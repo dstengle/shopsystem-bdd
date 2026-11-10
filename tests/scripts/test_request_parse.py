@@ -17,8 +17,8 @@ import shop_files
 import toolchain
 
 GLOSSARY = ROOT / "tests" / "scripts" / "fixtures" / "glossary" / "spec" / "index.md"
-GOOD = "When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to `started`."
-BAD = "When the person runs `work start` on an initiative that is `drafted`, `work` shall set its status to `started`."
+GOOD = "While an initiative is `proposed`, when the person runs `work start` on the initiative, `work` shall set the status of the initiative to `started`."
+BAD = "While an initiative is `drafted`, when the person runs `work start` on the initiative, `work` shall set the status of the initiative to `started`."
 LEGACY = "**When** `work list` is run, `work` shall print each request with its status."
 UNCODIFIED = "---\nid: capability/example.org/fixture/glossary/old\nnarrator: the person\n---\n\n## Behaviour\n\n- [r1] x\n"
 

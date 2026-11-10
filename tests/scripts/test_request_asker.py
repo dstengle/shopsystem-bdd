@@ -22,7 +22,7 @@ CONTEXT = "ex.com/prod/ctx"
 GLOSSARY = (ROOT / "tests" / "scripts" / "fixtures" / "glossary" / "spec" / "index.md").read_text()
 INDEX = ("---\nid: bounded-context/%s\nkind: bounded-context\nlanguage: codified-1\n---\n\n# ctx\n\n" % CONTEXT
          + GLOSSARY[GLOSSARY.index("## Glossary"):])
-LINE = ("When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to "
+LINE = ("While an initiative is `proposed`, when the person runs `work start` on the initiative, `work` shall set the status of the initiative to "
         "`started`.\n")
 
 

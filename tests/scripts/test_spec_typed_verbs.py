@@ -77,7 +77,7 @@ def test_a_tree_is_read_in_its_normal_form_and_written_back_typed(root):
 
 
 def test_no_generic_verb_fun_is_left_in_the_grammar():
-    gf = "".join((spec_grammar.GRAMMARS / name).read_text() for name in ("Core.gf", "Req.gf", "Steps.gf"))
+    gf = "".join((spec_grammar.GRAMMARS / name).read_text() for name in ("Core.gf", "Req.gf"))
     for fun in ("Happens :", "HappensI :", "Do :", "DoI :", "DoTo :", "SDoes :", "SDoesTo :", "Event ;"):
         assert fun not in gf, fun
 

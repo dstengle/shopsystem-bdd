@@ -1,8 +1,7 @@
 """The steps of a codified-2 feature in pytest-bdd (the CNL 4 design, I21-I27; b240 phase 13, from batch-33's b153 and
 b154): a step of a feature whose capability file says `language: codified-2` read through the step grammar 4
-(`features_vocab4`), as `features generate` wrote it; a step grammar 4 has no reading of is read as vocab.py reads
-every other step. One step definition for each keyword matches a text grammar 4 reads, beside vocab.py's own
-(`register`); the step function of every definition, and of work_queue_world's `bind_all`, reads the step again
+(`features_vocab4`), as `features generate` wrote it. One step definition for each keyword matches a text grammar 4
+reads (`register`); the step function of every definition, and of work_queue_world's `bind_all`, reads the step again
 (`step`), so whichever matches runs it alike."""
 from functools import cache
 from pathlib import Path

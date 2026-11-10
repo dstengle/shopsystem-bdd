@@ -294,27 +294,6 @@ shall [x4: agent the person (constant), x5: command `features bindings` (paramet
       change(e3, subject: x8, object: x9)
 ```
 
-## r105
-Retires: r17. From: b157 r60. Audit: distortion ("codified" dropped), fixed by section 5: the language of the capability is `codified-1` or `codified-2`.
-
-```reading
-While the group of a capability is `service` and the language of the capability is one of `codified-1` or `codified-2`, when the person runs `features generate`, `features` shall write the feature of the capability and print the feature.
-shall [x2: agent the person (constant), x3: command `features generate` (parameter), x4: tool `features` (constant)]
-  while [x1: capability]
-    group(x1) = `service`
-    or
-      case
-        language(x1) = `codified-1`
-      case
-        language(x1) = `codified-2`
-  when
-    run(e1, subject: x2, object: x3)
-  response [x5: feature]
-    of(x5, x1)
-    write(e2, subject: x4, object: x5)
-    print(e3, subject: x4, object: x5)
-```
-
 ## r106
 Retires: r18. From: b157 r61. Audit: coined (the counterfactual in the gloss of "differ"), said of a scenario that no requirement group has. Known limit: #13.
 
@@ -393,4 +372,21 @@ shall [x2: agent the person (constant), x3: command `features generate` (paramet
     not [x5: step, x6: universal condition]
       entail(subject: x6, object: x5)
       write(e2, subject: x4, object: x5)
+```
+
+## r110
+Retires: r105. From: b240 phase 25. Audit: the old language's reader is gone (b160): a capability in `codified-1` is refused naming `migrate upgrade`, so only the language of the capability `codified-2` is written.
+
+```reading
+While the group of a capability is `service` and the language of the capability is `codified-2`, when the person runs `features generate`, `features` shall write the feature of the capability and print the feature.
+shall [x2: agent the person (constant), x3: command `features generate` (parameter), x4: tool `features` (constant)]
+  while [x1: capability]
+    group(x1) = `service`
+    language(x1) = `codified-2`
+  when
+    run(e1, subject: x2, object: x3)
+  response [x5: feature]
+    of(x5, x1)
+    write(e2, subject: x4, object: x5)
+    print(e3, subject: x4, object: x5)
 ```

@@ -198,66 +198,6 @@ Feature: Feature file tools
     Then `features` exits with an error naming the scenario s1
     # entailed: U12 through the definition of refuse
 
-  @g105 @r105
-  Scenario: `features generate` writes the feature of a codified service capability (case 1)
-    Given the capability `shelf` holds:
-      """
-      ---
-      id: capability/ex.com/prod/ctx/shelf
-      title: shelf
-      narrator: a client
-      group: service
-      language: codified-1
-      rests_on: []
-      retired: []
-      ---
-      # shelf
-      ## Purpose
-      Something.
-      ## Terms
-      - **book** (noun): a thing.
-      ## Behaviour
-      ## Not yet
-      ## Dropped
-      """
-    And a capability c1
-    And the capability c1 is `service`
-    And the capability c1 is `codified-1`
-    When the person runs `features generate`
-    Then the capability c1 has the feature f1
-    And `features` writes the feature f1
-    And `features` prints the feature f1
-
-  @g105 @r105
-  Scenario: `features generate` writes the feature of a codified service capability (case 2)
-    Given the capability `shelf` holds:
-      """
-      ---
-      id: capability/ex.com/prod/ctx/shelf
-      title: shelf
-      narrator: a client
-      group: service
-      language: codified-1
-      rests_on: []
-      retired: []
-      ---
-      # shelf
-      ## Purpose
-      Something.
-      ## Terms
-      - **book** (noun): a thing.
-      ## Behaviour
-      ## Not yet
-      ## Dropped
-      """
-    And a capability c1
-    And the capability c1 is `service`
-    And the capability c1 is `codified-2`
-    When the person runs `features generate`
-    Then the capability c1 has the feature f1
-    And `features` writes the feature f1
-    And `features` prints the feature f1
-
   @g106 @r106
   Scenario: `features generate --check` names a feature with a scenario that no requirement group of its capability has
     Given the capability `shelf` holds:
@@ -267,7 +207,7 @@ Feature: Feature file tools
       title: shelf
       narrator: a client
       group: service
-      language: codified-1
+      language: codified-2
       rests_on: []
       retired: []
       ---
@@ -305,7 +245,7 @@ Feature: Feature file tools
       title: shelf
       narrator: a client
       group: service
-      language: codified-1
+      language: codified-2
       rests_on: []
       retired: []
       ---
@@ -365,3 +305,33 @@ Feature: Feature file tools
     And the universal condition u1 entails the step s1
     When the person runs `features generate` on the capability c1
     Then `features` does not write the step s1
+
+  @g110 @r110
+  Scenario: `features generate` writes the feature of a codified service capability
+    Given the capability `shelf` holds:
+      """
+      ---
+      id: capability/ex.com/prod/ctx/shelf
+      title: shelf
+      narrator: a client
+      group: service
+      language: codified-2
+      rests_on: []
+      retired: []
+      ---
+      # shelf
+      ## Purpose
+      Something.
+      ## Terms
+      - **book** (noun): a thing.
+      ## Behaviour
+      ## Not yet
+      ## Dropped
+      """
+    And a capability c1
+    And the capability c1 is `service`
+    And the capability c1 is `codified-2`
+    When the person runs `features generate`
+    Then the capability c1 has the feature f1
+    And `features` writes the feature f1
+    And `features` prints the feature f1

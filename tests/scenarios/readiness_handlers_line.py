@@ -61,7 +61,7 @@ def work_line(step):
     if "--recodify" in options:
         value = options["--recodify"]
         capability = "universal" if value == "`universal`" else R.CAPABILITY
-        R.universal(step) if capability == "universal" else R.codify(step)
+        R.universal(step) if capability == "universal" else R.codify(step, old=True)
         (step.repo / "spec" / "capabilities" / ("%s.md" % _name(value))).unlink(missing_ok=True)   # GivenK's file
         _shaped(step, item)
         line["recodified"] = capability

@@ -26,7 +26,7 @@ OWN = "bounded-context/ex.com/prod/ctx"
 FIXTURE = (Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "glossary" / "spec" / "index.md").read_text()
 # The context's index is codified, with the typed glossary of tests/scripts/fixtures/glossary/, so GOOD parses.
 INDEX = "---\nid: %s\nlanguage: codified-1\n---\n# ctx\n\n%s" % (OWN, FIXTURE[FIXTURE.index("## Glossary"):])
-GOOD = "When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to `started`."
+GOOD = "While an initiative is `proposed`, when the person runs `work start` on the initiative, `work` shall set the status of the initiative to `started`."
 BAD = "the queue is nice and quick"
 THING = ("---\nid: capability/ex.com/prod/ctx/thing\ntitle: Thing\nnarrator: a client\ngroup: service\n"
          "language: codified-1\nrests_on: []\nretired: []\n---\n\n# Thing\n\n## Purpose\nSomething.\n\n## Behaviour\n")

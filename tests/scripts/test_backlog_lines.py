@@ -12,10 +12,10 @@ from backlog_testing import git, state, work, write_item
 
 from conftest import GENERATE_SPEC
 
-ABANDON = ("When the person runs `work abandon` on an initiative that is `started`, `work` shall set its status to "
+ABANDON = ("While an initiative is `started`, when the person runs `work abandon` on the initiative, `work` shall set the status of the initiative to "
            "`abandoned`.")
-FROBNICATE = "When the person runs `work start` on an initiative that is `proposed`, `work` shall frobnicate the initiative."
-DONE = "When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to `done`."
+FROBNICATE = "While an initiative is `proposed`, when the person runs `work start` on the initiative, `work` shall frobnicate the initiative."
+DONE = "While an initiative is `proposed`, when the person runs `work start` on the initiative, `work` shall set the status of the initiative to `done`."
 TERM = "- **frobnicate** (verb, action): Forms: frobnicates, frobnicated. Frame: `work` frobnicates initiative."
 
 

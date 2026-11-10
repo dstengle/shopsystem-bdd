@@ -133,7 +133,7 @@ def requirement(step):
         raise AssertionError("no requirement condition %r" % word)
 
 
-EXEMPLIFIED = ("When the person runs `work start` on an initiative that is `proposed`, `work` shall print "
+EXEMPLIFIED = ("While an initiative is `proposed`, when the person runs `work start` on the initiative, `work` shall print "
                '"banana".')
 
 

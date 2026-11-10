@@ -5,7 +5,7 @@ narrator: a session reading or generating feature files
 group: service
 language: codified-2
 rests_on: [design-decision/plugin-takes-the-dependencies-it-needs, design-decision/plugin-scenarios-run-as-pytest-bdd, design-decision/query-commands-answer-in-their-output]
-retired: [g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18, g19, r19, g20, r20, g21, r21, g22, r22, g23, r23, g24, r24, g25, r25, g26, r26, g27, r27, g28, r28, g29, r29, g30, r30, g31, r31, g32, r32, g33, r33, g34, r34, g35, r35, g36, r36, g37, r37, g38, r38, g39, r39, g40, r40, g41, r41, g42, r42, g43, r43, g44, r44]
+retired: [g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18, g19, r19, g20, r20, g21, r21, g22, r22, g23, r23, g24, r24, g25, r25, g26, r26, g27, r27, g28, r28, g29, r29, g30, r30, g31, r31, g32, r32, g33, r33, g34, r34, g35, r35, g36, r36, g37, r37, g38, r38, g39, r39, g40, r40, g41, r41, g42, r42, g43, r43, g44, r44, g105, r105]
 unbuilt: []
 ---
 
@@ -154,30 +154,6 @@ Restates: r62@0.29.
 - [r104] While a feature file has a scenario that no binding binds, if the person runs `features bindings` with the `--unbound` and `--json` options, then `features` shall exit with an error naming the scenario and change no file.
 
 
-### [g105] `features generate` writes the feature of a codified service capability
-- [r105] While the group of a capability is `service` and the language of the capability is one of `codified-1` or `codified-2`, when the person runs `features generate`, `features` shall write the feature of the capability and print the feature.
-
-```given
-the capability `shelf` holds:
-  ---
-  id: capability/ex.com/prod/ctx/shelf
-  title: shelf
-  narrator: a client
-  group: service
-  language: codified-1
-  rests_on: []
-  retired: []
-  ---
-  # shelf
-  ## Purpose
-  Something.
-  ## Terms
-  - **book** (noun): a thing.
-  ## Behaviour
-  ## Not yet
-  ## Dropped
-```
-
 ### [g106] `features generate --check` names a feature with a scenario that no requirement group of its capability has
 - [r106] While the feature of a capability has a scenario that no requirement group has, if the person runs `features generate` with the `--check` option, then `features` shall exit with an error naming the feature and change no file.
 
@@ -188,7 +164,7 @@ the capability `shelf` holds:
   title: shelf
   narrator: a client
   group: service
-  language: codified-1
+  language: codified-2
   rests_on: []
   retired: []
   ---
@@ -216,7 +192,7 @@ the capability `shelf` holds:
   title: shelf
   narrator: a client
   group: service
-  language: codified-1
+  language: codified-2
   rests_on: []
   retired: []
   ---
@@ -242,6 +218,30 @@ the feature file `features/shelf.feature` holds:
 
 ### [g109] `features generate` leaves out a step that a universal condition entails
 - [r109] While the language of a capability is `codified-2`, when the person runs `features generate` on the capability, `features` shall not write a step that a universal condition entails.
+
+### [g110] `features generate` writes the feature of a codified service capability
+- [r110] While the group of a capability is `service` and the language of the capability is `codified-2`, when the person runs `features generate`, `features` shall write the feature of the capability and print the feature.
+
+```given
+the capability `shelf` holds:
+  ---
+  id: capability/ex.com/prod/ctx/shelf
+  title: shelf
+  narrator: a client
+  group: service
+  language: codified-2
+  rests_on: []
+  retired: []
+  ---
+  # shelf
+  ## Purpose
+  Something.
+  ## Terms
+  - **book** (noun): a thing.
+  ## Behaviour
+  ## Not yet
+  ## Dropped
+```
 
 ## Implementation, may change
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three

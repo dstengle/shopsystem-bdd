@@ -11,7 +11,7 @@ import spec_read
 import spec_relations
 from backlog_testing import git, state, work, write_item
 
-ABANDON = ("When the person runs `work abandon` on an initiative that is `started`, `work` shall set its status to "
+ABANDON = ("While an initiative is `started`, when the person runs `work abandon` on the initiative, `work` shall set the status of the initiative to "
            "`abandoned`.")
 ROW = "| initiative | holds | work-item | many |"
 GIVEN = "the file `notes.md` holds:\n  The first line.\n  The second line."

@@ -4,7 +4,7 @@ vocab` feature_file_tools_capability) and runs `features` with the command's opt
 arguments, each argument an instance's value; the Thens read what it printed and how it exited, an instance named by
 its value (a scenario by its title, a feature file by its path, a tag as written).
 
-Example data of a capability and of its feature file (g105-g107) is written as the given block holds it, and an
+Example data of a capability and of its feature file (g106, g107, g110) is written as the given block holds it, and an
 instance the Givens bind to it takes what it holds (`a capability c1`, the scenario of its feature file)."""
 import importlib.util
 import re

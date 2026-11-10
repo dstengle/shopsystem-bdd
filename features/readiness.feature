@@ -95,20 +95,6 @@ Feature: Readiness
     Then `work` refuses `work line`
     And `work` names the given block g1
 
-  @g33 @r33
-  Scenario: `work ready` refuses an item a step of whose scenarios has a placeholder
-    Given an item i1
-    And the item i1 is `shaped`
-    And a scenario s1
-    And the item i1 has the scenario s1
-    And a placeholder p1
-    And a step s2
-    And the step s2 holds the placeholder p1
-    And the scenario s1 has the step s2
-    When the person runs `work ready` on the item i1
-    Then `work` refuses `work ready`
-    And `work` names the step s2
-
   @g34 @r34
   Scenario: `work line --retires` writes a requirement in an item
     When the person runs `work line` with the `--retires` option on the item i1

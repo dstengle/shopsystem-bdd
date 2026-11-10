@@ -1,18 +1,14 @@
-"""The fixed step vocabulary (design §14.1, §14.3): the typed Steps funs and their patterns, a step read back into its
-template, kind and arguments, `features vocab --check`, the post-scenario U checks, and a fixture repository whose
+"""The step vocabulary (design §14.1, §14.3): a step read back through the step grammar 4 into its template, kind and
+arguments, `features vocab` and `features vocab --check`, the post-scenario U checks, and a fixture repository whose
 generated feature passes under pytest with its handlers."""
 import importlib.util
-import os
 import pathlib
-import re
 import shutil
 import subprocess
 import sys
 
-import features_vocab
+import features_vocab4
 import pytest
-import spec_grammar
-import spec_lexicon
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import toolchain
@@ -24,9 +20,9 @@ E2E = FIXTURES / "e2e"
 
 
 @pytest.fixture(scope="module")
-def vocab():
+def root():
     toolchain.require()
-    return features_vocab.load(FIXTURES / "repo")
+    return str(FIXTURES / "repo")
 
 
 @pytest.fixture
@@ -50,67 +46,39 @@ def scenarios_dir(root, handlers):
     return tests
 
 
-def test_two_kinds_with_the_same_template_give_two_distinct_patterns(vocab):
-    rows = {r.kind: r for r in features_vocab.rows(vocab) if r.template == "ThenK_A" and " not " not in r.pattern}
-    assert rows["initiative"].pattern != rows["work-item"].pattern
-    assert re.fullmatch(rows["initiative"].regex, "the initiative i1 is `started`")
-    assert not re.fullmatch(rows["work-item"].regex, "the initiative i1 is `started`")
-    assert rows["initiative"].pattern == "the initiative {n1} is {x1}"
-
-
-def test_every_row_names_its_template_kind_and_fun(vocab):
-    rows = features_vocab.rows(vocab)
-    given = [r for r in rows if r.template == "GivenK_A" and r.kind == "initiative" and r.attribute == "status"]
-    assert given and given[0].pattern == "an initiative {n1} that is {x1}"
-    assert {r.keyword for r in rows} == {"given", "when", "then"}
-    assert any(r.template == "WhenRuns" and r.kind is None for r in rows)
-
-
 @pytest.mark.parametrize("keyword, text, expected", [
-    ("then", "the initiative i1 is `started`",
-     {"template": "ThenK_A", "kind": "initiative", "attribute": "status", "term": "initiative", "names": ["i1"],
-          "values": ["`started`"]}),
-    ("given", "the initiative i1 is `started`", {"template": "GivenK_A", "kind": "initiative", "term": "initiative"}),
-    ("given", "an initiative i1 that is `proposed`", {"template": "GivenK_A", "names": ["i1"], "values": ["`proposed`"]}),
+    ("given", "an initiative i1", {"template": "GivenK", "kind": "initiative", "term": "initiative", "names": ["i1"]}),
+    ("given", "the initiative i1 is `proposed`",
+     {"template": "GivenK_A", "kind": "initiative", "attribute": "status", "names": ["i1"], "values": ["`proposed`"]}),
     ("when", "the person runs `work start` on the initiative i1",
-     {"template": "WhenRuns", "kind": "initiative", "term": "`work start`", "subject": "the person", "names": ["i1"]}),
+     {"template": "WhenRuns", "term": "`work start`", "command": "`work start`", "names": ["i1"]}),
     ("when", "the person runs `work list`", {"template": "WhenRuns", "kind": None, "term": "`work list`"}),
-    ("then", "`work run` takes the initiative i1", {"template": "ThenDoes", "term": "take", "kind": "initiative"}),
-    ("when", "`work run` starts the stage s1", {"template": "WhenHappens", "term": "start", "kind": "stage"}),
+    ("then", "`work` sets the status of the initiative i1 to `started`",
+     {"template": "ThenDoes", "term": "set", "names": ["i1"], "values": ["`started`"]}),
+    ("then", "`work` takes the initiative i1", {"template": "ThenDoes", "term": "take", "names": ["i1"]}),
+    ("when", "`work` starts the stage s1", {"template": "WhenHappens", "term": "start", "names": ["s1"]}),
     ("then", "`work` prints the work-item w1", {"template": "ThenPrints", "term": "`work`", "nps": ["the work-item w1"]}),
     ("then", "`work` exits with an error naming the status of the initiative i1",
      {"template": "ThenExitsErr", "term": "`work`", "names": ["i1"]}),
     ("given", "the file `notes.md` holds:", {"template": "GivenCodeText", "kind": "file", "names": ["`notes.md`"]}),
-    ("given", "the work-item w1 is under the capability-proposal p1",
-     {"template": "GivenR", "kind": "work-item", "term": "under", "names": ["w1", "p1"]}),
     ("given", "the stage s1 is for the work-item w1",
-     {"template": "GivenR", "kind": "stage", "term": "for", "names": ["s1", "w1"]}),
-    ("then", "the stage s1 is for the work-item w1", {"template": "ThenR", "kind": "stage", "term": "for"}),
-    ("given", "the initiative i1 fulfils the request q1", {"template": "GivenR", "term": "fulfils"}),
+     {"template": "GivenDoes", "term": "for", "names": ["s1", "w1"]}),
 ])
-def test_a_step_is_read_back_into_its_template_and_arguments(vocab, keyword, text, expected):
-    call = features_vocab.step(vocab, keyword, text)
+def test_a_step_is_read_back_into_its_template_and_arguments(root, keyword, text, expected):
+    call = features_vocab4.step(root, keyword, text)
     for field, value in expected.items():
         assert getattr(call, field) == value, (field, call)
 
 
-def test_a_relation_step_is_its_rows_clause_and_no_given_fun_of_its_own(vocab):
-    """A relation between two instances is the `SAtom` of its `## Relations` row's clause (design-r2 §4.4): the
-    StepsTyped module has no relation fun, and the vocabulary has one GivenR and one ThenR row for each row."""
-    import features_vocab_gf
-    import spec_lexicon
-    typed = features_vocab_gf.modules(spec_lexicon.read(FIXTURES / "repo"))["StepsTyped.gf"]
-    assert "r_" not in typed and "rel_" not in typed
-    tree = features_vocab.parse(vocab, "given", "the stage s1 is for the work-item w1")
-    assert tree[0] == "SAtom" and tree[1][0] == "rel_stage_for_work_item_Atom"
-    rows = {(r.template, r.pattern) for r in features_vocab.rows(vocab) if r.template in ("GivenR", "ThenR")}
-    assert ("GivenR", "the stage {n1} is for the work-item {n2}") in rows
-    assert ("ThenR", "the initiative {n1} fulfils the request {n2}") in rows
+def test_a_step_that_does_not_parse_is_refused(root):
+    with pytest.raises(features_vocab4.StepError, match="does not parse"):
+        features_vocab4.step(root, "then", "the initiative i1 is happy")
 
 
-def test_a_step_that_does_not_parse_is_refused(vocab):
-    with pytest.raises(features_vocab.StepError, match="does not parse"):
-        features_vocab.step(vocab, "then", "the initiative i1 is happy")
+def test_vocab_prints_the_functions_of_the_step_grammar_4(repo):
+    done = features(repo, "vocab")
+    assert done.returncode == 0, done.stderr
+    assert "k_initiative_Given : k_initiative_N -> Name -> Step" in done.stdout.splitlines()
 
 
 def test_vocab_check_names_a_missing_handler_and_passes_with_every_one(repo):
@@ -181,46 +149,3 @@ def test_marks_come_from_the_spec():
     marks = vocab.marks(FIXTURES / "repo")
     assert {"g1", "g2", "g3", "r1", "r4"} <= set(marks)
     assert "r5" not in marks
-
-
-@pytest.fixture
-def spec_repo(tmp_path):
-    toolchain.require()
-    shutil.copytree(FIXTURES / "repo", tmp_path / "repo")
-    return tmp_path / "repo"
-
-
-def test_a_second_load_reads_nothing(spec_repo, monkeypatch):
-    first = features_vocab.load(spec_repo)
-    monkeypatch.setattr(spec_lexicon, "read", lambda *a, **k: pytest.fail("lexicon read"))
-    monkeypatch.setattr(spec_grammar, "sources", lambda *a, **k: pytest.fail("sources rebuilt"))
-    assert features_vocab.load(spec_repo) is first
-
-
-def test_a_cold_load_reads_the_lexicon_once(spec_repo, monkeypatch):
-    features_vocab._by_print.clear()
-    real, calls = spec_lexicon.read, []
-    monkeypatch.setattr(spec_lexicon, "read", lambda *a, **k: calls.append(a) or real(*a, **k))
-    features_vocab.load(spec_repo)
-    assert len(calls) == 1
-
-
-def test_an_edit_of_equal_size_reloads(spec_repo):
-    first = features_vocab.load(spec_repo)
-    index = spec_repo / "spec" / "index.md"
-    text = index.read_text()
-    assert "a unit of delivery" in text
-    index.write_text(text.replace("a unit of delivery", "a unit of delivers"))
-    assert index.stat().st_size == len(text.encode())
-    assert features_vocab.load(spec_repo).lex is not first.lex
-
-
-def test_a_grammar_edit_reloads(spec_repo, tmp_path, monkeypatch):
-    grammars = tmp_path / "grammar"
-    shutil.copytree(spec_grammar.GRAMMARS, grammars)
-    monkeypatch.setattr(spec_grammar, "GRAMMARS", grammars)
-    before = features_vocab._fingerprint(spec_repo)
-    gf = min(grammars.glob("*.gf"))
-    stat = gf.stat()
-    os.utime(gf, ns=(stat.st_atime_ns, stat.st_mtime_ns + 1_000_000))
-    assert features_vocab._fingerprint(spec_repo) != before

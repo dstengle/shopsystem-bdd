@@ -7,7 +7,7 @@ import spec_read
 from backlog_section import Block, Group
 from backlog_testing import git, work, write_item
 
-LINE = ("When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to "
+LINE = ("While an initiative is `proposed`, when the person runs `work start` on the initiative, `work` shall set the status of the initiative to "
         "`started` and commit the initiative.")
 CAP = "spec/capabilities/work-queue.md"
 

@@ -11,14 +11,10 @@ from pathlib import Path
 
 SPEC = Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "generate" / "repo" / "spec"
 # A line that passes the bar in the fixture's spec, and one that does not parse there (`frobnicate` is no word of it).
-PASSING = ("When the person runs `work abandon` on an initiative that is `started`, `work` shall set its status to "
+PASSING = ("While an initiative is `started`, when the person runs `work abandon` on the initiative, `work` shall set the status of the initiative to "
            "`abandoned`.")
-FAILING = ("When the person runs `work start` on an initiative that is `proposed`, `work` shall frobnicate the "
+FAILING = ("While an initiative is `proposed`, when the person runs `work start` on the initiative, `work` shall frobnicate the "
            "initiative.")
-# A line `features generate` writes with a step no Steps fun words (b46): a negated `exit with an error`, and the step.
-UNWORDED = ("When the person runs `work abandon` on an initiative that is `started`, `work` shall not exit with an "
-            "error naming the initiative.")
-UNWORDED_STEP = "`work` does not [exit_error] the initiative i1"
 # A term bullet that brings a lexicon problem the fixture's lexicon does not have (v_t12: a condition whose gloss
 # names another kind, the brief, with "the"), and its term.
 ILL_TERM = "briefed"
@@ -41,7 +37,7 @@ INTO = {"--relation": ["--into", "work-queue"], "--given": ["--into", "work-queu
 # `work line --retires`: a live requirement of the fixture's work-queue, an id it does not hold, and the new line.
 LIVE = "work-queue#r1"
 NONEXISTENT = "work-queue#r99"
-LINE = ("When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to "
+LINE = ("While an initiative is `proposed`, when the person runs `work start` on the initiative, `work` shall set the status of the initiative to "
         "`started` and commit the initiative.")
 # `work line --universal --retires`: spec/universal.md of one live condition U1 in the old language.
 LIVE_U = "universal#U1"
@@ -50,7 +46,7 @@ CONDITION = "`work` shall commit every transition and push it."
 UNIVERSAL = ("---\nid: capability/ex.com/prod/ctx/universal\ntitle: Universal conditions\ngroup: guarantees\n"
              "language: codified-1\nretired: []\n---\n\n# Universal conditions\n\n## Behaviour\n\n"
              "- [U1] `work` shall commit every transition.\n")
-CAPABILITY = "work-queue"       # the fixture's capability, codified-1: the capability a scenario recodifies
+CAPABILITY = "work-queue"       # the fixture's capability: the capability a scenario recodifies, put back to codified-1
 
 
 def mine(step):
@@ -70,9 +66,9 @@ def B():
     return sys.modules["shop_backlog_world"]
 
 
-def codify(step):
+def codify(step, old=False):
     """D17's spec over the repository's `spec/`, once: the fixture less its uncodified `legacy.md`, its index naming
-    the context `ex.com/prod/ctx`."""
+    the context `ex.com/prod/ctx`; with `old`, its work-queue in `language: codified-1`, as a recodify finds it."""
     if step.context.get("codified"):
         return
     spec = step.repo / "spec"
@@ -80,6 +76,9 @@ def codify(step):
     (spec / "capabilities" / "legacy.md").unlink()
     index = spec / "index.md"
     index.write_text(re.sub(r"(?m)^id: .*$", "id: bounded-context/ex.com/prod/ctx", index.read_text(), count=1))
+    if old:
+        path = spec / "capabilities" / ("%s.md" % CAPABILITY)
+        path.write_text(path.read_text().replace("language: codified-2", "language: codified-1"))
     step.context["codified"] = True
 
 

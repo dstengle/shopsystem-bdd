@@ -16,9 +16,9 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import toolchain
 
 # An L3 alone: no transition takes a `proposed` initiative to `abandoned`. The fixture's DONE gives an L1 with r1 too.
-SKIPS = ("When the person runs `work abandon` on an initiative that is `proposed`, `work` shall set its status to "
+SKIPS = ("While an initiative is `proposed`, when the person runs `work abandon` on the initiative, `work` shall set the status of the initiative to "
          "`abandoned`.")
-GUARANTEE = "`work run` shall hold at most `workers` worker slots at a time."
+GUARANTEE = "An initiative always fulfils a request."
 
 
 @pytest.fixture
@@ -150,7 +150,8 @@ def test_ready_never_writes_spec_and_cleans_up(shaped, tmp_path, monkeypatch, te
 def test_a_group_generate_skips_is_the_reason(shaped, monkeypatch):
     """plan-3 review M5: the groups `features generate` writes no scenario for are read off `skipped`, not stderr."""
     fg = readiness_bar.features_generate
-    monkeypatch.setattr(fg.spec_steps, "read", lambda *_a: (_ for _ in ()).throw(fg.spec_steps.TraceError("no step")))
+    steps = fg.features_generate4.spec_steps4
+    monkeypatch.setattr(steps, "cases", lambda *_a: (_ for _ in ()).throw(steps.TraceError("no step")))
     skipped = {}
     fg.generate(shaped, shaped / "spec" / "capabilities" / "work-queue.md", skipped)
     assert skipped == {"work-queue#g%d" % n: "no step" for n in (1, 2, 3)}

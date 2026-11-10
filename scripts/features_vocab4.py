@@ -1,6 +1,5 @@
-"""A step of a codified-2 context read back through the step grammar 4 (the CNL 4 design, section 9; I14a): its one
-reading under its keyword and the Call features_vocab gives a step of grammar 3, keyed by the same templates, so a
-handler finds a codified-2 step as it finds a codified-1 one.
+"""A step read back through the step grammar 4 (the CNL 4 design, section 9; I14a): its one reading under its
+keyword as a Call, keyed by a template and a term, which a handler is found by.
 
 The templates: a Given that brings in an instance `GivenK`; example data `GivenCodeText` (a block under the step)
 and `GivenCode` (one value, in `quoted`); a value `GivenK_A`, `ThenK_A`; the number of Ks compared `GivenCount`
@@ -8,8 +7,7 @@ and `GivenCode` (one value, in `quoted`); a value `GivenK_A`, `ThenK_A`; the num
 `ThenDoes`, `ThenDoesNot` ("x exists" of the verb exist, b240); a run `WhenRuns` (its options, spec_lf_option), any other trigger `WhenHappens`;
 an act `ThenPrints`, `ThenPrintsNot`, `ThenExitsOk`, `ThenExitsErr`, `ThenChangesNothing`, else `ThenDoes`,
 `ThenDoesNot`. A step of more than one reading under its keyword (the same text read with a code of two kinds is
-one) is refused; a Given read as example data is that, not a holds condition on the same words (b154). `either`
-reads a step of a codified-2 feature that grammar 4 has no reading of in the old grammar (b240 phase 13).
+one) is refused; a Given read as example data is that, not a holds condition on the same words (b154).
 """
 import re
 
@@ -17,10 +15,34 @@ import spec_lf_np
 import spec_lf_option
 import spec_rgl_np
 import spec_rgl_steps
-from features_vocab import Call, StepError
 
 ROW = re.compile(r"^r\d+_(\w+?)_(Has|Holds|Is)$")
 ALLOWED = {"given": ("SCond", "_Given", "_HoldsBlock", "_HoldsText"), "when": ("STrig",), "then": ("SCond", "_Does")}
+
+
+class StepError(Exception):
+    """A step that does not parse in the step grammar 4, or reads as more than one step."""
+
+
+class Call:
+    """A step read back: its template, the kind and attribute it is typed by, the term its handler is keyed by, and
+    its arguments (names, values, subject, command, event, resource, noun phrases, quoted texts, and a docstring or
+    data table). `fixtures(name)` gives the scenario's pytest fixtures when it runs, so a handler reads `step.repo`,
+    `step.context`, `step.run` and `step.request`."""
+
+    def __init__(self, keyword, template, text, tree):
+        self.keyword, self.template, self.text, self.tree = keyword, template, text, tree
+        self.kind = self.attribute = self.term = self.subject = self.command = self.event = self.resource = None
+        self.docstring = self.datatable = self.fixtures = None
+        self.names, self.values, self.nps, self.quoted = [], [], [], []
+
+    def __repr__(self):
+        return "Call(%s)" % ", ".join("%s=%r" % kv for kv in self.__dict__.items() if kv[0] != "tree")
+
+    def __getattr__(self, name):
+        if name in ("repo", "context", "run", "request") and self.fixtures is not None:
+            return self.fixtures(name)
+        raise AttributeError(name)
 
 
 def _fun(tree):
@@ -118,19 +140,6 @@ def step(root, keyword, text):
     call.term = (call.command if name == "WhenRuns" else call.subject if name.startswith("Then") and term is None
                  else term)
     return call
-
-
-def either(root, vocab, keyword, text):
-    """A step of a codified-2 feature: its grammar 4 reading, else its reading in `vocab`, features_vocab's;
-    StepError, grammar 4's, when neither reads it."""
-    try:
-        return step(root, keyword, text)
-    except StepError as four:
-        from features_vocab import step as old
-        try:
-            return old(vocab, keyword, text)
-        except StepError:
-            raise four from None
 
 
 def nodes(tree):

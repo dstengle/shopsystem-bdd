@@ -22,6 +22,13 @@ CAP = "spec/capabilities/work-queue.md"
 FOUR = "When a session ends a stage, `work` shall print the stage."
 
 
+def old(repo):
+    """The fixture's work-queue put back to `language: codified-1`, committed: the capability a recodify switches."""
+    path = repo / CAP
+    path.write_text(path.read_text().replace("language: codified-2", "language: codified-1"))
+    git(repo, "commit", "-qam", "work-queue in the old language")
+
+
 def blocks(repo, name="b1"):
     return backlog_lines.read(backlog_items.find(repo, name), backlog_items.rel_of(name))
 
@@ -49,6 +56,7 @@ def test_a_marker_after_the_block_s_first_line_is_refused():
 
 
 def test_recodify_writes_the_marker_and_commits_the_item(ready_repo):
+    old(ready_repo)
     write_item(ready_repo, "b1", status="shaped")
     done = work(ready_repo, "line", "b1", "--recodify", "work-queue")
     assert done.returncode == 0, done.stderr
@@ -61,9 +69,6 @@ def test_recodify_writes_the_marker_and_commits_the_item(ready_repo):
 
 def test_a_capability_in_the_new_language_is_refused(ready_repo):
     write_item(ready_repo, "b1", status="shaped")
-    path = ready_repo / CAP
-    path.write_text(path.read_text().replace("language: codified-1", "language: codified-2"))
-    git(ready_repo, "commit", "-qam", "work-queue in the new language")
     head = git(ready_repo, "rev-parse", "HEAD")
     done = work(ready_repo, "line", "b1", "--recodify", "work-queue")
     assert done.returncode != 0 and "says `language: codified-2` already" in done.stderr, done.stderr
@@ -71,6 +76,7 @@ def test_a_capability_in_the_new_language_is_refused(ready_repo):
 
 
 def test_the_marker_is_laid_and_taken_out(ready_repo):
+    old(ready_repo)
     write_item(ready_repo, "b1", status="shaped")
     assert work(ready_repo, "line", "b1", "--recodify", "work-queue").returncode == 0
     was = (ready_repo / CAP).read_text()

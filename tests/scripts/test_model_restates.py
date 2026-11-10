@@ -7,7 +7,7 @@ import unittest
 
 from test_model_spec import COMMIT, ROOT, SCRIPT, START, WQ, CodifiedTest, codified
 
-OTHER = "When the person runs `work abandon` on an initiative that is `started`, `work` shall set its status to `abandoned`."
+OTHER = "While an initiative is `started`, when the person runs `work abandon` on the initiative, `work` shall set the status of the initiative to `abandoned`."
 
 
 class RestatesTest(CodifiedTest):

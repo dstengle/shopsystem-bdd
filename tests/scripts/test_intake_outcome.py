@@ -19,7 +19,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import toolchain
 
 # A peer's line no transition allows (a `proposed` initiative abandoned), and the counter-proposal that fixes it.
-ASKED = ("When the person runs `work abandon` on an initiative that is `proposed`, `work` shall set its status to "
+ASKED = ("While an initiative is `proposed`, when the person runs `work abandon` on the initiative, `work` shall set the status of the initiative to "
          "`abandoned`.")
 COUNTER = ABANDON
 

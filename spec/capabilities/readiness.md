@@ -5,7 +5,7 @@ narrator: a person or session readying an item
 group: service
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
-retired: [g1, r1, g2, r2, g3, r3, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18, g19, r19]
+retired: [g1, r1, g2, r2, g3, r3, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18, g19, r19, g33, r33]
 unbuilt: []
 ---
 
@@ -26,7 +26,6 @@ the item is settled. `work ready` checks the bar and asks nobody.
 - **bar check** (noun): one check of the readiness bar. Kind of: thing.
 - **pass** (verb, state): an item meets every bar check of the readiness bar. Forms: passes, passed. Frame: item passes readiness bar.
 - **meet** (verb, state): an item gives a bar check what it asks. Forms: meets, met. Frame: item meets bar check.
-- **placeholder** (noun): a bracketed placeholder in a step `features generate` writes, for a fact of a requirement that no step words. Kind of: text.
 - **the relation-row form** (artifact): four cells `| from | word | to | cardinality |` of a `## Relations` table, whose from and to are kinds of the lexicon.
 - **the upstream-entry form** (artifact): a bounded-context id `bounded-context/<path>` and, after `github:`, `<owner>/<name>`.
 - **the example-data form** (artifact): the rows of a given block, one a line: a thing with its code, a thing's attribute with its value, or two things related by a word of a relation row, as design-r2 section 9.1 sets them out.
@@ -48,7 +47,6 @@ the item is settled. `work ready` checks the bar and asks nobody.
 | capability | in | item |  |
 | term | in | item |  |
 | step | of | scenario |  |
-| placeholder | in | step |  |
 | requirement id | of | requirement | one |
 | universal condition id | of | universal condition | one |
 
@@ -86,9 +84,6 @@ the item is settled. `work ready` checks the bar and asks nobody.
 
 ### [g32] `work line --given` refuses a given block that does not conform to the example-data form
 - [r32] If the person runs `work line` with the `--given` option set to a given block that does not conform to the example-data form, then `work` shall refuse the command and name the given block.
-
-### [g33] `work ready` refuses an item a step of whose scenarios has a placeholder
-- [r33] While an item is `shaped` and a scenario of the item has a step that holds a placeholder, if the person runs `work ready` on the item, then `work` shall refuse the command and name the step.
 
 ### [g34] `work line --retires` writes a requirement in an item
 - [r34] When the person runs `work line` with the `--retires` option on an item, `work` shall write a requirement in the item and commit the item.

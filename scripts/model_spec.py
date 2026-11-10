@@ -134,20 +134,6 @@ class SpecReading:
         else:
             self.fact("unparsed", ident, p.refusal)
 
-    def given(self, gid, lines):
-        """given_unparsed(G, Line) for a given line the typed Steps grammar (features_vocab) refuses as a Given."""
-        import features_vocab
-        import spec_grammar
-        try:
-            vocab = features_vocab.load(self.root)
-        except (ImportError, spec_grammar.GrammarError):    # no tools: parsed() says which
-            return
-        for line, _ in lines:
-            try:
-                features_vocab.parse(vocab, "given", line)
-            except features_vocab.StepError:
-                self.fact("given_unparsed", gid, line)
-
     def read_codified(self, cap, path, entry):
         doc = spec_read.capability(path)
         where = self.rel(path)
@@ -199,8 +185,6 @@ class SpecReading:
                 if rid is not None:
                     self.fact("req_id", qid, cap, int(rid[1:]))
                 self.req_text[qid] = text
-            if g.given and not spec_read.codified(path, (spec_read.MARKER4,)):     # a codified-2 group's: in grammar 4,
-                self.given(gid, g.given)                                       # by features generate (I14a)
             for line, block in g.given:     # v15m: a condition the statement has, not example data
                 if not spec_read_given.example(line, block):
                     self.fact("given_condition", gid, line)

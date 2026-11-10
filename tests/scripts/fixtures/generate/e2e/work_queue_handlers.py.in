@@ -46,7 +46,7 @@ def work_list(step):
     step.context["exit"] = (0, "\n".join(shown))
 
 
-@handler("ThenK_A", "initiative")
+@handler("ThenDoes", "set")
 def then_status(step):
     assert step.context["status"][step.names[0]] == step.values[0]
 

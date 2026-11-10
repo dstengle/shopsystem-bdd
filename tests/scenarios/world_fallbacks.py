@@ -67,7 +67,7 @@ for _template, _term in (("ThenDoes", "holds"), ("ThenDoes", "set"),
                          ("GivenDoes", "has"), ("GivenDoes", "holds"), ("GivenDoes", "pass"),
                          ("GivenDoes", "violate"), ("GivenDoesNot", "pass"), ("GivenDoesNot", "meet"),
                          ("GivenK", "relation row"), ("GivenK", "upstream entry"),
-                         ("GivenK", "given block"), ("GivenK", "bar check"), ("GivenK", "placeholder"),
+                         ("GivenK", "given block"), ("GivenK", "bar check"),
                          ("GivenK", "step"), ("GivenK", "rule"), ("GivenK", "requirement id"),
                          ("GivenK", "universal condition id")):
     handler(_template, _term)(untaken)

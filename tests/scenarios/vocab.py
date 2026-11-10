@@ -1,11 +1,10 @@
-"""The step vocabulary in pytest-bdd (design §14.3): one step definition for each (keyword, template, kind) of the
-context's Steps grammar, dispatching to the handler `features_vocab.lookup` finds, and the checks of the observable
+"""The step vocabulary in pytest-bdd (design §14.3): one step definition for each keyword, matching a step the step
+grammar 4 reads (vocab4), dispatching to the handler `lookup` finds, and the checks of the observable
 universal conditions after every generated scenario (design §8.4: U12, a refused command changes nothing; U13, a
 commit a command makes in a repository with a remote is pushed, but under a remote the scenario made unpushable; U16,
 `--json` prints one JSON object; U11, U4 and U8 before b240's rewording, decisions 0086-0088).
 
-A step definition matches a step when the Steps grammar reads the step's text as its (template, kind); a cheap test
-of the pattern's words comes first, and each text is parsed once a process. `install(namespace, root, tests_dir)`
+Each text is parsed once a process. `install(namespace, root, tests_dir)`
 puts the definitions, the default fixtures (`repo`, `context`, `run`) and the hooks into a conftest's namespace, and
 imports the handlers (`world_*.py`, `*_handlers*.py`) by glob.
 
@@ -29,8 +28,6 @@ if str(SCRIPTS) not in sys.path:
 if __name__ in sys.modules:   # a loader by path puts the module in sys.modules first, as importlib's recipe does
     sys.modules.setdefault("vocab", sys.modules[__name__])
 
-import features_vocab
-
 if __package__:
     from . import vocab4
 else:   # loaded by path, as `features vocab --check` loads it
@@ -38,13 +35,13 @@ else:   # loaded by path, as `features vocab --check` loads it
     import vocab4
     sys.path.pop(0)
 
-_read, HANDLERS, CLAIMS = {}, {}, defaultdict(set)
+HANDLERS, CLAIMS = {}, defaultdict(set)
 FOUR_CHAINS, FOUR_RUN = {}, {}     # world_four's chains of grammar 4's handlers, and the runner of each
 
 
 def handler(template, term=None):
     """`@handler("GivenK_A", "initiative")`: the function that runs every step of that template and term; with no
-    term, the fallback for the template. It is called with the step's `features_vocab.Call`."""
+    term, the fallback for the template. It is called with the step's `features_vocab4.Call`."""
     def mark(fn):
         CLAIMS[(template, term)].add("%s:%d" % (fn.__code__.co_filename, fn.__code__.co_firstlineno))
         HANDLERS.setdefault((template, term), fn)
@@ -174,47 +171,11 @@ def pytest_bdd_after_scenario(request):
         pytest.fail("\n".join(problems), pytrace=False)
 
 
-def read(root, keyword, text):
-    """(template, kind) of a step's text under its keyword, or None; once a process for each text."""
-    key = (str(root), keyword, text)
-    if key not in _read:
-        try:
-            call = features_vocab.step(features_vocab.load(root), keyword, text)
-            _read[key] = (call.template, call.kind)
-        except features_vocab.StepError:
-            _read[key] = None
-    return _read[key]
-
-
-class VocabParser:
-    """A pytest-bdd step parser for one (keyword, template, kind); with `catch_all`, for any step the grammar
-    reads whose (template, kind) has no definition of its own."""
-
-    def __init__(self, root, row, own, catch_all=False):
-        self.root, self.keyword, self.key, self.own, self.catch_all = root, row.keyword, (row.template, row.kind), \
-            own, catch_all
-        self.name = "vocab %s %s %s" % (row.keyword, row.template, row.kind)
-        self.words = [] if catch_all else [_words(row)]
-
-    def is_matching(self, name):
-        if self.words and not any(all(w.strip() in name for w in words) for words in self.words):
-            return False
-        got = read(self.root, self.keyword, name)
-        return got is not None and (got == self.key or (self.catch_all and (self.keyword,) + got not in self.own))
-
-    def parse_arguments(self, name):
-        return {"text": name}
-
-
-def _words(row):
-    """The fixed words of a row's pattern: a quick test before the grammar reads a step."""
-    return [w for w in re.split(r"\{[nx]\d+\}", row.pattern) if w.strip()]
-
-
 def _step_function(root, keyword):
     def step_function(text, request, docstring=None, datatable=None):
-        call = (vocab4.step(root, keyword, text, request)
-                or features_vocab.step(features_vocab.load(root), keyword, text))
+        call = vocab4.step(root, keyword, text, request)
+        if call is None:
+            pytest.fail("not read in the step grammar 4 (is its capability codified-2?): %s" % text, pytrace=False)
         call.docstring, call.datatable, call.fixtures = docstring, datatable, request.getfixturevalue
         found = sys.modules["vocab"].lookup(call.template, call.term)
         if found is None:
@@ -232,25 +193,7 @@ def _marker(context):
 
 
 def register(namespace, root):
-    """One step definition for each (keyword, template, kind) row, and a catch-all for each keyword."""
-    from pytest_bdd.steps import StepFunctionContext
-    rows = features_vocab.rows(features_vocab.load(root))
-    own = {(r.keyword, r.template, r.kind) for r in rows}
-    chosen = {}
-    for row in rows:
-        key = (row.keyword, row.template, row.kind)
-        if key in chosen:   # one definition for each key, matching the text of any of its rows
-            chosen[key].words.append(_words(row))
-        chosen.setdefault(key, VocabParser(root, row, own))
-    for row in rows:
-        if row.kind is None:
-            chosen.setdefault((row.keyword, "*"), VocabParser(root, row, own, catch_all=True))
-    for n, parser in enumerate(chosen.values()):
-        context = StepFunctionContext(type=parser.keyword, step_func=_step_function(root, parser.keyword),
-                                      parser=parser)
-        marker = _marker(context)
-        name = "pytestbdd_stepdef_%s_vocab_%d" % (parser.keyword, n)
-        namespace[name] = pytest.fixture(name=name)(marker)
+    """One step definition for each keyword (vocab4's)."""
     vocab4.register(namespace, root, _step_function, _marker)
 
 

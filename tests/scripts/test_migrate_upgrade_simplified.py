@@ -23,7 +23,7 @@ from test_migrate_upgrade_codified import git, repository
 INDEX = (ROOT / "tests/scripts/fixtures/glossary/spec/index.md").read_text()
 CTX = "example.org/fixture/glossary"
 PEER = "bounded-context/example.org/acme/web"
-LINE = "When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to `started`."
+LINE = "While an initiative is `proposed`, when the person runs `work start` on the initiative, `work` shall set the status of the initiative to `started`."
 CART = ("---\nid: capability/%s/cart\ntitle: Cart\ngroup: service\nlanguage: codified-1\nretired: []\n---\n\n# Cart\n\n"
         "## Behaviour\n\n### [g1] a start\n- [r1] %s\n\n## Dropped\n" % (CTX, LINE))
 DECISION = ("---\nid: design-decision/%s/one\nsummary: One.\ndate: 2026-01-01\nstatus: accepted\ntier: judgement\n---\n"

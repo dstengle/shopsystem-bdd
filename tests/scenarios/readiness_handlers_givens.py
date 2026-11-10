@@ -22,7 +22,7 @@ B = shared("shop_backlog_world", "backlog_world.py")
 R = shared("shop_readiness_world", "readiness_world.py")
 local = W.local
 
-NAMED = ("relation row", "universal condition", "upstream entry", "given block", "bar check", "placeholder", "step",
+NAMED = ("relation row", "universal condition", "upstream entry", "given block", "bar check", "step",
          "rule", "requirement id", "universal condition id")
 
 
@@ -68,8 +68,7 @@ def given_does_not(step):
 def given_does(step):
     """pass: the item's one line passes the bar; has: "no requirement has the requirement id r1" (and of a universal
     condition id) makes the id one that `work line --retires` is refused, any other has (a bar check of the bar, a
-    scenario of the item, a step of the scenario) nothing; holds: a step that holds a placeholder makes the item's
-    line one whose scenario has such a step (b46), a term the item holds one that violates `v_t12`; violate: the
+    scenario of the item, a step of the scenario) nothing; holds: a term the item holds one that violates `v_t12`; violate: the
     rule the term violates, named by its code."""
     if not R.mine(step) or step.term not in ("pass", "has", "holds", "violate"):
         return False
@@ -79,9 +78,6 @@ def given_does(step):
         wrong = R.NONEXISTENT_U if "universal condition" in step.subject else R.NONEXISTENT
         step.context.setdefault("retires", {})[step.names[-1]] = wrong
         says(step, step.names[-1], wrong)
-    elif step.term == "holds" and step.nps[0].startswith("the placeholder "):
-        R.give_lines(step, step.context.get("item", "i1"), R.UNWORDED)
-        says(step, step.names[0], R.UNWORDED_STEP)
     elif step.term == "holds" and step.nps[0].startswith("the term "):
         R.give_lines(step, step.names[0], R.PASSING, [R.ILL_TERMED])
         says(step, step.names[1], R.ILL_TERM)

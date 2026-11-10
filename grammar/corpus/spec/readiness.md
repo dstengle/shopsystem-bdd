@@ -175,24 +175,6 @@ shall [x1: agent the person (constant), x2: command `work line` (parameter), x3:
     name(e3, subject: x6, object: x4)
 ```
 
-## r33
-Retires: r12. From: b157 r27. Audit: distortion (the scenarios are those `features generate` would write). Known limit: #13.
-
-```reading
-While an item is `shaped` and a scenario of the item has a step that holds a placeholder, if the person runs `work ready` on the item, then `work` shall refuse the command and name the step.
-shall [x5: agent the person (constant), x6: command `work ready` (parameter), x7: tool `work` (constant)]
-  while [x1: item, x2: scenario, x3: step, x4: placeholder]
-    status(x1) = `shaped`
-    of(x2, x1)
-    in(x4, x3)
-    of(x3, x2)
-  if
-    run(e1, subject: x5, object: x6, on: x1)
-  response
-    refuse(e2, subject: x7, object: x6)
-    name(e3, subject: x7, object: x3)
-```
-
 ## r34
 Retires: r13. From: b157 r28. Audit: fine; the option in the trigger (phase 11).
 
