@@ -170,6 +170,8 @@ out(A,B) :- n1(A,B,Z,T,V,pos), w1(A,B,Z,T,V,neg).  out(A,B) :- n1(A,B,Z,T,V,neg)
 out(A,B) :- n1(A,B,Z,T,V,pos), n1(A,B,Z,T,V,neg).
 cw(A,B,Z,C,P) :- side(A,B,S), ccond(S,Y,C,P), at(A,B,S,Y,Z).
 out(A,B) :- cw(A,B,Z,C,pos), cw(A,B,Z,C,neg).
+% a state whose frame takes no object ("a stage stalls", b219) is the one-place fluent crel(S,Q,Y,none,P): `none`
+% is a constant term, so it is read, merged and contradicted as a state with an object is
 rw(A,B,Q,Z1,Z2,P) :- side(A,B,S), crel(S,Q,Y1,Y2,P), at(A,B,S,Y1,Z1), at(A,B,S,Y2,Z2).
 out(A,B) :- rw(A,B,Q,Z1,Z2,pos), rw(A,B,Q,Z1,Z2,neg).
 fr(A,B,Z) :- side(A,B,S), free(S,X), at(A,B,S,X,Z).  hd(A,B,Z) :- side(A,B,S), holds(S,_,X), at(A,B,S,X,Z).

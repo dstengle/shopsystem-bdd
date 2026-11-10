@@ -115,9 +115,11 @@ def requirement(step):
     elif word == "exemplified":     # "banana" names no actor, command, option, value, rule or named instance
         H.write(repo, "spec/capabilities/thing.md", H.cap("thing", ["- [r1] " + EXEMPLIFIED]))
         H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))
+    elif word == "intransitive":     # a state verb whose frame takes no object, in the codified-2 world
+        C2.intransitive(step, H.PATH)
     elif word in C2.LINES:      # a line of grammar 4, in the smallest codified-2 world
         C2.requirement(step, word, H.PATH)
-    elif word in C2.SHELVED:      # a line of grammar 4 in the capability `shelf`, its verb added to the glossary
+    elif word in C2.OBLIQUE:      # a line of grammar 4 in the capability `shelf`, its verb added to the glossary
         C2.shelved(step, word, H.PATH)
     elif word in FRAMED:
         H.write(repo, "spec/capabilities/thing.md", H.cap("thing", ["- [r1] " + FRAMED[word][0]]))

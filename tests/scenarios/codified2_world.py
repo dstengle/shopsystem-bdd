@@ -182,16 +182,30 @@ def requirement(step, word, path):
         step.context.setdefault("says", {})["t1"] = says
 
 
+# A state verb whose frame takes no object (b219): the glossary entry the fixture has not, and r1 of the capability
+# `shelf`, whose feature feature-file-tools' scenario names; `model logic` names r1 by `shelf#r1`.
+INTRANSITIVE = ("- **stall** (verb, state): a stage makes no progress. Frame: stage stalls.\n",
+                "While a stage stalls, when the person runs `work start`, `work` shall print the stage.")
+
+
+def intransitive(step, path):
+    entry, line = INTRANSITIVE
+    context(step.repo, path, [line], "shelf")
+    index = step.repo / "spec" / "index.md"
+    index.write_text(index.read_text() + entry)
+    step.context.setdefault("ids", {})[step.names[0]] = "shelf#r1"
+
+
 # condition -> (the line r1 of the capability `shelf` says, the verb's entry the glossary gains for it, the step its
 # feature must hold): the requirements `features generate` writes the feature of (feature-file-tools)
-SHELVED = {"oblique": ("When a session ends a stage, `work` shall record the stage in a file.",
+OBLIQUE = {"oblique": ("When a session ends a stage, `work` shall record the stage in a file.",
                        ("- **record** (verb, action): an agent keeps a stage in a file. Frame: agent records stage "
                         "in file.\n"), r"(?m)^\s*Then `work` records the stage \w+ in the file \w+$")}
 
 
 def shelved(step, word, path):
-    """The requirement condition `word` of SHELVED: the world with `shelf`'s r1 its line, its verb in the glossary."""
-    line, entry, holds = SHELVED[word]
+    """The requirement condition `word` of OBLIQUE: the world with `shelf`'s r1 its line, its verb in the glossary."""
+    line, entry, holds = OBLIQUE[word]
     context(step.repo, path, [line], name="shelf")
     step.context.setdefault("holds", {})["features/shelf.feature"] = re.compile(holds)
     index = step.repo / "spec" / "index.md"
