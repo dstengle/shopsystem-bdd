@@ -9,6 +9,7 @@ import sys
 import model_restates
 import pytest
 import spec_grammar
+import spec_language
 import spec_lexicon
 import spec_read
 import spec_solve
@@ -26,6 +27,10 @@ def path(cap):
     return REPO / "spec" / "capabilities" / f"{cap}.md"
 
 
+def four(cap):
+    return spec_read.codified(path(cap), (spec_read.MARKER4,))
+
+
 @pytest.fixture(scope="module")
 def grammar():
     toolchain.require()
@@ -34,7 +39,7 @@ def grammar():
 
 @pytest.mark.parametrize("cap", GUARANTEES)
 def test_the_capability_is_codified_and_well_formed(cap):
-    assert spec_read.codified(path(cap)), f"{cap} has no `language: codified-1`"
+    assert spec_read.codified(path(cap)), f"{cap} has no `language: codified-1` or `codified-2`"
     doc = spec_read.capability(path(cap))
     assert doc.problems == []
     assert doc.groups, f"{cap} has no group"
@@ -46,7 +51,7 @@ def test_every_statement_parses_to_one_tree(grammar, cap):
     refused = []
     for g in spec_read.capability(path(cap)).groups:
         for r in g.requirements:
-            p = spec_grammar.parse(REPO, r.text)
+            p = spec_language.parse(REPO, r.text, capability=cap)    # in its file's grammar (CNL 4's I19)
             if p.tree is None:
                 refused.append(f"{cap}#{r.id}: {p.refusal}: {r.text}")
     assert refused == []
@@ -86,9 +91,10 @@ def test_each_group_is_one_statement_numbered_as_its_group(cap):
 
 @pytest.mark.parametrize("cap", GUARANTEES)
 def test_no_two_groups_share_features_condition_and_trigger(grammar, cap):
-    """v15n: statements that share features, condition and trigger are one statement (design-r2 §9.1)."""
+    """v15n: statements that share features, condition and trigger are one statement (design-r2 §9.1); of a codified-1
+    file, as model check reads v15n (a codified-2 line gives it no `pre`)."""
     seen, shared = {}, []
-    for g in spec_read.capability(path(cap)).groups:
+    for g in spec_read.capability(path(cap)).groups if not four(cap) else ():
         for r in g.requirements:
             clauses = spec_tree.parts(spec_tree.normal(spec_grammar.parse(REPO, r.text).tree))
             if all(clauses[k] is None for k in ("feat", "cond", "trig")):
@@ -101,12 +107,17 @@ def test_no_two_groups_share_features_condition_and_trigger(grammar, cap):
 
 @pytest.mark.parametrize("cap", GUARANTEES)
 def test_the_id_map_gives_every_id_the_capability_has(cap):
-    """ids-<cap>.tsv (design-r2 §9.1): old codified id, tab, new id; its new ids are exactly the file's."""
+    """ids-<cap>.tsv (design-r2 §9.1): old codified id, tab, new id; its new ids are exactly the file's, or, once the
+    file is reworded in the new language (CNL 4's I23a), each of them is the file's, live or retired."""
     rows = [line.split("\t") for line in (RECORDS / f"ids-{cap}.tsv").read_text().splitlines()]
     olds = [old for old, _ in rows]
     assert len(olds) == len(set(olds))
-    groups = spec_read.capability(path(cap)).groups
-    assert {new for _, new in rows} == {f"{cap}#{x}" for g in groups for x in [g.id] + [r.id for r in g.requirements]}
+    doc = spec_read.capability(path(cap))
+    have = {f"{cap}#{x}" for g in doc.groups for x in [g.id] + [r.id for r in g.requirements]}
+    if four(cap):
+        assert {new for _, new in rows} <= have | {f"{cap}#{x}" for x in doc.retired}
+    else:
+        assert {new for _, new in rows} == have
 
 
 @pytest.mark.usefixtures("grammar")
