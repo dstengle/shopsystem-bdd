@@ -14,6 +14,7 @@ polarity.
 import re
 
 import spec_lf_core as core
+import spec_lf_distinct
 import spec_lf_read
 import spec_rgl
 import spec_typed
@@ -139,8 +140,10 @@ def det(st, tree, cn):
         refs, conds = restrict(st, cn, ref)
         return NP(ref, "count", conds, refs, count=count(tree))
     row, suffix = st.names.row(fun(cn))
-    if d == "DetThe" and suffix == "Mod" and row[1] == "of":
+    if d in ("DetThe", "DetSame") and suffix == "Mod" and row[1] == "of":
         return of(st, row, np(st, args(cn)[1]))
+    if d in spec_lf_distinct.DETS:      # "another K", "two Ks", "the same K" (b240)
+        return spec_lf_distinct.det(st, d, cn, kind, restrict)
     if d in ("DetThe", "DetThePl"):
         found = spec_lf_read.the(st, kind, d == "DetThePl")     # R2, R11
         if found is not None:

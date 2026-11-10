@@ -51,6 +51,10 @@ concrete BaseEng of Base = open SyntaxEng, ParadigmsEng, (E = ExtraEng), (R = Re
     CodeLit s = s ;
     DetCount b n = mkDet (mkCard b n) ;
     DetOne = mkDet (mkCard n1_Numeral) ;
+    DetSame = mkDet (mkQuant ("the" ++ "same") ("the" ++ "same")) ;
+    DetAnother = mkDet (mkQuant "another" "other") ;
+    DetDifferent = mkDet (mkQuant ("a" ++ "different") "different") ;
+    DetTwo = mkDet (mkCard n2_Numeral) ;
     AtLeast = at_least_AdN ;
     AtMost = at_most_AdN ;
     Exactly = mkAdN "exactly" ;

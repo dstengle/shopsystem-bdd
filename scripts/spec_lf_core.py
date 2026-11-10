@@ -85,6 +85,7 @@ class State:
         self.boxed = {}         # each referent made inside a box already read (a no, not, every, only or count box, a
         #                         case of an or) and that box: R2 passes over it
         self.modality = None    # shall, may, always, never: the first a response or a necessity says (I17)
+        self.pairs = {}         # each referent of "two Ks" and its pair (spec_lf_distinct, b240)
 
     def ref(self, kind, origin=None, value=None, definite=False):
         r = Ref("x%d" % (len(self.refs) + 1), kind, origin or self.origin, value, definite)

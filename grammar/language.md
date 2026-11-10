@@ -109,6 +109,8 @@ A referent made inside a "no", "not", "every" or "only" box, a count's box or on
 a "the K" outside that box (DRS accessibility): "the K" binds to the latest earlier referent of kind K not inside
 such a box that does not hold it, and when every earlier K is inside one the line is refused, naming the noun and the
 box (design-model-check r166, r167, feature-file-tools r31; the boxes of a count and of "or" under Constructs).
+A K of a pair "two Ks" gave is no antecedent of "the K", which names neither of them; "another K" and "the same K"
+bind by this rule too (identity and distinctness, under Constructs).
 
 "the K of X" (a row `K | of | S`) is the image of X by the row, a referent of its own: X is read first, wherever it
 is said, and never an earlier K nor the K whose relative clause holds it. In "a review that lists the review of the
@@ -1157,6 +1159,152 @@ The Ks a number counts are made inside its box:
 ```reading
 When a session ends a stage, `work` shall print the number of files in the worktree of the session, and `work` shall print the file.
 refused: "the file" has no antecedent: a file is made inside "the number of files ...", which gives nothing outside it
+```
+
+### "another K", "a different K", "two Ks" and "the same K": identity and distinctness
+
+Two noun phrases of one kind may name one thing or two. "a K" never says which: two Ks of a line may be one thing.
+These four say it:
+
+- "another K" and "a different K" (one meaning) are a K that is not the K before it: a referent of its part as "a K"
+  is (R1), and the atom `distinct(y, x)`, x the referent "the K" would bind to by R2 in its place: the latest earlier
+  referent of kind K (or of a kind under it) not made inside a box that does not hold it. When that referent came
+  from "two Ks", y is distinct from both. With no such referent the line is refused, naming the noun, as R2 refuses
+  "the K"; "another K" never names the image of a row nor the run's own K.
+- "two Ks" are two Ks, each distinct from the other: two referents, the second with `distinct(y, x)`, and the clause
+  said of each, as of "a K and a K" (so "two sessions follow a stage" is one stage both follow). What restricts the
+  noun restricts each; a K its restriction makes is one K they share ("two files in a worktree": one worktree). A
+  later "the K" names neither and is refused.
+- "the same K" binds as "the K" does (R2): to the latest earlier K, else the image of a row, else the run's own K. When
+  R2 gives it nothing and the line said "two Ks" before it, it is one new K (R1), which each of the two shares: "two
+  sessions follow the same stage". Else it is refused as "the K" is.
+
+`model logic` and `features generate` read `distinct` from phase 9 on (b240); until then a line that holds it is
+refused by both, naming it.
+
+Found by the audit in design-model-check r176 (v15b, "two requirements share an id"), r179 (v15n, "another group"),
+r199 ("another interpreter"), r218 ("two others"), r224 (v_t15, two senses of one term), r247-r249 and r276-r278
+(two lines "of the same trigger and state", "another" requirement), migration-tools r28 and r29 ("a ledger entry
+supersedes another ledger entry", said with a coined noun), telemetry r8 ("`measure compare` on two batches"),
+backlog r26 and batches r20 and r22 (an item "not in the same batch"), backlog r39 ("an upstream branch of a
+different name") and batches r32 (a scenario of another item than the task's). Each said the identity with a coined
+noun, a rule code or not at all.
+
+```reading
+When a session gives a file to another session, `work` shall print the file.
+shall [x4: tool `work` (constant)]
+  when [x1: session, x2: file, x3: session]
+    distinct(x3, x1)
+    give(e1, subject: x1, object: x2, to: x3)
+  response
+    print(e2, subject: x4, object: x2)
+```
+
+```reading
+When a session gives a file to a different session, `work` shall print the file.
+shall [x4: tool `work` (constant)]
+  when [x1: session, x2: file, x3: session]
+    distinct(x3, x1)
+    give(e1, subject: x1, object: x2, to: x3)
+  response
+    print(e2, subject: x4, object: x2)
+```
+
+"the same K" bound to the earlier K, the twin of "another requirement of the same trigger" (design-model-check
+r276-r278):
+
+```reading
+While a session follows a stage and another session follows the same stage, when the person runs `work start`, `work` shall print the stage.
+shall [x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+  while [x1: session, x2: stage, x3: session]
+    follow(subject: x1, object: x2)
+    distinct(x3, x1)
+    follow(subject: x3, object: x2)
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    print(e2, subject: x6, object: x2)
+```
+
+"two Ks" of "the same K", the twin of "two requirements share an id" (design-model-check r176):
+
+```reading
+While two sessions follow the same stage, when the person runs `work start`, `work` shall end the stage.
+shall [x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+  while [x1: session, x3: stage, x2: session]
+    follow(subject: x1, object: x3)
+    distinct(x2, x1)
+    follow(subject: x2, object: x3)
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    end(e2, subject: x6, object: x3)
+```
+
+What restricts "two Ks" restricts each, and a K it makes is one both share:
+
+```reading
+When a session writes two files in a worktree, `work` shall print the worktree.
+shall [x5: tool `work` (constant)]
+  when [x1: session, x2: file, x3: worktree, x4: file]
+    in(x2, x3)
+    write(e1, subject: x1, object: x2)
+    distinct(x4, x2)
+    in(x4, x3)
+    write(e2, subject: x1, object: x4)
+  response
+    print(e3, subject: x5, object: x3)
+```
+
+In a response, two new Ks:
+
+```reading
+When a session ends a stage, `work` shall write two files.
+shall [x3: tool `work` (constant)]
+  when [x1: session, x2: stage]
+    end(e1, subject: x1, object: x2)
+  response [x4: file, x5: file]
+    write(e2, subject: x3, object: x4)
+    distinct(x5, x4)
+    write(e3, subject: x3, object: x5)
+```
+
+"another K" after "two Ks" is distinct from both:
+
+```reading
+When a session gives two files to a session, `work` shall write another file.
+shall [x5: tool `work` (constant)]
+  when [x1: session, x2: file, x4: session, x3: file]
+    give(e1, subject: x1, object: x2, to: x4)
+    distinct(x3, x2)
+    give(e2, subject: x1, object: x3, to: x4)
+  response [x6: file]
+    distinct(x6, x2)
+    distinct(x6, x3)
+    write(e3, subject: x5, object: x6)
+```
+
+The refusals: "another K" with no K before it, or with every K before it inside a box; "the same K" with neither an
+antecedent nor "two Ks" before it; "the K" after "two Ks".
+
+```reading
+When a session ends another stage, `work` shall print the stage.
+refused: "another stage" has no antecedent: no earlier noun phrase gives a stage
+```
+
+```reading
+While no session follows a stage, when the person runs `work start`, `work` shall end another stage.
+refused: "another stage" has no antecedent: a stage is made inside "no session ...", which gives nothing outside it
+```
+
+```reading
+When the person runs `work start`, `work` shall end the same stage.
+refused: "the same stage" has no antecedent: no earlier noun phrase, functional relation or declared indexical gives a stage
+```
+
+```reading
+While two sessions follow a stage, when the person runs `work start`, `work` shall print the session.
+refused: "the session" has no antecedent: "two sessions" gives two sessions, and "the session" names neither
 ```
 
 ## What the language cannot say yet

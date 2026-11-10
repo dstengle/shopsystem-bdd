@@ -19,6 +19,7 @@ spec_lf_facts_atoms'. An `or` box splits it as spec_facts does (`R#n`,
 `disj`); no translation, a ValueError.
 """
 import spec_facts
+import spec_lf_distinct
 import spec_lf_modal
 import spec_lf_number
 import spec_lf_quant
@@ -197,6 +198,7 @@ class Walk(Terms):
 
 def translate(ids, ident, form):
     """The facts of one codified-2 requirement's Form (of each of its splits, in order)."""
+    spec_lf_distinct.refuse(form, ValueError)     # b240: two things told apart, read from phase 9 on
     first = Walk(ids, ident)
     out = first.run(form)
     if not first.options:

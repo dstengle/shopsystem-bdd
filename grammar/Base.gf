@@ -29,6 +29,8 @@ abstract Base = {
     -- counts (call 4; I15): "at least two", "exactly one" ... before a noun; "one" alone is exactly one
     DetCount : Bound -> Many -> Det ;
     DetOne : Det ;
+    -- identity and distinctness (b240, construct #2): "the same K", "another K", "a different K", "two Ks"
+    DetSame, DetAnother, DetDifferent, DetTwo : Det ;
     AtLeast, AtMost, Exactly, MoreThan, FewerThan : Bound ;
     Many1, Many2, Many3, Many4, Many5, Many6, Many7, Many8, Many9, Many10 : Many ;
 }

@@ -7,6 +7,7 @@ resolved or noted as they are translated, and `spec_lf_read.refusal` reads the f
 """
 import spec_lf_clause
 import spec_lf_core
+import spec_lf_distinct
 import spec_lf_np
 import spec_lf_number
 import spec_lf_order
@@ -63,6 +64,8 @@ def atom(a):
         return spec_lf_time.show(a, term)
     if a.pred == spec_lf_set.PRED:
         return spec_lf_set.show(a, term)
+    if a.pred == spec_lf_distinct.PRED:     # "another K", "two Ks" (b240)
+        return spec_lf_distinct.show(a, term)
     x, attr, v = a.args
     return "%s(%s) = %s" % (attr, term(x), term(v))
 

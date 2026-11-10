@@ -22,6 +22,7 @@ from dataclasses import replace
 
 import spec_facts
 import spec_lf
+import spec_lf_distinct
 import spec_lf_order
 import spec_lf_set
 import spec_lf_values
@@ -256,6 +257,7 @@ def read(vocab, forms, entailed=None, r=None):
     the Reader of the case it takes, the first by default."""
     r, givens, when, thens = r or Reader(vocab), [], [], []
     for n, (ident, form) in enumerate(forms):
+        spec_lf_distinct.refuse(form, TraceError)     # b240: two things told apart, read from phase 9 on
         if form.modality != "shall":     # a permission obliges nothing, a necessity has no trigger (I17)
             raise TraceError("no step of a line that says %s" % form.modality)
         r.bind([x for p in form.parts for x in p.refs], n)

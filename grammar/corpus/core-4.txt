@@ -151,3 +151,13 @@ While the number of lines of a stage is more than eleven, when the person runs `
 = refused: does not parse at eleven
 When a session ends a stage, `work` shall print the number of line of the stage.
 = refused: does not parse at line
+# identity and distinctness (b240, construct #2): "another K", "a different K", "two Ks", "the same K"
+When a session gives a file to another session, `work` shall print the file.
+When a session gives a file to a different session, `work` shall print the file.
+While two sessions follow the same stage, when the person runs `work start`, `work` shall end the stage.
+While a session follows a stage and another session follows the same stage, when the person runs `work start`, `work` shall print the stage.
+When a session ends a stage, `work` shall write two files.
+While two sessions follows a stage, when the person runs `work start`, `work` shall exit successfully.
+= refused: the verb follow does not agree in number with its subject
+While two session follow a stage, when the person runs `work start`, `work` shall exit successfully.
+= refused: does not parse at session

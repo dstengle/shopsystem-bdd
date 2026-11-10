@@ -53,10 +53,16 @@ def _image(st, row, y):
     return NP(ref, "a", [Atom("rel", ("of", ref, y))], image=True) if new else core.fixed(ref)
 
 
-def the(st, kind, plural=False):
-    """R2 and R11: the NP "the K" binds to, or None, the refusal noted (the caller makes a definite referent)."""
+def the(st, kind, plural=False, said=None):
+    """R2 and R11: the NP "the K" (`said`, "the same K") binds to, or None, the refusal noted (the caller makes a
+    definite referent); one of a pair "two Ks" gave is refused: "the K" names neither (b240)."""
+    said = said or "the " + noun(st, kind, plural)
     refs = [r for r in st.refs if r.origin in ACCESSIBLE and r not in st.open and r not in st.boxed]
     bound = next((r for r in reversed(refs) if kind in st.vocab.ancestors(r.kind)), None)
+    if bound is not None and bound in st.pairs:
+        st.notes.append('"%s" has no antecedent: "two %s" gives two %s, and "%s" names neither'
+                        % (said, noun(st, bound.kind, True), noun(st, bound.kind, True), said))
+        return None
     if bound is not None:
         return core.fixed(bound)
     rows = [r for r in st.names.rows.values() if r[0] == kind and r[1] == "of"]
@@ -65,7 +71,6 @@ def the(st, kind, plural=False):
         return _image(st, *found[0])
     if kind in st.vocab.this:
         return core.fixed(st.constant(kind, st.vocab.this[kind], "indexical"))
-    said = "the " + noun(st, kind, plural)
     hidden = [r for r in st.refs if r in st.boxed and kind in st.vocab.ancestors(r.kind)]
     if hidden:
         st.notes.append(inside(st, said, hidden[-1], st.boxed[hidden[-1]]))
