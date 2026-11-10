@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/query-commands-answer-in-their-output, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items, design-decision/work-items-named-by-ids, design-decision/the-glossary-is-a-target-of-spec-work]
 retired: [r8, r9, r12, r13, r14, r15, r16, r17, r18, r21, r26, r27, r29, r31, r32, r33, r34, r35, r37, r39, r45, r46, r53, g73, r73, g72, r72]
-unbuilt: []
+unbuilt: [r136, r137, r138, r139, r140, r141, r142, r143, r144]
 ---
 
 # Design model check
@@ -139,6 +139,18 @@ context: product-level artifacts are read only where the files contain them.
 - **contravening** (adjective of capability): a capability with a line whose response a universal condition forbids, under the line's trigger.
 
 - **restating** (adjective of requirement): a requirement each of whose Thens other requirements entail.
+
+- **counted** (adjective of requirement): a requirement with "at least", "at most", "exactly", "more than" or "fewer than" before a number and a noun.
+- **overcounted** (adjective of capability): a capability with two lines of one trigger and state whose counts of one kind cannot both hold.
+
+- **timed** (adjective of requirement): a requirement that compares a moment or a duration with "after", "before", "since" or "within the last".
+- **clocked** (adjective of requirement): a requirement whose trigger is the clock reaching a moment.
+- **historical** (adjective of requirement): a requirement whose While clause says that an agent has done an action, as in "the batch has published a pull request".
+- **unitless** (adjective of requirement): a requirement with a number where a duration is due and no unit of the time pack after it.
+
+- **permissive** (adjective of requirement): a requirement that says an agent may do an action.
+- **invariant** (adjective of requirement): a requirement with no trigger that says a thing always holds or never holds.
+- **forbidding** (adjective of capability): a capability with a line that forbids what another of its lines says an agent may do.
 
 ## Behaviour
 
@@ -412,6 +424,33 @@ Restates: r65@0.29.
 
 ### [g135] `model logic` reports a requirement that other requirements entail
 - [r135] When the person runs `model logic` on a requirement that is restating, `model` shall print "L8".
+
+### [g136] `model parse` reads a count
+- [r136] When the person runs `model parse` on a requirement that is counted, `model` shall exit successfully.
+
+### [g137] `model logic` finds two counts that cannot both hold
+- [r137] When the person runs `model logic` on a capability that is overcounted, `model` shall print "L1".
+
+### [g138] `model parse` reads a comparison of moments
+- [r138] When the person runs `model parse` on a requirement that is timed, `model` shall exit successfully.
+
+### [g139] `model parse` reads the clock as a trigger
+- [r139] When the person runs `model parse` on a requirement that is clocked, `model` shall exit successfully.
+
+### [g140] `model parse` reads the perfect as history
+- [r140] When the person runs `model parse` on a requirement that is historical, `model` shall exit successfully.
+
+### [g141] `model parse` refuses a duration with no unit
+- [r141] If the person runs `model parse` on a requirement that is unitless, then `model` shall exit with an error naming the requirement.
+
+### [g142] `model parse` reads a permission
+- [r142] When the person runs `model parse` on a requirement that is permissive, `model` shall exit successfully.
+
+### [g143] `model parse` reads always and never with no trigger
+- [r143] When the person runs `model parse` on a requirement that is invariant, `model` shall exit successfully.
+
+### [g144] `model logic` finds a line that forbids what another permits
+- [r144] When the person runs `model logic` on a capability that is forbidding, `model` shall print "L7".
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a

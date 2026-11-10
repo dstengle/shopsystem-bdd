@@ -565,3 +565,66 @@ Feature: Design model check
     And the requirement r1 is restating
     When the person runs `model logic` on the requirement r1
     Then `model` prints "L8"
+
+  @g136 @r136
+  Scenario: `model parse` reads a count
+    Given a requirement r1
+    And the requirement r1 is counted
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g137 @r137
+  Scenario: `model logic` finds two counts that cannot both hold
+    Given a capability c1
+    And the capability c1 is overcounted
+    When the person runs `model logic` on the capability c1
+    Then `model` prints "L1"
+
+  @g138 @r138
+  Scenario: `model parse` reads a comparison of moments
+    Given a requirement r1
+    And the requirement r1 is timed
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g139 @r139
+  Scenario: `model parse` reads the clock as a trigger
+    Given a requirement r1
+    And the requirement r1 is clocked
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g140 @r140
+  Scenario: `model parse` reads the perfect as history
+    Given a requirement r1
+    And the requirement r1 is historical
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g141 @r141
+  Scenario: `model parse` refuses a duration with no unit
+    Given a requirement r1
+    And the requirement r1 is unitless
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits with an error naming the requirement r1
+
+  @g142 @r142
+  Scenario: `model parse` reads a permission
+    Given a requirement r1
+    And the requirement r1 is permissive
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g143 @r143
+  Scenario: `model parse` reads always and never with no trigger
+    Given a requirement r1
+    And the requirement r1 is invariant
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g144 @r144
+  Scenario: `model logic` finds a line that forbids what another permits
+    Given a capability c1
+    And the capability c1 is forbidding
+    When the person runs `model logic` on the capability c1
+    Then `model` prints "L7"
