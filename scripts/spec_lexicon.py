@@ -28,7 +28,7 @@ CORE_VERBS = {"run", "print", "hold", "exit", "become", "set", "be"}
 
 ENTRY = re.compile(r"^- \*\*(?P<term>.+?)\*\*\s*(?:\((?P<cat>[^)]*)\))?\s*:\s*(?P<text>.*)$", re.DOTALL)
 FIELDS = ("Values", "Transitions", "Means", "Forms", "Frame", "Plural", "Not", "Kind of", "This", "Redefines", "Schema",
-          "Field of")
+          "Field of", "Order")
 ASPECTS = ("state", "action")
 FIELD = re.compile(r"(?:^|\s)(?:%s):" % "|".join(FIELDS))
 
@@ -54,6 +54,7 @@ class Term:
     this: str = ""        # a kind's `This:`, the run's own thing of that kind
     schema: tuple = ()    # an artifact's `Schema:` as (schema type, file), stored, checked by nothing yet (b241)
     field_of: str = ""    # an attribute's `Field of:`, the artifact it is a field of, stored (b241)
+    order: str = ""       # an attribute's `Order:`, how its values are ordered (spec_lf_order, b240)
 
     @property
     def key(self):
@@ -134,7 +135,8 @@ def entry(bullet, where):
                 forms=_list(_field(text, "Forms")), plural=_field(text, "Plural"), nots=_list(_field(text, "Not")),
                 resource=resource, supertype=_field(text, "Kind of") or ("artifact" if label == "artifact" else ""), frame=_field(text, "Frame"), label=label,
                 aspect=aspect, frames=_fields(text, "Frame"), this=_field(text, "This"),
-                schema=schema.groups() if schema else (), field_of=_field(text, "Field of"))
+                schema=schema.groups() if schema else (), field_of=_field(text, "Field of"),
+                order=_field(text, "Order"))
 
 
 def gloss(text):
