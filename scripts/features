@@ -7,8 +7,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import features_generate
-import features_vocab
-import spec_grammar
+import features_vocab4
+import spec_gf
 import spec_read
 import spec_unbuilt
 from features_bindings import cmd_bindings
@@ -63,11 +63,11 @@ contract:
     removes it ('removed features/<c>.feature') and --check names it while it
     exists. --preview <file>
     prints the feature of a draft capability file and writes nothing.
-  - vocab prints the step vocabulary: each (template, kind) pattern of the
-    Steps grammar. vocab --check [--tests DIR] [<feature>...] imports DIR's
+  - vocab prints the step vocabulary: each function of the step grammar 4
+    with its type. vocab --check [--tests DIR] [<feature>...] imports DIR's
     world_*.py and *_handlers*.py and exits 1 naming each step of the
     generated feature files (all of them when none is named) that does not
-    parse or has no handler, and each key two handlers claim. A scenario of a
+    parse in the step grammar 4 or has no handler, and each key two handlers claim. A scenario of a
     requirement its capability lists in `unbuilt:` needs no handler.
 
 exit status: 0 success, 1 a check failed or a file was refused, 2 bad usage.
@@ -108,7 +108,7 @@ def cmd_generate(args):
         # (plan 9, D4): None.
         texts = {os.path.basename(path)[:-3]: None if retired(path) else features_generate.generate(root, path)
                  for path in paths}
-    except (features_generate.GenerateError, features_vocab.StepError, spec_grammar.Unlabelled) as err:
+    except (features_generate.GenerateError, features_vocab4.StepError) as err:
         sys.stderr.write("features: %s\n" % err)
         return 1
     differs = 0
@@ -158,12 +158,18 @@ def steps_of(path):
 
 
 def cmd_vocab(args):
-    """`features vocab [--check]`: the vocabulary, or the steps of generated features with no handler."""
+    """`features vocab [--check]`: the step grammar 4's functions, or the steps of generated features with no
+    handler."""
     root = os.path.abspath(args.root)
-    vocab = features_vocab.load(root)
     if not args.check:
-        for row in features_vocab.rows(vocab):
-            print("%s %s %s: %s" % (row.keyword, row.template, row.kind or "-", row.pattern))
+        import spec_rgl_steps
+        try:
+            _, gram = spec_rgl_steps.load(root)
+        except (ImportError, spec_gf.GrammarError) as err:
+            sys.stderr.write("features: %s\n" % err)
+            return 1
+        for fun in sorted(gram.functions):
+            print("%s : %s" % (fun, gram.functionType(fun)))
         return 0
     handlers = registry()
     handlers.load_handlers(os.path.join(root, args.tests))
@@ -181,8 +187,8 @@ def cmd_vocab(args):
         unbuilt = spec_unbuilt.unbuilt_lines(full, root)
         for n, keyword, text in steps_of(full):
             try:
-                call = features_vocab.step(vocab, keyword, text)
-            except features_vocab.StepError as err:
+                call = features_vocab4.step(root, keyword, text)
+            except features_vocab4.StepError as err:
                 problems.append("%s:%d: %s | %s" % (path, n, text, err))
                 continue
             if n not in unbuilt and not handlers.lookup(call.template, call.term):

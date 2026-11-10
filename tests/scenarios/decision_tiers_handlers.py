@@ -49,11 +49,12 @@ def decision(step, name, tier=None, status="accepted"):
 
 
 def field(step, name, key, value):
-    """Set or replace one frontmatter line `key: value` of the decision's file."""
+    """Set or replace one frontmatter line `key: value` of the decision's file; with None, take it away."""
     path = step.repo / "spec" / "decisions" / ("%s.md" % name)
     text = path.read_text()
     head, rest = text[4:].split("\n---\n", 1)
-    lines = [line for line in head.splitlines() if not line.startswith(key + ":")] + ["%s: %s" % (key, value)]
+    lines = [line for line in head.splitlines() if not line.startswith(key + ":")]
+    lines += ["%s: %s" % (key, value)] if value is not None else []
     path.write_text("---\n%s\n---\n%s" % ("\n".join(lines), rest))
 
 
@@ -65,40 +66,26 @@ def fields(step, name):
 
 @handler("GivenK_A", "design-decision")
 def given_decision_is(step):
-    """A value among the tiers is the decision's tier (it is accepted); any other is its status."""
-    name, value = bare(step.names[0]), bare(step.values[0])
-    if (step.repo / "spec" / "decisions" / ("%s.md" % name)).is_file():
-        field(step, name, "tier" if value in TIERS else "status", value)
-        says(step, name, "spec/decisions/%s.md" % name)
-    elif value in TIERS:
-        decision(step, name, tier=value)
-    else:
-        decision(step, name, status=value)
-
-
-@local("GivenK_C", "design-decision")
-def given_unenforced(step):
-    """untiered, untested and unrequired: the decision as written gives no tier, no test, no requirement. Any other
-    condition (design-model-check's headless) goes on to the registry."""
-    condition = step.text.rsplit(" is ", 1)[1]
-    if condition == "misrouted":
-        return misrouted(step)
-    if condition not in ("untiered", "untested", "unrequired"):
-        return False
-    step.context.setdefault(condition, set()).add(bare(step.names[0]))
-
-
-def misrouted(step):
-    """misrouted: the decision written again as a judgement decision, clean in every other way, whose `verified_by` names `sampling`, a route outside
-    the four; the error names it by its id."""
+    """A value among the tiers is the decision's tier (it is accepted); any other is its status. "is not v" leaves the
+    decision as it is unless it is v (its status `accepted`, no tier); "has no tier" takes its tier away."""
     name = bare(step.names[0])
-    decision(step, name, tier="judgement")
-    field(step, name, "verified_by", "[sampling]")
-    says(step, name, "design-decision/%s/%s" % (PATH, name))
+    path = step.repo / "spec" / "decisions" / ("%s.md" % name)
+    if not path.is_file():
+        decision(step, name)
+    says(step, name, "spec/decisions/%s.md" % name)
+    if not step.values:
+        return field(step, name, step.attribute, None)
+    value = bare(step.values[0])
+    key = "tier" if value in TIERS else "status"
+    if " is not " in step.text:
+        if fields(step, name).get(key) == value:
+            field(step, name, key, "accepted" if key == "status" else None)
+    else:
+        field(step, name, key, value)
 
 
 UNIVERSAL = ("---\nid: capability/%s/universal\ntitle: Universal conditions\nnarrator: every trace\ngroup: guarantees\n"
-             "language: codified-1\nretired: []\n---\n\n# Universal conditions\n\n## Behaviour\n\n%s")
+             "language: codified-2\nretired: []\n---\n\n# Universal conditions\n\n## Behaviour\n\n%s")
 
 
 @handler("GivenK", "universal condition")
@@ -109,25 +96,6 @@ def given_universal(step):
     write(step, "spec/universal.md", UNIVERSAL % (PATH, "".join(
         "- [U%d] `work` shall commit every transition.\n" % n for n in have)))
     says(step, bare(step.names[0]), "universal-condition/%s/u%d" % (PATH, have[-1]))
-
-
-@handler("GivenK_C", "universal condition")
-def given_unrouted(step):
-    """unrouted: no decision rests on it with a route; not unrouted, a judgement decision that does, `verified_by:
-    [check]`."""
-    assert step.text.endswith(("is unrouted", "is not unrouted")), step.text
-    if " is not " in step.text:
-        name = "routes-%s" % bare(step.names[0])
-        decision(step, name, tier="judgement")
-        field(step, name, "verified_by", "[check]")
-        field(step, name, "rests_on", "[%s]" % step.context["says"][bare(step.names[0])])
-
-
-@handler("GivenR", "supersedes")
-def given_supersedes(step):
-    new, old = (bare(n) for n in step.names)
-    have = re.findall(r"[\w./-]+", fields(step, new).get("supersedes", "").strip("[]"))
-    field(step, new, "supersedes", "[%s]" % ", ".join(have + ["design-decision/%s" % old]))
 
 
 def write(step, rel, text):
@@ -158,22 +126,6 @@ def given_test(step):
     says(step, name, "tests/test_%s.py::test_%s" % (name, name))
 
 
-@local("GivenK_C", "test")
-def given_failing_test(step):
-    """failing: the test also asserts False. Any other condition goes on to the registry."""
-    name = bare(step.names[0])
-    if not step.text.endswith(" is failing") or name not in step.context.get("says", {}):
-        return False
-    write(step, "tests/test_%s.py" % name, source(step, name, failing=True))
-
-
-@handler("GivenR", "enforced by")
-def given_enforced_by(step):
-    name, by = (bare(n) for n in step.names)
-    have = [x.strip() for x in fields(step, name).get("enforced_by", "").strip("[]").split(",") if x.strip()]
-    field(step, name, "enforced_by", "[%s]" % ", ".join(have + [step.context["says"][by]]))
-
-
 @handler("WhenRuns", "`model decisions --check`")
 def model_decisions_check(step):
     H.run_model(step, "decisions")
@@ -181,76 +133,17 @@ def model_decisions_check(step):
     step.context["decisions_run"] = True
 
 
-@local("ThenDoes", "test")
-def uses_test(step):
-    """`model` uses the test: its id is on a `holds` or `failing` line, and the test ran. Only after `model decisions
-    --check`: the registry's `use` is the batches' (a batch's plan)."""
-    if step.term != "use" or not step.context.get("decisions_run"):
-        return False
-    done, name = step.context["result"], bare(step.names[0])
-    said = step.context["says"][name]
-    assert any(line.startswith(("holds ", "failing ")) and said in line for line in done.stdout.splitlines()), \
-        (said, done.stdout)
-    assert name in (outside(step) / "ran").read_text().split(), done.stdout
-
-
 ARGUMENTS = (("--summary", "One sentence."), ("--decision", "So it is."), ("--tier", "judgement"))
 
 
-@handler("GivenK", "argument")
-def given_argument(step):
-    """The arguments `work decision` requires, in order of mention: --summary, --decision, --tier."""
-    have = step.context.setdefault("arguments", {})
-    have[bare(step.names[0])] = ARGUMENTS[len(have)][0]
-    says(step, bare(step.names[0]), have[bare(step.names[0])])
-
-
-@handler("GivenK_C", "argument")
-def given_absent(step):
-    """absent: the command is run without it; not absent, with it. An argument no Given named is its option."""
-    gone = step.context.setdefault("absent", set())
-    option = step.context.get("arguments", {}).get(bare(step.names[0]), bare(step.names[0]))
-    if " is not " in step.text:
-        gone.discard(option)
-    else:
-        gone.add(option)
-
-
 @handler("WhenRuns", "`work decision`")
-def work_decision(step, extra=()):
+def work_decision(step):
     """`work decision` in the repository, committed first, with a title, a summary, the decision's text and the tier
-    `judgement`: no `--tier` where the step names a decision a Given made untiered, and none of the arguments a Given
-    made absent."""
+    `judgement`, but each option the step runs it without; with `--verified-by`, the route `check`."""
     H.base(step.repo, step.context)
     step.context["head"] = W.init(step.repo)
-    named = [bare(n) for n in step.names]
-    gone = set(step.context.get("absent", ()))
-    if set(named) & step.context.get("untiered", set()):
-        gone.add("--tier")
-    title = named[0] if named and named[0] not in step.context.get("arguments", {}) else "Decided once"
+    gone = {bare(o) for o in getattr(step, "without", None) or ()}
     given = [word for option, value in ARGUMENTS if option not in gone for word in (option, value)]
-    step.context["work_decision"] = True
-    step.context["result"] = step.run("work", "decision", title, *given, *extra)
-
-
-@handler("WhenRuns", "`work decision --verified-by`")
-def work_decision_routed(step):
-    """`work decision` as above with `--verified-by check`: the decision it writes must hold the route."""
-    work_decision(step, ("--verified-by", "check"))
-    done = step.context["result"]
-    if done.returncode == 0:
-        step.context.setdefault("holds", {})[done.stdout.strip()] = re.compile(r"^verified_by: \[check\]$", re.MULTILINE)
-
-
-@local("ThenExitsErr")
-def decision_refused(step):
-    """After `work decision`: an error naming each code the step names (`--tier`) and each argument it names."""
-    if not step.context.get("work_decision"):
-        return False
-    done = step.context["result"]
-    assert done.returncode != 0, done.stdout
-    for np in step.nps:
-        for word in (w.strip("`") for w in np.split() if w.startswith("`")):
-            assert word in done.stderr, (word, done.stderr)
-    for name in step.names:
-        assert step.context["says"][bare(name)] in done.stderr, (name, done.stderr)
+    if "--verified-by" in {bare(o) for o, _ in getattr(step, "options", None) or ()}:
+        given += ["--verified-by", "check"]
+    step.context["result"] = step.run("work", "decision", "Decided once", *given)

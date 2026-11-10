@@ -3,7 +3,7 @@ I14a), the one meaning `model logic` reads (spec_lf), in the step grammar 4's tr
 
 - Givens: what the While and Where parts say, then what the trigger says of its referents besides its event, each a
   condition (`SCond`), a referent brought in at its first mention (`K_Given`, "a stage s1"); a `not` with no
-  referents of its own is its condition negated.
+  referents of its own is its condition negated; "has no T" spec_lf_values' Given.
 - When: the trigger's event (`STrig`).
 - Thens: each act of the response in the present (`S_Does`; setting an attribute spec_lf_set's), its polarity kept:
   "change nothing" is "changes nothing", a `not` over an act on a referent of its own "does not V a K"; a condition of
@@ -14,15 +14,22 @@ I14a), the one meaning `model logic` reads (spec_lf), in the step grammar 4's tr
   <premise>` in its place.
 Givens and the When are the first requirement's; a later one's While and trigger referent of a kind is the first
 one's of that kind and rank. A referent is named by its kind's first letter and a count, in order of first mention;
-an actor by its fun, a code by the slot's `K_Code`, the run's own thing by `K_This`. A construct with no step
+an actor by its fun, a code by the slot's `K_Code`, the run's own thing by `K_This`. Two referents `distinct`
+("another K", "two Ks", b240) are two instances of two names, which says they differ; a trigger of one act on each of
+two Ks a When each. A construct with no step
 (`only`, a count, `or`, the atom of a row whose word is neither `of` nor `in`, a negated restriction, a line of "may",
 "always" or "never") is a TraceError naming it.
 """
 from dataclasses import replace
 
-import spec_facts
 import spec_lf
+import spec_lf_core
+import spec_lf_distinct
+import spec_lf_exist
+import spec_lf_option
+import spec_lf_order
 import spec_lf_set
+import spec_lf_values
 import spec_rgl
 import spec_steps4_boxes as boxes
 from spec_lf_core import Atom, Box
@@ -39,7 +46,10 @@ class Reader:
         self.vocab, self.names, self.counts, self.shared, self.known = vocab, {}, {}, {}, set()
         self.brought = []       # the Givens of the response's boxes: each K brought in, its restrictor
         self.dets, self.images = {}, {}     # a referent said "no K"; an image's "the T of x" (spec_steps4_boxes)
+        self.numbers = {}       # a printed number's referent: its `number` box (spec_lf_number, b240)
+        self.arguments = {}     # an option's referent: its argument (spec_lf_option, b240)
         self.choices, self.taken, self.options = list(choices), [], []      # the case of each `or` box
+        self.pre = []           # the first line's While, Where and trigger parts: what a value Given meets
         self.actors = {t: ("a_%s_%d" % (spec_rgl.slug(t), n + 1), k) for n, (t, k) in enumerate(vocab.actors)}
 
     # --- referents ---------------------------------------------------------------------------------------------
@@ -90,7 +100,7 @@ class Reader:
     def np(self, ref, slot, a=False):
         """The `K_NP` tree of a referent in a slot of kind `slot`; with `a`, "a K" of its kind."""
         S = kid(slot)
-        if ref in self.images:
+        if ref in self.images or ref in self.numbers:
             return boxes.np_image(self, ref, slot)
         if ref in self.dets:
             a = self.dets[ref]
@@ -108,29 +118,32 @@ class Reader:
 
     # --- atoms -------------------------------------------------------------------------------------------------
     def frame(self, verb, sense, roles):
-        """(fun, subject kind, the slot kinds) of the frame an atom's roles read."""
-        seen = 0
+        """(fun, subject kind, the slot kinds) of the frame an atom's roles read: of two frames of the same role
+        labels, the one its referents' kinds pick (b236), else the first."""
+        seen, found = 0, []
         for n, v in enumerate(self.vocab.verbs, 1):
             seen += v.term.term == verb
             if v.term.term != verb or seen != sense:
                 continue
             for m, (subject, pieces) in enumerate(v.frames, 1):
                 labels = [(" ".join(w) or "object") if k is not None else " ".join(w) for w, k in pieces]
-                if labels == [r[0] for r in roles[1:]]:
-                    return ("e_%s_%s_%d_%d" % (spec_rgl.slug(verb), v.aspect, n, m), subject,
-                            [k for _, k in pieces if k is not None])
-        raise TraceError("no frame of %s" % verb)
+                if labels == spec_lf_option.labels(roles):     # a slot of several options one label (b240)
+                    found.append(("e_%s_%s_%d_%d" % (spec_rgl.slug(verb), v.aspect, n, m), subject,
+                                  [k for _, k in pieces if k is not None]))
+        if not found:
+            raise TraceError("no frame of %s" % verb)
+        return next((f for f in found if boxes.fits(self.vocab, f, roles)), found[0])
 
     def clause(self, atom, a=()):
         """(subject kind, the subject's argument, the verb phrase) of an event or state atom; the referents in `a`
         said "a K"."""
         verb, sense, roles = atom.args[-3:]
         fun, subject, slots = self.frame(verb, sense, roles)
-        refs = [r[1] for r in roles[1:] if len(r) == 2]
-        if any(r.kind == "thing" and r in a for r in refs) and verb == "change" and len(refs) == 1:
+        refs = spec_lf_option.slots(roles)
+        if any(getattr(r, "kind", None) == "thing" and r in a for r in refs) and verb == "change" and len(refs) == 1:
             vp = (fun, ("k_thing_One", ("k_thing_Nothing",)))
-        else:
-            vp = (fun,) + tuple(self.arg(r, k, r in a) for r, k in zip(refs, slots))
+        else:     # a run's options as the line says them (b240)
+            vp = (fun,) + tuple(spec_lf_option.slot_arg(self, r, k) or self.arg(r, k, r in a) for r, k in zip(refs, slots))
         return subject, self.arg(roles[0][1], subject), vp
 
     def cond(self, item, pos=True):
@@ -139,6 +152,8 @@ class Reader:
         if item.pred == "state":
             subject, s, vp = self.clause(item)
             return (kid(subject) + "_Holds", pol, s, vp)
+        if item.pred == "attr" and item.args[2] == spec_lf_values.NONE:     # "has no T" (b240)
+            return spec_lf_values.given(self, item, pos)
         if item.pred == "attr" and not hasattr(item.args[2], "kind"):
             x, term, value = item.args
             for n, (t, kinds) in enumerate(self.vocab.attributes, 1):
@@ -148,6 +163,10 @@ class Reader:
                     return ("%s_%s_Is" % (T, kid(k)), pol, self.np(x, k), ("%s_v_%s" % (T, spec_rgl.slug(value)),))
         if item.pred == "rel":
             return self.row(item.args, pol)
+        if item.pred == spec_lf_exist.PRED:     # "the file f1 exists" (b240)
+            return spec_lf_exist.given(self, item, pos)
+        if item.pred == "cmp" and len(item.args) == 4:      # an attribute's value compared (b240)
+            return spec_lf_order.given(self, item)
         raise TraceError("no step of %s" % spec_lf.atom(item))
 
     def row(self, args, pol):
@@ -167,7 +186,9 @@ class Reader:
         """The Given steps of a condition, each referent it mentions first brought in."""
         if isinstance(item, Box):
             return boxes.given(self, item, pos)
-        if boxes.image(self, item):
+        if item.pred == spec_lf_option.PRED:     # an option's argument, said with it in the When (b240)
+            return spec_lf_option.given(self, item)
+        if boxes.image(self, item) or item.pred == spec_lf_distinct.PRED:      # two names are two things (b240)
             return []
         cond = self.cond(item, pos)
         out = []
@@ -183,6 +204,8 @@ class Reader:
         for item in body:
             if isinstance(item, Atom) and item.pred in ("event", spec_lf_set.PRED):
                 out.append((True, self.does(item, pos)))
+            elif isinstance(item, Atom) and item.pred == spec_lf_distinct.PRED:     # two names (b240)
+                continue
             elif isinstance(item, Atom) and not boxes.image(self, item):
                 out.append((None, ("SCond", self.cond(item, pos))))
             elif isinstance(item, Atom):
@@ -206,7 +229,7 @@ class Reader:
             m = {r: replace(r, name="%s.%d" % (r.name, copy)) for r in box.refs + box.scope.refs}
             for r in box.refs:
                 self.brought.append((kid(r.kind) + "_Given", (kid(r.kind) + "_n",), ("NameLit", self.name(m[r]))))
-            self.brought += [("SCond", self.cond(c)) for c in subst(box.body, m)]
+            self.brought += [s for c in subst(box.body, m) for s in boxes.restrictor(self, c)]
             acts = self.acts(subst(box.scope.body, m))
             out += acts if copy == 1 else [("again" if act else act, tree) for act, tree in acts]
         return out
@@ -238,7 +261,7 @@ def cases(vocab, forms, entailed=None):
     while seq is not None:
         r = Reader(vocab, seq)
         out.append(read(vocab, forms, entailed, r))
-        seq = spec_facts._next(r.taken, r.options)
+        seq = spec_lf_core.next_choice(r.taken, r.options)
     return out
 
 
@@ -251,6 +274,8 @@ def read(vocab, forms, entailed=None, r=None):
         if form.modality != "shall":     # a permission obliges nothing, a necessity has no trigger (I17)
             raise TraceError("no step of a line that says %s" % form.modality)
         r.bind([x for p in form.parts for x in p.refs], n)
+        if n == 0:
+            r.pre = [i for p in form.parts if p.op in ("while", "where", "when", "if") for i in p.body]
         number, gone = 0, (entailed or {}).get(ident, {})
         for part in form.parts:
             if part.op in ("while", "where") and n == 0:
@@ -258,8 +283,9 @@ def read(vocab, forms, entailed=None, r=None):
             elif part.op in ("when", "if") and n == 0:
                 events = [i for i in part.body if isinstance(i, Atom) and i.pred == "event"]
                 givens += [g for item in part.body if item not in events for g in r.given(item)]
-                subject, s, vp = r.clause(events[0])
-                when.append(("STrig", (kid(subject) + "_Event", s, vp)))
+                for event in events:      # one act on each of "two Ks" (b240): a When each
+                    subject, s, vp = r.clause(event)
+                    when.append(("STrig", (kid(subject) + "_Event", s, vp)))
             elif part.op == "response":
                 for act, tree in r.acts(part.body):
                     number += act is True

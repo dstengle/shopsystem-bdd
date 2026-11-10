@@ -1,17 +1,27 @@
 """The refusal of a line grammar 4 stopped in, by the frames of the verb of its clause (the CNL 4 design, I10;
-spec_frames_refusal's twin on spec_rgl_vocab's frames): a verb short of the object or the recipient its frames take,
+on spec_rgl_vocab's frames): a verb short of the object or the recipient its frames take,
 a noun of a kind no frame of it takes in its subject, object or recipient slot, and a passive, which grammar 4 does not
 have, naming the verb whose subject it leaves out.
 
 A frame's object is its first piece with no fixed words before its kind; its recipient a piece after "to"."""
+import re
+
 from spec_frames import s3
-from spec_frames_refusal import participle
 
 # the words a noun phrase may start with before its noun: a verb's form after one of them is a noun
 DETS = {"a", "an", "the", "every", "no", "its", "only"}
 # where a clause starts: a verb before one of these is not the verb of the clause grammar 4 stopped in
 BOUNDARY = {",", ".", "shall", "when", "while", "if", "then", "where", "and", "or", "not"}
 ENDS = {".", ",", "and", "or"}
+
+
+def participle(term):
+    """The past participle of a verb's term: its second `Forms:`, else its first word with -ed."""
+    if len(term.forms) == 2:
+        return term.forms[1]
+    head, _, rest = term.term.partition(" ")
+    head = head + "d" if head.endswith("e") else head[:-1] + "ied" if re.search(r"[^aeiou]y$", head) else head + "ed"
+    return (head + " " + rest).strip()
 
 
 def _forms(vocab):

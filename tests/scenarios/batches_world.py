@@ -25,7 +25,7 @@ import spec_unbuilt
 
 STUB = Path(__file__).resolve().parents[1] / "scripts" / "stub_gh.py"
 DELIVERY = '[batch]\ntests = "python3 -c pass"\n'
-SECOND = "When the person runs `work abandon` on an initiative that is `started`, `work` shall exit successfully."
+SECOND = "While an initiative is `started`, when the person runs `work abandon` on the initiative, `work` shall exit successfully."
 OWN_START, OWN_IN = "i92", "i93"
 URL = "https://github.com/ex/ctx/pull/%d"
 CAP = "spec/capabilities/work-queue.md"

@@ -28,6 +28,7 @@ class Model(SpecReading, WorkReading, RequestReading):
         self.facts = []
         self.nodes = {}
         self.dangling = []
+        self.history = set()    # ids no longer live that a reference may still name: retired universal conditions
         self.problems = []
         self.context = None     # bounded-context/<path>
         self.path = None        # <owner>/<product>/<context name>
@@ -120,7 +121,8 @@ class Model(SpecReading, WorkReading, RequestReading):
         return t
 
     def term_id(self, word):
-        return f"term/{self.path}/{'-'.join(word.lower().split())}"
+        """A term's id: its words joined by "-", what no id may hold (the `@` of a tag, an apostrophe) left out."""
+        return f"term/{self.path}/{'-'.join(re.sub(r'[^a-z0-9 -]', '', word.lower()).split())}"
 
     def read(self):
         self.read_layout()
@@ -180,7 +182,7 @@ class Model(SpecReading, WorkReading, RequestReading):
         for path in sorted((self.root / "spec" / "capabilities").glob("*.md")):
             data, body = frontmatter(path.read_text())
             name = path.stem
-            codified = spec_read.codified(path)      # read as groups (§13.4); else v_p0
+            codified = spec_read.codified(path, (spec_read.MARKER4,))   # read as groups (§13.4); codified-1 is v_p0
             expected = f"capability/{self.path}/{name}" if self.path else None
             cap = data.get("id") or expected or name
             if expected and cap != expected:
@@ -251,6 +253,8 @@ class Model(SpecReading, WorkReading, RequestReading):
         for ident, kind, where in getattr(self, "_wanted", []):
             if str(ident).partition("/")[0] in FROZEN_KINDS:
                 continue        # a reference into the frozen .shop/work/ is history, never resolved (D5)
+            if ident in self.history:
+                continue        # a retired universal condition a decision still rests on (b240 phase 14)
             if self.frozen_request(ident):
                 continue        # a request of the frozen queue is history too (D7): its file is still there
             if str(ident).endswith("@0.29") and kind is None:

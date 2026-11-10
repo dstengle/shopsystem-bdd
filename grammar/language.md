@@ -46,6 +46,54 @@ shall [x3: tool `work` (constant)]
 The subject of a response with no trigger ("A session shall ...", U7) is a response referent here too; how the
 check reads an actor kind's line is I12a's.
 
+So "a K" in a response never names a K the line gave before: where the line means one it gave, it says "the K"
+(R2). The audit found two lines that say "a K" where an earlier one is meant: requests r63 ("`work` shall assign the
+line outcome of a request line proposed in the request", one line of the request, not a new one) and
+design-model-check r199 ("`model` shall use an interpreter that imports `clingo`", the interpreter it has, not a new
+one). Their twins, each read as it is said and as it is meant:
+
+```reading
+When a session ends a stage, `work` shall print the status of a stage.
+shall [x3: tool `work` (constant)]
+  when [x1: session, x2: stage]
+    end(e1, subject: x1, object: x2)
+  response [x4: stage, x5: status]
+    status(x4) = x5
+    print(e2, subject: x3, object: x5)
+```
+
+```reading
+When a session ends a stage, `work` shall print the status of the stage.
+shall [x3: tool `work` (constant)]
+  when [x1: session, x2: stage]
+    end(e1, subject: x1, object: x2)
+  response [x4: status]
+    status(x2) = x4
+    print(e2, subject: x3, object: x4)
+```
+
+```reading
+While a session follows a stage, when the person runs `work start`, `work` shall end a stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: session, x2: stage]
+    follow(subject: x1, object: x2)
+  when
+    run(e1, subject: x3, object: x4)
+  response [x6: stage]
+    end(e2, subject: x5, object: x6)
+```
+
+```reading
+While a session follows a stage, when the person runs `work start`, `work` shall end the stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: session, x2: stage]
+    follow(subject: x1, object: x2)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    end(e2, subject: x5, object: x2)
+```
+
 ## R2. "the K" binds to something the line gave, else it is refused
 
 "the K" binds to the latest earlier referent of kind K (or of a kind under K) in the line: one a part introduced, an
@@ -57,10 +105,12 @@ holds the "the K" gives it nothing: in "a stage that precedes the stage" the sta
 the relative clause restricts, and with no earlier stage the line is refused (design-model-check r162,
 feature-file-tools r24).
 
-A referent made inside a "no", "not", "every" or "only" box gives nothing to a "the K" outside that box (DRS
-accessibility): "the K" binds to the latest earlier referent of kind K not inside such a box that does not hold it,
-and when every earlier K is inside one the line is refused, naming the noun (design-model-check r166, r167,
-feature-file-tools r31).
+A referent made inside a "no", "not", "every" or "only" box, a count's box or one case of an "or" gives nothing to
+a "the K" outside that box (DRS accessibility): "the K" binds to the latest earlier referent of kind K not inside
+such a box that does not hold it, and when every earlier K is inside one the line is refused, naming the noun and the
+box (design-model-check r166, r167, feature-file-tools r31; the boxes of a count and of "or" under Constructs).
+A K of a pair "two Ks" gave is no antecedent of "the K", which names neither of them; "another K" and "the same K"
+bind by this rule too (identity and distinctness, under Constructs).
 
 "the K of X" (a row `K | of | S`) is the image of X by the row, a referent of its own: X is read first, wherever it
 is said, and never an earlier K nor the K whose relative clause holds it. In "a review that lists the review of the
@@ -134,7 +184,7 @@ shall [x5: agent the person (constant), x6: command `work start` (parameter), x7
 
 ```reading
 While no session follows a stage, when the person runs `work start`, `work` shall print the stage.
-refused: "the stage" has no antecedent outside a "no", "not", "every" or "only" box: give a stage outside it
+refused: "the stage" has no antecedent: a stage is made inside "no session ...", which gives nothing outside it
 ```
 
 ## R3. "no K": there is no K, within its own clause
@@ -512,3 +562,1431 @@ shall [x3: moment `2026-01-01` (parameter), x5: tool `work` (constant)]
 While a session has not written a file, when the person runs `work start`, `work` shall exit successfully.
 refused: the While clause says "has not written a file", which reads two ways: say "has written no file" or "a file that the session has not written"
 ```
+
+## Constructs
+
+The constructs grammar 4 is completed with (b240), one subsection a construct: what it says, the real lines the
+audit (`.shop/records/2026-11-10-grammar-4-audit.md`) found it missing in, by id, and its twins, each a block of a
+line in the words of a fixture context and the form it is meant to have, or `refused: <reason>`. A construct's
+blocks are written before it is built, and fail until it is.
+
+The acceptance test of the language is the spec corpus, `grammar/corpus/spec/` (its README): every live line of this
+repository's spec in the new language with the reading it is meant to have, checked by
+`tests/scripts/test_corpus_spec.py` (it parses to that reading, the reading translates to `model logic`'s facts and
+to `features generate`'s steps, every live line of a codified-2 file has its block, and the line linearises back
+word for word). This section's twins are the constructs' tests; the corpus is the language's. Every construct of the grammar, these among them, has a code in the construct catalogue,
+`grammar/constructs.md` (`model constructs --write`), by which a line about the language names it.
+
+### "the K" outside the box its K is made in, and the cases of "or"
+
+R2's accessibility over every box a line can make: a "no" or "not" box, the box of "every K", "only Ks" and a count
+("at least two Ks"), and each case of an "or" (two conditions, or two noun phrases, joined by "or": a case holds what
+its side says, and either side may be the one that holds). A K made inside one of them gives nothing to a "the K"
+said outside it, later in the same clause or in a later part, so the line is refused, naming the noun and the box.
+A K made before the box is seen inside it.
+
+Found by the audit in design-model-check r231 ("While a precondition of a requirement uses ... or the trigger of the
+requirement uses ...": the second case's "the requirement" is the first case's), backlog r6 ("`work` shall print
+every item, the title of the item, ...") and batches r4 ("`work` shall print every item in the batch, every task of
+the batch and the status of the task"): each said "the K" outside the box its K is made in, and was read as if it
+were not. Such a line says what it means another way, each K given outside the box, or the "the K" said inside it.
+
+```reading
+When the person runs `work start`, `work` shall print every stage and the status of the stage.
+refused: "the stage" has no antecedent: a stage is made inside "every stage ...", which gives nothing outside it
+```
+
+```reading
+When the person runs `work start`, `work` shall print every session and the worktree of the session.
+refused: "the session" has no antecedent: a session is made inside "every session ...", which gives nothing outside it
+```
+
+```reading
+While a session follows a stage or the session has a worktree, when the person runs `work start`, `work` shall exit successfully.
+refused: "the session" has no antecedent: a session is made inside one case of an "or", which gives nothing outside it
+```
+
+```reading
+While a stage is `open` or a stage is `done`, when the person runs `work start`, `work` shall print the stage.
+refused: "the stage" has no antecedent: a stage is made inside one case of an "or", which gives nothing outside it
+```
+
+```reading
+When the person runs `work start`, `work` shall print a stage or a file, and `work` shall end the stage.
+refused: "the stage" has no antecedent: a stage is made inside one case of an "or", which gives nothing outside it
+```
+
+```reading
+While at least two sessions follow a stage, when the person runs `work start`, `work` shall print the session.
+refused: "the session" has no antecedent: a session is made inside "at least two sessions ...", which gives nothing outside it
+```
+
+```reading
+When the person runs `work start`, `work` shall print at least two stages and the status of the stage.
+refused: "the stage" has no antecedent: a stage is made inside "at least two stages ...", which gives nothing outside it
+```
+
+```reading
+When the person runs `work start`, `work` shall not write a file, and `work` shall print the file.
+refused: "the file" has no antecedent: a file is made inside "no file ...", which gives nothing outside it
+```
+
+A K made before the box is seen in each case: "the stage" in the first case below is the stage the session follows.
+
+```reading
+While a session follows a stage and the stage is `open` or the session has a worktree, when the person runs `work start`, `work` shall print the stage.
+shall [x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+  while [x1: session, x2: stage]
+    follow(subject: x1, object: x2)
+    or
+      case
+        status(x2) = `open`
+      case [x3: worktree]
+        of(x3, x1)
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    print(e2, subject: x6, object: x2)
+```
+
+### "X conforms to A": conformance to a named artifact
+
+"X conforms to A" says that X meets what the artifact A sets out: a form, a schema, a layout, the language reference.
+A is a noun of a kind under `artifact` (the CLI pack's noun), said as a proper noun ("the comment form"), as "the K of
+X" ("the requirement grammar of the upstream"), or as a code naming a file (`grammar/language.md`, a parameter). Every
+artifact a line conforms to is declared with the part of speech (artifact): `- **the comment form** (artifact): ...`
+is a proper noun of kind artifact, `- **layout** (artifact): ...` a noun under artifact. Its entry may give `Schema:`
+(the schema type and its file, as in "Schema: json schema, `schemas/comment.json`."), and an attribute entry or a relation
+row that is one of its fields may give `Field of: <artifact>` (an attribute in its entry, a row in a cell of its own);
+the lexicon reads and keeps both, and nothing checks them yet (b241). The
+verb is the CLI pack's state verb `conform` (Frame: thing conforms to artifact), and its atom is `conforms(x, a)`: in
+a While or Where clause and a relative clause it is a state like any other, negated with "does not conform to A",
+counted out with "no K conforms to A", and said "a K that conforms to A" or "a K that does not conform to A". A K of
+another kind after "to" is refused, naming the verb's frame. "the K of X" after "does not conform to" is the K that X
+has, there whether or not X conforms: it stays outside the `not`. In `model logic` the atom is a state like a
+relation's (`crel(R, e_conform, x, a, pos)`, `neg` under a `not`), which clashes as any state does; in a scenario it is
+a Given, "the file f1 does not conform to the stage form", which the codified-2 world records.
+
+Found by the audit in requests r76, r77, r86 and r100 ("a comment that has a field block": a comment that conforms to
+the comment form), r82 ("a request line that has no logical form": one that does not conform to the requirement
+grammar of the upstream), r87 and r95 (b153); design-model-check r189, r195 and r196 (b152: "does not conform to the
+request form", "the entry form", "the final layout"); readiness r21, r24 and r26 (b157: "does not match the
+relation-row form", "the upstream-entry form", "the example-data form"). The design's own example (section 6.2):
+"While a request comment does not conform to the comment schema, when a session runs `work sync`, `work` shall print
+the comment and not write the comment."
+
+```reading
+While a file does not conform to the stage form, when the person runs `work start`, `work` shall print the file and not write the file.
+shall [x2: artifact the stage form (constant), x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: file]
+    not
+      conforms(x1, x2)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    print(e2, subject: x5, object: x1)
+    not
+      write(e3, subject: x5, object: x1)
+```
+
+```reading
+While a file conforms to the stage form and no worktree holds the file, when the person runs `work start`, `work` shall print the file.
+shall [x2: artifact the stage form (constant), x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+  while [x1: file]
+    conforms(x1, x2)
+    not [x3: worktree]
+      in(x1, x3)
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    print(e2, subject: x6, object: x1)
+```
+
+```reading
+If the person runs `work start` on a file that does not conform to the stage form, then `work` shall refuse the command and name the file.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x4: artifact the stage form (constant), x5: tool `work` (constant)]
+  if [x3: file]
+    not
+      conforms(x3, x4)
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    refuse(e2, subject: x5, object: x2)
+    name(e3, subject: x5, object: x3)
+```
+
+```reading
+When the person runs `work start`, `work` shall print every file that conforms to the stage form.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant), x5: artifact the stage form (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response
+    every [x4: file]
+      conforms(x4, x5)
+      scope
+        print(e2, subject: x3, object: x4)
+```
+
+```reading
+While no file conforms to the stage form, when the person runs `work start`, `work` shall exit successfully.
+shall [x2: artifact the stage form (constant), x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while
+    not [x1: file]
+      conforms(x1, x2)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    exit(e2, subject: x5, successfully)
+```
+
+The artifact as "the K of X", the worktree's own layout: it is there whether or not the file conforms to it.
+
+```reading
+While a worktree holds a file that does not conform to the layout of the worktree, when the person runs `work start`, `work` shall print the file.
+shall [x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+  while [x1: worktree, x2: file, x3: layout]
+    of(x3, x1)
+    not
+      conforms(x2, x3)
+    in(x2, x1)
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    print(e2, subject: x6, object: x2)
+```
+
+The artifact as a code naming a file: a parameter of kind artifact (R10).
+
+```reading
+While a file does not conform to `docs/stage.md`, when the person runs `work start`, `work` shall print the file.
+shall [x2: artifact `docs/stage.md` (parameter), x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: file]
+    not
+      conforms(x1, x2)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    print(e2, subject: x5, object: x1)
+```
+
+```reading
+While a file conforms to a stage, when the person runs `work start`, `work` shall print the file.
+refused: the verb conform takes as its recipient artifact or a kind of it: thing conforms to artifact
+```
+
+### "the T of X is after v": ordered comparison
+
+An attribute whose entry says `Order:` has ordered values, and a line may compare its value with a value: "the T of X
+is after v", "is before v", "is not after v", "is not before v", and "is after v and before w". `Order: by number.`
+orders the values by their numbers, as a release is ordered (`1.10.0` is after `1.9.0`), and any code of numbers
+joined by dots is a value of it; `Order: as listed.` orders them as `Values:` lists them, and only those are its
+values. "the T of X is v" and "X is v" take any such code too. The atom is `cmp(T(x)) after v` (the design's `cmp(x,
+A, op, v)`), the time pack's comparison of moments said of an attribute (section "Time"); "is not before v" puts it
+under `not`. A code that is no value of the attribute is refused, naming the code and the order; an attribute with
+no `Order:` has no "after" or "before". In `model logic` a comparison is a condition as a value is (`ccmp(R, x, T,
+after, point)`), checked exactly over the values the two lines of a pair name and the gaps between them (design call
+9): two lines whose ranges share no value never fire together, and a value between two named values (`1.0.1`,
+between `1.0.0` and `2.0.0`) is one that an attribute ordered by number may have and one ordered as listed has not.
+In a scenario a comparison is a Given of one value on the right side of every value the line names, a value the
+entry lists when one is: "the file f1 is `2.0.0`" for "after `1.0.0` and before `3.0.0`", "the file f1 is `3.0.1`"
+for "after `3.0.0`".
+
+Found by the audit in migration-tools r36, r39, r40, r41, r42, r45, r46, r51 and r55 (b156): each said a range of
+releases as one value of the release (`0.23.1` for "before `0.24.0`") or as "lacks the verb-frames step and does not
+lack the simplified-workflow step", which inverts what it means; and b161's line "While the release of the repository
+is after `3.0.0` and before `4.0.0`, ...". Each says the range with "after" and "before".
+
+```reading
+While the version of a file is before `2.0.0`, when the person runs `work start`, `work` shall print the file.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: file]
+    cmp(version(x1)) before `2.0.0`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    print(e2, subject: x4, object: x1)
+```
+
+```reading
+While the version of a file is after `1.0.0` and before `3.0.0`, when the person runs `work start`, `work` shall print the file.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: file]
+    cmp(version(x1)) after `1.0.0`
+    cmp(version(x1)) before `3.0.0`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    print(e2, subject: x4, object: x1)
+```
+
+```reading
+While the version of a file is not before `2.0.0`, when the person runs `work start`, `work` shall not write the file.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: file]
+    not
+      cmp(version(x1)) before `2.0.0`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    not
+      write(e2, subject: x4, object: x1)
+```
+
+A value between two named values: `1.10.0` is after `1.9.0`, as a release is, and needs no entry of its own.
+
+```reading
+While the version of a file is after `1.9.0`, when the person runs `work start`, `work` shall print the file.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: file]
+    cmp(version(x1)) after `1.9.0`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    print(e2, subject: x4, object: x1)
+```
+
+A value that no entry lists is a value of an attribute ordered by number all the same:
+
+```reading
+While the version of a file is `1.0.1`, when the person runs `work start`, `work` shall print the file.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: file]
+    version(x1) = `1.0.1`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    print(e2, subject: x4, object: x1)
+```
+
+An attribute ordered as listed: `high` is after `low`.
+
+```reading
+While the priority of a stage is after `low`, when the person runs `work start`, `work` shall end the stage.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: stage]
+    cmp(priority(x1)) after `low`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    end(e2, subject: x4, object: x1)
+```
+
+```reading
+While the version of a file is after `banana`, when the person runs `work start`, `work` shall print the file.
+refused: `banana` is no value of the version of a file, which is ordered by number
+```
+
+```reading
+While the priority of a stage is before `soon`, when the person runs `work start`, `work` shall end the stage.
+refused: `soon` is no value of the priority of a stage, which is ordered as listed: `low`, `high`, `urgent`
+```
+
+### "is one of `a` or `b`", "is not `a` or `b`", "has no T": value sets and a value's absence
+
+A line may name a set of an attribute's values: "the T of X is one of `a`, `b` or `c`" and "X is one of `a`, `b` or
+`c`" say that the value is one of them, a case of an "or" for each value (section "the K outside the box ...": a case
+holds what its side says); "the T of X is not `a`, `b` or `c`" and "X is not `a`, `b` or `c`" say that it is none of
+them, a `not` for each value. "None of them" is not "some other value the entry lists": a thing whose T has no value
+is none of them too. "X has no T" says that X's T has no value at all, the atom `T(x) = none`: a fact of its own,
+which no listed value meets, so "has no T" and "is `a`" never hold of one thing together, while "has no T" and "is
+not `a`" do. "every K of X is `v`" (and "is one of ...", "is not ...") says it of each K of X. The list names each
+value once and takes at least two; a value of another attribute is no member of it. In `model logic` a set is the
+"or" the check has, one split a value (`R#1`, `R#2` ...), in an `every` box `uin(R, x, T, v)` of each value; the
+absence a condition on the value `absent` (`cond(R, x, T, absent, pos)`), which L3 and L4 read as no value. In a
+scenario a set is a scenario a value, "is not" a Given of each value negated, and the absence the Given "the stage s1
+has no priority".
+
+Found by the audit in decision-tiers r13 ("untiered", said as "is not `check` and ... is not `judgement`", which also
+holds of a tier outside the three; it is "has no tier") and r23 (the route a design-decision may have, a set of
+values), backlog r28-r33 (one line a status the item may be in, when "is one of" says them in one line), migration-
+tools r48 and r52-r54 and intake r10 ("is not `delivered` and the request is not `refused` and ...", which is "is not
+`delivered`, `refused` or `withdrawn`"), and requests r60 ("has no origin": the command's origin absent).
+
+```reading
+While a line is one of `proposed`, `accepted` or `refused`, when the person runs `work start`, `work` shall print the line.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: line]
+    or
+      case
+        outcome(x1) = `proposed`
+      case
+        outcome(x1) = `accepted`
+      case
+        outcome(x1) = `refused`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    print(e2, subject: x4, object: x1)
+```
+
+```reading
+While the priority of a stage is one of `low` or `high`, when the person runs `work start`, `work` shall end the stage.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: stage]
+    or
+      case
+        priority(x1) = `low`
+      case
+        priority(x1) = `high`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    end(e2, subject: x4, object: x1)
+```
+
+"is not `a`, `b` or `c`": none of them.
+
+```reading
+While a stage is `open` and a line of the stage is not `accepted`, `refused` or `withdrawn`, when the person runs `work start`, `work` shall print the line.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: stage, x2: line]
+    status(x1) = `open`
+    of(x2, x1)
+    not
+      outcome(x2) = `accepted`
+    not
+      outcome(x2) = `refused`
+    not
+      outcome(x2) = `withdrawn`
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    print(e2, subject: x5, object: x2)
+```
+
+```reading
+While the priority of a stage is not `low` or `high`, when the person runs `work start`, `work` shall end the stage.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: stage]
+    not
+      priority(x1) = `low`
+    not
+      priority(x1) = `high`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    end(e2, subject: x4, object: x1)
+```
+
+"has no T": the value absent, which is no listed value.
+
+```reading
+While a stage is not `done` and the stage has no priority, when the person runs `work start`, `work` shall print the stage.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: stage]
+    not
+      status(x1) = `done`
+    priority(x1) = none
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    print(e2, subject: x4, object: x1)
+```
+
+"every K of X is `v`", and "is one of" said of each K of X:
+
+```reading
+While a stage is `open` and every line of the stage is `accepted`, when the person runs `work start`, `work` shall end the stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: stage]
+    status(x1) = `open`
+    every [x2: line]
+      of(x2, x1)
+      scope
+        outcome(x2) = `accepted`
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    end(e2, subject: x5, object: x1)
+```
+
+```reading
+While a stage is `open` and every line of the stage is one of `accepted`, `refused` or `withdrawn`, when the person runs `work start`, `work` shall end the stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: stage]
+    status(x1) = `open`
+    every [x2: line]
+      of(x2, x1)
+      scope
+        or
+          case
+            outcome(x2) = `accepted`
+          case
+            outcome(x2) = `refused`
+          case
+            outcome(x2) = `withdrawn`
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    end(e2, subject: x5, object: x1)
+```
+
+```reading
+While a line is one of `accepted` or `accepted`, when the person runs `work start`, `work` shall print the line.
+refused: the list of the outcome of a line names `accepted` twice
+```
+
+### "the number of Ks that P": a count as a value
+
+"the number of Ks that P" is a value: a line may print it, and may compare it with a number. Its noun is any kind's
+in the plural with what restricts it ("lines of the stage", "sessions that follow the stage", "lines of the stage
+whose outcome is `accepted`"). Printed, it is a referent of its own, `x: number`, and a `number` box that says what it
+counts: `number x of [y: K]` over the restrictions of y; the Ks it counts are made inside the box, so no "the K"
+outside it binds to them (R2). Compared, "the number of Ks that P is more than n" is the count box of R7 over the Ks
+with nothing in its scope: "is more than", "is less than" (R7's "fewer than"), "is at least", "is at most" and "is"
+(exactly), n a number word from one to ten or a code; a code of digits is that number, any other code (`batch_size`)
+a parameter (R10), which the box names. In `model logic` a printed number is an object of its own whose restrictions
+are the counted Ks', so two lines that print the numbers of two different sets of things never clash; a compared
+number is a count in a condition (`ccount`), and two lines whose conditions count one set of things with bounds that
+no number meets both of (a clingo `#count`, as two counts of one act are read) never fire together. In a scenario a
+printed number brings in two Ks with their restrictions, and the Then says the number of them; a compared number
+brings in as many Ks as the comparison needs at least (four for "more than three"), and a comparison with a
+parameter is a Given of the comparison itself.
+
+Found by the audit in analysis-tools r49, r50, r53, r56, r57, r58 and r64 (b154: "the run count of the coverage
+map", "the test count of the function", "the untested count of the Python file", "the reference count of the
+identifier", and a Python file that "exceeds" a size limit, each a noun or a verb that hides the number of things),
+batch-measurement r23, r24, r25 and r27 (b156: "round-trip count", "tool-use count", "compaction count"),
+feature-file-tools r45, r46, r61, r64, r79 and r80 (b157: "scenario count", and the counts a line of a capability
+says), design-model-check r202, r203, r239 and r252 (b152), backlog r27 and intake r11 (b158, b159); and in a line of
+batches, "While the number of tasks of the batch is more than `batch_size`, ...". Each says "the number of Ks that
+P".
+
+```reading
+When a session ends a stage, `work` shall print the number of lines of the stage.
+shall [x3: tool `work` (constant)]
+  when [x1: session, x2: stage]
+    end(e1, subject: x1, object: x2)
+  response [x4: number]
+    number x4 of [x5: line]
+      of(x5, x2)
+    print(e2, subject: x3, object: x4)
+```
+
+```reading
+When a session ends a stage, `work` shall print the number of sessions that follow the stage.
+shall [x3: tool `work` (constant)]
+  when [x1: session, x2: stage]
+    end(e1, subject: x1, object: x2)
+  response [x4: number]
+    number x4 of [x5: session]
+      follow(subject: x5, object: x2)
+    print(e2, subject: x3, object: x4)
+```
+
+```reading
+When a session ends a stage, `work` shall print the number of lines of the stage whose outcome is `accepted`.
+shall [x3: tool `work` (constant)]
+  when [x1: session, x2: stage]
+    end(e1, subject: x1, object: x2)
+  response [x4: number]
+    number x4 of [x5: line]
+      of(x5, x2)
+      outcome(x5) = `accepted`
+    print(e2, subject: x3, object: x4)
+```
+
+"shall not print the number of Ks": under `not`, as any object of "shall not" (batch-measurement r24).
+
+```reading
+When a session ends a stage, `work` shall not print the number of lines of the stage.
+shall [x3: tool `work` (constant)]
+  when [x1: session, x2: stage]
+    end(e1, subject: x1, object: x2)
+  response
+    not [x4: number]
+      number x4 of [x5: line]
+        of(x5, x2)
+      print(e2, subject: x3, object: x4)
+```
+
+Compared: R7's count box, with nothing in its scope.
+
+```reading
+While a stage is `open` and the number of lines of the stage is more than three, when the person runs `work start`, `work` shall end the stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: stage]
+    status(x1) = `open`
+    count more than 3 [x2: line]
+      of(x2, x1)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    end(e2, subject: x5, object: x1)
+```
+
+```reading
+While a stage is `open` and the number of lines of the stage is less than `3`, when the person runs `work start`, `work` shall end the stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: stage]
+    status(x1) = `open`
+    count fewer than 3 [x2: line]
+      of(x2, x1)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    end(e2, subject: x5, object: x1)
+```
+
+```reading
+While a stage is `open` and the number of lines of the stage is `0`, when the person runs `work start`, `work` shall end the stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: stage]
+    status(x1) = `open`
+    count exactly 0 [x2: line]
+      of(x2, x1)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    end(e2, subject: x5, object: x1)
+```
+
+A code that is no number is a parameter:
+
+```reading
+While a stage is `open` and the number of lines of the stage is more than `limit`, when the person runs `work start`, `work` shall end the stage.
+shall [x3: number `limit` (parameter), x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+  while [x1: stage]
+    status(x1) = `open`
+    count more than x3 [x2: line]
+      of(x2, x1)
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    end(e2, subject: x6, object: x1)
+```
+
+The Ks a number counts are made inside its box:
+
+```reading
+When a session ends a stage, `work` shall print the number of files in the worktree of the session, and `work` shall print the file.
+refused: "the file" has no antecedent: a file is made inside "the number of files ...", which gives nothing outside it
+```
+
+### "another K", "a different K", "two Ks" and "the same K": identity and distinctness
+
+Two noun phrases of one kind may name one thing or two. "a K" never says which: two Ks of a line may be one thing.
+These four say it:
+
+- "another K" and "a different K" (one meaning) are a K that is not the K before it: a referent of its part as "a K"
+  is (R1), and the atom `distinct(y, x)`, x the referent "the K" would bind to by R2 in its place: the latest earlier
+  referent of kind K (or of a kind under it) not made inside a box that does not hold it. When that referent came
+  from "two Ks", y is distinct from both. With no such referent the line is refused, naming the noun, as R2 refuses
+  "the K"; "another K" never names the image of a row nor the run's own K.
+- "two Ks" are two Ks, each distinct from the other: two referents, the second with `distinct(y, x)`, and the clause
+  said of each, as of "a K and a K" (so "two sessions follow a stage" is one stage both follow). What restricts the
+  noun restricts each; a K its restriction makes is one K they share ("two files in a worktree": one worktree). A
+  later "the K" names neither and is refused.
+- "the same K" binds as "the K" does (R2): to the latest earlier K, else the image of a row, else the run's own K. When
+  R2 gives it nothing and the line said "two Ks" before it, it is one new K (R1), which each of the two shares: "two
+  sessions follow the same stage". Else it is refused as "the K" is.
+
+`model logic` reads `distinct(y, x)` as two things its unification never makes one: when one line's two referents
+it holds would be one thing of a pair (one code named of both, a definite both bind to), the pair is not read under
+that unification. A trigger of one act on each of "two Ks" ("writes two files") is one act of the line, a trigger of
+each part: two lines fire on one act when each part of either is a part of the other, so "writes a file" is not the
+act of "writes two files". So two lines on one act whose states differ only in which things are one never clash:
+"another file in the same worktree" and "another file in a different worktree" below (the twin of design-model-check
+r276-r278, "another requirement of the same trigger and state"). `features generate` names the two things with two
+names ("the session s1 gives the file f1 to the session s2"), which says they differ; a trigger of one act on each of
+two Ks is a When each.
+
+Found by the audit in design-model-check r176 (v15b, "two requirements share an id"), r179 (v15n, "another group"),
+r199 ("another interpreter"), r218 ("two others"), r224 (v_t15, two senses of one term), r247-r249 and r276-r278
+(two lines "of the same trigger and state", "another" requirement), migration-tools r28 and r29 ("a ledger entry
+supersedes another ledger entry", said with a coined noun), telemetry r8 ("`measure compare` on two batches"),
+backlog r26 and batches r20 and r22 (an item "not in the same batch"), backlog r39 ("an upstream branch of a
+different name") and batches r32 (a scenario of another item than the task's). Each said the identity with a coined
+noun, a rule code or not at all.
+
+```reading
+When a session gives a file to another session, `work` shall print the file.
+shall [x4: tool `work` (constant)]
+  when [x1: session, x2: file, x3: session]
+    distinct(x3, x1)
+    give(e1, subject: x1, object: x2, to: x3)
+  response
+    print(e2, subject: x4, object: x2)
+```
+
+```reading
+When a session gives a file to a different session, `work` shall print the file.
+shall [x4: tool `work` (constant)]
+  when [x1: session, x2: file, x3: session]
+    distinct(x3, x1)
+    give(e1, subject: x1, object: x2, to: x3)
+  response
+    print(e2, subject: x4, object: x2)
+```
+
+"the same K" bound to the earlier K, the twin of "another requirement of the same trigger" (design-model-check
+r276-r278):
+
+```reading
+While a session follows a stage and another session follows the same stage, when the person runs `work start`, `work` shall print the stage.
+shall [x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+  while [x1: session, x2: stage, x3: session]
+    follow(subject: x1, object: x2)
+    distinct(x3, x1)
+    follow(subject: x3, object: x2)
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    print(e2, subject: x6, object: x2)
+```
+
+"two Ks" of "the same K", the twin of "two requirements share an id" (design-model-check r176):
+
+```reading
+While two sessions follow the same stage, when the person runs `work start`, `work` shall end the stage.
+shall [x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+  while [x1: session, x3: stage, x2: session]
+    follow(subject: x1, object: x3)
+    distinct(x2, x1)
+    follow(subject: x2, object: x3)
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    end(e2, subject: x6, object: x3)
+```
+
+What restricts "two Ks" restricts each, and a K it makes is one both share:
+
+```reading
+When a session writes two files in a worktree, `work` shall print the worktree.
+shall [x5: tool `work` (constant)]
+  when [x1: session, x2: file, x3: worktree, x4: file]
+    in(x2, x3)
+    write(e1, subject: x1, object: x2)
+    distinct(x4, x2)
+    in(x4, x3)
+    write(e2, subject: x1, object: x4)
+  response
+    print(e3, subject: x5, object: x3)
+```
+
+In a response, two new Ks:
+
+```reading
+When a session ends a stage, `work` shall write two files.
+shall [x3: tool `work` (constant)]
+  when [x1: session, x2: stage]
+    end(e1, subject: x1, object: x2)
+  response [x4: file, x5: file]
+    write(e2, subject: x3, object: x4)
+    distinct(x5, x4)
+    write(e3, subject: x3, object: x5)
+```
+
+"another K" after "two Ks" is distinct from both:
+
+```reading
+When a session gives two files to a session, `work` shall write another file.
+shall [x5: tool `work` (constant)]
+  when [x1: session, x2: file, x4: session, x3: file]
+    give(e1, subject: x1, object: x2, to: x4)
+    distinct(x3, x2)
+    give(e2, subject: x1, object: x3, to: x4)
+  response [x6: file]
+    distinct(x6, x2)
+    distinct(x6, x3)
+    write(e3, subject: x5, object: x6)
+```
+
+Two lines on one act in two states: the first's two files are in one worktree, the second's in two, so `model logic`
+finds no witness where both fire, and no L1:
+
+```reading
+When a session writes a file in a worktree and another file in the same worktree, `work` shall print the worktree.
+shall [x5: tool `work` (constant)]
+  when [x1: session, x2: file, x3: worktree, x4: file]
+    in(x2, x3)
+    write(e1, subject: x1, object: x2)
+    distinct(x4, x2)
+    in(x4, x3)
+    write(e2, subject: x1, object: x4)
+  response
+    print(e3, subject: x5, object: x3)
+```
+
+```reading
+When a session writes a file in a worktree and another file in a different worktree, `work` shall not print the worktree.
+shall [x6: tool `work` (constant)]
+  when [x1: session, x2: file, x3: worktree, x4: file, x5: worktree]
+    in(x2, x3)
+    write(e1, subject: x1, object: x2)
+    distinct(x4, x2)
+    distinct(x5, x3)
+    in(x4, x5)
+    write(e2, subject: x1, object: x4)
+  response
+    not
+      print(e3, subject: x6, object: x5)
+```
+
+The refusals: "another K" with no K before it, or with every K before it inside a box; "the same K" with neither an
+antecedent nor "two Ks" before it; "the K" after "two Ks".
+
+```reading
+When a session ends another stage, `work` shall print the stage.
+refused: "another stage" has no antecedent: no earlier noun phrase gives a stage
+```
+
+```reading
+While no session follows a stage, when the person runs `work start`, `work` shall end another stage.
+refused: "another stage" has no antecedent: a stage is made inside "no session ...", which gives nothing outside it
+```
+
+```reading
+When the person runs `work start`, `work` shall end the same stage.
+refused: "the same stage" has no antecedent: no earlier noun phrase, functional relation or declared indexical gives a stage
+```
+
+```reading
+While two sessions follow a stage, when the person runs `work start`, `work` shall print the session.
+refused: "the session" has no antecedent: "two sessions" gives two sessions, and "the session" names neither
+```
+
+### "X exists" and "no K exists": existence
+
+"X exists" says that the thing X is there: a state of X whose frame takes no object, the atom `exists(x)`. Every kind
+has it, with no entry in the glossary: "exist" is the base grammar's verb, a state, so a trigger may not say it ("When
+a file exists" is refused as a state verb in a trigger is). "X does not exist" puts the atom under `not`; "no K
+exists" is R3's "no K", a `not` box with its K; "a K that exists" and "a K whose T does not exist" are relative
+clauses as any state gives them. In `model logic` existence is the one-place fluent `crel(R, exists, x, none, Pol)`
+(the state whose frame takes no object, b219), and "no K exists" `rnone(R, exists, kind(K), none)`: "the `a` file
+exists" clashes with "the `a` file does not exist" and with "no file exists", but not with "the `b` file does not
+exist". In a scenario it is a Given, "the file f1 exists", "the `a` file does not exist" or "no file exists", which
+the world meets by making the thing or leaving it out.
+
+"has been written" is not existence: it is the perfect of an action, the history of section "Time" (built, and
+refused by `model logic` as any history is). A line that means that a thing is there says "exists"; one that means
+that an act happened before says the perfect.
+
+Found by the audit in analysis-tools r37-r41 ("this file system holds the dot-venv interpreter": a container noun
+and a row coined to say that a file is there; the interpreter that is used is the first that exists, each case
+written with existence, the order a known limit, #14), r48 and r50-r55 ("this repository holds a coverage map", "holds
+no coverage map"), and requests r72 ("a bounded context that has no host", the upstream's entry with no repository)
+and r81 (every with no existential import: "every request line ... is `refused`" holds of a request with no lines,
+so the line says that one exists too).
+
+```reading
+While the `a` file exists, when the person runs `work start`, `work` shall print the file.
+shall [x1: file `a` (parameter), x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while
+    exists(x1)
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    print(e2, subject: x4, object: x1)
+```
+
+"X does not exist": each case of a first match said with existence (analysis-tools r38-r40).
+
+```reading
+While the `b` file exists and the `a` file does not exist, when the person runs `work start`, `work` shall print the `b` file.
+shall [x1: file `b` (parameter), x2: file `a` (parameter), x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while
+    exists(x1)
+    not
+      exists(x2)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    print(e2, subject: x5, object: x1)
+```
+
+```reading
+While a file in a worktree exists, when the person runs `work start`, `work` shall print the file.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: file, x2: worktree]
+    in(x1, x2)
+    exists(x1)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    print(e2, subject: x5, object: x1)
+```
+
+"no K exists" (analysis-tools r55):
+
+```reading
+While no file exists, if the person runs `work start`, then `work` shall exit with an error naming `work start`.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while
+    not [x1: file]
+      exists(x1)
+  if
+    run(e1, subject: x2, object: x3)
+  response
+    exit(e2, subject: x4, with an error naming: x3)
+```
+
+"whose T does not exist" (requests r72):
+
+```reading
+If the person runs `work start` on a session whose worktree does not exist, then `work` shall exit with an error naming the session.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x5: tool `work` (constant)]
+  if [x3: session, x4: worktree]
+    of(x4, x3)
+    not
+      exists(x4)
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    exit(e2, subject: x5, with an error naming: x3)
+```
+
+"every K of X is v" holds of an X with no K; "a K of X exists and every K of X is v" says there is one (requests r81):
+
+```reading
+While a stage is `open` and a line of the stage exists and every line of the stage is `refused`, when the person runs `work start`, `work` shall end the stage.
+shall [x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+  while [x1: stage, x2: line]
+    status(x1) = `open`
+    of(x2, x1)
+    exists(x2)
+    every [x3: line]
+      of(x3, x1)
+      scope
+        outcome(x3) = `refused`
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    end(e2, subject: x6, object: x1)
+```
+
+```reading
+When the person runs `work start`, `work` shall print every file that exists.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response
+    every [x4: file]
+      exists(x4)
+      scope
+        print(e2, subject: x3, object: x4)
+```
+
+```reading
+When a session exists, `work` shall print the session.
+refused: the verb exist is a state, and a trigger takes an action
+```
+
+### "runs C with the `--x` option": an option with its argument
+
+A command's option is in the trigger, with the CLI pack's run: "runs C with the `--x` option", "with the `--x` and
+`--y` options" (or "with the `--x` option and the `--y` option"), "with the `--x` option on a K", "with the `--x`
+option set to v" (its argument: a code, or a thing the line says more of) and "without the `--x` option" (the option
+not given). The run is one atom, `run(e, subject: agent, object: command, with: option ..., without: option ...,
+on: thing)`, with every option it is given and every option it is not; an "and" list of options is one run with each
+of them (not a run for each, as "and" gives of any other argument), an "or" list a case for each. An option's
+argument is the atom `argument(option, v)` beside the run. In `model logic` the command a run runs is the command's
+code with each option given and its argument when that is a code (`work start --every 5`); an option not given is not
+in it, so the line pairs with every line on the command alone; a thing that an option is set to is what the run is on.
+In a scenario the When names each option and its argument as the line does, and the step's Call gives them to its
+handler (`options`: each option given with its argument, `without`: each option not given).
+
+Found by the audit in requests r59 ("`work request --raised-for` on a request": the option glued into the command
+code, which makes it a command apart from `work request`; with and on in one trigger were refused), r60 (none of
+three options given), r61, r102 ("with `--source` and `--thread`"), r62 ("`--from` on a text": the option's argument
+read as the run's object), r82 and r97-r101 (`work outcome accepted`, `work watch --hook`, `work watch --forward`),
+analysis-tools r36 (`tools probe --python` on a Python interpreter), U16 and backlog r27 ("with the `--json` option",
+one JSON object), and decision-tiers r20 and intake r13 ("an argument that `work decision` does not have": the option
+not given on this run said as a property of the command).
+
+One option (U16, backlog r27):
+
+```reading
+When the person runs `work start` with the `--json` option, `work` shall exit successfully.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--json` (parameter), x4: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2, with: x3)
+  response
+    exit(e2, subject: x4, successfully)
+```
+
+Two options of one run (requests r61, r102), said either way:
+
+```reading
+If the person runs `work start` with the `--source` and `--thread` options, then `work` shall exit with an error naming `--source`.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--source` (parameter), x4: option `--thread` (parameter), x5: tool `work` (constant)]
+  if
+    run(e1, subject: x1, object: x2, with: x3, with: x4)
+  response
+    exit(e2, subject: x5, with an error naming: x3)
+```
+
+```reading
+If the person runs `work start` with the `--source` option and the `--thread` option, then `work` shall exit with an error naming `--source`.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--source` (parameter), x4: option `--thread` (parameter), x5: tool `work` (constant)]
+  if
+    run(e1, subject: x1, object: x2, with: x3, with: x4)
+  response
+    exit(e2, subject: x5, with an error naming: x3)
+```
+
+An option and the thing the run is on (requests r59, analysis-tools r36):
+
+```reading
+When the person runs `work start` with the `--json` option on a stage, `work` shall print the stage.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--json` (parameter), x5: tool `work` (constant)]
+  when [x4: stage]
+    run(e1, subject: x1, object: x2, with: x3, on: x4)
+  response
+    print(e2, subject: x5, object: x4)
+```
+
+An option set to a code, its argument:
+
+```reading
+When the person runs `work start` with the `--every` option set to `5`, `work` shall exit successfully.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--every` (parameter), x4: thing `5` (parameter), x5: tool `work` (constant)]
+  when
+    argument(x3, x4)
+    run(e1, subject: x1, object: x2, with: x3)
+  response
+    exit(e2, subject: x5, successfully)
+```
+
+An option set to a thing the line says more of (requests r62):
+
+```reading
+If the person runs `work start` with the `--from` option set to a stage whose status is not `done`, then `work` shall exit with an error naming the stage.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--from` (parameter), x5: tool `work` (constant)]
+  if [x4: stage]
+    not
+      status(x4) = `done`
+    argument(x3, x4)
+    run(e1, subject: x1, object: x2, with: x3)
+  response
+    exit(e2, subject: x5, with an error naming: x4)
+```
+
+An option not given (decision-tiers r20), none of three (requests r60), and with the thing the run is on (intake
+r13):
+
+```reading
+If the person runs `work start` without the `--summary` option, then `work` shall exit with an error naming `--summary`.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--summary` (parameter), x4: tool `work` (constant)]
+  if
+    run(e1, subject: x1, object: x2, without: x3)
+  response
+    exit(e2, subject: x4, with an error naming: x3)
+```
+
+```reading
+If the person runs `work start` without the `--source`, `--thread` and `--raised-for` options, then `work` shall exit with an error naming `--source`.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--source` (parameter), x4: option `--thread` (parameter), x5: option `--raised-for` (parameter), x6: tool `work` (constant)]
+  if
+    run(e1, subject: x1, object: x2, without: x3, without: x4, without: x5)
+  response
+    exit(e2, subject: x6, with an error naming: x3)
+```
+
+```reading
+If a session runs `work start` without the `--reason` option on a line, then `work` shall exit with an error naming `--reason`.
+shall [x2: command `work start` (parameter), x3: option `--reason` (parameter), x5: tool `work` (constant)]
+  if [x1: session, x4: line]
+    run(e1, subject: x1, object: x2, without: x3, on: x4)
+  response
+    exit(e2, subject: x5, with an error naming: x3)
+```
+
+The noun after two codes is plural: "with the `--source` and `--thread` option" does not parse (grammar/corpus/core-4.txt).
+
+### "the push of the command", "the commit that the command makes": the run's own things
+
+A thing a run makes is said as the image of the command by a row (`push | of | command | one`: "the push of the
+command", the push of the command the trigger runs) or, for a kind whose entry has `This:`, as the run's own K (R11:
+"the commit", "the commit that the command makes"). Nothing is built for them: each kind the audit names (the Python
+interpreter, the decisions index, the git directory, the transcript, the push the command makes) gets its row or its
+`This:` in the reword phase whose lines use it. These are the twins of each shape.
+
+Found by the audit in analysis-tools r43-r46 and r66 ("the dot-venv interpreter", the interpreter `tools` runs
+with), decision-tiers r19 ("a decisions index": the one index of the repository), conversation r6 (the git directory,
+the transcript) and the push and the commit a `work` command makes.
+
+```reading
+When the person runs `work start`, `work` shall print the push of the command.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response [x4: push]
+    of(x4, x2)
+    print(e2, subject: x3, object: x4)
+```
+
+```reading
+When the person runs this command, `work` shall print the commit that the command makes.
+shall [x1: agent the person (constant), x2: command "the command the run runs" (indexical), x3: tool `work` (constant), x4: commit "the commit the run makes" (indexical)]
+  when
+    run(e1, subject: x1, object: x2)
+  response
+    make(subject: x2, object: x4)
+    print(e2, subject: x3, object: x4)
+```
+
+### What parses is read: a verb of two frames, "shall not V a K that P", "no K that P", "every K that no K Vs"
+
+A line that parses to one meaning is read by `model logic`'s check and by `features generate`'s steps, never refused
+for want of a translation (b236, b237, b238, and the audit's section 3: "the generator and the bar lag the grammar").
+Nothing new is said here; these are the shapes the check or the steps had no reading of:
+
+- a verb whose entry has two `Frame:` lines of the same role labels ("Frame: file covers line. Frame: stage covers
+  line.") is stepped in the frame its referents' kinds pick, the frame the parse typed the clause by (b236:
+  migration-tools' supersede, b156 r29 and r30; decision-tiers' enforce, b159 r15);
+- "shall not V a K that P", "shall V no K that P" and "shall not V a K of x", over a K the line names nowhere before
+  (R4: under "shall not", "a K" is any K), is a Then that the agent does not V a K brought in with what the line says
+  of it (b237: feature-file-tools r86 and r87, b157, "not write a scenario line of the requirement group"; batches
+  r22, b158, "shall not pick an item that has the dependency"); "not V the T of x", over a row's image, was read
+  already (the audit's "not close the issue of the request");
+- "no K that is related to a K whose T is not v" (a `not` inside the "no" box, on its own K) is read by the check as
+  a box of its own: no instances of its Ks are so related in the state the pair merges, with the inner one's T known
+  to be another value (b238: batches r20, b158, "the item has no dependency on an item whose status is not
+  `delivered`"); its Given, as of any "no" box of more than one atom, is said of the box's link to the thing outside
+  it ("the session s1 has no worktree"), which makes the line's state hold (b159 r15, "no review finding on the pull
+  request is `fix now`");
+- "every K that no K2 Vs" and "every K that x does not V" in a response (the audit's "every function of the Python
+  file that no test executes") are, in the check, a negated restriction of the object as "whose T is not v" is
+  (`onrel`: it agrees only with the same restriction on the other line's object), and in the steps a Given said of
+  "no K2" for each K brought in.
+
+```reading
+While a stage covers a line, when the person runs `work start`, `work` shall end the stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: stage, x2: line]
+    cover(subject: x1, object: x2)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    end(e2, subject: x5, object: x1)
+```
+
+```reading
+While a line is `proposed` and no stage covers the line, if the person runs `work start`, then `work` shall exit with an error naming the line.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: line]
+    outcome(x1) = `proposed`
+    not [x2: stage]
+      cover(subject: x2, object: x1)
+  if
+    run(e1, subject: x3, object: x4)
+  response
+    exit(e2, subject: x5, with an error naming: x1)
+```
+
+```reading
+When the person runs `work start`, `work` shall end no stage that a session follows.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response
+    not [x4: stage, x5: session]
+      follow(subject: x5, object: x4)
+      end(e2, subject: x3, object: x4)
+```
+
+```reading
+When the person runs `work start` on a stage, `work` shall not print a line of the stage.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x4: tool `work` (constant)]
+  when [x3: stage]
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    not [x5: line]
+      of(x5, x3)
+      print(e2, subject: x4, object: x5)
+```
+
+```reading
+While a stage has a line whose outcome is not `accepted`, when the person runs `work start`, `work` shall not end a stage that has the line.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: stage, x2: line]
+    not
+      outcome(x2) = `accepted`
+    of(x2, x1)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    not [x6: stage]
+      of(x2, x6)
+      end(e2, subject: x5, object: x6)
+```
+
+```reading
+When the person runs `work start` on a command, `work` shall not print the push of the command.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x4: tool `work` (constant)]
+  when [x3: command]
+    run(e1, subject: x1, object: x2, on: x3)
+  response [x5: push]
+    of(x5, x3)
+    not
+      print(e2, subject: x4, object: x5)
+```
+
+```reading
+While a session has no worktree that holds a file whose version is not `2.0.0`, when the person runs `work start`, `work` shall exit successfully.
+shall [x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+  while [x1: session]
+    not [x2: worktree, x3: file]
+      not
+        version(x3) = `2.0.0`
+      in(x3, x2)
+      of(x2, x1)
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    exit(e2, subject: x6, successfully)
+```
+
+```reading
+While a stage has no line whose outcome is not `accepted`, when the person runs `work start`, `work` shall end the stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: stage]
+    not [x2: line]
+      not
+        outcome(x2) = `accepted`
+      of(x2, x1)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    end(e2, subject: x5, object: x1)
+```
+
+```reading
+While no line of a stage is `accepted`, when the person runs `work start`, `work` shall exit successfully.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while
+    not [x1: line, x2: stage]
+      of(x1, x2)
+      outcome(x1) = `accepted`
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    exit(e2, subject: x5, successfully)
+```
+
+```reading
+When the person runs `work start` on a stage, `work` shall print every line of the stage that no file covers.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x4: tool `work` (constant)]
+  when [x3: stage]
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    every [x5: line]
+      of(x5, x3)
+      not [x6: file]
+        cover(subject: x6, object: x5)
+      scope
+        print(e2, subject: x4, object: x5)
+```
+
+```reading
+When the person runs `work start` on a session, `work` shall print every stage that the session does not follow.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x4: tool `work` (constant)]
+  when [x3: session]
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    every [x5: stage]
+      not
+        follow(subject: x3, object: x5)
+      scope
+        print(e2, subject: x4, object: x5)
+```
+
+## What the language cannot say yet
+
+The limits the rewording keeps, one subsection a limit: the construct the language has not, the lines that need it
+by id, and the plain line each says instead. A corpus block of such a line gives `Known limit: #<n>` as its trace.
+
+### #1: words about the language that no construct's code says
+
+A line about a line names the construct it uses by its code in the construct catalogue ("a requirement that uses
+`count`", the spec pack's use and violate, b124); a few things a line says of a requirement are no construct of the
+catalogue, and their words stay meta-level words of the glossary: a frame's role a requirement leaves out (omit,
+object, recipient), two counts no number meets both of (contradict), and a refusal or a construct the context does
+not read (the clock trigger of the time pack this repository does not import, the perfect whose construct code
+`done` is a value here, a number where a duration is due). Lines: design-model-check r205, r206 (omit an object, a
+recipient), r253 (a count that contradicts a count), r255 (a clock trigger), r256 (a perfect), r257 (a number that
+has no unit). Each says the thing in the glossary's words, the word a term of the capability.
+
+### #13: what a command would write
+
+A line that says X differs from what a command writes now ("is not what `model decisions` would write") compares X
+with a counterfactual: the output of a run that has not happened. The language has no noun phrase for it: "what
+`model decisions` writes" is no noun phrase (no free relative), and "does not conform to" takes an artifact, which a
+command's output is not. Lines: design-model-check r202, r203 (the decisions index), r220 (the rule catalogue),
+feature-file-tools r106 (a feature that is not what `features generate` writes).
+Each says instead what the stale file lacks, in the item's words: "While a design-decision has an index entry that a
+decisions index does not hold, if the person runs `model decisions --check`, then `model` shall exit with an error
+naming the decisions index and change no file."; the rows that are extra or changed are lost.
+readiness r33 (b157 r27: the scenarios `features generate` would write of an item's lines) says what the item's
+scenario holds as if the item had it: "While an item is `shaped` and a scenario of the item has a step that holds a
+placeholder, ...".
+
+### #6: a value compared with another thing's value
+
+"after v" compares a value with a value a line names; the language has no comparison of two things' values ("the
+release of the repository is after the release of the plugin"), which the check could not decide exactly over named
+points (design call 9). Lines: migration-tools r62, r63 and r64, of the release 4.0.0 (r63 is b156's line of the
+repository's release `newer`, newer than the plugin's own). They say instead the plugin's release the line is written for, as a value: "While the release of the repository
+is after `4.0.0`, ...", and the line gets a new id when the plugin's release moves on.
+
+### #8: a change of an attribute's value
+
+"set the T of x to v" says that an agent gives an attribute one value; the language has no form for an agent changing
+an attribute to any value, or for not changing it ("change the status of an item", "shall not change the status of a
+node"): `change` takes a thing, and an attribute is no thing. Lines: universal U13, U14 (b155: U4 "`work` shall commit
+every transition and push the commit", U5 "A session shall not write a status"). They say instead what the noun
+*transition* (the glossary: one change of a node's status, written by `work`) stands for: "When `work` writes a
+transition, `work` shall commit the transition and push the commit of the transition." and "A session shall not
+write a transition."
+
+### #15: an adjunct of a verb's frame
+
+A frame names a verb's subject, object and the fixed words before a third thing; the language has no adjunct that
+ties a thing to the act ("refuses a command for a reason", "the reason it refuses the command"). Line: universal U12
+(b155: U11 "exit with an error naming the reason"). It says instead "If a tool refuses a command, then the tool
+shall exit with an error naming a reason and change nothing.": the reason is any reason, and the link from the
+reason to the refusal is in the gloss of *reason* only.
+
+### #14: ordered choice
+
+A rule that takes the first of a list that meets a condition ("the first of `.venv/bin/python`, `venv/bin/python`
+and `$VIRTUAL_ENV/bin/python` that exists, else the interpreter running the script") has no construct: the language
+has no "the first K that P" over an order the line gives. Lines: analysis-tools r37-r41 (b154: the Python
+interpreter `tools probe` takes when `--python` is not given). Each case is a line of its own, said with existence
+("X exists", "X does not exist"): the case of the n-th interpreter says that it exists and that each before it does
+not, and r41 says that the second is not printed while the first exists. The order lives only in which cases the
+lines spell out; a fifth interpreter would need every line after it rewritten.
+
+### The Given of a "no" box beside the link it is said by
+
+A "no" box of more than one item ("the session has no worktree that holds a file whose version is not `2.0.0`") is
+given in a scenario by its link to the thing outside it ("the session s1 has no worktree"), which is more than the
+line says and makes its state hold. A line that also gives that thing a K by the same link ("While a session has a
+worktree and the session has no worktree that holds a file whose version is not `2.0.0`, ...") would be given two
+steps that contradict each other, so `features generate` has no scenario of it ("no Given of no there"); `model
+logic` reads it. No line of b152-b159 has the shape (b240 phase 12's sweep). It says instead what the K it gives
+meets: "While a session has a worktree and every file in the worktree is `2.0.0`, ...".
+
+### #10: for each X, its Y
+
+"every K" in a response is a box of its own, so a list of them ("print every item, every title of an item and every
+batch") prints each K but does not pair a thing with its own Y; "every item with its title" has no form (an "its"
+binds to its clause's subject, R8, not to an "every" of a response list). Line: conversation r8 (b159: the names
+table, each item beside its title). It says instead each "every" apart, and the pairing is the Implementation's.
+
+### #11: the outcome of the response's own act
+
+A line whose condition is what the response's own act gives ("a test that fails when `model` runs it") has no form:
+a condition holds before the trigger, and the run's own things (R11) are what a command makes, not what a test it
+runs gives. Line: decision-tiers r17 (b159). It says instead the test's last outcome, an attribute of test ("a test
+whose outcome is `failed`"), which the scenario gives before the run.
+
+### #16: liveness
+
+When is the next step (R9); "eventually" has no form (deferred to b127). Line: pr-review r1, kept (a review follows the
+publication of a pull request after `work batch brief`, not at the next step). It says instead the next-step
+obligation, which the batch session meets by its own steps (skill `building-a-batch`).
+
+### #12: an option set to a value of an attribute
+
+"with the `--x` option set to v" takes a code, or a thing the line says more of; a code that is a declared value of
+an attribute (`high-value`, a value of an item's value) is no argument, so a line cannot say that a command sets an
+attribute to the value an option gives it. Line: backlog r25 (b158: `work rate` with `--value`, `--urgency` and
+`--size`). It says instead the command with its arguments in its code, as one example: "When the person runs `work
+rate --value high-value --urgency low-urgency --size small` on an item, `work` shall set the value of the item to
+`high-value`, ..."; the rule that each rating is set to the one given is not said.
+
+### #14: up to a number, in rank order
+
+The language has no ordered choice: "the first K in rank order", "up to `batch_size` Ks", "unless what blocks it is
+picked earlier in the same pick". Line: batches r22 (b158 r20, `work batch start`'s pick). It says what holds of an
+item that nothing blocks, "While an item is `ready` and the item passes the readiness bar and the item has no
+dependency on an item whose status is not `delivered`, ... `work` shall pick the item ..."; the bound `batch_size`,
+the rank order and an item picked after the item it depends on in the same pick stay in the capability's
+Implementation section.
+
+### #16: an answer within a time
+
+"within the last 7 days" compares a moment with the clock; the language has no bound on how long an act takes ("no
+answer within the push timeout", `$SHOPSYSTEM_PUSH_TIMEOUT`), which b127 defers. Line: backlog r33 (b158 r37, a remote
+that does not answer `work idea`'s push in time). It says instead "While the remote of this repository does not
+answer the push of the command, ...", which reads that no answer comes at all; the timeout stays in the capability's
+Implementation section.
+
+### #8: an attribute set to the value a command is given, and an attribute left as it was
+
+"set the T of X to `v`" sets a value the line names; the language has no form for the value a command is given as its
+argument ("set the line outcome of the request line to the outcome the command gives"), and no negated act on an
+attribute ("not change the side of the request": `change` takes a file, and an attribute is no thing). Lines: requests
+r63 (b153: `work outcome` writes the line outcome it is given), which says instead the case of one value, the value in
+the command's code: "When the person runs `work outcome accepted` on a request line proposed in the request, `work`
+shall set the line outcome of the request line to `accepted` ..." (r82 names the command so too); requests r80 and
+r96, which say "keep the side of the request" (role-boundaries' keep, an act of the agent, not the absence of a
+change), so `model logic` does not read them as leaving the value as it was.
+
+### #3: one above the highest
+
+"the number of Ks" counts; the language has no aggregate over values: the highest of a set, a sum, one above the
+highest. Lines: migration-tools r32 (a ledger entry with no number is numbered from one above the decision ledger's
+highest) and r33 (a Behaviour line with no id gets one above the highest id its capability has used or retired), b156.
+Each says instead that `migrate` gives the thing a ledger number or a line id; which one is the implementation's.
+
+### #10: each of the Ks
+
+"two Ks" in a trigger are two things, but the language has no "each of the Ks" to say a thing of each in a response:
+"the measurement of the batch" after "two batches" names neither (R2), and "every batch" is every batch there is.
+Lines: telemetry r8 and batch-measurement r26 (b156), `measure compare` on two batches or two measurements. Each says
+instead "two measurements" or "two total rows", which are not tied to the batches or measurements the command names.
+
+### #17: a default value
+
+A value a thing is taken to have when it has none ("a repository with no plugin version file is on `0.23.1`") is no
+construct: a release's code is a value, and a value is not a thing a tool prints. Line: migration-tools r38 (b156). It
+says instead what the default makes `migrate status` print: every upgrade step, each being pending on `0.23.1`.
+
+### #18: the ratio of two figures
+
+A figure of one measurement divided by the same figure of another is arithmetic, which the language has not. Lines:
+telemetry r8 and batch-measurement r26 (b156). Each says "a ratio", a noun of the glossary, glossed as the second's
+figure divided by the first's.
+
+### #10: one thing counted for each of another's
+
+"`features count` counts each examples row of a scenario outline as a scenario" pairs each row with a scenario it
+counts as; the language has no "for each X, a Y" (distribution, the audit's #10), and "the number of scenarios" counts
+only the Ks the line names. Line: feature-file-tools r89 (b157 r46, "count every examples row"). It says instead the
+case where the rows are the only scenarios: "While a feature file has a scenario outline and the feature file has no
+scenario, ... `features` shall print the number of examples rows of the scenario outline."
+
+### A thing in a thing at any depth
+
+"every feature file under the directory, however deep" is the closure of `in` over directories; the language has no
+closure, and a row `feature file | in | subdirectory` is one level. Line: feature-file-tools r91 (b157 r48, where the
+depth was in the gloss of "subdirectory"). It says one subdirectory, and the gloss no longer says "at any depth".
+
+### #16: history, moments, and an "or" of a response, in `model logic` and `features generate`
+
+The constructs `done`, `done-since`, `moment-compare` and `within` of grammar/constructs.md parse and `model parse
+--form` prints their reading, but `model logic` has no translation of a history or of a comparison of moments, and
+`features generate` writes no scenario of a line that uses one; nor of a line that uses `or-list` between the objects
+of its response ("shall print a file or a stage"). Until they do, a requirement that uses one of them does not conform
+to the language reference: the scenario of feature-file-tools' catalogue line is written of every other "shall" example of the
+catalogue (tests/scenarios/feature_file_tools_world.py reads the codes from this section).
+
+### #16: "unchanged since" a moment the line does not name
+
+"S has V-ed O since m" takes a moment m of the line; "the lexicon has not changed since `model parse` last parsed the
+requirement" needs the moment of an earlier run, which no line names. Lines: design-model-check r282, r283, r284
+(b239's parse cache and compiled grammar). Each says instead what the cache holds: the parse of a requirement, whose
+entry gives the cache's key (the requirement's text, its grammar's sources and its lexicon's words), so "a parse
+cache holds the parse of a requirement" is true only while none of them has changed: "While a parse cache holds the
+parse of a requirement, when the person runs `model parse` on the requirement, `model` shall read the parse cache,
+write no compiled grammar and exit successfully."
+
+### A `not` over a verb inside a "no" box
+
+"no K that no K2 Vs" and "no K that a K2 does not V" parse, but `model logic` reads a `not` inside a "no" box only
+over an attribute of the box's own referent ("no dependency on an item whose status is not `delivered`"), not over a
+verb. Line: design-model-check r251 ("a requirement has no consequence that no premise entails"). It says instead,
+with the verb add (a requirement adds a consequence that no premise entails): "While a requirement has a consequence
+and the requirement adds no consequence, when the person runs `model logic`, `model` shall print `L8`."

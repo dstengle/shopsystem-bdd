@@ -75,7 +75,7 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
          # the box; and refused when only a stage inside a "no" box would give it
          "shadowed": ("When a session ends a stage, `work` shall not end a stage and print the stage.", None),
          "unreachable": (("While no session follows a stage, when the person runs `work start`, `work` shall print "
-                          "the stage."), '"the stage" has no antecedent outside a "no", "not", "every" or "only" box'),
+                          "the stage."), '"the stage" has no antecedent: a stage is made inside "no session ..."'),
          # "the K of X" in a relative clause on a K (b221): the stage of the worktree, a stage of its own, the worktree
          # the session's, as in "a review that lists the review of the pull request"; and "the K of every Y", one
          # worktree of each session, inside the every box (READINGS: what its logical form prints of each)
@@ -139,7 +139,15 @@ CAPABILITIES = {"restricting": ["A session shall change only files in its worktr
                 # Declining (I14a): `work` refuses `work start` (an error exit on a run, by the CLI pack's definition of
                 # refuse), so U1 entails its "change nothing" from its other Then.
                 "declining": [("If the person runs `work start`, then `work` shall exit with an error naming "
-                               "`work start` and change nothing.")]}
+                               "`work start` and change nothing.")],
+                # Unpairable (b120): r1 and r2 name the code `x` of a stage and of a line, which cannot be one thing,
+                # so the pair is set aside; r3 and r4 still clash.
+                "unpairable": [("While the `x` stage is `open`, when the person runs `work stop` on a file, `work` "
+                                "shall write the file."),
+                               ("While the `x` line is `accepted`, when the person runs `work stop` on a file, `work` "
+                                "shall not write the file."),
+                               "When the person runs `work check`, `work` shall exit successfully.",
+                               "When the person runs `work check`, `work` shall exit with an error naming `work check`."]}
 
 # The universal conditions a capability condition needs beside its lines, as spec/universal.md's U1, U2 ...: U1 is an
 # If line, which takes no precedence over a line of a capability (it holds in every trace).

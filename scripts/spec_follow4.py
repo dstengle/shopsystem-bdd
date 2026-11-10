@@ -29,9 +29,9 @@ def spellings(vocab):
 def _next(concrete, prefix, trees):
     """The tokens GF's completion offers after the token list `prefix` that keep it a prefix of a line."""
     import pgf
-    import spec_grammar
+    import spec_gf
     try:
-        found = concrete.complete(spec_grammar._gf_text(prefix) + " ")
+        found = concrete.complete(spec_gf.gf_text(prefix) + " ")
         candidates = sorted({token for _, token, _, _ in found})
     except pgf.ParseError:
         return []

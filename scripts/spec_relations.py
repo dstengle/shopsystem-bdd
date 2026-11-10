@@ -1,7 +1,8 @@
 """The relations of a context (design-r2 §4.2, §8): the `## Relations` tables, `Kind of:` expanded, v_t8 and v_t10.
 
 A row of a `## Relations` table, in `spec/index.md` or in a capability for its own local relations, is
-`| from kind | word | to kind |`, with an optional fourth cell for cardinality; the table's header and its rule are
+`| from kind | word | to kind |`, with an optional fourth cell for cardinality and an optional cell `Field of: <artifact>`
+naming the artifact the row is a field of (stored, checked by nothing yet: b241); the table's header and its rule are
 not rows. A relation entry (`- **fulfils** (relation initiative → request): ...`) is no row: it is v_t8. A row
 whose kind is a supertype (a kind entry's `Kind of:`) expands to each of its subkinds, at any depth, and keeps its
 own: (stage, for, node) gives (stage, for, node), (stage, for, work-item), ..., all with the one relation id of the
@@ -12,7 +13,8 @@ import re
 from collections import defaultdict, namedtuple
 from pathlib import Path
 
-Row = namedtuple("Row", "k1 word k2 cardinality where")
+Row = namedtuple("Row", "k1 word k2 cardinality where field_of", defaults=("",))
+MARK = "Field of:"
 
 
 def _cells(line):
@@ -25,7 +27,10 @@ def rows(text, where):
 
     def close():
         body = table[2:] if len(table) > 1 and all(set(c) <= set("-: ") for c in table[1]) else table
-        out.extend(Row(c[0], c[1], c[2], c[3] if len(c) > 3 else "", where) for c in body if len(c) >= 3)
+        for c in (c for c in body if len(c) >= 3):
+            rest = [x for x in c[3:] if not x.startswith(MARK)]
+            mark = next((x[len(MARK):].strip().rstrip(".") for x in c[3:] if x.startswith(MARK)), "")
+            out.append(Row(c[0], c[1], c[2], rest[0] if rest else "", where, mark))
         table.clear()
     for line in text.splitlines():
         if line.startswith("## "):
@@ -88,10 +93,10 @@ def expand(lexicon):
     return sorted({e[:4] for e in expansion(lexicon)})
 
 
-def problems(lexicon):
+def problems(lexicon, outer=frozenset()):
     """v_t4 (a row or a `Kind of:` naming no kind), v_t8 (a relation entry: a relation is a row) and v_t10
-    (two rows giving one (from, word, to)), as (code, term, message)."""
-    kinds = lexicon.kind_names()
+    (two rows giving one (from, word, to)), as (code, term, message); a kind of `outer` (an imported pack's) is a kind."""
+    kinds = lexicon.kind_names() | set(outer)
     out = [("v_t4", t.term, "%s: Kind of: %s is not a kind" % (t.where, t.supertype))
            for t in lexicon.of("kind") if t.supertype and t.supertype not in kinds]
     for row in lexicon.rows:

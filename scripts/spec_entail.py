@@ -18,7 +18,7 @@ from collections import defaultdict
 from pathlib import Path
 
 import clingo
-import spec_facts
+import spec_lf_core
 import spec_packs
 from spec_entail_rules import Premises, parse, q
 from spec_solve_pairs import Finding, order
@@ -126,13 +126,13 @@ def restating(facts, bridge=True):
     splits = defaultdict(list)
     for r, f in reqs.items():
         if f["resp"] and "#" in r:
-            splits[spec_facts.split(r)].append(r)
+            splits[spec_lf_core.split(r)].append(r)
     out = {}
     for base, rs in splits.items():
         thens = [(r, j) for r in sorted(rs) for j, *_ in reqs[r]["resp"]]
         if all(found.get(t) for t in thens):
             out[base] = [(j if r == base else "%s Then %s" % (r[len(base) + 1:], j),
-                          sorted({spec_facts.split(m) for m in found[(r, j)]}, key=order)) for r, j in thens]
+                          sorted({spec_lf_core.split(m) for m in found[(r, j)]}, key=order)) for r, j in thens]
     return out
 
 
@@ -140,7 +140,7 @@ def findings(root, ctx, scope):
     """The L8 findings of the codified-2 requirements (`cnl4`) of the capabilities in `scope`, every line a premise;
     a codified-1 line keeps the findings it had (none of L8), and with no codified-2 line in scope nothing is solved."""
     four = {s.id for s in ctx.statements if any(f.startswith("cnl4(") for f in ctx.facts[s.id])}
-    if not any(spec_facts.split(i).rpartition("#")[0] in scope for i in four):
+    if not any(spec_lf_core.split(i).rpartition("#")[0] in scope for i in four):
         return []
     facts = list(ctx.domain) + [f for s in ctx.statements for f in ctx.facts[s.id]]
     bridge = refuse_defined(root)
@@ -148,7 +148,7 @@ def findings(root, ctx, scope):
                                                      f.startswith("trig("))}
     out = []
     for r, thens in restating(facts, bridge).items():
-        if r.rpartition("#")[0] not in scope or r not in {spec_facts.split(i) for i in four}:
+        if r.rpartition("#")[0] not in scope or r not in {spec_lf_core.split(i) for i in four}:
             continue
         said = "; ".join("Then %s by %s" % (j, " and ".join(m + (" (through the definition of refuse)" if bridge and m in
                                                                    refusers else "") for m in ms)) for j, ms in thens)

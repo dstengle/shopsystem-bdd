@@ -1,6 +1,6 @@
 """The 3.0.0 upgrade step "verb frames" (migration-tools g25): each term's category written as its part of speech in
 the glossary and a capability's `## Terms`, nothing else changed, and each verb with no frame, each relational
-condition and each requirement that no longer parses named by file and id; no line is reworded."""
+condition named by file; no line is reworded."""
 import sys
 from pathlib import Path
 
@@ -39,12 +39,12 @@ def test_each_category_is_written_as_its_part_of_speech_and_nothing_else(tmp_pat
     assert (tmp_path / "spec/index.md").read_text() == INDEX + OTHER            # plan writes nothing
 
 
-def test_each_frameless_verb_relational_condition_and_unparsed_line_is_named(tmp_path):
+def test_each_frameless_verb_and_relational_condition_is_named(tmp_path):
     toolchain.require()
     notes = step.plan(spec(tmp_path)).notes
     assert any(n.startswith("verb frames: v_t11 pick, spec/index.md:") for n in notes), notes
     assert any(n.startswith("verb frames: v_t12 full, spec/index.md:") for n in notes), notes
-    assert any(n.startswith("verb frames: spec/capabilities/buy.md r1 no longer parses") for n in notes), notes
+    assert not any("no longer parses" in n for n in notes), notes       # the lines are the next step's to report
     assert LINE in step.plan(tmp_path).texts["spec/capabilities/buy.md"]   # no line reworded
 
 

@@ -119,6 +119,46 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 No agent has the Agent tool (design-decision/the-2-0-agents). A plugin agent's `hooks` and `permissionMode` are
 ignored, so a role's limits are its tools.
 
+## 4.0.0: the controlled language 4
+
+- **One language, grammar 4** (b112, b240; design `.shop/records/2026-11-09-cnl-4/`): a requirement line is read by a
+  grammar over GF's resource grammar library, generated per context from its glossary, and has one meaning or is
+  refused (`model parse` names why: a verb's frame, a verb's aspect, two readings, a reading rule). A file says
+  `language: codified-2`; the old grammar of `codified-1` is gone, and `model check`, `features generate`, the
+  readiness bar and the request lines refuse a `codified-1` file, naming `migrate upgrade` (design-model-check r287).
+- **The glossary**: a verb says its aspect, `(verb, action)` or `(verb, state)`: an action in a trigger or a
+  response, a state in a While clause or a relative clause (v_t14). Packs of words are imported by `spec/index.md`
+  (`imports: [cli, time]`): `cli` (tool, command, option, run, print, exit, refuse, name, conform), `time`, `spec`;
+  a word of the context's own spelled as a pack's carries `Redefines: <pack>` (v_t16). A relation row's word is a
+  preposition or a role noun.
+- **The reading rules R1-R12 and the logical form** (`grammar/language.md`): what "a", "the", "no", "every", "only",
+  "its", "one" and a negated clause mean, checked on every line; `model parse --form` prints a line's referents,
+  atoms and boxes; `model explain <cap>#r<n>` what the other lines force with it. `model logic` reads the form (L1-L7,
+  L8: a Then other lines entail); `features generate` writes the steps from it in the step grammar 4.
+- **New constructs** (`grammar/constructs.md`, each a code `model constructs` checks): conformance to a named
+  artifact, ordered comparison ("after `3.0.0` and before `4.0.0`"), value sets and a value's absence ("is one of",
+  "has no"), the number of Ks, identity and distinctness ("another", "two", "the same"), existence, a command's
+  options in the trigger ("runs `x` with the `--json` option"), the run's own things ("this K", `This:`), counts,
+  modality ("may", "always", "never") and time (the time pack).
+- **Example data out of lines**: a code or quoted string that names no declared constant is a parameter, bound in
+  its group's given block (`w_example`).
+- **`migrate upgrade` 4.0.0, "the controlled language 4"** (b161, migration-tools r61): writes each file's marker
+  `codified-2`, imports the CLI pack when a line uses its words, and gives each verb its aspect where its lines
+  decide it. It prints, by file and id, what a session rewords: each line grammar 4 refuses with the reason ("the"
+  with no antecedent and a negated indefinite in a While clause among them), each condition (adjective) and the
+  lines using it (grammar 4 reads no adjective: say the state with a structure), each line holding example data,
+  each "exit with an error naming" ("refuse the command and name" says it shorter), each verb whose aspect its lines
+  do not decide (v_t14), each relation row of no cardinality on of, for, with, on or in (the old check read it as
+  one: write `one` where one is meant) and each term the CLI pack defines too (v_t16). It rewords no line. After it,
+  reword each line it names under a new id with its old id in `retired:`; then run `model check`, `model logic` and
+  `features generate`.
+- **Known limits** (`grammar/language.md`, "What the language cannot say yet"; a corpus line traces `Known limit:
+  #<n>`): #3 one above the highest; #6 a value compared with another thing's value; #8 a change of an attribute's
+  value; #10 for each X its Y, each of the Ks, one thing counted for each of another's; #11 the outcome of the
+  response's own act; #12 an option set to a value of an attribute; #13 what a command would write; #14 ordered
+  choice and up to a number in rank order; #15 an adjunct of a verb's frame; #16 liveness, an answer within a time,
+  history and moments in `model logic` and `features generate`; #17 a default value; #18 the ratio of two figures.
+
 ## 3.0.1: `features generate` writes the scenario of a negated response with a recipient
 
 - **A negated response with a recipient gets its scenario** (b103, feature-file-tools r20): "`feed` shall not return

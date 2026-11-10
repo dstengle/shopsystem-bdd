@@ -14,7 +14,8 @@ import tools_size
 
 CONTRACT = """\
 contract:
-  - The tools are looked for in the project's own interpreter: --python, or
+  - The tools are looked for in the project's own interpreter: --python
+    (before the command or after it), or
     .venv/bin/python, venv/bin/python or $VIRTUAL_ENV under the current
     directory, or failing those the interpreter running this script, which is
     said. Only Python projects are known: any other gets one line saying so
@@ -100,33 +101,35 @@ def main():
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--python")
     sub = parser.add_subparsers(dest="command", required=True)
-    probe = sub.add_parser("probe")
+    given = argparse.ArgumentParser(add_help=False)   # --python after the command too: `tools probe --python <p>`
+    given.add_argument("--python", default=argparse.SUPPRESS)
+    probe = sub.add_parser("probe", parents=[given])
     probe.add_argument("--log", action="store_true")
     probe.add_argument("--json", action="store_true")
     probe.set_defaults(run=tools_env.cmd_probe)
-    sub.add_parser("install").set_defaults(run=tools_env.cmd_install)
-    made = sub.add_parser("map")
+    sub.add_parser("install", parents=[given]).set_defaults(run=tools_env.cmd_install)
+    made = sub.add_parser("map", parents=[given])
     made.add_argument("pytest", nargs="*")
     made.add_argument("--json", action="store_true")
     made.set_defaults(run=tools_map.cmd_map)
-    tests_of = sub.add_parser("tests-of")
+    tests_of = sub.add_parser("tests-of", parents=[given])
     tests_of.add_argument("target")
     tests_of.add_argument("--by-file", action="store_true")
     tests_of.add_argument("--json", action="store_true")
     tests_of.set_defaults(run=tools_map.cmd_tests_of, under=True)
-    untested = sub.add_parser("untested")
+    untested = sub.add_parser("untested", parents=[given])
     untested.add_argument("files", nargs="+")
     untested.add_argument("--json", action="store_true")
     untested.set_defaults(run=tools_map.cmd_untested, under=True)
-    refs = sub.add_parser("refs")
+    refs = sub.add_parser("refs", parents=[given])
     refs.add_argument("name")
     refs.add_argument("--json", action="store_true")
     refs.set_defaults(run=tools_refs.cmd_refs, under=True)
-    check = sub.add_parser("check")
+    check = sub.add_parser("check", parents=[given])
     check.add_argument("paths", nargs="*")
     check.add_argument("--base")
     check.set_defaults(run=tools_check.cmd_check)
-    size = sub.add_parser("size")
+    size = sub.add_parser("size", parents=[given])
     size.add_argument("--limit", type=int, default=tools_size.DEFAULT_LIMIT)
     size.set_defaults(run=tools_size.cmd_size)
     args = parser.parse_args()

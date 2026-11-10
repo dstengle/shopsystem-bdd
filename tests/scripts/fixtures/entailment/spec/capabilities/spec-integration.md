@@ -4,7 +4,7 @@ title: Spec integration
 narrator: the person at the gate
 group: guarantees
 rests_on: [design-decision/one-spec-per-context, design-decision/gate-on-behaviour-lines, design-decision/spec-writers-blind-to-code, design-decision/controller-per-spec-round, design-decision/light-decisions, design-decision/references-are-ids, design-decision/workflow-capabilities-are-guarantees, design-decision/the-ledger-is-tracked, design-decision/the-context-runs-without-a-coordinator, design-decision/the-glossary-is-a-target-of-spec-work]
-language: codified-1
+language: codified-2
 retired: [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16]
 ---
 
@@ -21,26 +21,9 @@ on the capability-proposal; no session writes spec itself (design-decision/the-c
 It is not formulation and not planning; it writes nothing a client can run.
 
 ## Terms
-
-- **`integrating-a-proposal`** (proper noun): the skill that integrates an approved design note into the spec.
 - **design note** (noun): an approved brainstorming note or design spec, the source of a capability-proposal.
-- **second spec** (noun): a `spec/` begun in a context that has one.
-- **fresh id** (noun): an id one above every id the capability, or `spec/decisions/`, has used or retired, and above every id other initiatives' drafts add on it.
-- **decision source** (noun): the `source` of a design-decision: records, initiatives and decisions by id, with the person, a date, a delegation or anything outside the repository in its `by`.
-- **recommended reading** (noun): the reading a gate question marks as recommended, with the statements it concerns in full.
-- **retire** (verb): an id is added to its capability's `retired:` list. Forms: retires, retired. Frame: round retires requirement.
-- **apply** (verb): a round writes approved drafts into `spec/`. Forms: applies, applied. Frame: round applies file.
-
-## Relations
-
-| from | word | to | cardinality |
-|---|---|---|---|
-| requirement | quotes | design note |  |
-| requirement | added by | capability-proposal |  |
-| question | on | term |  |
-| term | added by | glossary-proposal |  |
-| term | changed by | glossary-proposal |  |
-| term | removed by | glossary-proposal |  |
+- **retire** (verb, action): an id is added to its capability's `retired:` list. Forms: retires, retired. Frame: round retires requirement.
+- **apply** (verb, action): a round writes approved drafts into `spec/`. Forms: applies, applied. Frame: round applies file.
 
 ## Behaviour
 

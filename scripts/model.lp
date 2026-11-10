@@ -9,7 +9,8 @@
 % does not: `model rules --write` solves each pair and writes them into the rule catalogue grammar/rules.md.
 % The requirement language (GF parse, `model logic`) is outside this file: it joins the graph by the facts parsed/unparsed/
 % ambiguous, member_of, in(G, C), generates and restates (C29). Rules over facts the codified reader emits are
-% `#defined` and silent until it emits them. A file without `language: codified-1` or `codified-2` is not read: it is v_p0.
+% `#defined` and silent until it emits them. A file without `language: codified-1` or `codified-2` is not read: it is v_p0,
+% and so is a capability file in `codified-1`, the old language (b160).
 
 % ---------------------------------------------------------------- inputs
 #defined node/2.      #defined narrator/2.   #defined group/2.     #defined external/1.
@@ -384,7 +385,7 @@ v_t17(C, P)   :- misimported(C, P).
 
 % ---------------------------------------------------------------- the parse (C2, C25)
 % Every file of the spec is codified (§13.4): the 0.29 reader is gone, so `migrate upgrade` converts one that is not.
-label("v_p0", "a spec file is not codified (no `language: codified-1` or `codified-2`): run `migrate upgrade`").
+label("v_p0", "a spec file is not codified (no `language: codified-2`, or a capability in `codified-1`): run `migrate upgrade`").
 % fail v_p0: uncodified("spec/index.md").
 % pass v_p0: codified("c").
 v_p0(F)      :- uncodified(F).

@@ -85,8 +85,8 @@ def test_r1_the_published_pull_request_is_reviewed():
     assert -1 not in found and found == sorted(found), found
 
 
-@pytest.mark.requirement("pr-review#r2")
-def test_r2_no_review_after_a_task():
+@pytest.mark.requirement("pr-review#r10")
+def test_r10_no_review_after_a_task():
     for one in process(SKILL):
         if "work batch done" in one:
             assert "pr-reviewer" not in one and "work batch brief" not in one, one

@@ -95,9 +95,9 @@ When a session ends a stage that a session ends, `work` shall print the stage.
 When a session ends a stage whose status is not `done`, `work` shall print every session whose worktree holds a file.
 While sessions whose worktree holds a file follow a stage whose status is `open`, when the person runs `work start`, `work` shall exit successfully.
 When the person runs `work start`, `work` shall print every session whose worktree does not hold a file.
-# an attribute of another kind gives no whose
+# an attribute of another kind gives no whose (a worktree has a layout, so "whose" parses and "status" does not)
 When the person runs `work start`, `work` shall print every worktree whose status is `open`.
-= refused: does not parse at whose
+= refused: does not parse at status
 # one meaning or refused (b136, call 2): a list that belongs to either of two verbs reads two ways
 When the person runs `work start`, `work` shall print every session that follows a stage and the stage.
 = refused: more than one meaning: "every session that follows a stage and the stage" reads 2 ways
@@ -130,3 +130,52 @@ When a session ends a stage, `work` shall set the status of the stage to `done` 
 When a session ends a stage, the session shall set the status of the stage to `done`.
 When a session ends a stage, `work` shall set the stage to `done`.
 = refused: does not parse at to
+# value sets and a value's absence (b240, construct #4): one of a list of two or more, none of it, "has no T"
+While a line is one of `proposed`, `accepted` or `refused`, when the person runs `work start`, `work` shall print the line.
+While the priority of a stage is one of `low` or `high`, when the person runs `work start`, `work` shall end the stage.
+While a line is not `accepted`, `refused` or `withdrawn`, when the person runs `work start`, `work` shall print the line.
+While the priority of a stage is not `low` or `high`, when the person runs `work start`, `work` shall end the stage.
+While a stage has no priority, when the person runs `work start`, `work` shall print the stage.
+While a line is one of `accepted` or `done`, when the person runs `work start`, `work` shall print the line.
+= refused: does not parse at `done`
+While a line is one of `accepted`, when the person runs `work start`, `work` shall print the line.
+= refused: does not parse at when
+# the number of Ks (b240, construct #3): printed, a thing; compared with a number word or a code
+When a session ends a stage, `work` shall print the number of lines of the stage.
+When a session ends a stage, `work` shall print the number of sessions that follow the stage.
+When a session ends a stage, `work` shall print the number of lines of the stage whose outcome is `accepted`.
+While the number of lines of a stage is at least two, when the person runs `work start`, `work` shall end the stage.
+While a stage is `open` and the number of lines of the stage is more than `batch_size`, when the person runs `work start`, `work` shall end the stage.
+While a stage is `open` and the number of lines of the stage is `0`, when the person runs `work start`, `work` shall end the stage.
+While the number of lines of a stage is more than eleven, when the person runs `work start`, `work` shall end the stage.
+= refused: does not parse at eleven
+When a session ends a stage, `work` shall print the number of line of the stage.
+= refused: does not parse at line
+# identity and distinctness (b240, construct #2): "another K", "a different K", "two Ks", "the same K"
+When a session gives a file to another session, `work` shall print the file.
+When a session gives a file to a different session, `work` shall print the file.
+While two sessions follow the same stage, when the person runs `work start`, `work` shall end the stage.
+While a session follows a stage and another session follows the same stage, when the person runs `work start`, `work` shall print the stage.
+When a session ends a stage, `work` shall write two files.
+While two sessions follows a stage, when the person runs `work start`, `work` shall exit successfully.
+= refused: the verb follow does not agree in number with its subject
+While two session follow a stage, when the person runs `work start`, `work` shall exit successfully.
+= refused: does not parse at session
+# existence (b240, construct #7): "x exists", "does not exist", "no K exists", "a K that exists"
+While the `a` file exists and the `b` file does not exist, when the person runs `work start`, `work` shall print the `a` file.
+While no file exists, when the person runs `work start`, `work` shall exit successfully.
+When the person runs `work start`, `work` shall print every file that exists.
+While files exist, when the person runs `work start`, `work` shall exit successfully.
+While a file exist, when the person runs `work start`, `work` shall exit successfully.
+= refused: does not parse at exist
+When a session exists, `work` shall print the session.
+= refused: the verb exist is a state, and a trigger takes an action
+# options (b240, construct #12): one, two, with on, set to an argument, not given
+When the person runs `work start` with the `--json` option, `work` shall exit successfully.
+If the person runs `work start` with the `--source` and `--thread` options, then `work` shall exit with an error naming `--source`.
+When the person runs `work start` with the `--json` option on a stage, `work` shall print the stage.
+When the person runs `work start` with the `--every` option set to `5`, `work` shall exit successfully.
+If the person runs `work start` without the `--summary` option, then `work` shall exit with an error naming `--summary`.
+If a session runs `work start` without the `--reason` option on a line, then `work` shall exit with an error naming `--reason`.
+When the person runs `work start` with the `--source` and `--thread` option, `work` shall exit successfully.
+= refused: does not parse at option

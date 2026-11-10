@@ -29,3 +29,17 @@ def test_trees_of_two_meanings_are_refused_naming_the_subtree_that_reads_two_way
     assert kept is None and two[1] == 2
     assert two[0] in ("k_thing_One (Rel (e_follow (k_stage_And (Two s t))))",
                       "k_thing_And (Two (Rel (e_follow (k_stage_One s))) t)")
+
+
+def test_a_tree_with_no_translation_is_no_meaning_and_none_raises(monkeypatch):
+    import pytest
+    import spec_lf
+
+    def form(_vocab, tree):
+        if tree == UNDER_PRINT:
+            raise ValueError("no translation of it")
+        return tree
+    monkeypatch.setattr(spec_lf, "form", form)
+    assert spec_meaning.one([UNDER_FOLLOW, UNDER_PRINT], vocab=object()) == (UNDER_FOLLOW, None)
+    with pytest.raises(ValueError, match="no translation of it"):
+        spec_meaning.one([UNDER_PRINT], vocab=object())

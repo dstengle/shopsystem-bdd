@@ -13,10 +13,12 @@ polarity.
 """
 import re
 
+import spec_gf
 import spec_lf_core as core
+import spec_lf_distinct
+import spec_lf_option
 import spec_lf_read
 import spec_rgl
-import spec_typed
 from spec_lf_core import NP, Atom, Box, NPList
 
 
@@ -25,6 +27,7 @@ class Names:
 
     def __init__(self, vocab):
         self.kinds = sorted(((spec_rgl.kid(k), k) for k in vocab.kinds), key=lambda p: -len(p[0]))
+        self._kind = {}     # name -> kind(name): the scan over every kind is the most of a translation's time
         self.actors = {"a_%s_%d" % (spec_rgl.slug(t), n + 1): (t, k) for n, (t, k) in enumerate(vocab.actors)}
         self.attrs = sorted((("t_%s_%d" % (spec_rgl.slug(t.term), n), t) for n, (t, _) in
                              enumerate(vocab.attributes, 1)), key=lambda p: -len(p[0]))
@@ -33,7 +36,11 @@ class Names:
 
     def kind(self, name):
         """(the kind whose id `name` starts with, the rest of the name after it), or (None, name)."""
-        return next(((k, name[len(K) + 1:]) for K, k in self.kinds if name.startswith(K + "_")), (None, name))
+        hit = self._kind.get(name)
+        if hit is None:
+            hit = self._kind[name] = next(((k, name[len(K) + 1:]) for K, k in self.kinds if name.startswith(K + "_")),
+                                          (None, name))
+        return hit
 
     def attr(self, name):
         return next(((t, name[len(T) + 1:]) for T, t in self.attrs if name.startswith(T + "_")), (None, name))
@@ -61,7 +68,7 @@ def unknown(tree):
 
 def code(st, kind, lit):
     """A code's referent: `CodeLit "..."`."""
-    text = args(lit)[0].strip('"').replace(spec_typed.PLACEHOLDER, " ")
+    text = args(lit)[0].strip('"').replace(spec_gf.PLACEHOLDER, " ")
     word = text.strip("`")
     return core.fixed(st.constant(kind, text, "constant" if word in st.vocab.words else "parameter"))
 
@@ -84,6 +91,8 @@ def np(st, tree):
             return found
         if rest in ("And", "Or"):
             return NPList(rest.lower(), members(st, a[0]))
+        if rest in ("NamedAnd", "SetTo"):     # options (b240)
+            return spec_lf_option.np(st, kind, rest, a)
         if rest in ("Code", "Named"):
             return code(st, kind, a[0])
         if rest == "This":
@@ -95,6 +104,9 @@ def np(st, tree):
     t, rest = st.names.attr(name)
     if t is not None:
         return value_np(st, t, owner(st, tree))
+    if name == "Count_Up":      # "the number of Ks that P" (b240)
+        import spec_lf_number  # here: spec_lf_number imports this module
+        return spec_lf_number.np(st, a[0])
     raise unknown(tree)
 
 
@@ -136,8 +148,10 @@ def det(st, tree, cn):
         refs, conds = restrict(st, cn, ref)
         return NP(ref, "count", conds, refs, count=count(tree))
     row, suffix = st.names.row(fun(cn))
-    if d == "DetThe" and suffix == "Mod" and row[1] == "of":
+    if d in ("DetThe", "DetSame") and suffix == "Mod" and row[1] == "of":
         return of(st, row, np(st, args(cn)[1]))
+    if d in spec_lf_distinct.DETS:      # "another K", "two Ks", "the same K" (b240)
+        return spec_lf_distinct.det(st, d, cn, kind, restrict)
     if d in ("DetThe", "DetThePl"):
         found = spec_lf_read.the(st, kind, d == "DetThePl")     # R2, R11
         if found is not None:
@@ -162,7 +176,7 @@ def of(st, row, x):
     ref, new = st.image((row, x.ref), row[0])
     if not new:
         return NP(ref, "fixed", deps=[x], new=False)
-    return NP(ref, "a", [Atom("rel", ("of", ref, x.ref))], deps=[x])
+    return NP(ref, "a", [Atom("rel", ("of", ref, x.ref))], deps=[x], image=True)
 
 
 def its(st, kind):
@@ -172,7 +186,7 @@ def its(st, kind):
     spec_lf_read.its(st, [r[2] for r in rows], "its " + spec_lf_read.noun(st, kind))     # R8
     row = next((r for r in rows if subject and r[2] in st.vocab.ancestors(subject.kind)), rows[0])
     ref, new = st.image((row, subject), kind)
-    return NP(ref, "a", [Atom("rel", ("of", ref, subject))]) if new else core.fixed(ref)
+    return NP(ref, "a", [Atom("rel", ("of", ref, subject))], image=True) if new else core.fixed(ref)
 
 
 def owner(st, tnp):
@@ -197,7 +211,7 @@ def value_np(st, t, x):
     ref, new = st.image((t.term, x.ref), t.term)
     if not new:
         return NP(ref, "fixed", deps=[x], new=False)
-    return NP(ref, "a", [Atom("attr", (x.ref, t.term, ref))], deps=[x])
+    return NP(ref, "a", [Atom("attr", (x.ref, t.term, ref))], deps=[x], image=True)
 
 
 def restrict(st, cn, ref):

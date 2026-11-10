@@ -1,9 +1,0 @@
-# decision-tiers: sentences that parse with exactly one tree in the fixture glossary's grammar.
-When the person runs `model check` on a design-decision that is `proposed`, `model` shall print `w_untiered`.
-If the person runs `model check` on a design-decision that is not `accepted`, then `model` shall exit with an error naming `v_d6`.
-While a design-decision is `accepted`, if the person runs `model check`, then `model` shall exit with an error naming `v_d7`.
-While a design-decision is `accepted`, when the person runs `model decisions --check`, `model` shall use the suite.
-While a design-decision is `superseded`, if the person runs `model decisions --check`, then `model` shall exit with an error naming the design-decision.
-When the person runs `model decisions`, `model` shall write a file and exit successfully.
-Where `--json` is given, when the person runs `model check`, `model` shall print a JSON object.
-If the person runs `model check` on a design-decision that is `rejected`, then `model` shall exit with an error naming the design-decision and change nothing.

@@ -6,7 +6,7 @@ status: accepted
 tier: check
 enforced_by: [tests/scripts/test_refusal_path.py::test_every_refusal_class_reaches_the_one_base, tests/scripts/test_refusal_path.py::test_a_refused_command_exits_1_naming_the_reason_and_changes_nothing]
 verified_by: [check]
-rests_on: [U11]
+rests_on: [U12]
 by: "the plan for b145, 2026-11-10"
 ---
 

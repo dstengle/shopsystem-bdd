@@ -70,7 +70,7 @@ def test_generate_is_byte_stable_and_writes_no_scenario_of_a_permission(world):
 def test_the_steps_of_each_form(world):
     generate(world)
     found = {k: steps(v) for k, v in scenarios(world).items()}
-    assert found["g1 @r1"] == [("when", "the person runs `work backlog` with `--json`"),
+    assert found["g1 @r1"] == [("when", "the person runs `work backlog` with the `--json` option"),
                                ("then", "`work` exits successfully")]
     assert found["g2 @r2"] == [("given", "a session s1"), ("given", "a stage s2"),
                                ("given", "the session s1 follows the stage s2"),
@@ -144,3 +144,39 @@ def test_the_steps_of_every_construct_read_back_into_their_trees(tmp_path):
     assert read["no stage is `done`"][:2] == ("GivenK_A", "stage")
     assert read["`work` prints the status of the stage s2"][:2] == ("ThenPrints", "`work`")
     assert "the session s2 follows the stage s1" in read     # or's second case
+
+
+TWINS = ["While a stage covers a line, when the person runs `work start`, `work` shall end the stage.",
+         ("While a line is `proposed` and no stage covers the line, if the person runs `work start`, then `work` shall "
+          "exit with an error naming the line."),
+         "When the person runs `work start` on a stage, `work` shall not print a line of the stage.",
+         "When the person runs `work start`, `work` shall end no stage that a session follows.",
+         ("While a stage has no line whose outcome is not `accepted`, when the person runs `work start`, `work` shall "
+          "end the stage."),
+         "While no line of a stage is `accepted`, when the person runs `work start`, `work` shall exit successfully.",
+         "When the person runs `work start` on a stage, `work` shall print every line of the stage that no file covers."]
+
+
+def test_what_parses_is_stepped(tmp_path):
+    """b240 phase 12: a verb's second frame of the same role labels (b236), "shall not V a K that P" over a K named
+    nowhere before (b237), a "no" box of more than one item (b238) and "every K that no K2 Vs" each have steps, and
+    each step reads back into the tree it was written from."""
+    toolchain.require()
+    C.context(tmp_path, "ex.com/prod/ctx", TWINS, "c1")
+    done = generate(tmp_path)
+    assert done.returncode == 0 and done.stderr == "", done.stderr
+    found, read = {k: steps(v) for k, v in scenarios(tmp_path).items()}, {}
+    for scenario in found.values():
+        for keyword, text in scenario:
+            call = features_vocab4.step(tmp_path, keyword, text)
+            assert spec_rgl_steps.text(spec_rgl_steps.load(tmp_path)[1], call.tree) == text
+            read[text] = call.template
+    assert ("given", "the stage s1 covers the line l1") in found["g1 @r1"]
+    assert ("given", "no stage covers the line l1") in found["g2 @r2"]
+    assert found["g3 @r3"][-1] == ("then", "`work` does not print the line l1")
+    assert found["g4 @r4"][-1] == ("then", "`work` does not end the stage s1")
+    assert ("given", "the stage s1 has no line") in found["g5 @r5"]
+    assert ("given", "no line is `accepted`") in found["g6 @r6"]
+    assert ("given", "no file covers the line l2") in found["g7 @r7"]
+    assert (read["`work` does not print the line l1"], read["`work` does not end the stage s1"]) == ("ThenPrintsNot",
+                                                                                          "ThenDoesNot")

@@ -4,7 +4,7 @@ summary: "A capability's retired requirement ids are listed in its frontmatter a
 date: 2026-10-15
 status: accepted
 tier: requirement
-enforced_by: [design-model-check#r4]
+enforced_by: [design-model-check#r177]
 by: "docs/design-model/design-model.md v3 section 2 ('retired ids kept in the capability's ledger')"
 ---
 

@@ -31,7 +31,7 @@ a request's resolution names something that is not a requirement of the spec
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r20
+- Cited by: design-model-check#r184
 - Fails on:
 
   ```prolog
@@ -332,7 +332,7 @@ a requirement has no id
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r2
+- Cited by: design-model-check#r175
 - Fails on:
 
   ```prolog
@@ -352,7 +352,7 @@ two requirements share an id
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r3
+- Cited by: design-model-check#r176
 - Fails on:
 
   ```prolog
@@ -373,7 +373,7 @@ a retired id is used again
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r4
+- Cited by: design-model-check#r177
 - Fails on:
 
   ```prolog
@@ -522,7 +522,7 @@ a group has more than one statement
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r5
+- Cited by: design-model-check#r178
 - Fails on:
 
   ```prolog
@@ -544,7 +544,7 @@ a given line is not example data
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r7
+- Cited by: design-model-check#r180
 - Fails on:
 
   ```prolog
@@ -563,7 +563,7 @@ two groups of a capability share features, condition and trigger
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r6
+- Cited by: design-model-check#r179
 - Fails on:
 
   ```prolog
@@ -612,7 +612,7 @@ a scenario is generated from more than one group
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r11
+- Cited by: design-model-check#r182
 - Fails on:
 
   ```prolog
@@ -632,7 +632,7 @@ a group has no scenario
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r10
+- Cited by: design-model-check#r181
 - Fails on:
 
   ```prolog
@@ -726,7 +726,7 @@ a check decision names no test
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: no line
+- Cited by: decision-tiers#r14
 - Fails on:
 
   ```prolog
@@ -746,7 +746,7 @@ a requirement decision names no requirement
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: no line
+- Cited by: decision-tiers#r15
 - Fails on:
 
   ```prolog
@@ -766,7 +766,7 @@ an accepted decision supersedes one still accepted
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: no line
+- Cited by: decision-tiers#r18
 - Fails on:
 
   ```prolog
@@ -808,7 +808,7 @@ a request that is part of no job-thread, cites no origin and is raised for no re
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r19
+- Cited by: design-model-check#r183
 - Fails on:
 
   ```prolog
@@ -849,7 +849,7 @@ a word the glossary avoids
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r22
+- Cited by: design-model-check#r185
 - Fails on:
 
   ```prolog
@@ -876,7 +876,7 @@ a term has two entries, other than the senses of one verb
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r23
+- Cited by: design-model-check#r186
 - Fails on:
 
   ```prolog
@@ -899,7 +899,7 @@ an avoided word is a term
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r24
+- Cited by: design-model-check#r187
 - Fails on:
 
   ```prolog
@@ -991,7 +991,7 @@ a verb's entry gives no frame: the kinds of its subject and object, or that it t
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/migrate_upgrade_frames.py`, `scripts/spec_frames.py`
-- Cited by: migration-tools#r25
+- Cited by: migration-tools#r56
 - Fails on:
 
   ```prolog
@@ -1010,7 +1010,7 @@ a condition names another kind with `the`: a relation between two kinds is a ver
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/migrate_upgrade_frames.py`, `scripts/spec_frames.py`
-- Cited by: no line
+- Cited by: design-model-check#r208
 - Fails on:
 
   ```prolog
@@ -1029,7 +1029,7 @@ a verb's Frame: does not read as its subject, the verb and the kinds it takes
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/migrate_upgrade_frames.py`, `scripts/spec_frames.py`
-- Cited by: no line
+- Cited by: design-model-check#r217
 - Fails on:
 
   ```prolog
@@ -1048,7 +1048,7 @@ a verb's entry says neither state nor action
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`
-- Cited by: no line
+- Cited by: design-model-check#r221
 - Fails on:
 
   ```prolog
@@ -1067,7 +1067,7 @@ two entries of one verb take, in every slot, the same kind or one kind under the
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`
-- Cited by: no line
+- Cited by: design-model-check#r224
 - Fails on:
 
   ```prolog
@@ -1087,7 +1087,7 @@ a term an imported pack defines too has no `Redefines:` naming the pack
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/spec_packs.py`
-- Cited by: no line
+- Cited by: design-model-check#r227
 - Fails on:
 
   ```prolog
@@ -1106,7 +1106,7 @@ a term an imported pack defines too has no `Redefines:` naming the pack
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/spec_packs.py`
-- Cited by: no line
+- Cited by: design-model-check#r226
 - Fails on:
 
   ```prolog
@@ -1121,7 +1121,7 @@ a term an imported pack defines too has no `Redefines:` naming the pack
 
 ## v_p0
 
-a spec file is not codified (no `language: codified-1` or `codified-2`): run `migrate upgrade`
+a spec file is not codified (no `language: codified-2`, or a capability in `codified-1`): run `migrate upgrade`
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
@@ -1144,7 +1144,7 @@ a requirement does not parse
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r25
+- Cited by: design-model-check#r188
 - Fails on:
 
   ```prolog
@@ -1201,7 +1201,7 @@ a capability serves no job
 
 - Severity: warning
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r44
+- Cited by: design-model-check#r198
 - Fails on:
 
   ```prolog
@@ -1265,7 +1265,7 @@ an observation no initiative cites
 
 - Severity: warning
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r43
+- Cited by: design-model-check#r197
 - Fails on:
 
   ```prolog
@@ -1326,7 +1326,7 @@ a decision in force gives no tier
 
 - Severity: warning
 - Implemented in: `scripts/model.lp`
-- Cited by: decision-tiers#r1
+- Cited by: decision-tiers#r13
 - Fails on:
 
   ```prolog
@@ -1367,7 +1367,7 @@ a requirement holds example data: a code or quoted string that names no declared
 
 - Severity: warning
 - Implemented in: `scripts/model.lp`
-- Cited by: no line
+- Cited by: design-model-check#r246
 - Fails on:
 
   ```prolog

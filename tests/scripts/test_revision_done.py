@@ -10,6 +10,7 @@ from pathlib import Path
 
 import pytest
 import spec_lexicon
+import spec_rgl_vocab
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "scripts"
@@ -43,8 +44,9 @@ def test_no_two_statements_share_a_trigger_and_a_condition(check):
 
 
 def test_the_live_lexicon_has_no_problem_and_the_spec_no_means():
-    """Point 3: v_t4-v_t10 have no rows, and no capability or index says `Means:`."""
-    assert spec_lexicon.problems(spec_lexicon.read(ROOT)) == []
+    """Point 3: v_t4-v_t10 have no rows (the lexicon read with the kinds of its packs, as `model check` reads it), and
+    no capability or index says `Means:`."""
+    assert spec_lexicon.problems(spec_lexicon.read(ROOT), spec_rgl_vocab.outer(ROOT)) == []
     assert [p for p in (ROOT / "spec").rglob("*.md") if "Means:" in p.read_text()] == []
 
 
@@ -95,18 +97,6 @@ def test_every_script_module_has_a_map_row():
     missing = [p.name for p in sorted(SCRIPTS.glob("*.py"))
                if p.name not in text and "%s*" % p.name.split("_")[0] not in text]
     assert missing == []
-
-
-def test_the_lines_of_q47_parse(tmp_path):
-    """Point 6: a request raised with `work request` is read by the new grammar: its lines are work-queue's, a
-    codified-1 capability, so they are parsed in its grammar now that the index says codified-2 (b151)."""
-    text = (ROOT / ".shop" / "work" / "requests" / "q47.md").read_text()
-    body = text.split("## Lines", 1)[1].split("## Questions", 1)[0]
-    lines = [re.sub(r"^\d+\. ", "", l) for l in body.splitlines() if re.match(r"^\d+\. ", l)]
-    assert len(lines) == 6
-    (tmp_path / "q47.txt").write_text("\n".join(lines) + "\n")
-    done = run(SCRIPTS / "model", "parse", "--capability", "work-queue", "--file", tmp_path / "q47.txt")
-    assert done.returncode == 0, done.stdout + done.stderr
 
 
 @pytest.mark.live_logic

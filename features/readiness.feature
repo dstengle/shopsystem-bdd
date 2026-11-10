@@ -2,141 +2,153 @@
 Feature: Readiness
   Narrator: a person or session readying an item
 
-  @g1 @r1
-  Scenario: `work ready` readies a passing item
-    Given an item i1 that is `shaped`
-    And the item i1 is passing
+  @g4 @r4
+  Scenario: `work ready` asks no question
     When the person runs `work ready` on the item i1
-    Then the item i1 is `ready`
+    Then `work` does not ask a question
 
-  @g2 @r2
-  Scenario: `work ready` refuses an item that is not passing
-    Given an item i1 that is `shaped`
-    And the item i1 is not passing
+  @g23 @r23
+  Scenario: `work ready` readies a shaped item that passes the readiness bar
+    Given an item i1
+    And the item i1 is `shaped`
+    And the item i1 passes this readiness bar
     When the person runs `work ready` on the item i1
-    Then `work` exits with an error naming the reason r1
-    And `work` changes nothing
+    Then `work` sets the status of the item i1 to `ready`
 
-  @g3 @r3
+  @g24 @r24
+  Scenario: `work ready` refuses an item that does not pass the readiness bar, naming each bar check it does not meet
+    Given an item i1
+    And the item i1 is `shaped`
+    And the item i1 does not pass this readiness bar
+    And a bar check b1
+    And this readiness bar has the bar check b1
+    And the item i1 does not meet the bar check b1
+    And a bar check b2
+    And this readiness bar has the bar check b2
+    And the item i1 does not meet the bar check b2
+    When the person runs `work ready` on the item i1
+    Then `work` refuses `work ready`
+    And `work` names the bar check b1
+    And `work` names the bar check b2
+
+  @g25 @r25
   Scenario: `work ready` refuses an item that is not shaped
     Given an item i1
     And the item i1 is not `shaped`
     When the person runs `work ready` on the item i1
-    Then `work` exits with an error naming the status of the item i1
-    And `work` changes nothing
+    Then `work` refuses `work ready`
+    And `work` names the status of the item i1
 
-  @g4 @r4
-  Scenario: `work ready` asks no question
+  @g26 @r26
+  Scenario: `work line --relation` writes a relation row in an item
+    Given a relation row r1
+    When the person runs `work line` with the `--relation` option set to the relation row r1 on the item i1
+    Then the item i1 holds the relation row r1
+    And `work` writes the relation row r1
+    And `work` commits the item i1
+
+  @g27 @r27
+  Scenario: `work line --relation` refuses a relation row that does not conform to the relation-row form
+    Given a relation row r1
+    And the relation row r1 does not conform to the relation-row form
+    When the person runs `work line` with the `--relation` option set to the relation row r1
+    Then `work` refuses `work line`
+    And `work` names the relation row r1
+
+  @g28 @r28
+  Scenario: `work line --universal` writes a universal condition in an item
+    Given a universal condition u1
+    When the person runs `work line` with the `--universal` option set to the universal condition u1 on the item i1
+    Then the item i1 holds the universal condition u1
+    And `work` writes the universal condition u1
+    And `work` commits the item i1
+
+  @g29 @r29
+  Scenario: `work line --upstream` writes an upstream entry in an item
+    Given an upstream entry u1
+    When the person runs `work line` with the `--upstream` option set to the upstream entry u1 on the item i1
+    Then the item i1 holds the upstream entry u1
+    And `work` writes the upstream entry u1
+    And `work` commits the item i1
+
+  @g30 @r30
+  Scenario: `work line --upstream` refuses an upstream entry that does not conform to the upstream-entry form
+    Given an upstream entry u1
+    And the upstream entry u1 does not conform to the upstream-entry form
+    When the person runs `work line` with the `--upstream` option set to the upstream entry u1
+    Then `work` refuses `work line`
+    And `work` names the upstream entry u1
+
+  @g31 @r31
+  Scenario: `work line --given` writes a given block in an item
+    Given a given block g1
+    When the person runs `work line` with the `--given` option set to the given block g1 on the item i1
+    Then the item i1 holds the given block g1
+    And `work` writes the given block g1
+    And `work` commits the item i1
+
+  @g32 @r32
+  Scenario: `work line --given` refuses a given block that does not conform to the example-data form
+    Given a given block g1
+    And the given block g1 does not conform to the example-data form
+    When the person runs `work line` with the `--given` option set to the given block g1
+    Then `work` refuses `work line`
+    And `work` names the given block g1
+
+  @g34 @r34
+  Scenario: `work line --retires` writes a requirement in an item
+    When the person runs `work line` with the `--retires` option on the item i1
+    Then the item i1 holds the requirement r1
+    And `work` writes the requirement r1
+    And `work` commits the item i1
+
+  @g35 @r35
+  Scenario: `work line --retires` refuses a requirement id that no requirement has
+    Given a requirement id r1
+    And no requirement has the requirement id r1
+    When the person runs `work line` with the `--retires` option set to the requirement id r1
+    Then `work` refuses `work line`
+    And `work` names the requirement id r1
+
+  @g36 @r36
+  Scenario: `work ready` refuses an item a term of which violates a rule
+    Given an item i1
+    And the item i1 is `shaped`
+    And a term t1
+    And the item i1 holds the term t1
+    And a rule r1
+    And the term t1 violates the rule r1
     When the person runs `work ready` on the item i1
-    Then `work` does not ask the question q1
+    Then `work` refuses `work ready`
+    And `work` names the term t1
+    And `work` names the rule r1
 
-  @g5 @r5
-  Scenario: `work line --relation` writes a relation row onto an item
-    Given `--relation` is given
-    When the person runs `work line` on the item i1
-    Then `work` writes the relation row r1
+  @g37 @r37
+  Scenario: `work line --recodify` sets the language of a capability in an item
+    Given a capability c1
+    When the person runs `work line` with the `--recodify` option set to the capability c1 on the item i1
+    Then the item i1 holds the capability c1
+    And `work` sets the language of the capability c1 to `codified-2`
     And `work` commits the item i1
 
-  @g6 @r6
-  Scenario: `work line --relation` refuses a malformed relation row
-    Given `--relation` is given
-    And a relation row r1
-    And the relation row r1 is malformed
-    When the person runs `work line` on the relation row r1
-    Then `work` exits with an error naming the relation row r1
-    And `work` changes nothing
-
-  @g7 @r7
-  Scenario: `work line --universal` writes a universal condition onto an item
-    Given `--universal` is given
-    When the person runs `work line` on the item i1
-    Then `work` writes the universal condition u1
+  @g38 @r38
+  Scenario: `work line --recodify universal` sets the language of the universal conditions in an item
+    When the person runs `work line` with the `--recodify` option set to `universal` on the item i1
+    Then the item i1 holds `universal`
+    And `work` sets the language of `universal` to `codified-2`
     And `work` commits the item i1
 
-  @g8 @r8
-  Scenario: `work line --upstream` writes an upstream entry onto an item
-    Given `--upstream` is given
-    When the person runs `work line` on the item i1
-    Then `work` writes the upstream entry u1
+  @g39 @r39
+  Scenario: `work line --universal --retires` writes a universal condition in an item
+    When the person runs `work line` with the `--universal` and `--retires` options on the item i1
+    Then the item i1 holds the universal condition u1
+    And `work` writes the universal condition u1
     And `work` commits the item i1
 
-  @g9 @r9
-  Scenario: `work line --upstream` refuses a malformed upstream entry
-    Given `--upstream` is given
-    And an upstream entry u1
-    And the upstream entry u1 is malformed
-    When the person runs `work line` on the upstream entry u1
-    Then `work` exits with an error naming the upstream entry u1
-    And `work` changes nothing
-
-  @g10 @r10
-  Scenario: `work line --given` writes a given block onto an item
-    Given `--given` is given
-    When the person runs `work line` on the item i1
-    Then `work` writes the given block g1
-    And `work` commits the item i1
-
-  @g11 @r11
-  Scenario: `work line --given` refuses a malformed given block
-    Given `--given` is given
-    And a given block g1
-    And the given block g1 is malformed
-    When the person runs `work line` on the given block g1
-    Then `work` exits with an error naming the given block g1
-    And `work` changes nothing
-
-  @g12 @r12
-  Scenario: `work ready` refuses an item with an unworded step
-    Given an item i1 that is `shaped`
-    And the item i1 is unworded
-    When the person runs `work ready` on the item i1
-    Then `work` exits with an error naming the step s1
-
-  @g13 @r13
-  Scenario: A line that retires another
-    Given `--retires` is given
-    When the person runs `work line` on the item i1
-    Then `work` writes the requirement r1
-    And `work` commits the item i1
-
-  @g14 @r14
-  Scenario: A retired id that no capability holds
-    Given `--retires` is given
-    And a requirement r1
-    And the requirement r1 is nonexistent
-    When the person runs `work line` on the requirement r1
-    Then `work` exits with an error naming the requirement r1
-    And `work` changes nothing
-
-  @g15 @r15
-  Scenario: `work ready` refuses an item whose lines bring a lexicon problem
-    Given an item i1 that is `shaped`
-    And the item i1 is ill-termed
-    When the person runs `work ready` on the item i1
-    Then `work` exits with an error naming the term t1
-
-  @g16 @r16
-  Scenario: `work line --recodify` switches a capability's language on an item
-    When the person runs `work line --recodify` on the item i1
-    Then `work` writes the capability c1
-    And `work` commits the item i1
-
-  @g17 @r17
-  Scenario: `work line --recodify universal` switches the universal conditions' language on an item
-    When the person runs `work line --recodify universal` on the item i1
-    Then `work` writes the language marker l1
-    And `work` commits the item i1
-
-  @g18 @r18
-  Scenario: `work line --universal --retires` writes a universal condition that replaces another
-    When the person runs `work line --universal --retires` on the item i1
-    Then `work` writes the universal condition u1
-    And `work` commits the item i1
-
-  @g19 @r19
-  Scenario: A retired universal condition that `spec/universal.md` does not hold
-    Given an universal condition u1
-    And the universal condition u1 is nonexistent
-    When the person runs `work line --universal --retires` on the universal condition u1
-    Then `work` exits with an error naming the universal condition u1
-    And `work` changes nothing
+  @g40 @r40
+  Scenario: `work line --universal --retires` refuses a universal condition id that no universal condition has
+    Given a universal condition id u1
+    And no universal condition has the universal condition id u1
+    When the person runs `work line` with the `--universal` option and the `--retires` option set to the universal condition id u1
+    Then `work` refuses `work line`
+    And `work` names the universal condition id u1

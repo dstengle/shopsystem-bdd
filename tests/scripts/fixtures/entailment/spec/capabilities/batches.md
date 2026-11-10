@@ -3,9 +3,9 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/batches
 title: Batches
 narrator: a person or session building a batch
 group: service
-language: codified-1
+language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
-retired: []
+retired: [g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g10, r10, g12, r12, g13, r13, g16, r16, g17, r17, g18, r18, g19, r19]
 unbuilt: []
 ---
 
@@ -18,91 +18,84 @@ request. The plan and each task's status are on disk, so a session can stop and 
 question while building parks its item and the rest of the batch carries on. The person merges; the merge delivers.
 
 ## Terms
-- **uncited** (adjective of commit): A commit is uncited when the commit cites no item.
-
 - **batch brief** (noun): the brief `work batch start` writes for the one fresh agent that runs the batch: the batch, its tasks and worktrees, the skill it follows, the rules and the lessons, and where it stops. Kind of: file.
-
 - **review folder** (noun): the scratch directory `batch-<n>-review-<k>` under the batch's worktrees directory, which `work batch brief` writes a review's brief and change into and where the review's findings are saved, and which is never committed. Kind of: file.
+- **pass** (verb, state): the test that binds a scenario passes when it runs in a worktree. Forms: passes, passed. Frame: scenario passes in worktree.
+- **fail** (verb, state): the test that binds a scenario fails when it runs in a worktree. Forms: fails, failed. Frame: scenario fails in worktree.
+- **cite** (verb, state): a commit's message or a pull request's body names an item by its `Item: b<n>` line. Forms: cites, cited. Frame: commit cites item. Frame: pull request cites item.
 
 ## Relations
 | from | word | to | cardinality |
 |---|---|---|---|
-| commit | of | item | one |
-| pull request | with | commit | |
-| pull request | cites | item | |
-| commit | cites | item | |
 | review folder | of | batch | one |
-| scenario | of | item |  |
+| scenario | of | item | one |
+| batch plan | of | batch | one |
+| commit | in | pull request |  |
+| commit | of | git branch | one |
+| requirement | of | item |  |
+| requirement | in | git branch |  |
+| task | of | item | one |
+| worktree | of | task | one |
+| git branch | of | batch | one |
 
 ## Behaviour
 
-### [g1] `work batch start` picks ready items, up to `batch_size`
-- [r1] While an item is `ready` and the item is passing and the item is not blocked, when the person runs `work batch
-  start`, `work` shall write a batch that is `building`, write a batch plan and set the status of the item to
-  `in-batch`.
-
-### [g2] A ready item that is no longer passing is returned
-- [r2] While an item is `ready` and the item is not passing, when the person runs `work batch start`, `work` shall
-  set the status of the item to `shaped`.
-
-### [g3] A blocked item is not picked
-- [r3] While an item is `ready` and the item is blocked, when the person runs `work batch start`, `work` shall not set
-  the status of the item to `in-batch`.
-
-### [g4] `work batch status` prints where the batch stands
-- [r4] When the person runs `work batch status` on a batch, `work` shall print every item in the batch, every task of
-  the batch and the status of the task.
-
-### [g5] `work batch resume` carries on without a person
-- [r5] While a batch is `building`, when a session runs `work batch resume` on the batch, `work` shall use the batch
-  plan, and `work` shall not ask a question.
-
-### [g6] A park leaves the rest building
-- [r6] When a batch parks an item that is `in-batch`, `work` shall set the status of the item to `needs-input` and
-  write a question on the item, and `work` shall not set the status of the batch to `abandoned`.
-
-### [g7] A parked item's commits stay out of the pull request
-- [r7] While an item in a batch is `needs-input` and a commit is of the item, when the person runs `work batch review`
-  on the batch, `work` shall publish a pull request of the batch, and `work` shall not publish the commit.
-
-### [g8] `work batch review` publishes the pull request
-- [r8] While a batch is `building` and every task of the batch is `done`, when the person runs `work batch review` on
-  the batch, `work` shall publish a pull request of the batch and set the status of the batch to `in-review`.
-
 ### [g9] The merge delivers
-- [r9] While an item in a batch is `in-batch`, when the person merges the pull request of the batch, `work` shall set
-  the status of the item to `delivered` and set the status of the batch to `merged`.
-
-### [g10] `work batch abandon` returns the batch's items
-- [r10] When the person runs `work batch abandon` on a batch that is `building`, `work` shall set the status of the
-  batch to `abandoned` and set the status of every item in the batch that is `in-batch` to `ready`.
+- [r9] While an item in a batch is `in-batch`, when the person merges the pull request of the batch, `work` shall set the status of the item to `delivered` and set the status of the batch to `merged`.
 
 ### [g11] The pull request cites its items
-- [r11] While an item in a batch is `in-batch`, when the person runs `work batch review` on the batch, `work` shall
-  publish a pull request that cites the item.
-
-### [g12] `work batch review` refuses a batch with a task that is not done
-- [r12] While a task of a batch is not `done`, if the person runs `work batch review` on the batch, then `work` shall
-  exit with an error naming the task and change nothing.
-
-### [g13] `work batch review` refuses a commit that cites no item
-- [r13] While a commit of an item in a batch is uncited, if the person runs `work batch review` on the batch, then
-  `work` shall exit with an error naming the commit and change nothing.
+- [r11] While an item in a batch is `in-batch`, when the person runs `work batch review` on the batch, `work` shall publish a pull request that cites the item.
 
 ### [g14] `work batch start` writes the batch brief for a fresh agent
 - [r14] When the person runs `work batch start`, `work` shall write a batch brief and print the batch brief.
 
-### [g16] The merge removes the batch's review folders
-- [r16] When the person merges the pull request of a batch, `work` shall remove every review folder of the batch.
-
 ### [g15] `work batch abandon` removes the batch's review folders
 - [r15] When the person runs `work batch abandon` on a batch, `work` shall remove every review folder of the batch.
 
-### [g17] A park takes the parked item's lines out of the batch
-- [r17] While an item that is `in-batch` proposes a requirement, when a batch parks the item, `work` shall remove the requirement.
+### [g22] `work batch start` picks a ready item that passes the readiness bar and has no dependency on an item that is not delivered
+- [r22] While an item is `ready` and the item passes the readiness bar and the item has no dependency on an item whose status is not `delivered`, when the person runs `work batch start`, `work` shall pick the item, set the status of the item to `in-batch`, write a batch whose status is `building` and write a batch plan of the batch.
 
-### [g18] A parked item's failing scenario does not hold up another task
-- [r18] While an item in a batch is `needs-input` and a scenario of the item is not passing, when a session runs `work batch done` on a task of the batch that is `running`, `work` shall set the status of the task to `done`.
+### [g23] A ready item that no longer passes the readiness bar is returned
+- [r23] While an item is `ready` and the item does not pass the readiness bar, when the person runs `work batch start`, `work` shall set the status of the item to `shaped`.
+
+### [g24] A ready item with a dependency on an item that is neither ready nor delivered is not picked
+- [r24] While an item is not `ready` or `delivered` and a dependency on the item exists and another item whose status is `ready` has the dependency, when the person runs `work batch start`, `work` shall not pick the item.
+
+### [g25] `work batch resume` carries on without a person
+- [r25] While a batch is `building`, when a session runs `work batch resume` on the batch, `work` shall use the batch plan of the batch and ask no question.
+
+### [g26] `work batch park` parks an item and leaves the rest building
+- [r26] While an item in a batch is `in-batch`, when a session runs `work batch park` on the item, `work` shall set the status of the item to `needs-input`, write a question on the item and not set the status of the batch to `abandoned`.
+
+### [g27] A parked item's commits stay out of the pull request
+- [r27] While an item in a batch is `needs-input` and a commit cites the item, when the person runs `work batch review` on the batch, `work` shall publish a pull request of the batch that does not hold the commit.
+
+### [g28] `work batch abandon` returns the batch's items
+- [r28] While a batch is `building`, when the person runs `work batch abandon` on the batch, `work` shall set the status of the batch to `abandoned` and set the status of every item in the batch whose status is `in-batch` to `ready`.
+
+### [g29] `work batch review` refuses a batch with a task that is not done
+- [r29] While a task of a batch is not `done`, if the person runs `work batch review` on the batch, then `work` shall refuse the command and name the task.
+
+### [g30] `work batch review` refuses a commit that cites no item
+- [r30] While a git branch of a task of a batch has a commit that cites no item, if the person runs `work batch review` on the batch, then `work` shall refuse the command and name the commit.
+
+### [g31] The merge removes the batch's review folders
+- [r31] When the person merges a pull request of a batch, `work` shall remove every review folder of the batch.
+
+### [g32] `work batch park` takes the parked item's lines out of the batch
+- [r32] While an item in a batch is `in-batch` and the git branch of the batch holds a requirement of the item, when a session runs `work batch park` on the item, `work` shall remove the requirement from the git branch.
+
+### [g33] A parked item's failing scenario does not hold up another item's task
+- [r33] While an item in a batch is `in-batch` and a task of the item is `running` and an item in the batch is `needs-input` and a scenario of the item fails in the worktree of the task, when a session runs `work batch done` on the task, `work` shall set the status of the task to `done`.
+
+### [g34] Another item's passing scenario does not hold up a task
+- [r34] While an item in a batch is `in-batch` and a task of the item is `running` and another item in the batch is `in-batch` and a scenario of the item passes in the worktree of the task, when a session runs `work batch done` on the task, `work` shall set the status of the task to `done`.
+
+### [g35] `work batch review` publishes the pull request
+- [r35] While a batch is `building` and every task of the batch is `done`, when the person runs `work batch review` on the batch, `work` shall publish a pull request of the batch and set the status of the batch to `in-review`.
+
+### [g36] `work batch status` prints where the batch stands
+- [r36] While a batch holds an item and the batch has a task, when the person runs `work batch status` on the batch, `work` shall print the item, the task and the status of the task.
 
 ## Implementation, may change
 

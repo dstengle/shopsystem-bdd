@@ -106,7 +106,7 @@ def matches(repo, context, np, rel):
     path = Path(repo) / rel
     if re.fullmatch(r"`[^`]+`", np):      # a file named by its path (migration-tools' `.shop/work/FROZEN.md`)
         return rel == np.strip("`")
-    if re.fullmatch(r"(a|the) decisions index( \S+)?", np):
+    if re.fullmatch(r"(a|the|this) decisions index( \S+)?", np):
         return rel == "spec/decisions/index.md"
     ledger = re.match(r"the ledger of the initiative (\S+)$", np)
     if ledger:
@@ -199,38 +199,39 @@ def local(template, kind=None):
 def _local_first(vocab, root, keyword):
     import sys
 
-    import features_vocab
+    import pytest
     registry = vocab._step_function(root, keyword)
 
     def step_function(text, request, docstring=None, datatable=None):
-        call = features_vocab.step(features_vocab.load(root), keyword, text)
+        call = vocab.vocab4.step(root, keyword, text, request)
+        if call is None:
+            pytest.fail("not read in the step grammar 4 (is its capability codified-2?): %s" % text, pytrace=False)
         call.docstring, call.datatable, call.fixtures = docstring, datatable, request.getfixturevalue
         table = getattr(sys.modules.get("shop_work_queue_world"), "LOCAL", LOCAL)   # the handlers' copy of this module
-        found = table.get((call.template, call.kind)) or table.get((call.template, None))
-        if found is not None and found(call) is not False:
-            return None
+        for found in (table.get((call.template, call.kind)), table.get((call.template, None))):  # kind's, then any
+            if found is not None and found(call) is not False:
+                return None
         return registry(text, request, docstring, datatable)
     return step_function
 
 
 class Reads:
-    """A step parser that matches any step the Steps grammar reads under its keyword (vocab.read)."""
+    """A step parser that matches any step the step grammar 4 (vocab4) reads under its keyword."""
 
     def __init__(self, vocab, root, keyword):
         self.vocab, self.root, self.keyword, self.name = vocab, root, keyword, "reads %s" % keyword
 
     def is_matching(self, name):
-        return self.vocab.read(self.root, self.keyword, name) is not None
+        return self.vocab.vocab4.reads(self.root, self.keyword, name)
 
     def parse_arguments(self, name):
         return {"text": name}
 
 
 def bind_all(namespace, root):
-    """One step definition for each keyword, for any step the Steps grammar reads, dispatching to its handler as the
-    vocabulary does. pytest-bdd prefers a test module's definitions to the conftest's, so these take over there: the
-    vocabulary's own (template, kind) definition misses a step whose noun phrase names its kind with no instance
-    (`` `work` writes a work-item that is `drafted` ``), by the words of its pattern."""
+    """One step definition for each keyword, for any step the step grammar 4 reads, its `local` handlers tried first,
+    then the registry's handler as the vocabulary dispatches. pytest-bdd prefers a test module's definitions to the
+    conftest's, so these take over there."""
     import sys
 
     import pytest

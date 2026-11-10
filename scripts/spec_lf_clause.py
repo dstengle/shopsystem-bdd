@@ -12,10 +12,15 @@ The form's modality (I17) is the line's: `shall` for an obligation, `may` for a 
 While clause is (any K). A line that says both "shall" and "may", or "may not", is noted for spec_lf_read to refuse.
 """
 import spec_lf_core as core
+import spec_lf_exist
 import spec_lf_np as nps
+import spec_lf_number
+import spec_lf_option
+import spec_lf_order
 import spec_lf_read
 import spec_lf_set
 import spec_lf_time
+import spec_lf_values
 from spec_lf_core import Atom, Box, NPList
 
 ORIGIN = {"where": "while", "while": "while", "when": "trigger", "if": "trigger", "response": "response",
@@ -34,7 +39,9 @@ def frame_atom(st, n, m, slots):
     v = st.names.verbs[n]
     roles, it = [("subject", slots[0])], iter(slots[1:])
     for words, kind in v.frames[m - 1][1]:
-        roles.append((" ".join(words) or "object", next(it)) if kind is not None else (" ".join(words),))
+        x = next(it) if kind is not None else None
+        for y in (x if isinstance(x, tuple) else (x,)):     # every option of a run's slot (b240)
+            roles.append((" ".join(words) or "object", y) if kind is not None else (" ".join(words),))
     if v.aspect == "action":
         return Atom("event", (st.event(), v.term.term, sense(st, n), tuple(roles)))
     return Atom("state", (v.term.term, sense(st, n), tuple(roles)))
@@ -52,8 +59,9 @@ def vp(st, tree):
         return [nps.np(st, a[0])], lambda s, r: Atom("rel", (row[1], r[0], s))
     if name.startswith("e_"):
         n, m = numbers(name, 2)
-        return [nps.np(st, x) for x in a], lambda s, r: frame_atom(st, n, m, [s] + list(r))
-    return spec_lf_set.vp(st, tree, nps.owner) or _unknown(tree)
+        found = spec_lf_option.together(st, n, m, [nps.np(st, x) for x in a])     # a run's options (b240)
+        return found, lambda s, r: frame_atom(st, n, m, [s] + list(r))
+    return spec_lf_exist.vp(name) or spec_lf_set.vp(st, tree, nps.owner) or _unknown(tree)
 
 
 def _unknown(tree):
@@ -110,10 +118,14 @@ def cond(st, tree):
         first = cond(st, a[0])
         if name == "OneCond":
             return first
-        rest = cond(st, a[1])
         if name == "AndCond":
+            rest = cond(st, a[1])
             return first[0] + rest[0], first[1] + rest[1]
-        return [], [Box("or", (), (core.part("case", *first), core.part("case", *rest)))]
+        cases = [core.part("case", *first)]
+        st.close(cases)                 # R2: the first case gives nothing to the second
+        cases.append(core.part("case", *cond(st, a[1])))
+        st.close(cases)
+        return [], [Box("or", (), tuple(cases))]
     rest = st.names.kind(name)[1]
     if rest == "Holds":
         return clause(st, nps.np(st, a[1]), a[2], a[0] == "PNeg")
@@ -122,6 +134,15 @@ def cond(st, tree):
         x = nps.owner(st, a[1]) if rest == "IsOf" else nps.np(st, a[1])
         value = st.names.value(nps.fun(a[2]))
         return st.apply([x], lambda r: Atom("attr", (r[0], t.term, value)), 1 if a[0] == "PNeg" else None)
+    valued = spec_lf_values.cond(st, t, rest, a) if t is not None else None     # one of, none of, has no (b240)
+    if valued is not None:
+        return valued
+    ordered = spec_lf_order.cond(st, t, rest, a) if t is not None else None     # after, before (b240)
+    if ordered is not None:
+        return ordered
+    counted = spec_lf_number.cond(st, tree)     # the number of Ks is more than n (b240)
+    if counted is not None:
+        return counted
     timed = spec_lf_time.cond(st, tree)     # after, before, within the last, the perfect (I16)
     if timed is not None:
         return timed

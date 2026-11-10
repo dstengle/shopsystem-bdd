@@ -1,5 +1,5 @@
 % grammar/check.lp: the check of `model logic` (design-r3 §6), a fixed meta-encoding, the same for every spec.
-% It reads the facts of design-r3 §3 (one translation per fun, scripts/spec_facts.py) and the lexicon's domain, with
+% It reads the facts of design-r3 §3 (a line's logical form as facts, scripts/spec_lf_facts.py) and the lexicon's domain, with
 % one generic instance per noun phrase. A conflict is SEARCHED FOR: a witness of two requirements that fire on one
 % trigger in one consistent pre-state and demand opposite things, found by one brave solve over every candidate pair.
 % Shown: clash(A,B,Why) (L1), maybe(A,B,Why,C) (L6: a clash that depends on the prose condition C),
@@ -17,6 +17,10 @@
 #defined uattr/4. #defined ucond/5. #defined uccond/4. #defined pre/6. #defined prec/5.
 #defined each/2.   #defined only/5. #defined rattr/4.  #defined rrel/4.  #defined akind/2.
 #defined cnl4/1.  #defined count/7. #defined onattr/4.
+#defined ccmp/6.  #defined ckey/4.  #defined vkey/3.  #defined dense/1.  #defined uin/4.
+#defined ccount/4. #defined csig/5.  #defined csiga/5.  #defined distinct/3.
+#defined onrel/5.  #defined nobox/4. #defined nbrel/5.  #defined nbattr/6.
+#defined uscope/5. #defined uex/4.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
@@ -27,9 +31,9 @@ term(R,X) :- resp(R,_,_,_,X,_). term(R,X) :- resp(R,_,_,_,_,X). term(R,X) :- set
 term(R,X) :- uses(R,X,_).      term(R,X) :- uses(R,_,X).      term(R,X) :- nouse(R,X,_).  term(R,X) :- nouse(R,_,X).
 term(R,X) :- crel(R,_,X,_,_).  term(R,X) :- crel(R,_,_,X,_).  term(R,X) :- orel(R,_,_,X).
 term(R,X) :- holds(R,X,_).     term(R,X) :- holds(R,_,X).     term(R,X) :- free(R,X).
-term(R,X) :- urel(R,_,_,X).    term(R,X) :- count(R,_,_,X,_,_,_).
+term(R,X) :- uscope(R,_,_,X,_). term(R,X) :- urel(R,_,_,X).    term(R,X) :- count(R,_,_,X,_,_,_).  term(R,none) :- rnone(R,_,_,none).
 % kinds: a sub-kind is its kind (sub(K,K2): K is a kind of K2, transitively); two kinds are compatible when one is
-subeq(K,K) :- role(_,_,K).  subeq(K,K) :- none(_,K,_,_).  subeq(K,K) :- cnone(_,K,_).
+subeq(K,K) :- role(_,_,K).  subeq(K,K) :- none(_,K,_,_).  subeq(K,K) :- cnone(_,K,_).  subeq(K,K) :- uex(_,_,_,K).
 subeq(K,K3) :- sub(K,K2), subeq(K2,K3).
 compat(K,K2) :- subeq(K,K2).  compat(K,K2) :- subeq(K2,K).
 
@@ -144,10 +148,19 @@ doer(A,B,X,Y) :- pair(A,B), role(B,Y,K), aterm(A,B,A,X,K2), subeq(K2,K).
 ta(A,B,P,E,D,X) :- pair(A,B), trig(A,P,E,D,X).  tb(A,B,P,E,D,Y) :- pair(A,B), trig(B,P,E,D,Y).
 fires(A,B) :- ta(A,B,P,E,D1,X), tb(A,B,P,E,D2,Y), same(A,B,X,Y), doer(A,B,D1,D2).
 out(A,B) :- pair(A,B), trg(A), trg(B), not fires(A,B).
+% a trigger of one act on each of "two Ks" (b240) has a `trig` of each: the triggers are one act when each of either
+% side's is one of the other's (a trigger of one file written is not one of two written)
+ma(A,B,P,E,D1,X) :- ta(A,B,P,E,D1,X), tb(A,B,P,E,D2,Y), same(A,B,X,Y), doer(A,B,D1,D2).
+mb(A,B,P,E,D2,Y) :- ta(A,B,P,E,D1,X), tb(A,B,P,E,D2,Y), same(A,B,X,Y), doer(A,B,D1,D2).
+out(A,B) :- ta(A,B,P,E,D,X), trg(B), not ma(A,B,P,E,D,X).  out(A,B) :- tb(A,B,P,E,D,Y), trg(A), not mb(A,B,P,E,D,Y).
 nk(S,Y,K) :- named1(S,Y), role(S,Y,K).  thek(S,Y,K) :- the(S,Y), role(S,Y,K).
 tda(A,B,K) :- pair(A,B), tdef(A,K).  tdb(A,B,K) :- pair(A,B), tdef(B,K).
 out(A,B) :- tda(A,B,K), nk(B,Y,K), not tmap(A,B,Y).
 out(A,B) :- tdb(A,B,K), thek(B,Y,K), nk(A,X,K), not map(A,B,Y,X).
+% "another K", "two Ks" (b240, construct #2): `distinct(R,X,Y)`, two referents of one side never one thing of the
+% pair (one code named of both, a definite both map to), or the pair is out under this unification
+dpair(A,B,S,X,Y) :- side(A,B,S), distinct(S,X,Y).
+out(A,B) :- dpair(A,B,S,X,Y), at(A,B,S,X,Z), at(A,B,S,Y,Z).
 
 % ---- the two states: 0 is the pre-state (the trigger happens there), 1 is 0 with the sets of the triggered side --
 % An untriggered requirement paired with a triggered one is read at state 1 (its conditions there, its responses
@@ -189,14 +202,65 @@ out(A,B) :- cnonep(A,B,_,K,C), cw(A,B,Z,C,pos), kup(A,B,Z,K).
 % "no K is <rel> Y", "X is <rel> no K" (rnone): no instance of K is so related in the merged state
 out(A,B) :- side(A,B,S), rnone(S,Q,kind(K),Y), at(A,B,S,Y,Zy), rw(A,B,Q,Z,Zy,pos), kup(A,B,Z,K).
 out(A,B) :- side(A,B,S), rnone(S,Q,X,kind(K)), at(A,B,S,X,Zx), rw(A,B,Q,Zx,Z,pos), kup(A,B,Z,K).
+% a "no" box with a `not` inside it (b238, spec_lf_none): `nobox(R,N,K1,K2)` its own Ks (K2 `none` for one, each
+% a side o1, o2), `nbrel(R,N,Q,L,Rt)` its rows and states, `nbattr(R,N,O,T,V,P)` its values; a pair is out when
+% instances of its Ks in the merged state meet each row and value it says (a `neg` value by another value known, or
+% the value known not to hold)
+term(R,X) :- nbrel(R,_,_,X,_), X != o1, X != o2.  term(R,X) :- nbrel(R,_,_,_,X), X != o1, X != o2.
+nbz(A,B,S,N,o1,Z) :- side(A,B,S), nobox(S,N,K,_), kup(A,B,Z,K).
+nbz(A,B,S,N,o2,Z) :- side(A,B,S), nobox(S,N,_,K), K != none, kup(A,B,Z,K).
+nbm(A,B,S,N,Z1,Z2) :- nbz(A,B,S,N,o1,Z1), nbz(A,B,S,N,o2,Z2).
+nbm(A,B,S,N,Z1,none) :- nbz(A,B,S,N,o1,Z1), nobox(S,N,_,none).
+nbat(A,B,S,N,Z1,Z2,o1,Z1) :- nbm(A,B,S,N,Z1,Z2).
+nbat(A,B,S,N,Z1,Z2,o2,Z2) :- nbm(A,B,S,N,Z1,Z2), Z2 != none.
+nbat(A,B,S,N,Z1,Z2,X,Z) :- nbm(A,B,S,N,Z1,Z2), nbrel(S,N,_,X,_), X != o1, X != o2, at(A,B,S,X,Z).
+nbat(A,B,S,N,Z1,Z2,X,Z) :- nbm(A,B,S,N,Z1,Z2), nbrel(S,N,_,_,X), X != o1, X != o2, at(A,B,S,X,Z).
+nbno(A,B,S,N,Z1,Z2) :- nbm(A,B,S,N,Z1,Z2), nbrel(S,N,Q,L,Rt), nbat(A,B,S,N,Z1,Z2,L,ZL),
+                       nbat(A,B,S,N,Z1,Z2,Rt,ZR), not rw(A,B,Q,ZL,ZR,pos).
+nbv(A,B,S,N,Z1,Z2,X,T,V,P,M,Z) :- nbm(A,B,S,N,Z1,Z2), nbattr(S,N,X,T,V,P), nbat(A,B,S,N,Z1,Z2,X,Z), state(A,B,S,M).
+nbno(A,B,S,N,Z1,Z2) :- nbv(A,B,S,N,Z1,Z2,X,T,V,pos,M,Z), not pos(A,B,M,Z,T,V).
+nbmet(A,B,S,N,Z1,Z2,X,T,V) :- nbv(A,B,S,N,Z1,Z2,X,T,V,neg,M,Z), pos(A,B,M,Z,T,W), W != V.
+nbmet(A,B,S,N,Z1,Z2,X,T,V) :- nbv(A,B,S,N,Z1,Z2,X,T,V,neg,0,Z), w0(A,B,Z,T,V,neg).
+nbmet(A,B,S,N,Z1,Z2,X,T,V) :- nbv(A,B,S,N,Z1,Z2,X,T,V,neg,1,Z), w1(A,B,Z,T,V,neg).
+nbmet(A,B,S,N,Z1,Z2,X,T,V) :- nbv(A,B,S,N,Z1,Z2,X,T,V,neg,1,Z), n1(A,B,Z,T,V,neg).
+nbno(A,B,S,N,Z1,Z2) :- nbv(A,B,S,N,Z1,Z2,X,T,V,neg,_,_), not nbmet(A,B,S,N,Z1,Z2,X,T,V).
+out(A,B) :- nbm(A,B,S,N,Z1,Z2), not nbno(A,B,S,N,Z1,Z2).
 % a functional relation (`fun(Q)`: a relation row of cardinality one, or a preposition, spec_logic_vocab) relates a
 % thing to one thing: two images under one unification are out
 redge(A,B,Q,Z1,Z2) :- rw(A,B,Q,Z1,Z2,pos).
 redge(A,B,Q,Z1,Z2) :- side(A,B,S), orel(S,Q,Y1,Y2), at(A,B,S,Y1,Z1), at(A,B,S,Y2,Z2).
 out(A,B) :- fun(Q), redge(A,B,Q,Z,Z1), redge(A,B,Q,Z,Z2), Z1 < Z2.
 
+% ---- ordered comparison (b240, construct #6; design call 9): `ccmp(R,X,T,Op,K,P)`, the value of X's T is (P) after or
+% before the point K (a tuple, spec_lf_order.key). Exact over cells: each point the pair names (`c(K)`) and, for an
+% order by number (`dense(T)`), the gap just above each (`g(K)`), the one below them all (`lo`) and a value of no
+% number (`u`); an order as listed has only its values' points. A value's point: an entry's `vkey(T,V,K)`, a line's
+% code `ckey(R,T,V,K)`. A pair is out when no cell meets every comparison and value its sides say of X's T.
+cmpw(A,B,N,Z,T,O,K,P) :- side(A,B,S), state(A,B,S,N), ccmp(S,Y,T,O,K,P), at(A,B,S,Y,Z).
+oz(A,B,N,Z,T) :- cmpw(A,B,N,Z,T,_,_,_).
+okey(A,B,T,V,K) :- side(A,B,S), ckey(S,T,V,K).
+okey(A,B,T,V,K) :- oz(A,B,_,_,T), vkey(T,V,K).
+okd(A,B,T,V) :- okey(A,B,T,V,_).
+opt(A,B,T,K) :- cmpw(A,B,_,_,T,_,K,_).
+opt(A,B,T,K) :- oz(A,B,N,Z,T), has(A,B,N,Z,T,V,_), okey(A,B,T,V,K).
+ocell(A,B,T,c(K)) :- opt(A,B,T,K), dense(T).    ocell(A,B,T,g(K)) :- opt(A,B,T,K), dense(T).
+ocell(A,B,T,lo) :- oz(A,B,_,_,T), dense(T).     ocell(A,B,T,u) :- oz(A,B,_,_,T), dense(T).
+ocell(A,B,T,c(K)) :- oz(A,B,_,_,T), vkey(T,_,K), not dense(T).
+osat(A,B,T,after,K,c(L)) :- opt(A,B,T,K), ocell(A,B,T,c(L)), L > K.
+osat(A,B,T,after,K,g(L)) :- opt(A,B,T,K), ocell(A,B,T,g(L)), L >= K.
+osat(A,B,T,before,K,c(L)) :- opt(A,B,T,K), ocell(A,B,T,c(L)), L < K.
+osat(A,B,T,before,K,g(L)) :- opt(A,B,T,K), ocell(A,B,T,g(L)), L < K.
+osat(A,B,T,before,K,lo) :- opt(A,B,T,K), ocell(A,B,T,lo).
+obad(A,B,N,Z,T,C) :- oz(A,B,N,Z,T), ocell(A,B,T,C), cmpw(A,B,N,Z,T,O,K,pos), not osat(A,B,T,O,K,C).
+obad(A,B,N,Z,T,C) :- oz(A,B,N,Z,T), ocell(A,B,T,C), cmpw(A,B,N,Z,T,O,K,neg), osat(A,B,T,O,K,C).
+obad(A,B,N,Z,T,C) :- oz(A,B,N,Z,T), ocell(A,B,T,C), has(A,B,N,Z,T,V,pos), okey(A,B,T,V,K), C != c(K).
+obad(A,B,N,Z,T,C) :- oz(A,B,N,Z,T), ocell(A,B,T,C), has(A,B,N,Z,T,V,pos), not okd(A,B,T,V), C != u.
+obad(A,B,N,Z,T,c(K)) :- oz(A,B,N,Z,T), has(A,B,N,Z,T,V,neg), okey(A,B,T,V,K).
+ofit(A,B,N,Z,T) :- oz(A,B,N,Z,T), ocell(A,B,T,C), not obad(A,B,N,Z,T,C).
+out(A,B) :- oz(A,B,N,Z,T), not ofit(A,B,N,Z,T).
+
 % ---- a defined condition read through its definition (`dalt(C,N)`, `dlit(C,N,Attr,Val,Pol)`: the ways through a
-% Def whose literals are all on its own subject, spec_facts.def_facts) under `no`, `every` and a negation --------
+% Def whose literals are all on its own subject) under `no`, `every` and a negation --------
 has(A,B,0,Z,T,V,P) :- w0(A,B,Z,T,V,P).
 has(A,B,1,Z,T,V,P) :- w1(A,B,Z,T,V,P).  has(A,B,1,Z,T,V,P) :- n1(A,B,Z,T,V,P).
 % the instances a definition is asked of: (side's state N, instance Z, condition C)
@@ -231,6 +295,32 @@ out(A,B) :- umatch(A,B,S,U,Z), uccond(S,U,C,pos), cw(A,B,Z,C,neg).
 out(A,B) :- umatch(A,B,S,U,Z), uccond(S,U,C,neg), cw(A,B,Z,C,pos).
 out(A,B) :- umatch(A,B,S,U,Z), state(A,B,S,N), uccond(S,U,C,pos), refuted(A,B,N,Z,C).
 out(A,B) :- umatch(A,B,S,U,Z), state(A,B,S,N), uccond(S,U,C,neg), ent(A,B,N,Z,C).
+% "every K <restrictions> Vs the X" (uscope, b240 phase 21): an instance known not in the state with X is out
+out(A,B) :- umatch(A,B,S,U,Z), uscope(S,U,Q,W,pos), at(A,B,S,W,Zw), rw(A,B,Q,Z,Zw,neg).
+out(A,B) :- umatch(A,B,S,U,Z), uscope(S,U,Q,W,neg), at(A,B,S,W,Zw), rw(A,B,Q,Z,Zw,pos).
+% "every K <restrictions> Vs a K2" (uex): an instance known in the state with no K2 (rnone) is out
+out(A,B) :- umatch(A,B,S,U,Z), uex(S,U,Q,K), side(A,B,S2), rnone(S2,Q,X,kind(K2)), at(A,B,S2,X,Z), subeq(K,K2).
+% "every K <restrictions> is one of v, w" (uin(R,U,T,V) of each value, b240): each such instance has one of them,
+% so a value outside them (`absent` among them) is out, and so is each of them said not of it
+uinw(A,B,N,Z,S,U,T) :- umatch(A,B,S,U,Z), state(A,B,S,N), uin(S,U,T,_).
+uinv(A,B,S,U,T,V) :- side(A,B,S), uin(S,U,T,V).
+out(A,B) :- uinw(A,B,N,Z,S,U,T), has(A,B,N,Z,T,W,pos), not uinv(A,B,S,U,T,W).
+uinok(A,B,N,Z,S,U,T) :- uinw(A,B,N,Z,S,U,T), uinv(A,B,S,U,T,V), not has(A,B,N,Z,T,V,neg).
+out(A,B) :- uinw(A,B,N,Z,S,U,T), not uinok(A,B,N,Z,S,U,T).
+% "the number of Ks that P is more than n" (b240, construct #3): `ccount(R,X,B,N)` of the K X it counts, X's
+% restrictions `csig(R,X,L,Y,Pol)` (an edge L, r(Q) from X or i(Q) into X, to Y) and `csiga(R,X,T,V,Pol)`. Two sides
+% that count one set of things (their counted Ks restricted alike under this unification) with bounds that no number
+% of things meets both of never fire together (`#count`, as two counts of one act are read below)
+cz(A,B,S,Z,I) :- side(A,B,S), ccount(S,X,_,_), at(A,B,S,X,Z), I = (S,X).
+csg(A,B,S,Z,r(L,Zy,P)) :- side(A,B,S), csig(S,X,L,Y,P), at(A,B,S,X,Z), at(A,B,S,Y,Zy).
+csg(A,B,S,Z,a(T,V,P)) :- side(A,B,S), csiga(S,X,T,V,P), at(A,B,S,X,Z).
+cdif(A,B,Z1,Z2) :- cz(A,B,A,Z1,_), cz(A,B,B,Z2,_), csg(A,B,A,Z1,G), not csg(A,B,B,Z2,G).
+cdif(A,B,Z1,Z2) :- cz(A,B,A,Z1,_), cz(A,B,B,Z2,_), csg(A,B,B,Z2,G), not csg(A,B,A,Z1,G).
+cnum(0..M) :- M = #max{ N+1 : ccount(_,_,_,N) }, M >= 0.
+cadm(S,X,M) :- ccount(S,X,least,N), cnum(M), M >= N.    cadm(S,X,M) :- ccount(S,X,most,N), cnum(M), M <= N.
+cadm(S,X,N) :- ccount(S,X,exactly,N).                    cadm(S,X,M) :- ccount(S,X,more,N), cnum(M), M > N.
+cadm(S,X,M) :- ccount(S,X,fewer,N), cnum(M), M < N.
+out(A,B) :- cz(A,B,A,Z1,(A,X)), cz(A,B,B,Z2,(B,Y)), not cdif(A,B,Z1,Z2), #count{ M : cadm(A,X,M), cadm(B,Y,M) } = 0.
 
 % ---- L1: the clash of a pair, under one unification ---------------------------------------------------------------
 % A pair that cannot fire together under this unification is out, or unfit: soft, so that one pair never makes the
@@ -250,6 +340,14 @@ relof(A,B,Y,Q,X2) :- map(A,B,Y,X), orel(A,Q,X,X2), orel(B,Q,Y,Z), same(A,B,X2,Z)
 % the same negated restriction on the other side's object
 gap(A,B,X,Y) :- map(A,B,Y,X), onattr(B,Y,T,W), not onattr(A,X,T,W), not each(A,X).
 pag(A,B,X,Y) :- map(A,B,Y,X), onattr(A,X,T,W), not onattr(B,Y,T,W), not each(B,Y).
+% so is one over a row or a state (`onrel(R,X,Q,D,O)`: X is not related by Q to O, a term or kind(K) for "no K"; D
+% the side X is on; spec_lf_quant, b240 phase 12)
+gap(A,B,X,Y) :- map(A,B,Y,X), onrel(B,Y,Q,D,O), not onrelby(A,B,X,Q,D,O), not each(A,X).
+onrelby(A,B,X,Q,D,O) :- map(A,B,Y,X), onrel(B,Y,Q,D,O), onrel(A,X,Q,D,O).
+onrelby(A,B,X,Q,D,O) :- map(A,B,Y,X), onrel(B,Y,Q,D,O), onrel(A,X,Q,D,O2), same(A,B,O2,O).
+pag(A,B,X,Y) :- map(A,B,Y,X), onrel(A,X,Q,D,O), not onrelof(A,B,Y,Q,D,O), not each(B,Y).
+onrelof(A,B,Y,Q,D,O) :- map(A,B,Y,X), onrel(A,X,Q,D,O), onrel(B,Y,Q,D,O).
+onrelof(A,B,Y,Q,D,O) :- map(A,B,Y,X), onrel(A,X,Q,D,O), onrel(B,Y,Q,D,O2), same(A,B,O,O2).
 % each side's responses lifted to the pair first (`ra`, `rb`, `sa`, `sb`, `ua`, `ub`, `xa`, `xb`), so a clash is joined on the pair and the
 % event at once, never on an event (print, exit_error) that thousands of lines share
 ra(A,B,P,E,D,X) :- pair(A,B), resp(A,_,P,E,D,X).  rb(A,B,P,E,D,Y) :- pair(A,B), resp(B,_,P,E,D,Y).
@@ -318,13 +416,14 @@ clash(R,R,self) :- self(R).
 
 % ---- L3: a set whose pre-value (its own condition, or none) has no transition to the new value -------------------
 edge(T,U,V) :- trans(_,T,U,V).  moving(T) :- edge(T,_,_).  entered(T,V) :- edge(T,_,V).
-bad_set(R,T,U,V) :- set(R,_,X,T,V), cond(R,X,T,U,pos), U != V, moving(T), not edge(T,U,V).
-known(R,X,T) :- cond(R,X,T,_,pos).
+% (a value's absence, `absent` (b240), is no value: a set from it is a set from none, and no path need reach it)
+bad_set(R,T,U,V) :- set(R,_,X,T,V), cond(R,X,T,U,pos), U != V, U != absent, moving(T), not edge(T,U,V).
+known(R,X,T) :- cond(R,X,T,U,pos), U != absent.
 bad_set(R,T,none,V) :- set(R,_,X,T,V), not known(R,X,T), moving(T), not entered(T,V).
 #show bad_set/4.
 % ---- L4: a value a requirement's pre-state needs that no path reaches from an initial value -----------------------
 reach(T,V) :- initial(_,T,V).  reach(T,W) :- reach(T,V), edge(T,V,W).
-unreachable(R,T,V) :- cond(R,_,T,V,pos), moving(T), not reach(T,V).
+unreachable(R,T,V) :- cond(R,_,T,V,pos), V != absent, moving(T), not reach(T,V).
 #show unreachable/3.
 % ---- L5: an untriggered positive event obligation, with the triggered requirements that react to its event -------
 % holding a resource is a state, not an event ("every stage shall hold the initiative lock" is no G p trap)

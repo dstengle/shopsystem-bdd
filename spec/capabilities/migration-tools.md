@@ -3,9 +3,9 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/migration-tools
 title: Migration tools
 narrator: a person or session migrating a repository to the final layout or upgrading it between plugin releases
 group: service
-language: codified-1
+language: codified-2
 rests_on: [design-decision/migration-in-one-pass, design-decision/living-plan-to-work-items, design-decision/final-layout, design-decision/references-are-ids, design-decision/capability-ids-are-context-scoped, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/upgrades-between-plugin-releases, design-decision/work-items-named-by-ids, design-decision/answers-not-rulings, design-decision/the-ledger-is-tracked]
-retired: [r22, r23]
+retired: [g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12, g13, g14, g15, g16, g17, g18, g19, g20, g21, g24, g25, g29, g30, g40, g41, g45, g46, g57, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r29, r30, r40, r41, r45, r46, r57, g42, r42, g48, r48, g49, r49]
 unbuilt: []
 ---
 
@@ -21,43 +21,74 @@ what it needs to know at its start and before it is compacted.
 ## Terms
 - **the SessionStart hook** (proper noun): the plugin's hook that runs `migrate status --hook` when a session starts, and
   gives the session what it prints. Kind of: agent.
-- **tracked file** (noun): a file committed in the repository `migrate` runs in.
-- **untracked file** (noun): a file of the repository's working tree that git does not track, or a change not
-  committed.
 - **repository** (noun): the repository `migrate` runs in, with its working tree. Plural: repositories. This: the repository the command runs in.
-- **release** (attribute of repository): the plugin release `.shop/plugin-version` names, against the plugin's own: `0.23.1` before work-items were named by ids, `0.24.0` before `awaiting-answer` replaced `awaiting-ruling`, `0.29.0` before requirements were codified, `1.0.0` before the workflow was simplified, `own` the plugin's own release and `newer` a release newer than the plugin's. Values: `0.23.1`, `0.24.0`, `0.29.0`, `1.0.0`, `own`, `newer`.
-- **codified** (adjective of capability): a capability whose file has `language: codified-1` in its frontmatter.
+- **tracked file** (noun): a file committed in the repository `migrate` runs in. Kind of: file.
+- **uncommitted change** (noun): a change to the working tree of a repository that no commit holds: a file git does not track, or a change to a tracked file. Kind of: text.
+- **old-layout directory** (noun): a directory of the old system's layout at the root of a repository: `decisions/`, `work/`, `records/`, `docs/superpowers/plans/`, `docs/superpowers/specs/`, `docs/superpowers/requests/` or `adrs/`. Kind of: file.
+- **mention** (verb, state): a text holds the path, a relative link to or the id of a thing. Forms: mentions, mentioned. Frame: text mentions thing.
 - **rewrite** (verb, action): `migrate` changes the text of a file in place. Forms: rewrites, rewritten. Frame: `migrate` rewrites file.
 - **rename** (verb, action): `migrate` gives a file another name with git. Forms: renames, renamed. Frame: `migrate` renames file.
-- **uncommitted** (adjective of untracked file): an untracked file whose text no commit holds.
-- **unmigrated** (adjective of repository): a repository with a directory of the old layout at its root.
-- **ledgered** (adjective of repository): a repository with the old system's ledger of decisions, `spec/decisions.md`.
-- **superseding** (adjective of repository): a repository whose `spec/decisions.md` has an entry that supersedes another.
-- **qualified** (adjective of repository): a repository whose `spec/decisions.md` has an entry that supersedes another in part.
-- **numberless** (adjective of repository): a repository whose `spec/decisions.md` has an entry with no number.
-- **idless** (adjective of repository): a repository with a capability that has a Behaviour line with no id.
-- **conflicting** (adjective of repository): a repository with a file where `migrate run` would relocate another.
-- **unversioned** (adjective of repository): a repository with `.shop/` and no `.shop/plugin-version`.
-- **misversioned** (adjective of repository): a repository whose `.shop/plugin-version` holds no version.
-- **behind** (adjective of repository): A repository is behind when the repository is `0.23.1`.
-- **outdated** (adjective of repository): A repository is outdated when the repository is `0.24.0`.
-- **uncodified** (adjective of repository): A repository is uncodified when the repository is `0.29.0` and a capability is not codified.
-- **queued** (adjective of repository): A repository is queued when the repository is `1.0.0`.
-- **current** (adjective of repository): A repository is current when the repository is `own`.
-- **ahead** (adjective of repository): A repository is ahead when the repository is `newer`.
-- **idle** (adjective of repository): A repository is idle when the repository is `own` and no initiative is open.
-- **shopless** (adjective of repository): a repository without `.shop/`.
+- **decision ledger** (noun): the old system's ledger of decisions, the file `spec/decisions.md`. Kind of: file.
+- **ledger entry** (noun): one entry `## decision/<name>` of a decision ledger. Plural: ledger entries. Kind of: text.
+- **supersede** (verb, state): a ledger entry or a design-decision names another, whole or in part, as the one it takes the place of. Forms: supersedes, superseded. Frame: ledger entry supersedes ledger entry.
+- **qualifier** (noun): the words after the id a ledger entry supersedes, as `(in part)`. Kind of: text.
+- **ledger number** (noun): the `<nnnn>` before the name of a ledger entry. Kind of: text.
+- **stem** (noun): the part of the id of a ledger entry after `decision/`, or the name of a tracked file without its directory and its extension. Kind of: text.
+- **Behaviour line** (noun): a line of the `## Behaviour` of a capability of the old system. Kind of: text.
+- **line id** (noun): the `[r<n>]` of a Behaviour line. Kind of: text.
+- **plugin version file** (noun): the file `.shop/plugin-version`, one line naming the plugin release a repository is on. Kind of: file.
+- **content** (noun): the text a file holds. Kind of: text.
+- **shop directory** (noun): the directory `.shop/` of a repository. Kind of: file.
+- **upgrade step** (noun): one step of `migrate upgrade` from one plugin release to the next, named by its title. Kind of: thing.
+- **release** (attribute of repository): Values: `0.23.1`, `0.24.0`, `0.25.0`, `0.29.0`, `1.0.0`, `2.0.0`, `3.0.0`, `3.0.1`, `4.0.0`, `9.0.0`. Order: by number.
+- **release** (attribute of upgrade step): Values: `0.24.0`, `0.25.0`, `1.0.0`, `2.0.0`, `3.0.0`, `4.0.0`. Order: by number.
+- **work-item file** (noun): the file `.shop/work/<initiative>/<work-item>.md` of a work-item of plugin 1.x. Kind of: file.
+- **stage directory** (noun): the directory `.shop/work/<initiative>/runs/<work-item>/` of a work-item's stages. Kind of: file.
+- **initiative log** (noun): the file `.shop/work/<initiative>/log.jsonl` of an initiative of plugin 1.x. Kind of: file.
+- **restated file** (noun): the file `spec/restated.json`, the 0.29 requirements by id. Kind of: file.
+- **frozen notice** (noun): the file `.shop/work/FROZEN.md`, which says that the queue of plugin 1.x is frozen. Kind of: file.
+- **frozen request** (noun): a request of plugin 1.x under `.shop/work/requests/`. Kind of: file.
+- **status** (attribute of frozen request): Values: `open`, `awaiting-asker`, `awaiting-upstream`, `accepted`, `delivered`, `refused`, `withdrawn`.
+- **asker** (attribute of frozen request): the `asker:` of a frozen request, `internal` when the bounded context asked it of itself, else the id of the bounded context that asked it. Values: `internal`.
+- **index file** (noun): the file `spec/index.md` of a bounded context. Kind of: file.
+- **`no upgrade step is pending`** (proper noun): what `migrate upgrade` prints when no upgrade step is pending. Kind of: text.
+- **`only on the person's yes`** (proper noun): the SessionStart hook's note that a session runs a pending upgrade only on the person's yes. Kind of: text.
+- **`update the plugin`** (proper noun): the SessionStart hook's note to a session in a repository on a release after the plugin's. Kind of: text.
+- **`holds no version`** (proper noun): the SessionStart hook's note on a plugin version file that holds no version. Kind of: text.
 
-- **unframed** (adjective of repository): a repository whose `.shop/plugin-version` names a release after 1.0.0 and before 3.0.0.
+## Relations
+
+| from | word | to | cardinality |
+|---|---|---|---|
+| old-layout directory | in | repository |  |
+| uncommitted change | in | repository |  |
+| ledger entry | of | decision ledger |  |
+| decision ledger | of | repository | one |
+| qualifier | of | ledger entry | one |
+| ledger number | of | ledger entry | one |
+| stem | of | ledger entry | one |
+| stem | of | tracked file | one |
+| design-decision | of | ledger entry | one |
+| qualifier | in | design-decision |  |
+| Behaviour line | of | capability |  |
+| line id | of | Behaviour line | one |
+| tracked file | in | old-layout directory |  |
+| plugin version file | of | repository | one |
+| version | in | plugin version file | one |
+| content | of | plugin version file | one |
+| shop directory | of | repository | one |
+| capability | of | repository |  |
+| scenario | in | feature |  |
+| decisions index | of | repository | one |
+| frozen notice | of | repository | one |
+| initiative | of | repository |  |
+| index file | of | bounded context | one |
 
 ## Behaviour
 
-### [g1] `migrate run` relocates the old layout with git, rewrites what names it and gives each file the id of its kind
+### [g27] `migrate run` relocates every old-layout directory and rewrites every file that mentions one
 Restates: r1@0.29, r4@0.29, r5@0.29, r8@0.29, r9@0.29, r12@0.29, r14@0.29.
-- [r1] While a repository is unmigrated, when the person runs `migrate run --context example.org/acme/shop`,
-  `migrate` shall relocate `decisions/`, relocate `work/`, relocate `records/`, relocate `docs/superpowers/plans/`,
-  relocate `docs/superpowers/specs/`, relocate `docs/superpowers/requests/`, relocate `adrs/`, rewrite
-  `spec/index.md`, rewrite `README.md`, rewrite `spec/capabilities/thing.md` and rewrite `spec/decisions/0001-a.md`.
+- [r27] While this repository holds an old-layout directory, when the person runs `migrate run` on a bounded context, `migrate` shall relocate every old-layout directory and rewrite every file that mentions an old-layout directory.
 
 ```given
 the tracked file `decisions/0001-a.md` holds:
@@ -115,10 +146,9 @@ the tracked file `spec/capabilities/thing.md` holds:
   - [r1] **When** a, `thing` shall a.
 ```
 
-### [g2] `migrate run` replaces a ledger with one decision file for each entry, removes it, and leaves no unresolved reference
+### [g28] `migrate run` writes a design-decision of each ledger entry, removes the decision ledger and rewrites the decisions index
 Restates: r2@0.29, r6@0.29, r11@0.29, r16@0.29.
-- [r2] While a repository is ledgered, when the person runs `migrate run --context example.org/acme/shop`, `migrate`
-  shall relocate `spec/decisions.md`, rewrite `spec/decisions/index.md` and exit successfully.
+- [r28] While a decision ledger of this repository has a ledger entry, when the person runs `migrate run` on a bounded context, `migrate` shall write a design-decision of the ledger entry, remove the decision ledger, rewrite the decisions index of this repository and exit successfully.
 
 ```given
 the tracked file `spec/index.md` holds:
@@ -139,10 +169,9 @@ the tracked file `records/notes/one.md` holds:
   It has a second line.
 ```
 
-### [g3] `migrate run` gives a decision file its entry's supersedes, and the entry it supersedes the status `superseded`
+### [g58] `migrate run` writes the design-decision of a ledger entry that another supersedes with the status `superseded` and a design-decision that supersedes it
 Restates: r2@0.29.
-- [r3] While a repository is superseding, when the person runs `migrate run --context example.org/acme/shop`,
-  `migrate` shall rewrite `spec/decisions/0007-a.md` and rewrite `spec/decisions/0008-b.md`.
+- [r58] While a ledger entry supersedes another ledger entry, when the person runs `migrate run` on a bounded context, `migrate` shall write a design-decision of the ledger entry whose status is `superseded` and write another design-decision that supersedes the design-decision.
 
 ```given
 the tracked file `spec/decisions.md` holds:
@@ -158,10 +187,9 @@ the tracked file `spec/decisions.md` holds:
   revisit_when: the cart grows
 ```
 
-### [g4] `migrate run` writes a qualified supersedes as the decision's id alone, the qualifier going to `by`
+### [g31] `migrate run` writes the qualifier of a supersedes in part into the design-decision that supersedes
 Restates: r17@0.29.
-- [r4] While a repository is qualified, when the person runs `migrate run --context example.org/acme/shop`,
-  `migrate` shall rewrite `spec/decisions/0008-b.md`.
+- [r31] While a ledger entry that has a qualifier supersedes another ledger entry, when the person runs `migrate run` on a bounded context, `migrate` shall write a design-decision that holds the qualifier.
 
 ```given
 the tracked file `spec/decisions.md` holds:
@@ -176,10 +204,9 @@ the tracked file `spec/decisions.md` holds:
   supersedes: decision/0007-a (in part)
 ```
 
-### [g5] `migrate run` numbers each ledger entry with no number from one above the ledger's highest
+### [g32] `migrate run` gives each ledger entry with no ledger number a ledger number
 Restates: r13@0.29.
-- [r5] While a repository is numberless, when the person runs `migrate run --context example.org/acme/shop`,
-  `migrate` shall rewrite `spec/decisions/0008-b.md`.
+- [r32] While a ledger entry of a decision ledger has no ledger number, when the person runs `migrate run` on a bounded context, `migrate` shall give a ledger number to the ledger entry.
 
 ```given
 the tracked file `spec/decisions.md` holds:
@@ -193,10 +220,9 @@ the tracked file `spec/decisions.md` holds:
   source: bob
 ```
 
-### [g6] `migrate run` numbers each Behaviour line with no id from one above the highest its capability has used
+### [g33] `migrate run` gives each Behaviour line with no line id a line id
 Restates: r10@0.29.
-- [r6] While a repository is idless, when the person runs `migrate run --context example.org/acme/shop`, `migrate`
-  shall rewrite `spec/capabilities/thing.md`.
+- [r33] While a Behaviour line of a capability has no line id, when the person runs `migrate run` on a bounded context, `migrate` shall give a line id to the Behaviour line.
 
 ```given
 the tracked file `spec/capabilities/thing.md` holds:
@@ -215,10 +241,9 @@ the tracked file `spec/capabilities/thing.md` holds:
   - **When** b, `thing` shall b.
 ```
 
-### [g7] `migrate run` that cannot make every change names it and changes no file
+### [g34] `migrate run` refuses a ledger entry whose design-decision would take the place of a tracked file
 Restates: r7@0.29.
-- [r7] While a repository is conflicting, if the person runs `migrate run --context example.org/acme/shop`, then
-  `migrate` shall exit with an error naming `spec/decisions/0007-a.md` and change nothing.
+- [r34] While a ledger entry has a stem and a tracked file in an old-layout directory has the same stem, if the person runs `migrate run` on a bounded context, then `migrate` shall refuse the command and name the tracked file.
 
 ```given
 the tracked file `spec/decisions.md` holds:
@@ -234,55 +259,49 @@ the tracked file `decisions/0007-a.md` holds:
   # a, already there
 ```
 
-### [g8] `migrate run` refuses a repository with uncommitted changes, naming them
+### [g35] `migrate run` refuses a repository with an uncommitted change, naming it
 Restates: r15@0.29.
-- [r8] While an untracked file is uncommitted, if the person runs `migrate run --context example.org/acme/shop`,
-  then `migrate` shall exit with an error naming the untracked file and change nothing.
+- [r35] While this repository holds an uncommitted change, if the person runs `migrate run` on a bounded context, then `migrate` shall refuse the command and name the uncommitted change.
 
 ```given
 the tracked file `decisions/0001-a.md` holds "# a"
 ```
 
-### [g9] `migrate upgrade` refuses a repository with uncommitted changes, naming them
+### [g36] `migrate upgrade` refuses a repository with an uncommitted change, naming it
 Restates: r15@0.29.
-- [r9] While an untracked file is uncommitted, if the person runs `migrate upgrade`, then `migrate` shall exit with
-  an error naming the untracked file and change nothing.
+- [r36] While this repository holds an uncommitted change, if the person runs `migrate upgrade`, then `migrate` shall refuse the command and name the uncommitted change.
 
 ```given
 the tracked file `.shop/plugin-version` holds "0.23.1"
 ```
 
-### [g10] `migrate status` prints both versions and each pending upgrade step
+### [g37] `migrate status` prints the release of a repository before 0.24.0 and every upgrade step
 Restates: r18@0.29.
-- [r10] While a repository is behind, when the person runs `migrate status`, `migrate` shall print "0.23.1",
-  "0.24.0" and "work-items named by ids" and exit successfully.
+- [r37] While the release of this repository is before `0.24.0`, when the person runs `migrate status`, `migrate` shall print the release of this repository and every upgrade step and exit successfully.
 
 ```given
 the tracked file `.shop/plugin-version` holds "0.23.1"
 ```
 
-### [g11] a repository with `.shop/` and no `.shop/plugin-version` is on 0.23.1
+### [g38] `migrate status` on a repository with a shop directory and no plugin version file prints every upgrade step, as on 0.23.1
 Restates: r19@0.29.
-- [r11] While a repository is unversioned, when the person runs `migrate status`, `migrate` shall print "0.23.1".
+- [r38] While this repository has a shop directory and this repository has no plugin version file, when the person runs `migrate status`, `migrate` shall print every upgrade step.
 
 ```given
 the tracked file `.shop/records/.keep` holds "kept"
 ```
 
-### [g12] `migrate status` refuses a `.shop/plugin-version` that holds no version, naming what it holds
+### [g39] `migrate status` refuses a plugin version file that holds no version, naming what it holds
 Restates: r30@0.29.
-- [r12] While a repository is misversioned, if the person runs `migrate status`, then `migrate` shall exit with an
-  error naming "banana" and change nothing.
+- [r39] While a plugin version file of this repository holds no version, if the person runs `migrate status`, then `migrate` shall refuse the command and name the content of the plugin version file.
 
 ```given
 the tracked file `.shop/plugin-version` holds "banana"
 ```
 
-### [g13] `migrate upgrade` applies each pending step in one commit: work-items are named `w<n>` with their files and stage directories
+### [g59] `migrate upgrade` on a repository before 0.24.0 prints every upgrade step, rewrites the plugin version file, renames every work-item file and stage directory to `w<n>` and rewrites every initiative log
 Restates: r20@0.29, r25@0.29, r26@0.29.
-- [r13] While the repository is behind, when the person runs `migrate upgrade`, `migrate` shall rewrite
-  `.shop/plugin-version`, print "work-items named by ids" and "answers, not rulings", rename
-  `.shop/work/i1/size-check.md`, rename `.shop/work/i1/runs/size-check/` and rewrite `.shop/work/i1/log.jsonl`.
+- [r59] While the release of this repository is before `0.24.0`, when the person runs `migrate upgrade`, `migrate` shall print every upgrade step, rewrite the plugin version file of this repository, rename every work-item file and every stage directory and rewrite every initiative log.
 
 ```given
 the tracked file `spec/index.md` holds:
@@ -304,19 +323,9 @@ the tracked file `.shop/work/i1/log.jsonl` holds:
   {"time": "t", "work-item": "size-check", "event": "start"}
 ```
 
-### [g14] `migrate upgrade` with no pending step says so and changes nothing
-Restates: r27@0.29.
-- [r14] While the repository is current, when the person runs `migrate upgrade`, `migrate` shall print "no upgrade
-  step is pending" and change nothing.
-
-```given
-the tracked file `.shop/plugin-version` holds "3.0.1"
-```
-
-### [g15] the upgrade step after 0.24.0 renames `awaiting-ruling` to `awaiting-answer` and `## Rulings` to `## Answers`
+### [g43] `migrate upgrade` on a repository from 0.24.0 and before 0.25.0 rewrites every work-item file
 Restates: r29@0.29.
-- [r15] While the repository is outdated, when the person runs `migrate upgrade`, `migrate` shall rewrite
-  `.shop/work/i1/w1.md`.
+- [r43] While the release of this repository is after `0.23.1` and before `0.25.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite every work-item file.
 
 ```given
 the tracked file `.shop/plugin-version` holds "0.24.0"
@@ -331,10 +340,8 @@ the tracked file `.shop/work/i1/w1.md` holds:
   - yes
 ```
 
-### [g16] the upgrade step "codified requirements" writes `spec/restated.json`, scaffolds each uncodified capability, deletes deprecated scenarios and writes old references with their release
-- [r16] While the repository is uncodified, when the person runs `migrate upgrade`, `migrate` shall print
-  "spec/restated.json" and "spec/capabilities/cart.md", rewrite `spec/capabilities/cart.md`, rewrite
-  `features/cart.feature` and rewrite `.shop/work/i1/w2.md`.
+### [g44] `migrate upgrade` on a repository before 1.0.0 writes the restated file and rewrites each capability with no language
+- [r44] While the release of this repository is after `0.25.0` and before `1.0.0` and a capability of this repository has no language, when the person runs `migrate upgrade`, `migrate` shall write a restated file, rewrite the capability and print the restated file and the capability.
 
 ```given
 the tracked file `.shop/plugin-version` holds "0.29.0"
@@ -367,62 +374,66 @@ the tracked file `.shop/work/i1/w2.md` holds:
   # w2
 ```
 
-### [g17] the SessionStart hook tells a session to offer a pending upgrade, and to run it only on the person's yes
+### [g60] `migrate upgrade` on a repository before 1.0.0 writes each reference of a work-item file to a requirement with its release and removes each scenario that has the `@deprecated` tag from its feature
+- [r60] While the release of this repository is after `0.25.0` and before `1.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite every work-item file that mentions a requirement and rewrite every feature that holds a scenario that has the `@deprecated` tag.
+
+```given
+the tracked file `.shop/plugin-version` holds "0.29.0"
+the tracked file `spec/index.md` holds:
+  ---
+  id: bounded-context/example.org/acme/shop
+  title: shop
+  ---
+  # shop
+the tracked file `spec/capabilities/cart.md` holds:
+  ---
+  id: capability/example.org/acme/shop/cart
+  title: Cart
+  retired: []
+  ---
+  # Cart
+  ## Behaviour
+  - [r1] **When** the shopper applies a code, `cart` shall take ten percent off.
+the tracked file `features/cart.feature` holds:
+  Feature: Cart
+    @r1 @deprecated
+    Scenario: a code takes ten percent off (deprecated)
+      Given a cart
+the tracked file `.shop/work/i1/w2.md` holds:
+  ---
+  id: work-item/example.org/acme/shop/w2
+  kind: work-item
+  accepts: [cart#r1]
+  ---
+  # w2
+```
+
+### [g47] the SessionStart hook tells a session to offer the upgrade steps of a repository before 0.24.0, and to run them only on the person's yes
 Restates: r22@0.29.
-- [r17] While a repository is behind, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print
-  "0.23.1", "work-items named by ids" and "only on the person's yes".
+- [r47] While the release of this repository is before `0.24.0`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print the release of this repository, every upgrade step and `only on the person's yes`.
 
 ```given
 the tracked file `.shop/plugin-version` holds "0.23.1"
 ```
 
-### [g18] the SessionStart hook tells a session to tell the person to update the plugin
-Restates: r23@0.29.
-- [r18] While a repository is ahead, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print
-  "update the plugin".
-
-```given
-the tracked file `.shop/plugin-version` holds "9.0.0"
-```
-
-### [g19] the SessionStart hook tells a session nothing when nothing is pending and no initiative is open
-Restates: r24@0.29.
-- [r19] While a repository is idle, when the SessionStart hook runs `migrate status --hook`, `migrate` shall exit
-  successfully, and `migrate` shall not print "migrate upgrade" or print "i1".
-
-```given
-the tracked file `.shop/plugin-version` holds "3.0.1"
-the tracked file `.shop/work/i1/initiative.md` holds:
-  ---
-  id: initiative/example.org/acme/shop/i1
-  kind: initiative
-  status: done
-  ---
-  # i1
-```
-
-### [g20] the SessionStart hook tells a session nothing in a repository without `.shop/`
+### [g50] the SessionStart hook tells a session nothing in a repository with no shop directory
 Restates: r28@0.29.
-- [r20] While a repository is shopless, when the SessionStart hook runs `migrate status --hook`, `migrate` shall exit
-  successfully.
+- [r50] While this repository has no shop directory, when the SessionStart hook runs `migrate status --hook`, `migrate` shall exit successfully.
 
 ```given
 the tracked file `README.md` holds "No shop here."
 ```
 
-### [g21] the SessionStart hook tells a session that `.shop/plugin-version` holds no version
+### [g51] the SessionStart hook tells a session that the plugin version file holds no version
 Restates: r31@0.29.
-- [r21] While a repository is misversioned, when the SessionStart hook runs `migrate status --hook`, `migrate` shall
-  print "holds no version" and "banana".
+- [r51] While a plugin version file of this repository holds no version, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print `holds no version` and the content of the plugin version file.
 
 ```given
 the tracked file `.shop/plugin-version` holds "banana"
 ```
 
-### [g24] the upgrade step "the workflow simplified" freezes `.shop/work/`, moves the live requests to `.shop/requests/` and writes the decisions index
-- [r24] While the repository is queued, when the person runs `migrate upgrade`, `migrate` shall write
-  `.shop/work/FROZEN.md`, rename `.shop/work/requests/q2.md`, rewrite `spec/decisions/index.md` and print "the
-  workflow simplified", "i1" and "q1".
+### [g52] `migrate upgrade` on a repository from 1.0.0 and before 2.0.0 writes the frozen notice and rewrites the decisions index
+- [r52] While the release of this repository is after `0.29.0` and before `2.0.0`, when the person runs `migrate upgrade`, `migrate` shall write a frozen notice and rewrite the decisions index of this repository.
 
 ```given
 the tracked file `.shop/plugin-version` holds "1.0.0"
@@ -473,11 +484,167 @@ the tracked file `.shop/work/requests/q2.md` holds:
   # A peer's request
 ```
 
-### [g25] the upgrade step "verb frames" relabels each term with its part of speech and names each verb with no frame
-- [r25] While the repository is unframed, when the person runs `migrate upgrade`, `migrate` shall rewrite `spec/index.md` and print "verb frames" and "v_t11".
+### [g53] `migrate upgrade` on a repository from 1.0.0 and before 2.0.0 relocates each frozen request another bounded context asked that is not closed
+- [r53] While the release of this repository is after `0.29.0` and before `2.0.0` and the asker of a frozen request is not `internal` and the frozen request is not `delivered`, `refused` or `withdrawn`, when the person runs `migrate upgrade`, `migrate` shall relocate the frozen request.
 
 ```given
-the tracked file `.shop/plugin-version` holds "2.4.0"
+the tracked file `.shop/plugin-version` holds "1.0.0"
+the tracked file `spec/index.md` holds:
+  ---
+  id: bounded-context/example.org/acme/shop
+  title: shop
+  ---
+  # shop
+the tracked file `spec/decisions/0001-one.md` holds:
+  ---
+  id: design-decision/example.org/acme/shop/one
+  summary: One decision.
+  status: accepted
+  tier: judgement
+  ---
+  # One
+  ## Decision
+  One.
+the tracked file `spec/decisions/index.md` holds:
+  # Decisions
+  Written by hand, with no tier.
+the tracked file `.shop/work/i1/initiative.md` holds:
+  ---
+  id: initiative/example.org/acme/shop/i1
+  kind: initiative
+  title: A cart
+  status: started
+  ---
+  # i1
+the tracked file `.shop/work/requests/q1.md` holds:
+  ---
+  id: request/example.org/acme/shop/q1
+  kind: request
+  asker: internal
+  status: open
+  turn: upstream
+  ---
+  # An intention
+the tracked file `.shop/work/requests/q2.md` holds:
+  ---
+  id: request/example.org/acme/shop/q2
+  kind: request
+  asker: bounded-context/example.org/acme/web
+  status: open
+  turn: upstream
+  ---
+  # A peer's request
+```
+
+### [g54] `migrate upgrade` on a repository from 1.0.0 and before 2.0.0 names the upgrade step and each initiative that is not closed
+- [r54] While the release of this repository is after `0.29.0` and before `2.0.0` and an initiative of this repository is not `done` or `abandoned`, when the person runs `migrate upgrade`, `migrate` shall print every upgrade step whose release is `2.0.0` and the initiative.
+
+```given
+the tracked file `.shop/plugin-version` holds "1.0.0"
+the tracked file `spec/index.md` holds:
+  ---
+  id: bounded-context/example.org/acme/shop
+  title: shop
+  ---
+  # shop
+the tracked file `spec/decisions/0001-one.md` holds:
+  ---
+  id: design-decision/example.org/acme/shop/one
+  summary: One decision.
+  status: accepted
+  tier: judgement
+  ---
+  # One
+  ## Decision
+  One.
+the tracked file `spec/decisions/index.md` holds:
+  # Decisions
+  Written by hand, with no tier.
+the tracked file `.shop/work/i1/initiative.md` holds:
+  ---
+  id: initiative/example.org/acme/shop/i1
+  kind: initiative
+  title: A cart
+  status: started
+  ---
+  # i1
+the tracked file `.shop/work/requests/q1.md` holds:
+  ---
+  id: request/example.org/acme/shop/q1
+  kind: request
+  asker: internal
+  status: open
+  turn: upstream
+  ---
+  # An intention
+the tracked file `.shop/work/requests/q2.md` holds:
+  ---
+  id: request/example.org/acme/shop/q2
+  kind: request
+  asker: bounded-context/example.org/acme/web
+  status: open
+  turn: upstream
+  ---
+  # A peer's request
+```
+
+### [g55] `migrate upgrade` on a repository from 1.0.0 and before 2.0.0 names each frozen request it asked of itself that is not closed
+- [r55] While the release of this repository is after `0.29.0` and before `2.0.0` and the asker of a frozen request is `internal` and the frozen request is not `delivered`, `refused` or `withdrawn`, when the person runs `migrate upgrade`, `migrate` shall print the frozen request.
+
+```given
+the tracked file `.shop/plugin-version` holds "1.0.0"
+the tracked file `spec/index.md` holds:
+  ---
+  id: bounded-context/example.org/acme/shop
+  title: shop
+  ---
+  # shop
+the tracked file `spec/decisions/0001-one.md` holds:
+  ---
+  id: design-decision/example.org/acme/shop/one
+  summary: One decision.
+  status: accepted
+  tier: judgement
+  ---
+  # One
+  ## Decision
+  One.
+the tracked file `spec/decisions/index.md` holds:
+  # Decisions
+  Written by hand, with no tier.
+the tracked file `.shop/work/i1/initiative.md` holds:
+  ---
+  id: initiative/example.org/acme/shop/i1
+  kind: initiative
+  title: A cart
+  status: started
+  ---
+  # i1
+the tracked file `.shop/work/requests/q1.md` holds:
+  ---
+  id: request/example.org/acme/shop/q1
+  kind: request
+  asker: internal
+  status: open
+  turn: upstream
+  ---
+  # An intention
+the tracked file `.shop/work/requests/q2.md` holds:
+  ---
+  id: request/example.org/acme/shop/q2
+  kind: request
+  asker: bounded-context/example.org/acme/web
+  status: open
+  turn: upstream
+  ---
+  # A peer's request
+```
+
+### [g56] `migrate upgrade` on a repository from 2.0.0 and before 3.0.0 rewrites the index file with each term's part of speech and names each term that violates `v_t11`
+- [r56] While the release of this repository is after `1.0.0` and before `3.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite the index file of this bounded context and print every upgrade step whose release is `3.0.0` and every term that violates `v_t11`.
+
+```given
+the tracked file `.shop/plugin-version` holds "2.0.0"
 the tracked file `spec/index.md` holds:
   ---
   id: bounded-context/example.org/acme/shop
@@ -489,6 +656,67 @@ the tracked file `spec/index.md` holds:
   - **cart** (kind): the goods a shopper picks.
   - **shopper** (kind): a person who buys.
   - **pick** (event): a shopper puts goods in a cart. Forms: picks, picked.
+```
+
+### [g61] `migrate upgrade` on a repository from 3.0.0 and before 4.0.0 rewrites the index file and every capability in the controlled language 4 and names what it cannot reword
+- [r61] While the release of this repository is after `3.0.0` and before `4.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite the index file of this bounded context, rewrite every capability and print every upgrade step whose release is `4.0.0`.
+
+```given
+the tracked file `.shop/plugin-version` holds "3.0.1"
+the tracked file `spec/index.md` holds:
+  ---
+  id: bounded-context/example.org/acme/shop
+  title: shop
+  language: codified-1
+  ---
+  # shop
+  ## Glossary
+  - **cart** (noun): the goods a shopper picks.
+  - **shopper** (noun): a person who buys.
+  - **pick** (verb): a shopper puts goods in a cart. Forms: picks, picked. Frame: shopper picks cart.
+the tracked file `spec/capabilities/cart.md` holds:
+  ---
+  id: capability/example.org/acme/shop/cart
+  title: Cart
+  language: codified-1
+  retired: []
+  unbuilt: []
+  ---
+  # Cart
+  ## Behaviour
+  ### [g1] picking
+  - [r1] When a shopper picks a cart, the shopper shall pick the cart.
+```
+
+### [g62] `migrate upgrade` on a repository on the plugin's release says that no upgrade step is pending and changes nothing
+Restates: r27@0.29.
+- [r62] While the release of this repository is `4.0.0`, when the person runs `migrate upgrade`, `migrate` shall print `no upgrade step is pending` and change no file.
+
+```given
+the tracked file `.shop/plugin-version` holds "4.0.0"
+```
+
+### [g63] the SessionStart hook tells a session to tell the person to update the plugin
+Restates: r23@0.29.
+- [r63] While the release of this repository is after `4.0.0`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print `update the plugin`.
+
+```given
+the tracked file `.shop/plugin-version` holds "9.0.0"
+```
+
+### [g64] the SessionStart hook tells a session nothing on the plugin's release when no initiative is open
+Restates: r24@0.29.
+- [r64] While the release of this repository is `4.0.0` and every initiative of this repository is one of `done` or `abandoned`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall exit successfully, print no upgrade step and print no initiative.
+
+```given
+the tracked file `.shop/plugin-version` holds "4.0.0"
+the tracked file `.shop/work/i1/initiative.md` holds:
+  ---
+  id: initiative/example.org/acme/shop/i1
+  kind: initiative
+  status: done
+  ---
+  # i1
 ```
 
 ## Implementation, may change

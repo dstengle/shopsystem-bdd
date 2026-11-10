@@ -1,21 +1,48 @@
-"""A step of a codified-2 context read back through the step grammar 4 (the CNL 4 design, section 9; I14a): its one
-reading under its keyword and the Call features_vocab gives a step of grammar 3, keyed by the same templates, so a
-handler finds a codified-2 step as it finds a codified-1 one.
+"""A step read back through the step grammar 4 (the CNL 4 design, section 9; I14a): its one reading under its
+keyword as a Call, keyed by a template and a term, which a handler is found by.
 
 The templates: a Given that brings in an instance `GivenK`; example data `GivenCodeText` (a block under the step)
-and `GivenCode` (one value, in `quoted`); a value `GivenK_A`, `ThenK_A`; a state `GivenDoes`,
-`GivenDoesNot`, `ThenDoes`, `ThenDoesNot`; a run `WhenRuns`, any other trigger `WhenHappens`; an act `ThenPrints`,
-`ThenPrintsNot`, `ThenExitsOk`, `ThenExitsErr`, `ThenChangesNothing`, else `ThenDoes`, `ThenDoesNot`. A step of
-more than one reading under its keyword (the same text read with a code of two kinds is one) is refused.
+and `GivenCode` (one value, in `quoted`); a value `GivenK_A`, `ThenK_A`; the number of Ks compared `GivenCount`
+(its noun phrase the subject, the comparison its one noun phrase, b240); a state `GivenDoes`, `GivenDoesNot`,
+`ThenDoes`, `ThenDoesNot` ("x exists" of the verb exist, b240); a run `WhenRuns` (its options, spec_lf_option), any other trigger `WhenHappens`;
+an act `ThenPrints`, `ThenPrintsNot`, `ThenExitsOk`, `ThenExitsErr`, `ThenChangesNothing`, else `ThenDoes`,
+`ThenDoesNot`. A step of more than one reading under its keyword (the same text read with a code of two kinds is
+one) is refused; a Given read as example data is that, not a holds condition on the same words (b154).
 """
 import re
 
 import spec_lf_np
+import spec_lf_option
+import spec_rgl_np
 import spec_rgl_steps
-from features_vocab import Call, StepError
 
 ROW = re.compile(r"^r\d+_(\w+?)_(Has|Holds|Is)$")
 ALLOWED = {"given": ("SCond", "_Given", "_HoldsBlock", "_HoldsText"), "when": ("STrig",), "then": ("SCond", "_Does")}
+
+
+class StepError(Exception):
+    """A step that does not parse in the step grammar 4, or reads as more than one step."""
+
+
+class Call:
+    """A step read back: its template, the kind and attribute it is typed by, the term its handler is keyed by, and
+    its arguments (names, values, subject, command, event, resource, noun phrases, quoted texts, and a docstring or
+    data table). `fixtures(name)` gives the scenario's pytest fixtures when it runs, so a handler reads `step.repo`,
+    `step.context`, `step.run` and `step.request`."""
+
+    def __init__(self, keyword, template, text, tree):
+        self.keyword, self.template, self.text, self.tree = keyword, template, text, tree
+        self.kind = self.attribute = self.term = self.subject = self.command = self.event = self.resource = None
+        self.docstring = self.datatable = self.fixtures = None
+        self.names, self.values, self.nps, self.quoted = [], [], [], []
+
+    def __repr__(self):
+        return "Call(%s)" % ", ".join("%s=%r" % kv for kv in self.__dict__.items() if kv[0] != "tree")
+
+    def __getattr__(self, name):
+        if name in ("repo", "context", "run", "request") and self.fixtures is not None:
+            return self.fixtures(name)
+        raise AttributeError(name)
 
 
 def _fun(tree):
@@ -27,6 +54,8 @@ def _verb(names, vp):
     word of its frame (`r1_of_Has` "has", `r2_in_Holds` "holds") or of its condition (`r3_on_Is`, b197)."""
     if names.attr(_fun(vp))[1] == "Set":
         return "set"
+    if _fun(vp) == spec_rgl_np.EXISTS:      # "x exists" (b240)
+        return "exist"
     row = ROW.match(_fun(vp))
     if row:
         return {"Has": "has", "Holds": "holds"}.get(row.group(2), row.group(1).replace("_", " "))
@@ -47,6 +76,8 @@ def template(names, keyword, tree):
         event = args[0]
         verb = _verb(names, event[2])
         return ("WhenRuns" if verb == "run" else "WhenHappens"), None, None, verb
+    if fun == "SCond" and args[0][0] == "Count_Cmp":     # the number of Ks compared (b240)
+        return keyword.capitalize() + "Count", None, None, None
     if fun == "SCond":
         cond = args[0]
         t, rest = names.attr(cond[0])
@@ -74,6 +105,8 @@ def step(root, keyword, text):
     except spec_rgl_steps.StepError as err:
         raise StepError(str(err))
     trees = [t for t in found if t[0].endswith(ALLOWED[keyword])]
+    data = [t for t in trees if t[0].endswith(("_HoldsBlock", "_HoldsText"))]
+    trees = data or trees    # example data read as such, not as a holds condition on a code (b154)
     names = spec_lf_np.Names(vocab)
     read = {template(names, keyword, t) for t in trees}
     if len(read) != 1:
@@ -87,14 +120,21 @@ def step(root, keyword, text):
             (call.names if node[0] == "NameLit" else call.quoted).append(node[1])
         elif node[0] == "CodeLit" and name == "WhenRuns" and call.command is None:
             call.command = node[1]
+        elif node[0] == "CodeLit" and name.endswith("K_A"):     # a value no entry lists (b240)
+            call.values.append(node[1])
         elif names.attr(node[0])[0] is not None and "_v_" in node[0]:
             call.values.append(names.value(node[0]))
     row = tree[0] == "SCond" and ROW.match(tree[1][0])
-    if tree[0].endswith("_Does") or tree[0] == "SCond" and (row or not tree[1][0].endswith("_Is")):
+    if name.endswith("Count"):
+        call.subject = spec_rgl_steps.text(gram, tree[1][1])
+        call.nps = [" ".join(spec_rgl_steps.text(gram, a) for a in tree[1][2:]).strip()]
+    elif tree[0].endswith("_Does") or tree[0] == "SCond" and (row or not tree[1][0].endswith(("_Is", "_IsCode", "_HasNo"))):
         clause = tree[1] if tree[0] == "SCond" else tree
         call.subject = spec_rgl_steps.text(gram, clause[2])
         call.nps = [spec_rgl_steps.text(gram, a) for a in (clause[3:] if row else clause[3][1:])]
         call.event = _verb(names, clause[0] if row else clause[3])
+    if name == "WhenRuns":      # each option given with its argument, each not given (b240)
+        call.options, call.without = spec_lf_option.read(names, lambda t: spec_rgl_steps.text(gram, t), tree[1][2])
     if name == "WhenHappens":
         call.subject, call.event = spec_rgl_steps.text(gram, tree[1][1]), term
     call.term = (call.command if name == "WhenRuns" else call.subject if name.startswith("Then") and term is None

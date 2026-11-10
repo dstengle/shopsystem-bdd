@@ -14,8 +14,8 @@ from test_backlog_lines import ABANDON, FROBNICATE
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import toolchain
 
-SECOND = "When the person runs `work abandon` on an initiative that is `started`, `work` shall exit successfully."
-CLASH = ("When the person runs `work abandon` on an initiative that is `started`, `work` shall set its status to "
+SECOND = "While an initiative is `started`, when the person runs `work abandon` on the initiative, `work` shall exit successfully."
+CLASH = ("While an initiative is `started`, when the person runs `work abandon` on the initiative, `work` shall set the status of the initiative to "
          "`done`.")
 
 

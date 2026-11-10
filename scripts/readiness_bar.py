@@ -1,14 +1,12 @@
 """The readiness bar (capability readiness; workflow simplification plan 3, D6-D9, D11): an item is passing when every
-request line of the item is settled and its requirement lines are well-formed: they parse in their capability file's
-grammar (spec_language),
-they bring no problem of the lexicon (v_t4 to v_t13) that the lexicon without them does not have
-(readiness r15), `model logic` finds no L0 and no L1 naming them, and `features generate` writes a scenario for each of their groups
-that is not logic-only, with no step holding a bracketed placeholder (b46). The lines are checked on a copy of `spec/` under the temporary directory with the item's lines
-laid in, removed afterwards whatever happens; `spec/` itself is never written. The `check` design-decisions that a
+request line of the item is settled and its requirement lines are well-formed: they parse in grammar 4
+(spec_language), they bring no problem of the lexicon (v_t4 to v_t13) that the lexicon without them does
+not have (readiness r15), `model logic` finds no L0 and no L1 naming them, and `features generate` writes a scenario
+for each of their groups that has a step. The lines are checked on a copy of `spec/` under the temporary directory
+with the item's lines laid in, removed afterwards whatever happens; `spec/` itself is never written. The `check` design-decisions that a
 capability of the item's lines rests on run their tests on the root checkout, each once a process (plan 6, D13)."""
 import contextlib
 import io
-import re
 import shutil
 import tempfile
 from pathlib import Path
@@ -45,16 +43,15 @@ def unsettled(root, item):
 
 
 def _parses(copy, blocks):
-    """A reason for each of the item's requirements, and universal conditions (b43), that does not parse, each in its
-    capability file's grammar as laid (spec_language: a block that recodifies its capability is read in grammar 4)."""
+    """A reason for each of the item's requirements, and universal conditions (b43), that does not parse in grammar
+    4 (spec_language)."""
     reasons = []
-    statements = [(b.capability, "%s#%s" % (b.capability, rid), text) for b in blocks for g in b.groups
-                  for rid, text in g.requirements] + [(None, "universal#%s" % uid, text) for uid, text in blocks.universal]
-    for capability, ident, text in statements:
-        universal = capability is None     # a universal condition, in spec/universal.md's own grammar (b151)
-        parsed = spec_language.parse(copy, text, capability, universal)
+    statements = [("%s#%s" % (b.capability, rid), text) for b in blocks for g in b.groups
+                  for rid, text in g.requirements] + [("universal#%s" % uid, text) for uid, text in blocks.universal]
+    for ident, text in statements:
+        parsed = spec_language.parse(copy, text)
         if parsed.tree is None:
-            hint = spec_language.hint(copy, text, capability, universal)
+            hint = spec_language.hint(copy, text)
             reasons.append("%s: %s; parsed up to: %s; nearest words: %s" % (
                 ident, parsed.refusal, hint["prefix"] or "nothing", ", ".join(hint["near"]) or "none"))
     return reasons
@@ -73,28 +70,9 @@ def _logic(copy, mine):
     return list(dict.fromkeys(reasons)), list(dict.fromkeys(warnings))
 
 
-_STEP = re.compile(r"^    (Given|When|Then|And|But) (.*)$")
-_PLACEHOLDER = re.compile(r"\[[A-Za-z_][A-Za-z0-9_]*\]")   # a Steps fun with no English, as GF writes it
-_LITERAL = re.compile(r"`[^`]*`|\"[^\"]*\"")
-
-
-def unworded(text):
-    """{group id: [step text]} of the steps of a feature text that hold a bracketed placeholder (b46), outside a
-    backticked or quoted literal; the group is the scenario's first tag."""
-    found, group = {}, None
-    for line in text.splitlines():
-        if line.startswith("  @"):
-            group = line.split()[0][1:]
-        step = _STEP.match(line)
-        if step and group and _PLACEHOLDER.search(_LITERAL.sub("", step.group(2))):
-            found.setdefault(group, []).append(step.group(2))
-    return found
-
-
 def _scenarios(copy, blocks):
     """A reason for each group of a service capability that `features generate` writes no scenario for, unless it is
-    logic-only (D9), and for each step of its scenario that holds a bracketed placeholder (b46); a guarantees
-    capability has no scenarios."""
+    logic-only (D9); a guarantees capability has no scenarios."""
     reasons = []
     for block in blocks:
         path = backlog_lines.capability_file(copy, block.capability)
@@ -103,16 +81,14 @@ def _scenarios(copy, blocks):
         skipped = {}
         try:
             with contextlib.redirect_stderr(io.StringIO()):
-                text = features_generate.generate(copy, path, skipped)
+                features_generate.generate(copy, path, skipped)
         except features_generate.GenerateError as err:
             reasons.append("%s: %s" % (block.capability, err))
             continue
-        placeholders = unworded(text)
         for group in block.groups:
             gid = "%s#%s" % (block.capability, group.id)
             if gid in skipped:
                 reasons.append("%s has no scenario: %s" % (gid, skipped[gid]))
-            reasons += ["%s has a step no step words: %s" % (gid, s) for s in placeholders.get(group.id, ())]
     return reasons
 
 

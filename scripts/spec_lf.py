@@ -7,7 +7,12 @@ resolved or noted as they are translated, and `spec_lf_read.refusal` reads the f
 """
 import spec_lf_clause
 import spec_lf_core
+import spec_lf_distinct
+import spec_lf_exist
 import spec_lf_np
+import spec_lf_number
+import spec_lf_option
+import spec_lf_order
 import spec_lf_set
 import spec_lf_time
 import spec_meaning
@@ -31,6 +36,10 @@ def translate(vocab, tree):
     return spec_lf_clause.rule(st, spec_meaning.read(tree)), st
 
 
+# a state atom said by its own name (design 7.2): "X conforms to A" is conforms(x, a)
+NAMED = {("conform", ("subject", "to")): "conforms"}
+
+
 def term(x):
     if isinstance(x, Ref):
         return x.name
@@ -45,14 +54,24 @@ def atom(a):
         return "%s%s(%s)" % (verb, "#%d" % n if n > 1 else "", ", ".join([e] + [term(r) for r in roles]))
     if a.pred == "state":
         verb, n, roles = a.args
+        if (verb, tuple(r[0] for r in roles)) in NAMED:     # the CLI pack's conform: design 7.2's conforms(x, a)
+            return "%s(%s)" % (NAMED[verb, tuple(r[0] for r in roles)], ", ".join(term(r[1]) for r in roles))
         return "%s%s(%s)" % (verb, "#%d" % n if n > 1 else "", ", ".join(term(r) for r in roles))
     if a.pred == "rel":
         word, x, y = a.args
         return "%s(%s, %s)" % (word, term(x), term(y))
+    if a.pred == "cmp" and len(a.args) == 4:     # an attribute's value compared (b240)
+        return spec_lf_order.show(a, term)
     if a.pred in ("history", "cmp"):
         return spec_lf_time.show(a, term)
     if a.pred == spec_lf_set.PRED:
         return spec_lf_set.show(a, term)
+    if a.pred == spec_lf_distinct.PRED:     # "another K", "two Ks" (b240)
+        return spec_lf_distinct.show(a, term)
+    if a.pred == spec_lf_exist.PRED:     # "x exists" (b240)
+        return spec_lf_exist.show(a, term)
+    if a.pred == spec_lf_option.PRED:     # an option's argument (b240)
+        return spec_lf_option.show(a, term)
     x, attr, v = a.args
     return "%s(%s) = %s" % (attr, term(x), term(v))
 
@@ -66,12 +85,13 @@ def ref(r):
 
 def box(b, depth):
     pad = "  " * depth
-    op = b.op + (" %s %d" % b.count if b.count else "")
+    op = spec_lf_number.show(b, term) if b.op == "number" or b.count and isinstance(b.count[1], Ref) else \
+        b.op + (" %s %d" % b.count if b.count else "")
     head = pad + op + (" [%s]" % ", ".join(ref(r) for r in b.refs) if b.refs else "")
     out = [head]
     for c in b.body:
         out += box(c, depth + 1) if isinstance(c, Box) else [pad + "  " + atom(c)]
-    if b.scope is not None:
+    if b.scope is not None and (b.scope.refs or b.scope.body):     # a compared number's count has none (b240)
         out += box(b.scope, depth + 1)
     return out
 

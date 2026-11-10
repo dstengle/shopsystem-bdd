@@ -3,7 +3,7 @@
 -- the one before what follows it. `actor`, `named`, `act`, `shall` and `may` are the opers the generated ContextEng uses.
 concrete BaseEng of Base = open SyntaxEng, ParadigmsEng, (E = ExtraEng), (R = ResEng), ParamX, Prelude in {
   lincat
-    Req, Pre, Resp, Code = {s : Str} ;
+    Req, Pre, Resp, Code, Codes = {s : Str} ;
     Resps = {s : Str} ;
     Cond, Trig, Nec = S ;
     Mod = AdV ;
@@ -13,10 +13,20 @@ concrete BaseEng of Base = open SyntaxEng, ParadigmsEng, (E = ExtraEng), (R = Re
     Bound = AdN ;
     Many = Card ;
   oper
+    -- "a" or "an": the RGL's a_Det writes "a" before "up"; "an" before "up", "ur" and "un" but "uni" ("an upstream
+    -- entry", "an urgency", "an unparsed line", "a universal condition"; b240), else as the RGL does
+    aDet : SyntaxEng.Det = a_Det ** {s = pre {
+      "eu" | "Eu" | "uni" => "a" ;
+      "un" | "up" | "ur" => "an" ;
+      "a" | "e" | "i" | "o" | "A" | "E" | "I" | "O" => "an" ;
+      _ => "a"
+      }} ;
     -- a noun phrase spelled as written: an actor's name, a code; singular
     actor : Str -> NP = \s -> lin NP {s = \\_ => s ; a = R.agrP3 R.Sg} ;
     -- a thing named by a code before its noun: "the `--json` option"
     named : Str -> CN -> NP = \c, cn -> actor ("the" ++ c ++ cn.s ! R.Sg ! R.Nom) ;
+    -- things named by codes before their plural noun: "the `--x` and `--y` options" (b240)
+    namedPl : Str -> CN -> NP = \c, cn -> lin NP {s = \\_ => "the" ++ c ++ cn.s ! R.Pl ! R.Nom ; a = R.agrP3 R.Pl} ;
     -- a verb phrase after "shall", with its polarity: "write a file", "not write a file"
     act : SyntaxEng.Pol -> VP -> Str = \p, v -> p.s ++ R.infVP R.VVAux v False Simul p.p (R.agrP3 R.Sg) ;
     Acts : Type = {s : Str ; m : Bool} ;
@@ -42,15 +52,21 @@ concrete BaseEng of Base = open SyntaxEng, ParadigmsEng, (E = ExtraEng), (R = Re
     PNeg = E.UncNeg ;
     MAlways = mkAdV "always" ;
     MNever = mkAdV "never" ;
-    DetA = a_Det ;
+    DetA = aDet ;
     DetThe = the_Det ;
     DetEvery = every_Det ;
     DetPl = aPl_Det ;
     DetThePl = thePl_Det ;
     DetNo = mkDet no_Quant ;
     CodeLit s = s ;
+    CodeTwo a b = {s = a.s ++ "and" ++ b.s} ;
+    CodeMore a l = {s = a.s ++ "," ++ l.s} ;
     DetCount b n = mkDet (mkCard b n) ;
     DetOne = mkDet (mkCard n1_Numeral) ;
+    DetSame = mkDet (mkQuant ("the" ++ "same") ("the" ++ "same")) ;
+    DetAnother = mkDet (mkQuant "another" "other") ;
+    DetDifferent = mkDet (mkQuant ("a" ++ "different") "different") ;
+    DetTwo = mkDet (mkCard n2_Numeral) ;
     AtLeast = at_least_AdN ;
     AtMost = at_most_AdN ;
     Exactly = mkAdN "exactly" ;

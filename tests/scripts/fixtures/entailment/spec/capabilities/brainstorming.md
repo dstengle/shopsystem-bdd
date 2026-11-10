@@ -3,9 +3,9 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/brainstorming
 title: Brainstorming
 narrator: the person shaping work in a conversation
 group: guarantees
-language: codified-1
+language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
-retired: []
+retired: [g1, r1, g3, r3]
 unbuilt: []
 ---
 
@@ -19,16 +19,23 @@ reading. The person's words an item cites keep the conversation turns around the
 
 ## Terms
 - **the brainstorming session** (proper noun): the session in which the person and Claude shape work into items. Kind of: session.
+- **shape** (verb, action): a session writes an item's requirement lines with the person. Forms: shapes, shaped. Frame: session shapes item.
+- **quote** (verb, action): a session takes words of a message into a file it writes, as said in the message. Forms: quotes, quoted. Frame: session quotes message.
+
+## Relations
+
+| from | word | to | cardinality |
+|---|---|---|---|
+| message | of | agent | one |
 
 ## Behaviour
-
-### [g1] Lines are written and readied
-- [r1] When the brainstorming session writes an item, the brainstorming session shall write a requirement proposed by
-  the item and use `work ready`.
 
 ### [g2] Nothing waits on the person's reading
 - [r2] When the brainstorming session runs `work ready` on an item, the brainstorming session shall not ask a
   question.
 
-### [g3] A quote keeps its turns
-- [r3] When the brainstorming session writes a quote, the brainstorming session shall use `work quote`.
+### [g4] Lines are written and readied
+- [r4] When the brainstorming session shapes an item, the brainstorming session shall write a requirement that the item proposes and run `work ready` on the item.
+
+### [g5] A quote keeps its turns
+- [r5] When the brainstorming session quotes a message of the person, the brainstorming session shall run `work quote` on the message.

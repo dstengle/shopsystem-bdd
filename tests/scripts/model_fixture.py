@@ -1,6 +1,6 @@
-"""The file builders of the model tests (test_model.py and the modules that import from it): a codified context whose
-index carries the typed glossary of tests/scripts/fixtures/glossary/, capability files of one group a requirement and
-their generated feature files."""
+"""The file builders of the model tests (test_model.py and the modules that import from it): a codified-2 context
+(the CLI pack imported) whose index carries the typed glossary of tests/scripts/fixtures/glossary/, capability files
+of one group a requirement and their generated feature files."""
 import pathlib
 import re
 import textwrap
@@ -9,12 +9,15 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 PATH = "ex.com/prod/ctx"
 CONTEXT = f"bounded-context/{PATH}"
-HEAD = f"---\nid: {CONTEXT}\nlanguage: codified-1\n---\n# ctx\n"
+HEAD = f"---\nid: {CONTEXT}\nlanguage: codified-2\nimports: [cli]\n---\n# ctx\n"
 GLOSSARY = (ROOT / "tests" / "scripts" / "fixtures" / "glossary" / "spec" / "index.md").read_text()
-INDEX = HEAD + "\n" + GLOSSARY[GLOSSARY.index("## Glossary"):]
-# Every requirement `cap()` writes is this statement, which parses in the fixture glossary; its id and group are the
-# test's subject.
-STATEMENT = "When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to `started`."
+# the words the CLI pack defines too are marked as redefining it (v_t16)
+INDEX = HEAD + "\n" + re.sub(r"^(- \*\*(?:change|command|name|reason|refuse)\*\* .*)$", r"\1 Redefines: cli.",
+                              GLOSSARY[GLOSSARY.index("## Glossary"):], flags=re.MULTILINE)
+# Every requirement `cap()` writes is this statement, which parses in grammar 4 in the fixture glossary; its id and
+# group are the test's subject.
+STATEMENT = ("When the person runs `work start` on an initiative whose status is `proposed`, `work` shall set the status "
+             "of the initiative to `started`.")
 
 
 def full(kind, name):
@@ -48,7 +51,7 @@ def cap(name, reqs, group="service", retired="[]", rests_on="[]"):
         title: {name}
         narrator: a client
         group: {group}
-        language: codified-1
+        language: codified-2
         rests_on: {rests_on}
         retired: {retired}
         ---

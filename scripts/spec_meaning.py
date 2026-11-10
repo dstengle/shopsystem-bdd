@@ -72,9 +72,19 @@ def split(a, b):
 def one(trees, vocab=None):
     """(the tree kept, None) when every tree means one thing, else (None, (the subtree's text of the first tree whose
     words read two ways, the number of meanings)). The trees are taken shortest first, then by their text; their
-    meanings are logical forms over `vocab` when it is given."""
+    meanings are logical forms over `vocab` when it is given. A tree whose logical form has no translation is not
+    a meaning of the line (b240 review: "set to (a K and the `--y` option)"); when no tree has one, the first tree's
+    ValueError is raised."""
     ordered = sorted(trees, key=lambda t: (len(t), t))
-    of = {t: meaning(t, vocab) for t in ordered}
+    of, failed = {}, []
+    for t in ordered:
+        try:
+            of[t] = meaning(t, vocab)
+        except ValueError as error:
+            failed.append(error)
+    if not of:
+        raise failed[0]
+    ordered = [t for t in ordered if t in of]
     meanings = list(dict.fromkeys(of.values()))
     if len(meanings) == 1:
         return ordered[0], None

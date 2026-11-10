@@ -15,7 +15,7 @@ from pathlib import Path
 import clingo
 import spec_context
 import spec_entail
-import spec_facts
+import spec_lf_core
 import spec_packs
 from spec_entail_rules import Premises, parse, q
 from spec_findings import Words
@@ -60,7 +60,7 @@ class Explain:
         self.pack = refuse_pack(root)
 
     def parts(self, ident):
-        return sorted(r for r in self.reqs if spec_facts.split(r) == ident)
+        return sorted(r for r in self.reqs if spec_lf_core.split(r) == ident)
 
     def term(self, L, x):
         """A term of L's world in words: a code for a role named by one, a thing a premise M makes (`f(M,y,...)`) as
@@ -98,7 +98,7 @@ class Explain:
         prog = list(P.world(L, "0", Q, bool(self.pack)))
         prog += self.domain
         for M in sorted(self.reqs):
-            if P.base[M] != P.base[L] and spec_facts.split(M) != spec_facts.split(L) and spec_facts.split(L) not in self.precedence(M):
+            if P.base[M] != P.base[L] and spec_lf_core.split(M) != spec_lf_core.split(L) and spec_lf_core.split(L) not in self.precedence(M):
                 prog += ["use(%s,%s)." % (Q, q(M))] + P.rule(M)
         ctl = clingo.Control(["--warn=none", "-t", "1"])
         ctl.add("base", [], "\n".join(prog + [spec_entail.ENTAIL.read_text(), EXTRA]))
@@ -112,7 +112,7 @@ class Explain:
             p, e, d, x, m = s.arguments
             said = self.says(L, p.name, e, d, x)
             if said not in own:     # a response the line states itself, which a premise forces too, is no news
-                out.append((said, spec_facts.split(m.string)))
+                out.append((said, spec_lf_core.split(m.string)))
         return list(dict.fromkeys(out))
 
     def precedence(self, L):
@@ -121,8 +121,8 @@ class Explain:
         trig = self.P.trig.get(L)
         if forms & EXC or trig is None:
             return []
-        return [spec_facts.split(M) for M, f in sorted(self.reqs.items())
-                if "#" in M and spec_facts.split(M) != spec_facts.split(L) and {a[0] for a in f["form"]} & EXC
+        return [spec_lf_core.split(M) for M, f in sorted(self.reqs.items())
+                if "#" in M and spec_lf_core.split(M) != spec_lf_core.split(L) and {a[0] for a in f["form"]} & EXC
                 and self.P.trig.get(M, [None, None])[:2] == trig[:2]]
 
 

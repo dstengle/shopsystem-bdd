@@ -1,9 +1,0 @@
-# telemetry: sentences that parse with exactly one tree in the fixture glossary's grammar.
-When the person runs `measure batch` on an initiative that is `done`, `measure` shall write a measurement and print "wall time".
-While a result is `DONE`, when the person runs `measure batch` on an initiative, `measure` shall print the outcome of the result.
-When the person runs `measure defect` on a work-item that is `green`, `measure` shall write a record.
-When the person runs `measure compare batch-2 batch-3`, `measure` shall print "batch-2" and print "batch-3".
-If the person runs `measure batch` on an initiative that is not `done`, then `measure` shall exit with an error naming the status of the initiative and change nothing.
-Where `--json` is given, when the person runs `measure compare batch-2 batch-3`, `measure` shall print a JSON object.
-When the person runs `measure batch` on an initiative, `measure` shall write a measurement and commit the measurement.
-`measure` shall not push a commit.

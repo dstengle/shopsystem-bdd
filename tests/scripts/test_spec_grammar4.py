@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 import pytest
-import spec_grammar
+import spec_gf
 import spec_grammar4
 import spec_rgl_vocab
 
@@ -45,7 +45,7 @@ def test_every_line_of_the_twin_has_one_tree_that_round_trips_or_is_refused_with
                 failures.append("%s\n    not refused with %r: %s" % (line, reason, p.tree or p.refusal))
         elif p.tree is None:
             failures.append("%s\n    %s" % (line, p.refusal))
-        elif spec_grammar4.linearise(root, p.tree) != spec_grammar.normalise(line):
+        elif spec_grammar4.linearise(root, p.tree) != spec_gf.normalise(line):
             failures.append("%s\n    linearises as %s" % (line, spec_grammar4.linearise(root, p.tree)))
     assert not failures, "\n".join(failures)
 
@@ -112,7 +112,6 @@ def test_model_parse_reads_a_codified_2_context_in_grammar_4(root):
     assert done.returncode == 1 and "the verb write does not agree in number with its subject" in done.stdout
     done = model(root, "parse", "When a session writes a stage, `work` shall print the stage.")
     assert done.returncode == 1 and "parsed up to: When a session writes a" in done.stdout
-    assert model(root, "parse", "--grammar", "Def", "A stage is open when it is.").returncode == 2
 
 
 def test_model_parse_reads_a_codified_2_capability_file_s_requirements(root, tmp_path):

@@ -37,6 +37,20 @@ class ReadingTest(ModelTest):
         self.assertIn(f'rests_on("{THING}", "{full("design-decision", "x")}").', facts)
         self.assertIn(f'group("{THING}", "service").', facts)
 
+    def test_a_decision_may_rest_on_a_retired_universal_condition(self):
+        """A retired U<n> is history (b240 phase 14: U4, U8 and U11 reworded, their decisions kept); an id
+        spec/universal.md never held is still unresolved."""
+        self.write("spec/universal.md", f"---\nid: {full('capability', 'universal')}\nlanguage: codified-2\n"
+                   "retired: [U1]\n---\n\n## Behaviour\n\n- [U2] `thing` shall answer.\n")
+        for n, u in ((1, "U1"), (2, "U3")):
+            self.write(f"spec/decisions/{n:04d}-d{n}.md", f"---\nid: {full('design-decision', f'd{n}')}\nsummary: S\n"
+                       f"date: 2026-01-01\nstatus: accepted\ntier: judgement\nrests_on: [{u}]\n---\n\n# D\n\n"
+                       "## Decision\n\nD.\n")
+        found, _ = self.check_json()
+        self.assertEqual([d for d in found["unresolved"] if "universal-condition" in d],
+                         ["spec/decisions/0002-d2.md: %s names nothing in this repository"
+                          % full("universal-condition", "u3")], found)
+
     def test_a_deprecated_scenario_is_no_acceptance_scenario(self):
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] `thing` shall answer."], retired="[r2]"))
         self.write("features/thing.feature", "\n".join([  # noqa: FLY002 -- lines kept as a list, one a row

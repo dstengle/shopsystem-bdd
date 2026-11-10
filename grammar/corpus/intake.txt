@@ -1,9 +1,0 @@
-# intake: sentences that parse with exactly one tree in the fixture glossary's grammar.
-When the person runs `work intake` on a request that is `open`, `work` shall write an initiative that is `proposed` and commit the initiative.
-When the person runs `work outcome accepted` on a request line, `work` shall set the line outcome of the request line to `accepted`.
-When the person runs `work outcome refused` on a request line, `work` shall set the line outcome of the request line to `refused` and write the reason.
-When the person runs `work outcome rewritten` on a request line, `work` shall set the line outcome of the request line to `rewritten` and write a request line.
-While a request is `awaiting-upstream`, when the person runs `work intake` on the request, `work` shall not ask a question.
-While a request line is settled, when the person runs `work turn` on a request, `work` shall set the status of the request to `accepted`.
-If the person runs `work intake` on a request that is not `open`, then `work` shall exit with an error naming the status of the request and change nothing.
-When the person runs `work intake` on a request, `work` shall write an initiative and commit the initiative.

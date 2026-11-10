@@ -78,13 +78,14 @@ class LanguageCommandsTest(CodifiedTest):
         r = self.run_model("parse", START)
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertEqual(len(r.stdout.strip().splitlines()), 1, r.stdout)
-        self.assertTrue(r.stdout.startswith("When (RunsOn"), r.stdout)
+        self.assertTrue(r.stdout.startswith("When NoPre (k_agent_Event"), r.stdout)
 
     def test_a_refusal_exits_1_with_the_hint(self):
         r = self.run_model("parse", DRAFTED)
         self.assertEqual(r.returncode, 1)
         self.assertIn("`drafted`", r.stdout)
-        self.assertIn("parsed up to: When the person runs `work start` on an initiative that is", r.stdout)
+        self.assertIn("parsed up to: When the person runs `work start` on an initiative, `work` shall set the status of "
+                      "the initiative to", r.stdout)
         self.assertIn("nearest words:", r.stdout)
 
     def test_parse_a_file_numbers_its_lines(self):
@@ -92,14 +93,14 @@ class LanguageCommandsTest(CodifiedTest):
         r = self.run_model("parse", "--file", str(path))
         self.assertEqual(r.returncode, 1)
         out = r.stdout.splitlines()
-        self.assertTrue(out[0].startswith("1: When (RunsOn"), out)
+        self.assertTrue(out[0].startswith("1: When NoPre (k_agent_Event"), out)
         self.assertTrue([line for line in out if line.startswith("3: ") and "`drafted`" in line], out)
 
     def test_parse_a_file_skips_its_comment_lines(self):
         path = self.write("corpus.txt", "# a corpus: sentences that parse\n" + START + "\n")
         r = self.run_model("parse", "--file", str(path))
         self.assertEqual(r.returncode, 0, r.stdout)
-        self.assertTrue(r.stdout.startswith("2: When (RunsOn"), r.stdout)
+        self.assertTrue(r.stdout.startswith("2: When NoPre (k_agent_Event"), r.stdout)
 
     def test_parse_a_codified_file_parses_its_statements_only(self):
         path = self.write("spec/capabilities/wq.md", codified("wq", self.start_group()))
@@ -111,7 +112,7 @@ class LanguageCommandsTest(CodifiedTest):
         for row in out:
             n, tree = row.split(": ", 1)
             self.assertTrue(lines[int(n) - 1].startswith("- [r"), (row, lines[int(n) - 1]))
-            self.assertTrue(tree.startswith("When (RunsOn"), row)
+            self.assertTrue(tree.startswith("When NoPre (k_agent_Event"), row)
 
     def test_parse_a_codified_file_names_the_line_of_a_refused_statement(self):
         path = self.write("spec/capabilities/wq.md", codified("wq", self.start_group(f"- [r3] {DRAFTED}")))
@@ -122,15 +123,11 @@ class LanguageCommandsTest(CodifiedTest):
                         r.stdout)
 
     def test_parse_the_universal_file_parses_its_conditions(self):
-        text = "---\nlanguage: codified-1\n---\n\n# Universal\n\n## Behaviour\n\n- [U1] " + START + "\n"
+        text = "---\nlanguage: codified-2\n---\n\n# Universal\n\n## Behaviour\n\n- [U1] " + START + "\n"
         path = self.write("spec/universal.md", text)
         r = self.run_model("parse", "--file", str(path))
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
-        self.assertTrue(r.stdout.startswith("9: When (RunsOn"), r.stdout)
-
-    def test_parse_in_a_grammar_that_is_not_there_exits_2(self):
-        r = self.run_model("parse", "--grammar", "Nope", START)
-        self.assertEqual(r.returncode, 2, r.stdout + r.stderr)
+        self.assertTrue(r.stdout.startswith("9: When NoPre (k_agent_Event"), r.stdout)
 
     def test_lexicon_lists_terms_by_category(self):
         r = self.run_model("lexicon")

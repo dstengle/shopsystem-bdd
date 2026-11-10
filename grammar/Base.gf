@@ -7,7 +7,7 @@
 -- over one clause (`Necessary`, its clause a subject's `Nec`).
 abstract Base = {
   flags startcat = Req ;
-  cat Req ; Pre ; Cond ; Conds ; Trig ; Resp ; Resps ; Pol ; Det ; Code ; Bound ; Many ; Mod ; Nec ;
+  cat Req ; Pre ; Cond ; Conds ; Trig ; Resp ; Resps ; Pol ; Det ; Code ; Codes ; Bound ; Many ; Mod ; Nec ;
   fun
     Ubiq : Pre -> Resps -> Req ;               -- R.
     When : Pre -> Trig -> Resps -> Req ;       -- When T, R.
@@ -26,9 +26,14 @@ abstract Base = {
     MAlways, MNever : Mod ;                    -- always, never
     DetA, DetThe, DetEvery, DetPl, DetThePl, DetNo : Det ;   -- a, the, every, (bare plural), the (plural), no
     CodeLit : String -> Code ;                 -- `spec/index.md`
+    -- codes before a plural noun (b240, construct #12): "the `--x` and `--y` options"
+    CodeTwo : Code -> Code -> Codes ;          -- `a` and `b`
+    CodeMore : Code -> Codes -> Codes ;        -- `a`, `b` and `c`
     -- counts (call 4; I15): "at least two", "exactly one" ... before a noun; "one" alone is exactly one
     DetCount : Bound -> Many -> Det ;
     DetOne : Det ;
+    -- identity and distinctness (b240, construct #2): "the same K", "another K", "a different K", "two Ks"
+    DetSame, DetAnother, DetDifferent, DetTwo : Det ;
     AtLeast, AtMost, Exactly, MoreThan, FewerThan : Bound ;
     Many1, Many2, Many3, Many4, Many5, Many6, Many7, Many8, Many9, Many10 : Many ;
 }

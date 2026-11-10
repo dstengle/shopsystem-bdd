@@ -5,7 +5,7 @@ among initiates and terminates), one translation of spec_rgl's `<t>_Set` in each
   T") is the atom `initiates(e, subject: D, T(x) = v)`: the act e of D makes T of x v. The value is the post-state,
   never a presupposition of the pre-state; x is the owner the noun phrase names, no image of T is made.
 - `model parse --form` (`show`): the atom as `initiates(e2, subject: x3, status(x2) = done)`.
-- `model logic`'s facts (`facts`): the act `resp(R,I,Pol,set(T,V),D,X)`, as spec_facts gives a codified-1 `Set`,
+- `model logic`'s facts (`facts`): the act `resp(R,I,Pol,set(T,V),D,X)`, the set of design-r3 §3,
   and, when it obliges, `set(R,I,X,T,V)`, which check.lp's two states read as the post-state.
 - `features generate`'s Then (`then`): "D sets the T of x to v" in the present, with its polarity (`k_agent_Does`).
 """

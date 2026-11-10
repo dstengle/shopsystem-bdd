@@ -4,7 +4,7 @@ title: Code research
 narrator: the script `work run`, which started the researcher
 group: guarantees
 rests_on: [design-decision/scout-on-haiku-at-low-effort, design-decision/worker-results-are-files, design-decision/the-file-set-is-the-claim, design-decision/workflow-capabilities-are-guarantees]
-language: codified-1
+language: codified-2
 retired: [r1, r2, r3, r4, r5, r6]
 ---
 

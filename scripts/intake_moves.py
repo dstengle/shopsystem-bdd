@@ -34,11 +34,11 @@ def named(request, text):
     return '%s "%s"' % (request, title_of(text))
 
 
-def parsed(root, line, said, capability=None):
-    """Refuse `line` unless it parses in this context's requirement grammar (the grammar of `capability`'s file, when
-    one is named: request_lines), with `said` before the refusal."""
+def parsed(root, line, said):
+    """Refuse `line` unless it parses in this context's requirement grammar (request_lines), with `said` before the
+    refusal."""
     try:
-        request_lines.check(root, [line], capability)
+        request_lines.check(root, [line])
     except Refused as refused:
         why, head = str(refused), "line 1 does not parse in the upstream's requirement grammar: "
         if not why.startswith(head):
@@ -66,7 +66,7 @@ def _refusals(root, ident, text, number, word, into, group, line, reason):
     if word == "rewritten" and line is None:
         raise Refused("work outcome: a rewritten line is written with its counter-proposal: give --line <text>")
     if word == "accepted":
-        parsed(root, lines[str(number)], "line %d of %s, %s," % (number, named(ident, text), lines[str(number)]), into)
+        parsed(root, lines[str(number)], "line %d of %s, %s," % (number, named(ident, text), lines[str(number)]))
         if into is None:
             raise Refused("work outcome: an accepted line of %s goes into a capability of this context: give "
                           "--into <capability>" % named(ident, text))

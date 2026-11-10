@@ -1,8 +1,9 @@
 """Handlers of features/design-model-check.feature (design §14.3): `model` run on the repository the Givens build,
 and what it printed read back.
 
-A repository starts from what a model check needs to be clean: a codified `spec/index.md` with the typed glossary of
-tests/scripts/fixtures/glossary/, the capability `thing` with one requirement group and its scenario, the observation the initiatives cite, and an initiative for each work directory. The
+A repository starts from what a model check needs to be clean: a codified-2 `spec/index.md` (the CLI pack imported)
+with the typed glossary of tests/scripts/fixtures/glossary/, the capability `thing` with one requirement group and its
+scenario, the observation the initiatives cite, and an initiative for each work directory. The
 Givens of a condition (design_model_check_handlers_conditions.py) change it so that one rule fires, and keep in
 `says` what the output names an instance by (a file, a reference, a code)."""
 import os
@@ -14,11 +15,28 @@ from vocab import handler
 
 PATH = "ex.com/prod/ctx"
 FIXTURE = (Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "glossary" / "spec" / "index.md").read_text()
-TERMS = FIXTURE[FIXTURE.index("## Glossary") + len("## Glossary\n"):].strip() + "\n\n### This repository's\n\n"
-INDEX = "---\nid: bounded-context/%s\nlanguage: codified-1\n---\n# ctx\n\n## Glossary\n\n%s" % (PATH, TERMS)
-# A statement that parses in the fixture glossary: `cap()` writes it for each requirement a Given gives in 0.29 words.
-STATEMENT = "When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to `started`."
+# the fixture's terms, those the CLI pack defines too marked as redefining it (v_t16)
+TERMS = re.sub(r"^(- \*\*(?:change|command|name|reason|refuse)\*\* .*)$", r"\1 Redefines: cli.",
+               FIXTURE[FIXTURE.index("## Glossary") + len("## Glossary\n"):].strip(), flags=re.MULTILINE) + \
+    "\n\n### This repository's\n\n"
+MARKER = "language: codified-2\nimports: [cli]\n"
+INDEX = "---\nid: bounded-context/%s\n%s---\n# ctx\n\n## Glossary\n\n%s" % (PATH, MARKER, TERMS)
+# A statement that parses in grammar 4 in the fixture glossary: `cap()` writes it for each requirement a Given gives
+# in 0.29 words.
+STATEMENT = ("When the person runs `work start` on an initiative whose status is `proposed`, `work` shall set the status "
+             "of the initiative to `started`.")
 HIDE_CLINGO = 'raise ImportError("clingo is hidden for this test")\n'
+
+
+def sibling(name):
+    """A handler module beside this one, loaded once under the name the others load it by."""
+    import importlib.util
+    module = "shop_" + name[:-3]
+    if module not in sys.modules:
+        spec = importlib.util.spec_from_file_location(module, Path(__file__).with_name(name))
+        sys.modules[module] = loaded = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(loaded)
+    return sys.modules[module]
 
 
 def full(kind, name):
@@ -39,7 +57,7 @@ def cap(name, reqs, retired="[]", ident=None):
     for k, line in enumerate(reqs, 1):
         m = re.match(r"- (\[r\d+\] )?\*\*When\*\*", line)
         body += ["### [g%d] line %d" % (k, k), "- %s%s" % (m.group(1) or "", STATEMENT) if m else line]
-    return ("---\nid: %s\ntitle: %s\nnarrator: a client\ngroup: service\nlanguage: codified-1\nrests_on: []\n"
+    return ("---\nid: %s\ntitle: %s\nnarrator: a client\ngroup: service\nlanguage: codified-2\nrests_on: []\n"
             "retired: %s\n---\n\n# %s\n\n## Purpose\nSomething.\n\n## Behaviour\n\n%s\n\n## Not yet\n- None.\n"
             % (ident or full("capability", name), name, retired, name, "\n".join(body)))
 
@@ -59,7 +77,9 @@ def says(step, key, word):
 
 
 def flag(step, name):
-    return [name] if name in step.context.get("flags", []) else []
+    """`name` when a Given gave it, or the When runs the command with the option (grammar 4's `options`)."""
+    given = [o.strip("`") for o, _ in getattr(step, "options", None) or ()]
+    return [name] if name in step.context.get("flags", []) + given else []
 
 
 def base(repo, context):
@@ -68,7 +88,7 @@ def base(repo, context):
     if not index.is_file():
         write(repo, "spec/index.md", INDEX)
     elif "language: codified-" not in index.read_text():       # world_nodes' index: codified, the fixture terms added
-        text = index.read_text().replace("\n---\n", "\nlanguage: codified-1\n---\n", 1)
+        text = index.read_text().replace("\n---\n", "\n%s---\n" % MARKER, 1)
         index.write_text(text.replace("## Glossary\n\n", "## Glossary\n\n" + TERMS, 1))
     if not (repo / "spec" / "capabilities" / "thing.md").is_file():
         write(repo, "spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, `thing` shall answer."]))
@@ -99,7 +119,7 @@ def env_of(step):
     and a python3 on PATH that has it where one is clingoless."""
     found = step.context.get("interpreter")
     if not found:
-        return None
+        return sibling("design_model_check_handlers_cache.py").env(step) if step.context.get("xdg") else None
     repo = step.repo
     write(repo, "hidden/clingo.py", HIDE_CLINGO)
     env = {k: v for k, v in os.environ.items() if k not in ("SHOPSYSTEM_MODEL_PYTHON", "SHOPSYSTEM_MODEL_REEXEC",
@@ -112,7 +132,13 @@ def env_of(step):
     return env
 
 
+def built(step):
+    """The world the Givens' facts pick, built once before the command (design_model_check_handlers_facts)."""
+    step.context.pop("build", lambda _: None)(step)
+
+
 def run_model(step, *args):
+    built(step)
     base(step.repo, step.context)
     step.context["result"] = step.run("model", *args, env=env_of(step), timeout=120)
 
@@ -125,6 +151,7 @@ def model_check(step):
 @handler("WhenRuns", "`model logic`")
 def model_logic(step):
     """`model logic` on the capability the When names, or on the requirement, by the id a Given gave it."""
+    built(step)
     ids = step.context.get("ids", {})
     run_model(step, "logic", *[ids.get(step.names[0], step.names[0])] if step.names else [])
 
@@ -136,6 +163,7 @@ def model_facts(step):
 
 @handler("WhenRuns", "`model decisions`")
 def model_decisions(step):
+    built(step)
     for name in step.names:     # a decisions index the When names exists, current unless a Given made it stale
         if name not in step.context.get("says", {}):
             given_index(step)
@@ -162,7 +190,14 @@ def holding(step):
 
 @handler("WhenRuns", "`model parse`")
 def model_parse(step):
-    """`model parse` on the capability file that holds the requirement: each of its statements."""
+    """`model parse` on the capability file that holds the requirement: each of its statements; with the `--form`
+    option, design_model_check_handlers_form's; on a fragment, the world of an unfinished line."""
+    if flag(step, "--form"):
+        return sibling("design_model_check_handlers_form.py").model_parse_form(step)
+    if " on the fragment " in step.text:
+        step.context.setdefault("facts", []).append("run on fragment")
+        step.context["build"] = sibling("design_model_check_worlds.py").build
+    built(step)
     run_model(step, "parse", "--file", holding(step))
 
 
@@ -171,8 +206,9 @@ def model_parse(step):
 PRINTED = {"fact": ['node("capability/', 'node("bounded-context/'], "rule": ["v15a", "w_uncited_obs"]}
 
 
-def unsaid(step, word):
-    printed = PRINTED.get(step.kind)
+def unsaid(step, word, np=""):
+    kind = step.kind or " ".join(np.split()[1:-1])
+    printed = PRINTED.get(kind)
     return printed[(int(re.sub(r"\D", "", word) or 1) - 1) % len(printed)] if printed else word
 
 
@@ -182,7 +218,7 @@ def named(step):
     out = [q.strip('"') for q in step.quoted]
     for np in step.nps:
         out += [w.strip("`") for w in np.split() if w.startswith("`")]
-        out += [step.context.get("says", {}).get(w) or unsaid(step, w) for w in np.split() if w in step.names]
+        out += [step.context.get("says", {}).get(w) or unsaid(step, w, np) for w in np.split() if w in step.names]
     return out
 
 
@@ -220,13 +256,3 @@ def given_index(step):
 @handler("GivenK", "feature")
 def given_nothing(step):
     pass
-
-
-# An unpairable capability: r1 and r2 name the code `x` of an initiative and of a request, which no unification makes
-# one thing; r3 and r4 clash (an L1). `model logic` sets r1 and r2 aside and still finds r3 and r4's L1.
-UNPAIRABLE = [("While the initiative `x` is `proposed`, when the person runs `work stop` on a stage, `work run` shall "
-               "end the stage."),
-              ("While the request `x` is `open`, when the person runs `work stop` on a stage, `work run` shall not "
-               "end the stage."),
-              "When the person runs `work check`, `work` shall exit successfully.",
-              "When the person runs `work check`, `work` shall exit with an error naming `work check`."]

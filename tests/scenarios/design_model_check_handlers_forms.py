@@ -61,6 +61,7 @@ def given_unattributed(step):
 def work_record(step):
     """`work record` in the repository, committed first, with a title, a kind, the index row's text, a body kept
     outside the repository and the `--about` a Given gave the record."""
+    H.built(step)
     H.base(step.repo, step.context)
     step.context["head"] = W.init(step.repo)
     body = step.fixtures("tmp_path_factory").mktemp("body") / "body.md"

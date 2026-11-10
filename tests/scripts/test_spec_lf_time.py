@@ -7,7 +7,7 @@ import sys
 
 import pytest
 import spec_context
-import spec_grammar
+import spec_gf
 import spec_grammar4
 import spec_lf
 import spec_lf_read
@@ -50,7 +50,7 @@ def test_every_line_of_the_time_corpus_has_one_meaning_that_round_trips_or_is_re
                 failures.append("%s\n    not refused with %r: %s" % (line, reason, refusal or p.tree))
         elif refusal is not None:
             failures.append("%s\n    %s" % (line, refusal))
-        elif spec_grammar4.linearise(FIXTURE, p.tree) != spec_grammar.normalise(line):
+        elif spec_grammar4.linearise(FIXTURE, p.tree) != spec_gf.normalise(line):
             failures.append("%s\n    linearises as %s" % (line, spec_grammar4.linearise(FIXTURE, p.tree)))
     assert not failures, "\n".join(failures)
 

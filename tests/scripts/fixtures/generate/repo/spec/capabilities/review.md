@@ -3,7 +3,7 @@ id: capability/example.org/fixture/review
 title: Review
 narrator: the reviewer
 group: guarantees
-language: codified-1
+language: codified-2
 rests_on: []
 retired: []
 ---
@@ -15,8 +15,8 @@ A guarantees capability: checked on real batches, with no scenarios.
 
 ## Behaviour
 
-### [g1] a stage holds the spec lock
-- [r1] `work run` shall hold at most `workers` worker slots at a time.
+### [g1] an initiative fulfils a request
+- [r1] An initiative always fulfils a request.
 
 ## Not yet
 ## Dropped

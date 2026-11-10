@@ -4,7 +4,7 @@ title: Red-green
 narrator: the script `work run`, which started the implementer
 group: guarantees
 rests_on: [design-decision/feature-files-read-only-in-red-green, design-decision/plans-list-the-tests-they-break, design-decision/worker-results-are-files, design-decision/the-file-set-is-the-claim, design-decision/work-item-lifecycle-as-run, design-decision/workflow-capabilities-are-guarantees]
-language: codified-1
+language: codified-2
 retired: [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15]
 ---
 
@@ -19,7 +19,6 @@ the contract; the implementer satisfies them and stops when one cannot be satisf
 a scenario should have said, and it never writes a work-item's transition: `work run` reads its result.
 
 ## Terms
-
 - **passing** (adjective of scenario): a scenario that passes when it is run alone with `python3 -m pytest`.
 
 ## Behaviour

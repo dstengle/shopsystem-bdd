@@ -2,7 +2,7 @@
 id: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
 title: shopsystem-bdd
 language: codified-2
-imports: [cli]
+imports: [cli, spec]
 ---
 
 # shopsystem-bdd
@@ -15,9 +15,9 @@ stages, initiatives, work-items, proposals and delegations) is retired
 (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired), its capabilities kept as the
 record of their ids, and `.shop/work/` is frozen as history. Every capability file is codified (design model v5): the
 glossary below is typed, `spec/universal.md` holds the universal conditions, and `spec/restated.json` freezes the
-0.29 ids. This index says `codified-2` and imports the CLI pack (CNL 4): a capability that still says `codified-1`
+0.29 ids. This index says `codified-2` and imports the CLI pack (CNL 4) and the spec pack (b240): a capability that still says `codified-1`
 keeps parsing in the old grammar over the glossary and its own terms, and the glossary's words the pack defines too
-are marked `Redefines: cli`. Verify with `python3 scripts/model check`; the decisions index, `spec/decisions/index.md`,
+are marked `Redefines: cli`, and the spec pack's `Redefines: spec`. Verify with `python3 scripts/model check`; the decisions index, `spec/decisions/index.md`,
 is written by `python3 scripts/model decisions`; `python3 scripts/model rules` lists every rule with its label.
 
 ## Purpose
@@ -117,14 +117,14 @@ The simplified workflow:
 
 - **bounded context** (noun): one repository's spec, with its index, capabilities, decisions and glossary. This: the bounded context whose repository the command runs in.
 - **capability** (noun): one file under `spec/capabilities/`, with a group and a narrator. Plural: capabilities. Kind of: file.
-- **requirement** (noun): one codified statement of a capability, named `<capability>#r<n>`, that parses to one tree in the requirement grammar. Not: behaviour requirement, capability requirement, carry, carries, carried, carrying. Kind of: text.
+- **requirement** (noun): one codified statement of a capability, named `<capability>#r<n>`, that parses to one tree in the requirement grammar. Not: behaviour requirement, capability requirement, carry, carries, carried, carrying. Kind of: text. Redefines: spec.
 - **requirement group** (noun): the requirements of a capability that together make one scenario, named `<capability>#g<n>`, with a title.
 - **universal condition** (noun): a statement of `spec/universal.md`, named `U<n>`, true in every state of every trace and never restated in a requirement. Kind of: text.
 - **term** (noun): one entry of this glossary or of a capability's `## Terms`, with a category.
 - **design-decision** (noun): one file under `spec/decisions/`. Kind of: file.
 - **feature** (noun): the generated file `features/<capability>.feature`, one scenario for each requirement group. Kind of: file.
-- **scenario** (noun): a Gherkin scenario in `features/<capability>.feature`, generated from one requirement group, passing when the one test that binds it passes. Not: test case.
-- **step** (noun): one Given, When or Then line of a scenario, the linearisation of one step function, bound to exactly one step definition.
+- **scenario** (noun): a Gherkin scenario in `features/<capability>.feature`, generated from one requirement group, passing when the one test that binds it passes. Not: test case. Kind of: text.
+- **step** (noun): one Given, When or Then line of a scenario, the linearisation of one step function, bound to exactly one step definition. Kind of: text.
 
 - **request** (noun): the one way work enters a bounded context: lines that its asker (another context, the product level, or the context itself) proposes to its upstream (the context asked). Kind of: text.
 - **request line** (noun): one proposed statement of a request, with its line outcome. Kind of: text.
@@ -152,20 +152,21 @@ The simplified workflow:
 - **compaction** (noun): Claude Code's replacement of a session's earlier messages by a summary, recorded in its transcript.
 - **fact** (noun): one statement `model facts` gives clingo about the repository's files.
 
-- **worktree** (noun): a working tree `work run` makes for one stage.
+- **worktree** (noun): a working tree `work batch start` makes for one task of a batch, in which the dispatch that builds the task works.
 - **file** (noun): a file or a directory of the repository or of a worktree. Kind of: text.
+- **version** (noun): one release of an analysis tool, as `ruff==0.17.0`, or of the plugin, written `<major>.<minor>.<patch>`. Kind of: text.
 - **text** (noun): what a session or a tool writes: a file, or a part of one it writes whole, such as an entry, a line, a row, a block or a comment. Kind of: thing.
 - **thing** (noun): anything a requirement names, as what a verb such as keep, name, read or use takes.
 - **command** (noun): one run of `work`, `work run` or another tool, with its arguments. Kind of: thing. This: the command the run runs. Redefines: cli.
 - **reason** (noun): what an error names as the cause of a refused command. Kind of: text. Redefines: cli.
-- **JSON object** (noun): the one object a tool prints on standard output when `--json` is given.
+- **JSON object** (noun): a JSON value of the object type, as a tool prints it on standard output.
 - **initiative branch** (noun): the branch `work run` commits each transition on and merges each work-item branch into, whose base is the commit it started from. Plural: initiative branches. Not: integration branch.
 - **work-item branch** (noun): the branch an implementer commits a work-item's work on, from the initiative branch's head, merged into the initiative branch and deleted when it is merged. Plural: work-item branches.
-- **commit** (noun): one git commit on a branch, with its message and its change. Kind of: thing.
+- **commit** (noun): one git commit on a branch, with its message and its change. Kind of: thing. This: the commit the command makes.
 - **commit** (verb, action): a session or a tool records changed files, or a text changed in one, as one git commit on the current branch. Forms: commits, committed. Frame: agent commits text.
 - **push** (verb, action): a commit is pushed to a remote. Forms: pushes, pushed. Frame: agent pushes commit.
 - **relocate** (verb, action): a file or directory is moved with git, keeping its history. Forms: relocates, relocated. Frame: `migrate` relocates file.
-- **use** (verb, action): a session or a tool uses another tool, a model, an interpreter or a file. Forms: uses, used. Frame: agent uses thing.
+- **use** (verb, action): a session or a tool uses another tool, a model, an interpreter or a file. Forms: uses, used. Frame: agent uses thing. Redefines: spec.
 - **test** (noun): one test of the repository's suite, a scenario's or a script's, by its pytest id. Kind of: thing.
 - **violation** (noun): a row of a rule `model check` finds, printed under the rule's code and plain label.
 - **remote** (noun): the remote `work run` pushes the initiative branch to: the branch's upstream remote, else `origin`.
@@ -173,6 +174,7 @@ The simplified workflow:
 - **record** (noun): a file under `.shop/records/` whose frontmatter id has a record kind. Not: log entry. Kind of: file.
 - **measurement** (noun): a record under `.shop/records/measurements/` of the figures of one batch, of one earlier delivery or of a trial, written by `measure` or by the trial. Not: facts file. Kind of: record.
 - **trial** (noun): one run by the `trial-runner` of a plugin tool or `work run` on a real target or a fixture repository, measuring what its input names. Kind of: thing.
+- **the language reference** (artifact): the file `grammar/language.md` of the plugin: the reading rules of the controlled language, its constructs, each with its tested lines, and what it cannot say yet.
 
 - **status** (attribute of initiative): a node's, request's or design-decision's place in its kind's lifecycle, written in its frontmatter by `work`. Values: `proposed`, `started`, `done`, `abandoned`.
   Transitions: `proposed` → `started`: `work start`; `started` → `done`: complete; `started` → `abandoned`: `work abandon`. Not: state.
@@ -189,10 +191,12 @@ The simplified workflow:
 - **side** (attribute of request): the side whose part of the request is written next. Values: `asker`, `upstream`.
 - **kind** (attribute of stage): Values: `research`, `plan`, `implement`, `review`, `integrate`, `gate`, `apply`, `formulate`, `intake`, `answer`, `branch review`, `analysis`.
 - **group** (attribute of capability): Values: `service`, `guarantees`, `model`, `operations`.
+- **language** (attribute of capability): the language a capability file's lines are read in, its frontmatter's `language:`. Values: `codified-1`, `codified-2`.
 - **grade** (attribute of review finding): Values: `Critical`, `Important`, `Minor`.
 
 - **open** (adjective of initiative): An initiative is open when the initiative is not `done` and the initiative is not `abandoned`.
 - **open** (adjective of work-item): A work-item is open when the work-item is not `green` and the work-item is not `withdrawn`.
+- **uncited** (adjective of observation): an observation that the `source` of no initiative and of no request names.
 - **unfixed** (adjective of initiative): an initiative whose kept branch review lists a review finding to fix now.
 - **settled** (adjective of request line): A request line is settled when the request line is `accepted` or the request line is `refused` or the request line is `withdrawn`.
 - **closed** (adjective of capability-proposal): A capability-proposal is closed when the capability-proposal is `formulated` or the capability-proposal is `withdrawn`.
@@ -203,11 +207,11 @@ The simplified workflow:
 - **end** (verb, action): a session or a tool stops a thing it runs, such as a stage or a trial, with a result or without one. Frame: agent ends thing.
 - **ask** (verb, action): a session or a tool raises a question that waits for an answer. Frame: agent asks question.
 - **discard** (verb, action): `work run` drops a stage that ended without a readable result. Frame: `work run` discards stage.
-- **merge** (verb, action): `work run` merges a work-item branch into the initiative branch. Forms: merges, merged. Frame: the person merges pull request.
+- **merge** (verb, action): the person merges a pull request into its base branch on GitHub. Forms: merges, merged. Frame: the person merges pull request.
 - **raise** (verb, action): an initiative raises a request into an upstream. Forms: raises, raised. Frame: initiative raises request.
 - **refuse** (verb, action): a tool declines a command. Frame: tool refuses command. Redefines: cli.
 - **write** (verb, action): a session or a tool writes a file or a field. Forms: writes, written. Frame: agent writes text.
-- **change** (verb, action): a session or a tool changes a file or a field. Frame: agent changes file. Redefines: cli.
+- **change** (verb, action): a session or a tool changes a file or a field, or with "nothing" leaves every thing as it was. Frame: agent changes thing. Redefines: cli.
 - **give** (verb, action): a session or a tool gives a text a thing it lacks, such as a grade to a review finding. Forms: gives, given. Frame: agent gives thing to text.
 
 - **turn** (noun, exclusive): one for each request, held by the side whose part of the request is to be written next.
@@ -231,17 +235,16 @@ The simplified workflow:
 - **status** (attribute of task): Values: `pending`, `running`, `done`, `failed`.
 - **tier** (attribute of design-decision): Values: `check`, `requirement`, `judgement`.
 - **dependency** (noun): one item's need of another item, written in the item that needs it. Plural: dependencies. Kind of: text.
-- **blocked** (adjective of item): an item with a dependency on an item that is not `delivered` and is not in the same batch.
 - **well-formed** (adjective of item): an item whose every requirement parses, has no L0 or L1 finding of `model logic` with the item's lines laid over `spec/`, and has its scenarios written by `features generate`, and whose capabilities' `check` design-decisions pass their tests.
 - **passing** (adjective of item): An item is passing when the item is well-formed and every request line of the item is settled.
 - **clean** (adjective of pull request): A pull request is clean when no review finding on the pull request is `fix now`.
-- **pick** (verb, action): `work batch start` takes a ready item into a batch, or returns it to `shaped` when it is no longer passing. Forms: picks, picked. Frame: `work` picks item.
+- **pick** (verb, action): `work batch start` takes a ready item into the batch it writes. Forms: picks, picked. Frame: `work` picks item.
 - **park** (verb, action): a batch sets an item it cannot finish without an answer to `needs-input`. Forms: parks, parked. Frame: batch parks item.
 - **publish** (verb, action): `work` puts a thing on GitHub: a batch's branch as a pull request, with its commits. Forms: publishes, published. Frame: `work` publishes thing.
 - **triage** (attribute of review finding): what a review asks of its finding: fixed on the branch before the merge, kept as an observation, or dropped. Values: `fix now`, `observation`, `drop`.
 - **defect** (noun): a file of a batch that records a fault in the behaviour of the repository's code, with its reproduction, found by a review or after a merge. Kind of: file.
 - **failing** (adjective of test): the test fails when it runs.
-- **use** (verb, state): a text holds a word or a thing, as a requirement uses a term. Forms: uses, used. Frame: text uses thing.
+- **use** (verb, state): a text holds a word or a thing, as a requirement uses a term. Forms: uses, used. Frame: text uses thing. Redefines: spec.
 - **list** (verb, state): a text holds each of some things, as a glossary lists a term. Forms: lists, listed. Frame: text lists thing.
 
 ## Relations
@@ -262,14 +265,15 @@ The simplified workflow:
 | dependency | on | item | one |
 | request line | of | item | one |
 | question | on | item | one |
-| item | proposes | requirement |  |
 | item | in | batch | one |
 | task | of | batch | one |
 | pull request | of | batch | one |
 | review finding | on | pull request | one |
 | quote | from | session | one |
-| quote | cites | message |  |
 | design-decision | enforced by | test |  |
+| worktree | of | session | one |
+| command | of | tool | one |
+| commit | of | transition |  |
 
 ## Where things live
 

@@ -4,7 +4,7 @@ title: Planning
 narrator: the script `work run`, which started the planner
 group: guarantees
 rests_on: [design-decision/plans-carry-intent-not-code, design-decision/plans-list-the-tests-they-break, design-decision/worker-results-are-files, design-decision/the-file-set-is-the-claim, design-decision/workflow-capabilities-are-guarantees]
-language: codified-1
+language: codified-2
 retired: [r1, r2, r3, r4, r5, r6, r7]
 ---
 
@@ -19,17 +19,7 @@ work-item; it plans from the researcher's notes and gives intent, never code. A 
 (design-decision/behaviour-lines-are-ears): it grows from what running it shows.
 
 ## Terms
-
 - **plan** (noun): the file `plan.md` a planner writes in its stage directory: intent, never code.
-- **plan decision** (noun): a decision a plan makes that the capability's requirements leave open, named with the requirement or design-decision it rests on.
-- **code block** (noun): code, file contents, a diff or a step-definition body written out in a plan.
-
-## Relations
-
-| from | word | to | cardinality |
-|---|---|---|---|
-| test | broken by | plan decision |  |
-| plan decision | settled by | requirement |  |
 
 ## Behaviour
 

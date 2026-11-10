@@ -1,22 +1,22 @@
 """The rules of the entailment check (the CNL 4 design, I13a; its study's comp.py and cex.py, ported): a context's
 check facts read per requirement (`parse`), the world of a query q(L,I) as facts (`Premises.world`) and each premise M
 as Datalog rules over a query variable Q (`Premises.rule`), in its stratum (`stage`); grammar/entail.lp is their
-background. A codified-1 line's facts (spec_facts) and a codified-2 line's (spec_lf_facts) are read alike: an `each`
-object is an `every` one."""
+background. A line's facts are spec_lf_facts': an `each` object is an `every` one."""
 import re
 from collections import defaultdict
 
 import clingo
 
-DOMAIN = ("kind", "sub", "actor", "fun", "val", "trans", "initial", "prose", "dalt", "dlit", "akind")
+DOMAIN = ("kind", "sub", "actor", "fun", "val", "trans", "initial", "prose", "dalt", "dlit", "akind", "vkey", "dense")
 
 
 def parse(facts):
-    """({requirement: {predicate: [args]}}, {domain predicate: [args]}) of check facts (strings)."""
+    """({requirement: {predicate: [args]}}, {domain predicate: [args]}) of check facts (strings); a string argument
+    after the requirement's id kept quoted, so a code value is a term of the program as it stands."""
     reqs, dom = defaultdict(lambda: defaultdict(list)), defaultdict(list)
     for f in facts:
         t = clingo.parse_term(f.rstrip("."))
-        args = [a.string if a.type == clingo.SymbolType.String else str(a) for a in t.arguments]
+        args = [a.string if a.type == clingo.SymbolType.String and not n else str(a) for n, a in enumerate(t.arguments)]
         if t.name in DOMAIN:
             dom[t.name].append(args)
         elif args:
@@ -25,8 +25,10 @@ def parse(facts):
 
 
 def q(s):
-    """A term of the program: a symbol or a compound as it is, anything else quoted."""
-    if re.fullmatch(r"[a-z][A-Za-z0-9_]*", s) or re.fullmatch(r"(value|number|kind|set)\(.*\)", s):
+    """A term of the program: a symbol, a compound or a string (a code, b240 phase 21) as it is, anything else
+    quoted."""
+    if (re.fullmatch(r"[a-z][A-Za-z0-9_]*", s) or re.fullmatch(r'"(?:[^"\\]|\\.)*"', s)
+            or re.fullmatch(r"(value|number|kind|set)\(.*\)", s)):
         return s
     return '"%s"' % s.replace("\\", "\\\\").replace('"', '\\"')
 
@@ -151,8 +153,8 @@ class Premises:
     def rule(self, M):
         """M as Datalog over a query variable Q: `use(Q,M)` and its antecedent force its responses (tagged M)."""
         f, can = self.reqs[M], self.canon(M)
-        if f["only"] or f["holds"] or f["free"] or f["uall"] or f["ccount"] or f["onattr"]:
-            return []     # never forced: an `every` or a count over the pre-state, a negated restriction (b197)
+        if f["only"] or f["holds"] or f["free"] or f["uall"] or f["ccount"] or f["pcount"] or f["onattr"] or f["ccmp"]:
+            return []     # never forced: an `every` or a count over the pre-state, a negated restriction, a comparison
         kinds, mq = dict(f["role"]), q(M)
         every = {can[y] for y in self.every(M)} | {can[y] for y in self.neguniv(M)}
         ante = {can[y] for y in self.ante_roles(M) if y in can} | every

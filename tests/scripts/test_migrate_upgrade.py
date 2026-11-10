@@ -89,6 +89,23 @@ class TheStaging(unittest.TestCase):
         self.assertEqual(sorted(staged), ["a.md", "b.md", "spec/index.md"])
 
 
+class ALargeNoteList(unittest.TestCase):
+    """The upgrade's commit message is passed on stdin: notes over Linux's 128 KB limit for one argument (b240 review)."""
+
+    def test_notes_over_one_arguments_limit_are_committed(self):
+        root = repository({"spec/index.md": INDEX, ".shop/plugin-version": "3.0.1\n"})
+        notes = ["spec/capabilities/x.md r%d: a note of some length to make the message large enough" % i
+                 for i in range(3000)]
+        step = types.SimpleNamespace(plan=lambda _root: types.SimpleNamespace(failures=[], moves=[], texts={}, notes=notes))
+        with mock.patch.object(migrate_upgrade, "pending", return_value=[("4.0.0", "big", "notes", step)]), \
+                mock.patch.object(migrate_upgrade.shop_files, "pushed"), mock.patch("builtins.print"):
+            self.assertEqual(migrate_upgrade.upgrade(root), 0)
+        message = subprocess.run(["git", "log", "-1", "--format=%B"], cwd=root, capture_output=True,
+                                 text=True).stdout
+        self.assertGreater(len(message.encode()), 128 * 1024)
+        self.assertIn(notes[-1], message)
+
+
 class NoIdentity(unittest.TestCase):
     """With no git identity to commit with, `migrate upgrade` refuses before it plans a step (plan-9 review M1)."""
 

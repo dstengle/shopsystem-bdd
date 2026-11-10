@@ -8,10 +8,12 @@ context names a parameter) and R11 ("this K" the run's own K). R7 (counts) is I1
 precedence, inertia) the check's (I12a, I12b). This module holds the rest, and the refusals:
 
 - R2: "the K" binds to the latest earlier referent of kind K (a part's, an actor, a code, an indexical) not made
-  inside a "no", "not", "every" or "only" box read before it (State.boxed: DRS accessibility, b222), else to the image of a row `K | of | S` of the one earlier
-  referent of kind S (the worktree of the session), else to the run's own K when K's entry has `This:`; else the
-  line is refused, naming the noun (`the`). A referent whose noun phrase holds the "the" gives it nothing: "a stage
-  after the stage" is after an earlier stage, never after itself (b217).
+  inside a "no", "not", "every", "only" or count box or a case of an "or" read before it (State.boxed: DRS
+  accessibility, b222, b240), else to the image of a row `K | of | S` of the one earlier referent of kind S (the
+  worktree of the session), else to the run's own K when K's entry has `This:`; else the line is refused, naming the
+  noun and the box (`the`, `inside`). A referent named outside the box it is made in, a box closed only after the
+  "the K" was read ("every K and the status of the K"), is refused so too (`outside`). A referent whose noun phrase
+  holds the "the" gives it nothing: "a stage after the stage" is after an earlier stage, never after itself (b217).
   "the K of X" is the image of X by the row `K | of | S`, X read first (spec_lf_np's `of`): never an earlier K nor
   the K whose relative clause holds it, and inside the box of "every Y" when X is "every Y" (b221).
 - R4: "does not V a K" in a While or Where clause is refused (`negated`): it reads as "Vs no K" and as "a K that X
@@ -48,13 +50,19 @@ def words(st, ref):
 
 def _image(st, row, y):
     ref, new = st.image((row, y), row[0])
-    return NP(ref, "a", [Atom("rel", ("of", ref, y))]) if new else core.fixed(ref)
+    return NP(ref, "a", [Atom("rel", ("of", ref, y))], image=True) if new else core.fixed(ref)
 
 
-def the(st, kind, plural=False):
-    """R2 and R11: the NP "the K" binds to, or None, the refusal noted (the caller makes a definite referent)."""
+def the(st, kind, plural=False, said=None):
+    """R2 and R11: the NP "the K" (`said`, "the same K") binds to, or None, the refusal noted (the caller makes a
+    definite referent); one of a pair "two Ks" gave is refused: "the K" names neither (b240)."""
+    said = said or "the " + noun(st, kind, plural)
     refs = [r for r in st.refs if r.origin in ACCESSIBLE and r not in st.open and r not in st.boxed]
     bound = next((r for r in reversed(refs) if kind in st.vocab.ancestors(r.kind)), None)
+    if bound is not None and bound in st.pairs:
+        st.notes.append('"%s" has no antecedent: "two %s" gives two %s, and "%s" names neither'
+                        % (said, noun(st, bound.kind, True), noun(st, bound.kind, True), said))
+        return None
     if bound is not None:
         return core.fixed(bound)
     rows = [r for r in st.names.rows.values() if r[0] == kind and r[1] == "of"]
@@ -63,16 +71,71 @@ def the(st, kind, plural=False):
         return _image(st, *found[0])
     if kind in st.vocab.this:
         return core.fixed(st.constant(kind, st.vocab.this[kind], "indexical"))
-    said = "the " + noun(st, kind, plural)
-    if any(kind in st.vocab.ancestors(r.kind) for r in st.boxed):
-        st.notes.append('"%s" has no antecedent outside a "no", "not", "every" or "only" box: give %s '
-                        'outside it' % (said, article(noun(st, kind))))
+    hidden = [r for r in st.refs if r in st.boxed and kind in st.vocab.ancestors(r.kind)]
+    if hidden:
+        st.notes.append(inside(st, said, hidden[-1], st.boxed[hidden[-1]]))
         return None
     more = (': %d earlier noun phrases may give it: say "the %s of" one of them' % (len(found), noun(st, kind))
             if found else ": no earlier noun phrase, functional relation or declared indexical gives %s"
             % article(noun(st, kind)))
     st.notes.append('"%s" has no antecedent%s' % (said, more))
     return None
+
+
+NUMBERS = dict(enumerate(["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"]))
+
+
+def box_said(st, box):
+    """How a box is said, by the referent it is made for: "every stage ...", one case of an "or"."""
+    if box.op == "case":
+        return 'one case of an "or"'
+    kind = box.refs[0].kind
+    if box.op == "number":
+        return '"the number of %s ..."' % noun(st, kind, True)
+    if box.op == "count" and isinstance(box.count[1], core.Ref):
+        return '"%s %s %s ..."' % (box.count[0], box.count[1].value, noun(st, kind, True))
+    if box.op == "count":
+        bound, n = box.count
+        return '"%s %s %s ..."' % (bound, NUMBERS.get(n, n), noun(st, kind, n != 1))
+    return '"%s %s ..."' % ({"not": "no"}.get(box.op, box.op), noun(st, kind, box.op == "only"))
+
+
+def inside(st, said, ref, box):
+    """R2's refusal of "the K" (`said`) whose only antecedent `ref` is made inside `box`."""
+    return '"%s" has no antecedent: %s is made inside %s, which gives nothing outside it' \
+        % (said, article(noun(st, ref.kind)), box_said(st, box))
+
+
+def _refs(x):
+    if isinstance(x, core.Ref):
+        yield x
+    elif isinstance(x, (tuple, list)):
+        for y in x:
+            yield from _refs(y)
+
+
+def _outside(conds, seen):
+    """The first referent an atom of `conds` names that is not in `seen` nor made in a box around the atom."""
+    for c in conds:
+        if isinstance(c, Box):
+            inner = seen | set(c.refs)
+            found = _outside(c.body, inner) or (_outside([c.scope], inner) if c.scope is not None else None)
+        else:
+            found = next((r for r in _refs(c.args) if r not in seen), None)
+        if found is not None:
+            return found
+    return None
+
+
+def outside(st, form):
+    """R2 over the whole form: the refusal of a referent named outside the box it is made in ("print every stage and
+    the status of the stage": the stage is bound before its box is closed), or None."""
+    seen = set(form.fixed) | {r for p in form.parts for r in p.refs}
+    found = _outside(form.parts, seen)
+    boxes = core.closed(form.parts)
+    if found is None or found not in boxes:
+        return None
+    return inside(st, "the " + noun(st, found.kind), found, boxes[found])
 
 
 def its(st, kinds, said):
@@ -143,6 +206,9 @@ def refusal(vocab, tree):
     form, st = spec_lf.translate(vocab, tree)
     if st.notes:
         return "refused: " + st.notes[0]
+    leak = outside(st, form)
+    if leak:
+        return "refused: " + leak
     ops = {p.op for p in form.parts}
     if not ops & {"when", "if"} and form.modality == "shall" \
             and any(obliges(p) for p in form.parts if p.op == "response"):

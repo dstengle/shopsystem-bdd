@@ -4,7 +4,7 @@ title: Spec consistency
 narrator: the person keeping a spec
 group: guarantees
 rests_on: [design-decision/the-glossary-is-a-target-of-spec-work, design-decision/consistency-check-on-demand, design-decision/spec-writers-blind-to-code, design-decision/workflow-capabilities-are-guarantees]
-language: codified-1
+language: codified-2
 retired: [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17]
 ---
 
