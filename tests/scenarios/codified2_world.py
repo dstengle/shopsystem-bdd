@@ -70,13 +70,30 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
          # bound to the trigger's stage, and refused when only the stage it modifies would give it
          "embedding": ("When a session ends a stage, `work` shall print a stage that precedes the stage.", None),
          "self-embedding": ("When the person runs `work start`, `work` shall print a stage that precedes the stage.",
-                            '"the stage" has no antecedent')}
-# a condition's glossary entries, added to the fixture's
+                            '"the stage" has no antecedent'),
+         # "the K of X" in a relative clause on a K (b221): the stage of the worktree, a stage of its own, the worktree
+         # the session's, as in "a review that lists the review of the pull request"; and "the K of every Y", one
+         # worktree of each session, inside the every box (READINGS: what its logical form prints of each)
+         "self-relating": ("When a session writes a file, `work` shall print a stage that precedes the stage of the "
+                           "worktree.", None),
+         "distributive": ("When a session writes a file, `work` shall print the worktree of every session.", None)}
+# a condition's glossary entries, added to the fixture's, and its rows, added to its `## Relations`
 TERMS = {"embedding": ["- **precede** (verb, state): a stage comes before a stage. Frame: stage precedes stage."]}
-TERMS["self-embedding"] = TERMS["embedding"]
+TERMS["self-embedding"] = TERMS["self-relating"] = TERMS["embedding"]
+ROWS = {"self-relating": ["| stage | of | worktree | one |"]}
+# what `model parse --form` prints of a condition's line, said by the scenario's reading: the stage x6 of the worktree
+# x5 of the session x1, a referent of its own, which the head x4 precedes; one worktree x5 of each session x4, in the
+# every box's scope
+READINGS = {"self-relating": ("r2", "    of(x5, x1)\n    of(x6, x5)\n    precede(subject: x4, object: x6)\n"),
+            "distributive": ("d1", "    every [x4: session]\n      scope [x5: worktree]\n        of(x5, x4)\n")}
 # a condition whose line `features generate` writes: its capability is `shelf`, and the step its feature must hold
-# (the new stage precedes the trigger's, not itself)
-SHELVED = {"embedding": r"^    Then the stage s3 precedes the stage s2$"}
+# (the new stage precedes the trigger's, not itself; the head s3 precedes the stage s2 of the worktree, not itself; two
+# sessions, each with its own worktree printed)
+SHELVED = {"embedding": r"^    Then the stage s3 precedes the stage s2$",
+           "self-relating": r"^    And the worktree w1 has the stage s2\n    And the stage s3 precedes the stage s2$",
+           "distributive": (r"^    Given a session s2\n    And a session s3\n    When the session s1 writes the file f1\n"
+                            r"    Then the session s2 has the worktree w1\n    And `work` prints the worktree w1\n"
+                            r"    And the session s3 has the worktree w2\n    And `work` prints the worktree w2$")}
 
 TIMED = {"timed", "clocked", "historical", "unitless"}
 
@@ -176,10 +193,14 @@ def requirement(step, word, path):
     index = step.repo / "spec" / "index.md"
     for entry in TERMS.get(word, ()):
         index.write_text(index.read_text() + entry + "\n")
+    for row in ROWS.get(word, ()):
+        index.write_text(index.read_text().replace("|\n\n## Glossary", "|\n%s\n\n## Glossary" % row, 1))
     if word in SHELVED:
         step.context.setdefault("holds", {})["features/shelf.feature"] = re.compile(SHELVED[word], re.MULTILINE)
     if says:
         step.context.setdefault("says", {})["t1"] = says
+    if word in READINGS:
+        step.context.setdefault("says", {})[READINGS[word][0]] = READINGS[word][1]
 
 
 # A state verb whose frame takes no object (b219): the glossary entry the fixture has not, and r1 of the capability
