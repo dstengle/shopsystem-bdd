@@ -117,6 +117,8 @@ def requirement(step):
         H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))
     elif word == "intransitive":     # a state verb whose frame takes no object, in the codified-2 world
         C2.intransitive(step, H.PATH)
+    elif word == "setting":     # a response that sets an attribute to a value, in the codified-2 world's `shelf`
+        C2.setting(step, H.PATH)
     elif word in C2.LINES:      # a line of grammar 4, in the smallest codified-2 world
         C2.requirement(step, word, H.PATH)
     elif word in C2.OBLIQUE:      # a line of grammar 4 in the capability `shelf`, its verb added to the glossary

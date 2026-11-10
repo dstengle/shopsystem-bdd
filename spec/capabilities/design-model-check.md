@@ -148,6 +148,17 @@ context: product-level artifacts are read only where the files contain them.
 
 - **intransitive** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, whose While clause has a state verb whose frame takes no object, as in "a test fails" under `Frame: test fails.`.
 
+- **self-relating** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, with "the K of X" inside a relative clause on a noun phrase of kind K, as in "When the person runs `work batch review` on a batch, `work` shall write a review that lists the review of the pull request.".
+- **relation reading** (noun): a logical form in which "the K of X" inside a relative clause on a noun phrase of kind K is a referent of its own, the K of X, and not the referent of that noun phrase. Plural: relation readings. Kind of: logical form.
+- **distributive** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, with "the K of every Y" in its response, as in "When the person runs `work batch status`, `work` shall print the pull request of every batch.".
+- **distributed reading** (noun): a logical form in which "the K of every Y" is a referent inside the box of "every Y", one K of each Y, and not one K of all of them. Plural: distributed readings. Kind of: logical form.
+
+- **shadowed** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, with "the K" after a noun phrase of kind K inside a "no", "not", "every" or "only" box that does not hold "the K", and after a noun phrase of kind K outside that box, as in "While an item has no dependency on an item whose status is not `delivered`, when the person runs `work batch start`, `work` shall pick the item.".
+- **accessible reading** (noun): a logical form in which "the K" is the latest earlier referent of kind K that is not inside a "no", "not", "every" or "only" box which does not hold "the K", and not a referent inside such a box. Plural: accessible readings. Kind of: logical form.
+- **unreachable** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, with "the K" where every earlier noun phrase of kind K is inside a "no", "not", "every" or "only" box that does not hold "the K", as in "While no item is `ready`, when the person runs `work batch start`, `work` shall print the item.".
+
+- **setting** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, whose response says that an agent shall set an attribute of a thing the line names earlier to a value, as in "set the status of the request to `delivered`" or "set its status to `delivered`".
+
 ## Behaviour
 
 ### [g1] `model check` exits successfully on a sound context
@@ -474,6 +485,27 @@ Restates: r65@0.29.
 
 ### [g163] `model logic` reads a state verb that takes no object
 - [r163] When the person runs `model logic` on a requirement that is intransitive, `model` shall exit successfully.
+
+### [g164] `model parse --form` reads "the K of X" in a relative clause on a K as its own referent
+- [r164] When the person runs `model parse --form` on a requirement that is self-relating, `model` shall print a relation reading and exit successfully.
+
+### [g165] `model parse --form` reads "the K of every Y" inside the box of every Y
+- [r165] When the person runs `model parse --form` on a requirement that is distributive, `model` shall print a distributed reading and exit successfully.
+
+### [g166] `model parse --form` binds "the K" to a referent outside a no, not, every or only box
+- [r166] When the person runs `model parse --form` on a requirement that is shadowed, `model` shall print an accessible reading and exit successfully.
+
+### [g167] `model parse` refuses "the K" that only a referent inside a no, not, every or only box gives
+- [r167] If the person runs `model parse` on a requirement that is unreachable, then `model` shall exit with an error naming the term.
+
+### [g168] `model parse` reads a response that sets an attribute to a value
+- [r168] When the person runs `model parse` on a requirement that is setting, `model` shall exit successfully.
+
+### [g169] `model parse --form` reads setting an attribute as a change of its value
+- [r169] When the person runs `model parse --form` on a requirement that is setting, `model` shall print "initiates".
+
+### [g170] `model logic` finds no clash in a response that sets an attribute
+- [r170] When the person runs `model logic` on a requirement that is setting, `model` shall exit successfully.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a

@@ -154,10 +154,16 @@ def model_rules_option(step):
     run_model(step, "rules", step.term.strip("`").split()[-1])
 
 
+def holding(step):
+    """The capability file that holds the requirement: the one its id names (`ids`, as `shelf#r1`), else thing.md."""
+    ident = step.context.get("ids", {}).get(step.names[0], "") if step.names else ""
+    return str(step.repo / "spec" / "capabilities" / ("%s.md" % ident.split("#")[0] if "#" in ident else "thing.md"))
+
+
 @handler("WhenRuns", "`model parse`")
 def model_parse(step):
     """`model parse` on the capability file that holds the requirement: each of its statements."""
-    run_model(step, "parse", "--file", str(step.repo / "spec" / "capabilities" / "thing.md"))
+    run_model(step, "parse", "--file", holding(step))
 
 
 # What an instance no Given named is printed as, by its kind and number: `model facts` and `model rules` print every

@@ -14,6 +14,7 @@ While clause is (any K). A line that says both "shall" and "may", or "may not", 
 import spec_lf_core as core
 import spec_lf_np as nps
 import spec_lf_read
+import spec_lf_set
 import spec_lf_time
 from spec_lf_core import Atom, Box, NPList
 
@@ -52,6 +53,10 @@ def vp(st, tree):
     if name.startswith("e_"):
         n, m = numbers(name, 2)
         return [nps.np(st, x) for x in a], lambda s, r: frame_atom(st, n, m, [s] + list(r))
+    return spec_lf_set.vp(st, tree, nps.owner) or _unknown(tree)
+
+
+def _unknown(tree):
     raise nps.unknown(tree)
 
 
@@ -86,7 +91,7 @@ def clause(st, subject, vptree, neg):
     st.subject = saved
     if neg:
         spec_lf_read.negated(st, subject_of(subject), args, vptree)     # R4
-    return core.apply([subject] + args, lambda r: build(r[0], r[1:]), 1 if neg else None)
+    return st.apply([subject] + args, lambda r: build(r[0], r[1:]), 1 if neg else None)
 
 
 def gapped(st, ref, subject, gaptree, neg):
@@ -96,7 +101,7 @@ def gapped(st, ref, subject, gaptree, neg):
     st.subject = saved
     if neg:
         spec_lf_read.negated(st, subject_of(subject), args, gaptree)    # R4
-    return core.apply([subject] + args, lambda r: build(r[0], ref, r[1:]), 1 if neg else None)
+    return st.apply([subject] + args, lambda r: build(r[0], ref, r[1:]), 1 if neg else None)
 
 
 def cond(st, tree):
@@ -116,7 +121,7 @@ def cond(st, tree):
     if t is not None and (rest == "IsOf" or rest.endswith("_Is")):
         x = nps.owner(st, a[1]) if rest == "IsOf" else nps.np(st, a[1])
         value = st.names.value(nps.fun(a[2]))
-        return core.apply([x], lambda r: Atom("attr", (r[0], t.term, value)), 1 if a[0] == "PNeg" else None)
+        return st.apply([x], lambda r: Atom("attr", (r[0], t.term, value)), 1 if a[0] == "PNeg" else None)
     timed = spec_lf_time.cond(st, tree)     # after, before, within the last, the perfect (I16)
     if timed is not None:
         return timed

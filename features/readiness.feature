@@ -120,3 +120,23 @@ Feature: Readiness
     When the person runs `work line --recodify` on the item i1
     Then `work` writes the capability c1
     And `work` commits the item i1
+
+  @g17 @r17
+  Scenario: `work line --recodify universal` switches the universal conditions' language on an item
+    When the person runs `work line --recodify universal` on the item i1
+    Then `work` writes the language marker l1
+    And `work` commits the item i1
+
+  @g18 @r18
+  Scenario: `work line --universal --retires` writes a universal condition that replaces another
+    When the person runs `work line --universal --retires` on the item i1
+    Then `work` writes the universal condition u1
+    And `work` commits the item i1
+
+  @g19 @r19
+  Scenario: A retired universal condition that `spec/universal.md` does not hold
+    Given an universal condition u1
+    And the universal condition u1 is nonexistent
+    When the person runs `work line --universal --retires` on the universal condition u1
+    Then `work` exits with an error naming the universal condition u1
+    And `work` changes nothing

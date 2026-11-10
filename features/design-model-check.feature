@@ -693,3 +693,55 @@ Feature: Design model check
     And the requirement r1 is intransitive
     When the person runs `model logic` on the requirement r1
     Then `model` exits successfully
+
+  @g164 @r164
+  Scenario: `model parse --form` reads "the K of X" in a relative clause on a K as its own referent
+    Given a requirement r1
+    And the requirement r1 is self-relating
+    When the person runs `model parse --form` on the requirement r1
+    Then `model` prints the relation reading r2
+    And `model` exits successfully
+
+  @g165 @r165
+  Scenario: `model parse --form` reads "the K of every Y" inside the box of every Y
+    Given a requirement r1
+    And the requirement r1 is distributive
+    When the person runs `model parse --form` on the requirement r1
+    Then `model` prints the distributed reading d1
+    And `model` exits successfully
+
+  @g166 @r166
+  Scenario: `model parse --form` binds "the K" to a referent outside a no, not, every or only box
+    Given a requirement r1
+    And the requirement r1 is shadowed
+    When the person runs `model parse --form` on the requirement r1
+    Then `model` prints the accessible reading a1
+    And `model` exits successfully
+
+  @g167 @r167
+  Scenario: `model parse` refuses "the K" that only a referent inside a no, not, every or only box gives
+    Given a requirement r1
+    And the requirement r1 is unreachable
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits with an error naming the term t1
+
+  @g168 @r168
+  Scenario: `model parse` reads a response that sets an attribute to a value
+    Given a requirement r1
+    And the requirement r1 is setting
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g169 @r169
+  Scenario: `model parse --form` reads setting an attribute as a change of its value
+    Given a requirement r1
+    And the requirement r1 is setting
+    When the person runs `model parse --form` on the requirement r1
+    Then `model` prints "initiates"
+
+  @g170 @r170
+  Scenario: `model logic` finds no clash in a response that sets an attribute
+    Given a requirement r1
+    And the requirement r1 is setting
+    When the person runs `model logic` on the requirement r1
+    Then `model` exits successfully

@@ -386,6 +386,18 @@ the capability `shelf` holds:
 ### [g28] `features generate` writes the steps of a state verb that takes no object
 - [r28] When the person runs `features generate` on a requirement that is intransitive, `features` shall write the feature `features/shelf.feature` and exit successfully.
 
+### [g29] `features generate` writes the steps of "the K of X" in a relative clause on a K
+- [r29] When the person runs `features generate` on a requirement that is self-relating, `features` shall write the feature `features/shelf.feature` and exit successfully.
+
+### [g30] `features generate` writes the steps of "the K of every Y"
+- [r30] When the person runs `features generate` on a requirement that is distributive, `features` shall write the feature `features/shelf.feature` and exit successfully.
+
+### [g31] `features generate` writes the steps of "the K" bound outside a no, not, every or only box
+- [r31] When the person runs `features generate` on a requirement that is shadowed, `features` shall write the feature `features/shelf.feature` and exit successfully.
+
+### [g32] `features generate` writes the steps of a response that sets an attribute
+- [r32] When the person runs `features generate` on a requirement that is setting, `features` shall write the feature `features/shelf.feature` and exit successfully.
+
 ## Implementation, may change
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three
   backticks. A scenario's block is its tag lines, its `Scenario:` line and everything up to the next scenario's tag

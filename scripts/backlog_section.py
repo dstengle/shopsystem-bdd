@@ -6,7 +6,8 @@ the capability's file to (`work line --recodify`, backlog_recodify), an optional
 capability the item's lines replace (`work line --retires`, backlog_retires), then optional term bullets, then relation rows (`| from | word | to |
 cardinality |`), then `#### [g<n>] <title>` groups of `- [r<n>] <statement>` bullets, one line each, a group's fenced
 `given` block after its lines. After the capability blocks, a `### universal` block of `- [U<n>] <statement>`
-conditions and a `### index` block of upstream entries (`- bounded-context/<path>: ...`), the pieces of
+conditions (after an optional `language: codified-2` line and an optional `retired: [U<n>, ...]` line, spec/universal.md
+switched and the conditions the item's replace: backlog_universal) and a `### index` block of upstream entries (`- bounded-context/<path>: ...`), the pieces of
 `spec/universal.md` and of `spec/index.md`'s `## Upstreams` (b43)."""
 import re
 from collections import namedtuple
@@ -26,17 +27,20 @@ GROUP = re.compile(r"^#### \[(g[1-9]\d*)\] (\S.*)$")
 REQ = re.compile(r"^- \[(r[1-9]\d*)\] (\S.*)$")
 U = re.compile(r"^- \[(U[1-9]\d*)\] (\S.*)$")
 RETIRED = re.compile(r"^retired: \[(r[1-9]\d*(?:, r[1-9]\d*)*)\]$")
+U_RETIRED = re.compile(r"^retired: \[(U[1-9]\d*(?:, U[1-9]\d*)*)\]$")
 LANGUAGE = re.compile(r"^language: (codified-2)$")
 FENCE, CLOSE = "```given", "```"
 
 
 class Blocks(list):
     """The capability blocks, in file order (a list, as callers compare it), with the item's universal conditions
-    ((U<n>, statement)) and upstream entries (the bullet's text after `- `) beside them."""
+    ((U<n>, statement)) and upstream entries (the bullet's text after `- `) beside them, and the universal block's
+    marker (`universal_language`) and the U ids its conditions replace (`universal_retired`)."""
 
-    def __init__(self, blocks=(), universal=(), upstreams=()):
+    def __init__(self, blocks=(), universal=(), upstreams=(), universal_language=None, universal_retired=()):
         super().__init__(blocks)
         self.universal, self.upstreams = list(universal), list(upstreams)
+        self.universal_language, self.universal_retired = universal_language, tuple(universal_retired)
 
 
 class _Reader:
@@ -65,6 +69,17 @@ class _Reader:
         return self.capability_line(line)
 
     def condition(self, line):
+        blocks = self.blocks
+        if (m := LANGUAGE.match(line)):
+            if blocks.universal_language or blocks.universal_retired or blocks.universal:
+                self.refuse("a `language:` line that is not the first line of the universal block: %s" % line)
+            blocks.universal_language = m.group(1)
+            return
+        if (m := U_RETIRED.match(line)):
+            if blocks.universal_retired or blocks.universal:
+                self.refuse("a `retired:` line of the universal block after its conditions: %s" % line)
+            blocks.universal_retired = tuple(m.group(1).split(", "))
+            return
         m = U.match(line)
         if not m:
             self.refuse("a line of the universal block that is no `- [U<n>] <statement>`: %s" % line)
@@ -152,8 +167,12 @@ def render(blocks):
         parts += ["\n".join(block.terms)] if block.terms else []
         parts += ["\n".join(block.relations)] if block.relations else []
         out.append("\n\n".join(parts + [laid_group(g, "####") for g in block.groups]))
-    if getattr(blocks, "universal", None):
-        out.append("### %s\n\n" % UNIVERSAL + "\n".join("- [%s] %s" % u for u in blocks.universal))
+    language, retired = getattr(blocks, "universal_language", None), getattr(blocks, "universal_retired", ())
+    if getattr(blocks, "universal", None) or language or retired:
+        parts = ["### %s" % UNIVERSAL] + (["language: %s" % language] if language else [])
+        parts += ["retired: [%s]" % ", ".join(retired)] if retired else []
+        parts += ["\n".join("- [%s] %s" % u for u in blocks.universal)] if blocks.universal else []
+        out.append("\n\n".join(parts))
     if getattr(blocks, "upstreams", None):
         out.append("### %s\n\n" % INDEX + "\n".join("- %s" % b for b in blocks.upstreams))
     return "\n\n".join(out)

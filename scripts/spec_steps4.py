@@ -5,19 +5,25 @@ I14a), the one meaning `model logic` reads (spec_lf), in the step grammar 4's tr
   condition (`SCond`), a referent brought in at its first mention (`K_Given`, "a stage s1"); a `not` with no
   referents of its own is its condition negated.
 - When: the trigger's event (`STrig`).
-- Thens: each act of the response in the present (`S_Does`), its polarity kept: "change nothing" is "changes nothing",
-  a `not` over an act on a referent of its own "does not V a K"; a condition of the response a condition.
-  An act a universal condition entails (`entailed`, by the act's number as spec_lf_facts numbers it: each act in
-  order, "change nothing" one) is left out, a comment `# entailed: <premise>` in its place.
+- Thens: each act of the response in the present (`S_Does`; setting an attribute spec_lf_set's), its polarity kept:
+  "change nothing" is "changes nothing", a `not` over an act on a referent of its own "does not V a K"; a condition of
+  the response a condition, a row's atom its frame ("the session s1 has the worktree w1", "the worktree w1 holds the
+  file f1"). An `every` box gives two Ks, so the line is not met vacuously (R6): each brought in by a Given with its
+  restrictor, its scope's Thens said of each (b221). An act a universal condition entails (`entailed`, by the act's
+  number as spec_lf_facts numbers it: each act in order, "change nothing" one) is left out, a comment `# entailed:
+  <premise>` in its place.
 Givens and the When are the first requirement's; a later one's While and trigger referent of a kind is the first
 one's of that kind and rank. A referent is named by its kind's first letter and a count, in order of first mention;
 an actor by its fun, a code by the slot's `K_Code`, the run's own thing by `K_This`. A construct with no step
-(`every`, `only`, a count, `or`, a relation row's atom, a negated restriction, a line of "may", "always" or
-"never") is a TraceError naming it.
+(`only`, a count, `or`, the atom of a row whose word is neither `of` nor `in`, a negated restriction, a line of "may",
+"always" or "never") is a TraceError naming it.
 """
+from dataclasses import replace
+
 import spec_lf
+import spec_lf_set
 import spec_rgl
-from spec_lf_core import Atom, Box
+from spec_lf_core import Atom, Box, Ref
 
 kid = spec_rgl.kid
 
@@ -31,6 +37,7 @@ class Reader:
 
     def __init__(self, vocab):
         self.vocab, self.names, self.counts, self.shared, self.known = vocab, {}, {}, {}, set()
+        self.brought = []       # the Givens of the response's `every` boxes: each K brought in, its restrictor
         self.actors = {t: ("a_%s_%d" % (spec_rgl.slug(t), n + 1), k) for n, (t, k) in enumerate(vocab.actors)}
 
     # --- referents ---------------------------------------------------------------------------------------------
@@ -119,7 +126,19 @@ class Reader:
                 if t.term == term and k is not None:
                     T = "t_%s_%d" % (spec_rgl.slug(term), n)
                     return ("%s_%s_Is" % (T, kid(k)), pol, self.np(x, k), "%s_v_%s" % (T, spec_rgl.slug(value)))
+        if item.pred == "rel":
+            return self.row(item.args, pol)
         raise TraceError("no step of %s" % spec_lf.atom(item))
+
+    def row(self, args, pol):
+        """The `Cond` tree of a row's atom (word, y, x): "x has y" of a row `K | of | S`, "x holds y" of `K | in | S`."""
+        word, y, x = args
+        up = self.vocab.ancestors
+        for n, (k1, w, k2) in enumerate(self.vocab.rows, 1):
+            if w == word and word in ("of", "in") and k1 in up(y.kind) and k2 in up(x.kind):
+                frame = "r%d_%s_%s" % (n, spec_rgl.slug(word), "Has" if word == "of" else "Holds")
+                return (kid(k2) + "_Holds", pol, self.arg(x, k2), (frame, self.arg(y, k1)))
+        raise TraceError("no step of %s(%s, %s)" % (word, y.name, x.name))
 
     def given(self, item, pos=True):
         """The Given steps of a condition, each referent it mentions first brought in."""
@@ -139,23 +158,56 @@ class Reader:
         """[(act number or None, Then tree)] of a response's items, numbered as spec_lf_facts numbers its acts."""
         out = []
         for item in body:
-            if isinstance(item, Atom) and item.pred == "event":
+            if isinstance(item, Atom) and item.pred in ("event", spec_lf_set.PRED):
                 out.append((True, self.does(item, pos)))
             elif isinstance(item, Atom):
                 out.append((None, ("SCond", self.cond(item, pos))))
             elif item.op == "not" and len(item.body) == 1 and isinstance(item.body[0], Atom) and \
-                    item.body[0].pred == "event":
+                    item.body[0].pred in ("event", spec_lf_set.PRED):
                 out.append((True, self.does(item.body[0], not pos, set(item.refs))))
             elif item.op == "not" and not item.refs:
                 out += self.acts(item.body, not pos)
+            elif item.op == "every" and pos:
+                out += self.each(item)
             else:
                 raise TraceError("no Then of %s" % item.op)
         return out
 
+    def each(self, box):
+        """The Thens of an `every` box said of two Ks, each brought in with its restrictor (`brought`); the second
+        K's acts marked `again`, numbered as the first's (spec_lf_facts reads the box's acts once)."""
+        out = []
+        for copy in (1, 2):
+            m = {r: replace(r, name="%s.%d" % (r.name, copy)) for r in box.refs + box.scope.refs}
+            for r in box.refs:
+                self.brought.append((kid(r.kind) + "_Given", (kid(r.kind) + "_n",), ("NameLit", self.name(m[r]))))
+            self.brought += [("SCond", self.cond(c)) for c in subst(box.body, m)]
+            acts = self.acts(subst(box.scope.body, m))
+            out += acts if copy == 1 else [("again" if act else act, tree) for act, tree in acts]
+        return out
+
     def does(self, atom, pos, a=()):
+        if atom.pred == spec_lf_set.PRED:     # "`work` sets the status of the stage s2 to `done`" (b216)
+            found = spec_lf_set.then(self, atom, pos)
+            if found is None:
+                raise TraceError("no step of %s" % spec_lf.atom(atom))
+            return found
         subject, s, vp = self.clause(atom, a)
         nothing = vp[1:] == (("k_thing_One", ("k_thing_Nothing",)),)
         return (kid(subject) + "_Does", ("PPos",) if pos or nothing else ("PNeg",), s, vp)
+
+
+def subst(x, m):
+    """`x` (a referent, an atom, a box or a tuple of them) with each referent in `m` replaced."""
+    if isinstance(x, Ref):
+        return m.get(x, x)
+    if isinstance(x, Atom):
+        return Atom(x.pred, subst(x.args, m))
+    if isinstance(x, Box):
+        return replace(x, refs=subst(x.refs, m), body=subst(x.body, m), scope=subst(x.scope, m))
+    if isinstance(x, (tuple, list)):
+        return type(x)(subst(i, m) for i in x)
+    return x
 
 
 def mentioned(item):
@@ -187,9 +239,9 @@ def read(vocab, forms, entailed=None):
                 when.append(("STrig", (kid(subject) + "_Event", s, vp)))
             elif part.op == "response":
                 for act, tree in r.acts(part.body):
-                    number += bool(act)
+                    number += act is True
                     thens.append(("#", "entailed: %s" % gone[number]) if act and number in gone else ("then", tree))
             elif part.op not in ("while", "where", "when", "if"):
                 raise TraceError("no step of %s" % part.op)
-    out = [("given", g) for g in dict.fromkeys(givens)] + [("when", w) for w in when]
+    out = [("given", g) for g in dict.fromkeys(givens + r.brought)] + [("when", w) for w in when]
     return out + list(dict.fromkeys(thens))
