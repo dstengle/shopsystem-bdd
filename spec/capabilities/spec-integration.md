@@ -28,8 +28,8 @@ It is not formulation and not planning; it writes nothing a client can run.
 - **fresh id** (noun): an id one above every id the capability, or `spec/decisions/`, has used or retired, and above every id other initiatives' drafts add on it.
 - **decision source** (noun): the `source` of a design-decision: records, initiatives and decisions by id, with the person, a date, a delegation or anything outside the repository in its `by`.
 - **recommended reading** (noun): the reading a gate question marks as recommended, with the statements it concerns in full.
-- **retire** (verb): an id is added to its capability's `retired:` list. Forms: retires, retired. Frame: round retires requirement.
-- **apply** (verb): a round writes approved drafts into `spec/`. Forms: applies, applied. Frame: round applies file.
+- **retire** (verb, action): an id is added to its capability's `retired:` list. Forms: retires, retired. Frame: round retires requirement.
+- **apply** (verb, action): a round writes approved drafts into `spec/`. Forms: applies, applied. Frame: round applies file.
 
 ## Relations
 

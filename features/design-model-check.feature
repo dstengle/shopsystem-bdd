@@ -334,18 +334,44 @@ Feature: Design model check
     Then `model` prints the requirement r1
     And `model` prints "L1"
 
-  @g72 @r72
-  Scenario: `model rules --check` refuses a stale catalogue
-    Given `--check` is given
-    And a rule catalogue r1
+  @g74 @r74
+  Scenario: `model rules --write` writes the rule catalogue
+    When the person runs `model rules --write`
+    Then `model` writes the rule catalogue r1
+    And `model` exits successfully
+
+  @g75 @r75
+  Scenario: `model rules --check` refuses a stale rule catalogue
+    Given a rule catalogue r1
     And the rule catalogue r1 is stale
-    When the person runs `model rules` on the rule catalogue r1
+    When the person runs `model rules --check` on the rule catalogue r1
     Then `model` exits with an error naming the rule catalogue r1
     And `model` changes nothing
 
-  @g73 @r73
-  Scenario: `model rules --write` writes the rule catalogue
-    Given `--write` is given
-    When the person runs `model rules`
-    Then `model` writes the rule catalogue r1
-    And `model` exits successfully
+  @g76 @r76
+  Scenario: `model check` refuses a verb with no aspect
+    Given a term t1
+    And the term t1 is aspectless
+    When the person runs `model check` on the term t1
+    Then `model` exits with an error naming the term t1
+
+  @g77 @r77
+  Scenario: `model check` passes a verb with two frames
+    Given a term t1
+    And the term t1 is multiframed
+    When the person runs `model check` on the term t1
+    Then `model` exits successfully
+
+  @g78 @r78
+  Scenario: `model check` passes a verb with two senses told apart by kinds
+    Given a term t1
+    And the term t1 is polysemous
+    When the person runs `model check` on the term t1
+    Then `model` exits successfully
+
+  @g79 @r79
+  Scenario: `model check` refuses two senses that overlap
+    Given a term t1
+    And the term t1 is overlapping
+    When the person runs `model check` on the term t1
+    Then `model` exits with an error naming the term t1

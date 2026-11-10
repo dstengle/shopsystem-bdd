@@ -25,6 +25,9 @@ to its tier, and keeps a superseded decision marked so.
 - **argument** (noun): an option a command is given on its command line, such as `--tier`.
 - **absent** (adjective of argument): an argument that a command requires and that is not given.
 
+- **unrouted** (adjective of universal condition): a universal condition that no design-decision's `verified_by` covers.
+- **misrouted** (adjective of design-decision): a design-decision whose `verified_by` names a route other than `scenario`, `check`, `judgement` or `monitor`.
+
 ## Relations
 
 | from | word | to | cardinality |
@@ -64,6 +67,15 @@ to its tier, and keeps a superseded decision marked so.
 
 ### [g9] `work decision` names an absent argument
 - [r9] If the person runs `work decision` on an argument that is absent, then `work` shall exit with an error naming the argument and change nothing.
+
+### [g10] `work decision --verified-by` writes a route
+- [r10] When the person runs `work decision --verified-by`, `work` shall write a design-decision and commit the design-decision.
+
+### [g11] `model check` names a universal condition with no route
+- [r11] When the person runs `model check` on a universal condition that is unrouted, `model` shall print the universal condition.
+
+### [g12] `model check` refuses a route outside the four
+- [r12] If the person runs `model check` on a design-decision that is misrouted, then `model` shall exit with an error naming the design-decision.
 
 ## Implementation, may change
 

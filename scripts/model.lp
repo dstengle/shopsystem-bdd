@@ -31,6 +31,7 @@
 #defined authored_depends_on/2.   % the parse of "CAP depends on X" (v4)
 #defined age/2.                   % days since an initiative or a request was dated
 #defined tier/2.   #defined enforced_test/2.   #defined enforced_req/2.   % a decision's tier (decision-tiers D2)
+#defined route/2.  #defined decision_rests_on/2.   % a decision's verified_by and the ids it rests on (decision-tiers r11, r12)
 % the glossary: terms of spec/index.md and of each capability's Terms (C8, C27)
 #defined term_of/2.               % term_of(T, Ctx): term T is a term of bounded-context Ctx
 #defined avoid/2.                 % avoid(T, W): term T's entry lists word W after `Not:`
@@ -297,6 +298,15 @@ label("v_d8", "an accepted decision supersedes one still accepted").
 % pass v_d8: supersedes("n","o"). status("n","accepted"). status("o","superseded").
 v_d8(Old, New) :- supersedes(New, Old), status(New, "accepted"), status(Old, "accepted").
 
+% verification routes (decision-tiers r11, r12; b129): a decision's verified_by names scenario, check, judgement or
+% monitor, and a decision in force that rests on a universal condition with one of them routes it.
+route_name("scenario"). route_name("check"). route_name("judgement"). route_name("monitor").
+label("v_d9", "a decision names a verification route outside the four").
+% fail v_d9: route("d","sampling").
+% pass v_d9: route("d","check").
+v_d9(D, R) :- route(D, R), not route_name(R).
+routed(U) :- decision_rests_on(D, U), route(D, R), route_name(R), not status(D, "superseded"), not status(D, "rejected").
+
 % 16-18. requests (r113, r115, r117, r121).
 label("v17", "a request that is part of no job-thread, cites no origin and is raised for no request").
 % fail v17: node("q","request").
@@ -322,10 +332,10 @@ label("v_t1", "a word the glossary avoids").
 % fail v_t1: node("s","scenario"). node("x","bounded-context"). term_of("t","x"). avoid("t","job"). mentions("s","job").
 % pass v_t1: node("s","scenario"). node("x","bounded-context"). term_of("t","x"). avoid("t","job"). mentions("s","work-item").
 v_t1(X, W, T) :- mentions(X, W), avoid(T, W), term_of(T, Ctx), ctx_of(X, Ctx).
-label("v_t2", "a term has two entries").
-% fail v_t2: glossary_entry("t",1,"thing"). glossary_entry("t",2,"thing").
-% pass v_t2: glossary_entry("t",1,"thing").
-v_t2(T)       :- glossary_entry(T, N1, _), glossary_entry(T, N2, _), N1 < N2.
+label("v_t2", "a term has two entries, other than the senses of one verb").
+% fail v_t2: glossary_entry("t",1,"thing"). glossary_entry("t",2,"thing"). senses("u").
+% pass v_t2: glossary_entry("t",1,"thing"). glossary_entry("t",2,"thing"). senses("t").
+v_t2(T)       :- glossary_entry(T, N1, _), glossary_entry(T, N2, _), N1 < N2, not senses(T).   % a verb's senses: v_t15
 label("v_t3", "an avoided word is a term").
 % fail v_t3: term_of("t","x"). avoid("t","job"). term_of("t2","x"). glossary_entry("t2",3,"job").
 % pass v_t3: term_of("t","x"). avoid("t","job"). term_of("t2","x"). glossary_entry("t2",3,"task").
@@ -355,6 +365,14 @@ label("v_t13", "a verb's Frame: does not read as its subject, the verb and the k
 % fail v_t13: misframed("write","the object stage is no kind").
 % pass v_t13: category("write","event").
 v_t13(T, Why) :- misframed(T, Why).
+label("v_t14", "a verb's entry says neither state nor action").
+% fail v_t14: aspectless("write").
+% pass v_t14: category("write","event").
+v_t14(T)      :- aspectless(T).
+label("v_t15", "two entries of one verb take, in every slot, the same kind or one kind under the other").
+% fail v_t15: senses("name"). overlapping("name").
+% pass v_t15: senses("name").
+v_t15(T)      :- overlapping(T).
 
 % ---------------------------------------------------------------- the parse (C2, C25)
 % Every file of the spec is codified (§13.4): the 0.29 reader is gone, so `migrate upgrade` converts one that is not.
@@ -403,6 +421,10 @@ label("w_untiered", "a decision in force gives no tier").                       
 % pass w_untiered: node("d","design-decision"). tier("d","judgement").
 tiered(D)          :- tier(D, _).
 w_untiered(D)      :- node(D, "design-decision"), not status(D, "superseded"), not status(D, "rejected"), not tiered(D).
+label("w_unrouted", "a universal condition no decision routes").                          % decision-tiers r11
+% fail w_unrouted: node("u","universal-condition").
+% pass w_unrouted: node("u","universal-condition"). decision_rests_on("d","u"). route("d","check").
+w_unrouted(U)      :- node(U, "universal-condition"), not routed(U).
 
 #show.
 #show label/2.
@@ -413,9 +435,9 @@ w_untiered(D)      :- node(D, "design-decision"), not status(D, "superseded"), n
 #show v15l/1. #show v15m/2. #show v15n/2.
 #show v_s1/1. #show v_s2/1. #show v_s3/1. #show v_s4/1.
 #show v_d2/1. #show v_d4/2.
-#show v_d6/1. #show v_d7/1. #show v_d8/2.
+#show v_d6/1. #show v_d7/1. #show v_d8/2. #show v_d9/2.
 #show v17/1. #show v18d/1.
-#show v_t1/3. #show v_t2/1. #show v_t3/1. #show v_t4/1. #show v_t5/1. #show v_t6/2. #show v_t11/1. #show v_t12/1. #show v_t13/2.
+#show v_t1/3. #show v_t2/1. #show v_t3/1. #show v_t4/1. #show v_t5/1. #show v_t6/2. #show v_t11/1. #show v_t12/1. #show v_t13/2. #show v_t14/1. #show v_t15/1.
 #show v_p0/1. #show v_p1/2. #show v_p2/1. #show v_p3/2.
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
-#show w_many_requests/1. #show w_untiered/1.
+#show w_many_requests/1. #show w_untiered/1. #show w_unrouted/1.

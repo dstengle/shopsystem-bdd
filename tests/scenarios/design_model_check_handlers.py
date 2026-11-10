@@ -146,6 +146,13 @@ def model_rules(step):
     run_model(step, "rules", *flag(step, "--json"), *flag(step, "--write"), *flag(step, "--check"))
 
 
+@handler("WhenRuns", "`model rules --write`")
+@handler("WhenRuns", "`model rules --check`")
+def model_rules_option(step):
+    """`model rules` with the option its code names, on the rule catalogue a Given wrote (`grammar/rules.md`)."""
+    run_model(step, "rules", step.term.strip("`").split()[-1])
+
+
 @handler("WhenRuns", "`model parse`")
 def model_parse(step):
     """`model parse` on the capability file that holds the requirement: each of its statements."""

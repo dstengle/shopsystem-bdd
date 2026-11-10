@@ -27,7 +27,8 @@ LETTER = {"actor": "a", "kind": "k", "attribute": "t", "value": "v", "relation":
 CORE_VERBS = {"run", "print", "hold", "exit", "become", "set", "be"}
 
 ENTRY = re.compile(r"^- \*\*(?P<term>.+?)\*\*\s*(?:\((?P<cat>[^)]*)\))?\s*:\s*(?P<text>.*)$", re.DOTALL)
-FIELDS = ("Values", "Transitions", "Means", "Forms", "Frame", "Plural", "Not", "Kind of")
+FIELDS = ("Values", "Transitions", "Means", "Forms", "Frame", "Plural", "Not", "Kind of", "This")
+ASPECTS = ("state", "action")
 FIELD = re.compile(r"(?:^|\s)(?:%s):" % "|".join(FIELDS))
 
 
@@ -45,17 +46,25 @@ class Term:
     nots: tuple = ()
     resource: str = ""
     supertype: str = ""
-    frame: str = ""
+    frame: str = ""       # its first `Frame:`, the one the codified-1 grammar reads
     label: str = ""       # the text in the entry's parentheses, as written
+    aspect: str = ""      # a verb's: state or action (`(verb, state)`), "" when it says neither (v_t14)
+    frames: tuple = ()    # a verb's every `Frame:`: one meaning, one predicate
+    this: str = ""        # a kind's `This:`, the run's own thing of that kind
 
     @property
     def key(self):
         return (self.category, self.term, self.kinds)
 
 
+def _fields(text, name):
+    """Every value of the field `name` in an entry's text, in order."""
+    found = re.finditer(r"(?:^|\s)%s:\s*(.+?)\.(?=\s+(?:%s):|\s*$)" % (name, "|".join(FIELDS)), text, re.DOTALL)
+    return tuple(" ".join(m.group(1).split()) for m in found)
+
+
 def _field(text, name):
-    found = re.search(r"(?:^|\s)%s:\s*(.+?)\.(?=\s+(?:%s):|\s*$)" % (name, "|".join(FIELDS)), text, re.DOTALL)
-    return " ".join(found.group(1).split()) if found else ""
+    return (_fields(text, name) or ("",))[0]
 
 
 def _list(text):
@@ -89,7 +98,7 @@ def _category(raw):
         parts = re.split(r"\s*(?:→|->)\s*", raw[len("relation"):].strip())
         return "relation", tuple(p.strip() for p in parts if p.strip()), ""
     for part, cat in PARTS:
-        if raw == part:
+        if raw == part or part == "verb" and raw in ("verb, " + a for a in ASPECTS):
             return cat, (), ""
         if raw.startswith(part + " of ") and cat in ("attribute", "condition"):
             return cat, _list(raw[len(part) + 4:]), ""
@@ -106,6 +115,7 @@ def entry(bullet, where):
     label = " ".join((found.group("cat") or "").split())
     category, kinds, resource = _category(label)
     text = found.group("text").strip()
+    aspect = label.partition(", ")[2] if category == "event" else ""
     transitions = []
     for row in _field(text, "Transitions").split(";"):
         step = re.match(r"\s*(.+?)\s*(?:→|->)\s*(.+?):\s*(.+?)\s*$", row)
@@ -114,7 +124,8 @@ def entry(bullet, where):
     return Term(term=found.group("term").strip(), category=category, kinds=kinds, text=text, where=where,
                 values=_list(_field(text, "Values")), transitions=tuple(transitions),
                 forms=_list(_field(text, "Forms")), plural=_field(text, "Plural"), nots=_list(_field(text, "Not")),
-                resource=resource, supertype=_field(text, "Kind of"), frame=_field(text, "Frame"), label=label)
+                resource=resource, supertype=_field(text, "Kind of"), frame=_field(text, "Frame"), label=label,
+                aspect=aspect, frames=_fields(text, "Frame"), this=_field(text, "This"))
 
 
 def gloss(text):
@@ -263,8 +274,8 @@ def problems(lexicon):
     out += [("v_t5", v, "the value %s of %s is in more than one attribute (%s)" % (v, k, ", ".join(a)))
             for (k, v), a in seen.items() if len(a) > 1]
     counts = defaultdict(int)
-    for t in lexicon.terms:
-        counts[t.key] += 1
+    for t in lexicon.terms:     # a verb's two entries are two senses (spec_frames' v_t15)
+        counts[t.key] += t.category != "event"
     out += [("v_t6", key[1], "the %s %s is given %d times" % (key[0], key[1], n)) for key, n in counts.items()
             if n > 1]
     for t in lexicon.of("actor"):
