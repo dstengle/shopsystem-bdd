@@ -185,7 +185,10 @@ def parse(root, line):
     words = {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
     trees, at = _trees(gram, words, tokens, name)
     if trees:
-        kept, two = spec_meaning.one(trees, vocab)
+        try:
+            kept, two = spec_meaning.one(trees, vocab)
+        except ValueError as error:     # no tree of the line translates: refused, not a traceback
+            return Parse(refusal="refused: %s" % error, trees=trees)
         if kept:
             return Parse(tree=kept, trees=trees)
         words = spec_gf.detokenise(gram.languages[GRAMMAR + "Eng"].linearize(_expr(two[0])).split(" "))

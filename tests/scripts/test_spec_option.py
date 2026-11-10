@@ -128,3 +128,13 @@ def test_the_call_gives_its_handler_the_options(when, given, without):
     call = features_vocab4.step(FIXTURE, "when", when)
     assert (call.template, call.command) == ("WhenRuns", "`work start`")
     assert (call.options, call.without) == (given, without)
+
+
+@pytest.mark.parametrize("given", [" with the `--from` option set to a stage and the `--json` option",
+                                   " with the `--every` option set to `5` and the `--json` option"])
+def test_a_set_option_before_an_and_keeps_the_tree_that_translates(given):
+    # b240 review: one tree reads "set to (a stage and the `--json` option)", a list no option is set to; it is not kept
+    # and it no longer ends the parse in a traceback
+    parsed = spec_grammar4.parse(FIXTURE, LINE % (given, OK))
+    assert parsed.refusal is None and len(parsed.trees) > 1
+    assert ("when", "the person runs `work start`" + given.replace("a stage", "the stage s1")) in steps(LINE % (given, OK))
