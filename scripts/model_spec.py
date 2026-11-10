@@ -16,8 +16,8 @@ import spec_frames
 import spec_lexicon
 import spec_packs
 import spec_read
-import spec_rgl_np
 import spec_read_given
+import spec_rgl_np
 import spec_tree
 
 GRAMMAR_MISSING = object()
