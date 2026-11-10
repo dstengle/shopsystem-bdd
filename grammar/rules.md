@@ -726,7 +726,7 @@ a check decision names no test
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: no line
+- Cited by: decision-tiers#r14
 - Fails on:
 
   ```prolog
@@ -746,7 +746,7 @@ a requirement decision names no requirement
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: no line
+- Cited by: decision-tiers#r15
 - Fails on:
 
   ```prolog
@@ -766,7 +766,7 @@ an accepted decision supersedes one still accepted
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: no line
+- Cited by: decision-tiers#r18
 - Fails on:
 
   ```prolog
@@ -1326,7 +1326,7 @@ a decision in force gives no tier
 
 - Severity: warning
 - Implemented in: `scripts/model.lp`
-- Cited by: decision-tiers#r1
+- Cited by: decision-tiers#r13
 - Fails on:
 
   ```prolog

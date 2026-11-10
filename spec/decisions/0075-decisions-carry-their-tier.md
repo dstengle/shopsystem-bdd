@@ -5,7 +5,7 @@ date: 2026-11-05
 status: accepted
 supersedes: [design-decision/light-decisions]
 tier: requirement
-enforced_by: [decision-tiers#r1, decision-tiers#r2, decision-tiers#r3]
+enforced_by: [decision-tiers#r13, decision-tiers#r14, decision-tiers#r15]
 source: [record/missingmass.io/shopsystem/shopsystem-bdd/2026-11-04-workflow-simplification-design]
 by: "workflow simplification plan 6"
 ---

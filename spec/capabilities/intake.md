@@ -3,9 +3,9 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/intake
 title: Intake
 narrator: a session answering a peer bounded context's request
 group: service
-language: codified-1
+language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
-retired: [r1, r2, r3, r4, r5]
+retired: [r1, r2, r3, r4, r5, g6, r6, g7, r7, g8, r8, g9, r9]
 unbuilt: []
 ---
 
@@ -19,20 +19,29 @@ counter-propose. The exchange repeats until the lines are settled, with no perso
 cannot agree; the person accepts the request, which becomes an item. The brainstorming route is the `brainstorming`
 capability's.
 
+## Terms
+- **counter** (verb, state): a request line that the upstream proposes takes the place of a request line of the same request, written under the request's `## Counter-proposals`. Forms: counters, countered. Frame: request line counters request line.
+
+## Relations
+
+| from | word | to | cardinality |
+|---|---|---|---|
+| request line | of | request | one |
+| reason | for | request line | one |
+
 ## Behaviour
 
-### [g6] An item with a request line that is not settled is not readied
-- [r6] While an item is `shaped` and a request line of the item is not settled, if a session runs `work ready` on the
-  item, then `work` shall exit with an error naming the request line and change nothing.
+### [g10] An item with a request line not settled is not readied
+- [r10] While an item is `shaped` and a request line of the item is not `accepted`, `refused` or `withdrawn`, if a session runs `work ready` on the item, then `work` shall refuse the command and name the request line.
 
-### [g7] A counter-proposal passes the turn to the asker, posted
-- [r7] When a session runs `work outcome rewritten` on a request line proposed in a request, `work` shall set the line outcome of the request line to `rewritten`, write a request line, change the side of the request and post a comment.
+### [g11] A counter-proposal passes the turn to the asker, posted
+- [r11] When a session runs `work outcome rewritten` on a request line of a request, `work` shall set the line outcome of the request line to `rewritten`, write a request line of the request that counters the request line, set the side of the request to `asker` and post a comment on the request.
 
-### [g8] `work outcome refused` writes the reason
-- [r8] When a session runs `work outcome refused` on a request line proposed in a request, `work` shall set the line outcome of the request line to `refused`, write a reason and commit the request.
+### [g12] `work outcome refused` writes the reason
+- [r12] When a session runs `work outcome refused` on a request line of a request, `work` shall set the line outcome of the request line to `refused`, write a reason for the request line and commit the request.
 
-### [g9] `work outcome refused` refuses a refusal with no reason
-- [r9] While the argument `--reason` is absent, if a session runs `work outcome refused` on a request line, then `work` shall exit with an error naming the argument `--reason`.
+### [g13] `work outcome refused` refuses a refusal with no reason
+- [r13] If a session runs `work outcome refused` without the `--reason` option on a request line, then `work` shall refuse the command and name `--reason`.
 
 ## Implementation, may change
 - A request asked of this context is a conversation on one GitHub issue on this context's own repository (the

@@ -12,6 +12,7 @@ local = W.local
 
 
 @handler("GivenR", "proposes")
+@handler("GivenDoes", "propose")
 def item_proposes(step):
     """The requirement is one of the item's lines: the world gives the item its lines when it builds the batch."""
     item, requirement = step.names

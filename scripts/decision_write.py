@@ -2,7 +2,7 @@
 `spec/decisions/<nnnn>-<slug>.md`, the next number after the highest there, the decisions index rewritten as
 `model decisions` writes it, and the two committed together; its verification routes (`--verified-by`, r10) and the
 ids it rests on (`--rests-on`, a universal condition among them) written beside `enforced_by`. A decision missing --summary, --decision or --tier is
-refused before anything is written, every one absent named in one error (r9)."""
+refused before anything is written, every one absent named in one error (r20, r24, r25)."""
 import datetime
 import re
 import sys

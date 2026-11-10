@@ -262,13 +262,11 @@ The simplified workflow:
 | dependency | on | item | one |
 | request line | of | item | one |
 | question | on | item | one |
-| item | proposes | requirement |  |
 | item | in | batch | one |
 | task | of | batch | one |
 | pull request | of | batch | one |
 | review finding | on | pull request | one |
 | quote | from | session | one |
-| quote | cites | message |  |
 | design-decision | enforced by | test |  |
 | worktree | of | session | one |
 | command | of | tool | one |

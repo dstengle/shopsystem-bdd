@@ -1841,3 +1841,23 @@ worktree and the session has no worktree that holds a file whose version is not 
 steps that contradict each other, so `features generate` has no scenario of it ("no Given of no there"); `model
 logic` reads it. No line of b152-b159 has the shape (b240 phase 12's sweep). It says instead what the K it gives
 meets: "While a session has a worktree and every file in the worktree is `2.0.0`, ...".
+
+### #10: for each X, its Y
+
+"every K" in a response is a box of its own, so a list of them ("print every item, every title of an item and every
+batch") prints each K but does not pair a thing with its own Y; "every item with its title" has no form (an "its"
+binds to its clause's subject, R8, not to an "every" of a response list). Line: conversation r8 (b159: the names
+table, each item beside its title). It says instead each "every" apart, and the pairing is the Implementation's.
+
+### #11: the outcome of the response's own act
+
+A line whose condition is what the response's own act gives ("a test that fails when `model` runs it") has no form:
+a condition holds before the trigger, and the run's own things (R11) are what a command makes, not what a test it
+runs gives. Line: decision-tiers r17 (b159). It says instead the test's last outcome, an attribute of test ("a test
+whose outcome is `failed`"), which the scenario gives before the run.
+
+### #16: liveness
+
+When is the next step (R9); "eventually" has no form (deferred to b127). Line: pr-review r1, kept (a review follows the
+publication of a pull request after `work batch brief`, not at the next step). It says instead the next-step
+obligation, which the batch session meets by its own steps (skill `building-a-batch`).
