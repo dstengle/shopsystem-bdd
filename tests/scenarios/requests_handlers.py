@@ -252,4 +252,7 @@ def then_changes(step):
 
 @handler("ThenDoesNot", "change")
 def then_changes_not(step):
+    """A request's status or side; a file of another feature's Givens (analysis-tools' dependency file) world_cli's."""
+    if step.nps[-1].split()[1] not in FIELDS:
+        return shared("shop_world_cli", "world_cli.py").files_unchanged(step)
     assert not changed(step), step.text

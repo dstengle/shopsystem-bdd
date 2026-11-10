@@ -1832,6 +1832,16 @@ ties a thing to the act ("refuses a command for a reason", "the reason it refuse
 shall exit with an error naming a reason and change nothing.": the reason is any reason, and the link from the
 reason to the refusal is in the gloss of *reason* only.
 
+### #14: ordered choice
+
+A rule that takes the first of a list that meets a condition ("the first of `.venv/bin/python`, `venv/bin/python`
+and `$VIRTUAL_ENV/bin/python` that exists, else the interpreter running the script") has no construct: the language
+has no "the first K that P" over an order the line gives. Lines: analysis-tools r37-r41 (b154: the Python
+interpreter `tools probe` takes when `--python` is not given). Each case is a line of its own, said with existence
+("X exists", "X does not exist"): the case of the n-th interpreter says that it exists and that each before it does
+not, and r41 says that the second is not printed while the first exists. The order lives only in which cases the
+lines spell out; a fifth interpreter would need every line after it rewritten.
+
 ### The Given of a "no" box beside the link it is said by
 
 A "no" box of more than one item ("the session has no worktree that holds a file whose version is not `2.0.0`") is
