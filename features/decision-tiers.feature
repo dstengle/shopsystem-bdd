@@ -70,3 +70,23 @@ Feature: Decision tiers
     When the person runs `work decision` on the argument a1
     Then `work` exits with an error naming the argument a1
     And `work` changes nothing
+
+  @g10 @r10
+  Scenario: `work decision --verified-by` writes a route
+    When the person runs `work decision --verified-by`
+    Then `work` writes the design-decision d1
+    And `work` commits the design-decision d1
+
+  @g11 @r11
+  Scenario: `model check` names a universal condition with no route
+    Given an universal condition u1
+    And the universal condition u1 is unrouted
+    When the person runs `model check` on the universal condition u1
+    Then `model` prints the universal condition u1
+
+  @g12 @r12
+  Scenario: `model check` refuses a route outside the four
+    Given a design-decision d1
+    And the design-decision d1 is misrouted
+    When the person runs `model check` on the design-decision d1
+    Then `model` exits with an error naming the design-decision d1
