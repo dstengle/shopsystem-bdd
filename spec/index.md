@@ -104,7 +104,7 @@ The simplified workflow:
 
 ## Glossary
 
-- **the person** (proper noun): the human who asks, answers and approves.
+- **the person** (proper noun): the human who asks, answers and approves. Kind of: agent.
 - **`work run`** (proper noun): the supervisor of plugin 1.x that ran an initiative's work-items through their stages, removed in 2.0.0 with its record frozen under `.shop/work/`. Kind of: tool.
 - **`work`** (proper noun): the command that writes statuses, transitions and requests. Kind of: tool.
 - **`features`** (proper noun): the tool that reads, edits and reports on feature files. Kind of: tool.

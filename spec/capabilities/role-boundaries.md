@@ -21,7 +21,7 @@ Bash can still write files through the shell, which is why `work run` verifies t
 
 - **`trial-runner`** (proper noun): the agent that runs one trial. Kind of: dispatch.
 - **read** (verb, action): a session or a tool reads a file, a commit or another thing. Forms: reads, read. Frame: agent reads thing.
-- **name** (verb, state): a message or a file names a thing. Forms: names, named. Frame: agent names thing. Redefines: cli.
+- **name** (verb, action): a session or a tool says which thing it means. Forms: names, named. Frame: agent names thing. Redefines: cli.
 - **keep** (verb, action): a session leaves a thing as it was. Forms: keeps, kept. Frame: agent keeps thing.
 
 ## Behaviour
