@@ -40,8 +40,8 @@ def record(repo, k=1):
     return batch_findings.parse((repo / rel).read_text(), rel)
 
 
-@pytest.mark.requirement("pr-review#r5")
-def test_r5_a_fix_now_finding_sends_the_batch_back_to_building(briefed, batch_outside):
+@pytest.mark.requirement("pr-review#r13")
+def test_r13_a_fix_now_finding_sends_the_batch_back_to_building(briefed, batch_outside):
     done = ok(reviewed(briefed, FIX_NOW_B1))
     assert batch_plan.find(briefed, "batch-1").status == "building"
     assert git(briefed, "show", "--name-only", "--format=", "HEAD").split() == [
@@ -58,8 +58,8 @@ def test_r5_a_fix_now_finding_sends_the_batch_back_to_building(briefed, batch_ou
         '  open f1 Important b1 "Abandon" src/b1.txt:1: abandon leaves the initiative started']
 
 
-@pytest.mark.requirement("pr-review#r7")
-def test_r7_a_clean_review_awaits_the_merge(briefed, batch_outside):
+@pytest.mark.requirement("pr-review#r15")
+def test_r15_a_clean_review_awaits_the_merge(briefed, batch_outside):
     done = ok(reviewed(briefed, CLEAN))
     assert batch_plan.find(briefed, "batch-1").status == "awaiting-merge"
     assert record(briefed).result == "clean" and gh_calls(batch_outside)[-1] == ["pr", "ready", URL]

@@ -3,10 +3,10 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/conversation
 title: Conversation
 narrator: the person reading why a piece of work was asked for
 group: service
-language: codified-1
+language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
-retired: []
-unbuilt: []
+retired: [g2, r2, g3, r3, g4, r4]
+unbuilt: [r1, r6, r7, r8]
 ---
 
 # Conversation
@@ -18,13 +18,17 @@ committed, so that any clone or session can show them. The person reads names, n
 of every item and batch a session names (design goal 10).
 
 ## Terms
-- **the UserPromptSubmit hook** (proper noun): the plugin's hook that runs when the person submits a prompt, and gives the session and its transcript to `work quote`.
+- **the prompt hook** (proper noun): the plugin's UserPromptSubmit hook. Kind of: agent.
+- **cite** (verb, state): a quote holds a message as the one the person's words are from. Forms: cites, cited. Frame: quote cites message.
+- **git directory** (noun): the directory in which git keeps the data of a repository, which is never committed. Kind of: thing. This: the git directory of the repository the command runs in.
+- **transcript** (noun): the file in which Claude Code keeps the messages of a session. Kind of: file.
 
 ## Relations
 
 | from | word | to | cardinality |
 |---|---|---|---|
-| message | cited by | quote | |
+| file | in | git directory | one |
+| transcript | of | session | one |
 
 ## Behaviour
 
@@ -32,15 +36,14 @@ of every item and batch a session names (design goal 10).
 - [r1] When a session runs `work quote`, `work` shall write a quote from the session that cites a message and commit
   the quote.
 
-### [g2] The prompt hook gives the session and the transcript
-- [r2] When the UserPromptSubmit hook runs `work quote --hook`, `work` shall keep the session.
+### [g6] The prompt hook writes down the session and its transcript
+- [r6] When the prompt hook runs `work quote` with the `--hook` option, `work` shall write a file in the git directory that lists the transcript of the session.
 
-### [g3] `work show` on a quote prints its messages
-- [r3] When the person runs `work show` on a quote, `work` shall print every message cited by the quote.
+### [g7] `work show` on a quote prints its messages
+- [r7] When the person runs `work show` on a quote, `work` shall print every message that the quote cites.
 
-### [g4] The names table at SessionStart
-- [r4] When the SessionStart hook runs `work names`, `work` shall print every item, the title of the item and every
-  batch.
+### [g8] The names table at SessionStart
+- [r8] When the SessionStart hook runs `work names`, `work` shall print every item, every title of an item and every batch.
 
 ## Implementation, may change
 

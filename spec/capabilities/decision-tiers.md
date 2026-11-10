@@ -3,10 +3,10 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/decision-tiers
 title: Decision tiers
 narrator: a person or session keeping the decisions
 group: service
-language: codified-1
+language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
-retired: []
-unbuilt: []
+retired: [g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12]
+unbuilt: [r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25]
 ---
 
 # Decision tiers
@@ -18,68 +18,67 @@ runs with the suite and at the pull request; a `requirement` decision names the 
 to its tier, and keeps a superseded decision marked so.
 
 ## Terms
-- **untiered** (adjective of design-decision): a design-decision that is not `superseded` or `rejected` and whose frontmatter gives no `tier`.
-- **untested** (adjective of design-decision): A design-decision is untested when the design-decision is enforced by no test.
-- **unrequired** (adjective of design-decision): A design-decision is unrequired when the design-decision is enforced by no requirement.
-
-- **argument** (noun): an option a command is given on its command line, such as `--tier`.
-- **absent** (adjective of argument): an argument that a command requires and that is not given.
-
-- **unrouted** (adjective of universal condition): a universal condition that no design-decision's `verified_by` covers.
-- **misrouted** (adjective of design-decision): a design-decision whose `verified_by` names a route other than `scenario`, `check`, `judgement` or `monitor`.
+- **enforce** (verb, state): a design-decision names a test or a requirement under its `enforced_by` as what holds it. Forms: enforces, enforced. Frame: test enforces design-decision. Frame: requirement enforces design-decision.
+- **outcome** (attribute of test): Values: `passed`, `failed`.
+- **supersede** (verb, state): a design-decision names another under its `supersedes` as the one it takes the place of. Forms: supersedes, superseded. Frame: design-decision supersedes design-decision.
+- **route** (noun): a way a design-decision is verified, named under its `verified_by`. Kind of: text.
+- **kind** (attribute of route): the word that names the route. Values: `scenario`, `check`, `judgement`, `monitor`.
+- **verify** (verb, state): a design-decision names a universal condition under its `rests_on` and a route under its `verified_by`. Forms: verifies, verified. Frame: design-decision verifies universal condition.
 
 ## Relations
 
 | from | word | to | cardinality |
 |---|---|---|---|
-| design-decision | enforced by | requirement | |
+| route | of | design-decision |  |
 
 ## Behaviour
 
-### [g1] A decision with no tier is a warning
-- [r1] When the person runs `model check` on a design-decision that is untiered, `model` shall print `w_untiered`.
+### [g13] A decision in force with no tier is a warning
+- [r13] While a design-decision is not `superseded` or `rejected` and the design-decision has no tier, when the person runs `model check`, `model` shall print `w_untiered`.
 
-### [g2] A `check` decision names its test
-- [r2] While a design-decision is `check` and the design-decision is untested, if the person runs `model check`, then
-  `model` shall exit with an error naming `v_d6`.
+### [g14] A `check` decision names its test
+- [r14] While a design-decision is `check` and no test enforces the design-decision, if the person runs `model check`, then `model` shall exit with an error naming `v_d6`.
 
-### [g3] A `requirement` decision names its requirement
-- [r3] While a design-decision is `requirement` and the design-decision is unrequired, if the person runs `model
-  check`, then `model` shall exit with an error naming `v_d7`.
+### [g15] A `requirement` decision names its requirement
+- [r15] While a design-decision is `requirement` and no requirement enforces the design-decision, if the person runs `model check`, then `model` shall exit with an error naming `v_d7`.
 
-### [g4] `model decisions --check` runs the tests of the `check` decisions
-- [r4] While a design-decision is `check` and the design-decision is enforced by a test, when the person runs `model
-  decisions --check`, `model` shall use the test.
+### [g16] `model decisions --check` runs the tests of the `check` decisions
+- [r16] While a design-decision is `check` and a test enforces the design-decision, when the person runs `model decisions --check`, `model` shall run `pytest` on the test.
 
-### [g5] `model decisions --check` names each failing decision
-- [r5] While a design-decision is `check` and the design-decision is enforced by a test that is failing, if the person
-  runs `model decisions --check`, then `model` shall exit with an error naming the design-decision.
+### [g17] `model decisions --check` names each failing decision
+- [r17] While a design-decision is `check` and a test whose outcome is `failed` enforces the design-decision, if the person runs `model decisions --check`, then `model` shall exit with an error naming the design-decision.
 
-### [g6] A superseded decision is `superseded`
-- [r6] While a design-decision that is `accepted` supersedes a design-decision that is `accepted`, if the person runs `model check`, then
-  `model` shall exit with an error naming `v_d8`.
+### [g18] An accepted decision supersedes no accepted decision
+- [r18] While a design-decision whose status is `accepted` supersedes a design-decision whose status is `accepted`, if the person runs `model check`, then `model` shall exit with an error naming `v_d8`.
 
-### [g7] `work decision` writes and commits a decision
-- [r7] When the person runs `work decision`, `work` shall write a design-decision, write the decisions index and commit the design-decision.
+### [g19] `work decision` writes and commits a decision and the decisions index
+- [r19] When the person runs `work decision`, `work` shall write a design-decision and the decisions index and commit the design-decision and the decisions index.
 
-### [g8] `work decision` refuses a decision with no tier
-- [r8] If the person runs `work decision` on a design-decision that is untiered, then `work` shall exit with an error naming `--tier` and change nothing.
+### [g20] `work decision` refuses a decision with no tier
+- [r20] If the person runs `work decision` without the `--tier` option, then `work` shall refuse the command and name `--tier`.
 
-### [g9] `work decision` names an absent argument
-- [r9] If the person runs `work decision` on an argument that is absent, then `work` shall exit with an error naming the argument and change nothing.
+### [g24] `work decision` refuses a decision with no summary
+- [r24] If the person runs `work decision` without the `--summary` option, then `work` shall refuse the command and name `--summary`.
 
-### [g10] `work decision --verified-by` writes a route
-- [r10] When the person runs `work decision --verified-by`, `work` shall write a design-decision and commit the design-decision.
+### [g25] `work decision` refuses a decision with no text
+- [r25] If the person runs `work decision` without the `--decision` option, then `work` shall refuse the command and name `--decision`.
 
-### [g11] `model check` names a universal condition with no route
-- [r11] When the person runs `model check` on a universal condition that is unrouted, `model` shall print the universal condition.
+### [g21] `work decision` with `--verified-by` writes a route
+- [r21] When the person runs `work decision` with the `--verified-by` option, `work` shall write a design-decision that has a route and commit the design-decision.
 
-### [g12] `model check` refuses a route outside the four
-- [r12] If the person runs `model check` on a design-decision that is misrouted, then `model` shall exit with an error naming the design-decision.
+### [g22] `model check` names a universal condition no decision verifies
+- [r22] When the person runs `model check`, `model` shall print every universal condition that no design-decision verifies.
+
+### [g23] `model check` refuses a route outside the four
+- [r23] While a route of a design-decision is not `scenario`, `check`, `judgement` or `monitor`, if the person runs `model check`, then `model` shall exit with an error naming the design-decision.
 
 ## Implementation, may change
 
 - `w_untiered` is a warning; a decision gives its tier as `tier:` in its frontmatter.
+- A design-decision verifies a universal condition (r22) only while it is in force (not `superseded` or `rejected`),
+  and only with a route of the four (`model check`'s `w_unrouted`); a route outside the four is `v_d9` (r23).
+- `work decision` refuses a run without `--summary`, `--decision` or `--tier` (r20, r24, r25) in one error naming each
+  one missing.
 - A decision gives its tier as `tier: check | requirement | judgement` and what enforces it as `enforced_by: [...]`:
   pytest node ids (`<path>.py` or `<path>.py::<name>`, relative to the root) for a `check` decision, requirement ids
   (an entry in the form `<capability>#r<n>` or `#r<a>-r<b>`, as `model why` reads them; any other entry, a
@@ -100,7 +99,7 @@ to its tier, and keeps a superseded decision marked so.
   `xfailed`, `xpassed`, `deselected`) or `nothing passed` for an exit of 0 whose summary line shows a test that did not
   run, `not a test of this repository: <entry>` for an option or a file outside the root, which is never run, or
   `names no test`. It exits 1 when the index is stale or any decision fails (plan 6, D5; plan 6's review, S1-S3, M2).
-- design-model-check r52 (`--check` on a decisions index exits successfully) and r5 here are both kept: r5 is an "If"
+- design-model-check r52 (`--check` on a decisions index exits successfully) and r17 here are both kept: r17 is an "If"
   line on r52's trigger (the person runs `model decisions` with `--check`), so it takes precedence by the rule of
   `spec/universal.md` ("An "If" line takes precedence", the person, 2026-11-04), as design-model-check r51 (a stale
   index) does (plan 6, D6; plan 6's rulings, Q1).

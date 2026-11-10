@@ -36,7 +36,7 @@ def choices(script):
     return set(re.search(r"\{([a-z,-]+)\}", done.stdout).group(1).split(","))
 
 
-def test_r1_the_session_writes_lines_and_readies():
+def test_r4_the_session_writes_lines_and_readies():
     steps = process(SHAPING)
     first = {cmd: next(n for n, s in enumerate(steps) if commands(s, "work") & {cmd}) for cmd in ("idea", "line", "ready")}
     assert first["idea"] <= first["line"] < first["ready"], first
@@ -50,7 +50,7 @@ def test_r2_nothing_waits_on_the_person():
         assert "ask the person" not in step.lower() and not re.search(r"\bwait", step.lower()), step
 
 
-def test_r3_a_quote_is_written_with_work_quote():
+def test_r5_a_quote_is_written_with_work_quote():
     """The brainstorming session quotes the person's words with `work quote`, before `work shape`, and cites the quote
     in the item's note."""
     steps = process(SHAPING)
@@ -62,7 +62,7 @@ def test_r3_a_quote_is_written_with_work_quote():
     assert "quote-<n>" in text and "Until `work` keeps quotes" not in text
 
 
-def test_r3_the_skill_says_where_an_earlier_sessions_id_is():
+def test_r5_the_skill_says_where_an_earlier_sessions_id_is():
     """Plan 8's review, M6: `--session <id>` is advised only with where the id is found."""
     step = next(s for s in process(SHAPING) if "quote" in commands(s, "work"))
     assert "--session <id>" in step and "`<id>.jsonl`" in step and "~/.claude/projects/" in step, step
