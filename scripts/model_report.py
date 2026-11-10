@@ -74,6 +74,9 @@ def cmd_parse(args):
     import spec_grammar4
     if spec_grammar4.marked(args.root):
         return _parse4(args, lines)
+    if args.form:
+        print("--form reads grammar 4: spec/index.md does not say `language: codified-2`")
+        return 2
     refused = 0
     for n, line in lines:
         head = f"{n}: " if n is not None else ""
@@ -96,14 +99,24 @@ def cmd_parse(args):
     return 1 if refused else 0
 
 
+def _requirements(path):
+    """{line number: `<capability>#r<n>`} of a codified capability file's requirements; {} for any other file."""
+    import spec_read
+    if path.parent.name != "capabilities" or not spec_read.codified(path, (spec_read.MARKER, "codified-2")):
+        return {}
+    groups = spec_read.capability(path, (spec_read.MARKER, "codified-2")).groups
+    return {r.line_no: f"{path.stem}#{r.id}" for g in groups for r in g.requirements}
+
+
 def _parse4(args, lines):
-    """`model parse` in grammar 4, the context's `spec/index.md` saying `language: codified-2` (CNL 4's I7a)."""
+    """`model parse` in grammar 4, the context's `spec/index.md` saying `language: codified-2` (CNL 4's I7a); a
+    refused requirement of a capability file named `<capability>#r<n>` (I9)."""
     import spec_grammar
     import spec_grammar4
     if args.grammar != "Req":
         print(f"grammar 4 has no {args.grammar} grammar: a codified-2 context's lines are parsed as requirements")
         return 2
-    refused = 0
+    refused, named = 0, _requirements(Path(args.file)) if args.file else {}
     for n, line in lines:
         head = f"{n}: " if n is not None else ""
         try:
@@ -112,10 +125,10 @@ def _parse4(args, lines):
             print(f"grammar 4 could not be built: {err}")
             return 2
         if p.tree is not None:
-            print(head + p.tree)
+            print(head + (_form(args.root, p.tree) if args.form else p.tree))
             continue
         refused += 1
-        print(head + p.refusal)
+        print(head + (f"{named[n]}: " if n in named else "") + p.refusal)
         for tree in p.trees:
             print("  tree: " + tree)
         if not p.trees:
@@ -123,6 +136,14 @@ def _parse4(args, lines):
             print(f"  parsed up to: {h['prefix']}")
             print(f"  nearest words: {', '.join(h['near']) or '(none)'}")
     return 1 if refused else 0
+
+
+def _form(root, tree):
+    """The logical form of a grammar 4 tree, as spec_lf shows it."""
+    import spec_grammar4
+    import spec_lf
+    vocab, _ = spec_grammar4.load(root)
+    return spec_lf.show(spec_lf.form(vocab, tree))
 
 
 def cmd_lexicon(args):

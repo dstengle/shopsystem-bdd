@@ -102,6 +102,8 @@ def requirement(step):
             index = repo / "spec" / "index.md"
             index.write_text(index.read_text() + "\n## Relations\n\n| from | word | to | cardinality |\n"
                              "|---|---|---|---|\n| stage | for | work-item |  |\n")
+    else:       # a condition no branch writes would leave the base world's requirement, which passes unchecked
+        raise AssertionError("no requirement condition %r" % word)
 
 
 # A requirement of the fixture glossary for each frame condition, and how its refusal names the verb's term: `write`
