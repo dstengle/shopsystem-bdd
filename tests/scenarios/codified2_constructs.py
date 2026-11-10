@@ -38,7 +38,7 @@ LINES.update({"distributing": [RUN + "`work` shall print every stage."],
               "confining": ["When a session ends a stage, the session shall write only files in its worktree."],
               "bounding": [RUN + "`work` shall print at least two stages.", RUN + "`work` shall print at most one stage."],
               "tallying": ["While at least two stages are `done`, w" + RUN[1:] + "`work` shall exit successfully."],
-              "branching": [("While a stage is `done` or a session follows the stage, w" + RUN[1:] + "`work` shall exit "
+              "branching": [("While a stage is `done` or a session follows a stage, w" + RUN[1:] + "`work` shall exit "
                              "successfully.")],
               "linking": ["When a session ends a stage on a worktree, `work` shall print the stage."],
               "valued": ["When a session ends a stage, `work` shall print the status of the stage."],

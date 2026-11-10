@@ -75,7 +75,7 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
          # the box; and refused when only a stage inside a "no" box would give it
          "shadowed": ("When a session ends a stage, `work` shall not end a stage and print the stage.", None),
          "unreachable": (("While no session follows a stage, when the person runs `work start`, `work` shall print "
-                          "the stage."), '"the stage" has no antecedent outside a "no", "not", "every" or "only" box'),
+                          "the stage."), '"the stage" has no antecedent: a stage is made inside "no session ..."'),
          # "the K of X" in a relative clause on a K (b221): the stage of the worktree, a stage of its own, the worktree
          # the session's, as in "a review that lists the review of the pull request"; and "the K of every Y", one
          # worktree of each session, inside the every box (READINGS: what its logical form prints of each)

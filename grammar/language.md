@@ -105,10 +105,10 @@ holds the "the K" gives it nothing: in "a stage that precedes the stage" the sta
 the relative clause restricts, and with no earlier stage the line is refused (design-model-check r162,
 feature-file-tools r24).
 
-A referent made inside a "no", "not", "every" or "only" box gives nothing to a "the K" outside that box (DRS
-accessibility): "the K" binds to the latest earlier referent of kind K not inside such a box that does not hold it,
-and when every earlier K is inside one the line is refused, naming the noun (design-model-check r166, r167,
-feature-file-tools r31).
+A referent made inside a "no", "not", "every" or "only" box, a count's box or one case of an "or" gives nothing to
+a "the K" outside that box (DRS accessibility): "the K" binds to the latest earlier referent of kind K not inside
+such a box that does not hold it, and when every earlier K is inside one the line is refused, naming the noun and the
+box (design-model-check r166, r167, feature-file-tools r31; the boxes of a count and of "or" under Constructs).
 
 "the K of X" (a row `K | of | S`) is the image of X by the row, a referent of its own: X is read first, wherever it
 is said, and never an earlier K nor the K whose relative clause holds it. In "a review that lists the review of the
@@ -182,7 +182,7 @@ shall [x5: agent the person (constant), x6: command `work start` (parameter), x7
 
 ```reading
 While no session follows a stage, when the person runs `work start`, `work` shall print the stage.
-refused: "the stage" has no antecedent outside a "no", "not", "every" or "only" box: give a stage outside it
+refused: "the stage" has no antecedent: a stage is made inside "no session ...", which gives nothing outside it
 ```
 
 ## R3. "no K": there is no K, within its own clause
@@ -573,6 +573,78 @@ repository's spec in the new language with the reading it is meant to have, chec
 `tests/scripts/test_corpus_spec.py` (it parses to that reading, the reading translates to `model logic`'s facts and
 to `features generate`'s steps, every live line of a codified-2 file has its block, and the line linearises back
 word for word). This section's twins are the constructs' tests; the corpus is the language's.
+
+### "the K" outside the box its K is made in, and the cases of "or"
+
+R2's accessibility over every box a line can make: a "no" or "not" box, the box of "every K", "only Ks" and a count
+("at least two Ks"), and each case of an "or" (two conditions, or two noun phrases, joined by "or": a case holds what
+its side says, and either side may be the one that holds). A K made inside one of them gives nothing to a "the K"
+said outside it, later in the same clause or in a later part, so the line is refused, naming the noun and the box.
+A K made before the box is seen inside it.
+
+Found by the audit in design-model-check r231 ("While a precondition of a requirement uses ... or the trigger of the
+requirement uses ...": the second case's "the requirement" is the first case's), backlog r6 ("`work` shall print
+every item, the title of the item, ...") and batches r4 ("`work` shall print every item in the batch, every task of
+the batch and the status of the task"): each said "the K" outside the box its K is made in, and was read as if it
+were not. Such a line says what it means another way, each K given outside the box, or the "the K" said inside it.
+
+```reading
+When the person runs `work start`, `work` shall print every stage and the status of the stage.
+refused: "the stage" has no antecedent: a stage is made inside "every stage ...", which gives nothing outside it
+```
+
+```reading
+When the person runs `work start`, `work` shall print every session and the worktree of the session.
+refused: "the session" has no antecedent: a session is made inside "every session ...", which gives nothing outside it
+```
+
+```reading
+While a session follows a stage or the session has a worktree, when the person runs `work start`, `work` shall exit successfully.
+refused: "the session" has no antecedent: a session is made inside one case of an "or", which gives nothing outside it
+```
+
+```reading
+While a stage is `open` or a stage is `done`, when the person runs `work start`, `work` shall print the stage.
+refused: "the stage" has no antecedent: a stage is made inside one case of an "or", which gives nothing outside it
+```
+
+```reading
+When the person runs `work start`, `work` shall print a stage or a file, and `work` shall end the stage.
+refused: "the stage" has no antecedent: a stage is made inside one case of an "or", which gives nothing outside it
+```
+
+```reading
+While at least two sessions follow a stage, when the person runs `work start`, `work` shall print the session.
+refused: "the session" has no antecedent: a session is made inside "at least two sessions ...", which gives nothing outside it
+```
+
+```reading
+When the person runs `work start`, `work` shall print at least two stages and the status of the stage.
+refused: "the stage" has no antecedent: a stage is made inside "at least two stages ...", which gives nothing outside it
+```
+
+```reading
+When the person runs `work start`, `work` shall not write a file, and `work` shall print the file.
+refused: "the file" has no antecedent: a file is made inside "no file ...", which gives nothing outside it
+```
+
+A K made before the box is seen in each case: "the stage" in the first case below is the stage the session follows.
+
+```reading
+While a session follows a stage and the stage is `open` or the session has a worktree, when the person runs `work start`, `work` shall print the stage.
+shall [x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+  while [x1: session, x2: stage]
+    follow(subject: x1, object: x2)
+    or
+      case
+        status(x2) = `open`
+      case [x3: worktree]
+        of(x3, x1)
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    print(e2, subject: x6, object: x2)
+```
 
 ## What the language cannot say yet
 

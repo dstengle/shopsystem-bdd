@@ -79,7 +79,8 @@ class State:
         self.clauses = None     # spec_lf_clause, which the relative clauses of spec_lf_np are read by
         self.notes = []         # the reading rules' refusals met while translating (spec_lf_read), in order
         self.open = []          # the referents whose noun phrases are being read: R2 passes over them
-        self.boxed = set()      # the referents made inside a no, not, every or only box already read: R2 passes over
+        self.boxed = {}         # each referent made inside a box already read (a no, not, every, only or count box, a
+        #                         case of an or) and that box: R2 passes over it
         self.modality = None    # shall, may, always, never: the first a response or a necessity says (I17)
 
     def ref(self, kind, origin=None, value=None, definite=False):
@@ -107,10 +108,15 @@ class State:
                      and kind in self.vocab.ancestors(r.kind)), None)
 
     def apply(self, args, build, neg_at=None):
-        """`apply`, the referents of each no, not, every or only box it gives kept as boxed (R2, b222)."""
+        """`apply`, the referents of each box it gives kept as boxed (R2, b222)."""
         refs, conds = apply(args, build, neg_at)
-        self.boxed.update(closed(conds))
+        self.close(conds)
         return refs, conds
+
+    def close(self, conds):
+        """Keep the referents made inside each box of `conds` as boxed, with the box (R2)."""
+        for r, b in closed(conds).items():
+            self.boxed.setdefault(r, b)
 
     def event(self):
         self.events += 1
@@ -153,17 +159,19 @@ def _go(items, build, chosen, neg_at, i):
     return own + refs, a.restr + conds
 
 
-CLOSING = ("not", "every", "only")
+CLOSING = ("not", "every", "only", "count", "case")
 
 
-def closed(conds, inside=False):
-    """The referents of `conds` inside a not, every or only box ("no" is a not box): none is accessible outside it."""
-    out = []
+def closed(conds, box=None):
+    """{referent: the innermost box it is made in} of `conds`' referents inside a not, every, only or count box ("no"
+    is a not box) or a case of an or: none is accessible outside its box. A scope's referents are its box's."""
+    out = {}
     for c in conds:
         if isinstance(c, Box):
-            here = inside or c.op in CLOSING
-            out += list(c.refs) if here else []
-            out += closed(c.body, here) + (closed([c.scope], here) if c.scope is not None else [])
+            here = c if c.op in CLOSING else box
+            out.update({r: here for r in c.refs} if here is not None else {})
+            out.update(closed(c.body, here))
+            out.update(closed([c.scope], here) if c.scope is not None else {})
     return out
 
 

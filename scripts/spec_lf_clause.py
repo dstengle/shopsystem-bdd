@@ -110,10 +110,14 @@ def cond(st, tree):
         first = cond(st, a[0])
         if name == "OneCond":
             return first
-        rest = cond(st, a[1])
         if name == "AndCond":
+            rest = cond(st, a[1])
             return first[0] + rest[0], first[1] + rest[1]
-        return [], [Box("or", (), (core.part("case", *first), core.part("case", *rest)))]
+        cases = [core.part("case", *first)]
+        st.close(cases)                 # R2: the first case gives nothing to the second
+        cases.append(core.part("case", *cond(st, a[1])))
+        st.close(cases)
+        return [], [Box("or", (), tuple(cases))]
     rest = st.names.kind(name)[1]
     if rest == "Holds":
         return clause(st, nps.np(st, a[1]), a[2], a[0] == "PNeg")
