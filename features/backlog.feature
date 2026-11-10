@@ -2,168 +2,196 @@
 Feature: Backlog
   Narrator: a person or session keeping the backlog
 
-  @g1 @r1
-  Scenario: `work idea` writes an item
-    When the person runs `work idea`
-    Then `work` writes the item i1
-    And the item i1 is `idea`
+  @g5 @r5
+  Scenario: `work depend` records a dependency
+    When the person runs `work depend` on the item i1
+    Then the item i1 has the dependency d1
+    And `work` writes the dependency d1
     And `work` commits the item i1
 
-  @g2 @r2
-  Scenario: `work shape` shapes an idea
-    Given an item i1 that is `idea`
-    When the person runs `work shape` on the item i1
-    Then the item i1 is `shaped`
+  @g15 @r15
+  Scenario: `work show` names an item by its title
+    When the person runs `work show` on the item i1
+    Then the item i1 has the title t1
+    And `work` prints the title t1
 
-  @g3 @r3
+  @g22 @r22
+  Scenario: `work idea` writes an item
+    When the person runs `work idea`
+    Then the item i1 is `idea`
+    And `work` writes the item i1
+    And `work` commits the item i1
+
+  @g23 @r23
+  Scenario: `work shape` shapes an idea
+    Given an item i1
+    And the item i1 is `idea`
+    When the person runs `work shape` on the item i1
+    Then `work` sets the status of the item i1 to `shaped`
+
+  @g24 @r24
   Scenario: `work shape` refuses an item that is not an idea
     Given an item i1
     And the item i1 is not `idea`
     When the person runs `work shape` on the item i1
-    Then `work` exits with an error naming the status of the item i1
-    And `work` changes nothing
+    Then `work` refuses `work shape`
+    And `work` names the status of the item i1
 
-  @g4 @r4
+  @g25 @r25
   Scenario: `work rate` sets an item's ratings
-    Given `--value high-value --urgency low-urgency --size small` is given
-    When the person runs `work rate` on the item i1
-    Then the item i1 is `high-value`
-    And the item i1 is `low-urgency`
-    And the item i1 is `small`
+    When the person runs `work rate --value high-value --urgency low-urgency --size small` on the item i1
+    Then `work` sets the value of the item i1 to `high-value`
+    And `work` sets the urgency of the item i1 to `low-urgency`
+    And `work` sets the size of the item i1 to `small`
     And `work` commits the item i1
 
-  @g5 @r5
-  Scenario: `work depend` records a dependency
-    When the person runs `work depend` on the item i1
-    Then `work` writes the dependency d1
-    And the dependency d1 is of the item i1
+  @g26 @r26
+  Scenario: `work backlog` prints an item with its dependency on an item that is not delivered
+    Given an item i1
+    And the item i1 is not `delivered`
+    And a dependency d1
+    And the dependency d1 is on the item i1
+    And the dependency d1 exists
+    And an item i2
+    And the item i2 has the dependency d1
+    When the person runs `work backlog`
+    Then `work` prints the item i2
+    And `work` prints the dependency d1
+
+  @g27 @r27
+  Scenario: `work backlog --json` prints one JSON object
+    Given a JSON object j1
+    When the person runs `work backlog` with the `--json` option
+    Then `work` prints the JSON object j1
+    And `work` exits successfully
+
+  @g28 @r28
+  Scenario: `work withdraw` withdraws an item that is an idea, shaped, ready or needs input (case 1)
+    Given an item i1
+    And the item i1 is `idea`
+    When the person runs `work withdraw` on the item i1
+    Then `work` sets the status of the item i1 to `withdrawn`
+
+  @g28 @r28
+  Scenario: `work withdraw` withdraws an item that is an idea, shaped, ready or needs input (case 2)
+    Given an item i1
+    And the item i1 is `shaped`
+    When the person runs `work withdraw` on the item i1
+    Then `work` sets the status of the item i1 to `withdrawn`
+
+  @g28 @r28
+  Scenario: `work withdraw` withdraws an item that is an idea, shaped, ready or needs input (case 3)
+    Given an item i1
+    And the item i1 is `ready`
+    When the person runs `work withdraw` on the item i1
+    Then `work` sets the status of the item i1 to `withdrawn`
+
+  @g28 @r28
+  Scenario: `work withdraw` withdraws an item that is an idea, shaped, ready or needs input (case 4)
+    Given an item i1
+    And the item i1 is `needs-input`
+    When the person runs `work withdraw` on the item i1
+    Then `work` sets the status of the item i1 to `withdrawn`
+
+  @g29 @r29
+  Scenario: `work refuse` refuses an item that is an idea or shaped (case 1)
+    Given an item i1
+    And the item i1 is `idea`
+    When the person runs `work refuse` on the item i1
+    Then `work` sets the status of the item i1 to `refused`
+
+  @g29 @r29
+  Scenario: `work refuse` refuses an item that is an idea or shaped (case 2)
+    Given an item i1
+    And the item i1 is `shaped`
+    When the person runs `work refuse` on the item i1
+    Then `work` sets the status of the item i1 to `refused`
+
+  @g30 @r30
+  Scenario: `work answer` returns an item that needs input to shaped
+    Given an item i1
+    And the item i1 is `needs-input`
+    When the person runs `work answer` on the item i1
+    Then `work` sets the status of the item i1 to `shaped`
     And `work` commits the item i1
 
-  @g6 @r6
-  Scenario: `work backlog` prints the backlog, each item by its title
+  @g31 @r31
+  Scenario: `work backlog` prints the question of an item that needs input
+    Given an item i1
+    And the item i1 is `needs-input`
+    And a question q1
+    And the question q1 is on the item i1
+    And a question q2
+    And the question q2 is on the item i1
     When the person runs `work backlog`
     Then `work` prints the item i1
+    And `work` prints the question q1
+    And `work` prints the question q2
+
+  @g32 @r32
+  Scenario: `work idea` keeps its commit and names the remote that rejects its push
+    Given a remote r1
+    And this repository has the remote r1
+    And a push p1
+    And this command has the push p1
+    And the remote r1 rejects the push p1
+    When the person runs `work idea`
+    Then the item i1 is `idea`
+    And `work` writes the item i1
+    And `work` commits the item i1
+    And `work` prints the remote r1
+    And `work` exits successfully
+
+  @g33 @r33
+  Scenario: `work idea` keeps its commit and names the remote that does not answer its push
+    Given a remote r1
+    And this repository has the remote r1
+    And a push p1
+    And this command has the push p1
+    And the remote r1 does not answer the push p1
+    When the person runs `work idea`
+    Then the item i1 is `idea`
+    And `work` writes the item i1
+    And `work` commits the item i1
+    And `work` prints the remote r1
+    And `work` exits successfully
+
+  @g34 @r34
+  Scenario: `work idea` refuses the branch of a task
+    Given a git branch g1
+    And a task t1
+    And the task t1 has the git branch g1
+    And this repository checks out the git branch g1
+    When the person runs `work idea`
+    Then `work` refuses `work idea`
+    And `work` names the task t1
+
+  @g35 @r35
+  Scenario: `work idea` keeps an upstream branch of another name
+    Given a branch name b1
+    And a git branch g1
+    And the git branch g1 has the branch name b1
+    And this repository checks out the git branch g1
+    And a upstream branch u1
+    And the git branch g1 has the upstream branch u1
+    And a branch name b2
+    And the upstream branch u1 has the branch name b2
+    When the person runs `work idea`
+    Then the item i1 is `idea`
+    And `work` writes the item i1
+    And `work` commits the item i1
+    And `work` keeps the upstream branch u1
+
+  @g36 @r36
+  Scenario: `work backlog` prints every item with its title, status, provenance and ratings
+    Given an item i1
+    And the item i1 exists
+    When the person runs `work backlog`
+    Then `work` prints the item i1
+    And the item i1 has the title t1
     And `work` prints the title t1
-    And the title t1 is of the item i1
     And `work` prints the status of the item i1
     And `work` prints the provenance of the item i1
     And `work` prints the value of the item i1
     And `work` prints the urgency of the item i1
     And `work` prints the size of the item i1
-
-  @g7 @r7
-  Scenario: `work backlog` marks a blocked item
-    Given an item i1
-    And the item i1 is not `delivered`
-    And a dependency d1
-    And the dependency d1 is on the item i1
-    And an item i2
-    And the item i2 is blocked
-    And the dependency d1 is of the item i2
-    When the person runs `work backlog`
-    Then `work` prints the item i2
-    And `work` prints the dependency d1
-
-  @g8 @r8
-  Scenario: `work backlog --json` prints one JSON object
-    Given `--json` is given
-    When the person runs `work backlog`
-    Then `work` prints the JSON object j1
-    And `work` exits successfully
-
-  @g9 @r9
-  Scenario: `work withdraw` withdraws an idea
-    Given an item i1 that is `idea`
-    When the person runs `work withdraw` on the item i1
-    Then the item i1 is `withdrawn`
-
-  @g10 @r10
-  Scenario: `work withdraw` withdraws a shaped item
-    Given an item i1 that is `shaped`
-    When the person runs `work withdraw` on the item i1
-    Then the item i1 is `withdrawn`
-
-  @g11 @r11
-  Scenario: `work withdraw` withdraws a ready item
-    Given an item i1 that is `ready`
-    When the person runs `work withdraw` on the item i1
-    Then the item i1 is `withdrawn`
-
-  @g12 @r12
-  Scenario: `work withdraw` withdraws an item that needs input
-    Given an item i1 that is `needs-input`
-    When the person runs `work withdraw` on the item i1
-    Then the item i1 is `withdrawn`
-
-  @g13 @r13
-  Scenario: `work refuse` refuses an idea
-    Given an item i1 that is `idea`
-    When the person runs `work refuse` on the item i1
-    Then the item i1 is `refused`
-
-  @g14 @r14
-  Scenario: `work refuse` refuses a shaped item
-    Given an item i1 that is `shaped`
-    When the person runs `work refuse` on the item i1
-    Then the item i1 is `refused`
-
-  @g15 @r15
-  Scenario: `work show` names an item by its title
-    When the person runs `work show` on the item i1
-    Then `work` prints the title t1
-    And the title t1 is of the item i1
-
-  @g16 @r16
-  Scenario: `work answer` returns an item that needs input to shaped
-    Given an item i1 that is `needs-input`
-    When the person runs `work answer` on the item i1
-    Then the item i1 is `shaped`
-    And `work` commits the item i1
-
-  @g17 @r17
-  Scenario: `work backlog` prints the question of an item that needs input
-    Given an item i1 that is `needs-input`
-    When the person runs `work backlog`
-    Then `work` prints the item i1
-    And `work` prints the question q1
-    And the question q1 is on the item i1
-
-  @g18 @r18
-  Scenario: `work idea` keeps its commit and names a remote it cannot push to
-    Given a remote r1
-    And the remote r1 is unpushable
-    When the person runs `work idea`
-    Then `work` writes the item i1
-    And the item i1 is `idea`
-    And `work` commits the item i1
-    And `work` prints the remote r1
-    And `work` exits successfully
-
-  @g19 @r19
-  Scenario: `work idea` keeps its commit and names a remote that does not answer
-    Given a remote r1
-    And the remote r1 is silent
-    When the person runs `work idea`
-    Then `work` writes the item i1
-    And the item i1 is `idea`
-    And `work` commits the item i1
-    And `work` prints the remote r1
-    And `work` exits successfully
-
-  @g20 @r20
-  Scenario: `work idea` refuses the branch of a task
-    Given a repository r1
-    And the repository r1 is tasked
-    When the person runs `work idea`
-    Then `work` exits with an error naming the task t1
-    And `work` changes nothing
-
-  @g21 @r21
-  Scenario: `work idea` keeps the upstream branch of the branch checked out
-    Given a repository r1
-    And the repository r1 is tracking
-    When the person runs `work idea`
-    Then `work` writes the item i1
-    And the item i1 is `idea`
-    And `work` commits the item i1
-    And `work` keeps the upstream branch u1

@@ -6,7 +6,7 @@ capability's `unbuilt:` runs as an expected failure."""
 from pytest_bdd import scenarios
 
 from .conftest import ROOT
-from .work_queue_world import bind_all
+from .world_four import bind
 
-bind_all(globals(), ROOT)
+bind(globals(), ROOT, 'batches')
 scenarios("batches.feature")

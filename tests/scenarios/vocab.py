@@ -39,6 +39,7 @@ else:   # loaded by path, as `features vocab --check` loads it
     sys.path.pop(0)
 
 _read, HANDLERS, CLAIMS = {}, {}, defaultdict(set)
+FOUR_CHAINS, FOUR_RUN = {}, {}     # world_four's chains of grammar 4's handlers, and the runner of each
 
 
 def handler(template, term=None):
@@ -52,8 +53,9 @@ def handler(template, term=None):
 
 
 def lookup(template, term):
-    """The handler of (template, term), else the template's fallback, else None."""
-    return HANDLERS.get((template, term)) or HANDLERS.get((template, None))
+    """The handler of (template, term), else the template's fallback, else world_four's chain of the key, else
+    None."""
+    return HANDLERS.get((template, term)) or HANDLERS.get((template, None)) or FOUR_RUN.get((template, term))
 
 
 def load_handlers(tests_dir):

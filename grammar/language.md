@@ -1861,3 +1861,29 @@ whose outcome is `failed`"), which the scenario gives before the run.
 When is the next step (R9); "eventually" has no form (deferred to b127). Line: pr-review r1, kept (a review follows the
 publication of a pull request after `work batch brief`, not at the next step). It says instead the next-step
 obligation, which the batch session meets by its own steps (skill `building-a-batch`).
+
+### #12: an option set to a value of an attribute
+
+"with the `--x` option set to v" takes a code, or a thing the line says more of; a code that is a declared value of
+an attribute (`high-value`, a value of an item's value) is no argument, so a line cannot say that a command sets an
+attribute to the value an option gives it. Line: backlog r25 (b158: `work rate` with `--value`, `--urgency` and
+`--size`). It says instead the command with its arguments in its code, as one example: "When the person runs `work
+rate --value high-value --urgency low-urgency --size small` on an item, `work` shall set the value of the item to
+`high-value`, ..."; the rule that each rating is set to the one given is not said.
+
+### #14: up to a number, in rank order
+
+The language has no ordered choice: "the first K in rank order", "up to `batch_size` Ks", "unless what blocks it is
+picked earlier in the same pick". Line: batches r22 (b158 r20, `work batch start`'s pick). It says what holds of an
+item that nothing blocks, "While an item is `ready` and the item passes the readiness bar and the item has no
+dependency on an item whose status is not `delivered`, ... `work` shall pick the item ..."; the bound `batch_size`,
+the rank order and an item picked after the item it depends on in the same pick stay in the capability's
+Implementation section.
+
+### #16: an answer within a time
+
+"within the last 7 days" compares a moment with the clock; the language has no bound on how long an act takes ("no
+answer within the push timeout", `$SHOPSYSTEM_PUSH_TIMEOUT`), which b127 defers. Line: backlog r33 (b158 r37, a remote
+that does not answer `work idea`'s push in time). It says instead "While the remote of this repository does not
+answer the push of the command, ...", which reads that no answer comes at all; the timeout stays in the capability's
+Implementation section.
