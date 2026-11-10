@@ -16,7 +16,7 @@ precedence, inertia) the check's (I12a, I12b). This module holds the rest, and t
   needs, or when another referent of such a kind was given before it (`its`).
 - R12: a line with no trigger, and neither "always" nor "never", whose response obliges an act (an event outside a
   `not` or `only` box) is refused: it would oblige in every state. A "shall not" or "only" line with no trigger
-  forbids or restricts in every state, which is its meaning (`refusal`).
+  forbids or restricts in every state, which is its meaning (`refusal`). A "may" line obliges nothing (I17).
 
 The translation keeps the refusals of R2, R4 and R8 in its State's `notes` as it meets them; `refusal` gives the
 first of them, else R12's.
@@ -85,6 +85,12 @@ def its(st, kinds, said):
                         'one of them' % (said, words(st, s), article(noun(st, others[0].kind)), said.split(" ", 1)[1]))
 
 
+def note(st, why):
+    """A refusal met while translating, once."""
+    if why not in st.notes:
+        st.notes.append(why)
+
+
 def verb(st, vptree):
     """(the base form, the third person form) of a verb phrase's verb or row."""
     name = vptree if isinstance(vptree, str) else vptree[0]
@@ -129,7 +135,7 @@ def refusal(vocab, tree):
     if st.notes:
         return "refused: " + st.notes[0]
     ops = {p.op for p in form.parts}
-    if not ops & {"when", "if"} and form.modality not in ("always", "never") \
+    if not ops & {"when", "if"} and form.modality == "shall" \
             and any(obliges(p) for p in form.parts if p.op == "response"):
         return ('refused: the line has no trigger and neither "always" nor "never": it would oblige its response in '
                 'every state')

@@ -329,3 +329,36 @@ shall [x1: tool `work` (constant), x2: thing `spec/index.md` (parameter)]
     not
       change(e1, subject: x1, object: x2)
 ```
+
+## Modality: "shall", "may", "always" and "never"
+
+A line's modality is the form's first word (I17; the design's section 4.5). "shall" obliges (scenarios). "may"
+permits: it obliges nothing, so a "may" line with no trigger stands (R12 refuses only an obligation), and `model
+logic` reports a "shall not" line that forbids what it permits, on one trigger or none, in a state both allow (L7).
+"may not" reads two ways and is refused; so is a line that says both "shall" and "may". "always" and "never" say a
+necessity: a line of no trigger over one state clause (a While clause may come before it), its referents any K, as a
+While clause's are; it is a premise of `model logic`, true in both states of every pair it bears on.
+
+```reading
+A session may write a file.
+may []
+  response [x1: session, x2: file]
+    write(e1, subject: x1, object: x2)
+```
+
+```reading
+A session may not write a file.
+refused: the line says "may not", which reads as "is not allowed to" and as "is allowed not to": say "shall not", or say what it may do
+```
+
+```reading
+When a session ends a stage, the session may write a file, and `work` shall print the stage.
+refused: the line says both "may" and "shall": say each in a line of its own
+```
+
+```reading
+A session never follows a stage.
+never []
+  holds [x1: session, x2: stage]
+    follow(subject: x1, object: x2)
+```

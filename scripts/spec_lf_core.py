@@ -75,6 +75,7 @@ class State:
         self.origin, self.subject, self.events = "trigger", None, 0
         self.clauses = None     # spec_lf_clause, which the relative clauses of spec_lf_np are read by
         self.notes = []         # the reading rules' refusals met while translating (spec_lf_read), in order
+        self.modality = None    # shall, may, always, never: the first a response or a necessity says (I17)
 
     def ref(self, kind, origin=None, value=None, definite=False):
         r = Ref("x%d" % (len(self.refs) + 1), kind, origin or self.origin, value, definite)
