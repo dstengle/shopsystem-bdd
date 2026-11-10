@@ -7,10 +7,13 @@ R5 ("only" an `only` box, obliging nothing), R6 ("every K" in a response an `eve
 context names a parameter) and R11 ("this K" the run's own K). R7 (counts) is I15's and R9 (edge, level, the If
 precedence, inertia) the check's (I12a, I12b). This module holds the rest, and the refusals:
 
-- R2: "the K" binds to the latest earlier referent of kind K (a part's, an actor, a code, an indexical), else to the image of a row `K | of | S` of the one earlier
+- R2: "the K" binds to the latest earlier referent of kind K (a part's, an actor, a code, an indexical) not made
+  inside a "no", "not", "every" or "only" box read before it (State.boxed: DRS accessibility, b222), else to the image of a row `K | of | S` of the one earlier
   referent of kind S (the worktree of the session), else to the run's own K when K's entry has `This:`; else the
   line is refused, naming the noun (`the`). A referent whose noun phrase holds the "the" gives it nothing: "a stage
   after the stage" is after an earlier stage, never after itself (b217).
+  "the K of X" is the image of X by the row `K | of | S`, X read first (spec_lf_np's `of`): never an earlier K nor
+  the K whose relative clause holds it, and inside the box of "every Y" when X is "every Y" (b221).
 - R4: "does not V a K" in a While or Where clause is refused (`negated`): it reads as "Vs no K" and as "a K that X
   does not V"; the writer says one of them. Under "shall not" in a response, "a K" stays any K.
 - R8: "its" binds to the subject of its clause; the line is refused when that subject is of no kind the relation
@@ -50,7 +53,7 @@ def _image(st, row, y):
 
 def the(st, kind, plural=False):
     """R2 and R11: the NP "the K" binds to, or None, the refusal noted (the caller makes a definite referent)."""
-    refs = [r for r in st.refs if r.origin in ACCESSIBLE and r not in st.open]
+    refs = [r for r in st.refs if r.origin in ACCESSIBLE and r not in st.open and r not in st.boxed]
     bound = next((r for r in reversed(refs) if kind in st.vocab.ancestors(r.kind)), None)
     if bound is not None:
         return core.fixed(bound)
@@ -61,6 +64,10 @@ def the(st, kind, plural=False):
     if kind in st.vocab.this:
         return core.fixed(st.constant(kind, st.vocab.this[kind], "indexical"))
     said = "the " + noun(st, kind, plural)
+    if any(kind in st.vocab.ancestors(r.kind) for r in st.boxed):
+        st.notes.append('"%s" has no antecedent outside a "no", "not", "every" or "only" box: give %s '
+                        'outside it' % (said, article(noun(st, kind))))
+        return None
     more = (': %d earlier noun phrases may give it: say "the %s of" one of them' % (len(found), noun(st, kind))
             if found else ": no earlier noun phrase, functional relation or declared indexical gives %s"
             % article(noun(st, kind)))

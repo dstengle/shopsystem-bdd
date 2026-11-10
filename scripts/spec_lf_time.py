@@ -12,7 +12,6 @@ reading of them yet: spec_lf_facts refuses a line holding a comparison or a hist
 from dataclasses import dataclass
 
 import spec_lf_clause
-import spec_lf_core as core
 import spec_lf_np as nps
 import spec_lf_read
 import spec_rgl
@@ -59,7 +58,7 @@ def history(st, subject, vptree, neg, since=None):
         _, verb, sense, roles = build(r[0], r[1:1 + len(args)]).args
         st.events = events      # a history is no event of the line
         return Atom("history", (verb, sense, roles + ((("since", r[-1]),) if extra else ())))
-    return core.apply([subject] + args + extra, made, 1 if neg else None)
+    return st.apply([subject] + args + extra, made, 1 if neg else None)
 
 
 def perfect(st, note, vptree):
@@ -78,10 +77,10 @@ def cond(st, tree):
     neg = 1 if a and a[0] == "PNeg" else None
     if rest == "Within":
         bound = ago(st, a[2])
-        return core.apply([nps.np(st, a[1])], lambda r: Atom("cmp", (r[0], "after", bound)), neg)
+        return st.apply([nps.np(st, a[1])], lambda r: Atom("cmp", (r[0], "after", bound)), neg)
     if rest == "Cmp":
         op = ORDER[nps.fun(a[2])]
-        return core.apply([nps.np(st, a[1]), nps.np(st, a[3])], lambda r: Atom("cmp", (r[0], op, r[1])), neg)
+        return st.apply([nps.np(st, a[1]), nps.np(st, a[3])], lambda r: Atom("cmp", (r[0], op, r[1])), neg)
     if rest in ("Done", "DoneSince"):
         return history(st, nps.np(st, a[1]), a[2], bool(neg), a[3] if rest == "DoneSince" else None)
     return None

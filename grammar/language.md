@@ -57,6 +57,17 @@ holds the "the K" gives it nothing: in "a stage that precedes the stage" the sta
 the relative clause restricts, and with no earlier stage the line is refused (design-model-check r162,
 feature-file-tools r24).
 
+A referent made inside a "no", "not", "every" or "only" box gives nothing to a "the K" outside that box (DRS
+accessibility): "the K" binds to the latest earlier referent of kind K not inside such a box that does not hold it,
+and when every earlier K is inside one the line is refused, naming the noun (design-model-check r166, r167,
+feature-file-tools r31).
+
+"the K of X" (a row `K | of | S`) is the image of X by the row, a referent of its own: X is read first, wherever it
+is said, and never an earlier K nor the K whose relative clause holds it. In "a review that lists the review of the
+pull request" the review listed is the pull request's, not the review written; in "the worktree of every session" it
+is inside the box of every session, one worktree of each (design-model-check r164, r165; feature-file-tools r29,
+r30, b221).
+
 Tested on design-model-check r58-r61 ("... `model` shall exit with an error naming the term": no term is given
 before, so each is refused and is to be reworded) and migration-tools r13-r16 ("While the repository is behind
 ...": the repository is the run's own, an indexical once this repository's glossary gives `repository` a `This:`).
@@ -69,6 +80,18 @@ shall [x3: tool `work` (constant)]
   response [x4: worktree]
     of(x4, x1)
     print(e2, subject: x3, object: x4)
+```
+
+```reading
+When a session writes a file, `work` shall print the worktree of every session.
+shall [x3: tool `work` (constant)]
+  when [x1: session, x2: file]
+    write(e1, subject: x1, object: x2)
+  response
+    every [x4: session]
+      scope [x5: worktree]
+        of(x5, x4)
+        print(e2, subject: x3, object: x5)
 ```
 
 ```reading
@@ -93,6 +116,25 @@ refused: "the worktree" has no antecedent: 2 earlier noun phrases may give it: s
 ```reading
 While a session does not follow the stage, when a session ends a stage, `work` shall exit successfully.
 refused: "the stage" has no antecedent: no earlier noun phrase, functional relation or declared indexical gives a stage
+```
+
+```reading
+While a session follows a stage and no session follows a stage whose status is `done`, when the person runs `work start`, `work` shall print the stage.
+shall [x5: agent the person (constant), x6: command `work start` (parameter), x7: tool `work` (constant)]
+  while [x1: session, x2: stage]
+    follow(subject: x1, object: x2)
+    not [x3: session, x4: stage]
+      status(x4) = `done`
+      follow(subject: x3, object: x4)
+  when
+    run(e1, subject: x5, object: x6)
+  response
+    print(e2, subject: x7, object: x2)
+```
+
+```reading
+While no session follows a stage, when the person runs `work start`, `work` shall print the stage.
+refused: "the stage" has no antecedent outside a "no", "not", "every" or "only" box: give a stage outside it
 ```
 
 ## R3. "no K": there is no K, within its own clause
