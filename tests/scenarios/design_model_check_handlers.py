@@ -1,8 +1,9 @@
 """Handlers of features/design-model-check.feature (design §14.3): `model` run on the repository the Givens build,
 and what it printed read back.
 
-A repository starts from what a model check needs to be clean: a codified `spec/index.md` with the typed glossary of
-tests/scripts/fixtures/glossary/, the capability `thing` with one requirement group and its scenario, the observation the initiatives cite, and an initiative for each work directory. The
+A repository starts from what a model check needs to be clean: a codified-2 `spec/index.md` (the CLI pack imported)
+with the typed glossary of tests/scripts/fixtures/glossary/, the capability `thing` with one requirement group and its
+scenario, the observation the initiatives cite, and an initiative for each work directory. The
 Givens of a condition (design_model_check_handlers_conditions.py) change it so that one rule fires, and keep in
 `says` what the output names an instance by (a file, a reference, a code)."""
 import os
@@ -14,10 +15,16 @@ from vocab import handler
 
 PATH = "ex.com/prod/ctx"
 FIXTURE = (Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "glossary" / "spec" / "index.md").read_text()
-TERMS = FIXTURE[FIXTURE.index("## Glossary") + len("## Glossary\n"):].strip() + "\n\n### This repository's\n\n"
-INDEX = "---\nid: bounded-context/%s\nlanguage: codified-1\n---\n# ctx\n\n## Glossary\n\n%s" % (PATH, TERMS)
-# A statement that parses in the fixture glossary: `cap()` writes it for each requirement a Given gives in 0.29 words.
-STATEMENT = "When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to `started`."
+# the fixture's terms, those the CLI pack defines too marked as redefining it (v_t16)
+TERMS = re.sub(r"^(- \*\*(?:change|command|name|reason|refuse)\*\* .*)$", r"\1 Redefines: cli.",
+               FIXTURE[FIXTURE.index("## Glossary") + len("## Glossary\n"):].strip(), flags=re.MULTILINE) + \
+    "\n\n### This repository's\n\n"
+MARKER = "language: codified-2\nimports: [cli]\n"
+INDEX = "---\nid: bounded-context/%s\n%s---\n# ctx\n\n## Glossary\n\n%s" % (PATH, MARKER, TERMS)
+# A statement that parses in grammar 4 in the fixture glossary: `cap()` writes it for each requirement a Given gives
+# in 0.29 words.
+STATEMENT = ("When the person runs `work start` on an initiative whose status is `proposed`, `work` shall set the status "
+             "of the initiative to `started`.")
 HIDE_CLINGO = 'raise ImportError("clingo is hidden for this test")\n'
 
 
@@ -50,7 +57,7 @@ def cap(name, reqs, retired="[]", ident=None):
     for k, line in enumerate(reqs, 1):
         m = re.match(r"- (\[r\d+\] )?\*\*When\*\*", line)
         body += ["### [g%d] line %d" % (k, k), "- %s%s" % (m.group(1) or "", STATEMENT) if m else line]
-    return ("---\nid: %s\ntitle: %s\nnarrator: a client\ngroup: service\nlanguage: codified-1\nrests_on: []\n"
+    return ("---\nid: %s\ntitle: %s\nnarrator: a client\ngroup: service\nlanguage: codified-2\nrests_on: []\n"
             "retired: %s\n---\n\n# %s\n\n## Purpose\nSomething.\n\n## Behaviour\n\n%s\n\n## Not yet\n- None.\n"
             % (ident or full("capability", name), name, retired, name, "\n".join(body)))
 
@@ -81,7 +88,7 @@ def base(repo, context):
     if not index.is_file():
         write(repo, "spec/index.md", INDEX)
     elif "language: codified-" not in index.read_text():       # world_nodes' index: codified, the fixture terms added
-        text = index.read_text().replace("\n---\n", "\nlanguage: codified-1\n---\n", 1)
+        text = index.read_text().replace("\n---\n", "\n%s---\n" % MARKER, 1)
         index.write_text(text.replace("## Glossary\n\n", "## Glossary\n\n" + TERMS, 1))
     if not (repo / "spec" / "capabilities" / "thing.md").is_file():
         write(repo, "spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, `thing` shall answer."]))
@@ -251,11 +258,12 @@ def given_nothing(step):
     pass
 
 
-# An unpairable capability: r1 and r2 name the code `x` of an initiative and of a request, which no unification makes
-# one thing; r3 and r4 clash (an L1). `model logic` sets r1 and r2 aside and still finds r3 and r4's L1.
-UNPAIRABLE = [("While the initiative `x` is `proposed`, when the person runs `work stop` on a stage, `work run` shall "
-               "end the stage."),
-              ("While the request `x` is `open`, when the person runs `work stop` on a stage, `work run` shall not "
-               "end the stage."),
+# An unpairable capability, in the smallest codified-2 world: r1 and r2 name the code `x` of a stage and of a file,
+# which no unification makes one thing; r3 and r4 clash (an L1). `model logic` sets r1 and r2 aside and still finds r3
+# and r4's L1.
+UNPAIRABLE = [("While the `x` stage is `open`, when the person runs `work stop` on a stage, `work` shall end the "
+               "stage."),
+              ("While the version of the `x` file is `1.0.0`, when the person runs `work stop` on a stage, `work` "
+               "shall not end the stage."),
               "When the person runs `work check`, `work` shall exit successfully.",
               "When the person runs `work check`, `work` shall exit with an error naming `work check`."]

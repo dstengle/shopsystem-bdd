@@ -4,7 +4,6 @@ nodes themselves are written by world_nodes.py first; a capability, requirement,
 its own files."""
 import importlib.util
 import re
-import shutil
 import sys
 from pathlib import Path
 
@@ -27,7 +26,8 @@ MIXED = _sibling("codified2_mixed.py", "shop_codified2_mixed")
 GIVEN = _sibling("codified2_given.py", "shop_codified2_given")
 CONSTRUCTS = _sibling("codified2_constructs.py", "shop_codified2_constructs")
 ROOT = Path(__file__).resolve().parents[2]
-BROKEN = ROOT / "tests" / "scripts" / "fixtures" / "generate" / "broken" / "spec"
+# a line grammar 4 stops in: the fixture glossary has no verb tell
+UNPARSED = "When the person runs `work start`, `work` shall tell the person."
 
 
 def condition(step):
@@ -46,8 +46,7 @@ def node_path(step, name):
 def capability(step):
     name, word, repo = step.names[0], condition(step), step.repo
     if word == "unpairable":
-        H.write(repo, "spec/capabilities/%s.md" % name,
-                H.cap(name, ["- [r%d] %s" % (k, line) for k, line in enumerate(H.UNPAIRABLE, 1)]))
+        C2.context(repo, H.PATH, H.UNPAIRABLE, name)
         H.write(repo, "features/%s.feature" % name, H.feature(name, "@r1", "@r2", "@r3", "@r4"))
         H.says(step, "r1", "%s#r1" % name)
         return
@@ -93,11 +92,8 @@ def requirement(step):
         H.write(repo, "spec/capabilities/thing.md", H.cap("thing", ["- [r1] When asked, `thing` shall reply."]))
         H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))
     elif word == "unparsed":
-        shutil.copytree(BROKEN, repo / "spec", dirs_exist_ok=True)
-        H.write(repo, "spec/capabilities/thing.md", (BROKEN / "capabilities" / "thing.md").read_text().replace(
-            "capability/example.org/fixture/thing", H.full("capability", "thing")))
-        H.write(repo, "spec/index.md", (BROKEN / "index.md").read_text().replace(
-            "bounded-context/example.org/fixture", "bounded-context/" + H.PATH))
+        H.write(repo, "spec/capabilities/thing.md", H.cap("thing", ["- [r1] " + UNPARSED]))
+        H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))
     elif word == "withholding":
         withholding(step)
     elif word in C2.REQUIREMENTS:     # lines of grammar 4 that `model logic` checks for r1 (I13a)
@@ -124,20 +120,15 @@ def requirement(step):
         H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))
         if FRAMED[word][1]:     # the scenario's term t1 is the verb the line leaves short: the refusal names it so
             H.says(step, "t1", FRAMED[word][1])
-        if word == "prepositioned":     # the verb whose preposition the line says before each of its objects
+        if word in ADDED:      # a state verb, one whose preposition the line says before its object, or a row
             H.base(repo, step.context)
             index = repo / "spec" / "index.md"
-            index.write_text(index.read_text() + "- **subscribe** (verb, action): Frame: agent subscribes to stage.\n")
+            index.write_text(index.read_text() + ADDED[word])
         if word == "later-sensed":     # a sense of name before the agent's, whose subject `work` is not
             H.base(repo, step.context)
             index = repo / "spec" / "index.md"
             index.write_text(index.read_text().replace("- **name** (verb, action)", "- **name** (verb, state): a text "
                                                        "names a thing. Frame: text names thing.\n- **name** (verb, action)"))
-        if word == "negating":     # the relation the line negates, a row of `## Relations`
-            H.base(repo, step.context)
-            index = repo / "spec" / "index.md"
-            index.write_text(index.read_text() + "\n## Relations\n\n| from | word | to | cardinality |\n"
-                             "|---|---|---|---|\n| stage | for | work-item |  |\n")
     else:       # a condition no branch writes would leave the base world's requirement, which passes unchecked
         raise AssertionError("no requirement condition %r" % word)
 
@@ -146,17 +137,21 @@ EXEMPLIFIED = ("When the person runs `work start` on an initiative that is `prop
                '"banana".')
 
 
-# A requirement of the fixture glossary for each frame condition of grammar 3 (objectless, recipientless, mistyped and
-# agentless are grammar 4's, in the codified-2 world: CNL 4's I10).
+# A requirement of the fixture glossary in grammar 4 for each frame condition (objectless, recipientless, mistyped and
+# agentless are in the codified-2 world: CNL 4's I10), and what the index gains for it (ADDED).
 # An addressed line gives its trigger's verb its object and, after `to`, its recipient.
-FRAMED = {"negating": (("While a stage is not for a work-item, when the person runs `work start`, `work` shall not "
-                        "write a file."), None),
-          "verbal": (("While a session writes a file and a session does not commit a file, when the person runs "
-                      "`work start`, `work` shall commit a file."), None),
-          "prepositioned": (("While a session does not subscribe to a stage, when a session subscribes to a stage, "
-                             "`work` shall subscribe to a stage."), None),
+FRAMED = {"negating": ("While a work-item has no stage, when the person runs `work start`, `work` shall not write a file.",
+                       None),
+          "verbal": (("While a session owns a file and the person does not own the file, when the person runs "
+                      "`work start`, `work` shall commit the file."), None),
+          "prepositioned": (("While a session subscribes to a stage, when the person runs `work start`, `work` shall "
+                             "end the stage."), None),
           "addressed": ("When `work` gives a brief to a stage, `work` shall write a file.", None),
           "later-sensed": ("When the person runs `work start`, `work` shall name a requirement.", None)}
+# the state verbs a line uses (a While clause takes a state), and the row the negated relation is of
+ADDED = {"verbal": "- **own** (verb, state): an agent answers for a file. Frame: agent owns file.\n",
+         "prepositioned": "- **subscribe** (verb, state): an agent follows a stage. Frame: agent subscribes to stage.\n",
+         "negating": "\n## Relations\n\n| from | word | to | cardinality |\n|---|---|---|---|\n| stage | of | work-item |  |\n"}
 
 
 # feature-file-tools' withholding requirement, `[r1] `shelf` shall not lend a book to a reader.`, which the example data

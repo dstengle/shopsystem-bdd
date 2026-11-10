@@ -40,7 +40,7 @@ class ReadingTest(ModelTest):
     def test_a_decision_may_rest_on_a_retired_universal_condition(self):
         """A retired U<n> is history (b240 phase 14: U4, U8 and U11 reworded, their decisions kept); an id
         spec/universal.md never held is still unresolved."""
-        self.write("spec/universal.md", f"---\nid: {full('capability', 'universal')}\nlanguage: codified-1\n"
+        self.write("spec/universal.md", f"---\nid: {full('capability', 'universal')}\nlanguage: codified-2\n"
                    "retired: [U1]\n---\n\n## Behaviour\n\n- [U2] `thing` shall answer.\n")
         for n, u in ((1, "U1"), (2, "U3")):
             self.write(f"spec/decisions/{n:04d}-d{n}.md", f"---\nid: {full('design-decision', f'd{n}')}\nsummary: S\n"

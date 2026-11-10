@@ -5,6 +5,7 @@ unmarked is defined by p1 too, which the context imports; one that is redefining
 requests_handlers' bounded context condition and design_model_check_handlers_conditions' term condition hand these
 words to `bounded_context` and `term`."""
 import importlib.util
+import re
 import sys
 from pathlib import Path
 
@@ -25,9 +26,14 @@ TERM = ("unmarked", "redefining")
 
 
 def imports(repo, *names):
-    """`imports:` written into the frontmatter of spec/index.md."""
+    """`imports:` written into the frontmatter of spec/index.md, after the packs it imports already (the base world's
+    CLI pack)."""
     path = repo / "spec" / "index.md"
-    path.write_text(path.read_text().replace("\n---\n", "\nimports: [%s]\n---\n" % ", ".join(names), 1))
+    text = path.read_text()
+    m = re.search(r"^imports: \[(.*)\]\n", text, re.MULTILINE)
+    had = [n.strip() for n in m.group(1).split(",") if n.strip()] if m else []
+    line = "imports: [%s]\n" % ", ".join(had + [n for n in names if n not in had])
+    path.write_text(text.replace(m.group(0), line, 1) if m else text.replace("\n---\n", "\n%s---\n" % line, 1))
 
 
 def pack(repo, name, *terms):
