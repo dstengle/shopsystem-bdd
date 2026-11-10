@@ -20,24 +20,26 @@ an actor by its fun, a code by the slot's `K_Code`, the run's own thing by `K_Th
 """
 from dataclasses import replace
 
+import spec_facts
 import spec_lf
 import spec_lf_set
 import spec_rgl
-from spec_lf_core import Atom, Box, Ref
+import spec_steps4_boxes as boxes
+from spec_lf_core import Atom, Box
 
 kid = spec_rgl.kid
-
-
-class TraceError(Exception):
-    """A group with no scenario: a construct of its form with no step."""
+TraceError = boxes.TraceError
+subst = boxes.subst
 
 
 class Reader:
     """One scenario read into step trees: the referents' names and the words' funs."""
 
-    def __init__(self, vocab):
+    def __init__(self, vocab, choices=()):
         self.vocab, self.names, self.counts, self.shared, self.known = vocab, {}, {}, {}, set()
-        self.brought = []       # the Givens of the response's `every` boxes: each K brought in, its restrictor
+        self.brought = []       # the Givens of the response's boxes: each K brought in, its restrictor
+        self.dets, self.images = {}, {}     # a referent said "no K"; an image's "the T of x" (spec_steps4_boxes)
+        self.choices, self.taken, self.options = list(choices), [], []      # the case of each `or` box
         self.actors = {t: ("a_%s_%d" % (spec_rgl.slug(t), n + 1), k) for n, (t, k) in enumerate(vocab.actors)}
 
     # --- referents ---------------------------------------------------------------------------------------------
@@ -54,6 +56,19 @@ class Reader:
                 self.names[r] = self.shared[key]
             else:
                 self.shared.setdefault(key, self.name(r))
+
+    def pick(self, n):
+        """The case this scenario takes of an `or` box of `n` cases."""
+        c = self.choices[len(self.taken)] if len(self.taken) < len(self.choices) else 0
+        self.taken.append(c)
+        self.options.append(n)
+        return c
+
+    def bring_in(self, ref):
+        """A response's referent brought in by a Given, once."""
+        if ref not in self.known:
+            self.known.add(ref)
+            self.brought.append((kid(ref.kind) + "_Given", (kid(ref.kind) + "_n",), ("NameLit", self.name(ref))))
 
     def name(self, ref):
         if ref not in self.names:
@@ -75,9 +90,14 @@ class Reader:
     def np(self, ref, slot, a=False):
         """The `K_NP` tree of a referent in a slot of kind `slot`; with `a`, "a K" of its kind."""
         S = kid(slot)
+        if ref in self.images:
+            return boxes.np_image(self, ref, slot)
+        if ref in self.dets:
+            a = self.dets[ref]
         if not a and ref.origin in ("constant", "parameter") and ref.value not in self.actors:
             return (S + "_Code", ("CodeLit", ref.value))
-        k, tree = (ref.kind, (kid(ref.kind) + "_Det", ("DetA",), (kid(ref.kind) + "_UseN", (kid(ref.kind) + "_n",)))) \
+        det = a if isinstance(a, str) else "DetA"
+        k, tree = (ref.kind, (kid(ref.kind) + "_Det", (det,), (kid(ref.kind) + "_UseN", (kid(ref.kind) + "_n",)))) \
             if a else self.np0(ref)
         if slot not in self.vocab.ancestors(k):
             raise TraceError("no step of a %s in a slot of %s" % (k, slot))
@@ -125,17 +145,20 @@ class Reader:
                 k = next((k for k in kinds if k in self.vocab.ancestors(x.kind)), None)
                 if t.term == term and k is not None:
                     T = "t_%s_%d" % (spec_rgl.slug(term), n)
-                    return ("%s_%s_Is" % (T, kid(k)), pol, self.np(x, k), "%s_v_%s" % (T, spec_rgl.slug(value)))
+                    return ("%s_%s_Is" % (T, kid(k)), pol, self.np(x, k), ("%s_v_%s" % (T, spec_rgl.slug(value)),))
         if item.pred == "rel":
             return self.row(item.args, pol)
         raise TraceError("no step of %s" % spec_lf.atom(item))
 
     def row(self, args, pol):
-        """The `Cond` tree of a row's atom (word, y, x): "x has y" of a row `K | of | S`, "x holds y" of `K | in | S`."""
+        """The `Cond` tree of a row's atom (word, y, x): "x has y" of a row `K | of | S`, "x holds y" of `K | in | S`,
+        "y is <word> x" of any other word (spec_rgl_steps' `r<n>_<word>_Is`, b197)."""
         word, y, x = args
         up = self.vocab.ancestors
         for n, (k1, w, k2) in enumerate(self.vocab.rows, 1):
-            if w == word and word in ("of", "in") and k1 in up(y.kind) and k2 in up(x.kind):
+            if w == word and k1 in up(y.kind) and k2 in up(x.kind) and word not in ("of", "in"):
+                return ("r%d_%s_Is" % (n, spec_rgl.slug(word)), pol, self.arg(y, k1), self.arg(x, k2))
+            if w == word and k1 in up(y.kind) and k2 in up(x.kind):
                 frame = "r%d_%s_%s" % (n, spec_rgl.slug(word), "Has" if word == "of" else "Holds")
                 return (kid(k2) + "_Holds", pol, self.arg(x, k2), (frame, self.arg(y, k1)))
         raise TraceError("no step of %s(%s, %s)" % (word, y.name, x.name))
@@ -143,13 +166,13 @@ class Reader:
     def given(self, item, pos=True):
         """The Given steps of a condition, each referent it mentions first brought in."""
         if isinstance(item, Box):
-            if item.op != "not" or item.refs:
-                raise TraceError("no Given of %s" % item.op)
-            return [s for sub in item.body for s in self.given(sub, not pos)]
+            return boxes.given(self, item, pos)
+        if boxes.image(self, item):
+            return []
         cond = self.cond(item, pos)
         out = []
         for r in mentioned(item):
-            if r not in self.known and r.origin in ("while", "trigger"):
+            if r not in self.known and r not in self.dets and r.origin in ("while", "trigger"):
                 self.known.add(r)
                 out.append((kid(r.kind) + "_Given", (kid(r.kind) + "_n",), ("NameLit", self.name(r))))
         return out + [("SCond", cond)]
@@ -160,17 +183,19 @@ class Reader:
         for item in body:
             if isinstance(item, Atom) and item.pred in ("event", spec_lf_set.PRED):
                 out.append((True, self.does(item, pos)))
-            elif isinstance(item, Atom):
+            elif isinstance(item, Atom) and not boxes.image(self, item):
                 out.append((None, ("SCond", self.cond(item, pos))))
+            elif isinstance(item, Atom):
+                continue
             elif item.op == "not" and len(item.body) == 1 and isinstance(item.body[0], Atom) and \
                     item.body[0].pred in ("event", spec_lf_set.PRED):
                 out.append((True, self.does(item.body[0], not pos, set(item.refs))))
-            elif item.op == "not" and not item.refs:
+            elif item.op == "not" and not item.refs and not boxes.restriction(item):
                 out += self.acts(item.body, not pos)
             elif item.op == "every" and pos:
                 out += self.each(item)
             else:
-                raise TraceError("no Then of %s" % item.op)
+                out += boxes.acts(self, item, pos)
         return out
 
     def each(self, box):
@@ -197,19 +222,6 @@ class Reader:
         return (kid(subject) + "_Does", ("PPos",) if pos or nothing else ("PNeg",), s, vp)
 
 
-def subst(x, m):
-    """`x` (a referent, an atom, a box or a tuple of them) with each referent in `m` replaced."""
-    if isinstance(x, Ref):
-        return m.get(x, x)
-    if isinstance(x, Atom):
-        return Atom(x.pred, subst(x.args, m))
-    if isinstance(x, Box):
-        return replace(x, refs=subst(x.refs, m), body=subst(x.body, m), scope=subst(x.scope, m))
-    if isinstance(x, (tuple, list)):
-        return type(x)(subst(i, m) for i in x)
-    return x
-
-
 def mentioned(item):
     out = []
     for x in item.args:
@@ -220,10 +232,21 @@ def mentioned(item):
     return out
 
 
-def read(vocab, forms, entailed=None):
+def cases(vocab, forms, entailed=None):
+    """[[(keyword, tree)]] of one group, a scenario for each case its `or` boxes give (as codified-1's R#n)."""
+    out, seq = [], []
+    while seq is not None:
+        r = Reader(vocab, seq)
+        out.append(read(vocab, forms, entailed, r))
+        seq = spec_facts._next(r.taken, r.options)
+    return out
+
+
+def read(vocab, forms, entailed=None, r=None):
     """[(keyword, tree)] of one group, `forms` the (requirement id, Form) of each of its requirements in order;
-    `entailed` gives {requirement id: {act number: the comment's premise}}, an act left out with ("#", comment)."""
-    r, givens, when, thens = Reader(vocab), [], [], []
+    `entailed` gives {requirement id: {act number: the comment's premise}}, an act left out with ("#", comment); `r`
+    the Reader of the case it takes, the first by default."""
+    r, givens, when, thens = r or Reader(vocab), [], [], []
     for n, (ident, form) in enumerate(forms):
         if form.modality != "shall":     # a permission obliges nothing, a necessity has no trigger (I17)
             raise TraceError("no step of a line that says %s" % form.modality)

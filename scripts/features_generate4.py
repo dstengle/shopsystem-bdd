@@ -63,19 +63,27 @@ def _example(root, gid, group):
 
 
 def lines(root, ctx, cap, group, skipped=None):
-    """The (keyword, text, block) lines of a codified-2 group's scenario (a comment's keyword "#"), or None for a
-    group with a construct no step words (its reason kept in `skipped`, by group id, when given)."""
+    """The (keyword, text, block) lines of each scenario of a codified-2 group (a comment's keyword "#"), one a case of
+    its `or` boxes (spec_steps4's `cases`), or None for a group with a construct no step words (its reason kept in
+    `skipped`, by group id, when given)."""
     gid = "%s#%s" % (cap.name, group.id)
     mine = [s for s in ctx.statements if s.group == gid]
     if not mine:
         return None
     vocab, gram = spec_rgl_steps.load(root)
     try:
-        steps = spec_steps4.read(vocab, [(s.id, spec_lf.form(vocab, s.tree)) for s in mine], entailed(root, ctx))
+        forms = [(s.id, spec_lf.form(vocab, s.tree)) for s in mine]
+        # a permission obliges nothing, and a necessity's scenario waits on its decision's route (I17): neither has a
+        # step, and a group of only such lines has no scenario, as a logic-only group of codified-1 (D9)
+        forms = [(i, f) for i, f in forms if f.modality == "shall"]
+        if not forms:
+            return None
+        found = spec_steps4.cases(vocab, forms, entailed(root, ctx))
     except (spec_steps4.TraceError, ValueError) as err:
         print("features generate: %s: no scenario: %s" % (gid, err), file=sys.stderr)
         if skipped is not None:
             skipped[gid] = str(err)
         return None
-    return _example(root, gid, group) + [(k, t if k == "#" else spec_rgl_steps.text(gram, t), None)
-                                         for k, t in steps]
+    example = _example(root, gid, group)
+    return [example + [(k, t if k == "#" else spec_rgl_steps.text(gram, t), None) for k, t in steps]
+            for steps in found]
