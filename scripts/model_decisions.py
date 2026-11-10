@@ -15,6 +15,7 @@ from model_parse import as_list, decision_files, frontmatter
 from tools_env import project_python
 
 TIERS = ("check", "requirement", "judgement")
+ROUTES = ("scenario", "check", "judgement", "monitor")     # a decision's verification routes (verified_by, b129)
 TIMEOUT = 600       # seconds a decision's run may take
 WORKERS = 4         # decisions run side by side
 TAIL = 20           # lines of pytest's output a failing decision shows

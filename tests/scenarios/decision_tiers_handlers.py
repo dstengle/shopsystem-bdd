@@ -180,7 +180,7 @@ def given_absent(step):
 
 
 @handler("WhenRuns", "`work decision`")
-def work_decision(step):
+def work_decision(step, extra=()):
     """`work decision` in the repository, committed first, with a title, a summary, the decision's text and the tier
     `judgement`: no `--tier` where the step names a decision a Given made untiered, and none of the arguments a Given
     made absent."""
@@ -193,7 +193,16 @@ def work_decision(step):
     title = named[0] if named and named[0] not in step.context.get("arguments", {}) else "Decided once"
     given = [word for option, value in ARGUMENTS if option not in gone for word in (option, value)]
     step.context["work_decision"] = True
-    step.context["result"] = step.run("work", "decision", title, *given)
+    step.context["result"] = step.run("work", "decision", title, *given, *extra)
+
+
+@handler("WhenRuns", "`work decision --verified-by`")
+def work_decision_routed(step):
+    """`work decision` as above with `--verified-by check`: the decision it writes must hold the route."""
+    work_decision(step, ("--verified-by", "check"))
+    done = step.context["result"]
+    if done.returncode == 0:
+        step.context.setdefault("holds", {})[done.stdout.strip()] = re.compile(r"^verified_by: \[check\]$", re.M)
 
 
 @local("ThenExitsErr")
