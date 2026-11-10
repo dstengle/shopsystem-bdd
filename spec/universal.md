@@ -11,9 +11,9 @@ retired: [U1, U2, U3, U6, U9, U10, U11, U4, U5, U7, U8]
 
 ## Purpose
 
-The statements that are true in every state of every trace (design model v5, `docs/design-model/design-model.md`
-§2.5). Each is written once here, in the requirement grammar, and is never restated in a requirement: a line that only
-restated one is dropped with the U as its reason. `model logic` adds each as an `always` constraint to the background
+The statements that are true in every state of every trace (design model v5, `docs/reference/design-model.md`). Each
+is written once here, in the requirement grammar, and is never restated in a requirement: a line that only restated
+one is dropped with the U as its reason. `model logic` adds each as an `always` constraint to the background
 of every check, and where a U is observable in a test (U12, U13, U16) the scenario conftest checks it after every
 scenario that makes its trigger true. They come from the domain model's §7 (`.shop/records/2026-11-02-domain-model/`).
 U1, U2, U6, U9 and U10 stated guarantees of `work run`, its stages and initiatives, and are retired in plugin 2.0.0
