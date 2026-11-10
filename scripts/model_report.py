@@ -71,11 +71,13 @@ def cmd_parse(args):
         lines = _statements(Path(args.file))
     else:
         lines = [(None, args.line)]
-    import spec_grammar4
-    if spec_grammar4.marked(args.root):
+    import spec_language
+    path = Path(args.file) if args.file else None
+    capability = getattr(args, "capability", None) or (path.stem if path is not None and path.parent.name == "capabilities" else None)
+    if spec_language.four(args.root, capability):
         return _parse4(args, lines)
     if args.form:
-        print("--form reads grammar 4: spec/index.md does not say `language: codified-2`")
+        print("--form reads grammar 4: neither the capability's file nor spec/index.md says `language: codified-2`")
         return 2
     refused = 0
     for n, line in lines:

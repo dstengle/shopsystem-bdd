@@ -1,7 +1,8 @@
 """An item's `## Requirements` section (capability readiness): its text read into blocks and written back, byte-stable.
 
 The section holds one `### <capability>` block for each capability the item's pieces go into, in the capability
-file's own syntax one heading level down: an optional `retired: [r<n>, ...]` line first, the live requirements of the
+file's own syntax one heading level down: an optional `language: codified-2` line first, the marker the item switches
+the capability's file to (`work line --recodify`, backlog_recodify), an optional `retired: [r<n>, ...]` line next, the live requirements of the
 capability the item's lines replace (`work line --retires`, backlog_retires), then optional term bullets, then relation rows (`| from | word | to |
 cardinality |`), then `#### [g<n>] <title>` groups of `- [r<n>] <statement>` bullets, one line each, a group's fenced
 `given` block after its lines. After the capability blocks, a `### universal` block of `- [U<n>] <statement>`
@@ -18,13 +19,14 @@ SECTION = "Requirements"
 UNIVERSAL, INDEX = "universal", "index"
 TAKES = ("idea", "shaped")
 Group = namedtuple("Group", "id title requirements given", defaults=((),))
-Block = namedtuple("Block", "capability terms groups relations retired", defaults=((), ()))
+Block = namedtuple("Block", "capability terms groups relations retired language", defaults=((), (), None))
 
 CAP = re.compile(r"^### ([a-z0-9]+(?:-[a-z0-9]+)*)$")
 GROUP = re.compile(r"^#### \[(g[1-9]\d*)\] (\S.*)$")
 REQ = re.compile(r"^- \[(r[1-9]\d*)\] (\S.*)$")
 U = re.compile(r"^- \[(U[1-9]\d*)\] (\S.*)$")
 RETIRED = re.compile(r"^retired: \[(r[1-9]\d*(?:, r[1-9]\d*)*)\]$")
+LANGUAGE = re.compile(r"^language: (codified-2)$")
 FENCE, CLOSE = "```given", "```"
 
 
@@ -84,9 +86,14 @@ class _Reader:
             if any(b.capability == m.group(1) for b in blocks):
                 self.refuse("the capability %s has two blocks" % m.group(1))
             blocks.append(Block(m.group(1), [], []))
+        elif (m := LANGUAGE.match(line)):
+            if not blocks or blocks[-1] != Block(blocks[-1].capability, [], []):
+                self.refuse("a `language:` line that is not the first line of a `### <capability>` block: %s" % line)
+            blocks[-1] = blocks[-1]._replace(language=m.group(1))
         elif (m := RETIRED.match(line)):
             if not blocks or blocks[-1].terms or blocks[-1].relations or blocks[-1].groups or blocks[-1].retired:
-                self.refuse("a `retired:` line that is not the first line of a `### <capability>` block: %s" % line)
+                self.refuse("a `retired:` line that is not the first line of a `### <capability>` block, or after its "
+                            "`language:` line: %s" % line)
             blocks[-1] = blocks[-1]._replace(retired=tuple(m.group(1).split(", ")))
         elif (m := GROUP.match(line)):
             if not blocks:
@@ -116,8 +123,8 @@ class _Reader:
             else:
                 blocks[-1].terms.append(line.strip())
         else:
-            self.refuse("a line that is no heading, requirement, `retired:` line, term bullet or relation row: %s"
-                        % line)
+            self.refuse("a line that is no heading, requirement, `language:` or `retired:` line, term bullet or relation "
+                        "row: %s" % line)
 
 
 def read(item, rel):
@@ -140,7 +147,8 @@ def render(blocks):
     """The section's text, byte-stable: `read` of it gives `blocks` back."""
     out = []
     for block in blocks:
-        parts = ["### %s" % block.capability] + (["retired: [%s]" % ", ".join(block.retired)] if block.retired else [])
+        parts = ["### %s" % block.capability] + (["language: %s" % block.language] if block.language else [])
+        parts += (["retired: [%s]" % ", ".join(block.retired)] if block.retired else [])
         parts += ["\n".join(block.terms)] if block.terms else []
         parts += ["\n".join(block.relations)] if block.relations else []
         out.append("\n\n".join(parts + [laid_group(g, "####") for g in block.groups]))

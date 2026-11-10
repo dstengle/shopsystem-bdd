@@ -9,7 +9,7 @@
 % does not: `model rules --write` solves each pair and writes them into the rule catalogue grammar/rules.md.
 % The requirement language (GF parse, `model logic`) is outside this file: it joins the graph by the facts parsed/unparsed/
 % ambiguous, member_of, in(G, C), generates and restates (C29). Rules over facts the codified reader emits are
-% `#defined` and silent until it emits them. A file without `language: codified-1` is not read: it is v_p0.
+% `#defined` and silent until it emits them. A file without `language: codified-1` or `codified-2` is not read: it is v_p0.
 
 % ---------------------------------------------------------------- inputs
 #defined node/2.      #defined narrator/2.   #defined group/2.     #defined external/1.
@@ -52,7 +52,7 @@
 #defined retired_group/2.         % retired_group(C, N): g<n> is in C's retired:
 #defined u_id/2.                  % u_id(U, N): universal condition U is [U<n>]
 #defined codified/1.              % codified(C): C's file is language: codified-1
-#defined uncodified/1.            % uncodified(F): spec file F has no language: codified-1
+#defined uncodified/1.            % uncodified(F): spec file F has no language: codified-1 or codified-2
 #defined logic_only/1.            % logic_only(G): G has no Steps linearisation, so no scenario
 #defined pre/2.                   % pre(Q, Key): Q's trigger and condition trees, normalised (none when ubiquitous)
 #defined parsed/1.  #defined unparsed/2.  #defined ambiguous/1.
@@ -384,7 +384,7 @@ v_t17(C, P)   :- misimported(C, P).
 
 % ---------------------------------------------------------------- the parse (C2, C25)
 % Every file of the spec is codified (§13.4): the 0.29 reader is gone, so `migrate upgrade` converts one that is not.
-label("v_p0", "a spec file is not codified (no `language: codified-1`): run `migrate upgrade`").
+label("v_p0", "a spec file is not codified (no `language: codified-1` or `codified-2`): run `migrate upgrade`").
 % fail v_p0: uncodified("spec/index.md").
 % pass v_p0: codified("c").
 v_p0(F)      :- uncodified(F).

@@ -1,8 +1,9 @@
 """The codified spec files read (design model v5; the GF conversion's design §8.3, §8.4, §10.2, §13.4).
 
-`capability(path)` reads a capability file whose frontmatter has `language: codified-1`: the groups of its
-`## Behaviour` (`### [g<n>] <title>`, an optional `Restates:` line, `- [r<n>] <statement>` bullets and an optional
-fenced `given` block, read by spec_read_given), its `## Dropped` bullets and its `retired:` ids. A statement kept out of a group's requirements (no id,
+`capability(path)` reads a capability file whose frontmatter has `language: codified-1` or `codified-2` (CNL 4's
+I19): the groups of its `## Behaviour` (`### [g<n>] <title>`, an optional `Restates:` line, `- [r<n>] <statement>`
+bullets and an optional fenced `given` block, read by spec_read_given), its `## Dropped` bullets and its `retired:`
+ids. A statement kept out of a group's requirements (no id,
 or an id used before) is in the group's `odd`, beside its problem. `## Terms` is not read here: spec_lexicon is the
 one reader of term entries. `universal(root)` reads `spec/universal.md`, `restated(root)` reads `spec/restated.json`.
 Nothing is refused: what is malformed is a problem `<line>: <what>`, with the file's own line number.
@@ -16,6 +17,8 @@ from model_parse import frontmatter
 from spec_read_given import Block, GivenLines  # noqa: F401  (Block: what readers of `given` meet)
 
 MARKER = "codified-1"
+MARKER4 = "codified-2"      # a file in the new language, read through grammar 4 (CNL 4's call 15, I19)
+MARKERS = (MARKER, MARKER4)
 
 Capability = namedtuple("Capability", "path name frontmatter groups dropped retired problems")
 Group = namedtuple("Group", "id title restates given requirements line_no odd")   # odd: (line, r<n> or None, text)
@@ -31,8 +34,9 @@ OLD = re.compile(r"^(?:(?P<cap>[a-z0-9]+(?:-[a-z0-9]+)*)#)?r(?P<n>[1-9]\d*)@0\.2
 DROPPED = re.compile(r"^- (?:(?P<cap>[a-z0-9]+(?:-[a-z0-9]+)*)#)?r(?P<n>[1-9]\d*)@0\.29: (?P<why>\S.*)$")
 
 
-def codified(path, markers=(MARKER,)):
-    """True when the file's own frontmatter has `language: codified-1` (design §13.4), or another of `markers`."""
+def codified(path, markers=MARKERS):
+    """True when the file's own frontmatter has one of `markers` as its `language:` (design §13.4): `codified-1` or
+    `codified-2` unless a reader passes others."""
     path = Path(path)
     if not path.is_file():
         return False
@@ -153,16 +157,16 @@ def dropped(name, lines):
     return out, problems
 
 
-def capability(path, markers=(MARKER,)):
+def capability(path, markers=MARKERS):
     """The groups, dropped ids and retired ids of a codified capability file, and its problems; a file whose marker
-    is none of `markers` is read as not codified (`model parse` passes codified-2 too, CNL 4's I7a)."""
+    is none of `markers` is read as not codified."""
     path = Path(path)
     text = path.read_text()
     data, _ = frontmatter(text)
     retired = [str(r) for r in data.get("retired") or []] if isinstance(data.get("retired") or [], list) else []
     name = path.stem
     if str(data.get("language", "")).strip() not in markers:
-        return Capability(path, name, data, [], [], retired, [f"{path.name} is not codified (no language: {MARKER})"])
+        return Capability(path, name, data, [], [], retired, [f"{path.name} is not codified (no language: {' or '.join(markers)})"])
     reader = Reader(name, retired)
     reader.read(numbered(text, "Behaviour"))
     gone, problems = dropped(name, numbered(text, "Dropped"))
@@ -180,8 +184,8 @@ def read_universal(root):
     data, _ = frontmatter(text)
     problems, found, seen = [], [], set()
     retired = {str(r) for r in data.get("retired") or []} if isinstance(data.get("retired") or [], list) else set()
-    if str(data.get("language", "")).strip() != MARKER:
-        problems.append(f"universal.md is not codified (no language: {MARKER})")
+    if str(data.get("language", "")).strip() not in MARKERS:
+        problems.append(f"universal.md is not codified (no language: {' or '.join(MARKERS)})")
     for n, item in items(numbered(text, "Behaviour")):
         m = U.match(item)
         if not m:
