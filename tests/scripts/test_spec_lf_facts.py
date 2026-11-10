@@ -108,12 +108,12 @@ def test_a_state_verb_restricts_an_object_by_its_subject(tmp_path):
 
 
 def test_a_negated_restriction_of_an_object_is_refused(tmp_path):
-    """A `not` box over a response object's restrictions ("whose T is not v", "that does not V a K"), on an `every`
-    object or not, has no translation: it is refused, never read as the restriction it negates."""
+    """A `not` box over a response object's state ("that does not V a K"), on an `every` object or not, has no
+    translation: it is refused, never read as the restriction it negates (a negated attribute is `onattr`, b197)."""
     ctx = spec_context.load(world(
-        tmp_path, RUN + "`work` shall print a stage whose status is not `done`.",
+        tmp_path, RUN + "`work` shall print a session that does not follow a stage.",
         RUN + "`work` shall not print a session that does not follow a stage.",
-        RUN + "`work` shall print every stage whose status is not `done`.",
+        RUN + "`work` shall print every session that does not follow a stage.",
         "When a session ends a stage, `work` shall print every session that does not follow the stage."))
     assert sorted(ctx.refused) == ["thing#r1", "thing#r2", "thing#r3", "thing#r4"], ctx.refused
     assert all("no translation of a negated restriction" in why for why in ctx.refused.values()), ctx.refused
@@ -132,3 +132,34 @@ def test_a_state_that_takes_no_object_is_a_one_place_fluent(tmp_path):
     assert 'crel("thing#r2",e_stall,x1,none,neg).' in ctx.facts["thing#r2"]
     found = spec_solve.run(tmp_path, capability="thing")
     assert [(f.code, f.ids) for f in found] == [("L1", ["thing#r1", "thing#r3"])], found
+
+
+def test_every_in_a_condition_is_a_universal(tmp_path):
+    """b197: "every K that P is v" in a While clause is codified-1's universal (`uall`, `uattr`, `ucond`): a pair is
+    out where a K that meets it has another value, and clashes where every K is v."""
+    line = "While every stage is `done`, when the person runs `work start`, `work` shall exit successfully."
+    error = RUN.replace("When", "While a stage is `%s`, when") + "`work` shall exit with an error naming `work start`."
+    out = facts(tmp_path, line, error % "done")
+    assert {'uall("thing#r1",x1,k_stage).', 'ucond("thing#r1",x1,t_status,v_done,pos).'} <= set(out)
+    assert codes(tmp_path, line, error % "done") == ["L1"]
+    assert codes(tmp_path, line, error % "open") == []
+
+
+def test_a_count_in_a_condition_is_a_k_when_it_admits_one(tmp_path):
+    """b197: "at least two Ks that are v" in a While clause is a K that is v, its count kept (`ccount`); "at most one"
+    says nothing the check reads."""
+    line = "While %s `done`, when the person runs `work start`, `work` shall exit successfully."
+    out = facts(tmp_path, line % "at least two stages are", line % "at most one stage is")
+    assert {'role("thing#r1",x1,k_stage).', 'ccount("thing#r1",x1,least,2).'} <= set(out)
+    assert not [f for f in out if f.startswith(("role(\"thing#r2\"", "cond(\"thing#r2\""))], out
+    error = "While no stage is `done`, when the person runs `work start`, `work` shall exit with an error naming `work start`."
+    assert codes(tmp_path, line % "at least two stages are", error) == []
+
+
+def test_a_negated_attribute_of_an_object_is_onattr(tmp_path):
+    """b197: "a stage whose status is not `done`" is `onattr`, which clashes only with the same negated restriction."""
+    pos, neg = RUN + "`work` shall print a stage whose status is %s.", RUN + "`work` shall not print a stage%s."
+    assert 'onattr("thing#r1",x4,t_status,v_done).' in facts(tmp_path, pos % "not `done`")
+    assert codes(tmp_path, pos % "not `done`", neg % " whose status is not `done`") == ["L1"]
+    assert codes(tmp_path, pos % "not `done`", neg % " whose status is `done`") == []
+    assert codes(tmp_path, RUN + "`work` shall print a stage.", neg % " whose status is not `done`") == []

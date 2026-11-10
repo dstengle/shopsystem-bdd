@@ -159,6 +159,10 @@ context: product-level artifacts are read only where the files contain them.
 
 - **setting** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, whose response says that an agent shall set an attribute of a thing the line names earlier to a value, as in "set the status of the request to `delivered`" or "set its status to `delivered`".
 
+- **quantifying** (adjective of capability): a capability with a line whose While clause says "every K" that meets a restrictor and a line of one trigger whose response conflicts with it in a state where every K meets it.
+- **thresholded** (adjective of capability): a capability with a line whose While clause says a count of Ks, as "at least two Ks", and a line of one trigger whose response conflicts with it in a state that meets the count.
+- **excepting** (adjective of capability): a capability with a line that obliges an agent to act on a K that does not meet a restrictor, as "a K that is not `done`", and a line that forbids that act on such a K under one trigger and state.
+
 ## Behaviour
 
 ### [g1] `model check` exits successfully on a sound context
@@ -506,6 +510,15 @@ Restates: r65@0.29.
 
 ### [g170] `model logic` finds no clash in a response that sets an attribute
 - [r170] When the person runs `model logic` on a requirement that is setting, `model` shall exit successfully.
+
+### [g171] `model logic` reads every in a While clause
+- [r171] When the person runs `model logic` on a capability that is quantifying, `model` shall print "L1".
+
+### [g172] `model logic` reads a count in a While clause
+- [r172] When the person runs `model logic` on a capability that is thresholded, `model` shall print "L1".
+
+### [g173] `model logic` reads a negated restriction on an object
+- [r173] When the person runs `model logic` on a capability that is excepting, `model` shall print "L1".
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a

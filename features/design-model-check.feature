@@ -745,3 +745,24 @@ Feature: Design model check
     And the requirement r1 is setting
     When the person runs `model logic` on the requirement r1
     Then `model` exits successfully
+
+  @g171 @r171
+  Scenario: `model logic` reads every in a While clause
+    Given a capability c1
+    And the capability c1 is quantifying
+    When the person runs `model logic` on the capability c1
+    Then `model` prints "L1"
+
+  @g172 @r172
+  Scenario: `model logic` reads a count in a While clause
+    Given a capability c1
+    And the capability c1 is thresholded
+    When the person runs `model logic` on the capability c1
+    Then `model` prints "L1"
+
+  @g173 @r173
+  Scenario: `model logic` reads a negated restriction on an object
+    Given a capability c1
+    And the capability c1 is excepting
+    When the person runs `model logic` on the capability c1
+    Then `model` prints "L1"

@@ -73,10 +73,11 @@ def refused(ctx, cap, group):
             raise GenerateError("%s: %s" % (ident, ctx.refused[ident]))
 
 
-def written(group, lines):
-    """A scenario's text: its tags, its title and its (keyword, text, block) lines, a comment's keyword "#"."""
+def written(group, lines, case=None):
+    """A scenario's text: its tags, its title (with its case, of a group of several) and its (keyword, text, block)
+    lines, a comment's keyword "#"."""
     out = ["  " + " ".join("@" + x for x in [group.id] + [r.id for r in group.requirements]),
-           "  Scenario: " + group.title]
+           "  Scenario: " + group.title + ("" if case is None else " (case %d)" % case)]
     previous = None
     for keyword, text, block in lines:
         if keyword == "#":
@@ -111,13 +112,15 @@ def generate(root, path, skipped=None):
 
 
 def scenario_four(root, ctx, cap, group, skipped=None):
-    """A codified-2 group's scenario (features_generate4), or None."""
+    """A codified-2 group's scenarios (features_generate4), one a case of its `or` boxes, or None."""
     refused(ctx, cap, group)
     try:
         found = features_generate4.lines(root, ctx, cap, group, skipped)
     except features_generate4.GenerateError as err:
         raise GenerateError(str(err))
-    return written(group, found) if found else None
+    if not found:
+        return None
+    return "\n\n".join(written(group, lines, k if len(found) > 1 else None) for k, lines in enumerate(found, 1))
 
 
 def uncodified(root, paths):

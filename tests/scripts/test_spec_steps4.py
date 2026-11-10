@@ -1,7 +1,7 @@
 """Steps from the logical form (the CNL 4 design, I14a): `features generate` on a codified-2 capability writes each
 group's steps off its requirements' forms in the step grammar 4, byte-stable; every step it writes reads back through
 that grammar into the one tree it was written from and the template a handler is keyed by; a Then a universal
-condition entails is left out with a comment naming it; a construct with no step skips its group."""
+condition entails is left out with a comment naming it; the steps of b197's constructs read back as the others do."""
 import pathlib
 import subprocess
 import sys
@@ -12,6 +12,7 @@ import spec_rgl_steps
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "scenarios"))
+import codified2_constructs as K
 import codified2_world as C
 import toolchain
 
@@ -56,15 +57,14 @@ def steps(scenario):
     return out
 
 
-def test_generate_is_byte_stable_and_skips_a_group_no_step_words(world):
+def test_generate_is_byte_stable_and_writes_no_scenario_of_a_permission(world):
+    """A count has its steps (b197); a permission obliges nothing: no scenario and no warning (I17, b197)."""
     first = generate(world)
-    assert first.returncode == 0, first.stderr
+    assert first.returncode == 0 and first.stderr == "", first.stderr
     text = (world / "features" / "c1.feature").read_text()
     again = generate(world)
     assert again.returncode == 0 and (world / "features" / "c1.feature").read_text() == text
-    assert "c1#g7: no scenario: no Then of count" in first.stderr
-    assert "c1#g8: no scenario: no step of a line that says may" in first.stderr
-    assert sorted(scenarios(world)) == ["g%d @r%d" % (k, k) for k in range(1, 7)]
+    assert sorted(scenarios(world)) == ["g%d @r%d" % (k, k) for k in range(1, 8)]
 
 
 def test_the_steps_of_each_form(world):
@@ -121,3 +121,26 @@ def test_a_given_of_example_data_reads_back_as_grammar_3s(world):
         assert spec_rgl_steps.text(gram, call.tree) == text
         assert (call.template, call.kind, call.term, call.names, call.quoted) == (template, "file", "file",
                                                                                   ["`a.txt`"], quoted)
+
+
+def test_the_steps_of_every_construct_read_back_into_their_trees(tmp_path):
+    """b197: every, only, the counts, or, a row of another word than of and in, "the T of x", "no K" and a negated
+    restriction (codified2_constructs' lines, in one capability): each step reads back into the tree it was written
+    from, a row's condition as a state of the row's word."""
+    toolchain.require()
+    words = [w for w in K.LINES if w in K.HOLDS]
+    C.context(tmp_path, "ex.com/prod/ctx", [line for w in words for line in K.LINES[w]], "c1")
+    index = tmp_path / "spec" / "index.md"
+    index.write_text(index.read_text().replace("|\n\n## Glossary", "|\n%s\n\n## Glossary" % K.ROWS["linking"][0], 1))
+    done = generate(tmp_path)
+    assert done.returncode == 0 and done.stderr == "", done.stderr
+    read = {}
+    for scenario in (tmp_path / "features" / "c1.feature").read_text().split("  @")[1:]:     # each case of or too
+        for keyword, text in steps(scenario):
+            call = features_vocab4.step(tmp_path, keyword, text)
+            assert spec_rgl_steps.text(spec_rgl_steps.load(tmp_path)[1], call.tree) == text
+            read[text] = (call.template, call.term, call.nps)
+    assert read["the stage s2 is on the worktree w1"] == ("GivenDoes", "on", ["the worktree w1"])
+    assert read["no stage is `done`"][:2] == ("GivenK_A", "stage")
+    assert read["`work` prints the status of the stage s2"][:2] == ("ThenPrints", "`work`")
+    assert "the session s2 follows the stage s1" in read     # or's second case
