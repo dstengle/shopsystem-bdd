@@ -101,7 +101,7 @@ def has_given(step):
     """A dependency of an item (has) or on one (on), a question on an item; the repository's and the command's own
     things are the world's (has with no name)."""
     (k1, n1), (k2, n2) = parts(step)
-    if n1 is None:
+    if n1 is None or n2 is None:     # this repository's remote, the command's push; "has no dependency"
         return
     if (k1, k2) == ("item", "dependency") or (k1, k2) == ("dependency", "item"):
         dep, item = (n2, n1) if k1 == "item" else (n1, n2)
