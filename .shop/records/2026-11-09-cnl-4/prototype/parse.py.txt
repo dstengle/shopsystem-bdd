@@ -1,0 +1,94 @@
+"""Throwaway: parse lines in Proto.pgf, count trees, linearise back, time each parse.
+
+usage: parse.py <file of lines, tab-separated "id<TAB>line"> [--trees]
+"""
+import json
+import re
+import sys
+import time
+from itertools import islice
+
+import pgf
+
+HERE = sys.path[0]
+SP = "␣"  # a space inside one backquoted or quoted token
+LIMIT = 50
+
+
+def tokenise(line):
+    spans = re.findall(r'`[^`]*`|"[^"]*"|[^\s,.]+|[,.]', line.strip())
+    toks = [s.replace(" ", SP) for s in spans]
+    if toks and toks[0][0].isupper() and not toks[0].startswith("`"):
+        toks[0] = toks[0][0].lower() + toks[0][1:]
+    return toks
+
+
+def surface(text):
+    text = text.replace(SP, " ")
+    text = re.sub(r" ([,.])", r"\1", text)
+    return text[0].upper() + text[1:] if text and not text.startswith("`") else text
+
+
+def literal(words, text, quote):
+    def read(_, start):
+        while start < len(text) and text[start] == " ":
+            start += 1
+        end = text.find(" ", start)
+        end = len(text) if end < 0 else end
+        token = text[start:end]
+        if not token or token in words or not token.startswith(quote):
+            return None
+        return (pgf.Expr(token), 0.0, end)
+    return read
+
+
+def main():
+    gram = pgf.readPGF(HERE + "/Proto.pgf")
+    eng = gram.languages["ProtoEng"]
+    words = set(json.load(open(HERE + "/words.json")))
+    show = "--trees" in sys.argv
+    rows = [l.rstrip("\n").split("\t", 1) for l in open(sys.argv[1]) if l.strip() and not l.startswith("#")]
+    out = []
+    for ident, line in rows:
+        toks = tokenise(line)
+        text = " ".join(toks)
+        # Code literals start with a backquote, Quoted ones with a double quote; the callback is per category
+        # (pgf calls the String callback for both, so the quote decides)
+        def cb(_, start):
+            return literal(words, text, "`")(_, start) or literal(words, text, '"')(_, start)
+        t0 = time.perf_counter()
+        try:
+            trees = [e for _, e in islice(eng.parse(text, callbacks=[("String", cb)]), LIMIT)]
+            err = None
+        except pgf.ParseError as e:
+            trees, err = [], str(e)
+        ms = (time.perf_counter() - t0) * 1000
+        # code/quote literal callbacks both fire on the same String slot: keep trees whose literals match their slot
+        trees = [t for t in trees if literals_ok(str(t))]
+        uniq = list(dict.fromkeys(str(t) for t in trees))
+        lin = [surface(eng.linearize(pgf.readExpr(t))) for t in uniq]
+        rt = [l == surface(text) for l in lin]
+        out.append((ident, len(uniq), ms, err, all(rt) if lin else None))
+        print("%-26s trees=%d  %.1f ms  roundtrip=%s%s" % (ident, len(uniq), ms, all(rt) if lin else "-",
+                                                          ("  REFUSED: " + err) if err else ""))
+        if show or len(uniq) != 1:
+            for t, l in zip(uniq, lin):
+                print("    TREE:", t)
+                if l != surface(text):
+                    print("    LIN: ", l)
+    n = len(out)
+    print("\n%d lines: %d one tree, %d ambiguous, %d refused; mean parse %.1f ms, max %.1f ms" % (
+        n, sum(1 for o in out if o[1] == 1), sum(1 for o in out if o[1] > 1), sum(1 for o in out if o[1] == 0),
+        sum(o[2] for o in out) / n, max(o[2] for o in out)))
+
+
+def literals_ok(tree):
+    for cat, lit in re.findall(r'(CodeLit|QuotedLit) "((?:[^"\\]|\\.)*)"', tree):
+        lit = lit.replace('\\"', '"')
+        if (cat == "CodeLit") != lit.startswith("`"):
+            return False
+    return True
+
+
+if __name__ == "__main__":
+    main()

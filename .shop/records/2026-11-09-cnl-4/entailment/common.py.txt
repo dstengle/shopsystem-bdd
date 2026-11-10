@@ -1,0 +1,39 @@
+"""Shared helpers of the entailment study: the facts of gen.py plus each actor's kind (akind/2) and the bridge."""
+import os, sys, time, resource
+HERE = os.path.dirname(os.path.abspath(__file__))
+SCALE = os.path.dirname(HERE)
+sys.path.insert(0, SCALE)
+sys.path.insert(0, '/home/vscode/shopsystem-bdd/scripts')
+os.chdir('/home/vscode/shopsystem-bdd')
+import gen, spec_lexicon, spec_solve, clingo  # noqa
+
+ENT = open(os.path.join(HERE, 'ent.lp')).read()
+
+
+def akinds():
+    lx = spec_lexicon.read('.')
+    ids = lx.ids()
+    kinds = {t.term: ids[t.key] for t in lx.of('kind')}
+    return ["akind(%s,%s)." % (ids[t.key], kinds[t.supertype]) for t in lx.of('actor') if t.supertype in kinds]
+
+
+AKIND = akinds()
+
+
+def ent_program(k, mode, bridge=True):
+    return "\n".join(gen.facts(k, mode) + AKIND + (["bridge."] if bridge else []) + [ENT])
+
+
+def ground_solve(program, limit=600, brave=True):
+    t0 = time.time()
+    ctl = clingo.Control(["--warn=none", "-t", "1"])
+    ctl.add("base", [], program)
+    ctl.ground([("base", [])])
+    t1 = time.time()
+    atoms, done = spec_solve._solve(ctl, limit, brave=brave)
+    t2 = time.time()
+    return atoms, done, t1 - t0, t2 - t1, ctl
+
+
+def peak_mb():
+    return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024

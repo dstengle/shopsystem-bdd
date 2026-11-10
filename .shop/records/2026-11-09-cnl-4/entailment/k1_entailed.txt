@@ -1,0 +1,110 @@
+analysis-tools0#r21 resp 2 ['pos', 'change_nothing', 'a_tools', 'none'] | by U11 | needs bridge
+    L: While a coverage map is present, if the person runs `tools tests-of src/cart.py:absent`, then `tools` shall exit with an error naming `src/cart.py:absent` and change nothing.
+analysis-tools0#r22 resp 2 ['pos', 'change_nothing', 'a_tools', 'none'] | by U11 | needs bridge
+    L: While a coverage map is not present, if the person runs `tools tests-of src/cart.py:total`, then `tools` shall exit with an error naming `tools map` and change nothing.
+analysis-tools0#r26 resp 1 ['pos', 'print', 'a_tools', 'v1'] | by analysis-tools#r25 | no bridge
+    L: Where `--json` is given, when the person runs `tools refs total`, `tools` shall print the reference `src/shop.py:2` and the number of references.
+analysis-tools0#r26 resp 2 ['pos', 'print', 'a_tools', 'number(k_reference)'] | by analysis-tools#r25 | no bridge
+    L: Where `--json` is given, when the person runs `tools refs total`, `tools` shall print the reference `src/shop.py:2` and the number of references.
+analysis-tools0#r27 resp 2 ['pos', 'change_nothing', 'a_tools', 'none'] | by U11 | needs bridge
+    L: If the person runs `tools refs nowhere`, then `tools` shall exit with an error naming `nowhere` and change nothing.
+analysis-tools0#r6 resp 1 ['pos', 'print', 'a_tools', 'v3'] | by analysis-tools#r2 | no bridge
+    L: While the Python interpreter `.venv/bin/python` is present and the Python interpreter `venv/bin/python` is present, when the person runs `tools probe`, `tools` shall print the Python interpreter `.venv/bin/python`, and `tools` shall not print the Python interpreter `venv/bin/python`.
+backlog0#r17 resp 1 ['pos', 'print', 'a_work', 'v1'] | by backlog#r6 | no bridge
+    L: While an item is `needs-input`, when the person runs `work backlog`, `work` shall print the item and print the question on the item.
+backlog0#r18 resp 1 ['pos', 'e_write', 'a_work', 'v2'] | by backlog#r1 | no bridge
+    L: While a remote is unpushable, when the person runs `work idea`, `work` shall write an item that is `idea`, commit the item, print the remote and exit successfully.
+backlog0#r18 resp 2 ['pos', 'e_commit', 'a_work', 'v2'] | by backlog#r1 | no bridge
+    L: While a remote is unpushable, when the person runs `work idea`, `work` shall write an item that is `idea`, commit the item, print the remote and exit successfully.
+backlog0#r19 resp 1 ['pos', 'e_write', 'a_work', 'v2'] | by backlog#r1 | no bridge
+    L: While a remote is silent, when the person runs `work idea`, `work` shall write an item that is `idea`, commit the item, print the remote and exit successfully.
+backlog0#r19 resp 2 ['pos', 'e_commit', 'a_work', 'v2'] | by backlog#r1 | no bridge
+    L: While a remote is silent, when the person runs `work idea`, `work` shall write an item that is `idea`, commit the item, print the remote and exit successfully.
+backlog0#r20 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: While a repository is tasked, if the person runs `work idea`, then `work` shall exit with an error naming the task and change nothing.
+backlog0#r21 resp 1 ['pos', 'e_write', 'a_work', 'v2'] | by backlog#r1 | no bridge
+    L: While a repository is tracking, when the person runs `work idea`, `work` shall write an item that is `idea`, commit the item and keep the upstream branch.
+backlog0#r21 resp 2 ['pos', 'e_commit', 'a_work', 'v2'] | by backlog#r1 | no bridge
+    L: While a repository is tracking, when the person runs `work idea`, `work` shall write an item that is `idea`, commit the item and keep the upstream branch.
+backlog0#r3 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: If the person runs `work shape` on an item that is not `idea`, then `work` shall exit with an error naming the status of the item and change nothing.
+backlog0#r7 resp 1 ['pos', 'print', 'a_work', 'v3'] | by backlog#r6 | no bridge
+    L: While a dependency is on an item that is not `delivered` and the dependency is of an item that is blocked, when the person runs `work backlog`, `work` shall print the item and print the dependency.
+backlog0#r8 resp 1 ['pos', 'print', 'a_work', 'v1'] | by U8 | no bridge
+    L: Where `--json` is given, when the person runs `work backlog`, `work` shall print a JSON object and exit successfully.
+batches0#r12 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: While a task of a batch is not `done`, if the person runs `work batch review` on the batch, then `work` shall exit with an error naming the task and change nothing.
+batches0#r13 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: While a commit of an item in a batch is uncited, if the person runs `work batch review` on the batch, then `work` shall exit with an error naming the commit and change nothing.
+decision-tiers0#r8 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: If the person runs `work decision` on a design-decision that is untiered, then `work` shall exit with an error naming `--tier` and change nothing.
+decision-tiers0#r9 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: If the person runs `work decision` on an argument that is absent, then `work` shall exit with an error naming the argument and change nothing.
+design-model-check0#r51 resp 2 ['pos', 'change_nothing', 'a_model', 'none'] | by U11 | needs bridge
+    L: Where `--check` is given, if the person runs `model decisions` on a decisions index that is stale, then `model` shall exit with an error naming the decisions index and change nothing.
+design-model-check0#r57 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: If the person runs `work record` on a record that is unattributed, then `work` shall exit with an error naming `--about` and change nothing.
+feature-file-tools0#r13 resp 2 ['pos', 'change_nothing', 'a_features', 'none'] | by U11 | needs bridge
+    L: While the test module `tests/test_cart.py` is dangling, if the person runs `features bindings`, then `features` shall exit with an error naming the test module `tests/test_cart.py` and change nothing.
+feature-file-tools0#r15 resp 2 ['pos', 'change_nothing', 'a_features', 'none'] | by U11 | needs bridge
+    L: While the test module `tests/test_cart.py` is partial, if the person runs `features bindings --unbound`, then `features` shall exit with an error naming "Paying" and change nothing.
+feature-file-tools0#r18 resp 2 ['pos', 'change_nothing', 'a_features', 'none'] | by U11 | needs bridge
+    L: Where `--check` is given, if the person runs `features generate`, then `features` shall exit with an error naming the feature file `features/shelf.feature` and change nothing.
+feature-file-tools0#r19 resp 2 ['pos', 'change_nothing', 'a_features', 'none'] | by U11 | needs bridge
+    L: If the person runs `features vocab --check`, then `features` shall exit with an error naming the feature file `features/shelf.feature` and change nothing.
+feature-file-tools0#r7 resp 1 ['pos', 'print', 'a_features', 'v1'] | by feature-file-tools#r6 | no bridge
+    L: Where `--json` is given, when the person runs `features list --title Add`, `features` shall print the feature file `features/cart.feature` and "Adding".
+feature-file-tools0#r7 resp 2 ['pos', 'print', 'a_features', 'Adding'] | by feature-file-tools#r6 | no bridge
+    L: Where `--json` is given, when the person runs `features list --title Add`, `features` shall print the feature file `features/cart.feature` and "Adding".
+feature-file-tools0#r8 resp 2 ['pos', 'change_nothing', 'a_features', 'none'] | by U11 | needs bridge
+    L: While the feature file `features/rule.feature` is sectioned, if the person runs `features count --by-tag`, then `features` shall exit with an error naming the feature file `features/rule.feature` and change nothing.
+intake0#r6 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: While an item is `shaped` and a request line of the item is not settled, if a session runs `work ready` on the item, then `work` shall exit with an error naming the request line and change nothing.
+migration-tools0#r12 resp 2 ['pos', 'change_nothing', 'a_migrate', 'none'] | by U11 | needs bridge
+    L: While a repository is misversioned, if the person runs `migrate status`, then `migrate` shall exit with an error naming "banana" and change nothing.
+migration-tools0#r7 resp 2 ['pos', 'change_nothing', 'a_migrate', 'none'] | by U11 | needs bridge
+    L: While a repository is conflicting, if the person runs `migrate run --context example.org/acme/shop`, then `migrate` shall exit with an error naming `spec/decisions/0007-a.md` and change nothing.
+migration-tools0#r8 resp 2 ['pos', 'change_nothing', 'a_migrate', 'none'] | by U11 | needs bridge
+    L: While an untracked file is uncommitted, if the person runs `migrate run --context example.org/acme/shop`, then `migrate` shall exit with an error naming the untracked file and change nothing.
+migration-tools0#r9 resp 2 ['pos', 'change_nothing', 'a_migrate', 'none'] | by U11 | needs bridge
+    L: While an untracked file is uncommitted, if the person runs `migrate upgrade`, then `migrate` shall exit with an error naming the untracked file and change nothing.
+readiness0#r11 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: Where `--given` is given, if the person runs `work line` on a given block that is malformed, then `work` shall exit with an error naming the given block and change nothing.
+readiness0#r2 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: While an item is `shaped` and the item is not passing, if the person runs `work ready` on the item, then `work` shall exit with an error naming the reason and change nothing.
+readiness0#r3 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: If the person runs `work ready` on an item that is not `shaped`, then `work` shall exit with an error naming the status of the item and change nothing.
+readiness0#r6 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: Where `--relation` is given, if the person runs `work line` on a relation row that is malformed, then `work` shall exit with an error naming the relation row and change nothing.
+readiness0#r9 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: Where `--upstream` is given, if the person runs `work line` on an upstream entry that is malformed, then `work` shall exit with an error naming the upstream entry and change nothing.
+requests#r53#1 resp 1 ['pos', 'e_write', 'a_work', 'v2'] | by requests#r32 | no bridge
+    L: While a request is closed and a comment on the request is unrecorded, when a session runs `work sync`, `work` shall write the comment, and `work` shall not change the status of the request or change the side of the request.
+requests#r53#2 resp 1 ['pos', 'e_write', 'a_work', 'v2'] | by requests#r32 | no bridge
+    L: While a request is closed and a comment on the request is unrecorded, when a session runs `work sync`, `work` shall write the comment, and `work` shall not change the status of the request or change the side of the request.
+requests#r53#3 resp 1 ['pos', 'e_write', 'a_work', 'v2'] | by requests#r32 | no bridge
+    L: While a request is closed and a comment on the request is unrecorded, when a session runs `work sync`, `work` shall write the comment, and `work` shall not change the status of the request or change the side of the request.
+requests0#r15 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: If the person runs `work outcome` on a request that is `awaiting-asker`, then `work` shall exit with an error naming the request and change nothing.
+requests0#r16 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: While a bounded context is downstream, if the person runs `work outcome` on a request that is `open`, then `work` shall exit with an error naming the request and change nothing.
+requests0#r24 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: If the person runs `work resolve` on a request that is not `accepted`, then `work` shall exit with an error naming the status of the request and change nothing.
+requests0#r28 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: While a bounded context is unhosted, if the person runs `work request`, then `work` shall exit with an error naming the bounded context and change nothing.
+requests0#r38 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: While a request line is unparsed, if a session runs `work outcome accepted` on the request line, then `work` shall exit with an error naming the request line and change nothing.
+requests0#r40 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: While a request line proposed in a request is not settled, if the person runs `work accept` on the request, then `work` shall exit with an error naming the request line and change nothing.
+requests0#r52 resp 1 ['pos', 'e_write', 'a_work', 'v1'] | by requests#r32 | no bridge
+    L: While a comment that is unrecorded holds a foreign entry, when a session runs `work sync`, `work` shall write the comment, and `work` shall not write the foreign entry.
+requests0#r6 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: While a command is originless, if the person runs `work request`, then `work` shall exit with an error naming an origin and change nothing.
+requests0#r7 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: While a bounded context is downstream and a command is sourced, if the person runs `work request`, then `work` shall exit with an error naming an origin and change nothing.
+requests0#r8 resp 1 ['pos', 'exit_error', 'a_work', 'v3'] | by requests#r6 | no bridge
+    L: While a bounded context is downstream and a command is originless, if the person runs `work request`, then `work` shall exit with an error naming an origin and change nothing.
+requests0#r8 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11,requests#r6 | no bridge
+    L: While a bounded context is downstream and a command is originless, if the person runs `work request`, then `work` shall exit with an error naming an origin and change nothing.
+requests0#r9 resp 2 ['pos', 'change_nothing', 'a_work', 'none'] | by U11 | needs bridge
+    L: While a command is foreign, if the person runs `work request`, then `work` shall exit with an error naming a bounded context and change nothing.

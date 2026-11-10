@@ -1,0 +1,306 @@
+"""Throwaway: generate the typed lexicon modules Lex.gf / LexEng.gf from the vocabulary the 27 candidates need.
+
+Shaped like scripts/spec_typed.py: one GF category per kind (N, CN, NP0, NP, List), per subject kind (VP for states,
+Act for actions), per attribute of a kind (Val, Pred, ANP); funs per kind, per kind-of edge, per relation row, per verb
+frame, per attribute and per condition. The RGL does the English.
+"""
+import json
+import re
+import sys
+
+# ---------------------------------------------------------------------------------------------------------------
+# vocabulary: kind -> (noun words or None, parent kind or None, aliases)
+KINDS = {
+    "thing": (None, None),
+    "agent": (None, "thing"),
+    "session": ("session", "agent"), "person": ("person", "agent"), "hook": ("hook", "agent"),
+    "tool": ("tool", "agent"), "worker": ("worker", "agent"),
+    "text": ("text", "thing"),
+    "request_comment": ("request comment", "text"), "request_line": ("request line", "text"),
+    "artifact": ("artifact", "thing"),
+    "comment_schema": ("comment schema", "artifact"), "requirement_grammar": ("requirement grammar", "artifact"),
+    "text_element": (None, "thing"),
+    "tag": ("tag", "text_element"), "scenario_line": ("`Scenario:` line", "text_element"),
+    "file": ("file", "thing"),
+    "untracked_file": ("untracked file", "file"), "plugin_version_file": ("plugin version file", "file"),
+    "feature_file": ("feature file", "file"), "test_module": ("test module", "file"),
+    "verb": ("verb", "thing"), "prepositional_verb": ("prepositional verb", "verb"),
+    "branch": ("branch", "thing"),
+}
+for k, noun in [("request", "request"), ("origin_option", "origin option"), ("origin", "origin"),
+                ("command", "command"), ("reason", "reason"), ("batch", "batch"), ("task", "task"),
+                ("pull_request", "pull request"), ("commit", "commit"), ("item", "item"),
+                ("requirement", "requirement"), ("review_folder", "review folder"), ("repository", "repository"),
+                ("initiative", "initiative"), ("version", "version"), ("docstring", "docstring"),
+                ("scenario", "scenario"), ("scenarios_call", "`scenarios(...)` call"), ("trial", "trial"),
+                ("target", "target"), ("measurement", "measurement"), ("glossary_entry", "glossary entry"),
+                ("frame", "frame"), ("transition", "transition"), ("git_directory", "git directory"),
+                ("worktree", "worktree"), ("bounded_context", "bounded context"), ("id", "id")]:
+    KINDS[k] = (noun, "thing")
+ALIASES = {"request_comment": ["comment"]}           # a compound's head as a short name (the comment)
+NAMED = {"tool": ["`work`", "`migrate`", "`features`", "`model`", "`measure`", "`trial-runner`"],
+         "hook": ["the SessionStart hook", "the UserPromptSubmit hook"]}
+
+# relation rows: (from, word, to); word "of"/"on"/"in" make a noun modifier, "has"/"holds" a state verb
+ROWS = [("task", "of", "batch"), ("pull_request", "of", "batch"), ("review_folder", "of", "batch"),
+        ("branch", "of", "task"), ("branch", "of", "batch"), ("commit", "on", "branch"),
+        ("repository", "on", "branch"), ("initiative", "of", "repository"), ("text", "of", "file"),
+        ("text", "of", "docstring"), ("id", "of", "initiative"), ("scenario", "of", "feature_file"),
+        ("measurement", "of", "trial"), ("target", "of", "trial"), ("measurement", "of", "batch"), ("target", "of", "tool"),
+        ("file", "of", "target"), ("file", "in", "worktree"), ("worktree", "of", "worker"),
+        ("requirement_grammar", "of", "bounded_context"), ("glossary_entry", "of", "verb"),
+        ("plugin_version_file", "of", "repository"),
+        ("feature_file", "has", "docstring"), ("text", "has", "text_element"), ("glossary_entry", "has", "frame"),
+        ("commit", "holds", "text"), ("plugin_version_file", "holds", "version")]
+# role rows: a relational noun naming an instance of another kind: (role noun, of kind, is kind)
+ROLES = [("upstream", "request_line", "bounded_context"), ("upstream branch", "branch", "branch")]
+
+# verb frames: (verb, subject kind, object kind, object preposition, adjunct (prep, kind) or None, optional?, aspect)
+VERBS = [("conform", "text", "artifact", "to", None, "state"),
+         ("cite", "commit", "item", None, None, "state"),
+         ("propose", "item", "requirement", None, None, "state"),
+         ("bind", "test_module", "scenario", None, ("with", "scenarios_call"), "state"),
+         ("name", "measurement", "thing", None, None, "state"),
+         ("include", "measurement", "text", None, None, "state"),
+         ("use", "requirement", "verb", None, None, "state"),
+         ("print", "agent", "thing", None, None, "act"),
+         ("write", "agent", "thing", None, None, "act"),
+         ("publish", "agent", "pull_request", None, None, "act"),
+         ("park", "batch", "item", None, None, "act"),
+         ("remove", "agent", "thing", None, None, "act"),
+         ("remove", "agent", "thing", None, ("from", "branch"), "act"),
+         ("merge", "agent", "pull_request", None, None, "act"),
+         ("commit", "agent", "thing", None, None, "act"),
+         ("keep", "agent", "branch", None, None, "act"),
+         ("push", "agent", "commit", None, None, "act"),
+         ("rewrite", "agent", "thing", None, None, "act"),
+         ("start", "agent", "trial", None, None, "act"),
+         ("read", "agent", "file", None, None, "act"),
+         ("end", "agent", "trial", None, None, "act"),
+         ("make", "agent", "transition", None, None, "act"),
+         ("record", "agent", "thing", None, ("in", "git_directory"), "act"),
+         ("change", "agent", "thing", None, None, "act"),
+         ("refuse", "agent", "command", None, ("for", "reason"), "act")]
+# attributes: (kind, attribute, values, ordered)
+ATTRS = [("batch", "status", ["`building`", "`in-review`", "`merged`"], False),
+         ("task", "status", ["`done`"], False), ("request", "status", ["`accepted`"], False),
+         ("item", "status", ["`idea`", "`in-batch`"], False),
+         ("repository", "release", ["`own`"], False),
+         ("repository", "plugin version", ["`1.0.0`", "`3.0.0`"], True),
+         ("branch", "name", [], False)]
+CONDITIONS = [("initiative", "open")]                  # adjective of kind, defined elsewhere (a Def sentence)
+import os
+HEAD = "CN" if os.environ.get("CN_OF") else "N"   # experiment: a modifier on any CN
+DETCORE = bool(os.environ.get("DETCORE"))   # experiment: determiners as one core category
+DETS = ["A", "The", "Every", "No", "One", "Pl", "Its"]
+DET_LIN = {"A": "a_Det", "The": "the_Det", "Every": "every_Det", "No": "no_Quant", "One": "(mkDet (mkNumeral n1_Unit))",
+           "Pl": "aPl_Det", "Its": "(mkDet (SyntaxEng.mkQuant it_Pron))"}
+
+
+def scale(n):
+    """Experiment: n copies of the vocabulary (kinds renamed k_x<i>, nouns "x<i> <noun>"), to time a bigger grammar."""
+    keep = {"thing", "agent"}
+    r = lambda k, i: k if k in keep else "%s_x%d" % (k, i)
+    for i in range(2, n + 1):
+        for k, (noun, parent) in list(KINDS.items())[:N_KINDS]:
+            if k not in keep:
+                KINDS[r(k, i)] = (noun and "x%d %s" % (i, noun), parent and r(parent, i))
+        ROWS.extend([(r(x, i), w, r(y, i)) for x, w, y in ROWS[:N_ROWS]])
+        ROLES.extend([("x%d %s" % (i, a), r(y, i), r(x, i)) for a, y, x in ROLES[:N_ROLES]])
+        VERBS.extend([(v, r(sb, i), r(o, i), pr, adj and (adj[0], r(adj[1], i)), asp)
+                      for v, sb, o, pr, adj, asp in VERBS[:N_VERBS]])
+        ATTRS.extend([(r(k, i), a, vs, o) for k, a, vs, o in ATTRS[:N_ATTRS]])
+
+
+N_KINDS, N_ROWS, N_ROLES, N_VERBS, N_ATTRS = len(KINDS), len(ROWS), len(ROLES), len(VERBS), len(ATTRS)
+if os.environ.get("SCALE"):
+    scale(int(os.environ["SCALE"]))
+
+
+def ident(s):
+    return re.sub(r"[^A-Za-z0-9]+", "_", s).strip("_").lower() or "x"
+
+
+def noun_lin(words):
+    ws = words.split()
+    lin = 'mkN "%s"' % ws[-1]
+    for w in reversed(ws[:-1]):
+        lin = 'compoundN "%s" (%s)' % (w, lin)
+    return lin
+
+
+def ups(k):
+    out = [k]
+    while KINDS[k][1]:
+        k = KINDS[k][1]
+        out.append(k)
+    return out
+
+
+def main(out):
+    cats, funs, lins, lincats, words = [], [], [], [], set()
+    count = {}
+
+    def fun(group, name, typ, lin, args=""):
+        funs.append("  %s : %s ;" % (name, typ))
+        lins.append("  %s %s= %s ;" % (name, args + " " if args else "", lin))
+        count[group] = count.get(group, 0) + 1
+
+    def cat(name, lincat):
+        cats.append(name)
+        lincats.append("  %s = %s ;" % (name, lincat))
+
+    vp_kinds = sorted({v[1] for v in VERBS if v[5] == "state"} | {r[0] for r in ROWS if r[1] in ("has", "holds")}
+                      | {a[0] for a in ATTRS if not a[2]})
+    act_kinds = sorted({v[1] for v in VERBS if v[5] == "act"})
+    slot_kinds = sorted({v[2] for v in VERBS} | {r[2] for r in ROWS if r[1] in ("has", "holds")})
+    if DETCORE:
+        cat("Det", "Det")
+        for d in DETS:
+            fun("core determiners", "Det_" + d, "Det", "mkDet %s" % DET_LIN[d] if d == "No" else DET_LIN[d])
+    for k, (noun, _) in KINDS.items():
+        cat("%s_NP0" % k, "NP")
+        cat("%s_NP" % k, "NP")
+        if noun:
+            cat("%s_N" % k, "N")
+            cat("%s_CN" % k, "CN")
+        if k in slot_kinds:
+            cat("%s_List" % k, "ListNP")
+    for k in vp_kinds:
+        cat("%s_VP" % k, "VP")
+    for k in act_kinds:
+        cat("%s_Act" % k, "VP")
+    # per kind
+    for k, (noun, parent) in KINDS.items():
+        if noun:
+            fun("kind: noun", "%s_n" % k, "%s_N" % k, noun_lin(noun))
+            words.update(noun.split())
+            for i, a in enumerate(ALIASES.get(k, [])):
+                fun("kind: noun", "%s_n%d" % (k, i + 2), "%s_N" % k, noun_lin(a))
+                words.update(a.split())
+            fun("kind: N to CN", "%s_UseN" % k, "%s_N -> %s_CN" % (k, k), "mkCN n", "n")
+            if DETCORE:
+                fun("kind: determiners", "%s_Det" % k, "Det -> %s_CN -> %s_NP0" % (k, k), "mkNP d cn", "d cn")
+            else:
+                for d in DETS:
+                    fun("kind: determiners", "%s_%s" % (k, d), "%s_CN -> %s_NP0" % (k, k), "mkNP %s cn" % DET_LIN[d], "cn")
+        for w in NAMED.get(k, []):
+            ws = w.split()
+            lin = ('mkNP (mkPN "%s")' % w if len(ws) == 1 else "mkNP the_Det (mkCN (%s))" % noun_lin(" ".join(ws[1:])))
+            fun("kind: named instances", "%s_%s" % (k, ident(w)), "%s_NP0" % k, lin)
+            words.update(ws)
+        fun("kind: NP0 to NP", "%s_Simple" % k, "%s_NP0 -> %s_NP" % (k, k), "x", "x")
+        if parent:
+            fun("kind of: coercions", "Up_%s_%s" % (k, parent), "%s_NP0 -> %s_NP0" % (k, parent), "x", "x")
+        if k in slot_kinds:
+            fun("slot kind: only, lists", "%s_Only" % k, "%s_NP0 -> %s_NP" % (k, k), "mkNP only_Predet x", "x")
+            fun("slot kind: only, lists", "%s_Base" % k, "%s_NP0 -> %s_NP0 -> %s_List" % (k, k, k), "mkListNP x y", "x y")
+            fun("slot kind: only, lists", "%s_Cons" % k, "%s_NP0 -> %s_List -> %s_List" % (k, k, k), "mkListNP x y", "x y")
+            fun("slot kind: only, lists", "%s_And" % k, "%s_List -> %s_NP" % (k, k), "mkNP and_Conj x", "x")
+            fun("slot kind: only, lists", "%s_Or" % k, "%s_List -> %s_NP" % (k, k), "mkNP or_Conj x", "x")
+    # subject kinds: predication, events, relative clauses
+    for s in vp_kinds:
+        fun("subject kind: predication", "%s_Pred" % s, "%s_NP -> %s_VP -> Atom" % (s, s), "mkCl x v", "x v")
+    for s in act_kinds:
+        fun("subject kind: event", "%s_Event" % s, "%s_NP -> %s_Act -> Trig" % (s, s), "mkS (mkCl x v)", "x v")
+    for k, (noun, _) in KINDS.items():
+        if not noun:
+            continue
+        for s in ups(k):
+            if s in vp_kinds:
+                fun("subject kind: relative clause", "%s_Rel_%s" % (k, s), "Pol -> %s_CN -> %s_VP -> %s_CN" % (k, s, k),
+                    "mkCN cn (mkRS p (mkRCl which_RP v))", "p cn v")
+    # relation rows
+    for x, w, y in ROWS:
+        words.add(w)
+        if w in ("of", "on", "in"):
+            prep = "possess_Prep" if w == "of" else '(mkPrep "%s")' % w
+            fun("row: noun modifier", "%s_%s_%s" % (x, w, y), "%s_%s -> %s_NP -> %s_CN" % (x, HEAD, y, x),
+                "mkCN (%s) (SyntaxEng.mkAdv %s np)" % ("mkCN n" if HEAD == "N" else "n", prep), "n np")
+            if w != "of":
+                fun("row: copula", "%s_%s_%s_Is" % (x, w, y), "%s_NP -> %s_NP -> Atom" % (x, y),
+                    "mkCl a (SyntaxEng.mkAdv %s b)" % prep, "a b")
+            else:
+                for s in ups(x):
+                    if s in vp_kinds:
+                        fun("row: whose", "%s_Whose_%s_%s" % (y, x, s), "Pol -> %s_CN -> %s_VP -> %s_CN" % (y, s, y),
+                            "mkCN cn (mkRS p (mkRCl (E.GenRP G.NumSg (mkCN (%s))) v))" % noun_lin(KINDS[x][0]), "p cn v")
+        else:
+            v2 = "have_V2" if w == "has" else 'mkV2 (mkV "hold")'
+            fun("row: has/holds", "%s_%s_%s" % (x, w, y), "%s_NP -> %s_VP" % (y, x), "mkVP (%s) o" % v2, "o")
+    for role, y, x in ROLES:
+        r = ident(role)
+        words.update(role.split())
+        fun("role row", "%s_bare" % r, "%s_CN" % x, "mkCN (%s)" % noun_lin(role))
+        fun("role row", "%s_of_%s" % (r, y), "%s_NP -> %s_CN" % (y, x),
+            "mkCN (mkCN (%s)) (SyntaxEng.mkAdv possess_Prep np)" % noun_lin(role), "np")
+        for s in ups(x):
+            if s in vp_kinds:
+                fun("role row", "%s_Whose_%s_%s" % (y, r, s), "Pol -> %s_CN -> %s_VP -> %s_CN" % (y, s, y),
+                    "mkCN cn (mkRS p (mkRCl (E.GenRP G.NumSg (mkCN (%s))) v))" % noun_lin(role), "p cn v")
+    # verb frames
+    for v, s, o, prep, adj, aspect in VERBS:
+        words.add(v + "s")
+        words.add(v)
+        res = "%s_%s" % (s, "VP" if aspect == "state" else "Act")
+        v2 = 'mkV2 (mkV "%s")' % v + (' (mkPrep "%s")' % prep if prep else "")
+        if adj:
+            p, a = adj
+            words.add(p)
+            fun("verb frame", "%s_%s_%s_%s_%s" % (v, s, o, p, a), "%s_NP -> %s_NP -> %s" % (o, a, res),
+                'mkVP (mkVP (%s) o) (SyntaxEng.mkAdv (mkPrep "%s") a)' % (v2, p), "o a")
+        else:
+            fun("verb frame", "%s_%s_%s" % (v, s, o), "%s_NP -> %s" % (o, res), "mkVP (%s) o" % v2, "o")
+    # attributes
+    for k, attr, values, ordered in ATTRS:
+        a = "%s_%s" % (k, ident(attr))
+        words.update(attr.split())
+        anp = 'mkNP the_Det (mkCN (mkCN (%s)) (SyntaxEng.mkAdv possess_Prep x))' % noun_lin(attr)
+        if not values:
+            fun("attribute", "%s_HasDifferent" % a, "%s_VP" % k,
+                'mkVP have_V2 (mkNP a_Det (mkCN (mkA "different") (%s)))' % noun_lin(attr))
+            continue
+        cat("%s_Val" % a, "{s : Str}")
+        cat("%s_Pred" % a, "Adv")
+        cat("%s_ANP" % a, "NP")
+        for val in values:
+            words.add(val)
+            fun("attribute", "%s_v_%s" % (a, ident(val)), "%s_Val" % a, '{s = "%s"}' % val)
+        fun("attribute", "%s_Is" % a, "%s_Val -> %s_Pred" % (a, a), "ParadigmsEng.mkAdv v.s", "v")
+        if ordered:
+            fun("attribute", "%s_After" % a, "%s_Val -> %s_Pred" % (a, a), 'ParadigmsEng.mkAdv ("after" ++ v.s)', "v")
+            fun("attribute", "%s_Before" % a, "%s_Val -> %s_Pred" % (a, a), 'ParadigmsEng.mkAdv ("before" ++ v.s)', "v")
+            fun("attribute", "%s_And" % a, "%s_Pred -> %s_Pred -> %s_Pred" % (a, a, a), "SyntaxEng.mkAdv and_Conj x y", "x y")
+        else:
+            fun("attribute", "%s_Direct" % a, "%s_NP -> %s_Pred -> Atom" % (k, a), "mkCl x (mkVP p)", "x p")
+            fun("attribute", "%s_RelIs" % a, "Pol -> %s_CN -> %s_Pred -> %s_CN" % (k, a, k),
+                "mkCN cn (mkRS pol (mkRCl which_RP (mkVP p)))", "pol cn p")
+        fun("attribute", "%s_Of" % a, "%s_NP -> %s_ANP" % (k, a), anp, "x")
+        fun("attribute", "%s_Holds" % a, "%s_ANP -> %s_Pred -> Atom" % (a, a), "mkCl x (mkVP p)", "x p")
+        fun("attribute", "%s_Set" % a, "%s_ANP -> %s_Val -> agent_Act" % (a, a),
+            'mkVP (mkVP (mkV2 (mkV "set" "set" "set" "set" "setting")) x) (ParadigmsEng.mkAdv ("to" ++ v.s))', "x v")
+        fun("attribute", "%s_Thing" % a, "%s_ANP -> thing_NP0" % a, "x", "x")
+    for k, adj in CONDITIONS:
+        words.add(adj)
+        fun("condition", "%s_%s_Is" % (k, adj), "%s_NP -> Atom" % k, 'mkCl x (mkA "%s")' % adj, "x")
+        fun("condition", "%s_%s_Rel" % (k, adj), "Pol -> %s_CN -> %s_CN" % (k, k),
+            'mkCN cn (mkRS p (mkRCl which_RP (mkVP (mkA "%s"))))' % adj, "p cn")
+
+    fixed = lins
+    abs_ = ["-- generated by gen.py: the typed lexicon of the 27 candidates", "abstract Lex = {",
+            "  cat Atom ; Trig ; Pol ;", "  cat " + " ; ".join(cats) + " ;", "  fun"] + funs + ["}"]
+    con = ["-- generated by gen.py", "concrete LexEng of Lex = open SyntaxEng, ParadigmsEng, (E = ExtraEng), "
+           "(G = GrammarEng), Prelude in {", "  lincat Atom = Cl ; Trig = S ; Pol = SyntaxEng.Pol ;"] + lincats + \
+          ["  lin"] + fixed + ["}"]
+    open(out + "/Lex.gf", "w").write("\n".join(abs_) + "\n")
+    open(out + "/LexEng.gf", "w").write("\n".join(con) + "\n")
+    words = {w for ws in words for w in ws.split()}
+    json.dump(sorted(words), open(out + "/words.json", "w"))
+    json.dump(count, open(out + "/counts.json", "w"), indent=1)
+    print("cats %d funs %d" % (len(cats), len(funs)))
+    for g, n in sorted(count.items()):
+        print("  %-32s %d" % (g, n))
+
+
+if __name__ == "__main__":
+    main(sys.argv[1] if len(sys.argv) > 1 else ".")

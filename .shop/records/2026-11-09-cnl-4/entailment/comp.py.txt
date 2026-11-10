@@ -1,0 +1,318 @@
+"""The entailed-Then check compiled: each premise one Datalog rule over the worlds of the queries it is used in, no
+choice and no search (one stratified model). The world of a query Q = q(L,I) holds only what L's antecedent
+states (and what it entails: another value of a functional attribute, a definition's way), L's trigger, and L's
+other responses; a premise's negative literal needs a stated or entailed negation, never a missing fact. A forced
+fact is in the model; response I is entailed when it is. Same index and semantics as ent.lp.
+`program(k, mode, bridge)` gives the program text; `run(...)` gives ({(L, I): {M}}, ground s, solve s, peak MB)."""
+import os
+import re
+import time
+from collections import defaultdict
+import clingo
+import common
+import cex
+
+q = cex.q
+
+
+def index(C):
+    """{(L, I): [M]}: the premises asked of each response (ent.lp's index), and the queries."""
+    by_trig, untrig, refusers = defaultdict(list), [], []
+    for r in C.reqs:
+        t = C.trig.get(r)
+        if t is None:
+            untrig.append(r)
+        else:
+            by_trig[tuple(t[:2])].append(r)
+            if t[:2] == ["does", "e_refuse"]:
+                refusers.append(r)
+    gives = {}
+    for r, f in C.reqs.items():
+        g = {(a[1], a[2]) for a in f["resp"]}
+        if any(a[2] == "change_nothing" and a[1] == "pos" for a in f["resp"]):
+            g.add(("neg", "e_change"))
+        gives[r] = g
+    out = {}
+    for L, f in C.reqs.items():
+        lt = C.trig.get(L)
+        same = [M for M in by_trig[tuple(lt[:2])] if C.base[M] != C.base[L]] if lt else []
+        brev = lt is not None and lt[0] == "ran"
+        for j, p, e, d, x in f["resp"]:
+            cand = [M for M in same if (p, e) in gives[M]]
+            cand += [M for M in untrig if (p, e) in gives[M] and C.base[M] != C.base[L]]
+            if brev:
+                cand += [M for M in refusers if (p, e) in gives[M] and C.base[M] != C.base[L]]
+            own = any(j2 != j and (p2, e2) == (p, e) for j2, p2, e2, _, _ in f["resp"]) or (
+                (p, e) == ("neg", "e_change") and ("pos", "change_nothing") in {(a[1], a[2]) for a in f["resp"]})
+            if not cand and not own:
+                continue
+            use = set(cand)
+            if brev:
+                use |= {M for M in same if any(a[1:3] == ["pos", "exit_error"] for a in C.reqs[M]["resp"])}
+                use |= {M for M in refusers if C.base[M] != C.base[L]}
+            out[(L, j)] = sorted(use)
+    return out
+
+
+def world(C, L, I, Q, bridge):
+    """The facts of query Q: L's terms (and the actors it names), its antecedent, trigger and other responses."""
+    f, can = C.reqs[L], C.canon(L)
+    tm = lambda x: "t(%s)" % can[x] if x in can else q(x)
+    ex = C.existentials(L)
+    out, terms = [], {}
+    for y, k in f["role"]:
+        if can[y] == y and y not in ex:
+            terms[tm(y)] = k
+    akind = dict(C.dom["akind"])
+    for a in {a[2] for a in f["trig"]} | {a[3] for a in f["resp"]}:
+        if a in akind:
+            terms[a] = akind[a]
+    if L in C.trig and C.trig[L][0] == "ran":
+        terms[q(C.trig[L][1])] = "k_command"
+    for z, k in terms.items():
+        out += ["isk(%s,%s,%s)." % (Q, z, s) for s in C.supers(k)]
+    for y, c in f["named"]:
+        out.append("code(%s,%s,%s)." % (Q, tm(y), q(c)))
+    for y, t, v, p in f["cond"]:
+        out.append("%s(%s,%s,%s,%s)." % ("a0" if p == "pos" else "na0", Q, tm(y), t, v))
+    for y, t, v in f["oattr"]:
+        if y not in ex:
+            out.append("a0(%s,%s,%s,%s)." % (Q, tm(y), t, v))
+    for y, c, p in f["ccond"]:
+        out.append("%s(%s,%s,%s)." % ("k" if p == "pos" else "nk", Q, tm(y), c))
+    for qq, y1, y2, p in f["crel"]:
+        out.append("%s(%s,%s,%s,%s)." % ("rel" if p == "pos" else "nrel", Q, qq, tm(y1), tm(y2)))
+    for qq, y1, y2 in f["orel"]:
+        if y1 not in ex:
+            out.append("rel(%s,%s,%s,%s)." % (Q, qq, tm(y1), tm(y2)))
+    for (ft,) in f["feat"]:
+        out.append("feat(%s,%s)." % (Q, q(ft)))
+    for kk, t, v in f["none"]:
+        out.append("lnone(%s,%s,%s,%s)." % (Q, kk, t, v))
+    for kk, c in f["cnone"]:
+        out.append("lcnone(%s,%s,%s)." % (Q, kk, c))
+    for qq, x1, x2 in f["rnone"]:
+        out.append("lrnone(%s,%s,%s,%s)." % (Q, qq, x1 if x1.startswith("kind(") else tm(x1), x2 if x2.startswith("kind(") else tm(x2)))
+    if L in C.trig:
+        p, e, d, x = C.trig[L]
+        out.append("ev(%s,%s,%s,%s,%s)." % (Q, p, q(e), tm(d), tm(x)))
+        if bridge and p == "ran":
+            out.append("bridgecmd(%s,%s)." % (Q, q(e)))
+    for j, p, e, d, x in f["resp"]:
+        o = tm(x) if x in can and x not in ex else (x if x.startswith(("value(", "number(")) else
+                                                     ("x(%s)" % x if x in ex else q(x)))
+        if j != str(I):
+            out.append("r(%s,%s,%s,%s,%s,self)." % (Q, p, e, tm(d), o))
+        elif x in ex and p == "neg":   # "shall not E a K": E is done to no K; the witness is any K
+            out += ["isk(%s,x(%s),%s)." % (Q, x, s) for s in C.supers(dict(f["role"])[x])]
+            out.append("tq(%s,%s,%s,%s,x(%s))." % (Q, p, e, tm(d), x))
+            out += ["rel(%s,%s,x(%s),%s)." % (Q, qq, x, tm(y2)) for qq, y1, y2 in f["orel"] if y1 == x]
+            out += ["a0(%s,x(%s),%s,%s)." % (Q, x, t, v) for y, t, v in f["oattr"] if y == x]
+        elif x in ex:   # an existential of L: something of its kind with its restrictions and L's other responses
+            kinds = dict(f["role"])
+            cs = ["iskall(%s,Y,%s)" % (Q, kinds[x])] + ["propall(%s,Y,%s,%s)" % (Q, t, v) for y, t, v in f["oattr"] if y == x]
+            cs += ["relall(%s,%s,Y,%s)" % (Q, qq, tm(y2)) for qq, y1, y2 in f["orel"] if y1 == x]
+            cs += ["rall(%s,%s,%s,%s,Y,_)" % (Q, p2, e2, tm(d2)) for j2, p2, e2, d2, x2 in f["resp"] if x2 == x and j2 != j]
+            out.append("hit(%s,M) :- rall(%s,%s,%s,%s,Y,M), Y != x(%s), %s." % (Q, Q, p, e, tm(d), x, ", ".join(cs)))
+        else:
+            out.append("tq(%s,%s,%s,%s,%s)." % (Q, p, e, tm(d), o))
+    for j, p, e, d, x in f["resp"]:   # L's own made things, as terms of the world (for its other responses)
+        if x in ex and j != str(I):
+            out += ["prop(%s,x(%s),%s,%s)." % (Q, x, t, v) for y, t, v in f["oattr"] if y == x]
+    if L not in C.trig or True:
+        for j, p, e, d, x in f["resp"]:
+            if j != str(I) and e.startswith("set("):
+                t, v = e[4:-1].split(",")
+                out.append("setv(%s,%s,%s,%s)." % (Q, tm(x), t, v))
+    return out
+
+
+def rule(C, M):
+    """M as Datalog over a query variable Q: `use(Q,M)` and its antecedent force its responses (tagged M)."""
+    f, can = C.reqs[M], C.canon(M)
+    if f["only"] or f["holds"] or f["free"]:
+        return []
+    kinds = dict(f["role"])
+    every = {can[y] for (y,) in f["every"]} | {can[y] for y in C.neguniv(M)}
+    ante = {can[y] for y in C.ante_roles(M) if y in can} | every
+    V = lambda y: "V_%s" % can[y] if y in can else ("none" if y == "none" else q(y))
+    mq = q(M)
+    st = "1" if M not in C.trig else "0"
+    a, na = ("a1", "na1") if st == "1" else ("a0", "na0")
+    body = ["use(Q,%s)" % mq]
+    if M in C.trig:
+        p, e, d, x = C.trig[M]
+        body.append("ev(Q,%s,%s,%s,%s)" % (p, q(e), "_" if d == "any" else V(d), V(x)))
+    for y, t, v, p in f["cond"]:
+        body.append("%s(Q,%s,%s,%s)" % (a if p == "pos" else na, V(y), t, v))
+    for y, t, v in f["oattr"]:
+        if can.get(y) in ante:
+            body.append("%s(Q,%s,%s,%s)" % (a, V(y), t, v))
+    for y, c, p in f["ccond"]:
+        body.append("%s(Q,%s,%s)" % ("k" if p == "pos" else "nk", V(y), c))
+    for qq, y1, y2, p in f["crel"]:
+        body.append("%s(Q,%s,%s,%s)" % ("rel" if p == "pos" else "nrel", qq, V(y1), V(y2)))
+    for qq, y1, y2 in f["orel"]:
+        if can.get(y1) in ante:
+            body.append("rel(Q,%s,%s,%s)" % (qq, V(y1), V(y2)))
+    for (ft,) in f["feat"]:
+        body.append("feat(Q,%s)" % q(ft))
+    for kk, t, v in f["none"]:
+        body.append("lnone2(Q,%s,%s,%s)" % (kk, t, v))
+    for kk, c in f["cnone"]:   # forced only when L states it of a kind as wide
+        body.append("lcnone2(Q,%s,%s)" % (kk, c))
+    for qq, x1, x2 in f["rnone"]:
+        body.append("lrnone2(Q,%s,%s,%s)" % (qq, x1 if x1.startswith("kind(") else V(x1), x2 if x2.startswith("kind(") else V(x2)))
+    if f["uall"]:
+        return []   # never forced: an `every` over the pre-state that L cannot state of every thing
+    for y, c in f["named"]:
+        body.append("code(Q,%s,%s)" % (V(y), q(c)))
+    for y in sorted(ante):
+        body.append("isk(Q,%s,%s)" % (V(y), kinds[y]))
+
+    def deps(z):
+        return sorted({can[e] for qq, a1, a2 in f["orel"] for e in (a1, a2) if z in (a1, a2) and can.get(e) in every})
+
+    def obj(z):
+        if z in can and can[z] not in ante:
+            return "f(%s,%s%s)" % (mq, can[z], "".join(",V_%s" % e for e in deps(z)))
+        return V(z) if z in can or z == "none" else (z if z.startswith(("value(", "number(")) else q(z))
+    heads = []
+    for j, p, e, d, x in f["resp"]:
+        heads.append("r(Q,%s,%s,%s,%s,%s)" % (p, e, obj(d), obj(x), mq))
+        if e.startswith("set("):
+            t, v = e[4:-1].split(",")
+            heads.append("setv(Q,%s,%s,%s)" % (obj(x), t, v))
+    for z in can:
+        if can[z] == z and z not in ante:
+            heads += ["isk(Q,%s,%s)" % (obj(z), s) for s in C.supers(kinds[z])]
+            heads += ["prop(Q,%s,%s,%s)" % (obj(z), t, v) for y, t, v in f["oattr"] if y == z]
+            heads += ["rel(Q,%s,%s,%s)" % (qq, obj(z), obj(y2)) for qq, y1, y2 in f["orel"] if y1 == z]
+    men = lambda txt: {y for y in every if re.search(r"\bV_%s\b" % y, txt)}
+    body0 = [b for b in body if not men(b)]
+    out = []
+    for h in heads:   # an `every` role is read per response, with its own restrictions
+        hv = men(h)
+        out.append((h, body0 + [b for b in body if men(b) and men(b) <= hv]))
+    return stage(C, M, out)
+
+
+def stage(C, M, rules):
+    """The rules of M in their stratum, so that no premise rule is recursive (a recursive component of thousands of
+    rules makes the grounder's semi-naive loop match every new atom against every rule: quadratic). Stage A: the
+    premises on L's own trigger, over the world's facts; stage B: the untriggered premises (over state 1, after
+    stage A's sets) and those on the bridge's event (an error exit of stage A or of L itself is a refusal). A chain
+    longer than that (a stage-B premise firing another) is not followed."""
+    t = C.trig.get(M)
+    b = t is None or t[:2] == ["does", "e_refuse"]
+    sfx = "B" if b else "A"
+    out = []
+    for h, body in rules:
+        h = re.sub(r"^(r|isk|prop|rel|setv)\(", lambda m: m.group(1) + sfx + "(", h)
+        if b:
+            body = [re.sub(r"^(isk|rel|prop)\(", lambda m: m.group(1) + "2(", x) for x in body]
+            body = [re.sub(r"^ev\(Q,does,e_refuse", "evB(Q,does,e_refuse", x) for x in body]
+        out.append("%s :- %s." % (h, ", ".join(body)))
+    return out
+
+
+BACKGROUND = """
+#defined a0/4. #defined na0/4. #defined k/3. #defined nk/3. #defined rel/4. #defined nrel/4. #defined feat/2.
+#defined code/3. #defined ev/5. #defined r/6. #defined setv/4. #defined prop/4. #defined lnone/4. #defined hit/2.
+#defined isk/3. #defined rA/6. #defined rB/6. #defined iskA/3. #defined iskB/3. #defined propA/4. #defined propB/4. #defined relA/4. #defined relB/4. #defined setvA/4. #defined evB/5. #defined prop/4. #defined lcnone/3. #defined lrnone/4. #defined bridgecmd/2. #defined tq/5.
+% the strata: A (L's trigger) over the world, B (untriggered, the bridge) over the world and A, then all
+isk2(Q,Z,K) :- isk(Q,Z,K).  isk2(Q,Z,K) :- iskA(Q,Z,K).  rel2(Q,R,X,Y) :- rel(Q,R,X,Y).  rel2(Q,R,X,Y) :- relA(Q,R,X,Y).
+prop2(Q,Z,T,V) :- prop(Q,Z,T,V).  prop2(Q,Z,T,V) :- propA(Q,Z,T,V).
+setv2(Q,Z,T,V) :- setv(Q,Z,T,V).  setv2(Q,Z,T,V) :- setvA(Q,Z,T,V).
+rall(Q,P,E,D,X,M) :- r(Q,P,E,D,X,M).  rall(Q,P,E,D,X,M) :- rA(Q,P,E,D,X,M).  rall(Q,P,E,D,X,M) :- rB(Q,P,E,D,X,M).
+iskall(Q,Z,K) :- isk2(Q,Z,K).  iskall(Q,Z,K) :- iskB(Q,Z,K).
+propall(Q,Z,T,V) :- prop2(Q,Z,T,V).  propall(Q,Z,T,V) :- propB(Q,Z,T,V).
+relall(Q,R,X,Y) :- rel2(Q,R,X,Y).  relall(Q,R,X,Y) :- relB(Q,R,X,Y).
+evB(Q,does,e_refuse,D,C) :- bridgecmd(Q,C), r(Q,pos,exit_error,D,_,_).
+evB(Q,does,e_refuse,D,C) :- bridgecmd(Q,C), rA(Q,pos,exit_error,D,_,_).
+% entailed negations: another value of a functional attribute
+na0(Q,Z,T,V) :- a0(Q,Z,T,W), val(_,T,V), V != W.
+% state 1: after L's own (other) sets and the sets forced
+moved(Q,Z,T) :- setv2(Q,Z,T,_).
+a1(Q,Z,T,V) :- setv2(Q,Z,T,V).
+a1(Q,Z,T,V) :- a0(Q,Z,T,V), not moved(Q,Z,T).
+na1(Q,Z,T,V) :- na0(Q,Z,T,V), not moved(Q,Z,T).
+na1(Q,Z,T,V) :- a1(Q,Z,T,W), val(_,T,V), V != W.
+% a defined condition: one way's literals all stated; refuted when each way has one contradicted
+term(Q,Z) :- isk(Q,Z,_).
+dno(Q,Z,C,W) :- dask(Q,C), term(Q,Z), dlit(C,W,T,V,pos), not a0(Q,Z,T,V).
+dno(Q,Z,C,W) :- dask(Q,C), term(Q,Z), dlit(C,W,T,V,neg), not na0(Q,Z,T,V).
+k(Q,Z,C) :- dask(Q,C), term(Q,Z), dalt(C,W), not dno(Q,Z,C,W).
+dbr(Q,Z,C,W) :- dask(Q,C), term(Q,Z), dlit(C,W,T,V,pos), na0(Q,Z,T,V).
+dbr(Q,Z,C,W) :- dask(Q,C), term(Q,Z), dlit(C,W,T,V,neg), a0(Q,Z,T,V).
+dlv(Q,Z,C) :- dask(Q,C), term(Q,Z), dalt(C,W), not dbr(Q,Z,C,W).
+nk(Q,Z,C) :- dask(Q,C), term(Q,Z), dalt(C,_), not dlv(Q,Z,C).
+subeq(K,K) :- kind(K).  subeq(K,K3) :- sub(K,K2), subeq(K2,K3).
+lnone2(Q,K,T,V) :- lnone(Q,K2,T,V), subeq(K,K2).
+lcnone2(Q,K,C) :- lcnone(Q,K2,C), subeq(K,K2).
+lrnone2(Q,R,kind(K),Y) :- lrnone(Q,R,kind(K2),Y), subeq(K,K2).
+lrnone2(Q,R,X,kind(K)) :- lrnone(Q,R,X,kind(K2)), subeq(K,K2).
+% the query's response (generic rules: a rule a query in a recursive component would slow the grounder)
+hit(Q,M) :- tq(Q,P,E,D,X), rall(Q,P,E,D,X,M).
+hit(Q,M) :- tq(Q,neg,e_change,D,_), rall(Q,pos,change_nothing,D,none,M).
+ent(L,I,M) :- hit(q(L,I),M), M != self.
+self_ent(L,I) :- hit(q(L,I),self).
+#show ent/3. #show self_ent/2.
+"""
+
+
+def program(k, mode, bridge=True, chunk=None):
+    """The program text (one, or a list of independent parts of about `chunk` queries each: the queries are
+    independent, and a part's rules see only its own queries' atoms), and the number of queries."""
+    facts = common.gen.facts(k, mode) + common.AKIND
+    reqs, dom = cex.parse(facts)
+    C = cex.Compiler(reqs, dom)
+    idx = index(C)
+    if os.environ.get("NO_SPLIT_ARTEFACT"):   # gen.py's copies of a split line: one id, k triggers (see report)
+        idx = {key: [M for M in ms if not M.startswith("requests#r53#")] for key, ms in idx.items()
+               if not key[0].startswith("requests#r53#")}
+    domain = [f for f in facts if f.split("(")[0] in ("kind", "sub", "val", "dalt", "dlit")]
+    keys = sorted(idx)
+    size = chunk or len(keys) or 1
+    progs, rules = [], {}
+    for n in range(0, len(keys), size):
+        parts, used = list(domain), set()
+        for L, I in keys[n:n + size]:
+            ms = idx[(L, I)]
+            Q = "q(%s,%s)" % (q(L), I)
+            parts += C_world(C, L, I, Q, bridge)
+            parts += ["use(%s,%s)." % (Q, q(M)) for M in ms]
+            conds = {a[1] for M in ms for a in reqs[M]["ccond"]} & {a[0] for a in dom["dalt"]}
+            parts += ["dask(%s,%s)." % (Q, c) for c in conds]
+            used |= set(ms)
+        for M in sorted(used):
+            if M not in rules:
+                rules[M] = rule(C, M)
+            parts += rules[M]
+        progs.append("\n".join(parts + [BACKGROUND]))
+    return (progs if chunk else progs[0]), len(idx)
+
+
+C_world = world
+
+
+def run(k, mode, bridge=True, chunk=1000):
+    """({(L, I): {M}}, queries, build s, ground s, solve s, peak MB, the last Control); parts of `chunk` queries,
+    each grounded and solved in its own Control (single-threaded), the times summed."""
+    t0 = time.time()
+    progs, nq = program(k, mode, bridge, chunk=chunk)
+    tb, tg, ts = time.time() - t0, 0.0, 0.0
+    found = defaultdict(set)
+    for prog in progs:
+        t1 = time.time()
+        ctl = clingo.Control(["--warn=none", "-t", "1"])
+        ctl.add("base", [], prog)
+        ctl.ground([("base", [])])
+        t2 = time.time()
+        with ctl.solve(yield_=True) as h:
+            for m in h:
+                for s in m.symbols(shown=True):
+                    L, I = s.arguments[0].string, str(s.arguments[1].number)
+                    found[(L, I)].add(s.arguments[2].string if s.name == "ent" else L)
+        tg, ts = tg + t2 - t1, ts + time.time() - t2
+    return found, nq, tb, tg, ts, common.peak_mb(), ctl

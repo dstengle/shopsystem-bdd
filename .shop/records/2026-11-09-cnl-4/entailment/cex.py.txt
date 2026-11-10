@@ -1,0 +1,357 @@
+"""The counterexample check, object level: for a query (L, I), a world is guessed (L's terms, one witness per kind a
+universal or a `no` ranges over, the tool actors; their pre-state values, conditions, relations and features free
+but for L's antecedent), L's trigger happens, L's other responses hold, every other premise holds as a rule over
+the world (compiled from its facts, one ASP rule a premise), and response I is false. No such world: I is entailed.
+This is the method the owner proposed, used here to validate ent.lp (the one-solve forcing encoding).
+`queries(k, mode)` lists (L, I); `check(k, mode, queries, bridge)` gives {(L, I): entailed?} and times."""
+import time
+from collections import defaultdict
+import clingo
+import common
+
+QUIET = {"print", "exit_ok", "exit_error", "change_nothing"}
+
+
+def parse(facts):
+    reqs, dom = defaultdict(lambda: defaultdict(list)), defaultdict(list)
+    for f in facts:
+        t = clingo.parse_term(f.rstrip("."))
+        args = [a.string if a.type == clingo.SymbolType.String else str(a) for a in t.arguments]
+        if t.name in ("kind", "sub", "actor", "fun", "val", "trans", "initial", "prose", "dalt", "dlit", "akind"):
+            dom[t.name].append(args)
+        else:
+            reqs[args[0]][t.name].append(args[1:])
+    return reqs, dom
+
+
+def q(s):
+    import re
+    if re.fullmatch(r"[a-z][A-Za-z0-9_]*", s) or re.fullmatch(r"(value|number|kind|set)\(.*\)", s):
+        return s
+    return '"%s"' % s.replace('"', '\\"')
+
+
+class Compiler:
+    def __init__(self, reqs, dom):
+        self.reqs, self.dom = reqs, dom
+        self.sup = defaultdict(set)
+        for k, k2 in dom["sub"]:
+            self.sup[k].add(k2)
+        self.base = {r: (f["disj"][0][0] if f["disj"] else r) for r, f in reqs.items()}
+        self.exc = {r for r, f in reqs.items() if f["form"] and f["form"][0][0] in ("if", "while_if", "where_if")}
+        self.trig = {r: f["trig"][0] for r, f in reqs.items() if f["trig"]}
+
+    def supers(self, k):
+        out, todo = {k}, [k]
+        while todo:
+            for s in self.sup[todo.pop()]:
+                if s not in out:
+                    out.add(s)
+                    todo.append(s)
+        return out
+
+    def canon(self, r):
+        f = self.reqs[r]
+        first = {}
+        out = {}
+        for y, c in sorted(f["named"]):
+            first.setdefault(c, y)
+        for y, k in f["role"]:
+            c = next((c for yy, c in f["named"] if yy == y), None)
+            out[y] = first[c] if c else y
+        return out
+
+    # ---- the world of L -----------------------------------------------------------------------------------------
+    def world(self, L, I, bridge):
+        f, can = self.reqs[L], self.canon(L)
+        kinds = {y: k for y, k in f["role"]}
+        tm = lambda x: "t(%s)" % can[x] if x in can else q(x)
+        out, terms = [], {}
+        for y, k in f["role"]:
+            terms[tm(y)] = k
+        for a, k in self.dom["akind"]:
+            terms[a] = k
+        if L in self.trig and self.trig[L][0] == "ran":
+            terms[q(self.trig[L][1])] = "k_command"
+        wit = set()
+        for r, g in self.reqs.items():
+            wit |= {a[0] for a in g["none"]} | {a[0] for a in g["cnone"]} | {a[1] for a in g["uall"]}
+            wit |= {a[2][5:-1] for a in g["rnone"] if a[2].startswith("kind(")}
+            wit |= {a[1][5:-1] for a in g["rnone"] if a[1].startswith("kind(")}
+        for k in wit:
+            terms["w(%s)" % k] = k
+        for z, k in terms.items():
+            out.append("term(%s)." % z)
+            out += ["isk(%s,%s)." % (z, s) for s in self.supers(k)]
+        for y, c in f["named"]:
+            out.append("code(%s,%s)." % (tm(y), q(c)))
+        # the antecedent
+        for y, t, v, p in f["cond"]:
+            out.append(("a0(%s,%s,%s)." if p == "pos" else ":- a0(%s,%s,%s).") % (tm(y), t, v))
+        ex = self.existentials(L)
+        for y, t, v in f["oattr"]:
+            out.append(("prop(%s,%s,%s)." if y in ex else "a0(%s,%s,%s).") % (tm(y), t, v))
+        for y, c, p in f["ccond"]:
+            out.append(("k(%s,%s)." if p == "pos" else ":- k(%s,%s).") % (tm(y), c))
+        for qq, y1, y2, p in f["crel"]:
+            out.append(("rel(%s,%s,%s)." if p == "pos" else ":- rel(%s,%s,%s).") % (qq, tm(y1), tm(y2)))
+        for qq, y1, y2 in f["orel"]:
+            out.append("rel(%s,%s,%s)." % (qq, tm(y1), tm(y2)))
+        for (ft,) in f["feat"]:
+            out.append("feat(%s)." % q(ft))
+        for kk, t, v in f["none"]:
+            out.append(":- a0(Z,%s,%s), isk(Z,%s)." % (t, v, kk))
+        for kk, c in f["cnone"]:
+            out.append(":- k(Z,%s), isk(Z,%s)." % (c, kk))
+        for qq, x1, x2 in f["rnone"]:
+            if x2.startswith("kind("):
+                out.append(":- rel(%s,%s,Z), isk(Z,%s)." % (qq, tm(x1), x2[5:-1]))
+            else:
+                out.append(":- rel(%s,Z,%s), isk(Z,%s)." % (qq, tm(x2), x1[5:-1]))
+        if L in self.trig:
+            p, e, d, x = self.trig[L]
+            out.append("ev(%s,%s,%s,%s)." % (p, q(e), tm(d), tm(x)))
+            if bridge and p == "ran":
+                out.append("ev(does,e_refuse,D,%s) :- r(pos,exit_error,D,_)." % q(e))
+        for j, p, e, d, x in f["resp"]:
+            o = tm(x) if not x.startswith(("value(", "number(")) else x
+            if j != str(I):
+                out.append("r(%s,%s,%s,%s)." % (p, e, tm(d), o))
+            elif p == "neg":   # "shall not E X" false: E X happens
+                out.append("r(pos,%s,%s,%s)." % (e, tm(d), o))
+            elif x in ex:
+                # an existential of L's responses: no thing of its kind with its restrictions and L's other
+                # responses on it has this response either
+                cs = ["isk(Y,%s)" % kinds[x]] + ["prop(Y,%s,%s)" % (t, v) for y, t, v in f["oattr"] if y == x]
+                cs += ["rel(%s,Y,%s)" % (qq, tm(y2)) for qq, y1, y2 in f["orel"] if y1 == x]
+                cs += ["r(%s,%s,%s,Y)" % (p2, e2, tm(d2)) for j2, p2, e2, d2, x2 in f["resp"] if x2 == x and j2 != j]
+                out.append(":- r(pos,%s,%s,Y), %s." % (e, tm(d), ", ".join(cs)))
+            else:
+                out.append(":- r(pos,%s,%s,%s)." % (e, tm(d), o))
+        return out
+
+    def existentials(self, r):
+        """The roles of r's responses only (no code, not in its antecedent, not a doer): things r says are made."""
+        can = self.canon(r)
+        every = {y for (y,) in self.reqs[r]["every"]}   # an `every` object is a generic instance, not made
+        return {y for y in can if can[y] == y and y not in self.ante_roles(r) and y not in every}
+
+    def bare(self, r, x):
+        f = self.reqs[r]
+        if any(y == x for y, _ in f["named"]) or any(y == x for (y,) in f["the"]):
+            return False
+        used = [a for a in f["cond"] + f["ccond"] + f["oattr"] if a[0] == x]
+        used += [a for a in f["crel"] + f["orel"] if x in a[1:3]]
+        used += [a for a in f["trig"] if x in a[2:]]
+        used += [a for a in f["resp"] if a[4] == x][1:]
+        return not used
+
+    # ---- a premise as rules over the world ---------------------------------------------------------------------
+    def rules(self, M, L):
+        f, can = self.reqs[M], self.canon(M)
+        kinds = {y: k for y, k in f["role"]}
+        every = {y for (y,) in f["every"]} | self.neguniv(M)
+        V = lambda y: "V_%s" % can[y] if y in can else q(y)
+        body, inante = [], set()
+
+        def use(y):
+            if y in can:
+                inante.add(can[y])
+            return V(y)
+        late = M not in self.trig
+        a = "a1" if late else "a0"
+        if M in self.trig:
+            p, e, d, x = self.trig[M]
+            body.append("ev(%s,%s,%s,%s)" % (p, q(e), "_" if d == "any" else use(d), use(x)))
+        for y, t, v, p in f["cond"]:
+            body.append(("%s(%s,%s,%s)" if p == "pos" else "not %s(%s,%s,%s)") % (a, use(y), t, v))
+        for y, t, v in f["oattr"]:
+            if y in every or any(rr[4] == y for rr in f["resp"]) and y not in self.ante_roles(M):
+                continue   # an object restriction of a response object: it says what is made, not when
+            body.append("%s(%s,%s,%s)" % (a, use(y), t, v))
+        for y, c, p in f["ccond"]:
+            body.append(("k(%s,%s)" if p == "pos" else "not k(%s,%s)") % (use(y), c))
+        for qq, y1, y2, p in f["crel"]:
+            body.append(("rel(%s,%s,%s)" if p == "pos" else "not rel(%s,%s,%s)") % (qq, use(y1), use(y2)))
+        for qq, y1, y2 in f["orel"]:
+            if y1 in self.ante_roles(M) or y1 in every:
+                body.append("rel(%s,%s,%s)" % (qq, use(y1), use(y2)))
+        for (ft,) in f["feat"]:
+            body.append("feat(%s)" % q(ft))
+        extra, n = [], 0
+        for kk, t, v in f["none"]:
+            n += 1
+            extra.append("bad_%d(%s) :- %s(Z,%s,%s), isk(Z,%s)." % (n, "M", a, t, v, kk))
+            body.append("not bad_%d(M)" % n)
+        for kk, c in f["cnone"]:
+            n += 1
+            extra.append("bad_%d(M) :- k(Z,%s), isk(Z,%s)." % (n, c, kk))
+            body.append("not bad_%d(M)" % n)
+        for qq, x, y in f["rnone"]:
+            n += 1
+            if y.startswith("kind("):
+                extra.append("bad_%d(M,%s) :- rel(%s,%s,Z), isk(Z,%s), term(%s)." % (n, use(x), qq, use(x), y[5:-1], use(x)))
+                body.append("not bad_%d(M,%s)" % (n, use(x)))
+            else:
+                extra.append("bad_%d(M,%s) :- rel(%s,Z,%s), isk(Z,%s), term(%s)." % (n, use(y), qq, use(y), x[5:-1], use(y)))
+                body.append("not bad_%d(M,%s)" % (n, use(y)))
+        for u, kk in f["uall"]:
+            n += 1
+            rs = ["isk(U,%s)" % kk] + ["rel(%s,U,%s)" % (qq, use(w)) for qq, uu, w in f["urel"] if uu == u]
+            rs += ["%s(U,%s,%s)" % (a, t, v) for uu, t, v in f.get("uattr", []) if uu == u]
+            ws = sorted({use(w) for qq, uu, w in f["urel"] if uu == u})
+            neg = ["not %s(U,%s,%s)" % (a, t, v) if p == "pos" else "%s(U,%s,%s)" % (a, t, v)
+                   for uu, t, v, p in f["ucond"] if uu == u]
+            neg += ["not k(U,%s)" % c if p == "pos" else "k(U,%s)" % c for uu, c, p in f["uccond"] if uu == u]
+            hd = "bad_%d(M%s)" % (n, "".join("," + w for w in ws))
+            for ng in neg:
+                extra.append("%s :- %s, %s, %s." % (hd, ", ".join(rs), ng, ", ".join(["term(%s)" % w for w in ws] or ["true"])))
+            body.append("not " + hd)
+        if f["only"] or f["holds"] or f["free"]:
+            return []
+        for j, p, e, d, x in f["resp"]:   # the subject of a `shall` is universal
+            if d in can:
+                use(d)
+        for y, c in f["named"]:
+            use(y)
+        for y in list(can):
+            if can[y] in inante or y in every:
+                body.append("isk(%s,%s)" % (V(y), kinds[y]))
+        for y, c in f["named"]:
+            if can[y] in inante:
+                body.append("code(%s,%s)" % (V(y), q(c)))
+        for y in every:
+            if can[y] not in inante:
+                inante.add(can[y])
+                body += ["rel(%s,%s,%s)" % (qq, V(y), use(y2)) for qq, y1, y2, p in f["crel"] if y1 == y and p == "pos"]
+        heads = []
+        evr = {can[y] for y in every}
+
+        def skol(z):
+            """A new thing of M, one for each binding of the `every` roles it is restricted by (the title of each
+            item)."""
+            deps = sorted({e for qq, a1, a2 in f["orel"] for e in (a1, a2) if z in (a1, a2) and can.get(e) in evr})
+            return "f(%s,%s%s)" % (q(M), can[z], "".join(",V_%s" % can[e] for e in deps))
+        for j, p, e, d, x in f["resp"]:
+            def obj(z):
+                if z in can and can[z] not in inante:
+                    return skol(z)
+                return V(z) if z in can else (z if z.startswith(("value(", "number(")) else q(z))
+            dd = obj(d)
+            if dd.startswith("value(") or "V_" in dd and can.get(d) not in inante:
+                pass
+            heads.append("r(%s,%s,%s,%s)" % (p, e, dd, obj(x)))
+            if x in can and can[x] not in inante:   # what is made has its restrictions
+                heads += ["prop(%s,%s,%s)" % (obj(x), t, v) for y, t, v in f["oattr"] if y == x]
+                heads += ["rel(%s,%s,%s)" % (qq, obj(x), obj(y2)) for qq, y1, y2 in f["orel"] if y1 == x]
+            if e.startswith("set("):
+                t, v = e[4:-1].split(",")
+                heads.append("setv(%s,%s,%s)" % (obj(x), t, v))
+        # an `every` role is read per response: "write every comment that is unrecorded and print every request"
+        # is two universals, each with its own restrictions, not one rule over a comment and a request
+        import re as _re
+        men = lambda txt: {y for y in evr if _re.search(r"\bV_%s\b" % y, txt)}
+        body0 = [b for b in body if not men(b)]
+        out = []
+        for h in heads:
+            hv = men(h)
+            out.append("%s :- %s." % (h, ", ".join(body0 + [b for b in body if men(b) and men(b) <= hv] + ["true"])))
+        for z in can:   # a premise's own new thing has the kind of its role
+            if can[z] != z or z in inante:
+                continue
+            sk = skol(z)
+            hv = men(sk)
+            hb = ", ".join(body0 + [b for b in body if men(b) and men(b) <= hv] + ["true"])
+            out += ["isk(%s,%s) :- %s." % (sk, s_, hb) for s_ in self.supers(kinds[z])]
+            out.append("term(%s) :- %s." % (sk, hb))
+        tag = "b%d" % (abs(hash(M)) % 10**9)
+        return [x.replace("bad_", tag + "_").replace("(M)", "").replace("(M,", "(") for x in extra] + \
+            [x.replace("bad_", tag + "_").replace("(M)", "").replace("(M,", "(") for x in out]
+
+    def neguniv(self, M):
+        """A role only in M's negative responses (\"shall not ask a question\"): no such thing, read as every."""
+        f = self.reqs[M]
+        ante = self.ante_roles(M)
+        neg = {a[4] for a in f["resp"] if a[1] == "neg"}
+        pos = {a[4] for a in f["resp"] if a[1] == "pos"}
+        return {y for y, _ in f["role"] if y in neg and y not in pos and y not in ante}
+
+    def ante_roles(self, M):
+        f = self.reqs[M]
+        out = {a[0] for a in f["cond"] + f["ccond"]} | {a[1] for a in f["crel"]} | {a[2] for a in f["crel"]}
+        out |= {a[0] for a in f["named"]} | {a[3] for a in f["resp"]}
+        if M in self.trig:
+            out |= {self.trig[M][2], self.trig[M][3]}
+        return out
+
+
+BACKGROUND = """
+#defined prop/3. #defined setv/3. #defined rel/3. #defined k/2. #defined feat/1. #defined code/2. #defined ev/4.
+true.
+{ a0(Z,T,V) : val(K,T,V), isk(Z,K) } 1 :- term(Z), val(K,T,_), isk(Z,K).
+{ k(Z,C) } :- term(Z), cnd(C).
+{ rel(Q,Z1,Z2) } :- relq(Q), term(Z1), term(Z2).
+{ feat(F) } :- featq(F).
+:- fun(Q), rel(Q,Z,Z1), rel(Q,Z,Z2), Z1 < Z2.
+% a defined condition is its definition (iff), read on the pre-state
+dok(Z,C,W) :- term(Z), dalt(C,W), not dno(Z,C,W).
+dno(Z,C,W) :- term(Z), dlit(C,W,T,V,pos), not a0(Z,T,V).
+dno(Z,C,W) :- term(Z), dlit(C,W,T,V,neg), a0(Z,T,V).
+:- term(Z), dalt(C,_), k(Z,C), not dok(Z,C,_).
+:- dok(Z,C,_), not k(Z,C).
+% a set response moves its attribute (any r(pos,set(T,V),D,X) does, L's own other sets among them)
+setv(X,T,V) :- r(pos,set(T,V),_,X).
+moved(Z,T) :- setv(Z,T,_).
+a1(Z,T,V) :- setv(Z,T,V).
+a1(Z,T,V) :- a0(Z,T,V), not moved(Z,T).
+% the world is consistent: a response both ways, two sets of one attribute, a change nothing with a change
+r(neg,e_change,D,X) :- r(pos,change_nothing,D,none), term(X).
+:- r(pos,E,D,X), r(neg,E,D,X).
+:- setv(Z,T,V), setv(Z,T,W), V < W.
+"""
+
+
+def check(k, mode, queries=None, bridge=True, limit=10, reduce=False):
+    facts = common.gen.facts(k, mode) + common.AKIND
+    reqs, dom = parse(facts)
+    C = Compiler(reqs, dom)
+    domain = "\n".join(f for f in facts if f.split("(")[0] in ("kind", "sub", "val", "fun", "dalt", "dlit"))
+    conds = {a[1] for g in reqs.values() for a in g["ccond"]} | {a[0] for a in dom["dalt"]}
+    conds |= {a[1] for g in reqs.values() for a in g["cnone"]} | {a[1] for g in reqs.values() for a in g["uccond"]}
+    relqs = {a[0] for g in reqs.values() for a in g["crel"] + g["orel"] + g["rnone"] + g["urel"]}
+    feats = {a[0] for g in reqs.values() for a in g["feat"]}
+    stat = "\n".join(["cnd(%s)." % c for c in conds] + ["relq(%s)." % r for r in relqs] +
+                     ["featq(%s)." % q(f) for f in feats])
+    if queries is None:
+        queries = [(L, a[0]) for L, f in reqs.items() for a in f["resp"]]
+    rules = {}
+    out, tg, ts = {}, 0.0, 0.0
+    for L, I in queries:
+        prem = []
+        for M in reqs:
+            if C.base[M] == C.base[L]:
+                continue
+            same_trig = M in C.trig and L in C.trig and C.trig[M][:2] == C.trig[L][:2]
+            if same_trig and ((L in C.exc) != (M in C.exc)):
+                continue
+            lt, mt = C.trig.get(L), C.trig.get(M)
+            if reduce and mt is not None and not same_trig and not (
+                    bridge and lt and lt[0] == "ran" and mt[:2] == ["does", "e_refuse"]):
+                continue   # its trigger never happens in L's world
+            if M not in rules:
+                rules[M] = C.rules(M, L)
+            prem += rules[M]
+        prog = "\n".join([domain, stat, BACKGROUND] + C.world(L, I, bridge) + prem)
+        t0 = time.time()
+        ctl = clingo.Control(["--warn=none", "-t", "1"])
+        ctl.add("base", [], prog)
+        ctl.ground([("base", [])])
+        t1 = time.time()
+        ctl.configuration.solve.models = 1
+        with ctl.solve(async_=True) as h:
+            h.wait(limit)
+            res = h.get()
+        t2 = time.time()
+        tg, ts = tg + t1 - t0, ts + t2 - t1
+        out[(L, I)] = res.unsatisfiable
+    return out, tg, ts

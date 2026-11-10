@@ -1,0 +1,37 @@
+"""The scaled specs every study uses. `program(k, mode, check=None)` gives the clingo program text (domain facts,
+k renamed copies of this repository's requirement facts, the universal statements once, then `check`, default
+grammar/check.lp); `facts(k, mode)` gives just the fact lines (domain + requirements) as a list of strings.
+Modes: 'own' - each copy its own command strings (lines spread over many triggers);
+       'shared' - copies keep the same command strings (each trigger has k times the lines);
+       'mixed' - copies share command strings in groups of 4 (copy i uses group i // 4): the realistic middle.
+Run from /home/vscode/shopsystem-bdd. Lines = 260 * k + 5."""
+import re, sys
+sys.path.insert(0, 'scripts')
+import spec_context, spec_solve
+_ctx = spec_context.load('.')
+_base = [(s.id, _ctx.facts[s.id]) for s in _ctx.statements]
+CHECK = spec_solve.CHECK.read_text()
+DOMAIN = list(_ctx.domain)
+
+def _suffix(i, mode):
+    return {'own': i, 'shared': 0, 'mixed': i // 4}[mode]
+
+def facts(k, mode):
+    out = list(DOMAIN)
+    for i in range(k):
+        n = _suffix(i, mode)
+        for sid, fs in _base:
+            if sid.startswith('U') and i:
+                continue
+            for f in fs:
+                g = f if sid.startswith('U') else f.replace('"%s"' % sid, '"%s"' % sid.replace('#', '%d#' % i))
+                if n:
+                    g = re.sub(r'"(`[^`"]*)`"', lambda m: '"%s %d`"' % (m.group(1), n), g)
+                out.append(g)
+    return out
+
+def program(k, mode, check=None):
+    return "\n".join(facts(k, mode) + [check or CHECK])
+
+def lines(k):
+    return 260 * k + 5
