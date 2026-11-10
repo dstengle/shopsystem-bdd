@@ -20,7 +20,8 @@ def _rule_codes():
 
 def constants(lexicon):
     """(the declared constants of a lexicon, spelled bare, and the names a command may open with)."""
-    bare = lambda word: word.replace("`", "").strip()       # noqa: E731
+    def bare(word):
+        return word.replace("`", "").strip()
     names = {bare(t.term) for t in lexicon.terms if t.category == "actor"}
     values = {bare(v) for v, _, _, _ in lexicon.values()}
     return names | values | _rule_codes(), names
