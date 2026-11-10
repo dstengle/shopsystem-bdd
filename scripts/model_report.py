@@ -74,7 +74,7 @@ def cmd_parse(args):
     import spec_language
     path = Path(args.file) if args.file else None
     capability = getattr(args, "capability", None) or (path.stem if path is not None and path.parent.name == "capabilities" else None)
-    if spec_language.four(args.root, capability):
+    if spec_language.four(args.root, capability, universal=path is not None and path.name == "universal.md"):
         return _parse4(args, lines)
     if args.form:
         print("--form reads grammar 4: neither the capability's file nor spec/index.md says `language: codified-2`")
@@ -158,9 +158,10 @@ def cmd_lexicon(args):
     redefines; with --check, the lexicon's problems and the packs' (v_t16, v_t17) as a report, exit 1 when there is any."""
     import spec_lexicon
     import spec_packs
+    import spec_rgl_vocab
     lexicon = spec_lexicon.read(args.root)
     if args.check:
-        found = sorted(spec_lexicon.problems(lexicon) + spec_packs.problems(args.root, lexicon))
+        found = sorted(spec_lexicon.problems(lexicon, spec_rgl_vocab.outer(args.root)) + spec_packs.problems(args.root, lexicon))
         for code, term, message in found:
             print(f"{code}  {term}  {message}")
         print(f"{len(lexicon.terms)} terms, {len(found)} problems")

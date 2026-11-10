@@ -15,6 +15,8 @@ import pytest
 SCRIPTS = str(pathlib.Path(__file__).parent / "scripts")
 # This checkout's scripts come first: `work batch done` runs the suite with the plugin's own scripts directory on
 # PYTHONPATH (for `-p work_items`), and a module the tests import in-process must be the worktree's, not the plugin's.
+# The plugin is loaded by `-p work_items` before this file runs, so `work_items` imports the spec modules only at
+# collection, after this file has put the tree's scripts first (b198).
 if SCRIPTS in sys.path:
     sys.path.remove(SCRIPTS)
 sys.path.insert(0, SCRIPTS)

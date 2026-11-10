@@ -60,6 +60,21 @@ def lexicon(root):
     return spec_lexicon.Lexicon(terms, spec_relations.read(root))
 
 
+def outer(root):
+    """The kinds outside the context's own lexicon that the old lexicon reader's frames may name (b199): in a
+    codified-2 context, the base kinds and every kind and actor of each imported pack; in any other, none."""
+    import spec_grammar4  # here: spec_grammar4 imports this module
+
+    if not spec_grammar4.marked(root):
+        return frozenset()
+    out = set(BASE_KINDS)
+    for name in spec_packs.imports(root):
+        path = spec_packs.path_of(root, name)
+        if path is not None:
+            out |= {t.term for t in spec_packs.terms(path, name) if t.category in ("kind", "actor")}
+    return frozenset(out)
+
+
 def regular_plural(word):
     head, _, last = word.rpartition(" ")
     if re.search(r"(s|sh|ch|x|z)$", last):

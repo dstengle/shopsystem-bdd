@@ -8,7 +8,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import measure_show
 import measure_write
-from transcripts import Refused
+from shop_refused import Refused
 
 CONTRACT = """\
 contract:

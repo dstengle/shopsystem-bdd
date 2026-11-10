@@ -1,7 +1,7 @@
 """The plumbing of .shop/ that every command shares: the one refusal, frontmatter read with scripts/model's own reader
 (so the two never disagree on a file), the context's path, a file's text, git, a commit of named files only and its
 push (U4, backlog r18; to the branch's upstream, r21; refused on a task's branch, r20), bounded in time (r19), and an
-append to a log whole or not at all. Standard library only."""
+append to a log whole or not at all. Standard library and shop_refused."""
 import importlib.machinery
 import importlib.util
 import os
@@ -10,6 +10,9 @@ import signal
 import subprocess
 import sys
 from pathlib import Path
+
+# the one refusal, re-exported (b145): shop_files.Refused is shop_refused.Refused
+from shop_refused import Refused
 
 # A task's branch, `batch-<n>-b<j>` (batch_start), on which no command of .shop/ commits (backlog r20).
 TASK_BRANCH = re.compile(r"(batch-[1-9]\d*)-(b[1-9]\d*)")
@@ -27,10 +30,6 @@ def _load_model():
 
 
 frontmatter = _load_model().frontmatter
-
-
-class Refused(Exception):
-    """What was asked cannot be done; the message says why, and nothing was changed."""
 
 
 def context_path(root):

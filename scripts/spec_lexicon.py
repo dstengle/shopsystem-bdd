@@ -248,10 +248,10 @@ def unlabelled(lexicon):
             "(adjective of <kind>), (attribute of <kind>) or (noun, <resource>)): " + "; ".join(found))
 
 
-def problems(lexicon):
+def problems(lexicon, outer=frozenset()):
     """v_t4 (a term has a category, and its kinds are kinds), v_t5 (a value names one attribute of one kind),
     v_t6 (no two terms linearise the same), v_t7 (a gloss of more than one sentence), v_t9 (a `Means:` field),
-    spec_relations' v_t4, v_t8 and v_t10, and spec_frames' v_t11, v_t12 and v_t13, as (code, term, message) sorted."""
+    spec_relations' v_t4, v_t8 and v_t10, and spec_frames' v_t11, v_t12 and v_t13 (its frames may name `outer`, b199), as (code, term, message) sorted."""
     out = []
     kinds = lexicon.kind_names()
     for t in lexicon.terms:
@@ -286,4 +286,4 @@ def problems(lexicon):
             for t in lexicon.terms if not one_sentence(gloss(t.text))]
     out += [("v_t9", t.term, "%s: the meaning is a Means: field; write one Def sentence, or a gloss" % t.where)
             for t in lexicon.terms if re.search(r"(?:^|\s)Means:", t.text)]
-    return sorted(set(out + spec_relations.problems(lexicon) + spec_frames.problems(lexicon)))
+    return sorted(set(out + spec_relations.problems(lexicon) + spec_frames.problems(lexicon, outer)))

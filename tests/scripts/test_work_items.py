@@ -47,3 +47,38 @@ def pytest(repo, *args):
 def test_without_the_option_the_suite_runs_whole(tmp_path):
     done = pytest(consumer(tmp_path, "thing#r1"))
     assert done.returncode == 0 and "2 passed" in done.stdout, done.stdout + done.stderr
+
+
+TREE_CONFTEST = """import pathlib, sys
+SCRIPTS = str(pathlib.Path(__file__).parent / "scripts")
+if SCRIPTS in sys.path:
+    sys.path.remove(SCRIPTS)
+sys.path.insert(0, SCRIPTS)
+"""
+
+
+def _scripts_copy(into):
+    import shutil
+    into.mkdir(parents=True)
+    for source in SCRIPTS.glob("*.py"):
+        shutil.copy2(source, into / source.name)
+
+
+def test_a_tree_whose_conftest_puts_its_scripts_first_is_marked_by_its_own_spec_read(tmp_path):
+    """b198: `work batch done` runs a task's suite with the plugin's scripts on PYTHONPATH; the tree's own spec
+    modules, which its conftest puts first, are the ones `work_items` marks with."""
+    plugin = tmp_path / "plugin"
+    _scripts_copy(plugin)
+    (plugin / "spec_read.py").write_text("raise ImportError('the plugin\\'s spec_read was imported')\n")
+    tree = tmp_path / "tree"
+    _scripts_copy(tree / "scripts")
+    (tree / "conftest.py").write_text(TREE_CONFTEST)
+    (tree / "tests").mkdir()
+    (tree / "tests" / "test_one.py").write_text(
+        "def test_one():\n    import spec_read\n    assert 'tree' in spec_read.__file__\n")
+    env = dict(os.environ, PYTHONPATH=str(plugin))
+    env.pop("PYTEST_PLUGINS", None)
+    env.pop("PYTEST_ADDOPTS", None)
+    done = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "-p", "work_items"],
+                          cwd=tree, env=env, capture_output=True, text=True)
+    assert done.returncode == 0 and "1 passed" in done.stdout, done.stdout + done.stderr

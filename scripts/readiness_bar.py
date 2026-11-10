@@ -21,6 +21,7 @@ import request_text
 import spec_language
 import spec_lexicon
 import spec_read
+import spec_rgl_vocab
 import spec_solve
 from backlog_items import rel_of
 
@@ -50,9 +51,10 @@ def _parses(copy, blocks):
     statements = [(b.capability, "%s#%s" % (b.capability, rid), text) for b in blocks for g in b.groups
                   for rid, text in g.requirements] + [(None, "universal#%s" % uid, text) for uid, text in blocks.universal]
     for capability, ident, text in statements:
-        parsed = spec_language.parse(copy, text, capability)
+        universal = capability is None     # a universal condition, in spec/universal.md's own grammar (b151)
+        parsed = spec_language.parse(copy, text, capability, universal)
         if parsed.tree is None:
-            hint = spec_language.hint(copy, text, capability)
+            hint = spec_language.hint(copy, text, capability, universal)
             reasons.append("%s: %s; parsed up to: %s; nearest words: %s" % (
                 ident, parsed.refusal, hint["prefix"] or "nothing", ", ".join(hint["near"]) or "none"))
     return reasons
@@ -126,12 +128,13 @@ def well_formed(root, item, others=()):
         shutil.copytree(Path(root) / "spec", copy / "spec")      # backlog_lines.lay, the lexicon read before the item
         for other in others:
             backlog_lines.lay_onto(copy, other)
-        before = set(spec_lexicon.problems(spec_lexicon.read(copy)))
+        outer = spec_rgl_vocab.outer(copy)
+        before = set(spec_lexicon.problems(spec_lexicon.read(copy), outer))
         backlog_lines.lay_onto(copy, item)
         reasons = ["%s.md: %s" % (b.capability, p) for b in blocks
                    for p in spec_read.capability(backlog_lines.capability_file(copy, b.capability)).problems]
         reasons += ["universal.md: %s" % p for p in spec_read.read_universal(copy).problems] if blocks.universal else []
-        reasons += ["the lexicon: %s %s: %s" % found for found in spec_lexicon.problems(spec_lexicon.read(copy))
+        reasons += ["the lexicon: %s %s: %s" % found for found in spec_lexicon.problems(spec_lexicon.read(copy), outer)
                     if found not in before]                                                             # r15
         reasons = reasons or _parses(copy, blocks)
         if reasons:

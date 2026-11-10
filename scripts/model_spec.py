@@ -19,6 +19,7 @@ import spec_lexicon
 import spec_packs
 import spec_read
 import spec_read_given
+import spec_rgl_vocab
 import spec_tree
 
 GRAMMAR_MISSING = object()
@@ -53,7 +54,7 @@ class SpecReading:
                 self.problems.append(f"spec/index.md: glossary bullet {n} is not '- **<term>** (<part of speech>): <text>'")
         lexicon = spec_lexicon.read(self.root)
         cats, n, terms = {}, 0, lexicon.terms
-        words, known, kinds = Counter(t.term for t in terms), spec_frames.names(lexicon), lexicon.kind_names()
+        words, known, kinds = Counter(t.term for t in terms), spec_frames.names(lexicon, spec_rgl_vocab.outer(self.root)), lexicon.kind_names()
         overlapping = spec_frames.overlapping(lexicon)
         unmarked = spec_packs.unmarked(self.root, lexicon)     # v_t16, and v_t17 of an import of no pack
         for name in spec_packs.missing(self.root):
@@ -99,7 +100,7 @@ class SpecReading:
         for key in self.restated:
             self.fact("restated_id", f"{key}@0.29")
 
-    def parsed(self, ident, text, capability=None):
+    def parsed(self, ident, text, capability=None, universal=False):
         """parsed, unparsed or ambiguous for one statement, in its capability file's grammar (spec_language); its
         tree, or None. A grammar 4 line's tree is none of the old grammar's: it is recorded, and None returned."""
         if self._grammar is GRAMMAR_MISSING:
@@ -107,8 +108,8 @@ class SpecReading:
         import spec_grammar
         import spec_language
         try:
-            if spec_language.four(self.root, capability):
-                return self.parsed4(ident, spec_language.parse(self.root, text, capability))
+            if spec_language.four(self.root, capability, universal):
+                return self.parsed4(ident, spec_language.parse(self.root, text, capability, universal))
             p = spec_grammar.parse(self.root, text)
         except (ImportError, spec_grammar.GrammarError) as err:      # no pgf, no gf, or gf refused the sources
             self._grammar = GRAMMAR_MISSING
@@ -230,7 +231,7 @@ class SpecReading:
             self.fact("u_id", uid, int(u.id[1:]))
             self.req_text[uid] = u.text
             self.unmentioned.add(uid)
-            self.parsed(uid, u.text)
+            self.parsed(uid, u.text, universal=True)
 
     def codified_scenario(self, cap, key, title, tags, s):
         """generates(G, S) for each @g<n> tag naming a group of the capability."""

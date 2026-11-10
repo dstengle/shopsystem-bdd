@@ -5,11 +5,12 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import tools_check  # noqa: E402
-import tools_env  # noqa: E402
-import tools_map  # noqa: E402
-import tools_refs  # noqa: E402
-import tools_size  # noqa: E402
+import shop_refused
+import tools_check
+import tools_env
+import tools_map
+import tools_refs
+import tools_size
 
 CONTRACT = """\
 contract:
@@ -133,7 +134,7 @@ def main():
         if getattr(args, "under", False) or (args.command == "map" and args.json):  # counting a map's tests needs coverage
             under(tools_env.interpreter(args)[0], sys.argv[1:])
         return args.run(args)
-    except tools_env.Refused as why:
+    except shop_refused.Refused as why:
         sys.stderr.write("tools: %s\n" % why)
         return 1
 

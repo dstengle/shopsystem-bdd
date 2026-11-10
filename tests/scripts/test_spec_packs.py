@@ -42,3 +42,15 @@ def test_the_cli_pack_holds_the_command_line_words_and_defines_refuse():
     assert words == {"tool", "command", "option", "reason", "output", "run", "print", "exit", "change", "refuse",
                      "name"}
     assert "A tool refuses a command when it exits with an error on it." in text.split("## Definitions", 1)[1]
+
+
+FIXTURES = Path(__file__).resolve().parent / "fixtures"
+
+
+def test_outer_names_the_base_kinds_and_the_cli_packs_kinds():
+    """b199: in a codified-2 context the old lexicon reader's frames may name grammar 4's base kinds and the imported
+    packs' kinds and actors; a codified-1 context has none."""
+    import spec_rgl_vocab
+    outer = spec_rgl_vocab.outer(FIXTURES / "codified-2")
+    assert {"thing", "agent", "tool", "command", "option", "reason", "output"} <= outer
+    assert spec_rgl_vocab.outer(FIXTURES / "glossary") == frozenset()

@@ -24,3 +24,34 @@ class TermIdTest(CodifiedTest):
             TWO.splitlines(True)[0])
         self.write("spec/index.md", text)
         self.assertIn(f'category("term/{PATH}/open", "condition").', self.facts())
+
+
+def _model_check(root):
+    import pathlib
+    import subprocess
+    import sys
+    model = pathlib.Path(__file__).resolve().parents[2] / "scripts" / "model"
+    return subprocess.run([sys.executable, str(model), "check"], cwd=root, capture_output=True, text=True).stdout
+
+
+def _codified_2(tmp_path):
+    import pathlib
+    import shutil
+    shutil.copytree(pathlib.Path(__file__).resolve().parent / "fixtures" / "codified-2", tmp_path / "c2")
+    return tmp_path / "c2"
+
+
+def test_a_codified_2_index_has_no_v_t13_for_a_frame_naming_agent(tmp_path):
+    """b199: a frame naming grammar 4's base kind `agent`, or an imported pack's kind, reads."""
+    out = _model_check(_codified_2(tmp_path))
+    assert "v_t13" not in out, out
+    assert out.strip().splitlines()[-1].startswith("0 violations"), out
+
+
+def test_a_codified_1_index_still_reads_agent_as_unknown(tmp_path):
+    root = _codified_2(tmp_path)
+    index = root / "spec" / "index.md"
+    text = index.read_text().replace("language: codified-2", "language: codified-1").replace("imports: [cli]\n", "")
+    index.write_text(text)
+    out = _model_check(root)
+    assert "v_t13" in out and "write" in out, out

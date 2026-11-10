@@ -12,9 +12,10 @@ import spec_grammar
 import spec_read
 import spec_unbuilt
 from features_bindings import cmd_bindings
-from features_gherkin import Refused, load
+from features_gherkin import load
 from features_report import cmd_count, cmd_deprecated, cmd_list
 from model_parse import frontmatter
+from shop_refused import Refused
 
 CONTRACT = """\
 contract:
