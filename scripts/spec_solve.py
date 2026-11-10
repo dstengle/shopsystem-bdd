@@ -7,7 +7,7 @@ The shown atoms are the findings:
   L1  `clash(A,B,Why)`: A and B fire on one trigger in one consistent pre-state and demand opposite things, or
       `clash(A,A,self)`: A contradicts itself. Its text has the merged pre-state of one witness, from one normal
       solve of check.lp's part `witness` for every pair (spec_solve_pairs). (error)
-  L2  two statements whose normalised trees are equal. (warning)
+  L2  two statements whose grammar 4 trees are equal: a tree is one meaning already (spec_meaning). (warning)
   L3  `bad_set`: a set no transition allows. (error)
   L4  `unreachable`: a value a pre-state needs that no transition path reaches. (warning)
   L5  `lint`: an untriggered positive event obligation, with the requirements that react to its event. (warning)
@@ -30,10 +30,9 @@ from pathlib import Path
 import clingo
 import spec_context
 import spec_entail
-import spec_facts
 import spec_findings
 import spec_solve_pairs
-import spec_tree
+from spec_lf_core import split
 from spec_solve_pairs import Finding
 from spec_solve_pairs import order as _order
 
@@ -72,18 +71,10 @@ def solve(program, limit, brave=True):
     return _solve(_ground(program), limit, brave)[:2]
 
 
-def _key(tree):
-    """A tree with its lists sorted and its articles made one (an `a` and a `the` of a kind read alike)."""
-    if not isinstance(tree, tuple):
-        return tree
-    fun = tree[0][:-4] + "_An" if tree[0].startswith("k_") and tree[0].endswith("_The") else tree[0]
-    return (fun,) + tuple(_key(a) for a in tree[1:])
-
-
 def l2(statements, scope):
     seen = defaultdict(list)
-    for s in statements:     # a grammar 4 tree (a text) is one meaning already (spec_meaning)
-        seen[s.tree if isinstance(s.tree, str) else _key(spec_tree.normal(s.tree))].append(s)
+    for s in statements:
+        seen[s.tree].append(s)
     out = []
     for same in seen.values():
         if len(same) > 1 and any(s.capability in scope for s in same):
@@ -104,19 +95,19 @@ def _findings(ctl, words, atoms):
     seen = set()
     for code, name, write in (("L3", "bad_set", words.bad_set), ("L4", "unreachable", words.unreachable)):
         for r, *rest in args[name]:
-            finding = Finding(code, [spec_facts.split(r)], write(spec_facts.split(r), *rest))
+            finding = Finding(code, [split(r)], write(split(r), *rest))
             if (code, finding.text) not in seen:
                 seen.add((code, finding.text))
                 out.append(finding)
     for a, b in args["forbid"]:     # L7 (I17): a "shall not" line that forbids what a "may" line permits
-        out.append(Finding("L7", sorted({spec_facts.split(a), spec_facts.split(b)}, key=_order), words.forbid(a, b)))
+        out.append(Finding("L7", sorted({split(a), split(b)}, key=_order), words.forbid(a, b)))
     lints = defaultdict(set)
     for r, e, t in args["lint"]:
-        lints[(r, e)] |= set() if isinstance(t, clingo.Symbol) else {spec_facts.split(t)}
+        lints[(r, e)] |= set() if isinstance(t, clingo.Symbol) else {split(t)}
     done = set()
-    for (r, e), reactors in sorted(lints.items(), key=lambda kv: (_order(spec_facts.split(kv[0][0])), str(kv[0]))):
+    for (r, e), reactors in sorted(lints.items(), key=lambda kv: (_order(split(kv[0][0])), str(kv[0]))):
         reactors = sorted(reactors, key=_order)
-        finding = Finding("L5", [spec_facts.split(r)] + reactors, words.lint(r, e, reactors))
+        finding = Finding("L5", [split(r)] + reactors, words.lint(r, e, reactors))
         if (finding.ids[0], str(e)) not in done:
             done.add((finding.ids[0], str(e)))
             out.append(finding)
@@ -145,7 +136,7 @@ def run(root, capability=None, extra=None):
     found += l2(ctx.statements, scope)
     found += spec_entail.findings(root, ctx, scope)
     if requirement is not None:
-        found = [f for f in found if f.code == "L0" or requirement in {spec_facts.split(i) for i in f.ids}]
+        found = [f for f in found if f.code == "L0" or requirement in {split(i) for i in f.ids}]
     if not done and scope:
         found.append(Finding("L0", [], "the check did not finish in %d s; the findings so far are listed" % LIMIT))
     if not sat and scope:
