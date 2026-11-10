@@ -83,7 +83,7 @@ PATHS = {"work-item": r"\.shop/work/[^/]+/w\d+\.md", "initiative": r"\.shop/work
          "glossary-proposal": r"\.shop/work/[^/]+/[^/]+\.md", "transition": r"\.shop/work/[^/]+/log\.jsonl",
          "ledger": r"\.shop/work/[^/]+/ledger\.md", "design-decision": r"spec/decisions/\d{4}-[^/]+\.md",
          "record": r"\.shop/records/\d{4}-\d\d-\d\d-[^/]+\.md",
-         "batch brief": r"\.shop/worktrees/batch-\d+-driver/brief\.md"}
+         "batch brief": r"\.shop/worktrees/batch-\d+-driver/brief\.md", "rule catalogue": r"grammar/rules\.md"}
 
 
 SECTIONS = {"answer": "## Answers", "question": "## Questions", "resolution": "## Resolution",

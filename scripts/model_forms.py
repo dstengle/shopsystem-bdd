@@ -33,6 +33,7 @@ FORMS = [
     Form("quote", ".shop/quotes/<n>.md", "work quote"),
     Form("design-decision", "spec/decisions/<nnnn>-<slug>.md", "work decision"),
     Form("decisions index", "spec/decisions/index.md", "model decisions"),
+    Form("rule catalogue", "grammar/rules.md", "model rules --write"),
     Form("record", ".shop/records/<date>-<slug>.md", "work record"),
     Form("records index row", ".shop/records/README.md", "work record"),
     Form("feature", "features/<capability>.feature", "features generate"),
