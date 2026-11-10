@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/query-commands-answer-in-their-output, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items, design-decision/work-items-named-by-ids, design-decision/the-glossary-is-a-target-of-spec-work]
 retired: [r8, r9, r12, r13, r14, r15, r16, r17, r18, r21, r26, r27, r29, r31, r32, r33, r34, r35, r37, r39, r45, r46, r53]
-unbuilt: []
+unbuilt: [r71, r73, r72]
 ---
 
 # Design model check
@@ -88,6 +88,12 @@ context: product-level artifacts are read only where the files contain them.
 - **prepositional** (adjective of term): a verb whose frame puts a preposition between the verb and its object, as in `Frame: viewer subscribes to channel.`.
 - **prepositioned** (adjective of requirement): a requirement with a prepositional verb followed by its preposition and its object, as in `a viewer subscribes to a channel`.
 - **misframed** (adjective of term): a verb whose glossary entry has a `Frame:` that does not read as its subject, the verb and the kinds the verb takes.
+
+- **unpairable** (adjective of capability): a capability two of whose requirements share a named code that `grammar/check.lp` cannot unify, and two others of whose requirements conflict (an L1).
+
+- **rule catalogue** (noun): the generated file `grammar/rules.md`, one entry a rule. Kind of: file.
+- **violate** (verb): a thing does not meet a rule of the rule catalogue. Forms: violates, violated. Frame: thing violates rule.
+- **stale** (adjective of rule catalogue): a rule catalogue that is not what `model rules --write` would write.
 
 ## Behaviour
 
@@ -259,6 +265,15 @@ Restates: r65@0.29.
 
 ### [g70] `model check` refuses a frame that does not read
 - [r70] If the person runs `model check` on a term that is misframed, then `model` shall exit with an error naming the term.
+
+### [g71] A pair that cannot be unified sets only itself aside
+- [r71] When the person runs `model logic` on a capability that is unpairable, `model` shall print a requirement and print "L1".
+
+### [g73] `model rules --write` writes the rule catalogue
+- [r73] Where `--write` is given, when the person runs `model rules`, `model` shall write the rule catalogue and exit successfully.
+
+### [g72] `model rules --check` refuses a stale catalogue
+- [r72] Where `--check` is given, if the person runs `model rules` on a rule catalogue that is stale, then `model` shall exit with an error naming the rule catalogue and change nothing.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a

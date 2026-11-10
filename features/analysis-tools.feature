@@ -277,3 +277,15 @@ Feature: Analysis tools
       """
     When the person runs `tools size`
     Then `tools` exits successfully
+
+  @g34 @r34
+  Scenario: `tools install` installs the RGL
+    Given the analysis tool `gf-rgl` is `missing`
+    And the Python interpreter `.venv/bin/python` is `virtualenv`
+    When the person runs `tools install`
+    Then `tools` installs `gf-rgl`
+
+  @g35 @r35
+  Scenario: `tools probe` reports the RGL
+    When the person runs `tools probe`
+    Then `tools` prints `gf-rgl`

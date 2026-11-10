@@ -6,6 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/plugin-takes-the-dependencies-it-needs, design-decision/query-commands-answer-in-their-output]
 retired: []
+unbuilt: [r34, r35]
 ---
 
 # Analysis tools
@@ -204,6 +205,12 @@ the Python file `big.py` holds:
   c = 3
   d = 4
 ```
+
+### [g34] `tools install` installs the RGL
+- [r34] While the analysis tool `gf-rgl` is `missing` and the Python interpreter `.venv/bin/python` is `virtualenv`, when the person runs `tools install`, `tools` shall install the analysis tool `gf-rgl`.
+
+### [g35] `tools probe` reports the RGL
+- [r35] When the person runs `tools probe`, `tools` shall print the analysis tool `gf-rgl`.
 
 ## Implementation, may change
 - A reviewer passes the repository's own limit from its `CLAUDE.md` as `--limit`.

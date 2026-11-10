@@ -325,3 +325,27 @@ Feature: Design model check
     And the term t1 is misframed
     When the person runs `model check` on the term t1
     Then `model` exits with an error naming the term t1
+
+  @g71 @r71
+  Scenario: A pair that cannot be unified sets only itself aside
+    Given a capability c1
+    And the capability c1 is unpairable
+    When the person runs `model logic` on the capability c1
+    Then `model` prints the requirement r1
+    And `model` prints "L1"
+
+  @g72 @r72
+  Scenario: `model rules --check` refuses a stale catalogue
+    Given `--check` is given
+    And a rule catalogue r1
+    And the rule catalogue r1 is stale
+    When the person runs `model rules` on the rule catalogue r1
+    Then `model` exits with an error naming the rule catalogue r1
+    And `model` changes nothing
+
+  @g73 @r73
+  Scenario: `model rules --write` writes the rule catalogue
+    Given `--write` is given
+    When the person runs `model rules`
+    Then `model` writes the rule catalogue r1
+    And `model` exits successfully
