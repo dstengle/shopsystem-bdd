@@ -73,3 +73,14 @@ When a session and the person write a file, `work` shall print the file.
 # an attribute of another kind is no noun phrase of the kind
 When a session ends a stage, `work` shall print the status of the worktree.
 = refused: does not parse at worktree
+# relative clauses (b136, I9; b107 folded in): on a state frame, the subject's ("that follows") or an object's ("that
+# sessions follow"), each with its polarity, agreeing with its noun; on a row's has and holds; nested
+When a session ends a stage that sessions follow, `work` shall print every session that does not follow the stage.
+While a session that follows a stage has no worktree, when the person runs `work start`, `work` shall print the session.
+When the person runs `work start`, `work` shall print every worktree that a session has and every file that a worktree holds.
+While no session that does not follow a stage has a worktree, when the person runs `work start`, `work` shall exit successfully.
+When a session ends a stage that a session follows, `work` shall print every file in a worktree that a session has.
+When a session ends a stage that a session that has a worktree follows, `work` shall print the stage.
+# a relative clause is a state: an action verb's frame gives none
+When a session ends a stage that a session ends, `work` shall print the stage.
+= refused: does not parse at ends

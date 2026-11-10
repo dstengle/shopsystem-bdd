@@ -21,7 +21,9 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
          "denying": (("While a session has no worktree, when the person runs `work start`, `work` shall exit with an "
                       "error naming the session."), None),
          "compound": ("When a session ends a stage, `work` shall print the stage status.", None),
-         "restrictive": ("A session shall change only files in its worktree.", None)}
+         "restrictive": ("A session shall change only files in its worktree.", None),
+         "relative": (("When a session ends a stage that sessions follow, `work` shall print every session that does "
+                       "not follow the stage."), None)}
 
 
 def capability(name, lines, path):
