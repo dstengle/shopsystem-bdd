@@ -3,9 +3,9 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/feature-file-tools
 title: Feature file tools
 narrator: a session reading or generating feature files
 group: service
-language: codified-1
+language: codified-2
 rests_on: [design-decision/plugin-takes-the-dependencies-it-needs, design-decision/plugin-scenarios-run-as-pytest-bdd, design-decision/query-commands-answer-in-their-output]
-retired: []
+retired: [g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18, g19, r19, g20, r20, g21, r21, g22, r22, g23, r23, g24, r24, g25, r25, g26, r26, g27, r27, g28, r28, g29, r29, g30, r30, g31, r31, g32, r32, g33, r33, g34, r34, g35, r35, g36, r36, g37, r37, g38, r38, g39, r39, g40, r40, g41, r41, g42, r42, g43, r43, g44, r44]
 unbuilt: []
 ---
 
@@ -16,254 +16,147 @@ unbuilt: []
 title, lists the deprecated scenarios kept from before the conversion, and verifies that every scenario has exactly
 one test binding it. It writes each codified service capability's feature file from its requirement groups
 (`generate`), and checks that every step of a generated feature has a handler (`vocab`). It is not a Gherkin runner
-and runs no test; it edits no feature file by hand, since the generator owns them.
+and runs no test; it edits no feature file by hand, since the generator owns them. Which sentences `generate` writes
+the scenario of is the language reference's to say (`grammar/language.md`, its constructs and their tested lines),
+not a line here for each construct.
 
 ## Terms
-- **feature file** (noun): a `*.feature` file under the directory `--dir` names (default `features`), read line by
-  line.
-- **test module** (noun): a Python file under the directory `--tests` names (default `tests`) that binds scenarios
-  with `scenario(<feature>, "<title>")` or `scenarios(<path>, ...)` calls.
-- **nested** (adjective of feature file): a feature file with a docstring whose text has a tag and a `Scenario:` line.
-- **outlined** (adjective of feature file): a feature file with a Scenario Outline of several Examples tables.
-- **sectioned** (adjective of feature file): a feature file with a `Rule:` block.
-- **deprecating** (adjective of feature file): a feature file with a scenario tagged `@deprecated` and its replacement.
-- **undeprecated** (adjective of feature file): a feature file with no scenario tagged `@deprecated`.
-- **resolving** (adjective of test module): a test module each of whose bindings names a scenario a feature file has.
-- **dangling** (adjective of test module): a test module with a binding whose title no feature file has.
-- **sweeping** (adjective of test module): a test module that binds every scenario of a feature file with one `scenarios(...)` call.
-- **partial** (adjective of test module): a test module that leaves a scenario of its feature file unbound.
 
-- **withholding** (adjective of requirement): a requirement whose response says with `shall not` that a verb with a recipient does not happen.
+- **feature file** (noun): a `*.feature` file under the directory `--dir` names (default `features`), read line by line. Kind of: file.
+- **test module** (noun): a Python file under the directory `--tests` names (default `tests`), with its bindings. Kind of: file.
+- **subdirectory** (noun): a directory under the directory `--dir` names. Kind of: file.
+- **docstring** (noun): the text of a step between two lines of `"""` or of three backticks, in a feature file. Kind of: text.
+- **tag** (noun): a Gherkin tag of a scenario or of a feature file, as `@deprecated`. Kind of: text.
+- **requirement tag** (noun): a tag `@r<n>` of a scenario, which names a requirement of its group. Kind of: text.
+- **scenario line** (noun): a line that starts `Scenario:`. Kind of: text.
+- **scenario outline** (noun): a Scenario Outline of a feature file, with its Examples tables. Kind of: text.
+- **examples row** (noun): one row of values of an Examples table of a scenario outline. Kind of: text.
+- **rule block** (noun): a `Rule:` block of a feature file. Kind of: text.
+- **scenario title** (noun): the text after `Scenario:` that names a scenario. Kind of: text.
+- **replacement** (noun): the scenario that a scenario tagged `@deprecated` names after `Deprecated for:`. Kind of: scenario.
+- **binding** (noun): a `scenario(<feature>, "<title>")` or `scenarios(<path>, ...)` call of a test module. Kind of: text.
+- **scenarios call** (noun): a `scenarios(<path>, ...)` call of a test module. Kind of: binding.
+- **search text** (noun): the text `features list` is given with its `--title` option, which the scenario titles it prints contain. Kind of: text.
+- **handler** (noun): a function of `tests/scenarios/` that a step runs. Kind of: thing.
+- **contain** (verb, state): a text holds another text within it. Forms: contains, contained. Frame: text contains text.
+- **bind** (verb, state): a binding names a scenario, by its title or by its feature file, so that a test runs the scenario. Forms: binds, bound. Frame: binding binds scenario.
+- **entail** (verb, state): a universal condition gives a step from the other steps of its scenario. Forms: entails, entailed. Frame: universal condition entails step.
 
-- **declining** (adjective of capability): a capability with a requirement whose response says that a tool shall refuse a command.
-- **overstated** (adjective of file): a feature file with a Then step that a universal condition or a pack's definition entails from the other steps of its scenario.
+## Relations
 
-- **oblique** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, with a verb whose frame takes a kind after its object behind a preposition other than `to`, as in "`work` shall record the batch in a record" under `Frame: agent records thing in file.`.
-
-- **illustrated** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose given block has a line "the K `n` holds:" with a docstring under it, K a noun of the capability of one word or more, as "the feature file `features/a.feature` holds:".
-- **tabulated** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose given block has a line "the K `n` holds:" with a table under it, K a noun of the capability of one word or more.
-- **quoted** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose given block has a line "the K `n` holds" followed by one code span or quoted string, K a noun of the capability of one word or more, as "the tracked file `.shop/plugin-version` holds "3.0.0"".
-
-- **distributing** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose line says "every K" or a plural in its response, as "`features` shall print every feature file that is nested".
-- **generalising** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose line says "every K" in its While clause or its trigger.
-- **confining** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose line says that an agent shall V only Ks that meet a restrictor.
-- **bounding** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose line says "at least n Ks", "at most n Ks", "exactly n Ks", "more than n Ks" or "fewer than n Ks" in its response.
-- **tallying** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose line says a count of Ks in its While clause or its trigger.
-- **branching** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose line joins two conditions with "or".
-- **linking** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose line relates two things by a word of a row of `## Relations` (of, in, on, has, or whose over a row).
-- **valued** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose line says "the A of x" for an attribute A, as "the status of the item".
-- **excluding** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose line says "no K" in its While clause or its trigger.
-- **exempting** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose line acts on a K with a negated restriction, as "a K that is not `done`".
-- **permitting** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose one line says "may".
-- **necessitating** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose one line says "always" or "never" and has no trigger.
-- **scenarioless** (adjective of feature): a feature with its `Feature:` line and no scenario.
+| from | word | to | cardinality |
+|---|---|---|---|
+| docstring | of | feature file |  |
+| tag | in | docstring |  |
+| scenario line | in | docstring |  |
+| tag | of | feature file |  |
+| tag | of | scenario |  |
+| requirement tag | of | scenario |  |
+| scenario outline | of | feature file |  |
+| examples row | of | scenario outline |  |
+| rule block | of | feature file | one |
+| feature file | in | subdirectory | one |
+| scenario | of | feature file |  |
+| scenario title | of | scenario | one |
+| replacement | of | scenario | one |
+| binding | of | test module |  |
+| scenario | of | feature |  |
+| feature | of | capability | one |
+| step | of | feature |  |
+| handler | of | step |  |
+| requirement | of | capability |  |
+| requirement group | of | capability |  |
+| requirement | of | requirement group |  |
+| scenario | of | requirement group | one |
 
 ## Behaviour
 
-### [g1] `features count --by-tag` counts every scenario, and a docstring's text is none
+### [g88] `features count --by-tag` counts no scenario line of a docstring
 Restates: r1@0.29, r4@0.29.
-- [r1] While the feature file `features/notes.feature` is nested, when the person runs `features count --by-tag`,
-  `features` shall print the number of scenarios.
+- [r88] While a docstring of a feature file contains a tag and a scenario line, when the person runs `features count` with the `--by-tag` option, `features` shall print the number of scenarios of the feature file.
 
-### [g2] `features count --by-tag` counts a Scenario Outline once for each Examples row
+
+### [g89] `features count --by-tag` counts each examples row of a scenario outline as a scenario
 Restates: r4@0.29.
-- [r2] While the feature file `features/outline.feature` is outlined, when the person runs `features count --by-tag`,
-  `features` shall print the number of scenarios.
+- [r89] While a feature file has a scenario outline and the feature file has no scenario, when the person runs `features count` with the `--by-tag` option, `features` shall print the number of examples rows of the scenario outline.
 
-### [g3] a docstring's text is no tag
+### [g90] a tag in a docstring is no tag of its feature file
 Restates: r1@0.29, r7@0.29.
-- [r3] While the feature file `features/notes.feature` is nested, when the person runs `features list --tag slice-9`,
-  `features` shall exit successfully, and `features` shall not print the feature file `features/notes.feature`.
+- [r90] While a docstring of a feature file contains a tag and the feature file does not have the tag, when the person runs `features list` with the `--tag` option set to the tag, `features` shall exit successfully and not print the feature file.
 
-### [g4] every feature file under the directory is read, however deep
+
+### [g91] a feature file in a subdirectory is read
 Restates: r1@0.29.
-- [r4] When the person runs `features list --title Deep`, `features` shall print the feature file
-  `features/sub/deep.feature`.
+- [r91] While a feature file in a subdirectory has a scenario, when the person runs `features list` with the `--title` option set to the scenario title of the scenario, `features` shall print the feature file.
 
-```given
-the feature file `features/sub/deep.feature` holds:
-  Feature: Deep
-    Scenario: Deep down
-      Given a step
-```
 
-### [g5] `features list --tag` prints each scenario whose tags, its feature's included, have the tag
+### [g92] `features list --tag` prints every scenario of a feature file that has the tag
 Restates: r5@0.29.
-- [r5] When the person runs `features list --tag cart`, `features` shall print the feature file
-  `features/cart.feature` and "Adding".
+- [r92] While a feature file has a tag, when the person runs `features list` with the `--tag` option set to the tag, `features` shall print every scenario of the feature file.
 
-```given
-the feature file `features/cart.feature` holds:
-  @cart
-  Feature: Cart
-    Scenario: Adding
-      Given a step
-```
 
-### [g6] `features list --title` prints each scenario whose title holds the text
+### [g93] `features list --tag` prints a scenario that has the tag
 Restates: r5@0.29.
-- [r6] When the person runs `features list --title Add`, `features` shall print the feature file
-  `features/cart.feature` and "Adding".
+- [r93] While a scenario has a tag, when the person runs `features list` with the `--tag` option set to the tag, `features` shall print the scenario.
 
-```given
-the feature file `features/cart.feature` holds:
-  Feature: Cart
-    Scenario: Adding
-      Given a step
-    Scenario: Paying
-      Given a step
-```
 
-### [g7] `features list --json` prints the scenarios it found as one JSON object
+### [g94] `features list --title` prints each scenario whose title contains the text
+Restates: r5@0.29.
+- [r94] When the person runs `features list` with the `--title` option set to a search text, `features` shall print every scenario whose scenario title contains the search text.
+
+
+### [g95] `features list --json` prints the scenarios it found as one JSON object
 Restates: r60@0.29.
-- [r7] Where `--json` is given, when the person runs `features list --title Add`, `features` shall print the feature
-  file `features/cart.feature` and "Adding".
+- [r95] When the person runs `features list` with the `--json` option and the `--title` option set to a search text, `features` shall print every scenario whose scenario title contains the search text.
 
-```given
-the feature file `features/cart.feature` holds:
-  Feature: Cart
-    Scenario: Adding
-      Given a step
-```
 
-### [g8] a feature file with a `Rule:` block is refused
+### [g96] a feature file with a rule block is refused
 Restates: r2@0.29, r46@0.29.
-- [r8] While the feature file `features/rule.feature` is sectioned, if the person runs `features count --by-tag`,
-  then `features` shall exit with an error naming the feature file `features/rule.feature` and change nothing.
+- [r96] While a feature file has a rule block, if the person runs `features count` with the `--by-tag` option, then `features` shall refuse the command and name the feature file.
 
-### [g9] `features deprecated` prints each deprecated scenario with what replaces it
+
+### [g97] `features deprecated` prints each deprecated scenario with the tags of its replacement
 Restates: r21@0.29.
-- [r9] While the feature file `features/shelf.feature` is deprecating, when the person runs `features deprecated`,
-  `features` shall print "Lending" and "@r4".
+- [r97] While a replacement of a scenario has a requirement tag and the scenario has the `@deprecated` tag, when the person runs `features deprecated`, `features` shall print the scenario and every requirement tag of the replacement.
 
-```given
-the feature file `features/shelf.feature` holds:
-  Feature: Shelf
-    @deprecated
-    Scenario: Lending (deprecated)
-      Deprecated for: Lending a book
-      Given a step
-    @r4
-    Scenario: Lending a book
-      Given a step
-```
 
-### [g10] `features deprecated` says when nothing is deprecated
+### [g98] `features deprecated` says when nothing is deprecated
 Restates: r21@0.29.
-- [r10] While the feature file `features/shelf.feature` is undeprecated, when the person runs `features deprecated`,
-  `features` shall print "none deprecated".
+- [r98] While no scenario has the `@deprecated` tag, when the person runs `features deprecated`, `features` shall print `none deprecated`.
 
-```given
-the feature file `features/shelf.feature` holds:
-  Feature: Shelf
-    Scenario: Lending
-      Given a step
-```
 
-### [g11] `features deprecated --json` prints the deprecated scenarios as one JSON object
+### [g99] `features deprecated --json` prints the deprecated scenarios as one JSON object
 Restates: r61@0.29.
-- [r11] Where `--json` is given, when the person runs `features deprecated`, `features` shall print "Lending".
+- [r99] While a scenario has the `@deprecated` tag, when the person runs `features deprecated` with the `--json` option, `features` shall print the scenario title of the scenario.
 
-```given
-the feature file `features/shelf.feature` holds:
-  Feature: Shelf
-    @deprecated
-    Scenario: Lending (deprecated)
-      Deprecated for: removal
-      Given a step
-```
 
-### [g12] `features bindings` says so when every binding names a scenario
+### [g100] `features bindings` says so when every binding names a scenario
 Restates: r26@0.29.
-- [r12] While the test module `tests/test_cart.py` is resolving, when the person runs `features bindings`,
-  `features` shall print "every binding names a scenario" and exit successfully.
+- [r100] While every binding binds a scenario, when the person runs `features bindings`, `features` shall print `every binding names a scenario` and exit successfully.
 
-```given
-the feature file `features/cart.feature` holds:
-  Feature: Cart
-    Scenario: Adding
-      Given a step
-the test module `tests/test_cart.py` holds:
-  from pytest_bdd import scenario
-  @scenario("cart.feature", "Adding")
-  def test_adding():
-      pass
-```
 
-### [g13] `features bindings` names a binding whose title no feature file has
+### [g101] `features bindings` names the test module of a binding that binds no scenario
 Restates: r25@0.29.
-- [r13] While the test module `tests/test_cart.py` is dangling, if the person runs `features bindings`, then
-  `features` shall exit with an error naming the test module `tests/test_cart.py` and change nothing.
+- [r101] While a binding of a test module binds no scenario, if the person runs `features bindings`, then `features` shall exit with an error naming the test module and change no file.
 
-```given
-the feature file `features/cart.feature` holds:
-  Feature: Cart
-    Scenario: Adding
-      Given a step
-the test module `tests/test_cart.py` holds:
-  from pytest_bdd import scenario
-  @scenario("cart.feature", "Paying")
-  def test_paying():
-      pass
-```
 
-### [g14] a `scenarios(...)` call binds every scenario of the feature file it names
+### [g102] a scenarios call binds every scenario of the feature file it names
 Restates: r57@0.29.
-- [r14] While the test module `tests/test_cart.py` is sweeping, when the person runs `features bindings --unbound`,
-  `features` shall exit successfully.
+- [r102] While a scenarios call binds a scenario of a feature file, when the person runs `features bindings` with the `--unbound` option, `features` shall exit successfully and not print a scenario of the feature file.
 
-```given
-the feature file `features/cart.feature` holds:
-  Feature: Cart
-    Scenario: Adding
-      Given a step
-    Scenario: Paying
-      Given a step
-the test module `tests/test_cart.py` holds:
-  from pytest_bdd import scenarios
-  scenarios("cart.feature")
-```
 
-### [g15] `features bindings --unbound` names a scenario no test binds
+### [g103] `features bindings --unbound` names a scenario that no binding binds
 Restates: r58@0.29.
-- [r15] While the test module `tests/test_cart.py` is partial, if the person runs `features bindings --unbound`, then
-  `features` shall exit with an error naming "Paying" and change nothing.
+- [r103] While a feature file has a scenario that no binding binds, if the person runs `features bindings` with the `--unbound` option, then `features` shall exit with an error naming the scenario and change no file.
 
-```given
-the feature file `features/cart.feature` holds:
-  Feature: Cart
-    Scenario: Adding
-      Given a step
-    Scenario: Paying
-      Given a step
-the test module `tests/test_cart.py` holds:
-  from pytest_bdd import scenario
-  @scenario("cart.feature", "Adding")
-  def test_adding():
-      pass
-```
 
-### [g16] `features bindings --json` prints what it found wrong as one JSON object
+### [g104] `features bindings --unbound --json` names a scenario that no binding binds
 Restates: r62@0.29.
-- [r16] Where `--json` is given, when the person runs `features bindings --unbound`, `features` shall print "Paying".
+- [r104] While a feature file has a scenario that no binding binds, if the person runs `features bindings` with the `--unbound` and `--json` options, then `features` shall exit with an error naming the scenario and change no file.
 
-```given
-the feature file `features/cart.feature` holds:
-  Feature: Cart
-    Scenario: Adding
-      Given a step
-    Scenario: Paying
-      Given a step
-the test module `tests/test_cart.py` holds:
-  from pytest_bdd import scenario
-  @scenario("cart.feature", "Adding")
-  def test_adding():
-      pass
-```
 
-### [g17] `features generate` writes the feature file of a codified service capability
-- [r17] When the person runs `features generate`, `features` shall print the feature file `features/shelf.feature`
-  and exit successfully.
+### [g105] `features generate` writes the feature of a codified service capability
+- [r105] While the group of a capability is `service` and the language of the capability is one of `codified-1` or `codified-2`, when the person runs `features generate`, `features` shall write the feature of the capability and print the feature.
 
 ```given
 the capability `shelf` holds:
@@ -286,9 +179,8 @@ the capability `shelf` holds:
   ## Dropped
 ```
 
-### [g18] `features generate --check` names a feature file that differs from its capability
-- [r18] Where `--check` is given, if the person runs `features generate`, then `features` shall exit with an error
-  naming the feature file `features/shelf.feature` and change nothing.
+### [g106] `features generate --check` names a feature with a scenario that no requirement group of its capability has
+- [r106] While the feature of a capability has a scenario that no requirement group has, if the person runs `features generate` with the `--check` option, then `features` shall exit with an error naming the feature and change no file.
 
 ```given
 the capability `shelf` holds:
@@ -315,9 +207,8 @@ the feature file `features/shelf.feature` holds:
       Given a step
 ```
 
-### [g19] `features vocab --check` names a step with no handler
-- [r19] If the person runs `features vocab --check`, then `features` shall exit with an error naming the feature file
-  `features/shelf.feature` and change nothing.
+### [g107] `features vocab --check` names a step with no handler and its feature
+- [r107] While a step of a feature has no handler, if the person runs `features vocab` with the `--check` option, then `features` shall exit with an error naming the step and the feature and change no file.
 
 ```given
 the capability `shelf` holds:
@@ -347,106 +238,11 @@ the feature file `features/shelf.feature` holds:
       When the person lends a book
 ```
 
-### [g20] `features generate` writes the scenario of a negated response with a recipient
-- [r20] When the person runs `features generate` on a requirement that is withholding, `features` shall write the feature `features/shelf.feature` and exit successfully.
+### [g108] `features generate` writes a scenario of every requirement group of a capability in the language reference
+- [r108] While the language of a capability is `codified-2` and every requirement of the capability conforms to the language reference and every requirement of the capability uses the `shall` construct, when the person runs `features generate` on the capability, `features` shall write the scenario of every requirement group of the capability.
 
-```given
-the capability `shelf` holds:
-  ---
-  id: capability/ex.com/prod/ctx/shelf
-  title: shelf
-  narrator: a client
-  group: service
-  language: codified-1
-  rests_on: []
-  retired: []
-  ---
-  # shelf
-  ## Purpose
-  Something.
-  ## Terms
-  - **`shelf`** (proper noun): the service that lends books.
-  - **book** (noun): a thing a reader borrows.
-  - **reader** (noun): a person who borrows books.
-  - **lend** (verb): `shelf` hands a book to a reader. Forms: lends, lent. Frame: `shelf` lends book to reader.
-  ## Behaviour
-  ### [g1] `shelf` lends no book to a reader
-  - [r1] `shelf` shall not lend a book to a reader.
-  ## Not yet
-  ## Dropped
-```
-
-### [g21] `features generate` leaves out a Then that is entailed
-- [r21] When the person runs `features generate` on a capability that is declining, `features` shall not write a file that is overstated.
-
-### [g22] `features generate` writes a capability in the new language
-- [r22] When the person runs `features generate` on a capability that is recodified, `features` shall print the feature file `features/shelf.feature`.
-
-### [g23] `features generate` writes the steps of a frame with a kind behind a preposition after its object
-- [r23] When the person runs `features generate` on a requirement that is oblique, `features` shall write the feature `features/shelf.feature` and exit successfully.
-
-### [g24] `features generate` writes the steps of a definite inside a modifier
-- [r24] When the person runs `features generate` on a requirement that is embedding, `features` shall write the feature `features/shelf.feature` and exit successfully.
-
-### [g26] `features generate` writes a given line holding a docstring in the new language
-- [r26] When the person runs `features generate` on a capability that is illustrated, `features` shall write the feature `features/shelf.feature` and exit successfully.
-
-### [g27] `features generate` writes a given line holding a table in the new language
-- [r27] When the person runs `features generate` on a capability that is tabulated, `features` shall write the feature `features/shelf.feature` and exit successfully.
-
-### [g25] `features generate` writes a given line holding one value in the new language
-- [r25] When the person runs `features generate` on a capability that is quoted, `features` shall write the feature `features/shelf.feature` and exit successfully.
-
-### [g28] `features generate` writes the steps of a state verb that takes no object
-- [r28] When the person runs `features generate` on a requirement that is intransitive, `features` shall write the feature `features/shelf.feature` and exit successfully.
-
-### [g29] `features generate` writes the steps of "the K of X" in a relative clause on a K
-- [r29] When the person runs `features generate` on a requirement that is self-relating, `features` shall write the feature `features/shelf.feature` and exit successfully.
-
-### [g30] `features generate` writes the steps of "the K of every Y"
-- [r30] When the person runs `features generate` on a requirement that is distributive, `features` shall write the feature `features/shelf.feature` and exit successfully.
-
-### [g31] `features generate` writes the steps of "the K" bound outside a no, not, every or only box
-- [r31] When the person runs `features generate` on a requirement that is shadowed, `features` shall write the feature `features/shelf.feature` and exit successfully.
-
-### [g32] `features generate` writes the steps of a response that sets an attribute
-- [r32] When the person runs `features generate` on a requirement that is setting, `features` shall write the feature `features/shelf.feature` and exit successfully.
-
-### [g35] `features generate` writes the scenario of every in a response in the new language
-- [r35] When the person runs `features generate` on a capability that is distributing, `features` shall write the feature `features/shelf.feature`, and `features` shall not print "no scenario".
-
-### [g36] `features generate` writes the scenario of every in a condition in the new language
-- [r36] When the person runs `features generate` on a capability that is generalising, `features` shall write the feature `features/shelf.feature`, and `features` shall not print "no scenario".
-
-### [g37] `features generate` writes the scenario of only in the new language
-- [r37] When the person runs `features generate` on a capability that is confining, `features` shall write the feature `features/shelf.feature`, and `features` shall not print "no scenario".
-
-### [g38] `features generate` writes the scenario of a count in a response in the new language
-- [r38] When the person runs `features generate` on a capability that is bounding, `features` shall write the feature `features/shelf.feature`, and `features` shall not print "no scenario".
-
-### [g39] `features generate` writes the scenario of a count in a condition in the new language
-- [r39] When the person runs `features generate` on a capability that is tallying, `features` shall write the feature `features/shelf.feature`, and `features` shall not print "no scenario".
-
-### [g40] `features generate` writes the scenarios of or in the new language
-- [r40] When the person runs `features generate` on a capability that is branching, `features` shall write the feature `features/shelf.feature`, and `features` shall not print "no scenario".
-
-### [g41] `features generate` writes the scenario of a relation row in the new language
-- [r41] When the person runs `features generate` on a capability that is linking, `features` shall write the feature `features/shelf.feature`, and `features` shall not print "no scenario".
-
-### [g42] `features generate` writes the scenario of an attribute of a thing in the new language
-- [r42] When the person runs `features generate` on a capability that is valued, `features` shall write the feature `features/shelf.feature`, and `features` shall not print "no scenario".
-
-### [g43] `features generate` writes the scenario of no in a condition in the new language
-- [r43] When the person runs `features generate` on a capability that is excluding, `features` shall write the feature `features/shelf.feature`, and `features` shall not print "no scenario".
-
-### [g44] `features generate` writes the scenario of a negated restriction in the new language
-- [r44] When the person runs `features generate` on a capability that is exempting, `features` shall write the feature `features/shelf.feature`, and `features` shall not print "no scenario".
-
-### [g33] `features generate` writes no scenario of a permission in the new language
-- [r33] When the person runs `features generate` on a capability that is permitting, `features` shall write a feature that is scenarioless, and `features` shall not print "no scenario".
-
-### [g34] `features generate` writes no scenario of a necessity in the new language
-- [r34] When the person runs `features generate` on a capability that is necessitating, `features` shall write a feature that is scenarioless, and `features` shall not print "no scenario".
+### [g109] `features generate` leaves out a step that a universal condition entails
+- [r109] While the language of a capability is `codified-2`, when the person runs `features generate` on the capability, `features` shall not write a step that a universal condition entails.
 
 ## Implementation, may change
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three

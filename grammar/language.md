@@ -1801,7 +1801,8 @@ by id, and the plain line each says instead. A corpus block of such a line gives
 A line that says X differs from what a command writes now ("is not what `model decisions` would write") compares X
 with a counterfactual: the output of a run that has not happened. The language has no noun phrase for it: "what
 `model decisions` writes" is no noun phrase (no free relative), and "does not conform to" takes an artifact, which a
-command's output is not. Lines: design-model-check r202, r203 (the decisions index), r220 (the rule catalogue).
+command's output is not. Lines: design-model-check r202, r203 (the decisions index), r220 (the rule catalogue),
+feature-file-tools r106 (a feature that is not what `features generate` writes).
 Each says instead what the stale file lacks, in the item's words: "While a design-decision has an index entry that a
 decisions index does not hold, if the person runs `model decisions --check`, then `model` shall exit with an error
 naming the decisions index and change no file."; the rows that are extra or changed are lost.
@@ -1937,3 +1938,26 @@ says instead what the default makes `migrate status` print: every upgrade step, 
 A figure of one measurement divided by the same figure of another is arithmetic, which the language has not. Lines:
 telemetry r8 and batch-measurement r26 (b156). Each says "a ratio", a noun of the glossary, glossed as the second's
 figure divided by the first's.
+
+### #10: one thing counted for each of another's
+
+"`features count` counts each examples row of a scenario outline as a scenario" pairs each row with a scenario it
+counts as; the language has no "for each X, a Y" (distribution, the audit's #10), and "the number of scenarios" counts
+only the Ks the line names. Line: feature-file-tools r89 (b157 r46, "count every examples row"). It says instead the
+case where the rows are the only scenarios: "While a feature file has a scenario outline and the feature file has no
+scenario, ... `features` shall print the number of examples rows of the scenario outline."
+
+### A thing in a thing at any depth
+
+"every feature file under the directory, however deep" is the closure of `in` over directories; the language has no
+closure, and a row `feature file | in | subdirectory` is one level. Line: feature-file-tools r91 (b157 r48, where the
+depth was in the gloss of "subdirectory"). It says one subdirectory, and the gloss no longer says "at any depth".
+
+### #16: history, moments, and an "or" of a response, in `model logic` and `features generate`
+
+The constructs `done`, `done-since`, `moment-compare` and `within` of grammar/constructs.md parse and `model parse
+--form` prints their reading, but `model logic` has no translation of a history or of a comparison of moments, and
+`features generate` writes no scenario of a line that uses one; nor of a line that uses `or-list` between the objects
+of its response ("shall print a file or a stage"). Until they do, a requirement that uses one of them does not conform
+to the language reference: feature-file-tools r108's scenario is written of every other "shall" example of the
+catalogue (tests/scenarios/feature_file_tools_world.py reads the codes from this section).

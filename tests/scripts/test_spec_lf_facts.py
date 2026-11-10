@@ -167,6 +167,25 @@ def test_every_in_a_condition_is_a_universal(tmp_path):
     assert codes(tmp_path, line, error % "open") == []
 
 
+def test_every_in_a_condition_says_a_state_of_each(tmp_path):
+    """b240 phase 21: "every file conforms to the stage form" in a While clause is `uscope` (each K in the state with a
+    thing outside the box), "every session follows a stage" `uex` (each K in the state with some K2): a pair is out
+    where a K is known not to be so, and clashes where it may be."""
+    line = ("While every file conforms to the stage form, when the person runs `work start`, `work` shall exit "
+            "successfully.")
+    error = ("While a file %s to the stage form, when the person runs `work start`, `work` shall exit with an error "
+             "naming `work start`.")
+    assert 'uscope("thing#r1",x1,e_conform,a_the_stage_form,pos).' in facts(tmp_path, line)
+    assert codes(tmp_path, line, error % "conforms") == ["L1"]
+    assert codes(tmp_path, line, error % "does not conform") == []
+    some = "While every session follows a stage, when the person runs `work start`, `work` shall exit successfully."
+    other = ("While a session follows %s stage, when the person runs `work start`, `work` shall exit with an error "
+             "naming `work start`.")
+    assert 'uex("thing#r1",x1,e_follow,k_stage).' in facts(tmp_path, some)
+    assert codes(tmp_path, some, other % "a") == ["L1"]
+    assert codes(tmp_path, some, other % "no") == []
+
+
 def test_a_count_in_a_condition_is_a_k_when_it_admits_one(tmp_path):
     """b197: "at least two Ks that are v" in a While clause is a K that is v, its count kept (`ccount`); "at most one"
     says nothing the check reads."""

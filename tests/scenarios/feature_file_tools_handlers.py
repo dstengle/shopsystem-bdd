@@ -1,185 +1,181 @@
-"""feature-file-tools' handlers (design-r2 §4.3, §9.1): the example data writes feature files, test modules and a
-capability into the scenario's repository as the given block holds them; a feature file's primitive condition
-(`the feature file `features/notes.feature` is nested`) writes the canned file CANNED gives that condition, unless the
-example data wrote the file already, when it checks that the file has the condition; a test module's condition checks
-the module the example data wrote. The command runs through world_run's `WhenRuns`, `features generate` on a requirement on the capability
-that holds it; the Thens read what `features` printed.
+"""feature-file-tools' handlers in the step grammar 4 (b240 phase 21): a Given records an instance or a fact in
+feature_file_tools_world, the When writes the files they describe (`build`, or for `features generate` and `features
+vocab` feature_file_tools_capability) and runs `features` with the command's options and their
+arguments, each argument an instance's value; the Thens read what it printed and how it exited, an instance named by
+its value (a scenario by its title, a feature file by its path, a tag as written).
 
-Each canned feature file comes with the number of scenarios `features count --by-tag` gives it."""
+Example data of a capability and of its feature file (g105-g107) is written as the given block holds it, and an
+instance the Givens bind to it takes what it holds (`a capability c1`, the scenario of its feature file)."""
+import importlib.util
 import re
-import textwrap
+import shlex
+import sys
+from pathlib import Path
 
-from vocab import handler
+
+def shared(name, file):
+    """A world module loaded once by path, the one the other modules load under the same name."""
+    if name not in sys.modules:
+        spec = importlib.util.spec_from_file_location(name, Path(__file__).with_name(file))
+        sys.modules[name] = module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+    return sys.modules[name]
+
+
+W = shared("shop_feature_file_tools_world", "feature_file_tools_world.py")
+GEN = shared("shop_feature_file_tools_capability", "feature_file_tools_capability.py")
 
 INDEX = "---\nid: bounded-context/ex.com/prod/ctx\n---\n# ctx\n\n## Glossary\n\n"
-CANNED = {
-    "nested": (1, """\
-        Feature: Notes
-          Scenario: Nested
-            Given a note
-              \"\"\"
-              @slice-9
-              Scenario: Phantom
-              \"\"\"
-        """),
-    "outlined": (3, """\
-        @cart
-        Feature: Outline
-          Scenario Outline: Adding several
-            When the shopper adds <n> pens
-
-            Examples:
-              | n |
-              | 2 |
-              | 3 |
-
-            @slow
-            Examples:
-              | n  |
-              | 10 |
-        """),
-    "sectioned": (1, """\
-        Feature: Rules
-          Rule: one rule
-            Scenario: Under a rule
-              Given a step
-        """),
-}
-FEATURE_IS = {
-    "deprecating": lambda text: "@deprecated" in text and "Deprecated for: " in text,
-    "undeprecated": lambda text: "@deprecated" not in text,
-}
+KINDS = ("feature file", "scenario", "scenario title", "tag", "requirement tag", "docstring", "scenario line",
+         "scenario outline", "examples row", "rule block", "subdirectory", "replacement", "search text", "binding",
+         "scenarios call", "test module", "step", "feature", "requirement", "requirement group", "universal condition",
+         "capability", "handler")
+FILES = ("`features count`", "`features list`", "`features deprecated`", "`features bindings`")
 
 
-def bare(word):
-    return word.strip("`")
-
-
-def write(step, rel, text, scenarios=None):
+def write(step, rel, text):
     path = step.repo / rel
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text)
-    if scenarios is not None:
-        step.context.setdefault("scenarios", {})[rel] = scenarios
 
 
-def condition(step):
-    return step.text.rsplit(" is ", 1)[1]
+# --- the Givens ---------------------------------------------------------------------------------------------------
+@W.own("GivenCodeText", "feature file", "capability")
+def given_data(step):
+    """Example data: the file the given block holds (a capability under spec/capabilities/, with an index)."""
+    name = step.names[0].strip("`")
+    if step.term == "capability":
+        if not (step.repo / "spec" / "index.md").is_file():
+            write(step, "spec/index.md", INDEX)
+        name = "spec/capabilities/%s.md" % name
+    write(step, name, step.docstring + "\n")
 
 
-def titles(text, pattern):
-    return set(re.findall(pattern, text, re.MULTILINE))
+@W.own("GivenK", *KINDS)
+def given_k(step):
+    w, name = W.world(step), step.names[0]
+    w["kinds"][name] = step.kind
+    caps = sorted((step.repo / "spec" / "capabilities").glob("*.md"))
+    if step.kind == "capability" and caps:      # the example data's capability
+        w["values"][name] = caps[0].stem
 
 
-@handler("GivenCodeText", "feature file")
-def given_feature(step):
-    text = step.docstring + "\n"
-    write(step, bare(step.names[0]), text, sum(line.strip().startswith("Scenario") for line in text.splitlines()))
+@W.own("GivenDoes", "has", "contain", "bind", "use", "conform", "entail", "holds")
+def given_does(step):
+    W.record(step)
+    w = W.world(step)
+    a, b = w["facts"][-1][1:3]
+    if W.kind(w, a) == "capability" and W.kind(w, b) == "feature":
+        w["values"][b] = "features/%s.feature" % W.value(w, a)
+    if W.kind(w, a) == "feature" and W.kind(w, b) in ("scenario", "step"):     # what the example's feature holds
+        w["values"].setdefault(a, GEN.feature(w, a))
+        text = (step.repo / w["values"][a]).read_text()
+        pattern = r"^\s*Scenario: (.*)$" if W.kind(w, b) == "scenario" else r"^\s*(?:Given|When|Then) (.*)$"
+        w["values"][b] = re.findall(pattern, text, re.MULTILINE)[0]
 
 
-@handler("GivenK_C", "feature file")
-def feature_is(step):
-    rel, word = bare(step.names[0]), condition(step)
-    if (step.repo / rel).is_file():
-        assert FEATURE_IS[word]((step.repo / rel).read_text()), (rel, word)
-    else:
-        count, text = CANNED[word]
-        write(step, rel, textwrap.dedent(text), count)
+@W.own("GivenDoesNot", "has")
+def given_does_not(step):
+    W.record(step, False)
 
 
-@handler("GivenCodeText", "test module")
-def given_module(step):
-    write(step, bare(step.names[0]), step.docstring + "\n")
+@W.own("GivenK_A", "capability")
+def given_attribute(step):
+    """`the capability c1 is `codified-2``: the attribute's value written into the example's capability, or kept for
+    the capability the When writes."""
+    w = W.world(step)
+    w.setdefault("attrs", {})[step.attribute] = step.values[0].strip("`")
+    name = w["values"].get(step.names[0])
+    if name:
+        path = step.repo / "spec" / "capabilities" / ("%s.md" % name)
+        field = {"group": "group", "language": "language"}[step.attribute]
+        path.write_text(re.sub(r"^%s: .*$" % field, "%s: %s" % (field, step.values[0].strip("`")), path.read_text(),
+                               count=1, flags=re.MULTILINE))
 
 
-def has(step):
-    """Every scenario title of the scenario's feature files."""
-    return {t for p in (step.repo / "features").rglob("*.feature")
-            for t in titles(p.read_text(), r"^\s*Scenario(?: Outline)?: (.*)$")}
+# --- the When -----------------------------------------------------------------------------------------------------
+def argument(w, text):
+    return text.strip("`") if text.startswith("`") else W.value(w, W.ref(text))
 
 
-MODULE_IS = {
-    "resolving": lambda step, text: titles(text, r'scenario\("[^"]+", "([^"]+)"\)') <= has(step),
-    "dangling": lambda step, text: bool(titles(text, r'scenario\("[^"]+", "([^"]+)"\)') - has(step)),
-    "sweeping": lambda step, text: "scenarios(" in text,
-    "partial": lambda step, text: "scenarios(" not in text and bool(
-        has(step) - titles(text, r'scenario\("[^"]+", "([^"]+)"\)')),
-}
+@W.own("WhenRuns", *FILES, "`features generate`", "`features vocab`")
+def runs(step):
+    w = W.world(step)
+    names = GEN.prepare(step) if step.command not in FILES else W.build(step) or []
+    args = shlex.split(step.command.strip("`"))[1:]
+    for code, text in step.options:
+        args += [code.strip("`")] + ([argument(w, text)] if text else [])
+    step.context["result"] = step.run("features", *args, *names)
 
 
-@handler("GivenK_C", "test module")
-def module_is(step):
-    rel, word = bare(step.names[0]), condition(step)
-    assert MODULE_IS[word](step, (step.repo / rel).read_text()), (rel, word)
-
-
-@handler("GivenCodeText", "capability")
-def given_capability(step):
-    if not (step.repo / "spec" / "index.md").is_file():
-        write(step, "spec/index.md", INDEX)
-    write(step, "spec/capabilities/%s.md" % bare(step.names[0]), step.docstring + "\n")
-
-
-@handler("WhenRuns", "`features generate`")
-def generates(step):
-    """`features generate` on the capabilities the step names, a requirement (`on the requirement r1`) naming the
-    capability whose file holds it, a capability by the name a Given gave its file (`ids`, a recodified one's)."""
-    caps, ids = [], step.context.get("ids", {})
-    for name in step.names:
-        holding = [p.stem for p in sorted((step.repo / "spec" / "capabilities").glob("*.md"))
-                   if "- [%s] " % name in p.read_text()] if re.fullmatch(r"r\d+", name) else [ids.get(name, bare(name))]
-        assert len(holding) == 1, (name, holding)
-        caps += holding
-    step.context["result"] = step.run("features", "generate", *caps, *step.context.get("flags", []))
-
-
+# --- the Thens ----------------------------------------------------------------------------------------------------
 def result(step):
     done = step.context["result"]
     assert "Traceback" not in done.stderr, done.stderr
     return done
 
 
-@handler("ThenPrints", "`features`")
+def said(step, np):
+    """What output shows of a noun phrase: a number as `total <n>`, a code as it is, an instance by its value."""
+    w = W.world(step)
+    if np.startswith("the number of scenarios of "):
+        f = W.ref(np)
+        return "total %d" % sum(W.owner(w, s) == f for s in W.free(w))
+    if np.startswith("the number of examples rows of "):
+        o = W.ref(np)
+        return "total %d" % len([e for o2, e in W.facts(w, "has", ("scenario outline",)) if o2 == o])
+    return argument(w, np)
+
+
+@W.own("ThenPrints", "`features`")
 def prints(step):
     out = result(step).stdout
     for np in step.nps:
-        if np == "the number of scenarios":
-            assert "total %d\n" % sum(step.context["scenarios"].values()) in out, out
-        else:
-            want = np.strip('"') if np.startswith('"') else bare(np.split()[-1])
-            assert want in out, (want, out)
+        assert said(step, np) in out, (said(step, np), out)
 
 
-@handler("ThenPrintsNot", "`features`")
+@W.own("ThenPrintsNot", "`features`")
 def prints_not(step):
-    """A file named by its path not in stdout; a quoted text (`"no scenario"`, a warning) in neither stdout nor
-    stderr."""
     done = result(step)
     for np in step.nps:
-        if np.startswith('"'):
-            assert np.strip('"') not in done.stdout + done.stderr, (np, done.stdout, done.stderr)
-        else:
-            assert bare(np.split()[-1]) not in done.stdout, (np, done.stdout)
+        assert said(step, np) not in done.stdout, (said(step, np), done.stdout)
+
+
+@W.own("ThenExitsErr", "`features`")
+def exits_err(step):
+    done = result(step)
+    assert done.returncode != 0, done.stdout
+    for np in step.nps:
+        assert said(step, np) in done.stdout + done.stderr, (said(step, np), done.stdout, done.stderr)
+
+
+@W.own("ThenDoes", "write", registry=False)
+@W.own("ThenDoes", "refuse", "name", "has")
+def then_does(step):
+    done, w = result(step), W.world(step)
+    if step.term == "refuse":
+        assert done.returncode != 0, done.stdout
+    elif step.term == "name":
+        assert said(step, step.nps[0]) in done.stdout + done.stderr, (step.nps[0], done.stdout, done.stderr)
+    elif step.term == "has":
+        GEN.has(step, w)
+    else:
+        GEN.writes(step, w)
+
+
+@W.own("ThenDoesNot", "write", registry=False)
+def then_does_not(step):
+    GEN.writes_not(step, W.world(step))
 
 
 def unoverstated(step):
-    """`features does not write the file f1`, f1 overstated (r21): `features generate` wrote the capability's feature,
-    which holds the step the Given said it keeps and no step a universal condition entails from it."""
+    """`features does not write the file f1` (requests' handler of ThenDoesNot write, when a capability condition of
+    the codified-2 world kept what its feature must hold and must not under `generated`): `features generate` wrote
+    the capability's feature, which holds the one and not the other."""
     result(step)
     assert step.context["result"].returncode == 0, step.context["result"].stderr
     kept, entailed = step.context["generated"]
-    written = sorted((step.repo / "features").glob("*.feature"))
-    assert written, "features generate wrote no feature file"
-    texts = [p.read_text() for p in written]
+    texts = [p.read_text() for p in sorted((step.repo / "features").glob("*.feature"))]
+    assert texts, "features generate wrote no feature file"
     assert any(kept.search(t) for t in texts), (kept.pattern, texts)
     assert not any(entailed.search(t) for t in texts), (entailed.pattern, texts)
-
-
-@handler("ThenK_C", "feature")
-def feature_then(step):
-    """`the feature f1 is scenarioless` (r33, r34): the feature `features generate` wrote, which `ThenDoes write`
-    named f1, has its `Feature:` line and no scenario."""
-    rel = step.context["nodes"][step.names[0]][1]
-    text = (step.repo / rel).read_text()
-    assert condition(step) == "scenarioless", step.text
-    assert re.search(r"^Feature: ", text, re.MULTILINE) and not titles(text, r"^\s*Scenario(?: Outline)?: (.*)$"), text
