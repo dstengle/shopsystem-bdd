@@ -4,7 +4,7 @@ summary: "Every Behaviour line is one EARS requirement in one of EARS's patterns
 date: 2026-10-19
 status: accepted
 tier: requirement
-enforced_by: [design-model-check#r25]
+enforced_by: [design-model-check#r188]
 source: [observation/2026-10-19-lines-not-ears]
 by: "the person, 2026-10-19"
 ---

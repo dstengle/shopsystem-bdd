@@ -4,7 +4,7 @@ summary: "Ids are type-first: <kind>/<context path>/<name>, with the design mode
 date: 2026-10-17
 status: accepted
 tier: requirement
-enforced_by: [design-model-check#r36]
+enforced_by: [design-model-check#r191, design-model-check#r192]
 by: "the person's direction, 2026-10-17; shopsystem-knowledge decision/an-artifacts-iri-is-its-types-then-its-owners-path (adrs/0073) and decision/names-are-iris-printed-short; shopsystem-kb decision/iri-grammar; docs/design-model/grammar.md v3 section 6"
 ---
 

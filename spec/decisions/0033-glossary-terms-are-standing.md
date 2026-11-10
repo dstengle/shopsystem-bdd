@@ -4,7 +4,7 @@ summary: "A bounded context's terms are glossary entries in spec/index.md, stand
 date: 2026-10-17
 status: accepted
 tier: requirement
-enforced_by: [design-model-check#r22, design-model-check#r23, design-model-check#r24]
+enforced_by: [design-model-check#r185, design-model-check#r186, design-model-check#r187]
 source: [decision-argument/2026-10-17-type-first-ids-and-ubiquitous-language-design]
 by: "Part 2"
 ---

@@ -1823,3 +1823,21 @@ worktree and the session has no worktree that holds a file whose version is not 
 steps that contradict each other, so `features generate` has no scenario of it ("no Given of no there"); `model
 logic` reads it. No line of b152-b159 has the shape (b240 phase 12's sweep). It says instead what the K it gives
 meets: "While a session has a worktree and every file in the worktree is `2.0.0`, ...".
+
+### #16: "unchanged since" a moment the line does not name
+
+"S has V-ed O since m" takes a moment m of the line; "the lexicon has not changed since `model parse` last parsed the
+requirement" needs the moment of an earlier run, which no line names. Lines: design-model-check r282, r283, r284
+(b239's parse cache and compiled grammar). Each says instead what the cache holds: the parse of a requirement, whose
+entry gives the cache's key (the requirement's text, its grammar's sources and its lexicon's words), so "a parse
+cache holds the parse of a requirement" is true only while none of them has changed: "While a parse cache holds the
+parse of a requirement, when the person runs `model parse` on the requirement, `model` shall read the parse cache,
+write no compiled grammar and exit successfully."
+
+### A `not` over a verb inside a "no" box
+
+"no K that no K2 Vs" and "no K that a K2 does not V" parse, but `model logic` reads a `not` inside a "no" box only
+over an attribute of the box's own referent ("no dependency on an item whose status is not `delivered`"), not over a
+verb. Line: design-model-check r251 ("a requirement has no consequence that no premise entails"). It says instead,
+with the verb add (a requirement adds a consequence that no premise entails): "While a requirement has a consequence
+and the requirement adds no consequence, when the person runs `model logic`, `model` shall print `L8`."

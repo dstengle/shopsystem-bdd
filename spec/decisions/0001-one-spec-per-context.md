@@ -4,7 +4,7 @@ summary: "A bounded context has one spec: spec/index.md, the decisions, and one 
 date: 2026-09-29
 status: accepted
 tier: requirement
-enforced_by: [design-model-check#r36, design-model-check#r38]
+enforced_by: [design-model-check#r191, design-model-check#r192, design-model-check#r193]
 source: [decision-argument/2026-09-29-capability-spec-design]
 by: "0.8.0 (d034b50)"
 ---

@@ -4,7 +4,7 @@ summary: "A bounded context's files are spec/ (index.md, capabilities/, decision
 date: 2026-10-19
 status: accepted
 tier: requirement
-enforced_by: [design-model-check#r42]
+enforced_by: [design-model-check#r196]
 supersedes: [plugin-adopts-the-design-model]
 source: [observation/2026-10-19-final-state-only]
 by: "the person, 2026-10-19"
