@@ -18,3 +18,15 @@ def untaken(step):
 for _template, _term in (("ThenDoes", "keep"), ("ThenDoes", "remove"), ("ThenR", "for"), ("ThenR", "on"),
                        ("WhenHappens", "merge")):
     handler(_template, _term)(untaken)
+
+# The keys of grammar 4's steps that more than one codified-2 feature may say (b240 phase 20): a feature's own `local`
+# handler of the template takes its steps (readiness_handlers_givens.py, readiness_handlers_thens.py); these are
+# what is left when none does.
+for _template, _term in (("ThenDoes", "refuse"), ("ThenDoes", "name"), ("ThenDoes", "holds"), ("ThenDoes", "set"),
+                         ("GivenDoes", "has"), ("GivenDoes", "holds"), ("GivenDoes", "pass"),
+                         ("GivenDoes", "violate"), ("GivenDoesNot", "pass"), ("GivenDoesNot", "meet"),
+                         ("GivenK", "relation row"), ("GivenK", "upstream entry"),
+                         ("GivenK", "given block"), ("GivenK", "bar check"), ("GivenK", "placeholder"),
+                         ("GivenK", "step"), ("GivenK", "rule"), ("GivenK", "requirement id"),
+                         ("GivenK", "universal condition id")):
+    handler(_template, _term)(untaken)

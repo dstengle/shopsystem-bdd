@@ -189,6 +189,7 @@ The simplified workflow:
 - **side** (attribute of request): the side whose part of the request is written next. Values: `asker`, `upstream`.
 - **kind** (attribute of stage): Values: `research`, `plan`, `implement`, `review`, `integrate`, `gate`, `apply`, `formulate`, `intake`, `answer`, `branch review`, `analysis`.
 - **group** (attribute of capability): Values: `service`, `guarantees`, `model`, `operations`.
+- **language** (attribute of capability): the language a capability file's lines are read in, its frontmatter's `language:`. Values: `codified-1`, `codified-2`.
 - **grade** (attribute of review finding): Values: `Critical`, `Important`, `Minor`.
 
 - **open** (adjective of initiative): An initiative is open when the initiative is not `done` and the initiative is not `abandoned`.

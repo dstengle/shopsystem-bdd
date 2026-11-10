@@ -78,7 +78,8 @@ def test_a_guarantees_capability_has_no_feature(cap):
 
 
 def test_the_lexicon_has_no_problem(grammar):
-    assert spec_lexicon.problems(spec_lexicon.read(REPO)) == []
+    import spec_rgl_vocab     # the imported packs' kinds (artifact) a codified-2 context's terms may name, b240
+    assert spec_lexicon.problems(spec_lexicon.read(REPO), spec_rgl_vocab.outer(REPO)) == []
 
 
 @pytest.mark.parametrize("cap", GUARANTEES)

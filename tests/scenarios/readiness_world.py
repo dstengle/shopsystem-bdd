@@ -1,7 +1,8 @@
 """The scenario repository of features/readiness.feature and features/intake.feature (not a handler module, so the
 glob does not load it): the codified spec of tests/scripts/fixtures/generate/repo/ written over the repository's
-`spec/` (plan 3, D17), an item given requirement lines, and `work` run with no input. readiness_handlers.py and
-intake_handlers.py load it by path as `shop_readiness_world`."""
+`spec/` (plan 3, D17), an item given requirement lines, `work` run with no input, and what `work line` is given in
+readiness's scenarios (the pieces, the ids it retires, spec/universal.md). The readiness_handlers*.py and
+intake_handlers.py load it by path as `shop_readiness_world`; `mine` tells a step of readiness's feature."""
 import re
 import shutil
 import subprocess
@@ -24,6 +25,45 @@ ILL_TERM = "briefed"
 ILL_TERMED = "- **%s** (adjective of initiative): an initiative that the brief names." % ILL_TERM
 # What `work` must answer with no person there: no stdin, and a ceiling on the run (D16).
 NO_INPUT = {"stdin": subprocess.DEVNULL, "timeout": 120}
+
+
+# `work line`'s option: (kind of its piece, a piece that conforms to its form, one that does not), in the fixture's
+# spec (kinds initiative, work-item); `--given`'s piece goes into the group g4 the item's lines open.
+PIECES = {
+    "--relation": ("relation row", "| initiative | holds | work-item | many |", "| initiative | holds | frobnicator |"),
+    "--universal": ("universal condition", "`work` shall commit every transition.", None),
+    "--upstream": ("upstream entry", "bounded-context/ex.com/prod/up: the upstream, github: ex/up",
+                   "the upstream, github: ex/up"),
+    "--given": ("given block", "the file `notes.md` holds:\n  The first line.\n  The second line.",
+                "an initiative i1 that is `proposed`"),
+}
+INTO = {"--relation": ["--into", "work-queue"], "--given": ["--into", "work-queue", "--given", "g4"]}
+# `work line --retires`: a live requirement of the fixture's work-queue, an id it does not hold, and the new line.
+LIVE = "work-queue#r1"
+NONEXISTENT = "work-queue#r99"
+LINE = ("When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to "
+        "`started` and commit the initiative.")
+# `work line --universal --retires`: spec/universal.md of one live condition U1 in the old language.
+LIVE_U = "universal#U1"
+NONEXISTENT_U = "universal#U9"
+CONDITION = "`work` shall commit every transition and push it."
+UNIVERSAL = ("---\nid: capability/ex.com/prod/ctx/universal\ntitle: Universal conditions\ngroup: guarantees\n"
+             "language: codified-1\nretired: []\n---\n\n# Universal conditions\n\n## Behaviour\n\n"
+             "- [U1] `work` shall commit every transition.\n")
+CAPABILITY = "work-queue"       # the fixture's capability, codified-1: the capability a scenario recodifies
+
+
+def mine(step):
+    """True when the step is of a scenario of features/readiness.feature."""
+    node = step.request.node
+    scenario = getattr(getattr(node, "obj", None) or getattr(node, "function", None), "__scenario__", None)
+    return scenario is not None and Path(scenario.feature.filename).name == "readiness.feature"
+
+
+def universal(step):
+    """The fixture's codified spec, with a spec/universal.md of one live condition U1 in the old language."""
+    codify(step)
+    (step.repo / "spec" / "universal.md").write_text(UNIVERSAL)
 
 
 def B():

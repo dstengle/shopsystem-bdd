@@ -3,9 +3,9 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/readiness
 title: Readiness
 narrator: a person or session readying an item
 group: service
-language: codified-1
+language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
-retired: []
+retired: [g1, r1, g2, r2, g3, r3, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18, g19, r19]
 unbuilt: []
 ---
 
@@ -18,83 +18,98 @@ finds no L0 or L1 with them laid over `spec/`, `features generate` writes their 
 the item is settled. `work ready` checks the bar and asks nobody.
 
 ## Terms
+
 - **relation row** (noun): a row of the `## Relations` table of a capability: from, word, to and cardinality. Kind of: text.
 - **upstream entry** (noun): a bullet of the `## Upstreams` of `spec/index.md`: the id of a bounded context and the GitHub repository it is hosted on, if any. Kind of: text.
 - **given block** (noun): the fenced `given` block of a requirement group, the example data its scenario starts from. Kind of: text.
-- **malformed** (adjective of relation row): a relation row that is not four cells of a `## Relations` table, or whose from or to is no kind of the lexicon.
-- **malformed** (adjective of upstream entry): an upstream entry that does not start with a bounded-context id, or whose `github:` is not `<owner>/<name>`.
-- **malformed** (adjective of given block): a given block that is not example data in the form `spec_read_given` reads.
-
-- **unworded** (adjective of item): an item one of whose groups `features generate` writes as a scenario holding a step with a bracketed placeholder, a fact no step words.
-
+- **readiness bar** (noun): the checks `work ready` makes of an item on a copy of `spec/` with its lines laid in: its request lines settled, its lines parsed, no L0 and no L1 of `model logic` naming them, their scenarios written by `features generate`, and the `check` design-decisions its capabilities rest on passing. This: the readiness bar of the plugin that runs the command. Kind of: thing.
+- **bar check** (noun): one check of the readiness bar. Kind of: thing.
+- **pass** (verb, state): an item meets every bar check of the readiness bar. Forms: passes, passed. Frame: item passes readiness bar.
+- **meet** (verb, state): an item gives a bar check what it asks. Forms: meets, met. Frame: item meets bar check.
+- **placeholder** (noun): a bracketed placeholder in a step `features generate` writes, for a fact of a requirement that no step words. Kind of: text.
+- **the relation-row form** (artifact): four cells `| from | word | to | cardinality |` of a `## Relations` table, whose from and to are kinds of the lexicon.
+- **the upstream-entry form** (artifact): a bounded-context id `bounded-context/<path>` and, after `github:`, `<owner>/<name>`.
+- **the example-data form** (artifact): the rows of a given block, one a line: a thing with its code, a thing's attribute with its value, or two things related by a word of a relation row, as design-r2 section 9.1 sets them out.
+- **requirement id** (noun): the id `<capability>#r<n>` of a requirement. Kind of: text.
+- **universal condition id** (noun): the id `U<n>` of a universal condition. Kind of: text.
 - **nonexistent** (adjective of requirement): a requirement named by an id that no capability holds as a live requirement.
+- **`universal`** (proper noun): `spec/universal.md`, the file of the universal conditions, read as the capability named `universal`. Kind of: capability.
 
-- **ill-termed** (adjective of item): an item whose lines bring a problem of the lexicon (v_t4 to v_t13, a v_t12 among them) that the lexicon without them does not have.
+## Relations
 
-- **language marker** (noun): the `language:` field of the frontmatter of a capability file or of `spec/universal.md`, naming the language its lines are read in. Kind of: text.
-- **nonexistent** (adjective of universal condition): a universal condition named by an id `U<n>` that `spec/universal.md` does not hold as a live universal condition.
+| from | word | to | cardinality |
+|---|---|---|---|
+| bar check | of | readiness bar |  |
+| relation row | in | item |  |
+| universal condition | in | item |  |
+| upstream entry | in | item |  |
+| given block | in | item |  |
+| requirement | in | item |  |
+| capability | in | item |  |
+| term | in | item |  |
+| step | of | scenario |  |
+| placeholder | in | step |  |
+| requirement id | of | requirement | one |
+| universal condition id | of | universal condition | one |
 
 ## Behaviour
 
-### [g1] `work ready` readies a passing item
-- [r1] While an item is `shaped` and the item is passing, when the person runs `work ready` on the item, `work` shall
-  set the status of the item to `ready`.
+### [g23] `work ready` readies a shaped item that passes the readiness bar
+- [r23] While an item is `shaped` and the item passes the readiness bar, when the person runs `work ready` on the item, `work` shall set the status of the item to `ready`.
 
-### [g2] `work ready` refuses an item that is not passing
-- [r2] While an item is `shaped` and the item is not passing, if the person runs `work ready` on the item, then
-  `work` shall exit with an error naming the reason and change nothing.
+### [g24] `work ready` refuses an item that does not pass the readiness bar, naming each bar check it does not meet
+- [r24] While an item is `shaped` and the item does not pass the readiness bar, if the person runs `work ready` on the item, then `work` shall refuse the command and name every bar check of the readiness bar that the item does not meet.
 
-### [g3] `work ready` refuses an item that is not shaped
-- [r3] If the person runs `work ready` on an item that is not `shaped`, then `work` shall exit with an error naming
-  the status of the item and change nothing.
+### [g25] `work ready` refuses an item that is not shaped
+- [r25] While an item is not `shaped`, if the person runs `work ready` on the item, then `work` shall refuse the command and name the status of the item.
 
 ### [g4] `work ready` asks no question
 - [r4] When the person runs `work ready` on an item, `work` shall not ask a question.
 
-### [g5] `work line --relation` writes a relation row onto an item
-- [r5] Where `--relation` is given, when the person runs `work line` on an item, `work` shall write a relation row and commit the item.
+### [g26] `work line --relation` writes a relation row in an item
+- [r26] When the person runs `work line` with the `--relation` option set to a relation row on an item, `work` shall write the relation row in the item and commit the item.
 
-### [g6] `work line --relation` refuses a malformed relation row
-- [r6] Where `--relation` is given, if the person runs `work line` on a relation row that is malformed, then `work` shall exit with an error naming the relation row and change nothing.
+### [g27] `work line --relation` refuses a relation row that does not conform to the relation-row form
+- [r27] If the person runs `work line` with the `--relation` option set to a relation row that does not conform to the relation-row form, then `work` shall refuse the command and name the relation row.
 
-### [g7] `work line --universal` writes a universal condition onto an item
-- [r7] Where `--universal` is given, when the person runs `work line` on an item, `work` shall write a universal condition and commit the item.
+### [g28] `work line --universal` writes a universal condition in an item
+- [r28] When the person runs `work line` with the `--universal` option set to a universal condition on an item, `work` shall write the universal condition in the item and commit the item.
 
-### [g8] `work line --upstream` writes an upstream entry onto an item
-- [r8] Where `--upstream` is given, when the person runs `work line` on an item, `work` shall write an upstream entry and commit the item.
+### [g29] `work line --upstream` writes an upstream entry in an item
+- [r29] When the person runs `work line` with the `--upstream` option set to an upstream entry on an item, `work` shall write the upstream entry in the item and commit the item.
 
-### [g9] `work line --upstream` refuses a malformed upstream entry
-- [r9] Where `--upstream` is given, if the person runs `work line` on an upstream entry that is malformed, then `work` shall exit with an error naming the upstream entry and change nothing.
+### [g30] `work line --upstream` refuses an upstream entry that does not conform to the upstream-entry form
+- [r30] If the person runs `work line` with the `--upstream` option set to an upstream entry that does not conform to the upstream-entry form, then `work` shall refuse the command and name the upstream entry.
 
-### [g10] `work line --given` writes a given block onto an item
-- [r10] Where `--given` is given, when the person runs `work line` on an item, `work` shall write a given block and commit the item.
+### [g31] `work line --given` writes a given block in an item
+- [r31] When the person runs `work line` with the `--given` option set to a given block on an item, `work` shall write the given block in the item and commit the item.
 
-### [g11] `work line --given` refuses a malformed given block
-- [r11] Where `--given` is given, if the person runs `work line` on a given block that is malformed, then `work` shall exit with an error naming the given block and change nothing.
+### [g32] `work line --given` refuses a given block that does not conform to the example-data form
+- [r32] If the person runs `work line` with the `--given` option set to a given block that does not conform to the example-data form, then `work` shall refuse the command and name the given block.
 
-### [g12] `work ready` refuses an item with an unworded step
-- [r12] While an item is `shaped` and the item is unworded, if the person runs `work ready` on the item, then `work` shall exit with an error naming the step.
+### [g33] `work ready` refuses an item a step of whose scenarios has a placeholder
+- [r33] While an item is `shaped` and a scenario of the item has a step that holds a placeholder, if the person runs `work ready` on the item, then `work` shall refuse the command and name the step.
 
-### [g13] A line that retires another
-- [r13] Where `--retires` is given, when the person runs `work line` on an item, `work` shall write a requirement and commit the item.
+### [g34] `work line --retires` writes a requirement in an item
+- [r34] When the person runs `work line` with the `--retires` option on an item, `work` shall write a requirement in the item and commit the item.
 
-### [g14] A retired id that no capability holds
-- [r14] Where `--retires` is given, if the person runs `work line` on a requirement that is nonexistent, then `work` shall exit with an error naming the requirement and change nothing.
+### [g35] `work line --retires` refuses a requirement id that no requirement has
+- [r35] If the person runs `work line` with the `--retires` option set to a requirement id that no requirement has, then `work` shall refuse the command and name the requirement id.
 
-### [g15] `work ready` refuses an item whose lines bring a lexicon problem
-- [r15] While an item is `shaped` and the item is ill-termed, if the person runs `work ready` on the item, then `work` shall exit with an error naming the term.
+### [g36] `work ready` refuses an item a term of which violates a rule
+- [r36] While an item is `shaped` and a term in the item violates a rule, if the person runs `work ready` on the item, then `work` shall refuse the command and name the term and the rule.
 
-### [g16] `work line --recodify` switches a capability's language on an item
-- [r16] When the person runs `work line --recodify` on an item, `work` shall write a capability and commit the item.
+### [g37] `work line --recodify` sets the language of a capability in an item
+- [r37] When the person runs `work line` with the `--recodify` option set to a capability on an item, `work` shall set the language of the capability in the item to `codified-2` and commit the item.
 
-### [g17] `work line --recodify universal` switches the universal conditions' language on an item
-- [r17] When the person runs `work line --recodify universal` on an item, `work` shall write a language marker and commit the item.
+### [g38] `work line --recodify universal` sets the language of the universal conditions in an item
+- [r38] When the person runs `work line` with the `--recodify` option set to `universal` on an item, `work` shall set the language of the capability in the item to `codified-2` and commit the item.
 
-### [g18] `work line --universal --retires` writes a universal condition that replaces another
-- [r18] When the person runs `work line --universal --retires` on an item, `work` shall write a universal condition and commit the item.
+### [g39] `work line --universal --retires` writes a universal condition in an item
+- [r39] When the person runs `work line` with the `--universal` and `--retires` options on an item, `work` shall write a universal condition in the item and commit the item.
 
-### [g19] A retired universal condition that `spec/universal.md` does not hold
-- [r19] If the person runs `work line --universal --retires` on a universal condition that is nonexistent, then `work` shall exit with an error naming the universal condition and change nothing.
+### [g40] `work line --universal --retires` refuses a universal condition id that no universal condition has
+- [r40] If the person runs `work line` with the `--universal` option and the `--retires` option set to a universal condition id that no universal condition has, then `work` shall refuse the command and name the universal condition id.
 
 ## Implementation, may change
 - An item's requirement lines stay on the item until its batch merges: in the item file's `## Requirements`, one

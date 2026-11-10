@@ -44,7 +44,8 @@ def test_no_two_statements_share_a_trigger_and_a_condition(check):
 
 def test_the_live_lexicon_has_no_problem_and_the_spec_no_means():
     """Point 3: v_t4-v_t10 have no rows, and no capability or index says `Means:`."""
-    assert spec_lexicon.problems(spec_lexicon.read(ROOT)) == []
+    import spec_rgl_vocab     # the imported packs' kinds (artifact) a codified-2 context's terms may name, b240
+    assert spec_lexicon.problems(spec_lexicon.read(ROOT), spec_rgl_vocab.outer(ROOT)) == []
     assert [p for p in (ROOT / "spec").rglob("*.md") if "Means:" in p.read_text()] == []
 
 

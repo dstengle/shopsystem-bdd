@@ -1805,6 +1805,9 @@ command's output is not. Lines: design-model-check r202, r203 (the decisions ind
 Each says instead what the stale file lacks, in the item's words: "While a design-decision has an index entry that a
 decisions index does not hold, if the person runs `model decisions --check`, then `model` shall exit with an error
 naming the decisions index and change no file."; the rows that are extra or changed are lost.
+readiness r33 (b157 r27: the scenarios `features generate` would write of an item's lines) says what the item's
+scenario holds as if the item had it: "While an item is `shaped` and a scenario of the item has a step that holds a
+placeholder, ...".
 
 ### #6: a value compared with another thing's value
 
