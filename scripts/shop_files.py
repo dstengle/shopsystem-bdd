@@ -69,11 +69,12 @@ def append(log, data):
 
 
 def git(root, *args):
-    """Run git in `root`; a git that fails is refused, with git's first line of complaint."""
+    """Run git in `root`; a git that fails is refused, naming the repository, with git's first line of complaint
+    (requests r88-r90)."""
     done = subprocess.run(["git", *args], cwd=root, capture_output=True, text=True)
     if done.returncode != 0:
         said = (done.stderr.strip() or done.stdout.strip() or "exit %d" % done.returncode).splitlines()[0]
-        raise Refused("git %s failed: %s" % (args[0], said))
+        raise Refused("git %s failed in the repository %s: %s" % (args[0], Path(root).resolve(), said))
     return done.stdout
 
 
