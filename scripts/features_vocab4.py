@@ -8,7 +8,8 @@ and `GivenCode` (one value, in `quoted`); a value `GivenK_A`, `ThenK_A`; the num
 `ThenDoes`, `ThenDoesNot` ("x exists" of the verb exist, b240); a run `WhenRuns` (its options, spec_lf_option), any other trigger `WhenHappens`;
 an act `ThenPrints`, `ThenPrintsNot`, `ThenExitsOk`, `ThenExitsErr`, `ThenChangesNothing`, else `ThenDoes`,
 `ThenDoesNot`. A step of more than one reading under its keyword (the same text read with a code of two kinds is
-one) is refused.
+one) is refused; a Given read as example data is that, not a holds condition on the same words (b154). `either`
+reads a step of a codified-2 feature that grammar 4 has no reading of in the old grammar (b240 phase 13).
 """
 import re
 
@@ -82,6 +83,8 @@ def step(root, keyword, text):
     except spec_rgl_steps.StepError as err:
         raise StepError(str(err))
     trees = [t for t in found if t[0].endswith(ALLOWED[keyword])]
+    data = [t for t in trees if t[0].endswith(("_HoldsBlock", "_HoldsText"))]
+    trees = data or trees    # example data read as such, not as a holds condition on a code (b154)
     names = spec_lf_np.Names(vocab)
     read = {template(names, keyword, t) for t in trees}
     if len(read) != 1:
@@ -115,6 +118,19 @@ def step(root, keyword, text):
     call.term = (call.command if name == "WhenRuns" else call.subject if name.startswith("Then") and term is None
                  else term)
     return call
+
+
+def either(root, vocab, keyword, text):
+    """A step of a codified-2 feature: its grammar 4 reading, else its reading in `vocab`, features_vocab's;
+    StepError, grammar 4's, when neither reads it."""
+    try:
+        return step(root, keyword, text)
+    except StepError as four:
+        from features_vocab import step as old
+        try:
+            return old(vocab, keyword, text)
+        except StepError:
+            raise four from None
 
 
 def nodes(tree):

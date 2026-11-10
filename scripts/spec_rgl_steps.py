@@ -1,7 +1,8 @@
 """The step grammar of grammar 4 (the CNL 4 design, section 9; I14a): the module `ContextSteps`, generated over the
 context's `Context` (spec_rgl) and the hand-written `grammar/Steps4.gf`, compiled against the RGL and cached as
-spec_grammar4 caches grammar 4, a step tree written out (`text`) and a step's text parsed back into its trees
-(`trees`).
+spec_grammar4 caches grammar 4 and loaded once for a state of the context (spec_grammar4's `_context`), a step tree
+written out (`text`) and a step's text parsed back into its trees (`trees`), GF's parse kept on disk by
+spec_parse_cache (b240 phase 13, from b153).
 
 Per kind K: its instance `K_Inst : K_N -> Name -> K_NP0` ("the stage s1") and a Given that brings one in, `K_Given :
 K_N -> Name -> Step` ("a stage s1"), and its example data, `K_HoldsBlock : K_N -> Name -> Step` ("the file `a` holds:",
@@ -17,13 +18,14 @@ from itertools import islice
 
 import spec_grammar
 import spec_grammar4
+import spec_parse_cache
 import spec_rgl
 import tools_grammar
 
 GRAMMAR = "ContextSteps"
 BASE = ("Steps4.gf", "Steps4Eng.gf")
 NAME = re.compile(r'^(?:[a-z][a-z-]*[1-9]\d*|`[^`]+`|"[^"]*")$')
-_loaded = {}
+_loaded, _by_context = {}, {}
 
 
 class StepError(Exception):
@@ -59,11 +61,21 @@ def modules(vocab):
 
 
 def load(root):
-    """(grammar 4's Vocab, the compiled step grammar as a pgf.PGF), compiled once per set of sources."""
+    """(grammar 4's Vocab, the compiled step grammar as a pgf.PGF), compiled once per set of sources and computed once
+    for each set of grammar 4's sources (`_context`'s sha, b239)."""
+    return _load(root)[:2]
+
+
+def _load(root):
+    """(vocab, the PGF, the step grammar's sha)."""
     import pgf
     if not tools_grammar.rgl_path():
         raise spec_grammar.GrammarError("gf-rgl is missing: run `python3 scripts/tools install`")
-    vocab, srcs = spec_grammar4.sources(root)
+    vocab, srcs, context = spec_grammar4._context(root)
+    hit = _by_context.get(context)
+    if hit is not None and hit[0] is vocab:
+        return hit
+    srcs = dict(srcs)
     srcs.update({name: (spec_grammar.GRAMMARS / name).read_text() for name in BASE})
     srcs.update(modules(vocab))
     sha = hashlib.sha256(("steps 4 rgl %s\0" % tools_grammar.RGL_RELEASE + "".join(
@@ -73,7 +85,10 @@ def load(root):
         if not target.is_file():
             spec_grammar._compile(srcs, sha, GRAMMAR)
         _loaded[sha] = pgf.readPGF(str(target))
-    return vocab, _loaded[sha]
+    if len(_by_context) >= 16:
+        _by_context.clear()
+    _by_context[context] = (vocab, _loaded[sha], sha)
+    return _by_context[context]
 
 
 def text(gram, tree):
@@ -97,17 +112,30 @@ def _literal(words, line):
 
 
 def trees(root, line):
-    """The distinct trees (nested tuples) of a step's text; StepError when it has none."""
-    import pgf
-    vocab, gram = load(root)
+    """The distinct trees (nested tuples) of a step's text, GF's parse kept on disk (spec_parse_cache); StepError when
+    it has none."""
+    vocab, gram, sha = _load(root)
     tokens = spec_grammar.tokenise(line)
     words = {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
     gf_text = spec_grammar._gf_text(tokens)
+    digest = spec_parse_cache.key(sha, GRAMMAR, gf_text, words, spec_grammar4.LIMIT)
+    hit = spec_parse_cache.get(sha, GRAMMAR, digest)
+    if hit is None:
+        hit = _parse(gram, tokens, words, gf_text)
+        spec_parse_cache.put(sha, GRAMMAR, digest, *hit)
+    found, at = hit
+    if at is None:
+        return list(found)
+    where = "(it ends too soon)" if at >= len(tokens) else "at %s (token %d)" % (tokens[at], at + 1)
+    raise StepError("%r does not parse in the step grammar 4 %s" % (line, where))
+
+
+def _parse(gram, tokens, words, gf_text):
+    """(trees, None) of GF's parse, or ([], the index of the token GF stopped at)."""
+    import pgf
     try:
         found = islice(gram.languages[GRAMMAR + "Eng"].parse(
             gf_text, callbacks=[("String", _literal(words, gf_text))]), spec_grammar4.LIMIT)
-        return list(dict.fromkeys(spec_grammar._tree(e, gram) for _, e in found))
+        return list(dict.fromkeys(spec_grammar._tree(e, gram) for _, e in found)), None
     except pgf.ParseError as err:
-        at = len(tokens) if err.incomplete else spec_grammar._position(tokens, err.offset)
-        where = "(it ends too soon)" if at >= len(tokens) else "at %s (token %d)" % (tokens[at], at + 1)
-        raise StepError("%r does not parse in the step grammar 4 %s" % (line, where))
+        return [], (len(tokens) if err.incomplete else spec_grammar._position(tokens, err.offset))

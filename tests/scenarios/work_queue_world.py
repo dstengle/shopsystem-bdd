@@ -203,7 +203,8 @@ def _local_first(vocab, root, keyword):
     registry = vocab._step_function(root, keyword)
 
     def step_function(text, request, docstring=None, datatable=None):
-        call = features_vocab.step(features_vocab.load(root), keyword, text)
+        call = (vocab.vocab4.step(root, keyword, text, request)
+                or features_vocab.step(features_vocab.load(root), keyword, text))
         call.docstring, call.datatable, call.fixtures = docstring, datatable, request.getfixturevalue
         table = getattr(sys.modules.get("shop_work_queue_world"), "LOCAL", LOCAL)   # the handlers' copy of this module
         found = table.get((call.template, call.kind)) or table.get((call.template, None))
@@ -214,13 +215,15 @@ def _local_first(vocab, root, keyword):
 
 
 class Reads:
-    """A step parser that matches any step the Steps grammar reads under its keyword (vocab.read)."""
+    """A step parser that matches any step the Steps grammar, or the step grammar 4 (vocab4), reads under its
+    keyword."""
 
     def __init__(self, vocab, root, keyword):
         self.vocab, self.root, self.keyword, self.name = vocab, root, keyword, "reads %s" % keyword
 
     def is_matching(self, name):
-        return self.vocab.read(self.root, self.keyword, name) is not None
+        return (self.vocab.read(self.root, self.keyword, name) is not None
+                or self.vocab.vocab4.reads(self.root, self.keyword, name))
 
     def parse_arguments(self, name):
         return {"text": name}
