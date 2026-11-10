@@ -1,6 +1,7 @@
 """The readiness bar (capability readiness; workflow simplification plan 3, D6-D9, D11): an item is passing when every
 request line of the item is settled and its requirement lines are well-formed: they parse in the context's grammar,
-`model logic` finds no L0 and no L1 naming them, and `features generate` writes a scenario for each of their groups
+they bring no problem of the lexicon (v_t4 to v_t13) that the lexicon without them does not have
+(readiness r15), `model logic` finds no L0 and no L1 naming them, and `features generate` writes a scenario for each of their groups
 that is not logic-only, with no step holding a bracketed placeholder (b46). The lines are checked on a copy of `spec/` under the temporary directory with the item's lines
 laid in, removed afterwards whatever happens; `spec/` itself is never written. The `check` design-decisions that a
 capability of the item's lines rests on run their tests on the root checkout, each once a process (plan 6, D13)."""
@@ -17,6 +18,7 @@ import model_decisions
 import request_moves
 import request_text
 import spec_grammar
+import spec_lexicon
 import spec_read
 import spec_solve
 from backlog_items import rel_of
@@ -119,10 +121,16 @@ def well_formed(root, item, others=()):
         return ["it has no requirement line: give it one with `work line`"], []
     copy = Path(tempfile.mkdtemp(prefix="readiness-"))
     try:
-        backlog_lines.lay(root, item, copy, others)
+        shutil.copytree(Path(root) / "spec", copy / "spec")      # backlog_lines.lay, the lexicon read before the item
+        for other in others:
+            backlog_lines.lay_onto(copy, other)
+        before = set(spec_lexicon.problems(spec_lexicon.read(copy)))
+        backlog_lines.lay_onto(copy, item)
         reasons = ["%s.md: %s" % (b.capability, p) for b in blocks
                    for p in spec_read.capability(backlog_lines.capability_file(copy, b.capability)).problems]
         reasons += ["universal.md: %s" % p for p in spec_read.read_universal(copy).problems] if blocks.universal else []
+        reasons += ["the lexicon: %s %s: %s" % found for found in spec_lexicon.problems(spec_lexicon.read(copy))
+                    if found not in before]                                                             # r15
         reasons = reasons or _parses(copy, blocks)
         if reasons:
             return reasons, []

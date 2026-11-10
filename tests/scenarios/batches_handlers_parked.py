@@ -1,6 +1,6 @@
 """Handlers of features/batches.feature for a parked item (b47): a park takes the item's lines out of `batch-<n>`
-(g17), and `work batch done` on another task is not held up by a parked item's failing scenario (g18), over the world
-batches_handlers.py loads; see there."""
+(g17), and `work batch done` on another task is not held up by a parked item's failing scenario (g18), nor by another
+in-batch item's unbuilt scenario that passes (g19), over the world batches_handlers.py loads; see there."""
 import sys
 
 import backlog_items
@@ -54,6 +54,33 @@ def scenario_not_passing(step):
     step.context["failing"] = step.context["scenario_of"][step.names[0]]
 
 
+@local("GivenK_C", "scenario")
+def scenario_passing(step):
+    """The item's unbuilt scenario passes in the batch's tests: a pytest run of the feature with `-p work_items`."""
+    if step.text.split(" is ", 1)[1] != "passing":
+        return False
+    step.context["passing"] = step.context["scenario_of"][step.names[0]]
+
+
+def passing_tests(step, task):
+    """`[batch] tests` that run, in the task's worktree, the passing item's scenario of `features/work-queue.feature`
+    under the plugin's pytest plugin, every step bound to a step that passes; the task is the world's own in-batch
+    item's, so the passing scenario is another item's."""
+    B.write_item(step, T.OWN_IN, title="an item the world builds", status="in-batch")
+    T.given(step, "item", T.OWN_IN)
+    T.given(step, "task", task).setdefault("item", T.OWN_IN)
+    found = step.context["given"]["task"][task]
+    tree = step.repo / ".shop" / "worktrees" / ("%s-%s" % (T.batch_name(step, found["batch"]), T.task_id(step, task)))
+    title = step.context["item_fields"][step.context["passing"]]["title"]
+    test = T.outside(step) / "passing" / "test_passing.py"
+    test.parent.mkdir(exist_ok=True)
+    test.write_text("from pytest_bdd import given, parsers, scenario, then, when\n\n\n@scenario(%r, %r)\n"
+                    "def test_passing():\n    pass\n\n\n@given(parsers.re('.*'))\ndef _given():\n    pass\n\n\n"
+                    "@when(parsers.re('.*'))\ndef _when():\n    pass\n\n\n@then(parsers.re('.*'))\ndef _then():\n"
+                    "    pass\n" % (str(tree / "features" / "work-queue.feature"), title))
+    return "[batch]\ntests = 'python3 -m pytest -q -p work_items -p no:cacheprovider %s'\n" % test
+
+
 def failing_tests(step):
     """`[batch] tests` that exit 1 while `features/work-queue.feature` holds the failing item's scenario."""
     title = step.context["item_fields"][step.context["failing"]]["title"]
@@ -67,6 +94,8 @@ def batch_done(step):
     """`work batch done` on the task, each running task given its worktree on its branch first."""
     if step.context.get("failing"):
         step.context["delivery"] = failing_tests(step)
+    if step.context.get("passing"):
+        step.context["delivery"] = passing_tests(step, step.names[-1])
     T.prepare(step)
     T.ensure_batch(step)
     task = step.names[-1]

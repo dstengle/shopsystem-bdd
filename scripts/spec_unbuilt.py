@@ -2,14 +2,18 @@
 simplification plan 1). `unbuilt(root)` reads the ids of every codified capability under `root`/spec/capabilities/,
 `problems(root)` names each listed id the capability has no requirement for and each `unbuilt:` of a capability that
 is not codified (they mark nothing), and `mark(items, root)` puts a strict xfail on each pytest-bdd scenario of a
-listed requirement, so a scenario that starts passing fails the suite until its id leaves `unbuilt:`. Standard library
-and pytest only."""
+listed requirement, so a scenario that starts passing fails the suite until its id leaves `unbuilt:`; non-strict when
+`$SHOPSYSTEM_UNBUILT_NONSTRICT` names `root`, as `work batch done` sets it for a task's run, where another in-batch
+item's scenario that passes is no fault of the task (batches r19). Standard library and pytest only."""
+import os
 import pathlib
 import re
 
 import pytest
 from model_parse import frontmatter
 from spec_read import MARKER, capability
+
+NONSTRICT = "SHOPSYSTEM_UNBUILT_NONSTRICT"
 
 
 def _listed(root):
@@ -76,11 +80,19 @@ def without_unbuilt(text, ids):
     return text[:found.start()] + "unbuilt: [%s]" % ", ".join(kept) + text[found.end():]
 
 
+def strict(root):
+    """False when `$SHOPSYSTEM_UNBUILT_NONSTRICT` names `root` (resolved), else True."""
+    named = os.environ.get(NONSTRICT)
+    return not named or pathlib.Path(named).resolve() != pathlib.Path(root).resolve()
+
+
 def mark(items, root):
-    """A strict xfail on each scenario item whose feature's capability lists one of the item's r<n> marks."""
+    """An xfail on each scenario item whose feature's capability lists one of the item's r<n> marks, strict unless
+    `strict(root)` says not."""
     found = unbuilt(root)
     if not found:
         return
+    hard = strict(root)
     for item in items:
         scenario = getattr(getattr(item, "function", None), "__scenario__", None)
         if scenario is None:
@@ -89,7 +101,7 @@ def mark(items, root):
         ids = sorted(tag for tag in scenario.tags if tag in found.get(cap, ()))
         if ids:
             item.add_marker(pytest.mark.xfail(
-                strict=True, reason="unbuilt: %s" % ", ".join("%s#%s" % (cap, one) for one in ids)))
+                strict=hard, reason="unbuilt: %s" % ", ".join("%s#%s" % (cap, one) for one in ids)))
 
 
 def unbuilt_lines(feature, root):
