@@ -73,7 +73,7 @@ def reading(root, stem, rid, line):
     form = spec_lf.form(vocab, parsed.tree)
     wrong = []
     try:
-        _, why = spec_context.Four(root, True).facts(ident(stem, rid), line)
+        _, why = spec_context.Four(root).facts(ident(stem, rid), line)
     except CRASH as err:        # a translator that fails is a fault of the corpus, named as a refusal is
         why = "%s: %s" % (type(err).__name__, err)
     if why:

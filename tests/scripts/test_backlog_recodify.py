@@ -14,7 +14,7 @@ from backlog_section import Block, Group
 from backlog_testing import git, work, write_item
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "scenarios"))
-import codified2_mixed as M
+import codified2_world as C2
 import toolchain
 
 CAP = "spec/capabilities/work-queue.md"
@@ -87,8 +87,11 @@ def test_the_marker_is_laid_and_taken_out(ready_repo):
     assert (ready_repo / CAP).read_text() == was
 
 
-def _mixed(repo):
-    M.mixed(repo, "ex.com/prod/ctx")
+def _mixed(repo, path="ex.com/prod/ctx"):
+    """A codified-2 index with `shelf` in the new language beside `thing` in the old (`language: codified-1`)."""
+    C2.context(repo, path, [FOUR], "shelf")
+    old = C2.capability("thing", ["When the person runs `work start`, `work` shall exit successfully."], path)
+    (repo / "spec" / "capabilities" / "thing.md").write_text(old.replace("language: codified-2", "language: codified-1"))
     git(repo, "add", "-A")
     git(repo, "commit", "-q", "-m", "a mixed spec")
 

@@ -63,7 +63,7 @@ def test_the_same_k_of_x_is_the_image_of_x():
 
 @pytest.mark.parametrize("line", twins())
 def test_the_check_and_the_steps_read_distinct(line):
-    found, why = spec_context.Four(FIXTURE, True).facts("thing#r1", line)
+    found, why = spec_context.Four(FIXTURE).facts("thing#r1", line)
     assert why is None and any(f.startswith('distinct("thing#r1",') for f in found[1]), why
     steps = spec_rgl_steps.load(FIXTURE)[0]
     assert spec_steps4.cases(steps, [("thing#r1", spec_lf.form(steps, spec_grammar4.parse(FIXTURE, line).tree))])

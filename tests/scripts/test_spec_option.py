@@ -35,7 +35,7 @@ def tools():
 
 
 def facts(line):
-    found, why = spec_context.Four(FIXTURE, True).facts("thing#r1", line)
+    found, why = spec_context.Four(FIXTURE).facts("thing#r1", line)
     assert why is None, why
     return found[1]
 

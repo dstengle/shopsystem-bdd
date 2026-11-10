@@ -1,14 +1,12 @@
 """The words of `model logic`'s findings (design-r3 §6): an atom `grammar/check.lp` shows, written with the lexicon's
 terms from the facts of the requirements it names (`spec_context`). A split requirement's id (`s#r5#2`) is written
-as its requirement's (`spec_facts.split`)."""
+as its requirement's (`spec_lf_core.split`)."""
 from collections import defaultdict
 
 import clingo
-import spec_facts
-import spec_grammar
 import spec_grammar4
 import spec_meaning
-import spec_tree
+from spec_lf_core import split
 
 QUIET = {"print": "print", "exit_ok": "exit successfully", "exit_error": "exit with an error",
          "change_nothing": "change nothing"}
@@ -51,8 +49,6 @@ class Words:
                 return article(self.v.kinds.get(kind.name, kind.name))
         if x.name == "pair":
             return " ".join(self.term(rid, a) for a in x.arguments)
-        if x.name in self.v.words:
-            return article(x.name[2:].replace("_", " "))
         if x.name == "value":
             return self.v.value_text.get(x.arguments[1].name, str(x))
         if x.name == "any":
@@ -87,17 +83,10 @@ class Words:
         return "%s to %s%s" % (who, self.v.events.get(e.name, e.name), obj)
 
     def trigger(self, base):
+        """The trigger of a requirement's grammar 4 tree (`When`, `If`: its second argument), as grammar 4 writes it."""
         tree = self.trees.get(base)
-        if isinstance(tree, str):
-            return self.trigger4(tree)
-        trig = spec_tree.parts(tree)["trig"] if tree else None
-        if trig is None:
+        if tree is None:
             return None
-        text = spec_grammar.linearise(self.root, trig)
-        return text[0].lower() + text[1:] if text[:1].isupper() else text
-
-    def trigger4(self, tree):
-        """The trigger of a grammar 4 tree (`When`, `If`: its second argument), as grammar 4 writes it."""
         read = spec_meaning.read(tree)
         if read[0] not in ("When", "If"):
             return None
@@ -125,7 +114,7 @@ class Words:
 
     def clash(self, x, y, whys, pre):
         """`<x> and #<y> clash: on "<trigger>" with <pre-state>, <why>`: x, y in the order they are reported."""
-        bx, by = spec_facts.split(x), spec_facts.split(y)
+        bx, by = split(x), split(y)
         parts = []
         on = self.trigger(bx) or self.trigger(by)
         if on:
@@ -146,7 +135,7 @@ class Words:
                "decide: %s" % (ids, names, rest)
 
     def why(self, x, y, kind):
-        lx, ly = local(spec_facts.split(x), spec_facts.split(y)), local(spec_facts.split(y), spec_facts.split(x))
+        lx, ly = local(split(x), split(y)), local(split(y), split(x))
         rx, ry = self.of(x, "resp"), self.of(y, "resp")
         if kind in ("pos_neg", "neg_pos"):
             for _, p, e, d, o in rx:
@@ -204,11 +193,11 @@ class Words:
         """L7: the "shall not" of one side forbids what the "may" of the other permits."""
         may, nay = (a, b) if any(p.name == "may" for _, p, *_ in self.of(a, "resp")) else (b, a)
         _, _, e, d, o = next(r for r in self.of(may, "resp") if r[1].name == "may")
-        return "%s forbids what %s permits: %s" % (spec_facts.split(nay), spec_facts.split(may),
+        return "%s forbids what %s permits: %s" % (split(nay), split(may),
                                                    self.does(may, e, d, o).replace(" to ", " may ", 1))
 
     def lint(self, raw, e, reactors):
-        base = spec_facts.split(raw)
+        base = split(raw)
         d, o = next((d, o) for _, p, e2, d, o in self.of(raw, "resp") if e2 == e and p.name == "pos")
         text = "%s obliges %s in every state" % (base, self.does(raw, e, d, o))
         if reactors:

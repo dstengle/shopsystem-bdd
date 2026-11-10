@@ -75,7 +75,7 @@ def test_the_section_has_its_twins():
 
 @pytest.mark.parametrize("line", twins())
 def test_each_twin_translates_to_facts_and_to_steps(line):
-    found, why = spec_context.Four(FIXTURE, True).facts("thing#r1", line)
+    found, why = spec_context.Four(FIXTURE).facts("thing#r1", line)
     assert why is None and found[1], why
     steps = spec_rgl_steps.load(FIXTURE)[0]
     assert spec_steps4.cases(steps, [("thing#r1", spec_lf.form(steps, spec_grammar4.parse(FIXTURE, line).tree))])
