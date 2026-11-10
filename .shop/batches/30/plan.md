@@ -1,7 +1,7 @@
 ---
 id: batch/missingmass.io/shopsystem/shopsystem-bdd/batch-30
 kind: batch
-status: in-review
+status: awaiting-merge
 base: main
 forked_from: 1fff68f11a38bcd25d04702bbc4952c5d13d5e0d
 branch: batch-30
