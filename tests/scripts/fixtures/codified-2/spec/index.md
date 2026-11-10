@@ -9,7 +9,14 @@ imports: [cli]
 
 The words grammar 4's tests parse in (the CNL 4 design, I7a): the CLI pack imported, and a few words of its own. The
 scenario worlds copy it (tests/scenarios/codified2_world.py), and grammar/corpus/core-4.txt is parsed in it. It is
-not this repository's spec.
+not this repository's spec. Its rows give grammar 4's noun phrases (I8): of, its, has, holds, compounds.
+
+## Relations
+
+| from | word | to | cardinality |
+|---|---|---|---|
+| worktree | of | session | one |
+| file | in | worktree |  |
 
 ## Glossary
 
@@ -18,6 +25,7 @@ not this repository's spec.
 - **session** (noun): an agent that runs in a terminal. Kind of: agent.
 - **file** (noun): a file of a repository.
 - **stage** (noun): a step of a piece of work.
+- **worktree** (noun): a checkout a session works in.
 - **status** (attribute of stage): Values: `open`, `done`.
 - **write** (verb, action): an agent puts text into a file. Forms: writes, written. Frame: agent writes file.
 - **end** (verb, action): an agent stops a stage. Frame: agent ends stage.

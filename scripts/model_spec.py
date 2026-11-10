@@ -17,6 +17,7 @@ import spec_lexicon
 import spec_packs
 import spec_read
 import spec_read_given
+import spec_rgl_np
 import spec_tree
 
 GRAMMAR_MISSING = object()
@@ -54,6 +55,7 @@ class SpecReading:
         words, known, kinds = Counter(t.term for t in terms), spec_frames.names(lexicon), lexicon.kind_names()
         overlapping = spec_frames.overlapping(lexicon)
         unmarked = spec_packs.unmarked(self.root, lexicon)     # v_t16, and v_t17 of an import of no pack
+        derived = spec_rgl_np.derived(lexicon)                 # v_t18: a declared compound that is derived
         for name in spec_packs.missing(self.root):
             self.fact("misimported", self.context, name)
         for n, t in enumerate(terms, 1):
@@ -78,6 +80,8 @@ class SpecReading:
                 self.fact("senses", ident)
                 if t.term in overlapping:
                     self.fact("overlapping", ident)
+            if t.category in ("kind", "resource") and t.term in derived:
+                self.fact("derived", ident, derived[t.term])
             for name in unmarked.get((t.where, t.term), ()):
                 self.fact("unmarked", ident, name)
             if t.category == "condition" and spec_frames.relational(t, kinds):

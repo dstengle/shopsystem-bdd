@@ -48,3 +48,28 @@ While a session writes a file, when the person runs `work start`, `work` shall e
 = refused: the verb write is an action, and a While clause takes a state
 While a stage is `open` and a session does not end the stage, when the person runs `work start`, `work` shall exit successfully.
 = refused: the verb end is an action, and a While clause takes a state
+# noun phrases (b135, I8): "of" over an attribute and over a relation row, a list of two things
+When a session ends a stage, `work` shall print the status of the stage and the worktree of the session.
+While the status of the stage is not `done`, when a session ends the stage, `work` shall print the stage.
+# "its" over an attribute and over a row; a modifier of a row on a bare noun head
+When a session ends a stage, `work` shall print its status.
+When a session writes a file in its worktree, `work` shall print the file.
+A session shall change only files in its worktree.
+# has and holds: a row's frames, a state; "no" as an object and as a subject
+While a session has no worktree, when the person runs `work start`, `work` shall exit with an error naming the session.
+While sessions have no worktree, when the person runs `work start`, `work` shall exit successfully.
+While a session does not have a worktree, when the person runs `work start`, `work` shall exit successfully.
+While a worktree holds a file, when a session writes the file, `work` shall print the worktree.
+While no session follows a stage, when the person runs `work start`, `work` shall exit successfully.
+# compounds derived from an attribute and from a row
+When a session ends a stage, `work` shall print the stage status.
+When a session ends a stage, `work` shall print every stage status.
+When a session writes a file, `work` shall print the session worktree.
+# lists with and, or, of three, and as a subject that agrees in the plural
+When the person runs `work start`, `work` shall print the file and the stage.
+When the person runs `work start`, `work` shall print a file or a stage.
+When the person runs `work start`, `work` shall print the file, the stage and the worktree.
+When a session and the person write a file, `work` shall print the file.
+# an attribute of another kind is no noun phrase of the kind
+When a session ends a stage, `work` shall print the status of the worktree.
+= refused: does not parse at worktree

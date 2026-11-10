@@ -381,6 +381,10 @@ label("v_t17", "`spec/index.md` imports a pack that neither the plugin nor the b
 % fail v_t17: misimported("ctx","p1").
 % pass v_t17: typed("ctx").
 v_t17(C, P)   :- misimported(C, P).
+label("v_t18", "a noun entry is spelled as a compound that a relation row or an attribute derives").
+% fail v_t18: derived("batch-status","the attribute status of batch").
+% pass v_t18: category("batch-status","kind").
+v_t18(T, W)   :- derived(T, W).
 
 % ---------------------------------------------------------------- the parse (C2, C25)
 % Every file of the spec is codified (§13.4): the 0.29 reader is gone, so `migrate upgrade` converts one that is not.
@@ -446,7 +450,7 @@ w_unrouted(U)      :- node(U, "universal-condition"), not routed(U).
 #show v_d6/1. #show v_d7/1. #show v_d8/2. #show v_d9/2.
 #show v17/1. #show v18d/1.
 #show v_t1/3. #show v_t2/1. #show v_t3/1. #show v_t4/1. #show v_t5/1. #show v_t6/2. #show v_t11/1. #show v_t12/1. #show v_t13/2. #show v_t14/1. #show v_t15/1.
-#show v_t16/2. #show v_t17/2.
+#show v_t16/2. #show v_t17/2. #show v_t18/2.
 #show v_p0/1. #show v_p1/2. #show v_p2/1. #show v_p3/2.
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
 #show w_many_requests/1. #show w_untiered/1. #show w_unrouted/1.

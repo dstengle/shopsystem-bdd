@@ -20,6 +20,6 @@ abstract Base = {
     OneResp : Resp -> Resps ;
     AndResp : Resp -> Resps -> Resps ;         -- R1, and R2
     PPos, PNeg : Pol ;
-    DetA, DetThe, DetEvery, DetPl, DetThePl : Det ;   -- a, the, every, (bare plural), the (plural)
+    DetA, DetThe, DetEvery, DetPl, DetThePl, DetNo : Det ;   -- a, the, every, (bare plural), the (plural), no
     CodeLit : String -> Code ;                 -- `spec/index.md`
 }

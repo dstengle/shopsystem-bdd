@@ -36,6 +36,7 @@ class Vocab:
     actors: list = field(default_factory=list)      # (term, kind)
     attributes: list = field(default_factory=list)  # (term entry, its kinds that are kinds here)
     verbs: list = field(default_factory=list)       # Verb
+    rows: list = field(default_factory=list)        # (k1, word, k2) of each relation row whose kinds are kinds here
     words: set = field(default_factory=set)         # every spelling a code literal may not be
 
     def ancestors(self, kind):
@@ -109,11 +110,13 @@ def read(root):
     vocab.nouns = {k: (k, plural.get(k) or regular_plural(k)) for k in vocab.kinds}
     vocab.actors = [(t.term, t.supertype if t.supertype in vocab.kinds else "thing") for t in lex.of("actor")]
     vocab.attributes = [(t, tuple(k for k in t.kinds if k in vocab.kinds)) for t in lex.of("attribute")]
+    vocab.rows = list(dict.fromkeys((r.k1, r.word, r.k2) for r in lex.rows
+                                    if r.k1 in vocab.kinds and r.k2 in vocab.kinds))
     actors = dict(vocab.actors)
     for t in lex.of("event"):
         read_frames = tuple(f for f in (frame(t, text, vocab.kinds, actors) for text in t.frames) if f)
         if t.aspect in spec_lexicon.ASPECTS and read_frames:
             vocab.verbs.append(Verb(t, t.aspect, read_frames))
     vocab.words = lex.words() | {sg for sg, _ in vocab.nouns.values()} | {pl for _, pl in vocab.nouns.values()}
-    vocab.words |= {spec_frames.s3(v.term) for v in vocab.verbs}
+    vocab.words |= {spec_frames.s3(v.term) for v in vocab.verbs} | {"its", "no", "only", "has", "have", "holds"}
     return vocab

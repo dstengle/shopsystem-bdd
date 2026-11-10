@@ -40,5 +40,6 @@ concrete BaseEng of Base = open SyntaxEng, ParadigmsEng, (E = ExtraEng), (R = Re
     DetEvery = every_Det ;
     DetPl = aPl_Det ;
     DetThePl = thePl_Det ;
+    DetNo = mkDet no_Quant ;
     CodeLit s = s ;
 }
