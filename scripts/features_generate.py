@@ -10,8 +10,10 @@ once per state of its files (`spec_context.load`).
 import sys
 from pathlib import Path
 
+import features_generate4
 import features_vocab as fv
 import spec_context
+import spec_grammar4
 import spec_read
 import spec_read_given
 import spec_steps
@@ -22,6 +24,9 @@ HEADER = "# generated from spec/capabilities/%s.md by features generate; do not 
 
 class GenerateError(Exception):
     """A capability that cannot be written: a requirement or an example line that does not parse."""
+
+
+FOUR = (spec_grammar4.MARKER,)
 
 
 def _warn(gid, text):
@@ -46,10 +51,7 @@ def scenario_text(v, ctx, cap, group, skipped=None):
     """A group's scenario, or None for a logic-only group or one with a fact no step words (its reason kept in
     `skipped`, by group id, when given)."""
     gid = "%s#%s" % (cap.name, group.id)
-    for req in group.requirements:
-        ident = "%s#%s" % (cap.name, req.id)
-        if ident in ctx.refused:
-            raise GenerateError("%s: %s" % (ident, ctx.refused[ident]))
+    refused(ctx, cap, group)
     mine = [s for s in ctx.statements if s.group == gid]
     if not mine or spec_tree.logic_only([s.tree for s in mine]):
         return None
@@ -60,11 +62,26 @@ def scenario_text(v, ctx, cap, group, skipped=None):
         if skipped is not None:
             skipped[gid] = str(err)
         return None
-    lines = _example(v, cap, group) + [(k, v.text(t), None) for k, t in steps]
+    return written(group, _example(v, cap, group) + [(k, v.text(t), None) for k, t in steps])
+
+
+def refused(ctx, cap, group):
+    """GenerateError when a requirement of the group does not parse."""
+    for req in group.requirements:
+        ident = "%s#%s" % (cap.name, req.id)
+        if ident in ctx.refused:
+            raise GenerateError("%s: %s" % (ident, ctx.refused[ident]))
+
+
+def written(group, lines):
+    """A scenario's text: its tags, its title and its (keyword, text, block) lines, a comment's keyword "#"."""
     out = ["  " + " ".join("@" + x for x in [group.id] + [r.id for r in group.requirements]),
            "  Scenario: " + group.title]
     previous = None
     for keyword, text, block in lines:
+        if keyword == "#":
+            out.append("    # %s" % text)
+            continue
         out.append("    %s %s" % ("And" if keyword == previous else keyword.capitalize(), text))
         previous = keyword
         if block is not None and block.kind == "table":
@@ -77,7 +94,9 @@ def scenario_text(v, ctx, cap, group, skipped=None):
 def generate(root, path, skipped=None):
     """The feature text of one codified capability file (a draft outside spec/capabilities/ is read beside them);
     `skipped`, when given, gets the reason of each group with a fact no step words, by group id."""
-    v, cap, path = fv.load(root), spec_read.capability(path), Path(path).resolve()
+    four = spec_read.codified(path, FOUR)
+    cap, path = spec_read.capability(path, spec_context.MARKERS), Path(path).resolve()
+    v = None if four else fv.load(root)
     if cap.problems:
         raise GenerateError("; ".join("%s: %s" % (path.name, p) for p in cap.problems))
     drafted = path.parent != (Path(root) / "spec" / "capabilities").resolve()
@@ -86,15 +105,25 @@ def generate(root, path, skipped=None):
     out = [HEADER % path.stem, "Feature: %s" % cap.frontmatter.get("title", cap.name),
            "  Narrator: %s" % cap.frontmatter.get("narrator", "")]
     for group in groups:
-        text = scenario_text(v, ctx, cap, group, skipped)
+        text = scenario_four(root, ctx, cap, group, skipped) if four else scenario_text(v, ctx, cap, group, skipped)
         out += ["", text] if text else []
     return "\n".join(out) + "\n"
+
+
+def scenario_four(root, ctx, cap, group, skipped=None):
+    """A codified-2 group's scenario (features_generate4), or None."""
+    refused(ctx, cap, group)
+    try:
+        found = features_generate4.lines(root, ctx, cap, group, skipped)
+    except features_generate4.GenerateError as err:
+        raise GenerateError(str(err))
+    return written(group, found) if found else None
 
 
 def uncodified(root, paths):
     """The refusal of the first capability file of `paths` without `language: codified-1` (§13.4), or None: the 0.29
     reader is gone, so `migrate upgrade` converts it."""
     for path in paths:
-        if not spec_read.codified(path):
+        if not spec_read.codified(path, spec_context.MARKERS):
             return "%s is not codified: run `migrate upgrade`" % Path(path).relative_to(root).as_posix()
     return None

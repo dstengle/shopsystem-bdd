@@ -62,6 +62,8 @@ def capability(step):
         C2.context(repo, H.PATH, C2.CAPABILITIES[word], name, C2.UNIVERSAL.get(word, ()))
         for k in range(1, len(C2.UNIVERSAL.get(word, ())) + 1):
             H.says(step, "u%d" % k, "U%d" % k)
+        if word in C2.GENERATED:     # what its feature holds and must not (feature-file-tools' overstated file)
+            step.context["generated"] = tuple(re.compile(p, re.MULTILINE) for p in C2.GENERATED[word])
         return
     lines = {"unnumbered": ["- **When** asked, `%s` shall answer." % name],
              "renumbered": ["- [r1] **When** asked, `%s` shall answer." % name] * 2,

@@ -155,3 +155,16 @@ def prints_not(step):
     out = result(step).stdout
     for np in step.nps:
         assert bare(np.split()[-1]) not in out, (np, out)
+
+
+def unoverstated(step):
+    """`features does not write the file f1`, f1 overstated (r21): `features generate` wrote the capability's feature,
+    which holds the step the Given said it keeps and no step a universal condition entails from it."""
+    result(step)
+    assert step.context["result"].returncode == 0, step.context["result"].stderr
+    kept, entailed = step.context["generated"]
+    written = sorted((step.repo / "features").glob("*.feature"))
+    assert written, "features generate wrote no feature file"
+    texts = [p.read_text() for p in written]
+    assert any(kept.search(t) for t in texts), (kept.pattern, texts)
+    assert not any(entailed.search(t) for t in texts), (entailed.pattern, texts)
