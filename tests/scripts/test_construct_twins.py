@@ -1,8 +1,7 @@
 """The twins of grammar/language.md's `## Constructs` (b240): each line that grammar 4 reads is also read by the check
 and by the step generator, and linearises back to itself, in the fixture (the spec corpus's checks 2 and 4). A
-construct whose check and steps a later phase of b240 builds is `LATER` until then: identity and distinctness (phase
-8 the grammar and the form, phase 9 the check and the steps), whose twins test_spec_distinct.py holds refused by
-both, naming `distinct`, so that phase 9 takes it out of `LATER`."""
+construct whose check and steps a later phase of b240 builds is `LATER` until then (none now: identity and
+distinctness's check and steps came with phase 9)."""
 import pathlib
 import re
 import sys
