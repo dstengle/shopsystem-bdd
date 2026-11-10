@@ -6,7 +6,8 @@ A referent (`Ref`) has a kind and an origin: `while` (a Where or While clause), 
 context, call 7) or `constant` (an actor, a code that is a word of the context). An atom (`Atom`) is `event` (an
 action verb's frame, with its event), `state` (a state verb's frame), `rel` (a relation row: has, holds, of, in) or
 `attr` (an attribute's value). A box (`Box`) is a part of the rule (`while`, `where`, `when`, `if`, `response`) or
-`not`, `every`, `only` (each with its referents, its body and, for every and only, its scope) or `or` of `case`s.
+`not`, `every`, `only`, `count` (each with its referents, its body and, for every, only and count, its scope; a count
+its bound and number, as ("at least", 2): call 4, I15) or `or` of `case`s.
 """
 from dataclasses import dataclass, field, replace
 
@@ -33,7 +34,8 @@ class Box:
     op: str
     refs: tuple = ()
     body: tuple = ()
-    scope: object = None    # every, only: the Box of what holds of each referent
+    scope: object = None    # every, only, count: the Box of what holds of each referent
+    count: tuple = None     # count: (its bound, its number), as ("at most", 1)
 
 
 @dataclass(frozen=True)
@@ -57,6 +59,7 @@ class NP:
     deps: list = field(default_factory=list)
     new: bool = True
     said: str = None        # the determiner and noun as said ("a stage", "stages"), for a reading rule's refusal
+    count: tuple = None     # a count's (bound, number): quant "count"
 
 
 @dataclass
@@ -113,7 +116,7 @@ def fixed(ref):
 def apply(args, build, neg_at=None):
     """(referents, conditions) of a clause: `args` its noun phrases in order (the subject first), `build(refs)` its
     atom over their referents; a list with "and" gives an atom for each member, one with "or" an `or` box; "every",
-    "no" and "only" box the rest of the clause; from the argument `neg_at` on, the clause is under `not`."""
+    "no", "only" and a count box the rest of the clause; from the argument `neg_at` on, the clause is under `not`."""
     return _go([(a, True) for a in args], build, [], neg_at, 0)
 
 
@@ -135,9 +138,17 @@ def _go(items, build, chosen, neg_at, i):
     own = ([a.ref] if a.new else []) + a.inner
     if a.quant in ("every", "only"):
         return [], [Box(a.quant, _uniq(own), _uniq(a.restr), Box("scope", _uniq(refs), _uniq(conds)))]
+    if a.quant == "count":
+        return [], [Box("count", _uniq(own), _uniq(a.restr), Box("scope", _uniq(refs), _uniq(conds)), a.count)]
     if a.quant == "no":
         return [], [Box("not", _uniq(own + refs), _uniq(a.restr + conds))]
     return own + refs, a.restr + conds
+
+
+def least(count):
+    """The fewest things a count (bound, number) admits: "at most" and "fewer than" admit none."""
+    bound, n = count
+    return {"at least": n, "exactly": n, "more than": n + 1}.get(bound, 0)
 
 
 def _uniq(items):

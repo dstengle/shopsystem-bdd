@@ -1,0 +1,29 @@
+# time-4: the time constructs of grammar 4 (the CNL 4 design, section 4.4; I16), parsed in the smallest codified-2
+# context with the time pack imported (tests/scripts/fixtures/codified-2-time/: a stage's deadline is a moment), each
+# with one meaning that linearises back word for word; or a line followed by "= refused: <reason>".
+#
+# a moment within the last duration, in digits or in words, the unit agreeing with the number; and negated
+While a deadline of a stage is within the last 7 days, when the person runs `work start`, `work` shall print the stage.
+While a deadline of a stage is within the last one day, when the person runs `work start`, `work` shall print the stage.
+While a deadline of a stage is not within the last twelve hours, when a session ends the stage, `work` shall print the stage.
+# a moment after or before a code or another moment
+While a deadline of a stage is after `2026-01-01` and the deadline is before `2027-01-01`, when the person runs `work start`, `work` shall print the stage.
+While a deadline of a stage is not after a deadline of a stage, when the person runs `work start`, `work` shall exit successfully.
+# the clock as a trigger: "the clock" is the run's own clock (This:), and a schedule is a moment
+When the clock reaches a deadline of a stage, `work` shall print the stage.
+When the clock reaches a schedule, `work` shall print every stage.
+# the perfect of an action verb as history, its subject in either number, and since a moment
+While a session has ended a stage, when the person runs `work start`, `work` shall print the stage.
+While sessions have written a file, when the person runs `work start`, `work` shall print the file.
+While a session has written no file since `2026-01-01`, when the person runs `work start`, `work` shall exit successfully.
+# the newest and the oldest of a kind
+When the person runs `work start`, `work` shall print the newest stage and not print the oldest stage.
+# a number with no unit where a duration is due; a negated history with "a K" (R4); a state verb in the perfect
+While a deadline of a stage is within the last 7, when the person runs `work start`, `work` shall print the stage.
+= refused: the number 7 is a duration and takes a unit of the time pack after it: second, minute, hour, day, week
+While a session has not ended a stage, when the person runs `work start`, `work` shall exit successfully.
+= refused: the While clause says "has not ended a stage", which reads two ways: say "has ended no stage"
+While a session has followed a stage, when the person runs `work start`, `work` shall exit successfully.
+= refused: does not parse at followed
+# with the counts of I15: a number in words is a count before a noun and an amount before a unit
+While a deadline of a stage is within the last two days and a session has ended exactly one stage, when the person runs `work start`, `work` shall print at least two stages.

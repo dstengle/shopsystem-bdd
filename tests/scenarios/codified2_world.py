@@ -7,6 +7,8 @@ t1 by (None when it names no term). I19 extends the world to a mixed spec."""
 from pathlib import Path
 
 FIXTURE = Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "codified-2" / "spec" / "index.md"
+# the same world with the time pack imported and a stage's deadline, a moment (I16): the conditions of TIMED read in it
+TIME_FIXTURE = FIXTURE.parents[2] / "codified-2-time" / "spec" / "index.md"
 
 # condition -> (the line r1 says, what the refusal names t1 by, or None)
 LINES = {"plural": ("When sessions write a file, `work` shall print the file.", None),
@@ -49,9 +51,22 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
                        "the verb write takes a subject"),
          # the line stops after "the", where write's frame needs its object: the hint names the term that may follow
          "unfinished": ("When a session ends a stage, `work` shall write the", "may follow: file"),
+         # a count before a number and a noun (I15, call 4)
+         "counted": ("When the person runs `work start`, `work` shall print at least two stages.", None),
+         # the time pack and the time constructs (I16), in TIME_FIXTURE's world: a moment compared, the clock as a
+         # trigger, the perfect of an action verb as history, and a duration with no unit, refused naming the number
+         "timed": (("While a deadline of a stage is within the last 7 days, when the person runs `work start`, `work` "
+                    "shall print the stage."), None),
+         "clocked": ("When the clock reaches a deadline of a stage, `work` shall print the stage.", None),
+         "historical": (("While a session has ended a stage, when the person runs `work start`, `work` shall print the "
+                         "stage."), None),
+         "unitless": (("While a deadline of a stage is within the last 7, when the person runs `work start`, `work` "
+                       "shall print the stage."), "the number 7 is a duration"),
          # modality (I17): a permission, and a necessity with no trigger
          "permissive": ("A session may write a file.", None),
          "invariant": ("A session always follows a stage.", None)}
+
+TIMED = {"timed", "clocked", "historical", "unitless"}
 
 
 def capability(name, lines, path):
@@ -77,6 +92,10 @@ CAPABILITIES = {"restricting": ["A session shall change only files in its worktr
                                "When the person runs `work start`, `work` shall exit successfully."],
                 # Contravening (I12b, b117): `work` exits successfully on a command it refuses, which U1 forbids.
                 "contravening": ["When `work` refuses a command, `work` shall exit successfully."],
+                # Overcounted (I15, call 4): on one trigger `work` prints at least two stages and at most one stage;
+                # no number of stages meets both counts.
+                "overcounted": ["When the person runs `work start`, `work` shall print at least two stages.",
+                                "When the person runs `work start`, `work` shall print at most one stage."],
                 # Forbidding (I17): a session may write a file, and no session shall write a file while it follows a
                 # stage, which some session may: the "shall not" forbids what the "may" permits (L7)
                 "forbidding": ["A session may write a file.",
@@ -97,10 +116,11 @@ REQUIREMENTS = {"restating": ([("If the person runs `work start`, then `work` sh
                               UNIVERSAL["contravening"])}
 
 
-def context(repo, path, lines, name="thing", universal=()):
+def context(repo, path, lines, name="thing", universal=(), fixture=FIXTURE):
     """The world written into `repo`: the fixture's index under the bounded context `path`, the capability `name`
     with `lines` (and `thing` with none, when `name` is another), and spec/universal.md with `universal`, if any."""
-    index = FIXTURE.read_text().replace("bounded-context/example.org/fixture/codified-2", "bounded-context/" + path)
+    index = fixture.read_text().replace("bounded-context/example.org/fixture/codified-2-time", "bounded-context/" + path)
+    index = index.replace("bounded-context/example.org/fixture/codified-2", "bounded-context/" + path)
     files = [("spec/index.md", index), ("spec/capabilities/%s.md" % name, capability(name, lines, path))]
     if name != "thing":
         files.append(("spec/capabilities/thing.md", capability("thing", [], path)))
@@ -118,6 +138,6 @@ def context(repo, path, lines, name="thing", universal=()):
 def requirement(step, word, path):
     """The requirement condition `word`: the world with r1 the line LINES gives it, and t1 said as its refusal names it."""
     line, says = LINES[word]
-    context(step.repo, path, [line])
+    context(step.repo, path, [line], fixture=TIME_FIXTURE if word in TIMED else FIXTURE)
     if says:
         step.context.setdefault("says", {})["t1"] = says

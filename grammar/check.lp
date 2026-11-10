@@ -16,7 +16,7 @@
 #defined fun/1.   #defined prose/1. #defined dalt/2.  #defined dlit/5. #defined uall/3. #defined urel/4.
 #defined uattr/4. #defined ucond/5. #defined uccond/4. #defined pre/6. #defined prec/5.
 #defined each/2.   #defined only/5. #defined rattr/4.  #defined rrel/4.  #defined akind/2.
-#defined cnl4/1.   #defined nec/5.  #defined necsub/2.
+#defined cnl4/1.  #defined cmp/5.  #defined count/7.  #defined nec/5.  #defined necsub/2.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
@@ -27,7 +27,8 @@ term(R,X) :- resp(R,_,_,_,X,_). term(R,X) :- resp(R,_,_,_,_,X). term(R,X) :- set
 term(R,X) :- uses(R,X,_).      term(R,X) :- uses(R,_,X).      term(R,X) :- nouse(R,X,_).  term(R,X) :- nouse(R,_,X).
 term(R,X) :- crel(R,_,X,_,_).  term(R,X) :- crel(R,_,_,X,_).  term(R,X) :- orel(R,_,_,X).
 term(R,X) :- holds(R,X,_).     term(R,X) :- holds(R,_,X).     term(R,X) :- free(R,X).
-term(R,X) :- urel(R,_,_,X).
+term(R,X) :- urel(R,_,_,X).    term(R,X) :- count(R,_,_,X,_,_,_).
+term(R,X) :- cmp(R,X,_,_,_).  term(R,C) :- cmp(R,_,_,C,_).
 % kinds: a sub-kind is its kind (sub(K,K2): K is a kind of K2, transitively); two kinds are compatible when one is
 subeq(K,K) :- role(_,_,K).  subeq(K,K) :- none(_,K,_,_).  subeq(K,K) :- cnone(_,K,_).
 subeq(K,K3) :- sub(K,K2), subeq(K2,K3).
@@ -54,6 +55,8 @@ dem(R,ev(neg,E)) :- key(R,ev(may,E)).  dem(R,ev(may,E)) :- key(R,ev(neg,E)).
 dem(R,ev(pos,E)) :- key(R,ev(pos,change_nothing)), posev(E), not quiet(E), not own(R,E).
 % "D shall V only Ks that P" (`only`, spec_lf_facts) obliges no V: it can clash only with a V, by the V's keys
 key(R,ev(only,E)) :- only(R,_,E,_,_).  dem(R,ev(pos,E)) :- key(R,ev(only,E)).  dem(R,ev(only,E)) :- key(R,ev(pos,E)).
+% a count (`count(R,I,E,D,X,B,N)`, CNL 4's call 4, I15) can clash only with a count of its act E
+key(R,ev(cnt,E)) :- count(R,_,E,_,_,_,_).  dem(R,ev(cnt,E)) :- key(R,ev(cnt,E)).
 % cc(A,B) holds exactly when dem(A,K), key(B,K) for some K; a pair can clash when either way holds.
 % (1) two triggers of one event: joined on the trigger and the key at once
 tdem(A,P,E,K) :- trig(A,P,E,_,_), dem(A,K).  tkey(B,P,E,K) :- trig(B,P,E,_,_), key(B,K).
@@ -185,6 +188,17 @@ out(A,B) :- cnonep(A,B,_,K,C), cw(A,B,Z,C,pos), kup(A,B,Z,K).
 % "no K is <rel> Y", "X is <rel> no K" (rnone): no instance of K is so related in the merged state
 out(A,B) :- side(A,B,S), rnone(S,Q,kind(K),Y), at(A,B,S,Y,Zy), rw(A,B,Q,Z,Zy,pos), kup(A,B,Z,K).
 out(A,B) :- side(A,B,S), rnone(S,Q,X,kind(K)), at(A,B,S,X,Zx), rw(A,B,Q,Zx,Z,pos), kup(A,B,Z,K).
+% time (CNL 4's I16, call 9): a history ("has ended a stage", spec_lf_time) is a state relation `hist(E)`, set by its
+% event and unset by nothing, read as any `crel`. A comparison `cmp(R,X,Op,C,P)` puts a bound on the moment X: C a
+% moment of the line (a code among them) or `ago(S)`, now less S seconds ("within the last 7 days"). Over the
+% constants named, exactly: X above C (after, or not before) and below C (before, or not after) is out, unless both
+% are weak (not before C and not after C: X is C); and so is X above a bound later than a bound it is below.
+cw2(A,B,Z,O,Zc,P) :- side(A,B,S), cmp(S,Y,O,C,P), at(A,B,S,Y,Z), at(A,B,S,C,Zc).
+lo(A,B,Z,C,s) :- cw2(A,B,Z,after,C,pos).   lo(A,B,Z,C,w) :- cw2(A,B,Z,before,C,neg).
+hi(A,B,Z,C,s) :- cw2(A,B,Z,before,C,pos).  hi(A,B,Z,C,w) :- cw2(A,B,Z,after,C,neg).
+later(A,B,ago(N2),ago(N1)) :- lo(A,B,_,ago(N2),_), hi(A,B,_,ago(N1),_), N2 < N1.
+out(A,B) :- lo(A,B,Z,C,s), hi(A,B,Z,C,_).  out(A,B) :- lo(A,B,Z,C,_), hi(A,B,Z,C,s).
+out(A,B) :- lo(A,B,Z,C2,_), hi(A,B,Z,C1,_), later(A,B,C2,C1).
 % a functional relation (`fun(Q)`: a relation row of cardinality one, or a preposition, spec_logic_vocab) relates a
 % thing to one thing: two images under one unification are out
 redge(A,B,Q,Z1,Z2) :- rw(A,B,Q,Z1,Z2,pos).
@@ -276,6 +290,15 @@ cl(A,B,only) :- ok(A,B), oa1(A,B,E,D1,X), rb(A,B,pos,E,D2,Y), doer(A,B,D1,D2), s
                    at(A,B,A,X,Z), outside(A,B,A,Z).
 cl(A,B,only) :- ok(A,B), ob1(A,B,E,D2,Y), ra(A,B,pos,E,D1,X), doer(A,B,D1,D2), same(A,B,X,Y),
                    at(A,B,B,Y,Z), outside(A,B,B,Z).
+% counts: two counts of one act by one doer on one thing, alike restricted, that no number of things meets both of
+% (`adm(R,I,M)`: the count of act I of R admits M things; the numbers from 0 to one past the largest count's)
+num(0..M) :- M = #max{ N+1 : count(_,_,_,_,_,_,N) }, M >= 0.
+adm(R,I,M) :- count(R,I,_,_,_,least,N), num(M), M >= N.    adm(R,I,M) :- count(R,I,_,_,_,most,N), num(M), M <= N.
+adm(R,I,N) :- count(R,I,_,_,_,exactly,N).                 adm(R,I,M) :- count(R,I,_,_,_,more,N), num(M), M > N.
+adm(R,I,M) :- count(R,I,_,_,_,fewer,N), num(M), M < N.
+ka(A,B,I,E,D,X) :- pair(A,B), count(A,I,E,D,X,_,_).  kb(A,B,J,E,D,Y) :- pair(A,B), count(B,J,E,D,Y,_,_).
+cl(A,B,count) :- ok(A,B), ka(A,B,I,E,D1,X), kb(A,B,J,E,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y), not gap(A,B,X,Y),
+                    not pag(A,B,X,Y), #count{ M : adm(A,I,M), adm(B,J,M) } = 0.
 ua(A,B,D,X) :- pair(A,B), uses(A,D,X).   ub(A,B,D,Y) :- pair(A,B), uses(B,D,Y).
 xa(A,B,D,X) :- pair(A,B), nouse(A,D,X).  xb(A,B,D,Y) :- pair(A,B), nouse(B,D,Y).
 cl(A,B,use) :- ok(A,B), ua(A,B,D1,X), xb(A,B,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y).

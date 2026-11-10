@@ -12,6 +12,7 @@ import spec_tree
 
 QUIET = {"print": "print", "exit_ok": "exit successfully", "exit_error": "exit with an error",
          "change_nothing": "change nothing"}
+BOUNDS = {"least": "at least", "most": "at most", "exactly": "exactly", "more": "more than", "fewer": "fewer than"}
 
 
 def article(word):
@@ -176,6 +177,14 @@ class Words:
             _, e, d, o = self.of(rid, "only")[0]
             return "%s allows %s only within its restriction and %s obliges one outside it" % (
                 lo, self.does(rid, e, d, o), lt)
+        if kind == "count":
+            for _, e, d, o, b, n in self.of(x, "count"):
+                for _, e2, _, _, b2, n2 in self.of(y, "count"):
+                    if e == e2:
+                        act, obj = self.does(x, e, d, o), self.term(x, o)
+                        act += "" if act.endswith(obj) else " " + obj
+                        return "%s counts %s %s and %s %s %s (%s): no number meets both" % (
+                            lx, BOUNDS[b.name], n, ly, BOUNDS[b2.name], n2, act)
         return "%s and %s demand opposite things" % (lx, ly)
 
     def bad_set(self, base, t, frm, to):

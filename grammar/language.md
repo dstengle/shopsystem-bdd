@@ -217,10 +217,36 @@ shall [x4: tool `work` (constant)]
 
 ## R7. "one K" is exactly one; "a K" at least one
 
-"a K" is at least one K (R1). Counts ("one", "at least", "at most", "exactly") are I15's (call 4); grammar 4 has no
-count yet.
+"a K" is at least one K (R1). A count before a number (one to ten) and a noun, "at least", "at most", "exactly",
+"more than" or "fewer than", is a `count` box over its noun (call 4, I15): its bound and number, its restrictor and its
+scope, the clause said of each K counted. "one K" alone is exactly one. A count that admits no K ("at most", "fewer
+than") obliges no act, as "only" does not. `model logic` reads two counts of one act on one trigger and state: when no
+number of Ks meets both, the pair is an L1 (I15).
 
 Tested on U8 ("... a tool shall print one JSON object": exactly one).
+
+```reading
+When the person runs `work start`, `work` shall print one stage.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response
+    count exactly 1 [x4: stage]
+      scope
+        print(e2, subject: x3, object: x4)
+```
+
+```reading
+When the person runs `work start`, `work` shall print more than one stage whose status is `done`.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response
+    count more than 1 [x4: stage]
+      status(x4) = `done`
+      scope
+        print(e2, subject: x3, object: x4)
+```
 
 ## R8. "its" binds to the subject of its clause, or the line is refused
 
@@ -336,8 +362,9 @@ A line's modality is the form's first word (I17; the design's section 4.5). "sha
 permits: it obliges nothing, so a "may" line with no trigger stands (R12 refuses only an obligation), and `model
 logic` reports a "shall not" line that forbids what it permits, on one trigger or none, in a state both allow (L7).
 "may not" reads two ways and is refused; so is a line that says both "shall" and "may". "always" and "never" say a
-necessity: a line of no trigger over one state clause (a While clause may come before it), its referents any K, as a
-While clause's are; it is a premise of `model logic`, true in both states of every pair it bears on.
+necessity: a line of no trigger over one state clause, its referents any K, as a While clause's are; it is a premise
+of `model logic`, true in both states of every pair it bears on. A While clause may come before it, which the check
+does not read yet: such a line is refused there.
 
 ```reading
 A session may write a file.
@@ -361,4 +388,94 @@ A session never follows a stage.
 never []
   holds [x1: session, x2: stage]
     follow(subject: x1, object: x2)
+```
+
+## Time: moments compared, the clock, history, newest and oldest
+
+The time constructs of the CNL 4 design (section 4.4, call 9; I16), read with the rules above. The words of time are
+the time pack's (`grammar/packs/time.md`: moment, duration, the units, a schedule a moment, the clock an agent whose
+entry has `This:`, and reach); the constructs are the base grammar's (`grammar/Time.gf`, generated over a context's
+kinds by `scripts/spec_rgl_time.py`) and their reading `scripts/spec_lf_time.py`'s:
+
+- "x is after y", "x is before y": `cmp(x) after y`, y a moment of the line or a code; "is not" puts it under `not`.
+- "x is within the last N units": `cmp(x) after now - N units`, now the moment of the trigger. A number where a
+  duration is due takes a unit of the pack after it, or the line is refused.
+- "S has V-ed O", the perfect of an action verb, is a state: the history of that action (call 3), set by the action
+  and unset by nothing (`has V(...)`); "since m" is a role of it. "has not V-ed a K" in a condition is refused as R4
+  refuses "does not V a K".
+- "the clock reaches m" is a trigger like any other action; "the clock" with no antecedent is the run's own (R11).
+- "the newest K", "the oldest K": a referent of K and its order (`newest(x)`) among what its noun phrase allows.
+
+`model logic` reads a comparison exactly over the bounds named: a moment above a bound and below the same one, or
+below a bound earlier than one it is above ("within the last 7 days" and "not within the last 30 days"), is no state,
+so two lines with those While clauses never clash. A history is a state relation of its subject and object; its
+"since" and an order are not read by the check yet. The blocks below are read in the time fixture
+(`tests/scripts/fixtures/codified-2-time/`, a stage's deadline a moment) by `tests/scripts/test_spec_lf_time.py`.
+
+```reading-time
+While a deadline of a stage is within the last 7 days, when the person runs `work start`, `work` shall print the stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: deadline, x2: stage]
+    of(x1, x2)
+    cmp(x1) after now - 7 days
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    print(e2, subject: x5, object: x2)
+```
+
+```reading-time
+While a deadline of a stage is after `2026-01-01` and the deadline is not before `2027-01-01`, when a session ends the stage, `work` shall print the stage.
+shall [x3: moment `2026-01-01` (parameter), x4: moment `2027-01-01` (parameter), x6: tool `work` (constant)]
+  while [x1: deadline, x2: stage]
+    of(x1, x2)
+    cmp(x1) after x3
+    not
+      cmp(x1) before x4
+  when [x5: session]
+    end(e1, subject: x5, object: x2)
+  response
+    print(e2, subject: x6, object: x2)
+```
+
+```reading-time
+While a deadline of a stage is within the last 7, when the person runs `work start`, `work` shall print the stage.
+refused: the number 7 is a duration and takes a unit of the time pack after it: second, minute, hour, day, week
+```
+
+```reading-time
+When the clock reaches a deadline of a stage, `work` shall print the stage.
+shall [x1: clock "the clock of the run" (indexical), x4: tool `work` (constant)]
+  when [x2: deadline, x3: stage]
+    of(x2, x3)
+    reach(e1, subject: x1, object: x2)
+  response
+    print(e2, subject: x4, object: x3)
+```
+
+```reading-time
+While a session has written no file since `2026-01-01`, when the session ends a stage, `work` shall print the stage.
+shall [x3: moment `2026-01-01` (parameter), x5: tool `work` (constant)]
+  while [x1: session]
+    not [x2: file]
+      has write(subject: x1, object: x2, since: x3)
+  when [x4: stage]
+    end(e1, subject: x1, object: x4)
+  response
+    print(e2, subject: x5, object: x4)
+```
+
+```reading-time
+While a session has not written a file, when the person runs `work start`, `work` shall exit successfully.
+refused: the While clause says "has not written a file", which reads two ways: say "has written no file" or "a file that the session has not written"
+```
+
+```reading-time
+When the person runs `work start`, `work` shall print the newest stage.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response [x4: stage]
+    newest(x4)
+    print(e2, subject: x3, object: x4)
 ```

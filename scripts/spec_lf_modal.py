@@ -7,6 +7,18 @@ its clause, has no translation and is refused naming it."""
 from spec_lf_core import Atom
 
 
+def necessary(walk, form):
+    """True when `form` is a necessity, its facts emitted on `walk` (a spec_lf_facts Walk); else the walk is told
+    whether it is a permission (`walk.may`), and a modality with no translation raises ValueError."""
+    walk.may = form.modality == "may"
+    if form.modality in ("always", "never"):
+        necessity(walk, form)
+        return True
+    if form.modality not in ("shall", "may"):
+        raise ValueError("no translation of the rule %s %s" % (form.modality, " ".join(p.op for p in form.parts)))
+    return False
+
+
 def polarity(walk, pos):
     """The polarity of an act: `may` for a positive act of a permission, else `pos` or `neg`."""
     return ("may" if walk.may else "pos") if pos else "neg"

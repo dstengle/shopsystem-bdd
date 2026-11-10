@@ -23,12 +23,13 @@ import spec_refusal4
 import spec_rgl
 import spec_rgl_np
 import spec_rgl_rel
+import spec_rgl_time
 import spec_rgl_vocab
 import tools_grammar
 
 MARKER = "codified-2"
 GRAMMAR = "Context"
-BASE = ("Base.gf", "BaseEng.gf")
+BASE = ("Base.gf", "BaseEng.gf", "Time.gf", "TimeEng.gf")
 LIMIT = 50
 _loaded = {}
 
@@ -53,8 +54,14 @@ def sources(root):
     """(vocab, {file name: text}) of grammar 4: the base grammar's files and the generated Context."""
     vocab = spec_rgl_vocab.read(root)
     out = {name: (spec_grammar.GRAMMARS / name).read_text() for name in BASE}
-    out.update(spec_rgl.modules(vocab, spec_rgl_np.noun_phrases, spec_rgl_rel.clauses))
+    out.update(spec_rgl.modules(vocab, spec_rgl_np.noun_phrases, _clauses))
     return vocab, out
+
+
+def _clauses(w, vocab, states):
+    """The relative clauses (spec_rgl_rel) and the time constructs (spec_rgl_time) of `vocab`."""
+    spec_rgl_rel.clauses(w, vocab, states)
+    spec_rgl_time.constructs(w, vocab)
 
 
 def load(root):
@@ -142,7 +149,8 @@ def parse(root, line):
     term = disagreeing(gram, vocab, tokens, at)
     if term:
         return Parse(refusal="refused: the verb %s does not agree in number with its subject" % term)
-    aspect = misaspected(vocab, tokens, at) or spec_refusal4.refusal(vocab, tokens, at)
+    aspect = (misaspected(vocab, tokens, at) or spec_rgl_time.unitless(vocab, tokens, at)
+              or spec_refusal4.refusal(vocab, tokens, at))
     if aspect:
         return Parse(refusal=aspect)
     if at >= len(tokens):
