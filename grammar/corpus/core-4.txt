@@ -84,3 +84,10 @@ When a session ends a stage that a session that has a worktree follows, `work` s
 # a relative clause is a state: an action verb's frame gives none
 When a session ends a stage that a session ends, `work` shall print the stage.
 = refused: does not parse at ends
+# whose (b136, I9): over an attribute and over a row whose word is `of`, with its polarity, on a plural noun too
+When a session ends a stage whose status is not `done`, `work` shall print every session whose worktree holds a file.
+While sessions whose worktree holds a file follow a stage whose status is `open`, when the person runs `work start`, `work` shall exit successfully.
+When the person runs `work start`, `work` shall print every session whose worktree does not hold a file.
+# an attribute of another kind gives no whose
+When the person runs `work start`, `work` shall print every worktree whose status is `open`.
+= refused: does not parse at whose
