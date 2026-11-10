@@ -512,3 +512,21 @@ shall [x3: moment `2026-01-01` (parameter), x5: tool `work` (constant)]
 While a session has not written a file, when the person runs `work start`, `work` shall exit successfully.
 refused: the While clause says "has not written a file", which reads two ways: say "has written no file" or "a file that the session has not written"
 ```
+
+## Constructs
+
+The constructs grammar 4 is completed with (b240), one subsection a construct: what it says, the real lines the
+audit (`.shop/records/2026-11-10-grammar-4-audit.md`) found it missing in, by id, and its twins, each a block of a
+line in the words of a fixture context and the form it is meant to have, or `refused: <reason>`. A construct's
+blocks are written before it is built, and fail until it is.
+
+The acceptance test of the language is the spec corpus, `grammar/corpus/spec/` (its README): every live line of this
+repository's spec in the new language with the reading it is meant to have, checked by
+`tests/scripts/test_corpus_spec.py` (it parses to that reading, the reading translates to `model logic`'s facts and
+to `features generate`'s steps, every live line of a codified-2 file has its block, and the line linearises back
+word for word). This section's twins are the constructs' tests; the corpus is the language's.
+
+## What the language cannot say yet
+
+The limits the rewording keeps, one subsection a limit: the construct the language has not, the lines that need it
+by id, and the plain line each says instead. A corpus block of such a line gives `Known limit: #<n>` as its trace.
