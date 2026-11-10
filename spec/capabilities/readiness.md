@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: []
+unbuilt: [r15]
 ---
 
 # Readiness
@@ -28,6 +28,8 @@ the item is settled. `work ready` checks the bar and asks nobody.
 - **unworded** (adjective of item): an item one of whose groups `features generate` writes as a scenario holding a step with a bracketed placeholder, a fact no step words.
 
 - **nonexistent** (adjective of requirement): a requirement named by an id that no capability holds as a live requirement.
+
+- **ill-termed** (adjective of item): an item whose lines bring a problem of the lexicon (v_t4 to v_t13, a v_t12 among them) that the lexicon without them does not have.
 
 ## Behaviour
 
@@ -75,6 +77,9 @@ the item is settled. `work ready` checks the bar and asks nobody.
 
 ### [g14] A retired id that no capability holds
 - [r14] Where `--retires` is given, if the person runs `work line` on a requirement that is nonexistent, then `work` shall exit with an error naming the requirement and change nothing.
+
+### [g15] `work ready` refuses an item whose lines bring a lexicon problem
+- [r15] While an item is `shaped` and the item is ill-termed, if the person runs `work ready` on the item, then `work` shall exit with an error naming the term.
 
 ## Implementation, may change
 - An item's requirement lines stay on the item until its batch merges: in the item file's `## Requirements`, one

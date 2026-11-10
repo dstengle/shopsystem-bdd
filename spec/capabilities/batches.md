@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: []
+unbuilt: [r19]
 ---
 
 # Batches
@@ -103,6 +103,9 @@ question while building parks its item and the rest of the batch carries on. The
 
 ### [g18] A parked item's failing scenario does not hold up another task
 - [r18] While an item in a batch is `needs-input` and a scenario of the item is not passing, when a session runs `work batch done` on a task of the batch that is `running`, `work` shall set the status of the task to `done`.
+
+### [g19] Another item's passing scenario does not hold up a task
+- [r19] While an item in a batch is `in-batch` and a scenario of the item is passing, when a session runs `work batch done` on a task of the batch that is `running`, `work` shall set the status of the task to `done`.
 
 ## Implementation, may change
 

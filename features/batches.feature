@@ -176,3 +176,18 @@ Feature: Batches
     And the task t1 is `running`
     When the session s2 runs `work batch done` on the task t1
     Then the task t1 is `done`
+
+  @g19 @r19
+  Scenario: Another item's passing scenario does not hold up a task
+    Given an item i1
+    And a batch b1
+    And the item i1 is in the batch b1
+    And the item i1 is `in-batch`
+    And a scenario s1
+    And the scenario s1 is of the item i1
+    And the scenario s1 is passing
+    And a task t1
+    And the task t1 is of the batch b1
+    And the task t1 is `running`
+    When the session s2 runs `work batch done` on the task t1
+    Then the task t1 is `done`
