@@ -5,7 +5,7 @@ narrator: a person or session migrating a repository to the final layout or upgr
 group: service
 language: codified-2
 rests_on: [design-decision/migration-in-one-pass, design-decision/living-plan-to-work-items, design-decision/final-layout, design-decision/references-are-ids, design-decision/capability-ids-are-context-scoped, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/upgrades-between-plugin-releases, design-decision/work-items-named-by-ids, design-decision/answers-not-rulings, design-decision/the-ledger-is-tracked]
-retired: [g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12, g13, g14, g15, g16, g17, g18, g19, g20, g21, g24, g25, g45, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r45]
+retired: [g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12, g13, g14, g15, g16, g17, g18, g19, g20, g21, g24, g25, g29, g30, g40, g41, g45, g46, g57, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r29, r30, r40, r41, r45, r46, r57]
 unbuilt: []
 ---
 
@@ -169,27 +169,9 @@ the tracked file `records/notes/one.md` holds:
   It has a second line.
 ```
 
-### [g29] `migrate run` writes the design-decision of a ledger entry that another supersedes with the status `superseded`
+### [g58] `migrate run` writes the design-decision of a ledger entry that another supersedes with the status `superseded` and a design-decision that supersedes it
 Restates: r2@0.29.
-- [r29] While a ledger entry supersedes another ledger entry, when the person runs `migrate run` on a bounded context, `migrate` shall write a design-decision of the ledger entry whose status is `superseded`.
-
-```given
-the tracked file `spec/decisions.md` holds:
-  ## decision/0007-a
-  We do a.
-  date: 2025-03-01
-  source: alice
-  ## decision/0008-b
-  We do b instead.
-  date: 2025-03-02
-  source: bob
-  supersedes: decision/0007-a
-  revisit_when: the cart grows
-```
-
-### [g30] `migrate run` writes a design-decision that supersedes the design-decision of the ledger entry another supersedes
-Restates: r2@0.29.
-- [r30] While a ledger entry supersedes another ledger entry, when the person runs `migrate run` on a bounded context, `migrate` shall write a design-decision that supersedes a design-decision of the ledger entry.
+- [r58] While a ledger entry supersedes another ledger entry, when the person runs `migrate run` on a bounded context, `migrate` shall write a design-decision of the ledger entry whose status is `superseded` and write another design-decision that supersedes the design-decision.
 
 ```given
 the tracked file `spec/decisions.md` holds:
@@ -317,33 +299,9 @@ Restates: r30@0.29.
 the tracked file `.shop/plugin-version` holds "banana"
 ```
 
-### [g40] `migrate upgrade` on a repository before 0.24.0 prints every upgrade step and rewrites the plugin version file
+### [g59] `migrate upgrade` on a repository before 0.24.0 prints every upgrade step, rewrites the plugin version file, renames every work-item file and stage directory to `w<n>` and rewrites every initiative log
 Restates: r20@0.29, r25@0.29, r26@0.29.
-- [r40] While the release of this repository is before `0.24.0`, when the person runs `migrate upgrade`, `migrate` shall print every upgrade step and rewrite the plugin version file of this repository.
-
-```given
-the tracked file `spec/index.md` holds:
-  ---
-  id: bounded-context/example.org/acme/shop
-  title: shop
-  ---
-  # shop
-the tracked file `.shop/plugin-version` holds "0.23.1"
-the tracked file `.shop/work/i1/size-check.md` holds:
-  ---
-  id: work-item/example.org/acme/shop/size-check
-  kind: work-item
-  status: drafted
-  ---
-  # size-check
-the tracked file `.shop/work/i1/runs/size-check/1-research/notes.md` holds "Notes."
-the tracked file `.shop/work/i1/log.jsonl` holds:
-  {"time": "t", "work-item": "size-check", "event": "start"}
-```
-
-### [g41] `migrate upgrade` on a repository before 0.24.0 renames every work-item file and stage directory to `w<n>` and rewrites every initiative log
-Restates: r20@0.29, r25@0.29, r26@0.29.
-- [r41] While the release of this repository is before `0.24.0`, when the person runs `migrate upgrade`, `migrate` shall rename every work-item file and every stage directory and rewrite every initiative log.
+- [r59] While the release of this repository is before `0.24.0`, when the person runs `migrate upgrade`, `migrate` shall print every upgrade step, rewrite the plugin version file of this repository, rename every work-item file and every stage directory and rewrite every initiative log.
 
 ```given
 the tracked file `spec/index.md` holds:
@@ -424,42 +382,8 @@ the tracked file `.shop/work/i1/w2.md` holds:
   # w2
 ```
 
-### [g57] `migrate upgrade` on a repository before 1.0.0 removes each scenario that has the `@deprecated` tag from its feature
-- [r57] While the release of this repository is after `0.25.0` and before `1.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite every feature that holds a scenario that has the `@deprecated` tag.
-
-```given
-the tracked file `.shop/plugin-version` holds "0.29.0"
-the tracked file `spec/index.md` holds:
-  ---
-  id: bounded-context/example.org/acme/shop
-  title: shop
-  ---
-  # shop
-the tracked file `spec/capabilities/cart.md` holds:
-  ---
-  id: capability/example.org/acme/shop/cart
-  title: Cart
-  retired: []
-  ---
-  # Cart
-  ## Behaviour
-  - [r1] **When** the shopper applies a code, `cart` shall take ten percent off.
-the tracked file `features/cart.feature` holds:
-  Feature: Cart
-    @r1 @deprecated
-    Scenario: a code takes ten percent off (deprecated)
-      Given a cart
-the tracked file `.shop/work/i1/w2.md` holds:
-  ---
-  id: work-item/example.org/acme/shop/w2
-  kind: work-item
-  accepts: [cart#r1]
-  ---
-  # w2
-```
-
-### [g46] `migrate upgrade` on a repository before 1.0.0 writes each reference of a work-item file to a requirement with its release
-- [r46] While the release of this repository is after `0.25.0` and before `1.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite every work-item file that mentions a requirement.
+### [g60] `migrate upgrade` on a repository before 1.0.0 writes each reference of a work-item file to a requirement with its release and removes each scenario that has the `@deprecated` tag from its feature
+- [r60] While the release of this repository is after `0.25.0` and before `1.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite every work-item file that mentions a requirement and rewrite every feature that holds a scenario that has the `@deprecated` tag.
 
 ```given
 the tracked file `.shop/plugin-version` holds "0.29.0"
