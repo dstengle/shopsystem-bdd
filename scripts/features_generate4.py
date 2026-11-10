@@ -71,7 +71,13 @@ def lines(root, ctx, cap, group, skipped=None):
         return None
     vocab, gram = spec_rgl_steps.load(root)
     try:
-        steps = spec_steps4.read(vocab, [(s.id, spec_lf.form(vocab, s.tree)) for s in mine], entailed(root, ctx))
+        forms = [(s.id, spec_lf.form(vocab, s.tree)) for s in mine]
+        # a permission obliges nothing, and a necessity's scenario waits on its decision's route (I17): neither has a
+        # step, and a group of only such lines has no scenario, as a logic-only group of codified-1 (D9)
+        forms = [(i, f) for i, f in forms if f.modality == "shall"]
+        if not forms:
+            return None
+        steps = spec_steps4.read(vocab, forms, entailed(root, ctx))
     except (spec_steps4.TraceError, ValueError) as err:
         print("features generate: %s: no scenario: %s" % (gid, err), file=sys.stderr)
         if skipped is not None:

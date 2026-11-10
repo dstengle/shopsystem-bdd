@@ -152,9 +152,14 @@ def prints(step):
 
 @handler("ThenPrintsNot", "`features`")
 def prints_not(step):
-    out = result(step).stdout
+    """A file named by its path not in stdout; a quoted text (`"no scenario"`, a warning) in neither stdout nor
+    stderr."""
+    done = result(step)
     for np in step.nps:
-        assert bare(np.split()[-1]) not in out, (np, out)
+        if np.startswith('"'):
+            assert np.strip('"') not in done.stdout + done.stderr, (np, done.stdout, done.stderr)
+        else:
+            assert bare(np.split()[-1]) not in done.stdout, (np, done.stdout)
 
 
 def unoverstated(step):
@@ -168,3 +173,13 @@ def unoverstated(step):
     texts = [p.read_text() for p in written]
     assert any(kept.search(t) for t in texts), (kept.pattern, texts)
     assert not any(entailed.search(t) for t in texts), (entailed.pattern, texts)
+
+
+@handler("ThenK_C", "feature")
+def feature_then(step):
+    """`the feature f1 is scenarioless` (r33, r34): the feature `features generate` wrote, which `ThenDoes write`
+    named f1, has its `Feature:` line and no scenario."""
+    rel = step.context["nodes"][step.names[0]][1]
+    text = (step.repo / rel).read_text()
+    assert condition(step) == "scenarioless", step.text
+    assert re.search(r"^Feature: ", text, re.MULTILINE) and not titles(text, r"^\s*Scenario(?: Outline)?: (.*)$"), text
