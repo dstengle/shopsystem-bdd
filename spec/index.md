@@ -174,10 +174,10 @@ The simplified workflow:
 - **initiative branch** (noun): the branch `work run` commits each transition on and merges each work-item branch into, whose base is the commit it started from. Plural: initiative branches. Not: integration branch.
 - **work-item branch** (noun): the branch an implementer commits a work-item's work on, from the initiative branch's head, merged into the initiative branch and deleted when it is merged. Plural: work-item branches.
 - **commit** (noun): one git commit on a branch, with its message and its change. Kind of: thing.
-- **commit** (verb): a session or a tool records changed files, or a text changed in one, as one git commit on the current branch. Forms: commits, committed. Frame: agent commits text.
-- **push** (verb): a commit is pushed to a remote. Forms: pushes, pushed. Frame: agent pushes commit.
-- **relocate** (verb): a file or directory is moved with git, keeping its history. Forms: relocates, relocated. Frame: `migrate` relocates file.
-- **use** (verb): a session or a tool uses another tool, a model, an interpreter or a file. Forms: uses, used. Frame: agent uses thing.
+- **commit** (verb, action): a session or a tool records changed files, or a text changed in one, as one git commit on the current branch. Forms: commits, committed. Frame: agent commits text.
+- **push** (verb, action): a commit is pushed to a remote. Forms: pushes, pushed. Frame: agent pushes commit.
+- **relocate** (verb, action): a file or directory is moved with git, keeping its history. Forms: relocates, relocated. Frame: `migrate` relocates file.
+- **use** (verb, action): a session or a tool uses another tool, a model, an interpreter or a file. Forms: uses, used. Frame: agent uses thing.
 - **test** (noun): one test of the repository's suite, a scenario's or a script's, by its pytest id. Kind of: thing.
 - **violation** (noun): a row of a rule `model check` finds, printed under the rule's code and plain label.
 - **remote** (noun): the remote `work run` pushes the initiative branch to: the branch's upstream remote, else `origin`.
@@ -221,18 +221,18 @@ The simplified workflow:
 - **green check** (adjective of work-item branch): a work-item branch on which every test passes, its work-item's scenarios among them.
 
 
-- **start** (verb): a session begins a thing it runs, such as a stage or a trial. Frame: session starts thing.
-- **end** (verb): a session or a tool stops a thing it runs, such as a stage or a trial, with a result or without one. Frame: agent ends thing.
-- **ask** (verb): a session or a tool raises a question that waits for an answer. Frame: agent asks question.
-- **approve** (verb): the person approves a proposal at the gate. Frame: the person approves proposal.
-- **discard** (verb): `work run` drops a stage that ended without a readable result. Frame: `work run` discards stage.
-- **merge** (verb): `work run` merges a work-item branch into the initiative branch. Forms: merges, merged. Frame: the person merges pull request.
-- **rerun** (verb): `work run` runs a failing scenario once more, alone. Forms: reruns, rerun. Frame: `work run` reruns scenario.
-- **raise** (verb): an initiative raises a request into an upstream. Forms: raises, raised. Frame: initiative raises request.
-- **refuse** (verb): a tool declines a command. Frame: tool refuses command.
-- **write** (verb): a session or a tool writes a file or a field. Forms: writes, written. Frame: agent writes text.
-- **change** (verb): a session or a tool changes a file or a field. Frame: agent changes file.
-- **give** (verb): a session or a tool gives a text a thing it lacks, such as a grade to a review finding. Forms: gives, given. Frame: agent gives thing to text.
+- **start** (verb, action): a session begins a thing it runs, such as a stage or a trial. Frame: session starts thing.
+- **end** (verb, action): a session or a tool stops a thing it runs, such as a stage or a trial, with a result or without one. Frame: agent ends thing.
+- **ask** (verb, action): a session or a tool raises a question that waits for an answer. Frame: agent asks question.
+- **approve** (verb, action): the person approves a proposal at the gate. Frame: the person approves proposal.
+- **discard** (verb, action): `work run` drops a stage that ended without a readable result. Frame: `work run` discards stage.
+- **merge** (verb, action): `work run` merges a work-item branch into the initiative branch. Forms: merges, merged. Frame: the person merges pull request.
+- **rerun** (verb, action): `work run` runs a failing scenario once more, alone. Forms: reruns, rerun. Frame: `work run` reruns scenario.
+- **raise** (verb, action): an initiative raises a request into an upstream. Forms: raises, raised. Frame: initiative raises request.
+- **refuse** (verb, action): a tool declines a command. Frame: tool refuses command.
+- **write** (verb, action): a session or a tool writes a file or a field. Forms: writes, written. Frame: agent writes text.
+- **change** (verb, action): a session or a tool changes a file or a field. Frame: agent changes file.
+- **give** (verb, action): a session or a tool gives a text a thing it lacks, such as a grade to a review finding. Forms: gives, given. Frame: agent gives thing to text.
 
 - **spec lock** (noun, exclusive): one for each bounded context, held by every integrate, apply and formulate round.
 - **initiative lock** (noun, exclusive): one for each initiative, held by every stage of the initiative that is not a worker's.
@@ -267,9 +267,9 @@ The simplified workflow:
 - **well-formed** (adjective of item): an item whose every requirement parses, has no L0 or L1 finding of `model logic` with the item's lines laid over `spec/`, and has its scenarios written by `features generate`, and whose capabilities' `check` design-decisions pass their tests.
 - **passing** (adjective of item): An item is passing when the item is well-formed and every request line of the item is settled.
 - **clean** (adjective of pull request): A pull request is clean when no review finding on the pull request is `fix now`.
-- **pick** (verb): `work batch start` takes a ready item into a batch, or returns it to `shaped` when it is no longer passing. Forms: picks, picked. Frame: `work` picks item.
-- **park** (verb): a batch sets an item it cannot finish without an answer to `needs-input`. Forms: parks, parked. Frame: batch parks item.
-- **publish** (verb): `work` puts a thing on GitHub: a batch's branch as a pull request, with its commits. Forms: publishes, published. Frame: `work` publishes thing.
+- **pick** (verb, action): `work batch start` takes a ready item into a batch, or returns it to `shaped` when it is no longer passing. Forms: picks, picked. Frame: `work` picks item.
+- **park** (verb, action): a batch sets an item it cannot finish without an answer to `needs-input`. Forms: parks, parked. Frame: batch parks item.
+- **publish** (verb, action): `work` puts a thing on GitHub: a batch's branch as a pull request, with its commits. Forms: publishes, published. Frame: `work` publishes thing.
 - **triage** (attribute of review finding): what a review asks of its finding: fixed on the branch before the merge, kept as an observation, or dropped. Values: `fix now`, `observation`, `drop`.
 - **defect** (noun): a file of a batch that records a fault in the behaviour of the repository's code, with its reproduction, found by a review or after a merge. Kind of: file.
 - **failing** (adjective of test): the test fails when it runs.

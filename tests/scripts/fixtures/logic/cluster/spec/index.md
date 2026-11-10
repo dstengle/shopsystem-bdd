@@ -38,11 +38,11 @@ codified language, for the tests of `model logic` (`scripts/spec_solve.py`). It 
 - **agent** (noun): a session or a tool, as the one that does what a verb says.
 - **resource** (noun): what a session holds while it runs.
 - **free** (adjective of resource): a resource no running session holds.
-- **start** (verb): a stage or a round begins. Frame: agent starts session.
-- **end** (verb): a stage or a round stops. Frame: agent ends session.
-- **ask** (verb): Forms: asks, asked. Frame: agent asks question.
-- **take** (verb): Forms: takes, taken. Frame: `work run` takes thing.
-- **write** (verb): Forms: writes, written. Frame: agent writes question.
+- **start** (verb, action): a stage or a round begins. Frame: agent starts session.
+- **end** (verb, action): a stage or a round stops. Frame: agent ends session.
+- **ask** (verb, action): Forms: asks, asked. Frame: agent asks question.
+- **take** (verb, action): Forms: takes, taken. Frame: `work run` takes thing.
+- **write** (verb, action): Forms: writes, written. Frame: agent writes question.
 - **spec lock** (noun, exclusive): held by every integrate, apply and formulate round.
 - **initiative lock** (noun, exclusive): held by every round of an initiative.
 - **worker slot** (noun, counted by `workers`): held by every research stage.

@@ -45,12 +45,12 @@ repository's spec.
 
 - **open** (adjective of initiative): An initiative is open when the initiative is not `done` and the initiative is not `abandoned`.
 
-- **start** (verb): a stage begins. Frame: agent starts stage.
-- **end** (verb): a session stops. Frame: agent ends session.
-- **take** (verb): `work run` takes an initiative through its transitions. Forms: takes, taken. Frame: agent takes initiative.
-- **interleave** (verb): `work run` runs initiatives side by side. Frame: `work run` interleaves initiative.
-- **give** (verb): Forms: gives, given. Frame: `work run` gives brief to stage.
-- **refuse** (verb): Forms: refuses, refused. Frame: agent refuses command.
+- **start** (verb, action): a stage begins. Frame: agent starts stage.
+- **end** (verb, action): a session stops. Frame: agent ends session.
+- **take** (verb, action): `work run` takes an initiative through its transitions. Forms: takes, taken. Frame: agent takes initiative.
+- **interleave** (verb, action): `work run` runs initiatives side by side. Frame: `work run` interleaves initiative.
+- **give** (verb, action): Forms: gives, given. Frame: `work run` gives brief to stage.
+- **refuse** (verb, action): Forms: refuses, refused. Frame: agent refuses command.
 
 - **spec lock** (noun, exclusive): held by every integrate round.
 - **worker slot** (noun, counted by `workers`): held by every worker.

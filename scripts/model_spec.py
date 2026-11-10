@@ -51,6 +51,7 @@ class SpecReading:
         lexicon = spec_lexicon.read(self.root)
         cats, n, terms = {}, 0, lexicon.terms
         words, known, kinds = Counter(t.term for t in terms), spec_frames.names(lexicon), lexicon.kind_names()
+        overlapping = spec_frames.overlapping(lexicon)
         for n, t in enumerate(terms, 1):
             word = " ".join(term_word(t, words[t.term] > 1).lower().split())
             ident = self.term_id(word)
@@ -66,6 +67,13 @@ class SpecReading:
                 self.fact("misframed", ident, misread)
             elif t.category == "event" and spec_frames.frame(t, known) is None:
                 self.fact("frameless", ident)
+            if t.category == "event" and not t.aspect:
+                self.fact("aspectless", ident)
+            if t.category == "event" and words[t.term] > 1 and all(
+                    u.category == "event" for u in terms if u.term == t.term):     # two senses of one verb
+                self.fact("senses", ident)
+                if t.term in overlapping:
+                    self.fact("overlapping", ident)
             if t.category == "condition" and spec_frames.relational(t, kinds):
                 self.fact("relational", ident)
             self.fact("linearises", ident, f"{t.category} {t.term} ({', '.join(t.kinds)})")

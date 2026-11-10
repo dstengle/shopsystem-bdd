@@ -33,7 +33,7 @@ It changes the meaning of no approved scenario.
 - **old reference** (noun): a `decision/<name>` reference, a frontmatter `id` under `spec/decisions/` or `.shop/`, or an observation heading `## obs/<x>`.
 - **held scenario** (noun): a scenario tagged `@holding`.
 - **decision entry** (noun): an entry of an old ledger of decisions.
-- **tag** (verb): a scenario is given the `@r<n>` tag of the one statement it formulates. Forms: tags, tagged. Frame: session tags scenario.
+- **tag** (verb, action): a scenario is given the `@r<n>` tag of the one statement it formulates. Forms: tags, tagged. Frame: session tags scenario.
 
 ## Behaviour
 

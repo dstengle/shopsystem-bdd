@@ -25,11 +25,11 @@ and analysis and commits them, and sets the initiative `done`, committing it, wh
 decide goes to the person as a question.
 
 ## Terms
-- **draft** (verb): `work run` writes a node with `work add` or from a change list. Forms: drafts, drafted. Frame: `work run` drafts node.
-- **take** (verb): `work run` takes an initiative through the transitions its nodes can make. Forms: takes, took, taken. Frame: `work run` takes initiative.
-- **log** (verb): `work run` appends a line to `.shop/work/<initiative>/log.jsonl`. Forms: logs, logged. Frame: `work run` logs ledger.
-- **restore** (verb): `work run` puts a file back as its last commit has it, or removes it where that commit has none. Forms: restores, restored. Frame: `work run` restores file.
-- **remove** (verb): a session or a tool removes a file, a directory or a text it wrote. Forms: removes, removed. Frame: agent removes text.
+- **draft** (verb, action): `work run` writes a node with `work add` or from a change list. Forms: drafts, drafted. Frame: `work run` drafts node.
+- **take** (verb, action): `work run` takes an initiative through the transitions its nodes can make. Forms: takes, took, taken. Frame: `work run` takes initiative.
+- **log** (verb, action): `work run` appends a line to `.shop/work/<initiative>/log.jsonl`. Forms: logs, logged. Frame: `work run` logs ledger.
+- **restore** (verb, action): `work run` puts a file back as its last commit has it, or removes it where that commit has none. Forms: restores, restored. Frame: `work run` restores file.
+- **remove** (verb, action): a session or a tool removes a file, a directory or a text it wrote. Forms: removes, removed. Frame: agent removes text.
 - **output** (noun): what a stage's result gives as its stage's work.
 - **change list** (noun): the list an `integrate` or `apply` round's result gives of what it adds, changes and removes.
 - **draft** (noun): a file an `integrate` round writes under its drafts path, kept on the initiative branch. Plural: drafts.

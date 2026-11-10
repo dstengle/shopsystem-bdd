@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/query-commands-answer-in-their-output, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items, design-decision/work-items-named-by-ids, design-decision/the-glossary-is-a-target-of-spec-work]
 retired: [r8, r9, r12, r13, r14, r15, r16, r17, r18, r21, r26, r27, r29, r31, r32, r33, r34, r35, r37, r39, r45, r46, r53, g73, r73, g72, r72]
-unbuilt: [r74, r75, r76, r77, r78, r79]
+unbuilt: [r74, r75]
 ---
 
 # Design model check
@@ -92,7 +92,7 @@ context: product-level artifacts are read only where the files contain them.
 - **unpairable** (adjective of capability): a capability two of whose requirements share a named code that `grammar/check.lp` cannot unify, and two others of whose requirements conflict (an L1).
 
 - **rule catalogue** (noun): the generated file `grammar/rules.md`, one entry a rule. Kind of: file.
-- **violate** (verb): a thing does not meet a rule of the rule catalogue. Forms: violates, violated. Frame: thing violates rule.
+- **violate** (verb, state): a thing does not meet a rule of the rule catalogue. Forms: violates, violated. Frame: thing violates rule.
 - **stale** (adjective of rule catalogue): a rule catalogue that is not what `model rules --write` would write.
 
 - **aspectless** (adjective of term): a verb whose entry says neither `state` nor `action`.

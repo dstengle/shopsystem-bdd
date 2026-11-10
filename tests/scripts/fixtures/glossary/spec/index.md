@@ -148,33 +148,33 @@ category, for the tests of the lexicon and the requirement grammar. It is not th
 
 ### Events
 
-- **start** (verb): a stage or a delivery begins. Frame: agent starts thing.
-- **end** (verb): a stage stops. Frame: agent ends thing.
-- **write** (verb): Forms: writes, written. Frame: agent writes text.
-- **commit** (verb): Forms: commits, committed. Frame: agent commits text.
-- **refuse** (verb): a command is not done. Frame: agent refuses thing.
-- **merge** (verb): a branch is merged into another. Frame: agent merges work-item branch.
-- **rerun** (verb): Forms: reruns, rerun. Frame: agent reruns stage.
-- **discard** (verb): a stage's work is dropped. Frame: agent discards stage.
-- **give** (verb): Forms: gives, given. Frame: agent gives thing to thing.
-- **change** (verb): a file or a status is changed. Frame: agent changes text.
-- **ask** (verb): a question is asked. Frame: agent asks question.
-- **raise** (verb): a request is raised into an upstream. Frame: agent raises request.
-- **read** (verb): Forms: reads, read. Frame: agent reads thing.
-- **show** (verb): Forms: shows, shown. Frame: agent shows text.
-- **keep** (verb): Forms: keeps, kept. Frame: agent keeps text.
-- **push** (verb): a commit is pushed. Frame: agent pushes commit.
-- **delete** (verb): a file is removed. Frame: agent deletes text.
-- **approve** (verb): the person approves a proposal. Frame: agent approves thing.
-- **withdraw** (verb): Forms: withdraws, withdrawn. Frame: agent withdraws thing.
-- **list** (verb): a tool lists things. Frame: agent lists thing.
-- **name** (verb): a message names a thing. Frame: agent names thing.
-- **append** (verb): a line is added at the end of a file. Frame: agent appends text.
-- **stop** (verb): Forms: stops, stopped. Frame: agent stops thing.
-- **relocate** (verb): a path is moved with git. Frame: agent relocates file.
-- **generate** (verb): a file is generated. Frame: agent generates feature.
-- **use** (verb): a tool uses a thing. Frame: agent uses thing.
-- **pull** (verb): a work-item is pulled through its stages. Frame: agent pulls work-item.
+- **start** (verb, action): a stage or a delivery begins. Frame: agent starts thing.
+- **end** (verb, action): a stage stops. Frame: agent ends thing.
+- **write** (verb, action): Forms: writes, written. Frame: agent writes text.
+- **commit** (verb, action): Forms: commits, committed. Frame: agent commits text.
+- **refuse** (verb, action): a command is not done. Frame: agent refuses thing.
+- **merge** (verb, action): a branch is merged into another. Frame: agent merges work-item branch.
+- **rerun** (verb, action): Forms: reruns, rerun. Frame: agent reruns stage.
+- **discard** (verb, action): a stage's work is dropped. Frame: agent discards stage.
+- **give** (verb, action): Forms: gives, given. Frame: agent gives thing to thing.
+- **change** (verb, action): a file or a status is changed. Frame: agent changes text.
+- **ask** (verb, action): a question is asked. Frame: agent asks question.
+- **raise** (verb, action): a request is raised into an upstream. Frame: agent raises request.
+- **read** (verb, action): Forms: reads, read. Frame: agent reads thing.
+- **show** (verb, action): Forms: shows, shown. Frame: agent shows text.
+- **keep** (verb, action): Forms: keeps, kept. Frame: agent keeps text.
+- **push** (verb, action): a commit is pushed. Frame: agent pushes commit.
+- **delete** (verb, action): a file is removed. Frame: agent deletes text.
+- **approve** (verb, action): the person approves a proposal. Frame: agent approves thing.
+- **withdraw** (verb, action): Forms: withdraws, withdrawn. Frame: agent withdraws thing.
+- **list** (verb, action): a tool lists things. Frame: agent lists thing.
+- **name** (verb, action): a message names a thing. Frame: agent names thing.
+- **append** (verb, action): a line is added at the end of a file. Frame: agent appends text.
+- **stop** (verb, action): Forms: stops, stopped. Frame: agent stops thing.
+- **relocate** (verb, action): a path is moved with git. Frame: agent relocates file.
+- **generate** (verb, action): a file is generated. Frame: agent generates feature.
+- **use** (verb, action): a tool uses a thing. Frame: agent uses thing.
+- **pull** (verb, action): a work-item is pulled through its stages. Frame: agent pulls work-item.
 
 ### Resources
 
