@@ -20,6 +20,7 @@ spec_lf_facts_atoms'. An `or` box splits it as spec_facts does (`R#n`,
 """
 import spec_facts
 import spec_lf_distinct
+import spec_lf_exist
 import spec_lf_modal
 import spec_lf_number
 import spec_lf_quant
@@ -71,6 +72,8 @@ class Walk(Terms):
             elif isinstance(item, Atom) and item.pred in ("rel", "state"):
                 q, x, y = self.edge(item)
                 self.emit("rnone", q, side(x), side(y))
+            elif isinstance(item, Atom) and item.pred == spec_lf_exist.PRED and item.args[0] in own:
+                spec_lf_exist.none(self, item.args[0].kind)     # "no K exists" (b240)
             elif isinstance(item, Atom) and item.pred in TIME:
                 raise ValueError(TIME[item.pred](item))
             else:

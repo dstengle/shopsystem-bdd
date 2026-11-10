@@ -1345,6 +1345,131 @@ While two sessions follow a stage, when the person runs `work start`, `work` sha
 refused: "the session" has no antecedent: "two sessions" gives two sessions, and "the session" names neither
 ```
 
+### "X exists" and "no K exists": existence
+
+"X exists" says that the thing X is there: a state of X whose frame takes no object, the atom `exists(x)`. Every kind
+has it, with no entry in the glossary: "exist" is the base grammar's verb, a state, so a trigger may not say it ("When
+a file exists" is refused as a state verb in a trigger is). "X does not exist" puts the atom under `not`; "no K
+exists" is R3's "no K", a `not` box with its K; "a K that exists" and "a K whose T does not exist" are relative
+clauses as any state gives them. In `model logic` existence is the one-place fluent `crel(R, exists, x, none, Pol)`
+(the state whose frame takes no object, b219), and "no K exists" `rnone(R, exists, kind(K), none)`: "the `a` file
+exists" clashes with "the `a` file does not exist" and with "no file exists", but not with "the `b` file does not
+exist". In a scenario it is a Given, "the file f1 exists", "the `a` file does not exist" or "no file exists", which
+the world meets by making the thing or leaving it out.
+
+"has been written" is not existence: it is the perfect of an action, the history of section "Time" (built, and
+refused by `model logic` as any history is). A line that means that a thing is there says "exists"; one that means
+that an act happened before says the perfect.
+
+Found by the audit in analysis-tools r37-r41 ("this file system holds the dot-venv interpreter": a container noun
+and a row coined to say that a file is there; the interpreter that is used is the first that exists, each case
+written with existence, the order a known limit, #14), r48 and r50-r55 ("this repository holds a coverage map", "holds
+no coverage map"), and requests r72 ("a bounded context that has no host", the upstream's entry with no repository)
+and r81 (every with no existential import: "every request line ... is `refused`" holds of a request with no lines,
+so the line says that one exists too).
+
+```reading
+While the `a` file exists, when the person runs `work start`, `work` shall print the file.
+shall [x1: file `a` (parameter), x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while
+    exists(x1)
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    print(e2, subject: x4, object: x1)
+```
+
+"X does not exist": each case of a first match said with existence (analysis-tools r38-r40).
+
+```reading
+While the `b` file exists and the `a` file does not exist, when the person runs `work start`, `work` shall print the `b` file.
+shall [x1: file `b` (parameter), x2: file `a` (parameter), x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while
+    exists(x1)
+    not
+      exists(x2)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    print(e2, subject: x5, object: x1)
+```
+
+```reading
+While a file in a worktree exists, when the person runs `work start`, `work` shall print the file.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: file, x2: worktree]
+    in(x1, x2)
+    exists(x1)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    print(e2, subject: x5, object: x1)
+```
+
+"no K exists" (analysis-tools r55):
+
+```reading
+While no file exists, if the person runs `work start`, then `work` shall exit with an error naming `work start`.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while
+    not [x1: file]
+      exists(x1)
+  if
+    run(e1, subject: x2, object: x3)
+  response
+    exit(e2, subject: x4, with an error naming: x3)
+```
+
+"whose T does not exist" (requests r72):
+
+```reading
+If the person runs `work start` on a session whose worktree does not exist, then `work` shall exit with an error naming the session.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x5: tool `work` (constant)]
+  if [x3: session, x4: worktree]
+    of(x4, x3)
+    not
+      exists(x4)
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    exit(e2, subject: x5, with an error naming: x3)
+```
+
+"every K of X is v" holds of an X with no K; "a K of X exists and every K of X is v" says there is one (requests r81):
+
+```reading
+While a stage is `open` and a line of the stage exists and every line of the stage is `refused`, when the person runs `work start`, `work` shall end the stage.
+shall [x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+  while [x1: stage, x2: line]
+    status(x1) = `open`
+    of(x2, x1)
+    exists(x2)
+    every [x3: line]
+      of(x3, x1)
+      scope
+        outcome(x3) = `refused`
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    end(e2, subject: x6, object: x1)
+```
+
+```reading
+When the person runs `work start`, `work` shall print every file that exists.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response
+    every [x4: file]
+      exists(x4)
+      scope
+        print(e2, subject: x3, object: x4)
+```
+
+```reading
+When a session exists, `work` shall print the session.
+refused: the verb exist is a state, and a trigger takes an action
+```
+
 ## What the language cannot say yet
 
 The limits the rewording keeps, one subsection a limit: the construct the language has not, the lines that need it

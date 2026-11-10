@@ -128,9 +128,22 @@ def counts(w, vocab):
           "mkS (mkCl x (mkVP (ParadigmsEng.mkAdv (o.s ++ v.s))))", "x o v")
 
 
+EXISTS = "Exists_St"
+
+
+def exists(w):
+    """"x exists" (b240, construct #7): a state of every thing, `Exists_St`, whose frame takes no object; "x does not
+    exist" its polarity, "no K exists" the base grammar's "no", "a K that exists" spec_rgl_rel's relative clause."""
+    w.cat("k_thing_St", "VP")
+    w.fun(EXISTS, "k_thing_St", 'mkVP (mkV "exist")')
+
+
 def noun_phrases(w, vocab):
-    """Every noun-phrase fun of `vocab` written to `w`; the kinds a row gave a state frame (spec_rgl's `S_Holds`)."""
+    """Every noun-phrase fun of `vocab` written to `w`; the kinds a row gave a state frame (spec_rgl's `S_Holds`),
+    `thing` among them for "x exists"."""
     attributes(w, vocab)
     counts(w, vocab)
-    return rows(w, vocab)
+    exists(w)
+    states = rows(w, vocab)
+    return states + [k for k in ("thing",) if k not in states]
 

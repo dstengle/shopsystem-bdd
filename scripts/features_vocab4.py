@@ -4,14 +4,16 @@ handler finds a codified-2 step as it finds a codified-1 one.
 
 The templates: a Given that brings in an instance `GivenK`; example data `GivenCodeText` (a block under the step)
 and `GivenCode` (one value, in `quoted`); a value `GivenK_A`, `ThenK_A`; the number of Ks compared `GivenCount`
-(its noun phrase the subject, the comparison its one noun phrase, b240); a state `GivenDoes`,
-`GivenDoesNot`, `ThenDoes`, `ThenDoesNot`; a run `WhenRuns`, any other trigger `WhenHappens`; an act `ThenPrints`,
-`ThenPrintsNot`, `ThenExitsOk`, `ThenExitsErr`, `ThenChangesNothing`, else `ThenDoes`, `ThenDoesNot`. A step of
-more than one reading under its keyword (the same text read with a code of two kinds is one) is refused.
+(its noun phrase the subject, the comparison its one noun phrase, b240); a state `GivenDoes`, `GivenDoesNot`,
+`ThenDoes`, `ThenDoesNot` ("x exists" of the verb exist, b240); a run `WhenRuns`, any other trigger `WhenHappens`;
+an act `ThenPrints`, `ThenPrintsNot`, `ThenExitsOk`, `ThenExitsErr`, `ThenChangesNothing`, else `ThenDoes`,
+`ThenDoesNot`. A step of more than one reading under its keyword (the same text read with a code of two kinds is
+one) is refused.
 """
 import re
 
 import spec_lf_np
+import spec_rgl_np
 import spec_rgl_steps
 from features_vocab import Call, StepError
 
@@ -28,6 +30,8 @@ def _verb(names, vp):
     word of its frame (`r1_of_Has` "has", `r2_in_Holds` "holds") or of its condition (`r3_on_Is`, b197)."""
     if names.attr(_fun(vp))[1] == "Set":
         return "set"
+    if _fun(vp) == spec_rgl_np.EXISTS:      # "x exists" (b240)
+        return "exist"
     row = ROW.match(_fun(vp))
     if row:
         return {"Has": "has", "Holds": "holds"}.get(row.group(2), row.group(1).replace("_", " "))

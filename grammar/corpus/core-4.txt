@@ -161,3 +161,12 @@ While two sessions follows a stage, when the person runs `work start`, `work` sh
 = refused: the verb follow does not agree in number with its subject
 While two session follow a stage, when the person runs `work start`, `work` shall exit successfully.
 = refused: does not parse at session
+# existence (b240, construct #7): "x exists", "does not exist", "no K exists", "a K that exists"
+While the `a` file exists and the `b` file does not exist, when the person runs `work start`, `work` shall print the `a` file.
+While no file exists, when the person runs `work start`, `work` shall exit successfully.
+When the person runs `work start`, `work` shall print every file that exists.
+While files exist, when the person runs `work start`, `work` shall exit successfully.
+While a file exist, when the person runs `work start`, `work` shall exit successfully.
+= refused: does not parse at exist
+When a session exists, `work` shall print the session.
+= refused: the verb exist is a state, and a trigger takes an action

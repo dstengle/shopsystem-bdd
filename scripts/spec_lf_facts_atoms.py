@@ -7,6 +7,7 @@ atom refused naming it (`TIME`). The boxes, the rule and
 the response are spec_lf_facts'.
 """
 import spec_lf_distinct
+import spec_lf_exist
 import spec_lf_order
 import spec_lf_quant
 from spec_facts_np import const
@@ -84,6 +85,8 @@ class Terms:
             if not pos:
                 raise ValueError("no translation of distinct in a negated condition")
             self.emit(spec_lf_distinct.PRED, *(self.term(x) for x in item.args))
+        elif item.pred == spec_lf_exist.PRED:     # "x exists" (b240): a one-place fluent
+            spec_lf_exist.literal(self, item, pos)
         elif item.pred in TIME:
             raise ValueError(TIME[item.pred](item))
         else:
@@ -107,8 +110,10 @@ class Terms:
         if isinstance(item, Box) and item.op == "not":
             return spec_lf_quant.negated(self, item, own)
         pred = getattr(item, "pred", None)
-        if pred == spec_lf_distinct.PRED:
+        if pred == spec_lf_distinct.PRED or pred == spec_lf_exist.PRED and item.args[0] not in own:
             return self.literal(item)
+        if pred == spec_lf_exist.PRED:      # "a K that exists" (b240)
+            return spec_lf_exist.restrict(self, item, preds[1])
         if pred not in ("attr", "rel", "state"):
             raise ValueError("no translation of %s on an object" % (pred or item.op))
         first = {"attr": lambda a: a[0], "rel": lambda a: a[1], "state": lambda a: a[2][0][1]}[pred](item.args)

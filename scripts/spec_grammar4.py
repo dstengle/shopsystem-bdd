@@ -168,6 +168,8 @@ def misaspected(vocab, tokens, at):
     if at is None or at >= len(tokens):
         return None
     clause = next((CLAUSES[w.lower()] for w in reversed(tokens[:at]) if w.lower() in CLAUSES), None)
+    if clause and clause[0] == "action" and tokens[at] in ("exists", "exist"):     # "x exists" (b240): a state
+        return "refused: the verb exist is a state, and %s takes an action" % clause[1]
     for v in vocab.verbs:
         forms = {spec_rgl.spec_frames.s3(v.term).split()[0], v.term.term.split()[0]}
         if clause and tokens[at] in forms and v.aspect != clause[0]:

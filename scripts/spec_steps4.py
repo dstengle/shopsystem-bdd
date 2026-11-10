@@ -25,6 +25,7 @@ from dataclasses import replace
 import spec_facts
 import spec_lf
 import spec_lf_distinct
+import spec_lf_exist
 import spec_lf_order
 import spec_lf_set
 import spec_lf_values
@@ -157,6 +158,8 @@ class Reader:
                     return ("%s_%s_Is" % (T, kid(k)), pol, self.np(x, k), ("%s_v_%s" % (T, spec_rgl.slug(value)),))
         if item.pred == "rel":
             return self.row(item.args, pol)
+        if item.pred == spec_lf_exist.PRED:     # "the file f1 exists" (b240)
+            return spec_lf_exist.given(self, item, pos)
         if item.pred == "cmp" and len(item.args) == 4:      # an attribute's value compared (b240)
             return spec_lf_order.given(self, item)
         raise TraceError("no step of %s" % spec_lf.atom(item))
