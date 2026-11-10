@@ -26,6 +26,9 @@ FORMS = {("response",): "ubiq", ("when", "response"): "when", ("while", "respons
          ("where", "response"): "where", ("if", "response"): "if", ("while", "when", "response"): "while_when",
          ("where", "when", "response"): "where_when", ("where", "while", "response"): "where_while",
          ("while", "if", "response"): "while_if", ("where", "if", "response"): "where_if"}
+# A `not` box over a response object's restrictions ("whose T is not v", "that does not V a K"), on an `every` object
+# or not: the check has no reading of it (b188), so the line is refused rather than read as the restriction it negates.
+NEGATED = "no translation of a negated restriction (not) on an object"
 
 
 class Walk:
@@ -179,7 +182,7 @@ class Walk:
             elif isinstance(item, Atom):
                 self.restrict(item, own)
             elif item.op == "not" and not self.acting(item):
-                self.restrict(item, own)
+                raise ValueError(NEGATED)
             elif item.op == "not" and self.nothing(item):
                 self.acts += 1
                 self.emit("resp", self.acts, "pos" if pos else "neg", "change_nothing", self.term(
@@ -219,8 +222,8 @@ class Walk:
     def restrict(self, item, own, preds=("oattr", "orel")):
         """A restriction of a response's object (`own`, the referents its box introduced); of an earlier referent,
         the pre-state it presupposes."""
-        if isinstance(item, Box) and item.op == "not" and not preds[0].startswith("r"):
-            return self.negated(item, own)
+        if isinstance(item, Box) and item.op == "not":
+            raise ValueError(NEGATED)
         pred = getattr(item, "pred", None)
         if pred not in ("attr", "rel", "state"):
             raise ValueError("no translation of %s on an object" % (pred or item.op))
@@ -234,26 +237,6 @@ class Walk:
         else:
             q, x, y = self.edge(item)
             self.emit(preds[1], q, self.term(x), self.term(y))
-
-    def negated(self, box, own):
-        """A negated scope over an object's restrictions (I12b): "whose T is not v" `nattr(R,X,T,V)`, "that does not
-        V a K" `nrel(R,Q,X,kind(K))` (the box's own referents read as any thing of their kind), "that does not V the
-        K" `nrel(R,Q,X,Y)`; over an earlier referent's, the pre-state it presupposes, negated."""
-        def end(r):
-            return "kind(%s)" % self.ids.kind(r.kind) if r in box.refs else self.term(r)
-        firsts = {"attr": lambda a: a[0], "rel": lambda a: a[1], "state": lambda a: a[2][0][1]}
-        for item in box.body:
-            if getattr(item, "pred", None) not in firsts:
-                raise ValueError("no translation of not over %s on an object" % getattr(item, "op", "an event"))
-        if not all(firsts[i.pred](i.args) in own and firsts[i.pred](i.args) not in box.refs for i in box.body):
-            return self.box(box, True)
-        for item in box.body:
-            if item.pred == "attr" and not isinstance(item.args[2], Ref):
-                x, term, value = item.args
-                self.emit("nattr", self.term(x), *self.ids.attr(x.kind, term, value))
-            elif item.pred != "attr":
-                q, x, y = self.edge(item)
-                self.emit("nrel", q, self.term(x), end(y))
 
     def only(self, box):
         """"D shall V only Ks that P": no act; `only` and the restrictor P of its K (`rattr`, `rrel`)."""
