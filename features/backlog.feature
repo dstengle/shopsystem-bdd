@@ -172,7 +172,7 @@ Feature: Backlog
     And a git branch g1
     And the git branch g1 has the branch name b1
     And this repository checks out the git branch g1
-    And a upstream branch u1
+    And an upstream branch u1
     And the git branch g1 has the upstream branch u1
     And a branch name b2
     And the upstream branch u1 has the branch name b2

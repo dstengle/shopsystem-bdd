@@ -253,7 +253,7 @@ Feature: Design model check
     And the design-decision d1 has the index entry i1
     When the person runs `model decisions` with the `--check` option
     Then `model` exits with an error naming the decisions index d2
-    # entailed: U11 through the definition of refuse
+    # entailed: U12 through the definition of refuse
 
   @g203 @r203
   Scenario: `model decisions --check` passes a current index
@@ -428,7 +428,7 @@ Feature: Design model check
     And the rule r1 has the catalogue entry c1
     When the person runs `model rules` with the `--check` option
     Then `model` exits with an error naming the rule catalogue r2
-    # entailed: U11 through the definition of refuse
+    # entailed: U12 through the definition of refuse
 
   @g221 @r221
   Scenario: `model check` refuses a verb with no aspect

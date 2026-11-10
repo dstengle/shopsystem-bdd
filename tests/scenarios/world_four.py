@@ -51,24 +51,25 @@ def four(template, term, *features):
     return mark
 
 
-def bind(namespace, root, *features):
-    """`bind_all`, with each step tried first on its key's chain of these features' handlers."""
+def bind(namespace, root, *features, local=True):
+    """`bind_all`, with each step tried first on its key's chain of these features' handlers; with `local=False`, then
+    the registry alone, not work_queue_world's `local` handlers of other features (analysis-tools')."""
     from pytest_bdd.steps import StepFunctionContext
     world = sys.modules["shop_work_queue_world"]
     vocab = sys.modules["vocab"]
     world.bind_all(namespace, root)
     mine = frozenset(features)
     for keyword in ("given", "when", "then"):
-        context = StepFunctionContext(type=keyword, step_func=_first(root, keyword, mine),
+        context = StepFunctionContext(type=keyword, step_func=_first(root, keyword, mine, local),
                                       parser=world.Reads(vocab, root, keyword))
         name = "pytestbdd_stepdef_%s_reads_any" % keyword
         namespace[name] = pytest.fixture(name=name)(vocab._marker(context))
 
 
-def _first(root, keyword, mine):
+def _first(root, keyword, mine, local=True):
     """The step function of one keyword: the chain of the key's handlers of `mine`, then bind_all's."""
     world, vocab = sys.modules["shop_work_queue_world"], sys.modules["vocab"]
-    rest = world._local_first(vocab, root, keyword)
+    rest = world._local_first(vocab, root, keyword) if local else vocab._step_function(root, keyword)
 
     def step_function(text, request, docstring=None, datatable=None):
         call = vocab.vocab4.step(root, keyword, text, request)

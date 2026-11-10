@@ -2,6 +2,7 @@
 the stand-in interpreter was asked to run and the coverage map it left; a Then "X has the Y y1" binds y1 to what X has
 in the scenario's project (a commit, a version, a pip command, a heading) for the Thens after it; "the number of Ks
 ..." is the count of the Ks in the scenario's project."""
+import importlib.util
 import json
 import pathlib
 import re
@@ -12,6 +13,8 @@ if str(HERE.parent) not in sys.path:
     sys.path.insert(0, str(HERE.parent))
 
 from vocab import handler
+
+four = sys.modules["shop_world_four"].four   # loaded before the handlers, by the glob of world_*.py
 
 from scenarios import analysis_tools_handlers as h
 from scenarios import analysis_tools_world as w
@@ -24,6 +27,15 @@ import tools_env
 
 PACKAGES = {name: package for name, package, _, _ in tools_env.TOOLS}
 LOG = "Probe: tools -> "
+
+# The CLI pack's refuse and name of analysis-tools' steps (world_cli's), ahead of the registry's (world_refusal's).
+if "shop_world_cli" not in sys.modules:      # requests_handlers' `shared` loads it under this name too
+    _spec = importlib.util.spec_from_file_location("shop_world_cli", HERE / "world_cli.py")
+    sys.modules["shop_world_cli"] = importlib.util.module_from_spec(_spec)
+    _spec.loader.exec_module(sys.modules["shop_world_cli"])
+CLI = sys.modules["shop_world_cli"]
+four("ThenDoes", "refuse", "analysis-tools")(CLI.refuses)
+four("ThenDoes", "name", "analysis-tools")(CLI.names)
 
 
 def output(step, err=False):
@@ -144,7 +156,7 @@ def has(step, owner, np):
     raise AssertionError("nothing known of what %s has: %s" % (owner, np))
 
 
-@handler("ThenDoes", "has")
+@four("ThenDoes", "has", "analysis-tools")
 def then_has(step):
     h.named(step)[step.names[-1]] = has(step, step.subject, step.nps[0])
 

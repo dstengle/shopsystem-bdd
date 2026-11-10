@@ -293,8 +293,8 @@ Feature: Migration tools
   Scenario: `migrate status` prints the release of a repository before 0.24.0 and every upgrade step
     Given the tracked file `.shop/plugin-version` holds "0.23.1"
     And this repository is `0.23.1`
-    And a upgrade step u1
-    And a upgrade step u2
+    And an upgrade step u1
+    And an upgrade step u2
     When the person runs `migrate status`
     Then `migrate` prints the release of this repository
     And `migrate` prints the upgrade step u1
@@ -307,8 +307,8 @@ Feature: Migration tools
     And a shop directory s1
     And this repository has the shop directory s1
     And this repository has no plugin version file
-    And a upgrade step u1
-    And a upgrade step u2
+    And an upgrade step u1
+    And an upgrade step u2
     When the person runs `migrate status`
     Then `migrate` prints the upgrade step u1
     And `migrate` prints the upgrade step u2
@@ -350,8 +350,8 @@ Feature: Migration tools
       {"time": "t", "work-item": "size-check", "event": "start"}
       """
     And this repository is `0.23.1`
-    And a upgrade step u1
-    And a upgrade step u2
+    And an upgrade step u1
+    And an upgrade step u2
     When the person runs `migrate upgrade`
     Then `migrate` prints the upgrade step u1
     And `migrate` prints the upgrade step u2
@@ -475,57 +475,6 @@ Feature: Migration tools
     And `migrate` prints the restated file r1
     And `migrate` prints the capability c1
 
-  @g45 @r45
-  Scenario: `migrate upgrade` on a repository before 1.0.0 removes each scenario that has `@deprecated` from its feature
-    Given the tracked file `.shop/plugin-version` holds "0.29.0"
-    And the tracked file `spec/index.md` holds:
-      """
-      ---
-      id: bounded-context/example.org/acme/shop
-      title: shop
-      ---
-      # shop
-      """
-    And the tracked file `spec/capabilities/cart.md` holds:
-      """
-      ---
-      id: capability/example.org/acme/shop/cart
-      title: Cart
-      retired: []
-      ---
-      # Cart
-      ## Behaviour
-      - [r1] **When** the shopper applies a code, `cart` shall take ten percent off.
-      """
-    And the tracked file `features/cart.feature` holds:
-      """
-      Feature: Cart
-        @r1 @deprecated
-        Scenario: a code takes ten percent off (deprecated)
-          Given a cart
-      """
-    And the tracked file `.shop/work/i1/w2.md` holds:
-      """
-      ---
-      id: work-item/example.org/acme/shop/w2
-      kind: work-item
-      accepts: [cart#r1]
-      ---
-      # w2
-      """
-    And this repository is `0.29.0`
-    And a feature f1
-    And a scenario s1
-    And the scenario s1 has `@deprecated`
-    And the feature f1 holds the scenario s1
-    And a feature f2
-    And a scenario s2
-    And the scenario s2 has `@deprecated`
-    And the feature f2 holds the scenario s2
-    When the person runs `migrate upgrade`
-    Then `migrate` rewrites the feature f1
-    And `migrate` rewrites the feature f2
-
   @g46 @r46
   Scenario: `migrate upgrade` on a repository before 1.0.0 writes each reference of a work-item file to a requirement with its release
     Given the tracked file `.shop/plugin-version` holds "0.29.0"
@@ -579,8 +528,8 @@ Feature: Migration tools
   Scenario: the SessionStart hook tells a session to offer the upgrade steps of a repository before 0.24.0, and to run them only on the person's yes
     Given the tracked file `.shop/plugin-version` holds "0.23.1"
     And this repository is `0.23.1`
-    And a upgrade step u1
-    And a upgrade step u2
+    And an upgrade step u1
+    And an upgrade step u2
     When the SessionStart hook runs `migrate status --hook`
     Then `migrate` prints the release of this repository
     And `migrate` prints the upgrade step u1
@@ -612,7 +561,7 @@ Feature: Migration tools
     And the initiative i1 is `done`
     When the SessionStart hook runs `migrate status --hook`
     Then `migrate` exits successfully
-    And `migrate` does not print a upgrade step
+    And `migrate` does not print an upgrade step
     And `migrate` does not print an initiative
 
   @g49 @r49
@@ -633,7 +582,7 @@ Feature: Migration tools
     And the initiative i1 is `abandoned`
     When the SessionStart hook runs `migrate status --hook`
     Then `migrate` exits successfully
-    And `migrate` does not print a upgrade step
+    And `migrate` does not print an upgrade step
     And `migrate` does not print an initiative
 
   @g50 @r50
@@ -854,9 +803,9 @@ Feature: Migration tools
     And this repository has the initiative i1
     And the initiative i1 is not `done`
     And the initiative i1 is not `abandoned`
-    And a upgrade step u1
+    And an upgrade step u1
     And the upgrade step u1 is `2.0.0`
-    And a upgrade step u2
+    And an upgrade step u2
     And the upgrade step u2 is `2.0.0`
     When the person runs `migrate upgrade`
     Then `migrate` prints the upgrade step u1
@@ -949,9 +898,9 @@ Feature: Migration tools
       - **pick** (event): a shopper puts goods in a cart. Forms: picks, picked.
       """
     And this repository is `2.0.0`
-    And a upgrade step u1
+    And an upgrade step u1
     And the upgrade step u1 is `3.0.0`
-    And a upgrade step u2
+    And an upgrade step u2
     And the upgrade step u2 is `3.0.0`
     And a term t1
     And the term t1 violates `v_t11`
@@ -964,3 +913,54 @@ Feature: Migration tools
     And `migrate` prints the upgrade step u2
     And `migrate` prints the term t1
     And `migrate` prints the term t2
+
+  @g57 @r57
+  Scenario: `migrate upgrade` on a repository before 1.0.0 removes each scenario that has the `@deprecated` tag from its feature
+    Given the tracked file `.shop/plugin-version` holds "0.29.0"
+    And the tracked file `spec/index.md` holds:
+      """
+      ---
+      id: bounded-context/example.org/acme/shop
+      title: shop
+      ---
+      # shop
+      """
+    And the tracked file `spec/capabilities/cart.md` holds:
+      """
+      ---
+      id: capability/example.org/acme/shop/cart
+      title: Cart
+      retired: []
+      ---
+      # Cart
+      ## Behaviour
+      - [r1] **When** the shopper applies a code, `cart` shall take ten percent off.
+      """
+    And the tracked file `features/cart.feature` holds:
+      """
+      Feature: Cart
+        @r1 @deprecated
+        Scenario: a code takes ten percent off (deprecated)
+          Given a cart
+      """
+    And the tracked file `.shop/work/i1/w2.md` holds:
+      """
+      ---
+      id: work-item/example.org/acme/shop/w2
+      kind: work-item
+      accepts: [cart#r1]
+      ---
+      # w2
+      """
+    And this repository is `0.29.0`
+    And a feature f1
+    And a scenario s1
+    And the scenario s1 has `@deprecated`
+    And the feature f1 holds the scenario s1
+    And a feature f2
+    And a scenario s2
+    And the scenario s2 has `@deprecated`
+    And the feature f2 holds the scenario s2
+    When the person runs `migrate upgrade`
+    Then `migrate` rewrites the feature f1
+    And `migrate` rewrites the feature f2

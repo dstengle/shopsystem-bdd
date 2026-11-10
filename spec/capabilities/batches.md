@@ -20,8 +20,6 @@ question while building parks its item and the rest of the batch carries on. The
 ## Terms
 - **batch brief** (noun): the brief `work batch start` writes for the one fresh agent that runs the batch: the batch, its tasks and worktrees, the skill it follows, the rules and the lessons, and where it stops. Kind of: file.
 - **review folder** (noun): the scratch directory `batch-<n>-review-<k>` under the batch's worktrees directory, which `work batch brief` writes a review's brief and change into and where the review's findings are saved, and which is never committed. Kind of: file.
-- **readiness bar** (noun): the checks `work ready` makes of an item on a copy of `spec/` with its lines laid in. This: the readiness bar of the plugin that runs the command. Kind of: thing.
-- **pass** (verb, state): an item meets every check of the readiness bar. Forms: passes, passed. Frame: item passes readiness bar.
 - **pass** (verb, state): the test that binds a scenario passes when it runs in a worktree. Forms: passes, passed. Frame: scenario passes in worktree.
 - **fail** (verb, state): the test that binds a scenario fails when it runs in a worktree. Forms: fails, failed. Frame: scenario fails in worktree.
 - **cite** (verb, state): a commit's message or a pull request's body names an item by its `Item: b<n>` line. Forms: cites, cited. Frame: commit cites item. Frame: pull request cites item.

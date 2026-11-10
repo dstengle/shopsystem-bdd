@@ -163,7 +163,7 @@ Feature: Feature file tools
     And the binding b1 binds no scenario
     When the person runs `features bindings`
     Then `features` exits with an error naming the test module t1
-    # entailed: U11 through the definition of refuse
+    # entailed: U12 through the definition of refuse
 
   @g102 @r102
   Scenario: a scenarios call binds every scenario of the feature file it names
@@ -186,7 +186,7 @@ Feature: Feature file tools
     And the feature file f1 has the scenario s1
     When the person runs `features bindings` with the `--unbound` option
     Then `features` exits with an error naming the scenario s1
-    # entailed: U11 through the definition of refuse
+    # entailed: U12 through the definition of refuse
 
   @g104 @r104
   Scenario: `features bindings --unbound --json` names a scenario that no binding binds
@@ -196,7 +196,7 @@ Feature: Feature file tools
     And the feature file f1 has the scenario s1
     When the person runs `features bindings` with the `--unbound` and `--json` options
     Then `features` exits with an error naming the scenario s1
-    # entailed: U11 through the definition of refuse
+    # entailed: U12 through the definition of refuse
 
   @g105 @r105
   Scenario: `features generate` writes the feature of a codified service capability (case 1)
@@ -294,7 +294,7 @@ Feature: Feature file tools
     And the feature f1 has the scenario s1
     When the person runs `features generate` with the `--check` option
     Then `features` exits with an error naming the feature f1
-    # entailed: U11 through the definition of refuse
+    # entailed: U12 through the definition of refuse
 
   @g107 @r107
   Scenario: `features vocab --check` names a step with no handler and its feature
@@ -334,7 +334,7 @@ Feature: Feature file tools
     When the person runs `features vocab` with the `--check` option
     Then `features` exits with an error naming the step s1
     And `features` exits with an error naming the feature f1
-    # entailed: U11 through the definition of refuse
+    # entailed: U12 through the definition of refuse
 
   @g108 @r108
   Scenario: `features generate` writes a scenario of every requirement group of a capability in the language reference

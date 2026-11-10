@@ -207,9 +207,9 @@ def _local_first(vocab, root, keyword):
                 or features_vocab.step(features_vocab.load(root), keyword, text))
         call.docstring, call.datatable, call.fixtures = docstring, datatable, request.getfixturevalue
         table = getattr(sys.modules.get("shop_work_queue_world"), "LOCAL", LOCAL)   # the handlers' copy of this module
-        found = table.get((call.template, call.kind)) or table.get((call.template, None))
-        if found is not None and found(call) is not False:
-            return None
+        for found in (table.get((call.template, call.kind)), table.get((call.template, None))):  # kind's, then any
+            if found is not None and found(call) is not False:
+                return None
         return registry(text, request, docstring, datatable)
     return step_function
 

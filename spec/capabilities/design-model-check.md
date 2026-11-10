@@ -75,9 +75,7 @@ context: product-level artifacts are read only where the files contain them.
 - **number** (noun): a number in a requirement where a duration is due, as the `7` of "within the last 7 days". Kind of: thing.
 - **unit** (noun): a unit of the time pack after a number, such as `days`. Kind of: thing.
 - **permit** (verb, state): a requirement says with "may" that an agent may do an act. Forms: permits, permitted. Frame: requirement permits act.
-- **language** (attribute of capability): the controlled language a capability's file is written in, by the `language:` of its frontmatter. Values: `codified-1`, `codified-2`.
 - **refusal** (noun): a response in which a tool refuses a command. Kind of: thing.
-- **requirement id** (noun): an id `<capability>#r<n>`. Kind of: text.
 - **refer** (verb, state): a scenario names a requirement by its id in an `@r<n>` tag. Forms: refers, referred. Frame: scenario refers to requirement id.
 - **the final layout** (artifact): the files and directories a bounded context keeps, as design-decision/final-layout gives them.
 - **the request form** (artifact): the form `work request` writes a request in.
@@ -85,7 +83,6 @@ context: product-level artifacts are read only where the files contain them.
 - **the capability id form** (artifact): `capability/<context path>/<file name>` as the `id` of a capability's frontmatter, its file's name the last part.
 - **the feature form** (artifact): the path `features/<name>.feature` of a capability `<name>`.
 - **the node id form** (artifact): one line that is the id of a node of the design model.
-- **the language reference** (artifact): the file `grammar/language.md` of the plugin: the sentences of the controlled language and what each means.
 - **corpus** (noun): the files under `grammar/corpus/spec/` of a bounded context: each requirement of a capability with the logical form it is meant to have. Plural: corpora. Kind of: file. This: the corpus of the bounded context the command runs in.
 - **`L1`** (proper noun): the code under which `model logic` prints two requirements that oblige and forbid one act under one trigger and condition. Kind of: thing.
 - **`L7`** (proper noun): the code under which `model logic` prints a requirement that forbids what another permits. Kind of: thing.

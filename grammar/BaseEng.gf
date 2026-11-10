@@ -13,11 +13,11 @@ concrete BaseEng of Base = open SyntaxEng, ParadigmsEng, (E = ExtraEng), (R = Re
     Bound = AdN ;
     Many = Card ;
   oper
-    -- "a" or "an": the RGL's a_Det writes "a" before "up"; "an" before "up" and "un" but "uni" ("an upstream entry",
-    -- "an unparsed line", "a universal condition"; b240), else as the RGL does
+    -- "a" or "an": the RGL's a_Det writes "a" before "up"; "an" before "up", "ur" and "un" but "uni" ("an upstream
+    -- entry", "an urgency", "an unparsed line", "a universal condition"; b240), else as the RGL does
     aDet : SyntaxEng.Det = a_Det ** {s = pre {
       "eu" | "Eu" | "uni" => "a" ;
-      "un" | "up" => "an" ;
+      "un" | "up" | "ur" => "an" ;
       "a" | "e" | "i" | "o" | "A" | "E" | "I" | "O" => "an" ;
       _ => "a"
       }} ;
@@ -34,10 +34,6 @@ concrete BaseEng of Base = open SyntaxEng, ParadigmsEng, (E = ExtraEng), (R = Re
     andAct : Str -> Acts -> Acts = \a, l -> {s = a ++ (case l.m of {False => "and" ; True => ","}) ++ l.s ; m = True} ;
     shall : NP -> Acts -> {s : Str} = \x, l -> {s = (mkUtt x).s ++ "shall" ++ l.s} ;
     may : NP -> Acts -> {s : Str} = \x, l -> {s = (mkUtt x).s ++ "may" ++ l.s} ;
-    -- "a"/"an" as the RGL's, but "an" before "up" and "ur" too: "an upstream entry", "an urgency" (b240)
-    an : Str = pre { "eu" | "Eu" | "uni" => "a" ; "un" | "up" | "ur" => "an" ;
-                     "a" | "e" | "i" | "o" | "A" | "E" | "I" | "O" => "an" ; _ => "a" } ;
-    aDet : Det = lin Det {s = an ; sp = a_Det.sp ; n = a_Det.n ; hasNum = a_Det.hasNum} ;
   lin
     Ubiq p r = {s = p.s ++ r.s ++ "."} ;
     When p t r = {s = p.s ++ "when" ++ t.s ++ "," ++ r.s ++ "."} ;

@@ -10,7 +10,7 @@ shall [x2: command `work quote` (parameter), x3: tool `work` (constant)]
     run(e1, subject: x1, object: x2)
   response [x4: quote, x5: message]
     from(x4, x1)
-    cite(subject: x4, object: x5)
+    cite#2(subject: x4, object: x5)
     write(e2, subject: x3, object: x4)
     commit(e3, subject: x3, object: x4)
 ```
@@ -40,7 +40,7 @@ shall [x1: agent the person (constant), x2: command `work show` (parameter), x4:
     run(e1, subject: x1, object: x2, on: x3)
   response
     every [x5: message]
-      cite(subject: x3, object: x5)
+      cite#2(subject: x3, object: x5)
       scope
         print(e2, subject: x4, object: x5)
 ```

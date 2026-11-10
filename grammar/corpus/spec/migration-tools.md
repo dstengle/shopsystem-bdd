@@ -48,7 +48,7 @@ While a ledger entry supersedes another ledger entry, when the person runs `migr
 shall [x3: agent the person (constant), x4: command `migrate run` (parameter), x6: tool `migrate` (constant)]
   while [x1: ledger entry, x2: ledger entry]
     distinct(x2, x1)
-    supersede(subject: x1, object: x2)
+    supersede#2(subject: x1, object: x2)
   when [x5: bounded context]
     run(e1, subject: x3, object: x4, on: x5)
   response [x7: design-decision]
@@ -65,7 +65,7 @@ While a ledger entry supersedes another ledger entry, when the person runs `migr
 shall [x3: agent the person (constant), x4: command `migrate run` (parameter), x6: tool `migrate` (constant)]
   while [x1: ledger entry, x2: ledger entry]
     distinct(x2, x1)
-    supersede(subject: x1, object: x2)
+    supersede#2(subject: x1, object: x2)
   when [x5: bounded context]
     run(e1, subject: x3, object: x4, on: x5)
   response [x7: design-decision, x8: design-decision]
@@ -83,7 +83,7 @@ shall [x4: agent the person (constant), x5: command `migrate run` (parameter), x
   while [x1: ledger entry, x2: qualifier, x3: ledger entry]
     of(x2, x1)
     distinct(x3, x1)
-    supersede(subject: x1, object: x3)
+    supersede#2(subject: x1, object: x3)
   when [x6: bounded context]
     run(e1, subject: x4, object: x5, on: x6)
   response [x8: design-decision]
@@ -318,12 +318,12 @@ shall [x1: repository "the repository the command runs in" (indexical), x3: agen
     print(e5, subject: x5, object: x2)
 ```
 
-## r45
-Retires: r16. From: b156 r44. Audit: distortion, fixed by ordered comparison and the tag a declared constant (`@deprecated`, a proper noun).
+## r57
+Retires: r45 (r16). From: b156 r44. Audit: distortion, fixed by ordered comparison; the tag said as feature-file-tools says it, "the `@deprecated` tag" (b240's merge: `@deprecated` a proper noun broke feature-file-tools r97-r99).
 
 ```reading
-While the release of this repository is after `0.25.0` and before `1.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite every feature that holds a scenario that has `@deprecated`.
-shall [x1: repository "the repository the command runs in" (indexical), x2: agent the person (constant), x3: command `migrate upgrade` (parameter), x4: tool `migrate` (constant), x7: tag `@deprecated` (constant)]
+While the release of this repository is after `0.25.0` and before `1.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite every feature that holds a scenario that has the `@deprecated` tag.
+shall [x1: repository "the repository the command runs in" (indexical), x2: agent the person (constant), x3: command `migrate upgrade` (parameter), x4: tool `migrate` (constant), x7: tag `@deprecated` (parameter)]
   while
     cmp(release(x1)) after `0.25.0`
     cmp(release(x1)) before `1.0.0`

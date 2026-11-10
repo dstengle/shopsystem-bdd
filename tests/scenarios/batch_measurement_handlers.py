@@ -159,3 +159,17 @@ def has(step):
     assert world(step).code == 0, world(step).err
     assert all("totals" in m for m in figures(step)), step.text
     return None
+
+
+@local("GivenDoes")
+@local("GivenDoesNot")
+def given_has(step):
+    """`the measurement m1 has the session row s1`, `... holds the tool use t1`, `the stage row s1 has no round trip`: the given block holds them, so
+    nothing is recorded (world_fallbacks' "has" of other features fails a step no feature's handler took)."""
+    node = step.request.node
+    scenario = getattr(getattr(node, "obj", None) or getattr(node, "function", None), "__scenario__", None)
+    if scenario is None or pathlib.Path(scenario.feature.filename).name != "batch-measurement.feature":
+        return False
+    if step.term not in ("has", "holds"):
+        return False
+    return None

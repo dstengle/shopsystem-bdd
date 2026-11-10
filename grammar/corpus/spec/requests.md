@@ -172,9 +172,9 @@ shall [x1: agent the person (constant), x2: command `work list` (parameter), x3:
         print(e3, subject: x3, object: x6)
     every [x7: observation]
       not [x8: request]
-        cite(subject: x8, object: x7)
+        cite#3(subject: x8, object: x7)
       not [x9: initiative]
-        cite(subject: x9, object: x7)
+        cite#3(subject: x9, object: x7)
       scope
         print(e4, subject: x3, object: x7)
 ```
@@ -539,7 +539,7 @@ Retires: r45. From: b153 r88. Audit: distortion, fixed by "rejects the commit", 
 While this repository rejects the commit, if the person runs `work request`, then `work` shall refuse the command, name this repository and not post an issue.
 shall [x1: repository "the repository the command runs in" (indexical), x2: commit "the commit the command makes" (indexical), x3: agent the person (constant), x4: command `work request` (parameter), x5: tool `work` (constant)]
   while
-    reject(subject: x1, object: x2)
+    reject#2(subject: x1, object: x2)
   if
     run(e1, subject: x3, object: x4)
   response
@@ -556,7 +556,7 @@ Retires: r46. From: b153 r89. Audit: distortion, fixed by section 5 ("not close 
 While this repository rejects the commit and a request is `open`, if the person runs `work turn` on the request, then `work` shall refuse the command, name this repository, not post a comment and not close the issue of the request.
 shall [x1: repository "the repository the command runs in" (indexical), x2: commit "the commit the command makes" (indexical), x4: agent the person (constant), x5: command `work turn` (parameter), x6: tool `work` (constant)]
   while [x3: request]
-    reject(subject: x1, object: x2)
+    reject#2(subject: x1, object: x2)
     status(x3) = `open`
   if
     run(e1, subject: x4, object: x5, on: x3)
@@ -577,7 +577,7 @@ Retires: r47. From: b153 r90. Audit: distortion, fixed by section 5 ("not close 
 While this repository rejects the commit and a request is `awaiting-asker`, if the person runs `work fits` on the request, then `work` shall refuse the command, name this repository, not post a comment and not close the issue of the request.
 shall [x1: repository "the repository the command runs in" (indexical), x2: commit "the commit the command makes" (indexical), x4: agent the person (constant), x5: command `work fits` (parameter), x6: tool `work` (constant)]
   while [x3: request]
-    reject(subject: x1, object: x2)
+    reject#2(subject: x1, object: x2)
     status(x3) = `awaiting-asker`
   if
     run(e1, subject: x4, object: x5, on: x3)

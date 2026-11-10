@@ -31,7 +31,6 @@ file; it prints what the tools found and names a tool that is missing rather tha
 - **`jedi`** (proper noun): the static analyser jedi, which `tools refs` reads the code with. Kind of: analysis tool.
 - **`gf-rgl`** (proper noun): GF's resource grammar library. Kind of: analysis tool.
 - **the plugin** (proper noun): the shopsystem-bdd plugin, whose `scripts/tools` this capability is. Kind of: thing.
-- **version** (noun): one release of an analysis tool, as `ruff==0.17.0`. Kind of: thing.
 - **pin** (verb, state): the plugin names the one version of an analysis tool that `tools install` installs. Forms: pins, pinned. Frame: the plugin pins version.
 - **pip command** (noun): the command `<interpreter> -m pip install <package>` that `tools install` runs for one analysis tool. Kind of: text.
 - **install** (verb, action): `tools` puts an analysis tool, or one version of it, into the Python interpreter with pip. Forms: installs, installed. Frame: `tools` installs analysis tool. Frame: `tools` installs version.

@@ -64,7 +64,6 @@ not a line here for each construct.
 | feature | of | capability | one |
 | step | of | feature |  |
 | handler | of | step |  |
-| requirement | of | capability |  |
 | requirement group | of | capability |  |
 | requirement | of | requirement group |  |
 | scenario | of | requirement group | one |

@@ -28,12 +28,12 @@ for _template, _term in (("ThenDoes", "keep"), ("ThenDoes", "remove"), ("ThenR",
                        ("WhenHappens", "merge"),
                        # requests' (codified-2): its steps are taken by requests_handlers_givens' and _thens' locals
                        ("GivenK", "comment"), ("GivenK_A", "comment"), ("GivenK_A", "entry"), ("GivenK_A", "issue"),
-                       ("GivenDoes", "address"), ("GivenDoes", "cite"), ("GivenDoes", "has"), ("GivenDoes", "holds"),
+                       ("GivenDoes", "address"), ("GivenDoes", "has"), ("GivenDoes", "holds"),
                        ("GivenDoes", "on"), ("GivenDoes", "originate"), ("GivenDoes", "proposed in"),
                        ("GivenDoes", "reject"), ("GivenDoesNot", "address"), ("GivenDoesNot", "holds"),
                        ("GivenDoesNot", "identify"), ("GivenDoesNot", "originate"), ("ThenDoes", "has"),
-                       ("ThenDoes", "name"), ("ThenDoes", "proposed in"), ("ThenDoes", "raised for"),
-                       ("ThenDoes", "refuse"), ("ThenDoes", "set")):
+                       ("ThenDoes", "proposed in"), ("ThenDoes", "raised for"),
+                       ("ThenDoes", "set")):
     handler(_template, _term)(untaken)
 
 
@@ -55,7 +55,7 @@ def given_recorded(step):
 
 
 for _template, _term in (("ThenDoes", "has"), ("ThenDoes", "holds"), ("ThenDoes", "for"), ("ThenDoes", "give"),
-                         ("ThenDoes", "name"), ("ThenDoes", "refuse"), ("ThenDoes", "supersede"),
+                         ("ThenDoes", "supersede"),
                          ("ThenDoes", "include"), ("ThenDoes", "rewrite"), ("GivenK_C", "repository"),
                          ("ThenDoes", "relocate"), ("ThenDoes", "rename"), ("ThenK_A", "design-decision")):
     handler(_template, _term)(untaken)
@@ -63,7 +63,7 @@ for _template, _term in (("ThenDoes", "has"), ("ThenDoes", "holds"), ("ThenDoes"
 # The keys of grammar 4's steps that more than one codified-2 feature may say (b240 phase 20): a feature's own `local`
 # handler of the template takes its steps (readiness_handlers_givens.py, readiness_handlers_thens.py); these are
 # what is left when none does.
-for _template, _term in (("ThenDoes", "refuse"), ("ThenDoes", "name"), ("ThenDoes", "holds"), ("ThenDoes", "set"),
+for _template, _term in (("ThenDoes", "holds"), ("ThenDoes", "set"),
                          ("GivenDoes", "has"), ("GivenDoes", "holds"), ("GivenDoes", "pass"),
                          ("GivenDoes", "violate"), ("GivenDoesNot", "pass"), ("GivenDoesNot", "meet"),
                          ("GivenK", "relation row"), ("GivenK", "upstream entry"),
@@ -77,5 +77,5 @@ for _template, _term in (("ThenDoes", "refuse"), ("ThenDoes", "name"), ("ThenDoe
 # takes its steps (design-model-check's in design_model_check_handlers_facts.py); these are what is left when none does.
 for _template, _term in (("GivenDoes", "has"), ("GivenDoes", "holds"), ("GivenDoes", "violate"),
                          ("GivenDoesNot", "holds"), ("GivenK", "rule"), ("GivenK", "requirement id"),
-                         ("GivenK", "text"), ("ThenDoes", "refuse"), ("ThenDoes", "name")):
+                         ):
     handler(_template, _term)(untaken)

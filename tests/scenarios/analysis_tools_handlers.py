@@ -18,6 +18,8 @@ if str(HERE.parent) not in sys.path:
 
 from vocab import handler
 
+four = sys.modules["shop_world_four"].four   # loaded before the handlers, by the glob of world_*.py
+
 from scenarios import analysis_tools_world as w
 
 FEATURE = HERE.parents[1] / "features" / "analysis-tools.feature"
@@ -128,7 +130,7 @@ def given_manifest(step):
 INTERPRETERS = {"`.venv/bin/python`": ".venv", "`venv/bin/python`": "venv", "`$VIRTUAL_ENV/bin/python`": "$VIRTUAL_ENV"}
 
 
-@handler("GivenDoes", "exist")
+@four("GivenDoes", "exist", "analysis-tools")
 @handler("GivenDoesNot", "exist")
 def given_exists(step):
     """An interpreter of the first match exists (made where `tools` looks for it) or does not (left out); a coverage
@@ -149,7 +151,7 @@ def given_exists(step):
         w.fake(step.repo / where)
 
 
-@handler("GivenDoes", "holds")
+@four("GivenDoes", "holds", "analysis-tools")
 def given_holds(step):
     """A coverage map holds a test (the test's file is in the project the map is made of), a Python file holds a
     test, a file holds a finding."""
@@ -168,7 +170,7 @@ def given_executes(step):
     function(step, step.names[-1], "untested" if step.subject.startswith("no ") else "executed")
 
 
-@handler("GivenDoes", "has")
+@four("GivenDoes", "has", "analysis-tools")
 def given_has(step):
     """A Python file has a function (src/cart.py), no Python file has one (a name no file defines), an analysis tool
     has a finding (`ruff`, whose finding the stand-in prints)."""

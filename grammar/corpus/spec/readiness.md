@@ -8,7 +8,7 @@ While an item is `shaped` and the item passes the readiness bar, when the person
 shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x3: agent the person (constant), x4: command `work ready` (parameter), x5: tool `work` (constant)]
   while [x1: item]
     status(x1) = `shaped`
-    pass(subject: x1, object: x2)
+    pass#2(subject: x1, object: x2)
   when
     run(e1, subject: x3, object: x4, on: x1)
   response
@@ -24,7 +24,7 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
   while [x1: item]
     status(x1) = `shaped`
     not
-      pass(subject: x1, object: x2)
+      pass#2(subject: x1, object: x2)
   if
     run(e1, subject: x3, object: x4, on: x1)
   response

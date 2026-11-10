@@ -69,7 +69,7 @@ While an item is `ready` and the item passes the readiness bar and the item has 
 shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x6: command `work batch start` (parameter), x7: tool `work` (constant)]
   while [x1: item]
     status(x1) = `ready`
-    pass(subject: x1, object: x2)
+    pass#2(subject: x1, object: x2)
     not [x3: dependency, x4: item]
       not
         status(x4) = `delivered`
@@ -95,7 +95,7 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
   while [x1: item]
     status(x1) = `ready`
     not
-      pass(subject: x1, object: x2)
+      pass#2(subject: x1, object: x2)
   when
     run(e1, subject: x3, object: x4)
   response
@@ -284,7 +284,7 @@ shall [x8: command `work batch done` (parameter), x9: tool `work` (constant)]
     status(x4) = `needs-input`
     of(x5, x4)
     of(x6, x3)
-    fail(subject: x5, in: x6)
+    fail#2(subject: x5, in: x6)
   when [x7: session]
     run(e1, subject: x7, object: x8, on: x3)
   response
@@ -307,7 +307,7 @@ shall [x8: command `work batch done` (parameter), x9: tool `work` (constant)]
     status(x4) = `in-batch`
     of(x5, x4)
     of(x6, x3)
-    pass#2(subject: x5, in: x6)
+    pass(subject: x5, in: x6)
   when [x7: session]
     run(e1, subject: x7, object: x8, on: x3)
   response

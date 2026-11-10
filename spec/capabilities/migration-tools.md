@@ -5,7 +5,7 @@ narrator: a person or session migrating a repository to the final layout or upgr
 group: service
 language: codified-2
 rests_on: [design-decision/migration-in-one-pass, design-decision/living-plan-to-work-items, design-decision/final-layout, design-decision/references-are-ids, design-decision/capability-ids-are-context-scoped, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/upgrades-between-plugin-releases, design-decision/work-items-named-by-ids, design-decision/answers-not-rulings, design-decision/the-ledger-is-tracked]
-retired: [g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12, g13, g14, g15, g16, g17, g18, g19, g20, g21, g24, g25, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25]
+retired: [g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12, g13, g14, g15, g16, g17, g18, g19, g20, g21, g24, g25, g45, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r45]
 unbuilt: []
 ---
 
@@ -30,14 +30,13 @@ what it needs to know at its start and before it is compacted.
 - **rename** (verb, action): `migrate` gives a file another name with git. Forms: renames, renamed. Frame: `migrate` renames file.
 - **decision ledger** (noun): the old system's ledger of decisions, the file `spec/decisions.md`. Kind of: file.
 - **ledger entry** (noun): one entry `## decision/<name>` of a decision ledger. Plural: ledger entries. Kind of: text.
-- **supersede** (verb, state): a ledger entry or a design-decision names another, whole or in part, as the one it takes the place of. Forms: supersedes, superseded. Frame: ledger entry supersedes ledger entry. Frame: design-decision supersedes design-decision.
+- **supersede** (verb, state): a ledger entry or a design-decision names another, whole or in part, as the one it takes the place of. Forms: supersedes, superseded. Frame: ledger entry supersedes ledger entry.
 - **qualifier** (noun): the words after the id a ledger entry supersedes, as `(in part)`. Kind of: text.
 - **ledger number** (noun): the `<nnnn>` before the name of a ledger entry. Kind of: text.
 - **stem** (noun): the part of the id of a ledger entry after `decision/`, or the name of a tracked file without its directory and its extension. Kind of: text.
 - **Behaviour line** (noun): a line of the `## Behaviour` of a capability of the old system. Kind of: text.
 - **line id** (noun): the `[r<n>]` of a Behaviour line. Kind of: text.
 - **plugin version file** (noun): the file `.shop/plugin-version`, one line naming the plugin release a repository is on. Kind of: file.
-- **version** (noun): a plugin release written `<major>.<minor>.<patch>`. Kind of: text.
 - **content** (noun): the text a file holds. Kind of: text.
 - **shop directory** (noun): the directory `.shop/` of a repository. Kind of: file.
 - **upgrade step** (noun): one step of `migrate upgrade` from one plugin release to the next, named by its title. Kind of: thing.
@@ -47,9 +46,6 @@ what it needs to know at its start and before it is compacted.
 - **stage directory** (noun): the directory `.shop/work/<initiative>/runs/<work-item>/` of a work-item's stages. Kind of: file.
 - **initiative log** (noun): the file `.shop/work/<initiative>/log.jsonl` of an initiative of plugin 1.x. Kind of: file.
 - **restated file** (noun): the file `spec/restated.json`, the 0.29 requirements by id. Kind of: file.
-- **language** (attribute of capability): the marker `language:` of a capability's frontmatter. Values: `codified-1`, `codified-2`.
-- **tag** (noun): a Gherkin tag of a scenario. Kind of: text.
-- **`@deprecated`** (proper noun): the tag of a scenario the old system deprecated. Kind of: tag.
 - **frozen notice** (noun): the file `.shop/work/FROZEN.md`, which says that the queue of plugin 1.x is frozen. Kind of: file.
 - **frozen request** (noun): a request of plugin 1.x under `.shop/work/requests/`. Kind of: file.
 - **status** (attribute of frozen request): Values: `open`, `awaiting-asker`, `awaiting-upstream`, `accepted`, `delivered`, `refused`, `withdrawn`.
@@ -83,7 +79,6 @@ what it needs to know at its start and before it is compacted.
 | shop directory | of | repository | one |
 | capability | of | repository |  |
 | scenario | in | feature |  |
-| tag | of | scenario |  |
 | decisions index | of | repository | one |
 | frozen notice | of | repository | one |
 | initiative | of | repository |  |
@@ -429,8 +424,8 @@ the tracked file `.shop/work/i1/w2.md` holds:
   # w2
 ```
 
-### [g45] `migrate upgrade` on a repository before 1.0.0 removes each scenario that has `@deprecated` from its feature
-- [r45] While the release of this repository is after `0.25.0` and before `1.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite every feature that holds a scenario that has `@deprecated`.
+### [g57] `migrate upgrade` on a repository before 1.0.0 removes each scenario that has the `@deprecated` tag from its feature
+- [r57] While the release of this repository is after `0.25.0` and before `1.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite every feature that holds a scenario that has the `@deprecated` tag.
 
 ```given
 the tracked file `.shop/plugin-version` holds "0.29.0"
