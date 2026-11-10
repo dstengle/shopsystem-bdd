@@ -38,6 +38,7 @@ class Vocab:
     verbs: list = field(default_factory=list)       # Verb
     rows: list = field(default_factory=list)        # (k1, word, k2) of each relation row whose kinds are kinds here
     words: set = field(default_factory=set)         # every spelling a code literal may not be
+    this: dict = field(default_factory=dict)        # kind -> its entry's `This:`, the run's own thing of the kind
 
     def ancestors(self, kind):
         """The kind itself and every kind above it, nearest first."""
@@ -106,6 +107,7 @@ def read(root):
     for kind, parent in list(vocab.kinds.items()):
         if parent is not None and parent not in vocab.kinds:
             vocab.kinds[kind] = "thing"
+    vocab.this = {t.term: t.this for t in lex.of("kind") + lex.of("resource") if t.this}
     plural = {t.term: t.plural for t in lex.terms if t.plural}
     vocab.nouns = {k: (k, plural.get(k) or regular_plural(k)) for k in vocab.kinds}
     vocab.actors = [(t.term, t.supertype if t.supertype in vocab.kinds else "thing") for t in lex.of("actor")]
@@ -118,5 +120,5 @@ def read(root):
         if t.aspect in spec_lexicon.ASPECTS and read_frames:
             vocab.verbs.append(Verb(t, t.aspect, read_frames))
     vocab.words = lex.words() | {sg for sg, _ in vocab.nouns.values()} | {pl for _, pl in vocab.nouns.values()}
-    vocab.words |= {spec_frames.s3(v.term) for v in vocab.verbs} | {"its", "no", "only", "has", "have", "holds"}
+    vocab.words |= {spec_frames.s3(v.term) for v in vocab.verbs} | {"its", "no", "only", "has", "have", "holds", "this"}
     return vocab

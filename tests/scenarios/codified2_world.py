@@ -14,6 +14,13 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
                          "the verb write does not agree in number with its subject"),
          "optioned": ("When the person runs `work backlog` with the `--json` option, `work` shall exit successfully.",
                       None),
+         # the reading rules' refusals (I11b): a "the" with no antecedent (R2), a negated indefinite in a While
+         # clause (R4), a line that obliges with no trigger (R12)
+         "antecedentless": ("When the person runs `work start`, `work` shall print the stage.",
+                            '"the stage" has no antecedent'),
+         "unquantified": (("While a session does not follow a stage, when the person runs `work start`, `work` shall "
+                           "exit successfully."), 'says "does not follow a stage"'),
+         "triggerless": ("`work` shall write a file.", None),
          "misaspected": ("When a session follows a stage, `work` shall print the stage.",
                          "the verb follow is a state, and a trigger takes an action"),
          "genitive": (("When a session ends a stage, `work` shall print the status of the stage and the worktree of "
@@ -29,6 +36,8 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
          # the list "a stage and the stage" belongs to follow or to print: two meanings, refused naming the requirement
          "ambiguous": (("When the person runs `work start`, `work` shall print every session that follows a stage and "
                         "the stage."), None),
+         # "this" before command, whose entry in the CLI pack has This: (call 6); "the output" would be refused (R2)
+         "indexical": ("When the person runs this command, `work` shall print this command.", None),
          # a verb short of a noun its frame takes, or with one of the wrong kind (I10): the refusal names the verb
          "objectless": ("When the person runs `work start`, `work` shall write.", "the verb write takes an object"),
          "mistyped": ("When the person runs `work start`, `work` shall write a stage.",
