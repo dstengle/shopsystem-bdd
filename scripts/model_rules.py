@@ -61,10 +61,11 @@ def fires(code, example, kind):
     if kind == "facts":
         return any(name == code for name, _ in solve(Facts(example))[0])
     import spec_lexicon
+    import spec_rgl_vocab
     with tempfile.TemporaryDirectory() as root:
         (Path(root) / "spec").mkdir()
         (Path(root) / "spec" / "index.md").write_text(INDEX + example)
-        return any(found[0] == code for found in spec_lexicon.problems(spec_lexicon.read(root)))
+        return any(found[0] == code for found in spec_lexicon.problems(spec_lexicon.read(root), spec_rgl_vocab.outer(root)))
 
 
 def wrong(entries):

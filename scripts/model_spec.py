@@ -19,6 +19,7 @@ import spec_lexicon
 import spec_packs
 import spec_read
 import spec_read_given
+import spec_rgl_vocab
 import spec_tree
 
 GRAMMAR_MISSING = object()
@@ -53,7 +54,7 @@ class SpecReading:
                 self.problems.append(f"spec/index.md: glossary bullet {n} is not '- **<term>** (<part of speech>): <text>'")
         lexicon = spec_lexicon.read(self.root)
         cats, n, terms = {}, 0, lexicon.terms
-        words, known, kinds = Counter(t.term for t in terms), spec_frames.names(lexicon), lexicon.kind_names()
+        words, known, kinds = Counter(t.term for t in terms), spec_frames.names(lexicon, spec_rgl_vocab.outer(self.root)), lexicon.kind_names()
         overlapping = spec_frames.overlapping(lexicon)
         unmarked = spec_packs.unmarked(self.root, lexicon)     # v_t16, and v_t17 of an import of no pack
         for name in spec_packs.missing(self.root):

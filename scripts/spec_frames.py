@@ -107,8 +107,9 @@ def misread(term, names):
         word, role, " (nearest: %s)" % ", ".join(near) if near else "")
 
 
-def names(lexicon):
-    return lexicon.kind_names() | {t.term for t in lexicon.of("actor")}
+def names(lexicon, outer=frozenset()):
+    """The kinds and actors a frame may name: the lexicon's, and `outer` (spec_rgl_vocab.outer, b199)."""
+    return lexicon.kind_names() | {t.term for t in lexicon.of("actor")} | outer
 
 
 def _blank(text):
@@ -146,10 +147,10 @@ def overlapping(lexicon):
     return out
 
 
-def problems(lexicon):
+def problems(lexicon, outer=frozenset()):
     """v_t11, v_t12, v_t13 (a `Frame:` that does not read), v_t14 (a verb with no aspect) and v_t15 (two senses
     that overlap) as (code, term, message), and v_t4 for an actor whose `Kind of:` names no kind."""
-    known, kinds, out = names(lexicon), lexicon.kind_names(), []
+    known, kinds, out = names(lexicon, outer), lexicon.kind_names() | outer, []
     out += [("v_t14", t.term, "%s: the verb's entry says neither state nor action: write (verb, state) or (verb, "
              "action)" % t.where) for t in lexicon.of("event") if not t.aspect]
     out += [("v_t15", v, "two entries of the verb %s take, in every slot, the same kind or one kind under the "

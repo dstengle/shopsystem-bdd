@@ -14,6 +14,7 @@ from pathlib import Path
 import spec_grammar
 import spec_lexicon
 import spec_read
+import spec_rgl_vocab
 from migrate_upgrade_ids import Changes
 
 NAME = "verb frames"
@@ -38,10 +39,10 @@ def sources(root):
     return out + [(p.relative_to(root).as_posix(), "Terms") for p in sorted((root / "spec/capabilities").glob("*.md"))]
 
 
-def frames(lexicon):
+def frames(lexicon, outer=frozenset()):
     """Each verb with no frame (v_t11), each whose frame does not read (v_t13) and each relational condition (v_t12):
     the message names its file."""
-    return ["%s: %s %s, %s" % (NAME, code, term, message) for code, term, message in spec_lexicon.problems(lexicon)
+    return ["%s: %s %s, %s" % (NAME, code, term, message) for code, term, message in spec_lexicon.problems(lexicon, outer)
             if code in ("v_t11", "v_t12", "v_t13")]
 
 
@@ -83,5 +84,5 @@ def plan(root):
         shutil.copytree(root / "spec", copy / "spec")
         for rel, text in changes.texts.items():
             (copy / rel).write_text(text)
-        changes.notes = frames(spec_lexicon.read(copy)) + unparsed(copy)
+        changes.notes = frames(spec_lexicon.read(copy), spec_rgl_vocab.outer(copy)) + unparsed(copy)
     return changes
