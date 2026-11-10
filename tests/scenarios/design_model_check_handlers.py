@@ -143,7 +143,7 @@ def model_decisions(step):
 
 @handler("WhenRuns", "`model rules`")
 def model_rules(step):
-    run_model(step, "rules", *flag(step, "--json"))
+    run_model(step, "rules", *flag(step, "--json"), *flag(step, "--write"), *flag(step, "--check"))
 
 
 @handler("WhenRuns", "`model parse`")

@@ -5,6 +5,8 @@
 % reads a repository's files. Every v_ relation must be empty; w_ relations are warnings.
 % Each shown relation has one plain label, label("<code>", "<label>"), written beside its rule and only here;
 % `model check` and `model rules` read them from the solve (design-model-check r2, r65).
+% Below each label, `% fail <code>: <facts>` gives facts the rule fires on and `% pass <code>: <facts>` facts it
+% does not: `model rules --write` solves each pair and writes them into the rule catalogue grammar/rules.md.
 % The requirement language (GF parse, `model logic`) is outside this file: it joins the graph by the facts parsed/unparsed/
 % ambiguous, member_of, in(G, C), generates and restates (C29). Rules over facts the codified reader emits are
 % `#defined` and silent until it emits them. A file without `language: codified-1` is not read: it is v_p0.
@@ -104,6 +106,8 @@ nonorigin(X)    :- node(X, K), not origin(K).
 % 1 (needs) is retired in v4 (C22).
 % 2. standing edges only between standing artifacts, one clause per relation
 label("v2", "a standing edge touches something that is not standing").
+% fail v2: node("c","capability"). node("i","initiative"). serves("c","i").
+% pass v2: node("c","capability"). node("j","job"). serves("c","j").
 v2(C, J) :- serves(C, J),       nonstanding(C).    v2(C, J) :- serves(C, J),       nonstanding(J).
 v2(C, D) :- using(C, _, D),     nonstanding(C).    v2(C, D) :- using(C, _, D),     nonstanding(D).
 v2(C, D) :- rests_on(C, D),     nonstanding(C).    v2(C, D) :- rests_on(C, D),     nonstanding(D).
@@ -119,20 +123,32 @@ v2(R, X) :- seam(R, _, X),      nonstanding(X).
 
 % 3. a resolution names a requirement (never a scenario), and the spec has it (§7.2: v4's and the live clause, one rule)
 label("v3", "a request's resolution names something that is not a requirement of the spec").
+% fail v3: node("q","request"). resolution("q","s"). node("s","scenario").
+% pass v3: node("q","request"). resolution("q","r"). node("r","requirement").
 v3(Q, R) :- resolution(Q, R), not node(R, "requirement"), not old_ref(R).      % a 0.29 id is history (§13.4)
 
 label("v4", "a depends_on that no using gives").
+% fail v4: authored_depends_on("c","d").
+% pass v4: authored_depends_on("c","d"). using("c","i","d").
 v4(C, D) :- authored_depends_on(C, D), not using_any(C, D).
 label("v5", "a using against the pin").
+% fail v5: using("c","i","d"). in("c","x"). in("d","y").
+% pass v5: using("c","i","d"). in("c","x"). in("d","y"). pins("x","y","1.0").
 v5(C, D) :- using(C, _, D), in(C, X), in(D, Y), X != Y, not pinned(X, Y).
 label("v6", "a crossing names no seam").
+% fail v6: crosses("t","m").
+% pass v6: crosses("t","m"). node("m","context-seam").
 v6(T, R)  :- crosses(T, R), not node(R, "context-seam").
 label("v6b", "a job-thread is mapped with a crossing that names no seam").
+% fail v6b: status("t","mapped"). crosses("t","m").
+% pass v6b: status("t","mapped"). crosses("t","m"). node("m","context-seam").
 v6b(T)    :- status(T, "mapped"), crosses(T, R), not node(R, "context-seam").
 
 % 7. a request between two contexts is across a seam between them (§7.2: v4's); judged once the repository maps
 % seams, as w_unserved_cap is once it maps jobs. upstream names no client (v7c).
 label("v7", "a request between two contexts is across no seam between them").
+% fail v7: node("m","context-seam"). asker("q","a"). upstream("q","b").
+% pass v7: node("m","context-seam"). seam("m","a","b"). asker("q","a"). upstream("q","b").
 maps_seams :- node(_, "context-seam").
 across_seam(X, Y) :- seam(_, X, Y).     across_seam(X, Y) :- seam(_, Y, X).
 v7(Q) :- asker(Q, X), upstream(Q, Y), X != Y, X != "internal", not product_asker(Q), not across_seam(X, Y), maps_seams.
@@ -140,76 +156,128 @@ product_asker(Q) :- asker(Q, X), X = "product".
 product_asker(Q) :- asker(Q, X), X >= "product/", X < "product0".   % "product/<path>"
 standing_edge(U, D) :- using(U, _, D).
 label("v7c", "an upstream names a downstream client").
+% fail v7c: in("u","x"). in("d","y"). pins("y","x","1.0"). using("u","i","d").
+% pass v7c: in("u","x"). in("d","y"). pins("x","y","1.0"). using("u","i","d").
 v7c(U, D) :- in(U, X), in(D, Y), pins(Y, X, _), standing_edge(U, D).
 
 
 label("v10a", "a source that is not an origin").
+% fail v10a: source("i","j"). node("j","job").
+% pass v10a: source("i","o"). node("o","observation").
 v10a(I, R) :- source(I, R), nonorigin(R).
 v10a(I, R) :- source(I, R), not node(R, _).          % a source naming nothing is not an origin
 label("v10b", "a record is about nothing").
+% fail v10b: node("r","design").
+% pass v10b: node("r","design"). about("r","c"). node("c","capability").
 v10b(R)    :- node(R, K), record(K), not has_about(R).
 label("v10c", "a record is about something that is not standing").
+% fail v10c: about("r","i"). node("i","initiative").
+% pass v10c: about("r","c"). node("c","capability").
 v10c(R)    :- about(R, A), not is_standing(A).
 
 label("v11", "a capability without exactly one narrator").
+% fail v11: node("c","capability").
+% pass v11: node("c","capability"). narrator("c","a client").
 v11(C) :- node(C, "capability"), not has_narrator(C).
 v11(C) :- narrator(C, N1), narrator(C, N2), N1 != N2.
 
 label("v12a", "a decision has no summary").
+% fail v12a: node("d","design-decision").
+% pass v12a: node("d","design-decision"). summary("d","s").
 v12a(D) :- node(D, "design-decision"), not has_summary(D).
 sup_tc(A, B) :- supersedes(A, B).
 sup_tc(A, C) :- sup_tc(A, B), supersedes(B, C).
 label("v12b", "a supersedes cycle").
+% fail v12b: supersedes("a","b"). supersedes("b","a").
+% pass v12b: supersedes("a","b").
 v12b(D) :- sup_tc(D, D).
 
 label("v13", "a revisit signal no one reads").
+% fail v13: revisit_signal("d","m").
+% pass v13: revisit_signal("d","m"). node("m","measurement").
 v13(D) :- revisit_signal(D, Sig), Sig != "requests", not node(Sig, "measurement").
 
 % 15. ids: present, unique within the capability, never reused (C26)
 label("v15a", "a requirement has no id").
+% fail v15a: node("q","requirement").
+% pass v15a: node("q","requirement"). req_id("q","c",1).
 v15a(Q)     :- node(Q, "requirement"), not has_req_id(Q).
 label("v15b", "two requirements share an id").
+% fail v15b: req_id("q1","c",1). req_id("q2","c",1).
+% pass v15b: req_id("q1","c",1). req_id("q2","c",2).
 v15b(Q1,Q2) :- req_id(Q1, C, N), req_id(Q2, C, N), Q1 < Q2.
 label("v15c", "a retired id is used again").
+% fail v15c: req_id("q","c",1). retired_id("c",1).
+% pass v15c: req_id("q","c",2). retired_id("c",1).
 v15c(Q)     :- req_id(Q, C, N), retired_id(C, N).
 label("v15d", "a requirement id outside its capability").
+% fail v15d: req_id("q","c",1).
+% pass v15d: req_id("q","c",1). member_of("q","g"). in("g","c"). node("g","requirement-group").
 v15d(Q, C)  :- req_id(Q, C, _), not has_req(C, Q).
 label("v15g", "a group has no id, or shares one").
+% fail v15g: node("g","requirement-group").
+% pass v15g: node("g","requirement-group"). group_id("g","c",1).
 v15g(G)     :- node(G, "requirement-group"), not has_group_id(G).
 v15g(G)     :- group_id(G, C, N), group_id(G2, C, N), G != G2.
 label("v15h", "a universal condition has no id, or shares one").
+% fail v15h: node("u","universal-condition").
+% pass v15h: node("u","universal-condition"). u_id("u",1).
 v15h(U)     :- node(U, "universal-condition"), not has_u_id(U).
 v15h(U)     :- u_id(U, N), u_id(U2, N), U != U2.
 label("v15i", "an id is used again: retired, or added though live").
+% fail v15i: group_id("g","c",1). retired_group("c",1).
+% pass v15i: group_id("g","c",2). retired_group("c",1).
 v15i(G)     :- group_id(G, C, N), retired_group(C, N).
 v15i(X)     :- adds(P, X), status(P, S), S = ("drafted"; "awaiting-answer"), group_of(X, G), in(G, C), codified(C).
 label("v15j", "a group restates an id 0.29 did not have").
+% fail v15j: restates("g","c#r9@0.29").
+% pass v15j: restates("g","c#r9@0.29"). restated_id("c#r9@0.29").
 v15j(G, O)  :- restates(G, O), not restated_id(O).
 label("v15k", "the statements of a group differ in trigger or condition").
+% fail v15k: member_of("q1","g"). member_of("q2","g"). pre("q1","a"). pre("q2","b").
+% pass v15k: member_of("q1","g"). member_of("q2","g"). pre("q1","a"). pre("q2","a").
 v15k(G)     :- member_of(Q1, G), member_of(Q2, G), pre(Q1, K1), pre(Q2, K2), K1 != K2.
 label("v15l", "a group has more than one statement").
+% fail v15l: node("g","requirement-group"). member_of("q1","g"). member_of("q2","g").
+% pass v15l: node("g","requirement-group"). member_of("q1","g").
 v15l(G)     :- node(G, "requirement-group"), member_of(Q1, G), member_of(Q2, G), Q1 < Q2.
 label("v15m", "a given line is not example data").
+% fail v15m: given_condition("g","a work-item that is drafted").
+% pass v15m: group_id("g","c",1).
 v15m(G, L)  :- given_condition(G, L).
 label("v15n", "two groups of a capability share features, condition and trigger").
+% fail v15n: group_id("g1","c",1). group_id("g2","c",2). member_of("q1","g1"). member_of("q2","g2"). pre("q1","k"). pre("q2","k").
+% pass v15n: group_id("g1","c",1). group_id("g2","c",2). member_of("q1","g1"). member_of("q2","g2"). pre("q1","k"). pre("q2","k2").
 v15n(G1, G2) :- group_id(G1, C, _), group_id(G2, C, _), member_of(Q1, G1), member_of(Q2, G2), pre(Q1, K),
                 pre(Q2, K), G1 < G2.
 
 % scenarios: one per group, generated (C4, C6, C28)
 label("v_s1", "a scenario names no group").
+% fail v_s1: node("s","scenario").
+% pass v_s1: node("s","scenario"). generates("g","s").
 v_s1(S) :- node(S, "scenario"), not generated(S).
 label("v_s2", "a scenario is generated from more than one group").
+% fail v_s2: generates("g1","s"). generates("g2","s").
+% pass v_s2: generates("g1","s").
 v_s2(S) :- generates(G1, S), generates(G2, S), G1 != G2.
 label("v_s3", "a group has no scenario").
+% fail v_s3: node("g","requirement-group"). in("g","c").
+% pass v_s3: node("g","requirement-group"). in("g","c"). generates("g","s").
 v_s3(G) :- node(G, "requirement-group"), in(G, C), not has_scenario(G), not logic_only(G), not group(C, "guarantees").
 label("v_s4", "a requirement of a codified capability is in no group, or in two").
+% fail v_s4: req_id("q","c",1). codified("c").
+% pass v_s4: req_id("q","c",1). codified("c"). member_of("q","g").
 v_s4(Q) :- req_id(Q, C, _), codified(C), not grouped(Q).
 v_s4(Q) :- member_of(Q, G1), member_of(Q, G2), G1 != G2.
 
 % 19. done-ness of a job-thread and a request (the initiatives' rules went with the frozen queue: plan 9, D16)
 label("v_d2", "a built job-thread has a request not delivered").                            % §7.2: v4's
+% fail v_d2: node("t","job-thread"). status("t","built"). node("q","request"). req_part_of("q","t").
+% pass v_d2: node("t","job-thread"). status("t","built"). node("q","request"). req_part_of("q","t"). status("q","delivered").
 v_d2(T) :- status(T, "built"), node(T, "job-thread"), req_part_of(Q, T), node(Q, "request"), not status(Q, "delivered").
 label("v_d4", "a delivered request has an accepted line its resolution does not name").
+% fail v_d4: status("q","delivered"). outcome("q",1,"accepted"). line("q",1,"x").
+% pass v_d4: status("q","delivered"). outcome("q",1,"accepted"). line("q",1,"x"). resolution_of_line("q",1).
 v_d4(Q, N) :- status(Q, "delivered"), outcome(Q, N, "accepted"), line(Q, N, _), not resolution_of_line(Q, N).
 
 % decision tiers (decision-tiers r2, r3, r6; plan 6 D4): a check decision names a test, a requirement decision a
@@ -217,20 +285,30 @@ v_d4(Q, N) :- status(Q, "delivered"), outcome(Q, N, "accepted"), line(Q, N, _), 
 has_test(D) :- enforced_test(D, _).
 has_req_entry(D) :- enforced_req(D, _).
 label("v_d6", "a check decision names no test").
+% fail v_d6: tier("d","check").
+% pass v_d6: tier("d","check"). enforced_test("d","tests/scripts/test_x.py").
 v_d6(D) :- tier(D, "check"), not has_test(D).
 label("v_d7", "a requirement decision names no requirement").
+% fail v_d7: tier("d","requirement").
+% pass v_d7: tier("d","requirement"). enforced_req("d","c#r1").
 v_d7(D) :- tier(D, "requirement"), not has_req_entry(D).
 label("v_d8", "an accepted decision supersedes one still accepted").
+% fail v_d8: supersedes("n","o"). status("n","accepted"). status("o","accepted").
+% pass v_d8: supersedes("n","o"). status("n","accepted"). status("o","superseded").
 v_d8(Old, New) :- supersedes(New, Old), status(New, "accepted"), status(Old, "accepted").
 
 % 16-18. requests (r113, r115, r117, r121).
 label("v17", "a request that is part of no job-thread, cites no origin and is raised for no request").
+% fail v17: node("q","request").
+% pass v17: node("q","request"). req_source("q","o"). node("o","observation").
 in_thread(Q)    :- req_part_of(Q, T), node(T, "job-thread").
 in_thread(Q)    :- req_thread(Q).
 cites_origin(Q) :- req_source(Q, O), node(O, K), origin(K).
 raises_a_request(Q) :- req_raised_for(Q, _).
 v17(Q) :- node(Q, "request"), not in_thread(Q), not cites_origin(Q), not raises_a_request(Q).
 label("v18d", "an id of a kind kept in .shop/work/ with another context's path, other than the request a request is raised for").
+% fail v18d: foreign("request/a/b/c/q1").
+% pass v18d: foreign("request/a/b/c/q1"). req_raised_for("q","request/a/b/c/q1").
 raised_for_any(R) :- req_raised_for(_, R).
 v18d(X) :- foreign(X), not raised_for_any(X).
 
@@ -241,50 +319,88 @@ ctx_of(Q, X) :- has_req(C, Q), in(C, X).
 ctx_of(S, X) :- generates(G, S), in(G, C), in(C, X).
 ctx_of(S, X) :- node(S, "scenario"), not generated(S), node(X, "bounded-context").
 label("v_t1", "a word the glossary avoids").
+% fail v_t1: node("s","scenario"). node("x","bounded-context"). term_of("t","x"). avoid("t","job"). mentions("s","job").
+% pass v_t1: node("s","scenario"). node("x","bounded-context"). term_of("t","x"). avoid("t","job"). mentions("s","work-item").
 v_t1(X, W, T) :- mentions(X, W), avoid(T, W), term_of(T, Ctx), ctx_of(X, Ctx).
 label("v_t2", "a term has two entries").
+% fail v_t2: glossary_entry("t",1,"thing"). glossary_entry("t",2,"thing").
+% pass v_t2: glossary_entry("t",1,"thing").
 v_t2(T)       :- glossary_entry(T, N1, _), glossary_entry(T, N2, _), N1 < N2.
 label("v_t3", "an avoided word is a term").
+% fail v_t3: term_of("t","x"). avoid("t","job"). term_of("t2","x"). glossary_entry("t2",3,"job").
+% pass v_t3: term_of("t","x"). avoid("t","job"). term_of("t2","x"). glossary_entry("t2",3,"task").
 v_t3(W)       :- avoid(T, W), term_of(T, Ctx), glossary_entry(T2, _, W), term_of(T2, Ctx).
 label("v_t4", "a term of a typed glossary does not name its part of speech").
+% fail v_t4: node("t","term"). term_of("t","x"). typed("x").
+% pass v_t4: node("t","term"). term_of("t","x"). typed("x"). category("t","kind").
 v_t4(T)       :- node(T, "term"), term_of(T, Ctx), typed(Ctx), not has_category(T).
 label("v_t5", "a value names no attribute, or more than one").
+% fail v_t5: node("v","term"). category("v","value").
+% pass v_t5: node("v","term"). category("v","value"). value_of("v","k","a").
 v_t5(V)       :- category(V, "value"), not has_value_of(V).
 v_t5(V)       :- value_of(V, K1, A1), value_of(V, K2, A2), (K1, A1) < (K2, A2).
 label("v_t6", "two terms are written the same").
+% fail v_t6: linearises("t1","x y"). linearises("t2","x y").
+% pass v_t6: linearises("t1","x y"). linearises("t2","x z").
 v_t6(T1, T2)  :- linearises(T1, L), linearises(T2, L), T1 < T2.
 label("v_t11", "a verb's entry gives no frame: the kinds of its subject and object, or that it takes no object").
+% fail v_t11: frameless("write").
+% pass v_t11: category("write","event").
 v_t11(T)      :- frameless(T).
 label("v_t12", "a condition names another kind with `the`: a relation between two kinds is a verb").
+% fail v_t12: relational("owned").
+% pass v_t12: category("owned","condition").
 v_t12(T)      :- relational(T).
 label("v_t13", "a verb's Frame: does not read as its subject, the verb and the kinds it takes").
+% fail v_t13: misframed("write","the object stage is no kind").
+% pass v_t13: category("write","event").
 v_t13(T, Why) :- misframed(T, Why).
 
 % ---------------------------------------------------------------- the parse (C2, C25)
 % Every file of the spec is codified (§13.4): the 0.29 reader is gone, so `migrate upgrade` converts one that is not.
 label("v_p0", "a spec file is not codified (no `language: codified-1`): run `migrate upgrade`").
+% fail v_p0: uncodified("spec/index.md").
+% pass v_p0: codified("c").
 v_p0(F)      :- uncodified(F).
 % `model` parses every statement of a codified capability and of spec/universal.md in the context's grammar.
 label("v_p1", "a requirement does not parse").
+% fail v_p1: unparsed("q","token 3").
+% pass v_p1: parsed("q").
 v_p1(Q, Why) :- unparsed(Q, Why).
 label("v_p2", "a requirement parses to more than one tree").
+% fail v_p2: ambiguous("q").
+% pass v_p2: parsed("q").
 v_p2(Q)      :- ambiguous(Q).
 label("v_p3", "a line of a group's given block does not parse in the step grammar").
+% fail v_p3: given_unparsed("g","a thing w1").
+% pass v_p3: group_id("g","c",1).
 v_p3(G, L)   :- given_unparsed(G, L).
 
 % ---------------------------------------------------------------- warnings
 label("w_unserved_cap", "a capability serves no job").
+% fail w_unserved_cap: node("c","capability"). node("j","job").
+% pass w_unserved_cap: node("c","capability"). node("j","job"). serves("c","j").
 w_unserved_cap(C)  :- node(C, "capability"), not serves(C, _), node(_, "job").
 label("w_unserved_job", "a job nothing serves").
+% fail w_unserved_job: node("j","job").
+% pass w_unserved_job: node("j","job"). serves("c","j").
 w_unserved_job(J)  :- node(J, "job"), not serves(_, J), not of_job(_, J).
 seam_used(R)       :- seam(R, Up, Down), in(C, Down), in(D, Up), depends_on(C, D).
 label("w_seam_unused", "a seam nothing crosses").
+% fail w_seam_unused: seam("m","u","d").
+% pass w_seam_unused: seam("m","u","d"). in("c","d"). in("e","u"). using("c","i","e").
 w_seam_unused(R)   :- seam(R, _, _), not seam_used(R).
 label("w_uncited_obs", "an observation no initiative cites").
+% fail w_uncited_obs: node("o","observation").
+% pass w_uncited_obs: node("o","observation"). source("i","o").
 w_uncited_obs(O)   :- node(O, "observation"), not source(_, O), not cited(O).   % cited: a frozen source (plan 9, D6)
 label("w_many_requests", "more than five open requests to one upstream").                 % §7.2: v4's
+% fail w_many_requests: upstream("q1","x"). upstream("q2","x"). upstream("q3","x"). upstream("q4","x"). upstream("q5","x"). upstream("q6","x"). status("q1","open"). status("q2","open"). status("q3","open"). status("q4","open"). status("q5","open"). status("q6","open").
+% pass w_many_requests: upstream("q1","x"). upstream("q2","x"). upstream("q3","x"). upstream("q4","x"). upstream("q5","x"). upstream("q6","x"). status("q1","open"). status("q2","open"). status("q3","open"). status("q4","open"). status("q5","open"). status("q6","delivered").
 w_many_requests(X) :- upstream(_, X), #count{ Q : upstream(Q, X), status(Q, "open") } > 5.
 label("w_untiered", "a decision in force gives no tier").                                  % decision-tiers r1, D3
+% fail w_untiered: node("d","design-decision").
+% pass w_untiered: node("d","design-decision"). tier("d","judgement").
 tiered(D)          :- tier(D, _).
 w_untiered(D)      :- node(D, "design-decision"), not status(D, "superseded"), not status(D, "rejected"), not tiered(D).
 
