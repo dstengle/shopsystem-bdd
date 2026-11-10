@@ -13,6 +13,7 @@ While clause is (any K). A line that says both "shall" and "may", or "may not", 
 """
 import spec_lf_core as core
 import spec_lf_np as nps
+import spec_lf_order
 import spec_lf_read
 import spec_lf_set
 import spec_lf_time
@@ -126,6 +127,9 @@ def cond(st, tree):
         x = nps.owner(st, a[1]) if rest == "IsOf" else nps.np(st, a[1])
         value = st.names.value(nps.fun(a[2]))
         return st.apply([x], lambda r: Atom("attr", (r[0], t.term, value)), 1 if a[0] == "PNeg" else None)
+    ordered = spec_lf_order.cond(st, t, rest, a) if t is not None else None     # after, before (b240)
+    if ordered is not None:
+        return ordered
     timed = spec_lf_time.cond(st, tree)     # after, before, within the last, the perfect (I16)
     if timed is not None:
         return timed

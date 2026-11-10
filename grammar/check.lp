@@ -17,6 +17,7 @@
 #defined uattr/4. #defined ucond/5. #defined uccond/4. #defined pre/6. #defined prec/5.
 #defined each/2.   #defined only/5. #defined rattr/4.  #defined rrel/4.  #defined akind/2.
 #defined cnl4/1.  #defined count/7. #defined onattr/4.
+#defined ccmp/6.  #defined ckey/4.  #defined vkey/3.  #defined dense/1.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
@@ -194,6 +195,34 @@ out(A,B) :- side(A,B,S), rnone(S,Q,X,kind(K)), at(A,B,S,X,Zx), rw(A,B,Q,Zx,Z,pos
 redge(A,B,Q,Z1,Z2) :- rw(A,B,Q,Z1,Z2,pos).
 redge(A,B,Q,Z1,Z2) :- side(A,B,S), orel(S,Q,Y1,Y2), at(A,B,S,Y1,Z1), at(A,B,S,Y2,Z2).
 out(A,B) :- fun(Q), redge(A,B,Q,Z,Z1), redge(A,B,Q,Z,Z2), Z1 < Z2.
+
+% ---- ordered comparison (b240, construct #6; design call 9): `ccmp(R,X,T,Op,K,P)`, the value of X's T is (P) after or
+% before the point K (a tuple, spec_lf_order.key). Exact over cells: each point the pair names (`c(K)`) and, for an
+% order by number (`dense(T)`), the gap just above each (`g(K)`), the one below them all (`lo`) and a value of no
+% number (`u`); an order as listed has only its values' points. A value's point: an entry's `vkey(T,V,K)`, a line's
+% code `ckey(R,T,V,K)`. A pair is out when no cell meets every comparison and value its sides say of X's T.
+cmpw(A,B,N,Z,T,O,K,P) :- side(A,B,S), state(A,B,S,N), ccmp(S,Y,T,O,K,P), at(A,B,S,Y,Z).
+oz(A,B,N,Z,T) :- cmpw(A,B,N,Z,T,_,_,_).
+okey(A,B,T,V,K) :- side(A,B,S), ckey(S,T,V,K).
+okey(A,B,T,V,K) :- oz(A,B,_,_,T), vkey(T,V,K).
+okd(A,B,T,V) :- okey(A,B,T,V,_).
+opt(A,B,T,K) :- cmpw(A,B,_,_,T,_,K,_).
+opt(A,B,T,K) :- oz(A,B,N,Z,T), has(A,B,N,Z,T,V,_), okey(A,B,T,V,K).
+ocell(A,B,T,c(K)) :- opt(A,B,T,K), dense(T).    ocell(A,B,T,g(K)) :- opt(A,B,T,K), dense(T).
+ocell(A,B,T,lo) :- oz(A,B,_,_,T), dense(T).     ocell(A,B,T,u) :- oz(A,B,_,_,T), dense(T).
+ocell(A,B,T,c(K)) :- oz(A,B,_,_,T), vkey(T,_,K), not dense(T).
+osat(A,B,T,after,K,c(L)) :- opt(A,B,T,K), ocell(A,B,T,c(L)), L > K.
+osat(A,B,T,after,K,g(L)) :- opt(A,B,T,K), ocell(A,B,T,g(L)), L >= K.
+osat(A,B,T,before,K,c(L)) :- opt(A,B,T,K), ocell(A,B,T,c(L)), L < K.
+osat(A,B,T,before,K,g(L)) :- opt(A,B,T,K), ocell(A,B,T,g(L)), L < K.
+osat(A,B,T,before,K,lo) :- opt(A,B,T,K), ocell(A,B,T,lo).
+obad(A,B,N,Z,T,C) :- oz(A,B,N,Z,T), ocell(A,B,T,C), cmpw(A,B,N,Z,T,O,K,pos), not osat(A,B,T,O,K,C).
+obad(A,B,N,Z,T,C) :- oz(A,B,N,Z,T), ocell(A,B,T,C), cmpw(A,B,N,Z,T,O,K,neg), osat(A,B,T,O,K,C).
+obad(A,B,N,Z,T,C) :- oz(A,B,N,Z,T), ocell(A,B,T,C), has(A,B,N,Z,T,V,pos), okey(A,B,T,V,K), C != c(K).
+obad(A,B,N,Z,T,C) :- oz(A,B,N,Z,T), ocell(A,B,T,C), has(A,B,N,Z,T,V,pos), not okd(A,B,T,V), C != u.
+obad(A,B,N,Z,T,c(K)) :- oz(A,B,N,Z,T), has(A,B,N,Z,T,V,neg), okey(A,B,T,V,K).
+ofit(A,B,N,Z,T) :- oz(A,B,N,Z,T), ocell(A,B,T,C), not obad(A,B,N,Z,T,C).
+out(A,B) :- oz(A,B,N,Z,T), not ofit(A,B,N,Z,T).
 
 % ---- a defined condition read through its definition (`dalt(C,N)`, `dlit(C,N,Attr,Val,Pol)`: the ways through a
 % Def whose literals are all on its own subject, spec_facts.def_facts) under `no`, `every` and a negation --------

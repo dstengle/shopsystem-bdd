@@ -770,6 +770,113 @@ While a file conforms to a stage, when the person runs `work start`, `work` shal
 refused: the verb conform takes as its recipient artifact or a kind of it: thing conforms to artifact
 ```
 
+### "the T of X is after v": ordered comparison
+
+An attribute whose entry says `Order:` has ordered values, and a line may compare its value with a value: "the T of X
+is after v", "is before v", "is not after v", "is not before v", and "is after v and before w". `Order: by number.`
+orders the values by their numbers, as a release is ordered (`1.10.0` is after `1.9.0`), and any code of numbers
+joined by dots is a value of it; `Order: as listed.` orders them as `Values:` lists them, and only those are its
+values. "the T of X is v" and "X is v" take any such code too. The atom is `cmp(T(x)) after v` (the design's `cmp(x,
+A, op, v)`), the time pack's comparison of moments said of an attribute (section "Time"); "is not before v" puts it
+under `not`. A code that is no value of the attribute is refused, naming the code and the order; an attribute with
+no `Order:` has no "after" or "before". In `model logic` a comparison is a condition as a value is (`ccmp(R, x, T,
+after, point)`), checked exactly over the values the two lines of a pair name and the gaps between them (design call
+9): two lines whose ranges share no value never fire together, and a value between two named values (`1.0.1`,
+between `1.0.0` and `2.0.0`) is one that an attribute ordered by number may have and one ordered as listed has not.
+In a scenario a comparison is a Given of one value on the right side of every value the line names, a value the
+entry lists when one is: "the file f1 is `2.0.0`" for "after `1.0.0` and before `3.0.0`", "the file f1 is `3.0.1`"
+for "after `3.0.0`".
+
+Found by the audit in migration-tools r36, r39, r40, r41, r42, r45, r46, r51 and r55 (b156): each said a range of
+releases as one value of the release (`0.23.1` for "before `0.24.0`") or as "lacks the verb-frames step and does not
+lack the simplified-workflow step", which inverts what it means; and b161's line "While the release of the repository
+is after `3.0.0` and before `4.0.0`, ...". Each says the range with "after" and "before".
+
+```reading
+While the version of a file is before `2.0.0`, when the person runs `work start`, `work` shall print the file.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: file]
+    cmp(version(x1)) before `2.0.0`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    print(e2, subject: x4, object: x1)
+```
+
+```reading
+While the version of a file is after `1.0.0` and before `3.0.0`, when the person runs `work start`, `work` shall print the file.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: file]
+    cmp(version(x1)) after `1.0.0`
+    cmp(version(x1)) before `3.0.0`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    print(e2, subject: x4, object: x1)
+```
+
+```reading
+While the version of a file is not before `2.0.0`, when the person runs `work start`, `work` shall not write the file.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: file]
+    not
+      cmp(version(x1)) before `2.0.0`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    not
+      write(e2, subject: x4, object: x1)
+```
+
+A value between two named values: `1.10.0` is after `1.9.0`, as a release is, and needs no entry of its own.
+
+```reading
+While the version of a file is after `1.9.0`, when the person runs `work start`, `work` shall print the file.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: file]
+    cmp(version(x1)) after `1.9.0`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    print(e2, subject: x4, object: x1)
+```
+
+A value that no entry lists is a value of an attribute ordered by number all the same:
+
+```reading
+While the version of a file is `1.0.1`, when the person runs `work start`, `work` shall print the file.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: file]
+    version(x1) = `1.0.1`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    print(e2, subject: x4, object: x1)
+```
+
+An attribute ordered as listed: `high` is after `low`.
+
+```reading
+While the priority of a stage is after `low`, when the person runs `work start`, `work` shall end the stage.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: stage]
+    cmp(priority(x1)) after `low`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    end(e2, subject: x4, object: x1)
+```
+
+```reading
+While the version of a file is after `banana`, when the person runs `work start`, `work` shall print the file.
+refused: `banana` is no value of the version of a file, which is ordered by number
+```
+
+```reading
+While the priority of a stage is before `soon`, when the person runs `work start`, `work` shall end the stage.
+refused: `soon` is no value of the priority of a stage, which is ordered as listed: `low`, `high`, `urgent`
+```
+
 ## What the language cannot say yet
 
 The limits the rewording keeps, one subsection a limit: the construct the language has not, the lines that need it
@@ -784,3 +891,11 @@ command's output is not. Lines: design-model-check r202, r203 (the decisions ind
 Each says instead what the stale file lacks, in the item's words: "While a design-decision has an index entry that a
 decisions index does not hold, if the person runs `model decisions --check`, then `model` shall exit with an error
 naming the decisions index and change no file."; the rows that are extra or changed are lost.
+
+### #6: a value compared with another thing's value
+
+"after v" compares a value with a value a line names; the language has no comparison of two things' values ("the
+release of the repository is after the release of the plugin"), which the check could not decide exactly over named
+points (design call 9). Line: migration-tools r47 (b156: the repository's release `newer`, newer than the plugin's
+own). It says instead the plugin's release the line is written for, as a value: "While the release of the repository
+is after `4.0.0`, ...", and the line gets a new id when the plugin's release moves on.

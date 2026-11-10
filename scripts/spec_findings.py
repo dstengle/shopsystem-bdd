@@ -64,6 +64,8 @@ class Words:
         return entry.term, article(self.v.kinds[kid])
 
     def value(self, v):
+        if v.type == clingo.SymbolType.String:     # a code no entry lists, of an attribute ordered by number (b240)
+            return v.string
         return self.v.value_text.get(v.name, v.name)
 
     def does(self, rid, e, d, x):

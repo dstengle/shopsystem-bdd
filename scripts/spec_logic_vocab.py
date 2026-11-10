@@ -14,6 +14,7 @@ A condition is **defined** when its sentence parses as a `Def` (spec_facts.defin
 `Vocab.define`) and **opaque** otherwise (design-r3 §3.2).
 """
 import spec_lexicon
+import spec_lf_order
 import spec_relations
 import spec_typed
 import spec_typed_def
@@ -158,7 +159,7 @@ def _under(parents):
 def domain(vocab):
     """The lexicon's facts for `grammar/check.lp` (design-r3 §3): kinds, sub-kinds, actors with the kind each is a
     kind of (`akind`, b121), each attribute's values in their order, its transitions, and its initial values: those
-    no transition enters, or every value when each one is entered."""
+    no transition enters, or every value when each one is entered; an ordered attribute's points (spec_lf_order)."""
     out = ["kind(%s)." % k for k in sorted(vocab.kinds)]
     out += ["sub(%s,%s)." % pair for pair in vocab.subs]
     out += ["actor(%s)." % a for a in sorted(vocab.actors)]
@@ -170,5 +171,5 @@ def domain(vocab):
         out += ["val(%s,%s,%s)." % (kid, tid, v) for v in values]
         out += ["trans(%s,%s,%s,%s)." % (kid, tid, a, b) for a, b in edges]
         out += ["initial(%s,%s,%s)." % (kid, tid, v) for v in values if v not in entered or entered >= set(values)]
-    return out
+    return out + spec_lf_order.domain(vocab)
 

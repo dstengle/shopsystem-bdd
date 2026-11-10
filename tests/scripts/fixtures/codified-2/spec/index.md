@@ -34,3 +34,5 @@ not this repository's spec. Its rows give grammar 4's noun phrases (I8): of, its
 - **end** (verb, action): an agent stops a stage. Frame: agent ends stage.
 - **follow** (verb, state): an agent keeps track of a stage. Frame: agent follows stage.
 - **give** (verb, action): an agent hands a file to an agent. Frame: agent gives file to agent.
+- **version** (attribute of file): the release a file was written for. Values: `1.0.0`, `2.0.0`, `2.5.0`. Order: by number.
+- **priority** (attribute of stage): how soon a stage is to be ended. Values: `low`, `high`, `urgent`. Order: as listed.

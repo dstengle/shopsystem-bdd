@@ -87,10 +87,12 @@ def step(root, keyword, text):
             (call.names if node[0] == "NameLit" else call.quoted).append(node[1])
         elif node[0] == "CodeLit" and name == "WhenRuns" and call.command is None:
             call.command = node[1]
+        elif node[0] == "CodeLit" and name.endswith("K_A"):     # a value no entry lists (b240)
+            call.values.append(node[1])
         elif names.attr(node[0])[0] is not None and "_v_" in node[0]:
             call.values.append(names.value(node[0]))
     row = tree[0] == "SCond" and ROW.match(tree[1][0])
-    if tree[0].endswith("_Does") or tree[0] == "SCond" and (row or not tree[1][0].endswith("_Is")):
+    if tree[0].endswith("_Does") or tree[0] == "SCond" and (row or not tree[1][0].endswith(("_Is", "_IsCode"))):
         clause = tree[1] if tree[0] == "SCond" else tree
         call.subject = spec_rgl_steps.text(gram, clause[2])
         call.nps = [spec_rgl_steps.text(gram, a) for a in (clause[3:] if row else clause[3][1:])]

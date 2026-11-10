@@ -2,9 +2,11 @@
 extends): a referent as its term (an actor its id, a code or an indexical a role with `named(R,X,C)`), an event atom
 as its (event, doer, object), print, exit successfully and exit with an error naming as the check's own events
 (`WORDS`), a relation's or a state verb's atom as an edge, an atom of the pre-state as `cond` or `crel`, and a
-restriction of a response's object as `oattr`, `orel`; a time atom refused naming it (`TIME`). The boxes, the rule and
+restriction of a response's object as `oattr`, `orel`; an attribute's value compared, spec_lf_order's `ccmp`; a time
+atom refused naming it (`TIME`). The boxes, the rule and
 the response are spec_lf_facts'.
 """
+import spec_lf_order
 import spec_lf_quant
 from spec_facts_np import const
 from spec_lf_core import Box, Ref
@@ -70,11 +72,13 @@ class Terms:
             x, term, value = item.args
             if isinstance(value, Ref):
                 return      # "the status of x": an image the pre-state says nothing of
-            tid, vid = self.ids.attr(x.kind, term, value)
+            tid, vid = spec_lf_order.value_ids(self, x.kind, term, value)
             self.emit("cond", self.term(x), tid, vid, "pos" if pos else "neg")
         elif item.pred in ("rel", "state"):
             q, x, y = self.edge(item)
             self.emit("crel", q, self.term(x), self.term(y), "pos" if pos else "neg")
+        elif item.pred == "cmp" and len(item.args) == 4:     # an attribute's value compared (b240)
+            spec_lf_order.literal(self, item, pos)
         elif item.pred in TIME:
             raise ValueError(TIME[item.pred](item))
         else:

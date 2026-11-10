@@ -22,6 +22,7 @@ from dataclasses import replace
 
 import spec_facts
 import spec_lf
+import spec_lf_order
 import spec_lf_set
 import spec_rgl
 import spec_steps4_boxes as boxes
@@ -40,6 +41,7 @@ class Reader:
         self.brought = []       # the Givens of the response's boxes: each K brought in, its restrictor
         self.dets, self.images = {}, {}     # a referent said "no K"; an image's "the T of x" (spec_steps4_boxes)
         self.choices, self.taken, self.options = list(choices), [], []      # the case of each `or` box
+        self.pre = []           # the first line's While, Where and trigger parts: what a value Given meets
         self.actors = {t: ("a_%s_%d" % (spec_rgl.slug(t), n + 1), k) for n, (t, k) in enumerate(vocab.actors)}
 
     # --- referents ---------------------------------------------------------------------------------------------
@@ -148,6 +150,8 @@ class Reader:
                     return ("%s_%s_Is" % (T, kid(k)), pol, self.np(x, k), ("%s_v_%s" % (T, spec_rgl.slug(value)),))
         if item.pred == "rel":
             return self.row(item.args, pol)
+        if item.pred == "cmp" and len(item.args) == 4:      # an attribute's value compared (b240)
+            return spec_lf_order.given(self, item)
         raise TraceError("no step of %s" % spec_lf.atom(item))
 
     def row(self, args, pol):
@@ -251,6 +255,8 @@ def read(vocab, forms, entailed=None, r=None):
         if form.modality != "shall":     # a permission obliges nothing, a necessity has no trigger (I17)
             raise TraceError("no step of a line that says %s" % form.modality)
         r.bind([x for p in form.parts for x in p.refs], n)
+        if n == 0:
+            r.pre = [i for p in form.parts if p.op in ("while", "where", "when", "if") for i in p.body]
         number, gone = 0, (entailed or {}).get(ident, {})
         for part in form.parts:
             if part.op in ("while", "where") and n == 0:
