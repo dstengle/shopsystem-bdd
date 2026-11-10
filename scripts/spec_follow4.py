@@ -35,8 +35,12 @@ def _next(concrete, prefix, trees):
         candidates = sorted({token for _, token, _, _ in found})
     except pgf.ParseError:
         return []
-    return [token for token in candidates if (lambda parsed, stop: parsed or stop == len(prefix) + 1)(
-        *trees(prefix + [token]))]
+    kept = []
+    for token in candidates:
+        parsed, stop = trees(prefix + [token])
+        if parsed or stop == len(prefix) + 1:
+            kept.append(token)
+    return kept
 
 
 def terms(concrete, vocab, tokens, at, trees):

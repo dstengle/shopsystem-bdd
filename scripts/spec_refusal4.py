@@ -68,7 +68,7 @@ def refusal(vocab, tokens, at):
     hit = _verb_at(vocab, tokens, at)
     if hit is None:
         return passive(vocab, tokens, at)
-    start, end, v = hit
+    _, end, v = hit
     takes = "refused: the verb %s takes %%s: %s" % (v.term.term, _said(v))
     objects = [k for k in (_slot(f, ()) for f in v.frames) if k]
     recipients = [k for k in (_slot(f, ("to",)) for f in v.frames) if k]
