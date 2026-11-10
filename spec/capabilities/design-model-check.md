@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/query-commands-answer-in-their-output, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items, design-decision/work-items-named-by-ids, design-decision/the-glossary-is-a-target-of-spec-work]
 retired: [r8, r9, r12, r13, r14, r15, r16, r17, r18, r21, r26, r27, r29, r31, r32, r33, r34, r35, r37, r39, r45, r46, r53, g73, r73, g72, r72]
-unbuilt: []
+unbuilt: [r92, r93, r94, r95, r96, r97, r98, r99, r100]
 ---
 
 # Design model check
@@ -116,6 +116,19 @@ context: product-level artifacts are read only where the files contain them.
 - **denying** (adjective of requirement): a requirement with "no" before a noun as a subject or an object, as in "a verb has no frame".
 - **compound** (adjective of requirement): a requirement with a compound noun that an attribute or a relation row derives, as in "the batch status".
 - **restrictive** (adjective of requirement): a requirement with "only" before an object, as in "a worker shall change only files in its worktree".
+
+- **relative** (adjective of requirement): a requirement with a relative clause on a verb's frame, as in "a channel that a viewer subscribes to".
+- **possessive** (adjective of requirement): a requirement with "whose" over a relation row or an attribute, as in "a verb whose entry has no frame".
+- **ambiguous** (adjective of requirement): a requirement with two readings that mean different things, as in a list that may belong to either of two verbs.
+
+- **logical form** (noun): what a requirement means, as referents, atoms and boxes, printed by `model parse --form`.
+- **indexical** (adjective of requirement): a requirement that says "this" before a kind whose entry has `This:`.
+
+- **antecedentless** (adjective of requirement): a requirement with "the" before a noun that no earlier noun phrase, functional relation or declared indexical gives.
+- **unquantified** (adjective of requirement): a requirement whose While clause says "does not" before a noun phrase with "a" or "an", as in "an item does not hold a commit".
+- **triggerless** (adjective of requirement): a requirement with no trigger and neither "always" nor "never".
+
+- **unfinished** (adjective of requirement): a requirement that stops where its frame needs another word.
 
 ## Behaviour
 
@@ -344,6 +357,33 @@ Restates: r65@0.29.
 
 ### [g91] `model parse` passes only before an object
 - [r91] When the person runs `model parse` on a requirement that is restrictive, `model` shall exit successfully.
+
+### [g92] `model parse` passes a relative clause on a verb's frame
+- [r92] When the person runs `model parse` on a requirement that is relative, `model` shall exit successfully.
+
+### [g93] `model parse` passes whose over a relation row or an attribute
+- [r93] When the person runs `model parse` on a requirement that is possessive, `model` shall exit successfully.
+
+### [g94] `model parse` refuses a requirement with two meanings
+- [r94] If the person runs `model parse` on a requirement that is ambiguous, then `model` shall exit with an error naming the requirement.
+
+### [g95] `model parse --form` prints a requirement's logical form
+- [r95] When the person runs `model parse --form` on a requirement, `model` shall print a logical form and exit successfully.
+
+### [g96] `model parse` passes this before a kind whose entry has This:
+- [r96] When the person runs `model parse` on a requirement that is indexical, `model` shall exit successfully.
+
+### [g97] `model parse` refuses the with no antecedent
+- [r97] If the person runs `model parse` on a requirement that is antecedentless, then `model` shall exit with an error naming the term.
+
+### [g98] `model parse` refuses a negated indefinite in a While clause
+- [r98] If the person runs `model parse` on a requirement that is unquantified, then `model` shall exit with an error naming the term.
+
+### [g99] `model parse` refuses a requirement with no trigger and neither always nor never
+- [r99] If the person runs `model parse` on a requirement that is triggerless, then `model` shall exit with an error naming the requirement.
+
+### [g100] `model parse` refuses an unfinished requirement with the terms that may follow
+- [r100] If the person runs `model parse` on a requirement that is unfinished, then `model` shall exit with an error naming the requirement and print a term.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a
