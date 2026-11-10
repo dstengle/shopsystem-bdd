@@ -3,10 +3,10 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/requests
 title: Requests
 narrator: a context taking in or raising a request
 group: service
-language: codified-1
+language: codified-2
 rests_on: [design-decision/requests-written-through-work, design-decision/exits-are-successful-or-errors, design-decision/an-asker-is-told-by-its-registered-asker-id]
-retired: [r1, r3, r4, r5, r10, r11, r12, r13, r19, r20, r21, r22, r23, r42, g42]
-unbuilt: []
+retired: [r1, r3, r4, r5, r10, r11, r12, r13, r19, r20, r21, r22, r23, r42, g42, g2, r2, g6, r6, g7, r7, g8, r8, g9, r9, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18, g24, r24, g25, r25, g26, r26, g27, r27, g28, r28, g29, r29, g30, r30, g31, r31, g32, r32, g33, r33, g34, r34, g35, r35, g36, r36, g37, r37, g38, r38, g39, r39, g40, r40, g41, r41, g44, r44, g43, r43, g45, r45, g46, r46, g47, r47, g49, r49, g50, r50, g51, r51, g48, r48, g52, r52, g53, r53, g54, r54, g55, r55, g56, r56, g57, r57, g58, r58]
+unbuilt: [r59, r60, r61, r62, r63, r64, r65, r66, r67, r68, r69, r70, r71, r72, r73, r74, r75, r76, r77, r78, r79, r80, r81, r82, r83, r84, r85, r86, r87, r88, r89, r90, r91, r92, r93, r94, r95, r96, r97, r98, r99, r100, r101, r102]
 ---
 
 # Requests
@@ -48,180 +48,166 @@ a request (backlog, batches).
 
 - **foreign entry** (noun): an entry of a comment (`<field> <n>: <text>`) of the part of the side that did not post the comment's step: an entry of the upstream's part (`question`, `outcome`, `counter`, `reason`, `into`, and `resolution` but on a `fits`) in a step of the asker (`ask`, `fits`, or a `turn` posted in the asker's turn), or an entry of the asker's part (`line`, `answer`) in a step of the upstream (`offer`, `accept`, `resolve`, or a `turn` posted in the upstream's turn). Kind of: text.
 
-## Relations
+- **assign** (verb, action): a tool gives an attribute of a text a value. Forms: assigns, assigned. Frame: tool assigns thing.
+- **address** (verb, state): a request asks a bounded context, its upstream, whose repository keeps its record as the upstream's. Forms: addresses, addressed. Frame: request addresses bounded context.
+- **originate** (verb, state): a request is raised by a bounded context, its asker, whose repository keeps its record as the asker's. Forms: originates, originated. Frame: request originates from bounded context.
+- **identify** (verb, state): a text is the id of a bounded context, its path or the path's last part, or `internal` for this bounded context. Forms: identifies, identified. Frame: text identifies bounded context.
+- **citation** (noun): the id of an observation under the `source:` of a request or of an initiative. Kind of: text.
+- **lack** (verb, state): an observation has no citation: no request and no initiative names it under its `source:`. Forms: lacks, lacked. Frame: observation lacks citation.
+- **lack** (verb, state): a request does not hold a comment posted on its issue. Forms: lacks, lacked. Frame: request lacks comment.
+- **block** (verb, state): a request line is proposed in a request and has no line outcome, or one that is not `accepted`, `refused` or `withdrawn`, so the request cannot be accepted yet. Forms: blocks, blocked. Frame: request line blocks request.
+- **field block** (noun): the one fenced block of fields of a comment, `~~~shop-request` to `~~~`, whose fields parse as the comment form, which a comment with no block or with a block that does not parse lacks. Kind of: text.
+- **host** (noun): the repository on GitHub that the issues of the requests to a bounded context are posted on, named by the `github:` of its upstream entry, or by the git remote `origin` of this bounded context. Kind of: thing.
+- **reject** (verb, state): git refuses to commit in a repository, as when a pre-commit hook fails or another process holds the index lock. Forms: rejects, rejected. Frame: repository rejects commit.
 
+## Relations
 | from | word | to | cardinality |
 |---|---|---|---|
 | comment | holds | foreign entry |  |
 | comment | on | request | one |
+| issue | of | request | one |
+| comment | in | request |  |
+| foreign entry | in | field block |  |
+| field block | of | comment | one |
+| logical form | of | request line | one |
+| host | of | bounded context | one |
+| issue | in | host | one |
+| origin | of | command |  |
+| upstream entry | in | bounded context |  |
+| citation | of | observation |  |
 
 ## Behaviour
+### [g59] `work request` writes the request it is raised for
+- [r59] When the person runs `work request --raised-for` on a request, `work` shall write a request raised for the request.
 
-### [g2] `work request` writes the request it is raised for
-Restates: r29@0.29.
-- [r2] Where `--raised-for` is given, when the person runs `work request` on a request, `work` shall write a request
-  raised for the request.
+### [g60] `work request` refuses a request with no origin
+- [r60] While this command has no origin, if the person runs `work request`, then `work` shall refuse the command and name an origin.
 
-### [g6] An internal request names an origin
-Restates: r45@0.29.
-- [r6] While a command is originless, if the person runs `work request`, then `work` shall exit with an error naming
-  an origin and change nothing.
+### [g61] `work request` to an upstream refuses an observation beside a job-thread
+- [r61] While this bounded context holds an upstream entry, if the person runs `work request --source` with `--thread`, then `work` shall refuse the command and name `--source`.
 
-### [g7] A request to an upstream cites no observation
-Restates: r30@0.29.
-- [r7] While a bounded context is downstream and a command is sourced, if the person runs `work request`, then
-  `work` shall exit with an error naming an origin and change nothing.
+### [g62] A repository raises requests only as itself
+- [r62] If the person runs `work request --from` on a text that does not identify this bounded context, then `work` shall refuse the command and name the text.
 
-### [g8] A request to an upstream names the request it is raised for or a job-thread
-Restates: r31@0.29.
-- [r8] While a bounded context is downstream and a command is originless, if the person runs `work request`, then
-  `work` shall exit with an error naming an origin and change nothing.
+### [g63] `work outcome` writes a line outcome in the upstream's turn
+- [r63] While a request is `open`, when the person runs `work outcome` on the request, `work` shall assign the line outcome of a request line proposed in the request and commit the request.
 
-### [g9] A repository raises requests only as itself
-Restates: r32@0.29.
-- [r9] While a command is foreign, if the person runs `work request`, then `work` shall exit with an error naming a
-  bounded context and change nothing.
+### [g64] A side writes nothing in the other side's turn
+- [r64] While a request is `awaiting-asker`, if the person runs `work outcome` on the request, then `work` shall refuse the command and name the request.
 
-### [g14] `work outcome` writes a line outcome in the upstream's turn
-Restates: r12@0.29, r15@0.29, r5@0.29.
-- [r14] When the person runs `work outcome` on a request that is `open`, `work` shall write a line outcome and commit
-  the request.
+### [g65] The asker's repository does not write the upstream's part
+- [r65] While a request is `open` and the request does not address this bounded context, if the person runs `work outcome` on the request, then `work` shall refuse the command and name the request.
 
-### [g15] A side writes nothing in the other side's turn
-Restates: r16@0.29.
-- [r15] If the person runs `work outcome` on a request that is `awaiting-asker`, then `work` shall exit with an error
-  naming the request and change nothing.
+### [g66] `work ask` writes the upstream's question
+- [r66] While a request is `open`, when the person runs `work ask` on the request, `work` shall write a question and commit the request.
 
-### [g16] The asker's repository does not write the upstream's part
-Restates: r33@0.29, r55@0.29.
-- [r16] While a bounded context is downstream, if the person runs `work outcome` on a request that is `open`, then
-  `work` shall exit with an error naming the request and change nothing.
+### [g67] `work reply` writes the asker's answer
+- [r67] While a request is `awaiting-asker` and the request originates from this bounded context, when the person runs `work reply` on the request, `work` shall write an answer and commit the request.
 
-### [g17] `work ask` writes the upstream's question
-Restates: r20@0.29, r5@0.29.
-- [r17] When the person runs `work ask` on a request that is `open`, `work` shall write a question and commit the
-  request.
+### [g68] `work resolve` refuses a request that is not accepted
+- [r68] While a request is not `accepted`, if the person runs `work resolve` on the request, then `work` shall refuse the command and name the status of the request.
 
-### [g18] `work reply` writes the asker's answer
-Restates: r21@0.29, r4@0.29.
-- [r18] When the person runs `work reply` on a request that is `awaiting-asker`, `work` shall write an answer and
-  commit the request.
+### [g69] `work list` prints every request with its status and every observation no node cites
+- [r69] When the person runs `work list`, `work` shall print every request, the status of every request and every observation that lacks a citation.
 
-### [g24] `work resolve` refuses a request that is not accepted
-Restates: r10@0.29.
-- [r24] If the person runs `work resolve` on a request that is not `accepted`, then `work` shall exit with an error
-  naming the status of the request and change nothing.
+### [g70] `work show` on a request prints its status and its lines
+- [r70] When the person runs `work show` on a request, `work` shall print the status of the request and every request line proposed in the request.
 
-### [g25] `work list` prints every request with its status and every observation no node cites
-Restates: r50@0.29, r64@0.29.
-- [r25] When the person runs `work list`, `work` shall print every request and the status of the request and print
-  every observation that is uncited.
+### [g71] `work request` opens the request's issue
+- [r71] When the person runs `work request`, `work` shall post an issue, write a request whose status is `open` and commit the request.
 
-### [g26] `work show` on a request prints its status and its lines
-Restates: work-queue#r59@0.29.
-- [r26] When the person runs `work show` on a request, `work` shall print the status of the request and every
-  request line proposed in the request.
+### [g72] `work request` refuses an upstream with no GitHub repository
+- [r72] If the person runs `work request` on a bounded context that has no host, then `work` shall refuse the command and name the bounded context.
 
-### [g27] `work request` opens the request's issue
-Restates: r12@0.29, r4@0.29, r44@0.29, r28@0.29.
-- [r27] When the person runs `work request`, `work` shall post an issue, write a request that is `open` and commit the request.
+### [g73] `work offer` answers an ask with what may serve it
+- [r73] While a request is `open`, when a session runs `work offer` on the request, `work` shall post a comment, set the status of the request to `awaiting-asker` and commit the request.
 
-### [g28] `work request` refuses an upstream with no GitHub repository
-- [r28] While a bounded context is unhosted, if the person runs `work request`, then `work` shall exit with an error naming the bounded context and change nothing.
+### [g74] `work fits` ends a request an offer serves
+- [r74] While a request is `awaiting-asker`, when the person runs `work fits` on the request, `work` shall set the status of the request to `delivered`, write a resolution, post a comment, close the issue of the request and commit the request.
 
-### [g29] `work offer` answers an ask with what may serve it
-- [r29] When a session runs `work offer` on a request that is `open`, `work` shall post a comment, set the status of the request to `awaiting-asker` and commit the request.
+### [g75] `work propose` writes the asker's lines
+- [r75] While a request is `awaiting-asker`, when the person runs `work propose` on the request, `work` shall write a request line and commit the request.
 
-### [g30] `work fits` ends a request an offer serves
-- [r30] When the person runs `work fits` on a request that is `awaiting-asker`, `work` shall set the status of the request to `delivered`, write a resolution, post a comment, close an issue and commit the request.
+### [g76] `work sync` records what the other side posted
+- [r76] While a comment on a request has a field block and the request lacks the comment, when a session runs `work sync`, `work` shall write the comment and print every request.
 
-### [g31] `work propose` writes the asker's lines
-- [r31] When the person runs `work propose` on a request that is `awaiting-asker`, `work` shall write a request line and commit the request.
+### [g77] `work sync` acts on no comment it cannot read
+- [r77] While a comment on a request has no field block, when a session runs `work sync`, `work` shall print the comment and not write the comment.
 
-### [g32] `work sync` records what the other side posted
-- [r32] When a session runs `work sync`, `work` shall write every comment that is unrecorded and print every request.
+### [g78] `work turn` posts the asker's turn
+- [r78] While a request is `awaiting-asker`, when the person runs `work turn` on the request, `work` shall set the status of the request to `awaiting-upstream`, set the side of the request to `upstream` and post a comment.
 
-### [g33] `work sync` acts on no comment it cannot read
-Restates: r58@0.29.
-- [r33] While a comment is unreadable, when a session runs `work sync`, `work` shall print the comment, and `work` shall not write the comment.
+### [g79] The upstream's turn ends with a line not settled, posted
+- [r79] While a request is `open` and a request line proposed in the request is not `accepted` and the request line is not `refused` and the request line is not `withdrawn`, when the person runs `work turn` on the request, `work` shall set the status of the request to `awaiting-asker` and post a comment.
 
-### [g34] `work turn` posts the asker's turn
-Restates: r18@0.29, r7@0.29.
-- [r34] When the person runs `work turn` on a request that is `awaiting-asker`, `work` shall set its status to `awaiting-upstream`, change the side of the request and post a comment.
+### [g80] The upstream's turn ends with every line settled and one accepted, posted for the person to accept
+- [r80] While a request is `open` and a request line proposed in the request is `accepted` and no request line blocks the request, when the person runs `work turn` on the request, `work` shall post a comment and keep the side of the request.
 
-### [g35] The upstream's turn ends with a line not settled, posted
-Restates: r17@0.29.
-- [r35] While a request is `open` and a request line proposed in the request is not settled, when the person runs `work turn` on the request, `work` shall set the status of the request to `awaiting-asker` and post a comment.
+### [g81] The upstream's turn ends with every line refused, and the issue closed
+- [r81] While a request is `open` and every request line proposed in the request is `refused`, when the person runs `work turn` on the request, `work` shall set the status of the request to `refused`, post a comment and close the issue of the request.
 
-### [g36] The upstream's turn ends with every line settled and one accepted, posted for the person to accept
-Restates: r23@0.29, r8@0.29.
-- [r36] While a request is `open` and every request line proposed in the request is settled and a request line proposed in the request is `accepted`, when the person runs `work turn` on the request, `work` shall post a comment, and `work` shall not change the side of the request.
+### [g82] A line that does not parse is not accepted
+- [r82] While a request line has no logical form, if a session runs `work outcome accepted` on the request line, then `work` shall refuse the command and name the request line.
 
-### [g37] The upstream's turn ends with every line refused, and the issue closed
-Restates: r9@0.29.
-- [r37] While a request is `open` and a request line proposed in the request is `refused` and every request line proposed in the request is `refused`, when the person runs `work turn` on the request, `work` shall set the status of the request to `refused`, post a comment and close an issue.
+### [g83] `work accept` accepts a request and writes its item
+- [r83] While a request is `open` and a request line proposed in the request is `accepted` and no request line blocks the request, when the person runs `work accept` on the request, `work` shall set the status of the request to `accepted`, write an item whose status is `shaped`, post a comment and commit the request.
 
-### [g38] A line that does not parse is not accepted
-Restates: r2@0.29, r59@0.29.
-- [r38] While a request line is unparsed, if a session runs `work outcome accepted` on the request line, then `work` shall exit with an error naming the request line and change nothing.
+### [g84] `work accept` refuses a request with a line not settled
+- [r84] While a request line blocks a request, if the person runs `work accept` on the request, then `work` shall refuse the command and name the request line.
 
-### [g39] `work accept` accepts a request and writes its item
-- [r39] While a request is `open` and every request line proposed in the request is settled and a request line proposed in the request is `accepted`, when the person runs `work accept` on the request, `work` shall set the status of the request to `accepted`, write an item that is `shaped`, post a comment and commit the request.
+### [g85] `work resolve` posts the resolution and closes the issue
+- [r85] While a request is `accepted`, when the person runs `work resolve` on the request, `work` shall set the status of the request to `delivered`, write a resolution, set the side of the request to `asker`, post a comment, close the issue of the request and commit the request.
 
-### [g40] `work accept` refuses a request with a line not settled
-- [r40] While a request line proposed in a request is not settled, if the person runs `work accept` on the request, then `work` shall exit with an error naming the request line and change nothing.
+### [g86] `work watch` wakes on a readable comment the request does not hold
+- [r86] While a comment on a request has a field block and the request does not hold the comment, when a session runs `work watch`, `work` shall print the comment, exit successfully and not write the comment.
 
-### [g41] `work resolve` posts the resolution and closes the issue
-Restates: r10@0.29, r11@0.29, r12@0.29, r24@0.29.
-- [r41] When the person runs `work resolve` on a request that is `accepted`, `work` shall set its status to `delivered`, write a resolution, change the side of the request, post a comment, close an issue and commit the request.
+### [g87] `work watch` wakes on a new ask
+- [r87] While this bounded context has a host that holds an issue that no request has, when a session runs `work watch`, `work` shall print the issue and exit successfully.
 
-### [g44] `work watch` wakes on a readable comment the request does not hold
-- [r44] While a comment is unrecorded and the comment is not unreadable, when a session runs `work watch`, `work` shall print the comment and exit successfully, and `work` shall not write the comment.
+### [g88] `work request` opens no issue when its record is not committed
+- [r88] While this repository rejects a commit, if the person runs `work request`, then `work` shall refuse the command, name this repository and not post an issue.
 
-### [g43] `work watch` wakes on a new ask
-- [r43] While an issue is untaken, when a session runs `work watch`, `work` shall print the issue and exit successfully.
+### [g89] `work turn` posts nothing when its record is not committed
+- [r89] While this repository rejects a commit and a request is `open`, if the person runs `work turn` on the request, then `work` shall refuse the command, name this repository, not post a comment and not close an issue.
 
-### [g45] `work request` opens no issue when its record is not committed
-- [r45] While a repository is uncommittable, if the person runs `work request`, then `work` shall not post an issue.
+### [g90] `work fits` posts nothing when its record is not committed
+- [r90] While this repository rejects a commit and a request is `awaiting-asker`, if the person runs `work fits` on the request, then `work` shall refuse the command, name this repository, not post a comment and not close an issue.
 
-### [g46] `work turn` posts nothing when its record is not committed
-- [r46] While a repository is uncommittable, if the person runs `work turn` on a request that is `open`, then `work` shall not post a comment or close an issue.
+### [g91] `work reply` refuses a request this context received
+- [r91] While a request addresses this bounded context and the request does not originate from this bounded context, if the person runs `work reply` on the request, then `work` shall refuse the command and name the request.
 
-### [g47] `work fits` posts nothing when its record is not committed
-- [r47] While a repository is uncommittable, if the person runs `work fits` on a request that is `awaiting-asker`, then `work` shall not post a comment or close an issue.
+### [g92] The upstream's `work turn` refuses the asker's turn
+- [r92] While a request addresses this bounded context and the request does not originate from this bounded context and the request is `awaiting-asker`, if the person runs `work turn` on the request, then `work` shall refuse the command and name the request.
 
-### [g49] `work reply` refuses a request this context received
-- [r49] If the person runs `work reply` on a request that is received, then `work` shall exit with an error naming the request.
+### [g93] The asker's `work turn` refuses the upstream's turn
+- [r93] While a request originates from this bounded context and the request does not address this bounded context and the request is `open`, if the person runs `work turn` on the request, then `work` shall refuse the command and name the request.
 
-### [g50] The upstream's `work turn` refuses the asker's turn
-- [r50] While a request is received and the request is `awaiting-asker`, if the person runs `work turn` on the request, then `work` shall exit with an error naming the request.
+### [g94] The asker's `work turn` refuses a turn it has passed
+- [r94] While a request originates from this bounded context and the request does not address this bounded context and the request is `awaiting-upstream`, if the person runs `work turn` on the request, then `work` shall refuse the command and name the request.
 
-### [g51] The asker's `work turn` refuses the upstream's turn
-- [r51] While a request is sent and the request is `open`, if the person runs `work turn` on the request, then `work` shall exit with an error naming the request.
+### [g95] `work sync` writes no entry of the other side's part
+- [r95] While a comment on a request has a field block that holds a foreign entry and the request does not hold the comment, when a session runs `work sync`, `work` shall write the comment and not write the foreign entry.
 
-### [g48] The asker's `work turn` refuses a turn it has passed
-- [r48] While a request is sent and the request is `awaiting-upstream`, if the person runs `work turn` on the request, then `work` shall exit with an error naming the request.
+### [g96] `work sync` reopens no closed request
+- [r96] While a request is `delivered` or the request is `refused` or the request is `withdrawn`, when a session runs `work sync`, `work` shall keep the status of the request and the side of the request.
 
-### [g52] `work sync` writes no entry of the other side's part
-- [r52] While a comment that is unrecorded holds a foreign entry, when a session runs `work sync`, `work` shall write the comment, and `work` shall not write the foreign entry.
+### [g97] The SessionStart hook names a sent request awaiting the upstream
+- [r97] While a request originates from this bounded context and the request does not address this bounded context and the request is `awaiting-upstream`, when the SessionStart hook runs `work watch --hook`, `work` shall print the request.
 
-### [g53] `work sync` reopens no closed request
-- [r53] While a request is closed and a comment on the request is unrecorded, when a session runs `work sync`, `work` shall write the comment, and `work` shall not change the status of the request or change the side of the request.
+### [g98] The SessionStart hook names a received request awaiting the asker
+- [r98] While a request addresses this bounded context and the request does not originate from this bounded context and the request is `awaiting-asker`, when the SessionStart hook runs `work watch --hook`, `work` shall print the request.
 
-### [g54] The SessionStart hook names a sent request awaiting the upstream
-- [r54] While a request is sent and the request is `awaiting-upstream`, when the SessionStart hook runs `work watch --hook`, `work` shall print the request.
+### [g99] The SessionStart hook is silent with every request closed
+- [r99] While no request is `open` and no request is `awaiting-asker` and no request is `awaiting-upstream` and no request is `accepted`, when the SessionStart hook runs `work watch --hook`, `work` shall exit successfully and not print a request.
 
-### [g55] The SessionStart hook names a received request awaiting the asker
-- [r55] While a request is received and the request is `awaiting-asker`, when the SessionStart hook runs `work watch --hook`, `work` shall print the request.
+### [g100] `work watch --forward` wakes on a readable comment the request does not hold
+- [r100] While a comment on a request has a field block and the request does not hold the comment, when a session runs `work watch --forward`, `work` shall print the comment, exit successfully and not write the comment.
 
-### [g56] The SessionStart hook is silent with every request closed
-- [r56] While every request is closed, when the SessionStart hook runs `work watch --hook`, `work` shall exit successfully, and `work` shall not print a request.
+### [g101] `work watch --forward` wakes on a new ask
+- [r101] While this bounded context has a host that holds an issue that no request has, when a session runs `work watch --forward`, `work` shall print the issue and exit successfully.
 
-### [g57] `work watch --forward` wakes on a readable comment the request does not hold
-- [r57] While a comment is unrecorded and the comment is not unreadable, when a session runs `work watch --forward`, `work` shall print the comment and exit successfully, and `work` shall not write the comment.
-
-### [g58] `work watch --forward` wakes on a new ask
-- [r58] While an issue is untaken, when a session runs `work watch --forward`, `work` shall print the issue and exit successfully.
+### [g102] `work request` to an upstream refuses an observation beside a request it is raised for
+- [r102] While this bounded context holds an upstream entry, if the person runs `work request --source` with `--raised-for`, then `work` shall refuse the command and name `--source`.
 
 ## Implementation, may change
 - A request between two bounded contexts, each in its own git repository, is one conversation on one GitHub issue on

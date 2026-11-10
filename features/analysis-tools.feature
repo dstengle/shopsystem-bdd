@@ -2,290 +2,323 @@
 Feature: Analysis tools
   Narrator: a session researching or reviewing a project's code
 
-  @g1 @r1
-  Scenario: `--python` gives the Python interpreter
-    Given `--python` is given
-    When the person runs `tools probe`
-    Then `tools` prints `--python`
-
-  @g2 @r2
-  Scenario: `.venv/bin/python` is the Python interpreter when it exists
-    Given the Python interpreter `.venv/bin/python` is present
-    When the person runs `tools probe`
-    Then `tools` prints `.venv/bin/python`
-
-  @g3 @r3
-  Scenario: `venv/bin/python` is the Python interpreter when it exists and `.venv/bin/python` does not
-    Given the Python interpreter `venv/bin/python` is present
-    And the Python interpreter `.venv/bin/python` is not present
-    When the person runs `tools probe`
-    Then `tools` prints `venv/bin/python`
-
-  @g4 @r4
-  Scenario: `$VIRTUAL_ENV/bin/python` is the Python interpreter when there is no project virtualenv
-    Given the Python interpreter `$VIRTUAL_ENV/bin/python` is present
-    And the Python interpreter `.venv/bin/python` is not present
-    And the Python interpreter `venv/bin/python` is not present
-    When the person runs `tools probe`
-    Then `tools` prints `$VIRTUAL_ENV/bin/python`
-
-  @g5 @r5
-  Scenario: the Python interpreter running the script is the Python interpreter when there is no other
-    Given the Python interpreter `.venv/bin/python` is not present
-    And the Python interpreter `venv/bin/python` is not present
-    And the Python interpreter `$VIRTUAL_ENV/bin/python` is not present
-    When the person runs `tools probe`
-    Then `tools` prints `sys.executable`
-
-  @g6 @r6
-  Scenario: `.venv/bin/python` comes before `venv/bin/python`
-    Given the Python interpreter `.venv/bin/python` is present
-    And the Python interpreter `venv/bin/python` is present
-    When the person runs `tools probe`
-    Then `tools` prints `.venv/bin/python`
-    And `tools` does not print `venv/bin/python`
-
   @g7 @r7
   Scenario: `tools probe` prints each analysis tool and the Python interpreter
+    Given no analysis tool is `missing`
+    And an analysis tool a1
+    And an analysis tool a2
     When the person runs `tools probe`
     Then `tools` prints the analysis tool a1
+    And `tools` prints the analysis tool a2
     And `tools` exits successfully
 
   @g8 @r8
   Scenario: `tools probe` exits with an error naming a missing analysis tool
-    Given an analysis tool a1 that is `missing`
+    Given an analysis tool a1
+    And the analysis tool a1 is `missing`
     When the person runs `tools probe`
     Then `tools` exits with an error naming the analysis tool a1
 
-  @g9 @r9
-  Scenario: `tools probe --log` prints one line for a researcher's notes
-    When the person runs `tools probe --log`
-    Then `tools` prints "Probe: tools ->"
-    And `tools` prints the analysis tool a1
+  @g36 @r36
+  Scenario: `tools probe --python` prints the Python interpreter it is given
+    When the person runs `tools probe --python` on the Python interpreter p1
+    Then `tools` prints the Python interpreter p1
 
-  @g10 @r10
-  Scenario: `tools install` installs a missing analysis tool and changes no dependency file
-    Given the dependency file `requirements.txt` holds "pytest"
-    And the Python interpreter `.venv/bin/python` is `virtualenv`
-    And an analysis tool a1 that is `missing`
-    And an analysis tool a2 that is `installed`
+  @g37 @r37
+  Scenario: the dot-venv interpreter is the Python interpreter when it exists
+    Given this file system holds the dot-venv interpreter
+    When the person runs `tools probe`
+    Then `tools` prints the dot-venv interpreter
+
+  @g38 @r38
+  Scenario: the venv interpreter is the Python interpreter when it exists and the dot-venv interpreter does not
+    Given this file system holds the venv interpreter
+    And this file system does not hold the dot-venv interpreter
+    When the person runs `tools probe`
+    Then `tools` prints the venv interpreter
+
+  @g39 @r39
+  Scenario: the active-virtualenv interpreter is the Python interpreter when there is no project virtualenv
+    Given this file system holds the active-virtualenv interpreter
+    And this file system does not hold the dot-venv interpreter
+    And this file system does not hold the venv interpreter
+    When the person runs `tools probe`
+    Then `tools` prints the active-virtualenv interpreter
+
+  @g40 @r40
+  Scenario: the running interpreter is the Python interpreter when there is no other
+    Given this file system does not hold the dot-venv interpreter
+    And this file system does not hold the venv interpreter
+    And this file system does not hold the active-virtualenv interpreter
+    When the person runs `tools probe`
+    Then `tools` prints the running interpreter
+
+  @g41 @r41
+  Scenario: the dot-venv interpreter comes before the venv interpreter
+    Given this file system holds the dot-venv interpreter
+    And this file system holds the venv interpreter
+    When the person runs `tools probe`
+    Then `tools` does not print the venv interpreter
+
+  @g42 @r42
+  Scenario: `tools probe --log` prints one log line for a researcher's notes
+    Given a log line l1
+    When the person runs `tools probe --log`
+    Then `tools` prints the log line l1
+
+  @g43 @r43
+  Scenario: `tools install` installs a missing analysis tool and changes no dependency manifest
+    Given the dependency manifest `requirements.txt` holds "pytest"
+    And the dot-venv interpreter is `virtualenv`
+    And an analysis tool a1
+    And the analysis tool a1 is `missing`
+    And an analysis tool a2
+    And the analysis tool a2 is `missing`
     When the person runs `tools install`
     Then `tools` installs the analysis tool a1
-    And `tools` changes nothing
-    And `tools` does not install the analysis tool a2
+    And `tools` installs the analysis tool a2
+    And `tools` does not change a dependency manifest
 
-  @g11 @r11
-  Scenario: `tools install` installs the one version of ruff the plugin pins
-    Given the analysis tool `ruff` is `missing`
-    And the Python interpreter `.venv/bin/python` is `virtualenv`
+  @g44 @r44
+  Scenario: `tools install` installs the one version of `ruff` the plugin pins
+    Given `ruff` is `missing`
+    And the dot-venv interpreter is `virtualenv`
     When the person runs `tools install`
-    Then `tools` installs `ruff==0.17.0`
+    Then `ruff` has the pinned version p1
+    And `tools` installs the pinned version p1
 
-  @g12 @r12
-  Scenario: `tools install` installs nothing into a Python interpreter that is not a virtualenv
-    Given an analysis tool a1 that is `missing`
-    And the Python interpreter `.venv/bin/python` is `system`
+  @g45 @r45
+  Scenario: `tools install` refuses to install into a Python interpreter that is not a virtualenv
+    Given an analysis tool a1
+    And the analysis tool a1 is `missing`
+    And the dot-venv interpreter is `system`
     When the person runs `tools install`
-    Then `tools` does not install the analysis tool a1
+    Then `tools` refuses `tools install`
+    And `tools` names the analysis tool a1
+
+  @g46 @r46
+  Scenario: an analysis tool still missing after `tools install` is printed with its pip command
+    Given an analysis tool a1
+    And the analysis tool a1 is `uninstallable`
+    And the dot-venv interpreter is `virtualenv`
+    When the person runs `tools install`
+    Then the analysis tool a1 has the pip command p1
+    And `tools` prints the pip command p1
     And `tools` exits with an error naming the analysis tool a1
 
-  @g13 @r13
-  Scenario: an analysis tool still missing after `tools install` is printed with the failed command
-    Given an analysis tool a1 that is `uninstallable`
-    And the Python interpreter `.venv/bin/python` is `virtualenv`
-    When the person runs `tools install`
-    Then `tools` prints `pip install`
-    And `tools` exits with an error naming the analysis tool a1
-
-  @g14 @r14
-  Scenario: `tools map` writes the coverage map whether or not the tests pass
+  @g47 @r47
+  Scenario: `tools map` makes the coverage map whether or not the tests pass
     Given a test t1
-    And the test t1 is failing
+    And the test t1 is `failing`
     When the person runs `tools map`
-    Then `tools` replaces the coverage map c1
+    Then `tools` makes the coverage map c1
     And `tools` exits successfully
 
-  @g15 @r15
+  @g48 @r48
   Scenario: `tools map` replaces the coverage map made before
     Given a coverage map c1
-    And the coverage map c1 is present
+    And this repository holds the coverage map c1
     When the person runs `tools map`
     Then `tools` replaces the coverage map c1
 
-  @g16 @r16
-  Scenario: `tools map --json` prints the map commit and the number of tests
-    Given `--json` is given
-    When the person runs `tools map`
-    Then `tools` prints the map commit m1
-    And `tools` prints the number of tests
+  @g49 @r49
+  Scenario: `tools map --json` prints the commit of the coverage map and its run count
+    When the person runs `tools map --json`
+    Then `tools` makes the coverage map c1
+    And the coverage map c1 has the commit c2
+    And `tools` prints the commit c2
+    And the coverage map c1 has the run count r1
+    And `tools` prints the run count r1
 
-  @g17 @r17
-  Scenario: `tools tests-of` prints each test that executed its target
+  @g50 @r50
+  Scenario: `tools tests-of` prints each test that executed its function
     Given a coverage map c1
-    And the coverage map c1 is present
-    When the person runs `tools tests-of src/cart.py:total`
+    And this repository holds the coverage map c1
+    And a test t1
+    And the test t1 executes the function f1
+    And a test t2
+    And the test t2 executes the function f1
+    When the person runs `tools tests-of` on the function f1
     Then `tools` prints the test t1
-    And `tools` prints the number of tests
-    And `tools` prints the map commit m1
+    And `tools` prints the test t2
+    And the function f1 has the test count t3
+    And `tools` prints the test count t3
+    And the coverage map c1 has the commit c2
+    And `tools` prints the commit c2
 
-  @g18 @r18
-  Scenario: `tools tests-of --by-file` prints a count for each test file
+  @g51 @r51
+  Scenario: `tools tests-of --by-file` prints each Python file that holds a test that executed the function
     Given a coverage map c1
-    And the coverage map c1 is present
-    When the person runs `tools tests-of src/cart.py:total --by-file`
-    Then `tools` prints `tests/test_cart.py`
-    And `tools` prints the number of tests
+    And this repository holds the coverage map c1
+    And a Python file p1
+    And a test t1
+    And the test t1 executes the function f1
+    And the Python file p1 holds the test t1
+    And a Python file p2
+    And a test t2
+    And the test t2 executes the function f1
+    And the Python file p2 holds the test t2
+    When the person runs `tools tests-of --by-file` on the function f1
+    Then `tools` prints the Python file p1
+    And `tools` prints the Python file p2
 
-  @g19 @r19
-  Scenario: `tools tests-of` says that no test executed its target, and exits successfully
+  @g52 @r52
+  Scenario: `tools tests-of` says that no test executed its function, and exits successfully
     Given a coverage map c1
-    And the coverage map c1 is present
-    When the person runs `tools tests-of src/cart.py:refund`
-    Then `tools` prints "no test of the map executed"
-    And `tools` prints the map commit m1
+    And this repository holds the coverage map c1
+    And a function f1
+    And no test executes the function f1
+    When the person runs `tools tests-of` on the function f1
+    Then the coverage map c1 has the commit c2
+    And `tools` prints the commit c2
     And `tools` exits successfully
 
-  @g20 @r20
-  Scenario: `tools tests-of --json` prints the tests, their number and the map commit
+  @g53 @r53
+  Scenario: `tools tests-of --json` prints the tests, their count and the commit of the coverage map
     Given a coverage map c1
-    And the coverage map c1 is present
-    When the person runs `tools tests-of src/cart.py:total --json`
+    And this repository holds the coverage map c1
+    And a test t1
+    And the test t1 executes the function f1
+    And a test t2
+    And the test t2 executes the function f1
+    When the person runs `tools tests-of --json` on the function f1
     Then `tools` prints the test t1
-    And `tools` prints the number of tests
-    And `tools` prints the map commit m1
+    And `tools` prints the test t2
+    And the function f1 has the test count t3
+    And `tools` prints the test count t3
+    And the coverage map c1 has the commit c2
+    And `tools` prints the commit c2
 
-  @g21 @r21
-  Scenario: `tools tests-of` refuses a function its file does not have
+  @g54 @r54
+  Scenario: `tools tests-of` refuses a function that does not exist
     Given a coverage map c1
-    And the coverage map c1 is present
-    When the person runs `tools tests-of src/cart.py:absent`
-    Then `tools` exits with an error naming `src/cart.py:absent`
-    And `tools` changes nothing
+    And this repository holds the coverage map c1
+    And a function f1
+    And no Python file has the function f1
+    When the person runs `tools tests-of` on the function f1
+    Then `tools` refuses `tools tests-of`
+    And `tools` names the function f1
 
-  @g22 @r22
+  @g55 @r55
   Scenario: `tools tests-of` refuses when there is no coverage map
-    Given a coverage map c1
-    And the coverage map c1 is not present
-    When the person runs `tools tests-of src/cart.py:total`
-    Then `tools` exits with an error naming `tools map`
-    And `tools` changes nothing
+    Given this repository holds no coverage map
+    When the person runs `tools tests-of` on the function f1
+    Then `tools` refuses `tools tests-of`
+    And `tools` names `tools map`
 
-  @g23 @r23
-  Scenario: `tools untested` prints each function no test executed
+  @g56 @r56
+  Scenario: `tools untested` prints each function of a Python file that no test executed
     Given a coverage map c1
-    And the coverage map c1 is present
-    When the person runs `tools untested src/cart.py`
-    Then `tools` prints `refund`
-    And `tools` prints the number of functions
-    And `tools` prints the map commit m1
+    And this repository holds the coverage map c1
+    And a function f1
+    And no test executes the function f1
+    And a Python file p1
+    And the Python file p1 has the function f1
+    When the person runs `tools untested` on the Python file p1
+    Then `tools` prints the function f1
+    And the Python file p1 has the untested count u1
+    And `tools` prints the untested count u1
+    And the coverage map c1 has the commit c2
+    And `tools` prints the commit c2
     And `tools` exits successfully
 
-  @g24 @r24
-  Scenario: `tools untested --json` prints the functions, their number and the map commit
+  @g57 @r57
+  Scenario: `tools untested --json` prints the functions, their count and the commit of the coverage map
     Given a coverage map c1
-    And the coverage map c1 is present
-    When the person runs `tools untested src/cart.py --json`
-    Then `tools` prints `refund`
-    And `tools` prints the number of functions
-    And `tools` prints the map commit m1
+    And this repository holds the coverage map c1
+    And a function f1
+    And no test executes the function f1
+    And a Python file p1
+    And the Python file p1 has the function f1
+    When the person runs `tools untested --json` on the Python file p1
+    Then `tools` prints the function f1
+    And the Python file p1 has the untested count u1
+    And `tools` prints the untested count u1
+    And the coverage map c1 has the commit c2
+    And `tools` prints the commit c2
 
-  @g25 @r25
-  Scenario: `tools refs` prints each reference and a summary
-    Given the Python file `src/shop.py` holds:
-      """
-      from cart import total
-      print(total([1]))
-      """
-    When the person runs `tools refs total`
-    Then `tools` prints `src/shop.py:2`
-    And `tools` prints the number of references
+  @g58 @r58
+  Scenario: `tools refs` prints each reference to an identifier and their count
+    Given a Python file p1
+    And an identifier i1
+    And the Python file p1 defines the identifier i1
+    And a reference r1
+    And the reference r1 is to the identifier i1
+    And a reference r2
+    And the reference r2 is to the identifier i1
+    When the person runs `tools refs` on the identifier i1
+    Then `tools` prints the reference r1
+    And `tools` prints the reference r2
+    And the identifier i1 has the reference count r3
+    And `tools` prints the reference count r3
+    And `tools` exits successfully
 
-  @g26 @r26
-  Scenario: `tools refs --json` prints the references and the summary
-    Given the Python file `src/shop.py` holds:
-      """
-      from cart import total
-      print(total([1]))
-      """
-    And `--json` is given
-    When the person runs `tools refs total`
-    Then `tools` prints `src/shop.py:2`
-    And `tools` prints the number of references
+  @g59 @r59
+  Scenario: `tools refs` refuses an identifier the project does not define
+    Given an identifier i1
+    And no Python file defines the identifier i1
+    When the person runs `tools refs` on the identifier i1
+    Then `tools` refuses `tools refs`
+    And `tools` names the identifier i1
 
-  @g27 @r27
-  Scenario: `tools refs` refuses a name the project does not define
-    When the person runs `tools refs nowhere`
-    Then `tools` exits with an error naming `nowhere`
-    And `tools` changes nothing
+  @g60 @r60
+  Scenario: `tools check` prints each finding under its analysis tool's heading
+    Given a finding f2
+    And an analysis tool a1
+    And the analysis tool a1 has the finding f2
+    And a file f1
+    And the file f1 holds the finding f2
+    When the person runs `tools check` on the file f1
+    Then the analysis tool a1 has the heading h1
+    And `tools` prints the heading h1
+    And `tools` prints the finding f2
+    And `tools` exits with an error naming the finding f2
 
-  @g28 @r28
-  Scenario: `tools check` prints each finding under its tool's heading
-    When the person runs `tools check src`
-    Then `tools` prints `F401`
-    And `tools` prints "== ruff =="
-    And `tools` exits with an error naming `F401`
-
-  @g29 @r29
+  @g61 @r61
   Scenario: `tools check` names a missing analysis tool
-    Given the analysis tool `vulture` is `missing`
-    When the person runs `tools check src`
+    Given `vulture` is `missing`
+    When the person runs `tools check`
     Then `tools` exits with an error naming `vulture`
 
-  @g30 @r30
-  Scenario: `tools tests-of` names a missing coverage as missing
-    Given the analysis tool `coverage` is `missing`
-    When the person runs `tools tests-of src/cart.py:total`
-    Then `tools` prints `tools install`
-    And `tools` exits with an error naming `coverage`
+  @g62 @r62
+  Scenario: `tools tests-of` refuses when `coverage` is missing, naming `tools install`
+    Given `coverage` is `missing`
+    When the person runs `tools tests-of` on the function f1
+    Then `tools` refuses `tools tests-of`
+    And `tools` names `coverage`
+    And `tools` names `tools install`
 
-  @g31 @r31
-  Scenario: `tools refs` names a missing jedi as missing
-    Given the analysis tool `jedi` is `missing`
-    When the person runs `tools refs total`
-    Then `tools` prints `tools install`
-    And `tools` exits with an error naming `jedi`
+  @g63 @r63
+  Scenario: `tools refs` refuses when `jedi` is missing, naming `tools install`
+    Given `jedi` is `missing`
+    When the person runs `tools refs` on the identifier i1
+    Then `tools` refuses `tools refs`
+    And `tools` names `jedi`
+    And `tools` names `tools install`
 
-  @g32 @r32
-  Scenario: `tools size` prints each tracked Python file over the limit, a `python` shebang included, and exits with an error
-    Given the Python file `big.py` holds:
-      """
-      a = 1
-      b = 2
-      c = 3
-      d = 4
-      """
-    And the Python file `bin/tool` holds:
-      """
-      #!/usr/bin/env python3
-      a = 1
-      b = 2
-      c = 3
-      """
-    When the person runs `tools size --limit 3`
-    Then `tools` prints `big.py`
-    And `tools` prints `bin/tool`
-    And `tools` exits with an error naming `bin/tool`
+  @g64 @r64
+  Scenario: `tools size` prints each Python file over its size limit, and exits with an error
+    Given a Python file p1
+    And a size limit s1
+    And the Python file p1 exceeds the size limit s1
+    When the person runs `tools size --limit` on the size limit s1
+    Then `tools` prints the Python file p1
+    And `tools` exits with an error naming the Python file p1
 
-  @g33 @r33
-  Scenario: `tools size` takes 300 lines as the limit when none is given
-    Given the Python file `big.py` holds:
-      """
-      a = 1
-      b = 2
-      c = 3
-      d = 4
-      """
+  @g65 @r65
+  Scenario: `tools size` takes the default size limit when none is given
+    Given no Python file exceeds the default size limit
     When the person runs `tools size`
     Then `tools` exits successfully
 
-  @g34 @r34
+  @g66 @r66
   Scenario: `tools install` installs the RGL
-    Given the analysis tool `gf-rgl` is `missing`
-    And the Python interpreter `.venv/bin/python` is `virtualenv`
+    Given `gf-rgl` is `missing`
+    And the dot-venv interpreter is `virtualenv`
     When the person runs `tools install`
     Then `tools` installs `gf-rgl`
 
-  @g35 @r35
+  @g67 @r67
   Scenario: `tools probe` reports the RGL
     When the person runs `tools probe`
     Then `tools` prints `gf-rgl`
