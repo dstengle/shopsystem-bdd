@@ -2,8 +2,7 @@
 check facts read per requirement (`parse`), the world of a query q(L,I) as facts (`Premises.world`) and each premise M
 as Datalog rules over a query variable Q (`Premises.rule`), in its stratum (`stage`); grammar/entail.lp is their
 background. A codified-1 line's facts (spec_facts) and a codified-2 line's (spec_lf_facts) are read alike: an `each`
-object is an `every` one; a negated restriction (`nattr`, `nrel`) is read in a premise's antecedent as a stated
-negation, and a premise with a `nrel` over a kind forces nothing."""
+object is an `every` one."""
 import re
 from collections import defaultdict
 
@@ -108,12 +107,9 @@ class Premises:
         out += ["code(%s,%s,%s)." % (Q, tm(y), q(c)) for y, c in f["named"]]
         out += ["%s(%s,%s,%s,%s)." % ("a0" if p == "pos" else "na0", Q, tm(y), t, v) for y, t, v, p in f["cond"]]
         out += ["a0(%s,%s,%s,%s)." % (Q, tm(y), t, v) for y, t, v in f["oattr"] if y not in ex]
-        out += ["na0(%s,%s,%s,%s)." % (Q, tm(y), t, v) for y, t, v in f["nattr"] if y not in ex]
         out += ["%s(%s,%s,%s)." % ("k" if p == "pos" else "nk", Q, tm(y), c) for y, c, p in f["ccond"]]
         out += ["%s(%s,%s,%s,%s)." % ("rel" if p == "pos" else "nrel", Q, qq, tm(a), tm(b)) for qq, a, b, p in f["crel"]]
         out += ["rel(%s,%s,%s,%s)." % (Q, qq, tm(a), tm(b)) for qq, a, b in f["orel"] if a not in ex]
-        out += ["nrel(%s,%s,%s,%s)." % (Q, qq, tm(a), tm(b)) for qq, a, b in f["nrel"]
-                if a not in ex and not b.startswith("kind(")]
         out += ["feat(%s,%s)." % (Q, q(ft)) for (ft,) in f["feat"]]
         out += ["lnone(%s,%s,%s,%s)." % (Q, kk, t, v) for kk, t, v in f["none"]]
         out += ["lcnone(%s,%s,%s)." % (Q, kk, c) for kk, c in f["cnone"]]
@@ -155,8 +151,8 @@ class Premises:
     def rule(self, M):
         """M as Datalog over a query variable Q: `use(Q,M)` and its antecedent force its responses (tagged M)."""
         f, can = self.reqs[M], self.canon(M)
-        if f["only"] or f["holds"] or f["free"] or f["uall"] or any(b.startswith("kind(") for _, _, b in f["nrel"]):
-            return []     # never forced: an `every` over the pre-state, or a restriction no world states
+        if f["only"] or f["holds"] or f["free"] or f["uall"]:
+            return []     # never forced: an `every` over the pre-state
         kinds, mq = dict(f["role"]), q(M)
         every = {can[y] for y in self.every(M)} | {can[y] for y in self.neguniv(M)}
         ante = {can[y] for y in self.ante_roles(M) if y in can} | every
@@ -168,11 +164,9 @@ class Premises:
             body.append("ev(Q,%s,%s,%s,%s)" % (p, q(e), "_" if d == "any" else V(d), V(x)))
         body += ["%s(Q,%s,%s,%s)" % (a if p == "pos" else na, V(y), t, v) for y, t, v, p in f["cond"]]
         body += ["%s(Q,%s,%s,%s)" % (a, V(y), t, v) for y, t, v in f["oattr"] if can.get(y) in ante]
-        body += ["%s(Q,%s,%s,%s)" % (na, V(y), t, v) for y, t, v in f["nattr"] if can.get(y) in ante]
         body += ["%s(Q,%s,%s)" % ("k" if p == "pos" else "nk", V(y), c) for y, c, p in f["ccond"]]
         body += ["%s(Q,%s,%s,%s)" % ("rel" if p == "pos" else "nrel", qq, V(y1), V(y2)) for qq, y1, y2, p in f["crel"]]
         body += ["rel(Q,%s,%s,%s)" % (qq, V(y1), V(y2)) for qq, y1, y2 in f["orel"] if can.get(y1) in ante]
-        body += ["nrel(Q,%s,%s,%s)" % (qq, V(y1), V(y2)) for qq, y1, y2 in f["nrel"] if can.get(y1) in ante]
         body += ["feat(Q,%s)" % q(ft) for (ft,) in f["feat"]]
         body += ["lnone2(Q,%s,%s,%s)" % (kk, t, v) for kk, t, v in f["none"]]
         body += ["lcnone2(Q,%s,%s)" % (kk, c) for kk, c in f["cnone"]]     # forced only when L states it as wide

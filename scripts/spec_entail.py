@@ -52,10 +52,7 @@ def index(P):
         lt, other = P.trig.get(L), lambda M: P.base[M] != P.base[L]
         same = [M for M in by_trig[tuple(lt[:2])] if other(M)] if lt else []
         ran = lt is not None and lt[0] == "ran"
-        negated = {a[0] for a in f["nattr"]} | {a[1] for a in f["nrel"]}
         for j, p, e, d, x in f["resp"]:
-            if x in negated:     # an object a negated restriction narrows: no premise is read as giving it
-                continue
             cand = [M for M in same + untrig + (refusers if ran else []) if (p, e) in gives[M] and other(M)]
             own = any(j2 != j and (p2, e2) == (p, e) for j2, p2, e2, _, _ in f["resp"]) or (
                 (p, e) == ("neg", "e_change") and ("pos", "change_nothing") in gives[L])
