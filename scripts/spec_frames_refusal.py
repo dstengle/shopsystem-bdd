@@ -58,7 +58,7 @@ def _role(found, tokens, start, end, at, lexicon):
         return "object?" if found.object else None
     if not found.object:
         return "none" if at == end else None
-    to = [j for j in range(end, at + 1) if tokens[j] == "to"] if found.recipient else []
+    to = [j for j in range(end, at + 1) if tokens[j] == found.oblique] if found.recipient else []
     if to:
         head = _head(tokens, to[-1] + 1, lexicon)
         return "recipient" if head and head not in under.get(found.recipient, ()) else None

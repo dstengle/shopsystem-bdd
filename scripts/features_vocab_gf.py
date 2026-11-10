@@ -42,7 +42,9 @@ def verb_rows(vocab, np, name, meta, then):
     """features_vocab's rows of the verbs: each verb's trigger and Thens with any object (`np`), and with the
     instance (`name`) of each kind its frame takes as its object; `then` maps a step fun to its template."""
     out, members, M = [], spec_typed_verbs.members(vocab.lex), meta
-    for eid, (_, _, (_, o, r)) in sorted(vocab.frames.items()):
+    for eid, (_, _, (_, o, r), _) in sorted(vocab.frames.items()):
+        if eid != spec_typed_verbs.sense(eid):     # a verb's later sense: its rows are its first sense's
+            continue
         e = (eid,)
         if not o:
             out += [("when", "WhenHappens", None, None, ("STrig", ("HappensI", M, e)))]

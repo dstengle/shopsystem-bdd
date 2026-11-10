@@ -37,6 +37,8 @@ def test_the_preposition_after_the_verb_is_the_verbs():
         spec_frames.Frame("agent", "stage", None, "to"), None)
     assert spec_frames.frame(entry("agent subscribes for stage to text"), names) == (
         spec_frames.Frame("agent", "stage", "text", "for"))
+    assert spec_frames.frame(entry("agent subscribes stage in text"), names) == (
+        spec_frames.Frame("agent", "stage", "text", None, "in"))
 
 
 def test_a_frame_that_does_not_read_names_the_word():
