@@ -18,6 +18,7 @@ not this repository's spec. Its rows give grammar 4's noun phrases (I8): of, its
 | worktree | of | session | one |
 | file | in | worktree |  |
 | layout | of | worktree | one |
+| line | of | stage |  |
 
 ## Glossary
 
@@ -27,6 +28,7 @@ not this repository's spec. Its rows give grammar 4's noun phrases (I8): of, its
 - **session** (noun): an agent that runs in a terminal. Kind of: agent.
 - **file** (noun): a file of a repository.
 - **stage** (noun): a step of a piece of work.
+- **line** (noun): a sentence a stage is to meet.
 - **worktree** (noun): a checkout a session works in.
 - **layout** (artifact): the files a worktree is to hold, and where each is.
 - **status** (attribute of stage): Values: `open`, `done`.
@@ -36,3 +38,4 @@ not this repository's spec. Its rows give grammar 4's noun phrases (I8): of, its
 - **give** (verb, action): an agent hands a file to an agent. Frame: agent gives file to agent.
 - **version** (attribute of file): the release a file was written for. Values: `1.0.0`, `2.0.0`, `2.5.0`. Order: by number.
 - **priority** (attribute of stage): how soon a stage is to be ended. Values: `low`, `high`, `urgent`. Order: as listed.
+- **outcome** (attribute of line): what became of a line. Values: `proposed`, `accepted`, `refused`, `withdrawn`.

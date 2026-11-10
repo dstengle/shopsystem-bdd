@@ -130,3 +130,13 @@ When a session ends a stage, `work` shall set the status of the stage to `done` 
 When a session ends a stage, the session shall set the status of the stage to `done`.
 When a session ends a stage, `work` shall set the stage to `done`.
 = refused: does not parse at to
+# value sets and a value's absence (b240, construct #4): one of a list of two or more, none of it, "has no T"
+While a line is one of `proposed`, `accepted` or `refused`, when the person runs `work start`, `work` shall print the line.
+While the priority of a stage is one of `low` or `high`, when the person runs `work start`, `work` shall end the stage.
+While a line is not `accepted`, `refused` or `withdrawn`, when the person runs `work start`, `work` shall print the line.
+While the priority of a stage is not `low` or `high`, when the person runs `work start`, `work` shall end the stage.
+While a stage has no priority, when the person runs `work start`, `work` shall print the stage.
+While a line is one of `accepted` or `done`, when the person runs `work start`, `work` shall print the line.
+= refused: does not parse at `done`
+While a line is one of `accepted`, when the person runs `work start`, `work` shall print the line.
+= refused: does not parse at when

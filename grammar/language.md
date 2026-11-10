@@ -877,6 +877,151 @@ While the priority of a stage is before `soon`, when the person runs `work start
 refused: `soon` is no value of the priority of a stage, which is ordered as listed: `low`, `high`, `urgent`
 ```
 
+### "is one of `a` or `b`", "is not `a` or `b`", "has no T": value sets and a value's absence
+
+A line may name a set of an attribute's values: "the T of X is one of `a`, `b` or `c`" and "X is one of `a`, `b` or
+`c`" say that the value is one of them, a case of an "or" for each value (section "the K outside the box ...": a case
+holds what its side says); "the T of X is not `a`, `b` or `c`" and "X is not `a`, `b` or `c`" say that it is none of
+them, a `not` for each value. "None of them" is not "some other value the entry lists": a thing whose T has no value
+is none of them too. "X has no T" says that X's T has no value at all, the atom `T(x) = none`: a fact of its own,
+which no listed value meets, so "has no T" and "is `a`" never hold of one thing together, while "has no T" and "is
+not `a`" do. "every K of X is `v`" (and "is one of ...", "is not ...") says it of each K of X. The list names each
+value once and takes at least two; a value of another attribute is no member of it. In `model logic` a set is the
+"or" the check has, one split a value (`R#1`, `R#2` ...), in an `every` box `uin(R, x, T, v)` of each value; the
+absence a condition on the value `absent` (`cond(R, x, T, absent, pos)`), which L3 and L4 read as no value. In a
+scenario a set is a scenario a value, "is not" a Given of each value negated, and the absence the Given "the stage s1
+has no priority".
+
+Found by the audit in decision-tiers r13 ("untiered", said as "is not `check` and ... is not `judgement`", which also
+holds of a tier outside the three; it is "has no tier") and r23 (the route a design-decision may have, a set of
+values), backlog r28-r33 (one line a status the item may be in, when "is one of" says them in one line), migration-
+tools r48 and r52-r54 and intake r10 ("is not `delivered` and the request is not `refused` and ...", which is "is not
+`delivered`, `refused` or `withdrawn`"), and requests r60 ("has no origin": the command's origin absent).
+
+```reading
+While a line is one of `proposed`, `accepted` or `refused`, when the person runs `work start`, `work` shall print the line.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: line]
+    or
+      case
+        outcome(x1) = `proposed`
+      case
+        outcome(x1) = `accepted`
+      case
+        outcome(x1) = `refused`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    print(e2, subject: x4, object: x1)
+```
+
+```reading
+While the priority of a stage is one of `low` or `high`, when the person runs `work start`, `work` shall end the stage.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: stage]
+    or
+      case
+        priority(x1) = `low`
+      case
+        priority(x1) = `high`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    end(e2, subject: x4, object: x1)
+```
+
+"is not `a`, `b` or `c`": none of them.
+
+```reading
+While a stage is `open` and a line of the stage is not `accepted`, `refused` or `withdrawn`, when the person runs `work start`, `work` shall print the line.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: stage, x2: line]
+    status(x1) = `open`
+    of(x2, x1)
+    not
+      outcome(x2) = `accepted`
+    not
+      outcome(x2) = `refused`
+    not
+      outcome(x2) = `withdrawn`
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    print(e2, subject: x5, object: x2)
+```
+
+```reading
+While the priority of a stage is not `low` or `high`, when the person runs `work start`, `work` shall end the stage.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: stage]
+    not
+      priority(x1) = `low`
+    not
+      priority(x1) = `high`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    end(e2, subject: x4, object: x1)
+```
+
+"has no T": the value absent, which is no listed value.
+
+```reading
+While a stage is not `done` and the stage has no priority, when the person runs `work start`, `work` shall print the stage.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: stage]
+    not
+      status(x1) = `done`
+    priority(x1) = none
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    print(e2, subject: x4, object: x1)
+```
+
+"every K of X is `v`", and "is one of" said of each K of X:
+
+```reading
+While a stage is `open` and every line of the stage is `accepted`, when the person runs `work start`, `work` shall end the stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: stage]
+    status(x1) = `open`
+    every [x2: line]
+      of(x2, x1)
+      scope
+        outcome(x2) = `accepted`
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    end(e2, subject: x5, object: x1)
+```
+
+```reading
+While a stage is `open` and every line of the stage is one of `accepted`, `refused` or `withdrawn`, when the person runs `work start`, `work` shall end the stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: stage]
+    status(x1) = `open`
+    every [x2: line]
+      of(x2, x1)
+      scope
+        or
+          case
+            outcome(x2) = `accepted`
+          case
+            outcome(x2) = `refused`
+          case
+            outcome(x2) = `withdrawn`
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    end(e2, subject: x5, object: x1)
+```
+
+```reading
+While a line is one of `accepted` or `accepted`, when the person runs `work start`, `work` shall print the line.
+refused: the list of the outcome of a line names `accepted` twice
+```
+
 ## What the language cannot say yet
 
 The limits the rewording keeps, one subsection a limit: the construct the language has not, the lines that need it

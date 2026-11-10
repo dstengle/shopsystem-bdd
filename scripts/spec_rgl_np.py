@@ -10,7 +10,8 @@ comment", which means "a comment of a request"); a row whose word is `in` gives 
 (`T_IsOf`). An attribute whose entry says `Order:` (b240) also gives a point `T_Pt`, one of its values (`T_PtVal`) or a
 code (`T_PtCode`), "the T of x is after v" (`T_Cmp`), "the T of x is after v and before w" (`T_Between`), and, ordered
 by number, "the T of x is v" and "x is v" of a code (`T_IsCodeOf`, `T_<K>_IsCode`, the Given of a value no entry
-lists). "no K" is the base grammar's
+lists). Each attribute with `Values:` gives a list of them, "the T of x is one of `a` or `b`", "is not `a` or `b`"
+and "x has no T" (`sets`, b240). "no K" is the base grammar's
 determiner `DetNo`; lists with and/or and "only" are spec_rgl's `K_Arg`.
 """
 import spec_rgl
@@ -64,6 +65,25 @@ def attributes(w, vocab):
             w.fun("%s_Cpd_%s" % (T, K), "Det -> %s_NP" % T, "mkNP d (mkCN (%s))" % compound(t.term, k), "d")
         if t.order:
             ordered(w, T, t, ks)
+        if t.values:
+            sets(w, T, ks, noun)
+
+
+def sets(w, T, ks, noun):
+    """A list of the attribute's values (`T_Vals`, "`a`, `b` or `c`"), "the T of x is one of" it (`T_IsOneOf`), "is not"
+    it (`T_IsNoneOf`), the same said of a thing of each kind (`T_<K>_IsOneOf`, `T_<K>_IsNoneOf`), and "x has no T"
+    (`T_<K>_HasNo`): value sets and a value's absence (b240, construct #4)."""
+    w.cat(T + "_Vals", "{s : Str}")
+    w.fun(T + "_Vals2", "%s_Val -> %s_Val -> %s_Vals" % (T, T, T), '{s = a.s ++ "or" ++ b.s}', "a b")
+    w.fun(T + "_ValsMore", "%s_Val -> %s_Vals -> %s_Vals" % (T, T, T), '{s = a.s ++ "," ++ b.s}', "a b")
+    one = 'mkS (mkCl x (mkVP (ParadigmsEng.mkAdv ("one" ++ "of" ++ v.s))))'
+    none = "mkS E.UncNeg (mkCl x (mkVP (ParadigmsEng.mkAdv v.s)))"
+    for head, said in ((T + "_NP", ""), *(("%s_NP" % spec_rgl.kid(k), "_" + spec_rgl.kid(k)) for k in ks)):
+        w.fun("%s%s_IsOneOf" % (T, said), "%s -> %s_Vals -> Cond" % (head, T), one, "x v")
+        w.fun("%s%s_IsNoneOf" % (T, said), "%s -> %s_Vals -> Cond" % (head, T), none, "x v")
+    for k in ks:
+        w.fun("%s_%s_HasNo" % (T, spec_rgl.kid(k)), "%s_NP -> Cond" % spec_rgl.kid(k),
+              "mkS (mkCl x (mkVP have_V2 (mkNP no_Quant (%s))))" % noun, "x")
 
 
 def ordered(w, T, t, ks):

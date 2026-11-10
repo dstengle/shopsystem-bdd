@@ -3,7 +3,8 @@ section 7.4), beside spec_lf_facts, whose walk (`w`) emits them:
 
 - "every K that P is v" in a While or Where clause or a trigger: the universal of codified-1 (spec_facts_np), `uall(R,U,
   K)` with its restrictor `uattr(R,U,T,V)`, `urel(R,Q,U,W)` and what its scope says of it `ucond(R,U,T,V,Pol)`, which
-  check.lp reads (`umatch`): a pair is out where an instance of K that meets the restrictor has another value;
+  check.lp reads (`umatch`): a pair is out where an instance of K that meets the restrictor has another value; "every
+  K that P is one of `a` or `b`" `uin(R,U,T,V)` of each value (spec_lf_values, b240);
 - a count of Ks in a condition ("at least two stages are `done`"): when it admits no K (at most, fewer than, exactly
   0) it says nothing the check reads; otherwise there is a K that meets its restrictor and scope, a role with its
   literals, as "a K that P"; `ccount(R,X,B,N)` keeps the count, so the entailment check never forces it as a premise
@@ -13,6 +14,7 @@ section 7.4), beside spec_lf_facts, whose walk (`w`) emits them:
 
 Anything else in such a box has no translation: a ValueError naming it.
 """
+import spec_lf_values
 from spec_lf_core import Atom, Box, Ref, least
 
 NEGATED = "no translation of a negated restriction (not) on an object"
@@ -43,7 +45,11 @@ def every(w, box):
             w.emit("urel", q, u.name, w.term(y))
         else:
             raise ValueError("no translation of every there")
-    for item, pol in _literals(box.scope.body, "pos"):
+    sets = [b for b in box.scope.body if isinstance(b, Box) and spec_lf_values.members(u, b)]
+    for b in sets:          # "every K ... is one of `a` or `b`" (b240): `uin` of each value
+        for term, value in spec_lf_values.members(u, b):
+            w.emit("uin", u.name, *w.ids.attr(u.kind, term, value))
+    for item, pol in _literals([b for b in box.scope.body if not any(b is s for s in sets)], "pos"):
         if not (item.pred == "attr" and item.args[0] == u and not isinstance(item.args[2], Ref)):
             raise ValueError("no translation of every there")
         w.emit("ucond", u.name, *w.ids.attr(u.kind, item.args[1], item.args[2]), pol)

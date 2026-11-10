@@ -17,7 +17,7 @@
 #defined uattr/4. #defined ucond/5. #defined uccond/4. #defined pre/6. #defined prec/5.
 #defined each/2.   #defined only/5. #defined rattr/4.  #defined rrel/4.  #defined akind/2.
 #defined cnl4/1.  #defined count/7. #defined onattr/4.
-#defined ccmp/6.  #defined ckey/4.  #defined vkey/3.  #defined dense/1.
+#defined ccmp/6.  #defined ckey/4.  #defined vkey/3.  #defined dense/1.  #defined uin/4.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
@@ -260,6 +260,13 @@ out(A,B) :- umatch(A,B,S,U,Z), uccond(S,U,C,pos), cw(A,B,Z,C,neg).
 out(A,B) :- umatch(A,B,S,U,Z), uccond(S,U,C,neg), cw(A,B,Z,C,pos).
 out(A,B) :- umatch(A,B,S,U,Z), state(A,B,S,N), uccond(S,U,C,pos), refuted(A,B,N,Z,C).
 out(A,B) :- umatch(A,B,S,U,Z), state(A,B,S,N), uccond(S,U,C,neg), ent(A,B,N,Z,C).
+% "every K <restrictions> is one of v, w" (uin(R,U,T,V) of each value, b240): each such instance has one of them,
+% so a value outside them (`absent` among them) is out, and so is each of them said not of it
+uinw(A,B,N,Z,S,U,T) :- umatch(A,B,S,U,Z), state(A,B,S,N), uin(S,U,T,_).
+uinv(A,B,S,U,T,V) :- side(A,B,S), uin(S,U,T,V).
+out(A,B) :- uinw(A,B,N,Z,S,U,T), has(A,B,N,Z,T,W,pos), not uinv(A,B,S,U,T,W).
+uinok(A,B,N,Z,S,U,T) :- uinw(A,B,N,Z,S,U,T), uinv(A,B,S,U,T,V), not has(A,B,N,Z,T,V,neg).
+out(A,B) :- uinw(A,B,N,Z,S,U,T), not uinok(A,B,N,Z,S,U,T).
 
 % ---- L1: the clash of a pair, under one unification ---------------------------------------------------------------
 % A pair that cannot fire together under this unification is out, or unfit: soft, so that one pair never makes the
@@ -347,13 +354,14 @@ clash(R,R,self) :- self(R).
 
 % ---- L3: a set whose pre-value (its own condition, or none) has no transition to the new value -------------------
 edge(T,U,V) :- trans(_,T,U,V).  moving(T) :- edge(T,_,_).  entered(T,V) :- edge(T,_,V).
-bad_set(R,T,U,V) :- set(R,_,X,T,V), cond(R,X,T,U,pos), U != V, moving(T), not edge(T,U,V).
-known(R,X,T) :- cond(R,X,T,_,pos).
+% (a value's absence, `absent` (b240), is no value: a set from it is a set from none, and no path need reach it)
+bad_set(R,T,U,V) :- set(R,_,X,T,V), cond(R,X,T,U,pos), U != V, U != absent, moving(T), not edge(T,U,V).
+known(R,X,T) :- cond(R,X,T,U,pos), U != absent.
 bad_set(R,T,none,V) :- set(R,_,X,T,V), not known(R,X,T), moving(T), not entered(T,V).
 #show bad_set/4.
 % ---- L4: a value a requirement's pre-state needs that no path reaches from an initial value -----------------------
 reach(T,V) :- initial(_,T,V).  reach(T,W) :- reach(T,V), edge(T,V,W).
-unreachable(R,T,V) :- cond(R,_,T,V,pos), moving(T), not reach(T,V).
+unreachable(R,T,V) :- cond(R,_,T,V,pos), V != absent, moving(T), not reach(T,V).
 #show unreachable/3.
 % ---- L5: an untriggered positive event obligation, with the triggered requirements that react to its event -------
 % holding a resource is a state, not an event ("every stage shall hold the initiative lock" is no G p trap)

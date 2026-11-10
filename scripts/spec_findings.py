@@ -116,10 +116,12 @@ class Words:
             rid, var = (b, z.arguments[0]) if z.type == clingo.SymbolType.Function and z.name == "b" else (a, z)
             vals = inst.setdefault(str(z), (self.term(rid, var), []))[1]
             word = self.value(val) if sym.name == "pre" else self.v.cond_terms.get(val.name, val.name)
-            text = ("" if pol.name == "pos" else "not ") + word
+            text = ("is ", ("" if pol.name == "pos" else "not ") + word)
+            if sym.name == "pre" and str(val) == "absent":       # "has no T" (b240)
+                text = ("has ", "no " + self.attr(sym.arguments[3])[0])
             if text not in vals:
                 vals.append(text)
-        return ", ".join("%s that is %s" % (who, " and ".join(vals)) for _, (who, vals) in sorted(inst.items()))
+        return ", ".join("%s that %s" % (who, said(vals)) for _, (who, vals) in sorted(inst.items()))
 
     def clash(self, x, y, whys, pre):
         """`<x> and #<y> clash: on "<trigger>" with <pre-state>, <why>`: x, y in the order they are reported."""
@@ -212,3 +214,8 @@ class Words:
         if reactors:
             text += "; %s %s to it" % (", ".join(reactors), "reacts" if len(reactors) == 1 else "react")
         return text
+
+
+def said(vals):
+    """[(verb, what)] as one predicate: "is `a` and not `b`", "has no status and is `a`" (a verb said once in a row)."""
+    return " and ".join(("" if n and vals[n - 1][0] == verb else verb) + what for n, (verb, what) in enumerate(vals))

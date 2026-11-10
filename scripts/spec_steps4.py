@@ -3,7 +3,7 @@ I14a), the one meaning `model logic` reads (spec_lf), in the step grammar 4's tr
 
 - Givens: what the While and Where parts say, then what the trigger says of its referents besides its event, each a
   condition (`SCond`), a referent brought in at its first mention (`K_Given`, "a stage s1"); a `not` with no
-  referents of its own is its condition negated.
+  referents of its own is its condition negated; "has no T" spec_lf_values' Given.
 - When: the trigger's event (`STrig`).
 - Thens: each act of the response in the present (`S_Does`; setting an attribute spec_lf_set's), its polarity kept:
   "change nothing" is "changes nothing", a `not` over an act on a referent of its own "does not V a K"; a condition of
@@ -24,6 +24,7 @@ import spec_facts
 import spec_lf
 import spec_lf_order
 import spec_lf_set
+import spec_lf_values
 import spec_rgl
 import spec_steps4_boxes as boxes
 from spec_lf_core import Atom, Box
@@ -141,6 +142,8 @@ class Reader:
         if item.pred == "state":
             subject, s, vp = self.clause(item)
             return (kid(subject) + "_Holds", pol, s, vp)
+        if item.pred == "attr" and item.args[2] == spec_lf_values.NONE:     # "has no T" (b240)
+            return spec_lf_values.given(self, item, pos)
         if item.pred == "attr" and not hasattr(item.args[2], "kind"):
             x, term, value = item.args
             for n, (t, kinds) in enumerate(self.vocab.attributes, 1):

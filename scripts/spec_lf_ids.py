@@ -1,9 +1,10 @@
 """The check's names of a codified-2 context's words (the CNL 4 design, I12a), for spec_lf_facts: each kind, actor,
 verb, attribute and value, and relation row by the ids its logic Vocab (spec_logic_vocab) gives the codified-1 facts,
 so both kinds of file name one word alike; an attribute or a row found for a kind or a kind above it in grammar 4's
-kind tree. A word with no id raises ValueError naming it.
+kind tree; an attribute's absence its value `absent` (b240). A word with no id raises ValueError naming it.
 """
 import spec_lexicon
+import spec_lf_values
 
 
 class Ids:
@@ -27,9 +28,12 @@ class Ids:
         return out
 
     def attr(self, kind, term, value):
-        """(attribute id, value id) of `term` of a thing of `kind`."""
+        """(attribute id, value id) of `term` of a thing of `kind`; the value of "has no T" (spec_lf_values' `none`)
+        the check's `absent`, which no listed value is."""
         for k in self.above(kind):
             for tid, (kid, entry) in self.v.attrs.items():
+                if entry.term == term and kid == self.v.by_term.get(k) and value == spec_lf_values.NONE:
+                    return tid, spec_lf_values.ABSENT
                 if entry.term == term and kid == self.v.by_term.get(k):
                     vid = next((x for x in self.v.attr_values[tid] if self.v.value_text[x] == value), None)
                     if vid is not None:

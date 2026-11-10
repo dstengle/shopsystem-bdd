@@ -17,6 +17,7 @@ import spec_lf_order
 import spec_lf_read
 import spec_lf_set
 import spec_lf_time
+import spec_lf_values
 from spec_lf_core import Atom, Box, NPList
 
 ORIGIN = {"where": "while", "while": "while", "when": "trigger", "if": "trigger", "response": "response",
@@ -127,6 +128,9 @@ def cond(st, tree):
         x = nps.owner(st, a[1]) if rest == "IsOf" else nps.np(st, a[1])
         value = st.names.value(nps.fun(a[2]))
         return st.apply([x], lambda r: Atom("attr", (r[0], t.term, value)), 1 if a[0] == "PNeg" else None)
+    valued = spec_lf_values.cond(st, t, rest, a) if t is not None else None     # one of, none of, has no (b240)
+    if valued is not None:
+        return valued
     ordered = spec_lf_order.cond(st, t, rest, a) if t is not None else None     # after, before (b240)
     if ordered is not None:
         return ordered
