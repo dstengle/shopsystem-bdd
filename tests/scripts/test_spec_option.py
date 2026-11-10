@@ -104,6 +104,8 @@ def test_a_line_pairs_with_a_line_on_the_same_command(tmp_path, first, second, c
     (" with the `--json` option on a stage", "the person runs `work start` with the `--json` option on the stage s1"),
     (" with the `--from` option set to a stage",
      "the person runs `work start` with the `--from` option set to the stage s1"),
+    (" with the `--json` option and the `--from` option set to a stage",
+     "the person runs `work start` with the `--json` option and the `--from` option set to the stage s1"),
 ])
 def test_the_when_names_each_option_as_the_line_does(options, when):
     assert ("when", when) in steps(LINE % (options, OK)), steps(LINE % (options, OK))
@@ -115,6 +117,8 @@ def test_the_when_names_each_option_as_the_line_does(options, when):
      [("`--source`", None), ("`--thread`", None)], []),
     ("the person runs `work start` with the `--every` option set to `5`", [("`--every`", "`5`")], []),
     ("the person runs `work start` with the `--from` option set to the stage s1", [("`--from`", "the stage s1")], []),
+    ("the person runs `work start` with the `--json` option and the `--from` option set to the stage s1",
+     [("`--json`", None), ("`--from`", "the stage s1")], []),
     ("the person runs `work start` without the `--summary` option", [], ["`--summary`"]),
     ("the person runs `work start`", [], []),
 ])

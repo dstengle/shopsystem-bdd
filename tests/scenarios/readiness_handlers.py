@@ -1,7 +1,8 @@
-"""Handlers of features/readiness.feature (plan 3, Task 2): `work ready` run with no input on the items backlog_world.py
-writes, over the codified spec readiness_world.py writes. The item steps whose key the backlog claims reach these
-through work_queue_world's `local` table, so test_readiness.py binds with `bind_all`; each returns False for a step
-that is not about readiness, which then goes on to the registry."""
+"""Handlers of features/readiness.feature (plan 3, Task 2; codified-2 since b240 phase 20): `work ready` run with no
+input on the items backlog_world.py writes, over the codified spec readiness_world.py writes, and that it asks no
+question. Batches' "the item i1 is passing" reaches `given_passing` through work_queue_world's `local` table; the
+codified-2 steps of readiness's own scenarios reach readiness_handlers_givens.py and readiness_handlers_thens.py the
+same way, so test_readiness.py binds with `bind_all`."""
 import importlib.util
 import sys
 from pathlib import Path
@@ -31,38 +32,12 @@ def work_ready(step):
 
 @local("GivenK_C", "item")
 def given_passing(step):
-    """passing: the item given a line that passes the bar; not passing: one that does not parse, whose refusal must
-    name the line's id and the word that stopped it; unworded: one whose scenario holds a step no Steps fun words,
-    which the refusal must name (b46); ill-termed: a passing line beside a term bullet that brings a lexicon problem,
-whose term the refusal must name. Any other condition (blocked) goes on to the backlog's."""
+    """passing: the item given a line that passes the bar; not passing: one that does not parse. Any other condition
+    (blocked) goes on to the backlog's."""
     word = step.text.split(" is ", 1)[1]
-    if word == "ill-termed":
-        R.give_lines(step, step.names[0], R.PASSING, [R.ILL_TERMED])
-        step.context["ill_term"] = R.ILL_TERM
-        return None
-    if word == "unworded":
-        R.give_lines(step, step.names[0], R.UNWORDED)
-        step.context["unworded"] = R.UNWORDED_STEP
-        return None
     if word not in ("passing", "not passing"):
         return False
     R.give_lines(step, step.names[0], R.PASSING if word == "passing" else R.FAILING)
-    if word == "not passing":
-        step.context["reason"] = ["work-queue#r5", "frobnicate"]
-
-
-@local("ThenExitsErr", "reason")
-def refused_with_reason(step):
-    """The run was refused (exit 1, not a usage error), naming the item and every word of the reason a Given kept; a
-    reason no readiness Given kept is another capability's (supervision's `work run`)."""
-    if "reason" not in step.context:
-        return False
-    done = step.context["result"]
-    assert done.returncode == 1, (done.returncode, done.stdout, done.stderr)
-    labels = [said for name, said in step.context.get("says", {}).items() if B.item_rel(step.context, name)]
-    assert labels and all(label in done.stderr for label in labels), (labels, done.stderr)
-    for word in step.context.get("reason", ()):
-        assert word in done.stderr, (word, done.stderr)
 
 
 def _before(step, rel):
@@ -102,23 +77,3 @@ def asks_nothing(step):
         assert not _asks(_before(step, rel), after), (step.text, rel)
     for said in (done.stdout + done.stderr).splitlines():
         assert not said.rstrip().endswith("?"), (step.text, said)
-
-
-@local("ThenExitsErr", "step")
-def refused_naming_step(step):
-    """The run was refused (exit 1), naming the unworded step a Given kept, whole (b46)."""
-    if "unworded" not in step.context:
-        return False
-    done = step.context["result"]
-    assert done.returncode == 1, (done.returncode, done.stdout, done.stderr)
-    assert step.context["unworded"] in done.stderr, (step.context["unworded"], done.stderr)
-
-
-@local("ThenExitsErr", "term")
-def refused_naming_term(step):
-    """The run was refused (exit 1), naming the term of the problem the item's term bullet brought."""
-    if "ill_term" not in step.context:
-        return False
-    done = step.context["result"]
-    assert done.returncode == 1, (done.returncode, done.stdout, done.stderr)
-    assert step.context["ill_term"] in done.stderr, (step.context["ill_term"], done.stderr)
