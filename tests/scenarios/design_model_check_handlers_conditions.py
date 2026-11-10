@@ -24,6 +24,7 @@ def _sibling(name, module):
 H = _sibling("design_model_check_handlers.py", "shop_design_model_check_handlers")
 C2 = _sibling("codified2_world.py", "shop_codified2_world")
 MIXED = _sibling("codified2_mixed.py", "shop_codified2_mixed")
+GIVEN = _sibling("codified2_given.py", "shop_codified2_given")
 ROOT = Path(__file__).resolve().parents[2]
 BROKEN = ROOT / "tests" / "scripts" / "fixtures" / "generate" / "broken" / "spec"
 
@@ -62,6 +63,11 @@ def capability(step):
     if word == "recodified":     # the mixed spec (I19): the scenario's capability is its codified-2 file
         MIXED.mixed(repo, H.PATH)
         step.context.setdefault("ids", {})[name] = MIXED.NAME
+        return
+    if word in GIVEN.GIVEN:     # a given line of example data in grammar 4's steps (b218)
+        step.context.setdefault("ids", {})[name] = GIVEN.capability(repo, H.PATH, word)
+        step.context.setdefault("holds", {})["features/%s.feature" % GIVEN.NAME] = re.compile(
+            re.escape(GIVEN.WRITTEN[word]))
         return
     if word in C2.CAPABILITIES:     # lines of grammar 4 that `model logic` reads through their logical form (I12a)
         C2.context(repo, H.PATH, C2.CAPABILITIES[word], name, C2.UNIVERSAL.get(word, ()))
