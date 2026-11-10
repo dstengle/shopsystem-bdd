@@ -39,6 +39,8 @@ def modules(vocab):
         w.fun(K + "_HoldsBlock", "%s_N -> Name -> Step" % K, 'holds n x.s ":"', "n x")
         w.fun(K + "_HoldsText", "%s_N -> Name -> Quoted -> Step" % K, "holds n x.s q.s", "n x q")
     subjects = dict.fromkeys(subject for v in vocab.verbs if v.aspect == "action" for subject, _ in v.frames)
+    if vocab.attributes:    # an agent sets an attribute (spec_rgl's `<t>_Set`, b216)
+        subjects.setdefault("agent")
     for subject in subjects:
         S = spec_rgl.kid(subject)
         w.fun(S + "_Does", "Pol -> %s_Arg -> %s_V -> Step" % (S, S), "{s = (mkS p (mkCl x v)).s}", "p x v")

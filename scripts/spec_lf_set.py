@@ -43,7 +43,8 @@ def facts(walk, atom, polarity):
 
 
 def then(reader, atom, pos):
-    """The Then tree of a setting act: `k_agent_Does` over `<t>_Set` of "the T of x" and the value's fun."""
+    """The Then tree of a setting act: `k_agent_Does` over `<t>_Set` of "the T of x" and the value's fun; None
+    when no attribute of x's kind is the atom's."""
     _, doer, x, attr, value = atom.args
     for n, (t, kinds) in enumerate(reader.vocab.attributes, 1):
         k = next((k for k in kinds if k in reader.vocab.ancestors(x.kind)), None)
@@ -51,5 +52,5 @@ def then(reader, atom, pos):
             T = "t_%s_%d" % (spec_rgl.slug(attr), n)
             owner = ("%s_Of_%s" % (T, spec_rgl.kid(k)), reader.np(x, k))
             return ("k_agent_Does", ("PPos",) if pos else ("PNeg",), reader.arg(doer, "agent"),
-                    (T + "_Set", owner, "%s_v_%s" % (T, spec_rgl.slug(value))))
+                    (T + "_Set", owner, ("%s_v_%s" % (T, spec_rgl.slug(value)),)))
     return None
