@@ -8,8 +8,6 @@ comment", which means "a comment of a request"); a row whose word is `in` gives 
 (`r<n>_Holds`). An attribute T of a kind K gives its noun phrases (`T_NP`): "the T of x" (`T_Of_K`), "its T"
 (`T_Its`) and the compound "the K T" (`T_Cpd_K`), each a thing (`T_Up`), and the condition "the T of x is v"
 (`T_IsOf`). "no K" is the base grammar's determiner `DetNo`; lists with and/or and "only" are spec_rgl's `K_Arg`.
-
-A declared compound, a noun entry spelled as a compound a row or an attribute derives, is refused (`derived`, v_t18).
 """
 import spec_rgl
 import spec_rgl_vocab
@@ -66,11 +64,3 @@ def noun_phrases(w, vocab):
     attributes(w, vocab)
     return rows(w, vocab)
 
-
-def derived(lexicon):
-    """{a noun entry's term: what derives it} for each noun entry spelled as a compound that a relation row whose word
-    is `of` or an attribute of a kind derives (v_t18): "pull request" is declared, "the batch status" derived."""
-    made = {"%s %s" % (r.k2, r.k1): "the row %s | of | %s" % (r.k1, r.k2) for r in lexicon.rows if r.word == "of"}
-    made.update({"%s %s" % (k, t.term): "the attribute %s of %s" % (t.term, k)
-                 for t in lexicon.of("attribute") for k in t.kinds})
-    return {t.term: made[t.term] for t in lexicon.of("kind") + lexicon.of("resource") if t.term in made}
