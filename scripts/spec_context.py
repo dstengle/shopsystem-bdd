@@ -6,8 +6,10 @@ domain facts.
 A capability file that says `language: codified-2` is read through grammar 4 (CNL 4's call 15, I12a): each line
 parsed (spec_grammar4), its logical form (spec_lf) translated into the same facts (spec_lf_facts), a line a reading
 rule refuses or the translation has no facts of among the refused; both kinds of file feed one check. A context whose
-`spec/index.md` says `language: codified-2` takes its vocabulary from its layered lexicon, packs included; its
-universal conditions are read in the grammar `spec/universal.md`'s own marker names (b151).
+`spec/index.md` says `language: codified-2` takes its vocabulary from its layered lexicon, packs included; a
+codified-1 line there is translated with the old lexicon's Vocab and its ids mapped to the layered one's
+(spec_context_ids, b151), a line using an entry the layered lexicon left out refused; its universal conditions are
+read in the grammar `spec/universal.md`'s own marker names (b151).
 
 `load(root, extra=())` is cached in the process by the state of the files it reads: `spec/**/*.md` under `root`, the
 files of `extra` and the plugin's `grammar/*.gf` (each path with its mtime_ns and size).
@@ -16,6 +18,7 @@ import contextlib
 from collections import namedtuple
 from pathlib import Path
 
+import spec_context_ids
 import spec_facts
 import spec_grammar
 import spec_grammar4
@@ -138,19 +141,23 @@ class _Four:
 
 
 def _vocab(root, four):
-    """The logic's Vocab: of the layered lexicon and grammar 4's kinds when `spec/index.md` says codified-2."""
+    """The old lexicon's Vocab, its conditions defined, which every codified-1 line is translated with (its funs are
+    numbered by that lexicon), and the logic's Vocab: of the layered lexicon and grammar 4's kinds when
+    `spec/index.md` says codified-2, else the old one."""
+    lex = spec_lexicon.read(root)
+    old = spec_logic_vocab.Vocab(lex)
+    _define(root, lex, old)
     if not four.marked:
-        lex = spec_lexicon.read(root)
-        vocab = spec_logic_vocab.Vocab(lex)
-        _define(root, lex, vocab)
-        return vocab
-    lex = spec_rgl_vocab.lexicon(root)
-    return spec_logic_vocab.Vocab(lex, spec_rgl_vocab.read(root).kinds)
+        return old, old
+    layered = spec_rgl_vocab.lexicon(root)
+    return old, spec_logic_vocab.Vocab(layered, spec_rgl_vocab.read(root).kinds)
 
 
 def _translate(root, extra):
     four = _Four(root, spec_grammar4.marked(root))
-    vocab = _vocab(root, four)
+    old, vocab = _vocab(root, four)
+    ids = spec_context_ids.Ids(old, vocab)
+    ids.lay()
     caps, fours = _caps(root, extra)
     universal4 = spec_language.four(root, universal=True)
     statements, refused, facts = [], {}, {}
@@ -167,12 +174,16 @@ def _translate(root, extra):
                 refused[ident] = why
             continue
         parsed = spec_grammar.parse(root, text)
-        if parsed.tree:
-            statements.append(Statement(ident, cap, group, parsed.tree))
-            facts[ident] = spec_facts.translate(vocab, ident, parsed.tree)
-        else:
+        if not parsed.tree:
             refused[ident] = parsed.refusal
-    domain = spec_logic_vocab.domain(vocab) + spec_facts.def_facts(vocab)
+            continue
+        try:
+            facts[ident] = ids.facts(spec_facts.translate(old, ident, parsed.tree))
+        except spec_context_ids.Unmapped as err:
+            refused[ident] = "refused: %s" % err
+            continue
+        statements.append(Statement(ident, cap, group, parsed.tree))
+    domain = spec_logic_vocab.domain(vocab) + ids.domain(spec_facts.def_facts(old))
     return Context(vocab, caps, statements, facts, refused, domain)
 
 
