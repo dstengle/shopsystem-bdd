@@ -156,7 +156,7 @@ The simplified workflow:
 - **file** (noun): a file or a directory of the repository or of a worktree. Kind of: text.
 - **text** (noun): what a session or a tool writes: a file, or a part of one it writes whole, such as an entry, a line, a row, a block or a comment. Kind of: thing.
 - **thing** (noun): anything a requirement names, as what a verb such as keep, name, read or use takes.
-- **command** (noun): one run of `work`, `work run` or another tool, with its arguments. Kind of: thing. Redefines: cli.
+- **command** (noun): one run of `work`, `work run` or another tool, with its arguments. Kind of: thing. This: the command the run runs. Redefines: cli.
 - **reason** (noun): what an error names as the cause of a refused command. Kind of: text. Redefines: cli.
 - **JSON object** (noun): the one object a tool prints on standard output when `--json` is given.
 - **initiative branch** (noun): the branch `work run` commits each transition on and merges each work-item branch into, whose base is the commit it started from. Plural: initiative branches. Not: integration branch.

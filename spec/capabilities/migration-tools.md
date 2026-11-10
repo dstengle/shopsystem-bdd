@@ -20,7 +20,7 @@ what it needs to know at its start and before it is compacted.
 
 ## Terms
 - **the SessionStart hook** (proper noun): the plugin's hook that runs `migrate status --hook` when a session starts, and
-  gives the session what it prints.
+  gives the session what it prints. Kind of: agent.
 - **tracked file** (noun): a file committed in the repository `migrate` runs in.
 - **untracked file** (noun): a file of the repository's working tree that git does not track, or a change not
   committed.
