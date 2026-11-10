@@ -55,6 +55,11 @@ def gf_binary():
     return tools_grammar.gf_binary()
 
 
+def rgl_path():
+    """The built RGL, by `tools_grammar.rgl_path`: the directory `tools install` built gf-rgl in, or None."""
+    return tools_grammar.rgl_path()
+
+
 def tokenise(line):
     """A line's tokens: words, a backticked or double-quoted span whole, punctuation alone; the first word in lower
     case (the grammar writes it so)."""
@@ -99,8 +104,12 @@ def sources(root, lex=None):
 
 
 def _run_gf(gf, directory, concrete):
+    """GF's compile of <concrete>, the built RGL (its compiled .gfo) on GF's library path when there is one."""
+    rgl, env = rgl_path(), dict(os.environ)
+    if rgl:
+        env["GF_LIB_PATH"] = os.pathsep.join(filter(None, (rgl, env.get("GF_LIB_PATH"))))
     return subprocess.run([gf, "-make", "--output-dir=" + str(directory), concrete], cwd=directory,
-                          capture_output=True, text=True)
+                          capture_output=True, text=True, env=env)
 
 
 def _compile(srcs, sha, grammar):

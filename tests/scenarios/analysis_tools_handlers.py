@@ -243,7 +243,11 @@ def exits_err(step):
 def installs(step):
     done = w.pip_calls(step.context["python"])
     for np in step.nps:
-        if step.template == "ThenDoesNot":
+        if np == "`gf-rgl`":
+            rgl = pathlib.Path(step.context["env"]["XDG_DATA_HOME"]) / "shopsystem-bdd" / "gf-rgl-20250812"
+            assert "gf-rgl 20250812 built" in output(step), output(step, err=True)
+            assert (rgl / "alltenses" / "AllEng.gfo").is_file() and (rgl / "release").is_file(), output(step, True)
+        elif step.template == "ThenDoesNot":
             assert tool_of(np.split()[-1]) not in done, (np, done)
         elif np.startswith("`"):
             assert bare(np) in done, (np, done)
