@@ -6,7 +6,7 @@ group: guarantees
 rests_on: [design-decision/the-session-keeps-the-gate, design-decision/the-v3-agents, design-decision/workflow-capabilities-are-guarantees]
 language: codified-2
 retired: [g1, r1, g2, r2, g3, r3, g4, r4, g5, r5]
-unbuilt: [r6, r7, r8, r9, r10]
+unbuilt: []
 ---
 
 # Trials
@@ -34,18 +34,23 @@ decide on. A walking skeleton (design-decision/behaviour-lines-are-ears): it gro
 
 ## Behaviour
 ### [g6] A trial is started on its target
+Restates: r1@0.29.
 - [r6] When a session sends a trial to `trial-runner`, `trial-runner` shall start the trial.
 
 ### [g7] A trial reads only its target
+Restates: r2@0.29.
 - [r7] When `trial-runner` starts a trial, `trial-runner` shall read only files in the target of the trial.
 
 ### [g8] A trial writes nothing but its measurement
+Restates: r3@0.29.
 - [r8] When `trial-runner` starts a trial, `trial-runner` shall write only the measurement of the trial.
 
 ### [g9] A trial ends with a measurement listing its target
+Restates: r4@0.29.
 - [r9] When `trial-runner` ends a trial, `trial-runner` shall write a measurement of the trial that lists the target of the trial.
 
 ### [g10] The reply lists the measurement
+Restates: r5@0.29.
 - [r10] When `trial-runner` writes a measurement, `trial-runner` shall write a reply that lists the measurement.
 
 ## Implementation, may change
