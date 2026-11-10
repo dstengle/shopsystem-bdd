@@ -6,7 +6,7 @@ status: accepted
 tier: check
 enforced_by: [tests/scenarios/vocab.py]
 verified_by: [check]
-rests_on: [U8]
+rests_on: [U16]
 by: "the session for b169, 2026-11-10"
 ---
 

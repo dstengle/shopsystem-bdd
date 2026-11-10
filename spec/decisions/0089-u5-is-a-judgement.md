@@ -5,7 +5,7 @@ date: 2026-11-10
 status: accepted
 tier: judgement
 verified_by: [judgement]
-rests_on: [U5]
+rests_on: [U14]
 by: "the session for b169, 2026-11-10"
 ---
 
