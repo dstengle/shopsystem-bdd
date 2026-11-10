@@ -2,9 +2,10 @@
 in one tree, its actors, attributes and values, and each verb's frames read into pieces.
 
 The layers are spec_packs' (each imported pack, the glossary of `spec/index.md`, each capability's `## Terms`); a word
-a higher layer defines takes the place of a lower layer's entries of it (`Redefines:`, v_t16). The base grammar's own
-kinds are `thing`, the root, and `agent`, a kind of thing (the CLI pack's frames name both); a kind or an actor with
-no `Kind of:` is a kind of thing.
+the context defines takes the place of every pack's entries of it (`Redefines:`, v_t16), a later pack's of an earlier
+one's, while the glossary's and the capabilities' entries stand side by side, as the old lexicon reads them (b151).
+The base grammar's own kinds are `thing`, the root, and `agent`, a kind of thing (the CLI pack's frames name both); a
+kind or an actor with no `Kind of:` is a kind of thing.
 
 A verb's `Frame:` is read as its subject (a kind or an actor's kind), the verb's third person form, then pieces: each
 a run of fixed words and the kind after them, or fixed words alone at the end: `agent runs command with option` is
@@ -50,13 +51,13 @@ class Vocab:
 
 
 def lexicon(root):
-    """The context's terms over every layer, a lower layer's entries of a word a higher layer defines left out."""
+    """The context's terms over every layer: every entry of the glossary and of each capability side by side, and of
+    the packs' entries of a word only the last pack's, none when the context defines the word itself."""
     layered = spec_packs.layers(root)
-    order = {layer: n for n, layer in enumerate(dict.fromkeys(layer for layer, _ in layered))}
-    top = {}
-    for layer, t in layered:
-        top[t.term] = max(top.get(t.term, -1), order[layer])
-    terms = [t for layer, t in layered if order[layer] == top[t.term]]
+    own = {t.term for layer, t in layered if not layer.startswith("pack ")}
+    last = {t.term: layer for layer, t in layered if layer.startswith("pack ")}
+    terms = [t for layer, t in layered
+             if not layer.startswith("pack ") or (t.term not in own and last[t.term] == layer)]
     return spec_lexicon.Lexicon(terms, spec_relations.read(root))
 
 

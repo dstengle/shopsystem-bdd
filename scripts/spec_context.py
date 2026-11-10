@@ -8,7 +8,7 @@ parsed (spec_grammar4), its logical form (spec_lf) translated into the same fact
 rule refuses or the translation has no facts of among the refused; both kinds of file feed one check. A context whose
 `spec/index.md` says `language: codified-2` takes its vocabulary from its layered lexicon, packs included; a
 codified-1 line there is translated with the old lexicon's Vocab and its ids mapped to the layered one's
-(spec_context_ids, b151), a line using an entry the layered lexicon left out refused; its universal conditions are
+(spec_context_ids, b151), a line using an entry the layered lexicon has not refused; its universal conditions are
 read in the grammar `spec/universal.md`'s own marker names (b151).
 
 `load(root, extra=())` is cached in the process by the state of the files it reads: `spec/**/*.md` under `root`, the

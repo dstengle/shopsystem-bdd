@@ -2,9 +2,10 @@
 whose funs its tree carries, and each id of its facts is then mapped to the layered Vocab's id of the same entry,
 matched by its term and kind, so the facts, the domain and every reader of them stay in the layered space.
 
-The old lexicon numbers every entry of a word (`c_closed`, `c_closed_2` ...); the layered one keeps only the highest
-layer's entries of it, numbered again. An id of the old lexicon whose entry the layered one left out has no
-counterpart: the line that uses it is refused (`Unmapped`), naming the word.
+The layered lexicon holds every entry the old one does (spec_rgl_vocab reads the glossary's and the capabilities'
+entries side by side), so the map is the identity unless an imported pack's entry takes a number among the context's:
+a pack's `Open` and the context's `open` are both `c_open`, numbered in the order of their spellings. It is a guard
+otherwise: an id of the old lexicon whose entry the layered one has not is refused (`Unmapped`), naming the word.
 """
 import clingo
 
