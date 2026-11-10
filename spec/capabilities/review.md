@@ -36,12 +36,7 @@ fixed now becomes a fix work-item, and the rest an observation.
 
 | from | word | to | cardinality |
 |---|---|---|---|
-| commit | changes | feature |  |
-| commit | weakens | test |  |
-| commit | contradicts | requirement |  |
-| commit | deletes | scenario |  |
 | work-item | of | initiative | one |
-| commit | of | work-item |  |
 
 ## Behaviour
 

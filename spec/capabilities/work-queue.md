@@ -27,13 +27,6 @@ work-item's status; `work run` (supervision) takes them through it. It judges no
 - **asking stage** (attribute of question): the kind of stage that asked the question. Values: `research`, `plan`, `implement`, `review`.
 - **flag** (attribute of answer): the flag `work answer` is given with an answer to a reviewer's question. Values: `--change`, `--accept`, `unflagged`.
 
-## Relations
-
-| from | word | to | cardinality |
-|---|---|---|---|
-| ledger | of | initiative | one |
-| work-item | kept in | initiative | one |
-
 ## Behaviour
 
 ## Implementation, may change

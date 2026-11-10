@@ -72,17 +72,9 @@ decide goes to the person as a question.
 
 | from | word | to | cardinality |
 |---|---|---|---|
-| stage | for | request |  |
-| stage | for | question |  |
-| question | on | request |  |
-| stage | on | work-item branch |  |
 | result | gives | question |  |
 | result | gives | output |  |
 | result | gives | change list |  |
-| worker brief | for | work-item |  |
-| worker brief | with | work-item branch |  |
-| review brief | with | commit |  |
-| round brief | with | request |  |
 
 ## Behaviour
 

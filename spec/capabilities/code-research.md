@@ -26,16 +26,6 @@ nothing and changes nothing in the checkout.
 - **module** (noun): a Python file of the repository's code or tests.
 - **line count** (noun): the number of lines of a module and its room under the size limit `CLAUDE.md` gives.
 
-## Relations
-
-| from | word | to | cardinality |
-|---|---|---|---|
-| scenario | of | work-item |  |
-| line count | of | module | one |
-| test | broken by | work-item |  |
-| file | changed by | work-item |  |
-| probe | in | worktree |  |
-
 ## Behaviour
 
 ## Implementation, may change

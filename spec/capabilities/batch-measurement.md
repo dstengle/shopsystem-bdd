@@ -35,13 +35,6 @@ not know rather than guessing at it.
 - **present** (adjective of measurement): a measurement that is already written for its initiative on its day.
 - **include** (verb, action): `measure` puts a figure or a name into the measurement it writes. Forms: includes, included. Frame: `measure` includes measurement.
 
-## Relations
-
-| from | word | to | cardinality |
-|---|---|---|---|
-| logged stage | has | transcript | one |
-| logged stage | has | session file | one |
-
 ## Behaviour
 
 ### [g18] `measure show` prints a measurement's figures as tables, a stage's round trips beside its turns

@@ -31,17 +31,6 @@ It is not formulation and not planning; it writes nothing a client can run.
 - **retire** (verb, action): an id is added to its capability's `retired:` list. Forms: retires, retired. Frame: round retires requirement.
 - **apply** (verb, action): a round writes approved drafts into `spec/`. Forms: applies, applied. Frame: round applies file.
 
-## Relations
-
-| from | word | to | cardinality |
-|---|---|---|---|
-| requirement | quotes | design note |  |
-| requirement | added by | capability-proposal |  |
-| question | on | term |  |
-| term | added by | glossary-proposal |  |
-| term | changed by | glossary-proposal |  |
-| term | removed by | glossary-proposal |  |
-
 ## Behaviour
 
 ## Implementation, may change

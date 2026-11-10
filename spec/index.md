@@ -282,46 +282,24 @@ The simplified workflow:
 | from | word | to | cardinality |
 |---|---|---|---|
 | proposal | part of | initiative | one |
-| capability-proposal | argues | capability | one |
-| capability-proposal | removes | requirement |  |
-| capability-proposal | changes | requirement group |  |
-| glossary-proposal | adds | term |  |
-| glossary-proposal | changes | term |  |
-| glossary-proposal | removes | term |  |
-| work-item | under | capability-proposal | one |
-| work-item | accepts | requirement |  |
-| requirement | member of | requirement group | one |
-| requirement group | generates | scenario | one |
-| requirement group | in | capability | one |
-| capability | in | bounded context | one |
-| capability | rests on | design-decision |  |
 | design-decision | supersedes | design-decision |  |
-| request | asker | bounded context |  |
-| request | upstream | bounded context |  |
 | request | raised for | request |  |
-| commit | belongs to | work-item |  |
-| work-item branch | merges into | initiative branch |  |
-| stage | needs | resource |  |
-| file | in | worktree |  |
-| file | of | initiative |  |
-| initiative | outside | delivery |  |
+| file | in | worktree | one |
 | initiative | fulfils | request | one |
-| capability-proposal | adds | requirement |  |
 | work-item | blocked by | work-item |  |
-| question | on | node |  |
-| stage | for | node |  |
-| stage | with | result |  |
+| question | on | node | one |
+| stage | for | node | one |
+| stage | with | result | one |
 | request line | proposed in | request | one |
 | dependency | of | item | one |
 | dependency | on | item | one |
-| request line | of | item |  |
-| question | on | item |  |
+| request line | of | item | one |
+| question | on | item | one |
 | item | proposes | requirement |  |
 | item | in | batch | one |
-| item | asked by | bounded context |  |
 | task | of | batch | one |
 | pull request | of | batch | one |
-| review finding | on | pull request |  |
+| review finding | on | pull request | one |
 | quote | from | session | one |
 | quote | cites | message |  |
 | design-decision | enforced by | test |  |
