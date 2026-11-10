@@ -1,5 +1,9 @@
 """The lexicon's side of the logic (design-r3 §3): each fun of the generated `Typed` module traced back to its lexicon
-entry, and the domain facts for `grammar/check.lp` (kinds, sub-kinds, actors, values, transitions, `initial/3`).
+entry, and the domain facts for `grammar/check.lp` (kinds, sub-kinds, actors and each actor's kind, values,
+transitions, `initial/3`).
+
+A codified-2 context's Vocab (`Vocab(lexicon, parents)`, spec_lf_facts) is read from its layered lexicon, packs
+included, with the kind tree of grammar 4 (`parents`, spec_rgl_vocab: `thing` and `agent` among its kinds).
 
 The fun names are the ones `spec_typed.modules` gives: `<kind>_<det>`, `<attribute>_<part>`, `<condition>_<part>`,
 `rel_<k1>_<word>_<k2>` (a relation row's modifier), its `_Atom` (its clause) and `_AtomNot` (the clause negated), a value's own id and `n_<word>` for an
@@ -27,15 +31,17 @@ ATTR_PARTS = {"One", "More", "ThatIs", "ThatIsNot", "Whose", "WhoseNot", "Pre", 
 COND_PARTS = {"Pre", "ThatIs", "ThatIsNot", "Is", "IsNot"}
 
 
-# A relation row with no cardinality whose word is one of these prepositions relates a thing to one thing: a stage is
-# for one node and with one result (a call of report-checker-gaps; "one" says it, any other word does not).
+# A codified-1 context reads a relation row with no cardinality whose word is one of these prepositions as relating a
+# thing to one thing: a stage is for one node and with one result (a call of report-checker-gaps). A codified-2 one
+# reads a blank cardinality as any number, for every word: only "one" makes a row functional (CNL 4's call 14, b115).
 PREPOSITIONS = ("for", "with", "on", "of", "in")
 
 
-def functional(row):
-    """Whether a relation row relates each thing of its first kind to at most one of its second."""
+def functional(row, four=False):
+    """Whether a relation row relates each thing of its first kind to at most one of its second (`four`: as a
+    codified-2 context reads it)."""
     card = row.cardinality.strip().lower()
-    return card == "one" or (not card and row.word.strip().lower() in PREPOSITIONS)
+    return card == "one" or (not four and not card and row.word.strip().lower() in PREPOSITIONS)
 
 
 def _bare(text):
@@ -46,13 +52,16 @@ class Vocab:
     """The ids of one lexicon's grammar, by category: kinds (with their supertypes), attributes (with their kind,
     values and transitions), conditions, relations, events, actors and resources."""
 
-    def __init__(self, lexicon):
+    def __init__(self, lexicon, parents=None):
         ids = lexicon.ids()
         self.kinds = {ids[t.key]: t.term for t in lexicon.of("kind")}
+        taken = set(self.kinds.values())
+        self.kinds.update({spec_lexicon.ident(k, "kind"): k for k in parents or () if k not in taken})
         by_term = {term: kid for kid, term in self.kinds.items()}
         self.by_term = by_term
         self.events = {ids[t.key]: t.term for t in lexicon.of("event")}
         self.actors = {ids[t.key]: t.term for t in lexicon.of("actor")}
+        self.actor_kinds = {ids[t.key]: by_term[t.supertype] for t in lexicon.of("actor") if t.supertype in by_term}
         self.resources = {ids[t.key]: t for t in lexicon.of("resource")}
         self.attrs, self.attr_values, self.value_text, seen = {}, {}, {}, set()
         for t in lexicon.of("attribute"):
@@ -79,8 +88,8 @@ class Vocab:
             if k1 in by_term and k2 in by_term:
                 self.rels[spec_typed.relation_fun(by_term[k1], word, by_term[k2])] = rid
                 self.rel_kinds.setdefault(rid, set()).add((by_term[k1], by_term[k2]))
-        self.functional = {spec_relations.rid(row) for row in lexicon.rows if functional(row)}
-        subs = spec_relations.subkinds(lexicon)
+        self.functional = {spec_relations.rid(row) for row in lexicon.rows if functional(row, parents is not None)}
+        subs = spec_relations.subkinds(lexicon) if parents is None else _under(parents)
         self.subs = sorted((by_term[s], by_term[k]) for k, under in subs.items() for s in under
                            if k in by_term and s in by_term)
 
@@ -136,13 +145,26 @@ class Vocab:
                        if _bare(a) in by_text and _bare(b) in by_text})
 
 
+def _under(parents):
+    """{kind: every kind under it, at any depth} of a kind tree {kind: its parent}."""
+    out = {k: set() for k in parents}
+    for k in parents:
+        seen, up = {k}, parents[k]
+        while up is not None and up not in seen:
+            out.setdefault(up, set()).add(k)
+            seen.add(up)
+            up = parents.get(up)
+    return out
+
+
 def domain(vocab):
-    """The lexicon's facts for `grammar/check.lp` (design-r3 §3): kinds, sub-kinds, actors, each attribute's values in
-    their order, its transitions, and its initial values: those no transition enters, or every value when each one
-    is entered."""
+    """The lexicon's facts for `grammar/check.lp` (design-r3 §3): kinds, sub-kinds, actors with the kind each is a
+    kind of (`akind`, b121), each attribute's values in their order, its transitions, and its initial values: those
+    no transition enters, or every value when each one is entered."""
     out = ["kind(%s)." % k for k in sorted(vocab.kinds)]
     out += ["sub(%s,%s)." % pair for pair in vocab.subs]
     out += ["actor(%s)." % a for a in sorted(vocab.actors)]
+    out += ["akind(%s,%s)." % pair for pair in sorted(vocab.actor_kinds.items())]
     out += ["fun(%s)." % r for r in sorted(vocab.functional)]
     for tid, (kid, _) in sorted(vocab.attrs.items()):
         values, edges = vocab.attr_values[tid], vocab.transitions(tid)

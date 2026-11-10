@@ -96,6 +96,11 @@ refused: "the stage" has no antecedent: no earlier noun phrase, functional relat
 
 "no K" (and "nothing") is a `not` box over its referent and the rest of its own clause, and over nothing outside it.
 
+`model logic` keeps each `not` box's scope narrow (I12b). In a response, one over an object's restrictions ("a stage
+whose status is not `done`", "every session that does not follow a stage") narrows that object, whatever the line's
+polarity: the line bears on no `done` stage, and on no session that follows a stage, so it never clashes with a line
+about one. One over an act is the act forbidden ("shall not").
+
 Tested on migration-tools r8 ("... `migrate` shall exit with an error naming the untracked file and change
 nothing": the error is said, and no thing is changed).
 
@@ -174,7 +179,9 @@ shall [x3: tool `work` (constant)]
 ## R5. "X shall V only Ks that P": every K that X Vs meets P
 
 "only" is an `only` box: its restrictor (the Ks and what restricts them) and its scope (the act). Every K the agent
-Vs meets the restrictor; the line obliges no V.
+Vs meets the restrictor; the line obliges no V. `model logic` reads it so (I12a): it clashes only with a line in
+which the agent Vs a K known not to meet the restrictor (an attribute of another value), never with a V of a K that
+may meet it.
 
 Tested on U7 ("A worker shall change only files in its worktree") and trials r2 ("`trial-runner` shall read only a
 target").
@@ -193,7 +200,9 @@ shall []
 ## R6. "every K that P" in a response: for each such K
 
 "every K" is an `every` box: its restrictor and its scope, the act done for each K. The scenario the generator writes
-of such a line gives two Ks, so it is not met vacuously (the generator's part is I14a's).
+of such a line gives two Ks, so it is not met vacuously (the generator's part is I14a's). `model logic` reads it so
+(I12a): the act is obliged of each K the restrictor allows, so it clashes with a line that forbids the act of a K of
+that kind under the same trigger and state, though that line says more of its K ("a stage whose status is `done`").
 
 Tested on batches r8 ("... and every task of the batch is `done` ...") and requests r37 ("... and every request line
 proposed in the request is `refused` ...").
@@ -242,6 +251,14 @@ When names an event: the response follows at the next step. While names a state 
 If names an unwanted event whose response takes precedence over a When line's at the same step (call 12). Every
 state the response does not change keeps its value (inertia). The form keeps each part as its own box (`when`,
 `while`, `where`, `if`); the check reads them so (I12a, I12b).
+
+`model logic` reads the precedence as stated, never as a clash: an If line and a line of another form on one trigger
+are no pair, since where the If line's state holds its response replaces the other's, and where it does not hold the
+If line does not fire. Two If lines on one trigger are still checked against each other. A universal condition holds
+in every trace, so it takes no precedence and none is taken over it: it is paired with each line it bears on, If or
+not, and a line whose response it forbids under that line's trigger is an L1 naming it (b117). A pair of two
+codified-1 lines keeps the reading of plugin 2.x (an If line never paired with a line of another form) until its
+files are reworded.
 
 Tested on backlog r20 and r21 (in a tasked repository `work idea` refuses, If; in a tracking one it writes, When).
 
@@ -317,3 +334,13 @@ shall [x1: tool `work` (constant), x2: thing `spec/index.md` (parameter)]
     not
       change(e1, subject: x1, object: x2)
 ```
+
+## Relation rows: a fixed word set, and a blank cardinality is any number
+
+Not a reading rule of a line, but of the rows its noun phrases are made from (call 14). A row of `## Relations` says
+its word with a preposition of a fixed set (of, in, on, for, with, from, to, by, at) or a role noun (upstream,
+target); a relation said with a verb (adds, changes, removes) is a verb entry with a `Frame:`, and a row whose word is
+neither is `v_t20`. A blank cardinality means any number, for every word: `file | in | worktree` relates a file to any
+number of worktrees. Only `one` in the fourth cell makes a row functional (`worktree | of | session | one`: a session's
+worktree is one thing), and `model logic` reads "the worktree of the session" as that one thing. A codified-1 context
+keeps plugin 2.x's readings (a blank row of for, with, on, of or in functional; any word) until it is reworded.
