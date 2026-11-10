@@ -34,8 +34,8 @@ a request (backlog, batches).
 
 - **issue** (noun): the GitHub issue, on the GitHub repository of a request's upstream, that carries the request's conversation. Kind of: text.
 - **comment** (noun): one step of a request's conversation, posted on its issue, read only as the one block of fields it holds. Kind of: text.
-- **post** (verb): `work` puts an issue or a comment on GitHub. Forms: posts, posted. Frame: `work` posts text.
-- **close** (verb): `work` closes the issue of a request on GitHub. Forms: closes, closed. Frame: `work` closes issue.
+- **post** (verb, action): `work` puts an issue or a comment on GitHub. Forms: posts, posted. Frame: `work` posts text.
+- **close** (verb, action): `work` closes the issue of a request on GitHub. Forms: closes, closed. Frame: `work` closes issue.
 - **unrecorded** (adjective of comment): a comment on a request's issue that its request does not yet hold.
 - **unreadable** (adjective of comment): a comment whose block of fields does not parse.
 - **unhosted** (adjective of bounded context): an upstream whose entry under `## Upstreams` names no GitHub repository.

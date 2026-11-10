@@ -163,3 +163,16 @@ def test_same_named_conditions_have_their_own_definitions():
 def test_words_are_every_spelling_a_line_may_use():
     words = spec_lexicon.read(FIXTURE).words()
     assert {"`work run`", "initiative", "`drafted`", "spec lock", "under"} <= words
+
+
+def test_a_4_0_entry_gives_a_verbs_aspect_and_frames_and_a_kinds_this():
+    t = spec_lexicon.entry("- **write** (verb, action): an agent puts text into a file. Forms: writes, written. "
+                           "Frame: agent writes text. Frame: agent writes text to file.", "x")
+    assert (t.category, t.aspect, t.frame) == ("event", "action", "agent writes text")
+    assert t.frames == ("agent writes text", "agent writes text to file")
+    assert spec_lexicon.entry("- **name** (verb, state): a text holds a name. Frame: text names thing.", "x").aspect \
+        == "state"
+    assert spec_lexicon.entry("- **name** (verb): a thing named. Frame: text names thing.", "x").aspect == ""
+    assert spec_lexicon.entry("- **name** (verb, wish): a thing named.", "x").category == ""
+    t = spec_lexicon.entry("- **session** (noun): a conversation. This: the session the command runs in.", "x")
+    assert (t.category, t.this) == ("kind", "the session the command runs in")

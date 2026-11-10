@@ -38,9 +38,9 @@ def frames(lex):
     whose frame reads; a prepositional verb's forms end in its preposition ("subscribe to"), so each of its funs
     says the preposition before its object."""
     ids, known, out = lex.ids(), spec_frames.names(lex), {}
-    for t in lex.of("event"):
+    for t in lex.of("event"):     # the first frame of a verb's first sense: codified-1 reads no other
         found = spec_frames.frame(t, known)
-        if found is None:
+        if found is None or ids[t.key] in out:
             continue
         inf, s3 = ("%s %s" % (form, found.prep) if found.prep else form for form in spec_typed.event_forms(t))
         out[ids[t.key]] = (inf, s3, tuple(_type_id(n, ids, lex) if n else None for n in found[:3]))

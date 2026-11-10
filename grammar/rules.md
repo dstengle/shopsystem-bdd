@@ -872,7 +872,7 @@ a word the glossary avoids
 
 ## v_t2
 
-a term has two entries
+a term has two entries, other than the senses of one verb
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
@@ -882,12 +882,15 @@ a term has two entries
   ```prolog
   glossary_entry("t",1,"thing").
   glossary_entry("t",2,"thing").
+  senses("u").
   ```
 
 - Passes on:
 
   ```prolog
   glossary_entry("t",1,"thing").
+  glossary_entry("t",2,"thing").
+  senses("t").
   ```
 
 ## v_t3
@@ -1037,6 +1040,45 @@ a verb's Frame: does not read as its subject, the verb and the kinds it takes
 
   ```prolog
   category("write","event").
+  ```
+
+## v_t14
+
+a verb's entry says neither state nor action
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  aspectless("write").
+  ```
+
+- Passes on:
+
+  ```prolog
+  category("write","event").
+  ```
+
+## v_t15
+
+two entries of one verb take, in every slot, the same kind or one kind under the other
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  senses("name").
+  overlapping("name").
+  ```
+
+- Passes on:
+
+  ```prolog
+  senses("name").
   ```
 
 ## v_p0

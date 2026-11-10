@@ -27,12 +27,12 @@ Bash can still write files through the shell, which is why `work run` verifies t
 - **`capability-writer`** (proper noun): the agent a round dispatches to draft a capability's statements. Kind of: dispatch.
 - **`spec-checker`** (proper noun): the agent `checking-spec-consistency` dispatches to read the spec for findings. Kind of: dispatch.
 - **`trial-runner`** (proper noun): the agent that runs one trial. Kind of: dispatch.
-- **read** (verb): a session or a tool reads a file, a commit or another thing. Forms: reads, read. Frame: agent reads thing.
-- **show** (verb): a session shows the person a thing. Forms: shows, shown. Frame: session shows file.
-- **name** (verb): a message or a file names a thing. Forms: names, named. Frame: agent names thing.
-- **list** (verb): a session or a file lists things. Forms: lists, listed. Frame: session lists file.
-- **keep** (verb): a session leaves a thing as it was. Forms: keeps, kept. Frame: agent keeps thing.
-- **delete** (verb): a file or a scenario is removed. Forms: deletes, deleted. Frame: session deletes file.
+- **read** (verb, action): a session or a tool reads a file, a commit or another thing. Forms: reads, read. Frame: agent reads thing.
+- **show** (verb, action): a session shows the person a thing. Forms: shows, shown. Frame: session shows file.
+- **name** (verb, state): a message or a file names a thing. Forms: names, named. Frame: agent names thing.
+- **list** (verb, action): a session or a file lists things. Forms: lists, listed. Frame: session lists file.
+- **keep** (verb, action): a session leaves a thing as it was. Forms: keeps, kept. Frame: agent keeps thing.
+- **delete** (verb, action): a file or a scenario is removed. Forms: deletes, deleted. Frame: session deletes file.
 
 ## Behaviour
 
