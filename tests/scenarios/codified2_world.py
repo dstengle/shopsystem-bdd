@@ -162,3 +162,17 @@ def requirement(step, word, path):
     context(step.repo, path, [line], fixture=TIME_FIXTURE if word in TIMED else FIXTURE)
     if says:
         step.context.setdefault("says", {})["t1"] = says
+
+
+# A state verb whose frame takes no object (b219): the glossary entry the fixture has not, and r1 of the capability
+# `shelf`, whose feature feature-file-tools' scenario names; `model logic` names r1 by `shelf#r1`.
+INTRANSITIVE = ("- **stall** (verb, state): a stage makes no progress. Frame: stage stalls.\n",
+                "While a stage stalls, when the person runs `work start`, `work` shall print the stage.")
+
+
+def intransitive(step, path):
+    entry, line = INTRANSITIVE
+    context(step.repo, path, [line], "shelf")
+    index = step.repo / "spec" / "index.md"
+    index.write_text(index.read_text() + entry)
+    step.context.setdefault("ids", {})[step.names[0]] = "shelf#r1"

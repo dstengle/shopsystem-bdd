@@ -117,3 +117,18 @@ def test_a_negated_restriction_of_an_object_is_refused(tmp_path):
         "When a session ends a stage, `work` shall print every session that does not follow the stage."))
     assert sorted(ctx.refused) == ["thing#r1", "thing#r2", "thing#r3", "thing#r4"], ctx.refused
     assert all("no translation of a negated restriction" in why for why in ctx.refused.values()), ctx.refused
+
+
+def test_a_state_that_takes_no_object_is_a_one_place_fluent(tmp_path):
+    """b219: "a stage stalls" (Frame: stage stalls.) is `crel(R,E,X,none,Pol)`; it and its negation exclude each
+    other on one stage, as a state with an object does."""
+    world(tmp_path, *[RUN.replace("When", "While a stage %s, when" % s) + "`work` shall %s the stage." % p
+                      for s, p in (("stalls", "print"), ("does not stall", "not print"), ("stalls", "not print"))])
+    index = tmp_path / "spec" / "index.md"
+    index.write_text(index.read_text() + codified2_world.INTRANSITIVE[0])
+    ctx = spec_context.load(tmp_path)
+    assert not ctx.refused, ctx.refused
+    assert 'crel("thing#r1",e_stall,x1,none,pos).' in ctx.facts["thing#r1"]
+    assert 'crel("thing#r2",e_stall,x1,none,neg).' in ctx.facts["thing#r2"]
+    found = spec_solve.run(tmp_path, capability="thing")
+    assert [(f.code, f.ids) for f in found] == [("L1", ["thing#r1", "thing#r3"])], found
