@@ -22,10 +22,16 @@ def _sibling(name, module):
 # registrations repeat the same file and line, so no key is claimed twice.
 H = _sibling("design_model_check_handlers.py", "shop_design_model_check_handlers")
 C2 = _sibling("codified2_world.py", "shop_codified2_world")
-MIXED = _sibling("codified2_mixed.py", "shop_codified2_mixed")
 GIVEN = _sibling("codified2_given.py", "shop_codified2_given")
 CONSTRUCTS = _sibling("codified2_constructs.py", "shop_codified2_constructs")
 ROOT = Path(__file__).resolve().parents[2]
+# the capability in the new language: grammar 4's lines, each a scenario of its own that `features generate` writes
+RECODIFIED = "shelf"
+NEW = [("While a session follows a stage, if the person runs `work start`, then `work` shall exit with an error naming "
+        "the stage."),
+       "When a session ends a stage, `work` shall print the stage."]
+# `thing` in the old language, which `model check` refuses, naming `migrate upgrade` (v_p0)
+OLD = ["When the person runs `work start`, `work` shall exit successfully."]
 # a line grammar 4 stops in: the fixture glossary has no verb tell
 UNPARSED = "When the person runs `work start`, `work` shall tell the person."
 
@@ -50,11 +56,13 @@ def capability(step):
         H.write(repo, "features/%s.feature" % name, H.feature(name, "@r1", "@r2", "@r3", "@r4"))
         H.says(step, "r1", "%s#r1" % name)
         return
-    if word in ("recodified", "old"):     # the mixed spec (I19): its codified-2 file, or `thing` in the old language
-        MIXED.mixed(repo, H.PATH)
-        step.context.setdefault("ids", {})[name] = MIXED.NAME if word == "recodified" else "thing"
+    if word in ("recodified", "old"):     # a codified-2 capability, or beside it `thing` in the old language
+        C2.context(repo, H.PATH, NEW, RECODIFIED)
+        step.context.setdefault("ids", {})[name] = RECODIFIED if word == "recodified" else "thing"
         if word == "old":       # each group its scenario, so the old language is all `model check` finds
-            H.write(repo, "features/%s.feature" % MIXED.NAME, H.feature(MIXED.NAME, "@r1", "@r2"))
+            H.write(repo, "spec/capabilities/thing.md", C2.capability("thing", OLD, H.PATH).replace(
+                "language: codified-2", "language: codified-1"))
+            H.write(repo, "features/%s.feature" % RECODIFIED, H.feature(RECODIFIED, "@r1", "@r2"))
             H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))
         return
     if word in GIVEN.GIVEN:     # a given line of example data in grammar 4's steps (b218)
