@@ -4,6 +4,7 @@ also codified-2, whose requirement r1 is the line a requirement condition gives.
 
 A later grammar item adds its condition to LINES: the line r1 says, and what a refusal of it names the scenario's term
 t1 by (None when it names no term). I19 extends the world to a mixed spec."""
+import re
 from pathlib import Path
 
 FIXTURE = Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "codified-2" / "spec" / "index.md"
@@ -64,7 +65,18 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
                        "shall print the stage."), "the number 7 is a duration"),
          # modality (I17): a permission, and a necessity with no trigger
          "permissive": ("A session may write a file.", None),
-         "invariant": ("A session always follows a stage.", None)}
+         "invariant": ("A session always follows a stage.", None),
+         # a "the" inside a modifier of a noun phrase of its own kind (R2, b217), with the state verb precede of TERMS:
+         # bound to the trigger's stage, and refused when only the stage it modifies would give it
+         "embedding": ("When a session ends a stage, `work` shall print a stage that precedes the stage.", None),
+         "self-embedding": ("When the person runs `work start`, `work` shall print a stage that precedes the stage.",
+                            '"the stage" has no antecedent')}
+# a condition's glossary entries, added to the fixture's
+TERMS = {"embedding": ["- **precede** (verb, state): a stage comes before a stage. Frame: stage precedes stage."]}
+TERMS["self-embedding"] = TERMS["embedding"]
+# a condition whose line `features generate` writes: its capability is `shelf`, and the step its feature must hold
+# (the new stage precedes the trigger's, not itself)
+SHELVED = {"embedding": r"^    Then the stage s3 precedes the stage s2$"}
 
 TIMED = {"timed", "clocked", "historical", "unitless"}
 
@@ -159,6 +171,12 @@ def context(repo, path, lines, name="thing", universal=(), fixture=FIXTURE):
 def requirement(step, word, path):
     """The requirement condition `word`: the world with r1 the line LINES gives it, and t1 said as its refusal names it."""
     line, says = LINES[word]
-    context(step.repo, path, [line], fixture=TIME_FIXTURE if word in TIMED else FIXTURE)
+    name = "shelf" if word in SHELVED else "thing"
+    context(step.repo, path, [line], name, fixture=TIME_FIXTURE if word in TIMED else FIXTURE)
+    index = step.repo / "spec" / "index.md"
+    for entry in TERMS.get(word, ()):
+        index.write_text(index.read_text() + entry + "\n")
+    if word in SHELVED:
+        step.context.setdefault("holds", {})["features/shelf.feature"] = re.compile(SHELVED[word], re.MULTILINE)
     if says:
         step.context.setdefault("says", {})["t1"] = says
