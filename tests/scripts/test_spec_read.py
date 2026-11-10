@@ -122,7 +122,9 @@ def test_dropped_retired_and_frontmatter(tmp_path):
 def test_the_marker(tmp_path):
     assert spec_read.codified(write(tmp_path, HEAD + BODY))
     assert not spec_read.codified(write(tmp_path, HEAD.replace("language: codified-1\n", "") + BODY))
-    assert not spec_read.codified(write(tmp_path, HEAD.replace("codified-1", "codified-2") + BODY))
+    assert spec_read.codified(write(tmp_path, HEAD.replace("codified-1", "codified-2") + BODY))     # CNL 4's I19
+    assert not spec_read.codified(write(tmp_path, HEAD.replace("codified-1", "codified-2") + BODY), ("codified-1",))
+    assert not spec_read.codified(write(tmp_path, HEAD.replace("codified-1", "codified-9") + BODY))
     assert not spec_read.codified(tmp_path / "missing.md")
 
 

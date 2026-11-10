@@ -1121,7 +1121,7 @@ a term an imported pack defines too has no `Redefines:` naming the pack
 
 ## v_p0
 
-a spec file is not codified (no `language: codified-1`): run `migrate upgrade`
+a spec file is not codified (no `language: codified-1` or `codified-2`): run `migrate upgrade`
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`

@@ -23,6 +23,7 @@ def _sibling(name, module):
 # registrations repeat the same file and line, so no key is claimed twice.
 H = _sibling("design_model_check_handlers.py", "shop_design_model_check_handlers")
 C2 = _sibling("codified2_world.py", "shop_codified2_world")
+MIXED = _sibling("codified2_mixed.py", "shop_codified2_mixed")
 ROOT = Path(__file__).resolve().parents[2]
 BROKEN = ROOT / "tests" / "scripts" / "fixtures" / "generate" / "broken" / "spec"
 
@@ -57,6 +58,10 @@ def capability(step):
                 H.cap(name, ["- [r%d] %s" % (k, line) for k, line in enumerate(UNPAIRABLE, 1)]))
         H.write(repo, "features/%s.feature" % name, H.feature(name, "@r1", "@r2", "@r3", "@r4"))
         H.says(step, "r1", "%s#r1" % name)
+        return
+    if word == "recodified":     # the mixed spec (I19): the scenario's capability is its codified-2 file
+        MIXED.mixed(repo, H.PATH)
+        step.context.setdefault("ids", {})[name] = MIXED.NAME
         return
     if word in C2.CAPABILITIES:     # lines of grammar 4 that `model logic` reads through their logical form (I12a)
         C2.context(repo, H.PATH, C2.CAPABILITIES[word], name, C2.UNIVERSAL.get(word, ()))

@@ -61,6 +61,8 @@ def add_parsers(sub):
     p.add_argument("--retires", metavar="CAP#rN", help="the live requirement `<capability>#r<n>` the line replaces: "
                    "its id goes under the block's retired:, the line into that capability")
     p.add_argument("--term", help="a term bullet for the capability's ## Terms, in place of a line")
+    p.add_argument("--recodify", metavar="CAP", help="the codified capability the item switches to the new language: "
+                   "`language: codified-2` written into its block")
     p.add_argument("--relation", help="a row `| from | word | to | cardinality |` for the capability's ## Relations")
     p.add_argument("--given", nargs=2, metavar=("GROUP", "BLOCK"),
                    help="the given block of the item's group g<n> in the capability: example data, one line a row")
@@ -105,7 +107,7 @@ def cmd_depend(args):
     return 0
 
 
-PIECES = ("text", "term", "relation", "given", "universal", "upstream")
+PIECES = ("text", "term", "relation", "given", "universal", "upstream", "recodify")
 
 
 def cmd_line(args):
@@ -113,8 +115,14 @@ def cmd_line(args):
     given = [k for k in PIECES if getattr(args, k) is not None]
     if len(given) != 1:
         raise backlog_items.Refused("work line: give one of a requirement line, --term, --relation, --given, "
-                                    "--universal or --upstream")
+                                    "--universal, --upstream or --recodify")
     piece = given[0]
+    if piece == "recodify":
+        if args.into is not None or args.retires is not None:
+            raise backlog_items.Refused("work line: --recodify takes no --into or --retires")
+        item = backlog_lines.recodify(args.root, args.name, args.recodify)
+        print("%s: %s recodified" % (backlog_items.label(item), args.recodify))
+        return 0
     if args.retires is not None:
         if piece != "text":
             raise backlog_items.Refused("work line: --retires takes a requirement line, not --%s" % piece)

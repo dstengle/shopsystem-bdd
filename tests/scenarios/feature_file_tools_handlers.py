@@ -123,11 +123,11 @@ def given_capability(step):
 @handler("WhenRuns", "`features generate`")
 def generates(step):
     """`features generate` on the capabilities the step names, a requirement (`on the requirement r1`) naming the
-    capability whose file holds it."""
-    caps = []
+    capability whose file holds it, a capability by the name a Given gave its file (`ids`, a recodified one's)."""
+    caps, ids = [], step.context.get("ids", {})
     for name in step.names:
         holding = [p.stem for p in sorted((step.repo / "spec" / "capabilities").glob("*.md"))
-                   if "- [%s] " % name in p.read_text()] if re.fullmatch(r"r\d+", name) else [bare(name)]
+                   if "- [%s] " % name in p.read_text()] if re.fullmatch(r"r\d+", name) else [ids.get(name, bare(name))]
         assert len(holding) == 1, (name, holding)
         caps += holding
     step.context["result"] = step.run("features", "generate", *caps, *step.context.get("flags", []))
