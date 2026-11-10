@@ -49,14 +49,11 @@ def index(P):
     gives = {r: _gives(f) for r, f in P.reqs.items()}
     out = {}
     for L, f in P.reqs.items():
-        lt, other = P.trig.get(L), lambda M: P.base[M] != P.base[L]
-        same = [M for M in by_trig[tuple(lt[:2])] if other(M)] if lt else []
+        lt, base = P.trig.get(L), P.base[L]
+        same = [M for M in by_trig[tuple(lt[:2])] if P.base[M] != base] if lt else []
         ran = lt is not None and lt[0] == "ran"
-        negated = {a[0] for a in f["nattr"]} | {a[1] for a in f["nrel"]}
         for j, p, e, d, x in f["resp"]:
-            if x in negated:     # an object a negated restriction narrows: no premise is read as giving it
-                continue
-            cand = [M for M in same + untrig + (refusers if ran else []) if (p, e) in gives[M] and other(M)]
+            cand = [M for M in same + untrig + (refusers if ran else []) if (p, e) in gives[M] and P.base[M] != base]
             own = any(j2 != j and (p2, e2) == (p, e) for j2, p2, e2, _, _ in f["resp"]) or (
                 (p, e) == ("neg", "e_change") and ("pos", "change_nothing") in gives[L])
             if not cand and not own:
@@ -64,7 +61,7 @@ def index(P):
             use = set(cand)
             if ran:     # the premises an error exit on L's run brings in: its refusers, and the lines that exit so
                 use |= {M for M in same if any(a[1:3] == ["pos", "exit_error"] for a in P.reqs[M]["resp"])}
-                use |= {M for M in refusers if other(M)}
+                use |= {M for M in refusers if P.base[M] != base}
             out[(L, j)] = sorted(use)
     return out
 
