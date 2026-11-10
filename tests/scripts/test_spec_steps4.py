@@ -63,7 +63,7 @@ def test_generate_is_byte_stable_and_skips_a_group_no_step_words(world):
     again = generate(world)
     assert again.returncode == 0 and (world / "features" / "c1.feature").read_text() == text
     assert "c1#g7: no scenario: no Then of count" in first.stderr
-    assert "c1#g8: no scenario: no step of a line that says may" in first.stderr
+    assert "c1#g8" not in first.stderr     # a permission obliges nothing: no scenario and no warning (I17, b197)
     assert sorted(scenarios(world)) == ["g%d @r%d" % (k, k) for k in range(1, 7)]
 
 

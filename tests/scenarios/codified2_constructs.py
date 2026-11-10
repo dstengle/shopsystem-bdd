@@ -19,9 +19,18 @@ def _world():
 
 
 NAME = "shelf"
+ERROR = "%s the person runs `work start`, `work` shall exit with an error naming `work start`."
 # condition -> its lines, each a group of its own
 LINES = {"permitting": ["A session may write a file."],
-         "necessitating": ["A session always follows a stage."]}
+         "necessitating": ["A session always follows a stage."],
+         # design-model-check: a line of every, of a count and of a negated restriction, each with a line of its
+         # trigger whose response conflicts with it where its condition holds (L1)
+         "quantifying": [("While every stage is `done`, when the person runs `work start`, `work` shall exit "
+                          "successfully."), ERROR % "While a stage is `done`, when"],
+         "thresholded": [("While at least two stages are `done`, when the person runs `work start`, `work` shall exit "
+                          "successfully."), ERROR % "While a stage is `done`, when"],
+         "excepting": ["When the person runs `work start`, `work` shall print a stage whose status is not `done`.",
+                       "When the person runs `work start`, `work` shall not print a stage whose status is not `done`."]}
 # condition -> glossary entries and `## Relations` rows it adds
 TERMS, ROWS = {}, {}
 # condition -> a step the feature `features/shelf.feature` must hold

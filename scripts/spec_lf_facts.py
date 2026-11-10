@@ -14,11 +14,12 @@ clashes only with a V of a thing known to fall outside it. A count ("print at le
 `count(R,I,E,D,X,B,N)` of each act on its counted object X, with its bound B (`least`, `most`, `exactly`, `more`,
 `fewer`) and number N, and a `resp` only when it admits no fewer than one X. Each line is marked `cnl4(R)`, so the
 check reads its pairs as codified-2 lines (the If tag, a universal condition paired with each line). A "may" line and
-a necessity are spec_lf_modal's. The words are spec_lf_ids'. An `or` box splits it as spec_facts does (`R#n`,
+a necessity are spec_lf_modal's; every and a count in a condition and a negated restriction spec_lf_quant's. The words are spec_lf_ids'. An `or` box splits it as spec_facts does (`R#n`,
 `disj`); no translation, a ValueError.
 """
 import spec_facts
 import spec_lf_modal
+import spec_lf_quant
 import spec_lf_set
 from spec_facts_np import const
 from spec_lf_core import Atom, Box, Ref, least
@@ -28,9 +29,6 @@ FORMS = {("response",): "ubiq", ("when", "response"): "when", ("while", "respons
          ("where", "response"): "where", ("if", "response"): "if", ("while", "when", "response"): "while_when",
          ("where", "when", "response"): "where_when", ("where", "while", "response"): "where_while",
          ("while", "if", "response"): "while_if", ("where", "if", "response"): "where_if"}
-BOUNDS = {"at least": "least", "at most": "most", "exactly": "exactly", "more than": "more", "fewer than": "fewer"}
-# a `not` over a response object's restrictions ("whose T is not v"): the check has no reading of it (b188), refused
-NEGATED = "no translation of a negated restriction (not) on an object"
 # the time atoms (spec_lf_time, I16), which check.lp has no reading of: a line holding one is refused naming it
 TIME = {"cmp": lambda a: "no translation of a comparison of moments",
         "history": lambda a: "no translation of the history of %s" % a.args[0]}
@@ -128,6 +126,8 @@ class Walk:
                 self.literal(item, not pos)
         elif box.op == "not" and pos:
             self.none(set(box.refs), box.body)
+        elif box.op in ("every", "count") and pos:     # spec_lf_quant's (b197)
+            spec_lf_quant.condition(self, box)
         else:
             raise ValueError("no translation of %s in a condition" % box.op)
 
@@ -193,7 +193,7 @@ class Walk:
             elif isinstance(item, Atom):
                 self.restrict(item, own)
             elif item.op == "not" and not self.acting(item):
-                raise ValueError(NEGATED)
+                spec_lf_quant.negated(self, item, own)
             elif item.op == "not" and self.nothing(item):
                 self.acts += 1
                 self.emit("resp", self.acts, "pos" if pos else "neg", "change_nothing", self.term(
@@ -238,7 +238,7 @@ class Walk:
         """A restriction of a response's object (`own`, the referents its box introduced); of an earlier referent,
         the pre-state it presupposes."""
         if isinstance(item, Box) and item.op == "not":
-            raise ValueError(NEGATED)
+            return spec_lf_quant.negated(self, item, own)
         pred = getattr(item, "pred", None)
         if pred not in ("attr", "rel", "state"):
             raise ValueError("no translation of %s on an object" % (pred or item.op))
@@ -281,7 +281,7 @@ class Walk:
             self.acts += 1
             if least(box.count):
                 self.emit("resp", self.acts, spec_lf_modal.polarity(self, True), e, d, x)
-            self.emit("count", self.acts, e, d, x, BOUNDS[box.count[0]], box.count[1])
+            self.emit("count", self.acts, e, d, x, spec_lf_quant.BOUNDS[box.count[0]], box.count[1])
 
 
 def translate(ids, ident, form):

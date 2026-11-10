@@ -16,7 +16,7 @@
 #defined fun/1.   #defined prose/1. #defined dalt/2.  #defined dlit/5. #defined uall/3. #defined urel/4.
 #defined uattr/4. #defined ucond/5. #defined uccond/4. #defined pre/6. #defined prec/5.
 #defined each/2.   #defined only/5. #defined rattr/4.  #defined rrel/4.  #defined akind/2.
-#defined cnl4/1.  #defined count/7.
+#defined cnl4/1.  #defined count/7. #defined onattr/4.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
@@ -246,6 +246,10 @@ relby(A,B,X,Q,Z) :- map(A,B,Y,X), orel(B,Q,Y,Z), orel(A,Q,X,X2), same(A,B,X2,Z).
 pag(A,B,X,Y) :- map(A,B,Y,X), oattr(A,X,T,W), not oattr(B,Y,T,W), not each(B,Y).
 pag(A,B,X,Y) :- map(A,B,Y,X), orel(A,Q,X,X2), not relof(A,B,Y,Q,X2), not each(B,Y).
 relof(A,B,Y,Q,X2) :- map(A,B,Y,X), orel(A,Q,X,X2), orel(B,Q,Y,Z), same(A,B,X2,Z).
+% a negated restriction of an object (`onattr(R,X,T,V)`: its T is not V, spec_lf_quant, b197) is entailed only by
+% the same negated restriction on the other side's object
+gap(A,B,X,Y) :- map(A,B,Y,X), onattr(B,Y,T,W), not onattr(A,X,T,W), not each(A,X).
+pag(A,B,X,Y) :- map(A,B,Y,X), onattr(A,X,T,W), not onattr(B,Y,T,W), not each(B,Y).
 % each side's responses lifted to the pair first (`ra`, `rb`, `sa`, `sb`, `ua`, `ub`, `xa`, `xb`), so a clash is joined on the pair and the
 % event at once, never on an event (print, exit_error) that thousands of lines share
 ra(A,B,P,E,D,X) :- pair(A,B), resp(A,_,P,E,D,X).  rb(A,B,P,E,D,Y) :- pair(A,B), resp(B,_,P,E,D,Y).
