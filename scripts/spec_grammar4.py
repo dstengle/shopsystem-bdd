@@ -5,8 +5,8 @@ agree in number with its subject or whose aspect is not the one its clause takes
 action verb in a While clause; call 3).
 
 `model parse` reads a line in grammar 4 when `spec/index.md` says `language: codified-2` (`marked`); every other
-reader keeps grammar 3 until the switch (I19). A line with more than one tree is refused here; one meaning or refused
-is I9's.
+reader keeps grammar 3 until the switch (I19). A line with more than one tree keeps one when they all mean one thing,
+and is refused naming the words that read two ways when they do not (spec_meaning; call 2, I9).
 """
 import difflib
 import hashlib
@@ -16,6 +16,7 @@ from pathlib import Path
 
 import model_parse
 import spec_grammar
+import spec_meaning
 import spec_rgl
 import spec_rgl_np
 import spec_rgl_rel
@@ -31,8 +32,8 @@ _loaded = {}
 
 @dataclass
 class Parse:
-    """`tree` (a pgf expression's text) when the line has exactly one tree; else `refusal` says why, and `trees`
-    holds the trees of an ambiguous line."""
+    """`tree` (a pgf expression's text) when the line has one meaning, `trees` all its trees; else `refusal` says
+    why, and `trees` holds the trees of a line with more than one meaning."""
     tree: str = None
     refusal: str = None
     trees: list = field(default_factory=list)
@@ -128,10 +129,13 @@ def parse(root, line):
     tokens = spec_grammar.tokenise(line)
     words = {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
     trees, at = _trees(gram, words, tokens)
-    if len(trees) == 1:
-        return Parse(tree=trees[0], trees=trees)
     if trees:
-        return Parse(refusal="ambiguous: %d trees" % len(trees), trees=trees)
+        kept, two = spec_meaning.one(trees)
+        if kept:
+            return Parse(tree=kept, trees=trees)
+        words = spec_grammar.detokenise(gram.languages[GRAMMAR + "Eng"].linearize(_expr(two[0])).split(" "))
+        words = words if words in spec_grammar.normalise(line) else words[:1].lower() + words[1:]
+        return Parse(refusal='refused: more than one meaning: "%s" reads %d ways' % (words, two[1]), trees=trees)
     term = disagreeing(gram, vocab, tokens, at)
     if term:
         return Parse(refusal="refused: the verb %s does not agree in number with its subject" % term)
@@ -143,11 +147,15 @@ def parse(root, line):
     return Parse(refusal="does not parse at %s (token %d of %d)" % (tokens[at], at + 1, len(tokens)))
 
 
+def _expr(tree):
+    import pgf
+    return pgf.readExpr(tree)
+
+
 def linearise(root, tree):
     """A tree of grammar 4 written back as a line."""
-    import pgf
     _, gram = load(root)
-    text = gram.languages[GRAMMAR + "Eng"].linearize(pgf.readExpr(tree))
+    text = gram.languages[GRAMMAR + "Eng"].linearize(_expr(tree))
     return spec_grammar.detokenise(text.split(" "))
 
 

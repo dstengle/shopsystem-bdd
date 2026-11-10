@@ -91,3 +91,8 @@ When the person runs `work start`, `work` shall print every session whose worktr
 # an attribute of another kind gives no whose
 When the person runs `work start`, `work` shall print every worktree whose status is `open`.
 = refused: does not parse at whose
+# one meaning or refused (b136, call 2): a list that belongs to either of two verbs reads two ways
+When the person runs `work start`, `work` shall print every session that follows a stage and the stage.
+= refused: more than one meaning: "every session that follows a stage and the stage" reads 2 ways
+# a relative clause after two nouns belongs to the one its frame takes
+When a session writes a file in a worktree that a session has, `work` shall print the file.
