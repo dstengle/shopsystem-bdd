@@ -11,6 +11,7 @@ import shutil
 from pathlib import Path
 
 import backlog_forms
+import backlog_retires
 import spec_lexicon
 import spec_read
 from backlog_items import Refused, commit, find, label, one_line
@@ -87,6 +88,18 @@ def add_line(root, name, capability, text, group=None, in_group=None):
     return item, ident
 
 
+def retire(root, name, ident, text, into=None, group=None, in_group=None):
+    """`work line --retires <cap>#r<n> <line>`: the line written into the item `name` as `work line` writes it, and the
+    old id under its block's `retired:` (backlog_retires), committed; refused, changing nothing, when the capability
+    holds no live requirement of that id. The item and the new line's `<cap>#r<n>`."""
+    item = find(root, name)
+    capability, rid = backlog_retires.check(root, item, ident, into)
+    new = add_line_to(root, item, capability, text, group, in_group)
+    backlog_retires.with_retired(item, capability, rid)
+    commit(root, item, "work line: %s %s retires %s" % (label(item), new, ident))
+    return item, new
+
+
 def add_term(root, name, capability, bullet):
     """`work line --term`: one term bullet written into the item's block for `capability` and committed."""
     item = find(root, name)
@@ -117,13 +130,16 @@ def _append(text, heading, body, before="Behaviour"):
 
 def lay_onto(into, item, files=None):
     """The item's blocks laid over `into/spec`: term bullets at the end of the capability file's `## Terms`, relation
-    rows at the end of its `## Relations` table (made when it has none), groups (headings raised to `### `, each with
-    its given block) at the end of its `## Behaviour`; its universal conditions and upstream entries by
-    `backlog_forms.lay_spec`, the paths they change added to `files`. The names of the capabilities laid."""
+    rows at the end of its `## Relations` table (made when it has none), the lines it retires out of its `## Behaviour`
+    and into its `retired:` (backlog_retires), groups (headings raised to `### `, each with its given block) at the end
+    of its `## Behaviour`; its universal conditions and upstream entries by `backlog_forms.lay_spec`, the paths they
+    change added to `files`. The names of the capabilities laid."""
     blocks = read(item, "the item %s" % item.name)
     for block in blocks:
         path = capability_file(into, block.capability)
         text = path.read_text()
+        if block.retired:
+            text = backlog_retires.lay(text, block.capability, block.retired)
         if block.terms:
             text = _append(text, "Terms", "\n".join(block.terms))
         if block.relations:
@@ -154,6 +170,8 @@ def unlay(into, item, files=None):
             text = _cut(text, chunk)
         if block.relations:
             text = backlog_forms.without_lines(text, "Relations", block.relations, backlog_forms.HEADER)
+        if block.retired:
+            text = backlog_retires.unlay(path, text, block.retired)
         if text != was:
             path.write_text(text.rstrip("\n") + "\n")
             changed.append(block.capability)

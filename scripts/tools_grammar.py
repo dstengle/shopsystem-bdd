@@ -1,4 +1,4 @@
-"""The grammar tools: GF 3.12 and the pinned pgf and clingo wheels, installed and probed (design §11)."""
+"""The grammar tools: GF 3.12, the pinned pgf and clingo wheels and the RGL, installed and probed (design §11)."""
 import hashlib
 import json
 import os
@@ -8,6 +8,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tarfile
 import tempfile
 import urllib.request
 
@@ -16,10 +17,16 @@ GF_URL = ("https://github.com/GrammaticalFramework/gf-core/releases/download/rel
           "gf-3.12-ubuntu-24.04.deb")
 GF_SHA256 = "17aa5452b713f1e00a0755a1bad998a926acbffb96eefde2c3800ca72536b4d8"
 WHEELS = {"pgf": "1.1", "clingo": "5.8.2"}
+RGL_RELEASE = "20250812"
+RGL_URL = "https://github.com/GrammaticalFramework/gf-rgl/archive/refs/tags/%s.tar.gz" % RGL_RELEASE
+RGL_SHA256 = "c361a3302d5c04cbb570fa07c2cf757be974cd798f1066fdca6933f4d4cd0791"
+# English only (Setup.sh's modules of one language): src/<directory>/<module>Eng.gf
+RGL_MODULES = ("english/AllEng", "english/SymbolEng", "english/CompatibilityEng", "api/TryEng", "api/SymbolicEng")
 PARSE = "requirements cannot be parsed: `work request` and `model check` refuse"
 LOGIC = "requirements cannot be logic-checked: `model logic` refuses"
-WITHOUT = {"gf": PARSE, "pgf": PARSE, "clingo": LOGIC}
+WITHOUT = {"gf": PARSE, "pgf": PARSE, "clingo": LOGIC, "gf-rgl": "the grammar over GF's RGL cannot be compiled"}
 BY_HAND = "build GF 3.12 by hand and set $SHOPSYSTEM_GF to its gf"
+RGL_BY_HAND = "set $SHOPSYSTEM_GF_RGL_SRC to a gf-rgl %s source tree" % RGL_RELEASE
 VERSIONS = ("import json, sys\nfrom importlib import metadata\nout = {}\n"
             "for name in sys.argv[1:]:\n    try:\n        out[name] = metadata.version(name)\n"
             "    except metadata.PackageNotFoundError:\n        out[name] = None\n"
@@ -37,6 +44,25 @@ def gf_home(environ=None):
     data = environ.get("XDG_DATA_HOME") or os.path.join(environ.get("HOME") or os.path.expanduser("~"),
                                                         ".local", "share")
     return pathlib.Path(data) / "shopsystem-bdd" / ("gf-" + GF_VERSION)
+
+
+def rgl_home(environ=None):
+    """Where `tools install` builds the RGL, beside GF: <the data directory>/shopsystem-bdd/gf-rgl-<release>."""
+    return gf_home(environ).parent / ("gf-rgl-" + RGL_RELEASE)
+
+
+def rgl_path(environ=None):
+    """The built RGL, the directory GF is given as its library path ($GF_LIB_PATH), or None when it is not built."""
+    home = rgl_home(environ)
+    return str(home) if rgl_release(home) else None
+
+
+def rgl_release(home):
+    """The release of the RGL built at <home>, from the `release` file its build writes last, or None."""
+    try:
+        return (pathlib.Path(home) / "release").read_text().strip() or None
+    except OSError:
+        return None
 
 
 def gf_version(binary):
@@ -82,11 +108,12 @@ def versions(python):
 
 
 def probed(python=None, environ=None):
-    """{"gf": version|None, "pgf": …, "clingo": …} for the interpreter running the scripts."""
+    """{"gf": version|None, "pgf": …, "clingo": …, "gf-rgl": release|None} for the interpreter running the scripts."""
     found = versions(python or sys.executable)
     binary = gf_binary(environ)
     grammar = {"gf": gf_version(binary) if binary else None}
     grammar.update((name, found[name]) for name in WHEELS)
+    grammar["gf-rgl"] = rgl_release(rgl_home(environ))
     return grammar, binary
 
 
@@ -96,7 +123,8 @@ def probe_lines(grammar, binary):
         if version is None:
             lines.append("  %s missing: %s" % (name, WITHOUT[name]))
         else:
-            lines.append("  %s %s" % (name, version) + (" (%s)" % binary if name == "gf" else ""))
+            where = {"gf": binary, "gf-rgl": rgl_home()}.get(name)
+            lines.append("  %s %s" % (name, version) + (" (%s)" % where if where else ""))
     return lines
 
 
@@ -121,12 +149,12 @@ def install_wheels(python=None):
         print("%s %s installed" % (name, pin))
 
 
-def download(url, into):
+def download(url, into, what="GF", by_hand=BY_HAND):
     try:
         with urllib.request.urlopen(url, timeout=120) as response, open(into, "wb") as out:
             shutil.copyfileobj(response, out)
     except OSError as why:
-        raise Refused("GF could not be downloaded from %s: %s; or %s" % (url, why, BY_HAND))
+        raise Refused("%s could not be downloaded from %s: %s; or %s" % (what, url, why, by_hand))
 
 
 def install_gf(target=None, url=GF_URL, sha256=GF_SHA256, which=shutil.which):
@@ -174,7 +202,66 @@ def write_wrapper(root, target):
 
 
 def install():
-    """`tools install`'s grammar part: the platform checked, the wheels and GF installed. Raises Refused."""
+    """`tools install`'s grammar part: the platform checked, the wheels, GF and the RGL installed. Raises Refused."""
     check_platform()
     install_wheels()
     install_gf()
+    install_rgl(source=os.environ.get("SHOPSYSTEM_GF_RGL_SRC"))
+
+
+def install_rgl(target=None, gf=None, url=RGL_URL, sha256=RGL_SHA256, source=None):
+    """The RGL at <target>: its release's sources (downloaded and checked by sha256, or the tree <source>) built
+    with GF into prelude/, present/ and alltenses/ .gfo files, as gf-rgl's Setup.sh builds one language."""
+    target = pathlib.Path(target or rgl_home())
+    if rgl_release(target) == RGL_RELEASE:
+        print("gf-rgl %s already installed" % RGL_RELEASE)
+        return
+    gf = gf or gf_binary()
+    if not gf:
+        raise Refused("gf-rgl is built with GF, and there is no gf")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    work = pathlib.Path(tempfile.mkdtemp(prefix=".gf-rgl-", dir=target.parent))
+    try:
+        built = work / "rgl"
+        build_rgl(gf, pathlib.Path(source) if source else fetch_rgl(work, url, sha256), built)
+        (built / "release").write_text(RGL_RELEASE + "\n")
+        if target.exists():
+            shutil.rmtree(target)
+        os.rename(built, target)
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+    print("gf-rgl %s built" % RGL_RELEASE)
+
+
+def fetch_rgl(work, url, sha256):
+    """The release's source tree, downloaded into <work>, its sha256 checked, unpacked; its root returned."""
+    archive = work / "gf-rgl.tar.gz"
+    download(url, archive, "gf-rgl", RGL_BY_HAND)
+    digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+    if digest != sha256:
+        raise Refused("the download from %s has sha256 %s, not %s: nothing is installed" % (url, digest, sha256))
+    with tarfile.open(archive) as tar:
+        tar.extractall(work / "src", **({"filter": "data"} if hasattr(tarfile, "data_filter") else {}))
+    roots = [path for path in (work / "src").iterdir() if path.is_dir()]
+    if len(roots) != 1:
+        raise Refused("the download from %s is not one gf-rgl source tree" % url)
+    return roots[0]
+
+
+def build_rgl(gf, source, into):
+    """Setup.sh's build of English: the prelude, then each module for present (mkPresent) and alltenses."""
+    for part in ("prelude", "present", "alltenses"):
+        (into / part).mkdir(parents=True)
+    batch = [gf, "--batch", "--quiet", "--gf-lib-path=" + str(into)]
+    runs = [batch + ["--gfo-dir=" + str(into / "prelude")] + sorted(map(str, (source / "src" / "prelude").glob("*.gf")))]
+    for module in RGL_MODULES:
+        path = str(source / "src" / (module + ".gf"))
+        runs.append(batch + ["--no-pmcfg", "--gfo-dir=" + str(into / "present"), "--preproc=mkPresent", path])
+        runs.append(batch + ["--no-pmcfg", "--gfo-dir=" + str(into / "alltenses"), path])
+    for command in runs:
+        done = subprocess.run(command, cwd=source, stdin=subprocess.DEVNULL, capture_output=True, text=True)
+        if done.returncode:
+            raise Refused("gf-rgl did not build: %s\n  %s" % (" ".join(command[-2:]), "\n  ".join(
+                (done.stdout + done.stderr).strip().splitlines()[-4:])))
+    if not (into / "alltenses" / "AllEng.gfo").is_file():
+        raise Refused("gf-rgl was built from %s but alltenses/AllEng.gfo is not there" % source)

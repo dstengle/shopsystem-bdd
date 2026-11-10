@@ -23,6 +23,7 @@ from model_report import (  # noqa: F401
     render_decisions,
 )
 from model_restates import cmd_restates
+from model_rules import catalogue
 
 CONTRACT = """\
 contract:
@@ -146,6 +147,11 @@ contract:
     the index is stale or any decision fails.
   - rules --json prints one object, "rules", each {"code", "label",
     "kind": "violation" or "warning"}.
+  - rules --write writes the rule catalogue grammar/rules.md under --root
+    (model_rules): each rule's code, label, severity, where it is
+    implemented, the lines citing it, a failing and a passing example, each
+    example run first; rules --check writes nothing and exits 1 when the
+    file is not what --write would write.
   - parse <line> | --file F [--grammar Req|Steps|Def] prints the line's tree in
     the context's grammar and exits 0; a refused line prints the refusal (the
     token and its position, or the guard), the longest prefix that parsed and
@@ -180,6 +186,8 @@ def cmd_check(args):
 
 
 def cmd_rules(args):
+    if args.write or args.check:
+        return needing_clingo("rules", lambda: catalogue(args.root, write=args.write, check=args.check))
     return needing_clingo("rules", lambda: rules(args.json))
 
 
@@ -190,6 +198,8 @@ def main(argv=None):
     sub = ap.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("rules", help="print every rule's code and plain label, the violations first")
     r.add_argument("--json", action="store_true")
+    r.add_argument("--write", action="store_true", help="write the rule catalogue grammar/rules.md")
+    r.add_argument("--check", action="store_true", help="say whether grammar/rules.md is current")
     sub.add_parser("facts", help="print the facts read from the repository")
     c = sub.add_parser("check", help="solve the facts against model.lp and report")
     c.add_argument("--json", action="store_true")
@@ -213,6 +223,8 @@ def main(argv=None):
     args = ap.parse_args(argv)
     if args.cmd == "parse" and (args.line is None) == (args.file is None):
         ap.error("parse takes a line or --file, not both")
+    if args.cmd == "rules" and args.write + args.check + args.json > 1:
+        ap.error("rules takes one of --json, --write and --check")
     return {"facts": cmd_facts, "check": cmd_check, "rules": cmd_rules, "decisions": cmd_decisions,
             "parse": cmd_parse, "lexicon": cmd_lexicon, "logic": cmd_logic, "restates": cmd_restates,
             "forms": cmd_forms}[args.cmd](args)

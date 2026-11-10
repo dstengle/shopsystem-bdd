@@ -91,3 +91,19 @@ Feature: Readiness
     And the item i1 is unworded
     When the person runs `work ready` on the item i1
     Then `work` exits with an error naming the step s1
+
+  @g13 @r13
+  Scenario: A line that retires another
+    Given `--retires` is given
+    When the person runs `work line` on the item i1
+    Then `work` writes the requirement r1
+    And `work` commits the item i1
+
+  @g14 @r14
+  Scenario: A retired id that no capability holds
+    Given `--retires` is given
+    And a requirement r1
+    And the requirement r1 is nonexistent
+    When the person runs `work line` on the requirement r1
+    Then `work` exits with an error naming the requirement r1
+    And `work` changes nothing

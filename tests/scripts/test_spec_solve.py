@@ -192,11 +192,23 @@ def test_a_solve_past_its_limit_is_partial():
 
 
 def test_l0_is_an_error_and_its_report_exits_1(monkeypatch):
-    monkeypatch.setattr(spec_solve, "_solve", lambda *_args, **_kwargs: ([], False))
+    monkeypatch.setattr(spec_solve, "_solve", lambda *_args, **_kwargs: ([], False, True))
     found = spec_solve.run(CLUSTER)
     [l0] = of(found, "L0")
     assert l0.ids == [] and l0.text == "the check did not finish in 20 s; the findings so far are listed"
     assert "L0" in spec_solve.ERRORS and spec_solve.report([l0], False)[1] == 1
+
+
+def test_an_unsatisfiable_solve_is_an_error_naming_the_capability(monkeypatch, tmp_path):
+    """b120: no pair makes check.lp unsatisfiable (a pair that cannot be unified is set aside, the scenario of
+    design-model-check r71), so a check.lp made unsatisfiable on purpose stands for one that would."""
+    unsat = tmp_path / "check.lp"
+    unsat.write_text("broken. :- broken.\n" + spec_solve.CHECK.read_text())
+    monkeypatch.setattr(spec_solve, "CHECK", unsat)
+    found = spec_solve.run(CLUSTER, "supervision")
+    assert [(f.code, f.ids) for f in found if f.code != "L2"] == [("L0", [])]
+    assert found[0].text.startswith("the check of supervision is unsatisfiable")
+    assert spec_solve.report(found, False)[1] == 1
 
 
 def test_the_whole_context_is_one_grounding(monkeypatch, findings):

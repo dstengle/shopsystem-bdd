@@ -27,6 +27,8 @@ the item is settled. `work ready` checks the bar and asks nobody.
 
 - **unworded** (adjective of item): an item one of whose groups `features generate` writes as a scenario holding a step with a bracketed placeholder, a fact no step words.
 
+- **nonexistent** (adjective of requirement): a requirement named by an id that no capability holds as a live requirement.
+
 ## Behaviour
 
 ### [g1] `work ready` readies a passing item
@@ -67,6 +69,12 @@ the item is settled. `work ready` checks the bar and asks nobody.
 
 ### [g12] `work ready` refuses an item with an unworded step
 - [r12] While an item is `shaped` and the item is unworded, if the person runs `work ready` on the item, then `work` shall exit with an error naming the step.
+
+### [g13] A line that retires another
+- [r13] Where `--retires` is given, when the person runs `work line` on an item, `work` shall write a requirement and commit the item.
+
+### [g14] A retired id that no capability holds
+- [r14] Where `--retires` is given, if the person runs `work line` on a requirement that is nonexistent, then `work` shall exit with an error naming the requirement and change nothing.
 
 ## Implementation, may change
 - An item's requirement lines stay on the item until its batch merges: in the item file's `## Requirements`, one

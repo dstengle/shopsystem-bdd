@@ -116,13 +116,20 @@ def given_dependency_file(step):
 # --- the command ---
 
 def grammar_stub(step):
-    """GF stands installed under a fresh XDG_DATA_HOME, so `tools install` never downloads it in a scenario."""
+    """GF and the RGL stand installed under a fresh XDG_DATA_HOME, so `tools install` never downloads them in a
+    scenario; an RGL that is `missing` is not there, and is built from w.rgl_source with the real GF."""
     data = outside(step)
     gf = data / "shopsystem-bdd" / "gf-3.12" / "bin" / "gf"
     gf.parent.mkdir(parents=True)
     gf.write_text("#!/bin/sh\necho 'Grammatical Framework (GF) version 3.12.0'\n")
     gf.chmod(0o755)
     step.context.setdefault("env", {})["XDG_DATA_HOME"] = str(data)
+    if "gf-rgl" in step.context.get("fake", {}).get("missing", []):
+        w.rgl_source(gf, outside(step), step.context["env"])
+    else:
+        rgl = data / "shopsystem-bdd" / "gf-rgl-20250812"
+        rgl.mkdir()
+        (rgl / "release").write_text("20250812\n")
 
 
 def runs_tools(step):
@@ -236,7 +243,11 @@ def exits_err(step):
 def installs(step):
     done = w.pip_calls(step.context["python"])
     for np in step.nps:
-        if step.template == "ThenDoesNot":
+        if np == "`gf-rgl`":
+            rgl = pathlib.Path(step.context["env"]["XDG_DATA_HOME"]) / "shopsystem-bdd" / "gf-rgl-20250812"
+            assert "gf-rgl 20250812 built" in output(step), output(step, err=True)
+            assert (rgl / "alltenses" / "AllEng.gfo").is_file() and (rgl / "release").is_file(), output(step, True)
+        elif step.template == "ThenDoesNot":
             assert tool_of(np.split()[-1]) not in done, (np, done)
         elif np.startswith("`"):
             assert bare(np) in done, (np, done)

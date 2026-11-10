@@ -38,9 +38,25 @@ def node_path(step, name):
     return step.repo / step.context["nodes"][name][1]
 
 
+# An unpairable capability: r1 and r2 name the code `x` of an initiative and of a request, which no unification makes
+# one thing; r3 and r4 clash (an L1). `model logic` sets r1 and r2 aside and still finds r3 and r4's L1.
+UNPAIRABLE = [("While the initiative `x` is `proposed`, when the person runs `work stop` on a stage, `work run` shall "
+               "end the stage."),
+              ("While the request `x` is `open`, when the person runs `work stop` on a stage, `work run` shall not "
+               "end the stage."),
+              "When the person runs `work check`, `work` shall exit successfully.",
+              "When the person runs `work check`, `work` shall exit with an error naming `work check`."]
+
+
 @handler("GivenK_C", "capability")
 def capability(step):
     name, word, repo = step.names[0], condition(step), step.repo
+    if word == "unpairable":
+        H.write(repo, "spec/capabilities/%s.md" % name,
+                H.cap(name, ["- [r%d] %s" % (k, line) for k, line in enumerate(UNPAIRABLE, 1)]))
+        H.write(repo, "features/%s.feature" % name, H.feature(name, "@r1", "@r2", "@r3", "@r4"))
+        H.says(step, "r1", "%s#r1" % name)
+        return
     lines = {"unnumbered": ["- **When** asked, `%s` shall answer." % name],
              "renumbered": ["- [r1] **When** asked, `%s` shall answer." % name] * 2,
              "reusing": ["- [r1] **When** asked, `%s` shall answer." % name],

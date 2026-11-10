@@ -183,19 +183,71 @@ class GrammarTest(unittest.TestCase):
         self.assertEqual(found["python"], sys.executable)
         self.assertIn("ruff", found["tools"])
         self.assertEqual(found["grammar"]["gf"], "3.12.0")
-        self.assertEqual(set(found["grammar"]), {"gf", "pgf", "clingo"})
+        self.assertEqual(set(found["grammar"]), {"gf", "pgf", "clingo", "gf-rgl"})
 
     def test_probe_prints_a_grammar_block_naming_what_a_missing_tool_stops(self):
         done = self.tools("probe", env={"XDG_DATA_HOME": str(self.tmp / "nothing"), "PATH": "/usr/bin:/bin"})
         lines = done.stdout.splitlines()
         block = lines[lines.index("grammar:") + 1:]
-        self.assertEqual([line.split()[0] for line in block], ["gf", "pgf", "clingo"])
+        self.assertEqual([line.split()[0] for line in block], ["gf", "pgf", "clingo", "gf-rgl"])
         self.assertIn("  gf missing: requirements cannot be parsed: `work request` and `model check` refuse", block)
         self.assertEqual(done.returncode, 1)
 
     def test_probe_json_says_null_for_a_missing_gf(self):
         done = self.tools("probe", "--json", env={"XDG_DATA_HOME": str(self.tmp / "nothing"), "PATH": "/usr/bin:/bin"})
         self.assertIsNone(json.loads(done.stdout)["grammar"]["gf"])
+
+    def rgl_tarball(self):
+        """A gf-rgl release tarball laid out as the real one: gf-rgl-<release>/src/, one small module of each built."""
+        root = self.tmp / "tarball" / ("gf-rgl-" + tools_grammar.RGL_RELEASE)
+        (root / "src" / "prelude").mkdir(parents=True)
+        (root / "src" / "prelude" / "Prelude.gf").write_text("resource Prelude = { oper SS : Type = {s : Str} ; }\n")
+        for module in tools_grammar.RGL_MODULES:
+            path = root / "src" / (module + ".gf")
+            path.parent.mkdir(exist_ok=True)
+            (path.parent / (path.stem + "Abs.gf")).write_text("abstract %sAbs = { cat C ; }\n" % path.stem)
+            path.write_text("concrete %s of %sAbs = open Prelude in { lincat C = SS ; }\n" % (path.stem, path.stem))
+        archive = self.tmp / "rgl.tar.gz"
+        subprocess.run(["tar", "czf", str(archive), "-C", str(root.parent), root.name], check=True)
+        return archive, hashlib.sha256(archive.read_bytes()).hexdigest()
+
+    def install_rgl(self, **kwargs):
+        gf = tools_grammar.gf_binary()
+        self.assertTrue(gf, "no gf: run `python3 scripts/tools install`")
+        out = io.StringIO()
+        with redirect_stdout(out):
+            tools_grammar.install_rgl(gf=gf, **kwargs)
+        return out.getvalue()
+
+    def test_the_rgl_is_downloaded_checked_and_built_then_found(self):
+        archive, digest = self.rgl_tarball()
+        target = tools_grammar.rgl_home({"XDG_DATA_HOME": str(self.tmp / "data")})
+        self.assertIsNone(tools_grammar.rgl_path({"XDG_DATA_HOME": str(self.tmp / "data")}))
+        out = self.install_rgl(target=target, url=archive.as_uri(), sha256=digest)
+        self.assertEqual(out, "gf-rgl 20250812 built\n")
+        for part in ("prelude/Prelude.gfo", "present/AllEng.gfo", "alltenses/AllEng.gfo", "alltenses/TryEng.gfo"):
+            self.assertTrue((target / part).is_file(), part)
+        self.assertEqual(tools_grammar.rgl_path({"XDG_DATA_HOME": str(self.tmp / "data")}), str(target))
+        out = self.install_rgl(target=target, url=(self.tmp / "gone.tar.gz").as_uri(), sha256=digest)
+        self.assertEqual(out, "gf-rgl 20250812 already installed\n")
+
+    def test_an_rgl_download_with_a_wrong_digest_is_refused_and_nothing_is_installed(self):
+        archive, _digest = self.rgl_tarball()
+        target = self.tmp / "gf-rgl-20250812"
+        with self.assertRaises(tools_grammar.Refused) as raised:
+            self.install_rgl(target=target, url=archive.as_uri(), sha256="0" * 64)
+        self.assertIn("0" * 64, str(raised.exception))
+        self.assertFalse(target.exists())
+        self.assertEqual([p.name for p in self.tmp.iterdir() if p.name.startswith(".gf-rgl")], [])
+
+    def test_an_rgl_module_gf_cannot_compile_is_refused_naming_it(self):
+        self.rgl_tarball()
+        source = self.tmp / "tarball" / ("gf-rgl-" + tools_grammar.RGL_RELEASE)
+        (source / "src" / "api" / "TryEng.gf").write_text("concrete TryEng of Nothing = {}\n")
+        with self.assertRaises(tools_grammar.Refused) as raised:
+            self.install_rgl(target=self.tmp / "gf-rgl-20250812", source=str(source))
+        self.assertIn("TryEng.gf", str(raised.exception))
+        self.assertFalse((self.tmp / "gf-rgl-20250812").exists())
 
     def test_nothing_imports_telingo_or_the_old_solver(self):
         root = pathlib.Path(__file__).resolve().parents[2]
