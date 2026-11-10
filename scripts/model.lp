@@ -433,6 +433,10 @@ label("w_unrouted", "a universal condition no decision routes").                
 % fail w_unrouted: node("u","universal-condition").
 % pass w_unrouted: node("u","universal-condition"). decision_rests_on("d","u"). route("d","check").
 w_unrouted(U)      :- node(U, "universal-condition"), not routed(U).
+label("w_example", "a requirement holds example data: a code or quoted string that names no declared constant").  % design-model-check r101
+% fail w_example: exemplified("c#r1","banana").
+% pass w_example: node("c#r1","requirement").
+w_example(Q, L)    :- exemplified(Q, L).
 
 #show.
 #show label/2.
@@ -449,4 +453,4 @@ w_unrouted(U)      :- node(U, "universal-condition"), not routed(U).
 #show v_t16/2. #show v_t17/2.
 #show v_p0/1. #show v_p1/2. #show v_p2/1. #show v_p3/2.
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
-#show w_many_requests/1. #show w_untiered/1. #show w_unrouted/1.
+#show w_many_requests/1. #show w_untiered/1. #show w_unrouted/1. #show w_example/2.
