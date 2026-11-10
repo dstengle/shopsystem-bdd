@@ -74,7 +74,7 @@ def cmd_parse(args):
     import spec_language
     path = Path(args.file) if args.file else None
     capability = getattr(args, "capability", None) or (path.stem if path is not None and path.parent.name == "capabilities" else None)
-    if spec_language.four(args.root, capability):
+    if spec_language.four(args.root, capability, universal=path is not None and path.name == "universal.md"):
         return _parse4(args, lines)
     if args.form:
         print("--form reads grammar 4: neither the capability's file nor spec/index.md says `language: codified-2`")

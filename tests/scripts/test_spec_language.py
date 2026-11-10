@@ -18,3 +18,12 @@ def test_a_universal_condition_is_read_in_its_own_files_grammar():
 
 def test_a_codified_2_index_loads_a_codified_1_universal_condition():
     assert spec_context.load(MIXED).refused == {}
+
+
+def test_model_parse_reads_spec_universal_md_in_its_own_files_grammar():
+    import subprocess
+    model = Path(__file__).resolve().parents[2] / "scripts" / "model"
+    done = subprocess.run([sys.executable, str(model), "--root", str(MIXED), "parse", "--file",
+                           str(MIXED / "spec" / "universal.md")], capture_output=True, text=True)
+    assert done.returncode == 0, done.stdout + done.stderr
+    assert done.stdout.startswith("17: Ubiq ")
