@@ -200,27 +200,54 @@ def _local_first(vocab, root, keyword):
     import sys
 
     import features_vocab
-    registry = vocab._step_function(root, keyword)
+    import features_vocab4
 
     def step_function(text, request, docstring=None, datatable=None):
-        call = features_vocab.step(features_vocab.load(root), keyword, text)
+        call = (features_vocab4.step(root, keyword, text) if four(root, request) else
+                features_vocab.step(features_vocab.load(root), keyword, text))
         call.docstring, call.datatable, call.fixtures = docstring, datatable, request.getfixturevalue
         table = getattr(sys.modules.get("shop_work_queue_world"), "LOCAL", LOCAL)   # the handlers' copy of this module
         found = table.get((call.template, call.kind)) or table.get((call.template, None))
         if found is not None and found(call) is not False:
             return None
-        return registry(text, request, docstring, datatable)
+        found = vocab.lookup(call.template, call.term)
+        if found is None:
+            raise AssertionError("no handler for %s %s: %s" % (call.template, call.term, text))
+        return found(call)
     return step_function
 
 
+def four(root, request):
+    """True when the scenario's feature is a codified-2 capability's, whose steps the step grammar 4 reads."""
+    import spec_read
+    scenario = getattr(getattr(request.node, "function", None), "__scenario__", None)
+    path = Path(root) / "spec" / "capabilities" / ("%s.md" % Path(scenario.feature.filename).stem) if scenario else None
+    return bool(path and path.is_file() and spec_read.codified(path, (spec_read.MARKER4,)))
+
+
+_READ4 = {}
+
+
+def read4(root, keyword, text):
+    """Whether the step grammar 4 reads a step under its keyword, once a process for each text."""
+    import features_vocab4
+    key = (str(root), keyword, text)
+    if key not in _READ4:
+        try:
+            _READ4[key] = bool(features_vocab4.step(root, keyword, text))
+        except features_vocab4.StepError:
+            _READ4[key] = False
+    return _READ4[key]
+
+
 class Reads:
-    """A step parser that matches any step the Steps grammar reads under its keyword (vocab.read)."""
+    """A step parser that matches any step the Steps grammar, or the step grammar 4, reads under its keyword."""
 
     def __init__(self, vocab, root, keyword):
         self.vocab, self.root, self.keyword, self.name = vocab, root, keyword, "reads %s" % keyword
 
     def is_matching(self, name):
-        return self.vocab.read(self.root, self.keyword, name) is not None
+        return self.vocab.read(self.root, self.keyword, name) is not None or read4(self.root, self.keyword, name)
 
     def parse_arguments(self, name):
         return {"text": name}
