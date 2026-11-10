@@ -25,11 +25,11 @@ branch and the review re-reads what the fix changed; a clean pull request waits 
 
 | from | word | to | cardinality |
 |---|---|---|---|
-| review | of | pull request | |
+| review | of | pull request | one |
 | requirement | proposed by | item | |
-| commit | of | batch | |
+| commit | of | batch | one |
 | commit | outside | batch | |
-| commit | for | review finding | |
+| commit | for | review finding | one |
 
 ## Behaviour
 

@@ -28,11 +28,10 @@ question while building parks its item and the rest of the batch carries on. The
 | from | word | to | cardinality |
 |---|---|---|---|
 | commit | of | item | one |
-| pull request | with | commit | |
 | pull request | cites | item | |
 | commit | cites | item | |
 | review folder | of | batch | one |
-| scenario | of | item |  |
+| scenario | of | item | one |
 
 ## Behaviour
 

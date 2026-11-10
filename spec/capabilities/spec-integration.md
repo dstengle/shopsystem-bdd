@@ -22,25 +22,9 @@ It is not formulation and not planning; it writes nothing a client can run.
 
 ## Terms
 
-- **`integrating-a-proposal`** (proper noun): the skill that integrates an approved design note into the spec.
 - **design note** (noun): an approved brainstorming note or design spec, the source of a capability-proposal.
-- **second spec** (noun): a `spec/` begun in a context that has one.
-- **fresh id** (noun): an id one above every id the capability, or `spec/decisions/`, has used or retired, and above every id other initiatives' drafts add on it.
-- **decision source** (noun): the `source` of a design-decision: records, initiatives and decisions by id, with the person, a date, a delegation or anything outside the repository in its `by`.
-- **recommended reading** (noun): the reading a gate question marks as recommended, with the statements it concerns in full.
 - **retire** (verb, action): an id is added to its capability's `retired:` list. Forms: retires, retired. Frame: round retires requirement.
 - **apply** (verb, action): a round writes approved drafts into `spec/`. Forms: applies, applied. Frame: round applies file.
-
-## Relations
-
-| from | word | to | cardinality |
-|---|---|---|---|
-| requirement | quotes | design note |  |
-| requirement | added by | capability-proposal |  |
-| question | on | term |  |
-| term | added by | glossary-proposal |  |
-| term | changed by | glossary-proposal |  |
-| term | removed by | glossary-proposal |  |
 
 ## Behaviour
 

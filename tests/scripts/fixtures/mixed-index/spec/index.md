@@ -35,3 +35,5 @@ grammar over the same glossary.
 - **shelf** (noun): a board that holds goods.
 - **stock** (verb, action): a clerk fills a shelf. Forms: stocks, stocked. Frame: clerk stocks shelf.
 - **count** (verb, action): a clerk counts the goods on a shelf. Forms: counts, counted. Frame: clerk counts shelf.
+- **open** (adjective of stage): the stage's status is `open`.
+- **open** (adjective of file): the file is open in an editor.

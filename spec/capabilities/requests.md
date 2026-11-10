@@ -21,7 +21,6 @@ a request (backlog, batches).
 
 ## Terms
 - **resolution** (noun): the requirement id and version of each accepted line, under a request's `## Resolution`. Kind of: text.
-- **wording** (attribute of delegation): Values: `empty`, `written`.
 - **closed** (adjective of request): A request is closed when the request is `delivered` or the request is `refused` or the request is `withdrawn`.
 - **unparsed** (adjective of request line): a request line that does not parse in its upstream's requirement grammar.
 - **observation** (noun): an entry of `.shop/records/observations.md`, with its id and its date.

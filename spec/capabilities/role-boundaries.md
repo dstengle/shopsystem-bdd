@@ -19,20 +19,10 @@ Bash can still write files through the shell, which is why `work run` verifies t
 
 ## Terms
 
-- **the researcher** (proper noun): the worker of a `research` stage, started as the agent `code-scout`. Kind of: worker.
-- **the planner** (proper noun): the worker of a `plan` stage, started as the agent `bdd-planner`. Kind of: worker.
-- **the implementer** (proper noun): the worker of an `implement` stage, started as the agent `bdd-implementer`. Kind of: worker.
-- **the reviewer** (proper noun): the worker of a `review` stage, started as the agent `bdd-task-reviewer`. Kind of: worker.
-- **`initiative-round`** (proper noun): the agent of every round. Kind of: dispatch.
-- **`capability-writer`** (proper noun): the agent a round dispatches to draft a capability's statements. Kind of: dispatch.
-- **`spec-checker`** (proper noun): the agent `checking-spec-consistency` dispatches to read the spec for findings. Kind of: dispatch.
 - **`trial-runner`** (proper noun): the agent that runs one trial. Kind of: dispatch.
 - **read** (verb, action): a session or a tool reads a file, a commit or another thing. Forms: reads, read. Frame: agent reads thing.
-- **show** (verb, action): a session shows the person a thing. Forms: shows, shown. Frame: session shows file.
-- **name** (verb, state): a message or a file names a thing. Forms: names, named. Frame: agent names thing.
-- **list** (verb, action): a session or a file lists things. Forms: lists, listed. Frame: session lists file.
+- **name** (verb, state): a message or a file names a thing. Forms: names, named. Frame: agent names thing. Redefines: cli.
 - **keep** (verb, action): a session leaves a thing as it was. Forms: keeps, kept. Frame: agent keeps thing.
-- **delete** (verb, action): a file or a scenario is removed. Forms: deletes, deleted. Frame: session deletes file.
 
 ## Behaviour
 

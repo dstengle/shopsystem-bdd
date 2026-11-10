@@ -21,14 +21,6 @@ a scenario should have said, and it never writes a work-item's transition: `work
 ## Terms
 
 - **passing** (adjective of scenario): a scenario that passes when it is run alone with `python3 -m pytest`.
-- **large** (adjective of work-item): a work-item whose work needs more than 15 files touched.
-- **silent case** (noun): a case the scenarios of a work-item say nothing of, named in the report as an open question and left unchosen by the code.
-
-## Relations
-
-| from | word | to | cardinality |
-|---|---|---|---|
-| file | outside | file set |  |
 
 ## Behaviour
 

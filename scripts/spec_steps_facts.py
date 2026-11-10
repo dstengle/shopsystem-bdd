@@ -20,8 +20,12 @@ def name_of(sym):
 
 def _expansion(logic, rid, var, cid, n, obj):
     """The facts a positive defined condition `cid` on `var` adds after its own, over each way through its
-    definition; `n` is the number of roles before it."""
+    definition; `n` is the number of roles before it. A codified-1 line's definition under a codified-2 index is
+    followed in the old vocabulary it is written in, its facts mapped to the layered ids (`under`, spec_context_ids)."""
     import spec_facts
+    ids = getattr(logic, "under", None)
+    if ids is not None:
+        return set(ids.facts(_expansion(ids.old, rid, var, ids.back[cid], n, obj)))
     kid, clause = logic.def_lits[cid]
     out, seq = set(), []
     while seq is not None:

@@ -20,21 +20,6 @@ slice plan, `@holding` scenarios. It is `migrating-to-capabilities`: the first i
 `spec/`, re-pairing the existing scenarios, and `scripts/migrate` for every mechanical change, with one gate.
 It changes the meaning of no approved scenario.
 
-## Terms
-
-- **`migrating-to-capabilities`** (proper noun): the skill that migrates a repository on the old system to capability files, ids and the final layout.
-- **glossary bullet** (noun): a bullet of an old glossary that is not in the glossary's form.
-- **slice** (noun): an open slice of an old living plan.
-- **backlog entry** (noun): an entry of an old backlog, or of a log, that would become an observation.
-- **mechanical commit** (noun): the one commit of a migration's mechanical changes, made before its gate.
-- **suite difference** (noun): a difference of the suite's summary, its passing scenarios by title or its count of scenarios per tag from those before the migration, beyond the retitles, tags and deprecations the migration sets aside.
-- **rewritten file** (noun): a file other than Markdown in which the migration rewrote a path it relocated.
-- **context id** (noun): the id `bounded-context/<context path>` of a migrated context.
-- **old reference** (noun): a `decision/<name>` reference, a frontmatter `id` under `spec/decisions/` or `.shop/`, or an observation heading `## obs/<x>`.
-- **held scenario** (noun): a scenario tagged `@holding`.
-- **decision entry** (noun): an entry of an old ledger of decisions.
-- **tag** (verb, action): a scenario is given the `@r<n>` tag of the one statement it formulates. Forms: tags, tagged. Frame: session tags scenario.
-
 ## Behaviour
 
 ## Implementation, may change
