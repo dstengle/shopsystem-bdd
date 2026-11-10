@@ -81,9 +81,46 @@ def given_unenforced(step):
     """untiered, untested and unrequired: the decision as written gives no tier, no test, no requirement. Any other
     condition (design-model-check's headless) goes on to the registry."""
     condition = step.text.rsplit(" is ", 1)[1]
+    if condition == "misrouted":
+        return misrouted(step)
     if condition not in ("untiered", "untested", "unrequired"):
         return False
     step.context.setdefault(condition, set()).add(bare(step.names[0]))
+
+
+def misrouted(step):
+    """misrouted: the decision written again as a judgement decision, clean in every other way, whose `verified_by` names `sampling`, a route outside
+    the four; the error names it by its id."""
+    name = bare(step.names[0])
+    decision(step, name, tier="judgement")
+    field(step, name, "verified_by", "[sampling]")
+    says(step, name, "design-decision/%s/%s" % (PATH, name))
+
+
+UNIVERSAL = ("---\nid: capability/%s/universal\ntitle: Universal conditions\nnarrator: every trace\ngroup: guarantees\n"
+             "language: codified-1\nretired: []\n---\n\n# Universal conditions\n\n## Behaviour\n\n%s")
+
+
+@handler("GivenK", "universal condition")
+def given_universal(step):
+    """spec/universal.md with the condition [U<n>], a statement that parses; output names it by its id."""
+    have = step.context.setdefault("universal", [])
+    have.append(int(re.sub(r"\D", "", bare(step.names[0])) or 1))
+    write(step, "spec/universal.md", UNIVERSAL % (PATH, "".join(
+        "- [U%d] `work` shall commit every transition.\n" % n for n in have)))
+    says(step, bare(step.names[0]), "universal-condition/%s/u%d" % (PATH, have[-1]))
+
+
+@handler("GivenK_C", "universal condition")
+def given_unrouted(step):
+    """unrouted: no decision rests on it with a route; not unrouted, a judgement decision that does, `verified_by:
+    [check]`."""
+    assert step.text.endswith(("is unrouted", "is not unrouted")), step.text
+    if " is not " in step.text:
+        name = "routes-%s" % bare(step.names[0])
+        decision(step, name, tier="judgement")
+        field(step, name, "verified_by", "[check]")
+        field(step, name, "rests_on", "[%s]" % step.context["says"][bare(step.names[0])])
 
 
 @handler("GivenR", "supersedes")

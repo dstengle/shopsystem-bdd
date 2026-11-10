@@ -62,6 +62,18 @@ class WorkReading:
         for q in filter(None, (self.resolve_req(ref, where) for ref in reqs)):
             self.fact("enforced_req", d, q)
             self.want(q, "requirement", where)
+        self.read_routes(d, data, where)
+
+    def read_routes(self, d, data, where):
+        """route/2, a decision's `verified_by` (v_d9 names one outside the four), and decision_rests_on/2, each id it rests on;
+        a bare `U<n>` is the universal condition (b129)."""
+        for r in as_list(data.get("verified_by")):
+            self.fact("route", d, str(r).strip())
+        for ref in as_list(data.get("rests_on")):
+            ref = str(ref).strip()
+            ref = self.qualify(ref.lower() if re.fullmatch(r"U\d+", ref) else ref, "universal-condition")
+            self.fact("decision_rests_on", d, ref)
+            self.want(ref, None, where)
 
     def read_records(self):
         obs = self.root / RECORDS / "observations.md"
