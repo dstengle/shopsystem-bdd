@@ -6,7 +6,8 @@ The templates: a Given that brings in an instance `GivenK`; example data `GivenC
 and `GivenCode` (one value, in `quoted`); a value `GivenK_A`, `ThenK_A`; a state `GivenDoes`,
 `GivenDoesNot`, `ThenDoes`, `ThenDoesNot`; a run `WhenRuns`, any other trigger `WhenHappens`; an act `ThenPrints`,
 `ThenPrintsNot`, `ThenExitsOk`, `ThenExitsErr`, `ThenChangesNothing`, else `ThenDoes`, `ThenDoesNot`. A step of
-more than one reading under its keyword (the same text read with a code of two kinds is one) is refused.
+more than one reading under its keyword (the same text read with a code of two kinds is one) is refused; a Given
+read as example data is that, not a holds condition on the same words.
 """
 import re
 
@@ -74,6 +75,8 @@ def step(root, keyword, text):
     except spec_rgl_steps.StepError as err:
         raise StepError(str(err))
     trees = [t for t in found if t[0].endswith(ALLOWED[keyword])]
+    data = [t for t in trees if t[0].endswith(("_HoldsBlock", "_HoldsText"))]
+    trees = data or trees    # example data read as such, not as a holds condition on a code (b154)
     names = spec_lf_np.Names(vocab)
     read = {template(names, keyword, t) for t in trees}
     if len(read) != 1:
@@ -100,6 +103,16 @@ def step(root, keyword, text):
     call.term = (call.command if name == "WhenRuns" else call.subject if name.startswith("Then") and term is None
                  else term)
     return call
+
+
+def either(root, vocab, keyword, text):
+    """A step of a codified-2 feature: its grammar 4 reading, else (a line its file keeps from the old grammar) its
+    reading in `vocab`, features_vocab's; StepError when neither reads it."""
+    try:
+        return step(root, keyword, text)
+    except StepError:
+        from features_vocab import step as old
+        return old(vocab, keyword, text)
 
 
 def nodes(tree):

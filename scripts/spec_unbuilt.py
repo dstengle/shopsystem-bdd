@@ -11,7 +11,7 @@ import re
 
 import pytest
 from model_parse import frontmatter
-from spec_read import MARKER, capability
+from spec_read import MARKERS, capability
 
 NONSTRICT = "SHOPSYSTEM_UNBUILT_NONSTRICT"
 
@@ -23,7 +23,7 @@ def _listed(root):
         data, _ = frontmatter(path.read_text())
         listed = data.get("unbuilt") or []
         listed = [str(one).strip() for one in listed] if isinstance(listed, list) else [str(listed)]
-        if str(data.get("language", "")).strip() != MARKER:
+        if str(data.get("language", "")).strip() not in MARKERS:   # codified-1 or codified-2
             yield path.stem, listed, None
             continue
         have = {r.id for g in capability(path).groups for r in g.requirements}

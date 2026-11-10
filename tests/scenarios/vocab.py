@@ -31,6 +31,13 @@ if __name__ in sys.modules:   # a loader by path puts the module in sys.modules 
 
 import features_vocab
 
+if __package__:
+    from . import vocab4
+else:   # loaded by path, as `features vocab --check` loads it
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import vocab4
+    sys.path.pop(0)
+
 _read, HANDLERS, CLAIMS = {}, {}, defaultdict(set)
 
 
@@ -204,7 +211,7 @@ def _words(row):
 
 def _step_function(root, keyword):
     def step_function(text, request, docstring=None, datatable=None):
-        call = features_vocab.step(features_vocab.load(root), keyword, text)
+        call = vocab4.step(root, keyword, text, request) or features_vocab.step(features_vocab.load(root), keyword, text)
         call.docstring, call.datatable, call.fixtures = docstring, datatable, request.getfixturevalue
         found = sys.modules["vocab"].lookup(call.template, call.term)
         if found is None:
@@ -241,6 +248,7 @@ def register(namespace, root):
         marker = _marker(context)
         name = "pytestbdd_stepdef_%s_vocab_%d" % (parser.keyword, n)
         namespace[name] = pytest.fixture(name=name)(marker)
+    vocab4.register(namespace, root, _step_function, _marker)
 
 
 @pytest.fixture

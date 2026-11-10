@@ -144,3 +144,16 @@ def test_the_steps_of_every_construct_read_back_into_their_trees(tmp_path):
     assert read["no stage is `done`"][:2] == ("GivenK_A", "stage")
     assert read["`work` prints the status of the stage s2"][:2] == ("ThenPrints", "`work`")
     assert "the session s2 follows the stage s1" in read     # or's second case
+
+
+def test_a_given_of_example_data_is_not_read_as_a_holds_condition_on_a_code():
+    """b154: in this repository's spec a finding is in a file, so "the dependency manifest `n` holds \"pytest\"" also
+    reads as a file that holds a finding coded "pytest"; under Given it is example data (analysis-tools' g43), and
+    `features vocab --check` reads it so through `either`."""
+    toolchain.require()
+    root = pathlib.Path(__file__).resolve().parents[2]
+    text = 'the dependency manifest `requirements.txt` holds "pytest"'
+    assert len(spec_rgl_steps.trees(root, text)) == 2
+    call = features_vocab4.step(root, "given", text)
+    assert (call.template, call.term, call.names, call.quoted) == ("GivenCode", "dependency manifest",
+                                                                   ["`requirements.txt`"], ['"pytest"'])
