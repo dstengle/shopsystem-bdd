@@ -1,6 +1,7 @@
 """Grammar 4 of a context (the CNL 4 design, I7a): the base grammar `grammar/Base.gf` with the module `Context`
 spec_rgl generates from the context's vocabulary, compiled against the RGL and cached as spec_grammar caches grammar
-3, a line parsed in it, linearised back, and the refusal of a line it does not parse.
+3, a line parsed in it, linearised back, and the refusal of a line it does not parse, naming a verb that does not
+agree in number with its subject.
 
 `model parse` reads a line in grammar 4 when `spec/index.md` says `language: codified-2` (`marked`); every other
 reader keeps grammar 3 until the switch (I19). A line with more than one tree is refused here; one meaning or refused
@@ -88,6 +89,17 @@ def _trees(gram, words, tokens):
         return [], (len(tokens) if err.incomplete else spec_grammar._position(tokens, err.offset))
 
 
+def disagreeing(gram, vocab, tokens, at):
+    """The verb whose form at token `at` would parse in the other number: its term, or None."""
+    words = {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
+    for v in vocab.verbs:
+        singular, plural = spec_rgl.spec_frames.s3(v.term), v.term.term
+        other = {singular: plural, plural: singular}.get(tokens[at] if at < len(tokens) else None)
+        if other and len(other.split()) == 1 and _trees(gram, words, tokens[:at] + [other] + tokens[at + 1:])[0]:
+            return v.term.term
+    return None
+
+
 def parse(root, line):
     """One line parsed in grammar 4."""
     vocab, gram = load(root)
@@ -98,6 +110,9 @@ def parse(root, line):
         return Parse(tree=trees[0], trees=trees)
     if trees:
         return Parse(refusal="ambiguous: %d trees" % len(trees), trees=trees)
+    term = disagreeing(gram, vocab, tokens, at)
+    if term:
+        return Parse(refusal="refused: the verb %s does not agree in number with its subject" % term)
     if at >= len(tokens):
         return Parse(refusal="the line ends before its sentence does (after %d tokens)" % len(tokens))
     return Parse(refusal="does not parse at %s (token %d of %d)" % (tokens[at], at + 1, len(tokens)))
