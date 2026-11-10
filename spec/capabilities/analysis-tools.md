@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/plugin-takes-the-dependencies-it-needs, design-decision/query-commands-answer-in-their-output]
 retired: []
-unbuilt: [r34, r35]
+unbuilt: [r34]
 ---
 
 # Analysis tools

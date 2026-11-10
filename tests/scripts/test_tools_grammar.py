@@ -183,13 +183,13 @@ class GrammarTest(unittest.TestCase):
         self.assertEqual(found["python"], sys.executable)
         self.assertIn("ruff", found["tools"])
         self.assertEqual(found["grammar"]["gf"], "3.12.0")
-        self.assertEqual(set(found["grammar"]), {"gf", "pgf", "clingo"})
+        self.assertEqual(set(found["grammar"]), {"gf", "pgf", "clingo", "gf-rgl"})
 
     def test_probe_prints_a_grammar_block_naming_what_a_missing_tool_stops(self):
         done = self.tools("probe", env={"XDG_DATA_HOME": str(self.tmp / "nothing"), "PATH": "/usr/bin:/bin"})
         lines = done.stdout.splitlines()
         block = lines[lines.index("grammar:") + 1:]
-        self.assertEqual([line.split()[0] for line in block], ["gf", "pgf", "clingo"])
+        self.assertEqual([line.split()[0] for line in block], ["gf", "pgf", "clingo", "gf-rgl"])
         self.assertIn("  gf missing: requirements cannot be parsed: `work request` and `model check` refuse", block)
         self.assertEqual(done.returncode, 1)
 
