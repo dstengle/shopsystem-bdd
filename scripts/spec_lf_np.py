@@ -2,8 +2,8 @@
 spec_rgl, spec_rgl_np and spec_rgl_rel, the funs of a template told by their names (`Names`).
 
 A determiner gives a referent's reading: "a" and a bare plural a referent of the part (a bare plural in a response
-"every"), "every" an `every` box, "no" (and "nothing") a `not` box, "only" an `only` box; "the" binds to the latest
-referent of its kind a part introduced, else is a referent of the part marked definite. An actor and a code are one
+"every"), "every" an `every` box, "no" (and "nothing") a `not` box, "only" an `only` box; "the" binds by R2 and R11
+(spec_lf_read), else is a referent of the part marked definite and the line refused. An actor and a code are one
 referent of the line, a code a constant when it is a word of the context and a parameter when it is not (call 7);
 "this K" the run's own K, an indexical (call 6). "the T of x", "its T" and "the K T" are one functional image of x,
 "its" bound to the subject of its clause; a row's modifier, "has", "holds" and "whose" are `rel` atoms, an
@@ -12,6 +12,7 @@ attribute's value an `attr` atom; a relative clause restricts its noun by its fr
 import re
 
 import spec_lf_core as core
+import spec_lf_read
 import spec_rgl
 import spec_typed
 from spec_lf_core import NP, Atom, Box, NPList
@@ -113,24 +114,30 @@ def head(st, cn):
 def det(st, d, cn):
     """A determiner over a common noun: the referent made (or bound) first, then what restricts it."""
     kind = head(st, cn)
+    said = None
     if d in ("DetThe", "DetThePl"):
-        bound = st.bound(kind) if fun(cn).endswith("_UseN") else None
-        if bound is not None:
-            return core.fixed(bound)
+        found = spec_lf_read.the(st, kind, d == "DetThePl")     # R2, R11
+        if found is not None:
+            refs, conds = restrict(st, cn, found.ref)
+            found.restr, found.inner = found.restr + conds, found.inner + refs
+            return found
         quant, ref = "a", st.ref(kind, definite=True)
     else:
         quant = {"DetEvery": "every", "DetNo": "no"}.get(d, "a")
         if d == "DetPl" and st.origin == "response":
             quant = "every"
+        said = {"DetA": spec_lf_read.article(spec_lf_read.noun(st, kind)),
+                "DetPl": spec_lf_read.noun(st, kind, True)}.get(d)
         ref = st.ref(kind)
     refs, conds = restrict(st, cn, ref)
-    return NP(ref, quant, conds, refs)
+    return NP(ref, quant, conds, refs, said=said)
 
 
 def its(st, kind):
     """"its K": the image of the clause's subject by the row `K | of | S`."""
     subject = st.subject
     rows = [r for r in st.names.rows.values() if r[0] == kind and r[1] == "of"]
+    spec_lf_read.its(st, [r[2] for r in rows], "its " + spec_lf_read.noun(st, kind))     # R8
     row = next((r for r in rows if subject and r[2] in st.vocab.ancestors(subject.kind)), rows[0])
     ref, new = st.image((row, subject), kind)
     return NP(ref, "a", [Atom("rel", ("of", ref, subject))]) if new else core.fixed(ref)
@@ -142,6 +149,8 @@ def owner(st, tnp):
     if rest == "Up":
         return owner(st, args(tnp)[0])
     if rest == "Its":
+        t = st.names.attr(fun(tnp))[0]
+        spec_lf_read.its(st, next(ks for term, ks in st.vocab.attributes if term is t), "its " + t.term)    # R8
         return core.fixed(st.subject)
     if rest.startswith("Of_"):
         return np(st, args(tnp)[0])

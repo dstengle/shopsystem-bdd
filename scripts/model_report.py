@@ -110,9 +110,11 @@ def _requirements(path):
 
 def _parse4(args, lines):
     """`model parse` in grammar 4, the context's `spec/index.md` saying `language: codified-2` (CNL 4's I7a); a
-    refused requirement of a capability file named `<capability>#r<n>` (I9)."""
+    refused requirement of a capability file named `<capability>#r<n>` (I9); a line that parses and that a reading
+    rule refuses (spec_lf_read, I11b) printed with its refusal and its tree."""
     import spec_grammar
     import spec_grammar4
+    import spec_lf_read
     if args.grammar != "Req":
         print(f"grammar 4 has no {args.grammar} grammar: a codified-2 context's lines are parsed as requirements")
         return 2
@@ -124,9 +126,11 @@ def _parse4(args, lines):
         except (ImportError, spec_grammar.GrammarError) as err:
             print(f"grammar 4 could not be built: {err}")
             return 2
-        if p.tree is not None:
+        why = p.tree and spec_lf_read.refusal(spec_grammar4.load(args.root)[0], p.tree)     # R2, R4, R8, R12
+        if p.tree is not None and not why:
             print(head + (_form(args.root, p.tree) if args.form else p.tree))
             continue
+        p = spec_grammar4.Parse(refusal=why, trees=[p.tree]) if why else p
         refused += 1
         print(head + (f"{named[n]}: " if n in named else "") + p.refusal)
         for tree in p.trees:

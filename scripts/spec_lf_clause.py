@@ -9,6 +9,7 @@ negated clause puts all but its subject under `not`.
 """
 import spec_lf_core as core
 import spec_lf_np as nps
+import spec_lf_read
 from spec_lf_core import Atom, Box, NPList
 
 ORIGIN = {"where": "while", "while": "while", "when": "trigger", "if": "trigger", "response": "response"}
@@ -76,6 +77,8 @@ def clause(st, subject, vptree, neg):
     saved, st.subject = st.subject, subject_of(subject)
     args, build = vp(st, vptree)
     st.subject = saved
+    if neg:
+        spec_lf_read.negated(st, subject_of(subject), args, vptree)     # R4
     return core.apply([subject] + args, lambda r: build(r[0], r[1:]), 1 if neg else None)
 
 
@@ -84,6 +87,8 @@ def gapped(st, ref, subject, gaptree, neg):
     saved, st.subject = st.subject, subject_of(subject)
     args, build = gap(st, gaptree)
     st.subject = saved
+    if neg:
+        spec_lf_read.negated(st, subject_of(subject), args, gaptree)    # R4
     return core.apply([subject] + args, lambda r: build(r[0], ref, r[1:]), 1 if neg else None)
 
 

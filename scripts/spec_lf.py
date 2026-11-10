@@ -2,7 +2,8 @@
 referents, atoms and boxes (spec_lf_core's types), made from its tree by one translation per template (spec_lf_clause
 for the rule and its clauses, spec_lf_np for its noun phrases), and written out for `model parse --form` (`show`).
 It is the meaning spec_meaning compares the trees of a line by (call 2): two trees with one form are one meaning.
-The reading rules over the form (R1-R12) and their refusals are I11b's.
+The reading rules (R1-R12) and their refusals are spec_lf_read's (I11b): "the", "its" and a negated clause are
+resolved or noted as they are translated, and `spec_lf_read.refusal` reads the form and the notes.
 """
 import spec_lf_clause
 import spec_lf_core
@@ -15,12 +16,17 @@ _names = {}
 
 def form(vocab, tree):
     """The Form of `tree` (a grammar 4 tree's text) over the context's Vocab `vocab`."""
+    return translate(vocab, tree)[0]
+
+
+def translate(vocab, tree):
+    """(the Form of `tree`, the State of its translation, whose `notes` are the reading rules' refusals met)."""
     if id(vocab) not in _names:
         _names.clear()
         _names[id(vocab)] = (vocab, spec_lf_np.Names(vocab))
     st = spec_lf_core.State(vocab, _names[id(vocab)][1])
     st.clauses = spec_lf_clause
-    return spec_lf_clause.rule(st, spec_meaning.read(tree))
+    return spec_lf_clause.rule(st, spec_meaning.read(tree)), st
 
 
 def term(x):
