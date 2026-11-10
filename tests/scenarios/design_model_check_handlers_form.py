@@ -30,4 +30,4 @@ def model_parse_form(step):
     if not (step.repo / "spec" / "capabilities" / "thing.md").is_file():
         C2.context(step.repo, H.PATH, [LINE])
         H.says(step, "l1", TRIGGER)
-    H.run_model(step, "parse", "--form", "--file", str(step.repo / "spec" / "capabilities" / "thing.md"))
+    H.run_model(step, "parse", "--form", "--file", H.holding(step))

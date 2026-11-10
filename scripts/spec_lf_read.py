@@ -122,7 +122,7 @@ def negated(st, subject, args, vptree):
 def obliges(box):
     """Whether a box obliges an act: an event in it outside a `not` or `only` box, or a count that admits none."""
     for c in box.body:
-        if isinstance(c, Atom) and c.pred == "event":
+        if isinstance(c, Atom) and c.pred in ("event", "initiates"):     # an act, or setting an attribute (b216)
             return True
         if isinstance(c, Box) and (c.op == "every" and obliges(c.scope) or c.op in ("or", "case") and obliges(c)
                                    or c.op == "count" and core.least(c.count) and obliges(c.scope)):
