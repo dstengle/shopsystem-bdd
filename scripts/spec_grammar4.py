@@ -1,7 +1,8 @@
 """Grammar 4 of a context (the CNL 4 design, I7a): the base grammar `grammar/Base.gf` with the module `Context`
 spec_rgl generates from the context's vocabulary, compiled against the RGL and cached as spec_grammar caches grammar
 3, a line parsed in it, linearised back, and the refusal of a line it does not parse, naming a verb that does not
-agree in number with its subject.
+agree in number with its subject or whose aspect is not the one its clause takes (a state verb in a trigger, an
+action verb in a While clause; call 3).
 
 `model parse` reads a line in grammar 4 when `spec/index.md` says `language: codified-2` (`marked`); every other
 reader keeps grammar 3 until the switch (I19). A line with more than one tree is refused here; one meaning or refused
@@ -100,6 +101,25 @@ def disagreeing(gram, vocab, tokens, at):
     return None
 
 
+# the aspect a clause takes, by the word that opens it (call 3): a trigger an action, a While clause a state
+CLAUSES = {"when": ("action", "a trigger"), "if": ("action", "a trigger"), "while": ("state", "a While clause")}
+ASPECT = {"action": "an action", "state": "a state"}
+
+
+def misaspected(vocab, tokens, at):
+    """The refusal of a verb at token `at` whose aspect is not the one its clause takes, or None: the clause is the
+    one the nearest When, If or While before it opens."""
+    if at is None or at >= len(tokens):
+        return None
+    clause = next((CLAUSES[w.lower()] for w in reversed(tokens[:at]) if w.lower() in CLAUSES), None)
+    for v in vocab.verbs:
+        forms = {spec_rgl.spec_frames.s3(v.term).split()[0], v.term.term.split()[0]}
+        if clause and tokens[at] in forms and v.aspect != clause[0]:
+            return "refused: the verb %s is %s, and %s takes %s" % (v.term.term, ASPECT[v.aspect], clause[1],
+                                                                    ASPECT[clause[0]])
+    return None
+
+
 def parse(root, line):
     """One line parsed in grammar 4."""
     vocab, gram = load(root)
@@ -113,6 +133,9 @@ def parse(root, line):
     term = disagreeing(gram, vocab, tokens, at)
     if term:
         return Parse(refusal="refused: the verb %s does not agree in number with its subject" % term)
+    aspect = misaspected(vocab, tokens, at)
+    if aspect:
+        return Parse(refusal=aspect)
     if at >= len(tokens):
         return Parse(refusal="the line ends before its sentence does (after %d tokens)" % len(tokens))
     return Parse(refusal="does not parse at %s (token %d of %d)" % (tokens[at], at + 1, len(tokens)))

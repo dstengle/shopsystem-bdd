@@ -36,8 +36,15 @@ When the person runs `work start`, `work` shall print the files.
 # an option in the trigger (b134): a code before its noun, "the `--json` option", or the code alone
 When the person runs `work backlog` with the `--json` option, `work` shall print the output.
 When a session runs `work backlog` with `--json`, `work` shall exit successfully.
-# a noun of the wrong kind for its slot, and a state verb in a trigger, are not grammar 4 lines
+# a noun of the wrong kind for its slot is not a grammar 4 line
 When a session writes a stage, `work` shall print the stage.
 = refused: does not parse at stage
+# the aspect refusal (b134, call 3): a state verb in a trigger, an action verb in a While clause, named
 When a session follows a stage, `work` shall print the stage.
-= refused: does not parse at follows
+= refused: the verb follow is a state, and a trigger takes an action
+If sessions follow a stage, then `work` shall exit successfully.
+= refused: the verb follow is a state, and a trigger takes an action
+While a session writes a file, when the person runs `work start`, `work` shall exit successfully.
+= refused: the verb write is an action, and a While clause takes a state
+While a stage is `open` and a session does not end the stage, when the person runs `work start`, `work` shall exit successfully.
+= refused: the verb end is an action, and a While clause takes a state
