@@ -1,9 +1,7 @@
-"""spec_facts: one translation per fun into ground facts (design-r3 §3); spec_logic_vocab.domain; spec_context, the
-context read once. The ids are the fixtures' (`tests/scripts/fixtures/logic/cluster`, `fixtures/glossary`), never
-the live spec's."""
-import os
+"""spec_facts: one translation per fun of a codified-1 tree into ground facts (design-r3 §3); spec_logic_vocab.domain.
+The ids are the fixtures' (`tests/scripts/fixtures/facts`, the logic check's cluster as it was in codified-1, and
+`fixtures/glossary`), never the live spec's."""
 import pathlib
-import shutil
 import sys
 
 import pytest
@@ -17,7 +15,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import toolchain
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
-CLUSTER = REPO / "tests" / "scripts" / "fixtures" / "logic" / "cluster"
+CLUSTER = REPO / "tests" / "scripts" / "fixtures" / "facts"
 GLOSSARY = REPO / "tests" / "scripts" / "fixtures" / "glossary"
 START = ("When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to "
          "`started`.")
@@ -238,32 +236,6 @@ def test_domain_gives_values_transitions_and_initial_values(vocab):
     assert vals == ["val(k_stage,t_status_3,v_waiting).", "val(k_stage,t_status_3,v_running).",
                     "val(k_stage,t_status_3,v_ended)."]
     assert "initial(k_stage,t_stage_kind,v_plan)." in d       # no transitions: every value
-
-
-def test_the_context_is_read_once_per_state_of_its_files(tmp_path):
-    toolchain.require()
-    shutil.copytree(CLUSTER, tmp_path / "c")
-    root = tmp_path / "c"
-    ctx = spec_context.load(root)
-    assert spec_context.load(root) is ctx
-    assert [s.id for s in ctx.statements][:2] == ["supervision#r1", "supervision#r2"]
-    assert ctx.statements[-1] == spec_context.Statement("U2", None, None, ctx.statements[-1].tree)
-    assert ctx.statements[0].group == "supervision#g1" and ctx.statements[0].capability == "supervision"
-    assert ctx.facts["supervision#r11"][0] == 'form("supervision#r11",when).'
-    assert ctx.refused == {} and ctx.domain == spec_logic_vocab.domain(ctx.vocab) + spec_facts.def_facts(ctx.vocab)
-    assert "c_outputless" in ctx.vocab.def_lits and "c_free" not in ctx.vocab.def_lits
-    cap = root / "spec" / "capabilities" / "supervision.md"
-    cap.write_text(cap.read_text().replace("- [r12] When", "- [r12] Whenever"))
-    os.utime(cap, ns=(cap.stat().st_mtime_ns + 10**9,) * 2)
-    again = spec_context.load(root)
-    assert again is not ctx and "supervision#r12" in again.refused and "supervision#r12" not in again.facts
-    draft = tmp_path / "supervision.md"
-    draft.write_text(cap.read_text().replace("- [r12] Whenever", "- [r12] When").replace(
-        "shall not set its status to `started`.", "shall set its status to `done`."))
-    drafted = spec_context.load(root, [draft])
-    assert drafted.refused == {} and drafted.caps["supervision"].path == draft
-    assert 'set("supervision#r12",1,v1,t_status,v_done).' in drafted.facts["supervision#r12"]
-    assert spec_context.load(root, [draft]) is drafted
 
 
 def test_a_definite_with_no_antecedent_is_the_one_thing_of_its_kind(vocab):

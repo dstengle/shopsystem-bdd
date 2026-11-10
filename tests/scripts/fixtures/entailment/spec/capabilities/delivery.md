@@ -4,7 +4,7 @@ title: Delivery
 narrator: the person delivering an initiative
 group: guarantees
 rests_on: [design-decision/a-script-supervises-delivery, design-decision/gate-on-behaviour-lines, design-decision/formulation-needs-no-second-approval, design-decision/spec-writers-blind-to-code, design-decision/review-of-work-items, design-decision/workflow-capabilities-are-guarantees, design-decision/the-ledger-is-tracked, design-decision/the-context-runs-without-a-coordinator]
-language: codified-1
+language: codified-2
 retired: [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11]
 ---
 
@@ -20,10 +20,7 @@ merges no branch itself, and reads what `work run` ends with, never what its wor
 (design-decision/behaviour-lines-are-ears): it grows from what using it shows.
 
 ## Terms
-
-- **`delivering-an-initiative`** (proper noun): the skill that has `work run` deliver an initiative and shows the person what it ends with.
-- **disallowed tool** (noun): a tool a worker needs that `work run` does not allow it.
-- **note** (verb): a line naming an event is appended to an initiative's ledger with `work note`. Forms: notes, noted. Frame: session notes ledger.
+- **note** (verb, action): a line naming an event is appended to an initiative's ledger with `work note`. Forms: notes, noted. Frame: session notes ledger.
 
 ## Behaviour
 

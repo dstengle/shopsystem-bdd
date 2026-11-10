@@ -4,7 +4,7 @@ title: Formulation
 narrator: the person who approved the lines
 group: guarantees
 rests_on: [design-decision/a-scenario-names-one-requirement, design-decision/exits-are-successful-or-errors, design-decision/formulation-needs-no-second-approval, design-decision/spec-writers-blind-to-code, design-decision/held-scenarios, design-decision/controller-per-spec-round, design-decision/workflow-capabilities-are-guarantees, design-decision/the-context-runs-without-a-coordinator]
-language: codified-1
+language: codified-2
 retired: []
 ---
 

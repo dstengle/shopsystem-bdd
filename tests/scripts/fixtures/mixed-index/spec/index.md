@@ -8,8 +8,8 @@ imports: [cli]
 # A codified-2 index over codified-1 files
 
 tests/scripts/fixtures/codified-2's index with a few words of its own (b151, CNL 4's I20): the index says codified-2
-and imports the CLI pack, while `universal.md` and the capability `shelf` say codified-1 and are read in the old
-grammar over the same glossary.
+and imports the CLI pack, while `universal.md` and the capability `shelf` say codified-1: `model parse` reads them in
+the old grammar over the same glossary, and `model logic` refuses each of their lines, naming `migrate upgrade`.
 
 ## Relations
 

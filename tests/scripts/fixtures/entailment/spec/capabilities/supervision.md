@@ -3,7 +3,7 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/supervision
 title: Supervision
 narrator: the person who started `work run`
 group: service
-language: codified-1
+language: codified-2
 rests_on: [design-decision/a-script-supervises-delivery, design-decision/worker-results-are-files, design-decision/work-item-lifecycle-as-run, design-decision/review-of-work-items, design-decision/the-file-set-is-the-claim, design-decision/the-v3-agents, design-decision/exits-are-successful-or-errors, design-decision/a-ruling-returns-to-the-asking-stage, design-decision/answers-not-rulings, design-decision/workflow-capabilities-are-guarantees, design-decision/the-context-runs-without-a-coordinator, design-decision/requests-written-through-work, design-decision/an-answer-to-a-reviewer-returns-to-ready-or-done, design-decision/the-glossary-is-a-target-of-spec-work]
 retired: [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r26, r27, r28, r29, r30, r31, r32, r33, r34, r35, r36, r37, r38, r39, r40, r41, r42, r43, r44, r45, r46, r47, r48, r49, r50, r51, r52, r53, r54, r55, r56, r57, r58, r59, r60, r61, r62, r63, r64, r65, r66, r67, r68, r69, r70, r71, r72, r73, r74, r75, r76, r77, r78, r79, r80, r81, r82, r83, r84]
 ---
@@ -25,64 +25,25 @@ and analysis and commits them, and sets the initiative `done`, committing it, wh
 decide goes to the person as a question.
 
 ## Terms
-- **draft** (verb): `work run` writes a node with `work add` or from a change list. Forms: drafts, drafted. Frame: `work run` drafts node.
-- **take** (verb): `work run` takes an initiative through the transitions its nodes can make. Forms: takes, took, taken. Frame: `work run` takes initiative.
-- **log** (verb): `work run` appends a line to `.shop/work/<initiative>/log.jsonl`. Forms: logs, logged. Frame: `work run` logs ledger.
-- **restore** (verb): `work run` puts a file back as its last commit has it, or removes it where that commit has none. Forms: restores, restored. Frame: `work run` restores file.
-- **remove** (verb): a session or a tool removes a file, a directory or a text it wrote. Forms: removes, removed. Frame: agent removes text.
-- **output** (noun): what a stage's result gives as its stage's work.
 - **change list** (noun): the list an `integrate` or `apply` round's result gives of what it adds, changes and removes.
-- **draft** (noun): a file an `integrate` round writes under its drafts path, kept on the initiative branch. Plural: drafts.
-- **tool list** (noun): what `work run` gives a worker to work with.
-- **worker brief** (noun): the brief `work run` gives a worker. Kind of: brief.
-- **round brief** (noun): the brief `work run` gives a round. Kind of: brief.
-- **review brief** (noun): the brief `work run` gives a branch review. Kind of: brief.
-- **faulty** (adjective of session): a session that ends in an error or at its turn limit, or leaves output that holds no JSON result.
-- **meddling** (adjective of session): a session that changes a file under `.shop/work/` outside its stage directory.
-- **littering** (adjective of session): a session during whose work a file under `.shop/work/` of the checkout changes and is left uncommitted.
-- **crossing** (adjective of session): a session during whose work a session of another initiative that `work run` runs side by side commits a file of that other initiative and a change to a file of its own.
 - **outputless** (adjective of result): A result is outputless when the result gives no question and the result gives no output.
-- **setless** (adjective of result): a result that gives an empty file set.
-- **listless** (adjective of result): A result is listless when the result gives no change list.
-- **glossarial** (adjective of result): a result whose change list names the glossary.
-- **raising** (adjective of result): a result that gives the lines of a request into an upstream.
-- **awaited** (adjective of result): a result that gave the lines of a request into an upstream, where that request is not `delivered`.
-- **strange** (adjective of result): a result whose change list names a capability that neither `spec/capabilities/` nor its drafts have.
-- **unheld** (adjective of result): a result that gives an answer the drafts its stage applied do not hold.
-- **fixing** (adjective of result): a result that gives a question listing review findings to fix now.
-- **unparsing** (adjective of result): a result whose drafts hold a requirement that does not parse, or with whose drafts the logic check on the spec finds an L1 or an L3.
+- **draft** (verb, action): `work run` writes a node with `work add` or from a change list. Forms: drafts, drafted. Frame: `work run` drafts node.
+- **take** (verb, action): `work run` takes an initiative through the transitions its nodes can make. Forms: takes, took, taken. Frame: `work run` takes initiative.
+- **log** (verb, action): `work run` appends a line to `.shop/work/<initiative>/log.jsonl`. Forms: logs, logged. Frame: `work run` logs ledger.
+- **remove** (verb, action): a session or a tool removes a file, a directory or a text it wrote, or takes a text out of a git branch with a commit. Forms: removes, removed. Frame: agent removes text. Frame: agent removes text from git branch.
+- **output** (noun): what a stage's result gives as its stage's work. Redefines: cli.
+- **draft** (noun): a file an `integrate` round writes under its drafts path, kept on the initiative branch. Plural: drafts.
 - **naming** (adjective of result): a result that names a report its session wrote in its worktree.
-- **unpushable** (adjective of remote): a remote that refuses every push.
-- **ahead** (adjective of initiative branch): an initiative branch with commits its remote does not have.
-- **reviewed** (adjective of initiative branch): an initiative branch whose every commit but the kept branch reviews' own a kept branch review has read.
-- **gitless** (adjective of initiative branch): an initiative branch whose repository would not be a git repository.
-- **lost** (adjective of work-item branch): a work-item branch its implementer deleted before `work run` merged it.
 - **kept** (adjective of work-item branch): a work-item branch `work run` kept when its work-item became `awaiting-answer`.
-- **flaky** (adjective of work-item branch): a work-item branch on which a scenario fails once and passes on its second run alone.
-- **dirty** (adjective of file): a file under `.shop/work/` that differs from its last commit.
-- **answered** (adjective of question): a question with an answer written under its node's `## Answers`.
-- **bare** (adjective of initiative): an initiative that fulfils a request and has no capability-proposal, no glossary-proposal and no work-item.
-- **waiting** (adjective of work-item): A work-item is waiting when the work-item is blocked by a work-item that is not closed.
-- **unfulfilled** (adjective of request): A request is unfulfilled when no initiative fulfils the request.
-- **itemless** (adjective of initiative): an initiative in which no work-item is kept.
 - **codified** (adjective of change list): a change list whose every capability has `language: codified-1` in its file.
-- **uncodified** (adjective of change list): a change list that names a service capability with no `language: codified-1` in its file.
 
 ## Relations
 
 | from | word | to | cardinality |
 |---|---|---|---|
-| stage | for | request |  |
-| stage | for | question |  |
-| question | on | request |  |
-| stage | on | work-item branch |  |
 | result | gives | question |  |
 | result | gives | output |  |
 | result | gives | change list |  |
-| worker brief | for | work-item |  |
-| worker brief | with | work-item branch |  |
-| review brief | with | commit |  |
-| round brief | with | request |  |
 
 ## Behaviour
 

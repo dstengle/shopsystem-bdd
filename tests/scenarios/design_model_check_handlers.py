@@ -256,14 +256,3 @@ def given_index(step):
 @handler("GivenK", "feature")
 def given_nothing(step):
     pass
-
-
-# An unpairable capability, in the smallest codified-2 world: r1 and r2 name the code `x` of a stage and of a file,
-# which no unification makes one thing; r3 and r4 clash (an L1). `model logic` sets r1 and r2 aside and still finds r3
-# and r4's L1.
-UNPAIRABLE = [("While the `x` stage is `open`, when the person runs `work stop` on a stage, `work` shall end the "
-               "stage."),
-              ("While the version of the `x` file is `1.0.0`, when the person runs `work stop` on a stage, `work` "
-               "shall not end the stage."),
-              "When the person runs `work check`, `work` shall exit successfully.",
-              "When the person runs `work check`, `work` shall exit with an error naming `work check`."]

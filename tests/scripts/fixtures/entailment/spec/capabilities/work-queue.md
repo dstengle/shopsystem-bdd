@@ -3,7 +3,7 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue
 title: Work queue
 narrator: a person, session or script reading work-items or writing their transitions
 group: service
-language: codified-1
+language: codified-2
 rests_on: [design-decision/work-file-forms, design-decision/work-item-lifecycle-as-run, design-decision/the-file-set-is-the-claim, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/work-retry-reads-the-log, design-decision/query-commands-answer-in-their-output, design-decision/work-items-named-by-ids, design-decision/a-ruling-returns-to-the-asking-stage, design-decision/answers-not-rulings, design-decision/the-ledger-is-tracked, design-decision/work-list-and-work-show-replace-work-status]
 retired: [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r26]
 ---
@@ -23,16 +23,6 @@ work-item's status; `work run` (supervision) takes them through it. It judges no
 - **note** (noun): the one line `work note` appends to a ledger after the date it writes.
 - **form** (attribute of note): Values: `one-line`, `multi-line`.
 - **form** (attribute of answer): Values: `one-line`, `multi-line`.
-- **out of step** (adjective of work-item): a work-item whose last status in `log.jsonl` differs from the status in its file.
-- **asking stage** (attribute of question): the kind of stage that asked the question. Values: `research`, `plan`, `implement`, `review`.
-- **flag** (attribute of answer): the flag `work answer` is given with an answer to a reviewer's question. Values: `--change`, `--accept`, `unflagged`.
-
-## Relations
-
-| from | word | to | cardinality |
-|---|---|---|---|
-| ledger | of | initiative | one |
-| work-item | kept in | initiative | one |
 
 ## Behaviour
 

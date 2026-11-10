@@ -1,5 +1,8 @@
 """spec_solve: `model logic` as one brave solve of the context's facts and `grammar/check.lp` (design-r3 §6), on the
-cluster fixture for fixed ids and on seeded pairs, one per kind of clash. The live spec is never solved here."""
+cluster fixture (grammar 4, codified-2) for fixed ids and on seeded pairs, one per kind of clash. The live spec is never
+solved here. A grammar 4 line cannot say what L5 and L6 find (R12 refuses an obligation with no trigger; an adjective
+condition is no word of grammar 4): check.lp's `lint` and `maybe` are tested on facts (test_check_lp.py,
+test_check_lp_gaps.py)."""
 import json
 import pathlib
 import re
@@ -17,7 +20,6 @@ import toolchain
 REPO = pathlib.Path(__file__).resolve().parents[2]
 CLUSTER = REPO / "tests" / "scripts" / "fixtures" / "logic" / "cluster"
 SUPERVISION = "spec/capabilities/supervision.md"
-USE = "- **use** (verb, action): Forms: uses, used. Frame: `work run` uses question.\n"
 
 
 @pytest.fixture(scope="module")
@@ -64,10 +66,10 @@ def test_two_statements_saying_opposite_things_of_one_trigger_are_an_l1_naming_b
     assert l1.text.endswith("r11 obliges and r12 forbids `work` to set the status of an initiative to `started`")
 
 
-def test_the_resource_formulation_has_no_l1(findings):
+def test_lines_that_say_different_things_have_no_l1(findings):
     named = {i for f in of(findings, "L1") for i in f.ids}
-    assert not named & {"supervision#r2", "supervision#r5", "supervision#r6", "supervision#r7", "supervision#r8",
-                        "U1", "U2"}
+    assert not named & {"supervision#r1", "supervision#r2", "supervision#r5", "supervision#r6", "supervision#r7",
+                        "supervision#r8", "U1"}
 
 
 def test_a_set_off_the_transition_table_is_l3(findings):
@@ -84,33 +86,27 @@ def test_a_pre_state_value_no_path_reaches_is_l4(findings):
                        "reaches")
 
 
-def test_an_untriggered_event_obligation_is_l5(findings):
-    """Holding a resource is a state, not an event: the cluster's `shall hold` lines are not linted."""
-    [l5] = of(findings, "L5")
-    assert l5.ids == ["supervision#r10"]
-    assert l5.text == "supervision#r10 obliges `work` to write a question in every state"
-
-
-def test_l5_names_the_requirement_that_reacts_to_the_event(tmp_path):
-    root = copy(tmp_path, add=seeded("When `work` writes a question, `work run` shall start every research stage."))
-    [l5] = of(spec_solve.run(root), "L5")
-    assert l5.ids == ["supervision#r10", "supervision#r20"]
-    assert l5.text.endswith("in every state; supervision#r20 reacts to it")
+def test_an_obligation_with_no_trigger_is_refused_not_an_l5(tmp_path):
+    """R12: what L5 found in codified-1 is a refusal of grammar 4, so model logic never sees the line."""
+    root = copy(tmp_path, add=seeded("While a request is `awaiting-asker`, `work` shall write a question."))
+    assert not [f for f in spec_solve.run(root) if "supervision#r20" in f.ids]
+    assert spec_solve.spec_context.load(root).refused["supervision#r20"].startswith("refused: the line has no trigger")
 
 
 def test_a_requirement_that_contradicts_itself_is_l1_with_its_id_only(tmp_path):
     root = copy(tmp_path, add=seeded(
-        "When the person runs `work finish` on an initiative that is `started`, `work` shall set its status to "
-        "`done` and set its status to `abandoned`."))
+        "When the person runs `work finish` on an initiative whose status is `started`, `work` shall set the status "
+        "of the initiative to `done` and set the status of the initiative to `abandoned`."))
     [l1] = [f for f in of(spec_solve.run(root), "L1") if "supervision#r20" in f.ids]
     assert l1.ids == ["supervision#r20"] and l1.text == "supervision#r20 contradicts itself"
 
 
-CLOSE = "When the person runs `work close` on an initiative that is `started`, `work` shall set its status to "
+CLOSE = ("When the person runs `work close` on an initiative whose status is `started`, `work` shall set the status "
+         "of the initiative to ")
 SEEDED = [
-    ("pos_neg", ["When the person runs `work stop` on a stage, `work run` shall end the stage.",
-                 "When the person runs `work stop` on a stage, `work run` shall not end the stage."],
-     "r20 obliges and r21 forbids `work run` to end a stage"),
+    ("pos_neg", ["When the person runs `work stop` on a stage, `work` shall end the stage.",
+                 "When the person runs `work stop` on a stage, `work` shall not end the stage."],
+     "r20 obliges and r21 forbids `work` to end a stage"),
     ("set", [CLOSE + "`done`.", CLOSE + "`abandoned`."],
      "r20 sets the status of an initiative to `done` and r21 to `abandoned`"),
     ("exit", ["When the person runs `work check`, `work` shall exit successfully.",
@@ -119,14 +115,12 @@ SEEDED = [
     ("change", ["When the person runs `work peek`, `work` shall change nothing.",
                 "When the person runs `work peek`, `work` shall write a question."],
      "r20 changes nothing and r21 obliges `work` to write a question"),
-    ("use", ["`work run` shall use a question.", "`work run` shall not use a question."],
-     "r20 obliges and r21 forbids `work run` to use a question"),
 ]
 
 
 @pytest.mark.parametrize("why, lines, phrase", SEEDED, ids=[s[0] for s in SEEDED])
 def test_a_seeded_pair_is_an_l1_naming_both(tmp_path, why, lines, phrase):
-    root = copy(tmp_path, add=seeded(*lines), glossary=USE if why == "use" else "")
+    root = copy(tmp_path, add=seeded(*lines))
     found = [f for f in of(spec_solve.run(root), "L1") if "supervision#r20" in f.ids]
     assert [f.ids for f in found] == [["supervision#r20", "supervision#r21"]]
     assert found[0].text.startswith("supervision#r20 and #r21 clash: ")
@@ -154,10 +148,10 @@ def _draft(tmp_path, name, body):
     return draft
 
 
-PACING = ("---\nid: capability/x/pacing\nlanguage: codified-1\n---\n\n# Pacing\n\n## Behaviour\n\n"
+PACING = ("---\nid: capability/x/pacing\nlanguage: codified-2\n---\n\n# Pacing\n\n## Behaviour\n\n"
           "### [g1] proposed initiatives stay proposed\n"
-          "- [r1] When the person runs `work start` on an initiative that is `proposed`, `work` shall not "
-          "set its status to `started`.\n")
+          "- [r1] When the person runs `work start` on an initiative whose status is `proposed`, `work` shall not "
+          "set the status of the initiative to `started`.\n")
 
 
 def test_extra_drafted_files_are_checked_with_the_spec(tmp_path):
@@ -206,7 +200,7 @@ def test_an_unsatisfiable_solve_is_an_error_naming_the_capability(monkeypatch, t
     unsat.write_text("broken. :- broken.\n" + spec_solve.CHECK.read_text())
     monkeypatch.setattr(spec_solve, "CHECK", unsat)
     found = spec_solve.run(CLUSTER, "supervision")
-    assert [(f.code, f.ids) for f in found if f.code != "L2"] == [("L0", [])]
+    assert [(f.code, f.ids) for f in found if f.code not in ("L2", "L8")] == [("L0", [])]
     assert found[0].text.startswith("the check of supervision is unsatisfiable")
     assert spec_solve.report(found, False)[1] == 1
 
@@ -217,7 +211,7 @@ def test_the_whole_context_is_one_grounding(monkeypatch, findings):
     built, real = [], clingo.Control
     monkeypatch.setattr(spec_solve.clingo, "Control", lambda *a, **k: built.append(a) or real(*a, **k))
     assert spec_solve.run(CLUSTER) == findings
-    assert of(findings, "L1") and len(built) == 1
+    assert of(findings, "L1") and built.count((["--warn=none"],)) == 1     # L8's entailment solves on its own
 
 
 def test_the_cluster_is_checked_in_under_a_second(findings):
@@ -231,7 +225,7 @@ def test_the_text_report_lists_each_finding_and_exits_1_on_l1_or_l3(findings):
     assert code == 1
     lines = text.splitlines()
     assert any(line.startswith("L1 supervision#r11 ") for line in lines)
-    assert lines[-1] == "5 findings: 1 L1, 1 L2, 1 L3, 1 L4, 1 L5"
+    assert lines[-1] == "6 findings: 1 L1, 1 L2, 1 L3, 1 L4, 2 L8"
 
 
 def test_warnings_alone_exit_0():
@@ -248,26 +242,10 @@ def test_the_json_report_is_one_object(findings):
 
 
 def test_the_findings_are_sorted_by_code_then_requirement(findings):
-    assert [f.code for f in findings] == ["L1", "L2", "L3", "L4", "L5"]
+    assert [f.code for f in findings] == ["L1", "L2", "L3", "L4", "L8", "L8"]
 
 
 def test_no_telingo_cone_pool_or_horizon():
     text = (REPO / "scripts" / "spec_solve.py").read_text()
     assert not re.search(r"telingo|spec_engine|spec_logic|spec_trace|cone|pool|horizon|HORIZON", text)
     assert len(text.splitlines()) <= 200
-
-
-ODD = "- **odd** (adjective of result): a result nobody reads.\n"
-ENDS = "When a session ends a stage with a result that is {}, `work run` shall not write a question."
-
-
-def test_a_clash_that_depends_on_a_prose_condition_is_an_l6_naming_it(tmp_path):
-    first = "While a result is odd, when a session ends a stage with the result, `work run` shall write a question."
-    root = copy(tmp_path, add=seeded(first, ENDS.format("not outputless")), glossary=ODD)
-    found = [f for f in spec_solve.run(root) if "supervision#r20" in f.ids]
-    assert [(f.code, f.ids) for f in found] == [("L6", ["supervision#r20", "supervision#r21"])]
-    assert found[0].text.startswith("supervision#r20 and #r21: possible clash, depends on the prose condition odd; "
-                                    "define it in the controlled language to decide: ")
-    assert "a result that is odd and not outputless" in found[0].text and spec_solve.report(found, False)[1] == 0
-    root = copy(tmp_path / "real", add=seeded(first, ENDS.format("odd")), glossary=ODD)
-    assert [f.code for f in spec_solve.run(root) if "supervision#r20" in f.ids] == ["L1"]   # both say odd: firm
