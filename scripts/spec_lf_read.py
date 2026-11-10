@@ -11,6 +11,8 @@ precedence, inertia) the check's (I12a, I12b). This module holds the rest, and t
   referent of kind S (the worktree of the session), else to the run's own K when K's entry has `This:`; else the
   line is refused, naming the noun (`the`). A referent whose noun phrase holds the "the" gives it nothing: "a stage
   after the stage" is after an earlier stage, never after itself (b217).
+  "the K of X" is the image of X by the row `K | of | S`, X read first (spec_lf_np's `of`): never an earlier K nor
+  the K whose relative clause holds it, and inside the box of "every Y" when X is "every Y" (b221).
 - R4: "does not V a K" in a While or Where clause is refused (`negated`): it reads as "Vs no K" and as "a K that X
   does not V"; the writer says one of them. Under "shall not" in a response, "a K" stays any K.
 - R8: "its" binds to the subject of its clause; the line is refused when that subject is of no kind the relation
