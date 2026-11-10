@@ -28,7 +28,9 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
                          "whose worktree holds a file."), None),
          # the list "a stage and the stage" belongs to follow or to print: two meanings, refused naming the requirement
          "ambiguous": (("When the person runs `work start`, `work` shall print every session that follows a stage and "
-                        "the stage."), None)}
+                        "the stage."), None),
+         # the line stops after "the", where write's frame needs its object: the hint names the term that may follow
+         "unfinished": ("When a session ends a stage, `work` shall write the", "may follow: file")}
 
 
 def capability(name, lines, path):
