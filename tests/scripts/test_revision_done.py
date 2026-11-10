@@ -10,6 +10,7 @@ from pathlib import Path
 
 import pytest
 import spec_lexicon
+import spec_rgl_vocab
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "scripts"
@@ -44,7 +45,7 @@ def test_no_two_statements_share_a_trigger_and_a_condition(check):
 
 def test_the_live_lexicon_has_no_problem_and_the_spec_no_means():
     """Point 3: v_t4-v_t10 have no rows, and no capability or index says `Means:`."""
-    assert spec_lexicon.problems(spec_lexicon.read(ROOT)) == []
+    assert spec_lexicon.problems(spec_lexicon.read(ROOT), spec_rgl_vocab.outer(ROOT)) == []  # the packs' kinds: artifact
     assert [p for p in (ROOT / "spec").rglob("*.md") if "Means:" in p.read_text()] == []
 
 
