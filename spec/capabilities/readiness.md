@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: []
+unbuilt: [r17, r18, r19]
 ---
 
 # Readiness
@@ -30,6 +30,9 @@ the item is settled. `work ready` checks the bar and asks nobody.
 - **nonexistent** (adjective of requirement): a requirement named by an id that no capability holds as a live requirement.
 
 - **ill-termed** (adjective of item): an item whose lines bring a problem of the lexicon (v_t4 to v_t13, a v_t12 among them) that the lexicon without them does not have.
+
+- **language marker** (noun): the `language:` field of the frontmatter of a capability file or of `spec/universal.md`, naming the language its lines are read in. Kind of: text.
+- **nonexistent** (adjective of universal condition): a universal condition named by an id `U<n>` that `spec/universal.md` does not hold as a live universal condition.
 
 ## Behaviour
 
@@ -83,6 +86,15 @@ the item is settled. `work ready` checks the bar and asks nobody.
 
 ### [g16] `work line --recodify` switches a capability's language on an item
 - [r16] When the person runs `work line --recodify` on an item, `work` shall write a capability and commit the item.
+
+### [g17] `work line --recodify universal` switches the universal conditions' language on an item
+- [r17] When the person runs `work line --recodify universal` on an item, `work` shall write a language marker and commit the item.
+
+### [g18] `work line --universal --retires` writes a universal condition that replaces another
+- [r18] When the person runs `work line --universal --retires` on an item, `work` shall write a universal condition and commit the item.
+
+### [g19] A retired universal condition that `spec/universal.md` does not hold
+- [r19] If the person runs `work line --universal --retires` on a universal condition that is nonexistent, then `work` shall exit with an error naming the universal condition and change nothing.
 
 ## Implementation, may change
 - An item's requirement lines stay on the item until its batch merges: in the item file's `## Requirements`, one

@@ -413,3 +413,35 @@ Feature: Feature file tools
     When the person runs `features generate` on the requirement r1
     Then `features` writes `features/shelf.feature`
     And `features` exits successfully
+
+  @g29 @r29
+  Scenario: `features generate` writes the steps of "the K of X" in a relative clause on a K
+    Given a requirement r1
+    And the requirement r1 is self-relating
+    When the person runs `features generate` on the requirement r1
+    Then `features` writes `features/shelf.feature`
+    And `features` exits successfully
+
+  @g30 @r30
+  Scenario: `features generate` writes the steps of "the K of every Y"
+    Given a requirement r1
+    And the requirement r1 is distributive
+    When the person runs `features generate` on the requirement r1
+    Then `features` writes `features/shelf.feature`
+    And `features` exits successfully
+
+  @g31 @r31
+  Scenario: `features generate` writes the steps of "the K" bound outside a no, not, every or only box
+    Given a requirement r1
+    And the requirement r1 is shadowed
+    When the person runs `features generate` on the requirement r1
+    Then `features` writes `features/shelf.feature`
+    And `features` exits successfully
+
+  @g32 @r32
+  Scenario: `features generate` writes the steps of a response that sets an attribute
+    Given a requirement r1
+    And the requirement r1 is setting
+    When the person runs `features generate` on the requirement r1
+    Then `features` writes `features/shelf.feature`
+    And `features` exits successfully
