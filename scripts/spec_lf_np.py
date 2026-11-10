@@ -13,6 +13,7 @@ import re
 
 import spec_lf_core as core
 import spec_lf_read
+import spec_lf_time
 import spec_rgl
 import spec_typed
 from spec_lf_core import NP, Atom, Box, NPList
@@ -90,6 +91,8 @@ def np(st, tree):
             return det(st, fun(a[0]), a[1])
         if rest == "Its":
             return its(st, kind)
+        if rest == "Sup":
+            return spec_lf_time.sup(st, kind, a)
     t, rest = st.names.attr(name)
     if t is not None:
         return value_np(st, t, owner(st, tree))

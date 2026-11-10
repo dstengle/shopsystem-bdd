@@ -10,6 +10,7 @@ negated clause puts all but its subject under `not`.
 import spec_lf_core as core
 import spec_lf_np as nps
 import spec_lf_read
+import spec_lf_time
 from spec_lf_core import Atom, Box, NPList
 
 ORIGIN = {"where": "while", "while": "while", "when": "trigger", "if": "trigger", "response": "response"}
@@ -110,6 +111,9 @@ def cond(st, tree):
         x = nps.owner(st, a[1]) if rest == "IsOf" else nps.np(st, a[1])
         value = st.names.value(nps.fun(a[2]))
         return core.apply([x], lambda r: Atom("attr", (r[0], t.term, value)), 1 if a[0] == "PNeg" else None)
+    timed = spec_lf_time.cond(st, tree)     # after, before, within the last, the perfect (I16)
+    if timed is not None:
+        return timed
     raise nps.unknown(tree)
 
 
