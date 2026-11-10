@@ -119,7 +119,7 @@ def given_capability(step):
         title: %s
         narrator: a client
         group: service
-        language: codified-1
+        language: codified-2
         rests_on: []
         retired: []
         ---

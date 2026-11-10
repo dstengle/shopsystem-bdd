@@ -1,7 +1,7 @@
 """The quantified conditions and the negated restriction of an object in `check.lp`'s facts (b197; the CNL 4 design,
 section 7.4), beside spec_lf_facts, whose walk (`w`) emits them:
 
-- "every K that P is v" in a While or Where clause or a trigger: the universal of codified-1 (spec_facts_np), `uall(R,U,
+- "every K that P is v" in a While or Where clause or a trigger: the universal (design-r3 §3), `uall(R,U,
   K)` with its restrictor `uattr(R,U,T,V)`, `urel(R,Q,U,W)` and what its scope says of it `ucond(R,U,T,V,Pol)`, which
   check.lp reads (`umatch`): a pair is out where an instance of K that meets the restrictor has another value; "every
   K that P is one of `a` or `b`" `uin(R,U,T,V)` of each value (spec_lf_values, b240); "every K Vs the X" `uscope(R,U,

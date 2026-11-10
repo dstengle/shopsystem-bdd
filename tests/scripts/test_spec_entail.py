@@ -68,4 +68,4 @@ def test_a_requirement_is_restating_when_every_then_is_entailed(facts):
 def test_the_bridge_is_the_definition_of_refuse_an_imported_pack_gives():
     assert spec_entail.refuse_defined(FIXTURES / "codified-2")
     assert spec_entail.refuse_defined(FROZEN)
-    assert not spec_entail.refuse_defined(FIXTURES / "facts")      # it imports no pack
+    assert not spec_entail.refuse_defined(FIXTURES / "glossary")      # it imports no pack

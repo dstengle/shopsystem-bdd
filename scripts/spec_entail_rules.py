@@ -1,8 +1,7 @@
 """The rules of the entailment check (the CNL 4 design, I13a; its study's comp.py and cex.py, ported): a context's
 check facts read per requirement (`parse`), the world of a query q(L,I) as facts (`Premises.world`) and each premise M
 as Datalog rules over a query variable Q (`Premises.rule`), in its stratum (`stage`); grammar/entail.lp is their
-background. A codified-1 line's facts (spec_facts) and a codified-2 line's (spec_lf_facts) are read alike: an `each`
-object is an `every` one."""
+background. A line's facts are spec_lf_facts': an `each` object is an `every` one."""
 import re
 from collections import defaultdict
 

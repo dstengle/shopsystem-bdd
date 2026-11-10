@@ -129,10 +129,6 @@ class LanguageCommandsTest(CodifiedTest):
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertTrue(r.stdout.startswith("9: When NoPre (k_agent_Event"), r.stdout)
 
-    def test_parse_in_a_grammar_that_is_not_there_exits_2(self):
-        r = self.run_model("parse", "--grammar", "Nope", START)
-        self.assertEqual(r.returncode, 2, r.stdout + r.stderr)
-
     def test_lexicon_lists_terms_by_category(self):
         r = self.run_model("lexicon")
         self.assertEqual(r.returncode, 0, r.stderr)

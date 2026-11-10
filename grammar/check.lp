@@ -1,5 +1,5 @@
 % grammar/check.lp: the check of `model logic` (design-r3 §6), a fixed meta-encoding, the same for every spec.
-% It reads the facts of design-r3 §3 (one translation per fun, scripts/spec_facts.py) and the lexicon's domain, with
+% It reads the facts of design-r3 §3 (a line's logical form as facts, scripts/spec_lf_facts.py) and the lexicon's domain, with
 % one generic instance per noun phrase. A conflict is SEARCHED FOR: a witness of two requirements that fire on one
 % trigger in one consistent pre-state and demand opposite things, found by one brave solve over every candidate pair.
 % Shown: clash(A,B,Why) (L1), maybe(A,B,Why,C) (L6: a clash that depends on the prose condition C),
@@ -260,7 +260,7 @@ ofit(A,B,N,Z,T) :- oz(A,B,N,Z,T), ocell(A,B,T,C), not obad(A,B,N,Z,T,C).
 out(A,B) :- oz(A,B,N,Z,T), not ofit(A,B,N,Z,T).
 
 % ---- a defined condition read through its definition (`dalt(C,N)`, `dlit(C,N,Attr,Val,Pol)`: the ways through a
-% Def whose literals are all on its own subject, spec_facts.def_facts) under `no`, `every` and a negation --------
+% Def whose literals are all on its own subject) under `no`, `every` and a negation --------
 has(A,B,0,Z,T,V,P) :- w0(A,B,Z,T,V,P).
 has(A,B,1,Z,T,V,P) :- w1(A,B,Z,T,V,P).  has(A,B,1,Z,T,V,P) :- n1(A,B,Z,T,V,P).
 % the instances a definition is asked of: (side's state N, instance Z, condition C)

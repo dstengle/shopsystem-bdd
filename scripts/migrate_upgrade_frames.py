@@ -3,17 +3,16 @@ every change and writes none:
 - each term entry of `spec/index.md`'s `## Glossary` and of each capability's `## Terms` whose category is one of
   plugin 2.x's has it written as its part of speech, by `spec_lexicon.relabel` (`kind` -> `noun`, `event` -> `verb`,
   `condition of stage` -> `adjective of stage`); nothing else in a file changes;
-- `notes`, read off the relabelled spec laid on a copy of `spec/`: each verb that needs a `Frame:` (v_t11) or whose `Frame:` does not read (v_t13), each
-  relational condition (v_t12) and each requirement, universal conditions among them, that no longer parses, by file
-  and id. It rewords no line: a session writes the frames and rewords the lines, a changed line under a new id."""
+- `notes`, read off the relabelled spec laid on a copy of `spec/`: each verb that needs a `Frame:` (v_t11) or whose
+  `Frame:` does not read (v_t13) and each relational condition (v_t12), by file. It rewords no line: a session writes
+  the frames. The lines that do not parse are the upgrade step "the controlled language 4"'s to report, in the one
+  grammar there is."""
 import re
 import shutil
 import tempfile
 from pathlib import Path
 
-import spec_grammar
 import spec_lexicon
-import spec_read
 import spec_rgl_vocab
 from migrate_upgrade_ids import Changes
 
@@ -46,30 +45,6 @@ def frames(lexicon, outer=frozenset()):
             if code in ("v_t11", "v_t12", "v_t13")]
 
 
-def statements(copy):
-    """(file, id, text) of each requirement of a codified capability and each universal condition."""
-    out = []
-    for path in sorted((copy / "spec/capabilities").glob("*.md")):
-        if spec_read.codified(path):
-            rel = path.relative_to(copy).as_posix()
-            out += [(rel, r.id, r.text) for g in spec_read.capability(path).groups for r in g.requirements]
-    return out + [("spec/universal.md", u.id, u.text) for u in spec_read.universal(copy)]
-
-
-def unparsed(copy):
-    """Each requirement that does not parse in the relabelled spec's grammar, by file and id; a grammar that cannot
-    be built (a term with no part of speech, no gf) said once."""
-    out = []
-    try:
-        for rel, ident, text in statements(copy):
-            parsed = spec_grammar.parse(copy, text)
-            if parsed.tree is None:
-                out.append("%s: %s %s no longer parses: %s" % (NAME, rel, ident, parsed.refusal))
-    except spec_grammar.GrammarError as error:
-        out.append("%s: the requirements could not be parsed: %s" % (NAME, error))
-    return out
-
-
 def plan(root):
     root = Path(root)
     changes = Changes()
@@ -84,5 +59,5 @@ def plan(root):
         shutil.copytree(root / "spec", copy / "spec")
         for rel, text in changes.texts.items():
             (copy / rel).write_text(text)
-        changes.notes = frames(spec_lexicon.read(copy), spec_rgl_vocab.outer(copy)) + unparsed(copy)
+        changes.notes = frames(spec_lexicon.read(copy), spec_rgl_vocab.outer(copy))
     return changes

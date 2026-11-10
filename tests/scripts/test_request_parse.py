@@ -1,6 +1,6 @@
-"""The upstream parses each line of a request in its own requirement grammar when its index is codified (the GF
-conversion's design §13, §13.4; requests r38: `work outcome accepted` refuses a line that does not parse), and refuses
-when its spec is not codified, naming `migrate upgrade`; a refusal writes nothing."""
+"""The upstream parses each line of a request in its own requirement grammar, grammar 4, when its spec says
+`language: codified-2` (the GF conversion's design §13, §13.4; requests r38: `work outcome accepted` refuses a line
+that does not parse), and refuses when it does not, naming `migrate upgrade`; a refusal writes nothing."""
 import pathlib
 import shutil
 import subprocess
@@ -17,6 +17,7 @@ import shop_files
 import toolchain
 
 GLOSSARY = ROOT / "tests" / "scripts" / "fixtures" / "glossary" / "spec" / "index.md"
+FOUR = GLOSSARY.read_text().replace("language: codified-1\n", "language: codified-2\nimports: [cli]\n")
 GOOD = "While an initiative is `proposed`, when the person runs `work start` on the initiative, `work` shall set the status of the initiative to `started`."
 BAD = "While an initiative is `drafted`, when the person runs `work start` on the initiative, `work` shall set the status of the initiative to `started`."
 LEGACY = "**When** `work list` is run, `work` shall print each request with its status."
@@ -42,7 +43,7 @@ def make(tmp_path, index):
 @pytest.fixture
 def codified(tmp_path):
     toolchain.require()
-    return make(tmp_path, GLOSSARY.read_text())
+    return make(tmp_path, FOUR)
 
 
 @pytest.fixture
@@ -65,7 +66,8 @@ def test_a_line_that_does_not_parse_is_refused_naming_it(codified):
 def test_work_outcome_accepted_exits_1_on_a_line_that_does_not_parse_and_writes_nothing(codified):
     """requests r38."""
     (codified / "spec/capabilities").mkdir()
-    shutil.copyfile(GLOSSARY.parent / "capabilities" / "work-queue.md", codified / "spec/capabilities/work-queue.md")
+    queue = (GLOSSARY.parent / "capabilities" / "work-queue.md").read_text()
+    (codified / "spec/capabilities/work-queue.md").write_text(queue.replace("codified-1", "codified-2"))
     (codified / ".shop/requests").mkdir(parents=True)
     (codified / ".shop/requests/q1.md").write_text(
         "---\nid: request/ex.com/prod/ctx/q1\nkind: request\nasker: internal\nsource: [observation/o1]\n"
@@ -86,6 +88,12 @@ def test_an_upstream_whose_index_is_not_codified_is_refused_naming_migrate_upgra
     assert "spec/index.md is not codified: run `migrate upgrade`" in str(refused.value)
 
 
+def test_a_codified_1_index_is_refused_naming_migrate_upgrade(tmp_path):
+    with pytest.raises(shop_files.Refused) as refused:
+        request_lines.check(make(tmp_path, GLOSSARY.read_text()), [GOOD])
+    assert "spec/index.md is not codified: run `migrate upgrade`" in str(refused.value)
+
+
 def test_an_upstream_with_an_uncodified_capability_is_refused_naming_it(codified):
     (codified / "spec/capabilities").mkdir()
     (codified / "spec/capabilities/old.md").write_text(UNCODIFIED)
@@ -95,10 +103,10 @@ def test_an_upstream_with_an_uncodified_capability_is_refused_naming_it(codified
 
 
 def test_no_grammar_tools_refuses_naming_tools_install(codified, monkeypatch):
-    import spec_grammar
+    import spec_grammar4
     import tools_grammar
     monkeypatch.setattr(tools_grammar, "gf_binary", lambda environ=None: None)
-    monkeypatch.setattr(spec_grammar, "_loaded", {})
+    monkeypatch.setattr(spec_grammar4, "_loaded", {})
     monkeypatch.setenv("XDG_CACHE_HOME", str(codified / "empty-cache"))
     with pytest.raises(shop_files.Refused, match="tools install"):
         request_lines.check(codified, [GOOD])

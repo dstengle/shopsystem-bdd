@@ -51,94 +51,56 @@ def cmd_decisions(args):
 
 
 def _statements(path):
-    """A codified file's statements with their line numbers (spec_read); any other file's non-blank lines that are not
-    `#` comments (a corpus file's)."""
+    """A codified-2 file's statements with their line numbers (spec_read); any other file's non-blank lines that are
+    not `#` comments (a corpus file's)."""
     import spec_read
-    markers = (spec_read.MARKER, "codified-2")
-    if not spec_read.codified(path, markers):
+    if not spec_read.codified(path, (spec_read.MARKER4,)):
         return [(n, line) for n, line in enumerate(path.read_text().splitlines(), 1)
                 if line.strip() and not line.startswith("#")]
     if path.name == "universal.md":
         return [(u.line_no, u.text) for u in spec_read.read_universal(path.parent.parent).conditions]
-    return [(r.line_no, r.text) for g in spec_read.capability(path, markers).groups for r in g.requirements]
-
-
-def cmd_parse(args):
-    """Each line's tree, or its refusal with the longest prefix that parsed and the nearest lexicon words."""
-    import spec_grammar
-    import spec_tree
-    if args.file:
-        lines = _statements(Path(args.file))
-    else:
-        lines = [(None, args.line)]
-    import spec_language
-    path = Path(args.file) if args.file else None
-    capability = getattr(args, "capability", None) or (path.stem if path is not None and path.parent.name == "capabilities" else None)
-    if spec_language.four(args.root, capability, universal=path is not None and path.name == "universal.md"):
-        return _parse4(args, lines)
-    if args.form:
-        print("--form reads grammar 4: neither the capability's file nor spec/index.md says `language: codified-2`")
-        return 2
-    refused = 0
-    for n, line in lines:
-        head = f"{n}: " if n is not None else ""
-        try:
-            p = spec_grammar.parse(args.root, line, args.grammar)
-        except (ImportError, spec_grammar.GrammarError) as err:
-            print(f"the {args.grammar} grammar could not be built: {err}")
-            return 2
-        if p.tree is not None:
-            print(head + spec_tree.show(p.tree))
-            continue
-        refused += 1
-        print(head + p.refusal)
-        for tree in p.trees:
-            print("  tree: " + spec_tree.show(tree))
-        if not p.trees:
-            h = spec_grammar.hint(args.root, line, args.grammar)
-            print(f"  parsed up to: {h['prefix']}")
-            print(f"  nearest words: {', '.join(h['near']) or '(none)'}")
-    return 1 if refused else 0
+    return [(r.line_no, r.text) for g in spec_read.capability(path, (spec_read.MARKER4,)).groups for r in g.requirements]
 
 
 def _requirements(path):
-    """{line number: `<capability>#r<n>`} of a codified capability file's requirements; {} for any other file."""
+    """{line number: `<capability>#r<n>`} of a codified-2 capability file's requirements; {} for any other file."""
     import spec_read
-    if path.parent.name != "capabilities" or not spec_read.codified(path, (spec_read.MARKER, "codified-2")):
+    if path.parent.name != "capabilities" or not spec_read.codified(path, (spec_read.MARKER4,)):
         return {}
-    groups = spec_read.capability(path, (spec_read.MARKER, "codified-2")).groups
+    groups = spec_read.capability(path, (spec_read.MARKER4,)).groups
     return {r.line_no: f"{path.stem}#{r.id}" for g in groups for r in g.requirements}
 
 
-def _parse4(args, lines):
-    """`model parse` in grammar 4, the context's `spec/index.md` saying `language: codified-2` (CNL 4's I7a); a
-    refused requirement of a capability file named `<capability>#r<n>` (I9); a line that parses and that a reading
-    rule refuses (spec_lf_read, I11b) printed with its refusal and its tree."""
-    import spec_grammar
+def cmd_parse(args):
+    """`model parse` in grammar 4 (CNL 4's I7a): each line's tree, or its refusal with the longest prefix that parsed,
+    the nearest lexicon words and the terms that may follow; a refused requirement of a capability file named
+    `<capability>#r<n>` (I9); a line that parses and that a reading rule refuses (spec_lf_read, I11b) printed with its
+    refusal and its tree. A context whose `spec/index.md` does not say `language: codified-2` is refused, naming
+    `migrate upgrade`."""
+    import spec_gf
     import spec_grammar4
-    import spec_lf_read
-    if args.grammar != "Req":
-        print(f"grammar 4 has no {args.grammar} grammar: a codified-2 context's lines are parsed as requirements")
+    import spec_language
+    if not spec_grammar4.marked(args.root):
+        print("model parse reads grammar 4: spec/index.md does not say `language: codified-2`; run `migrate upgrade`")
         return 2
+    lines = _statements(Path(args.file)) if args.file else [(None, args.line)]
     refused, named = 0, _requirements(Path(args.file)) if args.file else {}
     for n, line in lines:
         head = f"{n}: " if n is not None else ""
         try:
-            p = spec_grammar4.parse(args.root, line)
-        except (ImportError, spec_grammar.GrammarError) as err:
+            p = spec_language.parse(args.root, line)
+        except (ImportError, spec_gf.GrammarError) as err:
             print(f"grammar 4 could not be built: {err}")
             return 2
-        why = p.tree and spec_lf_read.refusal(spec_grammar4.load(args.root)[0], p.tree)     # R2, R4, R8, R12
-        if p.tree is not None and not why:
+        if p.tree is not None:
             print(head + (_form(args.root, p.tree) if args.form else p.tree))
             continue
-        p = spec_grammar4.Parse(refusal=why, trees=[p.tree]) if why else p
         refused += 1
         print(head + (f"{named[n]}: " if n in named else "") + p.refusal)
         for tree in p.trees:
             print("  tree: " + tree)
         if not p.trees:
-            h = spec_grammar4.hint(args.root, line)
+            h = spec_language.hint(args.root, line)
             print(f"  parsed up to: {h['prefix']}")
             print(f"  nearest words: {', '.join(h['near']) or '(none)'}")
             print(f"  may follow: {', '.join(h['follow']) or '(none)'}")

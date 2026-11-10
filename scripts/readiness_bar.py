@@ -1,6 +1,6 @@
 """The readiness bar (capability readiness; workflow simplification plan 3, D6-D9, D11): an item is passing when every
-request line of the item is settled and its requirement lines are well-formed: they parse in their capability file's
-grammar (spec_language), they bring no problem of the lexicon (v_t4 to v_t13) that the lexicon without them does
+request line of the item is settled and its requirement lines are well-formed: they parse in grammar 4
+(spec_language), they bring no problem of the lexicon (v_t4 to v_t13) that the lexicon without them does
 not have (readiness r15), `model logic` finds no L0 and no L1 naming them, and `features generate` writes a scenario
 for each of their groups that has a step. The lines are checked on a copy of `spec/` under the temporary directory
 with the item's lines laid in, removed afterwards whatever happens; `spec/` itself is never written. The `check` design-decisions that a
@@ -43,16 +43,15 @@ def unsettled(root, item):
 
 
 def _parses(copy, blocks):
-    """A reason for each of the item's requirements, and universal conditions (b43), that does not parse, each in its
-    capability file's grammar as laid (spec_language: a block that recodifies its capability is read in grammar 4)."""
+    """A reason for each of the item's requirements, and universal conditions (b43), that does not parse in grammar
+    4 (spec_language)."""
     reasons = []
-    statements = [(b.capability, "%s#%s" % (b.capability, rid), text) for b in blocks for g in b.groups
-                  for rid, text in g.requirements] + [(None, "universal#%s" % uid, text) for uid, text in blocks.universal]
-    for capability, ident, text in statements:
-        universal = capability is None     # a universal condition, in spec/universal.md's own grammar (b151)
-        parsed = spec_language.parse(copy, text, capability, universal)
+    statements = [("%s#%s" % (b.capability, rid), text) for b in blocks for g in b.groups
+                  for rid, text in g.requirements] + [("universal#%s" % uid, text) for uid, text in blocks.universal]
+    for ident, text in statements:
+        parsed = spec_language.parse(copy, text)
         if parsed.tree is None:
-            hint = spec_language.hint(copy, text, capability, universal)
+            hint = spec_language.hint(copy, text)
             reasons.append("%s: %s; parsed up to: %s; nearest words: %s" % (
                 ident, parsed.refusal, hint["prefix"] or "nothing", ", ".join(hint["near"]) or "none"))
     return reasons

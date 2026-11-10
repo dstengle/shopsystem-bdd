@@ -1,6 +1,5 @@
 """The logical form as `grammar/check.lp`'s facts (the CNL 4 design, section 7.4, I12a): what a codified-2 requirement
-means, read from its form (spec_lf), never from its tree, in the facts spec_facts gives a codified-1 one, so both
-feed one check. A referent a part introduces is a role `role(R,X,K)` under its own name (x1, x2 ...); an actor is its
+means, read from its form (spec_lf), never from its tree, in the facts of design-r3 §3. A referent a part introduces is a role `role(R,X,K)` under its own name (x1, x2 ...); an actor is its
 id, a code that names a command run its text, any other code or an indexical a role with `named(R,X,C)`. A While or
 Where part, and what the trigger says of its referents, is the pre-state (`cond`, `crel`, a state verb's atom
 `crel(R,E,S,O,Pol)`, O `none` for a frame with no object, `none`, `rnone` for a `not` box with referents of its own);
@@ -15,7 +14,7 @@ clashes only with a V of a thing known to fall outside it. A count ("print at le
 `fewer`) and number N, and a `resp` only when it admits no fewer than one X. Each line is marked `cnl4(R)`, so the
 check reads its pairs as codified-2 lines (the If tag, a universal condition paired with each line). A "may" line and
 a necessity are spec_lf_modal's; every and a count in a condition and a negated restriction spec_lf_quant's. The words are spec_lf_ids', the atoms' terms
-spec_lf_facts_atoms'. An `or` box splits it as spec_facts does (`R#n`,
+spec_lf_facts_atoms'. An `or` box splits it (`R#n`,
 `disj`); no translation, a ValueError.
 """
 import spec_lf_distinct

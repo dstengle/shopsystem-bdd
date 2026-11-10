@@ -1,14 +1,14 @@
-"""The codified reading of scripts/model (design model v5; the GF conversion's design §7, §8, §10, §13.4): a part of
-Model (model_facts).
+"""The codified reading of scripts/model (design model v5; the GF conversion's design §7, §8, §10, §13.4; CNL 4's
+I19): a part of Model (model_facts).
 
-A capability file with `language: codified-1` is read by spec_read into groups `<cap>#g<n>`, each requirement
-`<cap>#r<n>` a member of one, and every requirement parsed in the context's grammar (spec_grammar): parsed(Q),
-unparsed(Q, Why) or ambiguous(Q), its trigger and condition trees normalised as pre(Q, Key) (v15k), and logic_only(G)
-from spec_tree; exemplified(Q, Literal) for a code or quoted string naming no declared constant
-(spec_example, w_example); given_condition(G, Line) for a given line that is not example data (spec_read_given, v15m).
-`spec/universal.md` gives the universal conditions, `spec/restated.json` the 0.29 ids a group may
-restate, and a typed glossary (spec_lexicon) the terms with their categories. A scenario of a codified capability
-names its group by `@g<n>`: generates(G, S)."""
+A capability file with `language: codified-2` is read by spec_read into groups `<cap>#g<n>`, each requirement
+`<cap>#r<n>` a member of one, and every requirement parsed in grammar 4 (spec_language): parsed(Q), unparsed(Q, Why)
+or ambiguous(Q), its preconditions and trigger as pre(Q, Key) (v15k, v15n); exemplified(Q, Literal) for a code or
+quoted string naming no declared constant (spec_example, w_example); given_condition(G, Line) for a given line that
+is not example data (spec_read_given, v15m). `spec/universal.md` in `codified-2` gives the universal conditions (in
+any other language it is v_p0), `spec/restated.json` the 0.29 ids a group may restate, and a typed glossary
+(spec_lexicon) the terms with their categories. A scenario of a codified capability names its group by `@g<n>`:
+generates(G, S)."""
 
 import re
 from collections import Counter
@@ -21,7 +21,6 @@ import spec_packs
 import spec_read
 import spec_read_given
 import spec_rgl_vocab
-import spec_tree
 
 GRAMMAR_MISSING = object()
 
@@ -101,32 +100,22 @@ class SpecReading:
         for key in self.restated:
             self.fact("restated_id", f"{key}@0.29")
 
-    def parsed(self, ident, text, capability=None, universal=False):
-        """parsed, unparsed or ambiguous for one statement, in its capability file's grammar (spec_language); its
-        tree, or None. A grammar 4 line's tree is none of the old grammar's: it is recorded, and None returned."""
+    def parsed(self, ident, text, universal=False):
+        """parsed, unparsed or ambiguous for one statement, in grammar 4 (spec_language), and its pre (v15k, v15n)
+        unless it is a universal condition."""
         if self._grammar is GRAMMAR_MISSING:
-            return None
-        import spec_grammar
+            return
+        import spec_gf
         import spec_language
         try:
-            if spec_language.four(self.root, capability, universal):
-                p = spec_language.parse(self.root, text, capability, universal)
-                if p.tree is not None and not universal:
-                    self.pre4(ident, p.tree)
-                return self.parsed4(ident, p)
-            p = spec_grammar.parse(self.root, text)
-        except (ImportError, spec_grammar.GrammarError) as err:      # no pgf, no gf, or gf refused the sources
+            p = spec_language.parse(self.root, text)
+        except (ImportError, spec_gf.GrammarError) as err:      # no pgf, no gf, or gf refused the sources
             self._grammar = GRAMMAR_MISSING
-            fix = "" if isinstance(err, spec_grammar.Unlabelled) else "; run `python3 scripts/tools install`"
-            self.problems.append(f"the codified statements are not parsed: {err}{fix}")
-            return None
-        if p.tree is not None:
-            self.fact("parsed", ident)
-        elif p.trees:
-            self.fact("ambiguous", ident)
-        else:
-            self.fact("unparsed", ident, p.refusal)
-        return p.tree
+            self.problems.append(f"the codified statements are not parsed: {err}; run `python3 scripts/tools install`")
+            return
+        if p.tree is not None and not universal:
+            self.pre4(ident, p.tree)
+        self.parsed4(ident, p)
 
     def parsed4(self, ident, p):
         """parsed, unparsed or ambiguous of a grammar 4 line (CNL 4's I19): a line of two meanings is ambiguous."""
@@ -173,7 +162,6 @@ class SpecReading:
                 old = f"{name}#r{n}@0.29"
                 self.fact("restates", gid, old)
                 self.restated_by.setdefault(old, []).append(gid)
-            trees = []
             for q in g.requirements:
                 n = int(q.id[1:])
                 qid = f"{cap}#{q.id}"
@@ -183,15 +171,9 @@ class SpecReading:
                 entry["reqs"][n] = qid
                 self.req_text[qid] = q.text
                 self.group_of[qid] = gid
-                tree = self.parsed(qid, q.text, path.stem)
+                self.parsed(qid, q.text)
                 for word in spec_example.parameters(q.text, self.example_constants()):     # w_example (I18)
                     self.fact("exemplified", qid, word)
-                if tree is not None:
-                    self.unmentioned.add(qid)       # a parsed statement uses lexicon words (C27)
-                    trees.append(tree)
-                    self.pre(qid, tree)
-            if trees and len(trees) == len(g.requirements) and spec_tree.logic_only(trees):
-                self.fact("logic_only", gid)
             for n, rid, text in g.odd:      # v15a with no id, v15b with an id used before
                 qid = f"{cap}#line{n}" if rid is None else f"{cap}#{rid}~{n}"
                 self.node(qid, "requirement")
@@ -209,17 +191,11 @@ class SpecReading:
             self._constants = spec_example.constants(spec_lexicon.read(self.root))
         return self._constants
 
-    def pre(self, qid, tree):
-        clauses = spec_tree.parts(spec_tree.normal(tree))
-        if any(clauses[k] is not None for k in ("feat", "cond", "trig")):
-            self.fact("pre", qid, " | ".join("-" if clauses[k] is None else spec_tree.show(clauses[k])
-                                             for k in ("feat", "cond", "trig")))
-
     def read_universal(self):
         doc = spec_read.read_universal(self.root)
         if not doc.path.is_file():
             return
-        if not spec_read.codified(doc.path):
+        if not spec_read.codified(doc.path, (spec_read.MARKER4,)):
             self.fact("uncodified", "spec/universal.md")
             return
         self.problems += [f"spec/universal.md: {p}" for p in doc.problems]

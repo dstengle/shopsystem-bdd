@@ -15,10 +15,7 @@ A preposition right after the verb is the verb's, its object after it (b106, des
 `frame(term, names)` reads one, `misread` says why one does not read; `problems(lexicon)` gives v_t11 (a verb with no
 `Frame:`), v_t13 (a `Frame:` that does not read, naming the word it could not read) and v_t12 (a
 condition whose definition names with "the" a kind other than its own: a relation between two kinds written as a
-condition). A noun fills a role when its kind (or the actor) is the frame's or a kind of it (`below`: `Kind of:` of
-kinds and actors). The grammar types a verb's object, recipient and trigger subject (spec_typed_verbs), so a line
-that breaks a frame stops GF: spec_frames_refusal names the verb where it stopped; `guard` checks the subject of a
-`shall` against the frames of its verbs.
+condition). `s3` is a verb's third person singular, which grammar 4 reads its forms by.
 """
 import difflib
 import re
@@ -29,7 +26,6 @@ Frame = namedtuple("Frame", "subject object recipient prep oblique", defaults=(N
 # the words that, right after a verb in its frame, are the verb's preposition before its object
 PREPOSITIONS = {"to", "for", "from", "on", "onto", "in", "into", "at", "with", "about", "of", "by", "over", "under",
                 "through", "after", "before", "against", "upon", "without"}
-_frames = {}
 
 
 def s3(term):
@@ -202,48 +198,3 @@ def below(lexicon):
             seen.add(at)
             at = up.get(at)
     return out
-
-
-def _of(lexicon):
-    """{event id: [(term, Frame or None) of each sense]} and {kind or actor id: its name}, kept while the lexicon
-    is."""
-    hit = _frames.get(id(lexicon))
-    if hit is None or hit[0] is not lexicon:
-        ids, known = lexicon.ids(), names(lexicon)
-        named = {ids[t.key]: t.term for t in lexicon.terms if t.category in ("kind", "actor")}
-        verbs = {}
-        for t in lexicon.of("event"):     # each sense of a verb, each typed by the codified-1 grammar
-            verbs.setdefault(ids[t.key], []).append((t, frame(t, known)))
-        hit = _frames[id(lexicon)] = (lexicon, verbs, named, below(lexicon))
-        if len(_frames) > 16:
-            _frames.clear()
-            _frames[id(lexicon)] = hit
-    return hit[1:]
-
-
-def _subject(subj, named):
-    """The kind or actor a `shall`'s subject names, or None when it names none (a code)."""
-    if subj[0] == "ActorSubj":
-        return named.get(subj[1][0])
-    np = subj[1]
-    return named.get(np[0][:-len("_toNP")]) if np[0].endswith("_toNP") else None
-
-
-def guard(tree, lexicon):
-    """Why the subject of a `shall` is not of the kind a frame of its verbs names (in any sense of the verb), naming
-    the verb; None when every subject is."""
-    import spec_tree
-    verbs, named, under = _of(lexicon)
-    for node in spec_tree.nodes(tree):
-        if node[0] not in ("Shall", "ShallNot"):
-            continue
-        subject = _subject(node[1], named)
-        for vp in spec_tree.nodes(node[2]):
-            if subject is None or vp[0] not in ("Do", "DoI", "DoTo"):
-                continue
-            senses = [(t, f) for t, f in verbs.get(vp[1][0], ()) if f]
-            if senses and not any(subject in under.get(f.subject, ()) for _, f in senses):
-                return "the verb %s takes as its subject %s or a kind of it: %s" % (
-                    senses[0][0].term, " or ".join(f.subject for _, f in senses),
-                    "; ".join(" ".join(t.frame.split()) for t, _ in senses))
-    return None

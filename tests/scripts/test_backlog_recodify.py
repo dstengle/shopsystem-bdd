@@ -1,6 +1,6 @@
 """`work line --recodify` (CNL 4's I19): the marker written into the item's block, read back byte-stable, laid over a
-spec and taken out again; the refusals; and the readiness bar over a mixed spec, each line parsed in its capability
-file's grammar (spec_language)."""
+spec and taken out again; the refusals; and the readiness bar and a request's lines over a mixed spec, a codified-1
+capability refused naming `migrate upgrade`."""
 import pathlib
 import sys
 
@@ -18,7 +18,7 @@ import codified2_world as C2
 import toolchain
 
 CAP = "spec/capabilities/work-queue.md"
-# a line of grammar 4, which the old grammar refuses (its verb end has no frame the old reader reads)
+# a line of grammar 4
 FOUR = "When a session ends a stage, `work` shall print the stage."
 
 
@@ -102,26 +102,25 @@ def test_a_line_is_read_in_its_capability_file_s_grammar(backlog_repo):
     assert spec_language.four(backlog_repo) and spec_language.four(backlog_repo, "nonesuch")    # the index's
 
 
-def test_the_bar_reads_a_recodified_capability_s_lines_in_grammar_4(backlog_repo):
+def test_the_bar_refuses_a_line_of_a_codified_1_capability_until_the_item_recodifies_it(backlog_repo):
     toolchain.require()
     _mixed(backlog_repo)
     write_item(backlog_repo, "b1", status="shaped")
     assert work(backlog_repo, "line", "b1", "--into", "thing", FOUR).returncode == 0
     reasons, _ = readiness_bar.well_formed(backlog_repo, backlog_items.find(backlog_repo, "b1"))
-    assert reasons and reasons[0].startswith("thing#r2: "), reasons       # the old grammar refuses it
+    assert reasons == ["thing: spec/capabilities/thing.md says `language: codified-1`: run `migrate upgrade`"], reasons
     assert work(backlog_repo, "line", "b1", "--recodify", "thing").returncode == 0
     reasons, _ = readiness_bar.well_formed(backlog_repo, backlog_items.find(backlog_repo, "b1"))
     assert reasons == [], reasons
 
 
-def test_a_request_line_is_checked_in_the_grammar_of_its_capability(backlog_repo):
+def test_a_request_line_to_an_upstream_with_a_codified_1_capability_is_refused_naming_it(backlog_repo):
     toolchain.require()
     import request_lines
     _mixed(backlog_repo)
-    assert request_lines.check(backlog_repo, [FOUR], "shelf") is None
     try:
-        request_lines.check(backlog_repo, [FOUR], "thing")
+        request_lines.check(backlog_repo, [FOUR])
     except backlog_items.Refused as err:
-        assert "does not parse in the upstream's requirement grammar" in str(err)
+        assert "spec/capabilities/thing.md is not codified: run `migrate upgrade`" in str(err), str(err)
     else:
-        raise AssertionError("a grammar 4 line passed in a codified-1 capability's grammar")
+        raise AssertionError("an upstream with a codified-1 capability was read")

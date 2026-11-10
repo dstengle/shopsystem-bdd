@@ -25,11 +25,12 @@ Q = shared("shop_requests_world", "requests_world.py")
 OWN = "bounded-context/ex.com/prod/ctx"
 FIXTURE = (Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "glossary" / "spec" / "index.md").read_text()
 # The context's index is codified, with the typed glossary of tests/scripts/fixtures/glossary/, so GOOD parses.
-INDEX = "---\nid: %s\nlanguage: codified-1\n---\n# ctx\n\n%s" % (OWN, FIXTURE[FIXTURE.index("## Glossary"):])
+HEAD = "---\nid: %s\nlanguage: codified-2\nimports: [cli]\n---\n" % OWN
+INDEX = HEAD + "# ctx\n\n%s" % FIXTURE[FIXTURE.index("## Glossary"):]
 GOOD = "While an initiative is `proposed`, when the person runs `work start` on the initiative, `work` shall set the status of the initiative to `started`."
 BAD = "the queue is nice and quick"
 THING = ("---\nid: capability/ex.com/prod/ctx/thing\ntitle: Thing\nnarrator: a client\ngroup: service\n"
-         "language: codified-1\nrests_on: []\nretired: []\n---\n\n# Thing\n\n## Purpose\nSomething.\n\n## Behaviour\n")
+         "language: codified-2\nrests_on: []\nretired: []\n---\n\n# Thing\n\n## Purpose\nSomething.\n\n## Behaviour\n")
 SIDE = {"awaiting-asker": "asker", "delivered": "asker", "refused": "asker"}
 FIELDS = {"status": "status", "side": "turn"}
 
@@ -145,7 +146,7 @@ def run_work(step, *args):
     if not index.is_file():
         index.parent.mkdir(parents=True, exist_ok=True)
         index.write_text(INDEX)
-    elif "language: codified-1" not in index.read_text():      # world_nodes' index: the fixture glossary instead
+    elif not index.read_text().startswith(HEAD):      # world_nodes' index: the fixture glossary instead
         index.write_text(INDEX + index.read_text().partition("## Glossary\n")[2])
     step.context["head"] = W.init(step.repo)
     Q.hosted(step.repo)

@@ -112,7 +112,6 @@ def test_model_parse_reads_a_codified_2_context_in_grammar_4(root):
     assert done.returncode == 1 and "the verb write does not agree in number with its subject" in done.stdout
     done = model(root, "parse", "When a session writes a stage, `work` shall print the stage.")
     assert done.returncode == 1 and "parsed up to: When a session writes a" in done.stdout
-    assert model(root, "parse", "--grammar", "Def", "A stage is open when it is.").returncode == 2
 
 
 def test_model_parse_reads_a_codified_2_capability_file_s_requirements(root, tmp_path):

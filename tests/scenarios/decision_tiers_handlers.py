@@ -85,7 +85,7 @@ def given_decision_is(step):
 
 
 UNIVERSAL = ("---\nid: capability/%s/universal\ntitle: Universal conditions\nnarrator: every trace\ngroup: guarantees\n"
-             "language: codified-1\nretired: []\n---\n\n# Universal conditions\n\n## Behaviour\n\n%s")
+             "language: codified-2\nretired: []\n---\n\n# Universal conditions\n\n## Behaviour\n\n%s")
 
 
 @handler("GivenK", "universal condition")
