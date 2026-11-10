@@ -170,7 +170,7 @@ def problems(lexicon, outer=frozenset()):
     out += [("v_t15", v, "two entries of the verb %s take, in every slot, the same kind or one kind under the "
              "other: their kinds do not tell the senses apart" % v) for v in sorted(overlapping(lexicon))]
     out += [("v_t4", t.term, "%s: Kind of: %s is not a kind" % (t.where, t.supertype)) for t in lexicon.of("actor")
-            if t.supertype and t.supertype not in kinds]
+            if t.supertype and t.supertype not in kinds and t.label != "artifact"]     # artifact: the CLI pack's
     for t in lexicon.of("event"):
         why = misread(t, known)
         if why:

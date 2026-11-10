@@ -12,11 +12,12 @@ DOMAIN = ("kind", "sub", "actor", "fun", "val", "trans", "initial", "prose", "da
 
 
 def parse(facts):
-    """({requirement: {predicate: [args]}}, {domain predicate: [args]}) of check facts (strings)."""
+    """({requirement: {predicate: [args]}}, {domain predicate: [args]}) of check facts (strings); a string argument
+    after the requirement's id kept quoted, so a code value is a term of the program as it stands."""
     reqs, dom = defaultdict(lambda: defaultdict(list)), defaultdict(list)
     for f in facts:
         t = clingo.parse_term(f.rstrip("."))
-        args = [a.string if a.type == clingo.SymbolType.String else str(a) for a in t.arguments]
+        args = [a.string if a.type == clingo.SymbolType.String and not n else str(a) for n, a in enumerate(t.arguments)]
         if t.name in DOMAIN:
             dom[t.name].append(args)
         elif args:
@@ -25,8 +26,10 @@ def parse(facts):
 
 
 def q(s):
-    """A term of the program: a symbol or a compound as it is, anything else quoted."""
-    if re.fullmatch(r"[a-z][A-Za-z0-9_]*", s) or re.fullmatch(r"(value|number|kind|set)\(.*\)", s):
+    """A term of the program: a symbol, a compound or a string (a code, b240 phase 21) as it is, anything else
+    quoted."""
+    if (re.fullmatch(r"[a-z][A-Za-z0-9_]*", s) or re.fullmatch(r'"(?:[^"\\]|\\.)*"', s)
+            or re.fullmatch(r"(value|number|kind|set)\(.*\)", s)):
         return s
     return '"%s"' % s.replace("\\", "\\\\").replace('"', '\\"')
 

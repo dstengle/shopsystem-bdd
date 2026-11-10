@@ -133,7 +133,8 @@ def cn(r, box):
     for item, pol in literals(box.body):
         p = ("PPos",) if pol == "pos" else ("PNeg",)
         if item.pred == "rel" and item.args[1] == y and pol == "pos" and tree[0].endswith("_UseN"):
-            n = next(n for n, (k1, word, _) in enumerate(r.vocab.rows, 1) if k1 == y.kind and word == item.args[0])
+            n = next(n for n, (k1, word, k2) in enumerate(r.vocab.rows, 1) if k1 == y.kind and word == item.args[0]
+                     and k2 in r.vocab.ancestors(item.args[2].kind))      # of the rows of the word, the one of its kinds
             tree = ("r%d_%s_Mod" % (n, spec_rgl.slug(item.args[0])), (K + "_n",), r.np(item.args[2], r.vocab.rows[
                 n - 1][2]))
         elif item.pred == "attr" and item.args[0] == y:

@@ -4,7 +4,9 @@ section 7.4), beside spec_lf_facts, whose walk (`w`) emits them:
 - "every K that P is v" in a While or Where clause or a trigger: the universal of codified-1 (spec_facts_np), `uall(R,U,
   K)` with its restrictor `uattr(R,U,T,V)`, `urel(R,Q,U,W)` and what its scope says of it `ucond(R,U,T,V,Pol)`, which
   check.lp reads (`umatch`): a pair is out where an instance of K that meets the restrictor has another value; "every
-  K that P is one of `a` or `b`" `uin(R,U,T,V)` of each value (spec_lf_values, b240);
+  K that P is one of `a` or `b`" `uin(R,U,T,V)` of each value (spec_lf_values, b240); "every K Vs the X" `uscope(R,U,
+  Q,W,Pol)`, out where such a K is known not so (or so, for `neg`), and "every K Vs a K2" (a box of one state with a
+  K2 of its own) `uex(R,U,Q,K2)`, out where such a K is known to be so with no K2 (b240 phase 21);
 - a count of Ks in a condition ("at least two stages are `done`"): when it admits no K (at most, fewer than, exactly
   0) it says nothing the check reads; otherwise there is a K that meets its restrictor and scope, a role with its
   literals, as "a K that P"; `ccount(R,X,B,N)` keeps the count, so the entailment check never forces it as a premise
@@ -33,9 +35,11 @@ def condition(w, box):
 
 
 def every(w, box):
-    if len(box.refs) != 1 or box.scope.refs:
+    if len(box.refs) != 1:
         raise ValueError("no translation of every there")
     u = box.refs[0]
+    if box.scope.refs:      # "every K Vs a K2" (b240 phase 21): `uex`, each K in the state with some K2
+        return some(w, box, u)
     w.emit("uall", u.name, w.ids.kind(u.kind))
     for item in box.body:
         if isinstance(item, Atom) and item.pred == "attr" and item.args[0] == u and not isinstance(item.args[2], Ref):
@@ -52,9 +56,29 @@ def every(w, box):
         for term, value in spec_lf_values.members(u, b):
             w.emit("uin", u.name, *w.ids.attr(u.kind, term, value))
     for item, pol in _literals([b for b in box.scope.body if not any(b is s for s in sets)], "pos"):
-        if not (item.pred == "attr" and item.args[0] == u and not isinstance(item.args[2], Ref)):
+        if item.pred in ("rel", "state"):   # "every K Vs the X" (b240 phase 21): `uscope`, X outside the box
+            q, x, y = w.edge(item)
+            if x != u or y is None or y in box.refs:
+                raise ValueError("no translation of every there")
+            w.emit("uscope", u.name, q, w.term(y), pol)
+        elif item.pred == "attr" and item.args[0] == u and not isinstance(item.args[2], Ref):
+            w.emit("ucond", u.name, *w.ids.attr(u.kind, item.args[1], item.args[2]), pol)
+        else:
             raise ValueError("no translation of every there")
-        w.emit("ucond", u.name, *w.ids.attr(u.kind, item.args[1], item.args[2]), pol)
+
+
+def some(w, box, u):
+    """"every K Vs a K2": the universal with its restrictor and `uex(R,U,Q,K2)` of its one state with a K2 of its own."""
+    w.emit("uall", u.name, w.ids.kind(u.kind))
+    if len(box.scope.refs) != 1 or len(box.scope.body) != 1 or box.body:
+        raise ValueError("no translation of every there")
+    item, k = box.scope.body[0], box.scope.refs[0]
+    if not (isinstance(item, Atom) and item.pred in ("rel", "state")):
+        raise ValueError("no translation of every there")
+    q, x, y = w.edge(item)
+    if (x, y) != (u, k):
+        raise ValueError("no translation of every there")
+    w.emit("uex", u.name, q, w.ids.kind(k.kind))
 
 
 def _literals(body, pol):

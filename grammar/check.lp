@@ -20,6 +20,7 @@
 #defined ccmp/6.  #defined ckey/4.  #defined vkey/3.  #defined dense/1.  #defined uin/4.
 #defined ccount/4. #defined csig/5.  #defined csiga/5.  #defined distinct/3.
 #defined onrel/5.  #defined nobox/4. #defined nbrel/5.  #defined nbattr/6.
+#defined uscope/5. #defined uex/4.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
@@ -30,9 +31,9 @@ term(R,X) :- resp(R,_,_,_,X,_). term(R,X) :- resp(R,_,_,_,_,X). term(R,X) :- set
 term(R,X) :- uses(R,X,_).      term(R,X) :- uses(R,_,X).      term(R,X) :- nouse(R,X,_).  term(R,X) :- nouse(R,_,X).
 term(R,X) :- crel(R,_,X,_,_).  term(R,X) :- crel(R,_,_,X,_).  term(R,X) :- orel(R,_,_,X).
 term(R,X) :- holds(R,X,_).     term(R,X) :- holds(R,_,X).     term(R,X) :- free(R,X).
-term(R,X) :- urel(R,_,_,X).    term(R,X) :- count(R,_,_,X,_,_,_).  term(R,none) :- rnone(R,_,_,none).
+term(R,X) :- uscope(R,_,_,X,_). term(R,X) :- urel(R,_,_,X).    term(R,X) :- count(R,_,_,X,_,_,_).  term(R,none) :- rnone(R,_,_,none).
 % kinds: a sub-kind is its kind (sub(K,K2): K is a kind of K2, transitively); two kinds are compatible when one is
-subeq(K,K) :- role(_,_,K).  subeq(K,K) :- none(_,K,_,_).  subeq(K,K) :- cnone(_,K,_).
+subeq(K,K) :- role(_,_,K).  subeq(K,K) :- none(_,K,_,_).  subeq(K,K) :- cnone(_,K,_).  subeq(K,K) :- uex(_,_,_,K).
 subeq(K,K3) :- sub(K,K2), subeq(K2,K3).
 compat(K,K2) :- subeq(K,K2).  compat(K,K2) :- subeq(K2,K).
 
@@ -294,6 +295,11 @@ out(A,B) :- umatch(A,B,S,U,Z), uccond(S,U,C,pos), cw(A,B,Z,C,neg).
 out(A,B) :- umatch(A,B,S,U,Z), uccond(S,U,C,neg), cw(A,B,Z,C,pos).
 out(A,B) :- umatch(A,B,S,U,Z), state(A,B,S,N), uccond(S,U,C,pos), refuted(A,B,N,Z,C).
 out(A,B) :- umatch(A,B,S,U,Z), state(A,B,S,N), uccond(S,U,C,neg), ent(A,B,N,Z,C).
+% "every K <restrictions> Vs the X" (uscope, b240 phase 21): an instance known not in the state with X is out
+out(A,B) :- umatch(A,B,S,U,Z), uscope(S,U,Q,W,pos), at(A,B,S,W,Zw), rw(A,B,Q,Z,Zw,neg).
+out(A,B) :- umatch(A,B,S,U,Z), uscope(S,U,Q,W,neg), at(A,B,S,W,Zw), rw(A,B,Q,Z,Zw,pos).
+% "every K <restrictions> Vs a K2" (uex): an instance known in the state with no K2 (rnone) is out
+out(A,B) :- umatch(A,B,S,U,Z), uex(S,U,Q,K), side(A,B,S2), rnone(S2,Q,X,kind(K2)), at(A,B,S2,X,Z), subeq(K,K2).
 % "every K <restrictions> is one of v, w" (uin(R,U,T,V) of each value, b240): each such instance has one of them,
 % so a value outside them (`absent` among them) is out, and so is each of them said not of it
 uinw(A,B,N,Z,S,U,T) :- umatch(A,B,S,U,Z), state(A,B,S,N), uin(S,U,T,_).

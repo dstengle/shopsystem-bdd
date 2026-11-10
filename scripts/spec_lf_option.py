@@ -119,10 +119,26 @@ def arg(reader, refs, slot):
         for r in reversed(refs[:-2]):
             tree = ("CodeMore", ("CodeLit", r.value), tree)
         return (K + "_NamedAnd", tree, (K + "_UseN", (K + "_n",)))
-    nps = (K + "_Two", reader.np(refs[-2], slot), reader.np(refs[-1], slot))
+    nps = (K + "_Two", _np(reader, refs[-2], slot), _np(reader, refs[-1], slot))
     for r in reversed(refs[:-2]):
-        nps = (K + "_More", reader.np(r, slot), nps)
+        nps = (K + "_More", _np(reader, r, slot), nps)
     return (K + "_And", nps)
+
+
+def _np(reader, ref, slot):
+    """One of a list: an option with its argument, an option by its code before its noun, else the referent."""
+    if ref in reader.arguments:
+        return said(reader, ref, slot)
+    return _named(ref, slot) or reader.np(ref, slot)
+
+
+def _named(ref, slot):
+    """The `K_NP` tree of an option named by its code before its noun ("the `--json` option"), or None."""
+    if ref.kind != OPTION or ref.value is None or ref.origin not in ("constant", "parameter"):
+        return None
+    K = spec_rgl.kid(OPTION)
+    tree = (K + "_Named", ("CodeLit", ref.value), (K + "_UseN", (K + "_n",)))
+    return (K + "_Simple", tree) if slot == OPTION else ("%s_Up_%s" % (K, spec_rgl.kid(slot)), tree)
 
 
 def slot_arg(reader, ref, slot):
@@ -133,12 +149,8 @@ def slot_arg(reader, ref, slot):
         return arg(reader, ref, slot)
     if ref in reader.arguments:
         return (spec_rgl.kid(slot) + "_One", said(reader, ref, slot))
-    if ref.kind != OPTION or ref.value is None or ref.origin not in ("constant", "parameter"):
-        return None
-    K = spec_rgl.kid(OPTION)
-    tree = (K + "_Named", ("CodeLit", ref.value), (K + "_UseN", (K + "_n",)))
-    return (spec_rgl.kid(slot) + "_One", (K + "_Simple", tree) if slot == OPTION else
-            ("%s_Up_%s" % (K, spec_rgl.kid(slot)), tree))
+    named = _named(ref, slot)
+    return None if named is None else (spec_rgl.kid(slot) + "_One", named)
 
 
 def said(reader, ref, slot):
