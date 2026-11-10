@@ -46,8 +46,7 @@ def node_path(step, name):
 def capability(step):
     name, word, repo = step.names[0], condition(step), step.repo
     if word == "unpairable":
-        H.write(repo, "spec/capabilities/%s.md" % name,
-                H.cap(name, ["- [r%d] %s" % (k, line) for k, line in enumerate(H.UNPAIRABLE, 1)]))
+        C2.context(repo, H.PATH, C2.CAPABILITIES[word], name)
         H.write(repo, "features/%s.feature" % name, H.feature(name, "@r1", "@r2", "@r3", "@r4"))
         H.says(step, "r1", "%s#r1" % name)
         return

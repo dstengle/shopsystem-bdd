@@ -139,7 +139,15 @@ CAPABILITIES = {"restricting": ["A session shall change only files in its worktr
                 # Declining (I14a): `work` refuses `work start` (an error exit on a run, by the CLI pack's definition of
                 # refuse), so U1 entails its "change nothing" from its other Then.
                 "declining": [("If the person runs `work start`, then `work` shall exit with an error naming "
-                               "`work start` and change nothing.")]}
+                               "`work start` and change nothing.")],
+                # Unpairable (b120): r1 and r2 name the code `x` of a stage and of a line, which cannot be one thing,
+                # so the pair is set aside; r3 and r4 still clash.
+                "unpairable": [("While the `x` stage is `open`, when the person runs `work stop` on a file, `work` "
+                                "shall write the file."),
+                               ("While the `x` line is `accepted`, when the person runs `work stop` on a file, `work` "
+                                "shall not write the file."),
+                               "When the person runs `work check`, `work` shall exit successfully.",
+                               "When the person runs `work check`, `work` shall exit with an error naming `work check`."]}
 
 # The universal conditions a capability condition needs beside its lines, as spec/universal.md's U1, U2 ...: U1 is an
 # If line, which takes no precedence over a line of a capability (it holds in every trace).
