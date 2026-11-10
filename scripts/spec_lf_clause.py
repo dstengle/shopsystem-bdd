@@ -14,6 +14,7 @@ While clause is (any K). A line that says both "shall" and "may", or "may not", 
 import spec_lf_core as core
 import spec_lf_np as nps
 import spec_lf_read
+import spec_lf_set
 import spec_lf_time
 from spec_lf_core import Atom, Box, NPList
 
@@ -52,6 +53,10 @@ def vp(st, tree):
     if name.startswith("e_"):
         n, m = numbers(name, 2)
         return [nps.np(st, x) for x in a], lambda s, r: frame_atom(st, n, m, [s] + list(r))
+    return spec_lf_set.vp(st, tree, nps.owner) or _unknown(tree)
+
+
+def _unknown(tree):
     raise nps.unknown(tree)
 
 

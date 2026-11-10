@@ -1,26 +1,25 @@
-"""The logical form as `grammar/check.lp`'s facts (the CNL 4 design, section 7.4, I12a): what a codified-2
-requirement means, read from its form (spec_lf), never from its tree, in the facts spec_facts gives a codified-1 one,
-so both feed one check.
-
-A referent a part introduces is a role `role(R,X,K)` under its own name (x1, x2 ...); an actor is its id, a code that
-names a command run its text, any other code or an indexical a role with `named(R,X,C)`. A While or Where part, and
-what the trigger says of its referents, is the pre-state (`cond`, `crel`, a state verb's atom `crel(R,E,S,O,Pol)`, O
-`none` for a frame with no object, `none`, `rnone` for a `not` box with referents of its own); the trigger's event is
-`trig(R,P,E,D,X)`, a run `trig(R,ran,Cmd,D,On)`; each act of the response a `resp(R,I,Pol,E,D,X)`, with its object's
-restrictions `oattr`, `orel`. "print", "exit successfully", "exit with an error naming", "change nothing" are the
-check's `print`, `exit_ok`, `exit_error`, `change_nothing`.
-
-Two boxes keep their meaning (b114, b116): an `every` object is `each(R,X)`, an obligation on each thing of its
-restrictor, so what another line says of that thing need only agree with it; "X shall V only Ks that P" obliges no V:
-it is `only(R,I,E,D,X)` with its restrictor `rattr(R,X,T,V)`, `rrel(R,Q,X,Y)`, which clashes only with a V of a thing
-known to fall outside it. A count ("print at least two stages", call 4, I15) is `count(R,I,E,D,X,B,N)` of each act on
-its counted object X, with its bound B (`least`, `most`, `exactly`, `more`, `fewer`) and number N, and a `resp` only
-when it admits no fewer than one X. Each line is marked `cnl4(R)`, so the check reads its pairs as codified-2 lines
-(the If tag, a universal condition paired with each line). A "may" line and a necessity are spec_lf_modal's. The words
-are spec_lf_ids'. An `or` box splits it as spec_facts does (`R#n`, `disj`); no translation, a ValueError.
+"""The logical form as `grammar/check.lp`'s facts (the CNL 4 design, section 7.4, I12a): what a codified-2 requirement
+means, read from its form (spec_lf), never from its tree, in the facts spec_facts gives a codified-1 one, so both
+feed one check. A referent a part introduces is a role `role(R,X,K)` under its own name (x1, x2 ...); an actor is its
+id, a code that names a command run its text, any other code or an indexical a role with `named(R,X,C)`. A While or
+Where part, and what the trigger says of its referents, is the pre-state (`cond`, `crel`, a state verb's atom
+`crel(R,E,S,O,Pol)`, O `none` for a frame with no object, `none`, `rnone` for a `not` box with referents of its own);
+the trigger's event is `trig(R,P,E,D,X)`, a run `trig(R,ran,Cmd,D,On)`; each act of the response a
+`resp(R,I,Pol,E,D,X)`, with its object's restrictions `oattr`, `orel`. "print", "exit successfully", "exit with an
+error naming", "change nothing" are the check's `print`, `exit_ok`, `exit_error`, `change_nothing`; setting an
+attribute is spec_lf_set's. Two boxes keep their meaning (b114, b116): an `every` object is `each(R,X)`, an
+obligation on each thing of its restrictor, so what another line says of that thing need only agree with it; "X shall
+V only Ks that P" obliges no V: it is `only(R,I,E,D,X)` with its restrictor `rattr(R,X,T,V)`, `rrel(R,Q,X,Y)`, which
+clashes only with a V of a thing known to fall outside it. A count ("print at least two stages", call 4, I15) is
+`count(R,I,E,D,X,B,N)` of each act on its counted object X, with its bound B (`least`, `most`, `exactly`, `more`,
+`fewer`) and number N, and a `resp` only when it admits no fewer than one X. Each line is marked `cnl4(R)`, so the
+check reads its pairs as codified-2 lines (the If tag, a universal condition paired with each line). A "may" line and
+a necessity are spec_lf_modal's. The words are spec_lf_ids'. An `or` box splits it as spec_facts does (`R#n`,
+`disj`); no translation, a ValueError.
 """
 import spec_facts
 import spec_lf_modal
+import spec_lf_set
 from spec_facts_np import const
 from spec_lf_core import Atom, Box, Ref, least
 
@@ -30,8 +29,7 @@ FORMS = {("response",): "ubiq", ("when", "response"): "when", ("while", "respons
          ("where", "when", "response"): "where_when", ("where", "while", "response"): "where_while",
          ("while", "if", "response"): "while_if", ("where", "if", "response"): "where_if"}
 BOUNDS = {"at least": "least", "at most": "most", "exactly": "exactly", "more than": "more", "fewer than": "fewer"}
-# A `not` box over a response object's restrictions ("whose T is not v", "that does not V a K"), on an `every` object
-# or not: the check has no reading of it (b188), so the line is refused rather than read as the restriction it negates.
+# a `not` over a response object's restrictions ("whose T is not v"): the check has no reading of it (b188), refused
 NEGATED = "no translation of a negated restriction (not) on an object"
 # the time atoms (spec_lf_time, I16), which check.lp has no reading of: a line holding one is refused naming it
 TIME = {"cmp": lambda a: "no translation of a comparison of moments",
@@ -190,7 +188,7 @@ class Walk:
     # --- the response ------------------------------------------------------------------------------------------
     def response(self, body, own, pos=True):
         for item in body:
-            if isinstance(item, Atom) and item.pred == "event":
+            if isinstance(item, Atom) and item.pred in ("event", spec_lf_set.PRED):
                 self.act(item, pos)
             elif isinstance(item, Atom):
                 self.restrict(item, own)
@@ -220,7 +218,7 @@ class Walk:
     @staticmethod
     def acting(box):
         """True for a box with an event atom in it, at any depth: a negated act, not a negated restriction."""
-        return any(isinstance(i, Atom) and i.pred == "event" or isinstance(i, Box) and Walk.acting(i)
+        return any(isinstance(i, Atom) and i.pred in ("event", spec_lf_set.PRED) or isinstance(i, Box) and Walk.acting(i)
                    for i in list(box.body) + ([box.scope] if getattr(box, "scope", None) else []))
 
     @staticmethod
@@ -230,6 +228,8 @@ class Walk:
                 and isinstance(box.body[0], Atom) and box.body[0].pred == "event" and box.body[0].args[1] == "change")
 
     def act(self, atom, pos):
+        if atom.pred == spec_lf_set.PRED:     # setting an attribute (b216): `set` and its `resp`
+            return spec_lf_set.facts(self, atom, spec_lf_modal.polarity(self, pos))
         e, d, x = self.event(atom)
         self.acts += 1
         self.emit("resp", self.acts, spec_lf_modal.polarity(self, pos), e, d, x)

@@ -123,3 +123,10 @@ When the person runs `work start`, `work` shall print at most one stage, exactly
 When a session ends fewer than ten stages, `work` shall print one file.
 When the person runs `work start`, `work` shall print at least one stages.
 = refused: does not parse at stages
+# setting an attribute of a thing named earlier to a value (b216): "the T of x", "the K T", polarity, among other acts
+When a session ends a stage, `work` shall set the status of the stage to `done`.
+When a session ends a stage, `work` shall not set the stage status to `open`.
+When a session ends a stage, `work` shall set the status of the stage to `done` and print the stage.
+When a session ends a stage, the session shall set the status of the stage to `done`.
+When a session ends a stage, `work` shall set the stage to `done`.
+= refused: does not parse at to

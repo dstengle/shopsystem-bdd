@@ -20,7 +20,9 @@ def _fun(tree):
 
 
 def _verb(names, vp):
-    """The term of a verb phrase's fun (`e_exit_action_3_2`)."""
+    """The term of a verb phrase's fun (`e_exit_action_3_2`); "set" of an attribute's `<t>_Set` (b216)."""
+    if names.attr(_fun(vp))[1] == "Set":
+        return "set"
     n = int(_fun(vp).rsplit("_", 2)[1])
     return names.verbs[n].term.term
 

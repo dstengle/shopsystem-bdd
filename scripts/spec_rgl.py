@@ -10,7 +10,8 @@ state; a trigger is `S_Event : S_Arg -> S_V -> Trig`, a condition `S_Holds : Pol
 makes the verb agree with its subject ("sessions write", "a session writes"); a necessity's clause is
 `S_Nec : Mod -> S_Arg -> S_St -> Nec` ("a session always follows a stage"). A response's subject is a doer D's own
 `D_NP0`: `D_Shall` (or `D_May`, a permission) over `D_Acts`, each act a `S_V` of D or a kind above it (`D_Act_S`), with its polarity. An
-attribute of K: `<t>_K_Is : Pol -> K_NP -> <t>_Val -> Cond` ("a stage is not `done`"), one `<t>_Val` fun per value.
+attribute of K: `<t>_K_Is : Pol -> K_NP -> <t>_Val -> Cond` ("a stage is not `done`"), one `<t>_Val` fun per value,
+and an agent's act of setting it, `<t>_Set : <t>_NP -> <t>_Val -> k_agent_V` ("set the status of the stage to `done`").
 """
 import re
 
@@ -137,6 +138,7 @@ def verbs(w, vocab, states=()):
         if "state" in aspects:
             w.fun(S + "_Holds", "Pol -> %s_Arg -> %s_St -> Cond" % (S, S), "mkS p (mkCl x v)", "p x v")
             w.fun(S + "_Nec", "Mod -> %s_Arg -> %s_St -> Nec" % (S, S), "mkS (mkCl x (mkVP m v))", "m x v")
+    setters(w, vocab, subjects)
     doers = [k for k in vocab.kinds if any("action" in subjects.get(a, ()) for a in vocab.ancestors(k))]
     for d in doers:
         D = kid(d)
@@ -151,6 +153,20 @@ def verbs(w, vocab, states=()):
         w.fun(D + "_OneAct", "%s_Act -> %s_Acts" % (D, D), "oneAct a.s", "a")
         w.fun(D + "_AndAct", "%s_Act -> %s_Acts -> %s_Acts" % (D, D, D), "andAct a.s l", "a l")
     return {k for k, aspects in subjects.items() if "state" in aspects}
+
+
+SET = 'mkV2 (mkV "set" "sets" "set" "set" "setting")'
+
+
+def setters(w, vocab, subjects):
+    """"set the T of x to v" (b216): for each attribute T an agent's action verb phrase (`T_Set`), so any doer says
+    it in a response, with its polarity, and a step says it in the present; `subjects` gains agent's action."""
+    for n, (t, _) in enumerate(vocab.attributes, 1):
+        T = "t_%s_%d" % (slug(t.term), n)
+        w.cat("k_agent_V", "VP")
+        subjects.setdefault("agent", set()).add("action")
+        w.fun(T + "_Set", "%s_NP -> %s_Val -> k_agent_V" % (T, T),
+              "mkVP (mkVP (%s) x) (SyntaxEng.mkAdv (mkPrep \"to\") (actor v.s))" % SET, "x v")
 
 
 def attributes(w, vocab):

@@ -238,3 +238,16 @@ def shelved(step, word, path):
     step.context.setdefault("holds", {})["features/shelf.feature"] = re.compile(holds)
     index = step.repo / "spec" / "index.md"
     index.write_text(index.read_text().replace("- **write** (verb, action)", entry + "- **write** (verb, action)", 1))
+
+
+# A response that sets an attribute of a thing the line names earlier to a value (b216): r1 of the capability `shelf`,
+# whose feature feature-file-tools' scenario names, and the Then it must hold; `model` names r1 by `shelf#r1`.
+SETTING = ("When a session ends a stage, `work` shall set the status of the stage to `done`.",
+           r"(?m)^    Then `work` sets the status of the stage s2 to `done`$")
+
+
+def setting(step, path):
+    line, holds = SETTING
+    context(step.repo, path, [line], "shelf")
+    step.context.setdefault("holds", {})["features/shelf.feature"] = re.compile(holds)
+    step.context.setdefault("ids", {})[step.names[0]] = "shelf#r1"

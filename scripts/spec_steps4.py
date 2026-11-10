@@ -5,13 +5,13 @@ I14a), the one meaning `model logic` reads (spec_lf), in the step grammar 4's tr
   condition (`SCond`), a referent brought in at its first mention (`K_Given`, "a stage s1"); a `not` with no
   referents of its own is its condition negated.
 - When: the trigger's event (`STrig`).
-- Thens: each act of the response in the present (`S_Does`), its polarity kept: "change nothing" is "changes nothing",
-  a `not` over an act on a referent of its own "does not V a K"; a condition of the response a condition, a row's
-  atom its frame ("the session s1 has the worktree w1", "the worktree w1 holds the file f1"). An `every` box gives two
-  Ks, so the line is not met vacuously (R6): each brought in by a Given with its restrictor, its scope's Thens said of
-  each (b221).
-  An act a universal condition entails (`entailed`, by the act's number as spec_lf_facts numbers it: each act in
-  order, "change nothing" one) is left out, a comment `# entailed: <premise>` in its place.
+- Thens: each act of the response in the present (`S_Does`; setting an attribute spec_lf_set's), its polarity kept:
+  "change nothing" is "changes nothing", a `not` over an act on a referent of its own "does not V a K"; a condition of
+  the response a condition, a row's atom its frame ("the session s1 has the worktree w1", "the worktree w1 holds the
+  file f1"). An `every` box gives two Ks, so the line is not met vacuously (R6): each brought in by a Given with its
+  restrictor, its scope's Thens said of each (b221). An act a universal condition entails (`entailed`, by the act's
+  number as spec_lf_facts numbers it: each act in order, "change nothing" one) is left out, a comment `# entailed:
+  <premise>` in its place.
 Givens and the When are the first requirement's; a later one's While and trigger referent of a kind is the first
 one's of that kind and rank. A referent is named by its kind's first letter and a count, in order of first mention;
 an actor by its fun, a code by the slot's `K_Code`, the run's own thing by `K_This`. A construct with no step
@@ -21,6 +21,7 @@ an actor by its fun, a code by the slot's `K_Code`, the run's own thing by `K_Th
 from dataclasses import replace
 
 import spec_lf
+import spec_lf_set
 import spec_rgl
 from spec_lf_core import Atom, Box, Ref
 
@@ -157,12 +158,12 @@ class Reader:
         """[(act number or None, Then tree)] of a response's items, numbered as spec_lf_facts numbers its acts."""
         out = []
         for item in body:
-            if isinstance(item, Atom) and item.pred == "event":
+            if isinstance(item, Atom) and item.pred in ("event", spec_lf_set.PRED):
                 out.append((True, self.does(item, pos)))
             elif isinstance(item, Atom):
                 out.append((None, ("SCond", self.cond(item, pos))))
             elif item.op == "not" and len(item.body) == 1 and isinstance(item.body[0], Atom) and \
-                    item.body[0].pred == "event":
+                    item.body[0].pred in ("event", spec_lf_set.PRED):
                 out.append((True, self.does(item.body[0], not pos, set(item.refs))))
             elif item.op == "not" and not item.refs:
                 out += self.acts(item.body, not pos)
@@ -186,6 +187,11 @@ class Reader:
         return out
 
     def does(self, atom, pos, a=()):
+        if atom.pred == spec_lf_set.PRED:     # "`work` sets the status of the stage s2 to `done`" (b216)
+            found = spec_lf_set.then(self, atom, pos)
+            if found is None:
+                raise TraceError("no step of %s" % spec_lf.atom(atom))
+            return found
         subject, s, vp = self.clause(atom, a)
         nothing = vp[1:] == (("k_thing_One", ("k_thing_Nothing",)),)
         return (kid(subject) + "_Does", ("PPos",) if pos or nothing else ("PNeg",), s, vp)

@@ -8,6 +8,7 @@ resolved or noted as they are translated, and `spec_lf_read.refusal` reads the f
 import spec_lf_clause
 import spec_lf_core
 import spec_lf_np
+import spec_lf_set
 import spec_lf_time
 import spec_meaning
 from spec_lf_core import Box, Ref
@@ -50,6 +51,8 @@ def atom(a):
         return "%s(%s, %s)" % (word, term(x), term(y))
     if a.pred in ("history", "cmp"):
         return spec_lf_time.show(a, term)
+    if a.pred == spec_lf_set.PRED:
+        return spec_lf_set.show(a, term)
     x, attr, v = a.args
     return "%s(%s) = %s" % (attr, term(x), term(v))
 
