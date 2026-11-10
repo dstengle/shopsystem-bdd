@@ -1624,6 +1624,172 @@ shall [x1: agent the person (constant), x2: command "the command the run runs" (
     print(e2, subject: x3, object: x4)
 ```
 
+### What parses is read: a verb of two frames, "shall not V a K that P", "no K that P", "every K that no K Vs"
+
+A line that parses to one meaning is read by `model logic`'s check and by `features generate`'s steps, never refused
+for want of a translation (b236, b237, b238, and the audit's section 3: "the generator and the bar lag the grammar").
+Nothing new is said here; these are the shapes the check or the steps had no reading of:
+
+- a verb whose entry has two `Frame:` lines of the same role labels ("Frame: file covers line. Frame: stage covers
+  line.") is stepped in the frame its referents' kinds pick, the frame the parse typed the clause by (b236:
+  migration-tools' supersede, b156 r29 and r30; decision-tiers' enforce, b159 r15);
+- "shall not V a K that P", "shall V no K that P" and "shall not V a K of x", over a K the line names nowhere before
+  (R4: under "shall not", "a K" is any K), is a Then that the agent does not V a K brought in with what the line says
+  of it (b237: feature-file-tools r86 and r87, b157, "not write a scenario line of the requirement group"; batches
+  r22, b158, "shall not pick an item that has the dependency"); "not V the T of x", over a row's image, was read
+  already (the audit's "not close the issue of the request");
+- "no K that is related to a K whose T is not v" (a `not` inside the "no" box, on its own K) is read by the check as
+  a box of its own: no instances of its Ks are so related in the state the pair merges, with the inner one's T known
+  to be another value (b238: batches r20, b158, "the item has no dependency on an item whose status is not
+  `delivered`"); its Given, as of any "no" box of more than one atom, is said of the box's link to the thing outside
+  it ("the session s1 has no worktree"), which makes the line's state hold (b159 r15, "no review finding on the pull
+  request is `fix now`");
+- "every K that no K2 Vs" and "every K that x does not V" in a response (the audit's "every function of the Python
+  file that no test executes") are, in the check, a negated restriction of the object as "whose T is not v" is
+  (`onrel`: it agrees only with the same restriction on the other line's object), and in the steps a Given said of
+  "no K2" for each K brought in.
+
+```reading
+While a stage covers a line, when the person runs `work start`, `work` shall end the stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: stage, x2: line]
+    cover(subject: x1, object: x2)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    end(e2, subject: x5, object: x1)
+```
+
+```reading
+While a line is `proposed` and no stage covers the line, if the person runs `work start`, then `work` shall exit with an error naming the line.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: line]
+    outcome(x1) = `proposed`
+    not [x2: stage]
+      cover(subject: x2, object: x1)
+  if
+    run(e1, subject: x3, object: x4)
+  response
+    exit(e2, subject: x5, with an error naming: x1)
+```
+
+```reading
+When the person runs `work start`, `work` shall end no stage that a session follows.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response
+    not [x4: stage, x5: session]
+      follow(subject: x5, object: x4)
+      end(e2, subject: x3, object: x4)
+```
+
+```reading
+When the person runs `work start` on a stage, `work` shall not print a line of the stage.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x4: tool `work` (constant)]
+  when [x3: stage]
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    not [x5: line]
+      of(x5, x3)
+      print(e2, subject: x4, object: x5)
+```
+
+```reading
+While a stage has a line whose outcome is not `accepted`, when the person runs `work start`, `work` shall not end a stage that has the line.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: stage, x2: line]
+    not
+      outcome(x2) = `accepted`
+    of(x2, x1)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    not [x6: stage]
+      of(x2, x6)
+      end(e2, subject: x5, object: x6)
+```
+
+```reading
+When the person runs `work start` on a command, `work` shall not print the push of the command.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x4: tool `work` (constant)]
+  when [x3: command]
+    run(e1, subject: x1, object: x2, on: x3)
+  response [x5: push]
+    of(x5, x3)
+    not
+      print(e2, subject: x4, object: x5)
+```
+
+```reading
+While a session has no worktree that holds a file whose version is not `2.0.0`, when the person runs `work start`, `work` shall exit successfully.
+shall [x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+  while [x1: session]
+    not [x2: worktree, x3: file]
+      not
+        version(x3) = `2.0.0`
+      in(x3, x2)
+      of(x2, x1)
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    exit(e2, subject: x6, successfully)
+```
+
+```reading
+While a stage has no line whose outcome is not `accepted`, when the person runs `work start`, `work` shall end the stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: stage]
+    not [x2: line]
+      not
+        outcome(x2) = `accepted`
+      of(x2, x1)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    end(e2, subject: x5, object: x1)
+```
+
+```reading
+While no line of a stage is `accepted`, when the person runs `work start`, `work` shall exit successfully.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while
+    not [x1: line, x2: stage]
+      of(x1, x2)
+      outcome(x1) = `accepted`
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    exit(e2, subject: x5, successfully)
+```
+
+```reading
+When the person runs `work start` on a stage, `work` shall print every line of the stage that no file covers.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x4: tool `work` (constant)]
+  when [x3: stage]
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    every [x5: line]
+      of(x5, x3)
+      not [x6: file]
+        cover(subject: x6, object: x5)
+      scope
+        print(e2, subject: x4, object: x5)
+```
+
+```reading
+When the person runs `work start` on a session, `work` shall print every stage that the session does not follow.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x4: tool `work` (constant)]
+  when [x3: session]
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    every [x5: stage]
+      not
+        follow(subject: x3, object: x5)
+      scope
+        print(e2, subject: x4, object: x5)
+```
+
 ## What the language cannot say yet
 
 The limits the rewording keeps, one subsection a limit: the construct the language has not, the lines that need it
@@ -1646,3 +1812,13 @@ release of the repository is after the release of the plugin"), which the check 
 points (design call 9). Line: migration-tools r47 (b156: the repository's release `newer`, newer than the plugin's
 own). It says instead the plugin's release the line is written for, as a value: "While the release of the repository
 is after `4.0.0`, ...", and the line gets a new id when the plugin's release moves on.
+
+### The Given of a "no" box beside the link it is said by
+
+A "no" box of more than one item ("the session has no worktree that holds a file whose version is not `2.0.0`") is
+given in a scenario by its link to the thing outside it ("the session s1 has no worktree"), which is more than the
+line says and makes its state hold. A line that also gives that thing a K by the same link ("While a session has a
+worktree and the session has no worktree that holds a file whose version is not `2.0.0`, ...") would be given two
+steps that contradict each other, so `features generate` has no scenario of it ("no Given of no there"); `model
+logic` reads it. No line of b152-b159 has the shape (b240 phase 12's sweep). It says instead what the K it gives
+meets: "While a session has a worktree and every file in the worktree is `2.0.0`, ...".

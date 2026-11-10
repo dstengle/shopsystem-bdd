@@ -118,8 +118,9 @@ class Reader:
 
     # --- atoms -------------------------------------------------------------------------------------------------
     def frame(self, verb, sense, roles):
-        """(fun, subject kind, the slot kinds) of the frame an atom's roles read."""
-        seen = 0
+        """(fun, subject kind, the slot kinds) of the frame an atom's roles read: of two frames of the same role
+        labels, the one its referents' kinds pick (b236), else the first."""
+        seen, found = 0, []
         for n, v in enumerate(self.vocab.verbs, 1):
             seen += v.term.term == verb
             if v.term.term != verb or seen != sense:
@@ -127,9 +128,11 @@ class Reader:
             for m, (subject, pieces) in enumerate(v.frames, 1):
                 labels = [(" ".join(w) or "object") if k is not None else " ".join(w) for w, k in pieces]
                 if labels == spec_lf_option.labels(roles):     # a slot of several options one label (b240)
-                    return ("e_%s_%s_%d_%d" % (spec_rgl.slug(verb), v.aspect, n, m), subject,
-                            [k for _, k in pieces if k is not None])
-        raise TraceError("no frame of %s" % verb)
+                    found.append(("e_%s_%s_%d_%d" % (spec_rgl.slug(verb), v.aspect, n, m), subject,
+                                  [k for _, k in pieces if k is not None]))
+        if not found:
+            raise TraceError("no frame of %s" % verb)
+        return next((f for f in found if boxes.fits(self.vocab, f, roles)), found[0])
 
     def clause(self, atom, a=()):
         """(subject kind, the subject's argument, the verb phrase) of an event or state atom; the referents in `a`
@@ -226,7 +229,7 @@ class Reader:
             m = {r: replace(r, name="%s.%d" % (r.name, copy)) for r in box.refs + box.scope.refs}
             for r in box.refs:
                 self.brought.append((kid(r.kind) + "_Given", (kid(r.kind) + "_n",), ("NameLit", self.name(m[r]))))
-            self.brought += [("SCond", self.cond(c)) for c in subst(box.body, m)]
+            self.brought += [s for c in subst(box.body, m) for s in boxes.restrictor(self, c)]
             acts = self.acts(subst(box.scope.body, m))
             out += acts if copy == 1 else [("again" if act else act, tree) for act, tree in acts]
         return out

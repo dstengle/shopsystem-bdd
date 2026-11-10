@@ -19,6 +19,7 @@
 #defined cnl4/1.  #defined count/7. #defined onattr/4.
 #defined ccmp/6.  #defined ckey/4.  #defined vkey/3.  #defined dense/1.  #defined uin/4.
 #defined ccount/4. #defined csig/5.  #defined csiga/5.  #defined distinct/3.
+#defined onrel/5.  #defined nobox/4. #defined nbrel/5.  #defined nbattr/6.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
@@ -200,6 +201,29 @@ out(A,B) :- cnonep(A,B,_,K,C), cw(A,B,Z,C,pos), kup(A,B,Z,K).
 % "no K is <rel> Y", "X is <rel> no K" (rnone): no instance of K is so related in the merged state
 out(A,B) :- side(A,B,S), rnone(S,Q,kind(K),Y), at(A,B,S,Y,Zy), rw(A,B,Q,Z,Zy,pos), kup(A,B,Z,K).
 out(A,B) :- side(A,B,S), rnone(S,Q,X,kind(K)), at(A,B,S,X,Zx), rw(A,B,Q,Zx,Z,pos), kup(A,B,Z,K).
+% a "no" box with a `not` inside it (b238, spec_lf_none): `nobox(R,N,K1,K2)` its own Ks (K2 `none` for one, each
+% a side o1, o2), `nbrel(R,N,Q,L,Rt)` its rows and states, `nbattr(R,N,O,T,V,P)` its values; a pair is out when
+% instances of its Ks in the merged state meet each row and value it says (a `neg` value by another value known, or
+% the value known not to hold)
+term(R,X) :- nbrel(R,_,_,X,_), X != o1, X != o2.  term(R,X) :- nbrel(R,_,_,_,X), X != o1, X != o2.
+nbz(A,B,S,N,o1,Z) :- side(A,B,S), nobox(S,N,K,_), kup(A,B,Z,K).
+nbz(A,B,S,N,o2,Z) :- side(A,B,S), nobox(S,N,_,K), K != none, kup(A,B,Z,K).
+nbm(A,B,S,N,Z1,Z2) :- nbz(A,B,S,N,o1,Z1), nbz(A,B,S,N,o2,Z2).
+nbm(A,B,S,N,Z1,none) :- nbz(A,B,S,N,o1,Z1), nobox(S,N,_,none).
+nbat(A,B,S,N,Z1,Z2,o1,Z1) :- nbm(A,B,S,N,Z1,Z2).
+nbat(A,B,S,N,Z1,Z2,o2,Z2) :- nbm(A,B,S,N,Z1,Z2), Z2 != none.
+nbat(A,B,S,N,Z1,Z2,X,Z) :- nbm(A,B,S,N,Z1,Z2), nbrel(S,N,_,X,_), X != o1, X != o2, at(A,B,S,X,Z).
+nbat(A,B,S,N,Z1,Z2,X,Z) :- nbm(A,B,S,N,Z1,Z2), nbrel(S,N,_,_,X), X != o1, X != o2, at(A,B,S,X,Z).
+nbno(A,B,S,N,Z1,Z2) :- nbm(A,B,S,N,Z1,Z2), nbrel(S,N,Q,L,Rt), nbat(A,B,S,N,Z1,Z2,L,ZL),
+                       nbat(A,B,S,N,Z1,Z2,Rt,ZR), not rw(A,B,Q,ZL,ZR,pos).
+nbv(A,B,S,N,Z1,Z2,X,T,V,P,M,Z) :- nbm(A,B,S,N,Z1,Z2), nbattr(S,N,X,T,V,P), nbat(A,B,S,N,Z1,Z2,X,Z), state(A,B,S,M).
+nbno(A,B,S,N,Z1,Z2) :- nbv(A,B,S,N,Z1,Z2,X,T,V,pos,M,Z), not pos(A,B,M,Z,T,V).
+nbmet(A,B,S,N,Z1,Z2,X,T,V) :- nbv(A,B,S,N,Z1,Z2,X,T,V,neg,M,Z), pos(A,B,M,Z,T,W), W != V.
+nbmet(A,B,S,N,Z1,Z2,X,T,V) :- nbv(A,B,S,N,Z1,Z2,X,T,V,neg,0,Z), w0(A,B,Z,T,V,neg).
+nbmet(A,B,S,N,Z1,Z2,X,T,V) :- nbv(A,B,S,N,Z1,Z2,X,T,V,neg,1,Z), w1(A,B,Z,T,V,neg).
+nbmet(A,B,S,N,Z1,Z2,X,T,V) :- nbv(A,B,S,N,Z1,Z2,X,T,V,neg,1,Z), n1(A,B,Z,T,V,neg).
+nbno(A,B,S,N,Z1,Z2) :- nbv(A,B,S,N,Z1,Z2,X,T,V,neg,_,_), not nbmet(A,B,S,N,Z1,Z2,X,T,V).
+out(A,B) :- nbm(A,B,S,N,Z1,Z2), not nbno(A,B,S,N,Z1,Z2).
 % a functional relation (`fun(Q)`: a relation row of cardinality one, or a preposition, spec_logic_vocab) relates a
 % thing to one thing: two images under one unification are out
 redge(A,B,Q,Z1,Z2) :- rw(A,B,Q,Z1,Z2,pos).
@@ -310,6 +334,14 @@ relof(A,B,Y,Q,X2) :- map(A,B,Y,X), orel(A,Q,X,X2), orel(B,Q,Y,Z), same(A,B,X2,Z)
 % the same negated restriction on the other side's object
 gap(A,B,X,Y) :- map(A,B,Y,X), onattr(B,Y,T,W), not onattr(A,X,T,W), not each(A,X).
 pag(A,B,X,Y) :- map(A,B,Y,X), onattr(A,X,T,W), not onattr(B,Y,T,W), not each(B,Y).
+% so is one over a row or a state (`onrel(R,X,Q,D,O)`: X is not related by Q to O, a term or kind(K) for "no K"; D
+% the side X is on; spec_lf_quant, b240 phase 12)
+gap(A,B,X,Y) :- map(A,B,Y,X), onrel(B,Y,Q,D,O), not onrelby(A,B,X,Q,D,O), not each(A,X).
+onrelby(A,B,X,Q,D,O) :- map(A,B,Y,X), onrel(B,Y,Q,D,O), onrel(A,X,Q,D,O).
+onrelby(A,B,X,Q,D,O) :- map(A,B,Y,X), onrel(B,Y,Q,D,O), onrel(A,X,Q,D,O2), same(A,B,O2,O).
+pag(A,B,X,Y) :- map(A,B,Y,X), onrel(A,X,Q,D,O), not onrelof(A,B,Y,Q,D,O), not each(B,Y).
+onrelof(A,B,Y,Q,D,O) :- map(A,B,Y,X), onrel(A,X,Q,D,O), onrel(B,Y,Q,D,O).
+onrelof(A,B,Y,Q,D,O) :- map(A,B,Y,X), onrel(A,X,Q,D,O), onrel(B,Y,Q,D,O2), same(A,B,O,O2).
 % each side's responses lifted to the pair first (`ra`, `rb`, `sa`, `sb`, `ua`, `ub`, `xa`, `xb`), so a clash is joined on the pair and the
 % event at once, never on an event (print, exit_error) that thousands of lines share
 ra(A,B,P,E,D,X) :- pair(A,B), resp(A,_,P,E,D,X).  rb(A,B,P,E,D,Y) :- pair(A,B), resp(B,_,P,E,D,Y).

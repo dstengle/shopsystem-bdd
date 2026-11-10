@@ -22,6 +22,7 @@ import spec_facts
 import spec_lf_distinct
 import spec_lf_exist
 import spec_lf_modal
+import spec_lf_none
 import spec_lf_number
 import spec_lf_option
 import spec_lf_quant
@@ -55,6 +56,8 @@ class Walk(Terms):
         elif box.op == "not" and not box.refs:
             for item in box.body:
                 self.literal(item, not pos)
+        elif box.op == "not" and pos and spec_lf_none.nested(box):     # a `not` inside the "no" box (b238)
+            spec_lf_none.facts(self, box)
         elif box.op == "not" and pos:
             self.none(set(box.refs), box.body)
         elif box.op in ("every", "count") and pos:     # spec_lf_quant's (b197)

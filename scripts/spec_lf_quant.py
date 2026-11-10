@@ -10,7 +10,8 @@ section 7.4), beside spec_lf_facts, whose walk (`w`) emits them:
   literals, as "a K that P"; `ccount(R,X,B,N)` keeps the count, so the entailment check never forces it as a premise
   of one K (spec_entail_rules);
 - "a K whose T is not v" on a response's object: `onattr(R,X,T,V)`, which check.lp's `gap` and `pag` read as they read
-  `oattr`, so a line on a K that is not v clashes only with one on a K known not to be v.
+  `oattr`, so a line on a K that is not v clashes only with one on a K known not to be v; "a K that x does not V"
+  and "a K that no K2 Vs" `onrel(R,X,Q,D,O)`, read the same way (b240 phase 12).
 
 Anything else in such a box has no translation: a ValueError naming it.
 """
@@ -83,12 +84,25 @@ def count(w, box):
 
 
 def negated(w, box, own):
-    """`not` over a response object's attribute ("a stage whose status is not `done`"): `onattr`."""
+    """`not` over a response object's attribute ("a stage whose status is not `done`"): `onattr`; over its row or
+    state ("a stage that the session does not follow", "a line that no file covers"): `onrel` (b240 phase 12)."""
+    item = box.body[0] if len(box.body) == 1 else None
+    if isinstance(item, Atom) and item.pred in ("rel", "state"):
+        return unrelated(w, item, own, set(box.refs))
     if box.refs or len(box.body) != 1:
         raise ValueError(NEGATED)
-    item = box.body[0]
     if not (isinstance(item, Atom) and item.pred == "attr" and item.args[0] in own and not isinstance(item.args[2],
                                                                                                      Ref)):
         raise ValueError(NEGATED)
     x, term, value = item.args
     w.emit("onattr", w.term(x), *w.ids.attr(x.kind, term, value))
+
+
+def unrelated(w, item, own, theirs):
+    """`onrel(R,X,Q,D,O)`: the object X is not related by Q to O (a term, or `kind(K)` for "no K", the `not` box's
+    own K), D `s` when X is the row's or the state's first side, `o` when its second; read as `onattr` is."""
+    q, x, y = w.edge(item)
+    obj, d, other = (x, "s", y) if x in own else (y, "o", x)
+    if obj not in own or other is None or other in own or len(theirs) > 1 or theirs and other not in theirs:
+        raise ValueError(NEGATED)
+    w.emit("onrel", w.term(obj), q, d, "kind(%s)" % w.ids.kind(other.kind) if other in theirs else w.term(other))

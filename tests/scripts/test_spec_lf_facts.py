@@ -97,8 +97,7 @@ def test_an_actor_is_a_doer_of_its_kind(tmp_path):
 
 
 def test_a_line_with_no_translation_is_refused_naming_it(tmp_path):
-    ctx = spec_context.load(world(tmp_path, "When a session ends a stage, `work` shall print every session that does "
-                                            "not follow the stage."))
+    ctx = spec_context.load(world(tmp_path, RUN + "`work` shall print a stage or a file."))
     assert "no translation" in ctx.refused["thing#r1"]
 
 
@@ -107,16 +106,39 @@ def test_a_state_verb_restricts_an_object_by_its_subject(tmp_path):
     assert 'orel("thing#r1",e_follow,x4,x2).' in out and 'each("thing#r1",x4).' in out
 
 
-def test_a_negated_restriction_of_an_object_is_refused(tmp_path):
-    """A `not` box over a response object's state ("that does not V a K"), on an `every` object or not, has no
-    translation: it is refused, never read as the restriction it negates (a negated attribute is `onattr`, b197)."""
-    ctx = spec_context.load(world(
-        tmp_path, RUN + "`work` shall print a session that does not follow a stage.",
-        RUN + "`work` shall not print a session that does not follow a stage.",
-        RUN + "`work` shall print every session that does not follow a stage.",
-        "When a session ends a stage, `work` shall print every session that does not follow the stage."))
-    assert sorted(ctx.refused) == ["thing#r1", "thing#r2", "thing#r3", "thing#r4"], ctx.refused
-    assert all("no translation of a negated restriction" in why for why in ctx.refused.values()), ctx.refused
+def test_a_negated_row_or_state_of_an_object_is_onrel(tmp_path):
+    """b240 phase 12: "a stage that no session follows", "a stage that the person does not follow" (on an `every`
+    object or not) are `onrel`, which, as `onattr`, clashes only with the same negated restriction."""
+    pos, neg = RUN + "`work` shall print a stage %s.", RUN + "`work` shall not print a stage%s."
+    assert 'onrel("thing#r1",x4,e_follow,o,kind(k_session)).' in facts(tmp_path, pos % "that no session follows")
+    assert 'onrel("thing#r1",x4,e_follow,o,a_the_person).' in facts(tmp_path, pos % "that the person does not follow")
+    assert codes(tmp_path, pos % "that no session follows", neg % " that no session follows") == ["L1"]
+    assert codes(tmp_path, pos % "that no session follows", neg % " whose status is `done`") == []
+    assert codes(tmp_path, RUN + "`work` shall print a stage.", neg % " that no session follows") == []
+    ctx = spec_context.load(world(tmp_path, RUN + "`work` shall print every session that does not follow a stage.",
+                                  "When a session ends a stage, `work` shall print every session that does not "
+                                  "follow the stage."))
+    assert not ctx.refused, ctx.refused
+
+
+def test_a_no_box_with_a_not_inside_it_is_read_whole(tmp_path):
+    """b238: "a stage has no line whose outcome is not `accepted`" is `nobox`, `nbrel` and `nbattr` (`neg`): it
+    clashes with a line on a stage whose line is `accepted`, not with one on a stage whose line is `refused`; through
+    two rows ("no worktree that holds a file whose version is not ..."), likewise."""
+    line = ("While a stage has no line whose outcome is not `accepted`, when the person runs `work start`, `work` shall "
+            "end the stage.")
+    other = ("While a stage has a line whose outcome is `%s`, when the person runs `work start`, `work` shall not end "
+             "the stage.")
+    assert {'nobox("thing#r1",n1,k_line,none).', 'nbattr("thing#r1",n1,o1,t_outcome,v_accepted,neg).',
+            'nbrel("thing#r1",n1,r_line_of_stage,o1,x1).'} <= set(facts(tmp_path, line))
+    assert codes(tmp_path, line, other % "accepted") == ["L1"]
+    assert codes(tmp_path, line, other % "refused") == []
+    two = ("While a session has no worktree that holds a file whose version is not `2.0.0`, when the person runs "
+           "`work start`, `work` shall print the session.")
+    other = ("While a session has a worktree that holds a file whose version is `%s`, when the person runs `work "
+             "start`, `work` shall not print the session.")
+    assert codes(tmp_path, two, other % "2.0.0") == ["L1"]
+    assert codes(tmp_path, two, other % "1.0.0") == []
 
 
 def test_a_state_that_takes_no_object_is_a_one_place_fluent(tmp_path):

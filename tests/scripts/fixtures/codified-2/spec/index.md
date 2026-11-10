@@ -43,3 +43,4 @@ not this repository's spec. Its rows give grammar 4's noun phrases (I8): of, its
 - **commit** (noun): a change a command records in a repository. This: the commit the run makes.
 - **make** (verb, state): a command has brought a commit about. Frame: command makes commit.
 - **outcome** (attribute of line): what became of a line. Values: `proposed`, `accepted`, `refused`, `withdrawn`.
+- **cover** (verb, state): a thing answers for a line. Forms: covers, covered. Frame: file covers line. Frame: stage covers line.
