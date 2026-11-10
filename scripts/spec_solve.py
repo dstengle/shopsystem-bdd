@@ -2,39 +2,38 @@
 brave clingo solve of the context's facts (`spec_context`, read once) and the fixed meta-encoding `grammar/check.lp`.
 The shown atoms are the findings:
 
-  L0  the check did not finish within LIMIT seconds; the findings so far are listed. (error)
+  L0  the check did not finish within LIMIT seconds; the findings so far are listed. Or the solve is unsatisfiable
+      (check.lp has no model of the facts), naming the capabilities checked. (error)
   L1  `clash(A,B,Why)`: A and B fire on one trigger in one consistent pre-state and demand opposite things, or
-      `clash(A,A,self)`: A contradicts itself. Its text has the merged pre-state of one witness, from a normal solve
-      focused on the pair. (error)
+      `clash(A,A,self)`: A contradicts itself. Its text has the merged pre-state of one witness, from one normal
+      solve of check.lp's part `witness` for every pair (spec_solve_pairs). (error)
   L2  two statements whose normalised trees are equal. (warning)
   L3  `bad_set`: a set no transition allows. (error)
   L4  `unreachable`: a value a pre-state needs that no transition path reaches. (warning)
   L5  `lint`: an untriggered positive event obligation, with the requirements that react to its event. (warning)
   L6  `maybe(A,B,Why,C)`: a clash whose every witness depends on the prose condition C (one side says C of a thing
       the other says more of); defining C in the controlled language decides it. (warning)
+  aside  `coded(A,B)` never `fit(A,B)`: a pair that shares a code no unification keeps one thing, set aside alone,
+      every other pair's findings kept. (warning)
 
 `run(root, capability=None, extra=None)` gives the findings, `report(findings, as_json)` their text and exit code.
 """
 import json
-import re
-from collections import Counter, defaultdict, namedtuple
+from collections import Counter, defaultdict
 from pathlib import Path
 
 import clingo
 import spec_context
 import spec_facts
 import spec_findings
+import spec_solve_pairs
 import spec_tree
+from spec_solve_pairs import Finding
+from spec_solve_pairs import order as _order
 
 ERRORS = ("L0", "L1", "L3")
 LIMIT = 20.0
-Finding = namedtuple("Finding", "code ids text")
 CHECK = Path(__file__).resolve().parent.parent / "grammar" / "check.lp"
-
-
-def _order(ident):
-    cap, _, local = ident.rpartition("#")
-    return (local.startswith("U"), cap, local[:1], int(re.sub(r"\D", "", local) or 0))
 
 
 def _ground(program):
@@ -44,16 +43,12 @@ def _ground(program):
     return ctl
 
 
-def _solve(ctl, limit, brave=True, focus=None, external="focus"):
-    """(the shown atoms of the last model, sorted; whether the solve finished within `limit` seconds) of a grounded
-    program. Brave, the last model holds every atom some model has; past the limit, the atoms found so far. With
-    `focus` (a pair), a normal solve with the external `focus(A,B)` (or `external`) true for it: the first witness of
-    that pair."""
+def _solve(ctl, limit, brave=True):
+    """(the shown atoms of the last model, sorted; whether the solve finished within `limit` seconds; whether it
+    found a model, or did not finish) of a grounded program. Brave, the last model holds every atom some model has;
+    past the limit, the atoms found so far."""
     ctl.configuration.solve.enum_mode = "brave" if brave else "auto"
     ctl.configuration.solve.models = 0 if brave else 1
-    atom = clingo.Function(external, [clingo.String(i) for i in focus]) if focus else None
-    if atom:
-        ctl.assign_external(atom, True)
     last = []
 
     def model(m):
@@ -62,14 +57,13 @@ def _solve(ctl, limit, brave=True, focus=None, external="focus"):
         done = handle.wait(limit)
         if not done:
             handle.cancel()
-    if atom:
-        ctl.assign_external(atom, False)
-    return sorted(last), done
+        sat = not done or not handle.get().unsatisfiable
+    return sorted(last), done, sat
 
 
 def solve(program, limit, brave=True):
-    """`_solve` of `program`, grounded."""
-    return _solve(_ground(program), limit, brave)
+    """`_solve` of `program`, grounded: its atoms and whether it finished."""
+    return _solve(_ground(program), limit, brave)[:2]
 
 
 def _key(tree):
@@ -92,44 +86,15 @@ def l2(statements, scope):
     return out
 
 
-def _pairs(found):
-    """{(id, id) of a pair of requirements, a split's read as one, or (id,) of one: its atoms' (a, b, why, ...)}."""
-    by_pair = defaultdict(list)
-    for a, b, why, *rest in found:
-        pair = tuple(sorted({spec_facts.split(a), spec_facts.split(b)}, key=_order))
-        by_pair[pair].append((a, b, "self" if len(pair) == 1 else why, *rest))
-    return sorted(by_pair.items(), key=lambda kv: [_order(i) for i in kv[0]])
-
-
-def _clashes(ctl, words, clashes, maybes=()):
-    """The L1 of each pair of requirements, and of each requirement that contradicts itself; the L6 of each pair with
-    a `maybe` and no `clash`. One focused normal solve a pair, on the one grounding, gives its witness's pre-state."""
-    out, firm = [], set()
-    for code, external, found in (("L1", "focus", clashes), ("L6", "focusm", maybes)):
-        for pair, hits in _pairs(found):
-            if len(pair) == 1:
-                out.append(Finding("L1", list(pair), "%s contradicts itself" % pair[0]))
-                continue
-            if pair in firm:
-                continue
-            firm.add(pair)
-            a, b = min(hits)[:2]
-            atoms, _ = _solve(ctl, LIMIT, brave=False, focus=(a, b), external=external)
-            x, y = (a, b) if spec_facts.split(a) == pair[0] else (b, a)
-            text = words.clash(x, y, sorted({h[2] for h in hits}), words.pre(a, b, atoms))
-            if code == "L6":
-                text = words.maybe(sorted({h[3] for h in hits}), text)
-            out.append(Finding(code, list(pair), text))
-    return out
-
-
 def _findings(ctl, words, atoms):
     syms = [clingo.parse_term(a) for a in atoms]
     args = defaultdict(list)
     for sym in syms:
         args[sym.name].append([s.string if s.type == clingo.SymbolType.String else s for s in sym.arguments])
-    out = _clashes(ctl, words, [(a, b, str(w)) for a, b, w in args["clash"]],
-                   [(a, b, str(w), c) for a, b, w, c in args["maybe"]])
+    out = spec_solve_pairs.clashes(ctl, lambda c: _solve(c, LIMIT, brave=False)[0], words,
+                                   [(a, b, str(w)) for a, b, w in args["clash"]],
+                                   [(a, b, str(w), c) for a, b, w, c in args["maybe"]])
+    out += spec_solve_pairs.aside(args["coded"], args["fit"])
     seen = set()
     for code, name, write in (("L3", "bad_set", words.bad_set), ("L4", "unreachable", words.unreachable)):
         for r, *rest in args[name]:
@@ -162,7 +127,7 @@ def run(root, capability=None, extra=None):
     facts = [f for s in ctx.statements for f in ctx.facts[s.id]]
     program = "\n".join(ctx.domain + facts + [CHECK.read_text()])
     ctl = _ground(program)
-    atoms, done = _solve(ctl, LIMIT)
+    atoms, done, sat = _solve(ctl, LIMIT)
     found = _findings(ctl, spec_findings.Words(root, ctx), atoms)
     scope = set(ctx.caps) if capability is None else {capability} & set(ctx.caps)
     if capability is not None:
@@ -170,6 +135,9 @@ def run(root, capability=None, extra=None):
     found += l2(ctx.statements, scope)
     if not done and scope:
         found.append(Finding("L0", [], "the check did not finish in %d s; the findings so far are listed" % LIMIT))
+    if not sat and scope:
+        found.append(Finding("L0", [], "the check of %s is unsatisfiable: grammar/check.lp has no model of its facts, "
+                             "so no finding of it can be listed" % ", ".join(sorted(scope))))
     return sorted(found, key=lambda f: (f.code, _order(f.ids[0]) if f.ids else ()))
 
 

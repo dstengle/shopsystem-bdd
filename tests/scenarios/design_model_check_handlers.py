@@ -122,6 +122,12 @@ def model_check(step):
     run_model(step, "check", *flag(step, "--json"))
 
 
+@handler("WhenRuns", "`model logic`")
+def model_logic(step):
+    """`model logic` on the capability the When names."""
+    run_model(step, "logic", *[step.names[0]] if step.names else [])
+
+
 @handler("WhenRuns", "`model facts`")
 def model_facts(step):
     run_model(step, "facts")

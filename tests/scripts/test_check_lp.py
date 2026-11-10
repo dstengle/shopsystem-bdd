@@ -60,13 +60,17 @@ R98 = req("r98", "cond(R,v1,t_status,v_drafted,pos). set(R,1,v1,t_status,v_done)
 EXAMPLE = R2 + R3 + R53 + R52 + R72 + R16 + R99 + R98
 
 
-def solve(facts, extra="", warn=False, brave=True):
-    """The shown atoms of the last model of check.lp over the facts."""
+def solve(facts, extra="", warn=False, brave=True, witness=""):
+    """The shown atoms of the last model of check.lp over the facts; with `witness`, its part `witness` ground on them
+    with those facts (focus(A,B), focusm(A,B)) too."""
     args = (["--enum-mode=brave"] if brave else []) + ([] if warn else ["--warn=none"])
     ctl = clingo.Control(args)
     ctl.load(str(CHECK))
     ctl.add("base", [], facts + extra)
     ctl.ground([("base", [])])
+    if witness:
+        ctl.add("witness", [], witness)
+        ctl.ground([("witness", [])])
     last = []
     ctl.solve(on_model=lambda m: last.__setitem__(slice(None), [str(s) for s in m.symbols(shown=True)]))
     return set(last)
@@ -231,7 +235,7 @@ def test_an_untriggered_event_obligation_is_linted():
 
 
 def test_focus_shows_one_merged_pre_state():
-    atoms = solve(R52 + R72 + DOM, 'focus("r52","r72").', brave=False)
+    atoms = solve(R52 + R72 + DOM, brave=False, witness='focus("r52","r72").')
     pre = {a for a in atoms if a.startswith("pre(")}
     assert 'pre("r52","r72",v1,t_status,v_awaiting_answer,pos)' in pre
     assert 'pre("r52","r72",b(v4),t_wording,v_written,pos)' in pre
