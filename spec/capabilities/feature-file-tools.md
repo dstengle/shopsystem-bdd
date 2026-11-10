@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/plugin-takes-the-dependencies-it-needs, design-decision/plugin-scenarios-run-as-pytest-bdd, design-decision/query-commands-answer-in-their-output]
 retired: []
-unbuilt: []
+unbuilt: [r35, r36, r37, r38, r39, r40, r41, r42, r43, r44, r33, r34]
 ---
 
 # Feature file tools
@@ -43,6 +43,20 @@ and runs no test; it edits no feature file by hand, since the generator owns the
 - **illustrated** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose given block has a line "the K `n` holds:" with a docstring under it, K a noun of the capability of one word or more, as "the feature file `features/a.feature` holds:".
 - **tabulated** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose given block has a line "the K `n` holds:" with a table under it, K a noun of the capability of one word or more.
 - **quoted** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose given block has a line "the K `n` holds" followed by one code span or quoted string, K a noun of the capability of one word or more, as "the tracked file `.shop/plugin-version` holds "3.0.0"".
+
+- **distributing** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose line says "every K" or a plural in its response, as "`features` shall print every feature file that is nested".
+- **generalising** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose line says "every K" in its While clause or its trigger.
+- **confining** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose line says that an agent shall V only Ks that meet a restrictor.
+- **bounding** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose line says "at least n Ks", "at most n Ks", "exactly n Ks", "more than n Ks" or "fewer than n Ks" in its response.
+- **tallying** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose line says a count of Ks in its While clause or its trigger.
+- **branching** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose line joins two conditions with "or".
+- **linking** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose line relates two things by a word of a row of `## Relations` (of, in, on, has, or whose over a row).
+- **valued** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose line says "the A of x" for an attribute A, as "the status of the item".
+- **excluding** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose line says "no K" in its While clause or its trigger.
+- **exempting** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose line acts on a K with a negated restriction, as "a K that is not `done`".
+- **permitting** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose one line says "may".
+- **necessitating** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose one line says "always" or "never" and has no trigger.
+- **scenarioless** (adjective of feature): a feature with its `Feature:` line and no scenario.
 
 ## Behaviour
 
@@ -397,6 +411,42 @@ the capability `shelf` holds:
 
 ### [g32] `features generate` writes the steps of a response that sets an attribute
 - [r32] When the person runs `features generate` on a requirement that is setting, `features` shall write the feature `features/shelf.feature` and exit successfully.
+
+### [g35] `features generate` writes the scenario of every in a response in the new language
+- [r35] When the person runs `features generate` on a capability that is distributing, `features` shall write the feature `features/shelf.feature`, and `features` shall not print "no scenario".
+
+### [g36] `features generate` writes the scenario of every in a condition in the new language
+- [r36] When the person runs `features generate` on a capability that is generalising, `features` shall write the feature `features/shelf.feature`, and `features` shall not print "no scenario".
+
+### [g37] `features generate` writes the scenario of only in the new language
+- [r37] When the person runs `features generate` on a capability that is confining, `features` shall write the feature `features/shelf.feature`, and `features` shall not print "no scenario".
+
+### [g38] `features generate` writes the scenario of a count in a response in the new language
+- [r38] When the person runs `features generate` on a capability that is bounding, `features` shall write the feature `features/shelf.feature`, and `features` shall not print "no scenario".
+
+### [g39] `features generate` writes the scenario of a count in a condition in the new language
+- [r39] When the person runs `features generate` on a capability that is tallying, `features` shall write the feature `features/shelf.feature`, and `features` shall not print "no scenario".
+
+### [g40] `features generate` writes the scenarios of or in the new language
+- [r40] When the person runs `features generate` on a capability that is branching, `features` shall write the feature `features/shelf.feature`, and `features` shall not print "no scenario".
+
+### [g41] `features generate` writes the scenario of a relation row in the new language
+- [r41] When the person runs `features generate` on a capability that is linking, `features` shall write the feature `features/shelf.feature`, and `features` shall not print "no scenario".
+
+### [g42] `features generate` writes the scenario of an attribute of a thing in the new language
+- [r42] When the person runs `features generate` on a capability that is valued, `features` shall write the feature `features/shelf.feature`, and `features` shall not print "no scenario".
+
+### [g43] `features generate` writes the scenario of no in a condition in the new language
+- [r43] When the person runs `features generate` on a capability that is excluding, `features` shall write the feature `features/shelf.feature`, and `features` shall not print "no scenario".
+
+### [g44] `features generate` writes the scenario of a negated restriction in the new language
+- [r44] When the person runs `features generate` on a capability that is exempting, `features` shall write the feature `features/shelf.feature`, and `features` shall not print "no scenario".
+
+### [g33] `features generate` writes no scenario of a permission in the new language
+- [r33] When the person runs `features generate` on a capability that is permitting, `features` shall write a feature that is scenarioless, and `features` shall not print "no scenario".
+
+### [g34] `features generate` writes no scenario of a necessity in the new language
+- [r34] When the person runs `features generate` on a capability that is necessitating, `features` shall write a feature that is scenarioless, and `features` shall not print "no scenario".
 
 ## Implementation, may change
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three

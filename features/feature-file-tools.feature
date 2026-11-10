@@ -445,3 +445,101 @@ Feature: Feature file tools
     When the person runs `features generate` on the requirement r1
     Then `features` writes `features/shelf.feature`
     And `features` exits successfully
+
+  @g33 @r33
+  Scenario: `features generate` writes no scenario of a permission in the new language
+    Given a capability c1
+    And the capability c1 is permitting
+    When the person runs `features generate` on the capability c1
+    Then `features` writes the feature f1
+    And the feature f1 is scenarioless
+    And `features` does not print "no scenario"
+
+  @g34 @r34
+  Scenario: `features generate` writes no scenario of a necessity in the new language
+    Given a capability c1
+    And the capability c1 is necessitating
+    When the person runs `features generate` on the capability c1
+    Then `features` writes the feature f1
+    And the feature f1 is scenarioless
+    And `features` does not print "no scenario"
+
+  @g35 @r35
+  Scenario: `features generate` writes the scenario of every in a response in the new language
+    Given a capability c1
+    And the capability c1 is distributing
+    When the person runs `features generate` on the capability c1
+    Then `features` writes `features/shelf.feature`
+    And `features` does not print "no scenario"
+
+  @g36 @r36
+  Scenario: `features generate` writes the scenario of every in a condition in the new language
+    Given a capability c1
+    And the capability c1 is generalising
+    When the person runs `features generate` on the capability c1
+    Then `features` writes `features/shelf.feature`
+    And `features` does not print "no scenario"
+
+  @g37 @r37
+  Scenario: `features generate` writes the scenario of only in the new language
+    Given a capability c1
+    And the capability c1 is confining
+    When the person runs `features generate` on the capability c1
+    Then `features` writes `features/shelf.feature`
+    And `features` does not print "no scenario"
+
+  @g38 @r38
+  Scenario: `features generate` writes the scenario of a count in a response in the new language
+    Given a capability c1
+    And the capability c1 is bounding
+    When the person runs `features generate` on the capability c1
+    Then `features` writes `features/shelf.feature`
+    And `features` does not print "no scenario"
+
+  @g39 @r39
+  Scenario: `features generate` writes the scenario of a count in a condition in the new language
+    Given a capability c1
+    And the capability c1 is tallying
+    When the person runs `features generate` on the capability c1
+    Then `features` writes `features/shelf.feature`
+    And `features` does not print "no scenario"
+
+  @g40 @r40
+  Scenario: `features generate` writes the scenarios of or in the new language
+    Given a capability c1
+    And the capability c1 is branching
+    When the person runs `features generate` on the capability c1
+    Then `features` writes `features/shelf.feature`
+    And `features` does not print "no scenario"
+
+  @g41 @r41
+  Scenario: `features generate` writes the scenario of a relation row in the new language
+    Given a capability c1
+    And the capability c1 is linking
+    When the person runs `features generate` on the capability c1
+    Then `features` writes `features/shelf.feature`
+    And `features` does not print "no scenario"
+
+  @g42 @r42
+  Scenario: `features generate` writes the scenario of an attribute of a thing in the new language
+    Given a capability c1
+    And the capability c1 is valued
+    When the person runs `features generate` on the capability c1
+    Then `features` writes `features/shelf.feature`
+    And `features` does not print "no scenario"
+
+  @g43 @r43
+  Scenario: `features generate` writes the scenario of no in a condition in the new language
+    Given a capability c1
+    And the capability c1 is excluding
+    When the person runs `features generate` on the capability c1
+    Then `features` writes `features/shelf.feature`
+    And `features` does not print "no scenario"
+
+  @g44 @r44
+  Scenario: `features generate` writes the scenario of a negated restriction in the new language
+    Given a capability c1
+    And the capability c1 is exempting
+    When the person runs `features generate` on the capability c1
+    Then `features` writes `features/shelf.feature`
+    And `features` does not print "no scenario"
