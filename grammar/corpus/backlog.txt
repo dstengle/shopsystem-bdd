@@ -1,9 +1,0 @@
-# backlog: sentences that parse with exactly one tree in the fixture glossary's grammar.
-When the person runs `work idea`, `work` shall write a request that is `open` and commit the request.
-When the person runs `work shape` on a request that is `open`, `work` shall set the status of the request to `accepted`.
-If the person runs `work shape` on a request that is not `open`, then `work` shall exit with an error naming the status of the request and change nothing.
-When the person runs `work backlog`, `work` shall print every request and the status of the request.
-Where `--json` is given, when the person runs `work backlog`, `work` shall print a JSON object and exit successfully.
-When the person runs `work withdraw` on a request that is `open`, `work` shall set the status of the request to `withdrawn`.
-When the person runs `work refuse` on a request that is `open`, `work` shall set the status of the request to `refused`.
-When the person runs `work show` on a request, `work` shall print the status of the request.

@@ -1,9 +1,0 @@
-# conversation: sentences that parse with exactly one tree in the fixture glossary's grammar.
-When the person runs `work quote`, `work` shall write a record and commit the record.
-When the SessionStart hook runs `work quote --session --transcript`, `work` shall write a record.
-When the person runs `work show` on a request, `work` shall print every request line.
-When the SessionStart hook runs `work names`, `work` shall print every initiative, the status of the initiative and every work-item.
-If the person runs `work quote`, then `work` shall not push a commit.
-When the SessionStart hook runs `work names`, `work` shall not change a file.
-Where `--json` is given, when the person runs `work show` on a request, `work` shall print a JSON object.
-If the person runs `work show` on a request that is `withdrawn`, then `work` shall exit with an error naming the request and change nothing.
