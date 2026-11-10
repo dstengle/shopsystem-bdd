@@ -29,6 +29,10 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
          # the list "a stage and the stage" belongs to follow or to print: two meanings, refused naming the requirement
          "ambiguous": (("When the person runs `work start`, `work` shall print every session that follows a stage and "
                         "the stage."), None),
+         # a verb short of a noun its frame takes, or with one of the wrong kind (I10): the refusal names the verb
+         "objectless": ("When the person runs `work start`, `work` shall write.", "the verb write takes an object"),
+         "mistyped": ("When the person runs `work start`, `work` shall write a stage.",
+                      "the verb write takes as its object file or a kind of it"),
          # the line stops after "the", where write's frame needs its object: the hint names the term that may follow
          "unfinished": ("When a session ends a stage, `work` shall write the", "may follow: file")}
 

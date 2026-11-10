@@ -18,6 +18,7 @@ import model_parse
 import spec_follow4
 import spec_grammar
 import spec_meaning
+import spec_refusal4
 import spec_rgl
 import spec_rgl_np
 import spec_rgl_rel
@@ -140,7 +141,7 @@ def parse(root, line):
     term = disagreeing(gram, vocab, tokens, at)
     if term:
         return Parse(refusal="refused: the verb %s does not agree in number with its subject" % term)
-    aspect = misaspected(vocab, tokens, at)
+    aspect = misaspected(vocab, tokens, at) or spec_refusal4.refusal(vocab, tokens, at)
     if aspect:
         return Parse(refusal=aspect)
     if at >= len(tokens):

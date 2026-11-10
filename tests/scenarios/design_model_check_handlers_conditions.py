@@ -110,11 +110,8 @@ def requirement(step):
 # takes an object (agent writes text), `give` a recipient (agent gives thing to thing), and a stage is no text;
 # a verb names its subject: "a file is not written" names no agent that writes it.
 # An addressed line gives its trigger's verb its object and, after `to`, its recipient.
-FRAMED = {"objectless": ("When the person runs `work start`, `work` shall write.", "the verb write takes an object"),
-          "recipientless": ("When the person runs `work start`, `work run` shall give a brief.",
+FRAMED = {"recipientless": ("When the person runs `work start`, `work run` shall give a brief.",
                             "the verb give takes a recipient"),
-          "mistyped": ("When the person runs `work start`, `work` shall write a stage.",
-                       "the verb write takes as its object text or a kind of it"),
           "negating": (("While a stage is not for a work-item, when the person runs `work start`, `work` shall not "
                         "write a file."), None),
           "verbal": (("While a session writes a file and a session does not commit a file, when the person runs "
