@@ -33,6 +33,8 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
          "objectless": ("When the person runs `work start`, `work` shall write.", "the verb write takes an object"),
          "mistyped": ("When the person runs `work start`, `work` shall write a stage.",
                       "the verb write takes as its object file or a kind of it"),
+         "recipientless": ("When the person runs `work start`, `work` shall give a file.",
+                           "the verb give takes a recipient"),
          # a passive, which grammar 4 has not: the verb's frame has a subject it leaves out
          "agentless": ("While a file is not written, when the person runs `work start`, `work` shall write a file.",
                        "the verb write takes a subject"),

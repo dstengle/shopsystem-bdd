@@ -106,13 +106,10 @@ def requirement(step):
         raise AssertionError("no requirement condition %r" % word)
 
 
-# A requirement of the fixture glossary for each frame condition, and how its refusal names the verb's term: `write`
-# takes an object (agent writes text), `give` a recipient (agent gives thing to thing), and a stage is no text;
-# a verb names its subject: "a file is not written" names no agent that writes it.
+# A requirement of the fixture glossary for each frame condition of grammar 3 (objectless, recipientless, mistyped and
+# agentless are grammar 4's, in the codified-2 world: CNL 4's I10).
 # An addressed line gives its trigger's verb its object and, after `to`, its recipient.
-FRAMED = {"recipientless": ("When the person runs `work start`, `work run` shall give a brief.",
-                            "the verb give takes a recipient"),
-          "negating": (("While a stage is not for a work-item, when the person runs `work start`, `work` shall not "
+FRAMED = {"negating": (("While a stage is not for a work-item, when the person runs `work start`, `work` shall not "
                         "write a file."), None),
           "verbal": (("While a session writes a file and a session does not commit a file, when the person runs "
                       "`work start`, `work` shall commit a file."), None),

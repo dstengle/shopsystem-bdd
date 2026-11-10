@@ -30,3 +30,4 @@ not this repository's spec. Its rows give grammar 4's noun phrases (I8): of, its
 - **write** (verb, action): an agent puts text into a file. Forms: writes, written. Frame: agent writes file.
 - **end** (verb, action): an agent stops a stage. Frame: agent ends stage.
 - **follow** (verb, state): an agent keeps track of a stage. Frame: agent follows stage.
+- **give** (verb, action): an agent hands a file to an agent. Frame: agent gives file to agent.

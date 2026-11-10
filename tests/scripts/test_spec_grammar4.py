@@ -133,5 +133,7 @@ def test_the_hint_names_the_terms_gf_s_completion_says_may_follow(root):
     assert follow("When a session ends a stage, `work` shall write the") == ["file"]
     assert follow("When the person runs `work start`, `work` shall write a stage.") == ["file"]
     assert follow("When a session ends, `work` shall print the file.") == ["stage"]
+    # only "to" may follow: the terms after it, the recipient's among them
+    assert "agent" in follow("When the person runs `work start`, `work` shall give a file.")
     assert "write" in follow("When a session ends a stage, `work` shall") and "follow" not in follow(
         "When a session ends a stage, `work` shall")

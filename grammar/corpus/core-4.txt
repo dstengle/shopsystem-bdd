@@ -106,3 +106,9 @@ When a session writes a file in a worktree that a session has, `work` shall prin
 # a passive, which grammar 4 has not, refused naming the verb whose subject it leaves out (I10)
 While a file is not written, when the person runs `work start`, `work` shall write a file.
 = refused: the verb write takes a subject, which a passive leaves out
+# a verb short of the recipient its frame takes, or with one of the wrong kind, refused naming the verb (I10)
+When the person runs `work start`, `work` shall give a file.
+= refused: the verb give takes a recipient
+When the person runs `work start`, `work` shall give a file to a stage.
+= refused: the verb give takes as its recipient agent or a kind of it
+When the person runs `work start`, `work` shall give a file to a session.
