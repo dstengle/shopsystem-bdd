@@ -27,8 +27,8 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
          "possessive": (("When a session ends a stage whose status is not `done`, `work` shall print every session "
                          "whose worktree holds a file."), None),
          # the list "a stage and the stage" belongs to follow or to print: two meanings, refused naming the requirement
-         "ambiguous": ("When the person runs `work start`, `work` shall print every session that follows a stage and "
-                       "the stage.", None)}
+         "ambiguous": (("When the person runs `work start`, `work` shall print every session that follows a stage and "
+                        "the stage."), None)}
 
 
 def capability(name, lines, path):
