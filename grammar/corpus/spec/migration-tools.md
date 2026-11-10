@@ -40,28 +40,11 @@ shall [x2: repository "the repository the command runs in" (indexical), x4: agen
     exit(e5, subject: x7, successfully)
 ```
 
-## r29
-Retires: r3. From: b156 r28. Audit: distortion, fixed by identity ("another ledger entry", construct `another`) in place of the coined noun "superseded entry".
+## r58
+Retires: r29, r30 (r3). From: b240 r179, v15n (r29 and r30 shared their condition and trigger). Audit: fine; the design-decision that supersedes is "another design-decision", the one it supersedes "the design-decision" (construct `another`).
 
 ```reading
-While a ledger entry supersedes another ledger entry, when the person runs `migrate run` on a bounded context, `migrate` shall write a design-decision of the ledger entry whose status is `superseded`.
-shall [x3: agent the person (constant), x4: command `migrate run` (parameter), x6: tool `migrate` (constant)]
-  while [x1: ledger entry, x2: ledger entry]
-    distinct(x2, x1)
-    supersede#2(subject: x1, object: x2)
-  when [x5: bounded context]
-    run(e1, subject: x3, object: x4, on: x5)
-  response [x7: design-decision]
-    of(x7, x2)
-    status(x7) = `superseded`
-    write(e2, subject: x6, object: x7)
-```
-
-## r30
-Retires: r3. From: b156 r29. Audit: distortion, fixed by identity (construct `another`), supersede stepped in the frame its referents' kinds pick (b236). The design-decision of the ledger entry that supersedes is r28's.
-
-```reading
-While a ledger entry supersedes another ledger entry, when the person runs `migrate run` on a bounded context, `migrate` shall write a design-decision that supersedes a design-decision of the ledger entry.
+While a ledger entry supersedes another ledger entry, when the person runs `migrate run` on a bounded context, `migrate` shall write a design-decision of the ledger entry whose status is `superseded` and write another design-decision that supersedes the design-decision.
 shall [x3: agent the person (constant), x4: command `migrate run` (parameter), x6: tool `migrate` (constant)]
   while [x1: ledger entry, x2: ledger entry]
     distinct(x2, x1)
@@ -69,9 +52,12 @@ shall [x3: agent the person (constant), x4: command `migrate run` (parameter), x
   when [x5: bounded context]
     run(e1, subject: x3, object: x4, on: x5)
   response [x7: design-decision, x8: design-decision]
-    of(x8, x2)
-    supersede(subject: x7, object: x8)
+    of(x7, x2)
+    status(x7) = `superseded`
     write(e2, subject: x6, object: x7)
+    distinct(x8, x7)
+    supersede(subject: x8, object: x7)
+    write(e3, subject: x6, object: x8)
 ```
 
 ## r31
@@ -225,11 +211,11 @@ shall [x2: repository "the repository the command runs in" (indexical), x4: agen
     name(e3, subject: x6, object: x7)
 ```
 
-## r40
-Retires: r13. From: b156 r39. Audit: distortion, fixed by ordered comparison (construct `ordered`).
+## r59
+Retires: r40, r41 (r13). From: b240 r179, v15n (r40 and r41 shared their condition and trigger). Audit: fine.
 
 ```reading
-While the release of this repository is before `0.24.0`, when the person runs `migrate upgrade`, `migrate` shall print every upgrade step and rewrite the plugin version file of this repository.
+While the release of this repository is before `0.24.0`, when the person runs `migrate upgrade`, `migrate` shall print every upgrade step, rewrite the plugin version file of this repository, rename every work-item file and every stage directory and rewrite every initiative log.
 shall [x1: repository "the repository the command runs in" (indexical), x2: agent the person (constant), x3: command `migrate upgrade` (parameter), x4: tool `migrate` (constant)]
   while
     cmp(release(x1)) before `0.24.0`
@@ -241,28 +227,15 @@ shall [x1: repository "the repository the command runs in" (indexical), x2: agen
         print(e2, subject: x4, object: x5)
     of(x6, x1)
     rewrite(e3, subject: x4, object: x6)
-```
-
-## r41
-Retires: r13. From: b156 r40. Audit: distortion, fixed by ordered comparison (construct `ordered`).
-
-```reading
-While the release of this repository is before `0.24.0`, when the person runs `migrate upgrade`, `migrate` shall rename every work-item file and every stage directory and rewrite every initiative log.
-shall [x1: repository "the repository the command runs in" (indexical), x2: agent the person (constant), x3: command `migrate upgrade` (parameter), x4: tool `migrate` (constant)]
-  while
-    cmp(release(x1)) before `0.24.0`
-  when
-    run(e1, subject: x2, object: x3)
-  response
-    every [x5: work-item file]
+    every [x7: work-item file]
       scope
-        rename(e2, subject: x4, object: x5)
-    every [x6: stage directory]
+        rename(e4, subject: x4, object: x7)
+    every [x8: stage directory]
       scope
-        rename(e3, subject: x4, object: x6)
-    every [x7: initiative log]
+        rename(e5, subject: x4, object: x8)
+    every [x9: initiative log]
       scope
-        rewrite(e4, subject: x4, object: x7)
+        rewrite(e6, subject: x4, object: x9)
 ```
 
 ## r42
@@ -318,31 +291,12 @@ shall [x1: repository "the repository the command runs in" (indexical), x3: agen
     print(e5, subject: x5, object: x2)
 ```
 
-## r57
-Retires: r45 (r16). From: b156 r44. Audit: distortion, fixed by ordered comparison; the tag said as feature-file-tools says it, "the `@deprecated` tag" (b240's merge: `@deprecated` a proper noun broke feature-file-tools r97-r99).
+## r60
+Retires: r46, r57 (r16, r45). From: b240 r179, v15n (r46 and r57 shared their condition and trigger). Audit: fine; the tag said as r57 said it, "the `@deprecated` tag".
 
 ```reading
-While the release of this repository is after `0.25.0` and before `1.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite every feature that holds a scenario that has the `@deprecated` tag.
-shall [x1: repository "the repository the command runs in" (indexical), x2: agent the person (constant), x3: command `migrate upgrade` (parameter), x4: tool `migrate` (constant), x7: tag `@deprecated` (parameter)]
-  while
-    cmp(release(x1)) after `0.25.0`
-    cmp(release(x1)) before `1.0.0`
-  when
-    run(e1, subject: x2, object: x3)
-  response
-    every [x5: feature, x6: scenario]
-      of(x7, x6)
-      in(x6, x5)
-      scope
-        rewrite(e2, subject: x4, object: x5)
-```
-
-## r46
-Retires: r16. From: b156 r45. Audit: distortion, fixed by ordered comparison (construct `ordered`).
-
-```reading
-While the release of this repository is after `0.25.0` and before `1.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite every work-item file that mentions a requirement.
-shall [x1: repository "the repository the command runs in" (indexical), x2: agent the person (constant), x3: command `migrate upgrade` (parameter), x4: tool `migrate` (constant)]
+While the release of this repository is after `0.25.0` and before `1.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite every work-item file that mentions a requirement and rewrite every feature that holds a scenario that has the `@deprecated` tag.
+shall [x1: repository "the repository the command runs in" (indexical), x2: agent the person (constant), x3: command `migrate upgrade` (parameter), x4: tool `migrate` (constant), x9: tag `@deprecated` (parameter)]
   while
     cmp(release(x1)) after `0.25.0`
     cmp(release(x1)) before `1.0.0`
@@ -353,6 +307,11 @@ shall [x1: repository "the repository the command runs in" (indexical), x2: agen
       mention(subject: x5, object: x6)
       scope
         rewrite(e2, subject: x4, object: x5)
+    every [x7: feature, x8: scenario]
+      of(x9, x8)
+      in(x8, x7)
+      scope
+        rewrite(e3, subject: x4, object: x7)
 ```
 
 ## r47
