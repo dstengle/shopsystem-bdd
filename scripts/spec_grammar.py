@@ -27,6 +27,7 @@ import tools_grammar
 
 GRAMMARS = Path(__file__).resolve().parent.parent / "grammar"
 LIMIT = 2000  # trees read from one parse before the guards; a literal slot reads any token
+_MISREAD = ('QuotedLit "`', 'CodeLit "\\"')   # a code read as a quoted text, or a quoted text as a code
 _loaded = {}
 _contexts = {}  # (spec_lexicon.read, root) -> (state of the files, (lexicon, sources, sha))
 
@@ -241,9 +242,9 @@ def _gf_parse(root, tokens, grammar, text, words):
     import pgf
     gram = load(root, grammar)
     try:
-        parses = islice(gram.languages["%sEng" % grammar].parse(text, callbacks=[("String", _literal(words, text))]),
-                        LIMIT)
-        return [_tree(e, gram) for _, e in parses], None
+        parses = gram.languages["%sEng" % grammar].parse(text, callbacks=[("String", _literal(words, text))])
+        kept = (e for _, e in islice(parses, 16 * LIMIT) if not any(s in str(e) for s in _MISREAD))   # b240 phase 13
+        return [_tree(e, gram) for e in islice(kept, LIMIT)], None
     except pgf.ParseError as err:
         return [], (len(tokens) if err.incomplete else _position(tokens, err.offset))
 
