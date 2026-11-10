@@ -1814,6 +1814,24 @@ points (design call 9). Line: migration-tools r47 (b156: the repository's releas
 own). It says instead the plugin's release the line is written for, as a value: "While the release of the repository
 is after `4.0.0`, ...", and the line gets a new id when the plugin's release moves on.
 
+### #8: a change of an attribute's value
+
+"set the T of x to v" says that an agent gives an attribute one value; the language has no form for an agent changing
+an attribute to any value, or for not changing it ("change the status of an item", "shall not change the status of a
+node"): `change` takes a thing, and an attribute is no thing. Lines: universal U13, U14 (b155: U4 "`work` shall commit
+every transition and push the commit", U5 "A session shall not write a status"). They say instead what the noun
+*transition* (the glossary: one change of a node's status, written by `work`) stands for: "When `work` writes a
+transition, `work` shall commit the transition and push the commit of the transition." and "A session shall not
+write a transition."
+
+### #15: an adjunct of a verb's frame
+
+A frame names a verb's subject, object and the fixed words before a third thing; the language has no adjunct that
+ties a thing to the act ("refuses a command for a reason", "the reason it refuses the command"). Line: universal U12
+(b155: U11 "exit with an error naming the reason"). It says instead "If a tool refuses a command, then the tool
+shall exit with an error naming a reason and change nothing.": the reason is any reason, and the link from the
+reason to the refusal is in the gloss of *reason* only.
+
 ### The Given of a "no" box beside the link it is said by
 
 A "no" box of more than one item ("the session has no worktree that holds a file whose version is not `2.0.0`") is

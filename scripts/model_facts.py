@@ -28,6 +28,7 @@ class Model(SpecReading, WorkReading, RequestReading):
         self.facts = []
         self.nodes = {}
         self.dangling = []
+        self.history = set()    # ids no longer live that a reference may still name: retired universal conditions
         self.problems = []
         self.context = None     # bounded-context/<path>
         self.path = None        # <owner>/<product>/<context name>
@@ -251,6 +252,8 @@ class Model(SpecReading, WorkReading, RequestReading):
         for ident, kind, where in getattr(self, "_wanted", []):
             if str(ident).partition("/")[0] in FROZEN_KINDS:
                 continue        # a reference into the frozen .shop/work/ is history, never resolved (D5)
+            if ident in self.history:
+                continue        # a retired universal condition a decision still rests on (b240 phase 14)
             if self.frozen_request(ident):
                 continue        # a request of the frozen queue is history too (D7): its file is still there
             if str(ident).endswith("@0.29") and kind is None:

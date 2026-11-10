@@ -171,8 +171,8 @@ def test_the_u11_and_u8_checks_after_a_scenario():
                 "changed": []}
     problems = vocab.u_problems([refused, json_ok, json_bad])
     assert len(problems) == 2
-    assert problems[0].startswith("U11:") and ".shop/work/i1.md" in problems[0]
-    assert problems[1].startswith("U8:")
+    assert problems[0].startswith("U12:") and ".shop/work/i1.md" in problems[0]
+    assert problems[1].startswith("U16:")
     assert vocab.u_problems([json_ok, dict(refused, changed=[])]) == []
 
 

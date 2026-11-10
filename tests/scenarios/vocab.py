@@ -1,8 +1,8 @@
 """The step vocabulary in pytest-bdd (design §14.3): one step definition for each (keyword, template, kind) of the
 context's Steps grammar, dispatching to the handler `features_vocab.lookup` finds, and the checks of the observable
-universal conditions after every generated scenario (design §8.4: U11, a refused command changes nothing; U4, a commit
-a command makes in a repository with a remote is pushed, but under a remote the scenario made unpushable; U8,
-`--json` prints one JSON object).
+universal conditions after every generated scenario (design §8.4: U12, a refused command changes nothing; U13, a
+commit a command makes in a repository with a remote is pushed, but under a remote the scenario made unpushable; U16,
+`--json` prints one JSON object; U11, U4 and U8 before b240's rewording, decisions 0086-0088).
 
 A step definition matches a step when the Steps grammar reads the step's text as its (template, kind); a cheap test
 of the pattern's words comes first, and each text is parsed once a process. `install(namespace, root, tests_dir)`
@@ -106,7 +106,7 @@ def branch_head(repo):
 
 
 def unpushed(repo, before):
-    """The remote a run's commit on the branch checked out is not pushed to (U4), or None: none when the run made no
+    """The remote a run's commit on the branch checked out is not pushed to (U13), or None: none when the run made no
     commit there or the repository has no remote for the branch (its upstream's, else `origin`). The commit is looked
     for on the branch's upstream branch there (`branch.<b>.merge`), else on the branch of its own name."""
     after = branch_head(repo)
@@ -121,15 +121,15 @@ def unpushed(repo, before):
 
 
 def u_problems(records, unpushable=False):
-    """The U11, U4 and U8 failures of a scenario's runs, each record {args, returncode, stdout, changed, unpushed}; U4
-    is not asked under an unpushable remote."""
+    """The U12, U13 and U16 failures of a scenario's runs, each record {args, returncode, stdout, changed, unpushed};
+    U13 is not asked under an unpushable remote."""
     out = []
     for r in records:
         command = " ".join(map(str, r["args"]))
         if r["returncode"] == 0 and r.get("unpushed") and not unpushable:
-            out.append("U4: `%s` committed and did not push the commit to %s" % (command, r["unpushed"]))
+            out.append("U13: `%s` committed and did not push the commit to %s" % (command, r["unpushed"]))
         if r["returncode"] != 0 and r["changed"]:
-            out.append("U11: `%s` was refused (exit %d) and changed %s" % (command, r["returncode"],
+            out.append("U12: `%s` was refused (exit %d) and changed %s" % (command, r["returncode"],
                                                                          ", ".join(r["changed"])))
         if r["returncode"] == 0 and "--json" in map(str, r["args"]):
             try:
@@ -137,7 +137,7 @@ def u_problems(records, unpushable=False):
             except ValueError:
                 one = False
             if not one:
-                out.append("U8: `%s` printed something other than one JSON object" % command)
+                out.append("U16: `%s` printed something other than one JSON object" % command)
     return out
 
 

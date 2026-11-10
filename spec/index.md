@@ -152,13 +152,13 @@ The simplified workflow:
 - **compaction** (noun): Claude Code's replacement of a session's earlier messages by a summary, recorded in its transcript.
 - **fact** (noun): one statement `model facts` gives clingo about the repository's files.
 
-- **worktree** (noun): a working tree `work run` makes for one stage.
+- **worktree** (noun): a working tree `work batch start` makes for one task of a batch, in which the dispatch that builds the task works.
 - **file** (noun): a file or a directory of the repository or of a worktree. Kind of: text.
 - **text** (noun): what a session or a tool writes: a file, or a part of one it writes whole, such as an entry, a line, a row, a block or a comment. Kind of: thing.
 - **thing** (noun): anything a requirement names, as what a verb such as keep, name, read or use takes.
 - **command** (noun): one run of `work`, `work run` or another tool, with its arguments. Kind of: thing. This: the command the run runs. Redefines: cli.
 - **reason** (noun): what an error names as the cause of a refused command. Kind of: text. Redefines: cli.
-- **JSON object** (noun): the one object a tool prints on standard output when `--json` is given.
+- **JSON object** (noun): a JSON value of the object type, as a tool prints it on standard output.
 - **initiative branch** (noun): the branch `work run` commits each transition on and merges each work-item branch into, whose base is the commit it started from. Plural: initiative branches. Not: integration branch.
 - **work-item branch** (noun): the branch an implementer commits a work-item's work on, from the initiative branch's head, merged into the initiative branch and deleted when it is merged. Plural: work-item branches.
 - **commit** (noun): one git commit on a branch, with its message and its change. Kind of: thing.
@@ -207,7 +207,7 @@ The simplified workflow:
 - **raise** (verb, action): an initiative raises a request into an upstream. Forms: raises, raised. Frame: initiative raises request.
 - **refuse** (verb, action): a tool declines a command. Frame: tool refuses command. Redefines: cli.
 - **write** (verb, action): a session or a tool writes a file or a field. Forms: writes, written. Frame: agent writes text.
-- **change** (verb, action): a session or a tool changes a file or a field. Frame: agent changes file. Redefines: cli.
+- **change** (verb, action): a session or a tool changes a file or a field, or with "nothing" leaves every thing as it was. Frame: agent changes thing. Redefines: cli.
 - **give** (verb, action): a session or a tool gives a text a thing it lacks, such as a grade to a review finding. Forms: gives, given. Frame: agent gives thing to text.
 
 - **turn** (noun, exclusive): one for each request, held by the side whose part of the request is to be written next.
@@ -270,6 +270,9 @@ The simplified workflow:
 | quote | from | session | one |
 | quote | cites | message |  |
 | design-decision | enforced by | test |  |
+| worktree | of | session | one |
+| command | of | tool | one |
+| commit | of | transition |  |
 
 ## Where things live
 

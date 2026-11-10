@@ -68,8 +68,9 @@ def test_the_spec_integration_steps_are_gone():
 
 def test_the_universal_conditions_of_work_run_are_retired():
     """U1, U2, U6, U9 and U10 stated guarantees of `work run` and initiatives (plan-9 review S2, the-old-workflow-retired);
-    U7 is kept until a line on a batch's task subagent is written (plan-9 rulings Q1)."""
+    U11, U4, U5, U7 and U8 are reworded in grammar 4 as U12-U16 (b155, b240), U7's worker now a dispatch with a
+    worktree."""
     doc = spec_read.read_universal(REPO)
     assert doc.problems == []
-    assert doc.frontmatter["retired"] == ["U1", "U2", "U3", "U6", "U9", "U10"]
-    assert [u.id for u in doc.conditions] == ["U11", "U4", "U5", "U7", "U8"]
+    assert doc.frontmatter["retired"] == ["U1", "U2", "U3", "U6", "U9", "U10", "U11", "U4", "U5", "U7", "U8"]
+    assert [u.id for u in doc.conditions] == ["U12", "U13", "U14", "U15", "U16"]
