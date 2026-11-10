@@ -1,10 +1,12 @@
 """Unit tests of scripts/model_spec: `model` reading the codified spec (the GF conversion's design §7, §8, §13.4).
 
-A fixture repository here has the typed glossary of tests/scripts/fixtures/glossary/ and capability files written by
-`codified()`. The helpers serve test_model_restates.py too."""
+A fixture repository here has the typed glossary of tests/scripts/fixtures/glossary/ in codified-2 (`INDEX`: the CLI
+pack imported, the words it defines too marked) and capability files written by `codified()`, their lines in grammar
+4. The helpers serve test_model_restates.py too."""
 
 import json
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
@@ -22,12 +24,21 @@ PATH = "example.org/fixture/glossary"
 CTX = f"bounded-context/{PATH}"
 WQ = f"capability/{PATH}/wq"
 
-START = "When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to `started`."
-COMMIT = "When the person runs `work start` on an initiative that is `proposed`, `work` shall commit the transition."
-ABANDON = "When the person runs `work abandon` on an initiative that is `started`, `work` shall set its status to `abandoned`."
-DRAFTED = "When the person runs `work start` on an initiative that is `drafted`, `work` shall set its status to `started`."
-AMBIGUOUS = "When the person runs `work list`, `work` shall print every request line in a request that is `accepted`."
-LOCK = "`work run` shall hold the spec lock."
+INDEX = re.sub(r"^(- \*\*(?:change|command|name|reason|refuse)\*\* .*)$", r"\1 Redefines: cli.",
+               GLOSSARY.read_text().replace("language: codified-1\n", "language: codified-2\nimports: [cli]\n"),
+               flags=re.MULTILINE)
+OWN = "- **own** (verb, state): an agent answers for a file. Frame: agent owns file.\n"
+
+START = ("When the person runs `work start` on an initiative whose status is `proposed`, `work` shall set the status of "
+         "the initiative to `started`.")
+COMMIT = "When the person runs `work start` on an initiative whose status is `proposed`, `work` shall commit a transition."
+ABANDON = ("When the person runs `work abandon` on an initiative whose status is `started`, `work` shall set the status "
+           "of the initiative to `abandoned`.")
+DRAFTED = ("When the person runs `work start` on an initiative, `work` shall set the status of the initiative to "
+           "`drafted`.")
+# "a file and the file" belongs to own or to list (OWN, the state verb, added to the glossary)
+AMBIGUOUS = "When the person runs `work list`, `work` shall list every session that owns a file and the file."
+LOCK = "`work run` shall not change `spec/index.md`."
 
 
 def codified(name, behaviour, dropped=(), retired="[]", marker=True, terms=()):
@@ -38,7 +49,7 @@ def codified(name, behaviour, dropped=(), retired="[]", marker=True, terms=()):
         title: {name}
         narrator: the person
         group: service
-        {"language: codified-1" if marker else ""}
+        {"language: codified-2" if marker else ""}
         rests_on: []
         retired: {retired}
         ---
@@ -69,7 +80,7 @@ class CodifiedTest(unittest.TestCase):
         toolchain.require()
         self.tmp = pathlib.Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, self.tmp)
-        self.write("spec/index.md", GLOSSARY.read_text())
+        self.write("spec/index.md", INDEX)
         self.write("spec/restated.json", json.dumps({"wq#r3": {"text": "old three", "line": 3},
                                                      "wq#r4": {"text": "old four", "line": 4},
                                                      "other#r1": {"text": "other one", "line": 9}}))
@@ -113,9 +124,6 @@ class FactsTest(CodifiedTest):
                      'restated_id("wq#r3@0.29").'):
             self.assertIn(fact, f)
         self.assertFalse([x for x in f if x.startswith("has_req(")], "has_req is derived from member_of")
-        pre = sorted(x.split(", ", 1)[1] for x in f if x.startswith("pre("))
-        self.assertEqual(len(pre), 2)
-        self.assertEqual(pre[0], pre[1], "both statements share the trigger")
 
     def test_an_uncodified_capability_is_v_p0_and_its_lines_are_not_read(self):
         self.write("spec/capabilities/old.md", codified("old", ["- [r1] **When** asked, `old` shall answer."],
@@ -128,15 +136,27 @@ class FactsTest(CodifiedTest):
         self.assertEqual(self.rows(found, "v_p0"), [["spec/capabilities/old.md"]])
         self.assertIn("migrate upgrade", found["labels"]["v_p0"])
 
+    def test_a_capability_in_codified_1_is_v_p0_and_its_lines_are_not_read(self):
+        """The old language is no longer read (b160): refused as a file that says none is, naming `migrate upgrade`."""
+        self.write("spec/capabilities/old.md", codified("old", ["### [g1] Start", f"- [r1] {START}"]).replace(
+            "language: codified-2", "language: codified-1"))
+        f = self.facts()
+        self.assertIn('uncodified("spec/capabilities/old.md").', f)
+        self.assertFalse([x for x in f if "old#" in x])
+        found, r = self.check()
+        self.assertEqual(self.rows(found, "v_p0"), [["spec/capabilities/old.md"]])
+        self.assertIn("migrate upgrade", found["labels"]["v_p0"])
+        self.assertEqual(r.returncode, 1)
+
     def test_an_index_that_is_not_codified_is_v_p0(self):
-        index = GLOSSARY.read_text().replace("language: codified-1\n", "")
+        index = INDEX.replace("language: codified-2\n", "")
         self.write("spec/index.md", index)
         found, _ = self.check()
         self.assertEqual(self.rows(found, "v_p0"), [["spec/index.md"]])
         self.assertFalse([d for d in found["problems"] if "glossary bullet" in d], found["problems"])
 
     def test_a_universal_condition_is_a_node_that_parses(self):
-        self.write("spec/universal.md", "---\nid: capability/%s/universal\nlanguage: codified-1\n---\n\n"
+        self.write("spec/universal.md", "---\nid: capability/%s/universal\nlanguage: codified-2\n---\n\n"
                                         "## Behaviour\n\n- [U1] %s\n- [U2] Things shall be fine.\n" % (PATH, LOCK))
         f = self.facts()
         u1, u2 = f"universal-condition/{PATH}/u1", f"universal-condition/{PATH}/u2"
@@ -157,7 +177,7 @@ class FactsTest(CodifiedTest):
 
     def test_a_word_in_two_categories_is_two_terms(self):
         """The legacy reader keyed a word once; the lexicon gives a kind and a resource of one spelling two terms."""
-        text = GLOSSARY.read_text().replace("## Glossary\n", "## Glossary\n\n- **pool** (noun): a set of workers.\n"
+        text = INDEX.replace("## Glossary\n", "## Glossary\n\n- **pool** (noun): a set of workers.\n"
                                             "- **pool** (noun, exclusive): held by a round.\n", 1)
         self.write("spec/index.md", text)
         f = self.facts()
@@ -176,21 +196,11 @@ class FactsTest(CodifiedTest):
         self.assertIn('node("features/wq.feature:g1 holds", "scenario").', f)
         self.assertFalse([x for x in f if x.startswith("has_sc(")])
 
-    def test_a_logic_only_group_is_marked(self):
-        self.write("spec/capabilities/wq.md", codified("wq", ["### [g1] Rounds hold the lock", f"- [r1] {LOCK}"]))
-        self.assertIn(f'logic_only("{WQ}#g1").', self.facts())
-
     def test_a_retired_group_id(self):
         self.write("spec/capabilities/wq.md", codified("wq", self.start_group(), retired="[r9, g4]"))
         f = self.facts()
         self.assertIn(f'retired_group("{WQ}", 4).', f)
         self.assertIn(f'retired_id("{WQ}", 9).', f)
-
-    def test_a_given_line_is_read_by_the_typed_steps_grammar(self):
-        given = ["", "```given", "an initiative i1 that is `proposed`", "the initiative i1 frobs widgets", "```"]
-        self.write("spec/capabilities/wq.md", codified("wq", self.start_group(*given)))
-        unparsed = [x for x in self.facts() if x.startswith("given_unparsed(")]
-        self.assertEqual(unparsed, [f'given_unparsed("{WQ}#g1", "the initiative i1 frobs widgets").'])
 
 
 class CheckTest(CodifiedTest):
@@ -220,14 +230,10 @@ class CheckTest(CodifiedTest):
         self.assertRegex(text, r"(?m)^v_p1  ")
 
     def test_an_ambiguous_line_is_v_p2(self):
+        self.write("spec/index.md", INDEX + OWN)
         self.write("spec/capabilities/wq.md", codified("wq", ["### [g1] List", f"- [r1] {AMBIGUOUS}"]))
         found, _ = self.check()
         self.assertEqual(self.rows(found, "v_p2"), [[f"{WQ}#r1"]], found)
-
-    def test_statements_of_a_group_with_two_triggers_are_v15k(self):
-        self.write("spec/capabilities/wq.md", codified("wq", ["### [g1] Mixed", f"- [r1] {START}", f"- [r2] {ABANDON}"]))
-        found, _ = self.check()
-        self.assertEqual(self.rows(found, "v15k"), [[f"{WQ}#g1"]], found)
 
     def test_a_group_of_more_than_one_statement_is_v15l(self):
         self.write("spec/capabilities/wq.md", codified("wq", self.start_group() + ["### [g2] One", f"- [r3] {LOCK}"]))
@@ -239,14 +245,9 @@ class CheckTest(CodifiedTest):
         self.write("spec/capabilities/wq.md", codified("wq", ["### [g1] Start", f"- [r1] {START}", *given]))
         self.assertEqual(self.rows(self.check()[0], "v15m"), [[f"{WQ}#g1", "an initiative i1 that is `proposed`"]])
 
-    def test_two_groups_sharing_features_condition_and_trigger_are_v15n(self):
-        self.write("spec/capabilities/wq.md", codified("wq", ["### [g1] A", f"- [r1] {START}", "### [g2] B",
-                                                              f"- [r2] {COMMIT}", "### [g3] C", f"- [r3] {ABANDON}"]))
-        self.assertEqual(self.rows(self.check()[0], "v15n"), [[f"{WQ}#g1", f"{WQ}#g2"]])
-
-    def test_a_group_with_a_scenario_or_logic_only_is_no_v_s3(self):
+    def test_a_group_with_a_scenario_is_no_v_s3(self):
         self.write("spec/capabilities/wq.md", codified("wq", self.start_group() + [
-            "", "### [g2] Abandon", f"- [r3] {ABANDON}", "", "### [g3] Lock", f"- [r4] {LOCK}"]))
+            "", "### [g2] Abandon", f"- [r3] {ABANDON}"]))
         self.write("features/wq.feature", generated("wq", ("g1", ["r1", "r2"])))
         found, _ = self.check()
         self.assertEqual(self.rows(found, "v_s3"), [[f"{WQ}#g2"]], found)
