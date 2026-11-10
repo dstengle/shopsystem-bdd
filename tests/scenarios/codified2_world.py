@@ -198,14 +198,14 @@ def intransitive(step, path):
 
 # condition -> (the line r1 of the capability `shelf` says, the verb's entry the glossary gains for it, the step its
 # feature must hold): the requirements `features generate` writes the feature of (feature-file-tools)
-SHELVED = {"oblique": ("When a session ends a stage, `work` shall record the stage in a file.",
+OBLIQUE = {"oblique": ("When a session ends a stage, `work` shall record the stage in a file.",
                        ("- **record** (verb, action): an agent keeps a stage in a file. Frame: agent records stage "
                         "in file.\n"), r"(?m)^\s*Then `work` records the stage \w+ in the file \w+$")}
 
 
 def shelved(step, word, path):
-    """The requirement condition `word` of SHELVED: the world with `shelf`'s r1 its line, its verb in the glossary."""
-    line, entry, holds = SHELVED[word]
+    """The requirement condition `word` of OBLIQUE: the world with `shelf`'s r1 its line, its verb in the glossary."""
+    line, entry, holds = OBLIQUE[word]
     context(step.repo, path, [line], name="shelf")
     step.context.setdefault("holds", {})["features/shelf.feature"] = re.compile(holds)
     index = step.repo / "spec" / "index.md"
