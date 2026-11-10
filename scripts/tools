@@ -21,13 +21,15 @@ contract:
   - probe prints one line a tool, '<tool> <version>' or '<tool> missing: <what
     it is for>', and the interpreter. --log prints the one line for a
     researcher's notes: 'Probe: tools -> ...'. After the interpreter it
-    prints the grammar block: 'grammar:', then gf (with its path), pgf
-    and clingo, each '<tool> <version>' or '<tool> missing: <what
-    the workflow cannot do without it>'. The grammar tools are those of the
-    interpreter running this script, and gf is $SHOPSYSTEM_GF, the install
-    path, or a gf on PATH that says it is Grammatical Framework. --json
-    prints one object: python, source, tools and grammar ({"gf": "3.12.0"
-    or null, "pgf", "clingo"}). Exit 1 when any is missing.
+    prints the grammar block: 'grammar:', then gf (with its path), pgf,
+    clingo and gf-rgl (with its path), each '<tool> <version>' or '<tool>
+    missing: <what the workflow cannot do without it>'. The grammar tools
+    are those of the interpreter running this script, gf is $SHOPSYSTEM_GF,
+    the install path, or a gf on PATH that says it is Grammatical Framework,
+    and gf-rgl is the RGL built at its install path, its version the pinned
+    release. --json prints one object: python, source, tools and grammar
+    ({"gf": "3.12.0" or null, "pgf", "clingo", "gf-rgl": "20250812" or
+    null}). Exit 1 when any is missing.
   - install runs '<interpreter> -m pip install <package>' for each missing
     tool (ruff at the version the plugin pins) and nothing else: it edits no
     dependency file. It refuses an
@@ -38,11 +40,16 @@ contract:
     into the interpreter running this script (--user outside a virtualenv),
     and GF 3.12, downloaded, checked by sha256, unpacked with dpkg-deb into
     ${XDG_DATA_HOME:-~/.local/share}/shopsystem-bdd/gf-3.12 with a bin/gf
-    wrapper. One line a grammar tool: 'gf 3.12 downloaded' or 'gf 3.12
-    already installed', '<wheel> <version> installed' or '... already
-    installed'. Linux x86_64 only: elsewhere, or without dpkg-deb, it exits
-    1 naming $SHOPSYSTEM_GF, for a GF built by hand. Exit 1 when any is
-    still missing.
+    wrapper, and the RGL (gf-rgl) at its pinned release 20250812: its
+    sources downloaded and checked by sha256, or the source tree
+    $SHOPSYSTEM_GF_RGL_SRC names, built in English with that gf into
+    ${XDG_DATA_HOME:-~/.local/share}/shopsystem-bdd/gf-rgl-20250812, the
+    library path GF is given. One line a grammar tool: 'gf 3.12 downloaded'
+    or 'gf 3.12 already installed', '<wheel> <version> installed' or '...
+    already installed', 'gf-rgl 20250812 built' or 'gf-rgl 20250812
+    already installed'. Linux x86_64 only: elsewhere, or without dpkg-deb,
+    it exits 1 naming $SHOPSYSTEM_GF, for a GF built by hand. Exit 1 when
+    any is still missing.
   - map runs the suite once under coverage with a context per test and keeps
     the data in .shop/scratch/tools/coverage. It is its own command, never
     part of the fast suite; arguments after -- go to pytest. Every tests-of

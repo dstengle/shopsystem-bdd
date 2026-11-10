@@ -66,10 +66,13 @@ class ToolsTest(unittest.TestCase):
         gf.parent.mkdir(parents=True)
         gf.write_text("#!/bin/sh\necho 'Grammatical Framework (GF) version 3.12.0'\n")
         gf.chmod(0o755)
+        rgl = self.data / "shopsystem-bdd" / "gf-rgl-20250812"
+        rgl.mkdir()
+        (rgl / "release").write_text("20250812\n")
 
     def run_script(self, *args):
         env = {k: v for k, v in os.environ.items() if k not in ("VIRTUAL_ENV", "PYTEST_ADDOPTS", "SHOPSYSTEM_GF")}
-        env["XDG_DATA_HOME"] = str(self.data)  # GF stands installed there, so install never downloads it
+        env["XDG_DATA_HOME"] = str(self.data)  # GF and the RGL stand installed there, so install never downloads them
         return subprocess.run([sys.executable, str(SCRIPT), "--python", sys.executable, *args], cwd=self.tmp,
                               capture_output=True, text=True, env=env)
 
@@ -77,7 +80,7 @@ class ToolsTest(unittest.TestCase):
         done = self.run_script("probe")
         lines = done.stdout.splitlines()
         grammar = lines.index("grammar:")
-        self.assertEqual([line.split()[0] for line in lines[grammar + 1:]], ["gf", "pgf", "clingo"])
+        self.assertEqual([line.split()[0] for line in lines[grammar + 1:]], ["gf", "pgf", "clingo", "gf-rgl"])
         lines = lines[:grammar]
         self.assertEqual(len(lines), 9)
         for line, name in zip(lines, ("coverage", "pytest-cov", "jedi", "ast-grep", "ruff", "vulture", "import-linter", "hypothesis")):

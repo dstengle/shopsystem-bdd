@@ -35,7 +35,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 |---|---|
 | `scripts/tools` | the `tools` command: its contract and argument parsing |
 | `scripts/tools_env.py` | the project's interpreter, `probe` and `install` |
-| `scripts/tools_grammar.py` | the grammar tools: GF 3.12 and the pinned pgf and clingo wheels, installed (`tools install`) and probed (`tools probe`'s grammar block, `--json`), and GF's lookup (`gf_binary`) |
+| `scripts/tools_grammar.py` | the grammar tools: GF 3.12, the pinned pgf and clingo wheels and the RGL (gf-rgl at its pinned release, its sources downloaded and checked or `$SHOPSYSTEM_GF_RGL_SRC`'s, built in English beside GF: `install_rgl`), installed (`tools install`) and probed (`tools probe`'s grammar block, `--json`), and the lookups of GF (`gf_binary`) and of the built RGL (`rgl_path`) |
 | `scripts/tools_map.py` | the coverage map: `map`, `tests-of`, `untested` |
 | `scripts/tools_refs.py` | `refs` |
 | `scripts/tools_check.py` | `check`: ruff, vulture, import-linter |
