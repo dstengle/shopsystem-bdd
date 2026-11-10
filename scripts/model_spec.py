@@ -132,7 +132,6 @@ class SpecReading:
             self.fact("ambiguous", ident)
         else:
             self.fact("unparsed", ident, p.refusal)
-        return None
 
     def given(self, gid, lines):
         """given_unparsed(G, Line) for a given line the typed Steps grammar (features_vocab) refuses as a Given."""

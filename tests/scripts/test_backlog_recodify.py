@@ -14,8 +14,8 @@ from backlog_section import Block, Group
 from backlog_testing import git, work, write_item
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "scenarios"))
-import codified2_mixed as M  # noqa: E402
-import toolchain  # noqa: E402
+import codified2_mixed as M
+import toolchain
 
 CAP = "spec/capabilities/work-queue.md"
 # a line of grammar 4, which the old grammar refuses (its verb end has no frame the old reader reads)
