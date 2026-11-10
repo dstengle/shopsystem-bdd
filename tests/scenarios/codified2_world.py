@@ -113,7 +113,18 @@ UNIVERSAL = {"contravening": [("If a tool refuses a command, then the tool shall
 REQUIREMENTS = {"restating": ([("If the person runs `work start`, then `work` shall exit with an error naming "
                                 "`work start` and change nothing."),
                                "If the person runs `work start`, then `work` shall exit with an error naming `work start`."],
-                              UNIVERSAL["contravening"])}
+                              UNIVERSAL["contravening"]),
+                # `model explain` (I13b). Refusing: r1 refuses its command, which U1 and the CLI pack's definition of
+                # refuse say more of. Overridden: r1, a When line, and r2, an If line of its trigger that refuses it.
+                "refusing": (["If the person runs `work start`, then `work` shall refuse the command."],
+                             UNIVERSAL["contravening"]),
+                "overridden": (["When the person runs `work start`, `work` shall exit successfully.",
+                                ("While a session follows a stage, if the person runs `work start`, then `work` shall "
+                                 "refuse the command.")], UNIVERSAL["contravening"])}
+# What `model explain` names a requirement condition's other instances by: U1 as the premise of a consequence, the
+# term refuse by its definition in the CLI pack, r2 by its id.
+SAYS = {"refusing": {"u1": "(by U1)", "t1": "(by the definition of refuse in the pack cli)"},
+        "overridden": {"r2": "thing#r2"}}
 
 
 def context(repo, path, lines, name="thing", universal=(), fixture=FIXTURE):
