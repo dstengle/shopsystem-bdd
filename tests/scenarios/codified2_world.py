@@ -81,6 +81,14 @@ UNIVERSAL = {"contravening": [("If a tool refuses a command, then the tool shall
                                "command and change nothing.")]}
 
 
+# The requirement conditions of `model logic` (I13a): the lines of the capability `thing`, r1 the one the scenario
+# names, and the universal conditions beside them. Restating: r1's exit with an error is r2's, and its change nothing
+# is U1's, on the command `work` refuses by exiting with an error on it (the CLI pack's definition of refuse).
+REQUIREMENTS = {"restating": (["If the person runs `work start`, then `work` shall exit with an error naming `work start` "
+                               "and change nothing.",
+                               "If the person runs `work start`, then `work` shall exit with an error naming `work start`."],
+                              UNIVERSAL["contravening"])}
+
 def context(repo, path, lines, name="thing", universal=()):
     """The world written into `repo`: the fixture's index under the bounded context `path`, the capability `name`
     with `lines` (and `thing` with none, when `name` is another), and spec/universal.md with `universal`, if any."""

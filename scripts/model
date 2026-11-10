@@ -179,8 +179,10 @@ contract:
     row of `## Relations`), v_t9 a meaning given as a field rather than a sentence,
     v_t10 two relation rows with one (from, word, to), and spec_frames'
     v_t11-v_t15.
-  - logic [--json] [<capability>] runs the temporal check (spec_solve) and
-    prints its report, with its exit code.
+  - logic [--json] [<capability> | <capability>#r<n>] runs the temporal check
+    (spec_solve) and the entailment check (spec_entail: L8, a requirement each
+    of whose Thens other requirements entail) and prints its report, with its
+    exit code; given a requirement's id, the findings that name it.
   - forms [--json] prints one line for each file form a bounded context
     keeps: its name, its path pattern and the command that writes it (or
     the plugin's item that will give it one, or "by hand"), and exits 0;
@@ -231,7 +233,7 @@ def main(argv=None):
     x = sub.add_parser("lexicon", help="list the terms by category; --check gives v_t4-v_t10")
     x.add_argument("--check", action="store_true")
     g = sub.add_parser("logic", help="the temporal check of the codified requirements")
-    g.add_argument("capability", nargs="?")
+    g.add_argument("capability", nargs="?", help="a capability, or a requirement's id <capability>#r<n>")
     g.add_argument("--json", action="store_true")
     s = sub.add_parser("restates", help="whether every 0.29 id is restated, dropped or moved")
     s.add_argument("capability", nargs="?")
