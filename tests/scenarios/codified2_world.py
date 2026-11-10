@@ -3,7 +3,7 @@ codified-2` and `imports: [cli]` (the glossary of tests/scripts/fixtures/codifie
 also codified-2, whose requirement r1 is the line a requirement condition gives. `model parse` reads it in grammar 4.
 
 A later grammar item adds its condition to LINES: the line r1 says, and what a refusal of it names the scenario's term
-t1 by (None when the line parses). I19 extends the world to a mixed spec."""
+t1 by (None when it names no term). I19 extends the world to a mixed spec."""
 from pathlib import Path
 
 FIXTURE = Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "codified-2" / "spec" / "index.md"
@@ -21,7 +21,14 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
          "denying": (("While a session has no worktree, when the person runs `work start`, `work` shall exit with an "
                       "error naming the session."), None),
          "compound": ("When a session ends a stage, `work` shall print the stage status.", None),
-         "restrictive": ("A session shall change only files in its worktree.", None)}
+         "restrictive": ("A session shall change only files in its worktree.", None),
+         "relative": (("When a session ends a stage that sessions follow, `work` shall print every session that does "
+                       "not follow the stage."), None),
+         "possessive": (("When a session ends a stage whose status is not `done`, `work` shall print every session "
+                         "whose worktree holds a file."), None),
+         # the list "a stage and the stage" belongs to follow or to print: two meanings, refused naming the requirement
+         "ambiguous": (("When the person runs `work start`, `work` shall print every session that follows a stage and "
+                        "the stage."), None)}
 
 
 def capability(name, lines, path):
