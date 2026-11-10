@@ -48,7 +48,9 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
          "agentless": ("While a file is not written, when the person runs `work start`, `work` shall write a file.",
                        "the verb write takes a subject"),
          # the line stops after "the", where write's frame needs its object: the hint names the term that may follow
-         "unfinished": ("When a session ends a stage, `work` shall write the", "may follow: file")}
+         "unfinished": ("When a session ends a stage, `work` shall write the", "may follow: file"),
+         # a count before a number and a noun (I15, call 4)
+         "counted": ("When the person runs `work start`, `work` shall print at least two stages.", None)}
 
 
 def capability(name, lines, path):
