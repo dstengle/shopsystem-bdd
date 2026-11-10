@@ -140,3 +140,14 @@ While a line is one of `accepted` or `done`, when the person runs `work start`, 
 = refused: does not parse at `done`
 While a line is one of `accepted`, when the person runs `work start`, `work` shall print the line.
 = refused: does not parse at when
+# the number of Ks (b240, construct #3): printed, a thing; compared with a number word or a code
+When a session ends a stage, `work` shall print the number of lines of the stage.
+When a session ends a stage, `work` shall print the number of sessions that follow the stage.
+When a session ends a stage, `work` shall print the number of lines of the stage whose outcome is `accepted`.
+While the number of lines of a stage is at least two, when the person runs `work start`, `work` shall end the stage.
+While a stage is `open` and the number of lines of the stage is more than `batch_size`, when the person runs `work start`, `work` shall end the stage.
+While a stage is `open` and the number of lines of the stage is `0`, when the person runs `work start`, `work` shall end the stage.
+While the number of lines of a stage is more than eleven, when the person runs `work start`, `work` shall end the stage.
+= refused: does not parse at eleven
+When a session ends a stage, `work` shall print the number of line of the stage.
+= refused: does not parse at line

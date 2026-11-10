@@ -41,6 +41,7 @@ class Reader:
         self.vocab, self.names, self.counts, self.shared, self.known = vocab, {}, {}, {}, set()
         self.brought = []       # the Givens of the response's boxes: each K brought in, its restrictor
         self.dets, self.images = {}, {}     # a referent said "no K"; an image's "the T of x" (spec_steps4_boxes)
+        self.numbers = {}       # a printed number's referent: its `number` box (spec_lf_number, b240)
         self.choices, self.taken, self.options = list(choices), [], []      # the case of each `or` box
         self.pre = []           # the first line's While, Where and trigger parts: what a value Given meets
         self.actors = {t: ("a_%s_%d" % (spec_rgl.slug(t), n + 1), k) for n, (t, k) in enumerate(vocab.actors)}
@@ -93,7 +94,7 @@ class Reader:
     def np(self, ref, slot, a=False):
         """The `K_NP` tree of a referent in a slot of kind `slot`; with `a`, "a K" of its kind."""
         S = kid(slot)
-        if ref in self.images:
+        if ref in self.images or ref in self.numbers:
             return boxes.np_image(self, ref, slot)
         if ref in self.dets:
             a = self.dets[ref]

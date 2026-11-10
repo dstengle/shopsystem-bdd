@@ -85,6 +85,10 @@ def box_said(st, box):
     if box.op == "case":
         return 'one case of an "or"'
     kind = box.refs[0].kind
+    if box.op == "number":
+        return '"the number of %s ..."' % noun(st, kind, True)
+    if box.op == "count" and isinstance(box.count[1], core.Ref):
+        return '"%s %s %s ..."' % (box.count[0], box.count[1].value, noun(st, kind, True))
     if box.op == "count":
         bound, n = box.count
         return '"%s %s %s ..."' % (bound, NUMBERS.get(n, n), noun(st, kind, n != 1))

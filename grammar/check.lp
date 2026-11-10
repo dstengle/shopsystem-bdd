@@ -18,6 +18,7 @@
 #defined each/2.   #defined only/5. #defined rattr/4.  #defined rrel/4.  #defined akind/2.
 #defined cnl4/1.  #defined count/7. #defined onattr/4.
 #defined ccmp/6.  #defined ckey/4.  #defined vkey/3.  #defined dense/1.  #defined uin/4.
+#defined ccount/4. #defined csig/5.  #defined csiga/5.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
@@ -267,6 +268,20 @@ uinv(A,B,S,U,T,V) :- side(A,B,S), uin(S,U,T,V).
 out(A,B) :- uinw(A,B,N,Z,S,U,T), has(A,B,N,Z,T,W,pos), not uinv(A,B,S,U,T,W).
 uinok(A,B,N,Z,S,U,T) :- uinw(A,B,N,Z,S,U,T), uinv(A,B,S,U,T,V), not has(A,B,N,Z,T,V,neg).
 out(A,B) :- uinw(A,B,N,Z,S,U,T), not uinok(A,B,N,Z,S,U,T).
+% "the number of Ks that P is more than n" (b240, construct #3): `ccount(R,X,B,N)` of the K X it counts, X's
+% restrictions `csig(R,X,L,Y,Pol)` (an edge L, r(Q) from X or i(Q) into X, to Y) and `csiga(R,X,T,V,Pol)`. Two sides
+% that count one set of things (their counted Ks restricted alike under this unification) with bounds that no number
+% of things meets both of never fire together (`#count`, as two counts of one act are read below)
+cz(A,B,S,Z,I) :- side(A,B,S), ccount(S,X,_,_), at(A,B,S,X,Z), I = (S,X).
+csg(A,B,S,Z,r(L,Zy,P)) :- side(A,B,S), csig(S,X,L,Y,P), at(A,B,S,X,Z), at(A,B,S,Y,Zy).
+csg(A,B,S,Z,a(T,V,P)) :- side(A,B,S), csiga(S,X,T,V,P), at(A,B,S,X,Z).
+cdif(A,B,Z1,Z2) :- cz(A,B,A,Z1,_), cz(A,B,B,Z2,_), csg(A,B,A,Z1,G), not csg(A,B,B,Z2,G).
+cdif(A,B,Z1,Z2) :- cz(A,B,A,Z1,_), cz(A,B,B,Z2,_), csg(A,B,B,Z2,G), not csg(A,B,A,Z1,G).
+cnum(0..M) :- M = #max{ N+1 : ccount(_,_,_,N) }, M >= 0.
+cadm(S,X,M) :- ccount(S,X,least,N), cnum(M), M >= N.    cadm(S,X,M) :- ccount(S,X,most,N), cnum(M), M <= N.
+cadm(S,X,N) :- ccount(S,X,exactly,N).                    cadm(S,X,M) :- ccount(S,X,more,N), cnum(M), M > N.
+cadm(S,X,M) :- ccount(S,X,fewer,N), cnum(M), M < N.
+out(A,B) :- cz(A,B,A,Z1,(A,X)), cz(A,B,B,Z2,(B,Y)), not cdif(A,B,Z1,Z2), #count{ M : cadm(A,X,M), cadm(B,Y,M) } = 0.
 
 % ---- L1: the clash of a pair, under one unification ---------------------------------------------------------------
 % A pair that cannot fire together under this unification is out, or unfit: soft, so that one pair never makes the

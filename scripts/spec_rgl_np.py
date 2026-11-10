@@ -11,7 +11,8 @@ comment", which means "a comment of a request"); a row whose word is `in` gives 
 code (`T_PtCode`), "the T of x is after v" (`T_Cmp`), "the T of x is after v and before w" (`T_Between`), and, ordered
 by number, "the T of x is v" and "x is v" of a code (`T_IsCodeOf`, `T_<K>_IsCode`, the Given of a value no entry
 lists). Each attribute with `Values:` gives a list of them, "the T of x is one of `a` or `b`", "is not `a` or `b`"
-and "x has no T" (`sets`, b240). "no K" is the base grammar's
+and "x has no T" (`sets`, b240). Each kind gives "the number of Ks" over its noun with what restricts it, a value
+(`Count_NP`) that is a thing and is compared with a number word or a code (`counts`, b240). "no K" is the base grammar's
 determiner `DetNo`; lists with and/or and "only" are spec_rgl's `K_Arg`.
 """
 import spec_rgl
@@ -103,8 +104,33 @@ def ordered(w, T, t, ks):
                   "mkS p (mkCl x (mkVP (ParadigmsEng.mkAdv c.s)))", "p x c")
 
 
+NUMBERS = ("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")
+COMPARE = {"More": "more than", "Less": "less than", "AtLeast": "at least", "AtMost": "at most", "Is": None}
+
+
+def counts(w, vocab):
+    """"the number of Ks that P" (`K_NumberOf`, b240, construct #3): a `Count_NP`, a thing (`Count_Up`), and "the
+    number of Ks is more than n" (`Count_Cmp`), n a number word (`Count_<n>`) or a code (`Count_Code`)."""
+    w.cat("Count_NP", "NP")
+    w.cat("Count_Op", "{s : Str}")
+    w.cat("Count_Val", "{s : Str}")
+    for k in vocab.kinds:
+        K = spec_rgl.kid(k)
+        w.fun(K + "_NumberOf", "%s_CN -> Count_NP" % K, 'mkNP the_Det (mkCN (mkN "number") (SyntaxEng.mkAdv '
+              '(mkPrep "of") (mkNP aPl_Det cn)))', "cn")
+    w.fun("Count_Up", "Count_NP -> k_thing_NP", "x", "x")
+    for name, said in COMPARE.items():
+        w.fun("Count_Op" + name, "Count_Op", "{s = %s}" % (spec_rgl.s(said) if said else "[]"))
+    for n, word in enumerate(NUMBERS, 1):
+        w.fun("Count_%d" % n, "Count_Val", "{s = %s}" % spec_rgl.s(word))
+    w.fun("Count_Code", "Code -> Count_Val", "c", "c")
+    w.fun("Count_Cmp", "Count_NP -> Count_Op -> Count_Val -> Cond",
+          "mkS (mkCl x (mkVP (ParadigmsEng.mkAdv (o.s ++ v.s))))", "x o v")
+
+
 def noun_phrases(w, vocab):
     """Every noun-phrase fun of `vocab` written to `w`; the kinds a row gave a state frame (spec_rgl's `S_Holds`)."""
     attributes(w, vocab)
+    counts(w, vocab)
     return rows(w, vocab)
 

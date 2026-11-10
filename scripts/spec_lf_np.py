@@ -95,6 +95,9 @@ def np(st, tree):
     t, rest = st.names.attr(name)
     if t is not None:
         return value_np(st, t, owner(st, tree))
+    if name == "Count_Up":      # "the number of Ks that P" (b240)
+        import spec_lf_number  # here: spec_lf_number imports this module
+        return spec_lf_number.np(st, a[0])
     raise unknown(tree)
 
 

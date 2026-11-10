@@ -8,6 +8,7 @@ resolved or noted as they are translated, and `spec_lf_read.refusal` reads the f
 import spec_lf_clause
 import spec_lf_core
 import spec_lf_np
+import spec_lf_number
 import spec_lf_order
 import spec_lf_set
 import spec_lf_time
@@ -75,12 +76,13 @@ def ref(r):
 
 def box(b, depth):
     pad = "  " * depth
-    op = b.op + (" %s %d" % b.count if b.count else "")
+    op = spec_lf_number.show(b, term) if b.op == "number" or b.count and isinstance(b.count[1], Ref) else \
+        b.op + (" %s %d" % b.count if b.count else "")
     head = pad + op + (" [%s]" % ", ".join(ref(r) for r in b.refs) if b.refs else "")
     out = [head]
     for c in b.body:
         out += box(c, depth + 1) if isinstance(c, Box) else [pad + "  " + atom(c)]
-    if b.scope is not None:
+    if b.scope is not None and (b.scope.refs or b.scope.body):     # a compared number's count has none (b240)
         out += box(b.scope, depth + 1)
     return out
 

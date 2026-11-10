@@ -7,7 +7,8 @@ context, call 7) or `constant` (an actor, a code that is a word of the context).
 action verb's frame, with its event), `state` (a state verb's frame), `rel` (a relation row: has, holds, of, in) or
 `attr` (an attribute's value). A box (`Box`) is a part of the rule (`while`, `where`, `when`, `if`, `response`) or
 `not`, `every`, `only`, `count` (each with its referents, its body and, for every, only and count, its scope; a count
-its bound and number, as ("at least", 2): call 4, I15) or `or` of `case`s.
+its bound and number, as ("at least", 2): call 4, I15; a number a parameter's referent, b240), `number` (the Ks "the
+number of Ks that P" counts, its `count` the number's referent: spec_lf_number, b240) or `or` of `case`s.
 """
 from dataclasses import dataclass, field, replace
 
@@ -35,7 +36,7 @@ class Box:
     refs: tuple = ()
     body: tuple = ()
     scope: object = None    # every, only, count: the Box of what holds of each referent
-    count: tuple = None     # count: (its bound, its number), as ("at most", 1)
+    count: tuple = None     # count: (its bound, its number), as ("at most", 1); number: the number's Ref
 
 
 @dataclass(frozen=True)
@@ -166,12 +167,12 @@ def _go(items, build, chosen, neg_at, i):
     return own + refs, a.restr + conds
 
 
-CLOSING = ("not", "every", "only", "count", "case")
+CLOSING = ("not", "every", "only", "count", "number", "case")
 
 
 def closed(conds, box=None):
-    """{referent: the innermost box it is made in} of `conds`' referents inside a not, every, only or count box ("no"
-    is a not box) or a case of an or: none is accessible outside its box. A scope's referents are its box's."""
+    """{referent: the innermost box it is made in} of `conds`' referents inside a not, every, only, count or number
+    box ("no" is a not box) or a case of an or: none is accessible outside its box. A scope's referents are its box's."""
     out = {}
     for c in conds:
         if isinstance(c, Box):
@@ -183,8 +184,11 @@ def closed(conds, box=None):
 
 
 def least(count):
-    """The fewest things a count (bound, number) admits: "at most" and "fewer than" admit none."""
+    """The fewest things a count (bound, number) admits: "at most" and "fewer than" admit none; of a parameter's
+    number (a Ref) "more than" admits one, any other bound none."""
     bound, n = count
+    if isinstance(n, Ref):
+        return 1 if bound == "more than" else 0
     return {"at least": n, "exactly": n, "more than": n + 1}.get(bound, 0)
 
 

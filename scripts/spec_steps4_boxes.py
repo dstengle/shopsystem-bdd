@@ -10,12 +10,15 @@ spec_steps4, whose Reader (`r`) they extend:
   "at most n" and "fewer than n" one past the most it admits (n + 1, n) with the Then on the last of them negated; a
   `not` over a response object's attribute ("a stage whose status is not `done`") a Given of the K that does not
   meet it, the K brought in;
+- "the number of Ks that P" printed two Ks brought in, compared with a parameter the Given of the comparison
+  (spec_lf_number, b240);
 - "the T of x" whose value is a referent (an image): no step of its own, the referent named "the T of x" where a
   step says it (`image`), so no Given names its value.
 A box of any other shape is a TraceError naming it.
 """
 from dataclasses import replace
 
+import spec_lf_number
 import spec_rgl
 from spec_lf_core import Atom, Box, Ref, least
 
@@ -34,6 +37,8 @@ def given(r, box, pos):
         return no(r, box)
     if box.op == "every" and pos:
         return [s for sub in list(box.body) + list(box.scope.body) for s in r.given(sub)]
+    if box.op == "count" and pos and isinstance(box.count[1], Ref):    # compared with a parameter (b240)
+        return spec_lf_number.compared(r, box)
     if box.op == "count" and pos:
         return [s for c in copies(box, least(box.count)) for sub in list(c.body) + list(c.scope.body)
                 for s in r.given(sub)]
@@ -74,6 +79,14 @@ def bring(r, box):
 
 def acts(r, box, pos):
     """[(act number or None, Then tree)] of an `only`, a `count` or a negated restriction in a response."""
+    if box.op == "number" and pos:      # a printed number (b240): two Ks it counts
+        spec_lf_number.bring(r, box)
+        return []
+    numbers = [b for b in box.body if isinstance(b, Box) and b.op == "number"]
+    if box.op == "not" and pos and numbers and len(box.body) == len(numbers) + 1:     # "not print the number of"
+        for b in numbers:
+            spec_lf_number.bring(r, b)
+        return r.acts([box.body[-1]], False)
     if box.op == "only" and pos:
         bring(r, box)
         return r.acts(box.scope.body)
@@ -120,7 +133,9 @@ def image(r, atom):
 
 
 def np_image(r, ref, slot):
-    """The `K_NP` tree of an image in a slot: "the T of x", a thing."""
+    """The `K_NP` tree of an image in a slot: "the T of x", a thing; a printed number's spec_lf_number's."""
+    if ref in r.numbers:
+        return spec_lf_number.step_np(r, ref, slot)
     T, k, owner = r.images[ref]
     if slot != "thing":
         raise TraceError("no step of the %s of a %s in a slot of %s" % (T, k, slot))

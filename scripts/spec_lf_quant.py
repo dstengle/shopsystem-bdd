@@ -14,6 +14,7 @@ section 7.4), beside spec_lf_facts, whose walk (`w`) emits them:
 
 Anything else in such a box has no translation: a ValueError naming it.
 """
+import spec_lf_number
 import spec_lf_values
 from spec_lf_core import Atom, Box, Ref, least
 
@@ -67,13 +68,16 @@ def _literals(body, pol):
 
 
 def count(w, box):
-    if len(box.refs) != 1 or box.scope.refs:
+    if box.scope.refs or len(box.refs) != 1 and box.scope.body:
         raise ValueError("no translation of a count there")
+    if not box.scope.body:      # the number of Ks compared (b240): its count and signature, whatever it admits
+        spec_lf_number.signature(w, box)
     if not least(box.count):
         return
     x = box.refs[0]
     w.roles(box.refs)
-    w.emit("ccount", x.name, BOUNDS[box.count[0]], box.count[1])
+    if box.scope.body:
+        w.emit("ccount", x.name, BOUNDS[box.count[0]], box.count[1])
     for item in list(box.body) + list(box.scope.body):
         w.literal(item)
 

@@ -151,7 +151,7 @@ class Premises:
     def rule(self, M):
         """M as Datalog over a query variable Q: `use(Q,M)` and its antecedent force its responses (tagged M)."""
         f, can = self.reqs[M], self.canon(M)
-        if f["only"] or f["holds"] or f["free"] or f["uall"] or f["ccount"] or f["onattr"] or f["ccmp"]:
+        if f["only"] or f["holds"] or f["free"] or f["uall"] or f["ccount"] or f["pcount"] or f["onattr"] or f["ccmp"]:
             return []     # never forced: an `every` or a count over the pre-state, a negated restriction, a comparison
         kinds, mq = dict(f["role"]), q(M)
         every = {can[y] for y in self.every(M)} | {can[y] for y in self.neguniv(M)}

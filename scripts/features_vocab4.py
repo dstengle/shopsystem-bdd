@@ -3,7 +3,8 @@ reading under its keyword and the Call features_vocab gives a step of grammar 3,
 handler finds a codified-2 step as it finds a codified-1 one.
 
 The templates: a Given that brings in an instance `GivenK`; example data `GivenCodeText` (a block under the step)
-and `GivenCode` (one value, in `quoted`); a value `GivenK_A`, `ThenK_A`; a state `GivenDoes`,
+and `GivenCode` (one value, in `quoted`); a value `GivenK_A`, `ThenK_A`; the number of Ks compared `GivenCount`
+(its noun phrase the subject, the comparison its one noun phrase, b240); a state `GivenDoes`,
 `GivenDoesNot`, `ThenDoes`, `ThenDoesNot`; a run `WhenRuns`, any other trigger `WhenHappens`; an act `ThenPrints`,
 `ThenPrintsNot`, `ThenExitsOk`, `ThenExitsErr`, `ThenChangesNothing`, else `ThenDoes`, `ThenDoesNot`. A step of
 more than one reading under its keyword (the same text read with a code of two kinds is one) is refused.
@@ -47,6 +48,8 @@ def template(names, keyword, tree):
         event = args[0]
         verb = _verb(names, event[2])
         return ("WhenRuns" if verb == "run" else "WhenHappens"), None, None, verb
+    if fun == "SCond" and args[0][0] == "Count_Cmp":     # the number of Ks compared (b240)
+        return keyword.capitalize() + "Count", None, None, None
     if fun == "SCond":
         cond = args[0]
         t, rest = names.attr(cond[0])
@@ -92,7 +95,10 @@ def step(root, keyword, text):
         elif names.attr(node[0])[0] is not None and "_v_" in node[0]:
             call.values.append(names.value(node[0]))
     row = tree[0] == "SCond" and ROW.match(tree[1][0])
-    if tree[0].endswith("_Does") or tree[0] == "SCond" and (row or not tree[1][0].endswith(("_Is", "_IsCode", "_HasNo"))):
+    if name.endswith("Count"):
+        call.subject = spec_rgl_steps.text(gram, tree[1][1])
+        call.nps = [" ".join(spec_rgl_steps.text(gram, a) for a in tree[1][2:]).strip()]
+    elif tree[0].endswith("_Does") or tree[0] == "SCond" and (row or not tree[1][0].endswith(("_Is", "_IsCode", "_HasNo"))):
         clause = tree[1] if tree[0] == "SCond" else tree
         call.subject = spec_rgl_steps.text(gram, clause[2])
         call.nps = [spec_rgl_steps.text(gram, a) for a in (clause[3:] if row else clause[3][1:])]

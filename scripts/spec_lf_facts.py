@@ -20,6 +20,7 @@ spec_lf_facts_atoms'. An `or` box splits it as spec_facts does (`R#n`,
 """
 import spec_facts
 import spec_lf_modal
+import spec_lf_number
 import spec_lf_quant
 import spec_lf_set
 from spec_facts_np import const
@@ -139,6 +140,8 @@ class Walk(Terms):
                 self.only(item)
             elif item.op == "count" and pos:
                 self.count(item, own | set(item.refs))
+            elif item.op == "number":      # a printed number (b240), or one not printed
+                spec_lf_number.facts(self, item)
             else:
                 raise ValueError("no translation of %s in a response" % item.op)
 

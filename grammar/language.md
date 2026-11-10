@@ -1022,6 +1022,143 @@ While a line is one of `accepted` or `accepted`, when the person runs `work star
 refused: the list of the outcome of a line names `accepted` twice
 ```
 
+### "the number of Ks that P": a count as a value
+
+"the number of Ks that P" is a value: a line may print it, and may compare it with a number. Its noun is any kind's
+in the plural with what restricts it ("lines of the stage", "sessions that follow the stage", "lines of the stage
+whose outcome is `accepted`"). Printed, it is a referent of its own, `x: number`, and a `number` box that says what it
+counts: `number x of [y: K]` over the restrictions of y; the Ks it counts are made inside the box, so no "the K"
+outside it binds to them (R2). Compared, "the number of Ks that P is more than n" is the count box of R7 over the Ks
+with nothing in its scope: "is more than", "is less than" (R7's "fewer than"), "is at least", "is at most" and "is"
+(exactly), n a number word from one to ten or a code; a code of digits is that number, any other code (`batch_size`)
+a parameter (R10), which the box names. In `model logic` a printed number is an object of its own whose restrictions
+are the counted Ks', so two lines that print the numbers of two different sets of things never clash; a compared
+number is a count in a condition (`ccount`), and two lines whose conditions count one set of things with bounds that
+no number meets both of (a clingo `#count`, as two counts of one act are read) never fire together. In a scenario a
+printed number brings in two Ks with their restrictions, and the Then says the number of them; a compared number
+brings in as many Ks as the comparison needs at least (four for "more than three"), and a comparison with a
+parameter is a Given of the comparison itself.
+
+Found by the audit in analysis-tools r49, r50, r53, r56, r57, r58 and r64 (b154: "the run count of the coverage
+map", "the test count of the function", "the untested count of the Python file", "the reference count of the
+identifier", and a Python file that "exceeds" a size limit, each a noun or a verb that hides the number of things),
+batch-measurement r23, r24, r25 and r27 (b156: "round-trip count", "tool-use count", "compaction count"),
+feature-file-tools r45, r46, r61, r64, r79 and r80 (b157: "scenario count", and the counts a line of a capability
+says), design-model-check r202, r203, r239 and r252 (b152), backlog r27 and intake r11 (b158, b159); and in a line of
+batches, "While the number of tasks of the batch is more than `batch_size`, ...". Each says "the number of Ks that
+P".
+
+```reading
+When a session ends a stage, `work` shall print the number of lines of the stage.
+shall [x3: tool `work` (constant)]
+  when [x1: session, x2: stage]
+    end(e1, subject: x1, object: x2)
+  response [x4: number]
+    number x4 of [x5: line]
+      of(x5, x2)
+    print(e2, subject: x3, object: x4)
+```
+
+```reading
+When a session ends a stage, `work` shall print the number of sessions that follow the stage.
+shall [x3: tool `work` (constant)]
+  when [x1: session, x2: stage]
+    end(e1, subject: x1, object: x2)
+  response [x4: number]
+    number x4 of [x5: session]
+      follow(subject: x5, object: x2)
+    print(e2, subject: x3, object: x4)
+```
+
+```reading
+When a session ends a stage, `work` shall print the number of lines of the stage whose outcome is `accepted`.
+shall [x3: tool `work` (constant)]
+  when [x1: session, x2: stage]
+    end(e1, subject: x1, object: x2)
+  response [x4: number]
+    number x4 of [x5: line]
+      of(x5, x2)
+      outcome(x5) = `accepted`
+    print(e2, subject: x3, object: x4)
+```
+
+"shall not print the number of Ks": under `not`, as any object of "shall not" (batch-measurement r24).
+
+```reading
+When a session ends a stage, `work` shall not print the number of lines of the stage.
+shall [x3: tool `work` (constant)]
+  when [x1: session, x2: stage]
+    end(e1, subject: x1, object: x2)
+  response
+    not [x4: number]
+      number x4 of [x5: line]
+        of(x5, x2)
+      print(e2, subject: x3, object: x4)
+```
+
+Compared: R7's count box, with nothing in its scope.
+
+```reading
+While a stage is `open` and the number of lines of the stage is more than three, when the person runs `work start`, `work` shall end the stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: stage]
+    status(x1) = `open`
+    count more than 3 [x2: line]
+      of(x2, x1)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    end(e2, subject: x5, object: x1)
+```
+
+```reading
+While a stage is `open` and the number of lines of the stage is less than `3`, when the person runs `work start`, `work` shall end the stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: stage]
+    status(x1) = `open`
+    count fewer than 3 [x2: line]
+      of(x2, x1)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    end(e2, subject: x5, object: x1)
+```
+
+```reading
+While a stage is `open` and the number of lines of the stage is `0`, when the person runs `work start`, `work` shall end the stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: stage]
+    status(x1) = `open`
+    count exactly 0 [x2: line]
+      of(x2, x1)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    end(e2, subject: x5, object: x1)
+```
+
+A code that is no number is a parameter:
+
+```reading
+While a stage is `open` and the number of lines of the stage is more than `limit`, when the person runs `work start`, `work` shall end the stage.
+shall [x3: number `limit` (parameter), x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+  while [x1: stage]
+    status(x1) = `open`
+    count more than x3 [x2: line]
+      of(x2, x1)
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    end(e2, subject: x6, object: x1)
+```
+
+The Ks a number counts are made inside its box:
+
+```reading
+When a session ends a stage, `work` shall print the number of files in the worktree of the session, and `work` shall print the file.
+refused: "the file" has no antecedent: a file is made inside "the number of files ...", which gives nothing outside it
+```
+
 ## What the language cannot say yet
 
 The limits the rewording keeps, one subsection a limit: the construct the language has not, the lines that need it
