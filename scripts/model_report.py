@@ -96,14 +96,24 @@ def cmd_parse(args):
     return 1 if refused else 0
 
 
+def _requirements(path):
+    """{line number: `<capability>#r<n>`} of a codified capability file's requirements; {} for any other file."""
+    import spec_read
+    if path.parent.name != "capabilities" or not spec_read.codified(path, (spec_read.MARKER, "codified-2")):
+        return {}
+    groups = spec_read.capability(path, (spec_read.MARKER, "codified-2")).groups
+    return {r.line_no: f"{path.stem}#{r.id}" for g in groups for r in g.requirements}
+
+
 def _parse4(args, lines):
-    """`model parse` in grammar 4, the context's `spec/index.md` saying `language: codified-2` (CNL 4's I7a)."""
+    """`model parse` in grammar 4, the context's `spec/index.md` saying `language: codified-2` (CNL 4's I7a); a
+    refused requirement of a capability file named `<capability>#r<n>` (I9)."""
     import spec_grammar
     import spec_grammar4
     if args.grammar != "Req":
         print(f"grammar 4 has no {args.grammar} grammar: a codified-2 context's lines are parsed as requirements")
         return 2
-    refused = 0
+    refused, named = 0, _requirements(Path(args.file)) if args.file else {}
     for n, line in lines:
         head = f"{n}: " if n is not None else ""
         try:
@@ -115,7 +125,7 @@ def _parse4(args, lines):
             print(head + p.tree)
             continue
         refused += 1
-        print(head + p.refusal)
+        print(head + (f"{named[n]}: " if n in named else "") + p.refusal)
         for tree in p.trees:
             print("  tree: " + tree)
         if not p.trees:
