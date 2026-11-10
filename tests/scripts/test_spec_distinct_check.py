@@ -48,8 +48,8 @@ def test_another_k_is_never_the_k_before_it(tmp_path, first, second, clash):
 
 @pytest.mark.parametrize("first, second, clash", [
     # the twin of r276-r278: two lines on one act in two states, the two files in one worktree or in two
-    ("a file in a worktree and another file in the same worktree", "a file in a worktree and another file in a "
-     "different worktree", False),
+    ("a file in a worktree and another file in the same worktree", ("a file in a worktree and another file in a "
+                                                                   "different worktree"), False),
     ("two files in a worktree", "a file in a worktree and another file in a different worktree", False),
     ("two files in a worktree", "a file in a worktree and another file in the same worktree", True),
     ("two files in a worktree", "two files in a worktree", True),
