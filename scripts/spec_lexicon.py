@@ -27,7 +27,8 @@ LETTER = {"actor": "a", "kind": "k", "attribute": "t", "value": "v", "relation":
 CORE_VERBS = {"run", "print", "hold", "exit", "become", "set", "be"}
 
 ENTRY = re.compile(r"^- \*\*(?P<term>.+?)\*\*\s*(?:\((?P<cat>[^)]*)\))?\s*:\s*(?P<text>.*)$", re.DOTALL)
-FIELDS = ("Values", "Transitions", "Means", "Forms", "Frame", "Plural", "Not", "Kind of", "This", "Redefines")
+FIELDS = ("Values", "Transitions", "Means", "Forms", "Frame", "Plural", "Not", "Kind of", "This", "Redefines", "Schema",
+          "Field of")
 ASPECTS = ("state", "action")
 FIELD = re.compile(r"(?:^|\s)(?:%s):" % "|".join(FIELDS))
 
@@ -51,6 +52,8 @@ class Term:
     aspect: str = ""      # a verb's: state or action (`(verb, state)`), "" when it says neither (v_t14)
     frames: tuple = ()    # a verb's every `Frame:`: one meaning, one predicate
     this: str = ""        # a kind's `This:`, the run's own thing of that kind
+    schema: tuple = ()    # an artifact's `Schema:` as (schema type, file), stored, checked by nothing yet (b241)
+    field_of: str = ""    # an attribute's `Field of:`, the artifact it is a field of, stored (b241)
 
     @property
     def key(self):
@@ -94,6 +97,8 @@ def _category(raw):
     initiative` -> ("attribute", ("initiative",), ""), `noun, exclusive` -> ("resource", (), "exclusive"); a relation
     entry (a problem, v_t8) as a relation; anything else, plugin 2.x's categories among them, as no category ("")."""
     raw = " ".join(raw.split())
+    if raw == "artifact":   # one part of speech: "the comment form" a proper noun, "layout" a noun, under artifact
+        return "artifact", (), ""
     if raw.startswith("relation"):
         parts = re.split(r"\s*(?:→|->)\s*", raw[len("relation"):].strip())
         return "relation", tuple(p.strip() for p in parts if p.strip()), ""
@@ -114,18 +119,22 @@ def entry(bullet, where):
         return None
     label = " ".join((found.group("cat") or "").split())
     category, kinds, resource = _category(label)
-    text = found.group("text").strip()
+    text, term = found.group("text").strip(), found.group("term").strip()
+    if category == "artifact":
+        category = "actor" if term.startswith(("the ", "`")) else "kind"
+    schema = re.match(r"(.+?),?\s*`([^`]+)`$", _field(text, "Schema"))
     aspect = label.partition(", ")[2] if category == "event" else ""
     transitions = []
     for row in _field(text, "Transitions").split(";"):
         step = re.match(r"\s*(.+?)\s*(?:→|->)\s*(.+?):\s*(.+?)\s*$", row)
         if step:
             transitions.append(step.groups())
-    return Term(term=found.group("term").strip(), category=category, kinds=kinds, text=text, where=where,
+    return Term(term=term, category=category, kinds=kinds, text=text, where=where,
                 values=_list(_field(text, "Values")), transitions=tuple(transitions),
                 forms=_list(_field(text, "Forms")), plural=_field(text, "Plural"), nots=_list(_field(text, "Not")),
-                resource=resource, supertype=_field(text, "Kind of"), frame=_field(text, "Frame"), label=label,
-                aspect=aspect, frames=_fields(text, "Frame"), this=_field(text, "This"))
+                resource=resource, supertype=_field(text, "Kind of") or ("artifact" if label == "artifact" else ""), frame=_field(text, "Frame"), label=label,
+                aspect=aspect, frames=_fields(text, "Frame"), this=_field(text, "This"),
+                schema=schema.groups() if schema else (), field_of=_field(text, "Field of"))
 
 
 def gloss(text):
@@ -244,7 +253,7 @@ def unlabelled(lexicon):
             found.append("%s: %s %s" % (t.where, t.term, fix))
     if not found:
         return None
-    return ("terms that do not name their part of speech (write each as (noun), (proper noun), (verb), "
+    return ("terms that do not name their part of speech (write each as (noun), (proper noun), (artifact), (verb), "
             "(adjective of <kind>), (attribute of <kind>) or (noun, <resource>)): " + "; ".join(found))
 
 
@@ -286,4 +295,4 @@ def problems(lexicon, outer=frozenset()):
             for t in lexicon.terms if not one_sentence(gloss(t.text))]
     out += [("v_t9", t.term, "%s: the meaning is a Means: field; write one Def sentence, or a gloss" % t.where)
             for t in lexicon.terms if re.search(r"(?:^|\s)Means:", t.text)]
-    return sorted(set(out + spec_relations.problems(lexicon) + spec_frames.problems(lexicon, outer)))
+    return sorted(set(out + spec_relations.problems(lexicon, outer) + spec_frames.problems(lexicon, outer)))

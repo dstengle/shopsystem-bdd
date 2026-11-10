@@ -39,8 +39,8 @@ def test_a_word_a_pack_defines_needs_redefines_naming_that_pack(tmp_path):
 def test_the_cli_pack_holds_the_command_line_words_and_defines_refuse():
     text = (spec_packs.PLUGIN / "cli.md").read_text()
     words = {t.term for t in spec_packs.terms(spec_packs.PLUGIN / "cli.md", "grammar/packs/cli.md")}
-    assert words == {"tool", "command", "option", "reason", "output", "run", "print", "exit", "change", "refuse",
-                     "name"}
+    assert words == {"tool", "command", "option", "reason", "output", "artifact", "run", "print", "exit", "change",
+                     "refuse", "conform", "name"}
     assert "A tool refuses a command when it exits with an error on it." in text.split("## Definitions", 1)[1]
 
 
