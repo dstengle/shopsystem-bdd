@@ -1,7 +1,8 @@
 ---
 id: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
 title: shopsystem-bdd
-language: codified-1
+language: codified-2
+imports: [cli]
 ---
 
 # shopsystem-bdd
@@ -14,8 +15,10 @@ stages, initiatives, work-items, proposals and delegations) is retired
 (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired), its capabilities kept as the
 record of their ids, and `.shop/work/` is frozen as history. Every capability file is codified (design model v5): the
 glossary below is typed, `spec/universal.md` holds the universal conditions, and `spec/restated.json` freezes the
-0.29 ids. Verify with `python3 scripts/model check`; the decisions index, `spec/decisions/index.md`, is written by
-`python3 scripts/model decisions`; `python3 scripts/model rules` lists every rule with its label.
+0.29 ids. This index says `codified-2` and imports the CLI pack (CNL 4): a capability that still says `codified-1`
+keeps parsing in the old grammar over the glossary and its own terms, and the glossary's words the pack defines too
+are marked `Redefines: cli`. Verify with `python3 scripts/model check`; the decisions index, `spec/decisions/index.md`,
+is written by `python3 scripts/model decisions`; `python3 scripts/model rules` lists every rule with its label.
 
 ## Purpose
 
@@ -109,7 +112,7 @@ The simplified workflow:
 - **`measure`** (proper noun): the tool that measures a merged batch, records a defect found after a merge, and shows and compares measurements. Kind of: tool.
 - **`migrate`** (proper noun): the tool that migrates a repository to the final layout and upgrades it between plugin releases. Kind of: tool.
 - **`model`** (proper noun): the tool that checks a repository against the design model and reads its requirements. Kind of: tool.
-- **tool** (noun): any of the commands `work`, `features`, `tools`, `measure`, `migrate` and `model`. Kind of: agent.
+- **tool** (noun): any of the commands `work`, `features`, `tools`, `measure`, `migrate` and `model`. Kind of: agent. Redefines: cli.
 - **worker** (noun): a session `work run` starts with `claude -p` for one stage of one work-item, as that stage's agent. Kind of: stage.
 
 - **bounded context** (noun): one repository's spec, with its index, capabilities, decisions and glossary.
@@ -167,8 +170,8 @@ The simplified workflow:
 - **file** (noun): a file or a directory of the repository or of a worktree. Kind of: text.
 - **text** (noun): what a session or a tool writes: a file, or a part of one it writes whole, such as an entry, a line, a row, a block or a comment. Kind of: thing.
 - **thing** (noun): anything a requirement names, as what a verb such as keep, name, read or use takes.
-- **command** (noun): one run of `work`, `work run` or another tool, with its arguments. Kind of: thing.
-- **reason** (noun): what an error names as the cause of a refused command. Kind of: text.
+- **command** (noun): one run of `work`, `work run` or another tool, with its arguments. Kind of: thing. Redefines: cli.
+- **reason** (noun): what an error names as the cause of a refused command. Kind of: text. Redefines: cli.
 - **JSON object** (noun): the one object a tool prints on standard output when `--json` is given.
 - **resource** (noun): what a session holds while it runs: a lock, a claim, a worker slot, a turn, an initiative directory or the checkout.
 - **initiative branch** (noun): the branch `work run` commits each transition on and merges each work-item branch into, whose base is the commit it started from. Plural: initiative branches. Not: integration branch.
@@ -229,9 +232,9 @@ The simplified workflow:
 - **merge** (verb, action): `work run` merges a work-item branch into the initiative branch. Forms: merges, merged. Frame: the person merges pull request.
 - **rerun** (verb, action): `work run` runs a failing scenario once more, alone. Forms: reruns, rerun. Frame: `work run` reruns scenario.
 - **raise** (verb, action): an initiative raises a request into an upstream. Forms: raises, raised. Frame: initiative raises request.
-- **refuse** (verb, action): a tool declines a command. Frame: tool refuses command.
+- **refuse** (verb, action): a tool declines a command. Frame: tool refuses command. Redefines: cli.
 - **write** (verb, action): a session or a tool writes a file or a field. Forms: writes, written. Frame: agent writes text.
-- **change** (verb, action): a session or a tool changes a file or a field. Frame: agent changes file.
+- **change** (verb, action): a session or a tool changes a file or a field. Frame: agent changes file. Redefines: cli.
 - **give** (verb, action): a session or a tool gives a text a thing it lacks, such as a grade to a review finding. Forms: gives, given. Frame: agent gives thing to text.
 
 - **spec lock** (noun, exclusive): one for each bounded context, held by every integrate, apply and formulate round.
