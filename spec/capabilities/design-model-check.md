@@ -141,7 +141,7 @@ context: product-level artifacts are read only where the files contain them.
 - **overridden** (adjective of requirement): a When requirement over which an If requirement of the same trigger takes precedence.
 
 - **oblique** (adjective of term): a verb whose frame takes a kind after its object behind a preposition other than `to`, as in `Frame: agent records thing in file.`.
-- **later-sensed** (adjective of requirement): a requirement of a capability whose file has `language: codified-1`, with a verb in the sense of an entry of the verb that is not its first, as in "`trial-runner` shall name the target" under `Frame: agent names thing.` when an entry `Frame: text names thing.` comes before it.
+- **later-sensed** (adjective of requirement): a requirement of a capability whose file has `language: codified-1`, with a verb read by an entry of the verb that is not its first, as in "`trial-runner` shall name the target" under `Frame: agent names thing.` when an entry `Frame: text names thing.` comes before it.
 
 - **embedding** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, with "the" before a noun inside a modifier of a noun phrase of the same kind, where an earlier noun phrase of that kind gives it, as in "When the person runs `work request --raised-for` on a request, `work` shall write a request raised for the request.".
 - **self-embedding** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, with "the" before a noun inside a modifier of a noun phrase of the same kind, where no earlier noun phrase of that kind gives it, as in "`work` shall write a request raised for the request" with no request before it.
@@ -160,7 +160,7 @@ context: product-level artifacts are read only where the files contain them.
 - **setting** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, whose response says that an agent shall set an attribute of a thing the line names earlier to a value, as in "set the status of the request to `delivered`" or "set its status to `delivered`".
 
 - **quantifying** (adjective of capability): a capability with a line whose While clause says "every K" that meets a restrictor and a line of one trigger whose response conflicts with it in a state where every K meets it.
-- **thresholded** (adjective of capability): a capability with a line whose While clause says a count of Ks, as "at least two Ks", and a line of one trigger whose response conflicts with it in a state that meets the count.
+- **thresholded** (adjective of capability): a capability with a line whose While clause says a count of Ks, as "at least two Ks", and a line of one trigger whose response conflicts with it in a state that meets that count.
 - **excepting** (adjective of capability): a capability with a line that obliges an agent to act on a K that does not meet a restrictor, as "a K that is not `done`", and a line that forbids that act on such a K under one trigger and state.
 
 ## Behaviour
