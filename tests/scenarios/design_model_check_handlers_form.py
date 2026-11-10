@@ -26,8 +26,10 @@ TRIGGER = "end(e1, subject: x1, object: x2)"
 
 @handler("WhenRuns", "`model parse --form`")
 def model_parse_form(step):
-    """`model parse --form` on the capability file that holds r1, in the codified-2 world."""
-    if not (step.repo / "spec" / "capabilities" / "thing.md").is_file():
+    """`model parse --form` on the capability file that holds r1 (`thing`, else `shelf`), in the codified-2 world."""
+    caps = step.repo / "spec" / "capabilities"
+    if not (caps / "thing.md").is_file():
         C2.context(step.repo, H.PATH, [LINE])
         H.says(step, "l1", TRIGGER)
-    H.run_model(step, "parse", "--form", "--file", str(step.repo / "spec" / "capabilities" / "thing.md"))
+    held = [p for p in (caps / "thing.md", caps / "shelf.md") if p.is_file() and "- [r1] " in p.read_text()]
+    H.run_model(step, "parse", "--form", "--file", str((held or [caps / "thing.md"])[0]))

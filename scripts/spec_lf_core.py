@@ -79,6 +79,7 @@ class State:
         self.clauses = None     # spec_lf_clause, which the relative clauses of spec_lf_np are read by
         self.notes = []         # the reading rules' refusals met while translating (spec_lf_read), in order
         self.open = []          # the referents whose noun phrases are being read: R2 passes over them
+        self.boxed = set()      # the referents made inside a no, not, every or only box already read: R2 passes over
         self.modality = None    # shall, may, always, never: the first a response or a necessity says (I17)
 
     def ref(self, kind, origin=None, value=None, definite=False):
@@ -104,6 +105,12 @@ class State:
         """The latest referent of `kind` or a kind under it that a part introduced, or None."""
         return next((r for r in reversed(self.refs) if r.origin in ORIGINS[:3]
                      and kind in self.vocab.ancestors(r.kind)), None)
+
+    def apply(self, args, build, neg_at=None):
+        """`apply`, the referents of each no, not, every or only box it gives kept as boxed (R2, b222)."""
+        refs, conds = apply(args, build, neg_at)
+        self.boxed.update(closed(conds))
+        return refs, conds
 
     def event(self):
         self.events += 1
@@ -144,6 +151,20 @@ def _go(items, build, chosen, neg_at, i):
     if a.quant == "no":
         return [], [Box("not", _uniq(own + refs), _uniq(a.restr + conds))]
     return own + refs, a.restr + conds
+
+
+CLOSING = ("not", "every", "only")
+
+
+def closed(conds, inside=False):
+    """The referents of `conds` inside a not, every or only box ("no" is a not box): none is accessible outside it."""
+    out = []
+    for c in conds:
+        if isinstance(c, Box):
+            here = inside or c.op in CLOSING
+            out += list(c.refs) if here else []
+            out += closed(c.body, here) + (closed([c.scope], here) if c.scope is not None else [])
+    return out
 
 
 def least(count):

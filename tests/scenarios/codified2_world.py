@@ -70,13 +70,23 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
          # bound to the trigger's stage, and refused when only the stage it modifies would give it
          "embedding": ("When a session ends a stage, `work` shall print a stage that precedes the stage.", None),
          "self-embedding": ("When the person runs `work start`, `work` shall print a stage that precedes the stage.",
-                            '"the stage" has no antecedent')}
+                            '"the stage" has no antecedent'),
+         # a "the" after a noun phrase of its kind inside a "not" box (R2, b222): bound to the trigger's stage, outside
+         # the box; and refused when only a stage inside a "no" box would give it
+         "shadowed": ("When a session ends a stage, `work` shall not end a stage and print the stage.", None),
+         "unreachable": (("While no session follows a stage, when the person runs `work start`, `work` shall print "
+                          "the stage."), '"the stage" has no antecedent outside a "no", "not", "every" or "only" box')}
 # a condition's glossary entries, added to the fixture's
 TERMS = {"embedding": ["- **precede** (verb, state): a stage comes before a stage. Frame: stage precedes stage."]}
 TERMS["self-embedding"] = TERMS["embedding"]
 # a condition whose line `features generate` writes: its capability is `shelf`, and the step its feature must hold
 # (the new stage precedes the trigger's, not itself)
-SHELVED = {"embedding": r"^    Then the stage s3 precedes the stage s2$"}
+SHELVED = {"embedding": r"^    Then the stage s3 precedes the stage s2$",
+           "shadowed": r"^    And `work` prints the stage s2$"}
+
+# a condition's reading `model parse --form` prints, by the instance the scenario names it (R2, b222: the response
+# prints the trigger's stage, x2, not the stage x4 inside the "not" box)
+READINGS = {"shadowed": {"a1": "print(e3, subject: x3, object: x2)"}}
 
 TIMED = {"timed", "clocked", "historical", "unitless"}
 
@@ -176,6 +186,8 @@ def requirement(step, word, path):
     index = step.repo / "spec" / "index.md"
     for entry in TERMS.get(word, ()):
         index.write_text(index.read_text() + entry + "\n")
+    for name, said in READINGS.get(word, {}).items():
+        step.context.setdefault("says", {})[name] = said
     if word in SHELVED:
         step.context.setdefault("holds", {})["features/shelf.feature"] = re.compile(SHELVED[word], re.MULTILINE)
     if says:

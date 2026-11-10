@@ -200,10 +200,10 @@ def restricting(st, cn, ref):
     name, a = fun(cn), args(cn)
     row, suffix = st.names.row(name)
     if suffix == "Mod":
-        return core.apply([np(st, a[1])], lambda r: Atom("rel", (row[1], ref, r[0])))
+        return st.apply([np(st, a[1])], lambda r: Atom("rel", (row[1], ref, r[0])))
     if suffix == "Cpd":
         owner_np = det(st, "DetThe", ["%s_UseN" % spec_rgl.kid(row[2]), ""])
-        return core.apply([owner_np], lambda r: Atom("rel", ("of", ref, r[0])))
+        return st.apply([owner_np], lambda r: Atom("rel", ("of", ref, r[0])))
     rest = st.names.kind(name)[1]
     if rest == "UseN":
         return [], []
