@@ -18,16 +18,6 @@ that a line has one reading, that the lines leave nothing to infer and that a sc
 used on demand by the session the person talks to, with a blind `spec-checker` dispatch for each judgment of
 meaning. It reads nothing but `spec/` and `features/`, and integration and formulation do not use it.
 
-## Terms
-
-- **`checking-spec-consistency`** (proper noun): the skill that checks the spec's consistency, run only when the person asks.
-- **consistency finding** (noun): one finding of a consistency pass, naming its ids, written in its findings file.
-- **competing pair** (noun): two requirements that act on one thing, such as one file, one status or one command, without saying which of them wins.
-- **unscoped requirement** (noun): a requirement that leaves to inference which runs, workers or commands it applies to.
-- **misplaced scenario** (noun): a scenario that shows the response of a requirement other than the one it names, or that gives an exit code.
-- **orphan status** (noun): a status or a mode the requirements name, with a way into it or out of it that no requirement gives.
-- **undefined word** (noun): a word a requirement depends on that is neither a term nor spelled out in the requirement.
-
 ## Behaviour
 
 ## Implementation, may change

@@ -20,9 +20,6 @@ nothing and changes nothing in the checkout.
 
 ## Terms
 
-- **probe** (noun): a command the researcher runs to see today's behaviour, in a scratch directory and on none of the checkout's data.
-- **old assumption** (noun): a place in the code that relies on a requirement the work-item changes or replaces, with the tests that execute it.
-- **skipped effect** (noun): a refusal or an effect that only a step of today's processing produces, where a work-item adds a path that skips the step.
 - **module** (noun): a Python file of the repository's code or tests.
 - **line count** (noun): the number of lines of a module and its room under the size limit `CLAUDE.md` gives.
 

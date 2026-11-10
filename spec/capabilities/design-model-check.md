@@ -41,23 +41,7 @@ context: product-level artifacts are read only where the files contain them.
 - **selfavoiding** (adjective of term): a term with a word after `Not:` that is a term of the context, or the term itself.
 - **malformed** (adjective of term): a term whose bullet in the `## Glossary` of `spec/index.md` is in no form of a term entry.
 - **reaching** (adjective of capability-proposal): a `drafted` or `approved` capability-proposal that changes a requirement no capability has.
-- **unformulated** (adjective of capability-proposal): a `formulated` capability-proposal that adds a requirement with no scenario, of a capability that is not of the group `guarantees`.
 - **plural** (adjective of capability-proposal): a capability-proposal that argues more than one capability.
-- **dangling** (adjective of capability-proposal): a capability-proposal that adds or removes an id its capability neither has nor lists as retired.
-- **termless** (adjective of capability-proposal): a capability-proposal whose `adds`, `changes` or `removes` names a `term/<term>` the glossary does not have.
-- **termless** (adjective of glossary-proposal): a glossary-proposal whose `adds`, `changes` or `removes` names a `term/<term>` the glossary does not have.
-- **parentless** (adjective of work-item): a work-item with no `part_of`.
-- **uncommitted** (adjective of work-item): a work-item that is not `withdrawn` and has no `accepts` and no `check`.
-- **misnumbered** (adjective of work-item): a work-item whose file name is not `w<n>.md`.
-- **alien** (adjective of work-item): a work-item whose `part_of` has another context's path, on a kind kept in `.shop/work/`.
-- **misreferenced** (adjective of work-item): a work-item whose `accepts` names a reference that is not `<capability>#r<n>`.
-- **unresolving** (adjective of work-item): a work-item whose `under` names nothing in its repository.
-- **misidentified** (adjective of work-item): a work-item whose `id` is not `<kind>/<context path>/<name>` with its own kind.
-- **homeless** (adjective of work-item): a work-item whose directory has no `initiative.md`.
-- **crowded** (adjective of initiative): an initiative that is not a capability-change and has more than one part directly under it.
-- **unrequested** (adjective of initiative): an initiative dated after 2026-10-23 that fulfils no request.
-- **unwaiting** (adjective of initiative): a `done` initiative while a request whose asker is its context and that names it is not `delivered`.
-- **jobbed** (adjective of initiative): an initiative whose kind is `job` or `job-path`.
 - **unanchored** (adjective of request): a request that is part of no job-thread, cites no origin and is raised for no request.
 - **misresolved** (adjective of request): a `delivered` request whose resolution names a requirement the spec does not have.
 - **misformed** (adjective of request): a request that is not of the form `work request` writes.
@@ -92,7 +76,6 @@ context: product-level artifacts are read only where the files contain them.
 - **unpairable** (adjective of capability): a capability two of whose requirements share a named code that `grammar/check.lp` cannot unify, and two others of whose requirements conflict (an L1).
 
 - **rule catalogue** (noun): the generated file `grammar/rules.md`, one entry a rule. Kind of: file.
-- **violate** (verb, state): a thing does not meet a rule of the rule catalogue. Forms: violates, violated. Frame: thing violates rule.
 - **stale** (adjective of rule catalogue): a rule catalogue that is not what `model rules --write` would write.
 
 - **aspectless** (adjective of term): a verb whose entry says neither `state` nor `action`.

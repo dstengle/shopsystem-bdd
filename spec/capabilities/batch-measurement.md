@@ -17,22 +17,7 @@ tables and compares two of them. It writes no prompt, reply or tool content, and
 not know rather than guessing at it.
 
 ## Terms
-- **initiative log** (noun): the `log.jsonl` of an initiative.
-- **unwritten** (adjective of initiative log): an initiative log for which `work run` has written no `log.jsonl`.
-- **requestless** (adjective of initiative log): the log's initiative fulfils no request.
-- **overfulfilling** (adjective of initiative log): the log's initiative fulfils more than one request.
-- **session file** (noun): a stage's `session.json`, what `claude -p --output-format json` printed for its session.
-- **content** (attribute of session file): whether the session file holds a session, nothing, or a shape `measure`
-  does not know. Values: `filled`, `empty`, `garbled`.
-- **transcript** (noun): a session's JSONL transcript, in Claude Code's own rows or the slim export's.
-- **availability** (attribute of transcript): whether `measure` finds the transcript and knows its shape.
-  Values: `found`, `lost`, `unreadable`.
-- **fulfilled request** (noun): a request the measured initiative fulfils, named by its id.
-- **standing** (attribute of fulfilled request): whether the queue holds the request with an asker, and whether that
-  asker is this bounded context. Values: `internal`, `external`, `unheld`, `askerless`.
 - **logged stage** (noun): a stage the initiative log gives a start for, run in one session.
-- **ending** (attribute of logged stage): whether the initiative log gives the stage an end. Values: `ended`, `unended`.
-- **present** (adjective of measurement): a measurement that is already written for its initiative on its day.
 - **include** (verb, action): `measure` puts a figure or a name into the measurement it writes. Forms: includes, included. Frame: `measure` includes measurement.
 
 ## Behaviour

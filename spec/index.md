@@ -117,7 +117,6 @@ The simplified workflow:
 
 - **bounded context** (noun): one repository's spec, with its index, capabilities, decisions and glossary.
 - **capability** (noun): one file under `spec/capabilities/`, with a group and a narrator. Plural: capabilities. Kind of: file.
-- **guarantees capability** (noun): a capability of the group `guarantees`, checked by `measure` on real batches and not by scenarios. Plural: guarantees capabilities.
 - **requirement** (noun): one codified statement of a capability, named `<capability>#r<n>`, that parses to one tree in the requirement grammar. Not: behaviour requirement, capability requirement, carry, carries, carried, carrying. Kind of: text.
 - **requirement group** (noun): the requirements of a capability that together make one scenario, named `<capability>#g<n>`, with a title.
 - **universal condition** (noun): a statement of `spec/universal.md`, named `U<n>`, true in every state of every trace and never restated in a requirement. Kind of: text.
@@ -125,7 +124,6 @@ The simplified workflow:
 - **design-decision** (noun): one file under `spec/decisions/`. Kind of: file.
 - **feature** (noun): the generated file `features/<capability>.feature`, one scenario for each requirement group. Kind of: file.
 - **scenario** (noun): a Gherkin scenario in `features/<capability>.feature`, generated from one requirement group, passing when the one test that binds it passes. Not: test case.
-- **deprecated scenario** (noun): a scenario kept in its feature file, tagged `@deprecated`, after its line is changed or removed, until its replacement passes. Not: held, holding, superseded.
 - **step** (noun): one Given, When or Then line of a scenario, the linearisation of one step function, bound to exactly one step definition.
 
 - **request** (noun): the one way work enters a bounded context: lines that its asker (another context, the product level, or the context itself) proposes to its upstream (the context asked). Kind of: text.
@@ -137,33 +135,21 @@ The simplified workflow:
 - **work-item** (noun): the unit of delivery under a capability-proposal, named by its id `w<n>`, that `work run` runs through its stages. Kind of: node.
 - **question** (noun): an open point on a node or a request line, with its readings and a recommended reading. Kind of: text.
 - **answer** (noun): the answer to a question on a work-item, a capability-proposal, a glossary-proposal or a request, written in it in its answerer's words. Not: ruling. Kind of: text.
-- **delegation** (noun): the person's words, given with a request, naming the questions a session may answer in the person's place.
 - **node** (noun): an initiative, a proposal or a work-item: anything with a status that `work run` runs through its transitions.
 - **transition** (noun): one change of a node's status, written by `work`. Not: move. Kind of: text.
 - **check** (noun): a command a work-item names in place of scenarios, whose exit code 0 shows its work complete. Not: criterion.
-- **gate** (noun): the person's approval of requirements and glossary entries before they are committed to `spec/`, with the questions they raise. Not: sign-off.
 - **ledger** (noun): the tracked file `.shop/work/<initiative>/ledger.md` of one initiative, one line an event, archived with the initiative.
 
-- **delivery** (noun): one invocation of `work run` on an initiative, from its start until it exits. Plural: deliveries.
 - **stage** (noun): one session `work run` starts for a node from its status: research, plan, implement and review by a worker, a round, an answering session, a branch review or an analysis. Not: phase. Kind of: session.
 - **round** (noun): a stage of the kind `integrate`, `gate`, `apply`, `formulate` or `intake`, numbered under its drafts path. Not: iteration. Kind of: stage.
 - **session** (noun): one Claude Code conversation with its own id and transcript: the person's, a stage or a dispatch. Not: conversation, chat. Kind of: agent.
 - **dispatch** (noun): a session another session starts with its Agent tool, and the transcript it leaves. Plural: dispatches. Not: subagent. Kind of: session.
-- **agent definition** (noun): a definition under `agents/` (its name, model, tools and skills) that a worker or a dispatch is started as. Not: persona.
 - **agent** (noun): a session or a tool, as the one that does what a verb says. Kind of: thing.
-- **brief** (noun): the input data `work run` writes for one stage in its stage directory, naming the node, the files to read, the worktree and where the result goes. Not: task file.
-- **input** (noun): what a session is started with: input data, such as a brief, or an input prompt, the text filled from a template.
-- **template** (noun): standing text in a skill or an agent definition that a session fills with input to start another session. Not: boilerplate.
 - **result** (noun): the file `result.json` a stage writes, giving its outcome, its summary and the files it names. Not: return.
 - **report** (noun): the implementer's file in its stage directory, beside its result, naming the files it touched, the tests whose setup it changed and its open questions. Not: write-up.
-- **hand-back** (noun): an implementer's stop with the outcome `HAND-BACK`, giving the condition and its evidence word for word. Not: handback.
 - **review** (noun): a reviewer's reading of commits against the spec and the repository's rules, written as graded findings: a pull request review or an architecture review. Not: audit. Kind of: text.
 - **review finding** (noun): one graded finding of a review. Kind of: text.
-- **stage directory** (noun): the directory `runs/<node>/<k>-<stage>/` that holds one stage's brief, result, report and session. Plural: stage directories. Not: run directory.
 - **compaction** (noun): Claude Code's replacement of a session's earlier messages by a summary, recorded in its transcript.
-- **round trip** (noun): one assistant message of a session's transcript with its own request id, the unit `--max-turns` limits.
-- **tool use** (noun): one call of a tool in a session's transcript, named by the tool.
-- **fault** (noun): a failure outside a session's work that stops it, such as a push or git command failing.
 - **fact** (noun): one statement `model facts` gives clingo about the repository's files.
 
 - **worktree** (noun): a working tree `work run` makes for one stage.
@@ -173,7 +159,6 @@ The simplified workflow:
 - **command** (noun): one run of `work`, `work run` or another tool, with its arguments. Kind of: thing. Redefines: cli.
 - **reason** (noun): what an error names as the cause of a refused command. Kind of: text. Redefines: cli.
 - **JSON object** (noun): the one object a tool prints on standard output when `--json` is given.
-- **resource** (noun): what a session holds while it runs: a lock, a claim, a worker slot, a turn, an initiative directory or the checkout.
 - **initiative branch** (noun): the branch `work run` commits each transition on and merges each work-item branch into, whose base is the commit it started from. Plural: initiative branches. Not: integration branch.
 - **work-item branch** (noun): the branch an implementer commits a work-item's work on, from the initiative branch's head, merged into the initiative branch and deleted when it is merged. Plural: work-item branches.
 - **commit** (noun): one git commit on a branch, with its message and its change. Kind of: thing.
@@ -184,15 +169,10 @@ The simplified workflow:
 - **test** (noun): one test of the repository's suite, a scenario's or a script's, by its pytest id. Kind of: thing.
 - **violation** (noun): a row of a rule `model check` finds, printed under the rule's code and plain label.
 - **remote** (noun): the remote `work run` pushes the initiative branch to: the branch's upstream remote, else `origin`.
-- **file set** (noun): the paths, globs or directories a work-item says its work changes. Not: fileset, scope.
-- **suite** (noun): every test `python3 -m pytest` runs from the root by default. Not: fast suite.
 
 - **record** (noun): a file under `.shop/records/` whose frontmatter id has a record kind. Not: log entry. Kind of: file.
 - **measurement** (noun): a record under `.shop/records/measurements/` of the figures of one batch, of one earlier delivery or of a trial, written by `measure` or by the trial. Not: facts file. Kind of: record.
 - **trial** (noun): one run by the `trial-runner` of a plugin tool or `work run` on a real target or a fixture repository, measuring what its input names. Kind of: thing.
-- **plugin version** (noun): the plugin release a repository on the final layout is on, recorded as one line in `.shop/plugin-version`.
-- **upgrade** (noun): what `migrate upgrade` does to a repository on the final layout to take it from one plugin release to the next: it applies the pending upgrade steps.
-- **upgrade step** (noun): one change to a repository's files that the plugin holds with the version that introduced it and a one-line description.
 
 - **status** (attribute of initiative): a node's, request's or design-decision's place in its kind's lifecycle, written in its frontmatter by `work`. Values: `proposed`, `started`, `done`, `abandoned`.
   Transitions: `proposed` → `started`: `work start`; `started` → `done`: complete; `started` → `abandoned`: `work abandon`. Not: state.
@@ -213,39 +193,24 @@ The simplified workflow:
 
 - **open** (adjective of initiative): An initiative is open when the initiative is not `done` and the initiative is not `abandoned`.
 - **open** (adjective of work-item): A work-item is open when the work-item is not `green` and the work-item is not `withdrawn`.
-- **complete** (adjective of initiative): An initiative is complete when a work-item of the initiative is `green` and every work-item of the initiative is closed and every capability-proposal part of the initiative is closed and the initiative is not unfixed.
 - **unfixed** (adjective of initiative): an initiative whose kept branch review lists a review finding to fix now.
 - **settled** (adjective of request line): A request line is settled when the request line is `accepted` or the request line is `refused` or the request line is `withdrawn`.
 - **closed** (adjective of capability-proposal): A capability-proposal is closed when the capability-proposal is `formulated` or the capability-proposal is `withdrawn`.
 - **closed** (adjective of glossary-proposal): A glossary-proposal is closed when the glossary-proposal is `approved` or the glossary-proposal is `withdrawn`.
 - **closed** (adjective of work-item): A work-item is closed when the work-item is `green` or the work-item is `withdrawn`.
-- **failed** (adjective of work-item): A work-item is failed when the work-item is `failed`. Not: aborted.
-- **free** (adjective of resource): a resource that no session holds, or a counted resource that fewer sessions hold than its number.
-- **green check** (adjective of work-item branch): a work-item branch on which every test passes, its work-item's scenarios among them.
-
 
 - **start** (verb, action): a session begins a thing it runs, such as a stage or a trial. Frame: session starts thing.
 - **end** (verb, action): a session or a tool stops a thing it runs, such as a stage or a trial, with a result or without one. Frame: agent ends thing.
 - **ask** (verb, action): a session or a tool raises a question that waits for an answer. Frame: agent asks question.
-- **approve** (verb, action): the person approves a proposal at the gate. Frame: the person approves proposal.
 - **discard** (verb, action): `work run` drops a stage that ended without a readable result. Frame: `work run` discards stage.
 - **merge** (verb, action): `work run` merges a work-item branch into the initiative branch. Forms: merges, merged. Frame: the person merges pull request.
-- **rerun** (verb, action): `work run` runs a failing scenario once more, alone. Forms: reruns, rerun. Frame: `work run` reruns scenario.
 - **raise** (verb, action): an initiative raises a request into an upstream. Forms: raises, raised. Frame: initiative raises request.
 - **refuse** (verb, action): a tool declines a command. Frame: tool refuses command. Redefines: cli.
 - **write** (verb, action): a session or a tool writes a file or a field. Forms: writes, written. Frame: agent writes text.
 - **change** (verb, action): a session or a tool changes a file or a field. Frame: agent changes file. Redefines: cli.
 - **give** (verb, action): a session or a tool gives a text a thing it lacks, such as a grade to a review finding. Forms: gives, given. Frame: agent gives thing to text.
 
-- **spec lock** (noun, exclusive): one for each bounded context, held by every integrate, apply and formulate round.
-- **initiative lock** (noun, exclusive): one for each initiative, held by every stage of the initiative that is not a worker's.
-- **node lock** (noun, exclusive): one for each node, held by every stage for that node.
-- **claim** (noun, exclusive): the tracked files a `claimed` work-item holds: those its file set covers and any added with `work claim`. Not: lock, reservation.
-- **worker slot** (noun, counted by `workers`): one of the `workers` of `.shop/delivery.toml` (default 4), held by every worker's stage.
-- **merge lock** (noun, exclusive): one for each initiative branch, held by a merge.
-- **initiative directory** (noun, exclusive): `.shop/work/<initiative>/`, held by the delivery that runs the initiative. Plural: initiative directories.
 - **turn** (noun, exclusive): one for each request, held by the side whose part of the request is to be written next.
-- **checkout** (noun, exclusive): the repository's main working tree, held by one delivery of `work run`.
 
 - **item** (noun): one file of the backlog, `.shop/backlog/b<n>.md`: work this bounded context may do, with its requirement lines, its provenance and its ratings, named by its id `b<n>` and its title. Kind of: file.
 - **backlog** (noun): every item of a bounded context, kept in `.shop/backlog/`.

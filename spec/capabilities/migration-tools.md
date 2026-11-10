@@ -21,8 +21,6 @@ what it needs to know at its start and before it is compacted.
 ## Terms
 - **the SessionStart hook** (proper noun): the plugin's hook that runs `migrate status --hook` when a session starts, and
   gives the session what it prints.
-- **the PreCompact hook** (proper noun): the plugin's hook that runs `migrate compacting` when a session is about to be
-  compacted, and gives the session what it prints.
 - **tracked file** (noun): a file committed in the repository `migrate` runs in.
 - **untracked file** (noun): a file of the repository's working tree that git does not track, or a change not
   committed.
@@ -31,7 +29,6 @@ what it needs to know at its start and before it is compacted.
 - **codified** (adjective of capability): a capability whose file has `language: codified-1` in its frontmatter.
 - **rewrite** (verb, action): `migrate` changes the text of a file in place. Forms: rewrites, rewritten. Frame: `migrate` rewrites file.
 - **rename** (verb, action): `migrate` gives a file another name with git. Forms: renames, renamed. Frame: `migrate` renames file.
-- **append** (verb, action): Forms: appends, appended. Frame: `migrate` appends file.
 - **uncommitted** (adjective of untracked file): an untracked file whose text no commit holds.
 - **unmigrated** (adjective of repository): a repository with a directory of the old layout at its root.
 - **ledgered** (adjective of repository): a repository with the old system's ledger of decisions, `spec/decisions.md`.
@@ -49,7 +46,6 @@ what it needs to know at its start and before it is compacted.
 - **current** (adjective of repository): A repository is current when the repository is `own`.
 - **ahead** (adjective of repository): A repository is ahead when the repository is `newer`.
 - **idle** (adjective of repository): A repository is idle when the repository is `own` and no initiative is open.
-- **busy** (adjective of repository): a repository in which an initiative is open.
 - **shopless** (adjective of repository): a repository without `.shop/`.
 
 - **unframed** (adjective of repository): a repository whose `.shop/plugin-version` names a release after 1.0.0 and before 3.0.0.
