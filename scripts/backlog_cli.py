@@ -58,6 +58,8 @@ def add_parsers(sub):
     where.add_argument("--group", help="the title of the new group the line opens (default: the item's title)")
     where.add_argument("--in", dest="in_group", help="the item's group g<n> the line joins")
     p.add_argument("text", nargs="?", help="the requirement line (or --term)")
+    p.add_argument("--retires", metavar="CAP#rN", help="the live requirement `<capability>#r<n>` the line replaces: "
+                   "its id goes under the block's retired:, the line into that capability")
     p.add_argument("--term", help="a term bullet for the capability's ## Terms, in place of a line")
     p.add_argument("--relation", help="a row `| from | word | to | cardinality |` for the capability's ## Relations")
     p.add_argument("--given", nargs=2, metavar=("GROUP", "BLOCK"),
@@ -113,6 +115,13 @@ def cmd_line(args):
         raise backlog_items.Refused("work line: give one of a requirement line, --term, --relation, --given, "
                                     "--universal or --upstream")
     piece = given[0]
+    if args.retires is not None:
+        if piece != "text":
+            raise backlog_items.Refused("work line: --retires takes a requirement line, not --%s" % piece)
+        item, ident = backlog_lines.retire(args.root, args.name, args.retires, args.text, args.into, args.group,
+                                           args.in_group)
+        print("%s: %s retires %s" % (backlog_items.label(item), ident, args.retires))
+        return 0
     if (args.into is None) != (piece in ("universal", "upstream")):
         raise backlog_items.Refused("work line: %s %s --into <capability>" % (
             "--" + piece if piece != "text" else "a requirement line", "takes no" if args.into else "takes"))
