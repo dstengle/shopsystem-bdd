@@ -1361,6 +1361,25 @@ a universal condition no decision routes
   route("d","check").
   ```
 
+## w_example
+
+a requirement holds example data: a code or quoted string that names no declared constant
+
+- Severity: warning
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  exemplified("c#r1","banana").
+  ```
+
+- Passes on:
+
+  ```prolog
+  node("c#r1","requirement").
+  ```
+
 ## v_t7
 
 a term's gloss is more than one sentence
