@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/query-commands-answer-in-their-output, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items, design-decision/work-items-named-by-ids, design-decision/the-glossary-is-a-target-of-spec-work]
 retired: [r8, r9, r12, r13, r14, r15, r16, r17, r18, r21, r26, r27, r29, r31, r32, r33, r34, r35, r37, r39, r45, r46, r53, g73, r73, g72, r72]
-unbuilt: []
+unbuilt: [r145, r156, r157, r158, r159]
 ---
 
 # Design model check
@@ -151,6 +151,11 @@ context: product-level artifacts are read only where the files contain them.
 - **permissive** (adjective of requirement): a requirement that says an agent may do an action.
 - **invariant** (adjective of requirement): a requirement with no trigger that says a thing always holds or never holds.
 - **forbidding** (adjective of capability): a capability with a line that forbids what another of its lines says an agent may do.
+
+- **recodified** (adjective of capability): a capability whose file has `language: codified-2` in its frontmatter.
+
+- **refusing** (adjective of requirement): a requirement whose response says that a tool shall refuse a command.
+- **overridden** (adjective of requirement): a When requirement over which an If requirement of the same trigger takes precedence.
 
 ## Behaviour
 
@@ -451,6 +456,21 @@ Restates: r65@0.29.
 
 ### [g144] `model logic` finds a line that forbids what another permits
 - [r144] When the person runs `model logic` on a capability that is forbidding, `model` shall print "L7".
+
+### [g145] `model logic` checks a capability in the new language
+- [r145] When the person runs `model logic` on a capability that is recodified, `model` shall exit successfully.
+
+### [g156] `model explain` prints a requirement
+- [r156] When the person runs `model explain` on a requirement, `model` shall print the requirement and exit successfully.
+
+### [g157] `model explain` prints what a refusal entails and where it comes from
+- [r157] When the person runs `model explain` on a requirement that is refusing, `model` shall print a universal condition and a term.
+
+### [g158] `model explain` prints the If requirement that takes precedence
+- [r158] When the person runs `model explain` on a requirement that is overridden, `model` shall print a requirement that is refusing.
+
+### [g159] `model explain` refuses an id that no capability holds
+- [r159] If the person runs `model explain` on a requirement that is nonexistent, then `model` shall exit with an error naming the requirement and change nothing.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a

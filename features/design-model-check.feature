@@ -628,3 +628,40 @@ Feature: Design model check
     And the capability c1 is forbidding
     When the person runs `model logic` on the capability c1
     Then `model` prints "L7"
+
+  @g145 @r145
+  Scenario: `model logic` checks a capability in the new language
+    Given a capability c1
+    And the capability c1 is recodified
+    When the person runs `model logic` on the capability c1
+    Then `model` exits successfully
+
+  @g156 @r156
+  Scenario: `model explain` prints a requirement
+    When the person runs `model explain` on the requirement r1
+    Then `model` prints the requirement r1
+    And `model` exits successfully
+
+  @g157 @r157
+  Scenario: `model explain` prints what a refusal entails and where it comes from
+    Given a requirement r1
+    And the requirement r1 is refusing
+    When the person runs `model explain` on the requirement r1
+    Then `model` prints the universal condition u1
+    And `model` prints the term t1
+
+  @g158 @r158
+  Scenario: `model explain` prints the If requirement that takes precedence
+    Given a requirement r1
+    And the requirement r1 is overridden
+    When the person runs `model explain` on the requirement r1
+    Then `model` prints the requirement r2
+    And the requirement r2 is refusing
+
+  @g159 @r159
+  Scenario: `model explain` refuses an id that no capability holds
+    Given a requirement r1
+    And the requirement r1 is nonexistent
+    When the person runs `model explain` on the requirement r1
+    Then `model` exits with an error naming the requirement r1
+    And `model` changes nothing

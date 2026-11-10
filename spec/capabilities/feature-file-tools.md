@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/plugin-takes-the-dependencies-it-needs, design-decision/plugin-scenarios-run-as-pytest-bdd, design-decision/query-commands-answer-in-their-output]
 retired: []
-unbuilt: []
+unbuilt: [r21, r22]
 ---
 
 # Feature file tools
@@ -34,6 +34,9 @@ and runs no test; it edits no feature file by hand, since the generator owns the
 - **partial** (adjective of test module): a test module that leaves a scenario of its feature file unbound.
 
 - **withholding** (adjective of requirement): a requirement whose response says with `shall not` that a verb with a recipient does not happen.
+
+- **declining** (adjective of capability): a capability with a requirement whose response says that a tool shall refuse a command.
+- **overstated** (adjective of file): a feature file with a Then step that a universal condition or a pack's definition entails from the other steps of its scenario.
 
 ## Behaviour
 
@@ -352,6 +355,12 @@ the capability `shelf` holds:
   ## Not yet
   ## Dropped
 ```
+
+### [g21] `features generate` leaves out a Then that is entailed
+- [r21] When the person runs `features generate` on a capability that is declining, `features` shall not write a file that is overstated.
+
+### [g22] `features generate` writes a capability in the new language
+- [r22] When the person runs `features generate` on a capability that is recodified, `features` shall print the feature file `features/shelf.feature`.
 
 ## Implementation, may change
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three

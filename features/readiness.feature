@@ -114,3 +114,9 @@ Feature: Readiness
     And the item i1 is ill-termed
     When the person runs `work ready` on the item i1
     Then `work` exits with an error naming the term t1
+
+  @g16 @r16
+  Scenario: `work line --recodify` switches a capability's language on an item
+    When the person runs `work line --recodify` on the item i1
+    Then `work` writes the capability c1
+    And `work` commits the item i1
