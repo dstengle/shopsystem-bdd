@@ -192,11 +192,6 @@ def then_changes(step):
     assert changed(step), step.text
 
 
-@handler("ThenDoesNot", "change")
-def then_changes_not(step):
-    assert not changed(step), step.text
-
-
 @handler("ThenR", "raised for")
 def then_raised_for(step):
     """The request's file (the one the command wrote, where it wrote one) names the other in its `raised_for`."""

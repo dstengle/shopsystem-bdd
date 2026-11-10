@@ -1,11 +1,12 @@
-"""analysis-tools' handlers (design §14.3): the Givens build a Python project, its interpreters, analysis tools,
-coverage map and files in the scenario's repository; every `tools ...` command of the generated feature runs
-`scripts/tools` there (with the stand-in interpreter of analysis_tools_world.py where a Given set one up); the Thens
-read what it printed and what the stand-in was asked to do.
+"""analysis-tools' Givens and When (design §14.3), its steps in grammar 4: the Givens build a Python project, its
+interpreters, analysis tools, coverage map and files in the scenario's repository; every `tools ...` command of the
+generated feature runs `scripts/tools` there (with the stand-in interpreter of analysis_tools_world.py where a Given
+set one up). The Thens are analysis_tools_handlers_thens.py's.
 
-An analysis tool named `a<n>` stands for the n-th of analysis_tools_world.NAMES; one named with a code is that tool.
+What an instance stands for is kept in the context's `named` (an instance name to the text that names it in the
+output), which world_cli's refuse and name read too: an analysis tool `a<n>` is the n-th of
+analysis_tools_world.NAMES unless a Given binds it to another; one named with a code is that tool.
 """
-import json
 import pathlib
 import re
 import shlex
@@ -20,17 +21,26 @@ from vocab import handler
 from scenarios import analysis_tools_world as w
 
 FEATURE = HERE.parents[1] / "features" / "analysis-tools.feature"
-TESTS = ("test_total", "test_sum")
-TEST_CART = "".join("\n\ndef %s():\n    assert total([1]) == 1\n" % t for t in TESTS)
+TEST_CART = "from cart import total\n\n\ndef test_cart():\n    assert total([1]) == 1\n"
+USES = "from cart import refund\n\n\ndef back(order):\n    return refund(order)\n\n\ndef again(order):\n    return refund(order)\n"
 FINDING = "src/cart.py:1:1: F401 unused import"
+LIMIT = "10"
+# the functions of src/cart.py: the one a test calls, the one no test calls, and one no file has
+FUNCTIONS = {"executed": "total", "untested": "refund", "nowhere": "nowhere"}
 
 
 def bare(word):
     return word.strip("`")
 
 
-def tool_of(name):
+def named(step):
+    return step.context.setdefault("named", {})
+
+
+def tool_of(step, name):
     found = re.fullmatch(r"a([1-9]\d*)", name)
+    if name in named(step):
+        return named(step)[name]
     return w.NAMES[int(found.group(1)) - 1] if found else bare(name)
 
 
@@ -47,32 +57,51 @@ def stand_in(step):
     return w.interpreter(step.context)
 
 
-# --- Givens ---
+def name_of(np):
+    """The instance name or code a noun phrase ends in, else None."""
+    found = re.search(r"(`[^`]+`|\b[A-Za-z]+[1-9]\d*)$", np)
+    return found.group(1) if found else None
 
-@handler("GivenK_A", "Python interpreter")
-def given_interpreter(step):
-    stand_in(step).update(venv=step.values[0] == "`virtualenv`")
+
+def function(step, name, kind):
+    """The function `name` stands for, bound to `kind` of FUNCTIONS the first time."""
+    named(step).setdefault(name, FUNCTIONS[kind])
 
 
-@handler("GivenK_C", "Python interpreter")
-def given_interpreter_present(step):
-    """`the Python interpreter <path> is [not] present`: <path>'s file is made, or is left out; `tools` finds it."""
-    name, ctx = bare(step.names[0]), step.context
-    ctx["discover"] = True
-    if step.text.endswith(" is not present"):
-        return
-    if name in (".venv/bin/python", "venv/bin/python") and not (step.repo / name).exists():
-        w.fake(step.repo / name.split("/")[0])
-    elif name == "$VIRTUAL_ENV/bin/python" and "env_dir" not in ctx:
-        ctx["env_dir"] = outside(step)
-        w.fake(ctx["env_dir"])
-        ctx.setdefault("env", {})["VIRTUAL_ENV"] = str(ctx["env_dir"])
+# --- instances and values ---
+
+@handler("GivenK", "analysis tool")
+def given_a_tool(step):
+    """An analysis tool a<n> is the n-th of NAMES until a Given says which it is."""
+    named(step).setdefault(step.names[0], tool_of(step, step.names[0]))
+
+
+for _kind in ("log line", "coverage map", "Python file", "function", "identifier", "reference",
+              "finding", "file", "size limit"):
+    handler("GivenK", _kind)(lambda step: None)     # an instance is made by what the Givens say of it
+
+
+@handler("GivenK", "test")
+def given_test(step):
+    name = bare(step.names[0])
+    files(step)["tests/test_%s.py" % name] = "from cart import total\n\n\ndef test_%s():\n    assert total([1]) == 1\n" % name
+    named(step)[name] = "test_%s" % name
+
+
+@handler("GivenK_A", "test")
+def given_failing(step):
+    name = bare(step.names[0])
+    assert step.values == ["`failing`"], step.text
+    files(step)["tests/test_%s.py" % name] = "def test_%s():\n    assert False\n" % name
 
 
 @handler("GivenK_A", "analysis tool")
 def given_tool(step):
-    config, tool = stand_in(step), tool_of(step.names[0])
-    presence = bare(step.values[0])
+    """`the analysis tool a1 is v`, `` `ruff` is v `` or `no analysis tool is v`: the stand-in has it or lacks it."""
+    config, presence = stand_in(step), bare(step.values[0])
+    if step.text.startswith("no "):
+        return
+    tool = tool_of(step, step.names[0]) if step.names else bare(step.text.split(" is ")[0])
     if presence in ("missing", "uninstallable"):
         config.setdefault("missing", []).append(tool)
         config.setdefault("block", []).append(tool)
@@ -80,37 +109,94 @@ def given_tool(step):
         config.update(pip_fails=True, pip_error="e1\ne2\nerror: no matching distribution for %s" % tool)
 
 
-@handler("GivenK", "coverage map")
-def given_map(step):
-    """A coverage map is made only when it is present (GivenK_C)."""
+@handler("GivenK_A", "Python interpreter")
+def given_environment(step):
+    """`the dot-venv interpreter is v`: the stand-in at `.venv/bin/python`, a virtualenv or the system's."""
+    stand_in(step).update(venv=step.values[0] == "`virtualenv`")
+    step.context["fake_at"] = step.repo / ".venv"
 
 
-@handler("GivenK_C", "coverage map")
-def given_map_present(step):
-    step.context["map"] = not step.text.endswith(" is not present")
-
-
-@handler("GivenK", "test")
-def given_test(step):
-    files(step)["tests/test_%s.py" % bare(step.names[0])] = (
-        "from cart import total\n\n\ndef test_%s():\n    assert total([1]) == 1\n" % bare(step.names[0]))
-
-
-@handler("GivenK_C", "test")
-def given_failing(step):
-    name = bare(step.names[0])
-    assert step.text.endswith(" is failing"), step.text
-    files(step)["tests/test_%s.py" % name] = "def test_%s():\n    assert False\n" % name
-
-
-@handler("GivenCodeText", "Python file")
-def given_python_file(step):
-    files(step)[bare(step.names[0])] = step.docstring + "\n"
-
-
-@handler("GivenCode", "dependency file")
-def given_dependency_file(step):
+@handler("GivenCode", "dependency manifest")
+def given_manifest(step):
     files(step)[bare(step.names[0])] = step.quoted[0].strip('"') + "\n"
+
+
+# --- what holds ---
+
+INTERPRETERS = {"the dot-venv interpreter": ".venv", "the venv interpreter": "venv",
+                "the active-virtualenv interpreter": "$VIRTUAL_ENV"}
+
+
+@handler("GivenDoes", "holds")
+@handler("GivenDoesNot", "holds")
+def given_holds(step):
+    """This file system holds an interpreter (made where tools looks, or left out), this repository holds a coverage
+    map (or none), a Python file holds a test, a file holds a finding."""
+    ctx, np = step.context, step.nps[0]
+    if step.subject == "this file system":
+        ctx["discover"] = True
+        where = INTERPRETERS[np]
+        if step.template == "GivenDoesNot":
+            return
+        if where == "$VIRTUAL_ENV":
+            ctx["env_dir"] = outside(step)
+            w.fake(ctx["env_dir"])
+            ctx.setdefault("env", {})["VIRTUAL_ENV"] = str(ctx["env_dir"])
+        elif not (step.repo / where).exists():
+            w.fake(step.repo / where)
+    elif step.subject == "this repository":
+        ctx["map"] = not np.startswith("no ")
+    elif np.startswith("the test"):
+        named(step)[step.names[0]] = "tests/test_%s.py" % bare(step.names[1])
+    else:
+        named(step)[step.names[0]], named(step)[step.names[1]] = FINDING.split(":")[0], FINDING
+
+
+@handler("GivenDoes", "execute")
+def given_executes(step):
+    """A test executes the function f1 (src/cart.py's `total`), or no test does (its `refund`)."""
+    function(step, step.names[-1], "untested" if step.subject.startswith("no ") else "executed")
+
+
+@handler("GivenDoes", "has")
+def given_has(step):
+    """A Python file has a function (src/cart.py), no Python file has one (a name no file defines), an analysis tool
+    has a finding (`ruff`, whose finding the stand-in prints)."""
+    if step.subject.startswith("no "):
+        function(step, step.names[-1], "nowhere")
+    elif step.nps[0].startswith("the function"):
+        named(step)[step.names[0]] = "src/cart.py"
+    else:
+        named(step)[step.names[0]] = "ruff"
+        stand_in(step)["ruff"] = FINDING
+
+
+@handler("GivenDoes", "define")
+def given_defines(step):
+    """A Python file defines the identifier (src/cart.py's `refund`, used twice in src/shop.py), or none does."""
+    if step.subject.startswith("no "):
+        named(step)[step.names[-1]] = "nowhere"
+        return
+    named(step).update({step.names[0]: "src/cart.py", step.names[1]: "refund"})
+    files(step)["src/shop.py"] = USES
+
+
+@handler("GivenDoes", "to")
+def given_reference(step):
+    """The n-th reference to the identifier is the n-th use of it in src/shop.py."""
+    lines = [n for n, line in enumerate(USES.splitlines(), 1) if "refund(" in line]
+    made = step.context.setdefault("references", [])
+    made.append(step.names[0])
+    named(step)[step.names[0]] = "src/shop.py:%d" % lines[len(made) - 1]
+
+
+@handler("GivenDoes", "exceed")
+def given_exceeds(step):
+    """A Python file over the size limit (src/big.py, of 20 lines over a limit of 10), or none over the default."""
+    if step.subject.startswith("no "):
+        return
+    files(step)["src/big.py"] = "x = 1\n" * 20
+    named(step).update({step.names[0]: "src/big.py", step.names[1]: LIMIT})
 
 
 # --- the command ---
@@ -132,16 +218,30 @@ def grammar_stub(step):
         (rgl / "release").write_text("20250812\n")
 
 
+def target(step, argv):
+    """The command's argument for the instance it runs on: an interpreter for --python, a function as
+    `src/cart.py:<name>`, a file's path, an identifier, a size limit; nothing when it runs on none."""
+    if not step.names:
+        return []
+    name = step.names[0]
+    if argv[-1] == "--python":
+        step.context["python"] = str(w.fake(outside(step) / "py"))
+        named(step)[name] = "python: %s" % step.context["python"]
+        return [step.context["python"]]
+    if argv[0] == "tests-of":
+        function(step, name, "executed")
+        return ["src/cart.py:%s" % named(step)[name]]
+    named(step).setdefault(name, "refund" if argv[0] == "refs" else "src/cart.py")
+    return [named(step)[name]]
+
+
 def runs_tools(step):
     ctx, repo = step.context, step.repo
-    tests = {} if any(k.startswith("tests/") for k in files(step)) else {
-        "tests/test_cart.py": "from cart import total" + TEST_CART}
+    tests = {} if any(k.startswith("tests/") for k in files(step)) else {"tests/test_cart.py": TEST_CART}
     w.started(repo, {**tests, **files(step)})
     grammar_stub(step)
-    flags = ctx.get("flags", [])
-    argv = shlex.split(bare(step.command))[1:] + [f for f in flags if f != "--python"]
-    if "--python" in flags and "python" not in ctx:
-        ctx["python"] = w.fake(outside(step) / "py")
+    argv = shlex.split(bare(step.command))[1:]
+    argv += target(step, argv)
     if argv[0] == "check":
         stand_in(step).setdefault("ruff", FINDING)
     if ctx.get("map"):
@@ -155,110 +255,3 @@ def runs_tools(step):
 
 for _command in sorted(set(re.findall(r"When the person runs (`tools[^`]*`)", FEATURE.read_text()))):
     handler("WhenRuns", _command)(runs_tools)
-
-
-# --- Thens ---
-
-def output(step, err=False):
-    done = step.context["result"]
-    return done.stdout + (done.stderr if err else "")
-
-
-def expected(step, np):
-    """What one noun phrase of a Then names in the output, as a list (empty when it names nothing to look for)."""
-    ctx, name = step.context, re.search(r"(`[^`]+`|\b[A-Za-z]+[1-9]\d*)$", np)
-    name = name.group(1) if name else None
-    interpreters = {"`--python`": ctx.get("python"), "`sys.executable`": sys.executable,
-                    "`$VIRTUAL_ENV/bin/python`": ctx.get("env_dir", pathlib.Path("/")) / "bin" / "python"}
-    if name in interpreters or name in ("`.venv/bin/python`", "`venv/bin/python`"):
-        return [str(interpreters.get(name) or step.repo / bare(name))]
-    if np.startswith("the Python interpreter"):
-        return ["python: "]
-    if np.startswith("the analysis tool"):
-        return [tool_of(name)]
-    if np.startswith("the test"):
-        return [TESTS[int(name[1:]) - 1]]
-    if np.startswith("the Python file") and not name.startswith("`"):
-        return [f for f in files(step) if not f.startswith("tests/")]
-    if np.startswith("the map commit"):
-        return [ctx.get("map_commit") or ctx["head"]]
-    if np.startswith("the number of"):
-        return []
-    if np.startswith('"'):
-        return [np.strip('"')]
-    return [bare(name) if name else bare(np)]
-
-
-@handler("ThenPrints", "`tools`")
-def prints(step):
-    out = output(step, err=True)
-    for np in step.nps:
-        for want in expected(step, np):
-            if step.context.get("json") and re.fullmatch(r"\S+\.py:\d+", want):
-                want = '"path": "%s", "line": %s' % tuple(want.split(":"))
-            assert want in out, (np, want, out)
-        if np.startswith("the number of") and step.context.get("json"):
-            assert any(isinstance(v, int) for v in _values(json.loads(step.context["result"].stdout))), out
-        elif np.startswith("the number of"):
-            assert re.search(r"\b\d+\b", out), out
-
-
-def _values(data):
-    if isinstance(data, dict):
-        for v in data.values():
-            yield from _values(v)
-    elif isinstance(data, list):
-        for v in data:
-            yield from _values(v)
-    else:
-        yield data
-
-
-@handler("ThenPrintsNot", "`tools`")
-def prints_not(step):
-    out = [line for line in output(step).splitlines() if line.startswith("python: ")]
-    for np in step.nps:
-        assert all(want not in " ".join(out) for want in expected(step, np)), (np, out)
-
-
-@handler("ThenExitsOk", "`tools`")
-def exits_ok(step):
-    done = step.context["result"]
-    assert done.returncode == 0, done.stdout + done.stderr
-    assert "Traceback" not in done.stderr
-
-
-@handler("ThenExitsErr", "`tools`")
-def exits_err(step):
-    done = step.context["result"]
-    assert done.returncode == 1, done.stdout + done.stderr
-    assert "Traceback" not in done.stderr
-    for np in step.nps:
-        for want in expected(step, np):
-            assert want in output(step, err=True), (np, want, output(step, err=True))
-
-
-@handler("ThenDoes", "install")
-@handler("ThenDoesNot", "install")
-def installs(step):
-    done = w.pip_calls(step.context["python"])
-    for np in step.nps:
-        if np == "`gf-rgl`":
-            rgl = pathlib.Path(step.context["env"]["XDG_DATA_HOME"]) / "shopsystem-bdd" / "gf-rgl-20250812"
-            assert "gf-rgl 20250812 built" in output(step), output(step, err=True)
-            assert (rgl / "alltenses" / "AllEng.gfo").is_file() and (rgl / "release").is_file(), output(step, True)
-        elif step.template == "ThenDoesNot":
-            assert tool_of(np.split()[-1]) not in done, (np, done)
-        elif np.startswith("`"):
-            assert bare(np) in done, (np, done)
-        else:
-            assert tool_of(np.split()[-1]) in done, (np, done)
-
-
-@handler("ThenDoes", "replace")
-def replaces_map(step):
-    at = step.repo / (w.MAP + ".at")
-    assert (step.repo / w.MAP).is_file() and at.is_file(), output(step, err=True)
-    assert at.read_text().strip() == step.context["head"]
-    if "first_map" in step.context:
-        assert step.context["head"] != step.context["first_map"]
