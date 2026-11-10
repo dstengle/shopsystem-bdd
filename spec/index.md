@@ -161,7 +161,7 @@ The simplified workflow:
 - **JSON object** (noun): a JSON value of the object type, as a tool prints it on standard output.
 - **initiative branch** (noun): the branch `work run` commits each transition on and merges each work-item branch into, whose base is the commit it started from. Plural: initiative branches. Not: integration branch.
 - **work-item branch** (noun): the branch an implementer commits a work-item's work on, from the initiative branch's head, merged into the initiative branch and deleted when it is merged. Plural: work-item branches.
-- **commit** (noun): one git commit on a branch, with its message and its change. Kind of: thing.
+- **commit** (noun): one git commit on a branch, with its message and its change. Kind of: thing. This: the commit the command makes.
 - **commit** (verb, action): a session or a tool records changed files, or a text changed in one, as one git commit on the current branch. Forms: commits, committed. Frame: agent commits text.
 - **push** (verb, action): a commit is pushed to a remote. Forms: pushes, pushed. Frame: agent pushes commit.
 - **relocate** (verb, action): a file or directory is moved with git, keeping its history. Forms: relocates, relocated. Frame: `migrate` relocates file.
@@ -193,6 +193,7 @@ The simplified workflow:
 
 - **open** (adjective of initiative): An initiative is open when the initiative is not `done` and the initiative is not `abandoned`.
 - **open** (adjective of work-item): A work-item is open when the work-item is not `green` and the work-item is not `withdrawn`.
+- **uncited** (adjective of observation): an observation that the `source` of no initiative and of no request names.
 - **unfixed** (adjective of initiative): an initiative whose kept branch review lists a review finding to fix now.
 - **settled** (adjective of request line): A request line is settled when the request line is `accepted` or the request line is `refused` or the request line is `withdrawn`.
 - **closed** (adjective of capability-proposal): A capability-proposal is closed when the capability-proposal is `formulated` or the capability-proposal is `withdrawn`.

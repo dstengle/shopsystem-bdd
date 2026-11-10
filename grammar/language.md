@@ -1887,3 +1887,14 @@ answer within the push timeout", `$SHOPSYSTEM_PUSH_TIMEOUT`), which b127 defers.
 that does not answer `work idea`'s push in time). It says instead "While the remote of this repository does not
 answer the push of the command, ...", which reads that no answer comes at all; the timeout stays in the capability's
 Implementation section.
+
+### #8: an attribute set to the value a command is given, and an attribute left as it was
+
+"set the T of X to `v`" sets a value the line names; the language has no form for the value a command is given as its
+argument ("set the line outcome of the request line to the outcome the command gives"), and no negated act on an
+attribute ("not change the side of the request": `change` takes a file, and an attribute is no thing). Lines: requests
+r63 (b153: `work outcome` writes the line outcome it is given), which says instead the case of one value, the value in
+the command's code: "When the person runs `work outcome accepted` on a request line proposed in the request, `work`
+shall set the line outcome of the request line to `accepted` ..." (r82 names the command so too); requests r80 and
+r96, which say "keep the side of the request" (role-boundaries' keep, an act of the agent, not the absence of a
+change), so `model logic` does not read them as leaving the value as it was.
