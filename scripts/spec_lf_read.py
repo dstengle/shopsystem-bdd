@@ -9,7 +9,8 @@ precedence, inertia) the check's (I12a, I12b). This module holds the rest, and t
 
 - R2: "the K" binds to the latest earlier referent of kind K (a part's, an actor, a code, an indexical), else to the image of a row `K | of | S` of the one earlier
   referent of kind S (the worktree of the session), else to the run's own K when K's entry has `This:`; else the
-  line is refused, naming the noun (`the`).
+  line is refused, naming the noun (`the`). A referent whose noun phrase holds the "the" gives it nothing: "a stage
+  after the stage" is after an earlier stage, never after itself (b217).
 - R4: "does not V a K" in a While or Where clause is refused (`negated`): it reads as "Vs no K" and as "a K that X
   does not V"; the writer says one of them. Under "shall not" in a response, "a K" stays any K.
 - R8: "its" binds to the subject of its clause; the line is refused when that subject is of no kind the relation
@@ -49,12 +50,12 @@ def _image(st, row, y):
 
 def the(st, kind, plural=False):
     """R2 and R11: the NP "the K" binds to, or None, the refusal noted (the caller makes a definite referent)."""
-    bound = next((r for r in reversed(st.refs) if r.origin in ACCESSIBLE and kind in st.vocab.ancestors(r.kind)), None)
+    refs = [r for r in st.refs if r.origin in ACCESSIBLE and r not in st.open]
+    bound = next((r for r in reversed(refs) if kind in st.vocab.ancestors(r.kind)), None)
     if bound is not None:
         return core.fixed(bound)
     rows = [r for r in st.names.rows.values() if r[0] == kind and r[1] == "of"]
-    found = list(dict.fromkeys((r, y) for r in rows for y in st.refs
-                               if y.origin in ACCESSIBLE and r[2] in st.vocab.ancestors(y.kind)))
+    found = list(dict.fromkeys((r, y) for r in rows for y in refs if r[2] in st.vocab.ancestors(y.kind)))
     if len(found) == 1:
         return _image(st, *found[0])
     if kind in st.vocab.this:
