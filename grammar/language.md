@@ -217,10 +217,36 @@ shall [x4: tool `work` (constant)]
 
 ## R7. "one K" is exactly one; "a K" at least one
 
-"a K" is at least one K (R1). Counts ("one", "at least", "at most", "exactly") are I15's (call 4); grammar 4 has no
-count yet.
+"a K" is at least one K (R1). A count before a number (one to ten) and a noun, "at least", "at most", "exactly",
+"more than" or "fewer than", is a `count` box over its noun (call 4, I15): its bound and number, its restrictor and its
+scope, the clause said of each K counted. "one K" alone is exactly one. A count that admits no K ("at most", "fewer
+than") obliges no act, as "only" does not. `model logic` reads two counts of one act on one trigger and state: when no
+number of Ks meets both, the pair is an L1 (I15).
 
 Tested on U8 ("... a tool shall print one JSON object": exactly one).
+
+```reading
+When the person runs `work start`, `work` shall print one stage.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response
+    count exactly 1 [x4: stage]
+      scope
+        print(e2, subject: x3, object: x4)
+```
+
+```reading
+When the person runs `work start`, `work` shall print more than one stage whose status is `done`.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response
+    count more than 1 [x4: stage]
+      status(x4) = `done`
+      scope
+        print(e2, subject: x3, object: x4)
+```
 
 ## R8. "its" binds to the subject of its clause, or the line is refused
 

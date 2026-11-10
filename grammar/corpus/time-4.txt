@@ -25,3 +25,5 @@ While a session has not ended a stage, when the person runs `work start`, `work`
 = refused: the While clause says "has not ended a stage", which reads two ways: say "has ended no stage"
 While a session has followed a stage, when the person runs `work start`, `work` shall exit successfully.
 = refused: does not parse at followed
+# with the counts of I15: a number in words is a count before a noun and an amount before a unit
+While a deadline of a stage is within the last two days and a session has ended exactly one stage, when the person runs `work start`, `work` shall print at least two stages.

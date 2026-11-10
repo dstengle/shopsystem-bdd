@@ -51,6 +51,8 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
                        "the verb write takes a subject"),
          # the line stops after "the", where write's frame needs its object: the hint names the term that may follow
          "unfinished": ("When a session ends a stage, `work` shall write the", "may follow: file"),
+         # a count before a number and a noun (I15, call 4)
+         "counted": ("When the person runs `work start`, `work` shall print at least two stages.", None),
          # the time pack and the time constructs (I16), in TIME_FIXTURE's world: a moment compared, the clock as a
          # trigger, the perfect of an action verb as history, and a duration with no unit, refused naming the number
          "timed": (("While a deadline of a stage is within the last 7 days, when the person runs `work start`, `work` "
@@ -85,7 +87,11 @@ CAPABILITIES = {"restricting": ["A session shall change only files in its worktr
                                 "exit with an error naming the stage."),
                                "When the person runs `work start`, `work` shall exit successfully."],
                 # Contravening (I12b, b117): `work` exits successfully on a command it refuses, which U1 forbids.
-                "contravening": ["When `work` refuses a command, `work` shall exit successfully."]}
+                "contravening": ["When `work` refuses a command, `work` shall exit successfully."],
+                # Overcounted (I15, call 4): on one trigger `work` prints at least two stages and at most one stage;
+                # no number of stages meets both counts.
+                "overcounted": ["When the person runs `work start`, `work` shall print at least two stages.",
+                                "When the person runs `work start`, `work` shall print at most one stage."]}
 
 # The universal conditions a capability condition needs beside its lines, as spec/universal.md's U1, U2 ...: U1 is an
 # If line, which takes no precedence over a line of a capability (it holds in every trace).

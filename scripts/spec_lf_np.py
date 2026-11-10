@@ -2,7 +2,8 @@
 spec_rgl, spec_rgl_np and spec_rgl_rel, the funs of a template told by their names (`Names`).
 
 A determiner gives a referent's reading: "a" and a bare plural a referent of the part (a bare plural in a response
-"every"), "every" an `every` box, "no" (and "nothing") a `not` box, "only" an `only` box; "the" binds by R2 and R11
+"every"), "every" an `every` box, "no" (and "nothing") a `not` box, "only" an `only` box, a count ("at least
+two", "one") a `count` box (call 4, I15); "the" binds by R2 and R11
 (spec_lf_read), else is a referent of the part marked definite and the line refused. An actor and a code are one
 referent of the line, a code a constant when it is a word of the context and a parameter when it is not (call 7);
 "this K" the run's own K, an indexical (call 6). "the T of x", "its T" and "the K T" are one functional image of x,
@@ -88,7 +89,7 @@ def np(st, tree):
         if rest == "This":
             return core.fixed(st.constant(kind, st.vocab.this[kind], "indexical"))
         if rest == "Det":
-            return det(st, fun(a[0]), a[1])
+            return det(st, a[0], a[1])
         if rest == "Its":
             return its(st, kind)
         if rest == "Sup":
@@ -114,10 +115,28 @@ def head(st, cn):
     return row[0] if row else st.names.kind(fun(cn))[0]
 
 
-def det(st, d, cn):
-    """A determiner over a common noun: the referent made (or bound) first, then what restricts it."""
-    kind = head(st, cn)
+BOUNDS = {"AtLeast": "at least", "AtMost": "at most", "Exactly": "exactly", "MoreThan": "more than",
+          "FewerThan": "fewer than"}
+
+
+def count(d):
+    """A count's (bound, number) of a determiner's tree (call 4, I15): "one K" is exactly one; else None."""
+    if fun(d) == "DetOne":
+        return ("exactly", 1)
+    if fun(d) == "DetCount":
+        bound, many = args(d)
+        return (BOUNDS[fun(bound)], int(fun(many)[len("Many"):]))
+    return None
+
+
+def det(st, tree, cn):
+    """A determiner (its tree) over a common noun: the referent made (or bound) first, then what restricts it."""
+    kind, d = head(st, cn), fun(tree)
     said = None
+    if count(tree):
+        ref = st.ref(kind)
+        refs, conds = restrict(st, cn, ref)
+        return NP(ref, "count", conds, refs, count=count(tree))
     if d in ("DetThe", "DetThePl"):
         found = spec_lf_read.the(st, kind, d == "DetThePl")     # R2, R11
         if found is not None:
@@ -159,7 +178,7 @@ def owner(st, tnp):
         return np(st, args(tnp)[0])
     if rest.startswith("Cpd_"):
         kind, _ = st.names.kind(rest[len("Cpd_"):] + "_")
-        return det(st, fun(args(tnp)[0]), ["%s_UseN" % spec_rgl.kid(kind), "%s_n" % spec_rgl.kid(kind)])
+        return det(st, args(tnp)[0], ["%s_UseN" % spec_rgl.kid(kind), "%s_n" % spec_rgl.kid(kind)])
     raise unknown(tnp)
 
 

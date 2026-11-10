@@ -13,20 +13,23 @@ and `none`, `rnone` for a `not` box with referents of its own); the trigger's ev
 Two boxes keep their meaning (b114, b116): an `every` object is `each(R,X)`, an obligation on each thing of its
 restrictor, so what another line says of that thing need only agree with it; "X shall V only Ks that P" obliges no V:
 it is `only(R,I,E,D,X)` with its restrictor `rattr(R,X,T,V)`, `rrel(R,Q,X,Y)`, which clashes only with a V of a
-thing known to fall outside it. Each line is marked `cnl4(R)`, so the check reads its pairs as
+thing known to fall outside it. A count ("print at least two stages", call 4, I15) is `count(R,I,E,D,X,B,N)` of
+each act on its counted object X, with its bound B (`least`, `most`, `exactly`, `more`, `fewer`) and number N, and a
+`resp` only when it admits no fewer than one X. Each line is marked `cnl4(R)`, so the check reads its pairs as
 codified-2 lines (the If tag, a universal condition paired with each line). The words are named by spec_lf_ids. An `or` box splits the requirement as spec_facts does (`R#n`, `disj`). A construct
 with no translation raises ValueError naming it.
 """
 import spec_facts
 import spec_lf_time
 from spec_facts_np import const
-from spec_lf_core import Atom, Box, Ref
+from spec_lf_core import Atom, Box, Ref, least
 
 WORDS = {("exit", "successfully"): "exit_ok", ("exit", "with an error naming"): "exit_error", ("print",): "print"}
 FORMS = {("response",): "ubiq", ("when", "response"): "when", ("while", "response"): "while",
          ("where", "response"): "where", ("if", "response"): "if", ("while", "when", "response"): "while_when",
          ("where", "when", "response"): "where_when", ("where", "while", "response"): "where_while",
          ("while", "if", "response"): "while_if", ("where", "if", "response"): "where_if"}
+BOUNDS = {"at least": "least", "at most": "most", "exactly": "exactly", "more than": "more", "fewer than": "fewer"}
 # A `not` box over a response object's restrictions ("whose T is not v", "that does not V a K"), on an `every` object
 # or not: the check has no reading of it (b188), so the line is refused rather than read as the restriction it negates.
 NEGATED = "no translation of a negated restriction (not) on an object"
@@ -204,6 +207,8 @@ class Walk:
                 self.response(item.scope.body, own | set(item.refs) | set(item.scope.refs))
             elif item.op == "only" and pos:
                 self.only(item)
+            elif item.op == "count" and pos:
+                self.count(item, own | set(item.refs))
             else:
                 raise ValueError("no translation of %s in a response" % item.op)
 
@@ -257,6 +262,24 @@ class Walk:
             e, d, x = self.event(item)
             self.acts += 1
             self.emit("only", self.acts, e, d, x)
+
+
+    def count(self, box, own):
+        """"D shall V at least n Ks": each act on the counted K a `count`, and a `resp` when the count admits no fewer
+        than one K."""
+        self.roles(box.refs)
+        for c in box.body:
+            self.restrict(c, own)
+        for item in box.scope.body:
+            if not (isinstance(item, Atom) and item.pred == "event"):
+                raise ValueError("no translation of a count over that")
+            e, d, x = self.event(item)
+            if x != box.refs[0].name:
+                raise ValueError("no translation of a count of other than an object")
+            self.acts += 1
+            if least(box.count):
+                self.emit("resp", self.acts, "pos", e, d, x)
+            self.emit("count", self.acts, e, d, x, BOUNDS[box.count[0]], box.count[1])
 
 
 def translate(ids, ident, form):
