@@ -187,6 +187,13 @@ class Words:
         term, kind = self.attr(t)
         return "%s needs %s whose %s is %s, which no transition path reaches" % (base, kind, term, self.value(v))
 
+    def forbid(self, a, b):
+        """L7: the "shall not" of one side forbids what the "may" of the other permits."""
+        may, nay = (a, b) if any(p.name == "may" for _, p, *_ in self.of(a, "resp")) else (b, a)
+        _, _, e, d, o = next(r for r in self.of(may, "resp") if r[1].name == "may")
+        return "%s forbids what %s permits: %s" % (spec_facts.split(nay), spec_facts.split(may),
+                                                   self.does(may, e, d, o).replace(" to ", " may ", 1))
+
     def lint(self, raw, e, reactors):
         base = spec_facts.split(raw)
         d, o = next((d, o) for _, p, e2, d, o in self.of(raw, "resp") if e2 == e and p.name == "pos")

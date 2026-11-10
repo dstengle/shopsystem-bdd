@@ -3,7 +3,7 @@
 % one generic instance per noun phrase. A conflict is SEARCHED FOR: a witness of two requirements that fire on one
 % trigger in one consistent pre-state and demand opposite things, found by one brave solve over every candidate pair.
 % Shown: clash(A,B,Why) (L1), maybe(A,B,Why,C) (L6: a clash that depends on the prose condition C),
-% bad_set(R,A,From,To) (L3), unreachable(R,A,V) (L4), lint(R,E,T) (L5), coded(A,B) and fit(A,B) (a pair set aside);
+% forbid(A,B) (L7: a "shall not" line that forbids what a "may" line permits), bad_set(R,A,From,To) (L3), unreachable(R,A,V) (L4), lint(R,E,T) (L5), coded(A,B) and fit(A,B) (a pair set aside);
 % in the part `witness`, with focus(A,B), pre(A,B,X,Attr,Val,Pol), the merged pre-state of one witness.
 % THE RULE OF THIS FILE: never join two requirement-level facts on a vocabulary word (an event, a kind, a code, an
 % attribute); copy each to the pair, or join on a whole key, first. The grounder orders a body's literals by their
@@ -16,7 +16,7 @@
 #defined fun/1.   #defined prose/1. #defined dalt/2.  #defined dlit/5. #defined uall/3. #defined urel/4.
 #defined uattr/4. #defined ucond/5. #defined uccond/4. #defined pre/6. #defined prec/5.
 #defined each/2.   #defined only/5. #defined rattr/4.  #defined rrel/4.  #defined akind/2.
-#defined cnl4/1.
+#defined cnl4/1.   #defined nec/5.  #defined necsub/2.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
@@ -49,6 +49,8 @@ vals(T,V) :- set(_,_,_,T,V).  posev(E) :- resp(_,_,pos,E,_,_).
 dem(R,ev(neg,E)) :- key(R,ev(pos,E)).  dem(R,ev(pos,E)) :- key(R,ev(neg,E)).
 dem(R,at(T,W)) :- key(R,at(T,V)), vals(T,W), V != W.
 dem(R,ev(pos,exit_error)) :- key(R,ev(pos,exit_ok)).  dem(R,nouse) :- key(R,use).
+% a permission is forbidden by a "shall not" of its act, and nothing else (L7)
+dem(R,ev(neg,E)) :- key(R,ev(may,E)).  dem(R,ev(may,E)) :- key(R,ev(neg,E)).
 dem(R,ev(pos,E)) :- key(R,ev(pos,change_nothing)), posev(E), not quiet(E), not own(R,E).
 % "D shall V only Ks that P" (`only`, spec_lf_facts) obliges no V: it can clash only with a V, by the V's keys
 key(R,ev(only,E)) :- only(R,_,E,_,_).  dem(R,ev(pos,E)) :- key(R,ev(only,E)).  dem(R,ev(only,E)) :- key(R,ev(pos,E)).
@@ -79,6 +81,9 @@ ukeyu(A,K) :- universal(A), key(A,K).  udemu(A,K) :- universal(A), dem(A,K).
 unc(A,B) :- udemu(A,K), key(B,K), A != B.  unc(A,B) :- ukeyu(A,K), dem(B,K), A != B.
 cand(A,B) :- unc(A,B), unames(A,N), names(B,N).
 cand(A,B) :- uses(A,_,_), nouse(B,_,_), A != B.
+% (4) a permission (`resp(R,I,may,E,D,X)`, spec_lf_modal) with a "shall not" of its act, both untriggered: on the key
+mkey(A,K) :- ureq(A), key(A,K), K = ev(may,_).
+cand(A,B) :- mkey(A,K), udem(B,K), A != B.
 % The If tag (CNL 4's call 12): the EARS unwanted-behaviour form ("If T, then ...") takes precedence over a line of
 % another form on its own trigger: where its state holds its response replaces the other's, and where it does not it
 % does not fire, so the two are never a pair (two of one form still are). A universal condition holds in every trace:
@@ -186,6 +191,17 @@ redge(A,B,Q,Z1,Z2) :- rw(A,B,Q,Z1,Z2,pos).
 redge(A,B,Q,Z1,Z2) :- side(A,B,S), orel(S,Q,Y1,Y2), at(A,B,S,Y1,Z1), at(A,B,S,Y2,Z2).
 out(A,B) :- fun(Q), redge(A,B,Q,Z,Z1), redge(A,B,Q,Z,Z2), Z1 < Z2.
 
+% ---- a necessity (`nec`, `necsub`: spec_lf_modal) is a premise of every pair, in both states: "a K1 never Qs a K2"
+% puts out a pair whose merged state relates a K1 to a K2 so; "a K1 always Qs a K2" one whose side says a K1 is so
+% related to no K2 (or to no kind above it). (A necessity is joined with a pair's own facts on its relation: a
+% context has few necessities, so this is no join of two requirement-level facts.)
+subeq(K,K) :- nec(_,_,_,K,_).  subeq(K,K) :- nec(_,_,_,_,K).
+out(A,B) :- nec(_,never,Q,Kx,Ky), rw(A,B,Q,Z1,Z2,pos), kup(A,B,Z1,Kx), kup(A,B,Z2,Ky).
+out(A,B) :- nec(N,always,Q,Kx,Ky), necsub(N,1), side(A,B,S), rnone(S,Q,X,kind(K)), at(A,B,S,X,Z), kup(A,B,Z,Kx),
+            subeq(Ky,K).
+out(A,B) :- nec(N,always,Q,Kx,Ky), necsub(N,2), side(A,B,S), rnone(S,Q,kind(K),Y), at(A,B,S,Y,Z), kup(A,B,Z,Ky),
+            subeq(Kx,K).
+
 % ---- a defined condition read through its definition (`dalt(C,N)`, `dlit(C,N,Attr,Val,Pol)`: the ways through a
 % Def whose literals are all on its own subject, spec_facts.def_facts) under `no`, `every` and a negation --------
 has(A,B,0,Z,T,V,P) :- w0(A,B,Z,T,V,P).
@@ -272,8 +288,13 @@ lit(A,B,S,Z1,r(Q,Z2,P)) :- side(A,B,S), crel(S,Q,Y1,Y2,P), at(A,B,S,Y1,Z1), at(A
 lit(A,B,S,Z2,i(Q,Z1,P)) :- side(A,B,S), crel(S,Q,Y1,Y2,P), at(A,B,S,Y1,Z1), at(A,B,S,Y2,Z2).
 dep(A,B,C) :- lit(A,B,S,Z,k(C,_)), prose(C), side(A,B,S2), S2 != S, lit(A,B,S2,Z,L), not lit(A,B,S,Z,L).
 depends(A,B) :- dep(A,B,_).
-clash(A,B,W) :- cl(A,B,W), not depends(A,B).
-maybe(A,B,W,C) :- cl(A,B,W), dep(A,B,C).
+% L7: a "shall not" that forbids what a "may" permits, of one doer and one thing, where both fire; not a clash
+cl(A,B,may) :- ok(A,B), ra(A,B,may,E,D1,X), rb(A,B,neg,E,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y), not gap(A,B,X,Y).
+cl(A,B,may) :- ok(A,B), ra(A,B,neg,E,D1,X), rb(A,B,may,E,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y), not pag(A,B,X,Y).
+forbid(A,B) :- cl(A,B,may).
+#show forbid/2.
+clash(A,B,W) :- cl(A,B,W), not depends(A,B), W != may.
+maybe(A,B,W,C) :- cl(A,B,W), dep(A,B,C), W != may.
 #show maybe/4.
 % a requirement whose own pre-state is inconsistent, or that demands opposite things of itself
 cd(R,Z,T,V,P) :- cond(R,X,T,V,P), canon(R,X,Z).  ccd(R,Z,C,P) :- ccond(R,X,C,P), canon(R,X,Z).

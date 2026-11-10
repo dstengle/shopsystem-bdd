@@ -14,10 +14,12 @@ Two boxes keep their meaning (b114, b116): an `every` object is `each(R,X)`, an 
 restrictor, so what another line says of that thing need only agree with it; "X shall V only Ks that P" obliges no V:
 it is `only(R,I,E,D,X)` with its restrictor `rattr(R,X,T,V)`, `rrel(R,Q,X,Y)`, which clashes only with a V of a
 thing known to fall outside it. Each line is marked `cnl4(R)`, so the check reads its pairs as
-codified-2 lines (the If tag, a universal condition paired with each line). The words are named by spec_lf_ids. An `or` box splits the requirement as spec_facts does (`R#n`, `disj`). A construct
+codified-2 lines (the If tag, a universal condition paired with each line). A "may" line and a necessity are
+spec_lf_modal's. The words are named by spec_lf_ids. An `or` box splits the requirement as spec_facts does (`R#n`, `disj`). A construct
 with no translation raises ValueError naming it.
 """
 import spec_facts
+import spec_lf_modal
 from spec_facts_np import const
 from spec_lf_core import Atom, Box, Ref
 
@@ -38,6 +40,7 @@ class Walk:
         self.ids, self.rid, self.out = ids, const(rid), []
         self.choices, self.taken, self.options = list(choices), [], []
         self.acts = 0
+        self.may = False        # a permission: its acts `may` (spec_lf_modal)
 
     def emit(self, pred, *args):
         fact = "%s(%s)." % (pred, ",".join((self.rid,) + tuple(str(a) for a in args)))
@@ -141,7 +144,10 @@ class Walk:
     # --- the rule ----------------------------------------------------------------------------------------------
     def run(self, form):
         ops = tuple(p.op for p in form.parts)
-        if form.modality != "shall" or ops not in FORMS:
+        if form.modality in ("always", "never"):
+            return spec_lf_modal.necessity(self, form)
+        self.may = form.modality == "may"
+        if form.modality not in ("shall", "may") or ops not in FORMS:
             raise ValueError("no translation of the rule %s %s" % (form.modality, " ".join(ops)))
         self.emit("form", FORMS[ops])
         self.out.append("cnl4(%s)." % self.rid)
@@ -197,7 +203,7 @@ class Walk:
                 for c in item.body:
                     self.restrict(c, own | set(item.refs))
                 self.response(item.scope.body, own | set(item.refs) | set(item.scope.refs))
-            elif item.op == "only" and pos:
+            elif item.op == "only" and pos and not self.may:
                 self.only(item)
             else:
                 raise ValueError("no translation of %s in a response" % item.op)
@@ -217,7 +223,7 @@ class Walk:
     def act(self, atom, pos):
         e, d, x = self.event(atom)
         self.acts += 1
-        self.emit("resp", self.acts, "pos" if pos else "neg", e, d, x)
+        self.emit("resp", self.acts, spec_lf_modal.polarity(self, pos), e, d, x)
 
     def restrict(self, item, own, preds=("oattr", "orel")):
         """A restriction of a response's object (`own`, the referents its box introduced); of an earlier referent,
