@@ -1,3 +1,8 @@
+> **History.** This is design model v5 of 2026-11-03, written for plugin 1.x and the `codified-1` language.
+> The workflow it describes (initiatives, work-items, the work-queue) was retired in 2.0.0 and its language in
+> 4.0.0. For the current model see [`docs/reference/design-model.md`](../../reference/design-model.md).
+> [More about this folder](../README.md).
+
 # Design state and initiatives
 
 A model for specifying a software system and running the work that
