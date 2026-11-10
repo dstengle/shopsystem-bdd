@@ -1,5 +1,4 @@
-"""The relations of a context (design-r2 §4.2, §8): the `## Relations` tables, `Kind of:` expanded, v_t8, v_t10 and
-v_t20 (a codified-2 context's row whose word is outside the fixed word set, CNL 4's call 14).
+"""The relations of a context (design-r2 §4.2, §8): the `## Relations` tables, `Kind of:` expanded, v_t8 and v_t10.
 
 A row of a `## Relations` table, in `spec/index.md` or in a capability for its own local relations, is
 `| from kind | word | to kind |`, with an optional fourth cell for cardinality; the table's header and its rule are
@@ -14,10 +13,6 @@ from collections import defaultdict, namedtuple
 from pathlib import Path
 
 Row = namedtuple("Row", "k1 word k2 cardinality where")
-# A codified-2 context's row says its word with a preposition of this fixed set or a role noun (CNL 4's call 14): a
-# relation said with a verb (adds, changes, removes) is a verb entry with a Frame:. A blank cardinality is any number.
-PREPOSITIONS = ("of", "in", "on", "for", "with", "from", "to", "by", "at")
-ROLE_NOUNS = ("upstream", "target")
 
 
 def _cells(line):
@@ -94,9 +89,8 @@ def expand(lexicon):
 
 
 def problems(lexicon):
-    """v_t4 (a row or a `Kind of:` naming no kind), v_t8 (a relation entry: a relation is a row), v_t10 (two rows
-    giving one (from, word, to)) and v_t20 (in a codified-2 context, a row whose word is no preposition of the fixed
-    set nor a role noun), as (code, term, message)."""
+    """v_t4 (a row or a `Kind of:` naming no kind), v_t8 (a relation entry: a relation is a row) and v_t10
+    (two rows giving one (from, word, to)), as (code, term, message)."""
     kinds = lexicon.kind_names()
     out = [("v_t4", t.term, "%s: Kind of: %s is not a kind" % (t.where, t.supertype))
            for t in lexicon.of("kind") if t.supertype and t.supertype not in kinds]
@@ -105,10 +99,6 @@ def problems(lexicon):
                  % (row.where, row.k1, row.word, row.k2, k)) for k in (row.k1, row.k2) if k not in kinds]
     out += [("v_t8", t.term, "%s: the relation %s (%s) is an entry; write it as a row of ## Relations"
              % (t.where, t.term, " → ".join(t.kinds))) for t in lexicon.of("relation")]
-    out += [("v_t20", row.word, "%s: the relation row %s %s %s says %s, which is neither a preposition (%s) nor a "
-             "role noun (%s); a relation said with a verb is a verb entry with a Frame:" % (
-                 row.where, row.k1, row.word, row.k2, row.word, ", ".join(PREPOSITIONS), ", ".join(ROLE_NOUNS)))
-            for row in lexicon.rows if getattr(lexicon, "four", False) and row.word not in PREPOSITIONS + ROLE_NOUNS]
     given = defaultdict(set)
     for a, word, b, _, row in expansion(lexicon):
         given[(a, word, b)].add(row)
