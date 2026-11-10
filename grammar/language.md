@@ -329,3 +329,13 @@ shall [x1: tool `work` (constant), x2: thing `spec/index.md` (parameter)]
     not
       change(e1, subject: x1, object: x2)
 ```
+
+## Relation rows: a fixed word set, and a blank cardinality is any number
+
+Not a reading rule of a line, but of the rows its noun phrases are made from (call 14). A row of `## Relations` says
+its word with a preposition of a fixed set (of, in, on, for, with, from, to, by, at) or a role noun (upstream,
+target); a relation said with a verb (adds, changes, removes) is a verb entry with a `Frame:`, and a row whose word is
+neither is `v_t20`. A blank cardinality means any number, for every word: `file | in | worktree` relates a file to any
+number of worktrees. Only `one` in the fourth cell makes a row functional (`worktree | of | session | one`: a session's
+worktree is one thing), and `model logic` reads "the worktree of the session" as that one thing. A codified-1 context
+keeps plugin 2.x's readings (a blank row of for, with, on, of or in functional; any word) until it is reworded.

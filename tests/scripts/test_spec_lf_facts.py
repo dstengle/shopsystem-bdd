@@ -105,3 +105,11 @@ def test_a_line_with_no_translation_is_refused_naming_it(tmp_path):
 def test_a_state_verb_restricts_an_object_by_its_subject(tmp_path):
     out = facts(tmp_path, "When a session ends a stage, `work` shall print every session that follows the stage.")
     assert 'orel("thing#r1",e_follow,x4,x2).' in out and 'each("thing#r1",x4).' in out
+
+
+def test_a_blank_cardinality_is_any_number_and_one_is_functional(tmp_path):
+    """Call 14 (b115): in a codified-2 context `file | in | worktree` (blank) relates a file to any number of
+    worktrees, though its word is a preposition; `worktree | of | session | one` is functional."""
+    domain = spec_context.load(world(tmp_path, RUN + "`work` shall exit successfully.")).domain
+    assert "fun(r_worktree_of_session)." in domain
+    assert "fun(r_file_in_worktree)." not in domain
