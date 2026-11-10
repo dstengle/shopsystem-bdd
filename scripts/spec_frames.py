@@ -24,7 +24,8 @@ import difflib
 import re
 from collections import namedtuple
 
-Frame = namedtuple("Frame", "subject object recipient prep", defaults=(None,))
+# prep: the verb's preposition before its object; oblique: the one before its recipient ("records thing in file")
+Frame = namedtuple("Frame", "subject object recipient prep oblique", defaults=(None, "to"))
 # the words that, right after a verb in its frame, are the verb's preposition before its object
 PREPOSITIONS = {"to", "for", "from", "on", "onto", "in", "into", "at", "with", "about", "of", "by", "over", "under",
                 "through", "after", "before", "against", "upon", "without"}
@@ -56,7 +57,8 @@ def _noun(text, names):
 def read(term, names, said=None):
     """(Frame, None) of an event entry whose (first) `Frame:` reads, else (None, (the word it could not read, the role
     it reads it as)); (None, None) when the entry gives no `Frame:`. A preposition after the verb is the verb's
-    (`Frame: viewer subscribes to channel.`): the object comes after it. `said` reads another of its frames."""
+    (`Frame: viewer subscribes to channel.`): the object comes after it; a recipient follows the object behind any
+    preposition (`Frame: agent records thing in file.`). `said` reads another of its frames."""
     text = " ".join((term.frame if said is None else said).split())
     if not text:
         return None, None
@@ -72,14 +74,26 @@ def read(term, names, said=None):
     first, _, after = rest.partition(" ")
     prep = first if first in PREPOSITIONS and after else None
     rest = after if prep else rest
+    split = _recipient(rest, names)
+    if split:
+        return Frame(subject, split[0], split[2], prep, split[1]), None
     obj, to, rec = rest.rpartition(" to ")
-    if to and _noun(obj, names) and _noun(rec, names):
-        return Frame(subject, _noun(obj, names), _noun(rec, names), prep), None
     if _noun(rest, names):
         return Frame(subject, _noun(rest, names), None, prep), None
     if to and _noun(obj, names):
         return None, (rec, "recipient")
     return None, (obj if to and _noun(rec, names) else rest, "object")
+
+
+def _recipient(rest, names):
+    """(object, preposition, recipient) of the words after a verb (and its own preposition) that are an object and
+    a recipient behind any preposition, the last that splits them into two kinds; None when none does."""
+    words = rest.split()
+    for j in range(len(words) - 2, 0, -1):
+        obj, rec = _noun(" ".join(words[:j]), names), _noun(" ".join(words[j + 1:]), names)
+        if words[j] in PREPOSITIONS and obj and rec:
+            return obj, words[j], rec
+    return None
 
 
 def frame(term, names):
@@ -191,14 +205,15 @@ def below(lexicon):
 
 
 def _of(lexicon):
-    """{event id: (term, Frame or None)} and {kind or actor id: its name}, kept while the lexicon is."""
+    """{event id: [(term, Frame or None) of each sense]} and {kind or actor id: its name}, kept while the lexicon
+    is."""
     hit = _frames.get(id(lexicon))
     if hit is None or hit[0] is not lexicon:
         ids, known = lexicon.ids(), names(lexicon)
         named = {ids[t.key]: t.term for t in lexicon.terms if t.category in ("kind", "actor")}
         verbs = {}
-        for t in lexicon.of("event"):     # a verb's first sense, the one the codified-1 grammar reads
-            verbs.setdefault(ids[t.key], (t, frame(t, known)))
+        for t in lexicon.of("event"):     # each sense of a verb, each typed by the codified-1 grammar
+            verbs.setdefault(ids[t.key], []).append((t, frame(t, known)))
         hit = _frames[id(lexicon)] = (lexicon, verbs, named, below(lexicon))
         if len(_frames) > 16:
             _frames.clear()
@@ -215,8 +230,8 @@ def _subject(subj, named):
 
 
 def guard(tree, lexicon):
-    """Why the subject of a `shall` is not of the kind a frame of its verbs names, naming the verb; None when every
-    subject is."""
+    """Why the subject of a `shall` is not of the kind a frame of its verbs names (in any sense of the verb), naming
+    the verb; None when every subject is."""
     import spec_tree
     verbs, named, under = _of(lexicon)
     for node in spec_tree.nodes(tree):
@@ -226,8 +241,9 @@ def guard(tree, lexicon):
         for vp in spec_tree.nodes(node[2]):
             if subject is None or vp[0] not in ("Do", "DoI", "DoTo"):
                 continue
-            term, found = verbs.get(vp[1][0], (None, None))
-            if found and subject not in under.get(found.subject, ()):
+            senses = [(t, f) for t, f in verbs.get(vp[1][0], ()) if f]
+            if senses and not any(subject in under.get(f.subject, ()) for _, f in senses):
                 return "the verb %s takes as its subject %s or a kind of it: %s" % (
-                    term.term, found.subject, " ".join(term.frame.split()))
+                    senses[0][0].term, " or ".join(f.subject for _, f in senses),
+                    "; ".join(" ".join(t.frame.split()) for t, _ in senses))
     return None

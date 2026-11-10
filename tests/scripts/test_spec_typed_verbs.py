@@ -3,6 +3,7 @@ kinds, a noun of a kind under the frame's kind filling the role, the refusal nam
 other tools read. Parsed in the typed glossary fixture (`tests/scripts/fixtures/glossary`) and, for a recipient, in
 the live glossary."""
 import pathlib
+import shutil
 import sys
 
 import pytest
@@ -79,3 +80,27 @@ def test_no_generic_verb_fun_is_left_in_the_grammar():
     gf = "".join((spec_grammar.GRAMMARS / name).read_text() for name in ("Core.gf", "Req.gf", "Steps.gf"))
     for fun in ("Happens :", "HappensI :", "Do :", "DoI :", "DoTo :", "SDoes :", "SDoesTo :", "Event ;"):
         assert fun not in gf, fun
+
+
+def test_a_verbs_later_sense_is_typed_by_its_own_frame(tmp_path):
+    toolchain.require()
+    shutil.copytree(FIXTURE, tmp_path, dirs_exist_ok=True)
+    index = tmp_path / "spec" / "index.md"
+    index.write_text(index.read_text().replace("- **name** (verb, action)", "- **name** (verb, state): a text names "
+                                               "a thing. Frame: text names thing.\n- **name** (verb, action)", 1))
+    for line in ("When a session names a stage, `work` shall name a file.",
+                 "When a file names a stage, `work` shall exit successfully."):
+        tree = spec_grammar.parse(tmp_path, line).tree
+        assert tree and spec_grammar.linearise(tmp_path, tree) == line, line
+    assert refusal(tmp_path, "When a requirement group names a file, `work` shall exit successfully.")
+
+
+def test_a_recipient_behind_another_preposition_is_typed(tmp_path):
+    toolchain.require()
+    shutil.copytree(FIXTURE, tmp_path, dirs_exist_ok=True)
+    index = tmp_path / "spec" / "index.md"
+    index.write_text(index.read_text() + "- **record** (verb, action): Frame: agent records thing in text.\n")
+    line = RUN + "`work` shall record a stage in a file."
+    tree = spec_grammar.parse(tmp_path, line).tree
+    assert tree and spec_grammar.linearise(tmp_path, tree) == line
+    assert refusal(tmp_path, RUN + "`work` shall record a stage to a file.")

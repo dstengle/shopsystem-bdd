@@ -4,6 +4,7 @@ also codified-2, whose requirement r1 is the line a requirement condition gives.
 
 A later grammar item adds its condition to LINES: the line r1 says, and what a refusal of it names the scenario's term
 t1 by (None when it names no term). I19 extends the world to a mixed spec."""
+import re
 from pathlib import Path
 
 FIXTURE = Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "codified-2" / "spec" / "index.md"
@@ -176,3 +177,19 @@ def intransitive(step, path):
     index = step.repo / "spec" / "index.md"
     index.write_text(index.read_text() + entry)
     step.context.setdefault("ids", {})[step.names[0]] = "shelf#r1"
+
+
+# condition -> (the line r1 of the capability `shelf` says, the verb's entry the glossary gains for it, the step its
+# feature must hold): the requirements `features generate` writes the feature of (feature-file-tools)
+SHELVED = {"oblique": ("When a session ends a stage, `work` shall record the stage in a file.",
+                       ("- **record** (verb, action): an agent keeps a stage in a file. Frame: agent records stage "
+                        "in file.\n"), r"(?m)^\s*Then `work` records the stage \w+ in the file \w+$")}
+
+
+def shelved(step, word, path):
+    """The requirement condition `word` of SHELVED: the world with `shelf`'s r1 its line, its verb in the glossary."""
+    line, entry, holds = SHELVED[word]
+    context(step.repo, path, [line], name="shelf")
+    step.context.setdefault("holds", {})["features/shelf.feature"] = re.compile(holds)
+    index = step.repo / "spec" / "index.md"
+    index.write_text(index.read_text().replace("- **write** (verb, action)", entry + "- **write** (verb, action)", 1))
