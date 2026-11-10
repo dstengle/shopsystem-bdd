@@ -16,8 +16,10 @@ The plugin depends on no other plugin. It needs, in the consuming repository's P
 
 - the grammar tools, installed by `python3 scripts/tools install` (Linux x86_64): GF 3.12 under
   `~/.local/share/shopsystem-bdd/gf-3.12/` (or `$SHOPSYSTEM_GF`), and the pinned wheels pgf 1.1 and clingo 5.8.2,
-  for `model check`, `model parse`, `model logic`, `features generate` and `work outcome`;
-  `tools probe` shows what is installed;
+  for `model check`, `model parse`, `model logic`, `features generate` and `work outcome`; and GF's Resource
+  Grammar Library, gf-rgl at its pinned release 20250812, built in English with that GF under
+  `~/.local/share/shopsystem-bdd/gf-rgl-20250812/` (from its sources downloaded, or `$SHOPSYSTEM_GF_RGL_SRC`'s),
+  for the grammar over the RGL; `tools probe` shows what is installed;
 - pytest and pytest-bdd, for the scenarios;
 - pytest-xdist, optional, to run the tests in parallel (`pytest.ini`'s `addopts = -n auto`; `-n 0` runs them in one
   process);

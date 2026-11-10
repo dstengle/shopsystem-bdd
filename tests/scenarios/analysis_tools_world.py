@@ -135,6 +135,27 @@ def pip_calls(python):
     return [call[3] for call in calls(python) if call[:3] == ["python", "pip", "install"]]
 
 
+# --- the RGL ---
+
+def rgl_source(gf, where, env):
+    """A gf-rgl source tree at <where>, one empty module of each the RGL's build compiles, named to `tools install` by
+    $SHOPSYSTEM_GF_RGL_SRC; the stand-in GF at <gf> made the real one, which builds it in a moment."""
+    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "scripts"))
+    import tools_grammar
+    real = tools_grammar.gf_binary({k: v for k, v in os.environ.items() if k != "XDG_DATA_HOME"})
+    assert real, "no gf to build the RGL with: run `python3 scripts/tools install`"
+    gf.write_text('#!/bin/sh\nexec %s "$@"\n' % real)
+    (where / "src" / "prelude").mkdir(parents=True)
+    (where / "src" / "prelude" / "Prelude.gf").write_text("resource Prelude = { oper SS : Type = {s : Str} ; }\n")
+    for module in tools_grammar.RGL_MODULES:
+        path = where / "src" / (module + ".gf")
+        path.parent.mkdir(exist_ok=True)
+        name = path.stem
+        (path.parent / (name + "Abs.gf")).write_text("abstract %sAbs = { cat C ; }\n" % name)
+        path.write_text("concrete %s of %sAbs = open Prelude in { lincat C = SS ; }\n" % (name, name))
+    env["SHOPSYSTEM_GF_RGL_SRC"] = str(where)
+
+
 # --- running tools ---
 
 def invoke(run, repo, context, argv, outside=None):

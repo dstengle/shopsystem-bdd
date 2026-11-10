@@ -108,6 +108,12 @@ def test_gf_binary_is_the_one_lookup_of_tools_grammar(monkeypatch):
     assert spec_grammar.gf_binary() == "/the/one/lookup/gf"
 
 
+def test_the_rgl_is_found_by_the_one_lookup_of_tools_grammar(monkeypatch):
+    import tools_grammar
+    monkeypatch.setattr(tools_grammar, "rgl_path", lambda environ=None: "/the/one/lookup/gf-rgl")
+    assert spec_grammar.rgl_path() == "/the/one/lookup/gf-rgl"
+
+
 def test_every_capability_has_a_corpus_of_at_least_eight_sentences():
     for name in CAPABILITIES:
         assert len(lines(CORPUS / ("%s.txt" % name))) >= 8, name
