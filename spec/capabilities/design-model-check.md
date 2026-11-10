@@ -103,7 +103,7 @@ context: product-level artifacts are read only where the files contain them.
 - **pack** (noun): a file of terms a bounded context imports: `grammar/packs/<name>.md` of the plugin, or `spec/packs/<name>.md` of the bounded context. Kind of: file.
 - **importing** (adjective of bounded context): a bounded context whose `spec/index.md` imports a pack.
 - **misimporting** (adjective of bounded context): a bounded context whose `spec/index.md` imports a pack that neither the plugin nor the bounded context has.
-- **unmarked** (adjective of term): a term that a pack the bounded context imports defines too, whose entry has no `Redefines:`.
+- **unmarked** (adjective of term): a term that a pack its bounded context imports defines too, whose entry has no `Redefines:`.
 - **redefining** (adjective of term): a term whose entry has `Redefines:` naming a pack that defines it.
 
 ## Behaviour
