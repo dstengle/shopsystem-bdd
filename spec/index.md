@@ -115,7 +115,7 @@ The simplified workflow:
 - **tool** (noun): any of the commands `work`, `features`, `tools`, `measure`, `migrate` and `model`. Kind of: agent. Redefines: cli.
 - **worker** (noun): a session `work run` starts with `claude -p` for one stage of one work-item, as that stage's agent. Kind of: stage.
 
-- **bounded context** (noun): one repository's spec, with its index, capabilities, decisions and glossary.
+- **bounded context** (noun): one repository's spec, with its index, capabilities, decisions and glossary. This: the bounded context whose repository the command runs in.
 - **capability** (noun): one file under `spec/capabilities/`, with a group and a narrator. Plural: capabilities. Kind of: file.
 - **requirement** (noun): one codified statement of a capability, named `<capability>#r<n>`, that parses to one tree in the requirement grammar. Not: behaviour requirement, capability requirement, carry, carries, carried, carrying. Kind of: text.
 - **requirement group** (noun): the requirements of a capability that together make one scenario, named `<capability>#g<n>`, with a title.
@@ -142,7 +142,7 @@ The simplified workflow:
 
 - **stage** (noun): one session `work run` starts for a node from its status: research, plan, implement and review by a worker, a round, an answering session, a branch review or an analysis. Not: phase. Kind of: session.
 - **round** (noun): a stage of the kind `integrate`, `gate`, `apply`, `formulate` or `intake`, numbered under its drafts path. Not: iteration. Kind of: stage.
-- **session** (noun): one Claude Code conversation with its own id and transcript: the person's, a stage or a dispatch. Not: conversation, chat. Kind of: agent.
+- **session** (noun): one Claude Code conversation with its own id and transcript: the person's, a stage or a dispatch. Not: conversation, chat. Kind of: agent. This: the session that runs the command.
 - **dispatch** (noun): a session another session starts with its Agent tool, and the transcript it leaves. Plural: dispatches. Not: subagent. Kind of: session.
 - **agent** (noun): a session or a tool, as the one that does what a verb says. Kind of: thing.
 - **result** (noun): the file `result.json` a stage writes, giving its outcome, its summary and the files it names. Not: return.
@@ -241,6 +241,8 @@ The simplified workflow:
 - **triage** (attribute of review finding): what a review asks of its finding: fixed on the branch before the merge, kept as an observation, or dropped. Values: `fix now`, `observation`, `drop`.
 - **defect** (noun): a file of a batch that records a fault in the behaviour of the repository's code, with its reproduction, found by a review or after a merge. Kind of: file.
 - **failing** (adjective of test): the test fails when it runs.
+- **use** (verb, state): a text holds a word or a thing, as a requirement uses a term. Forms: uses, used. Frame: text uses thing.
+- **list** (verb, state): a text holds each of some things, as a glossary lists a term. Forms: lists, listed. Frame: text lists thing.
 
 ## Relations
 
