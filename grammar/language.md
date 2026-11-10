@@ -1908,3 +1908,29 @@ the command's code: "When the person runs `work outcome accepted` on a request l
 shall set the line outcome of the request line to `accepted` ..." (r82 names the command so too); requests r80 and
 r96, which say "keep the side of the request" (role-boundaries' keep, an act of the agent, not the absence of a
 change), so `model logic` does not read them as leaving the value as it was.
+
+### #3: one above the highest
+
+"the number of Ks" counts; the language has no aggregate over values: the highest of a set, a sum, one above the
+highest. Lines: migration-tools r32 (a ledger entry with no number is numbered from one above the decision ledger's
+highest) and r33 (a Behaviour line with no id gets one above the highest id its capability has used or retired), b156.
+Each says instead that `migrate` gives the thing a ledger number or a line id; which one is the implementation's.
+
+### #10: each of the Ks
+
+"two Ks" in a trigger are two things, but the language has no "each of the Ks" to say a thing of each in a response:
+"the measurement of the batch" after "two batches" names neither (R2), and "every batch" is every batch there is.
+Lines: telemetry r8 and batch-measurement r26 (b156), `measure compare` on two batches or two measurements. Each says
+instead "two measurements" or "two total rows", which are not tied to the batches or measurements the command names.
+
+### #17: a default value
+
+A value a thing is taken to have when it has none ("a repository with no plugin version file is on `0.23.1`") is no
+construct: a release's code is a value, and a value is not a thing a tool prints. Line: migration-tools r38 (b156). It
+says instead what the default makes `migrate status` print: every upgrade step, each being pending on `0.23.1`.
+
+### #18: the ratio of two figures
+
+A figure of one measurement divided by the same figure of another is arithmetic, which the language has not. Lines:
+telemetry r8 and batch-measurement r26 (b156). Each says "a ratio", a noun of the glossary, glossed as the second's
+figure divided by the first's.

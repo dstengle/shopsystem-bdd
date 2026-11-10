@@ -991,7 +991,7 @@ a verb's entry gives no frame: the kinds of its subject and object, or that it t
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/migrate_upgrade_frames.py`, `scripts/spec_frames.py`
-- Cited by: migration-tools#r25
+- Cited by: migration-tools#r56
 - Fails on:
 
   ```prolog

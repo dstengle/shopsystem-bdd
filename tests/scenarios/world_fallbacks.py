@@ -43,3 +43,19 @@ for _template, _term in (("GivenDoes", "has"), ("ThenDoes", "has"), ("ThenDoes",
                          ("ThenDoes", "list"), ("GivenK", "title"),
                          ("GivenK_C", "universal condition")):     # readiness's nonexistent condition, kept from 3.x
     handler(_template, _term)(untaken)
+
+
+@handler("GivenK")
+@handler("GivenK_A")
+@handler("GivenDoes")
+@handler("GivenDoesNot")
+def given_recorded(step):
+    """A codified-2 feature's Given of an instance, a value or a link that no handler of its kind or verb takes (b240):
+    the scenario's example data holds the thing, and its When's handler reads the given block, so it records nothing."""
+
+
+for _template, _term in (("ThenDoes", "has"), ("ThenDoes", "holds"), ("ThenDoes", "for"), ("ThenDoes", "give"),
+                         ("ThenDoes", "name"), ("ThenDoes", "refuse"), ("ThenDoes", "supersede"),
+                         ("ThenDoes", "include"), ("ThenDoes", "rewrite"), ("GivenK_C", "repository"),
+                         ("ThenDoes", "relocate"), ("ThenDoes", "rename"), ("ThenK_A", "design-decision")):
+    handler(_template, _term)(untaken)

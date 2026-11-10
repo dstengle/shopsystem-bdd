@@ -121,7 +121,8 @@ class Model(SpecReading, WorkReading, RequestReading):
         return t
 
     def term_id(self, word):
-        return f"term/{self.path}/{'-'.join(word.lower().split())}"
+        """A term's id: its words joined by "-", what no id may hold (the `@` of a tag, an apostrophe) left out."""
+        return f"term/{self.path}/{'-'.join(re.sub(r'[^a-z0-9 -]', '', word.lower()).split())}"
 
     def read(self):
         self.read_layout()
