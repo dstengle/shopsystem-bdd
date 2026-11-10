@@ -783,6 +783,25 @@ an accepted decision supersedes one still accepted
   status("o","superseded").
   ```
 
+## v_d9
+
+a decision names a verification route outside the four
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  route("d","sampling").
+  ```
+
+- Passes on:
+
+  ```prolog
+  route("d","check").
+  ```
+
 ## v17
 
 a request that is part of no job-thread, cites no origin and is raised for no request
@@ -1239,6 +1258,27 @@ a decision in force gives no tier
   ```prolog
   node("d","design-decision").
   tier("d","judgement").
+  ```
+
+## w_unrouted
+
+a universal condition no decision routes
+
+- Severity: warning
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  node("u","universal-condition").
+  ```
+
+- Passes on:
+
+  ```prolog
+  node("u","universal-condition").
+  decision_rests_on("d","u").
+  route("d","check").
   ```
 
 ## v_t7

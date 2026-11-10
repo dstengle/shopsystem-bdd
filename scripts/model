@@ -113,11 +113,12 @@ contract:
     none). A codified statement needs the grammar tools (`tools install`).
   - Every rule of model.lp has one plain label, label("<code>", "<label>"),
     written beside it. check prints `<code>  <label>  (<count>)` above each
-    non-empty v_ relation's rows; `rules` prints every `<code>  <label>`,
+    non-empty v_ relation's rows, and `warning <code>  <label>  (<count>)`
+    above each w_ relation's; `rules` prints every `<code>  <label>`,
     the v_ rules then the w_ rules, and exits 0; check --json adds "labels",
     {code: label} for the codes it prints.
   - check solves the facts with model.lp (beside this script) and prints every
-    non-empty v_ relation, then the w_ relations with their counts, then the
+    non-empty v_ relation, then the w_ relations with their counts and rows, then the
     references that name nothing and the file problems (a missing id, a
     status not in a lifecycle, a block it cannot read). It exits 1 when any
     v_ relation is non-empty, any reference names nothing or any file has a
@@ -134,7 +135,11 @@ contract:
     w_untiered names a decision in force (not superseded or rejected, or with
     no status) that gives no tier; v_d6 a check decision with no test, v_d7 a
     requirement decision with no requirement, v_d8 an accepted decision that
-    supersedes one still accepted.
+    supersedes one still accepted. verified_by lists a decision's
+    verification routes (scenario, check, judgement or monitor; v_d9 names
+    any other), and rests_on the ids it rests on (a bare U<n> is the
+    universal condition); w_unrouted names a universal condition that no
+    decision in force rests on with a route.
   - decisions writes spec/decisions/index.md, the generated index of
     spec/decisions/, each row linked to its file, and nothing else; --check
     writes nothing and says whether the file on disk is what it would

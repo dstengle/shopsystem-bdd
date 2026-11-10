@@ -105,6 +105,19 @@ def rules(as_json=False):
     return 0
 
 
+def rows(found, labels, head, limit):
+    """Each relation with its label and count, then its rows up to the limit (a warning's too: decision-tiers r11)."""
+    by = {}
+    for name, a in found:
+        by.setdefault(name, []).append(a)
+    for name in sorted(by):
+        print(f"{head}{name}  {labels[name]}  ({len(by[name])})")
+        for a in by[name][:limit]:
+            print("    " + ", ".join(str(x) for x in a))
+        if len(by[name]) > limit:
+            print(f"    ... and {len(by[name]) - limit} more")
+
+
 def check(args):
     model = Model(args.root).read()
     found, labels = solve(model)
@@ -116,20 +129,8 @@ def check(args):
                           "unresolved": model.dangling, "problems": model.problems,
                           "labels": {code: labels[code] for code in printed}}, indent=1))
     else:
-        by = {}
-        for name, a in violations:
-            by.setdefault(name, []).append(a)
-        for name in sorted(by):
-            print(f"{name}  {labels[name]}  ({len(by[name])})")
-            for a in by[name][: args.limit]:
-                print("    " + ", ".join(str(x) for x in a))
-            if len(by[name]) > args.limit:
-                print(f"    ... and {len(by[name]) - args.limit} more")
-        counts = {}
-        for name, _ in warnings:
-            counts[name] = counts.get(name, 0) + 1
-        for name in sorted(counts):
-            print(f"warning {name}  {labels[name]}  ({counts[name]})")
+        rows(violations, labels, "", args.limit)
+        rows(warnings, labels, "warning ", args.limit)
         for d in model.dangling:
             print(f"unresolved: {d}")
         for p in model.problems:
