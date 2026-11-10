@@ -3,9 +3,9 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/telemetry
 title: Telemetry
 narrator: a session measuring a batch
 group: service
-language: codified-1
+language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified, design-decision/missingmass.io/shopsystem/shopsystem-bdd/measure-a-batch]
-retired: []
+retired: [g1, g2, g3, g4, r1, r2, r3, r4]
 unbuilt: []
 ---
 
@@ -17,6 +17,16 @@ review, fixing), and the defects: those the pull request's review found and thos
 to its item (design goal 8). The system's goals pull against each other (wall time, token cost, defect rate), and the
 knobs (batch size, review depth, the readiness bar) are tuned against these figures.
 
+## Terms
+
+- **include** (verb, state): a measurement holds a figure or a name. Forms: includes, included. Frame: measurement includes thing.
+- **wall time** (noun): the time from the start of a batch to its close. Kind of: thing.
+- **session time** (noun): the time the sessions of a batch spent on it. Kind of: thing.
+- **token** (noun): a unit of the text a model of a session reads or writes. Kind of: thing.
+- **role** (noun): what a session did in a batch: planning, implementing, review or fixing. Kind of: text.
+- **cost** (noun): what the tokens of a role cost. Kind of: thing.
+- **ratio** (noun): a figure of the second of two measurements divided by the same figure of the first. Kind of: text.
+
 ## Relations
 
 | from | word | to | cardinality |
@@ -24,23 +34,25 @@ knobs (batch size, review depth, the readiness bar) are tuned against these figu
 | defect | of | item | one |
 | defect | for | batch | one |
 | measurement | of | batch | one |
+| wall time | of | batch | one |
+| session time | of | batch | one |
+| token | of | batch |  |
+| role | of | batch |  |
+| cost | of | role | one |
 
 ## Behaviour
 
-### [g1] `measure batch` writes a merged batch's measurement
-- [r1] When the person runs `measure batch` on a batch that is `merged`, `measure` shall write a measurement of the
-  batch, include "wall time", include "session time", include "tokens" and include "cost by role".
+### [g5] `measure batch` writes a merged batch's measurement with its wall time, session time, tokens and cost by role
+- [r5] While a batch is `merged`, when the person runs `measure batch` on the batch, `measure` shall write a measurement of the batch that includes the wall time of the batch, the session time of the batch, the tokens of the batch and the cost of every role of the batch.
 
-### [g2] The review's findings are counted by grade
-- [r2] While a review finding is on the pull request of a batch, when the person runs `measure batch` on the batch,
-  `measure` shall include the grade of the review finding.
+### [g6] The measurement of a batch counts the review findings on its pull request by grade
+- [r6] When the person runs `measure batch` on a batch that has a pull request, `measure` shall write a measurement of the batch that includes the number of review findings on the pull request whose grade is `Critical`, the number of review findings on the pull request whose grade is `Important` and the number of review findings on the pull request whose grade is `Minor`.
 
-### [g3] A defect after the merge is traced to its item and batch
-- [r3] While an item is `delivered` and the item is in a batch, when the person runs `measure defect` on the item,
-  `measure` shall write a defect of the item for the batch.
+### [g7] A defect after the merge is traced to its item and batch
+- [r7] While an item in a batch is `delivered`, when the person runs `measure defect` on the item, `measure` shall write a defect for the batch that the item has.
 
-### [g4] `measure compare` sets two batches side by side
-- [r4] When the person runs `measure compare batch-2 batch-3`, `measure` shall print "batch-2" and print "batch-3".
+### [g8] `measure compare` sets the measurements of two batches side by side with their ratio
+- [r8] When the person runs `measure compare` on two batches, `measure` shall print two measurements and a ratio.
 
 ## Implementation, may change
 

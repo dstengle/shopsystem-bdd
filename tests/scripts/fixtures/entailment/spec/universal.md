@@ -3,8 +3,8 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/universal
 title: Universal conditions
 narrator: every trace of every delivery and every tool
 group: guarantees
-language: codified-1
-retired: [U1, U2, U3, U6, U9, U10]
+language: codified-2
+retired: [U1, U2, U3, U6, U9, U10, U11, U4, U5, U7, U8]
 ---
 
 # Universal conditions
@@ -14,40 +14,37 @@ retired: [U1, U2, U3, U6, U9, U10]
 The statements that are true in every state of every trace (design model v5, `docs/design-model/design-model.md`
 §2.5). Each is written once here, in the requirement grammar, and is never restated in a requirement: a line that only
 restated one is dropped with the U as its reason. `model logic` adds each as an `always` constraint to the background
-of every check, and where a U is observable in a test (U11, U8) the scenario conftest checks it after every scenario
-that makes its trigger true. They come from the domain model's §7 (`.shop/records/2026-11-02-domain-model/`), worded
-to parse. U1, U2, U6, U9 and U10 stated guarantees of `work run`, its stages and initiatives, and are retired in plugin
-2.0.0 (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired): their ids are in
-`retired:` and are never used again. U7 is kept, still true of a batch's task subagent in its worktree, until a line
-on that subagent is written.
+of every check, and where a U is observable in a test (U12, U13, U16) the scenario conftest checks it after every
+scenario that makes its trigger true. They come from the domain model's §7 (`.shop/records/2026-11-02-domain-model/`).
+U1, U2, U6, U9 and U10 stated guarantees of `work run`, its stages and initiatives, and are retired in plugin 2.0.0
+(design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired). U11, U4, U5, U7 and U8 are
+reworded in grammar 4 (b155, b240) as U12, U16 and U13 to U15. Retired ids are in `retired:` and are never used again.
 
 ## Behaviour
 
-- [U11] If a tool refuses a command, then the tool shall exit with an error naming the reason and change nothing.
-- [U4] `work` shall commit every transition and push the commit.
-- [U5] A session shall not write a status.
-- [U7] A worker shall change only files in its worktree.
-- [U8] Where `--json` is given, a tool shall print one JSON object.
+- [U12] If a tool refuses a command, then the tool shall exit with an error naming a reason and change nothing.
+- [U13] When `work` writes a transition, `work` shall commit the transition and push the commit of the transition.
+- [U14] A session shall not write a transition.
+- [U15] While a dispatch has a worktree, the dispatch shall change only files in the worktree.
+- [U16] When an agent runs a command of a tool with the `--json` option, the tool shall print one JSON object.
 
 ## Reading
 
-Each is one statement (design-r2 §4.1): what one condition asks is written as verb phrases joined by `and` under one
-`shall` (U11 "exit with an error naming the reason and change nothing", U4 "commit every transition and push the
-commit"), and `model logic` reads each conjunct as its own constraint under the one U id. The wording is the
-grammar's corpus (`grammar/corpus/universal.txt`). Where the domain model's §7 said more, the rest is carried by the
-lexicon and the background theory of `model logic`, not by a second statement:
+Each is one statement: what one condition asks is written as verb phrases joined by `and` under one `shall` (U12
+"exit with an error naming a reason and change nothing", U13 "commit the transition and push the commit of the
+transition"). Each line's intended reading is in the corpus `grammar/corpus/spec/universal.md`. Where the domain
+model's §7 said more, the rest is carried by the lexicon and the background theory of `model logic`:
 
-- U11: a refused command changes nothing, whatever tool refused it (the glossary's *refuse* said so until revision 2).
-  It is U3 reworded for verb frames (b82): U3's "a command is refused" is a passive with no agent, and *refuse*
-  takes a subject.
-- U4: the push of each commit on the initiative branch is the second conjunct of the statement; which remote it goes
-  to is the meaning of *remote* in the glossary.
-- U5: `work` is the only writer of a status (the glossary's *`work`* said so until revision 2): a session writes
-  none, and `work run` has `work` write each one.
-- U7: narrowed to the worktree. The domain model also lets a worker change its stage directory. `or` now joins
-  conditions (`CondOr`) and the verb phrases under `shall not`, but not noun phrases, so "files in its worktree or its
-  stage directory" has no tree; a worker's stage directory holds only what `work run` reads back from it (its result
-  and report). Carried forward to R14: a core fun for "X or Y" of two noun phrases.
+- U12: a refused command changes nothing, whatever tool refused it. The reason the error names is any reason: the
+  language cannot yet tie it to the refusal (`grammar/language.md`, "What the language cannot say yet", #15).
+- U13: the push of each commit `work` makes of a transition; which remote it goes to is the meaning of *remote* in
+  the glossary. The commit is the transition's by the row `commit | of | transition`.
+- U13, U14: a transition is the change of a status `work` writes. The language has no form yet for changing the value
+  of an attribute ("change the status of an item"), so *transition* stands for it (#8): `work` is the only writer of
+  a status.
+- U15: a worktree is a task's, made by `work batch start`, and the dispatch that builds the task works in it (the row
+  `worktree | of | session | one`). A dispatch with no worktree, such as a reviewer, is not bound by it.
+- U16: the `--json` option is in the trigger, given to a command of the tool that prints the object.
 
 
 ### An "If" line takes precedence

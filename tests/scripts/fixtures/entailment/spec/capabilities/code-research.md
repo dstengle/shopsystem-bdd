@@ -4,7 +4,7 @@ title: Code research
 narrator: the script `work run`, which started the researcher
 group: guarantees
 rests_on: [design-decision/scout-on-haiku-at-low-effort, design-decision/worker-results-are-files, design-decision/the-file-set-is-the-claim, design-decision/workflow-capabilities-are-guarantees]
-language: codified-1
+language: codified-2
 retired: [r1, r2, r3, r4, r5, r6]
 ---
 
@@ -20,21 +20,8 @@ nothing and changes nothing in the checkout.
 
 ## Terms
 
-- **probe** (noun): a command the researcher runs to see today's behaviour, in a scratch directory and on none of the checkout's data.
-- **old assumption** (noun): a place in the code that relies on a requirement the work-item changes or replaces, with the tests that execute it.
-- **skipped effect** (noun): a refusal or an effect that only a step of today's processing produces, where a work-item adds a path that skips the step.
 - **module** (noun): a Python file of the repository's code or tests.
 - **line count** (noun): the number of lines of a module and its room under the size limit `CLAUDE.md` gives.
-
-## Relations
-
-| from | word | to | cardinality |
-|---|---|---|---|
-| scenario | of | work-item |  |
-| line count | of | module | one |
-| test | broken by | work-item |  |
-| file | changed by | work-item |  |
-| probe | in | worktree |  |
 
 ## Behaviour
 
