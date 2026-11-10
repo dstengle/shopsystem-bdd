@@ -16,6 +16,7 @@ from collections import Counter
 import spec_example
 import spec_frames
 import spec_lexicon
+import spec_meaning
 import spec_packs
 import spec_read
 import spec_read_given
@@ -109,7 +110,10 @@ class SpecReading:
         import spec_language
         try:
             if spec_language.four(self.root, capability, universal):
-                return self.parsed4(ident, spec_language.parse(self.root, text, capability, universal))
+                p = spec_language.parse(self.root, text, capability, universal)
+                if p.tree is not None and not universal:
+                    self.pre4(ident, p.tree)
+                return self.parsed4(ident, p)
             p = spec_grammar.parse(self.root, text)
         except (ImportError, spec_grammar.GrammarError) as err:      # no pgf, no gf, or gf refused the sources
             self._grammar = GRAMMAR_MISSING
@@ -133,6 +137,16 @@ class SpecReading:
             self.fact("ambiguous", ident)
         else:
             self.fact("unparsed", ident, p.refusal)
+
+    def pre4(self, ident, tree):
+        """pre(Q, Key) of a grammar 4 line (v15k, v15n): its preconditions (While, Where) and its trigger, as their
+        trees' text; a line with no trigger and no precondition has none."""
+        t = spec_meaning.read(tree)
+        if not isinstance(t, list) or t[0] not in ("Ubiq", "When", "If", "Necessary"):
+            return
+        pre, trig = t[1], t[2] if t[0] in ("When", "If") else None
+        if pre != "NoPre" or trig is not None:
+            self.fact("pre", ident, " | ".join("-" if x is None else spec_meaning.write(x) for x in (pre, trig)))
 
     def read_codified(self, cap, path, entry):
         doc = spec_read.capability(path)
