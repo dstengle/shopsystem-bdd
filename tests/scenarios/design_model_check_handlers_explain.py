@@ -25,3 +25,13 @@ def model_explain(step):
     ident = step.context.get("ids", {}).get(name, "thing#r1")
     H.says(step, name, ident)
     H.run_model(step, "explain", ident)
+
+
+@handler("ThenK_C", "requirement")
+def printed_refusing(step):
+    """`the requirement r2 is refusing`: the line `model explain` printed under the requirement's id says that the tool
+    shall refuse a command."""
+    word, ident = step.text.rsplit(" is ", 1)[1], step.context["says"][step.names[0]]
+    assert word == "refusing", "no requirement condition %r as a Then" % word
+    lines = [line for line in step.context["result"].stdout.splitlines() if line.strip().startswith(ident + "  ")]
+    assert lines and any(" shall refuse " in line for line in lines), (ident, step.context["result"].stdout)
