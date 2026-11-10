@@ -16,10 +16,11 @@ it is `only(R,I,E,D,X)` with its restrictor `rattr(R,X,T,V)`, `rrel(R,Q,X,Y)`, w
 thing known to fall outside it. A count ("print at least two stages", call 4, I15) is `count(R,I,E,D,X,B,N)` of
 each act on its counted object X, with its bound B (`least`, `most`, `exactly`, `more`, `fewer`) and number N, and a
 `resp` only when it admits no fewer than one X. Each line is marked `cnl4(R)`, so the check reads its pairs as
-codified-2 lines (the If tag, a universal condition paired with each line). The words are named by spec_lf_ids. An `or` box splits the requirement as spec_facts does (`R#n`, `disj`). A construct
-with no translation raises ValueError naming it.
+codified-2 lines (the If tag, a universal condition paired with each line). A "may" line and a necessity are
+spec_lf_modal's. The words are spec_lf_ids'. An `or` box splits it as spec_facts does (`R#n`, `disj`); no translation, a ValueError.
 """
 import spec_facts
+import spec_lf_modal
 import spec_lf_time
 from spec_facts_np import const
 from spec_lf_core import Atom, Box, Ref, least
@@ -149,7 +150,9 @@ class Walk:
     # --- the rule ----------------------------------------------------------------------------------------------
     def run(self, form):
         ops = tuple(p.op for p in form.parts)
-        if form.modality != "shall" or ops not in FORMS:
+        if spec_lf_modal.necessary(self, form):
+            return self.out
+        if ops not in FORMS:
             raise ValueError("no translation of the rule %s %s" % (form.modality, " ".join(ops)))
         self.emit("form", FORMS[ops])
         self.out.append("cnl4(%s)." % self.rid)
@@ -205,7 +208,7 @@ class Walk:
                 for c in item.body:
                     self.restrict(c, own | set(item.refs))
                 self.response(item.scope.body, own | set(item.refs) | set(item.scope.refs))
-            elif item.op == "only" and pos:
+            elif item.op == "only" and pos and not self.may:
                 self.only(item)
             elif item.op == "count" and pos:
                 self.count(item, own | set(item.refs))
@@ -227,7 +230,7 @@ class Walk:
     def act(self, atom, pos):
         e, d, x = self.event(atom)
         self.acts += 1
-        self.emit("resp", self.acts, "pos" if pos else "neg", e, d, x)
+        self.emit("resp", self.acts, spec_lf_modal.polarity(self, pos), e, d, x)
 
     def restrict(self, item, own, preds=("oattr", "orel")):
         """A restriction of a response's object (`own`, the referents its box introduced); of an earlier referent,
@@ -263,7 +266,6 @@ class Walk:
             self.acts += 1
             self.emit("only", self.acts, e, d, x)
 
-
     def count(self, box, own):
         """"D shall V at least n Ks": each act on the counted K a `count`, and a `resp` when the count admits no fewer
         than one K."""
@@ -278,7 +280,7 @@ class Walk:
                 raise ValueError("no translation of a count of other than an object")
             self.acts += 1
             if least(box.count):
-                self.emit("resp", self.acts, "pos", e, d, x)
+                self.emit("resp", self.acts, spec_lf_modal.polarity(self, True), e, d, x)
             self.emit("count", self.acts, e, d, x, BOUNDS[box.count[0]], box.count[1])
 
 

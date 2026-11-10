@@ -13,6 +13,8 @@ The shown atoms are the findings:
   L5  `lint`: an untriggered positive event obligation, with the requirements that react to its event. (warning)
   L6  `maybe(A,B,Why,C)`: a clash whose every witness depends on the prose condition C (one side says C of a thing
       the other says more of); defining C in the controlled language decides it. (warning)
+  L7  `forbid(A,B)`: a "shall not" line forbids what a "may" line permits, on one trigger (or none) in one
+      consistent pre-state (I17). (warning)
   L8  a codified-2 requirement each of whose Thens other requirements entail, each Then named with its premises (spec_entail).
       (warning)
   aside  `coded(A,B)` never `fit(A,B)`: a pair that shares a code no unification keeps one thing, set aside alone,
@@ -106,6 +108,8 @@ def _findings(ctl, words, atoms):
             if (code, finding.text) not in seen:
                 seen.add((code, finding.text))
                 out.append(finding)
+    for a, b in args["forbid"]:     # L7 (I17): a "shall not" line that forbids what a "may" line permits
+        out.append(Finding("L7", sorted({spec_facts.split(a), spec_facts.split(b)}, key=_order), words.forbid(a, b)))
     lints = defaultdict(set)
     for r, e, t in args["lint"]:
         lints[(r, e)] |= set() if isinstance(t, clingo.Symbol) else {spec_facts.split(t)}

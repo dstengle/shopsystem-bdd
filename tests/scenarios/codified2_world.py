@@ -61,7 +61,11 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
          "historical": (("While a session has ended a stage, when the person runs `work start`, `work` shall print the "
                          "stage."), None),
          "unitless": (("While a deadline of a stage is within the last 7, when the person runs `work start`, `work` "
-                       "shall print the stage."), "the number 7 is a duration")}
+                       "shall print the stage."), "the number 7 is a duration"),
+         # modality (I17): a permission, and a necessity with no trigger
+         "permissive": ("A session may write a file.", None),
+         "invariant": ("A session always follows a stage.", None)}
+
 TIMED = {"timed", "clocked", "historical", "unitless"}
 
 
@@ -91,7 +95,11 @@ CAPABILITIES = {"restricting": ["A session shall change only files in its worktr
                 # Overcounted (I15, call 4): on one trigger `work` prints at least two stages and at most one stage;
                 # no number of stages meets both counts.
                 "overcounted": ["When the person runs `work start`, `work` shall print at least two stages.",
-                                "When the person runs `work start`, `work` shall print at most one stage."]}
+                                "When the person runs `work start`, `work` shall print at most one stage."],
+                # Forbidding (I17): a session may write a file, and no session shall write a file while it follows a
+                # stage, which some session may: the "shall not" forbids what the "may" permits (L7)
+                "forbidding": ["A session may write a file.",
+                               "While a session follows a stage, the session shall not write a file."]}
 
 # The universal conditions a capability condition needs beside its lines, as spec/universal.md's U1, U2 ...: U1 is an
 # If line, which takes no precedence over a line of a capability (it holds in every trace).

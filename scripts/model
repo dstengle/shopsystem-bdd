@@ -180,7 +180,8 @@ contract:
     v_t10 two relation rows with one (from, word, to), and spec_frames'
     v_t11-v_t15.
   - logic [--json] [<capability> | <capability>#r<n>] runs the temporal check
-    (spec_solve) and the entailment check (spec_entail: L8, a requirement each
+    (spec_solve; L7, a "shall not" line that forbids what a "may" line
+    permits) and the entailment check (spec_entail: L8, a requirement each
     of whose Thens other requirements entail) and prints its report, with its
     exit code; given a requirement's id, the findings that name it.
   - forms [--json] prints one line for each file form a bounded context

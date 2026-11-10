@@ -6,6 +6,10 @@ subject and each kind of the frame by the words before it (`object` when there a
 its end a role of their own ("successfully"), its sense the entry's place among the entries of its word; a row's
 "has" and "holds" are `rel` atoms; a verb phrase with a gap is the same atom with the gap's referent in its role. A
 negated clause puts all but its subject under `not`.
+
+The form's modality (I17) is the line's: `shall` for an obligation, `may` for a permission (a doer's `May`), and
+`always` or `never` for a necessity, a line of no trigger whose one clause (`Nec`) is its part `holds`, read as a
+While clause is (any K). A line that says both "shall" and "may", or "may not", is noted for spec_lf_read to refuse.
 """
 import spec_lf_core as core
 import spec_lf_np as nps
@@ -13,7 +17,9 @@ import spec_lf_read
 import spec_lf_time
 from spec_lf_core import Atom, Box, NPList
 
-ORIGIN = {"where": "while", "while": "while", "when": "trigger", "if": "trigger", "response": "response"}
+ORIGIN = {"where": "while", "while": "while", "when": "trigger", "if": "trigger", "response": "response",
+          "holds": "while"}
+MODALITY = {"Shall": "shall", "May": "may", "MAlways": "always", "MNever": "never"}
 
 
 def sense(st, n):
@@ -123,17 +129,38 @@ def response(st, tree):
         first = response(st, a[0])
         rest = response(st, a[1]) if name == "AndResp" else ([], [])
         return first[0] + rest[0], first[1] + rest[1]
-    if st.names.kind(name)[1] != "Shall":
+    said = st.names.kind(name)[1]
+    if said not in ("Shall", "May"):
         raise nps.unknown(tree)
+    modal(st, MODALITY[said])
     doer, refs, conds, acts = nps.np(st, a[0]), [], [], a[1]
     while True:
         act_name, act = nps.fun(acts), nps.args(acts)
         one = act[0]
+        if said == "May" and nps.args(one)[0] == "PNeg":
+            spec_lf_read.note(st, 'the line says "may not", which reads as "is not allowed to" and as "is allowed not '
+                                  'to": say "shall not", or say what it may do')
         r, c = clause(st, doer, nps.args(one)[1], nps.args(one)[0] == "PNeg")
         refs, conds = refs + r, conds + c
         if act_name.endswith("_OneAct"):
             return refs, conds
         acts = act[1]
+
+
+def modal(st, modality):
+    """The line's modality, noted when a response says another than an earlier one."""
+    if st.modality not in (None, modality):
+        spec_lf_read.note(st, 'the line says both "%s" and "%s": say each in a line of its own' % (st.modality, modality))
+    st.modality = st.modality or modality
+
+
+def necessity(st, tree):
+    """(referents, conditions) of a necessity's one clause: "a session always follows a stage"."""
+    a = nps.args(tree)
+    if st.names.kind(nps.fun(tree))[1] != "Nec":
+        raise nps.unknown(tree)
+    modal(st, MODALITY[a[0]])
+    return clause(st, nps.np(st, a[1]), a[2], False)
 
 
 def rule(st, tree):
@@ -155,6 +182,6 @@ def rule(st, tree):
         if not st.names.kind(nps.fun(trig))[1] == "Event":
             raise nps.unknown(trig)
         read(name.lower(), lambda s, t: clause(s, nps.np(s, nps.args(t)[0]), nps.args(t)[1], False), trig)
-    read("response", response, a[-1])
+    read("holds" if name == "Necessary" else "response", necessity if name == "Necessary" else response, a[-1])
     fixed = tuple(r for r in st.refs if r.origin not in core.ORIGINS[:3])
-    return core.Form("shall", fixed, tuple(parts))
+    return core.Form(st.modality, fixed, tuple(parts))
