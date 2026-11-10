@@ -574,7 +574,8 @@ The acceptance test of the language is the spec corpus, `grammar/corpus/spec/` (
 repository's spec in the new language with the reading it is meant to have, checked by
 `tests/scripts/test_corpus_spec.py` (it parses to that reading, the reading translates to `model logic`'s facts and
 to `features generate`'s steps, every live line of a codified-2 file has its block, and the line linearises back
-word for word). This section's twins are the constructs' tests; the corpus is the language's.
+word for word). This section's twins are the constructs' tests; the corpus is the language's. Every construct of the grammar, these among them, has a code in the construct catalogue,
+`grammar/constructs.md` (`model constructs --write`), by which a line about the language names it.
 
 ### "the K" outside the box its K is made in, and the cases of "or"
 

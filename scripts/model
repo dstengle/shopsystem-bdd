@@ -161,6 +161,11 @@ contract:
     implemented, the lines citing it, a failing and a passing example, each
     example run first; rules --check writes nothing and exits 1 when the
     file is not what --write would write.
+  - constructs --write writes the construct catalogue grammar/constructs.md
+    under --root (model_constructs): each construct's code, label, form,
+    functions, the lines citing it, and an example with its reading, each
+    example parsed in grammar/corpus/constructs/ first; constructs --check
+    writes nothing and exits 1 when the file is not what --write would write.
   - parse <line> | --file F [--grammar Req|Steps|Def] prints the line's tree in
     the context's grammar and exits 0; a refused line prints the refusal (the
     token and its position, or the guard), the longest prefix that parsed and
@@ -225,6 +230,10 @@ def cmd_rules(args):
     return needing_clingo("rules", lambda: rules(args.json))
 
 
+def cmd_constructs(args):
+    return __import__("model_constructs").catalogue(args.root, write=args.write)
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="model", description=__doc__, epilog=CONTRACT,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -234,6 +243,9 @@ def main(argv=None):
     r.add_argument("--json", action="store_true")
     r.add_argument("--write", action="store_true", help="write the rule catalogue grammar/rules.md")
     r.add_argument("--check", action="store_true", help="say whether grammar/rules.md is current")
+    k = sub.add_parser("constructs", help="write or check the construct catalogue grammar/constructs.md")
+    k.add_argument("--write", action="store_true", help="write the construct catalogue")
+    k.add_argument("--check", action="store_true", help="say whether grammar/constructs.md is current")
     sub.add_parser("facts", help="print the facts read from the repository")
     c = sub.add_parser("check", help="solve the facts against model.lp and report")
     c.add_argument("--json", action="store_true")
@@ -263,9 +275,12 @@ def main(argv=None):
         ap.error("parse takes a line or --file, not both")
     if args.cmd == "rules" and args.write + args.check + args.json > 1:
         ap.error("rules takes one of --json, --write and --check")
+    if args.cmd == "constructs" and args.write == args.check:
+        ap.error("constructs takes one of --write and --check")
     return {"facts": cmd_facts, "check": cmd_check, "rules": cmd_rules, "decisions": cmd_decisions,
             "parse": cmd_parse, "lexicon": cmd_lexicon, "logic": cmd_logic, "restates": cmd_restates,
-            "forms": cmd_forms, "explain": cmd_explain}[args.cmd](args)
+            "forms": cmd_forms, "explain": cmd_explain,
+            "constructs": cmd_constructs}[args.cmd](args)
 
 
 if __name__ == "__main__":
