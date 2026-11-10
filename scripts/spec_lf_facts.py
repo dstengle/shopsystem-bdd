@@ -14,7 +14,8 @@ clashes only with a V of a thing known to fall outside it. A count ("print at le
 `count(R,I,E,D,X,B,N)` of each act on its counted object X, with its bound B (`least`, `most`, `exactly`, `more`,
 `fewer`) and number N, and a `resp` only when it admits no fewer than one X. Each line is marked `cnl4(R)`, so the
 check reads its pairs as codified-2 lines (the If tag, a universal condition paired with each line). A "may" line and
-a necessity are spec_lf_modal's; every and a count in a condition and a negated restriction spec_lf_quant's. The words are spec_lf_ids'. An `or` box splits it as spec_facts does (`R#n`,
+a necessity are spec_lf_modal's; every and a count in a condition and a negated restriction spec_lf_quant's. The words are spec_lf_ids', the atoms' terms
+spec_lf_facts_atoms'. An `or` box splits it as spec_facts does (`R#n`,
 `disj`); no translation, a ValueError.
 """
 import spec_facts
@@ -22,29 +23,17 @@ import spec_lf_modal
 import spec_lf_quant
 import spec_lf_set
 from spec_facts_np import const
-from spec_lf_core import Atom, Box, Ref, least
+from spec_lf_core import Atom, Box, least
+from spec_lf_facts_atoms import TIME, Terms
 
-WORDS = {("exit", "successfully"): "exit_ok", ("exit", "with an error naming"): "exit_error", ("print",): "print"}
 FORMS = {("response",): "ubiq", ("when", "response"): "when", ("while", "response"): "while",
          ("where", "response"): "where", ("if", "response"): "if", ("while", "when", "response"): "while_when",
          ("where", "when", "response"): "where_when", ("where", "while", "response"): "where_while",
          ("while", "if", "response"): "while_if", ("where", "if", "response"): "where_if"}
-# the time atoms (spec_lf_time, I16), which check.lp has no reading of: a line holding one is refused naming it
-TIME = {"cmp": lambda a: "no translation of a comparison of moments",
-        "history": lambda a: "no translation of the history of %s" % a.args[0]}
 
 
-class Walk:
+class Walk(Terms):
     """One walk of one form: its facts and the choices it took at each `or` box."""
-
-    def __init__(self, ids, rid, choices=()):
-        self.ids, self.rid, self.out, self.acts = ids, const(rid), [], 0
-        self.choices, self.taken, self.options = list(choices), [], []
-
-    def emit(self, pred, *args):
-        fact = "%s(%s)." % (pred, ",".join((self.rid,) + tuple(str(a) for a in args)))
-        if fact not in self.out:
-            self.out.append(fact)
 
     def pick(self, n):
         c = self.choices[len(self.taken)] if len(self.taken) < len(self.choices) else 0
@@ -52,69 +41,7 @@ class Walk:
         self.options.append(n)
         return c
 
-    # --- terms -------------------------------------------------------------------------------------------------
-    def term(self, ref):
-        if ref is None:     # the object of a state whose frame takes none (edge)
-            return "none"
-        if ref.origin == "constant" and ref.value in self.ids.actors:
-            return self.ids.actors[ref.value]
-        if ref.origin in ("constant", "parameter", "indexical"):
-            self.emit("role", ref.name, self.ids.kind(ref.kind))
-            self.emit("named", ref.name, const(ref.value))
-        return ref.name
-
-    def roles(self, refs):
-        for r in refs:
-            self.emit("role", r.name, self.ids.kind(r.kind))
-
-    @staticmethod
-    def slots(roles):
-        """(the subject, the referents of the frame's kinds after it, the fixed words of the frame's end)."""
-        subject = roles[0][1]
-        kinds = [r[1] for r in roles[1:] if len(r) == 2]
-        fixed = tuple(r[0] for r in roles[1:] if len(r) == 1) + tuple(r[0] for r in roles[1:] if len(r) == 2
-                                                                         and r[0] == "with an error naming")
-        return subject, kinds, fixed
-
-    def obj(self, refs):
-        terms = [self.term(r) for r in refs]
-        return "none" if not terms else terms[0] if len(terms) == 1 else "pair(%s,%s)" % tuple(terms[:2])
-
-    def event(self, atom):
-        """(event, doer, object) of an event atom."""
-        _, verb, _, roles = atom.args
-        subject, kinds, fixed = self.slots(roles)
-        return WORDS.get((verb,) + fixed[:1]) or self.ids.event(verb), self.term(subject), self.obj(kinds)
-
-    # --- the pre-state -----------------------------------------------------------------------------------------
-    def literal(self, item, pos=True):
-        if isinstance(item, Box):
-            return self.box(item, pos)
-        if item.pred == "attr":
-            x, term, value = item.args
-            if isinstance(value, Ref):
-                return      # "the status of x": an image the pre-state says nothing of
-            tid, vid = self.ids.attr(x.kind, term, value)
-            self.emit("cond", self.term(x), tid, vid, "pos" if pos else "neg")
-        elif item.pred in ("rel", "state"):
-            q, x, y = self.edge(item)
-            self.emit("crel", q, self.term(x), self.term(y), "pos" if pos else "neg")
-        elif item.pred in TIME:
-            raise ValueError(TIME[item.pred](item))
-        else:
-            raise ValueError("no translation of an event in a condition")
-
-    def edge(self, atom):
-        """(relation, x, y) of a `rel` atom or of a state verb's atom; y None when its frame takes no object (b219)."""
-        if atom.pred == "rel":
-            word, x, y = atom.args
-            return self.ids.relation(word, x.kind, y.kind), x, y
-        verb, _, roles = atom.args
-        subject, kinds, fixed = self.slots(roles)
-        if len(kinds) > 1 or fixed:
-            raise ValueError("no translation of the state %s there" % verb)
-        return self.ids.event(verb), subject, (kinds or [None])[0]
-
+    # --- the boxes of the pre-state ------------------------------------------------------------------------------
     def box(self, box, pos):
         if box.op == "or":
             case = box.body[self.pick(len(box.body))]
@@ -233,25 +160,6 @@ class Walk:
         e, d, x = self.event(atom)
         self.acts += 1
         self.emit("resp", self.acts, spec_lf_modal.polarity(self, pos), e, d, x)
-
-    def restrict(self, item, own, preds=("oattr", "orel")):
-        """A restriction of a response's object (`own`, the referents its box introduced); of an earlier referent,
-        the pre-state it presupposes."""
-        if isinstance(item, Box) and item.op == "not":
-            return spec_lf_quant.negated(self, item, own)
-        pred = getattr(item, "pred", None)
-        if pred not in ("attr", "rel", "state"):
-            raise ValueError("no translation of %s on an object" % (pred or item.op))
-        first = {"attr": lambda a: a[0], "rel": lambda a: a[1], "state": lambda a: a[2][0][1]}[pred](item.args)
-        if first not in own:
-            return self.literal(item)
-        if item.pred == "attr":
-            x, term, value = item.args
-            if not isinstance(value, Ref):
-                self.emit(preds[0], self.term(x), *self.ids.attr(x.kind, term, value))
-        else:
-            q, x, y = self.edge(item)
-            self.emit(preds[1], q, self.term(x), self.term(y))
 
     def only(self, box):
         """"D shall V only Ks that P": no act; `only` and the restrictor P of its K (`rattr`, `rrel`)."""
