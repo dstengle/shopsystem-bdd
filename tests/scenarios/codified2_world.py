@@ -99,12 +99,22 @@ CAPABILITIES = {"restricting": ["A session shall change only files in its worktr
                 # Forbidding (I17): a session may write a file, and no session shall write a file while it follows a
                 # stage, which some session may: the "shall not" forbids what the "may" permits (L7)
                 "forbidding": ["A session may write a file.",
-                               "While a session follows a stage, the session shall not write a file."]}
+                               "While a session follows a stage, the session shall not write a file."],
+                # Declining (I14a): `work` refuses `work start` (an error exit on a run, by the CLI pack's definition of
+                # refuse), so U1 entails its "change nothing" from its other Then.
+                "declining": [("If the person runs `work start`, then `work` shall exit with an error naming "
+                               "`work start` and change nothing.")]}
 
 # The universal conditions a capability condition needs beside its lines, as spec/universal.md's U1, U2 ...: U1 is an
 # If line, which takes no precedence over a line of a capability (it holds in every trace).
 UNIVERSAL = {"contravening": [("If a tool refuses a command, then the tool shall exit with an error naming the "
                                "command and change nothing.")]}
+UNIVERSAL["declining"] = UNIVERSAL["contravening"]
+
+# What `features generate` writes of a capability condition's lines (I14a): (a step its feature must hold, a step it
+# must not, as U1 entails it). Declining: the error exit is the line's own Then; its "change nothing" is entailed.
+GENERATED = {"declining": (r"^    Then `work` exits with an error naming `work start`$",
+                           r"^\s*(Then|And) `work` changes nothing$")}
 
 
 # The requirement conditions of `model logic` (I13a): the lines of the capability `thing`, r1 the one the scenario
