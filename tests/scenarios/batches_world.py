@@ -51,8 +51,11 @@ def outside(step):
 
 
 def env(step):
+    """The run's environment: the stand-in gh, and no inherited PYTHONPATH, so that the tests `work batch done` runs
+    load this plugin's scripts, not those of a `work` that runs this suite (batch_git.scripts_env)."""
     where = outside(step)
-    return dict(os.environ, SHOPSYSTEM_WORK_GH="%s %s" % (shlex.quote(sys.executable), shlex.quote(str(STUB))),
+    inherited = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
+    return dict(inherited, SHOPSYSTEM_WORK_GH="%s %s" % (shlex.quote(sys.executable), shlex.quote(str(STUB))),
                 STUB_GH_CALLS=str(where / "gh-calls.jsonl"), STUB_GH_STATE=str(where / "gh-state.json"),
                 GH_TOKEN="", GIT_TERMINAL_PROMPT="0")
 
