@@ -182,7 +182,7 @@ class Model(SpecReading, WorkReading, RequestReading):
         for path in sorted((self.root / "spec" / "capabilities").glob("*.md")):
             data, body = frontmatter(path.read_text())
             name = path.stem
-            codified = spec_read.codified(path)      # read as groups (§13.4); else v_p0
+            codified = spec_read.codified(path, (spec_read.MARKER4,))   # read as groups (§13.4); codified-1 is v_p0
             expected = f"capability/{self.path}/{name}" if self.path else None
             cap = data.get("id") or expected or name
             if expected and cap != expected:

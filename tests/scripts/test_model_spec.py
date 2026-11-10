@@ -136,6 +136,18 @@ class FactsTest(CodifiedTest):
         self.assertEqual(self.rows(found, "v_p0"), [["spec/capabilities/old.md"]])
         self.assertIn("migrate upgrade", found["labels"]["v_p0"])
 
+    def test_a_capability_in_codified_1_is_v_p0_and_its_lines_are_not_read(self):
+        """The old language is no longer read (b160): refused as a file that says none is, naming `migrate upgrade`."""
+        self.write("spec/capabilities/old.md", codified("old", ["### [g1] Start", f"- [r1] {START}"]).replace(
+            "language: codified-2", "language: codified-1"))
+        f = self.facts()
+        self.assertIn('uncodified("spec/capabilities/old.md").', f)
+        self.assertFalse([x for x in f if "old#" in x])
+        found, r = self.check()
+        self.assertEqual(self.rows(found, "v_p0"), [["spec/capabilities/old.md"]])
+        self.assertIn("migrate upgrade", found["labels"]["v_p0"])
+        self.assertEqual(r.returncode, 1)
+
     def test_an_index_that_is_not_codified_is_v_p0(self):
         index = INDEX.replace("language: codified-2\n", "")
         self.write("spec/index.md", index)

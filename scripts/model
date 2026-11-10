@@ -50,14 +50,15 @@ contract:
     spec/capabilities/*.md, each a capability with frontmatter (id, narrator,
     group, rests_on, retired) and a `## Behaviour` section; a `formulated_as`
     key is a file problem. A file whose own frontmatter has
-    `language: codified-1` is codified (design model v5): its Behaviour is
+    `language: codified-2` is codified (design model v5): its Behaviour is
     groups `### [g<n>] <title>`, each with an optional
     `Restates: r<n>@0.29, <cap>#r<n>@0.29.` line, `- [r<n>] <statement>`
     bullets and an optional fenced `given` block of example data; its
     `## Dropped` lists the
     0.29 ids no group restates. A capability file, spec/index.md or
-    spec/universal.md without that marker is not read: it is v_p0, which
-    `migrate upgrade` converts;
+    spec/universal.md without that marker (or `codified-1`, which
+    spec/index.md and spec/universal.md may still say) is not read: it is
+    v_p0, which `migrate upgrade` converts;
     spec/universal.md, the universal conditions `- [U<n>] <statement>`;
     spec/restated.json, the 0.29 ids `<cap>#r<n>` with their text;
     features/**/*.feature, the containers of scenarios, a capability
