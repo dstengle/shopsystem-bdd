@@ -375,3 +375,88 @@ Feature: Design model check
     And the term t1 is overlapping
     When the person runs `model check` on the term t1
     Then `model` exits with an error naming the term t1
+
+  @g80 @r80
+  Scenario: `model lexicon` shows the terms of the imported packs
+    Given a bounded context b1
+    And the bounded context b1 is importing
+    When the person runs `model lexicon` on the bounded context b1
+    Then `model` prints the term t1
+    And `model` exits successfully
+
+  @g81 @r81
+  Scenario: `model check` refuses an import of no pack
+    Given a bounded context b1
+    And the bounded context b1 is misimporting
+    When the person runs `model check` on the bounded context b1
+    Then `model` exits with an error naming the pack p1
+
+  @g82 @r82
+  Scenario: `model check` refuses a pack's term redefined without Redefines:
+    Given a term t1
+    And the term t1 is unmarked
+    When the person runs `model check` on the term t1
+    Then `model` exits with an error naming the term t1
+
+  @g83 @r83
+  Scenario: `model check` passes a term marked Redefines:
+    Given a term t1
+    And the term t1 is redefining
+    When the person runs `model check` on the term t1
+    Then `model` exits successfully
+
+  @g84 @r84
+  Scenario: `model parse` passes a plural subject whose verb agrees
+    Given a requirement r1
+    And the requirement r1 is plural
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g85 @r85
+  Scenario: `model parse` refuses a verb that does not agree with its subject
+    Given a requirement r1
+    And the requirement r1 is disagreeing
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits with an error naming the term t1
+
+  @g86 @r86
+  Scenario: `model parse` refuses a verb of the wrong aspect for its clause
+    Given a requirement r1
+    And the requirement r1 is misaspected
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits with an error naming the term t1
+
+  @g87 @r87
+  Scenario: `model parse` passes a trigger that runs a command with an option
+    Given a requirement r1
+    And the requirement r1 is optioned
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g88 @r88
+  Scenario: `model parse` passes of and its over a relation row or an attribute
+    Given a requirement r1
+    And the requirement r1 is genitive
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g89 @r89
+  Scenario: `model parse` passes no before a subject or an object
+    Given a requirement r1
+    And the requirement r1 is denying
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g90 @r90
+  Scenario: `model parse` passes a derived compound noun
+    Given a requirement r1
+    And the requirement r1 is compound
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g91 @r91
+  Scenario: `model parse` passes only before an object
+    Given a requirement r1
+    And the requirement r1 is restrictive
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
