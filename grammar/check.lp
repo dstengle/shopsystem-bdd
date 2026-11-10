@@ -16,7 +16,7 @@
 #defined fun/1.   #defined prose/1. #defined dalt/2.  #defined dlit/5. #defined uall/3. #defined urel/4.
 #defined uattr/4. #defined ucond/5. #defined uccond/4. #defined pre/6. #defined prec/5.
 #defined each/2.   #defined only/5. #defined rattr/4.  #defined rrel/4.  #defined akind/2.
-#defined cnl4/1.  #defined cmp/5.  #defined count/7.  #defined nec/5.  #defined necsub/2.
+#defined cnl4/1.  #defined cmp/5.  #defined count/7.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
@@ -204,17 +204,6 @@ out(A,B) :- lo(A,B,Z,C2,_), hi(A,B,Z,C1,_), later(A,B,C2,C1).
 redge(A,B,Q,Z1,Z2) :- rw(A,B,Q,Z1,Z2,pos).
 redge(A,B,Q,Z1,Z2) :- side(A,B,S), orel(S,Q,Y1,Y2), at(A,B,S,Y1,Z1), at(A,B,S,Y2,Z2).
 out(A,B) :- fun(Q), redge(A,B,Q,Z,Z1), redge(A,B,Q,Z,Z2), Z1 < Z2.
-
-% ---- a necessity (`nec`, `necsub`: spec_lf_modal) is a premise of every pair, in both states: "a K1 never Qs a K2"
-% puts out a pair whose merged state relates a K1 to a K2 so; "a K1 always Qs a K2" one whose side says a K1 is so
-% related to no K2 (or to no kind above it). (A necessity is joined with a pair's own facts on its relation: a
-% context has few necessities, so this is no join of two requirement-level facts.)
-subeq(K,K) :- nec(_,_,_,K,_).  subeq(K,K) :- nec(_,_,_,_,K).
-out(A,B) :- nec(_,never,Q,Kx,Ky), rw(A,B,Q,Z1,Z2,pos), kup(A,B,Z1,Kx), kup(A,B,Z2,Ky).
-out(A,B) :- nec(N,always,Q,Kx,Ky), necsub(N,1), side(A,B,S), rnone(S,Q,X,kind(K)), at(A,B,S,X,Z), kup(A,B,Z,Kx),
-            subeq(Ky,K).
-out(A,B) :- nec(N,always,Q,Kx,Ky), necsub(N,2), side(A,B,S), rnone(S,Q,kind(K),Y), at(A,B,S,Y,Z), kup(A,B,Z,Ky),
-            subeq(Kx,K).
 
 % ---- a defined condition read through its definition (`dalt(C,N)`, `dlit(C,N,Attr,Val,Pol)`: the ways through a
 % Def whose literals are all on its own subject, spec_facts.def_facts) under `no`, `every` and a negation --------

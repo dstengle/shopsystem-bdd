@@ -362,9 +362,9 @@ A line's modality is the form's first word (I17; the design's section 4.5). "sha
 permits: it obliges nothing, so a "may" line with no trigger stands (R12 refuses only an obligation), and `model
 logic` reports a "shall not" line that forbids what it permits, on one trigger or none, in a state both allow (L7).
 "may not" reads two ways and is refused; so is a line that says both "shall" and "may". "always" and "never" say a
-necessity: a line of no trigger over one state clause, its referents any K, as a While clause's are; it is a premise
-of `model logic`, true in both states of every pair it bears on. A While clause may come before it, which the check
-does not read yet: such a line is refused there.
+necessity: a line of no trigger over one state clause, its referents any K, as a While clause's are; a While clause
+may come before it. `model logic` does not read a necessity yet: it is no premise of a pair and hides no finding,
+and the check neither refuses it nor reports it.
 
 ```reading
 A session may write a file.
