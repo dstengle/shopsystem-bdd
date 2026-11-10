@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/plugin-takes-the-dependencies-it-needs, design-decision/plugin-scenarios-run-as-pytest-bdd, design-decision/query-commands-answer-in-their-output]
 retired: []
-unbuilt: [r35, r36, r37, r38, r39, r40, r41, r42, r43, r44]
+unbuilt: []
 ---
 
 # Feature file tools

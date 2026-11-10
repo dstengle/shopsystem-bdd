@@ -8,10 +8,13 @@ and `GivenCode` (one value, in `quoted`); a value `GivenK_A`, `ThenK_A`; a state
 `ThenPrintsNot`, `ThenExitsOk`, `ThenExitsErr`, `ThenChangesNothing`, else `ThenDoes`, `ThenDoesNot`. A step of
 more than one reading under its keyword (the same text read with a code of two kinds is one) is refused.
 """
+import re
+
 import spec_lf_np
 import spec_rgl_steps
 from features_vocab import Call, StepError
 
+ROW = re.compile(r"^r\d+_(\w+?)_(Has|Holds|Is)$")
 ALLOWED = {"given": ("SCond", "_Given", "_HoldsBlock", "_HoldsText"), "when": ("STrig",), "then": ("SCond", "_Does")}
 
 
@@ -20,9 +23,13 @@ def _fun(tree):
 
 
 def _verb(names, vp):
-    """The term of a verb phrase's fun (`e_exit_action_3_2`); "set" of an attribute's `<t>_Set` (b216)."""
+    """The term of a verb phrase's fun (`e_exit_action_3_2`); "set" of an attribute's `<t>_Set` (b216); a row's
+    word of its frame (`r1_of_Has` "has", `r2_in_Holds` "holds") or of its condition (`r3_on_Is`, b197)."""
     if names.attr(_fun(vp))[1] == "Set":
         return "set"
+    row = ROW.match(_fun(vp))
+    if row:
+        return {"Has": "has", "Holds": "holds"}.get(row.group(2), row.group(1).replace("_", " "))
     n = int(_fun(vp).rsplit("_", 2)[1])
     return names.verbs[n].term.term
 
@@ -47,7 +54,7 @@ def template(names, keyword, tree):
         if t is not None:
             kind = names.kind(rest)[0]
             return keyword.capitalize() + "K_A", kind, t.term, kind
-        verb = _verb(names, cond[3])
+        verb = _verb(names, cond[0] if ROW.match(cond[0]) else cond[3])
         return keyword.capitalize() + ("DoesNot" if neg else "Does"), None, None, verb
     neg, verb, vp = args[0] == ("PNeg",), _verb(names, args[2]), args[2]
     if verb == "print":
@@ -82,11 +89,12 @@ def step(root, keyword, text):
             call.command = node[1]
         elif names.attr(node[0])[0] is not None and "_v_" in node[0]:
             call.values.append(names.value(node[0]))
-    if tree[0].endswith("_Does") or tree[0] == "SCond" and not tree[1][0].endswith("_Is"):
+    row = tree[0] == "SCond" and ROW.match(tree[1][0])
+    if tree[0].endswith("_Does") or tree[0] == "SCond" and (row or not tree[1][0].endswith("_Is")):
         clause = tree[1] if tree[0] == "SCond" else tree
         call.subject = spec_rgl_steps.text(gram, clause[2])
-        call.nps = [spec_rgl_steps.text(gram, a) for a in clause[3][1:]]
-        call.event = _verb(names, clause[3])
+        call.nps = [spec_rgl_steps.text(gram, a) for a in (clause[3:] if row else clause[3][1:])]
+        call.event = _verb(names, clause[0] if row else clause[3])
     if name == "WhenHappens":
         call.subject, call.event = spec_rgl_steps.text(gram, tree[1][1]), term
     call.term = (call.command if name == "WhenRuns" else call.subject if name.startswith("Then") and term is None

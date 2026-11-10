@@ -31,10 +31,40 @@ LINES = {"permitting": ["A session may write a file."],
                           "successfully."), ERROR % "While a stage is `done`, when"],
          "excepting": ["When the person runs `work start`, `work` shall print a stage whose status is not `done`.",
                        "When the person runs `work start`, `work` shall not print a stage whose status is not `done`."]}
+RUN = "When the person runs `work start`, "
+# feature-file-tools: a line of each construct `features generate` writes the scenario of
+LINES.update({"distributing": [RUN + "`work` shall print every stage."],
+              "generalising": ["While every stage is `done`, w" + RUN[1:] + "`work` shall exit successfully."],
+              "confining": ["When a session ends a stage, the session shall write only files in its worktree."],
+              "bounding": [RUN + "`work` shall print at least two stages.", RUN + "`work` shall print at most one stage."],
+              "tallying": ["While at least two stages are `done`, w" + RUN[1:] + "`work` shall exit successfully."],
+              "branching": [("While a stage is `done` or a session follows the stage, w" + RUN[1:] + "`work` shall exit "
+                             "successfully.")],
+              "linking": ["When a session ends a stage on a worktree, `work` shall print the stage."],
+              "valued": ["When a session ends a stage, `work` shall print the status of the stage."],
+              "excluding": ["While no stage is `done`, w" + RUN[1:] + "`work` shall exit successfully."],
+              "exempting": [RUN + "`work` shall print a stage whose status is not `done`."]})
 # condition -> glossary entries and `## Relations` rows it adds
-TERMS, ROWS = {}, {}
-# condition -> a step the feature `features/shelf.feature` must hold
-HOLDS = {}
+TERMS, ROWS = {}, {"linking": ["| stage | on | worktree |  |"]}
+# condition -> the steps the feature `features/shelf.feature` must hold: two Ks of every in a response (R6); one K
+# that meets every's scope; a K that meets only's restrictor and the Then on it (R5); the bound's number of Ks, and
+# one past "at most one" with the Then on it negated; two Ks of "at least two" in a condition; a scenario a case of
+# or; the row's Given; "the T of x" with no value; "no K" said, no K brought in; a K that does not meet a restriction
+HOLDS = {"distributing": r"^    Given a stage s1\n    And a stage s2\n.*\n    Then `work` prints the stage s1\n"
+                         r"    And `work` prints the stage s2$",
+         "generalising": r"^    Given a stage s1\n    And the stage s1 is `done`\n    When the person runs `work start`$",
+         "confining": (r"^    And the worktree w1 holds the file f1\n    When the session s1 ends the stage s2\n"
+                       r"    Then the session s1 writes the file f1$"),
+         "bounding": (r"^    Then `work` prints the stage s1\n    And `work` prints the stage s2\n(?s:.*)"
+                      r"^    Given a stage s1\n    And a stage s2\n.*\n    Then `work` does not print the stage s2$"),
+         "tallying": r"^    Given a stage s1\n    And the stage s1 is `done`\n    And a stage s2\n    And the stage s2 is `done`$",
+         "branching": (r"^  Scenario: line 1 \(case 1\)\n    Given a stage s1\n    And the stage s1 is `done`\n(?s:.*)"
+                       r"^  Scenario: line 1 \(case 2\)\n.*\n.*\n    And the session s2 follows the stage s1$"),
+         "linking": r"^    And the stage s2 is on the worktree w1\n    When the session s1 ends the stage s2$",
+         "valued": r"^    When the session s1 ends the stage s2\n    Then `work` prints the status of the stage s2$",
+         "excluding": r"^    Given no stage is `done`\n    When the person runs `work start`$",
+         "exempting": (r"^    Given a stage s1\n    And the stage s1 is not `done`\n    When the person runs `work start`\n"
+                       r"    Then `work` prints the stage s1$")}
 
 
 def capability(step, path, word):
