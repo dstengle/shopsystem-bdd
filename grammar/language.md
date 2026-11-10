@@ -646,7 +646,141 @@ shall [x4: agent the person (constant), x5: command `work start` (parameter), x6
     print(e2, subject: x6, object: x2)
 ```
 
+### "X conforms to A": conformance to a named artifact
+
+"X conforms to A" says that X meets what the artifact A sets out: a form, a schema, a layout, the language reference.
+A is a noun of a kind under `artifact` (the CLI pack's noun), said as a proper noun ("the comment form"), as "the K of
+X" ("the requirement grammar of the upstream"), or as a code naming a file (`grammar/language.md`, a parameter). Every
+artifact a line conforms to is declared with the part of speech (artifact): `- **the comment form** (artifact): ...`
+is a proper noun of kind artifact, `- **layout** (artifact): ...` a noun under artifact. Its entry may give `Schema:`
+(the schema type and its file, as in "Schema: json schema, `schemas/comment.json`."), and an attribute entry or a relation
+row that is one of its fields may give `Field of: <artifact>` (an attribute in its entry, a row in a cell of its own);
+the lexicon reads and keeps both, and nothing checks them yet (b241). The
+verb is the CLI pack's state verb `conform` (Frame: thing conforms to artifact), and its atom is `conforms(x, a)`: in
+a While or Where clause and a relative clause it is a state like any other, negated with "does not conform to A",
+counted out with "no K conforms to A", and said "a K that conforms to A" or "a K that does not conform to A". A K of
+another kind after "to" is refused, naming the verb's frame. "the K of X" after "does not conform to" is the K that X
+has, there whether or not X conforms: it stays outside the `not`. In `model logic` the atom is a state like a
+relation's (`crel(R, e_conform, x, a, pos)`, `neg` under a `not`), which clashes as any state does; in a scenario it is
+a Given, "the file f1 does not conform to the stage form", which the codified-2 world records.
+
+Found by the audit in requests r76, r77, r86 and r100 ("a comment that has a field block": a comment that conforms to
+the comment form), r82 ("a request line that has no logical form": one that does not conform to the requirement
+grammar of the upstream), r87 and r95 (b153); design-model-check r189, r195 and r196 (b152: "does not conform to the
+request form", "the entry form", "the final layout"); readiness r21, r24 and r26 (b157: "does not match the
+relation-row form", "the upstream-entry form", "the example-data form"). The design's own example (section 6.2):
+"While a request comment does not conform to the comment schema, when a session runs `work sync`, `work` shall print
+the comment and not write the comment."
+
+```reading
+While a file does not conform to the stage form, when the person runs `work start`, `work` shall print the file and not write the file.
+shall [x2: artifact the stage form (constant), x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: file]
+    not
+      conforms(x1, x2)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    print(e2, subject: x5, object: x1)
+    not
+      write(e3, subject: x5, object: x1)
+```
+
+```reading
+While a file conforms to the stage form and no worktree holds the file, when the person runs `work start`, `work` shall print the file.
+shall [x2: artifact the stage form (constant), x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+  while [x1: file]
+    conforms(x1, x2)
+    not [x3: worktree]
+      in(x1, x3)
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    print(e2, subject: x6, object: x1)
+```
+
+```reading
+If the person runs `work start` on a file that does not conform to the stage form, then `work` shall refuse the command and name the file.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x4: artifact the stage form (constant), x5: tool `work` (constant)]
+  if [x3: file]
+    not
+      conforms(x3, x4)
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    refuse(e2, subject: x5, object: x2)
+    name(e3, subject: x5, object: x3)
+```
+
+```reading
+When the person runs `work start`, `work` shall print every file that conforms to the stage form.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant), x5: artifact the stage form (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response
+    every [x4: file]
+      conforms(x4, x5)
+      scope
+        print(e2, subject: x3, object: x4)
+```
+
+```reading
+While no file conforms to the stage form, when the person runs `work start`, `work` shall exit successfully.
+shall [x2: artifact the stage form (constant), x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while
+    not [x1: file]
+      conforms(x1, x2)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    exit(e2, subject: x5, successfully)
+```
+
+The artifact as "the K of X", the worktree's own layout: it is there whether or not the file conforms to it.
+
+```reading
+While a worktree holds a file that does not conform to the layout of the worktree, when the person runs `work start`, `work` shall print the file.
+shall [x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+  while [x1: worktree, x2: file, x3: layout]
+    of(x3, x1)
+    not
+      conforms(x2, x3)
+    in(x2, x1)
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    print(e2, subject: x6, object: x2)
+```
+
+The artifact as a code naming a file: a parameter of kind artifact (R10).
+
+```reading
+While a file does not conform to `docs/stage.md`, when the person runs `work start`, `work` shall print the file.
+shall [x2: artifact `docs/stage.md` (parameter), x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: file]
+    not
+      conforms(x1, x2)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    print(e2, subject: x5, object: x1)
+```
+
+```reading
+While a file conforms to a stage, when the person runs `work start`, `work` shall print the file.
+refused: the verb conform takes as its recipient artifact or a kind of it: thing conforms to artifact
+```
+
 ## What the language cannot say yet
 
 The limits the rewording keeps, one subsection a limit: the construct the language has not, the lines that need it
 by id, and the plain line each says instead. A corpus block of such a line gives `Known limit: #<n>` as its trace.
+
+### #13: what a command would write
+
+A line that says X differs from what a command writes now ("is not what `model decisions` would write") compares X
+with a counterfactual: the output of a run that has not happened. The language has no noun phrase for it: "what
+`model decisions` writes" is no noun phrase (no free relative), and "does not conform to" takes an artifact, which a
+command's output is not. Lines: design-model-check r202, r203 (the decisions index), r220 (the rule catalogue).
+Each says instead what the stale file lacks, in the item's words: "While a design-decision has an index entry that a
+decisions index does not hold, if the person runs `model decisions --check`, then `model` shall exit with an error
+naming the decisions index and change no file."; the rows that are extra or changed are lost.

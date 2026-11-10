@@ -162,7 +162,7 @@ def of(st, row, x):
     ref, new = st.image((row, x.ref), row[0])
     if not new:
         return NP(ref, "fixed", deps=[x], new=False)
-    return NP(ref, "a", [Atom("rel", ("of", ref, x.ref))], deps=[x])
+    return NP(ref, "a", [Atom("rel", ("of", ref, x.ref))], deps=[x], image=True)
 
 
 def its(st, kind):
@@ -172,7 +172,7 @@ def its(st, kind):
     spec_lf_read.its(st, [r[2] for r in rows], "its " + spec_lf_read.noun(st, kind))     # R8
     row = next((r for r in rows if subject and r[2] in st.vocab.ancestors(subject.kind)), rows[0])
     ref, new = st.image((row, subject), kind)
-    return NP(ref, "a", [Atom("rel", ("of", ref, subject))]) if new else core.fixed(ref)
+    return NP(ref, "a", [Atom("rel", ("of", ref, subject))], image=True) if new else core.fixed(ref)
 
 
 def owner(st, tnp):
@@ -197,7 +197,7 @@ def value_np(st, t, x):
     ref, new = st.image((t.term, x.ref), t.term)
     if not new:
         return NP(ref, "fixed", deps=[x], new=False)
-    return NP(ref, "a", [Atom("attr", (x.ref, t.term, ref))], deps=[x])
+    return NP(ref, "a", [Atom("attr", (x.ref, t.term, ref))], deps=[x], image=True)
 
 
 def restrict(st, cn, ref):

@@ -60,6 +60,8 @@ class NP:
     new: bool = True
     said: str = None        # the determiner and noun as said ("a stage", "stages"), for a reading rule's refusal
     count: tuple = None     # a count's (bound, number): quant "count"
+    image: bool = False     # a functional image ("the K of x", "its K", "the T of x") made here: under a negated
+    #                         clause it stays outside the `not` (it is there whether or not the clause holds)
 
 
 @dataclass
@@ -136,8 +138,13 @@ def apply(args, build, neg_at=None):
 
 def _go(items, build, chosen, neg_at, i):
     if neg_at == i:
+        held = [a for a, main in items if main and isinstance(a, NP) and a.image and a.new
+                and not any(d.new or d.restr for d in a.deps)]
+        items = [(replace(a, new=False, restr=[], inner=[], deps=[]) if any(a is h for h in held) else a, main)
+                 for a, main in items]
         refs, conds = _go(items, build, chosen, None, i)
-        return [], [Box("not", _uniq(refs), _uniq(conds))]
+        outside = [r for a in held for r in [a.ref] + a.inner], [c for a in held for c in a.restr]
+        return outside[0], outside[1] + [Box("not", _uniq(refs), _uniq(conds))]
     if not items:
         return [], [build(chosen)]
     (a, main), rest = items[0], items[1:]

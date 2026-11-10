@@ -31,6 +31,10 @@ def translate(vocab, tree):
     return spec_lf_clause.rule(st, spec_meaning.read(tree)), st
 
 
+# a state atom said by its own name (design 7.2): "X conforms to A" is conforms(x, a)
+NAMED = {("conform", ("subject", "to")): "conforms"}
+
+
 def term(x):
     if isinstance(x, Ref):
         return x.name
@@ -45,6 +49,8 @@ def atom(a):
         return "%s%s(%s)" % (verb, "#%d" % n if n > 1 else "", ", ".join([e] + [term(r) for r in roles]))
     if a.pred == "state":
         verb, n, roles = a.args
+        if (verb, tuple(r[0] for r in roles)) in NAMED:     # the CLI pack's conform: design 7.2's conforms(x, a)
+            return "%s(%s)" % (NAMED[verb, tuple(r[0] for r in roles)], ", ".join(term(r[1]) for r in roles))
         return "%s%s(%s)" % (verb, "#%d" % n if n > 1 else "", ", ".join(term(r) for r in roles))
     if a.pred == "rel":
         word, x, y = a.args

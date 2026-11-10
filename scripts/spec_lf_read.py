@@ -50,7 +50,7 @@ def words(st, ref):
 
 def _image(st, row, y):
     ref, new = st.image((row, y), row[0])
-    return NP(ref, "a", [Atom("rel", ("of", ref, y))]) if new else core.fixed(ref)
+    return NP(ref, "a", [Atom("rel", ("of", ref, y))], image=True) if new else core.fixed(ref)
 
 
 def the(st, kind, plural=False):

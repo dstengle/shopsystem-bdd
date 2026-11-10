@@ -95,9 +95,9 @@ When a session ends a stage that a session ends, `work` shall print the stage.
 When a session ends a stage whose status is not `done`, `work` shall print every session whose worktree holds a file.
 While sessions whose worktree holds a file follow a stage whose status is `open`, when the person runs `work start`, `work` shall exit successfully.
 When the person runs `work start`, `work` shall print every session whose worktree does not hold a file.
-# an attribute of another kind gives no whose
+# an attribute of another kind gives no whose (a worktree has a layout, so "whose" parses and "status" does not)
 When the person runs `work start`, `work` shall print every worktree whose status is `open`.
-= refused: does not parse at whose
+= refused: does not parse at status
 # one meaning or refused (b136, call 2): a list that belongs to either of two verbs reads two ways
 When the person runs `work start`, `work` shall print every session that follows a stage and the stage.
 = refused: more than one meaning: "every session that follows a stage and the stage" reads 2 ways

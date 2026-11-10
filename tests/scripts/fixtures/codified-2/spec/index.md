@@ -17,15 +17,18 @@ not this repository's spec. Its rows give grammar 4's noun phrases (I8): of, its
 |---|---|---|---|
 | worktree | of | session | one |
 | file | in | worktree |  |
+| layout | of | worktree | one |
 
 ## Glossary
 
 - **the person** (proper noun): the human who runs the tools. Kind of: agent.
 - **`work`** (proper noun): the tool of the backlog. Kind of: tool.
+- **the stage form** (artifact): the fields a file of a stage holds, and their order. Schema: markdown frontmatter, `docs/stage.md`.
 - **session** (noun): an agent that runs in a terminal. Kind of: agent.
 - **file** (noun): a file of a repository.
 - **stage** (noun): a step of a piece of work.
 - **worktree** (noun): a checkout a session works in.
+- **layout** (artifact): the files a worktree is to hold, and where each is.
 - **status** (attribute of stage): Values: `open`, `done`.
 - **write** (verb, action): an agent puts text into a file. Forms: writes, written. Frame: agent writes file.
 - **end** (verb, action): an agent stops a stage. Frame: agent ends stage.
