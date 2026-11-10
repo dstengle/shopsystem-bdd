@@ -13,7 +13,7 @@ import pytest
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "tests"))
-import toolchain  # noqa: E402
+import toolchain
 
 COPIES = 4
 QUOTED = re.compile(r'"((?:[^"\\]|\\.)*)"')

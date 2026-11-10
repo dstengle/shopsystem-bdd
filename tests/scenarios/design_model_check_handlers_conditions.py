@@ -40,10 +40,10 @@ def node_path(step, name):
 
 # An unpairable capability: r1 and r2 name the code `x` of an initiative and of a request, which no unification makes
 # one thing; r3 and r4 clash (an L1). `model logic` sets r1 and r2 aside and still finds r3 and r4's L1.
-UNPAIRABLE = ["While the initiative `x` is `proposed`, when the person runs `work stop` on a stage, `work run` shall "
-              "end the stage.",
-              "While the request `x` is `open`, when the person runs `work stop` on a stage, `work run` shall not "
-              "end the stage.",
+UNPAIRABLE = [("While the initiative `x` is `proposed`, when the person runs `work stop` on a stage, `work run` shall "
+               "end the stage."),
+              ("While the request `x` is `open`, when the person runs `work stop` on a stage, `work run` shall not "
+               "end the stage."),
               "When the person runs `work check`, `work` shall exit successfully.",
               "When the person runs `work check`, `work` shall exit with an error naming `work check`."]
 
