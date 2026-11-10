@@ -6,7 +6,7 @@ group: service
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: [g2, r2, g3, r3, g4, r4]
-unbuilt: [r1, r6, r7, r8]
+unbuilt: []
 ---
 
 # Conversation

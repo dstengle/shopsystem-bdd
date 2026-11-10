@@ -18,3 +18,11 @@ def untaken(step):
 for _template, _term in (("ThenDoes", "keep"), ("ThenDoes", "remove"), ("ThenR", "for"), ("ThenR", "on"),
                        ("WhenHappens", "merge")):
     handler(_template, _term)(untaken)
+
+
+# A codified-2 step (b240) whose verb or row word many features say: each feature's `local` handler takes it.
+for _template, _term in (("GivenDoes", "has"), ("ThenDoes", "has"), ("ThenDoes", "holds"), ("ThenDoes", "run"),
+                         ("ThenDoes", "set"), ("ThenDoes", "on"), ("ThenDoes", "for"), ("ThenDoes", "from"),
+                         ("ThenDoes", "list"), ("GivenK", "title"),
+                         ("GivenK_C", "universal condition")):     # readiness's nonexistent condition, kept from 3.x
+    handler(_template, _term)(untaken)

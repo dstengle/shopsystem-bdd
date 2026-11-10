@@ -4,6 +4,7 @@ write, each on its issue (requests_world.py), and the items backlog_world.py wri
 another capability claims reach these through work_queue_world's `local` table, so test_intake.py binds with
 `bind_all`; each returns False for a step that is not about intake, which then goes on to the registry."""
 import importlib.util
+import re
 import sys
 from pathlib import Path
 
@@ -61,7 +62,7 @@ def work_outcome(step):
     """`work outcome q<n> <k> <word>` on the line a Given placed, with the word's option, over the codified spec (the
     accepted line goes into one of its capabilities, a counter-proposal parses in its grammar). A line no Given placed
     in a request is line 1 of the world's request q9, in the words a Given said it has; the request is on its issue.
-    An option a Given made absent (`--reason`) is left out."""
+    An option a Given made absent, or the step runs it without (`--reason`), is left out."""
     if step.names[-1] not in step.context.get("line_of", {}):
         R.write_request(step)
         step.context.setdefault("line_of", {})[step.names[-1]] = (R.REQUEST, 1)
@@ -75,7 +76,8 @@ def work_outcome(step):
     path = step.repo / W.node_rel(step.context, request)
     Q.with_issue(step, path)
     step.context["before"] = {"status": W.field(path, "status"), "side": W.field(path, "turn")}
-    options = OPTIONS[word] if OPTIONS[word][0] not in step.context.get("absent", ()) else []
+    gone = set(step.context.get("absent", ())) | {o.strip("`") for o in getattr(step, "without", None) or ()}
+    options = OPTIONS[word] if OPTIONS[word][0] not in gone else []
     B.run_work(step, "outcome", request, str(number), word, *options, env=Q.env(step), **R.NO_INPUT)
 
 
@@ -128,3 +130,101 @@ def writes_reason(step):
     now = request_text.entries(path.read_text(), "Reasons")
     said = "%d. %s" % (number, OPTIONS["refused"][1])
     assert said not in had and said in now, (step.text, had, now)
+
+
+# Grammar 4 (b240 phase 15): the rows and verbs of the codified-2 feature, each a `local` handler that returns False
+# for a step that is not about intake.
+
+@local("GivenK_A", "request line")
+def line_is_not(step):
+    """`the request line r1 is not `accepted``: the line has no outcome when it had that one; "is v" is requests'."""
+    if " is not " not in step.text:
+        return False
+    lines = step.context.setdefault("lines", {})
+    if lines.get(step.names[0]) == step.values[0].strip("`"):
+        lines[step.names[0]] = None
+        if step.names[0] in step.context.get("line_of", {}):
+            R.write_request(step, None)
+
+
+@local("GivenDoes")
+def has_line(step):
+    """`the item i1 has the request line r1`: the line of the item's request (R.link_request); `the request r2 has
+    the request line r1`: line 1 of the world's request q9, the request r2 its file."""
+    if step.term != "has" or not step.text.startswith(("the item ", "the request ")) \
+            or " has the request line " not in step.text:
+        return False
+    owner, line = step.names
+    if step.text.startswith("the item "):
+        return R.link_request(step, line, owner)
+    R.write_request(step, step.context.get("lines", {}).get(line))
+    step.context.setdefault("line_of", {})[line] = (R.REQUEST, 1)
+    step.context["nodes"][owner] = step.context["nodes"][R.REQUEST]
+
+
+def last_request(step):
+    return request_of(step, next(iter(step.context["line_of"])))
+
+
+@local("ThenDoes")
+def sets_line(step):
+    """`work` sets the line outcome of the request line r1 to v (its `## Outcomes` entry), the side of the request r2
+    to v (its `turn:`)."""
+    if step.term != "set" or not step.context.get("line_of"):
+        return False
+    value = step.values[0].strip("`")
+    if step.nps[0].startswith("the side of "):
+        path, _ = last_request(step)
+        assert W.field(path, "turn") == value, (step.text, W.field(path, "turn"))
+        return None
+    path, number = request_of(step, step.names[0])
+    got = request_text.entries(path.read_text(), "Outcomes")
+    assert "%d. %s" % (number, value) in got, (step.text, got)
+
+
+@local("ThenDoes")
+def request_has_line(step):
+    """`the request r2 has the request line r3`: the request's `## Lines` gained an entry, which r3 names."""
+    if step.term != "has" or " has the request line " not in step.text or not step.context.get("line_of"):
+        return False
+    path, _ = last_request(step)
+    rel = path.relative_to(step.repo).as_posix()
+    had = request_text.entries(W.git(step.repo, "show", "%s:%s" % (step.context["head"], rel)), "Lines")
+    now = request_text.entries(path.read_text(), "Lines")
+    assert len(now) == len(had) + 1, (step.text, had, now)
+    step.context["line_of"][step.names[1]] = (step.context["line_of"][next(iter(step.context["line_of"]))][0],
+                                              int(now[-1].split(".", 1)[0]))
+
+
+@handler("ThenDoes", "counter")
+def counters(step):
+    """`the request line r3 counters the request line r1`: `<n>. <m>` under the request's `## Counter-proposals`."""
+    new, old = (request_of(step, n) for n in step.names)
+    got = request_text.entries(new[0].read_text(), "Counter-proposals")
+    assert "%d. %d" % (old[1], new[1]) in got, (step.text, got)
+
+
+@local("ThenDoes")
+def reason_for(step):
+    """`the reason r3 is for the request line r1`: the line's entry under its request's `## Reasons`, new in the
+    last run; the comment c1 `is on the request r2`: what `work posts the comment c1` reads."""
+    if step.term == "on" and step.text.startswith("the comment "):
+        return None
+    if step.term != "for" or not step.context.get("line_of"):
+        return False
+    path, number = request_of(step, step.names[1])
+    rel = path.relative_to(step.repo).as_posix()
+    had = request_text.entries(W.git(step.repo, "show", "%s:%s" % (step.context["head"], rel)), "Reasons")
+    now = request_text.entries(path.read_text(), "Reasons")
+    said = "%d. %s" % (number, OPTIONS["refused"][1])
+    assert said not in had and said in now, (step.text, had, now)
+    step.context["reason_of"] = path
+
+
+@local("ThenDoes")
+def writes_in_request(step):
+    """`work` writes the request line r3 (the reason r3): the last run changed the request that holds it."""
+    if step.term != "write" or not step.context.get("line_of") or not re.match(r"the (request line|reason) ", step.nps[0]):
+        return False
+    path, _ = last_request(step)
+    assert path.relative_to(step.repo).as_posix() in W.runs(step)[-1]["changed"], (step.text, W.runs(step)[-1])
