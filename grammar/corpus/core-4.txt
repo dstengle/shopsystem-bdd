@@ -103,3 +103,6 @@ When the person runs `work start`, `work` shall print every session that follows
 = refused: more than one meaning: "every session that follows a stage and the stage" reads 2 ways
 # a relative clause after two nouns belongs to the one its frame takes
 When a session writes a file in a worktree that a session has, `work` shall print the file.
+# a passive, which grammar 4 has not, refused naming the verb whose subject it leaves out (I10)
+While a file is not written, when the person runs `work start`, `work` shall write a file.
+= refused: the verb write takes a subject, which a passive leaves out

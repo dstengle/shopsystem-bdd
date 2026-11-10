@@ -116,8 +116,6 @@ FRAMED = {"recipientless": ("When the person runs `work start`, `work run` shall
                         "write a file."), None),
           "verbal": (("While a session writes a file and a session does not commit a file, when the person runs "
                       "`work start`, `work` shall commit a file."), None),
-          "agentless": ("While a file is not written, when the person runs `work start`, `work` shall write a file.",
-                        "the verb write takes a subject"),
           "prepositioned": (("While a session does not subscribe to a stage, when a session subscribes to a stage, "
                              "`work` shall subscribe to a stage."), None),
           "addressed": ("When `work` gives a brief to a stage, `work` shall write a file.", None)}

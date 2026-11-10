@@ -33,6 +33,9 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
          "objectless": ("When the person runs `work start`, `work` shall write.", "the verb write takes an object"),
          "mistyped": ("When the person runs `work start`, `work` shall write a stage.",
                       "the verb write takes as its object file or a kind of it"),
+         # a passive, which grammar 4 has not: the verb's frame has a subject it leaves out
+         "agentless": ("While a file is not written, when the person runs `work start`, `work` shall write a file.",
+                       "the verb write takes a subject"),
          # the line stops after "the", where write's frame needs its object: the hint names the term that may follow
          "unfinished": ("When a session ends a stage, `work` shall write the", "may follow: file")}
 
