@@ -192,6 +192,8 @@ def writes_not_foreign(step):
 @handler("ThenDoesNot", "write")
 def writes_not(step):
     """A comment held before the run is held once still; one that was not is held not at all."""
+    if "generated" in step.context:     # feature-file-tools' overstated file (r21)
+        return shared("shop_feature_file_tools_handlers", "feature_file_tools_handlers.py").unoverstated(step)
     name = step.names[0]
     before = step.context.get("held_before", {}).get("q1.md", "")
     assert held(step, name) == (1 if step.context["comments"][name] + " " in before else 0), step.text
