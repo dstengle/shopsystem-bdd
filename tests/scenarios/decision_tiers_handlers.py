@@ -239,7 +239,7 @@ def work_decision_routed(step):
     work_decision(step, ("--verified-by", "check"))
     done = step.context["result"]
     if done.returncode == 0:
-        step.context.setdefault("holds", {})[done.stdout.strip()] = re.compile(r"^verified_by: \[check\]$", re.M)
+        step.context.setdefault("holds", {})[done.stdout.strip()] = re.compile(r"^verified_by: \[check\]$", re.MULTILINE)
 
 
 @local("ThenExitsErr")
