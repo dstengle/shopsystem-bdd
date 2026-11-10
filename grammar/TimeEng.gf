@@ -1,16 +1,14 @@
 -- The English of the base grammar's time words: an amount carries its number, so its unit agrees ("one day",
--- "7 days"); `dur` is the noun phrase of an amount and a unit, `cmp` "x is after y", `sup` "the newest K".
+-- "7 days"); `dur` is the noun phrase of an amount and a unit, `cmp` "x is after y".
 concrete TimeEng of Time = BaseEng ** open SyntaxEng, ParadigmsEng, (R = ResEng), ParamX, Prelude in {
   lincat
     Amount = {s : Str ; n : ParamX.Number} ;
     Order = {s : Str} ;
-    Sup = A ;
     Span = NP ;
   oper
     amount : Str -> ParamX.Number -> {s : Str ; n : ParamX.Number} = \s, n -> {s = s ; n = n} ;
     dur : {s : Str ; n : ParamX.Number} -> N -> NP = \a, u -> lin NP {s = \\_ => a.s ++ u.s ! a.n ! R.Nom ;
       a = R.agrP3 a.n} ;
-    sup : A -> CN -> NP = \s, cn -> mkNP the_Det (mkCN (mkAP s) cn) ;
   lin
     AmountInt i = amount i.s Pl ;
     A_one = amount "one" Sg ;
@@ -27,6 +25,4 @@ concrete TimeEng of Time = BaseEng ** open SyntaxEng, ParadigmsEng, (R = ResEng)
     A_twelve = amount "twelve" Pl ;
     After = {s = "after"} ;
     Before = {s = "before"} ;
-    Newest = mkA "newest" ;
-    Oldest = mkA "oldest" ;
 }
