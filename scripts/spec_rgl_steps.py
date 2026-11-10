@@ -16,7 +16,7 @@ import hashlib
 import re
 from itertools import islice
 
-import spec_grammar
+import spec_gf
 import spec_grammar4
 import spec_parse_cache
 import spec_rgl
@@ -70,20 +70,20 @@ def _load(root):
     """(vocab, the PGF, the step grammar's sha)."""
     import pgf
     if not tools_grammar.rgl_path():
-        raise spec_grammar.GrammarError("gf-rgl is missing: run `python3 scripts/tools install`")
+        raise spec_gf.GrammarError("gf-rgl is missing: run `python3 scripts/tools install`")
     vocab, srcs, context = spec_grammar4._context(root)
     hit = _by_context.get(context)
     if hit is not None and hit[0] is vocab:
         return hit
     srcs = dict(srcs)
-    srcs.update({name: (spec_grammar.GRAMMARS / name).read_text() for name in BASE})
+    srcs.update({name: (spec_gf.GRAMMARS / name).read_text() for name in BASE})
     srcs.update(modules(vocab))
     sha = hashlib.sha256(("steps 4 rgl %s\0" % tools_grammar.RGL_RELEASE + "".join(
         "%s\0%s\0" % kv for kv in sorted(srcs.items()))).encode()).hexdigest()[:32]
     if sha not in _loaded:
-        target = spec_grammar._cache() / sha / ("%s.pgf" % GRAMMAR)
+        target = spec_gf.cache() / sha / ("%s.pgf" % GRAMMAR)
         if not target.is_file():
-            spec_grammar._compile(srcs, sha, GRAMMAR)
+            spec_gf.compile(srcs, sha, GRAMMAR)
         _loaded[sha] = pgf.readPGF(str(target))
     if len(_by_context) >= 16:
         _by_context.clear()
@@ -94,13 +94,13 @@ def _load(root):
 def text(gram, tree):
     """A step tree (nested tuples) written out, as it reads after its keyword; the colon that ends a Given of a block
     against the word before it."""
-    out = " ".join(gram.languages[GRAMMAR + "Eng"].linearize(spec_grammar._expr(tree)).split())
+    out = " ".join(gram.languages[GRAMMAR + "Eng"].linearize(spec_gf.expr(tree)).split())
     return (out[:-2] + ":" if out.endswith(" :") else out).replace(spec_rgl.TOKEN, " ")
 
 
 def _literal(words, line):
     """GF's String callback: a literal is one token, an instance name or a code, never a word of the vocabulary."""
-    read = spec_grammar._literal(words, line)
+    read = spec_gf.literal(words, line)
 
     def literal(cat, start):
         found = read(cat, start)
@@ -115,9 +115,9 @@ def trees(root, line):
     """The distinct trees (nested tuples) of a step's text, GF's parse kept on disk (spec_parse_cache); StepError when
     it has none."""
     vocab, gram, sha = _load(root)
-    tokens = spec_grammar.tokenise(line)
+    tokens = spec_gf.tokenise(line)
     words = {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
-    gf_text = spec_grammar._gf_text(tokens)
+    gf_text = spec_gf.gf_text(tokens)
     digest = spec_parse_cache.key(sha, GRAMMAR, gf_text, words, spec_grammar4.LIMIT)
     hit = spec_parse_cache.get(sha, GRAMMAR, digest)
     if hit is None:
@@ -136,6 +136,6 @@ def _parse(gram, tokens, words, gf_text):
     try:
         found = islice(gram.languages[GRAMMAR + "Eng"].parse(
             gf_text, callbacks=[("String", _literal(words, gf_text))]), spec_grammar4.LIMIT)
-        return list(dict.fromkeys(spec_grammar._tree(e, gram) for _, e in found)), None
+        return list(dict.fromkeys(spec_gf.tree(e, gram) for _, e in found)), None
     except pgf.ParseError as err:
-        return [], (len(tokens) if err.incomplete else spec_grammar._position(tokens, err.offset))
+        return [], (len(tokens) if err.incomplete else spec_gf.position(tokens, err.offset))

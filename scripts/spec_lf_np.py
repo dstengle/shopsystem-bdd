@@ -13,12 +13,12 @@ polarity.
 """
 import re
 
+import spec_gf
 import spec_lf_core as core
 import spec_lf_distinct
 import spec_lf_option
 import spec_lf_read
 import spec_rgl
-import spec_typed
 from spec_lf_core import NP, Atom, Box, NPList
 
 
@@ -63,7 +63,7 @@ def unknown(tree):
 
 def code(st, kind, lit):
     """A code's referent: `CodeLit "..."`."""
-    text = args(lit)[0].strip('"').replace(spec_typed.PLACEHOLDER, " ")
+    text = args(lit)[0].strip('"').replace(spec_gf.PLACEHOLDER, " ")
     word = text.strip("`")
     return core.fixed(st.constant(kind, text, "constant" if word in st.vocab.words else "parameter"))
 

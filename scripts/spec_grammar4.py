@@ -1,6 +1,5 @@
 """Grammar 4 of a context (the CNL 4 design, I7a): the base grammar `grammar/Base.gf` with the module `Context`
-spec_rgl generates from the context's vocabulary, compiled against the RGL and cached as spec_grammar caches grammar
-3, a line parsed in it, linearised back, and the refusal of a line it does not parse, naming a verb that does not
+spec_rgl generates from the context's vocabulary, compiled against the RGL and cached by spec_gf, a line parsed in it, linearised back, and the refusal of a line it does not parse, naming a verb that does not
 agree in number with its subject or whose aspect is not the one its clause takes (a state verb in a trigger, an
 action verb in a While clause; call 3).
 
@@ -21,7 +20,7 @@ from pathlib import Path
 
 import model_parse
 import spec_follow4
-import spec_grammar
+import spec_gf
 import spec_meaning
 import spec_packs
 import spec_parse_cache
@@ -71,7 +70,7 @@ def sha(srcs):
 
 def _state(root):
     files = (sorted((root / "spec").glob("**/*.md")) + sorted(spec_packs.PLUGIN.glob("*.md"))
-             + [spec_grammar.GRAMMARS / name for name in BASE])
+             + [spec_gf.GRAMMARS / name for name in BASE])
     return tuple((str(p), st.st_mtime_ns, st.st_size) for p, st in ((p, p.stat()) for p in files))
 
 
@@ -82,7 +81,7 @@ def _context(root):
     hit = _contexts.get(key)
     if hit is None or hit[0] != state:
         vocab = spec_rgl_vocab.read(root)
-        out = {name: (spec_grammar.GRAMMARS / name).read_text() for name in BASE}
+        out = {name: (spec_gf.GRAMMARS / name).read_text() for name in BASE}
         out.update(spec_rgl.modules(vocab, spec_rgl_np.noun_phrases, _clauses))
         if len(_contexts) >= 16:
             _contexts.clear()
@@ -100,20 +99,20 @@ def load(root):
     """(vocab, the compiled grammar as a pgf.PGF), compiled once per set of sources and RGL release."""
     import pgf
     if not tools_grammar.rgl_path():
-        raise spec_grammar.GrammarError("gf-rgl is missing: run `python3 scripts/tools install`")
+        raise spec_gf.GrammarError("gf-rgl is missing: run `python3 scripts/tools install`")
     vocab, srcs, name = _context(root)
     if name not in _loaded:
-        target = spec_grammar._cache() / name / ("%s.pgf" % GRAMMAR)
+        target = spec_gf.cache() / name / ("%s.pgf" % GRAMMAR)
         if not target.is_file():
-            spec_grammar._compile(srcs, name, GRAMMAR)
+            spec_gf.compile(srcs, name, GRAMMAR)
         _loaded[name] = pgf.readPGF(str(target))
     return vocab, _loaded[name]
 
 
 def _literal(words, text):
     """GF's String callback: a code is one backticked token that is no word of the vocabulary (a value's, an
-    actor's), as spec_grammar reads one; a bare word is never a code."""
-    read = spec_grammar._literal(words, text)
+    actor's), as spec_gf reads one; a bare word is never a code."""
+    read = spec_gf.literal(words, text)
 
     def code(cat, start):
         found = read(cat, start)
@@ -126,7 +125,7 @@ def _trees(gram, words, tokens, name=None):
     under the sources' sha `name` when one is given."""
     if name is None:
         return _gf_trees(gram, words, tokens)
-    digest = spec_parse_cache.key(name, GRAMMAR, spec_grammar._gf_text(tokens), words, LIMIT)
+    digest = spec_parse_cache.key(name, GRAMMAR, spec_gf.gf_text(tokens), words, LIMIT)
     hit = spec_parse_cache.get(name, GRAMMAR, digest)
     if hit is None:
         hit = _gf_trees(gram, words, tokens)
@@ -137,13 +136,13 @@ def _trees(gram, words, tokens, name=None):
 def _gf_trees(gram, words, tokens):
     """GF's parse of `tokens`, as `_trees` gives it."""
     import pgf
-    text = spec_grammar._gf_text(tokens)
+    text = spec_gf.gf_text(tokens)
     try:
         parses = islice(gram.languages[GRAMMAR + "Eng"].parse(
             text, callbacks=[("String", _literal(words, text))]), LIMIT)
         return list(dict.fromkeys(str(e) for _, e in parses)), None
     except pgf.ParseError as err:
-        return [], (len(tokens) if err.incomplete else spec_grammar._position(tokens, err.offset))
+        return [], (len(tokens) if err.incomplete else spec_gf.position(tokens, err.offset))
 
 
 def disagreeing(gram, vocab, tokens, at, name=None):
@@ -182,15 +181,15 @@ def parse(root, line):
     """One line parsed in grammar 4."""
     vocab, gram = load(root)
     name = _context(root)[2]
-    tokens = spec_grammar.tokenise(line)
+    tokens = spec_gf.tokenise(line)
     words = {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
     trees, at = _trees(gram, words, tokens, name)
     if trees:
         kept, two = spec_meaning.one(trees, vocab)
         if kept:
             return Parse(tree=kept, trees=trees)
-        words = spec_grammar.detokenise(gram.languages[GRAMMAR + "Eng"].linearize(_expr(two[0])).split(" "))
-        words = words if words in spec_grammar.normalise(line) else words[:1].lower() + words[1:]
+        words = spec_gf.detokenise(gram.languages[GRAMMAR + "Eng"].linearize(_expr(two[0])).split(" "))
+        words = words if words in spec_gf.normalise(line) else words[:1].lower() + words[1:]
         return Parse(refusal='refused: more than one meaning: "%s" reads %d ways' % (words, two[1]), trees=trees)
     term = disagreeing(gram, vocab, tokens, at, name)
     if term:
@@ -213,7 +212,7 @@ def linearise(root, tree):
     """A tree of grammar 4 written back as a line."""
     _, gram = load(root)
     text = gram.languages[GRAMMAR + "Eng"].linearize(_expr(tree))
-    return spec_grammar.detokenise(text.split(" "))
+    return spec_gf.detokenise(text.split(" "))
 
 
 def hint(root, line):
@@ -221,14 +220,14 @@ def hint(root, line):
     terms that may follow the prefix (GF's completion, spec_follow4)."""
     vocab, gram = load(root)
     name = _context(root)[2]
-    tokens = spec_grammar.tokenise(line)
+    tokens = spec_gf.tokenise(line)
     words = {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
     _, at = _trees(gram, words, tokens, name)
     if at is None:
-        return {"prefix": spec_grammar.normalise(line), "near": [], "follow": []}
+        return {"prefix": spec_gf.normalise(line), "near": [], "follow": []}
     follow = spec_follow4.terms(gram.languages[GRAMMAR + "Eng"], vocab, tokens, at,
                                 lambda some: _trees(gram, words, some, name))
     if at >= len(tokens):
-        return {"prefix": spec_grammar.normalise(line), "near": [], "follow": follow}
-    return {"prefix": spec_grammar.detokenise(tokens[:at]) if at else "",
+        return {"prefix": spec_gf.normalise(line), "near": [], "follow": follow}
+    return {"prefix": spec_gf.detokenise(tokens[:at]) if at else "",
             "near": difflib.get_close_matches(tokens[at], sorted(vocab.words), n=5), "follow": follow}

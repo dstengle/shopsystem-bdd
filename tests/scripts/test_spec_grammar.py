@@ -89,7 +89,8 @@ def test_tokenise_keeps_backticked_and_quoted_spans_and_splits_punctuation():
 
 
 def test_require_fails_naming_tools_install_when_a_tool_is_missing(monkeypatch):
-    monkeypatch.setattr(spec_grammar, "gf_binary", lambda: None)
+    import tools_grammar
+    monkeypatch.setattr(tools_grammar, "gf_binary", lambda environ=None: None)
     with pytest.raises(pytest.fail.Exception) as failed:
         toolchain.require()
     assert "gf" in str(failed.value) and "python3 scripts/tools install" in str(failed.value)
@@ -279,7 +280,8 @@ def test_a_second_load_of_one_glossary_runs_no_gf(monkeypatch, tmp_path):
 
     def no_gf(*args, **kwargs):
         raise AssertionError("gf ran on a cache hit")
-    monkeypatch.setattr(spec_grammar, "_run_gf", no_gf)
+    import spec_gf
+    monkeypatch.setattr(spec_gf, "_run_gf", no_gf)
     assert "ReqEng" in spec_grammar.load(ctx).languages
     assert spec_grammar.parse(ctx, "`work` shall set the status of every initiative to `started`.").tree
 

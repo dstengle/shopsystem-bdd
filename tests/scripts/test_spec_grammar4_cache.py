@@ -109,8 +109,8 @@ def test_the_sources_are_the_same_in_every_process():
 
 def test_a_second_process_reuses_the_compiled_grammar_of_unchanged_sources(ctx):
     toolchain.require()
-    code = ("import spec_grammar, spec_grammar4, sys; spec_grammar4.load(sys.argv[1]); "
-            "print(spec_grammar._cache() / spec_grammar4.sha(spec_grammar4.sources(sys.argv[1])[1]) / 'Context.pgf')")
+    code = ("import spec_gf, spec_grammar4, sys; spec_grammar4.load(sys.argv[1]); "
+            "print(spec_gf.cache() / spec_grammar4.sha(spec_grammar4.sources(sys.argv[1])[1]) / 'Context.pgf')")
     target = pathlib.Path(run(code, ctx, 1))
     before = target.stat().st_mtime_ns
     assert pathlib.Path(run(code, ctx, 2)) == target

@@ -43,11 +43,11 @@ def compiled(step):
     C2.context(step.repo, H.PATH, [LINE])
     done = step.run("model", "parse", "--file", "spec/capabilities/thing.md", timeout=600)     # the person's cache
     assert done.returncode == 0, (done.stdout, done.stderr)
-    import spec_grammar
+    import spec_gf
     import spec_grammar4
     name = spec_grammar4._context(str(step.repo))[2]
     xdg = step.context["xdg"] = step.fixtures("tmp_path_factory").mktemp("xdg")
-    shutil.copytree(spec_grammar._cache() / name, xdg / "shopsystem-bdd" / "pgf" / name)
+    shutil.copytree(spec_gf.cache() / name, xdg / "shopsystem-bdd" / "pgf" / name)
     step.context["pgf"] = _files(xdg / "shopsystem-bdd" / "pgf")
 
 

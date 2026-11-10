@@ -7,16 +7,13 @@ being that of every source, and is written by a rename so two processes compilin
 """
 import difflib
 import hashlib
-import os
-import shutil
-import subprocess
-import tempfile
 from dataclasses import dataclass, field
 from itertools import islice
 from pathlib import Path
 
 import spec_frames
 import spec_frames_refusal
+import spec_gf
 import spec_lexicon
 import spec_parse_cache
 import spec_tree
@@ -25,15 +22,14 @@ import spec_typed_def
 import spec_typed_verbs
 import tools_grammar
 
-GRAMMARS = Path(__file__).resolve().parent.parent / "grammar"
+GRAMMARS = spec_gf.GRAMMARS
 LIMIT = 2000  # trees read from one parse before the guards; a literal slot reads any token
 _MISREAD = ('QuotedLit "`', 'CodeLit "\\"')   # a code read as a quoted text, or a quoted text as a code
 _loaded = {}
 _contexts = {}  # (spec_lexicon.read, root) -> (state of the files, (lexicon, sources, sha))
 
 
-class GrammarError(Exception):
-    """The grammar could not be built: no gf, or gf refused the sources."""
+GrammarError = spec_gf.GrammarError
 
 
 class Unlabelled(GrammarError):
@@ -50,44 +46,17 @@ class Parse:
     before: int = 0
 
 
+tokenise, detokenise, normalise = spec_gf.tokenise, spec_gf.detokenise, spec_gf.normalise
+_gf_text, _cache, _compile = spec_gf.gf_text, spec_gf.cache, spec_gf.compile
+_tree, _expr, _position, _literal = spec_gf.tree, spec_gf.expr, spec_gf.position, spec_gf.literal
+
+
 def gf_binary():
-    """GF's binary, by `tools_grammar.gf_binary`, the one lookup: `$SHOPSYSTEM_GF`, the install path, then a `gf`
-    on PATH that says it is Grammatical Framework."""
     return tools_grammar.gf_binary()
 
 
 def rgl_path():
-    """The built RGL, by `tools_grammar.rgl_path`: the directory `tools install` built gf-rgl in, or None."""
     return tools_grammar.rgl_path()
-
-
-def tokenise(line):
-    """A line's tokens: words, a backticked or double-quoted span whole, punctuation alone; the first word in lower
-    case (the grammar writes it so)."""
-    out = spec_typed.tokens(line)
-    if out and out[0][:1].isupper() and (out[0][1:].islower() or len(out[0]) == 1):
-        out[0] = out[0][0].lower() + out[0][1:]
-    return out
-
-
-def detokenise(tokens):
-    text = " ".join(tokens).replace(spec_typed.PLACEHOLDER, " ")
-    for mark in ",.;:":
-        text = text.replace(" " + mark, mark)
-    return text[:1].upper() + text[1:]
-
-
-def normalise(line):
-    """The line as the grammar writes it: single spaces, no space before punctuation, a capital first letter."""
-    return detokenise(tokenise(line))
-
-
-def _gf_text(tokens):
-    return " ".join(t.replace(" ", spec_typed.PLACEHOLDER) for t in tokens)
-
-
-def _cache():
-    return Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "shopsystem-bdd" / "pgf"
 
 
 def sources(root, lex=None):
@@ -102,40 +71,6 @@ def sources(root, lex=None):
     out.update(spec_typed.modules(lex))
     out.update(spec_typed_def.modules(lex))
     return out
-
-
-def _run_gf(gf, directory, concrete):
-    """GF's compile of <concrete>, the built RGL (its compiled .gfo) on GF's library path when there is one."""
-    rgl, env = rgl_path(), dict(os.environ)
-    if rgl:
-        env["GF_LIB_PATH"] = os.pathsep.join(filter(None, (rgl, env.get("GF_LIB_PATH"))))
-    return subprocess.run([gf, "-make", "--output-dir=" + str(directory), concrete], cwd=directory,
-                          capture_output=True, text=True, env=env)
-
-
-def _compile(srcs, sha, grammar):
-    gf = gf_binary()
-    if not gf:
-        raise GrammarError("no gf: run `python3 scripts/tools install`, or set $SHOPSYSTEM_GF")
-    base = _cache()
-    base.mkdir(parents=True, exist_ok=True)
-    tmp = Path(tempfile.mkdtemp(dir=base, prefix=".tmp-"))
-    try:
-        for name, text in srcs.items():
-            (tmp / name).write_text(text)
-        done = _run_gf(gf, tmp, "%sEng.gf" % grammar)
-        if not (tmp / ("%s.pgf" % grammar)).is_file():
-            raise GrammarError("gf could not compile %s:\n%s%s" % (grammar, done.stdout[-2000:], done.stderr[-2000:]))
-        final = base / sha
-        try:
-            os.rename(tmp, final)
-            tmp = None
-        except OSError:
-            if not (final / ("%s.pgf" % grammar)).is_file():
-                os.replace(tmp / ("%s.pgf" % grammar), final / ("%s.pgf" % grammar))
-    finally:
-        if tmp is not None:
-            shutil.rmtree(tmp, ignore_errors=True)
 
 
 def _state(root):
@@ -172,57 +107,6 @@ def load(root, grammar="Req"):
             _compile(srcs, sha, grammar)
         _loaded[(sha, grammar)] = pgf.readPGF(str(target))
     return _loaded[(sha, grammar)]
-
-
-def _tree(expr, gram):
-    """A pgf expression as nested tuples. An argument the English leaves unsaid (the noun phrase of "its status")
-    is a metavariable; in a kind's noun-phrase slot it can only be that kind's "it"."""
-    unpacked = expr.unpack()
-    if not isinstance(unpacked, tuple):
-        return unpacked.replace(spec_typed.PLACEHOLDER, " ") if isinstance(unpacked, str) else unpacked
-    fun, args = unpacked
-    if fun is None:
-        return None
-    out = [fun]
-    for (_, _, typ), arg in zip(gram.functionType(fun).hypos, args):
-        sub = _tree(arg, gram)
-        if sub is None:
-            cat = str(typ)
-            sub = (cat[:-3] + "_It",) if cat.startswith("k_") and cat.endswith("_NP") else ("?",)
-        out.append(sub)
-    return tuple(out)
-
-
-def _expr(tree):
-    import pgf
-    if isinstance(tree, tuple):
-        return pgf.Expr(tree[0], [_expr(a) for a in tree[1:]])
-    return pgf.Expr(tree.replace(" ", spec_typed.PLACEHOLDER) if isinstance(tree, str) else tree)
-
-
-def _position(tokens, offset):
-    """The index of the token at a character offset of the text given to GF."""
-    start = 0
-    for i, t in enumerate(tokens):
-        start += len(t) + 1
-        if offset < start:
-            return i
-    return len(tokens)
-
-
-def _literal(words, text):
-    """GF's String callback: a literal slot reads one token, but not a lexicon word, which the guard would refuse
-    there anyway, nor a mark of punctuation, which ends a clause; so a line of many backticked words is not read 3^n ways past LIMIT."""
-    import pgf
-
-    def read(_, start):  # offsets count characters
-        while start < len(text) and text[start] == " ":
-            start += 1
-        end = text.find(" ", start)
-        end = len(text) if end < 0 else end
-        token = text[start:end]
-        return None if not token or token in words or token in ",.;:" else (pgf.Expr(token), 0.0, end)
-    return read
 
 
 def _raw(root, tokens, grammar):

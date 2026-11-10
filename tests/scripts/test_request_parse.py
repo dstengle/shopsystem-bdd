@@ -96,7 +96,8 @@ def test_an_upstream_with_an_uncodified_capability_is_refused_naming_it(codified
 
 def test_no_grammar_tools_refuses_naming_tools_install(codified, monkeypatch):
     import spec_grammar
-    monkeypatch.setattr(spec_grammar, "gf_binary", lambda: None)
+    import tools_grammar
+    monkeypatch.setattr(tools_grammar, "gf_binary", lambda environ=None: None)
     monkeypatch.setattr(spec_grammar, "_loaded", {})
     monkeypatch.setenv("XDG_CACHE_HOME", str(codified / "empty-cache"))
     with pytest.raises(shop_files.Refused, match="tools install"):

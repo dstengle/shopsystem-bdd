@@ -7,7 +7,7 @@ import sys
 
 import pytest
 import spec_context
-import spec_grammar
+import spec_gf
 import spec_grammar4
 import spec_lf
 import spec_lf_read
@@ -37,7 +37,7 @@ def test_each_modal_line_round_trips_and_has_its_modality(vocab):
     for line, modality in LINES.items():
         p = spec_grammar4.parse(FIXTURE, line)
         assert p.tree is not None, (line, p.refusal)
-        assert spec_grammar4.linearise(FIXTURE, p.tree) == spec_grammar.normalise(line)
+        assert spec_grammar4.linearise(FIXTURE, p.tree) == spec_gf.normalise(line)
         assert spec_lf.form(vocab, p.tree).modality == modality, line
         assert spec_lf_read.refusal(vocab, p.tree) is None, line
 

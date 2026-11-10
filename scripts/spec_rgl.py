@@ -17,9 +17,9 @@ and an agent's act of setting it, `<t>_Set : <t>_NP -> <t>_Val -> k_agent_V` ("s
 import re
 
 import spec_frames
-import spec_typed
+import spec_gf
 
-TOKEN = spec_typed.PLACEHOLDER
+TOKEN = spec_gf.PLACEHOLDER
 OPTION = "option"       # the CLI pack's noun: an option of a kind, "the `--x` option set to v" (b240)
 
 
@@ -32,13 +32,15 @@ def kid(kind):
 
 
 def s(text):
-    """A spelling as a GF string: its tokens joined by ++ (spec_typed.gf_str)."""
-    return spec_typed.gf_str(text)
+    """A spelling as a GF string expression: `"spec" ++ "lock"`; a span keeps its spaces as spec_gf's PLACEHOLDER."""
+    parts = ['"%s"' % t.replace(" ", spec_gf.PLACEHOLDER).replace("\\", "\\\\").replace('"', '\\"')
+             for t in spec_gf.tokens(text)]
+    return " ++ ".join(parts) if len(parts) == 1 else "(%s)" % " ++ ".join(parts)
 
 
 def noun(singular, plural):
     """A noun of one or more words: the last word inflected (its plural the plural's last word), the others before it."""
-    words, last = spec_typed.tokens(singular), spec_typed.tokens(plural)[-1]
+    words, last = spec_gf.tokens(singular), spec_gf.tokens(plural)[-1]
     lin = "mkN %s %s" % (s(words[-1]), s(last))
     for word in reversed(words[:-1]):
         lin = "compoundN %s (%s)" % (s(word), lin)
