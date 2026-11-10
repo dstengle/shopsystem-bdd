@@ -163,7 +163,6 @@ def _bullets(text, heading):
 class Lexicon:
     terms: list = field(default_factory=list)
     rows: list = field(default_factory=list)       # spec_relations.Row of the `## Relations` tables
-    four: bool = False      # spec/index.md says `language: codified-2`: its rows take spec_relations' fixed word set
 
     def of(self, category):
         return [t for t in self.terms if t.category == category]
@@ -223,9 +222,7 @@ def read(root):
         if path.is_file():
             where = path.relative_to(root).as_posix()
             terms += [t for t in (entry(b, where) for b in _bullets(path.read_text(), heading)) if t]
-    index = sources[0][0].read_text() if sources[0][0].is_file() else ""
-    head = index.split("---\n")[1] if index.startswith("---\n") and index.count("---\n") > 1 else ""
-    return Lexicon(terms, spec_relations.read(root), re.search(r"(?m)^language: codified-2$", head) is not None)
+    return Lexicon(terms, spec_relations.read(root))
 
 
 def _unnamed(t):

@@ -111,12 +111,3 @@ def test_rows_of_a_table_skip_its_header_and_rule_and_end_with_the_section():
         | x | y | z |
         """)
     assert [(r.k1, r.word, r.k2) for r in spec_relations.rows(text, "w")] == [("a", "b", "c")]
-
-
-def test_v_t20_a_row_of_a_codified_2_context_whose_word_is_no_preposition_nor_role_noun(tmp_path):
-    """Call 14: a codified-2 context's row is a preposition of the fixed set or a role noun; `result asks question`
-    is a verb (a verb entry with a Frame:). A codified-1 context keeps its words until it is reworded."""
-    four = INDEX.replace("language: codified-1", "language: codified-2") + "| stage | upstream | node |\n"
-    found = [p for p in spec_lexicon.problems(repo(tmp_path / "a", index=four)) if p[0] == "v_t20"]
-    assert [(p[1], "result asks question" in p[2]) for p in found] == [("asks", True)]
-    assert not [p for p in spec_lexicon.problems(repo(tmp_path / "b")) if p[0] == "v_t20"]
