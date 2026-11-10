@@ -28,6 +28,7 @@ TRIGGER = "end(e1, subject: x1, object: x2)"
 def model_parse_form(step):
     """`model parse --form` on the capability file that holds r1 (`shelf`'s when a Given wrote it, else `thing`'s), in
     the codified-2 world."""
+    H.built(step)
     caps = step.repo / "spec" / "capabilities"
     if not (caps / "thing.md").is_file():
         C2.context(step.repo, H.PATH, [LINE])
