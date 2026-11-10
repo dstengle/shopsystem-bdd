@@ -18,7 +18,7 @@
 #defined each/2.   #defined only/5. #defined rattr/4.  #defined rrel/4.  #defined akind/2.
 #defined cnl4/1.  #defined count/7. #defined onattr/4.
 #defined ccmp/6.  #defined ckey/4.  #defined vkey/3.  #defined dense/1.  #defined uin/4.
-#defined ccount/4. #defined csig/5.  #defined csiga/5.
+#defined ccount/4. #defined csig/5.  #defined csiga/5.  #defined distinct/3.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
@@ -146,10 +146,19 @@ doer(A,B,X,Y) :- pair(A,B), role(B,Y,K), aterm(A,B,A,X,K2), subeq(K2,K).
 ta(A,B,P,E,D,X) :- pair(A,B), trig(A,P,E,D,X).  tb(A,B,P,E,D,Y) :- pair(A,B), trig(B,P,E,D,Y).
 fires(A,B) :- ta(A,B,P,E,D1,X), tb(A,B,P,E,D2,Y), same(A,B,X,Y), doer(A,B,D1,D2).
 out(A,B) :- pair(A,B), trg(A), trg(B), not fires(A,B).
+% a trigger of one act on each of "two Ks" (b240) has a `trig` of each: the triggers are one act when each of either
+% side's is one of the other's (a trigger of one file written is not one of two written)
+ma(A,B,P,E,D1,X) :- ta(A,B,P,E,D1,X), tb(A,B,P,E,D2,Y), same(A,B,X,Y), doer(A,B,D1,D2).
+mb(A,B,P,E,D2,Y) :- ta(A,B,P,E,D1,X), tb(A,B,P,E,D2,Y), same(A,B,X,Y), doer(A,B,D1,D2).
+out(A,B) :- ta(A,B,P,E,D,X), trg(B), not ma(A,B,P,E,D,X).  out(A,B) :- tb(A,B,P,E,D,Y), trg(A), not mb(A,B,P,E,D,Y).
 nk(S,Y,K) :- named1(S,Y), role(S,Y,K).  thek(S,Y,K) :- the(S,Y), role(S,Y,K).
 tda(A,B,K) :- pair(A,B), tdef(A,K).  tdb(A,B,K) :- pair(A,B), tdef(B,K).
 out(A,B) :- tda(A,B,K), nk(B,Y,K), not tmap(A,B,Y).
 out(A,B) :- tdb(A,B,K), thek(B,Y,K), nk(A,X,K), not map(A,B,Y,X).
+% "another K", "two Ks" (b240, construct #2): `distinct(R,X,Y)`, two referents of one side never one thing of the
+% pair (one code named of both, a definite both map to), or the pair is out under this unification
+dpair(A,B,S,X,Y) :- side(A,B,S), distinct(S,X,Y).
+out(A,B) :- dpair(A,B,S,X,Y), at(A,B,S,X,Z), at(A,B,S,Y,Z).
 
 % ---- the two states: 0 is the pre-state (the trigger happens there), 1 is 0 with the sets of the triggered side --
 % An untriggered requirement paired with a triggered one is read at state 1 (its conditions there, its responses

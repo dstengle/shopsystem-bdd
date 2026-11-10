@@ -98,9 +98,16 @@ class Walk(Terms):
 
     def trigger(self, part):
         events = [a for a in part.body if isinstance(a, Atom) and a.pred == "event"]
-        if len(events) != 1:
+        if len(events) != 1 and not spec_lf_distinct.one_act(events):
             raise ValueError("no translation of a trigger with %d events" % len(events))
-        _, verb, _, roles = events[0].args
+        for event in events:     # the acts of "two Ks" (b240): one trigger each, one verb and one doer
+            self.trig(event)
+        for item in part.body:
+            if item not in events:
+                self.literal(item)
+
+    def trig(self, event):
+        _, verb, _, roles = event.args
         subject, kinds, _ = self.slots(roles)
         if verb == "run" and kinds and kinds[0].origin in ("constant", "parameter"):
             on = [r[1] for r in roles[1:] if len(r) == 2 and r[0] not in ("object", "with")]
@@ -108,11 +115,8 @@ class Walk(Terms):
             cmd = " ".join([kinds[0].value] + options)
             self.emit("trig", "ran", const(cmd), self.term(subject), self.obj(on))
         else:
-            e, d, x = self.event(events[0])
+            e, d, x = self.event(event)
             self.emit("trig", "does", e, d, x)
-        for item in part.body:
-            if item is not events[0]:
-                self.literal(item)
 
     # --- the response ------------------------------------------------------------------------------------------
     def response(self, body, own, pos=True):
@@ -198,7 +202,6 @@ class Walk(Terms):
 
 def translate(ids, ident, form):
     """The facts of one codified-2 requirement's Form (of each of its splits, in order)."""
-    spec_lf_distinct.refuse(form, ValueError)     # b240: two things told apart, read from phase 9 on
     first = Walk(ids, ident)
     out = first.run(form)
     if not first.options:

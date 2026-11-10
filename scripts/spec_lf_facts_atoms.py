@@ -6,6 +6,7 @@ restriction of a response's object as `oattr`, `orel`; an attribute's value comp
 atom refused naming it (`TIME`). The boxes, the rule and
 the response are spec_lf_facts'.
 """
+import spec_lf_distinct
 import spec_lf_order
 import spec_lf_quant
 from spec_facts_np import const
@@ -79,6 +80,10 @@ class Terms:
             self.emit("crel", q, self.term(x), self.term(y), "pos" if pos else "neg")
         elif item.pred == "cmp" and len(item.args) == 4:     # an attribute's value compared (b240)
             spec_lf_order.literal(self, item, pos)
+        elif item.pred == spec_lf_distinct.PRED:     # two things told apart (b240): never one thing
+            if not pos:
+                raise ValueError("no translation of distinct in a negated condition")
+            self.emit(spec_lf_distinct.PRED, *(self.term(x) for x in item.args))
         elif item.pred in TIME:
             raise ValueError(TIME[item.pred](item))
         else:
@@ -102,6 +107,8 @@ class Terms:
         if isinstance(item, Box) and item.op == "not":
             return spec_lf_quant.negated(self, item, own)
         pred = getattr(item, "pred", None)
+        if pred == spec_lf_distinct.PRED:
+            return self.literal(item)
         if pred not in ("attr", "rel", "state"):
             raise ValueError("no translation of %s on an object" % (pred or item.op))
         first = {"attr": lambda a: a[0], "rel": lambda a: a[1], "state": lambda a: a[2][0][1]}[pred](item.args)

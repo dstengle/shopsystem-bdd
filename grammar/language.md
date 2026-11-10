@@ -1179,8 +1179,15 @@ These four say it:
   R2 gives it nothing and the line said "two Ks" before it, it is one new K (R1), which each of the two shares: "two
   sessions follow the same stage". Else it is refused as "the K" is.
 
-`model logic` and `features generate` read `distinct` from phase 9 on (b240); until then a line that holds it is
-refused by both, naming it.
+`model logic` reads `distinct(y, x)` as two things its unification never makes one: when one line's two referents
+it holds would be one thing of a pair (one code named of both, a definite both bind to), the pair is not read under
+that unification. A trigger of one act on each of "two Ks" ("writes two files") is one act of the line, a trigger of
+each part: two lines fire on one act when each part of either is a part of the other, so "writes a file" is not the
+act of "writes two files". So two lines on one act whose states differ only in which things are one never clash:
+"another file in the same worktree" and "another file in a different worktree" below (the twin of design-model-check
+r276-r278, "another requirement of the same trigger and state"). `features generate` names the two things with two
+names ("the session s1 gives the file f1 to the session s2"), which says they differ; a trigger of one act on each of
+two Ks is a When each.
 
 Found by the audit in design-model-check r176 (v15b, "two requirements share an id"), r179 (v15n, "another group"),
 r199 ("another interpreter"), r218 ("two others"), r224 (v_t15, two senses of one term), r247-r249 and r276-r278
@@ -1282,6 +1289,37 @@ shall [x5: tool `work` (constant)]
     distinct(x6, x2)
     distinct(x6, x3)
     write(e3, subject: x5, object: x6)
+```
+
+Two lines on one act in two states: the first's two files are in one worktree, the second's in two, so `model logic`
+finds no witness where both fire, and no L1:
+
+```reading
+When a session writes a file in a worktree and another file in the same worktree, `work` shall print the worktree.
+shall [x5: tool `work` (constant)]
+  when [x1: session, x2: file, x3: worktree, x4: file]
+    in(x2, x3)
+    write(e1, subject: x1, object: x2)
+    distinct(x4, x2)
+    in(x4, x3)
+    write(e2, subject: x1, object: x4)
+  response
+    print(e3, subject: x5, object: x3)
+```
+
+```reading
+When a session writes a file in a worktree and another file in a different worktree, `work` shall not print the worktree.
+shall [x6: tool `work` (constant)]
+  when [x1: session, x2: file, x3: worktree, x4: file, x5: worktree]
+    in(x2, x3)
+    write(e1, subject: x1, object: x2)
+    distinct(x4, x2)
+    distinct(x5, x3)
+    in(x4, x5)
+    write(e2, subject: x1, object: x4)
+  response
+    not
+      print(e3, subject: x6, object: x5)
 ```
 
 The refusals: "another K" with no K before it, or with every K before it inside a box; "the same K" with neither an

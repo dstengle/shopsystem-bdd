@@ -1,7 +1,7 @@
 """Identity and distinctness (b240, construct #2), the grammar and the form: "another K", "a different K", "two Ks"
 and "the same K" parse with one meaning and round-trip; "two Ks" restricts each of the two, a referent made inside a
-box of its restriction made again for the second; `distinct` refused by the check and by the steps, naming it, until
-they read it (phase 9)."""
+box of its restriction made again for the second; `distinct` in the check's facts and read by the steps (phase 9,
+with test_spec_distinct_check.py)."""
 import pathlib
 import re
 import sys
@@ -62,9 +62,8 @@ def test_the_same_k_of_x_is_the_image_of_x():
 
 
 @pytest.mark.parametrize("line", twins())
-def test_the_check_and_the_steps_refuse_distinct_naming_it(line):
+def test_the_check_and_the_steps_read_distinct(line):
     found, why = spec_context.Four(FIXTURE, True).facts("thing#r1", line)
-    assert found is None and "distinct" in why, why
+    assert why is None and any(f.startswith('distinct("thing#r1",') for f in found[1]), why
     steps = spec_rgl_steps.load(FIXTURE)[0]
-    with pytest.raises(spec_steps4.TraceError, match="distinct"):
-        spec_steps4.cases(steps, [("thing#r1", spec_lf.form(steps, spec_grammar4.parse(FIXTURE, line).tree))])
+    assert spec_steps4.cases(steps, [("thing#r1", spec_lf.form(steps, spec_grammar4.parse(FIXTURE, line).tree))])

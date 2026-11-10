@@ -14,7 +14,9 @@ I14a), the one meaning `model logic` reads (spec_lf), in the step grammar 4's tr
   <premise>` in its place.
 Givens and the When are the first requirement's; a later one's While and trigger referent of a kind is the first
 one's of that kind and rank. A referent is named by its kind's first letter and a count, in order of first mention;
-an actor by its fun, a code by the slot's `K_Code`, the run's own thing by `K_This`. A construct with no step
+an actor by its fun, a code by the slot's `K_Code`, the run's own thing by `K_This`. Two referents `distinct`
+("another K", "two Ks", b240) are two instances of two names, which says they differ; a trigger of one act on each of
+two Ks a When each. A construct with no step
 (`only`, a count, `or`, the atom of a row whose word is neither `of` nor `in`, a negated restriction, a line of "may",
 "always" or "never") is a TraceError naming it.
 """
@@ -176,7 +178,7 @@ class Reader:
         """The Given steps of a condition, each referent it mentions first brought in."""
         if isinstance(item, Box):
             return boxes.given(self, item, pos)
-        if boxes.image(self, item):
+        if boxes.image(self, item) or item.pred == spec_lf_distinct.PRED:      # two names are two things (b240)
             return []
         cond = self.cond(item, pos)
         out = []
@@ -192,6 +194,8 @@ class Reader:
         for item in body:
             if isinstance(item, Atom) and item.pred in ("event", spec_lf_set.PRED):
                 out.append((True, self.does(item, pos)))
+            elif isinstance(item, Atom) and item.pred == spec_lf_distinct.PRED:     # two names (b240)
+                continue
             elif isinstance(item, Atom) and not boxes.image(self, item):
                 out.append((None, ("SCond", self.cond(item, pos))))
             elif isinstance(item, Atom):
@@ -257,7 +261,6 @@ def read(vocab, forms, entailed=None, r=None):
     the Reader of the case it takes, the first by default."""
     r, givens, when, thens = r or Reader(vocab), [], [], []
     for n, (ident, form) in enumerate(forms):
-        spec_lf_distinct.refuse(form, TraceError)     # b240: two things told apart, read from phase 9 on
         if form.modality != "shall":     # a permission obliges nothing, a necessity has no trigger (I17)
             raise TraceError("no step of a line that says %s" % form.modality)
         r.bind([x for p in form.parts for x in p.refs], n)
@@ -270,8 +273,9 @@ def read(vocab, forms, entailed=None, r=None):
             elif part.op in ("when", "if") and n == 0:
                 events = [i for i in part.body if isinstance(i, Atom) and i.pred == "event"]
                 givens += [g for item in part.body if item not in events for g in r.given(item)]
-                subject, s, vp = r.clause(events[0])
-                when.append(("STrig", (kid(subject) + "_Event", s, vp)))
+                for event in events:      # one act on each of "two Ks" (b240): a When each
+                    subject, s, vp = r.clause(event)
+                    when.append(("STrig", (kid(subject) + "_Event", s, vp)))
             elif part.op == "response":
                 for act, tree in r.acts(part.body):
                     number += act is True

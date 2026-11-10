@@ -10,8 +10,9 @@
   second; the pair kept in the State, so that a later "the K" is refused and "another K" is distinct from both (`two`);
 - "the same K": "the K" (R2), else, after "two Ks" of another kind, one new K the pair shares (`same`).
 
-`show` writes the atom for `model parse --form`; the check and the steps have no reading of it yet (phase 9): a
-form that holds it is refused by both, naming it (`refuse`).
+`show` writes the atom for `model parse --form`. The check reads it as `distinct(R,X,Y)` (spec_lf_facts_atoms), two
+terms its unification never makes one thing; the steps read it as two instances of two names, and nothing more
+(spec_steps4). A trigger of one act on each of "two Ks" is a trigger of each act (`one_act`).
 """
 import spec_lf_read
 from spec_lf_core import NP, Atom, Box, NPList, Ref
@@ -100,23 +101,10 @@ def same(st, cn, kind, restrict):
     return NP(ref, "a", conds, refs, said=said)
 
 
-def held(items):
-    """The first `distinct` atom of `items` (a form's parts, boxes, atoms) at any depth, or None."""
-    for c in items:
-        if isinstance(c, Box):
-            found = held(c.body) or (held([c.scope]) if c.scope is not None else None)
-            if found is not None:
-                return found
-        elif c.pred == PRED:
-            return c
-    return None
-
-
-def refuse(form, error):
-    """Raise `error` naming the first `distinct` atom of `form`: the check and the steps read none yet (phase 9)."""
-    found = held(form.parts)
-    if found is not None:
-        raise error("no translation of distinct(%s, %s)" % (found.args[0].name, found.args[1].name))
+def one_act(events):
+    """True for the event atoms of a trigger that are one act on each of "two Ks" (or a list): one verb, one sense and
+    one subject, more than one atom. The check reads each as a trigger of the line, the steps each as a When."""
+    return len(events) > 1 and len({(e.args[1], e.args[2], e.args[3][0]) for e in events}) == 1
 
 
 def show(a, term):

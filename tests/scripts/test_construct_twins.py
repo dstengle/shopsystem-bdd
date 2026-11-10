@@ -15,7 +15,7 @@ import toolchain
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
 FIXTURE = REPO / "tests" / "scripts" / "fixtures" / "codified-2"
-LATER = ('### "another K"',)
+LATER = ()
 BLOCK = re.compile(r"^```reading\n(.*?)\n```$", re.MULTILINE | re.DOTALL)
 
 
