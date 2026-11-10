@@ -119,10 +119,17 @@ def arg(reader, refs, slot):
         for r in reversed(refs[:-2]):
             tree = ("CodeMore", ("CodeLit", r.value), tree)
         return (K + "_NamedAnd", tree, (K + "_UseN", (K + "_n",)))
-    nps = (K + "_Two", reader.np(refs[-2], slot), reader.np(refs[-1], slot))
+    nps = (K + "_Two", one(reader, refs[-2], slot), one(reader, refs[-1], slot))
     for r in reversed(refs[:-2]):
-        nps = (K + "_More", reader.np(r, slot), nps)
+        nps = (K + "_More", one(reader, r, slot), nps)
     return (K + "_And", nps)
+
+
+def one(reader, ref, slot):
+    """The `K_NP` tree of one member of a list of options: with its argument ("the `--retires` option set to the
+    universal condition id u1"), or named by its code before its noun ("the `--universal` option")."""
+    found = slot_arg(reader, ref, slot)
+    return found[1] if found else reader.np(ref, slot)
 
 
 def slot_arg(reader, ref, slot):

@@ -13,6 +13,14 @@ concrete BaseEng of Base = open SyntaxEng, ParadigmsEng, (E = ExtraEng), (R = Re
     Bound = AdN ;
     Many = Card ;
   oper
+    -- "a" or "an": the RGL's a_Det writes "a" before "up"; "an" before "up" and "un" but "uni" ("an upstream entry",
+    -- "an unparsed line", "a universal condition"; b240), else as the RGL does
+    aDet : SyntaxEng.Det = a_Det ** {s = pre {
+      "eu" | "Eu" | "uni" => "a" ;
+      "un" | "up" => "an" ;
+      "a" | "e" | "i" | "o" | "A" | "E" | "I" | "O" => "an" ;
+      _ => "a"
+      }} ;
     -- a noun phrase spelled as written: an actor's name, a code; singular
     actor : Str -> NP = \s -> lin NP {s = \\_ => s ; a = R.agrP3 R.Sg} ;
     -- a thing named by a code before its noun: "the `--json` option"
@@ -44,7 +52,7 @@ concrete BaseEng of Base = open SyntaxEng, ParadigmsEng, (E = ExtraEng), (R = Re
     PNeg = E.UncNeg ;
     MAlways = mkAdV "always" ;
     MNever = mkAdV "never" ;
-    DetA = a_Det ;
+    DetA = aDet ;
     DetThe = the_Det ;
     DetEvery = every_Det ;
     DetPl = aPl_Det ;
