@@ -6,7 +6,8 @@ action verb in a While clause; call 3).
 
 `model parse` reads a line in grammar 4 when `spec/index.md` says `language: codified-2` (`marked`); every other
 reader keeps grammar 3 until the switch (I19). A line with more than one tree keeps one when they all mean one thing,
-and is refused naming the words that read two ways when they do not (spec_meaning; call 2, I9).
+and is refused naming the words that read two ways when they do not (spec_meaning, by their logical forms; call 2,
+I9, I11a).
 """
 import difflib
 import hashlib
@@ -130,7 +131,7 @@ def parse(root, line):
     words = {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
     trees, at = _trees(gram, words, tokens)
     if trees:
-        kept, two = spec_meaning.one(trees)
+        kept, two = spec_meaning.one(trees, vocab)
         if kept:
             return Parse(tree=kept, trees=trees)
         words = spec_grammar.detokenise(gram.languages[GRAMMAR + "Eng"].linearize(_expr(two[0])).split(" "))
