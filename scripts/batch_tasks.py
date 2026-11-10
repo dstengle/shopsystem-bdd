@@ -13,6 +13,7 @@ only when it is that worktree on its branch (`batch_git.is_tree`, S1). Each chan
 import re
 import shlex
 import subprocess
+from pathlib import Path
 
 import backlog_items
 import backlog_lines
@@ -67,15 +68,20 @@ def under_shop(root, since, branch):
     return sorted(set(filter(None, out.splitlines())))
 
 
-def run_tests(root, tree):
+def run_tests(root, tree, strict=True):
     """`[batch] tests` of `.shop/delivery.toml` (default `python3 -m pytest -q -p work_items`) run in `tree`, the
-    plugin's scripts on PYTHONPATH (D12)."""
+    plugin's scripts on PYTHONPATH (D12); with `strict` false, an unbuilt scenario that passes in `tree` is no
+    failure (`spec_unbuilt.NONSTRICT`, batches r19)."""
     command = delivery(root).get("batch", {}).get("tests", TESTS)
-    return command, subprocess.run(shlex.split(command), cwd=tree, capture_output=True, text=True, env=scripts_env())
+    env = scripts_env()
+    env.pop(spec_unbuilt.NONSTRICT, None)
+    if not strict:
+        env[spec_unbuilt.NONSTRICT] = str(Path(tree).resolve())
+    return command, subprocess.run(shlex.split(command), cwd=tree, capture_output=True, text=True, env=env)
 
 
-def tests_pass(root, tree, command_name):
-    command, done = run_tests(root, tree)
+def tests_pass(root, tree, command_name, strict=True):
+    command, done = run_tests(root, tree, strict)
     if done.returncode != 0:
         tail = "\n".join((done.stdout + done.stderr).splitlines()[-20:])
         raise Refused("%s: the tests `%s` failed in %s (exit %d):\n%s" % (command_name, command, tree,
@@ -178,7 +184,7 @@ def checked(root, batch, task):
         raise Refused("%s: %s: still in unbuilt: %s" % (command, label, ", ".join(unbuilt)))
     head = git(tree, "rev-parse", "HEAD").stdout.strip()
     with batch_parked.tested_tree(root, batch, task, tree, head, command) as tested:     # no parked lines (r18)
-        tests_pass(root, tested, "%s: %s" % (command, label))
+        tests_pass(root, tested, "%s: %s" % (command, label), strict=False)   # its own ids are built (r19)
     return head
 
 

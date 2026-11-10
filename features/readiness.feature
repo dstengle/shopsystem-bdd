@@ -107,3 +107,10 @@ Feature: Readiness
     When the person runs `work line` on the requirement r1
     Then `work` exits with an error naming the requirement r1
     And `work` changes nothing
+
+  @g15 @r15
+  Scenario: `work ready` refuses an item whose lines bring a lexicon problem
+    Given an item i1 that is `shaped`
+    And the item i1 is ill-termed
+    When the person runs `work ready` on the item i1
+    Then `work` exits with an error naming the term t1

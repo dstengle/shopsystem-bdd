@@ -33,8 +33,13 @@ def work_ready(step):
 def given_passing(step):
     """passing: the item given a line that passes the bar; not passing: one that does not parse, whose refusal must
     name the line's id and the word that stopped it; unworded: one whose scenario holds a step no Steps fun words,
-    which the refusal must name (b46). Any other condition (blocked) goes on to the backlog's."""
+    which the refusal must name (b46); ill-termed: a passing line beside a term bullet that brings a lexicon problem,
+whose term the refusal must name. Any other condition (blocked) goes on to the backlog's."""
     word = step.text.split(" is ", 1)[1]
+    if word == "ill-termed":
+        R.give_lines(step, step.names[0], R.PASSING, [R.ILL_TERMED])
+        step.context["ill_term"] = R.ILL_TERM
+        return None
     if word == "unworded":
         R.give_lines(step, step.names[0], R.UNWORDED)
         step.context["unworded"] = R.UNWORDED_STEP
@@ -107,3 +112,13 @@ def refused_naming_step(step):
     done = step.context["result"]
     assert done.returncode == 1, (done.returncode, done.stdout, done.stderr)
     assert step.context["unworded"] in done.stderr, (step.context["unworded"], done.stderr)
+
+
+@local("ThenExitsErr", "term")
+def refused_naming_term(step):
+    """The run was refused (exit 1), naming the term of the problem the item's term bullet brought."""
+    if "ill_term" not in step.context:
+        return False
+    done = step.context["result"]
+    assert done.returncode == 1, (done.returncode, done.stdout, done.stderr)
+    assert step.context["ill_term"] in done.stderr, (step.context["ill_term"], done.stderr)
