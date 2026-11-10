@@ -460,3 +460,66 @@ Feature: Design model check
     And the requirement r1 is restrictive
     When the person runs `model parse` on the requirement r1
     Then `model` exits successfully
+
+  @g92 @r92
+  Scenario: `model parse` passes a relative clause on a verb's frame
+    Given a requirement r1
+    And the requirement r1 is relative
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g93 @r93
+  Scenario: `model parse` passes whose over a relation row or an attribute
+    Given a requirement r1
+    And the requirement r1 is possessive
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g94 @r94
+  Scenario: `model parse` refuses a requirement with two meanings
+    Given a requirement r1
+    And the requirement r1 is ambiguous
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits with an error naming the requirement r1
+
+  @g95 @r95
+  Scenario: `model parse --form` prints a requirement's logical form
+    When the person runs `model parse --form` on the requirement r1
+    Then `model` prints the logical form l1
+    And `model` exits successfully
+
+  @g96 @r96
+  Scenario: `model parse` passes this before a kind whose entry has This:
+    Given a requirement r1
+    And the requirement r1 is indexical
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g97 @r97
+  Scenario: `model parse` refuses the with no antecedent
+    Given a requirement r1
+    And the requirement r1 is antecedentless
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits with an error naming the term t1
+
+  @g98 @r98
+  Scenario: `model parse` refuses a negated indefinite in a While clause
+    Given a requirement r1
+    And the requirement r1 is unquantified
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits with an error naming the term t1
+
+  @g99 @r99
+  Scenario: `model parse` refuses a requirement with no trigger and neither always nor never
+    Given a requirement r1
+    And the requirement r1 is triggerless
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits with an error naming the requirement r1
+
+  @g100 @r100
+  Scenario: `model parse` refuses an unfinished requirement with the terms that may follow
+    Given a requirement r1
+    And the requirement r1 is unfinished
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits with an error naming the requirement r1
+    And `model` prints the term t1

@@ -168,6 +168,11 @@ contract:
     are numbered `<n>: `. It exits 2 when the grammar cannot be built.
     Where spec/index.md says `language: codified-2`, the line is parsed in
     grammar 4 (spec_grammar4) instead, and only as a requirement.
+  - parse --form prints, in place of a grammar 4 line's tree, its logical
+    form (spec_lf): its modality and the referents no part introduces, each
+    with its origin, then its Where, While, trigger and response, each a box
+    of referents, atoms and boxes. In a context that is not codified-2 it
+    exits 2: only grammar 4 has a logical form.
   - lexicon lists the terms by category; lexicon --check prints v_t4-v_t10
     (`<code>  <term>  <message>`) and exits 1 when there is any: v_t7 a
     gloss of more than one sentence, v_t8 a relation entry (a relation is a
@@ -222,6 +227,7 @@ def main(argv=None):
     p.add_argument("line", nargs="?")
     p.add_argument("--file")
     p.add_argument("--grammar", default="Req", choices=["Req", "Steps", "Def"])
+    p.add_argument("--form", action="store_true", help="print each line's logical form in place of its tree")
     x = sub.add_parser("lexicon", help="list the terms by category; --check gives v_t4-v_t10")
     x.add_argument("--check", action="store_true")
     g = sub.add_parser("logic", help="the temporal check of the codified requirements")

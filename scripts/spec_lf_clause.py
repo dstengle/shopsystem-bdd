@@ -1,0 +1,156 @@
+"""The clauses of grammar 4 in the logical form (the CNL 4 design, call 8; I11a): the rule (Where, While, the trigger,
+the responses), each condition, trigger and act a clause over a verb phrase, one translation per template.
+
+A frame's verb phrase is an `event` atom for an action verb and a `state` atom for a state verb, its roles the
+subject and each kind of the frame by the words before it (`object` when there are none), the frame's fixed words at
+its end a role of their own ("successfully"), its sense the entry's place among the entries of its word; a row's
+"has" and "holds" are `rel` atoms; a verb phrase with a gap is the same atom with the gap's referent in its role. A
+negated clause puts all but its subject under `not`.
+"""
+import spec_lf_core as core
+import spec_lf_np as nps
+import spec_lf_read
+from spec_lf_core import Atom, Box, NPList
+
+ORIGIN = {"where": "while", "while": "while", "when": "trigger", "if": "trigger", "response": "response"}
+
+
+def sense(st, n):
+    """The place of verb n's entry among the entries of its word."""
+    v = st.names.verbs[n]
+    return sum(1 for m, w in st.names.verbs.items() if m <= n and w.term.term == v.term.term)
+
+
+def frame_atom(st, n, m, slots):
+    """The atom of frame m of verb n, `slots` the referent of each kind of the frame in order."""
+    v = st.names.verbs[n]
+    roles, it = [("subject", slots[0])], iter(slots[1:])
+    for words, kind in v.frames[m - 1][1]:
+        roles.append((" ".join(words) or "object", next(it)) if kind is not None else (" ".join(words),))
+    if v.aspect == "action":
+        return Atom("event", (st.event(), v.term.term, sense(st, n), tuple(roles)))
+    return Atom("state", (v.term.term, sense(st, n), tuple(roles)))
+
+
+def numbers(name, count):
+    return [int(x) for x in name.rsplit("_", count)[1:]]
+
+
+def vp(st, tree):
+    """(the verb phrase's noun phrases, build(subject, their referents) -> its atom)."""
+    name, a = nps.fun(tree), nps.args(tree)
+    row, suffix = st.names.row(name)
+    if suffix in ("Has", "Holds"):
+        return [nps.np(st, a[0])], lambda s, r: Atom("rel", (row[1], r[0], s))
+    if name.startswith("e_"):
+        n, m = numbers(name, 2)
+        return [nps.np(st, x) for x in a], lambda s, r: frame_atom(st, n, m, [s] + list(r))
+    raise nps.unknown(tree)
+
+
+def gap(st, tree):
+    """(the noun phrases of a verb phrase with a gap, build(subject, the gap's referent, their referents))."""
+    name, a = nps.fun(tree), nps.args(tree)
+    row, suffix = st.names.row(name)
+    if suffix == "Gap":
+        return [], lambda s, g, r: Atom("rel", (row[1], g, s))
+    if not name.startswith("g_"):
+        raise nps.unknown(tree)
+    n, m, k = numbers(name, 3)
+    pieces = st.names.verbs[n].frames[m - 1][1]
+    slots = [i for i, (_, kind) in enumerate(pieces) if kind is not None]
+    gaps = ([0] if slots[0] == 0 else []) + ([slots[-1]] if 0 < slots[-1] == len(pieces) - 1 else [])
+    at = slots.index(gaps[k - 1])
+
+    def build(s, g, r):
+        r = list(r)
+        return frame_atom(st, n, m, [s] + r[:at] + [g] + r[at:])
+    return [nps.np(st, x) for x in a], build
+
+
+def subject_of(np):
+    return np.members[0].ref if isinstance(np, NPList) else np.ref
+
+
+def clause(st, subject, vptree, neg):
+    """(referents, conditions) of a clause: its subject's noun phrase (translated) and its verb phrase's tree."""
+    saved, st.subject = st.subject, subject_of(subject)
+    args, build = vp(st, vptree)
+    st.subject = saved
+    if neg:
+        spec_lf_read.negated(st, subject_of(subject), args, vptree)     # R4
+    return core.apply([subject] + args, lambda r: build(r[0], r[1:]), 1 if neg else None)
+
+
+def gapped(st, ref, subject, gaptree, neg):
+    """(referents, conditions) of an object relative clause on `ref`: "a stage that sessions follow"."""
+    saved, st.subject = st.subject, subject_of(subject)
+    args, build = gap(st, gaptree)
+    st.subject = saved
+    if neg:
+        spec_lf_read.negated(st, subject_of(subject), args, gaptree)    # R4
+    return core.apply([subject] + args, lambda r: build(r[0], ref, r[1:]), 1 if neg else None)
+
+
+def cond(st, tree):
+    name, a = nps.fun(tree), nps.args(tree)
+    if name in ("OneCond", "AndCond", "OrCond"):
+        first = cond(st, a[0])
+        if name == "OneCond":
+            return first
+        rest = cond(st, a[1])
+        if name == "AndCond":
+            return first[0] + rest[0], first[1] + rest[1]
+        return [], [Box("or", (), (core.part("case", *first), core.part("case", *rest)))]
+    rest = st.names.kind(name)[1]
+    if rest == "Holds":
+        return clause(st, nps.np(st, a[1]), a[2], a[0] == "PNeg")
+    t, rest = st.names.attr(name)
+    if t is not None and (rest == "IsOf" or rest.endswith("_Is")):
+        x = nps.owner(st, a[1]) if rest == "IsOf" else nps.np(st, a[1])
+        value = st.names.value(nps.fun(a[2]))
+        return core.apply([x], lambda r: Atom("attr", (r[0], t.term, value)), 1 if a[0] == "PNeg" else None)
+    raise nps.unknown(tree)
+
+
+def response(st, tree):
+    name, a = nps.fun(tree), nps.args(tree)
+    if name in ("OneResp", "AndResp"):
+        first = response(st, a[0])
+        rest = response(st, a[1]) if name == "AndResp" else ([], [])
+        return first[0] + rest[0], first[1] + rest[1]
+    if st.names.kind(name)[1] != "Shall":
+        raise nps.unknown(tree)
+    doer, refs, conds, acts = nps.np(st, a[0]), [], [], a[1]
+    while True:
+        act_name, act = nps.fun(acts), nps.args(acts)
+        one = act[0]
+        r, c = clause(st, doer, nps.args(one)[1], nps.args(one)[0] == "PNeg")
+        refs, conds = refs + r, conds + c
+        if act_name.endswith("_OneAct"):
+            return refs, conds
+        acts = act[1]
+
+
+def rule(st, tree):
+    """The Form of a requirement's tree."""
+    name, a = nps.fun(tree), nps.args(tree)
+    parts = []
+
+    def read(op, fn, sub):
+        st.origin = ORIGIN[op]
+        parts.append(core.part(op, *fn(st, sub)))
+    pre = a[0]
+    if nps.fun(pre) in ("While", "Where"):
+        read(nps.fun(pre).lower(), cond, nps.args(pre)[0])
+    elif nps.fun(pre) == "WhereWhile":
+        read("where", cond, nps.args(pre)[0])
+        read("while", cond, nps.args(pre)[1])
+    if name in ("When", "If"):
+        trig = a[1]
+        if not st.names.kind(nps.fun(trig))[1] == "Event":
+            raise nps.unknown(trig)
+        read(name.lower(), lambda s, t: clause(s, nps.np(s, nps.args(t)[0]), nps.args(t)[1], False), trig)
+    read("response", response, a[-1])
+    fixed = tuple(r for r in st.refs if r.origin not in core.ORIGINS[:3])
+    return core.Form("shall", fixed, tuple(parts))

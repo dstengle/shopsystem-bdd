@@ -3,7 +3,7 @@ codified-2` and `imports: [cli]` (the glossary of tests/scripts/fixtures/codifie
 also codified-2, whose requirement r1 is the line a requirement condition gives. `model parse` reads it in grammar 4.
 
 A later grammar item adds its condition to LINES: the line r1 says, and what a refusal of it names the scenario's term
-t1 by (None when the line parses). I19 extends the world to a mixed spec."""
+t1 by (None when it names no term). I19 extends the world to a mixed spec."""
 from pathlib import Path
 
 FIXTURE = Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "codified-2" / "spec" / "index.md"
@@ -14,6 +14,13 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
                          "the verb write does not agree in number with its subject"),
          "optioned": ("When the person runs `work backlog` with the `--json` option, `work` shall exit successfully.",
                       None),
+         # the reading rules' refusals (I11b): a "the" with no antecedent (R2), a negated indefinite in a While
+         # clause (R4), a line that obliges with no trigger (R12)
+         "antecedentless": ("When the person runs `work start`, `work` shall print the stage.",
+                            '"the stage" has no antecedent'),
+         "unquantified": (("While a session does not follow a stage, when the person runs `work start`, `work` shall "
+                           "exit successfully."), 'says "does not follow a stage"'),
+         "triggerless": ("`work` shall write a file.", None),
          "misaspected": ("When a session follows a stage, `work` shall print the stage.",
                          "the verb follow is a state, and a trigger takes an action"),
          "genitive": (("When a session ends a stage, `work` shall print the status of the stage and the worktree of "
@@ -21,7 +28,27 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
          "denying": (("While a session has no worktree, when the person runs `work start`, `work` shall exit with an "
                       "error naming the session."), None),
          "compound": ("When a session ends a stage, `work` shall print the stage status.", None),
-         "restrictive": ("A session shall change only files in its worktree.", None)}
+         "restrictive": ("A session shall change only files in its worktree.", None),
+         "relative": (("When a session ends a stage that sessions follow, `work` shall print every session that does "
+                       "not follow the stage."), None),
+         "possessive": (("When a session ends a stage whose status is not `done`, `work` shall print every session "
+                         "whose worktree holds a file."), None),
+         # the list "a stage and the stage" belongs to follow or to print: two meanings, refused naming the requirement
+         "ambiguous": (("When the person runs `work start`, `work` shall print every session that follows a stage and "
+                        "the stage."), None),
+         # "this" before command, whose entry in the CLI pack has This: (call 6); "the output" would be refused (R2)
+         "indexical": ("When the person runs this command, `work` shall print this command.", None),
+         # a verb short of a noun its frame takes, or with one of the wrong kind (I10): the refusal names the verb
+         "objectless": ("When the person runs `work start`, `work` shall write.", "the verb write takes an object"),
+         "mistyped": ("When the person runs `work start`, `work` shall write a stage.",
+                      "the verb write takes as its object file or a kind of it"),
+         "recipientless": ("When the person runs `work start`, `work` shall give a file.",
+                           "the verb give takes a recipient"),
+         # a passive, which grammar 4 has not: the verb's frame has a subject it leaves out
+         "agentless": ("While a file is not written, when the person runs `work start`, `work` shall write a file.",
+                       "the verb write takes a subject"),
+         # the line stops after "the", where write's frame needs its object: the hint names the term that may follow
+         "unfinished": ("When a session ends a stage, `work` shall write the", "may follow: file")}
 
 
 def capability(name, lines, path):
