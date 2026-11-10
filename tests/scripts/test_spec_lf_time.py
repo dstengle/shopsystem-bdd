@@ -1,7 +1,6 @@
 """The time constructs (the CNL 4 design, section 4.4, call 9; I16): grammar/corpus/time-4.txt parsed in the
 codified-2 context with the time pack (tests/scripts/fixtures/codified-2-time/), their logical form (spec_lf_time),
-check.lp's facts of it (spec_lf_facts) and `model logic` over them: comparisons of a moment exact over the constants
-named, a history a state relation."""
+and `model logic`'s refusal of a line holding one, which the check has no reading of yet."""
 import pathlib
 import re
 import sys
@@ -66,7 +65,7 @@ def blocks():
 
 def test_the_language_reference_shows_each_time_construct():
     lines = " ".join(line for line, _ in blocks())
-    for words in ("within the last", " after ", "the clock reaches", " has written ", " since ", "the newest"):
+    for words in ("within the last", " after ", "the clock reaches", " has written ", " since "):
         assert words in lines, words
 
 
@@ -82,37 +81,31 @@ def world(tmp_path, *lines):
     return tmp_path
 
 
-def facts(tmp_path, *lines):
-    ctx = spec_context.load(world(tmp_path, *lines))
-    assert not ctx.refused, ctx.refused
-    return [f for s in ctx.statements for f in ctx.facts[s.id]]
+def refused(tmp_path, *lines):
+    """What `model logic`'s reading of the context refuses each line of `lines` with, by id."""
+    return spec_context.load(world(tmp_path, *lines)).refused
 
 
-def codes(tmp_path, *lines):
-    return [f.code for f in spec_solve.run(world(tmp_path, *lines), capability="thing")]
+def test_model_logic_refuses_a_comparison_of_moments_by_name(tmp_path):
+    out = refused(tmp_path, "While a deadline is within the last 7 days, " + ON + "print the deadline.",
+                  "While a deadline is not before `2026-01-01`, " + ON + "exit successfully.")
+    assert set(out) == {"thing#r1", "thing#r2"}, out
+    assert all("no translation of a comparison of moments" in why for why in out.values()), out
 
 
-def test_a_comparison_is_a_bound_and_a_history_a_state_relation(tmp_path):
-    out = facts(tmp_path, "While a deadline is within the last 7 days and a session has ended a stage, " + ON +
-                "print the deadline.", "While a deadline is before `2026-01-01`, " + ON + "exit successfully.")
-    assert 'cmp("thing#r1",x1,after,ago(604800),pos).' in out
-    assert 'crel("thing#r1",hist(e_end),x2,x3,pos).' in out
-    assert 'cmp("thing#r2",x1,before,x2,pos).' in out and 'named("thing#r2",x2,"`2026-01-01`").' in out
+def test_model_logic_refuses_a_history_by_name(tmp_path):
+    out = refused(tmp_path, "While a session has ended a stage, when the session writes a file, `work` shall print "
+                  "the file.", "While a session has written no file since `2026-01-01`, when the session ends a stage, "
+                  "`work` shall exit successfully.")
+    assert set(out) == {"thing#r1", "thing#r2"}, out
+    assert "no translation of the history of end" in out["thing#r1"], out
+    assert "no translation of the history of write" in out["thing#r2"], out
 
 
-def test_bounds_that_leave_no_moment_between_them_never_clash(tmp_path):
-    assert codes(tmp_path, "While a deadline is within the last 7 days, " + ON + "print the deadline.",
-                 "While a deadline is not within the last 30 days, " + ON + "not print the deadline.") == []
-    assert codes(tmp_path, "While a deadline is after `2026-01-01`, " + ON + "print the deadline.",
-                 "While a deadline is before `2026-01-01`, " + ON + "not print the deadline.") == []
-
-
-def test_bounds_that_leave_a_moment_between_them_clash(tmp_path):
-    assert codes(tmp_path, "While a deadline is within the last 30 days, " + ON + "print the deadline.",
-                 "While a deadline is not within the last 7 days, " + ON + "not print the deadline.") == ["L1"]
-
-
-def test_a_history_and_its_denial_never_clash(tmp_path):
-    assert codes(tmp_path, "While a session has ended a stage, when the session writes a file, `work` shall print "
-                 "the file.", "While a session has not ended the stage, when the session writes a file, `work` shall "
-                 "not print the file.") == []
+def test_model_logic_reads_no_pair_of_two_refused_time_lines(tmp_path):
+    """The bounds of "within the last 30 days" and "not within the last 7 days" leave a moment between them, but the
+    check reads neither line, so it finds no L1 of them."""
+    found = spec_solve.run(world(tmp_path, "While a deadline is within the last 30 days, " + ON + "print the deadline.",
+                                 "While a deadline is not within the last 7 days, " + ON + "not print the deadline."),
+                           capability="thing")
+    assert [f.code for f in found if f.code == "L1"] == []

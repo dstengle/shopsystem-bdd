@@ -48,7 +48,7 @@ def atom(a):
     if a.pred == "rel":
         word, x, y = a.args
         return "%s(%s, %s)" % (word, term(x), term(y))
-    if a.pred in ("history", "cmp", "order"):
+    if a.pred in ("history", "cmp"):
         return spec_lf_time.show(a, term)
     x, attr, v = a.args
     return "%s(%s) = %s" % (attr, term(x), term(v))

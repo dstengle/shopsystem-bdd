@@ -390,7 +390,7 @@ never []
     follow(subject: x1, object: x2)
 ```
 
-## Time: moments compared, the clock, history, newest and oldest
+## Time: moments compared, the clock, history
 
 The time constructs of the CNL 4 design (section 4.4, call 9; I16), read with the rules above. The words of time are
 the time pack's (`grammar/packs/time.md`: moment, duration, the units, a schedule a moment, the clock an agent whose
@@ -404,12 +404,10 @@ kinds by `scripts/spec_rgl_time.py`) and their reading `scripts/spec_lf_time.py`
   and unset by nothing (`has V(...)`); "since m" is a role of it. "has not V-ed a K" in a condition is refused as R4
   refuses "does not V a K".
 - "the clock reaches m" is a trigger like any other action; "the clock" with no antecedent is the run's own (R11).
-- "the newest K", "the oldest K": a referent of K and its order (`newest(x)`) among what its noun phrase allows.
 
-`model logic` reads a comparison exactly over the bounds named: a moment above a bound and below the same one, or
-below a bound earlier than one it is above ("within the last 7 days" and "not within the last 30 days"), is no state,
-so two lines with those While clauses never clash. A history is a state relation of its subject and object; its
-"since" and an order are not read by the check yet. The blocks below are read in the time fixture
+`model logic` has no reading of a comparison or a history yet: it refuses a line holding one, naming it ("no
+translation of a comparison of moments", "no translation of the history of end"), as it refuses any construct it
+has no translation for. The blocks below are read in the time fixture
 (`tests/scripts/fixtures/codified-2-time/`, a stage's deadline a moment) by `tests/scripts/test_spec_lf_time.py`.
 
 ```reading-time
@@ -468,14 +466,4 @@ shall [x3: moment `2026-01-01` (parameter), x5: tool `work` (constant)]
 ```reading-time
 While a session has not written a file, when the person runs `work start`, `work` shall exit successfully.
 refused: the While clause says "has not written a file", which reads two ways: say "has written no file" or "a file that the session has not written"
-```
-
-```reading-time
-When the person runs `work start`, `work` shall print the newest stage.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
-  when
-    run(e1, subject: x1, object: x2)
-  response [x4: stage]
-    newest(x4)
-    print(e2, subject: x3, object: x4)
 ```

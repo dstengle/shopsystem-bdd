@@ -5,9 +5,9 @@ context imports it with `imports: [cli, time]` in the frontmatter of `spec/index
 same is marked `Redefines: time.` A context's own moments are kinds of moment ("a deadline", Kind of: moment).
 
 The base grammar says the rest (grammar/language.md, "Time"): "after" and "before" between two moments, "within the
-last" and a duration, the perfect of an action verb ("has ended") as history, and "since" a moment after it; "the
-newest" and "the oldest" of a kind. A duration is a number and a unit of this pack: "7 days", "one hour"; a number
-with no unit where a duration is due is refused.
+last" and a duration, the perfect of an action verb ("has ended") as history, and "since" a moment after it. A
+duration is a number and a unit of this pack: "7 days", "one hour"; a number with no unit where a duration is due is
+refused.
 
 ## Glossary
 
