@@ -13,7 +13,8 @@ and `none`, `rnone` for a `not` box with referents of its own); the trigger's ev
 Two boxes keep their meaning (b114, b116): an `every` object is `each(R,X)`, an obligation on each thing of its
 restrictor, so what another line says of that thing need only agree with it; "X shall V only Ks that P" obliges no V:
 it is `only(R,I,E,D,X)` with its restrictor `rattr(R,X,T,V)`, `rrel(R,Q,X,Y)`, which clashes only with a V of a
-thing known to fall outside it. The words are named by spec_lf_ids. An `or` box splits the requirement as spec_facts does (`R#n`, `disj`). A construct
+thing known to fall outside it. Each line is marked `cnl4(R)`, so the check reads its pairs as
+codified-2 lines (the If tag, a universal condition paired with each line). The words are named by spec_lf_ids. An `or` box splits the requirement as spec_facts does (`R#n`, `disj`). A construct
 with no translation raises ValueError naming it.
 """
 import spec_facts
@@ -140,6 +141,7 @@ class Walk:
         if form.modality != "shall" or ops not in FORMS:
             raise ValueError("no translation of the rule %s %s" % (form.modality, " ".join(ops)))
         self.emit("form", FORMS[ops])
+        self.out.append("cnl4(%s)." % self.rid)
         for p in form.parts:
             self.roles(p.refs)
             if p.op in ("when", "if"):

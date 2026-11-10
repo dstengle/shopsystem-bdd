@@ -16,6 +16,7 @@
 #defined fun/1.   #defined prose/1. #defined dalt/2.  #defined dlit/5. #defined uall/3. #defined urel/4.
 #defined uattr/4. #defined ucond/5. #defined uccond/4. #defined pre/6. #defined prec/5.
 #defined each/2.   #defined only/5. #defined rattr/4.  #defined rrel/4.  #defined akind/2.
+#defined cnl4/1.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
@@ -78,10 +79,17 @@ ukeyu(A,K) :- universal(A), key(A,K).  udemu(A,K) :- universal(A), dem(A,K).
 unc(A,B) :- udemu(A,K), key(B,K), A != B.  unc(A,B) :- ukeyu(A,K), dem(B,K), A != B.
 cand(A,B) :- unc(A,B), unames(A,N), names(B,N).
 cand(A,B) :- uses(A,_,_), nouse(B,_,_), A != B.
-% the EARS unwanted-behaviour form ("If T, then ...") is the exception to the other requirements on its trigger: it
-% wins over them, so an `if` requirement and a non-`if` one are never a pair (two of one form still are)
+% The If tag (CNL 4's call 12): the EARS unwanted-behaviour form ("If T, then ...") takes precedence over a line of
+% another form on its own trigger: where its state holds its response replaces the other's, and where it does not it
+% does not fire, so the two are never a pair (two of one form still are). A universal condition holds in every trace:
+% it takes no precedence and none is taken over it, so it is paired with each line it bears on, If or not (b117).
+% A pair of two codified-1 lines (`cnl4(R)`: a codified-2 line, spec_lf_facts) keeps the reading it had until its
+% files are reworded: an If line is never paired with a line of another form.
 exc(R) :- form(R,if).  exc(R) :- form(R,while_if).  exc(R) :- form(R,where_if).
-over(A,B) :- cand(A,B), exc(A), not exc(B).  over(A,B) :- cand(A,B), exc(B), not exc(A).
+four(A,B) :- cand(A,B), cnl4(A).  four(A,B) :- cand(A,B), cnl4(B).
+lone(A,B) :- cand(A,B), not four(A,B).
+lone(A,B) :- four(A,B), tc(A,B,_,_), not universal(A), not universal(B).
+over(A,B) :- lone(A,B), exc(A), not exc(B).  over(A,B) :- lone(A,B), exc(B), not exc(A).
 pair(A,B) :- cand(A,B), A < B, not over(A,B).  pair(A,B) :- cand(B,A), A < B, not over(B,A).
 
 % ---- unification: each role of B is one of A's roles of a compatible kind, or its own instance b(Y) -------------

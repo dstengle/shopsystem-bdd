@@ -247,6 +247,14 @@ If names an unwanted event whose response takes precedence over a When line's at
 state the response does not change keeps its value (inertia). The form keeps each part as its own box (`when`,
 `while`, `where`, `if`); the check reads them so (I12a, I12b).
 
+`model logic` reads the precedence as stated, never as a clash: an If line and a line of another form on one trigger
+are no pair, since where the If line's state holds its response replaces the other's, and where it does not hold the
+If line does not fire. Two If lines on one trigger are still checked against each other. A universal condition holds
+in every trace, so it takes no precedence and none is taken over it: it is paired with each line it bears on, If or
+not, and a line whose response it forbids under that line's trigger is an L1 naming it (b117). A pair of two
+codified-1 lines keeps the reading of plugin 2.x (an If line never paired with a line of another form) until its
+files are reworded.
+
 Tested on backlog r20 and r21 (in a tasked repository `work idea` refuses, If; in a tracking one it writes, When).
 
 ```reading
