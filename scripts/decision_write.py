@@ -1,6 +1,7 @@
 """`work decision` (capability decision-tiers r7, r8): a design-decision written whole from its arguments as
 `spec/decisions/<nnnn>-<slug>.md`, the next number after the highest there, the decisions index rewritten as
-`model decisions` writes it, and the two committed together. A decision missing --summary, --decision or --tier is
+`model decisions` writes it, and the two committed together; its verification routes (`--verified-by`, r10) and the
+ids it rests on (`--rests-on`, a universal condition among them) written beside `enforced_by`. A decision missing --summary, --decision or --tier is
 refused before anything is written, every one absent named in one error (r9)."""
 import datetime
 import re
@@ -8,6 +9,7 @@ import sys
 from pathlib import Path
 
 import shop_files
+from model_decisions import ROUTES
 from model_parse import DECISIONS, decision_files
 from model_report import render_decisions
 
@@ -25,6 +27,8 @@ The file written:
   status: accepted
   tier: <--tier>
   enforced_by: [<--enforced-by>, ...]      (when given)
+  verified_by: [<--verified-by>, ...]      (when given)
+  rests_on: [<--rests-on>, ...]            (when given)
   source: [<--source>, ...]                (when given)
   by: "<--by>"                             (when given)
   ---
@@ -37,7 +41,9 @@ The file written:
 
 --context, --decision and --alternatives take the text, or @<file> for the text of a file. A check decision names
 the tests that enforce it (--enforced-by <path>.py::<test>), a requirement decision the requirements
-(--enforced-by <capability>#r<n>), a judgement decision none (design-decision/decision-tiers). With any of --summary,
+(--enforced-by <capability>#r<n>), a judgement decision none (design-decision/decision-tiers). A decision that
+routes a universal condition rests on it (--rests-on universal-condition/u<n>) and names how it is verified
+(--verified-by scenario, check, judgement or monitor). With any of --summary,
 --decision and --tier missing the command is refused, naming each one missing, and writes nothing. It prints the path
 written."""
 
@@ -54,6 +60,10 @@ def add_parser(sub):
     p.add_argument("--alternatives", help="the ## Alternatives section: what else was weighed (text or @<file>)")
     p.add_argument("--enforced-by", dest="enforced_by", action="append", default=[],
                    help="a test (check tier) or a requirement (requirement tier) that enforces it; repeatable")
+    p.add_argument("--verified-by", dest="verified_by", action="append", default=[], choices=ROUTES,
+                   help="how what it decides is verified: scenario, check, judgement or monitor; repeatable")
+    p.add_argument("--rests-on", dest="rests_on", action="append", default=[],
+                   help="an id the decision rests on, such as the universal condition it routes; repeatable")
     p.add_argument("--source", action="append", default=[], help="an id the decision rests on; repeatable")
     p.add_argument("--by", help="who decided, and when")
     p.add_argument("--slug", help="the file's and id's name after its number (default: from the title)")
@@ -94,7 +104,8 @@ def next_number(root):
 def render(number, title, ident, args, sections, date):
     head = ["id: %s" % ident, "summary: %s" % quoted(args.summary, "summary"), "date: %s" % date,
             "status: accepted", "tier: %s" % args.tier]
-    for key, values in (("enforced_by", args.enforced_by), ("source", args.source)):
+    for key, values in (("enforced_by", args.enforced_by), ("verified_by", args.verified_by),
+                        ("rests_on", args.rests_on), ("source", args.source)):
         if values:
             head.append("%s: [%s]" % (key, ", ".join(values)))
     if args.by:
