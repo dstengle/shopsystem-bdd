@@ -76,8 +76,8 @@ def _key(tree):
 
 def l2(statements, scope):
     seen = defaultdict(list)
-    for s in statements:
-        seen[_key(spec_tree.normal(s.tree))].append(s)
+    for s in statements:     # a grammar 4 tree (a text) is one meaning already (spec_meaning)
+        seen[s.tree if isinstance(s.tree, str) else _key(spec_tree.normal(s.tree))].append(s)
     out = []
     for same in seen.values():
         if len(same) > 1 and any(s.capability in scope for s in same):

@@ -58,6 +58,9 @@ def capability(step):
         H.write(repo, "features/%s.feature" % name, H.feature(name, "@r1", "@r2", "@r3", "@r4"))
         H.says(step, "r1", "%s#r1" % name)
         return
+    if word in C2.CAPABILITIES:     # lines of grammar 4 that `model logic` reads through their logical form (I12a)
+        C2.context(repo, H.PATH, C2.CAPABILITIES[word], name)
+        return
     lines = {"unnumbered": ["- **When** asked, `%s` shall answer." % name],
              "renumbered": ["- [r1] **When** asked, `%s` shall answer." % name] * 2,
              "reusing": ["- [r1] **When** asked, `%s` shall answer." % name],
