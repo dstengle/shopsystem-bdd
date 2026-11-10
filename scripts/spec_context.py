@@ -118,8 +118,9 @@ def _read(root, extra):
         return _translate(root, extra)
 
 
-class _Four:
-    """Grammar 4's side of one read: its vocabulary, compiled once, and the check's names of its words."""
+class Four:
+    """Grammar 4's side of one read: its vocabulary, compiled once, and the check's names of its words; also the
+    spec corpus's translation of one line (tests/scripts/test_corpus_spec.py, check 2)."""
 
     def __init__(self, root, marked):
         self.root, self.marked, self.rgl, self.ids = root, marked, None, None
@@ -154,7 +155,7 @@ def _vocab(root, four):
 
 
 def _translate(root, extra):
-    four = _Four(root, spec_grammar4.marked(root))
+    four = Four(root, spec_grammar4.marked(root))
     old, vocab = _vocab(root, four)
     ids = spec_context_ids.Ids(old, vocab)
     ids.lay()
