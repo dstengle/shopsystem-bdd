@@ -51,9 +51,10 @@ def _parses(copy, blocks):
     statements = [(b.capability, "%s#%s" % (b.capability, rid), text) for b in blocks for g in b.groups
                   for rid, text in g.requirements] + [(None, "universal#%s" % uid, text) for uid, text in blocks.universal]
     for capability, ident, text in statements:
-        parsed = spec_language.parse(copy, text, capability)
+        universal = capability is None     # a universal condition, in spec/universal.md's own grammar (b151)
+        parsed = spec_language.parse(copy, text, capability, universal)
         if parsed.tree is None:
-            hint = spec_language.hint(copy, text, capability)
+            hint = spec_language.hint(copy, text, capability, universal)
             reasons.append("%s: %s; parsed up to: %s; nearest words: %s" % (
                 ident, parsed.refusal, hint["prefix"] or "nothing", ", ".join(hint["near"]) or "none"))
     return reasons

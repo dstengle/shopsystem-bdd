@@ -6,8 +6,8 @@ domain facts.
 A capability file that says `language: codified-2` is read through grammar 4 (CNL 4's call 15, I12a): each line
 parsed (spec_grammar4), its logical form (spec_lf) translated into the same facts (spec_lf_facts), a line a reading
 rule refuses or the translation has no facts of among the refused; both kinds of file feed one check. A context whose
-`spec/index.md` says `language: codified-2` takes its vocabulary from its layered lexicon, packs included, and reads
-its universal conditions in grammar 4 too.
+`spec/index.md` says `language: codified-2` takes its vocabulary from its layered lexicon, packs included; its
+universal conditions are read in the grammar `spec/universal.md`'s own marker names (b151).
 
 `load(root, extra=())` is cached in the process by the state of the files it reads: `spec/**/*.md` under `root`, the
 files of `extra` and the plugin's `grammar/*.gf` (each path with its mtime_ns and size).
@@ -19,6 +19,7 @@ from pathlib import Path
 import spec_facts
 import spec_grammar
 import spec_grammar4
+import spec_language
 import spec_lexicon
 import spec_lf
 import spec_lf_facts
@@ -151,12 +152,13 @@ def _translate(root, extra):
     four = _Four(root, spec_grammar4.marked(root))
     vocab = _vocab(root, four)
     caps, fours = _caps(root, extra)
+    universal4 = spec_language.four(root, universal=True)
     statements, refused, facts = [], {}, {}
     lines = [(name, "%s#%s" % (name, g.id), "%s#%s" % (name, r.id), r.text)
              for name, cap in sorted(caps.items()) for g in cap.groups for r in g.requirements]
     lines += [(None, None, u.id, u.text) for u in spec_read.universal(root)]
     for cap, group, ident, text in lines:
-        if cap in fours or (cap is None and four.marked):
+        if cap in fours or (cap is None and universal4):
             found, why = four.facts(ident, text)
             if found:
                 statements.append(Statement(ident, cap, group, found[0]))
