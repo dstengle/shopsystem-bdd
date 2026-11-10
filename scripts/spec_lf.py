@@ -8,6 +8,7 @@ resolved or noted as they are translated, and `spec_lf_read.refusal` reads the f
 import spec_lf_clause
 import spec_lf_core
 import spec_lf_np
+import spec_lf_time
 import spec_meaning
 from spec_lf_core import Box, Ref
 
@@ -47,6 +48,8 @@ def atom(a):
     if a.pred == "rel":
         word, x, y = a.args
         return "%s(%s, %s)" % (word, term(x), term(y))
+    if a.pred in ("history", "cmp"):
+        return spec_lf_time.show(a, term)
     x, attr, v = a.args
     return "%s(%s) = %s" % (attr, term(x), term(v))
 
@@ -60,7 +63,8 @@ def ref(r):
 
 def box(b, depth):
     pad = "  " * depth
-    head = pad + b.op + (" [%s]" % ", ".join(ref(r) for r in b.refs) if b.refs else "")
+    op = b.op + (" %s %d" % b.count if b.count else "")
+    head = pad + op + (" [%s]" % ", ".join(ref(r) for r in b.refs) if b.refs else "")
     out = [head]
     for c in b.body:
         out += box(c, depth + 1) if isinstance(c, Box) else [pad + "  " + atom(c)]

@@ -1,14 +1,17 @@
 -- The English of the base grammar, over GF's RGL: agreement, negation and "a"/"an" are the RGL's. Overridden
 -- defaults (call 1): "does not" (ExtraEng's uncontracted negation), not "doesn't"; no comma after a While clause but
--- the one before what follows it. `actor`, `named`, `act` and `acts` are the opers the generated ContextEng uses.
+-- the one before what follows it. `actor`, `named`, `act`, `shall` and `may` are the opers the generated ContextEng uses.
 concrete BaseEng of Base = open SyntaxEng, ParadigmsEng, (E = ExtraEng), (R = ResEng), ParamX, Prelude in {
   lincat
     Req, Pre, Resp, Code = {s : Str} ;
     Resps = {s : Str} ;
-    Cond, Trig = S ;
+    Cond, Trig, Nec = S ;
+    Mod = AdV ;
     Conds = {s : Str} ;
     Pol = SyntaxEng.Pol ;
     Det = SyntaxEng.Det ;
+    Bound = AdN ;
+    Many = Card ;
   oper
     -- a noun phrase spelled as written: an actor's name, a code; singular
     actor : Str -> NP = \s -> lin NP {s = \\_ => s ; a = R.agrP3 R.Sg} ;
@@ -20,10 +23,12 @@ concrete BaseEng of Base = open SyntaxEng, ParadigmsEng, (E = ExtraEng), (R = Re
     oneAct : Str -> Acts = \a -> {s = a ; m = False} ;
     andAct : Str -> Acts -> Acts = \a, l -> {s = a ++ (case l.m of {False => "and" ; True => ","}) ++ l.s ; m = True} ;
     shall : NP -> Acts -> {s : Str} = \x, l -> {s = (mkUtt x).s ++ "shall" ++ l.s} ;
+    may : NP -> Acts -> {s : Str} = \x, l -> {s = (mkUtt x).s ++ "may" ++ l.s} ;
   lin
     Ubiq p r = {s = p.s ++ r.s ++ "."} ;
     When p t r = {s = p.s ++ "when" ++ t.s ++ "," ++ r.s ++ "."} ;
     If p t r = {s = p.s ++ "if" ++ t.s ++ "," ++ "then" ++ r.s ++ "."} ;
+    Necessary p n = {s = p.s ++ n.s ++ "."} ;
     NoPre = {s = []} ;
     While c = {s = "while" ++ c.s ++ ","} ;
     Where c = {s = "where" ++ c.s ++ ","} ;
@@ -35,6 +40,8 @@ concrete BaseEng of Base = open SyntaxEng, ParadigmsEng, (E = ExtraEng), (R = Re
     AndResp r l = {s = r.s ++ "," ++ "and" ++ l.s} ;
     PPos = positivePol ;
     PNeg = E.UncNeg ;
+    MAlways = mkAdV "always" ;
+    MNever = mkAdV "never" ;
     DetA = a_Det ;
     DetThe = the_Det ;
     DetEvery = every_Det ;
@@ -42,4 +49,21 @@ concrete BaseEng of Base = open SyntaxEng, ParadigmsEng, (E = ExtraEng), (R = Re
     DetThePl = thePl_Det ;
     DetNo = mkDet no_Quant ;
     CodeLit s = s ;
+    DetCount b n = mkDet (mkCard b n) ;
+    DetOne = mkDet (mkCard n1_Numeral) ;
+    AtLeast = at_least_AdN ;
+    AtMost = at_most_AdN ;
+    Exactly = mkAdN "exactly" ;
+    MoreThan = mkAdN "more than" ;
+    FewerThan = mkAdN "fewer than" ;
+    Many1 = mkCard n1_Numeral ;
+    Many2 = mkCard n2_Numeral ;
+    Many3 = mkCard n3_Numeral ;
+    Many4 = mkCard n4_Numeral ;
+    Many5 = mkCard n5_Numeral ;
+    Many6 = mkCard n6_Numeral ;
+    Many7 = mkCard n7_Numeral ;
+    Many8 = mkCard n8_Numeral ;
+    Many9 = mkCard n9_Numeral ;
+    Many10 = mkCard n10_Numeral ;
 }

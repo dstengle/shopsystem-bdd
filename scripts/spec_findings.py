@@ -12,6 +12,7 @@ import spec_tree
 
 QUIET = {"print": "print", "exit_ok": "exit successfully", "exit_error": "exit with an error",
          "change_nothing": "change nothing"}
+BOUNDS = {"least": "at least", "most": "at most", "exactly": "exactly", "more": "more than", "fewer": "fewer than"}
 
 
 def article(word):
@@ -176,6 +177,14 @@ class Words:
             _, e, d, o = self.of(rid, "only")[0]
             return "%s allows %s only within its restriction and %s obliges one outside it" % (
                 lo, self.does(rid, e, d, o), lt)
+        if kind == "count":
+            for _, e, d, o, b, n in self.of(x, "count"):
+                for _, e2, _, _, b2, n2 in self.of(y, "count"):
+                    if e == e2:
+                        act, obj = self.does(x, e, d, o), self.term(x, o)
+                        act += "" if act.endswith(obj) else " " + obj
+                        return "%s counts %s %s and %s %s %s (%s): no number meets both" % (
+                            lx, BOUNDS[b.name], n, ly, BOUNDS[b2.name], n2, act)
         return "%s and %s demand opposite things" % (lx, ly)
 
     def bad_set(self, base, t, frm, to):
@@ -186,6 +195,13 @@ class Words:
     def unreachable(self, base, t, v):
         term, kind = self.attr(t)
         return "%s needs %s whose %s is %s, which no transition path reaches" % (base, kind, term, self.value(v))
+
+    def forbid(self, a, b):
+        """L7: the "shall not" of one side forbids what the "may" of the other permits."""
+        may, nay = (a, b) if any(p.name == "may" for _, p, *_ in self.of(a, "resp")) else (b, a)
+        _, _, e, d, o = next(r for r in self.of(may, "resp") if r[1].name == "may")
+        return "%s forbids what %s permits: %s" % (spec_facts.split(nay), spec_facts.split(may),
+                                                   self.does(may, e, d, o).replace(" to ", " may ", 1))
 
     def lint(self, raw, e, reactors):
         base = spec_facts.split(raw)

@@ -140,6 +140,18 @@ context: product-level artifacts are read only where the files contain them.
 
 - **restating** (adjective of requirement): a requirement each of whose Thens other requirements entail.
 
+- **counted** (adjective of requirement): a requirement with "at least", "at most", "exactly", "more than" or "fewer than" before a number and a noun.
+- **overcounted** (adjective of capability): a capability with two lines of one trigger and state whose counts of one kind cannot both hold.
+
+- **timed** (adjective of requirement): a requirement that compares a moment or a duration with "after", "before", "since" or "within the last".
+- **clocked** (adjective of requirement): a requirement whose trigger is the clock reaching a moment.
+- **historical** (adjective of requirement): a requirement whose While clause says that an agent has done an action, as in "the batch has published a pull request".
+- **unitless** (adjective of requirement): a requirement with a number where a duration is due and no unit of the time pack after it.
+
+- **permissive** (adjective of requirement): a requirement that says an agent may do an action.
+- **invariant** (adjective of requirement): a requirement with no trigger that says a thing always holds or never holds.
+- **forbidding** (adjective of capability): a capability with a line that forbids what another of its lines says an agent may do.
+
 ## Behaviour
 
 ### [g1] `model check` exits successfully on a sound context
@@ -412,6 +424,33 @@ Restates: r65@0.29.
 
 ### [g135] `model logic` reports a requirement that other requirements entail
 - [r135] When the person runs `model logic` on a requirement that is restating, `model` shall print "L8".
+
+### [g136] `model parse` reads a count
+- [r136] When the person runs `model parse` on a requirement that is counted, `model` shall exit successfully.
+
+### [g137] `model logic` finds two counts that cannot both hold
+- [r137] When the person runs `model logic` on a capability that is overcounted, `model` shall print "L1".
+
+### [g138] `model parse` reads a comparison of moments
+- [r138] When the person runs `model parse` on a requirement that is timed, `model` shall exit successfully.
+
+### [g139] `model parse` reads the clock as a trigger
+- [r139] When the person runs `model parse` on a requirement that is clocked, `model` shall exit successfully.
+
+### [g140] `model parse` reads the perfect as history
+- [r140] When the person runs `model parse` on a requirement that is historical, `model` shall exit successfully.
+
+### [g141] `model parse` refuses a duration with no unit
+- [r141] If the person runs `model parse` on a requirement that is unitless, then `model` shall exit with an error naming the requirement.
+
+### [g142] `model parse` reads a permission
+- [r142] When the person runs `model parse` on a requirement that is permissive, `model` shall exit successfully.
+
+### [g143] `model parse` reads always and never with no trigger
+- [r143] When the person runs `model parse` on a requirement that is invariant, `model` shall exit successfully.
+
+### [g144] `model logic` finds a line that forbids what another permits
+- [r144] When the person runs `model logic` on a capability that is forbidding, `model` shall print "L7".
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a
