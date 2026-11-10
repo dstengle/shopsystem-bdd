@@ -4,6 +4,7 @@ import os
 import subprocess
 import sys
 
+import shop_refused
 import tools_grammar
 
 # name, pip package, what it is for, what the workflow does without it
@@ -29,7 +30,7 @@ VERSIONS = ("import json, sys\nfrom importlib import metadata\nout = {}\n"
             "out['virtualenv'] = sys.prefix != sys.base_prefix\nprint(json.dumps(out))\n")
 
 
-class Refused(Exception):
+class Refused(shop_refused.Refused):
     pass
 
 

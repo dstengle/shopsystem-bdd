@@ -12,6 +12,8 @@ import tarfile
 import tempfile
 import urllib.request
 
+import shop_refused
+
 GF_VERSION = "3.12"
 GF_URL = ("https://github.com/GrammaticalFramework/gf-core/releases/download/release-3.12/"
           "gf-3.12-ubuntu-24.04.deb")
@@ -34,7 +36,7 @@ VERSIONS = ("import json, sys\nfrom importlib import metadata\nout = {}\n"
 WRAPPER = '#!/bin/sh\nLD_LIBRARY_PATH=%s${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH} exec %s "$@"\n'
 
 
-class Refused(Exception):
+class Refused(shop_refused.Refused):
     pass
 
 

@@ -1,7 +1,9 @@
 """The Gherkin reader behind scripts/features: a feature file parsed into its tags, Background and scenarios, the
-feature files under a directory, and a scenario found by its title. Standard library only."""
+feature files under a directory, and a scenario found by its title. Standard library and shop_refused."""
 import os
 import re
+
+import shop_refused
 
 STEP = re.compile(r"(Given|When|Then|And|But|\*)\s")
 SCENARIO = re.compile(r"(Scenario Outline|Scenario Template|Scenario|Example):")
@@ -9,7 +11,7 @@ EXAMPLES = re.compile(r"(Examples|Scenarios):")
 REQ_TAG = re.compile(r"r\d+$")
 
 
-class Refused(Exception):
+class Refused(shop_refused.Refused):
     pass
 
 

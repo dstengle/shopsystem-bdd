@@ -1,13 +1,15 @@
 """Claude Code's transcripts read, raw or the slim export: a JSON-lines file's rows, an ISO time, a transcript's
 assistant rows checked, the key of a request, and Claude Code's own store. A file of a shape not known is refused,
-naming it; no figure is guessed. Standard library only."""
+naming it; no figure is guessed. Standard library and shop_refused."""
 import datetime
 import json
 import os
 from pathlib import Path
 
+import shop_refused
 
-class Refused(Exception):
+
+class Refused(shop_refused.Refused):
     """What measure was asked cannot be done; the message says why, and nothing was written."""
 
 
