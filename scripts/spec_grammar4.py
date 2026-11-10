@@ -8,6 +8,10 @@ action verb in a While clause; call 3).
 reader keeps grammar 3 until the switch (I19). A line with more than one tree keeps one when they all mean one thing,
 and is refused naming the words that read two ways when they do not (spec_meaning, by their logical forms; call 2,
 I9, I11a).
+
+Its sources, their sha and the vocabulary are computed once a process for one state of the context's spec files, the
+plugin's packs and the base grammar's files (`_context`); its parses are kept on disk by spec_parse_cache, keyed by
+that sha, the lexicon's words and the text (b239).
 """
 import difflib
 import hashlib
@@ -19,6 +23,8 @@ import model_parse
 import spec_follow4
 import spec_grammar
 import spec_meaning
+import spec_packs
+import spec_parse_cache
 import spec_refusal4
 import spec_rgl
 import spec_rgl_np
@@ -31,7 +37,7 @@ MARKER = "codified-2"
 GRAMMAR = "Context"
 BASE = ("Base.gf", "BaseEng.gf", "Time.gf", "TimeEng.gf")
 LIMIT = 50
-_loaded = {}
+_loaded, _contexts = {}, {}
 
 
 @dataclass
@@ -51,11 +57,37 @@ def marked(root):
 
 
 def sources(root):
-    """(vocab, {file name: text}) of grammar 4: the base grammar's files and the generated Context."""
-    vocab = spec_rgl_vocab.read(root)
-    out = {name: (spec_grammar.GRAMMARS / name).read_text() for name in BASE}
-    out.update(spec_rgl.modules(vocab, spec_rgl_np.noun_phrases, _clauses))
-    return vocab, out
+    """(vocab, {file name: text}) of grammar 4: the base grammar's files and the generated Context; the dict is the
+    caller's own."""
+    vocab, srcs, _ = _context(root)
+    return vocab, dict(srcs)
+
+
+def sha(srcs):
+    """The name of a set of grammar 4's sources: its compiled PGF's folder and its parses' key."""
+    return hashlib.sha256(("rgl %s\0" % tools_grammar.RGL_RELEASE + "".join(
+        "%s\0%s\0" % kv for kv in sorted(srcs.items()))).encode()).hexdigest()[:32]
+
+
+def _state(root):
+    files = (sorted((root / "spec").glob("**/*.md")) + sorted(spec_packs.PLUGIN.glob("*.md"))
+             + [spec_grammar.GRAMMARS / name for name in BASE])
+    return tuple((str(p), st.st_mtime_ns, st.st_size) for p, st in ((p, p.stat()) for p in files))
+
+
+def _context(root):
+    """(vocab, sources, sha) of the context at `root`, computed again when a file under `spec/`, a plugin pack or a
+    base grammar file changes, or when `spec_rgl_vocab.read` is replaced (a stub)."""
+    key, state = (spec_rgl_vocab.read, str(Path(root).resolve())), _state(Path(root).resolve())
+    hit = _contexts.get(key)
+    if hit is None or hit[0] != state:
+        vocab = spec_rgl_vocab.read(root)
+        out = {name: (spec_grammar.GRAMMARS / name).read_text() for name in BASE}
+        out.update(spec_rgl.modules(vocab, spec_rgl_np.noun_phrases, _clauses))
+        if len(_contexts) >= 16:
+            _contexts.clear()
+        hit = _contexts[key] = (state, (vocab, out, sha(out)))
+    return hit[1]
 
 
 def _clauses(w, vocab, states):
@@ -69,15 +101,13 @@ def load(root):
     import pgf
     if not tools_grammar.rgl_path():
         raise spec_grammar.GrammarError("gf-rgl is missing: run `python3 scripts/tools install`")
-    vocab, srcs = sources(root)
-    sha = hashlib.sha256(("rgl %s\0" % tools_grammar.RGL_RELEASE + "".join(
-        "%s\0%s\0" % kv for kv in sorted(srcs.items()))).encode()).hexdigest()[:32]
-    if sha not in _loaded:
-        target = spec_grammar._cache() / sha / ("%s.pgf" % GRAMMAR)
+    vocab, srcs, name = _context(root)
+    if name not in _loaded:
+        target = spec_grammar._cache() / name / ("%s.pgf" % GRAMMAR)
         if not target.is_file():
-            spec_grammar._compile(srcs, sha, GRAMMAR)
-        _loaded[sha] = pgf.readPGF(str(target))
-    return vocab, _loaded[sha]
+            spec_grammar._compile(srcs, name, GRAMMAR)
+        _loaded[name] = pgf.readPGF(str(target))
+    return vocab, _loaded[name]
 
 
 def _literal(words, text):
@@ -91,8 +121,21 @@ def _literal(words, text):
     return code
 
 
-def _trees(gram, words, tokens):
-    """(the distinct trees of a parse, or [] and the index of the token GF stopped at)."""
+def _trees(gram, words, tokens, name=None):
+    """(the distinct trees of a parse, or [] and the index of the token GF stopped at); kept in spec_parse_cache
+    under the sources' sha `name` when one is given."""
+    if name is None:
+        return _gf_trees(gram, words, tokens)
+    digest = spec_parse_cache.key(name, GRAMMAR, spec_grammar._gf_text(tokens), words, LIMIT)
+    hit = spec_parse_cache.get(name, GRAMMAR, digest)
+    if hit is None:
+        hit = _gf_trees(gram, words, tokens)
+        spec_parse_cache.put(name, GRAMMAR, digest, *hit)
+    return list(hit[0]), hit[1]
+
+
+def _gf_trees(gram, words, tokens):
+    """GF's parse of `tokens`, as `_trees` gives it."""
     import pgf
     text = spec_grammar._gf_text(tokens)
     try:
@@ -103,13 +146,13 @@ def _trees(gram, words, tokens):
         return [], (len(tokens) if err.incomplete else spec_grammar._position(tokens, err.offset))
 
 
-def disagreeing(gram, vocab, tokens, at):
+def disagreeing(gram, vocab, tokens, at, name=None):
     """The verb whose form at token `at` would parse in the other number: its term, or None."""
     words = {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
     for v in vocab.verbs:
         singular, plural = spec_rgl.spec_frames.s3(v.term), v.term.term
         other = {singular: plural, plural: singular}.get(tokens[at] if at < len(tokens) else None)
-        if other and len(other.split()) == 1 and _trees(gram, words, tokens[:at] + [other] + tokens[at + 1:])[0]:
+        if other and len(other.split()) == 1 and _trees(gram, words, tokens[:at] + [other] + tokens[at + 1:], name)[0]:
             return v.term.term
     return None
 
@@ -136,9 +179,10 @@ def misaspected(vocab, tokens, at):
 def parse(root, line):
     """One line parsed in grammar 4."""
     vocab, gram = load(root)
+    name = _context(root)[2]
     tokens = spec_grammar.tokenise(line)
     words = {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
-    trees, at = _trees(gram, words, tokens)
+    trees, at = _trees(gram, words, tokens, name)
     if trees:
         kept, two = spec_meaning.one(trees, vocab)
         if kept:
@@ -146,7 +190,7 @@ def parse(root, line):
         words = spec_grammar.detokenise(gram.languages[GRAMMAR + "Eng"].linearize(_expr(two[0])).split(" "))
         words = words if words in spec_grammar.normalise(line) else words[:1].lower() + words[1:]
         return Parse(refusal='refused: more than one meaning: "%s" reads %d ways' % (words, two[1]), trees=trees)
-    term = disagreeing(gram, vocab, tokens, at)
+    term = disagreeing(gram, vocab, tokens, at, name)
     if term:
         return Parse(refusal="refused: the verb %s does not agree in number with its subject" % term)
     aspect = (misaspected(vocab, tokens, at) or spec_rgl_time.unitless(vocab, tokens, at)
@@ -174,13 +218,14 @@ def hint(root, line):
     """For a refused line: the longest prefix that parsed, the vocabulary's words nearest the token after it, and the
     terms that may follow the prefix (GF's completion, spec_follow4)."""
     vocab, gram = load(root)
+    name = _context(root)[2]
     tokens = spec_grammar.tokenise(line)
     words = {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
-    _, at = _trees(gram, words, tokens)
+    _, at = _trees(gram, words, tokens, name)
     if at is None:
         return {"prefix": spec_grammar.normalise(line), "near": [], "follow": []}
     follow = spec_follow4.terms(gram.languages[GRAMMAR + "Eng"], vocab, tokens, at,
-                                lambda some: _trees(gram, words, some))
+                                lambda some: _trees(gram, words, some, name))
     if at >= len(tokens):
         return {"prefix": spec_grammar.normalise(line), "near": [], "follow": follow}
     return {"prefix": spec_grammar.detokenise(tokens[:at]) if at else "",

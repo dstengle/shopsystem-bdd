@@ -21,8 +21,9 @@ def compound(head, before):
 
 
 def rows(w, vocab):
-    """The modifier, its, has, holds and compound funs of each relation row; the kinds given a state frame."""
-    states, its, seen = set(), set(), set()
+    """The modifier, its, has, holds and compound funs of each relation row; the kinds given a state frame, in the
+    order of their rows (a set's order changes with the process, and the sources with it)."""
+    states, its, seen = {}, set(), set()
     for n, (k1, word, k2) in enumerate(vocab.rows, 1):
         K1, K2, R = spec_rgl.kid(k1), spec_rgl.kid(k2), "r%d_%s" % (n, spec_rgl.slug(word))
         w.fun(R + "_Mod", "%s_N -> %s_NP -> %s_CN" % (K1, K2, K1),
@@ -32,14 +33,14 @@ def rows(w, vocab):
             continue
         seen.add((k1, word, k2))
         w.cat(K2 + "_St", "VP")
-        states.add(k2)
+        states[k2] = None
         w.fun(R + ("_Has" if word == "of" else "_Holds"), "%s_Arg -> %s_St" % (K1, K2), "mkVP (%s) x" % verb, "x")
         if word == "of":
             w.fun(R + "_Cpd", K1 + "_CN", "mkCN (%s)" % compound(k1, k2))
             if k1 not in its:
                 its.add(k1)
                 w.fun(K1 + "_Its", "%s_N -> %s_NP0" % (K1, K1), "mkNP (SyntaxEng.mkQuant it_Pron) n", "n")
-    return states
+    return list(states)
 
 
 def attributes(w, vocab):
