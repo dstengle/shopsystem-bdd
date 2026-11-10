@@ -54,3 +54,39 @@ def test_outer_names_the_base_kinds_and_the_cli_packs_kinds():
     outer = spec_rgl_vocab.outer(FIXTURES / "codified-2")
     assert {"thing", "agent", "tool", "command", "option", "reason", "output"} <= outer
     assert spec_rgl_vocab.outer(FIXTURES / "glossary") == frozenset()
+
+
+REPO = Path(__file__).resolve().parents[2]
+
+
+def test_the_spec_pack_holds_the_words_for_talking_about_specs():
+    """b240, quote-23: a line about the language names a construct by its code, "a requirement that uses
+    `rc-object`", and a rule finding names its rule, "a term that violates `v_t11`"."""
+    path = spec_packs.PLUGIN / "spec.md"
+    words = {t.term: t for t in spec_packs.terms(path, "grammar/packs/spec.md")}
+    assert set(words) == {"requirement", "construct", "rule", "use", "violate"}
+    assert "Frame: requirement uses construct." in words["use"].text
+    assert "Frame: thing violates rule." in words["violate"].text
+    assert "grammar/constructs.md" in words["construct"].text and "grammar/rules.md" in words["rule"].text
+
+
+def test_this_repository_imports_the_spec_pack_and_marks_its_own_words():
+    assert spec_packs.imports(REPO) == ["cli", "spec"]
+    assert spec_packs.problems(REPO) == []
+
+
+def test_a_line_names_a_construct_by_its_code_in_a_context_importing_the_spec_pack(tmp_path):
+    import spec_grammar4
+    sys.path.insert(0, str(REPO / "tests"))
+    import toolchain
+    toolchain.require()
+    (tmp_path / "spec").mkdir()
+    (tmp_path / "spec" / "index.md").write_text(
+        "---\nid: bounded-context/x\nlanguage: codified-2\nimports: [cli, spec]\n---\n# x\n\n## Glossary\n\n"
+        "- **`model`** (proper noun): the tool of the model. Kind of: tool.\n- **the person** (proper noun): the "
+        "human. Kind of: agent.\n")
+    uses = "When the person runs `model parse` on a requirement that uses `rc-object`, `model` shall exit successfully."
+    violates = ("When the person runs `model check` on a requirement that violates `v_t11`, `model` shall print the "
+                "requirement.")
+    for line in (uses, violates):
+        assert spec_grammar4.parse(tmp_path, line).tree, spec_grammar4.parse(tmp_path, line).refusal

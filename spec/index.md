@@ -2,7 +2,7 @@
 id: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
 title: shopsystem-bdd
 language: codified-2
-imports: [cli]
+imports: [cli, spec]
 ---
 
 # shopsystem-bdd
@@ -15,9 +15,9 @@ stages, initiatives, work-items, proposals and delegations) is retired
 (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired), its capabilities kept as the
 record of their ids, and `.shop/work/` is frozen as history. Every capability file is codified (design model v5): the
 glossary below is typed, `spec/universal.md` holds the universal conditions, and `spec/restated.json` freezes the
-0.29 ids. This index says `codified-2` and imports the CLI pack (CNL 4): a capability that still says `codified-1`
+0.29 ids. This index says `codified-2` and imports the CLI pack (CNL 4) and the spec pack (b240): a capability that still says `codified-1`
 keeps parsing in the old grammar over the glossary and its own terms, and the glossary's words the pack defines too
-are marked `Redefines: cli`. Verify with `python3 scripts/model check`; the decisions index, `spec/decisions/index.md`,
+are marked `Redefines: cli`, and the spec pack's `Redefines: spec`. Verify with `python3 scripts/model check`; the decisions index, `spec/decisions/index.md`,
 is written by `python3 scripts/model decisions`; `python3 scripts/model rules` lists every rule with its label.
 
 ## Purpose
@@ -117,7 +117,7 @@ The simplified workflow:
 
 - **bounded context** (noun): one repository's spec, with its index, capabilities, decisions and glossary. This: the bounded context whose repository the command runs in.
 - **capability** (noun): one file under `spec/capabilities/`, with a group and a narrator. Plural: capabilities. Kind of: file.
-- **requirement** (noun): one codified statement of a capability, named `<capability>#r<n>`, that parses to one tree in the requirement grammar. Not: behaviour requirement, capability requirement, carry, carries, carried, carrying. Kind of: text.
+- **requirement** (noun): one codified statement of a capability, named `<capability>#r<n>`, that parses to one tree in the requirement grammar. Not: behaviour requirement, capability requirement, carry, carries, carried, carrying. Kind of: text. Redefines: spec.
 - **requirement group** (noun): the requirements of a capability that together make one scenario, named `<capability>#g<n>`, with a title.
 - **universal condition** (noun): a statement of `spec/universal.md`, named `U<n>`, true in every state of every trace and never restated in a requirement. Kind of: text.
 - **term** (noun): one entry of this glossary or of a capability's `## Terms`, with a category.
@@ -165,7 +165,7 @@ The simplified workflow:
 - **commit** (verb, action): a session or a tool records changed files, or a text changed in one, as one git commit on the current branch. Forms: commits, committed. Frame: agent commits text.
 - **push** (verb, action): a commit is pushed to a remote. Forms: pushes, pushed. Frame: agent pushes commit.
 - **relocate** (verb, action): a file or directory is moved with git, keeping its history. Forms: relocates, relocated. Frame: `migrate` relocates file.
-- **use** (verb, action): a session or a tool uses another tool, a model, an interpreter or a file. Forms: uses, used. Frame: agent uses thing.
+- **use** (verb, action): a session or a tool uses another tool, a model, an interpreter or a file. Forms: uses, used. Frame: agent uses thing. Redefines: spec.
 - **test** (noun): one test of the repository's suite, a scenario's or a script's, by its pytest id. Kind of: thing.
 - **violation** (noun): a row of a rule `model check` finds, printed under the rule's code and plain label.
 - **remote** (noun): the remote `work run` pushes the initiative branch to: the branch's upstream remote, else `origin`.
@@ -241,7 +241,7 @@ The simplified workflow:
 - **triage** (attribute of review finding): what a review asks of its finding: fixed on the branch before the merge, kept as an observation, or dropped. Values: `fix now`, `observation`, `drop`.
 - **defect** (noun): a file of a batch that records a fault in the behaviour of the repository's code, with its reproduction, found by a review or after a merge. Kind of: file.
 - **failing** (adjective of test): the test fails when it runs.
-- **use** (verb, state): a text holds a word or a thing, as a requirement uses a term. Forms: uses, used. Frame: text uses thing.
+- **use** (verb, state): a text holds a word or a thing, as a requirement uses a term. Forms: uses, used. Frame: text uses thing. Redefines: spec.
 - **list** (verb, state): a text holds each of some things, as a glossary lists a term. Forms: lists, listed. Frame: text lists thing.
 
 ## Relations

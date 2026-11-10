@@ -19,7 +19,7 @@ a requirement to why it exists. It does not edit the spec, the work or the recor
 context: product-level artifacts are read only where the files contain them.
 
 ## Terms
-- **rule** (noun): a relation of `scripts/model.lp`, with its code and its plain label: a violation's or a warning's.
+- **rule** (noun): a relation of `scripts/model.lp`, with its code and its plain label: a violation's or a warning's. Redefines: spec.
 - **decisions index** (noun): the generated file `spec/decisions/index.md`. Plural: decisions indexes. Kind of: file.
 - **interpreter** (noun): a `python3` that `model` runs under or tries.
 - **clingoless** (adjective of interpreter): an interpreter that cannot import clingo, where a `python3` on `PATH` can.
