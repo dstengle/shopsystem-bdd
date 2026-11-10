@@ -9,6 +9,7 @@ block under its group's lines, a universal condition as the next `[U<n>]` of `sp
 import re
 from pathlib import Path
 
+import backlog_universal
 import shop_files
 import spec_lexicon
 import spec_read
@@ -141,11 +142,13 @@ def next_universal(used):
     return "U%d" % (max((int(u[1:]) for u in used if re.fullmatch(r"U\d+", u)), default=0) + 1)
 
 
-def add_universal(root, name, statement):
+def add_universal(root, name, statement, retires=None):
     """`work line --universal`: one universal condition written into the item's `### universal` block, its id the
-    next past `spec/universal.md`'s and the item's own, and committed."""
+    next past `spec/universal.md`'s and the item's own, and committed; with `retires` (`universal#U<n>`), the live
+    condition it replaces under the block's `retired:` (backlog_universal), refused when it is nonexistent."""
     item = find(root, name)
     takes(item)
+    old = backlog_universal.check_retires(root, item, retires) if retires is not None else None
     statement = one_line(statement, "universal condition")
     if statement.startswith("#"):
         raise Refused("work line: %s: the universal condition starts with #, which would read as a heading" %
@@ -153,8 +156,9 @@ def add_universal(root, name, statement):
     blocks = _blocks(item)
     ident = next_universal(universal_ids(root) | {u for u, _ in blocks.universal})
     blocks.universal.append((ident, statement))
+    blocks.universal_retired = tuple(blocks.universal_retired) + ((old,) if old else ())
     item.sections[SECTION] = render(blocks)
-    commit(root, item, "work line: %s universal#%s" % (label(item), ident))
+    commit(root, item, "work line: %s universal#%s%s" % (label(item), ident, " retires %s" % retires if old else ""))
     return item, ident
 
 
