@@ -33,6 +33,9 @@ Where a stage is `open`, while sessions follow the stage, if a session ends the 
 `work` shall not change `spec/index.md`.
 # determiners: a, the, every, a bare plural, the plural
 When the person runs `work start`, `work` shall print the files.
+# an option in the trigger (b134): a code before its noun, "the `--json` option", or the code alone
+When the person runs `work backlog` with the `--json` option, `work` shall print the output.
+When a session runs `work backlog` with `--json`, `work` shall exit successfully.
 # a noun of the wrong kind for its slot, and a state verb in a trigger, are not grammar 4 lines
 When a session writes a stage, `work` shall print the stage.
 = refused: does not parse at stage
