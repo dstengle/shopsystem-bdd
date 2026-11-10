@@ -60,7 +60,8 @@ def ref(r):
 
 def box(b, depth):
     pad = "  " * depth
-    head = pad + b.op + (" [%s]" % ", ".join(ref(r) for r in b.refs) if b.refs else "")
+    op = b.op + (" %s %d" % b.count if b.count else "")
+    head = pad + op + (" [%s]" % ", ".join(ref(r) for r in b.refs) if b.refs else "")
     out = [head]
     for c in b.body:
         out += box(c, depth + 1) if isinstance(c, Box) else [pad + "  " + atom(c)]

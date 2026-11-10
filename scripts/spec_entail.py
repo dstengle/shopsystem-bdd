@@ -4,7 +4,7 @@ of whose Thens other requirements entail, named with the premises of each Then.
 Each response I of a requirement L is a query q(L,I) when some other requirement on L's trigger, untriggered, or (on a
 run) refusing could give it (`index`). Its world holds what L states, each such premise is one clingo rule over it
 (spec_entail_rules), and every query is answered in one stratified model of grammar/entail.lp (parts of CHUNK
-queries, each its own solve). Response I is entailed when it is forced. A codified-2 line reads as its check facts
+queries, each its own solve). A counted response (`count`, I15) is never a query. Response I is entailed when it is forced. A codified-2 line reads as its check facts
 (spec_lf_facts), so the form's meaning is what the check reads; codified-1 lines are read alike.
 
 The bridge, the CLI pack's definition "A tool refuses a command when it exits with an error on it.", is used when the
@@ -52,7 +52,10 @@ def index(P):
         lt, base = P.trig.get(L), P.base[L]
         same = [M for M in by_trig[tuple(lt[:2])] if P.base[M] != base] if lt else []
         ran = lt is not None and lt[0] == "ran"
+        counted = {a[0] for a in f["count"]}
         for j, p, e, d, x in f["resp"]:
+            if j in counted:    # a count's Then is never asked: "a K" given does not give "at least n Ks" (I15)
+                continue
             cand = [M for M in same + untrig + (refusers if ran else []) if (p, e) in gives[M] and P.base[M] != base]
             own = any(j2 != j and (p2, e2) == (p, e) for j2, p2, e2, _, _ in f["resp"]) or (
                 (p, e) == ("neg", "e_change") and ("pos", "change_nothing") in gives[L])
