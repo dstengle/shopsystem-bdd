@@ -16,7 +16,7 @@
 #defined fun/1.   #defined prose/1. #defined dalt/2.  #defined dlit/5. #defined uall/3. #defined urel/4.
 #defined uattr/4. #defined ucond/5. #defined uccond/4. #defined pre/6. #defined prec/5.
 #defined each/2.   #defined only/5. #defined rattr/4.  #defined rrel/4.  #defined akind/2.
-#defined cnl4/1.
+#defined cnl4/1.  #defined nattr/4. #defined nrel/4.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
@@ -237,6 +237,21 @@ relby(A,B,X,Q,Z) :- map(A,B,Y,X), orel(B,Q,Y,Z), orel(A,Q,X,X2), same(A,B,X2,Z).
 pag(A,B,X,Y) :- map(A,B,Y,X), oattr(A,X,T,W), not oattr(B,Y,T,W), not each(B,Y).
 pag(A,B,X,Y) :- map(A,B,Y,X), orel(A,Q,X,X2), not relof(A,B,Y,Q,X2), not each(B,Y).
 relof(A,B,Y,Q,X2) :- map(A,B,Y,X), orel(A,Q,X,X2), orel(B,Q,Y,Z), same(A,B,X2,Z).
+% A negated scope on an object (`nattr`, `nrel`, spec_lf_facts: "whose T is not v", "that does not V a K") narrows
+% it: a unification that makes it a thing known to have the value, or the relation, is out; and it is a restriction
+% the other side's object need not have (a gap), unless that side's object is narrowed by the same negation.
+out(A,B) :- side(A,B,S), nattr(S,X,T,V), at(A,B,S,X,Z), zval(A,B,Z,T,V).
+out(A,B) :- side(A,B,S), nrel(S,Q,X,Y), at(A,B,S,X,Zx), at(A,B,S,Y,Zy), redge(A,B,Q,Zx,Zy).
+out(A,B) :- side(A,B,S), nrel(S,Q,X,kind(K)), at(A,B,S,X,Zx), redge(A,B,Q,Zx,Z), kup(A,B,Z,K).
+nta(A,B,X,T,W) :- pair(A,B), nattr(A,X,T,W).  ntb(A,B,Y,T,W) :- pair(A,B), nattr(B,Y,T,W).
+nra(A,B,X,Q,V) :- pair(A,B), nrel(A,Q,X,V).    nrb(A,B,Y,Q,W) :- pair(A,B), nrel(B,Q,Y,W).
+nsame(A,B,X,Y) :- map(A,B,Y,X), ntb(A,B,Y,T,W), nta(A,B,X,T,W).
+nsame(A,B,X,Y) :- map(A,B,Y,X), nrb(A,B,Y,Q,kind(K)), nra(A,B,X,Q,kind(K)).
+nsame(A,B,X,Y) :- map(A,B,Y,X), nrb(A,B,Y,Q,W), nra(A,B,X,Q,V), same(A,B,V,W).
+negb(A,B,Y) :- ntb(A,B,Y,_,_).  negb(A,B,Y) :- nrb(A,B,Y,_,_).
+nega(A,B,X) :- nta(A,B,X,_,_).  nega(A,B,X) :- nra(A,B,X,_,_).
+gap(A,B,X,Y) :- map(A,B,Y,X), negb(A,B,Y), not nsame(A,B,X,Y), not each(A,X).
+pag(A,B,X,Y) :- map(A,B,Y,X), nega(A,B,X), not nsame(A,B,X,Y), not each(B,Y).
 % each side's responses lifted to the pair first (`ra`, `rb`, `sa`, `sb`, `ua`, `ub`, `xa`, `xb`), so a clash is joined on the pair and the
 % event at once, never on an event (print, exit_error) that thousands of lines share
 ra(A,B,P,E,D,X) :- pair(A,B), resp(A,_,P,E,D,X).  rb(A,B,P,E,D,Y) :- pair(A,B), resp(B,_,P,E,D,Y).

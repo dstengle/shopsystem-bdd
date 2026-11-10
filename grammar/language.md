@@ -96,6 +96,11 @@ refused: "the stage" has no antecedent: no earlier noun phrase, functional relat
 
 "no K" (and "nothing") is a `not` box over its referent and the rest of its own clause, and over nothing outside it.
 
+`model logic` keeps each `not` box's scope narrow (I12b). In a response, one over an object's restrictions ("a stage
+whose status is not `done`", "every session that does not follow a stage") narrows that object, whatever the line's
+polarity: the line bears on no `done` stage, and on no session that follows a stage, so it never clashes with a line
+about one. One over an act is the act forbidden ("shall not").
+
 Tested on migration-tools r8 ("... `migrate` shall exit with an error naming the untracked file and change
 nothing": the error is said, and no thing is changed).
 
