@@ -4,7 +4,7 @@ summary: "`measure batch <batch>` measures one batch from git and its sessions' 
 date: 2026-11-05
 status: accepted
 tier: requirement
-enforced_by: [telemetry#r1, telemetry#r2, telemetry#r3, telemetry#r4]
+enforced_by: [telemetry#r5, telemetry#r6, telemetry#r7, telemetry#r8]
 supersedes: [design-decision/measure-an-initiative]
 source: [record/missingmass.io/shopsystem/shopsystem-bdd/2026-11-04-workflow-simplification-design]
 by: "workflow simplification plan 7, decided by the planner; revisit"

@@ -28,8 +28,8 @@ When the person runs `work run`, `work run` shall take every open initiative, an
 While a work-item is `green` or a work-item is `withdrawn`, `work run` shall not discard a stage for the work-item.
 = While (CondOr (t_status_Is (k_work_item_An k_work_item) v_green) (CondOne (t_status_Is (k_work_item_An k_work_item) v_withdrawn))) (OneResp (ShallNot (ActorSubj a_work_run) (OneVPor (Do e_discard (k_stage_toNP (k_stage_An (rel_stage_for_work_item k_stage (k_work_item_The k_work_item))))))))
 # QuotedFor: a figure given for one thing (batch-measurement r8, r12-r14)
-When the person runs `measure initiative i7-cart`, `measure` shall not include "turns" for the logged stage.
-= When (Runs (ActorSubj a_the_person) (CmdCode (CodeLit "`measure initiative i7-cart`"))) (OneResp (ShallNot (ActorSubj a_measure) (OneVPor (Do e_include (QuotedFor (QuotedLit "\"turns\"") (k_logged_stage_toNP (k_logged_stage_The k_logged_stage)))))))
+When the person runs `measure initiative i7-cart`, `measure` shall not print "turns" for the logged stage.
+= When (Runs (ActorSubj a_the_person) (CmdCode (CodeLit "`measure initiative i7-cart`"))) (OneResp (ShallNot (ActorSubj a_measure) (OneVPor (Print (OneNP (QuotedFor (QuotedLit "\"turns\"") (k_logged_stage_toNP (k_logged_stage_The k_logged_stage))))))))
 # a relation as a clause (Atom), and a typed modifier for a subkind and for the supertype (check point 12)
 While a stage is for a work-item, when the person merges a pull request, `work run` shall discard the stage.
 = WhileWhen (CondOne (rel_stage_for_work_item_Atom (k_stage_An k_stage) (k_work_item_An k_work_item))) (Happens (ActorSubj a_the_person) e_merge (k_pull_request_toNP (k_pull_request_An k_pull_request))) (OneResp (Shall (ActorSubj a_work_run) (OneVP (Do e_discard (k_stage_toNP (k_stage_The k_stage))))))

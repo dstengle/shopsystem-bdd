@@ -73,7 +73,7 @@ def test_0060_is_superseded_by_measure_a_batch():
     assert old.status == "superseded" and not old.tier
     new = by["spec/decisions/0078-measure-a-batch.md"]
     assert new.status == "accepted" and new.tier == "requirement"
-    assert list(new.requirements) == ["telemetry#r1", "telemetry#r2", "telemetry#r3", "telemetry#r4"]
+    assert list(new.requirements) == ["telemetry#r5", "telemetry#r6", "telemetry#r7", "telemetry#r8"]
     head = (ROOT / "spec/capabilities/telemetry.md").read_text().split("\n---", 1)[0]
     assert "design-decision/missingmass.io/shopsystem/shopsystem-bdd/measure-a-batch" in head
 

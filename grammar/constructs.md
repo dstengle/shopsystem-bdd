@@ -298,7 +298,7 @@ a condition of history: an act that has happened
 
 - Form: <subject> has <past participle> ...
 - Functions: `k_\w+_Done`
-- Cited by: batches#r8, batches#r12, batches#r18, batches#r19, pr-review#r2
+- Cited by: batches#r8, batches#r12, batches#r18, batches#r19, migration-tools#r49, migration-tools#r54, pr-review#r2
 - Example and its reading:
 
 ```construct

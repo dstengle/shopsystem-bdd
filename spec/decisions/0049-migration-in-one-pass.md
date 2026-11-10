@@ -4,7 +4,7 @@ summary: "A consuming repository moves from the old system to the final layout i
 date: 2026-10-19
 status: accepted
 tier: requirement
-enforced_by: [migration-tools#r1]
+enforced_by: [migration-tools#r27]
 supersedes: [model-reads-a-ledger]
 source: [observation/2026-10-19-final-state-only, review-finding/2026-10-13-kb-and-bdd-assessment]
 by: "the person, 2026-10-19"
