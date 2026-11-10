@@ -67,3 +67,18 @@ def work_record(step):
     body.write_text("What was found.\n")
     step.context["result"] = step.run("work", "record", "What was found", "--kind", "analysis", "--summary",
                                       "what was found, in one row", "--body", str(body), *step.context.get("record_about", []))
+
+
+@handler("GivenK", "rule catalogue")
+def given_catalogue(step):
+    """The rule catalogue `model rules --write` writes in the repository, current until a condition makes it stale."""
+    H.base(step.repo, step.context)
+    step.run("model", "rules", "--write")
+    H.says(step, step.names[0], "grammar/rules.md")
+
+
+@handler("GivenK_C", "rule catalogue")
+def stale_catalogue(step):
+    """stale: an entry of the catalogue edited by hand, so that it is not what `model rules --write` writes."""
+    path = step.repo / "grammar" / "rules.md"
+    path.write_text(path.read_text().replace("a requirement has no id", "a requirement has an id", 1))
