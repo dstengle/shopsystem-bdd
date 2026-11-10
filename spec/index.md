@@ -203,7 +203,7 @@ The simplified workflow:
 - **end** (verb, action): a session or a tool stops a thing it runs, such as a stage or a trial, with a result or without one. Frame: agent ends thing.
 - **ask** (verb, action): a session or a tool raises a question that waits for an answer. Frame: agent asks question.
 - **discard** (verb, action): `work run` drops a stage that ended without a readable result. Frame: `work run` discards stage.
-- **merge** (verb, action): `work run` merges a work-item branch into the initiative branch. Forms: merges, merged. Frame: the person merges pull request.
+- **merge** (verb, action): the person merges a pull request into its base branch on GitHub. Forms: merges, merged. Frame: the person merges pull request.
 - **raise** (verb, action): an initiative raises a request into an upstream. Forms: raises, raised. Frame: initiative raises request.
 - **refuse** (verb, action): a tool declines a command. Frame: tool refuses command. Redefines: cli.
 - **write** (verb, action): a session or a tool writes a file or a field. Forms: writes, written. Frame: agent writes text.
@@ -231,11 +231,10 @@ The simplified workflow:
 - **status** (attribute of task): Values: `pending`, `running`, `done`, `failed`.
 - **tier** (attribute of design-decision): Values: `check`, `requirement`, `judgement`.
 - **dependency** (noun): one item's need of another item, written in the item that needs it. Plural: dependencies. Kind of: text.
-- **blocked** (adjective of item): an item with a dependency on an item that is not `delivered` and is not in the same batch.
 - **well-formed** (adjective of item): an item whose every requirement parses, has no L0 or L1 finding of `model logic` with the item's lines laid over `spec/`, and has its scenarios written by `features generate`, and whose capabilities' `check` design-decisions pass their tests.
 - **passing** (adjective of item): An item is passing when the item is well-formed and every request line of the item is settled.
 - **clean** (adjective of pull request): A pull request is clean when no review finding on the pull request is `fix now`.
-- **pick** (verb, action): `work batch start` takes a ready item into a batch, or returns it to `shaped` when it is no longer passing. Forms: picks, picked. Frame: `work` picks item.
+- **pick** (verb, action): `work batch start` takes a ready item into the batch it writes. Forms: picks, picked. Frame: `work` picks item.
 - **park** (verb, action): a batch sets an item it cannot finish without an answer to `needs-input`. Forms: parks, parked. Frame: batch parks item.
 - **publish** (verb, action): `work` puts a thing on GitHub: a batch's branch as a pull request, with its commits. Forms: publishes, published. Frame: `work` publishes thing.
 - **triage** (attribute of review finding): what a review asks of its finding: fixed on the branch before the merge, kept as an observation, or dropped. Values: `fix now`, `observation`, `drop`.
