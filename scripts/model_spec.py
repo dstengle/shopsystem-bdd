@@ -225,6 +225,8 @@ class SpecReading:
             self.fact("uncodified", "spec/universal.md")
             return
         self.problems += [f"spec/universal.md: {p}" for p in doc.problems]
+        self.history.update(f"universal-condition/{self.path}/u{str(r)[1:]}"     # a retired U<n> is history
+                            for r in doc.frontmatter.get("retired") or [])
         for u in doc.conditions:
             uid = f"universal-condition/{self.path}/u{u.id[1:]}"
             self.node(uid, "universal-condition")

@@ -4,13 +4,16 @@ statement parses to exactly one tree in the live `Req` grammar, `model logic` fi
 restates` finds every 0.29 id restated, dropped or moved, and none of them has a feature file. Of the 11 converted,
 only `trials` is left; the others are retired in 2.0.0 (test_spec_retired)."""
 import pathlib
+import re
 import sys
 
 import model_restates
 import pytest
 import spec_grammar
+import spec_grammar4
 import spec_language
 import spec_lexicon
+import spec_lf
 import spec_read
 import spec_solve
 import spec_tree
@@ -120,11 +123,13 @@ def test_the_id_map_gives_every_id_the_capability_has(cap):
         assert {new for _, new in rows} == have
 
 
-@pytest.mark.usefixtures("grammar")
-@pytest.mark.parametrize("u, conjuncts", [("U11", ["ExitErr", "ChangeNothing"]), ("U4", ["Do", "Do"])])
-def test_u11_and_u4_are_one_statement_of_joined_verb_phrases(u, conjuncts):
-    """U11 (U3 reworded for verb frames) and U4 by VP coordination (design-r2 §5.6): one `shall`, its verb phrases joined by `and`."""
+@pytest.mark.parametrize("u, acts", [("U12", ["exit", "change"]), ("U13", ["commit", "push"])])
+def test_u12_and_u13_are_one_statement_of_joined_verb_phrases(u, acts):
+    """U12 (U11 reworded in grammar 4) and U13 (U4) by VP coordination: one `shall`, its acts joined by `and`, each
+    done by the one subject."""
+    toolchain.require()
     text = {c.id: c.text for c in spec_read.universal(REPO)}[u]
-    resp = spec_tree.parts(spec_grammar.parse(REPO, text).tree)["resp"]
-    assert [vp[0] for _, _, vp in resp] == conjuncts
-    assert len({str(subject) for _, subject, _ in resp}) == 1
+    tree = spec_language.parse(REPO, text, universal=True).tree
+    shown = spec_lf.show(spec_lf.form(spec_grammar4.load(REPO)[0], tree))
+    found = re.findall(r"(\w+)\(e\d+, subject: (x\d+)", shown.split("response", 1)[1])
+    assert [act for act, _ in found] == acts and len({subject for _, subject in found}) == 1
