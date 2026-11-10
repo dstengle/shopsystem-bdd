@@ -4,9 +4,11 @@ spec_grammar4 caches grammar 4, a step tree written out (`text`) and a step's te
 (`trees`).
 
 Per kind K: its instance `K_Inst : K_N -> Name -> K_NP0` ("the stage s1") and a Given that brings one in, `K_Given :
-K_N -> Name -> Step` ("a stage s1"). Per subject kind S of an action frame: `S_Does : Pol -> S_Arg -> S_V -> Step`, an
+K_N -> Name -> Step` ("a stage s1"), and its example data, `K_HoldsBlock : K_N -> Name -> Step` ("the file `a` holds:",
+its docstring or table under the step) and `K_HoldsText : K_N -> Name -> Quoted -> Step` ("the file `a` holds
+"3.0.0""). Per subject kind S of an action frame: `S_Does : Pol -> S_Arg -> S_V -> Step`, an
 act in the present with its polarity ("`work` does not write a file"). A state, an attribute's value and a trigger are
-Base's `Cond` and `Trig`, a step through `SCond` and `STrig`. A step's literal is an instance name (`s1`) or a code.
+Base's `Cond` and `Trig`, a step through `SCond` and `STrig`. A step's literal is an instance name (`s1`), a code or a quoted string.
 """
 import hashlib
 import re
@@ -19,7 +21,7 @@ import tools_grammar
 
 GRAMMAR = "ContextSteps"
 BASE = ("Steps4.gf", "Steps4Eng.gf")
-NAME = re.compile(r"^(?:[a-z][a-z-]*[1-9]\d*|`[^`]+`)$")
+NAME = re.compile(r'^(?:[a-z][a-z-]*[1-9]\d*|`[^`]+`|"[^"]*")$')
 _loaded = {}
 
 
@@ -34,6 +36,8 @@ def modules(vocab):
         K = spec_rgl.kid(k)
         w.fun(K + "_Inst", "%s_N -> Name -> %s_NP0" % (K, K), "inst n x.s", "n x")
         w.fun(K + "_Given", "%s_N -> Name -> Step" % K, "intro n x.s", "n x")
+        w.fun(K + "_HoldsBlock", "%s_N -> Name -> Step" % K, 'holds n x.s ":"', "n x")
+        w.fun(K + "_HoldsText", "%s_N -> Name -> Quoted -> Step" % K, "holds n x.s q.s", "n x q")
     subjects = dict.fromkeys(subject for v in vocab.verbs if v.aspect == "action" for subject, _ in v.frames)
     for subject in subjects:
         S = spec_rgl.kid(subject)
@@ -65,9 +69,10 @@ def load(root):
 
 
 def text(gram, tree):
-    """A step tree (nested tuples) written out, as it reads after its keyword."""
-    out = gram.languages[GRAMMAR + "Eng"].linearize(spec_grammar._expr(tree))
-    return " ".join(out.split()).replace(spec_rgl.TOKEN, " ")
+    """A step tree (nested tuples) written out, as it reads after its keyword; the colon that ends a Given of a block
+    against the word before it."""
+    out = " ".join(gram.languages[GRAMMAR + "Eng"].linearize(spec_grammar._expr(tree)).split())
+    return (out[:-2] + ":" if out.endswith(" :") else out).replace(spec_rgl.TOKEN, " ")
 
 
 def _literal(words, line):

@@ -2,7 +2,8 @@
 reading under its keyword and the Call features_vocab gives a step of grammar 3, keyed by the same templates, so a
 handler finds a codified-2 step as it finds a codified-1 one.
 
-The templates: a Given that brings in an instance `GivenK`; a value `GivenK_A`, `ThenK_A`; a state `GivenDoes`,
+The templates: a Given that brings in an instance `GivenK`; example data `GivenCodeText` (a block under the step)
+and `GivenCode` (one value, in `quoted`); a value `GivenK_A`, `ThenK_A`; a state `GivenDoes`,
 `GivenDoesNot`, `ThenDoes`, `ThenDoesNot`; a run `WhenRuns`, any other trigger `WhenHappens`; an act `ThenPrints`,
 `ThenPrintsNot`, `ThenExitsOk`, `ThenExitsErr`, `ThenChangesNothing`, else `ThenDoes`, `ThenDoesNot`. A step of
 more than one reading under its keyword (the same text read with a code of two kinds is one) is refused.
@@ -11,7 +12,7 @@ import spec_lf_np
 import spec_rgl_steps
 from features_vocab import Call, StepError
 
-ALLOWED = {"given": ("SCond", "_Given"), "when": ("STrig",), "then": ("SCond", "_Does")}
+ALLOWED = {"given": ("SCond", "_Given", "_HoldsBlock", "_HoldsText"), "when": ("STrig",), "then": ("SCond", "_Does")}
 
 
 def _fun(tree):
@@ -30,6 +31,9 @@ def template(names, keyword, tree):
     if fun.endswith("_Given"):
         kind = names.kind(fun)[0]
         return "GivenK", kind, None, kind
+    if fun.endswith(("_HoldsBlock", "_HoldsText")):
+        kind = names.kind(fun)[0]
+        return ("GivenCodeText" if fun.endswith("_HoldsBlock") else "GivenCode"), kind, None, kind
     if fun == "STrig":
         event = args[0]
         verb = _verb(names, event[2])
@@ -70,8 +74,8 @@ def step(root, keyword, text):
     call = Call(keyword, name, text, tree)
     call.kind, call.attribute = kind, attribute
     for node in nodes(tree):
-        if node[0] == "NameLit":
-            call.names.append(node[1])
+        if node[0] in ("NameLit", "QuotedLit"):
+            (call.names if node[0] == "NameLit" else call.quoted).append(node[1])
         elif node[0] == "CodeLit" and name == "WhenRuns" and call.command is None:
             call.command = node[1]
         elif names.attr(node[0])[0] is not None and "_v_" in node[0]:

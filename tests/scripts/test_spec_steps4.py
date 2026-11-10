@@ -108,3 +108,16 @@ def test_every_step_reads_back_into_its_tree_and_template(world):
 def test_a_step_of_no_reading_is_refused(world):
     with pytest.raises(features_vocab4.StepError):
         features_vocab4.step(world, "then", "`work` sings the stage s1")
+
+
+def test_a_given_of_example_data_reads_back_as_grammar_3s(world):
+    """b218: "the K `n` holds:" (its block under the step) is GivenCodeText, "the K `n` holds" and one value GivenCode,
+    as a codified-1 step of example data reads, its kind the term."""
+    gram = spec_rgl_steps.load(world)[1]
+    for text, template, quoted in (("the file `a.txt` holds:", "GivenCodeText", []),
+                                   ('the file `a.txt` holds "3.0.0"', "GivenCode", ['"3.0.0"']),
+                                   ("the file `a.txt` holds `3.0.0`", "GivenCode", ["`3.0.0`"])):
+        call = features_vocab4.step(world, "given", text)
+        assert spec_rgl_steps.text(gram, call.tree) == text
+        assert (call.template, call.kind, call.term, call.names, call.quoted) == (template, "file", "file",
+                                                                                  ["`a.txt`"], quoted)
