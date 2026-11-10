@@ -31,13 +31,13 @@ OLD = re.compile(r"^(?:(?P<cap>[a-z0-9]+(?:-[a-z0-9]+)*)#)?r(?P<n>[1-9]\d*)@0\.2
 DROPPED = re.compile(r"^- (?:(?P<cap>[a-z0-9]+(?:-[a-z0-9]+)*)#)?r(?P<n>[1-9]\d*)@0\.29: (?P<why>\S.*)$")
 
 
-def codified(path):
-    """True when the file's own frontmatter has `language: codified-1` (design §13.4)."""
+def codified(path, markers=(MARKER,)):
+    """True when the file's own frontmatter has `language: codified-1` (design §13.4), or another of `markers`."""
     path = Path(path)
     if not path.is_file():
         return False
     data, _ = frontmatter(path.read_text())
-    return str(data.get("language", "")).strip() == MARKER
+    return str(data.get("language", "")).strip() in markers
 
 
 def numbered(text, title):
@@ -153,14 +153,15 @@ def dropped(name, lines):
     return out, problems
 
 
-def capability(path):
-    """The groups, dropped ids and retired ids of a codified capability file, and its problems."""
+def capability(path, markers=(MARKER,)):
+    """The groups, dropped ids and retired ids of a codified capability file, and its problems; a file whose marker
+    is none of `markers` is read as not codified (`model parse` passes codified-2 too, CNL 4's I7a)."""
     path = Path(path)
     text = path.read_text()
     data, _ = frontmatter(text)
     retired = [str(r) for r in data.get("retired") or []] if isinstance(data.get("retired") or [], list) else []
     name = path.stem
-    if str(data.get("language", "")).strip() != MARKER:
+    if str(data.get("language", "")).strip() not in markers:
         return Capability(path, name, data, [], [], retired, [f"{path.name} is not codified (no language: {MARKER})"])
     reader = Reader(name, retired)
     reader.read(numbered(text, "Behaviour"))

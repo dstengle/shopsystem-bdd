@@ -22,6 +22,7 @@ def _sibling(name, module):
 # The handlers module is loaded by vocab under another name: its helpers are read from this copy, whose handler
 # registrations repeat the same file and line, so no key is claimed twice.
 H = _sibling("design_model_check_handlers.py", "shop_design_model_check_handlers")
+C2 = _sibling("codified2_world.py", "shop_codified2_world")
 ROOT = Path(__file__).resolve().parents[2]
 BROKEN = ROOT / "tests" / "scripts" / "fixtures" / "generate" / "broken" / "spec"
 
@@ -85,6 +86,8 @@ def requirement(step):
             "bounded-context/example.org/fixture", "bounded-context/" + H.PATH))
     elif word == "withholding":
         withholding(step)
+    elif word in C2.LINES:      # a line of grammar 4, in the smallest codified-2 world
+        C2.requirement(step, word, H.PATH)
     elif word in FRAMED:
         H.write(repo, "spec/capabilities/thing.md", H.cap("thing", ["- [r1] " + FRAMED[word][0]]))
         H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))
@@ -157,6 +160,9 @@ def misfiled(step):
 @handler("GivenK_C", "term")
 def term(step):
     name, word, path = step.names[0], condition(step), step.repo / "spec" / "index.md"
+    packs = _sibling("design_model_check_handlers_packs.py", "shop_design_model_check_handlers_packs")
+    if word in packs.TERM:      # a word a pack the context imports defines too
+        return packs.term(step, word)
     text = path.read_text()
     if word == "duplicated":
         path.write_text(text + "- **%s** (noun): a thing again.\n" % name)

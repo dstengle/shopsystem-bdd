@@ -166,6 +166,8 @@ contract:
     token and its position, or the guard), the longest prefix that parsed and
     the lexicon words nearest the refused token, and exits 1. A file's lines
     are numbered `<n>: `. It exits 2 when the grammar cannot be built.
+    Where spec/index.md says `language: codified-2`, the line is parsed in
+    grammar 4 (spec_grammar4) instead, and only as a requirement.
   - lexicon lists the terms by category; lexicon --check prints v_t4-v_t10
     (`<code>  <term>  <message>`) and exits 1 when there is any: v_t7 a
     gloss of more than one sentence, v_t8 a relation entry (a relation is a

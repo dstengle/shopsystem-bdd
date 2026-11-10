@@ -54,12 +54,13 @@ def _statements(path):
     """A codified file's statements with their line numbers (spec_read); any other file's non-blank lines that are not
     `#` comments (a corpus file's)."""
     import spec_read
-    if not spec_read.codified(path):
+    markers = (spec_read.MARKER, "codified-2")
+    if not spec_read.codified(path, markers):
         return [(n, line) for n, line in enumerate(path.read_text().splitlines(), 1)
                 if line.strip() and not line.startswith("#")]
     if path.name == "universal.md":
         return [(u.line_no, u.text) for u in spec_read.read_universal(path.parent.parent).conditions]
-    return [(r.line_no, r.text) for g in spec_read.capability(path).groups for r in g.requirements]
+    return [(r.line_no, r.text) for g in spec_read.capability(path, markers).groups for r in g.requirements]
 
 
 def cmd_parse(args):
@@ -70,6 +71,9 @@ def cmd_parse(args):
         lines = _statements(Path(args.file))
     else:
         lines = [(None, args.line)]
+    import spec_grammar4
+    if spec_grammar4.marked(args.root):
+        return _parse4(args, lines)
     refused = 0
     for n, line in lines:
         head = f"{n}: " if n is not None else ""
@@ -92,25 +96,59 @@ def cmd_parse(args):
     return 1 if refused else 0
 
 
+def _parse4(args, lines):
+    """`model parse` in grammar 4, the context's `spec/index.md` saying `language: codified-2` (CNL 4's I7a)."""
+    import spec_grammar
+    import spec_grammar4
+    if args.grammar != "Req":
+        print(f"grammar 4 has no {args.grammar} grammar: a codified-2 context's lines are parsed as requirements")
+        return 2
+    refused = 0
+    for n, line in lines:
+        head = f"{n}: " if n is not None else ""
+        try:
+            p = spec_grammar4.parse(args.root, line)
+        except (ImportError, spec_grammar.GrammarError) as err:
+            print(f"grammar 4 could not be built: {err}")
+            return 2
+        if p.tree is not None:
+            print(head + p.tree)
+            continue
+        refused += 1
+        print(head + p.refusal)
+        for tree in p.trees:
+            print("  tree: " + tree)
+        if not p.trees:
+            h = spec_grammar4.hint(args.root, line)
+            print(f"  parsed up to: {h['prefix']}")
+            print(f"  nearest words: {', '.join(h['near']) or '(none)'}")
+    return 1 if refused else 0
+
+
 def cmd_lexicon(args):
-    """The terms by category; with --check, v_t4-v_t6 as a report, exit 1 when there is any."""
+    """The terms by category, an imported pack's marked with its layer and a redefining entry with the pack it
+    redefines; with --check, the lexicon's problems and the packs' (v_t16, v_t17) as a report, exit 1 when there is any."""
     import spec_lexicon
+    import spec_packs
     lexicon = spec_lexicon.read(args.root)
     if args.check:
-        found = spec_lexicon.problems(lexicon)
+        found = sorted(spec_lexicon.problems(lexicon) + spec_packs.problems(args.root, lexicon))
         for code, term, message in found:
             print(f"{code}  {term}  {message}")
         print(f"{len(lexicon.terms)} terms, {len(found)} problems")
         return 1 if found else 0
+    layered = spec_packs.layers(args.root, lexicon)     # an imported pack's terms first, each shown with its layer
     for cat in spec_lexicon.CATEGORIES + ("",):
-        terms = [t for t in lexicon.terms if t.category == cat or (not cat and t.category not in spec_lexicon.CATEGORIES)]
+        terms = [(layer, t) for layer, t in layered
+                 if t.category == cat or (not cat and t.category not in spec_lexicon.CATEGORIES)]
         if terms:
             print(f"{cat or 'no category'} ({len(terms)})")
-        for t in terms:
+        for layer, t in terms:
             more = {"attribute": f" (of {', '.join(t.kinds)}): {', '.join(t.values)}",
                     "condition": f" (of {', '.join(t.kinds)})", "relation": f" ({' → '.join(t.kinds)})",
                     "resource": f" ({t.resource})" if t.resource else ""}.get(t.category, "")
-            print(f"  {t.term}{more}")
+            marks = ([layer] if layer.startswith("pack ") else []) + [f"redefines {p}" for p in spec_packs.redefines(t)]
+            print(f"  {t.term}{more}" + (f"  [{'; '.join(marks)}]" if marks else ""))
     return 0
 
 

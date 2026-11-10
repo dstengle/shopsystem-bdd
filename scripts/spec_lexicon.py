@@ -27,7 +27,7 @@ LETTER = {"actor": "a", "kind": "k", "attribute": "t", "value": "v", "relation":
 CORE_VERBS = {"run", "print", "hold", "exit", "become", "set", "be"}
 
 ENTRY = re.compile(r"^- \*\*(?P<term>.+?)\*\*\s*(?:\((?P<cat>[^)]*)\))?\s*:\s*(?P<text>.*)$", re.DOTALL)
-FIELDS = ("Values", "Transitions", "Means", "Forms", "Frame", "Plural", "Not", "Kind of", "This")
+FIELDS = ("Values", "Transitions", "Means", "Forms", "Frame", "Plural", "Not", "Kind of", "This", "Redefines")
 ASPECTS = ("state", "action")
 FIELD = re.compile(r"(?:^|\s)(?:%s):" % "|".join(FIELDS))
 

@@ -67,7 +67,7 @@ def base(repo, context):
     index = repo / "spec" / "index.md"
     if not index.is_file():
         write(repo, "spec/index.md", INDEX)
-    elif "language: codified-1" not in index.read_text():       # world_nodes' index: codified, the fixture terms added
+    elif "language: codified-" not in index.read_text():       # world_nodes' index: codified, the fixture terms added
         text = index.read_text().replace("\n---\n", "\nlanguage: codified-1\n---\n", 1)
         index.write_text(text.replace("## Glossary\n\n", "## Glossary\n\n" + TERMS, 1))
     if not (repo / "spec" / "capabilities" / "thing.md").is_file():

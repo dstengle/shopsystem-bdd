@@ -100,6 +100,23 @@ context: product-level artifacts are read only where the files contain them.
 - **polysemous** (adjective of term): a verb with two entries whose frames take kinds that do not overlap.
 - **overlapping** (adjective of term): a verb with two entries whose frames take, in every slot, the same kind or one kind under the other.
 
+- **pack** (noun): a file of terms a bounded context imports: `grammar/packs/<name>.md` of the plugin, or `spec/packs/<name>.md` of the bounded context. Kind of: file.
+- **importing** (adjective of bounded context): a bounded context whose `spec/index.md` imports a pack.
+- **misimporting** (adjective of bounded context): a bounded context whose `spec/index.md` imports a pack that neither the plugin nor the bounded context has.
+- **unmarked** (adjective of term): a term that a pack its bounded context imports defines too, whose entry has no `Redefines:`.
+- **redefining** (adjective of term): a term whose entry has `Redefines:` naming a pack that defines it.
+
+- **plural** (adjective of requirement): a requirement whose subject is plural and whose verb agrees with it, as in "When sessions write a file".
+- **disagreeing** (adjective of requirement): a requirement whose verb does not agree in number with its subject, as in "When sessions writes a file".
+
+- **misaspected** (adjective of requirement): a requirement with an action verb in its While clause or a state verb in its trigger.
+- **optioned** (adjective of requirement): a requirement whose trigger runs a command with an option, as in "runs `work backlog` with the `--json` option".
+
+- **genitive** (adjective of requirement): a requirement with "of" or "its" over a relation row or an attribute, as in "the branch of the task".
+- **denying** (adjective of requirement): a requirement with "no" before a noun as a subject or an object, as in "a verb has no frame".
+- **compound** (adjective of requirement): a requirement with a compound noun that an attribute or a relation row derives, as in "the batch status".
+- **restrictive** (adjective of requirement): a requirement with "only" before an object, as in "a worker shall change only files in its worktree".
+
 ## Behaviour
 
 ### [g1] `model check` exits successfully on a sound context
@@ -291,6 +308,42 @@ Restates: r65@0.29.
 
 ### [g79] `model check` refuses two senses that overlap
 - [r79] If the person runs `model check` on a term that is overlapping, then `model` shall exit with an error naming the term.
+
+### [g80] `model lexicon` shows the terms of the imported packs
+- [r80] When the person runs `model lexicon` on a bounded context that is importing, `model` shall print every term and exit successfully.
+
+### [g81] `model check` refuses an import of no pack
+- [r81] If the person runs `model check` on a bounded context that is misimporting, then `model` shall exit with an error naming the pack.
+
+### [g82] `model check` refuses a pack's term redefined without Redefines:
+- [r82] If the person runs `model check` on a term that is unmarked, then `model` shall exit with an error naming the term.
+
+### [g83] `model check` passes a term marked Redefines:
+- [r83] When the person runs `model check` on a term that is redefining, `model` shall exit successfully.
+
+### [g84] `model parse` passes a plural subject whose verb agrees
+- [r84] When the person runs `model parse` on a requirement that is plural, `model` shall exit successfully.
+
+### [g85] `model parse` refuses a verb that does not agree with its subject
+- [r85] If the person runs `model parse` on a requirement that is disagreeing, then `model` shall exit with an error naming the term.
+
+### [g86] `model parse` refuses a verb of the wrong aspect for its clause
+- [r86] If the person runs `model parse` on a requirement that is misaspected, then `model` shall exit with an error naming the term.
+
+### [g87] `model parse` passes a trigger that runs a command with an option
+- [r87] When the person runs `model parse` on a requirement that is optioned, `model` shall exit successfully.
+
+### [g88] `model parse` passes of and its over a relation row or an attribute
+- [r88] When the person runs `model parse` on a requirement that is genitive, `model` shall exit successfully.
+
+### [g89] `model parse` passes no before a subject or an object
+- [r89] When the person runs `model parse` on a requirement that is denying, `model` shall exit successfully.
+
+### [g90] `model parse` passes a derived compound noun
+- [r90] When the person runs `model parse` on a requirement that is compound, `model` shall exit successfully.
+
+### [g91] `model parse` passes only before an object
+- [r91] When the person runs `model parse` on a requirement that is restrictive, `model` shall exit successfully.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a
