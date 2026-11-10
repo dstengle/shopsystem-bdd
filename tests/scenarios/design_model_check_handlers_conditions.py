@@ -58,6 +58,11 @@ def capability(step):
         H.write(repo, "features/%s.feature" % name, H.feature(name, "@r1", "@r2", "@r3", "@r4"))
         H.says(step, "r1", "%s#r1" % name)
         return
+    if word in C2.CAPABILITIES:     # lines of grammar 4 that `model logic` reads through their logical form (I12a)
+        C2.context(repo, H.PATH, C2.CAPABILITIES[word], name, C2.UNIVERSAL.get(word, ()))
+        for k in range(1, len(C2.UNIVERSAL.get(word, ())) + 1):
+            H.says(step, "u%d" % k, "U%d" % k)
+        return
     lines = {"unnumbered": ["- **When** asked, `%s` shall answer." % name],
              "renumbered": ["- [r1] **When** asked, `%s` shall answer." % name] * 2,
              "reusing": ["- [r1] **When** asked, `%s` shall answer." % name],
@@ -86,6 +91,13 @@ def requirement(step):
             "bounded-context/example.org/fixture", "bounded-context/" + H.PATH))
     elif word == "withholding":
         withholding(step)
+    elif word in C2.REQUIREMENTS:     # lines of grammar 4 that `model logic` checks for r1 (I13a)
+        lines, universal = C2.REQUIREMENTS[word]
+        C2.context(repo, H.PATH, lines, universal=universal)
+        step.context.setdefault("ids", {})[step.names[0]] = "thing#r1"
+    elif word == "exemplified":     # "banana" names no actor, command, option, value, rule or named instance
+        H.write(repo, "spec/capabilities/thing.md", H.cap("thing", ["- [r1] " + EXEMPLIFIED]))
+        H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))
     elif word in C2.LINES:      # a line of grammar 4, in the smallest codified-2 world
         C2.requirement(step, word, H.PATH)
     elif word in FRAMED:
@@ -104,6 +116,10 @@ def requirement(step):
                              "|---|---|---|---|\n| stage | for | work-item |  |\n")
     else:       # a condition no branch writes would leave the base world's requirement, which passes unchecked
         raise AssertionError("no requirement condition %r" % word)
+
+
+EXEMPLIFIED = ("When the person runs `work start` on an initiative that is `proposed`, `work` shall print "
+               '"banana".')
 
 
 # A requirement of the fixture glossary for each frame condition of grammar 3 (objectless, recipientless, mistyped and

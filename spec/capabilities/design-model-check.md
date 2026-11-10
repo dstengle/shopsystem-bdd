@@ -130,6 +130,16 @@ context: product-level artifacts are read only where the files contain them.
 
 - **unfinished** (adjective of requirement): a requirement that stops where its frame needs another word.
 
+- **exemplified** (adjective of requirement): a requirement holding a code or a quoted string that names no actor, command, option, value, rule or named instance.
+
+- **restricting** (adjective of capability): a capability with a line that obliges an agent to change only things of one kind, and a line in which that agent changes a thing of that kind.
+- **exhaustive** (adjective of capability): a capability with a line that obliges a tool to print every thing of a kind and a line that forbids it to print a thing of that kind, under one trigger and state.
+
+- **overriding** (adjective of capability): a capability with an If line and a When line of one trigger whose responses differ, where the If line's state holds.
+- **contravening** (adjective of capability): a capability with a line whose response a universal condition forbids, under the line's trigger.
+
+- **restating** (adjective of requirement): a requirement each of whose Thens other requirements entail.
+
 ## Behaviour
 
 ### [g1] `model check` exits successfully on a sound context
@@ -384,6 +394,24 @@ Restates: r65@0.29.
 
 ### [g100] `model parse` refuses an unfinished requirement with the terms that may follow
 - [r100] If the person runs `model parse` on a requirement that is unfinished, then `model` shall exit with an error naming the requirement and print a term.
+
+### [g101] `model check` warns of example data in a line
+- [r101] When the person runs `model check` on a requirement that is exemplified, `model` shall print the requirement.
+
+### [g131] `model logic` finds no clash between only and a change of that kind
+- [r131] When the person runs `model logic` on a capability that is restricting, `model` shall not print "L1".
+
+### [g132] `model logic` finds the clash of every and a forbidden print
+- [r132] When the person runs `model logic` on a capability that is exhaustive, `model` shall print "L1".
+
+### [g133] `model logic` reads an If line as taking precedence over a When line
+- [r133] When the person runs `model logic` on a capability that is overriding, `model` shall not print "L1".
+
+### [g134] `model logic` pairs a universal condition with the lines it bears on
+- [r134] When the person runs `model logic` on a capability that is contravening, `model` shall print the universal condition.
+
+### [g135] `model logic` reports a requirement that other requirements entail
+- [r135] When the person runs `model logic` on a requirement that is restating, `model` shall print "L8".
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a

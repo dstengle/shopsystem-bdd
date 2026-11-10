@@ -59,10 +59,50 @@ def capability(name, lines, path):
             "## Not yet\n- None.\n" % (path, name, name, name, body))
 
 
-def context(repo, path, lines):
-    """The world written into `repo`: the fixture's index under the bounded context `path`, and `thing` with `lines`."""
+# The capabilities of `model logic` (I12a): each condition's lines, which the check reads through their logical form.
+# Restricting: a session may change only files in its worktree, and a session changes a file, which may be one.
+# Exhaustive: `work` prints every stage, and must not print a done stage, which is one of every stage.
+CAPABILITIES = {"restricting": ["A session shall change only files in its worktree.",
+                                "When a session ends a stage, the session shall change a file."],
+                "exhaustive": ["When the person runs `work start`, `work` shall print every stage.",
+                               ("When the person runs `work start`, `work` shall not print a stage whose status is "
+                                "`done`.")],
+                # Overriding (I12b, call 12): an If line and a When line of one trigger whose responses differ; where a
+                # session follows a stage, the If line's response replaces the When line's, so the pair is no clash.
+                "overriding": [("While a session follows a stage, if the person runs `work start`, then `work` shall "
+                                "exit with an error naming the stage."),
+                               "When the person runs `work start`, `work` shall exit successfully."],
+                # Contravening (I12b, b117): `work` exits successfully on a command it refuses, which U1 forbids.
+                "contravening": ["When `work` refuses a command, `work` shall exit successfully."]}
+
+# The universal conditions a capability condition needs beside its lines, as spec/universal.md's U1, U2 ...: U1 is an
+# If line, which takes no precedence over a line of a capability (it holds in every trace).
+UNIVERSAL = {"contravening": [("If a tool refuses a command, then the tool shall exit with an error naming the "
+                               "command and change nothing.")]}
+
+
+# The requirement conditions of `model logic` (I13a): the lines of the capability `thing`, r1 the one the scenario
+# names, and the universal conditions beside them. Restating: r1's exit with an error is r2's, and its change nothing
+# is U1's, on the command `work` refuses by exiting with an error on it (the CLI pack's definition of refuse).
+REQUIREMENTS = {"restating": ([("If the person runs `work start`, then `work` shall exit with an error naming "
+                                "`work start` and change nothing."),
+                               "If the person runs `work start`, then `work` shall exit with an error naming `work start`."],
+                              UNIVERSAL["contravening"])}
+
+
+def context(repo, path, lines, name="thing", universal=()):
+    """The world written into `repo`: the fixture's index under the bounded context `path`, the capability `name`
+    with `lines` (and `thing` with none, when `name` is another), and spec/universal.md with `universal`, if any."""
     index = FIXTURE.read_text().replace("bounded-context/example.org/fixture/codified-2", "bounded-context/" + path)
-    for rel, text in (("spec/index.md", index), ("spec/capabilities/thing.md", capability("thing", lines, path))):
+    files = [("spec/index.md", index), ("spec/capabilities/%s.md" % name, capability(name, lines, path))]
+    if name != "thing":
+        files.append(("spec/capabilities/thing.md", capability("thing", [], path)))
+    if universal:
+        body = "\n".join("- [U%d] %s" % (k, line) for k, line in enumerate(universal, 1))
+        files.append(("spec/universal.md", "---\nid: capability/%s/universal\ntitle: Universal conditions\nnarrator: "
+                      "every trace\ngroup: guarantees\nlanguage: codified-2\nretired: []\n---\n\n# Universal "
+                      "conditions\n\n## Behaviour\n\n%s\n" % (path, body)))
+    for rel, text in files:
         target = repo / rel
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(text)

@@ -523,3 +523,45 @@ Feature: Design model check
     When the person runs `model parse` on the requirement r1
     Then `model` exits with an error naming the requirement r1
     And `model` prints the term t1
+
+  @g101 @r101
+  Scenario: `model check` warns of example data in a line
+    Given a requirement r1
+    And the requirement r1 is exemplified
+    When the person runs `model check` on the requirement r1
+    Then `model` prints the requirement r1
+
+  @g131 @r131
+  Scenario: `model logic` finds no clash between only and a change of that kind
+    Given a capability c1
+    And the capability c1 is restricting
+    When the person runs `model logic` on the capability c1
+    Then `model` does not print "L1"
+
+  @g132 @r132
+  Scenario: `model logic` finds the clash of every and a forbidden print
+    Given a capability c1
+    And the capability c1 is exhaustive
+    When the person runs `model logic` on the capability c1
+    Then `model` prints "L1"
+
+  @g133 @r133
+  Scenario: `model logic` reads an If line as taking precedence over a When line
+    Given a capability c1
+    And the capability c1 is overriding
+    When the person runs `model logic` on the capability c1
+    Then `model` does not print "L1"
+
+  @g134 @r134
+  Scenario: `model logic` pairs a universal condition with the lines it bears on
+    Given a capability c1
+    And the capability c1 is contravening
+    When the person runs `model logic` on the capability c1
+    Then `model` prints the universal condition u1
+
+  @g135 @r135
+  Scenario: `model logic` reports a requirement that other requirements entail
+    Given a requirement r1
+    And the requirement r1 is restating
+    When the person runs `model logic` on the requirement r1
+    Then `model` prints "L8"

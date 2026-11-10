@@ -15,6 +15,8 @@
 #defined trans/4. #defined initial/3. #defined focus/2. #defined focusm/2. #defined rnone/4. #defined the/2.
 #defined fun/1.   #defined prose/1. #defined dalt/2.  #defined dlit/5. #defined uall/3. #defined urel/4.
 #defined uattr/4. #defined ucond/5. #defined uccond/4. #defined pre/6. #defined prec/5.
+#defined each/2.   #defined only/5. #defined rattr/4.  #defined rrel/4.  #defined akind/2.
+#defined cnl4/1.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
@@ -48,6 +50,8 @@ dem(R,ev(neg,E)) :- key(R,ev(pos,E)).  dem(R,ev(pos,E)) :- key(R,ev(neg,E)).
 dem(R,at(T,W)) :- key(R,at(T,V)), vals(T,W), V != W.
 dem(R,ev(pos,exit_error)) :- key(R,ev(pos,exit_ok)).  dem(R,nouse) :- key(R,use).
 dem(R,ev(pos,E)) :- key(R,ev(pos,change_nothing)), posev(E), not quiet(E), not own(R,E).
+% "D shall V only Ks that P" (`only`, spec_lf_facts) obliges no V: it can clash only with a V, by the V's keys
+key(R,ev(only,E)) :- only(R,_,E,_,_).  dem(R,ev(pos,E)) :- key(R,ev(only,E)).  dem(R,ev(only,E)) :- key(R,ev(pos,E)).
 % cc(A,B) holds exactly when dem(A,K), key(B,K) for some K; a pair can clash when either way holds.
 % (1) two triggers of one event: joined on the trigger and the key at once
 tdem(A,P,E,K) :- trig(A,P,E,_,_), dem(A,K).  tkey(B,P,E,K) :- trig(B,P,E,_,_), key(B,K).
@@ -75,10 +79,17 @@ ukeyu(A,K) :- universal(A), key(A,K).  udemu(A,K) :- universal(A), dem(A,K).
 unc(A,B) :- udemu(A,K), key(B,K), A != B.  unc(A,B) :- ukeyu(A,K), dem(B,K), A != B.
 cand(A,B) :- unc(A,B), unames(A,N), names(B,N).
 cand(A,B) :- uses(A,_,_), nouse(B,_,_), A != B.
-% the EARS unwanted-behaviour form ("If T, then ...") is the exception to the other requirements on its trigger: it
-% wins over them, so an `if` requirement and a non-`if` one are never a pair (two of one form still are)
+% The If tag (CNL 4's call 12): the EARS unwanted-behaviour form ("If T, then ...") takes precedence over a line of
+% another form on its own trigger: where its state holds its response replaces the other's, and where it does not it
+% does not fire, so the two are never a pair (two of one form still are). A universal condition holds in every trace:
+% it takes no precedence and none is taken over it, so it is paired with each line it bears on, If or not (b117).
+% A pair of two codified-1 lines (`cnl4(R)`: a codified-2 line, spec_lf_facts) keeps the reading it had until its
+% files are reworded: an If line is never paired with a line of another form.
 exc(R) :- form(R,if).  exc(R) :- form(R,while_if).  exc(R) :- form(R,where_if).
-over(A,B) :- cand(A,B), exc(A), not exc(B).  over(A,B) :- cand(A,B), exc(B), not exc(A).
+four(A,B) :- cand(A,B), cnl4(A).  four(A,B) :- cand(A,B), cnl4(B).
+lone(A,B) :- cand(A,B), not four(A,B).
+lone(A,B) :- four(A,B), tc(A,B,_,_), not universal(A), not universal(B).
+over(A,B) :- lone(A,B), exc(A), not exc(B).  over(A,B) :- lone(A,B), exc(B), not exc(A).
 pair(A,B) :- cand(A,B), A < B, not over(A,B).  pair(A,B) :- cand(B,A), A < B, not over(B,A).
 
 % ---- unification: each role of B is one of A's roles of a compatible kind, or its own instance b(Y) -------------
@@ -118,6 +129,10 @@ same(A,B,X,Y) :- at(A,B,A,X,Z), at(A,B,B,Y,Z).
 kindof(A,B,Z,K) :- side(A,B,S), role(S,Y,K), at(A,B,S,Y,Z).
 doer(A,B,X,Y) :- same(A,B,X,Y).
 doer(A,B,any,Y) :- pair(A,B), term(B,Y).  doer(A,B,X,any) :- pair(A,B), term(A,X).
+% an actor is a doer a role of its kind or a kind above it stands for (`akind`, the actor's Kind of:, b121)
+aterm(A,B,S,Y,K) :- side(A,B,S), term(S,Y), not role(S,Y,_), akind(Y,K).
+doer(A,B,X,Y) :- pair(A,B), role(A,X,K), aterm(A,B,B,Y,K2), subeq(K2,K).
+doer(A,B,X,Y) :- pair(A,B), role(B,Y,K), aterm(A,B,A,X,K2), subeq(K2,K).
 % the triggers are one event: its doer and its object unify, or the pair is out under this unification
 ta(A,B,P,E,D,X) :- pair(A,B), trig(A,P,E,D,X).  tb(A,B,P,E,D,Y) :- pair(A,B), trig(B,P,E,D,Y).
 fires(A,B) :- ta(A,B,P,E,D1,X), tb(A,B,P,E,D2,Y), same(A,B,X,Y), doer(A,B,D1,D2).
@@ -213,11 +228,14 @@ out(A,B) :- umatch(A,B,S,U,Z), state(A,B,S,N), uccond(S,U,C,neg), ent(A,B,N,Z,C)
 % program UNSAT and hides every other finding.
 ok(A,B) :- pair(A,B), not out(A,B), not unfit(A,B).
 % the restrictions of B's object (its kind, its `for`) are entailed by A's object, or the other way round
-gap(A,B,X,Y) :- map(A,B,Y,X), oattr(B,Y,T,W), not oattr(A,X,T,W).
-gap(A,B,X,Y) :- map(A,B,Y,X), orel(B,Q,Y,Z), not relby(A,B,X,Q,Z).
+% (an obligation on every K, `each(R,X)` of a codified-2 line (spec_lf_facts), binds each K its restrictions allow:
+% what the other side says of its K need only agree with them, which the unification already asks. A codified-1
+% line's `every(R,X)` is left unread, as it was, until its files are reworded: its findings stay as they were.)
+gap(A,B,X,Y) :- map(A,B,Y,X), oattr(B,Y,T,W), not oattr(A,X,T,W), not each(A,X).
+gap(A,B,X,Y) :- map(A,B,Y,X), orel(B,Q,Y,Z), not relby(A,B,X,Q,Z), not each(A,X).
 relby(A,B,X,Q,Z) :- map(A,B,Y,X), orel(B,Q,Y,Z), orel(A,Q,X,X2), same(A,B,X2,Z).
-pag(A,B,X,Y) :- map(A,B,Y,X), oattr(A,X,T,W), not oattr(B,Y,T,W).
-pag(A,B,X,Y) :- map(A,B,Y,X), orel(A,Q,X,X2), not relof(A,B,Y,Q,X2).
+pag(A,B,X,Y) :- map(A,B,Y,X), oattr(A,X,T,W), not oattr(B,Y,T,W), not each(B,Y).
+pag(A,B,X,Y) :- map(A,B,Y,X), orel(A,Q,X,X2), not relof(A,B,Y,Q,X2), not each(B,Y).
 relof(A,B,Y,Q,X2) :- map(A,B,Y,X), orel(A,Q,X,X2), orel(B,Q,Y,Z), same(A,B,X2,Z).
 % each side's responses lifted to the pair first (`ra`, `rb`, `sa`, `sb`, `ua`, `ub`, `xa`, `xb`), so a clash is joined on the pair and the
 % event at once, never on an event (print, exit_error) that thousands of lines share
@@ -234,6 +252,14 @@ cl(A,B,change) :- ok(A,B), ra(A,B,pos,change_nothing,D1,_), rb(A,B,pos,E,D2,_), 
                      not own(A,E), doer(A,B,D1,D2).
 cl(A,B,change) :- ok(A,B), rb(A,B,pos,change_nothing,D2,_), ra(A,B,pos,E,D1,_), not quiet(E),
                      not own(B,E), doer(A,B,D1,D2).
+% only: a V by its agent of a thing known to fall outside its restrictor (an attribute of another value there)
+oa1(A,B,E,D,X) :- pair(A,B), only(A,_,E,D,X).  ob1(A,B,E,D,Y) :- pair(A,B), only(B,_,E,D,Y).
+zval(A,B,Z,T,W) :- side(A,B,S), oattr(S,Y,T,W), at(A,B,S,Y,Z).  zval(A,B,Z,T,W) :- pos(A,B,_,Z,T,W).
+outside(A,B,S,Z) :- side(A,B,S), rattr(S,X,T,V), at(A,B,S,X,Z), zval(A,B,Z,T,W), V != W.
+cl(A,B,only) :- ok(A,B), oa1(A,B,E,D1,X), rb(A,B,pos,E,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y),
+                   at(A,B,A,X,Z), outside(A,B,A,Z).
+cl(A,B,only) :- ok(A,B), ob1(A,B,E,D2,Y), ra(A,B,pos,E,D1,X), doer(A,B,D1,D2), same(A,B,X,Y),
+                   at(A,B,B,Y,Z), outside(A,B,B,Z).
 ua(A,B,D,X) :- pair(A,B), uses(A,D,X).   ub(A,B,D,Y) :- pair(A,B), uses(B,D,Y).
 xa(A,B,D,X) :- pair(A,B), nouse(A,D,X).  xb(A,B,D,Y) :- pair(A,B), nouse(B,D,Y).
 cl(A,B,use) :- ok(A,B), ua(A,B,D1,X), xb(A,B,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y).

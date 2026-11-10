@@ -4,7 +4,8 @@ Model (model_facts).
 A capability file with `language: codified-1` is read by spec_read into groups `<cap>#g<n>`, each requirement
 `<cap>#r<n>` a member of one, and every requirement parsed in the context's grammar (spec_grammar): parsed(Q),
 unparsed(Q, Why) or ambiguous(Q), its trigger and condition trees normalised as pre(Q, Key) (v15k), and logic_only(G)
-from spec_tree; given_condition(G, Line) for a given line that is not example data (spec_read_given, v15m).
+from spec_tree; exemplified(Q, Literal) for a code or quoted string naming no declared constant
+(spec_example, w_example); given_condition(G, Line) for a given line that is not example data (spec_read_given, v15m).
 `spec/universal.md` gives the universal conditions, `spec/restated.json` the 0.29 ids a group may
 restate, and a typed glossary (spec_lexicon) the terms with their categories. A scenario of a codified capability
 names its group by `@g<n>`: generates(G, S)."""
@@ -12,6 +13,7 @@ names its group by `@g<n>`: generates(G, S)."""
 import re
 from collections import Counter
 
+import spec_example
 import spec_frames
 import spec_lexicon
 import spec_packs
@@ -167,6 +169,8 @@ class SpecReading:
                 self.req_text[qid] = q.text
                 self.group_of[qid] = gid
                 tree = self.parsed(qid, q.text)
+                for word in spec_example.parameters(q.text, self.example_constants()):     # w_example (I18)
+                    self.fact("exemplified", qid, word)
                 if tree is not None:
                     self.unmentioned.add(qid)       # a parsed statement uses lexicon words (C27)
                     trees.append(tree)
@@ -185,6 +189,12 @@ class SpecReading:
             for line, block in g.given:     # v15m: a condition the statement has, not example data
                 if not spec_read_given.example(line, block):
                     self.fact("given_condition", gid, line)
+
+    def example_constants(self):
+        """The declared constants a literal of a line may name (spec_example), read once."""
+        if getattr(self, "_constants", None) is None:
+            self._constants = spec_example.constants(spec_lexicon.read(self.root))
+        return self._constants
 
     def pre(self, qid, tree):
         clauses = spec_tree.parts(spec_tree.normal(tree))

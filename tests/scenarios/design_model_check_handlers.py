@@ -124,8 +124,9 @@ def model_check(step):
 
 @handler("WhenRuns", "`model logic`")
 def model_logic(step):
-    """`model logic` on the capability the When names."""
-    run_model(step, "logic", *[step.names[0]] if step.names else [])
+    """`model logic` on the capability the When names, or on the requirement, by the id a Given gave it."""
+    ids = step.context.get("ids", {})
+    run_model(step, "logic", *[ids.get(step.names[0], step.names[0])] if step.names else [])
 
 
 @handler("WhenRuns", "`model facts`")
