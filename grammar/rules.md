@@ -1020,6 +1020,44 @@ a verb's Frame: does not read as its subject, the verb and the kinds it takes
   category("write","event").
   ```
 
+## v_t16
+
+a term an imported pack defines too has no `Redefines:` naming the pack
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/spec_packs.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  unmarked("t1","cli").
+  ```
+
+- Passes on:
+
+  ```prolog
+  category("t1","kind").
+  ```
+
+## v_t17
+
+`spec/index.md` imports a pack that neither the plugin nor the bounded context has
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/spec_packs.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  misimported("ctx","p1").
+  ```
+
+- Passes on:
+
+  ```prolog
+  typed("ctx").
+  ```
+
 ## v_p0
 
 a spec file is not codified (no `language: codified-1`): run `migrate upgrade`

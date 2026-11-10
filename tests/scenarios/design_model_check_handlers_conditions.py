@@ -157,6 +157,9 @@ def misfiled(step):
 @handler("GivenK_C", "term")
 def term(step):
     name, word, path = step.names[0], condition(step), step.repo / "spec" / "index.md"
+    packs = _sibling("design_model_check_handlers_packs.py", "shop_design_model_check_handlers_packs")
+    if word in packs.TERM:      # a word a pack the context imports defines too
+        return packs.term(step, word)
     text = path.read_text()
     if word == "duplicated":
         path.write_text(text + "- **%s** (noun): a thing again.\n" % name)

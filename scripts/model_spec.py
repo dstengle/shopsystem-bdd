@@ -14,6 +14,7 @@ from collections import Counter
 
 import spec_frames
 import spec_lexicon
+import spec_packs
 import spec_read
 import spec_read_given
 import spec_tree
@@ -51,6 +52,9 @@ class SpecReading:
         lexicon = spec_lexicon.read(self.root)
         cats, n, terms = {}, 0, lexicon.terms
         words, known, kinds = Counter(t.term for t in terms), spec_frames.names(lexicon), lexicon.kind_names()
+        unmarked = spec_packs.unmarked(self.root, lexicon)     # v_t16, and v_t17 of an import of no pack
+        for name in spec_packs.missing(self.root):
+            self.fact("misimported", self.context, name)
         for n, t in enumerate(terms, 1):
             word = " ".join(term_word(t, words[t.term] > 1).lower().split())
             ident = self.term_id(word)
@@ -66,6 +70,8 @@ class SpecReading:
                 self.fact("misframed", ident, misread)
             elif t.category == "event" and spec_frames.frame(t, known) is None:
                 self.fact("frameless", ident)
+            for name in unmarked.get((t.where, t.term), ()):
+                self.fact("unmarked", ident, name)
             if t.category == "condition" and spec_frames.relational(t, kinds):
                 self.fact("relational", ident)
             self.fact("linearises", ident, f"{t.category} {t.term} ({', '.join(t.kinds)})")

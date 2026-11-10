@@ -77,6 +77,10 @@ def given_command(step):
 @handler("GivenK_C", "bounded context")
 def given_context(step):
     """downstream: the index lists an upstream; unmigrated: a `records/` directory at the root (design-model-check)."""
+    word = step.text.rsplit(" is ", 1)[1]
+    packs = shared("shop_design_model_check_handlers_packs", "design_model_check_handlers_packs.py")
+    if word in packs.CONTEXT:       # the packs it imports (design-model-check)
+        return packs.bounded_context(step, word)
     if step.text.endswith(" unmigrated"):
         (step.repo / "records").mkdir(parents=True, exist_ok=True)
         (step.repo / "records" / "old.md").write_text("# old\n")
