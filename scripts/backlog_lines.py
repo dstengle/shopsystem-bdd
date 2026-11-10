@@ -13,11 +13,13 @@ from pathlib import Path
 import backlog_forms
 import backlog_recodify
 import backlog_retires
+import backlog_universal
 import spec_lexicon
 import spec_read
 from backlog_items import Refused, commit, find, label, one_line
 from backlog_section import (
     SECTION,
+    UNIVERSAL,
     Block,
     Blocks,
     Group,
@@ -103,10 +105,15 @@ def retire(root, name, ident, text, into=None, group=None, in_group=None):
 
 def recodify(root, name, capability):
     """`work line --recodify <capability>`: the item's block for it given `language: codified-2` (backlog_recodify),
-    committed; refused, changing nothing, when the capability is in the new language already."""
+    or for `universal` its universal block (backlog_universal), committed; refused, changing nothing, when the
+    capability is in the new language already."""
     item = find(root, name)
-    backlog_recodify.check(root, item, capability)
-    backlog_recodify.with_language(item, capability)
+    if capability == UNIVERSAL:
+        backlog_universal.check_recodify(root, item)
+        backlog_universal.with_language(item)
+    else:
+        backlog_recodify.check(root, item, capability)
+        backlog_recodify.with_language(item, capability)
     commit(root, item, "work line: %s recodifies %s" % (label(item), capability))
     return item
 
@@ -160,7 +167,9 @@ def lay_onto(into, item, files=None):
         if block.groups:
             text = _append(text, "Behaviour", "\n\n".join(laid_group(g) for g in block.groups))
         path.write_text(text)
-    backlog_forms.lay_spec(into, blocks, [] if files is None else files)
+    files = [] if files is None else files
+    backlog_forms.lay_spec(into, blocks, files)
+    backlog_universal.lay(into, blocks, files)
     return [b.capability for b in blocks]
 
 
@@ -190,7 +199,9 @@ def unlay(into, item, files=None):
         if text != was:
             path.write_text(text.rstrip("\n") + "\n")
             changed.append(block.capability)
-    backlog_forms.unlay_spec(into, blocks, [] if files is None else files)
+    files = [] if files is None else files
+    backlog_forms.unlay_spec(into, blocks, files)
+    backlog_universal.unlay(into, blocks, files)
     return changed
 
 
@@ -221,7 +232,8 @@ def renumber(root, item, taken):
     ids} of the items picked before it), each the next free in file order (plan 4, D8). `taken` gains the item's ids;
     the item's `## Requirements` is rewritten. The (`<cap>#<old>`, `<cap>#<new>`) pairs."""
     blocks, pairs = read(item, "the item %s" % item.name), []
-    out = Blocks(upstreams=blocks.upstreams)
+    out = Blocks(upstreams=blocks.upstreams, universal_language=blocks.universal_language,
+                 universal_retired=blocks.universal_retired)
     for block in blocks:
         cap = spec_read.capability(capability_file(root, block.capability))
         used = {g.id for g in cap.groups} | {r.id for g in cap.groups for r in g.requirements}

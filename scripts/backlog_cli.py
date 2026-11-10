@@ -59,10 +59,11 @@ def add_parsers(sub):
     where.add_argument("--in", dest="in_group", help="the item's group g<n> the line joins")
     p.add_argument("text", nargs="?", help="the requirement line (or --term)")
     p.add_argument("--retires", metavar="CAP#rN", help="the live requirement `<capability>#r<n>` the line replaces: "
-                   "its id goes under the block's retired:, the line into that capability")
+                   "its id goes under the block's retired:, the line into that capability; with --universal, the "
+                   "live universal condition `universal#U<n>` it replaces")
     p.add_argument("--term", help="a term bullet for the capability's ## Terms, in place of a line")
     p.add_argument("--recodify", metavar="CAP", help="the codified capability the item switches to the new language: "
-                   "`language: codified-2` written into its block")
+                   "`language: codified-2` written into its block (`universal`: spec/universal.md)")
     p.add_argument("--relation", help="a row `| from | word | to | cardinality |` for the capability's ## Relations")
     p.add_argument("--given", nargs=2, metavar=("GROUP", "BLOCK"),
                    help="the given block of the item's group g<n> in the capability: example data, one line a row")
@@ -122,6 +123,10 @@ def cmd_line(args):
             raise backlog_items.Refused("work line: --recodify takes no --into or --retires")
         item = backlog_lines.recodify(args.root, args.name, args.recodify)
         print("%s: %s recodified" % (backlog_items.label(item), args.recodify))
+        return 0
+    if args.retires is not None and piece == "universal":
+        item, ident = backlog_forms.add_universal(args.root, args.name, args.universal, args.retires)
+        print("%s: universal#%s retires %s" % (backlog_items.label(item), ident, args.retires))
         return 0
     if args.retires is not None:
         if piece != "text":
