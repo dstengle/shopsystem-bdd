@@ -7,7 +7,8 @@ hold `## Relations` and `## Definitions`. `spec/index.md` imports packs in its f
 The layers, lowest first (`layers`): each imported pack in the order listed, then the glossary of `spec/index.md`,
 then each capability's `## Terms`. A word a higher layer defines that an imported pack defines too carries
 `Redefines: <pack>` on its entry, else it is unmarked (v_t16); an import that names no pack is v_t17. The requirement
-grammar of codified-1 does not read the packs' words: only `model lexicon` and these checks do, until grammar 4.
+grammar of codified-1 does not read the packs' words: `model lexicon` and these checks do, and grammar 4
+(spec_rgl_vocab) reads them as its layers.
 """
 import re
 from pathlib import Path
