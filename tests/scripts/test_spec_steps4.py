@@ -24,7 +24,7 @@ LINES = ["When the person runs `work backlog` with the `--json` option, `work` s
          ("If the person runs `work start`, then `work` shall exit with an error naming `work start` and change "
           "nothing."),
          "While a session follows a stage, the session shall not write a file.",
-         "When the person runs `work start`, `work` shall print every stage.",
+         "When the person runs `work start`, `work` shall print at least two stages.",
          "A session may write a file."]
 
 
@@ -62,7 +62,7 @@ def test_generate_is_byte_stable_and_skips_a_group_no_step_words(world):
     text = (world / "features" / "c1.feature").read_text()
     again = generate(world)
     assert again.returncode == 0 and (world / "features" / "c1.feature").read_text() == text
-    assert "c1#g7: no scenario: no Then of every" in first.stderr
+    assert "c1#g7: no scenario: no Then of count" in first.stderr
     assert "c1#g8: no scenario: no step of a line that says may" in first.stderr
     assert sorted(scenarios(world)) == ["g%d @r%d" % (k, k) for k in range(1, 7)]
 

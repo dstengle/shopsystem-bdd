@@ -62,6 +62,12 @@ accessibility): "the K" binds to the latest earlier referent of kind K not insid
 and when every earlier K is inside one the line is refused, naming the noun (design-model-check r166, r167,
 feature-file-tools r31).
 
+"the K of X" (a row `K | of | S`) is the image of X by the row, a referent of its own: X is read first, wherever it
+is said, and never an earlier K nor the K whose relative clause holds it. In "a review that lists the review of the
+pull request" the review listed is the pull request's, not the review written; in "the worktree of every session" it
+is inside the box of every session, one worktree of each (design-model-check r164, r165; feature-file-tools r29,
+r30, b221).
+
 Tested on design-model-check r58-r61 ("... `model` shall exit with an error naming the term": no term is given
 before, so each is refused and is to be reworded) and migration-tools r13-r16 ("While the repository is behind
 ...": the repository is the run's own, an indexical once this repository's glossary gives `repository` a `This:`).
@@ -74,6 +80,18 @@ shall [x3: tool `work` (constant)]
   response [x4: worktree]
     of(x4, x1)
     print(e2, subject: x3, object: x4)
+```
+
+```reading
+When a session writes a file, `work` shall print the worktree of every session.
+shall [x3: tool `work` (constant)]
+  when [x1: session, x2: file]
+    write(e1, subject: x1, object: x2)
+  response
+    every [x4: session]
+      scope [x5: worktree]
+        of(x5, x4)
+        print(e2, subject: x3, object: x5)
 ```
 
 ```reading

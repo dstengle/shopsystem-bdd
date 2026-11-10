@@ -6,9 +6,10 @@ A determiner gives a referent's reading: "a" and a bare plural a referent of the
 two", "one") a `count` box (call 4, I15); "the" binds by R2 and R11
 (spec_lf_read), else is a referent of the part marked definite and the line refused. An actor and a code are one
 referent of the line, a code a constant when it is a word of the context and a parameter when it is not (call 7);
-"this K" the run's own K, an indexical (call 6). "the T of x", "its T" and "the K T" are one functional image of x,
-"its" bound to the subject of its clause; a row's modifier, "has", "holds" and "whose" are `rel` atoms, an
-attribute's value an `attr` atom; a relative clause restricts its noun by its frame's atom, with its polarity.
+"this K" the run's own K, an indexical (call 6). "the K of x" (R2, b221), "the T of x", "its T" and "the K T" are one
+functional image of x, "its" bound to the subject of its clause; a row's modifier, "has", "holds" and "whose" are `rel`
+atoms, an attribute's value an `attr` atom; a relative clause restricts its noun by its frame's atom, with its
+polarity.
 """
 import re
 
@@ -134,6 +135,9 @@ def det(st, tree, cn):
         ref = st.ref(kind)
         refs, conds = restrict(st, cn, ref)
         return NP(ref, "count", conds, refs, count=count(tree))
+    row, suffix = st.names.row(fun(cn))
+    if d == "DetThe" and suffix == "Mod" and row[1] == "of":
+        return of(st, row, np(st, args(cn)[1]))
     if d in ("DetThe", "DetThePl"):
         found = spec_lf_read.the(st, kind, d == "DetThePl")     # R2, R11
         if found is not None:
@@ -150,6 +154,15 @@ def det(st, tree, cn):
         ref = st.ref(kind)
     refs, conds = restrict(st, cn, ref)
     return NP(ref, quant, conds, refs, said=said)
+
+
+def of(st, row, x):
+    """R2's "the K of X": X read first, then the image of X by the row `K | of | S`, a referent of its own (never an
+    earlier K, nor the K whose relative clause holds it), placed after X: in the scope of "every Y", one K of each Y."""
+    ref, new = st.image((row, x.ref), row[0])
+    if not new:
+        return NP(ref, "fixed", deps=[x], new=False)
+    return NP(ref, "a", [Atom("rel", ("of", ref, x.ref))], deps=[x])
 
 
 def its(st, kind):
