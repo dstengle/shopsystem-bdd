@@ -95,6 +95,9 @@ def requirement(step):
         lines, universal = C2.REQUIREMENTS[word]
         C2.context(repo, H.PATH, lines, universal=universal)
         step.context.setdefault("ids", {})[step.names[0]] = "thing#r1"
+    elif word == "exemplified":     # "banana" names no actor, command, option, value, rule or named instance
+        H.write(repo, "spec/capabilities/thing.md", H.cap("thing", ["- [r1] " + EXEMPLIFIED]))
+        H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))
     elif word in C2.LINES:      # a line of grammar 4, in the smallest codified-2 world
         C2.requirement(step, word, H.PATH)
     elif word in FRAMED:
@@ -113,6 +116,10 @@ def requirement(step):
                              "|---|---|---|---|\n| stage | for | work-item |  |\n")
     else:       # a condition no branch writes would leave the base world's requirement, which passes unchecked
         raise AssertionError("no requirement condition %r" % word)
+
+
+EXEMPLIFIED = ("When the person runs `work start` on an initiative that is `proposed`, `work` shall print "
+               '"banana".')
 
 
 # A requirement of the fixture glossary for each frame condition of grammar 3 (objectless, recipientless, mistyped and
