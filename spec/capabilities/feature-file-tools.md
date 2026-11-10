@@ -38,6 +38,12 @@ and runs no test; it edits no feature file by hand, since the generator owns the
 - **declining** (adjective of capability): a capability with a requirement whose response says that a tool shall refuse a command.
 - **overstated** (adjective of file): a feature file with a Then step that a universal condition or a pack's definition entails from the other steps of its scenario.
 
+- **oblique** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, with a verb whose frame takes a kind after its object behind a preposition other than `to`, as in "`work` shall record the batch in a record" under `Frame: agent records thing in file.`.
+
+- **illustrated** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose given block has a line "the K `n` holds:" with a docstring under it, K a noun of the capability of one word or more, as "the feature file `features/a.feature` holds:".
+- **tabulated** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose given block has a line "the K `n` holds:" with a table under it, K a noun of the capability of one word or more.
+- **quoted** (adjective of capability): a capability whose file has `language: codified-2`, with a group whose given block has a line "the K `n` holds" followed by one code span or quoted string, K a noun of the capability of one word or more, as "the tracked file `.shop/plugin-version` holds "3.0.0"".
+
 ## Behaviour
 
 ### [g1] `features count --by-tag` counts every scenario, and a docstring's text is none
@@ -361,6 +367,24 @@ the capability `shelf` holds:
 
 ### [g22] `features generate` writes a capability in the new language
 - [r22] When the person runs `features generate` on a capability that is recodified, `features` shall print the feature file `features/shelf.feature`.
+
+### [g23] `features generate` writes the steps of a frame with a kind behind a preposition after its object
+- [r23] When the person runs `features generate` on a requirement that is oblique, `features` shall write the feature `features/shelf.feature` and exit successfully.
+
+### [g24] `features generate` writes the steps of a definite inside a modifier
+- [r24] When the person runs `features generate` on a requirement that is embedding, `features` shall write the feature `features/shelf.feature` and exit successfully.
+
+### [g26] `features generate` writes a given line holding a docstring in the new language
+- [r26] When the person runs `features generate` on a capability that is illustrated, `features` shall write the feature `features/shelf.feature` and exit successfully.
+
+### [g27] `features generate` writes a given line holding a table in the new language
+- [r27] When the person runs `features generate` on a capability that is tabulated, `features` shall write the feature `features/shelf.feature` and exit successfully.
+
+### [g25] `features generate` writes a given line holding one value in the new language
+- [r25] When the person runs `features generate` on a capability that is quoted, `features` shall write the feature `features/shelf.feature` and exit successfully.
+
+### [g28] `features generate` writes the steps of a state verb that takes no object
+- [r28] When the person runs `features generate` on a requirement that is intransitive, `features` shall write the feature `features/shelf.feature` and exit successfully.
 
 ## Implementation, may change
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three

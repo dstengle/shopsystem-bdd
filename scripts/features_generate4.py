@@ -17,7 +17,7 @@ import spec_rgl_steps
 import spec_steps4
 from spec_solve_pairs import order
 
-ALLOWED = {"given": ("SCond", "_Given")}
+ALLOWED = {"given": ("SCond", "_Given", "_HoldsBlock", "_HoldsText")}
 _entailed = {}
 
 

@@ -665,3 +665,31 @@ Feature: Design model check
     When the person runs `model explain` on the requirement r1
     Then `model` exits with an error naming the requirement r1
     And `model` changes nothing
+
+  @g160 @r160
+  Scenario: `model check` reads a frame with a kind behind a preposition after its object
+    Given a term t1
+    And the term t1 is oblique
+    When the person runs `model check` on the term t1
+    Then `model` exits successfully
+
+  @g161 @r161
+  Scenario: `model parse` reads a codified-1 line in a verb's later sense
+    Given a requirement r1
+    And the requirement r1 is later-sensed
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g162 @r162
+  Scenario: `model parse` refuses a definite that only the noun phrase it modifies gives
+    Given a requirement r1
+    And the requirement r1 is self-embedding
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits with an error naming the term t1
+
+  @g163 @r163
+  Scenario: `model logic` reads a state verb that takes no object
+    Given a requirement r1
+    And the requirement r1 is intransitive
+    When the person runs `model logic` on the requirement r1
+    Then `model` exits successfully

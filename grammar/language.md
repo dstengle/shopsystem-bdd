@@ -52,7 +52,10 @@ check reads an actor kind's line is I12a's.
 actor, a code or an indexical. Else to the image of a relation row `K | of | S` of the one earlier referent of kind S
 ("the worktree" after "a session" is the worktree of the session). Else, when K's entry has `This:`, to the run's own
 K (R11). Else the line is refused, naming the noun: "the" never means the only K in the world. "Earlier" is said
-before it in the line: a "the K" that only a later noun phrase gives is refused too.
+before it in the line: a "the K" that only a later noun phrase gives is refused too. A referent whose noun phrase
+holds the "the K" gives it nothing: in "a stage that precedes the stage" the stage is an earlier one, never the stage
+the relative clause restricts, and with no earlier stage the line is refused (design-model-check r162,
+feature-file-tools r24).
 
 Tested on design-model-check r58-r61 ("... `model` shall exit with an error naming the term": no term is given
 before, so each is refused and is to be reworded) and migration-tools r13-r16 ("While the repository is behind

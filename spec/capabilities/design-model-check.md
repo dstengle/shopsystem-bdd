@@ -140,6 +140,14 @@ context: product-level artifacts are read only where the files contain them.
 - **refusing** (adjective of requirement): a requirement whose response says that a tool shall refuse a command.
 - **overridden** (adjective of requirement): a When requirement over which an If requirement of the same trigger takes precedence.
 
+- **oblique** (adjective of term): a verb whose frame takes a kind after its object behind a preposition other than `to`, as in `Frame: agent records thing in file.`.
+- **later-sensed** (adjective of requirement): a requirement of a capability whose file has `language: codified-1`, with a verb in the sense of an entry of the verb that is not its first, as in "`trial-runner` shall name the target" under `Frame: agent names thing.` when an entry `Frame: text names thing.` comes before it.
+
+- **embedding** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, with "the" before a noun inside a modifier of a noun phrase of the same kind, where an earlier noun phrase of that kind gives it, as in "When the person runs `work request --raised-for` on a request, `work` shall write a request raised for the request.".
+- **self-embedding** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, with "the" before a noun inside a modifier of a noun phrase of the same kind, where no earlier noun phrase of that kind gives it, as in "`work` shall write a request raised for the request" with no request before it.
+
+- **intransitive** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, whose While clause has a state verb whose frame takes no object, as in "a test fails" under `Frame: test fails.`.
+
 ## Behaviour
 
 ### [g1] `model check` exits successfully on a sound context
@@ -454,6 +462,18 @@ Restates: r65@0.29.
 
 ### [g159] `model explain` refuses an id that no capability holds
 - [r159] If the person runs `model explain` on a requirement that is nonexistent, then `model` shall exit with an error naming the requirement and change nothing.
+
+### [g160] `model check` reads a frame with a kind behind a preposition after its object
+- [r160] When the person runs `model check` on a term that is oblique, `model` shall exit successfully.
+
+### [g161] `model parse` reads a codified-1 line in a verb's later sense
+- [r161] When the person runs `model parse` on a requirement that is later-sensed, `model` shall exit successfully.
+
+### [g162] `model parse` refuses a definite that only the noun phrase it modifies gives
+- [r162] If the person runs `model parse` on a requirement that is self-embedding, then `model` shall exit with an error naming the term.
+
+### [g163] `model logic` reads a state verb that takes no object
+- [r163] When the person runs `model logic` on a requirement that is intransitive, `model` shall exit successfully.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a

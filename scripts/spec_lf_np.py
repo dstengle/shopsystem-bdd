@@ -188,7 +188,15 @@ def value_np(st, t, x):
 
 
 def restrict(st, cn, ref):
-    """(referents, conditions) a common noun puts on its referent `ref`."""
+    """(referents, conditions) a common noun puts on its referent `ref`, which R2 passes over while it is read."""
+    st.open.append(ref)
+    try:
+        return restricting(st, cn, ref)
+    finally:
+        st.open.pop()
+
+
+def restricting(st, cn, ref):
     name, a = fun(cn), args(cn)
     row, suffix = st.names.row(name)
     if suffix == "Mod":
@@ -199,7 +207,7 @@ def restrict(st, cn, ref):
     rest = st.names.kind(name)[1]
     if rest == "UseN":
         return [], []
-    refs, conds = restrict(st, a[1], ref)
+    refs, conds = restricting(st, a[1], ref)
     pol = a[0] == "PNeg"
     if rest.startswith("Rel_"):
         more = st.clauses.clause(st, core.fixed(ref), a[2], pol)

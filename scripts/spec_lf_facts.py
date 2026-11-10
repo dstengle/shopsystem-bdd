@@ -4,20 +4,20 @@ so both feed one check.
 
 A referent a part introduces is a role `role(R,X,K)` under its own name (x1, x2 ...); an actor is its id, a code that
 names a command run its text, any other code or an indexical a role with `named(R,X,C)`. A While or Where part, and
-what the trigger says of its referents, is the pre-state (`cond`, `crel`, a state verb's atom `crel(R,E,S,O,Pol)`,
-and `none`, `rnone` for a `not` box with referents of its own); the trigger's event is `trig(R,P,E,D,X)`, a run
-`trig(R,ran,Cmd,D,On)`; each act of the response a `resp(R,I,Pol,E,D,X)`, with its object's restrictions `oattr`,
-`orel`. "print", "exit successfully", "exit with an error naming", "change nothing" are the check's `print`,
-`exit_ok`, `exit_error`, `change_nothing`.
+what the trigger says of its referents, is the pre-state (`cond`, `crel`, a state verb's atom `crel(R,E,S,O,Pol)`, O
+`none` for a frame with no object, `none`, `rnone` for a `not` box with referents of its own); the trigger's event is
+`trig(R,P,E,D,X)`, a run `trig(R,ran,Cmd,D,On)`; each act of the response a `resp(R,I,Pol,E,D,X)`, with its object's
+restrictions `oattr`, `orel`. "print", "exit successfully", "exit with an error naming", "change nothing" are the
+check's `print`, `exit_ok`, `exit_error`, `change_nothing`.
 
 Two boxes keep their meaning (b114, b116): an `every` object is `each(R,X)`, an obligation on each thing of its
 restrictor, so what another line says of that thing need only agree with it; "X shall V only Ks that P" obliges no V:
-it is `only(R,I,E,D,X)` with its restrictor `rattr(R,X,T,V)`, `rrel(R,Q,X,Y)`, which clashes only with a V of a
-thing known to fall outside it. A count ("print at least two stages", call 4, I15) is `count(R,I,E,D,X,B,N)` of
-each act on its counted object X, with its bound B (`least`, `most`, `exactly`, `more`, `fewer`) and number N, and a
-`resp` only when it admits no fewer than one X. Each line is marked `cnl4(R)`, so the check reads its pairs as
-codified-2 lines (the If tag, a universal condition paired with each line). A "may" line and a necessity are
-spec_lf_modal's. The words are spec_lf_ids'. An `or` box splits it as spec_facts does (`R#n`, `disj`); no translation, a ValueError.
+it is `only(R,I,E,D,X)` with its restrictor `rattr(R,X,T,V)`, `rrel(R,Q,X,Y)`, which clashes only with a V of a thing
+known to fall outside it. A count ("print at least two stages", call 4, I15) is `count(R,I,E,D,X,B,N)` of each act on
+its counted object X, with its bound B (`least`, `most`, `exactly`, `more`, `fewer`) and number N, and a `resp` only
+when it admits no fewer than one X. Each line is marked `cnl4(R)`, so the check reads its pairs as codified-2 lines
+(the If tag, a universal condition paired with each line). A "may" line and a necessity are spec_lf_modal's. The words
+are spec_lf_ids'. An `or` box splits it as spec_facts does (`R#n`, `disj`); no translation, a ValueError.
 """
 import spec_facts
 import spec_lf_modal
@@ -42,9 +42,8 @@ class Walk:
     """One walk of one form: its facts and the choices it took at each `or` box."""
 
     def __init__(self, ids, rid, choices=()):
-        self.ids, self.rid, self.out = ids, const(rid), []
+        self.ids, self.rid, self.out, self.acts = ids, const(rid), [], 0
         self.choices, self.taken, self.options = list(choices), [], []
-        self.acts = 0
 
     def emit(self, pred, *args):
         fact = "%s(%s)." % (pred, ",".join((self.rid,) + tuple(str(a) for a in args)))
@@ -52,14 +51,15 @@ class Walk:
             self.out.append(fact)
 
     def pick(self, n):
-        i = len(self.taken)
-        c = self.choices[i] if i < len(self.choices) else 0
+        c = self.choices[len(self.taken)] if len(self.taken) < len(self.choices) else 0
         self.taken.append(c)
         self.options.append(n)
         return c
 
     # --- terms -------------------------------------------------------------------------------------------------
     def term(self, ref):
+        if ref is None:     # the object of a state whose frame takes none (edge)
+            return "none"
         if ref.origin == "constant" and ref.value in self.ids.actors:
             return self.ids.actors[ref.value]
         if ref.origin in ("constant", "parameter", "indexical"):
@@ -109,15 +109,15 @@ class Walk:
             raise ValueError("no translation of an event in a condition")
 
     def edge(self, atom):
-        """(relation, x, y) of a `rel` atom or of a state verb's atom between two kinds."""
+        """(relation, x, y) of a `rel` atom or of a state verb's atom; y None when its frame takes no object (b219)."""
         if atom.pred == "rel":
             word, x, y = atom.args
             return self.ids.relation(word, x.kind, y.kind), x, y
         verb, _, roles = atom.args
         subject, kinds, fixed = self.slots(roles)
-        if len(kinds) != 1 or fixed:
+        if len(kinds) > 1 or fixed:
             raise ValueError("no translation of the state %s there" % verb)
-        return self.ids.event(verb), subject, kinds[0]
+        return self.ids.event(verb), subject, (kinds or [None])[0]
 
     def box(self, box, pos):
         if box.op == "or":

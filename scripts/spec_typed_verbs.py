@@ -5,9 +5,12 @@ Each kind or actor T a frame names as a subject gets the category `<T>_Sb`, and 
 A noun fills it when its kind (or the actor) is T or a kind of T (`spec_frames.below`); a noun phrase with no kind
 (a code or quoted literal, a quoted figure for a thing, an attribute's "the status of the item", "a status") fills any object slot, and a code any
 subject slot. A verb `e` with its frame gives `e__Happens` / `e__HappensI` / `e__HappensTo` (a trigger, its
-recipient after "to"), `e__Do` / `e__DoI` / `e__DoTo` (a verb phrase), `e__Does` / `e__DoesNot` (a condition
+recipient after its preposition), `e__Do` / `e__DoI` / `e__DoTo` (a verb phrase), `e__Does` / `e__DoesNot` (a condition
 between two kinds, "a session does not write a file"; b85) and, for the step grammar, `e__SDoes`, `e__SDoesNot`,
 `e__SDoesTo`, `e__SDoesToNot` (b103), `e__SDoesI`, `e__SDoesINot`.
+
+A verb's later sense (a second entry of the verb, b215) gets its own funs, `e__s2__Do` ..., typed by its frame, and
+reads back as the verb's: `normal` drops the sense, `typed` picks the first sense whose kinds its arguments fit.
 
 The rest of the tools read a tree in its normal form (`normal`): the verb's clause as `Do e x`, `DoTo e x y`,
 `DoI e`, `Happens s e x`, `HappensI s e`, `HappensTo s e x y`, `Does s e x`, `DoesNot s e x` (and `SDoes s e x`
@@ -34,17 +37,47 @@ def _type_id(name, ids, lex):
 
 
 def frames(lex):
-    """{event id: (inf, s3, (subject type id, object type id or None, recipient type id or None))} of every verb
-    whose frame reads; a prepositional verb's forms end in its preposition ("subscribe to"), so each of its funs
+    """{event id: (inf, s3, (subject type id, object type id or None, recipient type id or None), the preposition
+    before the recipient)} of every verb whose frame reads; a prepositional verb's forms end in its preposition ("subscribe to"), so each of its funs
     says the preposition before its object."""
-    ids, known, out = lex.ids(), spec_frames.names(lex), {}
-    for t in lex.of("event"):     # the first frame of a verb's first sense: codified-1 reads no other
+    ids, known, out, senses = lex.ids(), spec_frames.names(lex), Frames(members(lex)), {}
+    for t in lex.of("event"):     # the first frame of each sense of a verb, a later sense's funs `e__s<n>__Do` ...
         found = spec_frames.frame(t, known)
-        if found is None or ids[t.key] in out:
+        if found is None:
             continue
+        k = senses[ids[t.key]] = senses.get(ids[t.key], 0) + 1
         inf, s3 = ("%s %s" % (form, found.prep) if found.prep else form for form in spec_typed.event_forms(t))
-        out[ids[t.key]] = (inf, s3, tuple(_type_id(n, ids, lex) if n else None for n in found[:3]))
+        out[ids[t.key] + ("%ss%d" % (SEP, k) if k > 1 else "")] = (
+            inf, s3, tuple(_type_id(n, ids, lex) if n else None for n in found[:3]), found.oblique)
     return out
+
+
+class Frames(dict):
+    """frames(lex): the senses of the verbs, with `members` (members(lex)), by which `typed` picks a sense."""
+
+    def __init__(self, members_):
+        super().__init__()
+        self.members = members_
+
+
+def sense(key):
+    """The event id of a key of `frames(lex)` (a later sense's `e__s2` is `e`)."""
+    return key.split(SEP)[0]
+
+
+def _fits(tid, arg, members_):
+    """Whether a normal argument may fill a slot of type `tid`: a noun of a kind at or under it, an actor at or under
+    it, or a noun phrase with no kind."""
+    if tid is None or not isinstance(arg, tuple):
+        return True
+    kids, aids = members_.get(tid, ([], []))
+    if arg[0] == "ActorSubj":
+        return arg[1][0] in aids
+    if arg[0] == "NPSubj":
+        arg = arg[1]
+    if arg[0] == "Only":
+        return _fits(tid, arg[1], members_)
+    return arg[0][:-len("_toNP")] in kids if arg[0].endswith("_toNP") else True
 
 
 def members(lex):
@@ -116,13 +149,13 @@ def modules(lex):
         lins += ['%s%sOnly x = {s = "only" ++ x.s ; p = Full ; n = x.n} ;' % (cat, SEP),
                  "%s%sCode c = np c ;" % (cat, SEP), "%s%sQuoted q = np q ;" % (cat, SEP),
                  "%s%sField x = x ;" % (cat, SEP), '%s%sQuotedFor q x = np (q ++ "for" ++ x.s) ;' % (cat, SEP)]
-    for eid, (inf, s3, (s, o, r)) in sorted(found.items()):
-        i, t = spec_typed.gf_str(inf), spec_typed.gf_str(s3)
+    for eid, (inf, s3, (s, o, r), to) in sorted(found.items()):
+        i, t, to = spec_typed.gf_str(inf), spec_typed.gf_str(s3), spec_typed.gf_str(to)
         if o and r:
             funs += ["%s%sDoTo : %s_Ob -> %s_Ob -> VP ;" % (eid, SEP, o, r),
                      "%s%sHappensTo : %s_Sb -> %s_Ob -> %s_Ob -> Trig ;" % (eid, SEP, s, o, r)]
-            lins += ['%s%sDoTo x y = %s ++ x.s ++ "to" ++ y.s ;' % (eid, SEP, i),
-                     '%s%sHappensTo s x y = s ++ %s ++ x.s ++ "to" ++ y.s ;' % (eid, SEP, t)]
+            lins += ['%s%sDoTo x y = %s ++ x.s ++ %s ++ y.s ;' % (eid, SEP, i, to),
+                     '%s%sHappensTo s x y = s ++ %s ++ x.s ++ %s ++ y.s ;' % (eid, SEP, t, to)]
         elif o:
             funs += ["%s%sDo : %s_Ob -> VP ;" % (eid, SEP, o), "%s%sHappens : %s_Sb -> %s_Ob -> Trig ;" % (eid, SEP, s, o),
                      "%s%sDoes, %s%sDoesNot : %s_Sb -> %s_Ob -> Atom ;" % (eid, SEP, eid, SEP, s, o)]
@@ -138,12 +171,12 @@ def modules(lex):
 def step_modules(lex):
     """(funs, lins) of the typed verb funs of the step grammar, for features_vocab_gf's StepsTyped module."""
     funs, lins = [], []
-    for eid, (inf, s3, (s, o, r)) in sorted(frames(lex).items()):
-        i, t = spec_typed.gf_str(inf), spec_typed.gf_str(s3)
+    for eid, (inf, s3, (s, o, r), to) in sorted(frames(lex).items()):
+        i, t, to = spec_typed.gf_str(inf), spec_typed.gf_str(s3), spec_typed.gf_str(to)
         if o and r:
             funs.append("%s%sSDoesTo, %s%sSDoesToNot : %s_Sb -> %s_Ob -> %s_Ob -> Step ;" % (eid, SEP, eid, SEP, s, o, r))
-            lins += ['%s%sSDoesTo s x y = s ++ %s ++ x.s ++ "to" ++ y.s ;' % (eid, SEP, t),
-                     '%s%sSDoesToNot s x y = s ++ "does" ++ "not" ++ %s ++ x.s ++ "to" ++ y.s ;' % (eid, SEP, i)]
+            lins += ['%s%sSDoesTo s x y = s ++ %s ++ x.s ++ %s ++ y.s ;' % (eid, SEP, t, to),
+                     '%s%sSDoesToNot s x y = s ++ "does" ++ "not" ++ %s ++ x.s ++ %s ++ y.s ;' % (eid, SEP, i, to)]
         elif o:
             funs += ["%s%sSDoes, %s%sSDoesNot : %s_Sb -> %s_Ob -> Step ;" % (eid, SEP, eid, SEP, s, o)]
             lins += ["%s%sSDoes s x = s ++ %s ++ x.s ;" % (eid, SEP, t),
@@ -181,6 +214,7 @@ def normal(tree):
     if not isinstance(tree, tuple):
         return tree
     eid, _, shape = tree[0].partition(SEP)
+    shape = shape.split(SEP)[-1] if shape.startswith("s") and SEP in shape else shape     # a later sense's
     if shape in SHAPES:
         args = [_normal_arg(a) for a in tree[1:]]
         if SHAPES[shape].startswith("s"):
@@ -224,11 +258,14 @@ def typed(tree, found=None, meta=None):
         shape = SHAPES[tree[0]]
         args = list(tree[1:])
         event = args.pop(1 if shape.startswith("s") else 0)
-        s, o, r = found[event[0]][2]
+        keys = [k for k in found if sense(k) == event[0]]
+        key = next((k for k in keys if all(_fits(dict(zip("sor", found[k][2]))[role], arg, found.members)
+                                            for role, arg in zip(shape, args))), keys[0] if keys else event[0])
+        s, o, r = found[key][2]
         out = []
         for role, arg in zip(shape, args):
             out.append(_sb(s, arg, meta) if role == "s" else _ob(o if role == "o" else r, arg, meta))
-        return ("%s%s%s" % (event[0], SEP, tree[0]),) + tuple(out)
+        return ("%s%s%s" % (key, SEP, tree[0]),) + tuple(out)
     return (tree[0],) + tuple(typed(a, found, meta) for a in tree[1:])
 
 
