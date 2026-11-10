@@ -1796,6 +1796,17 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x4
 The limits the rewording keeps, one subsection a limit: the construct the language has not, the lines that need it
 by id, and the plain line each says instead. A corpus block of such a line gives `Known limit: #<n>` as its trace.
 
+### #1: words about the language that no construct's code says
+
+A line about a line names the construct it uses by its code in the construct catalogue ("a requirement that uses
+`count`", the spec pack's use and violate, b124); a few things a line says of a requirement are no construct of the
+catalogue, and their words stay meta-level words of the glossary: a frame's role a requirement leaves out (omit,
+object, recipient), two counts no number meets both of (contradict), and a refusal or a construct the context does
+not read (the clock trigger of the time pack this repository does not import, the perfect whose construct code
+`done` is a value here, a number where a duration is due). Lines: design-model-check r205, r206 (omit an object, a
+recipient), r253 (a count that contradicts a count), r255 (a clock trigger), r256 (a perfect), r257 (a number that
+has no unit). Each says the thing in the glossary's words, the word a term of the capability.
+
 ### #13: what a command would write
 
 A line that says X differs from what a command writes now ("is not what `model decisions` would write") compares X
@@ -1814,8 +1825,8 @@ placeholder, ...".
 
 "after v" compares a value with a value a line names; the language has no comparison of two things' values ("the
 release of the repository is after the release of the plugin"), which the check could not decide exactly over named
-points (design call 9). Lines: migration-tools r62, r63 (b156 r47: the repository's release `newer`, newer than the
-plugin's own) and r64, of the release 4.0.0 (retiring r42, r48 and r49, which said `3.0.1`). They say instead the plugin's release the line is written for, as a value: "While the release of the repository
+points (design call 9). Lines: migration-tools r62, r63 and r64, of the release 4.0.0 (r63 is b156's line of the
+repository's release `newer`, newer than the plugin's own). They say instead the plugin's release the line is written for, as a value: "While the release of the repository
 is after `4.0.0`, ...", and the line gets a new id when the plugin's release moves on.
 
 ### #8: a change of an attribute's value
@@ -1959,7 +1970,7 @@ The constructs `done`, `done-since`, `moment-compare` and `within` of grammar/co
 --form` prints their reading, but `model logic` has no translation of a history or of a comparison of moments, and
 `features generate` writes no scenario of a line that uses one; nor of a line that uses `or-list` between the objects
 of its response ("shall print a file or a stage"). Until they do, a requirement that uses one of them does not conform
-to the language reference: feature-file-tools r108's scenario is written of every other "shall" example of the
+to the language reference: the scenario of feature-file-tools' catalogue line is written of every other "shall" example of the
 catalogue (tests/scenarios/feature_file_tools_world.py reads the codes from this section).
 
 ### #16: "unchanged since" a moment the line does not name

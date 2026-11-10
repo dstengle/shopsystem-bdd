@@ -131,6 +131,40 @@ def test_every_file_of_this_repository_s_spec_says_codified_2():
     assert [p.name for p in files if not spec_read.codified(p, (spec_read.MARKER4,))] == []
 
 
+LIMIT = re.compile(r"^### #(\d+): .*?\n(.*?)(?=^##|\Z)", re.MULTILINE | re.DOTALL)
+TOKEN = re.compile(r"\b[rU]\d+-r\d+\b|\b[rUb]\d+\b|[a-z]+(?:-[a-z]+)*")
+
+
+def limits(root):
+    """(the (#n, file, id) a corpus block traces `Known limit: #n` by, the (#n, file, id) of a live line that
+    `grammar/language.md`'s subsection `### #n` names): an id is named after its capability's name ("design-model-check
+    r202, r203", "analysis-tools r37-r41"), an item's line ("b156 r47") is none."""
+    found, lines = corpus(root), live(root)
+    traced = {(n, stem, rid) for stem, blocks in found.items() for rid, (trace, _, _) in blocks.items()
+              for n in re.findall(r"#(\d+)", trace.partition("Known limit:")[2])}
+    text = (pathlib.Path(root) / "grammar" / "language.md").read_text()
+    named = set()
+    for n, body in LIMIT.findall(text[text.index("## What the language cannot say yet"):]):
+        where = None
+        for token in TOKEN.findall(" ".join(body.split())):
+            if token in lines:
+                where = token
+            elif re.fullmatch(r"b\d+", token):
+                where = None
+            elif re.fullmatch(r"[rU]\d+(-r\d+)?", token) and where:
+                first, _, last = token.partition("-")
+                ids = [first] if not last else ["r%d" % k for k in range(int(first[1:]), int(last[1:]) + 1)]
+                named |= {(n, where, i) for i in ids if i in lines[where]}
+    return traced, named
+
+
+def test_every_known_limit_is_said_with_its_lines():
+    """b240 phase 26: each line the corpus traces `Known limit: #n` is named under `### #n` of language.md's "What
+    the language cannot say yet", and each live line named there traces it."""
+    traced, named = limits(REPO)
+    assert sorted(traced - named) == [] and sorted(named - traced) == []
+
+
 # --- the checks proved on a fixture ---------------------------------------------------------------------------------
 
 LINES = ["When a session ends a stage, `work` shall print the stage.",
