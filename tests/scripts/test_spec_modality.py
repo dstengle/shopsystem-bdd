@@ -1,7 +1,7 @@
 """Modality in grammar 4 (the CNL 4 design, section 4.5, I17): "may" a permission, "always" and "never" a necessity
 of no trigger, each parsed, linearised back word for word and read into its form's modality; "may not" and a line of
 "shall" and "may" refused by the reading rules; in `model logic`, a "shall not" that forbids what a "may" permits an L7
-and a necessity a premise of every pair (spec_lf_modal, grammar/check.lp)."""
+and a necessity no fact of the check, so it hides no finding (spec_lf_modal, grammar/check.lp)."""
 import pathlib
 import sys
 
@@ -70,11 +70,11 @@ def found(tmp_path, *lines):
     return [(f.code, f.text) for f in spec_solve.run(world(tmp_path, *lines), capability="thing")]
 
 
-def test_a_permission_is_a_may_act_and_a_necessity_a_premise(tmp_path):
+def test_a_permission_is_a_may_act_and_a_necessity_no_premise(tmp_path):
     ctx = spec_context.load(world(tmp_path, "A session may write a file.", "A session always has a worktree."))
     assert not ctx.refused, ctx.refused
     assert 'resp("thing#r1",1,may,e_write,x1,x2).' in ctx.facts["thing#r1"]
-    assert {'nec("thing#r2",always,r_worktree_of_session,k_worktree,k_session).', 'necsub("thing#r2",2).'} <= set(ctx.facts["thing#r2"])
+    assert ctx.facts["thing#r2"] == ['form("thing#r2",nec).', 'cnl4("thing#r2").']
 
 
 def test_a_shall_not_that_forbids_what_a_may_permits_is_an_l7(tmp_path):
@@ -89,17 +89,17 @@ def test_on_one_trigger_too_and_never_on_another_act(tmp_path):
     assert found(tmp_path / "other", "A session may write a file.", "A session shall not end a stage.") == []
 
 
-def test_a_necessity_puts_out_a_pair_whose_state_it_rules_out(tmp_path):
+def test_a_necessity_puts_out_no_pair(tmp_path):
     pre = "While a session follows a stage, when the person runs `work start`, `work` shall "
     lines = (pre + "print the stage.", pre + "not print the stage.")
     assert [c for c, _ in found(tmp_path / "a", *lines)] == ["L1"]
-    assert found(tmp_path / "b", *lines, "A session never follows a stage.") == []
+    assert [c for c, _ in found(tmp_path / "b", *lines, "A session never follows a stage.")] == ["L1"]
     pre = "While a session has no worktree, when the person runs `work start`, `work` shall "
     lines = (pre + "print the session.", pre + "not print the session.")
-    assert [c for c, _ in found(tmp_path / "c", *lines)] == ["L1"]
-    assert found(tmp_path / "d", *lines, "A session always has a worktree.") == []
+    assert [c for c, _ in found(tmp_path / "c", *lines, "A session always has a worktree.")] == ["L1"]
 
 
-def test_a_necessity_under_while_has_no_translation(tmp_path):
+def test_a_necessity_under_while_is_not_refused(tmp_path):
     ctx = spec_context.load(world(tmp_path, "While a stage is `done`, a session never follows the stage."))
-    assert "no translation of a necessity" in ctx.refused["thing#r1"]
+    assert not ctx.refused, ctx.refused
+    assert found(tmp_path, "While a stage is `done`, a session never follows the stage.") == []
