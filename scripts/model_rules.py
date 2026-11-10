@@ -16,6 +16,7 @@ CATALOGUE = "grammar/rules.md"
 LABEL = re.compile(r'^label\("([^"]+)",\s*"((?:[^"\\]|\\.)+)"\)\.', re.MULTILINE)
 EXAMPLE = re.compile(r"^% (fail|pass) (\S+): (.+)$", re.MULTILINE)
 INDEX = "---\nid: bounded-context/ex/ctx\nlanguage: codified-1\n---\n# ctx\n\n"
+FOUR = {"v_t20"}        # the rules of a codified-2 context's lexicon only: their examples' index says codified-2
 # The rules of `model lexicon --check` that model.lp holds no rule of: (label, failing spec/index.md, passing one).
 LEXICON = {
     "v_t7": ("a term's gloss is more than one sentence",
@@ -33,6 +34,11 @@ LEXICON = {
                "|---|---|---|---|\n| thing | holds | thing | many |\n| thing | holds | thing | one |\n"),
               ("## Glossary\n\n- **thing** (noun): A thing.\n\n## Relations\n\n| from | word | to | how many |\n"
                "|---|---|---|---|\n| thing | holds | thing | many |\n")),
+    "v_t20": ("a relation row's word is neither a preposition of the fixed set nor a role noun (codified-2)",
+              ("## Glossary\n\n- **thing** (noun): A thing.\n\n## Relations\n\n| from | word | to | how many |\n"
+               "|---|---|---|---|\n| thing | holds | thing |  |\n"),
+              ("## Glossary\n\n- **thing** (noun): A thing.\n\n## Relations\n\n| from | word | to | how many |\n"
+               "|---|---|---|---|\n| thing | in | thing |  |\n")),
 }
 
 
@@ -63,7 +69,8 @@ def fires(code, example, kind):
     import spec_lexicon
     with tempfile.TemporaryDirectory() as root:
         (Path(root) / "spec").mkdir()
-        (Path(root) / "spec" / "index.md").write_text(INDEX + example)
+        index = INDEX.replace("codified-1", "codified-2") if code in FOUR else INDEX
+        (Path(root) / "spec" / "index.md").write_text(index + example)
         return any(found[0] == code for found in spec_lexicon.problems(spec_lexicon.read(root)))
 
 

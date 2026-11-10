@@ -31,15 +31,17 @@ ATTR_PARTS = {"One", "More", "ThatIs", "ThatIsNot", "Whose", "WhoseNot", "Pre", 
 COND_PARTS = {"Pre", "ThatIs", "ThatIsNot", "Is", "IsNot"}
 
 
-# A relation row with no cardinality whose word is one of these prepositions relates a thing to one thing: a stage is
-# for one node and with one result (a call of report-checker-gaps; "one" says it, any other word does not).
+# A codified-1 context reads a relation row with no cardinality whose word is one of these prepositions as relating a
+# thing to one thing: a stage is for one node and with one result (a call of report-checker-gaps). A codified-2 one
+# reads a blank cardinality as any number, for every word: only "one" makes a row functional (CNL 4's call 14, b115).
 PREPOSITIONS = ("for", "with", "on", "of", "in")
 
 
-def functional(row):
-    """Whether a relation row relates each thing of its first kind to at most one of its second."""
+def functional(row, four=False):
+    """Whether a relation row relates each thing of its first kind to at most one of its second (`four`: as a
+    codified-2 context reads it)."""
     card = row.cardinality.strip().lower()
-    return card == "one" or (not card and row.word.strip().lower() in PREPOSITIONS)
+    return card == "one" or (not four and not card and row.word.strip().lower() in PREPOSITIONS)
 
 
 def _bare(text):
@@ -86,7 +88,7 @@ class Vocab:
             if k1 in by_term and k2 in by_term:
                 self.rels[spec_typed.relation_fun(by_term[k1], word, by_term[k2])] = rid
                 self.rel_kinds.setdefault(rid, set()).add((by_term[k1], by_term[k2]))
-        self.functional = {spec_relations.rid(row) for row in lexicon.rows if functional(row)}
+        self.functional = {spec_relations.rid(row) for row in lexicon.rows if functional(row, parents is not None)}
         subs = spec_relations.subkinds(lexicon) if parents is None else _under(parents)
         self.subs = sorted((by_term[s], by_term[k]) for k, under in subs.items() for s in under
                            if k in by_term and s in by_term)

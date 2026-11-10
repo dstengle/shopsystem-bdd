@@ -1493,3 +1493,38 @@ two relation rows give one (from, word, to)
   |---|---|---|---|
   | thing | holds | thing | many |
   ```
+
+## v_t20
+
+a relation row's word is neither a preposition of the fixed set nor a role noun (codified-2)
+
+- Severity: violation
+- Implemented in: `scripts/spec_relations.py`
+- Cited by: no line
+- Fails on:
+
+  ```markdown
+  ## Glossary
+
+  - **thing** (noun): A thing.
+
+  ## Relations
+
+  | from | word | to | how many |
+  |---|---|---|---|
+  | thing | holds | thing |  |
+  ```
+
+- Passes on:
+
+  ```markdown
+  ## Glossary
+
+  - **thing** (noun): A thing.
+
+  ## Relations
+
+  | from | word | to | how many |
+  |---|---|---|---|
+  | thing | in | thing |  |
+  ```

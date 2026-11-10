@@ -13,7 +13,8 @@ and `none`, `rnone` for a `not` box with referents of its own); the trigger's ev
 Two boxes keep their meaning (b114, b116): an `every` object is `each(R,X)`, an obligation on each thing of its
 restrictor, so what another line says of that thing need only agree with it; "X shall V only Ks that P" obliges no V:
 it is `only(R,I,E,D,X)` with its restrictor `rattr(R,X,T,V)`, `rrel(R,Q,X,Y)`, which clashes only with a V of a
-thing known to fall outside it. The words are named by spec_lf_ids. An `or` box splits the requirement as spec_facts does (`R#n`, `disj`). A construct
+thing known to fall outside it. Each line is marked `cnl4(R)`, so the check reads its pairs as
+codified-2 lines (the If tag, a universal condition paired with each line). The words are named by spec_lf_ids. An `or` box splits the requirement as spec_facts does (`R#n`, `disj`). A construct
 with no translation raises ValueError naming it.
 """
 import spec_facts
@@ -140,6 +141,7 @@ class Walk:
         if form.modality != "shall" or ops not in FORMS:
             raise ValueError("no translation of the rule %s %s" % (form.modality, " ".join(ops)))
         self.emit("form", FORMS[ops])
+        self.out.append("cnl4(%s)." % self.rid)
         for p in form.parts:
             self.roles(p.refs)
             if p.op in ("when", "if"):
@@ -176,6 +178,8 @@ class Walk:
                 self.act(item, pos)
             elif isinstance(item, Atom):
                 self.restrict(item, own)
+            elif item.op == "not" and not self.acting(item):
+                self.restrict(item, own)
             elif item.op == "not" and self.nothing(item):
                 self.acts += 1
                 self.emit("resp", self.acts, "pos" if pos else "neg", "change_nothing", self.term(
@@ -196,6 +200,12 @@ class Walk:
                 raise ValueError("no translation of %s in a response" % item.op)
 
     @staticmethod
+    def acting(box):
+        """True for a box with an event atom in it, at any depth: a negated act, not a negated restriction."""
+        return any(isinstance(i, Atom) and i.pred == "event" or isinstance(i, Box) and Walk.acting(i)
+                   for i in list(box.body) + ([box.scope] if getattr(box, "scope", None) else []))
+
+    @staticmethod
     def nothing(box):
         """True for "change nothing": `not` over a thing changed, and nothing else."""
         return (len(box.refs) == 1 and box.refs[0].kind == "thing" and len(box.body) == 1
@@ -209,6 +219,8 @@ class Walk:
     def restrict(self, item, own, preds=("oattr", "orel")):
         """A restriction of a response's object (`own`, the referents its box introduced); of an earlier referent,
         the pre-state it presupposes."""
+        if isinstance(item, Box) and item.op == "not" and not preds[0].startswith("r"):
+            return self.negated(item, own)
         pred = getattr(item, "pred", None)
         if pred not in ("attr", "rel", "state"):
             raise ValueError("no translation of %s on an object" % (pred or item.op))
@@ -222,6 +234,26 @@ class Walk:
         else:
             q, x, y = self.edge(item)
             self.emit(preds[1], q, self.term(x), self.term(y))
+
+    def negated(self, box, own):
+        """A negated scope over an object's restrictions (I12b): "whose T is not v" `nattr(R,X,T,V)`, "that does not
+        V a K" `nrel(R,Q,X,kind(K))` (the box's own referents read as any thing of their kind), "that does not V the
+        K" `nrel(R,Q,X,Y)`; over an earlier referent's, the pre-state it presupposes, negated."""
+        def end(r):
+            return "kind(%s)" % self.ids.kind(r.kind) if r in box.refs else self.term(r)
+        firsts = {"attr": lambda a: a[0], "rel": lambda a: a[1], "state": lambda a: a[2][0][1]}
+        for item in box.body:
+            if getattr(item, "pred", None) not in firsts:
+                raise ValueError("no translation of not over %s on an object" % getattr(item, "op", "an event"))
+        if not all(firsts[i.pred](i.args) in own and firsts[i.pred](i.args) not in box.refs for i in box.body):
+            return self.box(box, True)
+        for item in box.body:
+            if item.pred == "attr" and not isinstance(item.args[2], Ref):
+                x, term, value = item.args
+                self.emit("nattr", self.term(x), *self.ids.attr(x.kind, term, value))
+            elif item.pred != "attr":
+                q, x, y = self.edge(item)
+                self.emit("nrel", q, self.term(x), end(y))
 
     def only(self, box):
         """"D shall V only Ks that P": no act; `only` and the restrictor P of its K (`rattr`, `rrel`)."""
