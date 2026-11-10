@@ -139,6 +139,7 @@ def _parse4(args, lines):
             h = spec_grammar4.hint(args.root, line)
             print(f"  parsed up to: {h['prefix']}")
             print(f"  nearest words: {', '.join(h['near']) or '(none)'}")
+            print(f"  may follow: {', '.join(h['follow']) or '(none)'}")
     return 1 if refused else 0
 
 

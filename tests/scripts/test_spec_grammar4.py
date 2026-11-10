@@ -123,3 +123,17 @@ def test_model_parse_reads_a_codified_2_capability_file_s_requirements(root, tmp
                    "### [g1] one\n- [r1] When a session writes a file, `work` shall print the file.\n")
     done = model(tmp_path, "parse", "--file", str(cap))
     assert done.returncode == 0 and done.stdout.startswith("12: When NoPre"), done.stdout + done.stderr
+
+
+def test_the_hint_names_the_terms_gf_s_completion_says_may_follow(root):
+    """Only the terms a prefix with them still parses: write's object is a file, a session's verb ends a stage, and
+    after `shall` every verb of an act a tool may take; a code literal before them does not let any word in."""
+    def follow(line):
+        return spec_grammar4.hint(root, line)["follow"]
+    assert follow("When a session ends a stage, `work` shall write the") == ["file"]
+    assert follow("When the person runs `work start`, `work` shall write a stage.") == ["file"]
+    assert follow("When a session ends, `work` shall print the file.") == ["stage"]
+    # only "to" may follow: the terms after it, the recipient's among them
+    assert "agent" in follow("When the person runs `work start`, `work` shall give a file.")
+    assert "write" in follow("When a session ends a stage, `work` shall") and "follow" not in follow(
+        "When a session ends a stage, `work` shall")

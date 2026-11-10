@@ -16,8 +16,10 @@ from itertools import islice
 from pathlib import Path
 
 import model_parse
+import spec_follow4
 import spec_grammar
 import spec_meaning
+import spec_refusal4
 import spec_rgl
 import spec_rgl_np
 import spec_rgl_rel
@@ -140,7 +142,7 @@ def parse(root, line):
     term = disagreeing(gram, vocab, tokens, at)
     if term:
         return Parse(refusal="refused: the verb %s does not agree in number with its subject" % term)
-    aspect = misaspected(vocab, tokens, at)
+    aspect = misaspected(vocab, tokens, at) or spec_refusal4.refusal(vocab, tokens, at)
     if aspect:
         return Parse(refusal=aspect)
     if at >= len(tokens):
@@ -161,11 +163,17 @@ def linearise(root, tree):
 
 
 def hint(root, line):
-    """For a refused line: the longest prefix that parsed and the vocabulary's words nearest the token after it."""
+    """For a refused line: the longest prefix that parsed, the vocabulary's words nearest the token after it, and the
+    terms that may follow the prefix (GF's completion, spec_follow4)."""
     vocab, gram = load(root)
     tokens = spec_grammar.tokenise(line)
-    _, at = _trees(gram, {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}, tokens)
-    if at is None or at >= len(tokens):
-        return {"prefix": spec_grammar.normalise(line), "near": []}
+    words = {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
+    _, at = _trees(gram, words, tokens)
+    if at is None:
+        return {"prefix": spec_grammar.normalise(line), "near": [], "follow": []}
+    follow = spec_follow4.terms(gram.languages[GRAMMAR + "Eng"], vocab, tokens, at,
+                                lambda some: _trees(gram, words, some))
+    if at >= len(tokens):
+        return {"prefix": spec_grammar.normalise(line), "near": [], "follow": follow}
     return {"prefix": spec_grammar.detokenise(tokens[:at]) if at else "",
-            "near": difflib.get_close_matches(tokens[at], sorted(vocab.words), n=5)}
+            "near": difflib.get_close_matches(tokens[at], sorted(vocab.words), n=5), "follow": follow}
