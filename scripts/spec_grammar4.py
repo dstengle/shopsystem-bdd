@@ -14,6 +14,7 @@ that sha, the lexicon's words and the text (b239).
 """
 import difflib
 import hashlib
+import os
 from dataclasses import dataclass, field
 from itertools import islice
 from pathlib import Path
@@ -68,10 +69,15 @@ def sha(srcs):
         "%s\0%s\0" % kv for kv in sorted(srcs.items()))).encode()).hexdigest()[:32]
 
 
+def _md(top):
+    """The paths of the .md files under `top`, sorted: os.walk, since pathlib's glob is the most of a parse's time."""
+    return sorted(os.path.join(d, f) for d, _, names in os.walk(top) for f in names if f.endswith(".md"))
+
+
 def _state(root):
-    files = (sorted((root / "spec").glob("**/*.md")) + sorted(spec_packs.PLUGIN.glob("*.md"))
-             + [spec_gf.GRAMMARS / name for name in BASE])
-    return tuple((str(p), st.st_mtime_ns, st.st_size) for p, st in ((p, p.stat()) for p in files))
+    files = (_md(root / "spec") + sorted(str(p) for p in spec_packs.PLUGIN.glob("*.md"))
+             + [str(spec_gf.GRAMMARS / name) for name in BASE])
+    return tuple((p, st.st_mtime_ns, st.st_size) for p, st in ((p, os.stat(p)) for p in files))
 
 
 def _context(root):
@@ -97,6 +103,11 @@ def _clauses(w, vocab, states):
 
 def load(root):
     """(vocab, the compiled grammar as a pgf.PGF), compiled once per set of sources and RGL release."""
+    return _named(root)[:2]
+
+
+def _named(root):
+    """(vocab, the PGF, the sources' sha): load's, and parse's with one look at the files' state."""
     import pgf
     if not tools_grammar.rgl_path():
         raise spec_gf.GrammarError("gf-rgl is missing: run `python3 scripts/tools install`")
@@ -106,7 +117,7 @@ def load(root):
         if not target.is_file():
             spec_gf.compile(srcs, name, GRAMMAR)
         _loaded[name] = pgf.readPGF(str(target))
-    return vocab, _loaded[name]
+    return vocab, _loaded[name], name
 
 
 def _literal(words, text):
@@ -179,8 +190,7 @@ def misaspected(vocab, tokens, at):
 
 def parse(root, line):
     """One line parsed in grammar 4."""
-    vocab, gram = load(root)
-    name = _context(root)[2]
+    vocab, gram, name = _named(root)
     tokens = spec_gf.tokenise(line)
     words = {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
     trees, at = _trees(gram, words, tokens, name)
@@ -221,8 +231,7 @@ def linearise(root, tree):
 def hint(root, line):
     """For a refused line: the longest prefix that parsed, the vocabulary's words nearest the token after it, and the
     terms that may follow the prefix (GF's completion, spec_follow4)."""
-    vocab, gram = load(root)
-    name = _context(root)[2]
+    vocab, gram, name = _named(root)
     tokens = spec_gf.tokenise(line)
     words = {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
     _, at = _trees(gram, words, tokens, name)

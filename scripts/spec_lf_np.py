@@ -27,6 +27,7 @@ class Names:
 
     def __init__(self, vocab):
         self.kinds = sorted(((spec_rgl.kid(k), k) for k in vocab.kinds), key=lambda p: -len(p[0]))
+        self._kind = {}     # name -> kind(name): the scan over every kind is the most of a translation's time
         self.actors = {"a_%s_%d" % (spec_rgl.slug(t), n + 1): (t, k) for n, (t, k) in enumerate(vocab.actors)}
         self.attrs = sorted((("t_%s_%d" % (spec_rgl.slug(t.term), n), t) for n, (t, _) in
                              enumerate(vocab.attributes, 1)), key=lambda p: -len(p[0]))
@@ -35,7 +36,11 @@ class Names:
 
     def kind(self, name):
         """(the kind whose id `name` starts with, the rest of the name after it), or (None, name)."""
-        return next(((k, name[len(K) + 1:]) for K, k in self.kinds if name.startswith(K + "_")), (None, name))
+        hit = self._kind.get(name)
+        if hit is None:
+            hit = self._kind[name] = next(((k, name[len(K) + 1:]) for K, k in self.kinds if name.startswith(K + "_")),
+                                          (None, name))
+        return hit
 
     def attr(self, name):
         return next(((t, name[len(T) + 1:]) for T, t in self.attrs if name.startswith(T + "_")), (None, name))
