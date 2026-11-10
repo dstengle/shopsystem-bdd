@@ -16,7 +16,7 @@
 #defined fun/1.   #defined prose/1. #defined dalt/2.  #defined dlit/5. #defined uall/3. #defined urel/4.
 #defined uattr/4. #defined ucond/5. #defined uccond/4. #defined pre/6. #defined prec/5.
 #defined each/2.   #defined only/5. #defined rattr/4.  #defined rrel/4.  #defined akind/2.
-#defined cnl4/1.    #defined count/7.
+#defined cnl4/1.  #defined cmp/5.  #defined count/7.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
@@ -28,6 +28,7 @@ term(R,X) :- uses(R,X,_).      term(R,X) :- uses(R,_,X).      term(R,X) :- nouse
 term(R,X) :- crel(R,_,X,_,_).  term(R,X) :- crel(R,_,_,X,_).  term(R,X) :- orel(R,_,_,X).
 term(R,X) :- holds(R,X,_).     term(R,X) :- holds(R,_,X).     term(R,X) :- free(R,X).
 term(R,X) :- urel(R,_,_,X).    term(R,X) :- count(R,_,_,X,_,_,_).
+term(R,X) :- cmp(R,X,_,_,_).  term(R,C) :- cmp(R,_,_,C,_).
 % kinds: a sub-kind is its kind (sub(K,K2): K is a kind of K2, transitively); two kinds are compatible when one is
 subeq(K,K) :- role(_,_,K).  subeq(K,K) :- none(_,K,_,_).  subeq(K,K) :- cnone(_,K,_).
 subeq(K,K3) :- sub(K,K2), subeq(K2,K3).
@@ -182,6 +183,17 @@ out(A,B) :- cnonep(A,B,_,K,C), cw(A,B,Z,C,pos), kup(A,B,Z,K).
 % "no K is <rel> Y", "X is <rel> no K" (rnone): no instance of K is so related in the merged state
 out(A,B) :- side(A,B,S), rnone(S,Q,kind(K),Y), at(A,B,S,Y,Zy), rw(A,B,Q,Z,Zy,pos), kup(A,B,Z,K).
 out(A,B) :- side(A,B,S), rnone(S,Q,X,kind(K)), at(A,B,S,X,Zx), rw(A,B,Q,Zx,Z,pos), kup(A,B,Z,K).
+% time (CNL 4's I16, call 9): a history ("has ended a stage", spec_lf_time) is a state relation `hist(E)`, set by its
+% event and unset by nothing, read as any `crel`. A comparison `cmp(R,X,Op,C,P)` puts a bound on the moment X: C a
+% moment of the line (a code among them) or `ago(S)`, now less S seconds ("within the last 7 days"). Over the
+% constants named, exactly: X above C (after, or not before) and below C (before, or not after) is out, unless both
+% are weak (not before C and not after C: X is C); and so is X above a bound later than a bound it is below.
+cw2(A,B,Z,O,Zc,P) :- side(A,B,S), cmp(S,Y,O,C,P), at(A,B,S,Y,Z), at(A,B,S,C,Zc).
+lo(A,B,Z,C,s) :- cw2(A,B,Z,after,C,pos).   lo(A,B,Z,C,w) :- cw2(A,B,Z,before,C,neg).
+hi(A,B,Z,C,s) :- cw2(A,B,Z,before,C,pos).  hi(A,B,Z,C,w) :- cw2(A,B,Z,after,C,neg).
+later(A,B,ago(N2),ago(N1)) :- lo(A,B,_,ago(N2),_), hi(A,B,_,ago(N1),_), N2 < N1.
+out(A,B) :- lo(A,B,Z,C,s), hi(A,B,Z,C,_).  out(A,B) :- lo(A,B,Z,C,_), hi(A,B,Z,C,s).
+out(A,B) :- lo(A,B,Z,C2,_), hi(A,B,Z,C1,_), later(A,B,C2,C1).
 % a functional relation (`fun(Q)`: a relation row of cardinality one, or a preposition, spec_logic_vocab) relates a
 % thing to one thing: two images under one unification are out
 redge(A,B,Q,Z1,Z2) :- rw(A,B,Q,Z1,Z2,pos).

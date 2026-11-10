@@ -20,6 +20,7 @@ codified-2 lines (the If tag, a universal condition paired with each line). The 
 with no translation raises ValueError naming it.
 """
 import spec_facts
+import spec_lf_time
 from spec_facts_np import const
 from spec_lf_core import Atom, Box, Ref, least
 
@@ -96,9 +97,11 @@ class Walk:
                 return      # "the status of x": an image the pre-state says nothing of
             tid, vid = self.ids.attr(x.kind, term, value)
             self.emit("cond", self.term(x), tid, vid, "pos" if pos else "neg")
-        elif item.pred in ("rel", "state"):
+        elif item.pred in ("rel", "state", "history"):
             q, x, y = self.edge(item)
             self.emit("crel", q, self.term(x), self.term(y), "pos" if pos else "neg")
+        elif item.pred in ("cmp", "order"):
+            spec_lf_time.fact(self, item, pos)
         else:
             raise ValueError("no translation of an event in a condition")
 
@@ -107,6 +110,8 @@ class Walk:
         if atom.pred == "rel":
             word, x, y = atom.args
             return self.ids.relation(word, x.kind, y.kind), x, y
+        if atom.pred == "history":
+            return spec_lf_time.edge(self, atom)
         verb, _, roles = atom.args
         subject, kinds, fixed = self.slots(roles)
         if len(kinds) != 1 or fixed:
@@ -135,7 +140,7 @@ class Walk:
             if isinstance(item, Atom) and item.pred == "attr" and item.args[0] in own:
                 x, term, value = item.args
                 self.emit("none", self.ids.kind(x.kind), *self.ids.attr(x.kind, term, value))
-            elif isinstance(item, Atom) and item.pred in ("rel", "state"):
+            elif isinstance(item, Atom) and item.pred in ("rel", "state", "history"):
                 q, x, y = self.edge(item)
                 self.emit("rnone", q, side(x), side(y))
             else:
@@ -230,6 +235,8 @@ class Walk:
         if isinstance(item, Box) and item.op == "not":
             raise ValueError(NEGATED)
         pred = getattr(item, "pred", None)
+        if pred == "order":
+            return      # "the newest K": its order is no restriction the check reads
         if pred not in ("attr", "rel", "state"):
             raise ValueError("no translation of %s on an object" % (pred or item.op))
         first = {"attr": lambda a: a[0], "rel": lambda a: a[1], "state": lambda a: a[2][0][1]}[pred](item.args)
