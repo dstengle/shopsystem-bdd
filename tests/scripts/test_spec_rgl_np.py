@@ -1,15 +1,10 @@
 """Grammar 4's noun phrases (the CNL 4 design, I8; spec_rgl_np): of, its, no, has, holds, lists, only and compounds
-over the rows and attributes of the codified-2 fixture, and v_t18, a declared compound that a row or an attribute
-also derives."""
+over the rows and attributes of the codified-2 fixture."""
 import pathlib
-import shutil
-import subprocess
 import sys
 
 import pytest
 import spec_grammar4
-import spec_lexicon
-import spec_rgl_np
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import toolchain
@@ -57,21 +52,3 @@ def test_a_list_is_never_coerced_to_a_kind_above(root):
                                   "worktree.")
     assert p.tree and len(p.trees) == 1 and "k_thing_More" in p.tree
 
-
-def test_a_declared_compound_that_is_derived_is_refused(tmp_path):
-    shutil.copytree(FIXTURE / "spec", tmp_path / "spec")
-    index = tmp_path / "spec" / "index.md"
-    index.write_text(index.read_text().replace("codified-2", "codified-1")
-                     + "- **stage status** (noun): how far a stage is.\n"
-                     "- **session worktree** (noun): a worktree of a session.\n"
-                     "- **pull request** (noun): a change asked for.\n")
-    lexicon = spec_lexicon.read(tmp_path)
-    assert spec_rgl_np.derived(lexicon) == {"stage status": "the attribute status of stage",
-                                            "session worktree": "the row worktree | of | session"}
-    # `model check` reads a codified-1 index's lexicon (a codified-2 one is v_p0 until the switch, I19)
-    done = subprocess.run([sys.executable, str(REPO / "scripts" / "model"), "--root", str(tmp_path), "check"],
-                          capture_output=True, text=True, timeout=300)
-    found = [line for line in done.stdout.splitlines() if "v_t18" in line or "/stage-status" in line
-             or "/session-worktree" in line or "/pull-request" in line]
-    assert found[0].startswith("v_t18") and "(2)" in found[0], done.stdout
-    assert all("pull-request" not in line for line in found[:3]), done.stdout

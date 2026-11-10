@@ -1119,25 +1119,6 @@ a term an imported pack defines too has no `Redefines:` naming the pack
   typed("ctx").
   ```
 
-## v_t18
-
-a noun entry is spelled as a compound that a relation row or an attribute derives
-
-- Severity: violation
-- Implemented in: `scripts/model.lp`
-- Cited by: no line
-- Fails on:
-
-  ```prolog
-  derived("batch-status","the attribute status of batch").
-  ```
-
-- Passes on:
-
-  ```prolog
-  category("batch-status","kind").
-  ```
-
 ## v_p0
 
 a spec file is not codified (no `language: codified-1`): run `migrate upgrade`
