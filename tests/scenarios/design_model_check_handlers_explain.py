@@ -21,6 +21,7 @@ H = _sibling("design_model_check_handlers.py", "shop_design_model_check_handlers
 
 @handler("WhenRuns", "`model explain`")
 def model_explain(step):
+    H.built(step)
     name = step.names[0]
     ident = step.context.get("ids", {}).get(name, "thing#r1")
     H.says(step, name, ident)

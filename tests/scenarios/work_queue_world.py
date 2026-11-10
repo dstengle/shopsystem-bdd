@@ -199,11 +199,10 @@ def local(template, kind=None):
 def _local_first(vocab, root, keyword):
     import sys
 
-    import features_vocab
     registry = vocab._step_function(root, keyword)
 
     def step_function(text, request, docstring=None, datatable=None):
-        call = features_vocab.step(features_vocab.load(root), keyword, text)
+        call = vocab.call_of(root, keyword, text)
         call.docstring, call.datatable, call.fixtures = docstring, datatable, request.getfixturevalue
         table = getattr(sys.modules.get("shop_work_queue_world"), "LOCAL", LOCAL)   # the handlers' copy of this module
         found = table.get((call.template, call.kind)) or table.get((call.template, None))

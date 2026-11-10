@@ -112,7 +112,13 @@ def env_of(step):
     return env
 
 
+def built(step):
+    """The world the Givens' facts pick, built once before the command (design_model_check_handlers_facts)."""
+    step.context.pop("build", lambda s: None)(step)
+
+
 def run_model(step, *args):
+    built(step)
     base(step.repo, step.context)
     step.context["result"] = step.run("model", *args, env=env_of(step), timeout=120)
 
@@ -125,6 +131,7 @@ def model_check(step):
 @handler("WhenRuns", "`model logic`")
 def model_logic(step):
     """`model logic` on the capability the When names, or on the requirement, by the id a Given gave it."""
+    built(step)
     ids = step.context.get("ids", {})
     run_model(step, "logic", *[ids.get(step.names[0], step.names[0])] if step.names else [])
 
@@ -163,6 +170,7 @@ def holding(step):
 @handler("WhenRuns", "`model parse`")
 def model_parse(step):
     """`model parse` on the capability file that holds the requirement: each of its statements."""
+    built(step)
     run_model(step, "parse", "--file", holding(step))
 
 

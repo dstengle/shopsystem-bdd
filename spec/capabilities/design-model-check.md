@@ -6,7 +6,7 @@ group: service
 language: codified-2
 rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/query-commands-answer-in-their-output, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items, design-decision/work-items-named-by-ids, design-decision/the-glossary-is-a-target-of-spec-work]
 retired: [r8, r9, r12, r13, r14, r15, r16, r17, r18, r21, r26, r27, r29, r31, r32, r33, r34, r35, r37, r39, r45, r46, r53, g73, r73, g72, r72, g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g10, r10, g11, r11, g19, r19, g20, r20, g22, r22, g23, r23, g24, r24, g25, r25, g28, r28, g30, r30, g36, r36, g38, r38, g40, r40, g41, r41, g42, r42, g43, r43, g44, r44, g47, r47, g48, r48, g49, r49, g51, r51, g52, r52, g57, r57, g58, r58, g59, r59, g60, r60, g61, r61, g62, r62, g63, r63, g64, r64, g65, r65, g66, r66, g67, r67, g68, r68, g69, r69, g70, r70, g71, r71, g74, r74, g75, r75, g76, r76, g77, r77, g78, r78, g79, r79, g80, r80, g81, r81, g82, r82, g83, r83, g84, r84, g85, r85, g86, r86, g87, r87, g88, r88, g89, r89, g90, r90, g91, r91, g92, r92, g93, r93, g94, r94, g95, r95, g96, r96, g97, r97, g98, r98, g99, r99, g100, r100, g101, r101, g131, r131, g132, r132, g133, r133, g134, r134, g135, r135, g136, r136, g137, r137, g138, r138, g139, r139, g140, r140, g141, r141, g142, r142, g143, r143, g144, r144, g145, r145, g157, r157, g158, r158, g159, r159, g160, r160, g161, r161, g162, r162, g163, r163, g164, r164, g165, r165, g166, r166, g167, r167, g168, r168, g169, r169, g170, r170, g171, r171, g172, r172, g173, r173]
-unbuilt: [r174, r175, r176, r177, r178, r179, r180, r181, r182, r183, r184, r185, r186, r187, r188, r189, r190, r191, r192, r193, r194, r195, r196, r197, r198, r199, r200, r201, r202, r203, r204, r205, r206, r207, r208, r209, r210, r211, r212, r213, r214, r215, r216, r217, r218, r219, r220, r221, r222, r223, r224, r225, r226, r227, r228, r229, r230, r231, r232, r233, r234, r235, r236, r237, r238, r239, r240, r241, r242, r243, r244, r245, r246, r247, r248, r249, r250, r251, r252, r253, r254, r255, r256, r257, r258, r259, r260, r261, r262, r263, r264, r265, r266, r267, r268, r269, r270, r271, r272, r273, r274, r275, r276, r277, r278]
+unbuilt: []
 ---
 
 # Design model check
@@ -22,129 +22,19 @@ context: product-level artifacts are read only where the files contain them.
 - **rule** (noun): a relation of `scripts/model.lp`, with its code and its plain label: a violation's or a warning's.
 - **decisions index** (noun): the generated file `spec/decisions/index.md`. Plural: decisions indexes. Kind of: file.
 - **interpreter** (noun): a `python3` that `model` runs under or tries.
-- **clingoless** (adjective of interpreter): an interpreter that cannot import clingo, where a `python3` on `PATH` can.
-- **unfound** (adjective of interpreter): an interpreter that cannot import clingo, where no interpreter `model` tries can.
-- **stale** (adjective of decisions index): a decisions index that is not what `model decisions` would write.
-- **sound** (adjective of bounded context): a bounded context in which `model check` finds no violation, unresolved reference or file problem.
-- **unmigrated** (adjective of bounded context): a bounded context with `spec/decisions.md`, or with a `decisions/`, `work/` or `records/` directory at its root.
-- **unnumbered** (adjective of capability): a capability with a requirement bullet in its Behaviour that has no `[r<n>]`.
-- **renumbered** (adjective of capability): a capability two of whose requirements have the same id.
-- **reusing** (adjective of capability): a capability that uses an id it lists as retired.
-- **misnamed** (adjective of capability): a capability whose `id` is not `capability/<context path>/<file name>`, or that has no `## Behaviour`.
-- **untested** (adjective of requirement): a requirement that no scenario names, of a capability that is not of the group `guarantees`.
-- **avoiding** (adjective of requirement): a requirement that mentions a word its context's glossary lists after `Not:`.
-- **unparsed** (adjective of requirement): a requirement that does not parse in its context's requirement grammar.
-- **overtagged** (adjective of scenario): a scenario not tagged `@deprecated` that has more than one `@r<n>` tag.
-- **misreferring** (adjective of scenario): a scenario that names a requirement its capability does not have.
-- **misfiled** (adjective of feature): a feature that is not `features/<name>.feature` for a capability `<name>`.
-- **duplicated** (adjective of term): a term that two glossary entries have as their term.
-- **selfavoiding** (adjective of term): a term with a word after `Not:` that is a term of the context, or the term itself.
-- **malformed** (adjective of term): a term whose bullet in the `## Glossary` of `spec/index.md` is in no form of a term entry.
-- **reaching** (adjective of capability-proposal): a `drafted` or `approved` capability-proposal that changes a requirement no capability has.
-- **plural** (adjective of capability-proposal): a capability-proposal that argues more than one capability.
-- **unanchored** (adjective of request): a request that is part of no job-thread, cites no origin and is raised for no request.
-- **misresolved** (adjective of request): a `delivered` request whose resolution names a requirement the spec does not have.
-- **misformed** (adjective of request): a request that is not of the form `work request` writes.
-- **compound** (adjective of requirement group): a requirement group with more than one statement.
-- **repeating** (adjective of requirement group): a requirement group whose statement has the features, condition and trigger of another group's statement in its capability.
-- **unexampled** (adjective of requirement group): a requirement group with a given line that is not example data.
-- **headless** (adjective of design-decision): a design-decision with no `id` or no `## Decision` section.
 
+- **duplicated** (adjective of term): a term that two glossary entries have as their term.
 - **file form** (noun): one kind of file a bounded context keeps, with its path and the command that writes it. Plural: file forms.
 
-- **unattributed** (adjective of record): a record whose `--about` is not one line or is not the id of a node of the design model.
-
-- **objectless** (adjective of requirement): a requirement with a verb whose glossary entry gives it an object, used with no object.
-- **recipientless** (adjective of requirement): a requirement with a verb whose glossary entry gives it a recipient, used with no recipient.
-- **frameless** (adjective of term): a verb whose glossary entry does not name the kinds of its subject and object, nor say that it takes no object.
-- **relational** (adjective of term): a condition whose definition names with `the` a kind other than the kind it is a condition of.
-- **negating** (adjective of requirement): a requirement that says with `not` that a verb or a relation between two kinds does not hold.
-
-- **mistyped** (adjective of requirement): a requirement with a verb whose subject, object or recipient is not of the kind the verb's frame names.
-
-- **addressed** (adjective of requirement): a requirement whose trigger is a verb with its object and, after `to`, its recipient.
-
-- **verbal** (adjective of requirement): a requirement whose condition is a verb between two kinds, positive or with `does not`.
-- **agentless** (adjective of requirement): a requirement with a verb whose frame has a subject, used in the passive with no subject.
-
-- **unlabelled** (adjective of term): a term whose entry does not name its part of speech.
-
-- **prepositional** (adjective of term): a verb whose frame puts a preposition between the verb and its object, as in `Frame: viewer subscribes to channel.`.
-- **prepositioned** (adjective of requirement): a requirement with a prepositional verb followed by its preposition and its object, as in `a viewer subscribes to a channel`.
-- **misframed** (adjective of term): a verb whose glossary entry has a `Frame:` that does not read as its subject, the verb and the kinds the verb takes.
-
-- **unpairable** (adjective of capability): a capability two of whose requirements share a named code that `grammar/check.lp` cannot unify, and two others of whose requirements conflict (an L1).
-
 - **rule catalogue** (noun): the generated file `grammar/rules.md`, one entry a rule. Kind of: file.
-- **stale** (adjective of rule catalogue): a rule catalogue that is not what `model rules --write` would write.
-
-- **aspectless** (adjective of term): a verb whose entry says neither `state` nor `action`.
-- **multiframed** (adjective of term): a verb whose entry has two `Frame:` lines.
-- **polysemous** (adjective of term): a verb with two entries whose frames take kinds that do not overlap.
-- **overlapping** (adjective of term): a verb with two entries whose frames take, in every slot, the same kind or one kind under the other.
 
 - **pack** (noun): a file of terms a bounded context imports: `grammar/packs/<name>.md` of the plugin, or `spec/packs/<name>.md` of the bounded context. Kind of: file.
-- **importing** (adjective of bounded context): a bounded context whose `spec/index.md` imports a pack.
-- **misimporting** (adjective of bounded context): a bounded context whose `spec/index.md` imports a pack that neither the plugin nor the bounded context has.
-- **unmarked** (adjective of term): a term that a pack its bounded context imports defines too, whose entry has no `Redefines:`.
-- **redefining** (adjective of term): a term whose entry has `Redefines:` naming a pack that defines it.
-
-- **plural** (adjective of requirement): a requirement whose subject is plural and whose verb agrees with it, as in "When sessions write a file".
-- **disagreeing** (adjective of requirement): a requirement whose verb does not agree in number with its subject, as in "When sessions writes a file".
-
-- **misaspected** (adjective of requirement): a requirement with an action verb in its While clause or a state verb in its trigger.
-- **optioned** (adjective of requirement): a requirement whose trigger runs a command with an option, as in "runs `work backlog` with the `--json` option".
-
-- **genitive** (adjective of requirement): a requirement with "of" or "its" over a relation row or an attribute, as in "the branch of the task".
-- **denying** (adjective of requirement): a requirement with "no" before a noun as a subject or an object, as in "a verb has no frame".
-- **compound** (adjective of requirement): a requirement with a compound noun that an attribute or a relation row derives, as in "the batch status".
-- **restrictive** (adjective of requirement): a requirement with "only" before an object, as in "a worker shall change only files in its worktree".
-
-- **relative** (adjective of requirement): a requirement with a relative clause on a verb's frame, as in "a channel that a viewer subscribes to".
-- **possessive** (adjective of requirement): a requirement with "whose" over a relation row or an attribute, as in "a verb whose entry has no frame".
-- **ambiguous** (adjective of requirement): a requirement with two readings that mean different things, as in a list that may belong to either of two verbs.
 
 - **logical form** (noun): what a requirement means, as referents, atoms and boxes, printed by `model parse --form`.
-- **indexical** (adjective of requirement): a requirement that says "this" before a kind whose entry has `This:`.
-
-- **antecedentless** (adjective of requirement): a requirement with "the" before a noun that no earlier noun phrase, functional relation or declared indexical gives.
-- **unquantified** (adjective of requirement): a requirement whose While clause says "does not" before a noun phrase with "a" or "an", as in "an item does not hold a commit".
-- **triggerless** (adjective of requirement): a requirement with no trigger and neither "always" nor "never".
-
-- **unfinished** (adjective of requirement): a requirement that stops where its frame needs another word.
-
-- **exemplified** (adjective of requirement): a requirement holding a code or a quoted string that names no actor, command, option, value, rule or named instance.
-
-- **restricting** (adjective of capability): a capability with a line that obliges an agent to change only things of one kind, and a line in which that agent changes a thing of that kind.
-- **exhaustive** (adjective of capability): a capability with a line that obliges a tool to print every thing of a kind and a line that forbids it to print a thing of that kind, under one trigger and state.
-
-- **overriding** (adjective of capability): a capability with an If line and a When line of one trigger whose responses differ, where the If line's state holds.
-- **contravening** (adjective of capability): a capability with a line whose response a universal condition forbids, under the line's trigger.
-
-- **restating** (adjective of requirement): a requirement each of whose Thens other requirements entail.
-
-- **counted** (adjective of requirement): a requirement with "at least", "at most", "exactly", "more than" or "fewer than" before a number and a noun.
-- **overcounted** (adjective of capability): a capability with two lines of one trigger and state whose counts of one kind cannot both hold.
-
-- **timed** (adjective of requirement): a requirement that compares a moment or a duration with "after", "before", "since" or "within the last".
-- **clocked** (adjective of requirement): a requirement whose trigger is the clock reaching a moment.
-- **historical** (adjective of requirement): a requirement whose While clause says that an agent has done an action, as in "the batch has published a pull request".
-- **unitless** (adjective of requirement): a requirement with a number where a duration is due and no unit of the time pack after it.
-
-- **permissive** (adjective of requirement): a requirement that says an agent may do an action.
-- **invariant** (adjective of requirement): a requirement with no trigger that says a thing always holds or never holds.
-- **forbidding** (adjective of capability): a capability with a line that forbids what another of its lines says an agent may do.
 
 - **recodified** (adjective of capability): a capability whose file has `language: codified-2` in its frontmatter.
 
-- **refusing** (adjective of requirement): a requirement whose response says that a tool shall refuse a command.
-- **overridden** (adjective of requirement): a When requirement over which an If requirement of the same trigger takes precedence.
-
-- **oblique** (adjective of term): a verb whose frame takes a kind after its object behind a preposition other than `to`, as in `Frame: agent records thing in file.`.
-- **later-sensed** (adjective of requirement): a requirement of a capability whose file has `language: codified-1`, with a verb read by an entry of the verb that is not its first, as in "`trial-runner` shall name the target" under `Frame: agent names thing.` when an entry `Frame: text names thing.` comes before it.
-
 - **embedding** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, with "the" before a noun inside a modifier of a noun phrase of the same kind, where an earlier noun phrase of that kind gives it, as in "When the person runs `work request --raised-for` on a request, `work` shall write a request raised for the request.".
-- **self-embedding** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, with "the" before a noun inside a modifier of a noun phrase of the same kind, where no earlier noun phrase of that kind gives it, as in "`work` shall write a request raised for the request" with no request before it.
 
 - **intransitive** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, whose While clause has a state verb whose frame takes no object, as in "a test fails" under `Frame: test fails.`.
 
@@ -155,13 +45,8 @@ context: product-level artifacts are read only where the files contain them.
 
 - **shadowed** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, with "the K" after a noun phrase of kind K inside a "no", "not", "every" or "only" box that does not hold "the K", and after a noun phrase of kind K outside that box, as in "While an item has no dependency on an item whose status is not `delivered`, when the person runs `work batch start`, `work` shall pick the item.".
 - **accessible reading** (noun): a logical form in which "the K" is the latest earlier referent of kind K that is not inside a "no", "not", "every" or "only" box which does not hold "the K", and not a referent inside such a box. Plural: accessible readings. Kind of: logical form.
-- **unreachable** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, with "the K" where every earlier noun phrase of kind K is inside a "no", "not", "every" or "only" box that does not hold "the K", as in "While no item is `ready`, when the person runs `work batch start`, `work` shall print the item.".
 
 - **setting** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, whose response says that an agent shall set an attribute of a thing the line names earlier to a value, as in "set the status of the request to `delivered`" or "set its status to `delivered`".
-
-- **quantifying** (adjective of capability): a capability with a line whose While clause says "every K" that meets a restrictor and a line of one trigger whose response conflicts with it in a state where every K meets it.
-- **thresholded** (adjective of capability): a capability with a line whose While clause says a count of Ks, as "at least two Ks", and a line of one trigger whose response conflicts with it in a state that meets that count.
-- **excepting** (adjective of capability): a capability with a line that obliges an agent to act on a K that does not meet a restrictor, as "a K that is not `done`", and a line that forbids that act on such a K under one trigger and state.
 
 - **violate** (verb, state): a thing does not meet a rule of the rule catalogue. Forms: violates, violated. Frame: thing violates rule.
 - **frame** (noun): one `Frame:` of a verb's entry: the kinds its subject, object and recipient take. Kind of: text.
@@ -329,15 +214,19 @@ Restates: r65@0.29.
 - [r156] When the person runs `model explain` on a requirement, `model` shall print the requirement and exit successfully.
 
 ### [g174] `model check` exits successfully when nothing violates a rule
+Restates: r1@0.29.
 - [r174] While this bounded context conforms to the design model, when the person runs `model check`, `model` shall print no violation and exit successfully.
 
 ### [g175] `model check` prints a violation under its rule's code
+Restates: r2@0.29, r3@0.29, spec-integration#r16@0.29.
 - [r175] While a capability violates `v15a`, if the person runs `model check`, then `model` shall exit with an error naming `v15a`.
 
 ### [g176] Two requirements with one id
+Restates: r4@0.29.
 - [r176] While a capability violates `v15b`, if the person runs `model check`, then `model` shall exit with an error naming `v15b`.
 
 ### [g177] A retired id used again
+Restates: r5@0.29.
 - [r177] While a capability violates `v15c`, if the person runs `model check`, then `model` shall exit with an error naming `v15c`.
 
 ### [g178] A group with more than one statement
@@ -350,72 +239,94 @@ Restates: r65@0.29.
 - [r180] While a requirement group violates `v15m`, if the person runs `model check`, then `model` shall exit with an error naming `v15m`.
 
 ### [g181] A requirement with no scenario
+Restates: r8@0.29.
 - [r181] While a requirement group violates `v_s3`, if the person runs `model check`, then `model` shall exit with an error naming `v_s3`.
 
 ### [g182] A scenario that names more than one requirement
+Restates: r107@0.29.
 - [r182] While a scenario violates `v_s2`, if the person runs `model check`, then `model` shall exit with an error naming `v_s2`.
 
 ### [g183] A request with no origin
+Restates: r120@0.29.
 - [r183] While a request violates `v17`, if the person runs `model check`, then `model` shall exit with an error naming `v17`.
 
 ### [g184] A delivered request resolved by no requirement of the spec
+Restates: r116@0.29.
 - [r184] While a request violates `v3`, if the person runs `model check`, then `model` shall exit with an error naming `v3`.
 
 ### [g185] A requirement that uses an avoided word
+Restates: r52@0.29.
 - [r185] While a requirement violates `v_t1`, if the person runs `model check`, then `model` shall exit with an error naming `v_t1`.
 
 ### [g186] Two glossary entries with one term
+Restates: r53@0.29.
 - [r186] While a term violates `v_t2`, if the person runs `model check`, then `model` shall exit with an error naming `v_t2`.
 
 ### [g187] An avoided word that is a term
+Restates: r54@0.29.
 - [r187] While a term violates `v_t3`, if the person runs `model check`, then `model` shall exit with an error naming `v_t3`.
 
 ### [g188] A requirement that does not parse
+Restates: r103@0.29, r104@0.29.
 - [r188] While a requirement violates `v_p1`, if the person runs `model check`, then `model` shall exit with an error naming `v_p1`.
 
 ### [g189] A request not of the form `work request` writes
+Restates: r112@0.29.
 - [r189] While a request does not conform to the request form, if the person runs `model check`, then `model` shall exit with an error naming the request.
 
 ### [g190] A scenario that names a requirement its capability does not have
+Restates: r9@0.29.
 - [r190] While a scenario refers to a requirement id that the capability of the scenario does not hold, if the person runs `model check`, then `model` shall exit with an error naming the scenario.
 
 ### [g191] A capability with no capability id
+Restates: r25@0.29.
 - [r191] While a capability does not conform to the capability id form, if the person runs `model check`, then `model` shall exit with an error naming the capability.
 
 ### [g192] A capability with no Behaviour section
 - [r192] While a capability does not conform to the capability section form, if the person runs `model check`, then `model` shall exit with an error naming the capability.
 
 ### [g193] A feature file of no capability
+Restates: r26@0.29.
 - [r193] While a feature does not conform to the feature form, if the person runs `model check`, then `model` shall exit with an error naming the feature.
 
 ### [g194] A decision with no id or no Decision section
+Restates: r29@0.29.
 - [r194] While a design-decision does not conform to the decision form, if the person runs `model check`, then `model` shall exit with an error naming the design-decision.
 
 ### [g195] A glossary bullet in no form of a term entry
+Restates: r48@0.29, r49@0.29.
 - [r195] While a term does not conform to the entry form, if the person runs `model check`, then `model` shall exit with an error naming the term.
 
 ### [g196] A repository not on the final layout
+Restates: r61@0.29.
 - [r196] While this bounded context does not conform to the final layout, if the person runs `model check`, then `model` shall exit with an error naming `scripts/migrate`.
 
 ### [g197] A warning leaves the exit as it is
+Restates: r11@0.29.
 - [r197] While an observation violates `w_uncited_obs`, when the person runs `model check`, `model` shall print `w_uncited_obs` and exit successfully.
 
 ### [g198] A context with no job has no unserved capability
+Restates: r111@0.29.
 - [r198] While this bounded context has no job, when the person runs `model check`, `model` shall not print `w_unserved_cap`.
 
 ### [g199] `model check` tries again under an interpreter that has clingo
+Restates: r55@0.29.
 - [r199] While `model check` has an interpreter that does not import `clingo`, when the person runs `model check`, `model` shall use an interpreter that imports `clingo`.
 
 ### [g200] No interpreter has clingo
+Restates: r12@0.29.
 - [r200] While no interpreter imports `clingo`, if the person runs `model check`, then `model` shall refuse the command and name `pip install clingo`.
 
 ### [g201] `model facts` prints the facts
+Restates: r13@0.29.
 - [r201] When the person runs `model facts`, `model` shall print every fact of this bounded context.
 
 ### [g202] `model decisions --check` refuses an index that lacks an index entry
+Restates: r15@0.29.
 - [r202] While a design-decision has an index entry that a decisions index does not hold, if the person runs `model decisions --check`, then `model` shall exit with an error naming the decisions index and change no file.
 
 ### [g203] `model decisions --check` passes a current index
+Restates: r37@0.29.
 - [r203] While no decisions index lacks an index entry, when the person runs `model decisions --check`, `model` shall exit successfully.
 
 ### [g204] `work record` refuses an `--about` that identifies nothing

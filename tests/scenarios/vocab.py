@@ -173,8 +173,19 @@ def read(root, keyword, text):
             call = features_vocab.step(features_vocab.load(root), keyword, text)
             _read[key] = (call.template, call.kind)
         except features_vocab.StepError:
-            _read[key] = None
+            _read[key] = _read4(root, keyword, text)
     return _read[key]
+
+
+def _read4(root, keyword, text):
+    """A step only the step grammar 4 reads (a codified-2 capability's): (4, template, kind), which is no row's key, so
+    the catch-all definition of its keyword takes it; None when grammar 4 does not read it either."""
+    import features_vocab4
+    try:
+        call = features_vocab4.step(root, keyword, text)
+    except Exception:  # noqa: BLE001  (a context with no grammar 4 reads no step in it)
+        return None
+    return (4, call.template, call.kind)
 
 
 class VocabParser:
@@ -202,9 +213,18 @@ def _words(row):
     return [w for w in re.split(r"\{[nx]\d+\}", row.pattern) if w.strip()]
 
 
+def call_of(root, keyword, text):
+    """A step's Call, read in the Steps grammar, else in the step grammar 4 (`_read4`)."""
+    try:
+        return features_vocab.step(features_vocab.load(root), keyword, text)
+    except features_vocab.StepError:
+        import features_vocab4
+        return features_vocab4.step(root, keyword, text)
+
+
 def _step_function(root, keyword):
     def step_function(text, request, docstring=None, datatable=None):
-        call = features_vocab.step(features_vocab.load(root), keyword, text)
+        call = call_of(root, keyword, text)
         call.docstring, call.datatable, call.fixtures = docstring, datatable, request.getfixturevalue
         found = sys.modules["vocab"].lookup(call.template, call.term)
         if found is None:

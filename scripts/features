@@ -157,6 +157,15 @@ def steps_of(path):
     return out
 
 
+def step_of(vocab, root, keyword, text):
+    """A step's Call, read in the Steps grammar, else in the step grammar 4 (a codified-2 capability's step)."""
+    try:
+        return features_vocab.step(vocab, keyword, text)
+    except features_vocab.StepError:
+        import features_vocab4
+        return features_vocab4.step(root, keyword, text)
+
+
 def cmd_vocab(args):
     """`features vocab [--check]`: the vocabulary, or the steps of generated features with no handler."""
     root = os.path.abspath(args.root)
@@ -181,7 +190,7 @@ def cmd_vocab(args):
         unbuilt = spec_unbuilt.unbuilt_lines(full, root)
         for n, keyword, text in steps_of(full):
             try:
-                call = features_vocab.step(vocab, keyword, text)
+                call = step_of(vocab, root, keyword, text)
             except features_vocab.StepError as err:
                 problems.append("%s:%d: %s | %s" % (path, n, text, err))
                 continue
