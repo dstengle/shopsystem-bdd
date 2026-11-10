@@ -188,7 +188,7 @@ a response the doer is obliged to
 
 - Form: <doer> shall <act>
 - Functions: `k_\w+_Shall`
-- Cited by: no line
+- Cited by: feature-file-tools#r108
 - Example and its reading:
 
 ```construct

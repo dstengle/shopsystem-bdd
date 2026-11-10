@@ -123,8 +123,8 @@ The simplified workflow:
 - **term** (noun): one entry of this glossary or of a capability's `## Terms`, with a category.
 - **design-decision** (noun): one file under `spec/decisions/`. Kind of: file.
 - **feature** (noun): the generated file `features/<capability>.feature`, one scenario for each requirement group. Kind of: file.
-- **scenario** (noun): a Gherkin scenario in `features/<capability>.feature`, generated from one requirement group, passing when the one test that binds it passes. Not: test case.
-- **step** (noun): one Given, When or Then line of a scenario, the linearisation of one step function, bound to exactly one step definition.
+- **scenario** (noun): a Gherkin scenario in `features/<capability>.feature`, generated from one requirement group, passing when the one test that binds it passes. Not: test case. Kind of: text.
+- **step** (noun): one Given, When or Then line of a scenario, the linearisation of one step function, bound to exactly one step definition. Kind of: text.
 
 - **request** (noun): the one way work enters a bounded context: lines that its asker (another context, the product level, or the context itself) proposes to its upstream (the context asked). Kind of: text.
 - **request line** (noun): one proposed statement of a request, with its line outcome. Kind of: text.
@@ -173,6 +173,8 @@ The simplified workflow:
 - **record** (noun): a file under `.shop/records/` whose frontmatter id has a record kind. Not: log entry. Kind of: file.
 - **measurement** (noun): a record under `.shop/records/measurements/` of the figures of one batch, of one earlier delivery or of a trial, written by `measure` or by the trial. Not: facts file. Kind of: record.
 - **trial** (noun): one run by the `trial-runner` of a plugin tool or `work run` on a real target or a fixture repository, measuring what its input names. Kind of: thing.
+- **the language reference** (artifact): the file `grammar/language.md` of the plugin: the reading rules of the controlled language, its constructs, each with its tested lines, and what it cannot say yet.
+- **the corpus** (proper noun): the directory `grammar/corpus/spec/` of the plugin: every live line of a capability whose language is `codified-2`, with the reading it is meant to have. Kind of: file.
 
 - **status** (attribute of initiative): a node's, request's or design-decision's place in its kind's lifecycle, written in its frontmatter by `work`. Values: `proposed`, `started`, `done`, `abandoned`.
   Transitions: `proposed` → `started`: `work start`; `started` → `done`: complete; `started` → `abandoned`: `work abandon`. Not: state.
@@ -189,6 +191,7 @@ The simplified workflow:
 - **side** (attribute of request): the side whose part of the request is written next. Values: `asker`, `upstream`.
 - **kind** (attribute of stage): Values: `research`, `plan`, `implement`, `review`, `integrate`, `gate`, `apply`, `formulate`, `intake`, `answer`, `branch review`, `analysis`.
 - **group** (attribute of capability): Values: `service`, `guarantees`, `model`, `operations`.
+- **language** (attribute of capability): the grammar a capability's lines are read in, written as `language:` in its frontmatter. Values: `codified-1`, `codified-2`.
 - **grade** (attribute of review finding): Values: `Critical`, `Important`, `Minor`.
 
 - **open** (adjective of initiative): An initiative is open when the initiative is not `done` and the initiative is not `abandoned`.
