@@ -22,8 +22,8 @@ two Ks a When each. A construct with no step
 """
 from dataclasses import replace
 
-import spec_facts
 import spec_lf
+import spec_lf_core
 import spec_lf_distinct
 import spec_lf_exist
 import spec_lf_option
@@ -261,7 +261,7 @@ def cases(vocab, forms, entailed=None):
     while seq is not None:
         r = Reader(vocab, seq)
         out.append(read(vocab, forms, entailed, r))
-        seq = spec_facts._next(r.taken, r.options)
+        seq = spec_lf_core.next_choice(r.taken, r.options)
     return out
 
 

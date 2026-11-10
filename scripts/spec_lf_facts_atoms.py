@@ -10,8 +10,7 @@ import spec_lf_distinct
 import spec_lf_exist
 import spec_lf_order
 import spec_lf_quant
-from spec_facts_np import const
-from spec_lf_core import Box, Ref
+from spec_lf_core import Box, Ref, const
 
 WORDS = {("exit", "successfully"): "exit_ok", ("exit", "with an error naming"): "exit_error", ("print",): "print"}
 

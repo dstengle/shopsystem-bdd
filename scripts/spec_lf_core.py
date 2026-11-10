@@ -15,6 +15,25 @@ from dataclasses import dataclass, field, replace
 ORIGINS = ("while", "trigger", "response", "indexical", "parameter", "constant")
 
 
+def const(text):
+    """A clingo string."""
+    return '"%s"' % str(text).replace("\\", "\\\\").replace('"', '\\"')
+
+
+def split(ident):
+    """The requirement a split of an `or` comes from: `s#r5#2` -> `s#r5`; any other id as it is."""
+    head, sep, tail = ident.rpartition("#")
+    return head if sep and tail.isdigit() else ident
+
+
+def next_choice(taken, options):
+    """The choices of the next walk of a form's `or` boxes after one that took `taken`, or None after the last."""
+    for j in range(len(taken) - 1, -1, -1):
+        if taken[j] + 1 < options[j]:
+            return taken[:j] + [taken[j] + 1]
+    return None
+
+
 @dataclass(frozen=True)
 class Ref:
     name: str               # x1, x2 ... in order of first mention

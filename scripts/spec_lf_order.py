@@ -16,8 +16,7 @@ import re
 
 import spec_lf_np as nps
 import spec_rgl
-from spec_facts_np import const
-from spec_lf_core import Atom, Box
+from spec_lf_core import Atom, Box, const
 
 NUMBER, LISTED, WIDTH = "by number", "as listed", 6
 ORDER = {"After": "after", "Before": "before"}

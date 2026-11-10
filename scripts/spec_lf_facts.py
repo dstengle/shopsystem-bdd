@@ -18,7 +18,6 @@ a necessity are spec_lf_modal's; every and a count in a condition and a negated 
 spec_lf_facts_atoms'. An `or` box splits it as spec_facts does (`R#n`,
 `disj`); no translation, a ValueError.
 """
-import spec_facts
 import spec_lf_distinct
 import spec_lf_exist
 import spec_lf_modal
@@ -27,8 +26,7 @@ import spec_lf_number
 import spec_lf_option
 import spec_lf_quant
 import spec_lf_set
-from spec_facts_np import const
-from spec_lf_core import Atom, Box, least
+from spec_lf_core import Atom, Box, const, least, next_choice
 from spec_lf_facts_atoms import TIME, Terms
 
 FORMS = {("response",): "ubiq", ("when", "response"): "when", ("while", "response"): "while",
@@ -217,5 +215,5 @@ def translate(ids, ident, form):
         sid = "%s#%d" % (ident, k)
         w = Walk(ids, sid, seq)
         out += ["disj(%s,%s)." % (const(sid), const(ident))] + w.run(form)
-        seq = spec_facts._next(w.taken, w.options)
+        seq = next_choice(w.taken, w.options)
     return out
