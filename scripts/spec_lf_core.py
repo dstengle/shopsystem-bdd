@@ -56,6 +56,7 @@ class NP:
     inner: list = field(default_factory=list)
     deps: list = field(default_factory=list)
     new: bool = True
+    said: str = None        # the determiner and noun as said ("a stage", "stages"), for a reading rule's refusal
 
 
 @dataclass
@@ -73,6 +74,7 @@ class State:
         self.refs, self.fixed, self.images = [], {}, {}
         self.origin, self.subject, self.events = "trigger", None, 0
         self.clauses = None     # spec_lf_clause, which the relative clauses of spec_lf_np are read by
+        self.notes = []         # the reading rules' refusals met while translating (spec_lf_read), in order
 
     def ref(self, kind, origin=None, value=None, definite=False):
         r = Ref("x%d" % (len(self.refs) + 1), kind, origin or self.origin, value, definite)
