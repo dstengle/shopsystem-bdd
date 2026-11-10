@@ -74,6 +74,9 @@ def cmd_parse(args):
     import spec_grammar4
     if spec_grammar4.marked(args.root):
         return _parse4(args, lines)
+    if args.form:
+        print("--form reads grammar 4: spec/index.md does not say `language: codified-2`")
+        return 2
     refused = 0
     for n, line in lines:
         head = f"{n}: " if n is not None else ""
@@ -122,7 +125,7 @@ def _parse4(args, lines):
             print(f"grammar 4 could not be built: {err}")
             return 2
         if p.tree is not None:
-            print(head + p.tree)
+            print(head + (_form(args.root, p.tree) if args.form else p.tree))
             continue
         refused += 1
         print(head + (f"{named[n]}: " if n in named else "") + p.refusal)
@@ -133,6 +136,14 @@ def _parse4(args, lines):
             print(f"  parsed up to: {h['prefix']}")
             print(f"  nearest words: {', '.join(h['near']) or '(none)'}")
     return 1 if refused else 0
+
+
+def _form(root, tree):
+    """The logical form of a grammar 4 tree, as spec_lf shows it."""
+    import spec_grammar4
+    import spec_lf
+    vocab, _ = spec_grammar4.load(root)
+    return spec_lf.show(spec_lf.form(vocab, tree))
 
 
 def cmd_lexicon(args):
