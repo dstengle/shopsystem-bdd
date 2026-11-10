@@ -108,12 +108,12 @@ def started(root, files=None):
 
 # --- the interpreter ---
 
-def fake(where, **config):
+def fake(where, log=None, **config):
     """An interpreter at <where>/bin/python that answers as a virtualenv with the tools it is told to have,
-    logs what it is asked to run in <where>/calls.log, and runs the rest as the real one."""
+    logs what it is asked to run in `log` (default <where>/calls.log), and runs the rest as the real one."""
     (where / "bin").mkdir(parents=True)
     config = {"missing": [], "venv": True, "pip_fails": False, "pip_error": "", "pytest": "run",
-              "pytest_out": "", "block": [], **config, "log": str(where / "calls.log")}
+              "pytest_out": "", "block": [], **config, "log": str(log or where / "calls.log")}
     (where / "bin" / "fake.json").write_text(json.dumps(config))
     for name in ("python", "lint-imports"):
         (where / "bin" / name).write_text("#!%s\n%s" % (sys.executable, FAKE))
@@ -127,7 +127,7 @@ def interpreter(context):
 
 
 def calls(python):
-    log = pathlib.Path(python).parent.parent / "calls.log"
+    log = pathlib.Path(json.loads((pathlib.Path(python).parent / "fake.json").read_text())["log"])
     return [json.loads(line) for line in log.read_text().splitlines()] if log.exists() else []
 
 
@@ -159,11 +159,15 @@ def rgl_source(gf, where, env):
 # --- running tools ---
 
 def invoke(run, repo, context, argv, outside=None):
-    """Run tools in the project: with the stand-in or the --python given, or the real one; its map made first if wanted."""
+    """Run tools in the project: with the stand-in (at `.venv` of the project, which tools finds, when `fake_at` says
+    so) or the --python given, or the real one; its map made first if wanted."""
     if "fake" in context and "python" not in context:
-        context["python"] = fake(outside(), **context["fake"])
+        at = context.get("fake_at")
+        log = outside() / "calls.log" if at else None    # the log of a stand-in in the project kept out of it
+        context["python"] = fake(at or outside(), log=log, **context["fake"])
+        context["discover"] = context.get("discover") or bool(at)
     option = []
-    if "python" in context or not context.get("discover"):
+    if not context.get("discover"):
         option = ["--python", str(context.get("python", sys.executable))]
     env = {k: v for k, v in os.environ.items() if k not in ("VIRTUAL_ENV", "PYTEST_ADDOPTS", "SHOPSYSTEM_GF")}
     env.update(context.get("env", {}))

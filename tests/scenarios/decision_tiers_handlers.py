@@ -158,9 +158,11 @@ def given_test(step):
     says(step, name, "tests/test_%s.py::test_%s" % (name, name))
 
 
+@handler("GivenK_C", "test")
 @local("GivenK_C", "test")
 def given_failing_test(step):
-    """failing: the test also asserts False. Any other condition goes on to the registry."""
+    """failing: the test also asserts False. Any other condition goes on to the registry (this one is also the
+    registry's, which the feature of no other capability says)."""
     name = bare(step.names[0])
     if not step.text.endswith(" is failing") or name not in step.context.get("says", {}):
         return False
