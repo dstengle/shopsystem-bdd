@@ -3,6 +3,12 @@ file in `extra` replacing the capability of its name), every requirement and uni
 translated into facts (`spec_facts`), the requirements that do not parse with their refusals, and the lexicon's
 domain facts.
 
+A capability file that says `language: codified-2` is read through grammar 4 (CNL 4's call 15, I12a): each line
+parsed (spec_grammar4), its logical form (spec_lf) translated into the same facts (spec_lf_facts), a line a reading
+rule refuses or the translation has no facts of among the refused; both kinds of file feed one check. A context whose
+`spec/index.md` says `language: codified-2` takes its vocabulary from its layered lexicon, packs included, and reads
+its universal conditions in grammar 4 too.
+
 `load(root, extra=())` is cached in the process by the state of the files it reads: `spec/**/*.md` under `root`, the
 files of `extra` and the plugin's `grammar/*.gf` (each path with its mtime_ns and size).
 """
@@ -12,9 +18,15 @@ from pathlib import Path
 
 import spec_facts
 import spec_grammar
+import spec_grammar4
 import spec_lexicon
+import spec_lf
+import spec_lf_facts
+import spec_lf_ids
+import spec_lf_read
 import spec_logic_vocab
 import spec_read
+import spec_rgl_vocab
 
 GRAMMAR = Path(__file__).resolve().parent.parent / "grammar"
 Statement = namedtuple("Statement", "id capability group tree")
@@ -41,13 +53,21 @@ def fingerprint(root, extra=()):
             _stamp(sorted(GRAMMAR.glob("*.gf"))))
 
 
+MARKERS = (spec_read.MARKER, spec_grammar4.MARKER)
+
+
 def _caps(root, extra):
-    caps = {}
+    """{name: capability} of the codified capabilities, and the names of those that say `language: codified-2`."""
+    caps, four = {}, set()
     for path in sorted((Path(root) / "spec" / "capabilities").glob("*.md")) + [Path(p) for p in extra]:
-        if spec_read.codified(path):
-            cap = spec_read.capability(path)
+        if spec_read.codified(path, MARKERS):
+            cap = spec_read.capability(path, MARKERS)
             caps[cap.name] = cap
-    return caps
+            if spec_read.codified(path, (spec_grammar4.MARKER,)):
+                four.add(cap.name)
+            else:
+                four.discard(cap.name)
+    return caps, four
 
 
 def _define(root, lex, vocab):
@@ -94,22 +114,62 @@ def _read(root, extra):
         return _translate(root, extra)
 
 
+class _Four:
+    """Grammar 4's side of one read: its vocabulary, compiled once, and the check's names of its words."""
+
+    def __init__(self, root, marked):
+        self.root, self.marked, self.rgl, self.ids = root, marked, None, None
+
+    def facts(self, ident, text):
+        """(the tree and facts of a codified-2 line, None) or (None, its refusal)."""
+        if self.rgl is None:
+            self.rgl = spec_grammar4.load(self.root)[0]
+            lex = spec_rgl_vocab.lexicon(self.root)
+            self.ids = spec_lf_ids.Ids(spec_logic_vocab.Vocab(lex, self.rgl.kinds), lex, self.rgl.kinds)
+        parsed = spec_grammar4.parse(self.root, text)
+        why = parsed.refusal or spec_lf_read.refusal(self.rgl, parsed.tree)
+        if why:
+            return None, why
+        try:
+            return (parsed.tree, spec_lf_facts.translate(self.ids, ident, spec_lf.form(self.rgl, parsed.tree))), None
+        except ValueError as err:
+            return None, "refused: %s" % err
+
+
+def _vocab(root, four):
+    """The logic's Vocab: of the layered lexicon and grammar 4's kinds when `spec/index.md` says codified-2."""
+    if not four.marked:
+        lex = spec_lexicon.read(root)
+        vocab = spec_logic_vocab.Vocab(lex)
+        _define(root, lex, vocab)
+        return vocab
+    lex = spec_rgl_vocab.lexicon(root)
+    return spec_logic_vocab.Vocab(lex, spec_rgl_vocab.read(root).kinds)
+
+
 def _translate(root, extra):
-    lex = spec_lexicon.read(root)
-    vocab = spec_logic_vocab.Vocab(lex)
-    _define(root, lex, vocab)
-    caps = _caps(root, extra)
-    statements, refused = [], {}
+    four = _Four(root, spec_grammar4.marked(root))
+    vocab = _vocab(root, four)
+    caps, fours = _caps(root, extra)
+    statements, refused, facts = [], {}, {}
     lines = [(name, "%s#%s" % (name, g.id), "%s#%s" % (name, r.id), r.text)
              for name, cap in sorted(caps.items()) for g in cap.groups for r in g.requirements]
     lines += [(None, None, u.id, u.text) for u in spec_read.universal(root)]
     for cap, group, ident, text in lines:
+        if cap in fours or (cap is None and four.marked):
+            found, why = four.facts(ident, text)
+            if found:
+                statements.append(Statement(ident, cap, group, found[0]))
+                facts[ident] = found[1]
+            else:
+                refused[ident] = why
+            continue
         parsed = spec_grammar.parse(root, text)
         if parsed.tree:
             statements.append(Statement(ident, cap, group, parsed.tree))
+            facts[ident] = spec_facts.translate(vocab, ident, parsed.tree)
         else:
             refused[ident] = parsed.refusal
-    facts = {s.id: spec_facts.translate(vocab, s.id, s.tree) for s in statements}
     domain = spec_logic_vocab.domain(vocab) + spec_facts.def_facts(vocab)
     return Context(vocab, caps, statements, facts, refused, domain)
 

@@ -174,7 +174,9 @@ shall [x3: tool `work` (constant)]
 ## R5. "X shall V only Ks that P": every K that X Vs meets P
 
 "only" is an `only` box: its restrictor (the Ks and what restricts them) and its scope (the act). Every K the agent
-Vs meets the restrictor; the line obliges no V.
+Vs meets the restrictor; the line obliges no V. `model logic` reads it so (I12a): it clashes only with a line in
+which the agent Vs a K known not to meet the restrictor (an attribute of another value), never with a V of a K that
+may meet it.
 
 Tested on U7 ("A worker shall change only files in its worktree") and trials r2 ("`trial-runner` shall read only a
 target").
@@ -193,7 +195,9 @@ shall []
 ## R6. "every K that P" in a response: for each such K
 
 "every K" is an `every` box: its restrictor and its scope, the act done for each K. The scenario the generator writes
-of such a line gives two Ks, so it is not met vacuously (the generator's part is I14a's).
+of such a line gives two Ks, so it is not met vacuously (the generator's part is I14a's). `model logic` reads it so
+(I12a): the act is obliged of each K the restrictor allows, so it clashes with a line that forbids the act of a K of
+that kind under the same trigger and state, though that line says more of its K ("a stage whose status is `done`").
 
 Tested on batches r8 ("... and every task of the batch is `done` ...") and requests r37 ("... and every request line
 proposed in the request is `refused` ...").

@@ -6,6 +6,8 @@ from collections import defaultdict
 import clingo
 import spec_facts
 import spec_grammar
+import spec_grammar4
+import spec_meaning
 import spec_tree
 
 QUIET = {"print": "print", "exit_ok": "exit successfully", "exit_error": "exit with an error",
@@ -83,10 +85,20 @@ class Words:
 
     def trigger(self, base):
         tree = self.trees.get(base)
+        if isinstance(tree, str):
+            return self.trigger4(tree)
         trig = spec_tree.parts(tree)["trig"] if tree else None
         if trig is None:
             return None
         text = spec_grammar.linearise(self.root, trig)
+        return text[0].lower() + text[1:] if text[:1].isupper() else text
+
+    def trigger4(self, tree):
+        """The trigger of a grammar 4 tree (`When`, `If`: its second argument), as grammar 4 writes it."""
+        read = spec_meaning.read(tree)
+        if read[0] not in ("When", "If"):
+            return None
+        text = spec_grammar4.linearise(self.root, spec_meaning.write(read[2]))
         return text[0].lower() + text[1:] if text[:1].isupper() else text
 
     def pre(self, a, b, atoms):
@@ -159,6 +171,11 @@ class Words:
             d, o = (uses or self.of(x, "nouse"))[0]
             verbs = ("obliges", "forbids") if uses else ("forbids", "obliges")
             return "%s %s and %s %s %s to use %s" % (lx, verbs[0], ly, verbs[1], self.term(x, d), self.term(x, o))
+        if kind == "only":
+            rid, other, lo, lt = (x, y, lx, ly) if self.of(x, "only") else (y, x, ly, lx)
+            _, e, d, o = self.of(rid, "only")[0]
+            return "%s allows %s only within its restriction and %s obliges one outside it" % (
+                lo, self.does(rid, e, d, o), lt)
         return "%s and %s demand opposite things" % (lx, ly)
 
     def bad_set(self, base, t, frm, to):

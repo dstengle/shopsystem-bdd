@@ -59,10 +59,24 @@ def capability(name, lines, path):
             "## Not yet\n- None.\n" % (path, name, name, name, body))
 
 
-def context(repo, path, lines):
-    """The world written into `repo`: the fixture's index under the bounded context `path`, and `thing` with `lines`."""
+# The capabilities of `model logic` (I12a): each condition's lines, which the check reads through their logical form.
+# Restricting: a session may change only files in its worktree, and a session changes a file, which may be one.
+# Exhaustive: `work` prints every stage, and must not print a done stage, which is one of every stage.
+CAPABILITIES = {"restricting": ["A session shall change only files in its worktree.",
+                                "When a session ends a stage, the session shall change a file."],
+                "exhaustive": ["When the person runs `work start`, `work` shall print every stage.",
+                               ("When the person runs `work start`, `work` shall not print a stage whose status is "
+                                "`done`.")]}
+
+
+def context(repo, path, lines, name="thing"):
+    """The world written into `repo`: the fixture's index under the bounded context `path`, and the capability `name`
+    with `lines` (and `thing` with none, when `name` is another)."""
     index = FIXTURE.read_text().replace("bounded-context/example.org/fixture/codified-2", "bounded-context/" + path)
-    for rel, text in (("spec/index.md", index), ("spec/capabilities/thing.md", capability("thing", lines, path))):
+    files = [("spec/index.md", index), ("spec/capabilities/%s.md" % name, capability(name, lines, path))]
+    if name != "thing":
+        files.append(("spec/capabilities/thing.md", capability("thing", [], path)))
+    for rel, text in files:
         target = repo / rel
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(text)
