@@ -123,6 +123,14 @@ def test_the_corpus_of_this_repository_holds():
     assert faults(REPO) == []
 
 
+def test_every_file_of_this_repository_s_spec_says_codified_2():
+    """The plan's done (b240, phase 24): every capability file and `spec/universal.md` say codified-2, so check 3
+    covers every line of the spec."""
+    spec = REPO / "spec"
+    files = sorted((spec / "capabilities").glob("*.md")) + [spec / "universal.md"]
+    assert [p.name for p in files if not spec_read.codified(p, (spec_read.MARKER4,))] == []
+
+
 # --- the checks proved on a fixture ---------------------------------------------------------------------------------
 
 LINES = ["When a session ends a stage, `work` shall print the stage.",

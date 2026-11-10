@@ -3,7 +3,7 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/supervision
 title: Supervision
 narrator: the person who started `work run`
 group: service
-language: codified-1
+language: codified-2
 rests_on: [design-decision/a-script-supervises-delivery, design-decision/worker-results-are-files, design-decision/work-item-lifecycle-as-run, design-decision/review-of-work-items, design-decision/the-file-set-is-the-claim, design-decision/the-v3-agents, design-decision/exits-are-successful-or-errors, design-decision/a-ruling-returns-to-the-asking-stage, design-decision/answers-not-rulings, design-decision/workflow-capabilities-are-guarantees, design-decision/the-context-runs-without-a-coordinator, design-decision/requests-written-through-work, design-decision/an-answer-to-a-reviewer-returns-to-ready-or-done, design-decision/the-glossary-is-a-target-of-spec-work]
 retired: [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r26, r27, r28, r29, r30, r31, r32, r33, r34, r35, r36, r37, r38, r39, r40, r41, r42, r43, r44, r45, r46, r47, r48, r49, r50, r51, r52, r53, r54, r55, r56, r57, r58, r59, r60, r61, r62, r63, r64, r65, r66, r67, r68, r69, r70, r71, r72, r73, r74, r75, r76, r77, r78, r79, r80, r81, r82, r83, r84]
 ---
@@ -25,20 +25,17 @@ and analysis and commits them, and sets the initiative `done`, committing it, wh
 decide goes to the person as a question.
 
 ## Terms
+- **change list** (noun): the list an `integrate` or `apply` round's result gives of what it adds, changes and removes.
+- **outputless** (adjective of result): A result is outputless when the result gives no question and the result gives no output.
 - **draft** (verb, action): `work run` writes a node with `work add` or from a change list. Forms: drafts, drafted. Frame: `work run` drafts node.
 - **take** (verb, action): `work run` takes an initiative through the transitions its nodes can make. Forms: takes, took, taken. Frame: `work run` takes initiative.
 - **log** (verb, action): `work run` appends a line to `.shop/work/<initiative>/log.jsonl`. Forms: logs, logged. Frame: `work run` logs ledger.
 - **remove** (verb, action): a session or a tool removes a file, a directory or a text it wrote, or takes a text out of a git branch with a commit. Forms: removes, removed. Frame: agent removes text. Frame: agent removes text from git branch.
 - **output** (noun): what a stage's result gives as its stage's work. Redefines: cli.
-- **change list** (noun): the list an `integrate` or `apply` round's result gives of what it adds, changes and removes.
 - **draft** (noun): a file an `integrate` round writes under its drafts path, kept on the initiative branch. Plural: drafts.
-- **outputless** (adjective of result): A result is outputless when the result gives no question and the result gives no output.
 - **naming** (adjective of result): a result that names a report its session wrote in its worktree.
-- **unpushable** (adjective of remote): a remote that refuses every push.
-- **ahead** (adjective of initiative branch): an initiative branch with commits its remote does not have.
 - **kept** (adjective of work-item branch): a work-item branch `work run` kept when its work-item became `awaiting-answer`.
 - **codified** (adjective of change list): a change list whose every capability has `language: codified-1` in its file.
-- **uncodified** (adjective of change list): a change list that names a service capability with no `language: codified-1` in its file.
 
 ## Relations
 

@@ -4,7 +4,7 @@ title: Role boundaries
 narrator: the person using the workflow
 group: guarantees
 rests_on: [design-decision/the-v3-agents, design-decision/spec-writers-blind-to-code, design-decision/the-session-keeps-the-gate]
-language: codified-1
+language: codified-2
 retired: [r1, r2, r3, r4, r5, r6]
 ---
 
@@ -18,7 +18,6 @@ the definitions under `agents/`, not by a scenario. Tool lists bound what a sess
 Bash can still write files through the shell, which is why `work run` verifies the files a worker leaves.
 
 ## Terms
-
 - **`trial-runner`** (proper noun): the agent that runs one trial. Kind of: dispatch.
 - **read** (verb, action): a session or a tool reads a file, a commit or another thing. Forms: reads, read. Frame: agent reads thing.
 - **name** (verb, action): a session or a tool says which thing it means. Forms: names, named. Frame: agent names thing. Redefines: cli.

@@ -99,18 +99,6 @@ def test_every_script_module_has_a_map_row():
     assert missing == []
 
 
-def test_the_lines_of_q47_parse(tmp_path):
-    """Point 6: a request raised with `work request` is read by the new grammar: its lines are work-queue's, a
-    codified-1 capability, so they are parsed in its grammar now that the index says codified-2 (b151)."""
-    text = (ROOT / ".shop" / "work" / "requests" / "q47.md").read_text()
-    body = text.split("## Lines", 1)[1].split("## Questions", 1)[0]
-    lines = [re.sub(r"^\d+\. ", "", l) for l in body.splitlines() if re.match(r"^\d+\. ", l)]
-    assert len(lines) == 6
-    (tmp_path / "q47.txt").write_text("\n".join(lines) + "\n")
-    done = run(SCRIPTS / "model", "parse", "--capability", "work-queue", "--file", tmp_path / "q47.txt")
-    assert done.returncode == 0, done.stdout + done.stderr
-
-
 @pytest.mark.live_logic
 def test_model_logic_finds_no_conflict_in_the_spec(live_logic, live_expected):
     """Point 4 on the live spec: no L1-L3 finding outside the known ones (`EXPECTED`); L4 and L5 are warnings."""
