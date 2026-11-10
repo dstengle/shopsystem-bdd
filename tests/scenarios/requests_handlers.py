@@ -1,10 +1,10 @@
-"""Handlers of features/requests.feature (design §14.3): the request commands of `work` run on the requests
-world_nodes.py writes, in a git repository, with the lines, delegations and origins the Givens keep in the context.
+"""Handlers of features/requests.feature (design §14.3): the request commands of `work` run on the requests the Givens
+wrote (requests_handlers_givens), each `q<k>.md` on its issue, in a git repository, with the lines, outcomes and
+origins the Givens keep in the context; and the request lines, conditions and `change` of features/intake.feature.
 
 A request's `turn` follows its status before a command runs (the asker's for `awaiting-asker`, `delivered` and
-`refused`), since world_nodes writes every request in the upstream's turn. Where the bounded context is downstream,
-the request is the context's own request to its upstream (its asker is the context, it names no origin). `ThenDoes`
-and `ThenDoesNot` with `change` compare a request's status or side with what it was before the command ran."""
+`refused`), since a request is written in the upstream's turn. `ThenDoes` with `change` (intake) compares a
+request's status or side with what it was before the command ran."""
 import importlib.util
 import sys
 from pathlib import Path
@@ -28,7 +28,6 @@ FIXTURE = (Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "gloss
 INDEX = "---\nid: %s\nlanguage: codified-1\n---\n# ctx\n\n%s" % (OWN, FIXTURE[FIXTURE.index("## Glossary"):])
 GOOD = "When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to `started`."
 BAD = "the queue is nice and quick"
-FOREIGN = "ctx-elsewhere"
 THING = ("---\nid: capability/ex.com/prod/ctx/thing\ntitle: Thing\nnarrator: a client\ngroup: service\n"
          "language: codified-1\nrests_on: []\nretired: []\n---\n\n# Thing\n\n## Purpose\nSomething.\n\n## Behaviour\n")
 SIDE = {"awaiting-asker": "asker", "delivered": "asker", "refused": "asker"}
@@ -67,13 +66,6 @@ def given_bare(step):
     pass
 
 
-@handler("GivenK_C", "command")
-def given_command(step):
-    step.context["command"] = step.text.split(" is ", 1)[1]
-    says(step, "an origin", "(--")
-    says(step, "a bounded context", FOREIGN)
-
-
 @handler("GivenK_C", "bounded context")
 def given_context(step):
     """downstream: the index lists an upstream; unmigrated: a `records/` directory at the root (design-model-check)."""
@@ -109,21 +101,41 @@ def given_observation(step):
                     % (step.names[0], OWN))
 
 
+def path_of(step, name):
+    """The file of the request `name`, written by requests_handlers_givens where no Given wrote it."""
+    return givens().request(step, name)
+
+
+def givens():
+    return next(m for m in list(sys.modules.values()) if getattr(m, "__file__", "").endswith(
+        "requests_handlers_givens.py"))
+
+
 def prepare(step, name):
-    """The request `name` as the command will find it: its side from its status, the context's own request where the
-    context is downstream, its line outcomes from the Givens; and its fields before the command, for `change`."""
-    path = step.repo / W.node_rel(step.context, name)
-    Q.with_issue(step, path)
+    """The request `name` as the command will find it: its side from its status (a request is written in the
+    upstream's turn), the line outcomes the Givens gave its lines; and its status and side before the command, for
+    `keep` and `change`. Returns its `q<n>`."""
+    path = path_of(step, name)
     text = path.read_text()
     status = W.field(path, "status")
     text = text.replace("turn: upstream", "turn: %s" % SIDE.get(status, "upstream"))
-    if step.context.get("downstream"):
-        text = text.replace("asker: other", "asker: %s" % OWN)
-    outcomes = [o for o in step.context.get("lines", {}).values() if o]
-    if outcomes:
-        text = text.replace("## Outcomes\n", "## Outcomes\n1. %s\n" % outcomes[0])
+    lines, outcomes = step.context.get("lines", {}), []
+    for line, (request, k) in sorted(step.context.get("line_of", {}).items(), key=lambda kv: kv[1][1]):
+        if request == name and lines.get(line):
+            outcomes.append("%d. %s\n" % (k, lines[line]))
+    text = text.replace("## Outcomes\n", "## Outcomes\n" + "".join(outcomes), 1)
     path.write_text(text)
     step.context["before"] = {k: W.field(path, f) for k, f in FIELDS.items()}
+    step.context.setdefault("before_of", {})[name] = step.context["before"]
+    return path.stem
+
+
+def prepare_all(step):
+    """Every request the Givens wrote prepared, and the comments put on their issues (a sync or a watch)."""
+    for name, (kind, _) in list(step.context.get("nodes", {}).items()):
+        if kind == "request":
+            prepare(step, name)
+    Q.put_comments(step, path_of)
 
 
 def run_work(step, *args):
@@ -141,21 +153,27 @@ def run_work(step, *args):
 
 
 @handler("WhenRuns", "`work request`")
+@handler("WhenRuns", "`work request --raised-for`")
+@handler("WhenRuns", "`work request --source`")
+@handler("WhenRuns", "`work request --from`")
 def work_request(step):
-    flags = step.context.get("flags", [])
-    command = step.context.get("command")
-    asker = FOREIGN if command == "foreign" else OWN if step.context.get("downstream") else "internal"
+    """`work request` with the asker a Given made it (`--from`), and its origin: none where this command has none,
+    `--source` with the option the step names after it, the request it is raised for, a job-thread to an upstream
+    (to the one the step names), else an observation."""
+    asker = step.context.get("from") or (OWN if step.context.get("downstream") else "internal")
     args = ["request", "a request", "--from", asker, "--ask", "I need to do something like this"]
-    if step.context.get("unhosted"):      # a request to the upstream, raised in a job-thread
-        args += ["--thread", "job-thread/ex.com/prod/t1"]
-    elif command == "sourced":
-        args += ["--source", "observation/ex.com/prod/ctx/obs-1", "--thread", "job-thread/ex.com/prod/t1"]
-    elif command != "originless" and "--raised-for" not in flags:
+    with_option = step.text.rsplit(" with ", 1)[1].strip("`") if " with `" in step.text else None
+    if step.context.get("no_origin"):
+        pass
+    elif step.term == "`work request --raised-for`":
+        args += ["--raised-for", path_of(step, step.names[0]).stem]
+    elif with_option:
+        args += ["--source", "observation/ex.com/prod/ctx/obs-1", with_option,
+                 "job-thread/ex.com/prod/t1" if with_option == "--thread" else "q9"]
+    elif step.context.get("downstream"):
+        args += ["--thread", "job-thread/ex.com/prod/t1"] + (["--to", Q.UP] if step.names else [])
+    else:
         args += ["--source", "observation/ex.com/prod/ctx/obs-1"]
-    if "--raised-for" in flags:
-        args += ["--raised-for", step.names[0]]
-    if "--delegation" in flags or step.context.get("delegation") == "empty":
-        args += ["--delegation", "" if step.context.get("delegation") == "empty" else "answer any question"]
     run_work(step, *args)
 
 
@@ -165,18 +183,30 @@ def work_request(step):
 @handler("WhenRuns", "`work turn`")
 @handler("WhenRuns", "`work resolve`")
 def work_request_command(step):
-    name = step.names[0]
-    prepare(step, name)
+    name = step.names[-1]
+    q = prepare(step, name)
     word = step.term.strip("`").split()[1]
     if word == "outcome":     # an accepted line parses here and names the capability it goes into
-        path = step.repo / W.node_rel(step.context, name)
+        path = path_of(step, name)
         path.write_text(path.read_text().replace("1. line 1\n", "1. %s\n" % GOOD, 1))
         cap = step.repo / "spec" / "capabilities" / "thing.md"
         cap.parent.mkdir(parents=True, exist_ok=True)
         cap.write_text(THING)
     rest = {"outcome": ["1", "accepted", "--into", "thing"], "ask": ["1", "Which queue?"], "reply": ["1", "The work queue"],
             "turn": [], "resolve": ["--line", "1", "thing#r1", "1.0.0"]}[word]
-    run_work(step, word, name, *rest)
+    run_work(step, word, q, *rest)
+
+
+@handler("WhenRuns", "`work list`")
+@handler("WhenRuns", "`work show`")
+@handler("WhenRuns", "`work watch --hook`")
+def work_read(step):
+    """`work list`, `work show` on a request and `work watch --hook`, on the requests the Givens wrote."""
+    for name in step.names:
+        path_of(step, name)
+    prepare_all(step)
+    words = step.term.strip("`").split()[1:]
+    run_work(step, *words, *[path_of(step, n).stem for n in step.names])
 
 
 def changed(step):
@@ -195,17 +225,3 @@ def then_changes(step):
 @handler("ThenDoesNot", "change")
 def then_changes_not(step):
     assert not changed(step), step.text
-
-
-@handler("ThenR", "raised for")
-def then_raised_for(step):
-    """The request's file (the one the command wrote, where it wrote one) names the other in its `raised_for`."""
-    request, other = step.names
-    raised = W.field(step.repo / W.node_rel(step.context, request), "raised_for") or ""
-    assert raised.endswith("/%s" % other), (step.text, raised)
-
-
-@handler("GivenK_C", "observation")
-def given_uncited(step):
-    """uncited: the observation as its Given wrote it, which no node's `source` names."""
-    step.context.setdefault("observations", set()).add(step.names[0])

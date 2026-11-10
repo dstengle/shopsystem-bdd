@@ -1,9 +1,11 @@
 """The scenario repository of features/requests.feature and features/intake.feature's issues (not a handler module, so
 the glob does not load it): the stand-in gh (tests/scripts/stub_gh.py) with its files beside the repository, the
-repository's `origin` on GitHub (`ex/ctx`, never reached), and a request given the issue its conversation is on.
+repository's `origin` on GitHub (`ex/ctx`, never reached), a request given the issue its conversation is on, and the
+comments the Givens of a codified-2 scenario describe, put on their requests' issues before the run (`put_comments`).
 requests_handlers*.py and intake_handlers.py load it by path as `shop_requests_world`."""
 import json
 import os
+import re
 import shlex
 import subprocess
 import sys
@@ -12,6 +14,9 @@ from pathlib import Path
 STUB = Path(__file__).resolve().parents[1] / "scripts" / "stub_gh.py"
 OWN_REPO = "ex/ctx"
 ISSUE = "https://github.com/%s/issues/1" % OWN_REPO
+READABLE = "~~~shop-request\nstep: turn\nstatus: awaiting-upstream\nturn: upstream\nanswer 1: The work queue\n~~~\n"
+UNREADABLE = "~~~shop-request\nstep: turn\nthis is no field\n~~~\n"
+OFFER = "~~~shop-request\nstep: offer\nstatus: awaiting-asker\nturn: asker\noffer: This may serve.\nanswer 1: %s\n~~~\n"
 
 
 def outside(step):
@@ -93,3 +98,33 @@ def sided(path, word):
         text = text.replace("\nasker: other\n", "\nasker: bounded-context/ex.com/prod/other\n", 1)
         text = text.replace("\nstatus: open\n", "\nstatus: awaiting-asker\n", 1)
     path.write_text(text)
+
+
+def feature(step):
+    """The stem of the running scenario's feature file (`requests`)."""
+    found = getattr(getattr(step.request.node, "function", None), "__scenario__", None)
+    return Path(found.feature.filename).stem if found is not None else None
+
+
+def comment(step, name):
+    """What the Givens said of the comment `name`: its request and its body (`readable`, `unreadable`, or the name of
+    the foreign entry its field block holds). No request holds it: requests' Givens say only that one does not."""
+    return step.context.setdefault("comment", {}).setdefault(name, {"request": None, "body": "readable"})
+
+
+def put_comments(step, path_of):
+    """Each comment a Given put on a request posted on that request's issue (`<issue>#issuecomment-<k>`); its URL is
+    what names it."""
+    found = issues(step)
+    for name, said in step.context.get("comment", {}).items():
+        if said["request"] is None or name in step.context.get("comments", {}):
+            continue
+        path = path_of(step, said["request"])
+        url = re.search(r"^issue: (.*)$", path.read_text(), re.MULTILINE).group(1).strip()
+        comments = found[url]["comments"]
+        link = "%s#issuecomment-%d" % (url, 100 + len(comments))
+        body = {"readable": READABLE, "unreadable": UNREADABLE}.get(said["body"])
+        comments.append({"url": link, "body": body or OFFER % step.context["foreign"][said["body"]]})
+        step.context.setdefault("comments", {})[name] = link
+        step.context.setdefault("says", {})[name] = link
+    write_issues(step, found)

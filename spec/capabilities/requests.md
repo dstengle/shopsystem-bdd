@@ -6,7 +6,7 @@ group: service
 language: codified-2
 rests_on: [design-decision/requests-written-through-work, design-decision/exits-are-successful-or-errors, design-decision/an-asker-is-told-by-its-registered-asker-id]
 retired: [r1, r3, r4, r5, r10, r11, r12, r13, r19, r20, r21, r22, r23, r42, g42, g2, r2, g6, r6, g7, r7, g8, r8, g9, r9, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18, g24, r24, g25, r25, g26, r26, g27, r27, g28, r28, g29, r29, g30, r30, g31, r31, g32, r32, g33, r33, g34, r34, g35, r35, g36, r36, g37, r37, g38, r38, g39, r39, g40, r40, g41, r41, g44, r44, g43, r43, g45, r45, g46, r46, g47, r47, g49, r49, g50, r50, g51, r51, g48, r48, g52, r52, g53, r53, g54, r54, g55, r55, g56, r56, g57, r57, g58, r58]
-unbuilt: [r59, r60, r61, r62, r63, r64, r65, r66, r67, r68, r69, r70, r71, r72, r73, r74, r75, r76, r77, r78, r79, r80, r81, r82, r83, r84, r85, r86, r87, r88, r89, r90, r91, r92, r93, r94, r95, r96, r97, r98, r99, r100, r101, r102]
+unbuilt: []
 ---
 
 # Requests
@@ -21,30 +21,13 @@ a request (backlog, batches).
 
 ## Terms
 - **resolution** (noun): the requirement id and version of each accepted line, under a request's `## Resolution`. Kind of: text.
-- **closed** (adjective of request): A request is closed when the request is `delivered` or the request is `refused` or the request is `withdrawn`.
-- **unparsed** (adjective of request line): a request line that does not parse in its upstream's requirement grammar.
 - **observation** (noun): an entry of `.shop/records/observations.md`, with its id and its date.
-- **uncited** (adjective of observation): an observation that the `source` of no initiative and of no request names.
 - **origin** (noun): what a request is raised from: an observation `--source` names, a job-thread `--thread` names, or a request `--raised-for` names.
-- **originless** (adjective of command): a command that gives none of `--source`, `--thread` and `--raised-for`.
-- **sourced** (adjective of command): a command that gives `--source` with `--thread` or `--raised-for`.
-- **foreign** (adjective of command): a command that gives `--from` an asker other than its own bounded context.
-- **downstream** (adjective of bounded context): a bounded context whose `spec/index.md` lists an upstream under `## Upstreams`.
 
 - **issue** (noun): the GitHub issue, on the GitHub repository of a request's upstream, that carries the request's conversation. Kind of: text.
 - **comment** (noun): one step of a request's conversation, posted on its issue, read only as the one block of fields it holds. Kind of: text.
 - **post** (verb, action): `work` puts an issue or a comment on GitHub. Forms: posts, posted. Frame: `work` posts text.
 - **close** (verb, action): `work` closes the issue of a request on GitHub. Forms: closes, closed. Frame: `work` closes issue.
-- **unrecorded** (adjective of comment): a comment on a request's issue that its request does not yet hold.
-- **unreadable** (adjective of comment): a comment whose block of fields does not parse.
-- **unhosted** (adjective of bounded context): an upstream whose entry under `## Upstreams` names no GitHub repository.
-
-- **untaken** (adjective of issue): an open issue on the GitHub repository of this bounded context whose body is an ask that no request holds.
-
-- **uncommittable** (adjective of repository): a repository in which git refuses to commit a request's record, as when a pre-commit hook fails or another process holds the index lock.
-
-- **received** (adjective of request): a request whose record is kept in its upstream's repository and whose asker is another bounded context.
-- **sent** (adjective of request): a request whose record is kept in its asker's repository and whose upstream is another bounded context.
 
 - **foreign entry** (noun): an entry of a comment (`<field> <n>: <text>`) of the part of the side that did not post the comment's step: an entry of the upstream's part (`question`, `outcome`, `counter`, `reason`, `into`, and `resolution` but on a `fits`) in a step of the asker (`ask`, `fits`, or a `turn` posted in the asker's turn), or an entry of the asker's part (`line`, `answer`) in a step of the upstream (`offer`, `accept`, `resolve`, or a `turn` posted in the upstream's turn). Kind of: text.
 
@@ -63,7 +46,6 @@ a request (backlog, batches).
 ## Relations
 | from | word | to | cardinality |
 |---|---|---|---|
-| comment | holds | foreign entry |  |
 | comment | on | request | one |
 | issue | of | request | one |
 | comment | in | request |  |
