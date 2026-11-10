@@ -65,7 +65,10 @@ def run_measure(step, *args):
 
 
 def telemetry(step):
-    return bool(step.context.get("telemetry"))
+    """True in a scenario of features/telemetry.feature."""
+    node = step.request.node
+    scenario = getattr(getattr(node, "obj", None), "__scenario__", None)
+    return scenario is not None and Path(scenario.feature.filename).name == "telemetry.feature"
 
 
 @handler("GivenK", "review finding")
@@ -73,20 +76,39 @@ def given_review_finding(step):
     T.given(step, "review finding", step.names[0])
 
 
-@local("GivenR", "review finding")
-def review_finding_on(step):
-    if step.term != "on":
+@local("GivenK_A", "review finding")
+def review_finding_grade(step):
+    if not telemetry(step):
         return False
-    finding, pr = step.names
-    T.given(step, "review finding", finding)["pull request"] = pr
+    T.given(step, "review finding", step.names[0])["grade"] = step.values[0].strip("`")
+    return None
+
+
+@local("GivenDoes")
+def given_link(step):
+    """`the review finding r1 is on the pull request p1`, `the batch b1 has the pull request p1`, `the batch b1 holds
+    the item i1`; a batch's role, which the measurement's sessions give, records nothing."""
+    if not telemetry(step) or step.term not in ("on", "has", "holds"):
+        return False
+    one, other = step.names
+    if step.term == "on":
+        T.given(step, "review finding", one)["pull request"] = other
+    elif step.nps[0].startswith("the pull request"):
+        T.given(step, "pull request", other)["batch"] = one
+    elif step.term == "holds":
+        T.given(step, "item", other)["batch"] = one
+    return None
 
 
 def write_reviews(step):
-    """A review record on main for each review finding on a batch's pull request: review 1, one Important fix-now
-    finding on an in-batch item of the batch."""
+    """A review record on main for each batch's pull request with review findings on it, one finding of each, in
+    their grades, on an in-batch item of the batch."""
     prs = step.context["given"].get("pull request", {})
-    for found in step.context["given"].get("review finding", {}).values():
-        batch = prs.get(found.get("pull request"), {}).get("batch")
+    findings = {}
+    for name, found in sorted(step.context["given"].get("review finding", {}).items()):
+        findings.setdefault(found.get("pull request"), []).append((name, found.get("grade", "Important")))
+    for pr, found in findings.items():
+        batch = prs.get(pr, {}).get("batch")
         if batch is None:
             continue
         name = T.batch_name(step, batch)
@@ -94,10 +116,10 @@ def write_reviews(step):
         head = T.git(step, "rev-parse", name).strip()
         rng = "%s..%s" % (T.plan_field(step, batch, "forked_from"), head)
         review = batch_findings.Review(
-            1, name, "review/ex.com/prod/ctx/%s/review-1" % name, step.context["prs"][found["pull request"]], head,
-            rng, "fix-now", "One finding.",
-            [batch_findings.Finding("f1", "Important", "fix now", "a fault", B.ident(item), "src/x.txt:1",
-                                    "The line says one thing; the code does another.")])
+            1, name, "review/ex.com/prod/ctx/%s/review-1" % name, step.context["prs"][pr], head, rng, "fix-now",
+            "Findings.", [batch_findings.Finding("f%d" % k, grade, "fix now", "a fault", B.ident(item), "src/x.txt:1",
+                                                 "The line says one thing; the code does another.")
+                          for k, (_, grade) in enumerate(found, 1)])
         path = step.repo / batch_findings.rel_of(name, 1)
         path.write_text(batch_findings.render(review), encoding="utf-8")
     W.init(step.repo)
@@ -105,36 +127,15 @@ def write_reviews(step):
 
 @handler("WhenRuns", "`measure batch`")
 def measure_batch(step):
+    for pr in step.context.get("given", {}).get("pull request", {}).values():
+        batch = pr.get("batch")
+        if batch and not any(f.get("batch") == batch for f in step.context["given"].get("item", {}).values()):
+            T.given(step, "item", "i1")["batch"] = batch
+            B.write_item(step, "i1")
     T.prepare(step)
     T.ensure_batch(step)
     write_reviews(step)
     run_measure(step, "batch", T.batch_name(step, step.names[-1]))
-
-
-@local("ThenDoes", "measurement")
-def writes_measurement(step):
-    if not telemetry(step) or step.term != "write":
-        return False
-    ran = step.context["world"]
-    assert ran.code == 0, ran.err
-    assert ran.record().is_file() and ran.out.strip().startswith(MEASUREMENTS), (step.text, ran.out)
-
-
-@local("ThenR", "measurement")
-def measurement_of(step):
-    if not telemetry(step) or step.term != "of":
-        return False
-    assert step.context["world"].figures()["batch"] == T.batch_name(step, step.names[1]), step.text
-
-
-@local("ThenDoes", "review finding")
-def includes_grade(step):
-    if not telemetry(step) or step.term != "include":
-        return False
-    ran = step.context["world"]
-    assert ran.code == 0, ran.err
-    assert ran.figures()["findings_by_grade"]["Important"] >= 1, ran.figures()["findings_by_grade"]
-    assert "Important" in ran.record().read_text(), step.text
 
 
 @handler("WhenRuns", "`measure defect`")
@@ -147,42 +148,19 @@ def measure_defect(step):
     run_measure(step, "defect", B.ident(item), "--says", "abandon leaves it started; run work abandon i1")
 
 
-def defect_field(step, key):
-    ran = step.context["world"]
-    assert ran.code == 0, ran.err
-    return W.field(ran.repo / ran.out.strip(), key)
-
-
-@local("ThenDoes", "defect")
-def writes_defect(step):
-    if not telemetry(step) or step.term != "write":
-        return False
-    ran = step.context["world"]
-    assert ran.code == 0, ran.err
-    rel = ran.out.strip()
-    assert (ran.repo / rel).is_file() and rel.startswith(".shop/batches/"), (step.text, rel)
-    subject = T.git(step, "log", "-1", "--format=%s").strip()
-    name = rel.rsplit("defect-", 1)[1].split(".")[0]
-    assert subject.startswith("measure defect: ") and " d%s of " % name in subject, (step.text, subject)
-
-
-@local("ThenR", "defect")
-def defect_of_for(step):
-    if not telemetry(step) or step.term not in ("of", "for"):
-        return False
-    if step.term == "of":
-        assert defect_field(step, "item") == B.ident(step.names[1]), step.text
-    else:
-        assert defect_field(step, "batch") == T.batch_name(step, step.names[1]), step.text
-
-
-@handler("WhenRuns", "`measure compare batch-2 batch-3`")
+@local("WhenRuns")
 def measure_compare(step):
-    """Two batches' measurements written from the script tests' complete figures (measure_batch_testing.FIGURES),
-    then compared by name."""
+    """`measure compare` in telemetry (batch-measurement's compares measurement files): Each batch the Whens name given a measurement from the script tests' complete figures
+    (measure_batch_testing.FIGURES), then the batches compared by name."""
+    if not telemetry(step) or step.command != "`measure compare`":
+        return False
     testing = shared("shop_measure_batch_testing", "../scripts/measure_batch_testing.py")
-    B.index(step)
-    for date, name, cost in (("2026-11-01", "batch-2", 1.0), ("2026-11-02", "batch-3", 2.0)):
-        testing.write_measurement(step.repo, date, dict(testing.FIGURES, batch=name, cost=cost))
+    names = step.context.setdefault("compared", [])
+    names += [T.batch_name(step, n) for n in step.names]
+    if not (step.repo / "spec" / "index.md").is_file():
+        B.index(step)
+    for k, name in enumerate(names, 1):
+        testing.write_measurement(step.repo, "2026-11-0%d" % k, dict(testing.FIGURES, batch=name, cost=float(k)))
     W.init(step.repo)
-    run_measure(step, "compare", "batch-2", "batch-3")
+    run_measure(step, "compare", *(names * 2 if len(names) == 1 else names))
+    return None
