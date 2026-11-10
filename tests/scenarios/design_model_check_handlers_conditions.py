@@ -91,6 +91,10 @@ def requirement(step):
             "bounded-context/example.org/fixture", "bounded-context/" + H.PATH))
     elif word == "withholding":
         withholding(step)
+    elif word in C2.REQUIREMENTS:     # lines of grammar 4 that `model logic` checks for r1 (I13a)
+        lines, universal = C2.REQUIREMENTS[word]
+        C2.context(repo, H.PATH, lines, universal=universal)
+        step.context.setdefault("ids", {})[step.names[0]] = "thing#r1"
     elif word in C2.LINES:      # a line of grammar 4, in the smallest codified-2 world
         C2.requirement(step, word, H.PATH)
     elif word in FRAMED:

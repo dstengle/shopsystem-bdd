@@ -13,10 +13,13 @@ The shown atoms are the findings:
   L5  `lint`: an untriggered positive event obligation, with the requirements that react to its event. (warning)
   L6  `maybe(A,B,Why,C)`: a clash whose every witness depends on the prose condition C (one side says C of a thing
       the other says more of); defining C in the controlled language decides it. (warning)
+  L8  a codified-2 requirement each of whose Thens other requirements entail, each Then named with its premises (spec_entail).
+      (warning)
   aside  `coded(A,B)` never `fit(A,B)`: a pair that shares a code no unification keeps one thing, set aside alone,
       every other pair's findings kept. (warning)
 
-`run(root, capability=None, extra=None)` gives the findings, `report(findings, as_json)` their text and exit code.
+`run(root, capability=None, extra=None)` gives the findings (`capability` a capability's name, or a requirement's id
+`<capability>#r<n>`: the findings that name it), `report(findings, as_json)` their text and exit code.
 """
 import json
 from collections import Counter, defaultdict
@@ -24,6 +27,7 @@ from pathlib import Path
 
 import clingo
 import spec_context
+import spec_entail
 import spec_facts
 import spec_findings
 import spec_solve_pairs
@@ -122,7 +126,9 @@ def _names(finding, scope):
 def run(root, capability=None, extra=None):
     """The findings of the codified capabilities of the context at `root`, with drafted capability files `extra` laid
     over it (a draft replacing the capability of its name). The solve is always the whole context; `capability`
-    keeps the findings that name one of its requirements."""
+    keeps the findings that name one of its requirements; a requirement's id, those that name it."""
+    requirement = capability if capability and "#" in capability else None
+    capability = capability.rpartition("#")[0] if requirement else capability
     ctx = spec_context.load(root, extra or ())
     facts = [f for s in ctx.statements for f in ctx.facts[s.id]]
     program = "\n".join(ctx.domain + facts + [CHECK.read_text()])
@@ -133,6 +139,9 @@ def run(root, capability=None, extra=None):
     if capability is not None:
         found = [f for f in found if _names(f, scope)]
     found += l2(ctx.statements, scope)
+    found += spec_entail.findings(root, ctx, scope)
+    if requirement is not None:
+        found = [f for f in found if f.code == "L0" or requirement in {spec_facts.split(i) for i in f.ids}]
     if not done and scope:
         found.append(Finding("L0", [], "the check did not finish in %d s; the findings so far are listed" % LIMIT))
     if not sat and scope:
