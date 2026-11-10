@@ -53,11 +53,11 @@ def _noun(text, names):
     return bare if bare in names else None
 
 
-def read(term, names):
-    """(Frame, None) of an event entry whose `Frame:` reads, else (None, (the word it could not read, the role it
-    reads it as)); (None, None) when the entry gives no `Frame:`. A preposition after the verb is the verb's
-    (`Frame: viewer subscribes to channel.`): the object comes after it."""
-    text = " ".join(term.frame.split())
+def read(term, names, said=None):
+    """(Frame, None) of an event entry whose (first) `Frame:` reads, else (None, (the word it could not read, the role
+    it reads it as)); (None, None) when the entry gives no `Frame:`. A preposition after the verb is the verb's
+    (`Frame: viewer subscribes to channel.`): the object comes after it. `said` reads another of its frames."""
+    text = " ".join((term.frame if said is None else said).split())
     if not text:
         return None, None
     verb = s3(term)
@@ -88,10 +88,15 @@ def frame(term, names):
     return read(term, names)[0]
 
 
+def frames(term, names):
+    """Every `Frame:` of a verb's entry that reads, in order: the several frames of one meaning."""
+    return [f for f in (read(term, names, said)[0] for said in term.frames) if f]
+
+
 def misread(term, names):
-    """Why a verb's `Frame:` does not read, naming the word it could not read and what it expected there; None when
-    it reads or the entry gives no `Frame:` (v_t11)."""
-    why = read(term, names)[1]
+    """Why a verb's `Frame:` (the first of its frames that does not read) does not read, naming the word it could not
+    read and what it expected there; None when each reads or the entry gives no `Frame:` (v_t11)."""
+    why = next((w for w in (read(term, names, said)[1] for said in term.frames or (term.frame,)) if w), None)
     if why is None:
         return None
     word, role = why
@@ -124,9 +129,31 @@ def relational(term, kinds):
     return None
 
 
+def overlapping(lexicon):
+    """The verbs with two entries (two senses) whose frames take, in every slot, the same kind or one kind under the
+    other (v_t15): no line's kinds would tell the senses apart. Frames that fill different slots do not overlap."""
+    known, under, out = names(lexicon), below(lexicon), set()
+    near = lambda a, b: a == b or a in under.get(b, ()) or b in under.get(a, ())
+    senses = {}
+    for t in lexicon.of("event"):
+        senses.setdefault(t.term, []).append(frames(t, known))
+    for verb, entries in senses.items():
+        for i, mine in enumerate(entries):
+            for theirs in entries[i + 1:]:
+                if any(all(near(a, b) if a and b else a == b for a, b in zip(f[:3], g[:3]))
+                       for f in mine for g in theirs):
+                    out.add(verb)
+    return out
+
+
 def problems(lexicon):
-    """v_t11, v_t12 and v_t13 (a `Frame:` that does not read) as (code, term, message), and v_t4 for an actor whose `Kind of:` names no kind."""
+    """v_t11, v_t12, v_t13 (a `Frame:` that does not read), v_t14 (a verb with no aspect) and v_t15 (two senses
+    that overlap) as (code, term, message), and v_t4 for an actor whose `Kind of:` names no kind."""
     known, kinds, out = names(lexicon), lexicon.kind_names(), []
+    out += [("v_t14", t.term, "%s: the verb's entry says neither state nor action: write (verb, state) or (verb, "
+             "action)" % t.where) for t in lexicon.of("event") if not t.aspect]
+    out += [("v_t15", v, "two entries of the verb %s take, in every slot, the same kind or one kind under the "
+             "other: their kinds do not tell the senses apart" % v) for v in sorted(overlapping(lexicon))]
     out += [("v_t4", t.term, "%s: Kind of: %s is not a kind" % (t.where, t.supertype)) for t in lexicon.of("actor")
             if t.supertype and t.supertype not in kinds]
     for t in lexicon.of("event"):
@@ -153,7 +180,7 @@ def below(lexicon):
     """{kind or actor: itself and every kind and actor under it, at any depth}."""
     up = supers(lexicon)
     out = {n: {n} for n in names(lexicon)}
-    for n in out:
+    for n in list(out):
         seen, at = {n}, up.get(n)
         while at and at not in seen:
             out.setdefault(at, {at}).add(n)
@@ -168,7 +195,9 @@ def _of(lexicon):
     if hit is None or hit[0] is not lexicon:
         ids, known = lexicon.ids(), names(lexicon)
         named = {ids[t.key]: t.term for t in lexicon.terms if t.category in ("kind", "actor")}
-        verbs = {ids[t.key]: (t, frame(t, known)) for t in lexicon.of("event")}
+        verbs = {}
+        for t in lexicon.of("event"):     # a verb's first sense, the one the codified-1 grammar reads
+            verbs.setdefault(ids[t.key], (t, frame(t, known)))
         hit = _frames[id(lexicon)] = (lexicon, verbs, named, below(lexicon))
         if len(_frames) > 16:
             _frames.clear()

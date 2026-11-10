@@ -32,8 +32,8 @@ file; it prints what the tools found and names a tool that is missing rather tha
 - **reference** (noun): a use of a name the project defines, written `path:line`.
 - **finding** (noun): what ruff, vulture or import-linter reports.
 - **dependency file** (noun): a file that lists a project's dependencies (`pyproject.toml`, `requirements.txt`, ...).
-- **install** (verb): `tools` puts an analysis tool into the interpreter with pip. Forms: installs, installed. Frame: `tools` installs analysis tool.
-- **replace** (verb): `tools` writes a new coverage map in place of the one before. Forms: replaces, replaced. Frame: `tools` replaces coverage map.
+- **install** (verb, action): `tools` puts an analysis tool into the interpreter with pip. Forms: installs, installed. Frame: `tools` installs analysis tool.
+- **replace** (verb, action): `tools` writes a new coverage map in place of the one before. Forms: replaces, replaced. Frame: `tools` replaces coverage map.
 
 ## Behaviour
 

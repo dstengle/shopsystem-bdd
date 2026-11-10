@@ -93,7 +93,7 @@ def requirement(step):
         if word == "prepositioned":     # the verb whose preposition the line says before each of its objects
             H.base(repo, step.context)
             index = repo / "spec" / "index.md"
-            index.write_text(index.read_text() + "- **subscribe** (verb): Frame: agent subscribes to stage.\n")
+            index.write_text(index.read_text() + "- **subscribe** (verb, action): Frame: agent subscribes to stage.\n")
         if word == "negating":     # the relation the line negates, a row of `## Relations`
             H.base(repo, step.context)
             index = repo / "spec" / "index.md"
@@ -169,16 +169,33 @@ def term(step):
         path.write_text(text.replace("- **%s** (noun): a thing.\n" % name, "- **%s** (verb): a thing done.\n" % name))
     elif word == "prepositional":     # the preposition between the verb and its object belongs to the verb
         path.write_text(text.replace("- **%s** (noun): a thing.\n" % name,
-                                     "- **%s** (verb): a stage is followed. Frame: agent %ss to stage.\n" % (name, name)))
+                                     "- **%s** (verb, action): a stage is followed. Frame: agent %ss to stage.\n" % (name, name)))
     elif word == "misframed":     # a Frame: whose object is no kind: the refusal names the word it could not read
         path.write_text(text.replace("- **%s** (noun): a thing.\n" % name,
-                                     "- **%s** (verb): a stage is followed. Frame: agent %ss widget.\n" % (name, name)))
+                                     "- **%s** (verb, action): a stage is followed. Frame: agent %ss widget.\n" % (name, name)))
         H.says(step, name, '%s, the Frame: does not read at "widget"' % name)
     elif word == "unlabelled":     # the category of plugin 2.x, which names no part of speech
         path.write_text(text.replace("- **%s** (noun): a thing.\n" % name, "- **%s** (kind): a thing.\n" % name))
     elif word == "relational":     # a condition of a stage whose definition names the session
         path.write_text(text.replace("- **%s** (noun): a thing.\n" % name,
                                      "- **%s** (adjective of stage): a stage that the session ends.\n" % name))
+    elif word in SENSES:     # a verb's 4.0 entries: its aspect, its frames, its senses
+        path.write_text(text.replace("- **%s** (noun): a thing.\n" % name, SENSES[word].replace("V", name)))
+        if word in REFUSED:     # the refusal names the term under its rule, which no other rule of the entries gives
+            H.says(step, name, "%s  (1)\n    term/%s/%s" % (REFUSED[word], H.PATH, name))
+
+
+# The verb entries of each verb condition, V its word: an agent's frame and a text's take kinds neither of which is
+# under the other; a session is a kind of agent, so a session's frame overlaps an agent's.
+SENSES = {"aspectless": "- **V** (verb): an agent marks a text. Frame: agent Vs text.\n",
+          "multiframed": "- **V** (verb, action): an agent marks a text. Frame: agent Vs text. Frame: agent Vs text to "
+                         "agent.\n",
+          "polysemous": ("- **V** (verb, action): an agent marks a text. Frame: agent Vs text.\n"
+                         "- **V** (verb, state): a text bears a thing's mark. Frame: text Vs thing.\n"),
+          "overlapping": ("- **V** (verb, action): an agent marks a text. Frame: agent Vs text.\n"
+                          "- **V** (verb, state): a session bears a text's mark. Frame: session Vs text.\n")}
+REFUSED = {"aspectless": "v_t14  a verb's entry says neither state nor action",
+           "overlapping": "v_t15  two entries of one verb take, in every slot, the same kind or one kind under the other"}
 
 
 @handler("GivenK_C", "request")

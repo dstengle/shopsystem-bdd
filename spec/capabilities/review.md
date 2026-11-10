@@ -22,7 +22,7 @@ fixed now becomes a fix work-item, and the rest an observation.
 
 - **the branch reviewer** (proper noun): the session of a `branch review` stage, started as the agent `bdd-branch-reviewer`. Kind of: worker.
 - **the architecture reviewer** (proper noun): the agent `architecture-reviewer`, started when the person asks. Kind of: dispatch.
-- **find** (verb): a review finds a thing in what it reads. Forms: finds, found. Frame: review finds review finding.
+- **find** (verb, action): a review finds a thing in what it reads. Forms: finds, found. Frame: review finds review finding.
 - **unrequested behaviour** (noun): observable behaviour of code, such as an output, a file written, a status or a refusal, that no requirement asks for.
 - **fix work-item** (noun): a work-item drafted from a branch review's findings to fix now.
 - **refactor** (noun): a change of code's shape that keeps its behaviour.

@@ -42,7 +42,11 @@ contract:
     bullet of that section in no such form is a file problem. A
     `## Relations` table, in spec/index.md or a capability, gives the
     relations as rows `| from kind | word | to kind |`, and a kind's
-    `Kind of: <kind>` its supertype (spec_relations);
+    `Kind of: <kind>` its supertype (spec_relations). A verb's part of speech
+    names its aspect, `(verb, state)` or `(verb, action)` (v_t14 when it names
+    neither); its entry may give several `Frame:` fields (one meaning), and
+    two entries of one verb are two senses, which their kinds tell apart
+    (v_t15 when their frames overlap in every slot);
     spec/capabilities/*.md, each a capability with frontmatter (id, narrator,
     group, rests_on, retired) and a `## Behaviour` section; a `formulated_as`
     key is a file problem. A file whose own frontmatter has
@@ -161,7 +165,8 @@ contract:
     (`<code>  <term>  <message>`) and exits 1 when there is any: v_t7 a
     gloss of more than one sentence, v_t8 a relation entry (a relation is a
     row of `## Relations`), v_t9 a meaning given as a field rather than a sentence,
-    v_t10 two relation rows with one (from, word, to).
+    v_t10 two relation rows with one (from, word, to), and spec_frames'
+    v_t11-v_t15.
   - logic [--json] [<capability>] runs the temporal check (spec_solve) and
     prints its report, with its exit code.
   - forms [--json] prints one line for each file form a bounded context

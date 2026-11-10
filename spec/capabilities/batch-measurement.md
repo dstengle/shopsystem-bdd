@@ -33,7 +33,7 @@ not know rather than guessing at it.
 - **logged stage** (noun): a stage the initiative log gives a start for, run in one session.
 - **ending** (attribute of logged stage): whether the initiative log gives the stage an end. Values: `ended`, `unended`.
 - **present** (adjective of measurement): a measurement that is already written for its initiative on its day.
-- **include** (verb): `measure` puts a figure or a name into the measurement it writes. Forms: includes, included. Frame: `measure` includes measurement.
+- **include** (verb, action): `measure` puts a figure or a name into the measurement it writes. Forms: includes, included. Frame: `measure` includes measurement.
 
 ## Relations
 

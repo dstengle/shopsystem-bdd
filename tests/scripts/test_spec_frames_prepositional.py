@@ -14,7 +14,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import toolchain
 
 FIXTURE = pathlib.Path(__file__).resolve().parent / "fixtures" / "glossary"
-VERB = "- **subscribe** (verb): Frame: agent subscribes to stage.\n"
+VERB = "- **subscribe** (verb, action): Frame: agent subscribes to stage.\n"
 
 
 @pytest.fixture(scope="module")

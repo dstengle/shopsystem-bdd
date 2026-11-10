@@ -17,7 +17,7 @@ import toolchain
 REPO = pathlib.Path(__file__).resolve().parents[2]
 CLUSTER = REPO / "tests" / "scripts" / "fixtures" / "logic" / "cluster"
 SUPERVISION = "spec/capabilities/supervision.md"
-USE = "- **use** (verb): Forms: uses, used. Frame: `work run` uses question.\n"
+USE = "- **use** (verb, action): Forms: uses, used. Frame: `work run` uses question.\n"
 
 
 @pytest.fixture(scope="module")
@@ -43,7 +43,7 @@ def copy(tmp_path, root=CLUSTER, path=SUPERVISION, add="", glossary=""):
     target.write_text(text[:end].rstrip() + "\n\n" + add + text[end:])
     if glossary:
         index = out / "spec" / "index.md"
-        index.write_text(index.read_text().replace("- **start** (verb)", glossary + "- **start** (verb)"))
+        index.write_text(index.read_text().replace("- **start** (verb, action)", glossary + "- **start** (verb, action)"))
     return out
 
 
