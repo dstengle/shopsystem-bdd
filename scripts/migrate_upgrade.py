@@ -179,8 +179,11 @@ def upgrade(root):
             notes = [note for note in notes if not migrate_upgrade_simplified.superseded(note)]
         (root / VERSION_FILE).write_text(plugin_version() + "\n")
         git(root, "add", "-f", "--", VERSION_FILE)
-        git(root, "commit", "-q", "-m", "migrate upgrade: %s to %s\n\n%s" % (
-            before, plugin_version(), "\n".join(["upgrade step " + step_line(s) for s in steps] + notes)))
+        message = "migrate upgrade: %s to %s\n\n%s" % (
+            before, plugin_version(), "\n".join(["upgrade step " + step_line(s) for s in steps] + notes))
+        # on stdin: the notes of a large spec are over Linux's 128 KB limit for one argument
+        subprocess.run(["git", "commit", "-q", "-F", "-"], cwd=root, input=message, capture_output=True, text=True,
+                       check=True)
     except Exception as error:  # noqa: BLE001 -- any failure of a step puts every change back (r15, r20)
         subprocess.run(["git", "reset", "-q", "--hard", "HEAD"], cwd=root, capture_output=True)
         subprocess.run(["git", "clean", "-fdq"], cwd=root, capture_output=True)
