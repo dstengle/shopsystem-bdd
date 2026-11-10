@@ -111,6 +111,8 @@ def requirement(step):
         H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))
     elif word in C2.LINES:      # a line of grammar 4, in the smallest codified-2 world
         C2.requirement(step, word, H.PATH)
+    elif word in C2.SHELVED:      # a line of grammar 4 in the capability `shelf`, its verb added to the glossary
+        C2.shelved(step, word, H.PATH)
     elif word in FRAMED:
         H.write(repo, "spec/capabilities/thing.md", H.cap("thing", ["- [r1] " + FRAMED[word][0]]))
         H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))
@@ -120,6 +122,11 @@ def requirement(step):
             H.base(repo, step.context)
             index = repo / "spec" / "index.md"
             index.write_text(index.read_text() + "- **subscribe** (verb, action): Frame: agent subscribes to stage.\n")
+        if word == "later-sensed":     # a sense of name before the agent's, whose subject `work` is not
+            H.base(repo, step.context)
+            index = repo / "spec" / "index.md"
+            index.write_text(index.read_text().replace("- **name** (verb, action)", "- **name** (verb, state): a text "
+                                                       "names a thing. Frame: text names thing.\n- **name** (verb, action)"))
         if word == "negating":     # the relation the line negates, a row of `## Relations`
             H.base(repo, step.context)
             index = repo / "spec" / "index.md"
@@ -142,7 +149,8 @@ FRAMED = {"negating": (("While a stage is not for a work-item, when the person r
                       "`work start`, `work` shall commit a file."), None),
           "prepositioned": (("While a session does not subscribe to a stage, when a session subscribes to a stage, "
                              "`work` shall subscribe to a stage."), None),
-          "addressed": ("When `work` gives a brief to a stage, `work` shall write a file.", None)}
+          "addressed": ("When `work` gives a brief to a stage, `work` shall write a file.", None),
+          "later-sensed": ("When the person runs `work start`, `work` shall name a requirement.", None)}
 
 
 # feature-file-tools' withholding requirement, `[r1] `shelf` shall not lend a book to a reader.`, which the example data
@@ -210,6 +218,8 @@ def term(step):
         path.write_text(text.replace("- **%s** (noun): a thing.\n" % name, SENSES[word].replace("V", name)))
         if word in REFUSED:     # the refusal names the term under its rule, which no other rule of the entries gives
             H.says(step, name, "%s  (1)\n    term/%s/%s" % (REFUSED[word], H.PATH, name))
+    else:       # a condition no branch writes would leave the base world's term, which passes unchecked
+        raise AssertionError("no term condition %r" % word)
 
 
 # The verb entries of each verb condition, V its word: an agent's frame and a text's take kinds neither of which is
@@ -220,7 +230,8 @@ SENSES = {"aspectless": "- **V** (verb): an agent marks a text. Frame: agent Vs 
           "polysemous": ("- **V** (verb, action): an agent marks a text. Frame: agent Vs text.\n"
                          "- **V** (verb, state): a text bears a thing's mark. Frame: text Vs thing.\n"),
           "overlapping": ("- **V** (verb, action): an agent marks a text. Frame: agent Vs text.\n"
-                          "- **V** (verb, state): a session bears a text's mark. Frame: session Vs text.\n")}
+                          "- **V** (verb, state): a session bears a text's mark. Frame: session Vs text.\n"),
+          "oblique": "- **V** (verb, action): an agent keeps a thing in a text. Frame: agent Vs thing in text.\n"}
 REFUSED = {"aspectless": "v_t14  a verb's entry says neither state nor action",
            "overlapping": "v_t15  two entries of one verb take, in every slot, the same kind or one kind under the other"}
 
