@@ -5,8 +5,8 @@ narrator: a person or session verifying a repository against the design model
 group: service
 language: codified-1
 rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/query-commands-answer-in-their-output, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items, design-decision/work-items-named-by-ids, design-decision/the-glossary-is-a-target-of-spec-work]
-retired: [r8, r9, r12, r13, r14, r15, r16, r17, r18, r21, r26, r27, r29, r31, r32, r33, r34, r35, r37, r39, r45, r46, r53]
-unbuilt: []
+retired: [r8, r9, r12, r13, r14, r15, r16, r17, r18, r21, r26, r27, r29, r31, r32, r33, r34, r35, r37, r39, r45, r46, r53, g73, r73, g72, r72]
+unbuilt: [r74, r75, r76, r77, r78, r79]
 ---
 
 # Design model check
@@ -94,6 +94,11 @@ context: product-level artifacts are read only where the files contain them.
 - **rule catalogue** (noun): the generated file `grammar/rules.md`, one entry a rule. Kind of: file.
 - **violate** (verb): a thing does not meet a rule of the rule catalogue. Forms: violates, violated. Frame: thing violates rule.
 - **stale** (adjective of rule catalogue): a rule catalogue that is not what `model rules --write` would write.
+
+- **aspectless** (adjective of term): a verb whose entry says neither `state` nor `action`.
+- **multiframed** (adjective of term): a verb whose entry has two `Frame:` lines.
+- **polysemous** (adjective of term): a verb with two entries whose frames take kinds that do not overlap.
+- **overlapping** (adjective of term): a verb with two entries whose frames take, in every slot, the same kind or one kind under the other.
 
 ## Behaviour
 
@@ -269,11 +274,23 @@ Restates: r65@0.29.
 ### [g71] A pair that cannot be unified sets only itself aside
 - [r71] When the person runs `model logic` on a capability that is unpairable, `model` shall print a requirement and print "L1".
 
-### [g73] `model rules --write` writes the rule catalogue
-- [r73] Where `--write` is given, when the person runs `model rules`, `model` shall write the rule catalogue and exit successfully.
+### [g74] `model rules --write` writes the rule catalogue
+- [r74] When the person runs `model rules --write`, `model` shall write the rule catalogue and exit successfully.
 
-### [g72] `model rules --check` refuses a stale catalogue
-- [r72] Where `--check` is given, if the person runs `model rules` on a rule catalogue that is stale, then `model` shall exit with an error naming the rule catalogue and change nothing.
+### [g75] `model rules --check` refuses a stale rule catalogue
+- [r75] If the person runs `model rules --check` on a rule catalogue that is stale, then `model` shall exit with an error naming the rule catalogue and change nothing.
+
+### [g76] `model check` refuses a verb with no aspect
+- [r76] If the person runs `model check` on a term that is aspectless, then `model` shall exit with an error naming the term.
+
+### [g77] `model check` passes a verb with two frames
+- [r77] When the person runs `model check` on a term that is multiframed, `model` shall exit successfully.
+
+### [g78] `model check` passes a verb with two senses told apart by kinds
+- [r78] When the person runs `model check` on a term that is polysemous, `model` shall exit successfully.
+
+### [g79] `model check` refuses two senses that overlap
+- [r79] If the person runs `model check` on a term that is overlapping, then `model` shall exit with an error naming the term.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a
