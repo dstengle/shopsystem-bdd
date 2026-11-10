@@ -184,6 +184,13 @@ contract:
     permits) and the entailment check (spec_entail: L8, a requirement each
     of whose Thens other requirements entail) and prints its report, with its
     exit code; given a requirement's id, the findings that name it.
+  - explain <capability>#r<n> prints the requirement's id and line, then
+    under "which also means:" each response other requirements force where
+    its trigger, state and responses hold, with its premise (a universal
+    condition, a requirement, or an imported pack's definition of refuse),
+    and under "taking precedence over it" each If requirement of its trigger
+    (when it is of another form), and exits 0; an id no capability holds is
+    refused, naming it, with exit 1 and nothing written (model_explain).
   - forms [--json] prints one line for each file form a bounded context
     keeps: its name, its path pattern and the command that writes it (or
     the plugin's item that will give it one, or "by hand"), and exits 0;
@@ -203,6 +210,10 @@ def cmd_facts(args):
 
 def cmd_check(args):
     return needing_clingo("check", lambda: check(args))
+
+
+def cmd_explain(args):
+    return needing_clingo("explain", lambda: __import__("model_explain").explain(args.root, args.requirement))
 
 
 def cmd_rules(args):
@@ -239,6 +250,8 @@ def main(argv=None):
     s = sub.add_parser("restates", help="whether every 0.29 id is restated, dropped or moved")
     s.add_argument("capability", nargs="?")
     s.add_argument("--json", action="store_true")
+    e = sub.add_parser("explain", help="print a requirement, what it also means and what takes precedence over it")
+    e.add_argument("requirement", help="a requirement's id <capability>#r<n>")
     f = sub.add_parser("forms", help="print every file form: its name, its path pattern and the command that writes it")
     f.add_argument("--json", action="store_true")
     args = ap.parse_args(argv)
@@ -248,7 +261,7 @@ def main(argv=None):
         ap.error("rules takes one of --json, --write and --check")
     return {"facts": cmd_facts, "check": cmd_check, "rules": cmd_rules, "decisions": cmd_decisions,
             "parse": cmd_parse, "lexicon": cmd_lexicon, "logic": cmd_logic, "restates": cmd_restates,
-            "forms": cmd_forms}[args.cmd](args)
+            "forms": cmd_forms, "explain": cmd_explain}[args.cmd](args)
 
 
 if __name__ == "__main__":
