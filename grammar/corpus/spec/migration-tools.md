@@ -238,22 +238,6 @@ shall [x1: repository "the repository the command runs in" (indexical), x2: agen
         rewrite(e6, subject: x4, object: x9)
 ```
 
-## r42
-Retires: r14. From: b156 r41. Audit: distortion, fixed by the plugin's release as a value. Known limit: #6 (a value compared with the plugin's release).
-
-```reading
-While the release of this repository is `3.0.1`, when the person runs `migrate upgrade`, `migrate` shall print `no upgrade step is pending` and change no file.
-shall [x1: repository "the repository the command runs in" (indexical), x2: agent the person (constant), x3: command `migrate upgrade` (parameter), x4: tool `migrate` (constant), x5: text `no upgrade step is pending` (constant)]
-  while
-    release(x1) = `3.0.1`
-  when
-    run(e1, subject: x2, object: x3)
-  response
-    print(e2, subject: x4, object: x5)
-    not [x6: file]
-      change(e3, subject: x4, object: x6)
-```
-
 ## r43
 Retires: r15. From: b156 r42. Audit: distortion, fixed by ordered comparison (construct `ordered`: "after `0.23.1` and before `0.25.0`").
 
@@ -331,46 +315,6 @@ shall [x1: repository "the repository the command runs in" (indexical), x2: agen
       scope
         print(e3, subject: x4, object: x6)
     print(e4, subject: x4, object: x7)
-```
-
-## r48
-Retires: r18. From: b156 r47. Audit: distortion, fixed by the note a declared constant. Known limit: #6 ("after `3.0.1`", the plugin's release as a value).
-
-```reading
-While the release of this repository is after `3.0.1`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print `update the plugin`.
-shall [x1: repository "the repository the command runs in" (indexical), x2: agent the SessionStart hook (constant), x3: command `migrate status --hook` (parameter), x4: tool `migrate` (constant), x5: text `update the plugin` (constant)]
-  while
-    cmp(release(x1)) after `3.0.1`
-  when
-    run(e1, subject: x2, object: x3)
-  response
-    print(e2, subject: x4, object: x5)
-```
-
-## r49
-Retires: r19. From: b156 r48. Audit: distortion, fixed by section 5 ("of this repository") and a value set (construct `value-set`). Known limit: #6 (the plugin's release as a value).
-
-```reading
-While the release of this repository is `3.0.1` and every initiative of this repository is one of `done` or `abandoned`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall exit successfully, print no upgrade step and print no initiative.
-shall [x1: repository "the repository the command runs in" (indexical), x3: agent the SessionStart hook (constant), x4: command `migrate status --hook` (parameter), x5: tool `migrate` (constant)]
-  while
-    release(x1) = `3.0.1`
-    every [x2: initiative]
-      of(x2, x1)
-      scope
-        or
-          case
-            status(x2) = `done`
-          case
-            status(x2) = `abandoned`
-  when
-    run(e1, subject: x3, object: x4)
-  response
-    exit(e2, subject: x5, successfully)
-    not [x6: upgrade step]
-      print(e3, subject: x5, object: x6)
-    not [x7: initiative]
-      print(e4, subject: x5, object: x7)
 ```
 
 ## r50
@@ -514,4 +458,83 @@ shall [x1: repository "the repository the command runs in" (indexical), x2: agen
       violate(subject: x8, object: x9)
       scope
         print(e4, subject: x4, object: x8)
+```
+
+## r61
+From: b161 r26. Audit: the grammar 4 form b161's notes give, the coined "unpacked" said by ordered comparison (construct `ordered`: "after `3.0.0` and before `4.0.0`") and "the controlled language 4" said, as r56 says its step, as the upgrade step whose release is `4.0.0`.
+
+```reading
+While the release of this repository is after `3.0.0` and before `4.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite the index file of this bounded context, rewrite every capability and print every upgrade step whose release is `4.0.0`.
+shall [x1: repository "the repository the command runs in" (indexical), x2: agent the person (constant), x3: command `migrate upgrade` (parameter), x4: tool `migrate` (constant), x5: bounded context "the bounded context whose repository the command runs in" (indexical)]
+  while
+    cmp(release(x1)) after `3.0.0`
+    cmp(release(x1)) before `4.0.0`
+  when
+    run(e1, subject: x2, object: x3)
+  response [x6: index file]
+    of(x6, x5)
+    rewrite(e2, subject: x4, object: x6)
+    every [x7: capability]
+      scope
+        rewrite(e3, subject: x4, object: x7)
+    every [x8: upgrade step]
+      release(x8) = `4.0.0`
+      scope
+        print(e4, subject: x4, object: x8)
+```
+
+## r62
+Retires: r42. From: the release 4.0.0 (b161). Known limit: #6 (a value compared with the plugin's release).
+
+```reading
+While the release of this repository is `4.0.0`, when the person runs `migrate upgrade`, `migrate` shall print `no upgrade step is pending` and change no file.
+shall [x1: repository "the repository the command runs in" (indexical), x2: agent the person (constant), x3: command `migrate upgrade` (parameter), x4: tool `migrate` (constant), x5: text `no upgrade step is pending` (constant)]
+  while
+    release(x1) = `4.0.0`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    print(e2, subject: x4, object: x5)
+    not [x6: file]
+      change(e3, subject: x4, object: x6)
+```
+
+## r63
+Retires: r48. From: the release 4.0.0 (b161). Known limit: #6 ("after `4.0.0`", the plugin's release as a value).
+
+```reading
+While the release of this repository is after `4.0.0`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print `update the plugin`.
+shall [x1: repository "the repository the command runs in" (indexical), x2: agent the SessionStart hook (constant), x3: command `migrate status --hook` (parameter), x4: tool `migrate` (constant), x5: text `update the plugin` (constant)]
+  while
+    cmp(release(x1)) after `4.0.0`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    print(e2, subject: x4, object: x5)
+```
+
+## r64
+Retires: r49. From: the release 4.0.0 (b161). Known limit: #6 (the plugin's release as a value).
+
+```reading
+While the release of this repository is `4.0.0` and every initiative of this repository is one of `done` or `abandoned`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall exit successfully, print no upgrade step and print no initiative.
+shall [x1: repository "the repository the command runs in" (indexical), x3: agent the SessionStart hook (constant), x4: command `migrate status --hook` (parameter), x5: tool `migrate` (constant)]
+  while
+    release(x1) = `4.0.0`
+    every [x2: initiative]
+      of(x2, x1)
+      scope
+        or
+          case
+            status(x2) = `done`
+          case
+            status(x2) = `abandoned`
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    exit(e2, subject: x5, successfully)
+    not [x6: upgrade step]
+      print(e3, subject: x5, object: x6)
+    not [x7: initiative]
+      print(e4, subject: x5, object: x7)
 ```

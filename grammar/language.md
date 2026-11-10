@@ -1814,8 +1814,8 @@ placeholder, ...".
 
 "after v" compares a value with a value a line names; the language has no comparison of two things' values ("the
 release of the repository is after the release of the plugin"), which the check could not decide exactly over named
-points (design call 9). Line: migration-tools r47 (b156: the repository's release `newer`, newer than the plugin's
-own). It says instead the plugin's release the line is written for, as a value: "While the release of the repository
+points (design call 9). Lines: migration-tools r62, r63 (b156 r47: the repository's release `newer`, newer than the
+plugin's own) and r64, of the release 4.0.0 (retiring r42, r48 and r49, which said `3.0.1`). They say instead the plugin's release the line is written for, as a value: "While the release of the repository
 is after `4.0.0`, ...", and the line gets a new id when the plugin's release moves on.
 
 ### #8: a change of an attribute's value

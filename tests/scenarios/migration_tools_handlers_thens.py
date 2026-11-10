@@ -76,6 +76,9 @@ def rewritten(step, what):
         assert "status: awaiting-answer" in text and "## Answers" in text, text
     elif what == "work-item file":
         assert "accepts: [cart#r1@0.29]" in M.read(step, ".shop/work/i1/w2.md")
+    elif what == "capability" and "language: codified-1" in M.held(step).get("spec/capabilities/cart.md", ""):
+        before = M.held(step)["spec/capabilities/cart.md"]      # 4.0.0: the marker alone, no line reworded
+        assert M.read(step, "spec/capabilities/cart.md") == before.replace("codified-1", "codified-2")
     elif what == "capability":
         text = M.read(step, "spec/capabilities/cart.md")
         assert "### [g1] r1@0.29\nRestates: r1@0.29.\n" in text and "- [r1]" not in text, text
@@ -83,8 +86,10 @@ def rewritten(step, what):
         text = M.read(step, "features/cart.feature")
         assert "@deprecated" not in text and text.startswith("Feature: Cart"), text
     elif what == "index file":
-        before = M.held(step)["spec/index.md"]
-        assert M.read(step, "spec/index.md") == before.replace("(kind)", "(noun)").replace("(event)", "(verb)") != before
+        before = M.held(step)["spec/index.md"]      # 3.0.0's parts of speech, then 4.0.0's marker and aspect (no line uses a CLI word)
+        after = (before.replace("(kind)", "(noun)").replace("(event)", "(verb)").replace("(verb)", "(verb, action)")
+                 .replace("language: codified-1\n", "language: codified-2\n"))
+        assert M.read(step, "spec/index.md") == after != before
     else:
         raise AssertionError("no reading of a rewritten %s" % what)
 

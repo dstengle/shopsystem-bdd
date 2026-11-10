@@ -278,14 +278,6 @@ Feature: Migration tools
     And the plugin version file p1 has the content c1
     And `migrate` names the content c1
 
-  @g42 @r42
-  Scenario: `migrate upgrade` on a repository on the plugin's release says that no upgrade step is pending and changes nothing
-    Given the tracked file `.shop/plugin-version` holds "3.0.1"
-    And this repository is `3.0.1`
-    When the person runs `migrate upgrade`
-    Then `migrate` prints `no upgrade step is pending`
-    And `migrate` does not change a file
-
   @g43 @r43
   Scenario: `migrate upgrade` on a repository from 0.24.0 and before 0.25.0 rewrites every work-item file
     Given the tracked file `.shop/plugin-version` holds "0.24.0"
@@ -366,55 +358,6 @@ Feature: Migration tools
     And `migrate` prints the upgrade step u1
     And `migrate` prints the upgrade step u2
     And `migrate` prints `only on the person's yes`
-
-  @g48 @r48
-  Scenario: the SessionStart hook tells a session to tell the person to update the plugin
-    Given the tracked file `.shop/plugin-version` holds "9.0.0"
-    And this repository is `9.0.0`
-    When the SessionStart hook runs `migrate status --hook`
-    Then `migrate` prints `update the plugin`
-
-  @g49 @r49
-  Scenario: the SessionStart hook tells a session nothing on the plugin's release when no initiative is open (case 1)
-    Given the tracked file `.shop/plugin-version` holds "3.0.1"
-    And the tracked file `.shop/work/i1/initiative.md` holds:
-      """
-      ---
-      id: initiative/example.org/acme/shop/i1
-      kind: initiative
-      status: done
-      ---
-      # i1
-      """
-    And this repository is `3.0.1`
-    And an initiative i1
-    And this repository has the initiative i1
-    And the initiative i1 is `done`
-    When the SessionStart hook runs `migrate status --hook`
-    Then `migrate` exits successfully
-    And `migrate` does not print an upgrade step
-    And `migrate` does not print an initiative
-
-  @g49 @r49
-  Scenario: the SessionStart hook tells a session nothing on the plugin's release when no initiative is open (case 2)
-    Given the tracked file `.shop/plugin-version` holds "3.0.1"
-    And the tracked file `.shop/work/i1/initiative.md` holds:
-      """
-      ---
-      id: initiative/example.org/acme/shop/i1
-      kind: initiative
-      status: done
-      ---
-      # i1
-      """
-    And this repository is `3.0.1`
-    And an initiative i1
-    And this repository has the initiative i1
-    And the initiative i1 is `abandoned`
-    When the SessionStart hook runs `migrate status --hook`
-    Then `migrate` exits successfully
-    And `migrate` does not print an upgrade step
-    And `migrate` does not print an initiative
 
   @g50 @r50
   Scenario: the SessionStart hook tells a session nothing in a repository with no shop directory
@@ -874,3 +817,105 @@ Feature: Migration tools
     And `migrate` rewrites the work-item file w2
     And `migrate` rewrites the feature f1
     And `migrate` rewrites the feature f2
+
+  @g61 @r61
+  Scenario: `migrate upgrade` on a repository from 3.0.0 and before 4.0.0 rewrites the index file and every capability in the controlled language 4 and names what it cannot reword
+    Given the tracked file `.shop/plugin-version` holds "3.0.1"
+    And the tracked file `spec/index.md` holds:
+      """
+      ---
+      id: bounded-context/example.org/acme/shop
+      title: shop
+      language: codified-1
+      ---
+      # shop
+      ## Glossary
+      - **cart** (noun): the goods a shopper picks.
+      - **shopper** (noun): a person who buys.
+      - **pick** (verb): a shopper puts goods in a cart. Forms: picks, picked. Frame: shopper picks cart.
+      """
+    And the tracked file `spec/capabilities/cart.md` holds:
+      """
+      ---
+      id: capability/example.org/acme/shop/cart
+      title: Cart
+      language: codified-1
+      retired: []
+      unbuilt: []
+      ---
+      # Cart
+      ## Behaviour
+      ### [g1] picking
+      - [r1] When a shopper picks a cart, the shopper shall pick the cart.
+      """
+    And this repository is `3.0.1`
+    And a capability c1
+    And a capability c2
+    And an upgrade step u1
+    And the upgrade step u1 is `4.0.0`
+    And an upgrade step u2
+    And the upgrade step u2 is `4.0.0`
+    When the person runs `migrate upgrade`
+    Then this bounded context has the index file i1
+    And `migrate` rewrites the index file i1
+    And `migrate` rewrites the capability c1
+    And `migrate` rewrites the capability c2
+    And `migrate` prints the upgrade step u1
+    And `migrate` prints the upgrade step u2
+
+  @g62 @r62
+  Scenario: `migrate upgrade` on a repository on the plugin's release says that no upgrade step is pending and changes nothing
+    Given the tracked file `.shop/plugin-version` holds "4.0.0"
+    And this repository is `4.0.0`
+    When the person runs `migrate upgrade`
+    Then `migrate` prints `no upgrade step is pending`
+    And `migrate` does not change a file
+
+  @g63 @r63
+  Scenario: the SessionStart hook tells a session to tell the person to update the plugin
+    Given the tracked file `.shop/plugin-version` holds "9.0.0"
+    And this repository is `9.0.0`
+    When the SessionStart hook runs `migrate status --hook`
+    Then `migrate` prints `update the plugin`
+
+  @g64 @r64
+  Scenario: the SessionStart hook tells a session nothing on the plugin's release when no initiative is open (case 1)
+    Given the tracked file `.shop/plugin-version` holds "4.0.0"
+    And the tracked file `.shop/work/i1/initiative.md` holds:
+      """
+      ---
+      id: initiative/example.org/acme/shop/i1
+      kind: initiative
+      status: done
+      ---
+      # i1
+      """
+    And this repository is `4.0.0`
+    And an initiative i1
+    And this repository has the initiative i1
+    And the initiative i1 is `done`
+    When the SessionStart hook runs `migrate status --hook`
+    Then `migrate` exits successfully
+    And `migrate` does not print an upgrade step
+    And `migrate` does not print an initiative
+
+  @g64 @r64
+  Scenario: the SessionStart hook tells a session nothing on the plugin's release when no initiative is open (case 2)
+    Given the tracked file `.shop/plugin-version` holds "4.0.0"
+    And the tracked file `.shop/work/i1/initiative.md` holds:
+      """
+      ---
+      id: initiative/example.org/acme/shop/i1
+      kind: initiative
+      status: done
+      ---
+      # i1
+      """
+    And this repository is `4.0.0`
+    And an initiative i1
+    And this repository has the initiative i1
+    And the initiative i1 is `abandoned`
+    When the SessionStart hook runs `migrate status --hook`
+    Then `migrate` exits successfully
+    And `migrate` does not print an upgrade step
+    And `migrate` does not print an initiative
