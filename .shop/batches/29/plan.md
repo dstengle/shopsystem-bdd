@@ -1,0 +1,23 @@
+---
+id: batch/missingmass.io/shopsystem/shopsystem-bdd/batch-29
+kind: batch
+status: building
+base: main
+forked_from: 6e10e78e5f89a35734b82cf425bd0da8428bc7a9
+branch: batch-29
+pull_request:
+---
+
+# batch-29
+
+## Tasks
+
+| task | item | status | branch |
+|---|---|---|---|
+| t1 | b144 | pending | batch-29-b144 |
+| t2 | b150 | pending | batch-29-b150 |
+| t3 | b143 | pending | batch-29-b143 |
+
+## Plan
+
+One task for each item: each builds its item's requirement lines, whose generated scenarios are its acceptance tests.
