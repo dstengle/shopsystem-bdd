@@ -4,7 +4,7 @@ Feature: Analysis tools
 
   @g7 @r7
   Scenario: `tools probe` prints each analysis tool and the Python interpreter
-    Given no analysis tool is `missing`
+    Given no analysis tool whose presence is `missing` exists
     And an analysis tool a1
     And an analysis tool a2
     When the person runs `tools probe`
@@ -15,7 +15,7 @@ Feature: Analysis tools
   @g8 @r8
   Scenario: `tools probe` exits with an error naming a missing analysis tool
     Given an analysis tool a1
-    And the analysis tool a1 is `missing`
+    And the presence of the analysis tool a1 is `missing`
     When the person runs `tools probe`
     Then `tools` exits with an error naming the analysis tool a1
 
@@ -75,11 +75,11 @@ Feature: Analysis tools
   @g43 @r43
   Scenario: `tools install` installs a missing analysis tool and changes no dependency file
     Given the dependency file `requirements.txt` holds "pytest"
-    And this Python interpreter is `virtualenv`
+    And the environment of this Python interpreter is `virtualenv`
     And an analysis tool a1
-    And the analysis tool a1 is `missing`
+    And the presence of the analysis tool a1 is `missing`
     And an analysis tool a2
-    And the analysis tool a2 is `missing`
+    And the presence of the analysis tool a2 is `missing`
     When the person runs `tools install`
     Then `tools` installs the analysis tool a1
     And `tools` installs the analysis tool a2
@@ -87,8 +87,8 @@ Feature: Analysis tools
 
   @g44 @r44
   Scenario: `tools install` installs the one version of `ruff` the plugin pins
-    Given `ruff` is `missing`
-    And this Python interpreter is `virtualenv`
+    Given the presence of `ruff` is `missing`
+    And the environment of this Python interpreter is `virtualenv`
     When the person runs `tools install`
     Then `ruff` has the version v1
     And the plugin pins the version v1
@@ -97,8 +97,8 @@ Feature: Analysis tools
   @g45 @r45
   Scenario: `tools install` refuses to install into a Python interpreter that is not a virtualenv
     Given an analysis tool a1
-    And the analysis tool a1 is `missing`
-    And this Python interpreter is `system`
+    And the presence of the analysis tool a1 is `missing`
+    And the environment of this Python interpreter is `system`
     When the person runs `tools install`
     Then `tools` refuses `tools install`
     And `tools` names the analysis tool a1
@@ -106,8 +106,8 @@ Feature: Analysis tools
   @g46 @r46
   Scenario: an analysis tool still missing after `tools install` is printed with its pip command
     Given an analysis tool a1
-    And the analysis tool a1 is `uninstallable`
-    And this Python interpreter is `virtualenv`
+    And the presence of the analysis tool a1 is `uninstallable`
+    And the environment of this Python interpreter is `virtualenv`
     When the person runs `tools install`
     Then the analysis tool a1 has the pip command p1
     And `tools` prints the pip command p1
@@ -297,13 +297,13 @@ Feature: Analysis tools
 
   @g61 @r61
   Scenario: `tools check` names a missing analysis tool
-    Given `vulture` is `missing`
+    Given the presence of `vulture` is `missing`
     When the person runs `tools check`
     Then `tools` exits with an error naming `vulture`
 
   @g62 @r62
   Scenario: `tools tests-of` refuses when `coverage` is missing, naming `tools install`
-    Given `coverage` is `missing`
+    Given the presence of `coverage` is `missing`
     When the person runs `tools tests-of` on the function f1
     Then `tools` refuses `tools tests-of`
     And `tools` names `coverage`
@@ -311,7 +311,7 @@ Feature: Analysis tools
 
   @g63 @r63
   Scenario: `tools refs` refuses when `jedi` is missing, naming `tools install`
-    Given `jedi` is `missing`
+    Given the presence of `jedi` is `missing`
     When the person runs `tools refs` on the identifier i1
     Then `tools` refuses `tools refs`
     And `tools` names `jedi`
@@ -334,8 +334,8 @@ Feature: Analysis tools
 
   @g66 @r66
   Scenario: `tools install` installs the RGL
-    Given `gf-rgl` is `missing`
-    And this Python interpreter is `virtualenv`
+    Given the presence of `gf-rgl` is `missing`
+    And the environment of this Python interpreter is `virtualenv`
     When the person runs `tools install`
     Then `tools` installs `gf-rgl`
 

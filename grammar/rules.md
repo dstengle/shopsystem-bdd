@@ -726,7 +726,7 @@ a check decision names no test
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: decision-tiers#r14
+- Cited by: decision-tiers#r26
 - Fails on:
 
   ```prolog
@@ -746,7 +746,7 @@ a requirement decision names no requirement
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: decision-tiers#r15
+- Cited by: decision-tiers#r27
 - Fails on:
 
   ```prolog
@@ -1098,6 +1098,25 @@ a term an imported pack defines too has no `Redefines:` naming the pack
 
   ```prolog
   category("t1","kind").
+  ```
+
+## w_value_kind
+
+an attribute does not say whether its values are adjectives or nouns (Values (adjective): or Values (noun):)
+
+- Severity: warning
+- Implemented in: `scripts/model.lp`
+- Cited by: migration-tools#r65
+- Fails on:
+
+  ```prolog
+  undeclared_values("status").
+  ```
+
+- Passes on:
+
+  ```prolog
+  category("status","attribute").
   ```
 
 ## v_t17

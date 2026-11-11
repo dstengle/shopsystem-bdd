@@ -773,6 +773,50 @@ While a file conforms to a stage, when the person runs `work start`, `work` shal
 refused: the verb conform takes as its recipient artifact or a kind of it: thing conforms to artifact
 ```
 
+### "the T of X is v" and "X is v": a value, adjective or noun
+
+A line says an attribute's value in the full form, "the T of X is v" ("the status of the item is `idea`", "an item
+whose status is `idea`"), which any value takes. The short form "X is v" ("an item is `shaped`") leaves the attribute
+out, so it reads as English only when v reads after "is" as an adjective or a participle; with a noun ("an item is
+`idea`", "a design-decision is `check`"), a verb phrase ("an item is `needs-input`") or a release ("a repository is
+`1.0.0`") it does not. So an attribute entry declares the kind of its values (b257): `Values (adjective):` lists those
+the short form takes, `Values (noun):` every other, and an entry may give both. A line that says a noun value in the
+short form, "is", "is not", "is one of" or "is not `a` or `b`" after the thing alone, is refused, naming the value,
+the attribute and the full form. An entry that gives a plain `Values:` declares neither, and its values keep the short
+form as they did in 4.0, which `model check` warns of (`w_value_kind`). Generated Gherkin says every value in the full
+form, "the status of the item i1 is `idea`", so that whoever binds a step reads the attribute in it; a value of "no K"
+is "no item whose status is `idea` exists". The constructs are `attribute-is` and `adjective-value`.
+
+Found in backlog r23, r24, r28-r31 (`idea`, `needs-input`), batches r27, r33, decision-tiers r14-r17 (the tiers),
+r23 (a route's kind) and pr-review r4, r13-r15 (`judgement`, `fix now`), each reworded to the full form (b257).
+
+```reading
+While the tier of a stage is `review`, when the person runs `work start`, `work` shall end the stage.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: stage]
+    tier(x1) = `review`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    end(e2, subject: x4, object: x1)
+```
+
+```reading
+While a stage is `open`, when the person runs `work start`, `work` shall end the stage.
+shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+  while [x1: stage]
+    status(x1) = `open`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    end(e2, subject: x4, object: x1)
+```
+
+```reading
+While a stage is `review`, when the person runs `work start`, `work` shall end the stage.
+refused: `review` is a noun, a value of the tier of a stage: "a stage is `review`" does not read; write "the tier of the stage is `review`" or "a stage whose tier is `review`"
+```
+
 ### "the T of X is after v": ordered comparison
 
 An attribute whose entry says `Order:` has ordered values, and a line may compare its value with a value: "the T of X
@@ -1825,9 +1869,9 @@ placeholder, ...".
 
 "after v" compares a value with a value a line names; the language has no comparison of two things' values ("the
 release of the repository is after the release of the plugin"), which the check could not decide exactly over named
-points (design call 9). Lines: migration-tools r62, r63 and r64, of the release 4.0.0 (r63 is b156's line of the
-repository's release `newer`, newer than the plugin's own). They say instead the plugin's release the line is written for, as a value: "While the release of the repository
-is after `4.0.0`, ...", and the line gets a new id when the plugin's release moves on.
+points (design call 9). Lines: migration-tools r65, r66, r67 and r68, of the release 4.1.0 (r67 is b156's line of the
+repository's release `newer`, newer than the plugin's own; r62-r64 were 4.0.0's). They say instead the plugin's release the line is written for, as a value: "While the release of the repository
+is after `4.1.0`, ...", and the line gets a new id when the plugin's release moves on.
 
 ### #8: a change of an attribute's value
 

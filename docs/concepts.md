@@ -127,7 +127,7 @@ A requirement line is one sentence that says what the software does. It is plain
 kind: the plugin parses every line, and a line that could mean two things is refused before anyone builds it.
 
 ```reading
-While an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
+While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
 shall [x2: agent the person (constant), x3: command `work shape` (parameter), x4: tool `work` (constant)]
   while [x1: item]
     status(x1) = `idea`
@@ -145,7 +145,7 @@ part the checks and the generator read.
 - **Written by:** `work line` into an item; `work batch start` moves it into `spec/`. You never edit a line in
   place: a changed line gets a new id, and `work line --retires <capability>#r<n>` retires the old one.
 
-This line is `backlog#r23`. Try one yourself with `model parse "<line>"`.
+This line is `backlog#r37`. Try one yourself with `model parse "<line>"`.
 Read more: [Writing requirements](writing-requirements.md) and the language reference,
 [`grammar/language.md`](../grammar/language.md).
 
@@ -157,8 +157,8 @@ A group is one or more lines that together make one scenario, under a title a pe
 - **Written by:** `work line --group "<title>"` opens one in an item; `--in g<n>` adds a line to it.
 
 ```markdown
-### [g23] `work shape` shapes an idea
-- [r23] While an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
+### [g37] `work shape` shapes an idea
+- [r37] While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
 ```
 
 Most groups hold one line. The title is what you'll see as the scenario's name.
@@ -208,13 +208,13 @@ A scenario is a group turned into Gherkin; a feature file holds a capability's s
 - **Lives in:** `features/<capability>.feature`, one scenario a group, tagged with its group and line ids.
 - **Written by:** `features generate`. The first line of the file says "do not edit", and it means it.
 
-Here's g23 from above, as [`features/backlog.feature`](../features/backlog.feature) has it:
+Here's g37 from above, as [`features/backlog.feature`](../features/backlog.feature) has it:
 
 ```gherkin
-@g23 @r23
+@g37 @r37
 Scenario: `work shape` shapes an idea
   Given an item i1
-  And the item i1 is `idea`
+  And the status of the item i1 is `idea`
   When the person runs `work shape` on the item i1
   Then `work` sets the status of the item i1 to `shaped`
 ```

@@ -378,6 +378,10 @@ label("v_t16", "a term an imported pack defines too has no `Redefines:` naming t
 % fail v_t16: unmarked("t1","cli").
 % pass v_t16: category("t1","kind").
 v_t16(T, P)   :- unmarked(T, P).
+label("w_value_kind", "an attribute does not say whether its values are adjectives or nouns (Values (adjective): or Values (noun):)").
+% fail w_value_kind: undeclared_values("status").
+% pass w_value_kind: category("status","attribute").
+w_value_kind(T) :- undeclared_values(T).
 label("v_t17", "`spec/index.md` imports a pack that neither the plugin nor the bounded context has").
 % fail v_t17: misimported("ctx","p1").
 % pass v_t17: typed("ctx").
@@ -454,4 +458,4 @@ w_example(Q, L)    :- exemplified(Q, L).
 #show v_t16/2. #show v_t17/2.
 #show v_p0/1. #show v_p1/2. #show v_p2/1. #show v_p3/2.
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
-#show w_many_requests/1. #show w_untiered/1. #show w_unrouted/1. #show w_example/2.
+#show w_many_requests/1. #show w_untiered/1. #show w_unrouted/1. #show w_example/2. #show w_value_kind/1.

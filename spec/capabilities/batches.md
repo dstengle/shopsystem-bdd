@@ -5,7 +5,7 @@ narrator: a person or session building a batch
 group: service
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
-retired: [g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g10, r10, g12, r12, g13, r13, g16, r16, g17, r17, g18, r18, g19, r19]
+retired: [g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g10, r10, g12, r12, g13, r13, g16, r16, g17, r17, g18, r18, g19, r19, g27, r27, g33, r33]
 unbuilt: []
 ---
 
@@ -67,8 +67,8 @@ question while building parks its item and the rest of the batch carries on. The
 ### [g26] `work batch park` parks an item and leaves the rest building
 - [r26] While an item in a batch is `in-batch`, when a session runs `work batch park` on the item, `work` shall set the status of the item to `needs-input`, write a question on the item and not set the status of the batch to `abandoned`.
 
-### [g27] A parked item's commits stay out of the pull request
-- [r27] While an item in a batch is `needs-input` and a commit cites the item, when the person runs `work batch review` on the batch, `work` shall publish a pull request of the batch that does not hold the commit.
+### [g37] A parked item's commits stay out of the pull request
+- [r37] While the status of an item in a batch is `needs-input` and a commit cites the item, when the person runs `work batch review` on the batch, `work` shall publish a pull request of the batch that does not hold the commit.
 
 ### [g28] `work batch abandon` returns the batch's items
 - [r28] While a batch is `building`, when the person runs `work batch abandon` on the batch, `work` shall set the status of the batch to `abandoned` and set the status of every item in the batch whose status is `in-batch` to `ready`.
@@ -85,8 +85,8 @@ question while building parks its item and the rest of the batch carries on. The
 ### [g32] `work batch park` takes the parked item's lines out of the batch
 - [r32] While an item in a batch is `in-batch` and the git branch of the batch holds a requirement of the item, when a session runs `work batch park` on the item, `work` shall remove the requirement from the git branch.
 
-### [g33] A parked item's failing scenario does not hold up another item's task
-- [r33] While an item in a batch is `in-batch` and a task of the item is `running` and an item in the batch is `needs-input` and a scenario of the item fails in the worktree of the task, when a session runs `work batch done` on the task, `work` shall set the status of the task to `done`.
+### [g38] A parked item's failing scenario does not hold up another item's task
+- [r38] While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the batch is `needs-input` and a scenario of the item fails in the worktree of the task, when a session runs `work batch done` on the task, `work` shall set the status of the task to `done`.
 
 ### [g34] Another item's passing scenario does not hold up a task
 - [r34] While an item in a batch is `in-batch` and a task of the item is `running` and another item in the batch is `in-batch` and a scenario of the item passes in the worktree of the task, when a session runs `work batch done` on the task, `work` shall set the status of the task to `done`.

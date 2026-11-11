@@ -10,7 +10,7 @@ Feature: Readiness
   @g23 @r23
   Scenario: `work ready` readies a shaped item that passes the readiness bar
     Given an item i1
-    And the item i1 is `shaped`
+    And the status of the item i1 is `shaped`
     And the item i1 passes this readiness bar
     When the person runs `work ready` on the item i1
     Then `work` sets the status of the item i1 to `ready`
@@ -18,7 +18,7 @@ Feature: Readiness
   @g24 @r24
   Scenario: `work ready` refuses an item that does not pass the readiness bar, naming each bar check it does not meet
     Given an item i1
-    And the item i1 is `shaped`
+    And the status of the item i1 is `shaped`
     And the item i1 does not pass this readiness bar
     And a bar check b1
     And this readiness bar has the bar check b1
@@ -34,7 +34,7 @@ Feature: Readiness
   @g25 @r25
   Scenario: `work ready` refuses an item that is not shaped
     Given an item i1
-    And the item i1 is not `shaped`
+    And the status of the item i1 is not `shaped`
     When the person runs `work ready` on the item i1
     Then `work` refuses `work ready`
     And `work` names the status of the item i1
@@ -113,7 +113,7 @@ Feature: Readiness
   @g36 @r36
   Scenario: `work ready` refuses an item a term of which violates a rule
     Given an item i1
-    And the item i1 is `shaped`
+    And the status of the item i1 is `shaped`
     And a term t1
     And the item i1 holds the term t1
     And a rule r1

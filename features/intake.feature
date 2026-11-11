@@ -5,12 +5,12 @@ Feature: Intake
   @g10 @r10
   Scenario: An item with a request line not settled is not readied
     Given an item i1
-    And the item i1 is `shaped`
+    And the status of the item i1 is `shaped`
     And a request line r1
     And the item i1 has the request line r1
-    And the request line r1 is not `accepted`
-    And the request line r1 is not `refused`
-    And the request line r1 is not `withdrawn`
+    And the line outcome of the request line r1 is not `accepted`
+    And the line outcome of the request line r1 is not `refused`
+    And the line outcome of the request line r1 is not `withdrawn`
     When the session s1 runs `work ready` on the item i1
     Then `work` refuses `work ready`
     And `work` names the request line r1

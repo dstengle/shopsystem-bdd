@@ -31,7 +31,7 @@ b250 "work show prints the status of an item" idea
 $ work shape b250
 b250 "work show prints the status of an item" shaped
 $ work line b250 --into backlog --group "work show prints an item's status" 'When the person runs `work show` on an item, `work` shall print the status of the item.'
-b250 "work show prints the status of an item": backlog#r37
+b250 "work show prints the status of an item": backlog#r43
 $ work ready b250
 b250 "work show prints the status of an item" ready
 ```
@@ -93,12 +93,12 @@ Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CA
   group's given block, a universal condition, an upstream entry.
 - `--recodify <cap>`: switch a capability's block to the current language (`codified-2`).
 
-The line gets the next free id of its capability (`backlog#r37`). It goes into `spec/` only when a batch starts.
+The line gets the next free id of its capability (`backlog#r43`). It goes into `spec/` only when a batch starts.
 `work line` does not parse the line; [`work ready`](#work-ready) does.
 
 ```console
 $ work line b250 --into backlog --group "work show prints an item's status" 'When the person runs `work show` on an item, `work` shall print the status of the item.'
-b250 "work show prints the status of an item": backlog#r37
+b250 "work show prints the status of an item": backlog#r43
 ```
 
 How to write a good line is in [Writing requirements](../writing-requirements.md); the file format is in
@@ -145,7 +145,7 @@ $ work ready b250
 b250 "work show prints the status of an item" ready
 $ work ready b253
 work: work ready: b253 "work names prints every item" is not passing:
-  backlog#r39: does not parse at item (token 3 of 15); parsed up to: When an; nearest words: item, items, term, stem, cite
+  backlog#r45: does not parse at item (token 3 of 15); parsed up to: When an; nearest words: item, items, term, stem, cite
 ```
 
 What each reason means is in [Troubleshooting](../troubleshooting.md).
@@ -220,8 +220,8 @@ The person wants to see where an item stands at a glance.
 
 ### backlog
 
-#### [g37] work show prints an item's status
-- [r37] When the person runs `work show` on an item, `work` shall print the status of the item.
+#### [g43] work show prints an item's status
+- [r43] When the person runs `work show` on an item, `work` shall print the status of the item.
 ```
 
 #### `work names`
@@ -286,7 +286,7 @@ Synopsis: `work batch resume batch`
 ```console
 $ work batch resume batch-34
 batch-34 building: plan .shop/batches/34/plan.md
-t1 b250 "work show prints the status of an item": running in .shop/worktrees/batch-34-t1 on batch-34-b250: build backlog#r37; then work batch done batch-34 t1, or work batch park batch-34 b250 --question <text>
+t1 b250 "work show prints the status of an item": running in .shop/worktrees/batch-34-t1 on batch-34-b250: build backlog#r43; then work batch done batch-34 t1, or work batch park batch-34 b250 --question <text>
 ```
 
 #### `work batch done`
@@ -501,7 +501,7 @@ Writes which requirement holds each accepted line, and in which version; the req
 Synopsis: `work resolve [--line N REQUIREMENT VERSION] request`
 
 ```console
-$ work resolve q48 --line 1 backlog#r37 4.1.0
+$ work resolve q48 --line 1 backlog#r43 4.1.0
 ```
 
 #### `work list`
@@ -654,8 +654,8 @@ Prints a requirement, what it also means because of other requirements, and what
 Synopsis: `model explain requirement`
 
 ```console
-$ model explain backlog#r24
-backlog#r24  While an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
+$ model explain backlog#r38
+backlog#r38  While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
 which also means:
   `work` shall exit with an error (by the definition of refuse in the pack cli)
   `work` shall change nothing (by U12)

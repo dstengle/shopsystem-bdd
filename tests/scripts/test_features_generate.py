@@ -26,7 +26,7 @@ Feature: Work queue
   @g1 @r1 @r2
   Scenario: `work start` starts a proposed initiative
     Given an initiative i1
-    And the initiative i1 is `proposed`
+    And the status of the initiative i1 is `proposed`
     When the person runs `work start` on the initiative i1
     Then `work` sets the status of the initiative i1 to `started`
     And `work` exits successfully
@@ -34,7 +34,7 @@ Feature: Work queue
   @g2 @r3
   Scenario: `work start` refuses an initiative that is not proposed
     Given an initiative i1
-    And the initiative i1 is not `proposed`
+    And the status of the initiative i1 is not `proposed`
     When the person runs `work start` on the initiative i1
     Then `work` exits with an error naming the status of the initiative i1
 
@@ -49,9 +49,9 @@ Feature: Work queue
       The second line.
       """
     And a work-item w1
-    And the work-item w1 is not `green`
+    And the status of the work-item w1 is not `green`
     And a work-item w2
-    And the work-item w2 is not `green`
+    And the status of the work-item w2 is not `green`
     When the person runs `work list`
     Then `work` prints the work-item w1
     And `work` prints the work-item w2
@@ -61,9 +61,9 @@ G1 = [
     "  @g1 @r1",
     "  Scenario: `work run` with no initiative takes the open initiatives",
     "    Given an initiative i1",
-    "    And the initiative i1 is not `done`",
+    "    And the status of the initiative i1 is not `done`",
     "    And an initiative i2",
-    "    And the initiative i2 is not `done`",
+    "    And the status of the initiative i2 is not `done`",
     "    When the person runs `work run`",
     "    Then `work` takes the initiative i1",
     "    And `work` takes the initiative i2",
@@ -157,7 +157,7 @@ def test_a_codified1_capability_is_refused_naming_migrate_upgrade(repo):
 def test_an_if_group_states_the_restriction_it_excludes(repo):
     assert features(repo, "generate", "work-queue").returncode == 0
     block = generated(repo, "work-queue").split("  @g2 @r3")[1].split("  @g3")[0]
-    assert "    Given an initiative i1\n    And the initiative i1 is not `proposed`\n" in block
+    assert "    Given an initiative i1\n    And the status of the initiative i1 is not `proposed`\n" in block
 
 
 def test_a_given_line_that_is_not_example_data_is_left_out_with_one_line_on_stderr(repo):

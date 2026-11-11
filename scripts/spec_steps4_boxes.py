@@ -66,6 +66,16 @@ def no(r, box):
             r.dets.pop(x)
 
 
+def none_whose(r, x, T, pol, value):
+    """The Cond tree of a value said of "no K": "no item whose status is `idea` exists", the full form (b257), since
+    "the status of no item" does not read."""
+    K = kid(x.kind)
+    cn = (K + "_Whose_" + T, ("PPos",), (K + "_UseN", (K + "_n",)), value)
+    np = (K + "_Det", ("DetNo",), cn)
+    return ("k_thing_Holds", pol, ("k_thing_One", ("%s_Up_k_thing" % K, np) if x.kind != "thing" else
+                                   ("k_thing_Simple", np)), ("Exists_St",))
+
+
 def link(r, box):
     """([the atom], [its own K]) a box of more than one item is said by: its row or state to a thing outside it, else
     a value of one of its Ks."""

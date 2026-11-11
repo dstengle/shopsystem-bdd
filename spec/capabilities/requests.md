@@ -35,9 +35,9 @@ a request (backlog, batches).
 - **requirement grammar** (artifact): the grammar a bounded context's requirements are parsed in, over its glossary and its capabilities' terms.
 - **GitHub repository** (noun): the repository on GitHub that the issues of the requests to a bounded context are posted on. Kind of: thing.
 - **entry** (noun): one field of a comment, `<field> <n>: <text>`, of the part of one side: `line` or `answer` of the asker's, `question`, `outcome`, `counter`, `reason`, `into` or `resolution` of the upstream's. Plural: entries. Kind of: text.
-- **side** (attribute of comment): Values: `asker`, `upstream`.
-- **side** (attribute of entry): Values: `asker`, `upstream`.
-- **status** (attribute of issue): Values: `open`, `closed`.
+- **side** (attribute of comment): Values (noun): `asker`, `upstream`.
+- **side** (attribute of entry): Values (noun): `asker`, `upstream`.
+- **status** (attribute of issue): Values (adjective): `open`, `closed`.
 
 ## Relations
 

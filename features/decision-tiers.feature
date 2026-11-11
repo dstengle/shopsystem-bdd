@@ -5,53 +5,18 @@ Feature: Decision tiers
   @g13 @r13
   Scenario: A decision in force with no tier is a warning
     Given a design-decision d1
-    And the design-decision d1 is not `superseded`
-    And the design-decision d1 is not `rejected`
+    And the status of the design-decision d1 is not `superseded`
+    And the status of the design-decision d1 is not `rejected`
     And the design-decision d1 has no tier
     When the person runs `model check`
     Then `model` prints `w_untiered`
 
-  @g14 @r14
-  Scenario: A `check` decision names its test
-    Given a design-decision d1
-    And the design-decision d1 is `check`
-    And no test enforces the design-decision d1
-    When the person runs `model check`
-    Then `model` exits with an error naming `v_d6`
-
-  @g15 @r15
-  Scenario: A `requirement` decision names its requirement
-    Given a design-decision d1
-    And the design-decision d1 is `requirement`
-    And no requirement enforces the design-decision d1
-    When the person runs `model check`
-    Then `model` exits with an error naming `v_d7`
-
-  @g16 @r16
-  Scenario: `model decisions --check` runs the tests of the `check` decisions
-    Given a design-decision d1
-    And the design-decision d1 is `check`
-    And a test t1
-    And the test t1 enforces the design-decision d1
-    When the person runs `model decisions --check`
-    Then `model` runs `pytest` on the test t1
-
-  @g17 @r17
-  Scenario: `model decisions --check` names each failing decision
-    Given a design-decision d1
-    And the design-decision d1 is `check`
-    And a test t1
-    And the test t1 is `failed`
-    And the test t1 enforces the design-decision d1
-    When the person runs `model decisions --check`
-    Then `model` exits with an error naming the design-decision d1
-
   @g18 @r18
   Scenario: An accepted decision supersedes no accepted decision
     Given a design-decision d1
-    And the design-decision d1 is `accepted`
+    And the status of the design-decision d1 is `accepted`
     And a design-decision d2
-    And the design-decision d2 is `accepted`
+    And the status of the design-decision d2 is `accepted`
     And the design-decision d1 supersedes the design-decision d2
     When the person runs `model check`
     Then `model` exits with an error naming `v_d8`
@@ -87,18 +52,6 @@ Feature: Decision tiers
     Then `model` prints the universal condition u1
     And `model` prints the universal condition u2
 
-  @g23 @r23
-  Scenario: `model check` refuses a route outside the four
-    Given a route r1
-    And a design-decision d1
-    And the design-decision d1 has the route r1
-    And the route r1 is not `scenario`
-    And the route r1 is not `check`
-    And the route r1 is not `judgement`
-    And the route r1 is not `monitor`
-    When the person runs `model check`
-    Then `model` exits with an error naming the design-decision d1
-
   @g24 @r24
   Scenario: `work decision` refuses a decision with no summary
     When the person runs `work decision` without the `--summary` option
@@ -110,3 +63,50 @@ Feature: Decision tiers
     When the person runs `work decision` without the `--decision` option
     Then `work` refuses `work decision`
     And `work` names the `--decision` option
+
+  @g26 @r26
+  Scenario: A `check` decision names its test
+    Given a design-decision d1
+    And the tier of the design-decision d1 is `check`
+    And no test enforces the design-decision d1
+    When the person runs `model check`
+    Then `model` exits with an error naming `v_d6`
+
+  @g27 @r27
+  Scenario: A `requirement` decision names its requirement
+    Given a design-decision d1
+    And the tier of the design-decision d1 is `requirement`
+    And no requirement enforces the design-decision d1
+    When the person runs `model check`
+    Then `model` exits with an error naming `v_d7`
+
+  @g28 @r28
+  Scenario: `model decisions --check` runs the tests of the `check` decisions
+    Given a design-decision d1
+    And the tier of the design-decision d1 is `check`
+    And a test t1
+    And the test t1 enforces the design-decision d1
+    When the person runs `model decisions --check`
+    Then `model` runs `pytest` on the test t1
+
+  @g29 @r29
+  Scenario: `model decisions --check` names each failing decision
+    Given a design-decision d1
+    And the tier of the design-decision d1 is `check`
+    And a test t1
+    And the outcome of the test t1 is `failed`
+    And the test t1 enforces the design-decision d1
+    When the person runs `model decisions --check`
+    Then `model` exits with an error naming the design-decision d1
+
+  @g30 @r30
+  Scenario: `model check` refuses a route outside the four
+    Given a route r1
+    And a design-decision d1
+    And the design-decision d1 has the route r1
+    And the kind of the route r1 is not `scenario`
+    And the kind of the route r1 is not `check`
+    And the kind of the route r1 is not `judgement`
+    And the kind of the route r1 is not `monitor`
+    When the person runs `model check`
+    Then `model` exits with an error naming the design-decision d1

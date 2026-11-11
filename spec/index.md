@@ -176,23 +176,23 @@ The simplified workflow:
 - **trial** (noun): one run by the `trial-runner` of a plugin tool or `work run` on a real target or a fixture repository, measuring what its input names. Kind of: thing.
 - **the language reference** (artifact): the file `grammar/language.md` of the plugin: the reading rules of the controlled language, its constructs, each with its tested lines, and what it cannot say yet.
 
-- **status** (attribute of initiative): a node's, request's or design-decision's place in its kind's lifecycle, written in its frontmatter by `work`. Values: `proposed`, `started`, `done`, `abandoned`.
+- **status** (attribute of initiative): a node's, request's or design-decision's place in its kind's lifecycle, written in its frontmatter by `work`. Values (adjective): `proposed`, `started`, `done`, `abandoned`.
   Transitions: `proposed` → `started`: `work start`; `started` → `done`: complete; `started` → `abandoned`: `work abandon`. Not: state.
-- **status** (attribute of capability-proposal): Values: `drafted`, `awaiting-answer`, `approved`, `formulated`, `withdrawn`.
+- **status** (attribute of capability-proposal): Values (adjective): `drafted`, `awaiting-answer`, `approved`, `formulated`, `withdrawn`.
   Transitions: `drafted` → `awaiting-answer`: ask; `awaiting-answer` → `drafted`: `work answer`; `drafted` → `approved`: approve; `approved` → `formulated`: a formulate round; `drafted` → `withdrawn`: `work withdraw`; `awaiting-answer` → `withdrawn`: `work withdraw`; `approved` → `withdrawn`: `work withdraw`.
-- **status** (attribute of glossary-proposal): Values: `drafted`, `awaiting-answer`, `approved`, `withdrawn`.
+- **status** (attribute of glossary-proposal): Values (adjective): `drafted`, `awaiting-answer`, `approved`, `withdrawn`.
   Transitions: `drafted` → `awaiting-answer`: ask; `awaiting-answer` → `drafted`: `work answer`; `drafted` → `approved`: approve; `drafted` → `withdrawn`: `work withdraw`; `awaiting-answer` → `withdrawn`: `work withdraw`.
-- **status** (attribute of work-item): Values: `drafted`, `researched`, `planned`, `ready`, `claimed`, `done`, `green`, `awaiting-answer`, `failed`, `withdrawn`.
+- **status** (attribute of work-item): Values (adjective): `drafted`, `researched`, `planned`, `ready`, `claimed`, `done`, `green`, `awaiting-answer`, `failed`, `withdrawn`.
   Transitions: `drafted` → `researched`: a research stage; `researched` → `planned`: a plan stage; `planned` → `ready`: `work`; `ready` → `claimed`: `work claim`; `claimed` → `done`: an implement stage; `done` → `green`: a review stage; `drafted` → `awaiting-answer`: ask; `researched` → `awaiting-answer`: ask; `planned` → `awaiting-answer`: ask; `claimed` → `awaiting-answer`: ask; `done` → `awaiting-answer`: ask; `awaiting-answer` → `drafted`: `work answer`; `awaiting-answer` → `researched`: `work answer`; `awaiting-answer` → `planned`: `work answer`; `awaiting-answer` → `ready`: `work answer`; `awaiting-answer` → `done`: `work answer`; `drafted` → `failed`: discard; `researched` → `failed`: discard; `planned` → `failed`: discard; `claimed` → `failed`: discard; `done` → `failed`: discard; `failed` → `drafted`: `work retry`; `failed` → `researched`: `work retry`; `failed` → `planned`: `work retry`; `failed` → `claimed`: `work retry`; `failed` → `done`: `work retry`; `drafted` → `withdrawn`: `work withdraw`; `researched` → `withdrawn`: `work withdraw`; `planned` → `withdrawn`: `work withdraw`; `ready` → `withdrawn`: `work withdraw`; `awaiting-answer` → `withdrawn`: `work withdraw`; `failed` → `withdrawn`: `work withdraw`.
-- **status** (attribute of request): Values: `open`, `awaiting-asker`, `awaiting-upstream`, `accepted`, `delivered`, `refused`, `withdrawn`.
-- **status** (attribute of design-decision): Values: `proposed`, `accepted`, `rejected`, `superseded`.
-- **outcome** (attribute of result): the one word a stage's result gives. Values: `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `HAND-BACK`, `QUESTION`, `NEEDS_CONTEXT`. Not: verdict.
-- **line outcome** (attribute of request line): the upstream's answer to one line of a request. Values: `accepted`, `rewritten`, `refused`, `question`, `withdrawn`.
-- **side** (attribute of request): the side whose part of the request is written next. Values: `asker`, `upstream`.
-- **kind** (attribute of stage): Values: `research`, `plan`, `implement`, `review`, `integrate`, `gate`, `apply`, `formulate`, `intake`, `answer`, `branch review`, `analysis`.
-- **group** (attribute of capability): Values: `service`, `guarantees`, `model`, `operations`.
-- **language** (attribute of capability): the language a capability file's lines are read in, its frontmatter's `language:`. Values: `codified-1`, `codified-2`.
-- **grade** (attribute of review finding): Values: `Critical`, `Important`, `Minor`.
+- **status** (attribute of request): Values (adjective): `open`, `awaiting-asker`, `awaiting-upstream`, `accepted`, `delivered`, `refused`, `withdrawn`.
+- **status** (attribute of design-decision): Values (adjective): `proposed`, `accepted`, `rejected`, `superseded`.
+- **outcome** (attribute of result): the one word a stage's result gives. Values (noun): `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `HAND-BACK`, `QUESTION`, `NEEDS_CONTEXT`. Not: verdict.
+- **line outcome** (attribute of request line): the upstream's answer to one line of a request. Values (adjective): `accepted`, `rewritten`, `refused`, `withdrawn`. Values (noun): `question`.
+- **side** (attribute of request): the side whose part of the request is written next. Values (noun): `asker`, `upstream`.
+- **kind** (attribute of stage): Values (noun): `research`, `plan`, `implement`, `review`, `integrate`, `gate`, `apply`, `formulate`, `intake`, `answer`, `branch review`, `analysis`.
+- **group** (attribute of capability): Values (noun): `service`, `guarantees`, `model`, `operations`.
+- **language** (attribute of capability): the language a capability file's lines are read in, its frontmatter's `language:`. Values (noun): `codified-1`, `codified-2`.
+- **grade** (attribute of review finding): Values (adjective): `Critical`, `Important`, `Minor`.
 
 - **open** (adjective of initiative): An initiative is open when the initiative is not `done` and the initiative is not `abandoned`.
 - **open** (adjective of work-item): A work-item is open when the work-item is not `green` and the work-item is not `withdrawn`.
@@ -224,24 +224,24 @@ The simplified workflow:
 - **pull request** (noun): the GitHub pull request of a batch's branch. Kind of: thing.
 - **quote** (noun): a file under `.shop/quotes/` of the person's words cited by another file, with its session, its message and the messages around it. Kind of: file.
 - **message** (noun): one turn of the person or of a session in a transcript, without its tool uses.
-- **status** (attribute of item): Values: `idea`, `shaped`, `ready`, `in-batch`, `delivered`, `needs-input`, `refused`, `withdrawn`.
+- **status** (attribute of item): Values (adjective): `shaped`, `ready`, `in-batch`, `delivered`, `refused`, `withdrawn`. Values (noun): `idea`, `needs-input`.
   Transitions: `idea` → `shaped`: `work shape`; `shaped` → `ready`: `work ready`; `ready` → `shaped`: pick; `ready` → `in-batch`: pick; `in-batch` → `delivered`: merge; `in-batch` → `needs-input`: park; `in-batch` → `ready`: `work batch abandon`; `needs-input` → `shaped`: `work answer`; `idea` → `refused`: `work refuse`; `shaped` → `refused`: `work refuse`; `idea` → `withdrawn`: `work withdraw`; `shaped` → `withdrawn`: `work withdraw`; `ready` → `withdrawn`: `work withdraw`; `needs-input` → `withdrawn`: `work withdraw`.
-- **provenance** (attribute of item): where an item came from: this bounded context, a peer bounded context or the product. Values: `own`, `peer`, `product`.
-- **value** (attribute of item): Values: `low-value`, `medium-value`, `high-value`.
-- **urgency** (attribute of item): Values: `low-urgency`, `medium-urgency`, `high-urgency`.
-- **size** (attribute of item): Values: `small`, `medium`, `large`.
-- **status** (attribute of batch): Values: `building`, `in-review`, `awaiting-merge`, `merged`, `abandoned`.
+- **provenance** (attribute of item): where an item came from: this bounded context, a peer bounded context or the product. Values (noun): `own`, `peer`, `product`.
+- **value** (attribute of item): Values (adjective): `low-value`, `medium-value`, `high-value`.
+- **urgency** (attribute of item): Values (adjective): `low-urgency`, `medium-urgency`, `high-urgency`.
+- **size** (attribute of item): Values (adjective): `small`, `medium`, `large`.
+- **status** (attribute of batch): Values (adjective): `building`, `in-review`, `awaiting-merge`, `merged`, `abandoned`.
   Transitions: `building` → `in-review`: `work batch review`; `in-review` → `building`: a fix-now finding; `in-review` → `awaiting-merge`: a clean review; `awaiting-merge` → `merged`: merge; `in-review` → `merged`: merge; `building` → `abandoned`: `work batch abandon`; `in-review` → `abandoned`: `work batch abandon`.
-- **status** (attribute of task): Values: `pending`, `running`, `done`, `failed`.
-- **tier** (attribute of design-decision): Values: `check`, `requirement`, `judgement`.
+- **status** (attribute of task): Values (adjective): `pending`, `running`, `done`, `failed`.
+- **tier** (attribute of design-decision): Values (noun): `check`, `requirement`, `judgement`.
 - **dependency** (noun): one item's need of another item, written in the item that needs it. Plural: dependencies. Kind of: text.
 - **well-formed** (adjective of item): an item whose every requirement parses, has no L0 or L1 finding of `model logic` with the item's lines laid over `spec/`, and has its scenarios written by `features generate`, and whose capabilities' `check` design-decisions pass their tests.
 - **passing** (adjective of item): An item is passing when the item is well-formed and every request line of the item is settled.
-- **clean** (adjective of pull request): A pull request is clean when no review finding on the pull request is `fix now`.
+- **clean** (adjective of pull request): A pull request is clean when no review finding on the pull request whose triage is `fix now` exists.
 - **pick** (verb, action): `work batch start` takes a ready item into the batch it writes. Forms: picks, picked. Frame: `work` picks item.
 - **park** (verb, action): a batch sets an item it cannot finish without an answer to `needs-input`. Forms: parks, parked. Frame: batch parks item.
 - **publish** (verb, action): `work` puts a thing on GitHub: a batch's branch as a pull request, with its commits. Forms: publishes, published. Frame: `work` publishes thing.
-- **triage** (attribute of review finding): what a review asks of its finding: fixed on the branch before the merge, kept as an observation, or dropped. Values: `fix now`, `observation`, `drop`.
+- **triage** (attribute of review finding): what a review asks of its finding: fixed on the branch before the merge, kept as an observation, or dropped. Values (noun): `fix now`, `observation`, `drop`.
 - **defect** (noun): a file of a batch that records a fault in the behaviour of the repository's code, with its reproduction, found by a review or after a merge. Kind of: file.
 - **failing** (adjective of test): the test fails when it runs.
 - **use** (verb, state): a text holds a word or a thing, as a requirement uses a term. Forms: uses, used. Frame: text uses thing. Redefines: spec.

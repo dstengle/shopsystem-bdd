@@ -4,7 +4,7 @@ summary: "A repository on the final layout records the plugin version it is on, 
 date: 2026-10-22
 status: accepted
 tier: requirement
-enforced_by: [migration-tools#r59, migration-tools#r62]
+enforced_by: [migration-tools#r59, migration-tools#r66]
 source: [design-decision/work-items-named-by-ids]
 by: "the person, 2026-10-22 (\"Please create a more general purpose migration capability\"), delegating the drafting decisions to the coordinator; on the design note work-item ids and plugin upgrades (0.24.0)"
 ---

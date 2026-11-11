@@ -160,7 +160,10 @@ class Reader:
                 k = next((k for k in kinds if k in self.vocab.ancestors(x.kind)), None)
                 if t.term == term and k is not None:
                     T = "t_%s_%d" % (spec_rgl.slug(term), n)
-                    return ("%s_%s_Is" % (T, kid(k)), pol, self.np(x, k), ("%s_v_%s" % (T, spec_rgl.slug(value)),))
+                    if self.dets.get(x) == "DetNo":
+                        return boxes.none_whose(self, x, T, pol, ("%s_v_%s" % (T, spec_rgl.slug(value)),))
+                    return (T + "_IsOf", pol, ("%s_Of_%s" % (T, kid(k)), self.np(x, k)),     # the full form (b257)
+                            ("%s_v_%s" % (T, spec_rgl.slug(value)),))
         if item.pred == "rel":
             return self.row(item.args, pol)
         if item.pred == spec_lf_exist.PRED:     # "the file f1 exists" (b240)

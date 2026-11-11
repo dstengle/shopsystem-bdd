@@ -43,7 +43,7 @@ When the person runs `work idea`, `work` shall write an item whose status is `id
 *While* is a state that holds when the trigger comes. It goes before the trigger.
 
 ```requirement
-While an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
+While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
 ```
 
 ### Unwanted behaviour: If ... then
@@ -51,7 +51,7 @@ While an item is `idea`, when the person runs `work shape` on the item, `work` s
 *If* is the trigger of something that should not happen; *then* says how the tool answers it.
 
 ```requirement
-While an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
+While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
 ```
 
 ### Prohibition and restriction: shall not, shall ... only
@@ -103,13 +103,13 @@ The clauses come in one order: **Where**, **While**, **When** or **If**, then **
 is refused at the word *while*:
 
 ```refused
-When the person runs `work shape` on an item, while the item is `idea`, `work` shall set the status of the item to `shaped`.
+When the person runs `work shape` on an item, while the status of the item is `idea`, `work` shall set the status of the item to `shaped`.
 ```
 
 All four together:
 
 ```requirement
-Where a remote of this repository exists, while an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
+Where a remote of this repository exists, while the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
 ```
 
 ## 2. Words
@@ -124,7 +124,7 @@ bullet with its part of speech in brackets. These are real entries of this repos
 |---|---|
 | `noun` | `- **dependency** (noun): one item's need of another item, written in the item that needs it. Plural: dependencies. Kind of: text.` |
 | `proper noun` | ``- **`work`** (proper noun): the command that writes statuses, transitions and requests. Kind of: tool.`` |
-| `attribute of K` | ``- **size** (attribute of item): Values: `small`, `medium`, `large`.`` |
+| `attribute of K` | ``- **size** (attribute of item): Values (adjective): `small`, `medium`, `large`.`` |
 | `verb, action` | ``- **pick** (verb, action): `work batch start` takes a ready item into the batch it writes. Forms: picks, picked. Frame: `work` picks item.`` |
 | `verb, state` | `- **check out** (verb, state): a repository has a git branch as the one its working tree is on. Forms: checks out, checked out. Frame: repository checks out git branch.` |
 | `artifact` | ``- **the comment form** (artifact): one fenced block of fields, `~~~shop-request` to `~~~`, of `<name>: <value>` lines that the comment's step names, above any free text.`` |
@@ -136,8 +136,17 @@ A few fields do a lot of work:
   A line that breaks a frame is refused, naming the verb and its frames.
 - **Action or state.** An action verb happens (it goes in When, If and the response). A state verb holds (it goes
   in While, in a relative clause, and after always or never).
-- **`Values:`** lists an attribute's values. Each value belongs to one attribute of one kind: `` `shaped` `` is an
-  item's status, not a batch's.
+- **`Values (adjective):`** and **`Values (noun):`** list an attribute's values, by how they read after "is". Each
+  value belongs to one attribute of one kind: `` `shaped` `` is an item's status, not a batch's. An adjective
+  (`shaped`, `in-batch`) may be said the short way, "an item is `shaped`"; any other value, a noun, a verb phrase
+  or a release (`idea`, `needs-input`, `1.0.0`), only the full way, "the status of an item is `idea`" or "an item
+  whose status is `idea`". The item's status gives both: `idea` and `needs-input` under `Values (noun):`, the rest
+  under `Values (adjective):`. A plain `Values:` declares neither and keeps the short way, with a `model check`
+  warning (`w_value_kind`). The short way of a noun is refused, naming the full way:
+
+  ```refused
+  While an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
+  ```
 - **`This:`** names the run's own thing. The glossary's `bounded context` has one, so "this bounded context" means
   the one the command runs in ([R11](../grammar/language.md#r11-this-k-and-an-unbound-the-k-whose-entry-has-this-are-the-runs-own-k)).
 
@@ -193,7 +202,7 @@ actor (39)
 ...
 attribute (38)
 ...
-  status (of item): `idea`, `shaped`, `ready`, `in-batch`, `delivered`, `needs-input`, `refused`, `withdrawn`
+  status (of item): `shaped` (adjective), `ready` (adjective), `in-batch` (adjective), `delivered` (adjective), `refused` (adjective), `withdrawn` (adjective), `idea` (noun), `needs-input` (noun)
 ...
 event (95)
   run  [pack cli]
@@ -275,15 +284,15 @@ When the person runs `work backlog` with the `--json` option, `work` shall print
 This parses, but it says what is already said elsewhere:
 
 ```text
-While an item is not `idea`, if the person runs `work shape` on the item, then `work` shall exit with an error naming the status of the item and change nothing.
+While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall exit with an error naming the status of the item and change nothing.
 ```
 
 Write "refuse the command and name X". The rest follows from the `cli` pack's definition of refuse and from
 universal U12, and `model explain` shows it:
 
 ```console
-$ model explain backlog#r24
-backlog#r24  While an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
+$ model explain backlog#r38
+backlog#r38  While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
 which also means:
   `work` shall exit with an error (by the definition of refuse in the pack cli)
   `work` shall change nothing (by U12)

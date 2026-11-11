@@ -134,7 +134,7 @@ class LanguageCommandsTest(CodifiedTest):
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertRegex(r.stdout, r"(?m)^kind \(\d+\)$")
         self.assertRegex(r.stdout, r"(?m)^  initiative$")
-        self.assertRegex(r.stdout, r"(?m)^  status \(of work-item\): `drafted`, ")
+        self.assertRegex(r.stdout, r"(?m)^  status \(of work-item\): `drafted` \(adjective\), ")
         self.assertEqual(self.run_model("lexicon", "--check").returncode, 0)
 
     def test_lexicon_check_gives_the_term_rules(self):

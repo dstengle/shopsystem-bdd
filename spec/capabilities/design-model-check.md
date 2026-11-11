@@ -33,7 +33,7 @@ context: product-level artifacts are read only where the files contain them.
 - **object** (noun): the noun phrase a verb takes after it, or the kind a frame names after its verb. Kind of: thing.
 - **recipient** (noun): the noun phrase a verb takes after its object and a preposition, or the kind a frame names there. Kind of: thing.
 - **preposition** (noun): a word such as `to` or `on` that a frame puts before an object or a recipient. Kind of: thing.
-- **part of speech** (attribute of term): what an entry names a term in its parentheses. Values: `noun`, `verb`, `adjective`, `attribute`, `proper noun`, `artifact`.
+- **part of speech** (attribute of term): what an entry names a term in its parentheses. Values (noun): `noun`, `verb`, `adjective`, `attribute`, `proper noun`, `artifact`.
 - **omit** (verb, state): a requirement uses a term and leaves out a word that a frame of the term needs. Forms: omits, omitted. Frame: requirement omits thing.
 - **job** (noun): a job of the product that a capability of a bounded context serves. Kind of: thing.
 - **`clingo`** (proper noun): the answer set solver that `model` imports. Kind of: thing.
@@ -42,9 +42,9 @@ context: product-level artifacts are read only where the files contain them.
 - **index entry** (noun): the row of the decisions index for one design-decision, as `model decisions` writes it from the design-decision's file. Plural: index entries. Kind of: text.
 - **catalogue entry** (noun): the entry of the rule catalogue for one rule, as `model rules --write` writes it from the rule. Plural: catalogue entries. Kind of: text.
 - **section** (noun): a part of a file under a `##` heading. Kind of: text.
-- **heading** (attribute of section): the words of a section's `##` line. Values: `Purpose`, `Terms`, `Relations`, `Behaviour`, `Context`, `Decision`, `Consequences`.
+- **heading** (attribute of section): the words of a section's `##` line. Values (noun): `Purpose`, `Terms`, `Relations`, `Behaviour`, `Context`, `Decision`, `Consequences`.
 - **id** (noun): the `id` field of a file's frontmatter. Kind of: text.
-- **aspect** (attribute of term): whether a verb says a lasting condition or an event. Values: `state`, `action`.
+- **aspect** (attribute of term): whether a verb says a lasting condition or an event. Values (noun): `state`, `action`.
 - **precondition** (noun): the While clause of a requirement: the condition its trigger happens in. Kind of: text.
 - **trigger** (noun): the When or If clause of a requirement: the event it answers. Kind of: text.
 - **noun phrase** (noun): a noun with its determiner and modifiers, given to a verb as its subject, object or recipient. Kind of: thing.

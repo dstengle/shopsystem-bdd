@@ -41,11 +41,11 @@ shall [x1: agent the person (constant), x2: command `work idea` (parameter), x3:
     commit(e3, subject: x3, object: x4)
 ```
 
-## r23
-Retires: r2. From: b158 r23. Audit: fine.
+## r37
+Retires: r23. From: b257. Audit: the short form of a noun value, said in the full form.
 
 ```reading
-While an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
+While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
 shall [x2: agent the person (constant), x3: command `work shape` (parameter), x4: tool `work` (constant)]
   while [x1: item]
     status(x1) = `idea`
@@ -55,11 +55,11 @@ shall [x2: agent the person (constant), x3: command `work shape` (parameter), x4
     initiates(e2, subject: x4, status(x1) = `shaped`)
 ```
 
-## r24
-Retires: r3. From: b158 r24. Audit: fine.
+## r38
+Retires: r24. From: b257. Audit: the short form of a noun value, said in the full form.
 
 ```reading
-While an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
+While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
 shall [x2: agent the person (constant), x3: command `work shape` (parameter), x4: tool `work` (constant)]
   while [x1: item]
     not
@@ -122,11 +122,11 @@ shall [x1: agent the person (constant), x2: command `work backlog` (parameter), 
     exit(e3, subject: x4, successfully)
 ```
 
-## r28
-Retires: r9, r10, r11, r12. From: b158 r28-r31. Audit: fine; one line by a value set.
+## r39
+Retires: r28. From: b257. Audit: the short form of a noun value, said in the full form.
 
 ```reading
-While an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person runs `work withdraw` on the item, `work` shall set the status of the item to `withdrawn`.
+While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person runs `work withdraw` on the item, `work` shall set the status of the item to `withdrawn`.
 shall [x2: agent the person (constant), x3: command `work withdraw` (parameter), x4: tool `work` (constant)]
   while [x1: item]
     or
@@ -144,11 +144,11 @@ shall [x2: agent the person (constant), x3: command `work withdraw` (parameter),
     initiates(e2, subject: x4, status(x1) = `withdrawn`)
 ```
 
-## r29
-Retires: r13, r14. From: b158 r32, r33. Audit: fine; one line by a value set.
+## r40
+Retires: r29. From: b257. Audit: the short form of a noun value, said in the full form.
 
 ```reading
-While an item is one of `idea` or `shaped`, when the person runs `work refuse` on the item, `work` shall set the status of the item to `refused`.
+While the status of an item is one of `idea` or `shaped`, when the person runs `work refuse` on the item, `work` shall set the status of the item to `refused`.
 shall [x2: agent the person (constant), x3: command `work refuse` (parameter), x4: tool `work` (constant)]
   while [x1: item]
     or
@@ -162,11 +162,11 @@ shall [x2: agent the person (constant), x3: command `work refuse` (parameter), x
     initiates(e2, subject: x4, status(x1) = `refused`)
 ```
 
-## r30
-Retires: r16. From: b158 r34. Audit: fine.
+## r41
+Retires: r30. From: b257. Audit: the short form of a noun value, said in the full form.
 
 ```reading
-While an item is `needs-input`, when the person runs `work answer` on the item, `work` shall set the status of the item to `shaped` and commit the item.
+While the status of an item is `needs-input`, when the person runs `work answer` on the item, `work` shall set the status of the item to `shaped` and commit the item.
 shall [x2: agent the person (constant), x3: command `work answer` (parameter), x4: tool `work` (constant)]
   while [x1: item]
     status(x1) = `needs-input`
@@ -177,11 +177,11 @@ shall [x2: agent the person (constant), x3: command `work answer` (parameter), x
     commit(e3, subject: x4, object: x1)
 ```
 
-## r31
-Retires: r17. From: b158 r35. Audit: fine.
+## r42
+Retires: r31. From: b257. Audit: the short form of a noun value, said in the full form.
 
 ```reading
-While an item is `needs-input`, when the person runs `work backlog`, `work` shall print the item and every question on the item.
+While the status of an item is `needs-input`, when the person runs `work backlog`, `work` shall print the item and every question on the item.
 shall [x2: agent the person (constant), x3: command `work backlog` (parameter), x4: tool `work` (constant)]
   while [x1: item]
     status(x1) = `needs-input`

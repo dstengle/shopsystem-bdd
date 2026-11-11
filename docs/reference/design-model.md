@@ -123,7 +123,7 @@ a line by hand.
 | `v15i` | an id is used again: retired, or added though live | A retired `g<n>` is back; take a new group id. |
 | `v15j` | a group restates an id 0.29 did not have | Fix its `Restates:`; the 0.29 ids are in `spec/restated.json`. |
 
-To change a delivered line, retire it: `work line <item> --retires backlog#r24 "<new line>"` gives the new line a
+To change a delivered line, retire it: `work line <item> --retires backlog#r38 "<new line>"` gives the new line a
 new id and puts the old one under `retired:`.
 
 ### Groups and scenarios

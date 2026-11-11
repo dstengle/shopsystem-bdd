@@ -74,30 +74,30 @@ category, for the tests of the lexicon and the requirement grammar. It is not th
 - **thing** (noun): anything a requirement names.
 - **bounded context** (noun): one repository's spec. Kind of: thing.
 - **capability** (noun): one file under `spec/capabilities/`. Plural: capabilities. Kind of: text.
-- **group** (attribute of capability): Values: service, guarantees, operations.
+- **group** (attribute of capability): Values (noun): service, guarantees, operations.
 - **requirement** (noun): one codified statement of a capability. Not: behaviour line. Kind of: text.
 - **requirement group** (noun): the requirements that together make one scenario. Kind of: thing.
 - **term** (noun): one entry of the glossary. Kind of: text.
 - **design-decision** (noun): one file under `spec/decisions/`. Kind of: text.
-- **status** (attribute of design-decision): Values: `proposed`, `accepted`, `rejected`, `superseded`.
+- **status** (attribute of design-decision): Values (adjective): `proposed`, `accepted`, `rejected`, `superseded`.
 - **feature** (noun): the generated feature file of a capability. Kind of: text.
 - **scenario** (noun): one Gherkin scenario, generated from one requirement group. Kind of: text.
 - **step** (noun): one Given, When or Then line. Kind of: text.
 - **request** (noun): what brings work into a bounded context. Kind of: text.
-- **status** (attribute of request): Values: `open`, `awaiting-asker`, `awaiting-upstream`, `accepted`, `delivered`,
+- **status** (attribute of request): Values (adjective): `open`, `awaiting-asker`, `awaiting-upstream`, `accepted`, `delivered`,
   `refused`, `withdrawn`.
 - **request line** (noun): one proposed statement of a request. Kind of: text.
-- **line outcome** (attribute of request line): Values: `accepted`, `rewritten`, `refused`, `question`, `withdrawn`.
+- **line outcome** (attribute of request line): Values (adjective): `accepted`, `rewritten`, `refused`, `withdrawn`. Values (noun): `question`.
 - **initiative** (noun): the delivery of one request's accepted lines. Not: epic. Kind of: text.
-- **status** (attribute of initiative): Values: `proposed`, `started`, `done`, `abandoned`.
+- **status** (attribute of initiative): Values (adjective): `proposed`, `started`, `done`, `abandoned`.
   Transitions: `proposed` → `started`: `work start`; `started` → `abandoned`: `work abandon`; `started` → `done`: complete.
 - **capability-proposal** (noun): the part of an initiative that proposes requirements of one capability. Kind of: text.
-- **status** (attribute of capability-proposal): Values: `drafted`, `awaiting-answer`, `approved`, `formulated`,
+- **status** (attribute of capability-proposal): Values (adjective): `drafted`, `awaiting-answer`, `approved`, `formulated`,
   `withdrawn`.
 - **glossary-proposal** (noun): the part of an initiative that proposes terms. Kind of: text.
-- **status** (attribute of glossary-proposal): Values: `drafted`, `awaiting-answer`, `approved`, `withdrawn`.
+- **status** (attribute of glossary-proposal): Values (adjective): `drafted`, `awaiting-answer`, `approved`, `withdrawn`.
 - **work-item** (noun): the unit of delivery under a capability-proposal. Kind of: text.
-- **status** (attribute of work-item): Values: `drafted`, `researched`, `planned`, `ready`, `claimed`, `done`,
+- **status** (attribute of work-item): Values (adjective): `drafted`, `researched`, `planned`, `ready`, `claimed`, `done`,
   `green`, `awaiting-answer`, `failed`, `withdrawn`.
   Transitions: `drafted` → `researched`: research; `researched` → `planned`: plan; `planned` → `ready`: plan;
   `ready` → `claimed`: implement; `claimed` → `done`: implement; `done` → `green`: review.
@@ -106,13 +106,13 @@ category, for the tests of the lexicon and the requirement grammar. It is not th
 - **delegation** (noun): the person's words naming the questions a session may answer. Kind of: text.
 - **delivery** (noun): one invocation of `work run`. Plural: deliveries. Kind of: agent.
 - **stage** (noun): one session `work run` starts for one node. Kind of: session.
-- **stage kind** (attribute of stage): Values: research, plan, implement, review, analysis.
+- **stage kind** (attribute of stage): Values (noun): research, plan, implement, review, analysis.
 - **round** (noun): a stage of the kinds integrate, gate, apply, formulate or intake. Kind of: stage.
-- **round kind** (attribute of round): Values: integrate, gate, apply, formulate, intake.
+- **round kind** (attribute of round): Values (noun): integrate, gate, apply, formulate, intake.
 - **worker** (noun): a stage that holds a worker slot. Kind of: stage.
 - **session** (noun): one Claude Code conversation. Kind of: agent.
 - **result** (noun): the result a stage writes. Kind of: text.
-- **outcome** (attribute of result): Values: `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `HAND-BACK`,
+- **outcome** (attribute of result): Values (noun): `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `HAND-BACK`,
   `QUESTION`, `NEEDS_CONTEXT`.
 - **brief** (noun): the input data of one stage. Kind of: text.
 - **checkout** (noun): the repository's main working tree. Kind of: thing.
@@ -128,7 +128,7 @@ category, for the tests of the lexicon and the requirement grammar. It is not th
 - **record** (noun): a file under `.shop/records/`. Kind of: text.
 - **measurement** (noun): the record of one measured initiative. Kind of: text.
 - **finding** (noun): one finding of a review. Kind of: text.
-- **grade** (attribute of finding): Values: Critical, Important, Minor.
+- **grade** (attribute of finding): Values (adjective): Critical, Important, Minor.
 - **file** (noun): a file of the repository. Kind of: text.
 - **command** (noun): one run of `work`, `work run` or a tool, with its arguments. Kind of: thing.
 - **reason** (noun): why a command was refused. Kind of: text.

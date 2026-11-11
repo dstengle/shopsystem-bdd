@@ -5,7 +5,7 @@ narrator: the person who merges a batch's pull request
 group: guarantees
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
-retired: [g2, r2, g3, r3, g5, r5, g6, r6, g7, r7, r8, g8, r9]
+retired: [g2, r2, g3, r3, g5, r5, g6, r6, g7, r7, r8, g8, r9, g4, r4, g12, r13, g13, r14, g14, r15]
 unbuilt: []
 ---
 
@@ -34,9 +34,8 @@ branch and the review re-reads what the fix changed; a clean pull request waits 
 ### [g1] One review a batch, at its pull request
 - [r1] When `work` publishes a pull request of a batch, `pr-reviewer` shall write a review of the pull request.
 
-### [g4] Engineering quality against the judgement decisions
-- [r4] While a design-decision is `judgement`, when `pr-reviewer` writes a review of a pull request, `pr-reviewer`
-  shall read the design-decision.
+### [g17] Engineering quality against the judgement decisions
+- [r17] While the tier of a design-decision is `judgement`, when `pr-reviewer` writes a review of a pull request, `pr-reviewer` shall read the design-decision.
 
 ### [g9] `pr-reviewer` reviews only pull requests
 - [r10] `pr-reviewer` shall write only reviews of a pull request.
@@ -47,14 +46,14 @@ branch and the review re-reads what the fix changed; a clean pull request waits 
 ### [g11] A review reads only the batch's own commits
 - [r12] When `pr-reviewer` writes a review of a pull request of a batch, `pr-reviewer` shall read only commits of the batch.
 
-### [g12] A fix-now finding sends the batch back to building
-- [r13] While a review finding on a pull request of a batch is `fix now`, when a session runs `work batch reviewed` on the batch, `work` shall set the status of the batch to `building`.
+### [g18] A fix-now finding sends the batch back to building
+- [r18] While the triage of a review finding on a pull request of a batch is `fix now`, when a session runs `work batch reviewed` on the batch, `work` shall set the status of the batch to `building`.
 
-### [g13] The next review reads the commits for each fix-now finding
-- [r14] While a review finding on a pull request is `fix now`, when `pr-reviewer` writes a review of the pull request, `pr-reviewer` shall read every commit for the review finding.
+### [g19] The next review reads the commits for each fix-now finding
+- [r19] While the triage of a review finding on a pull request is `fix now`, when `pr-reviewer` writes a review of the pull request, `pr-reviewer` shall read every commit for the review finding.
 
-### [g14] A pull request with no fix-now finding awaits the person's merge
-- [r15] While a batch has a pull request and no review finding on the pull request is `fix now`, when a session runs `work batch reviewed` on the batch, `work` shall set the status of the batch to `awaiting-merge`.
+### [g20] A pull request with no fix-now finding awaits the person's merge
+- [r20] While a batch has a pull request and no review finding on the pull request whose triage is `fix now` exists, when a session runs `work batch reviewed` on the batch, `work` shall set the status of the batch to `awaiting-merge`.
 
 ### [g15] Findings named with their grade and triage
 - [r16] When `pr-reviewer` writes a review finding, `pr-reviewer` shall name the grade of the review finding and the triage of the review finding.

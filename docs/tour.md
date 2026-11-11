@@ -74,7 +74,7 @@ kind (210)
   ...
 attribute (38)
   ...
-  status (of item): `idea`, `shaped`, `ready`, `in-batch`, `delivered`, `needs-input`, `refused`, `withdrawn`
+  status (of item): `shaped` (adjective), `ready` (adjective), `in-batch` (adjective), `delivered` (adjective), `refused` (adjective), `withdrawn` (adjective), `idea` (noun), `needs-input` (noun)
   ...
 event (95)
   run  [pack cli]
@@ -158,11 +158,11 @@ That's what you asked for.
 
 ```console
 $ work line b250 --into backlog --retires backlog#r15 --group '`work show` names an item by its title and its status' 'When the person runs `work show` on an item, `work` shall print the title of the item and the status of the item.'
-b250 "work show prints the status of an item": backlog#r37 retires backlog#r15
+b250 "work show prints the status of an item": backlog#r43 retires backlog#r15
 ```
 
 **What happened.** The line went into the item's `## Requirements`, not into `spec/` yet. It was given the
-next free id of the capability, `r37`, in a new group `g37`, with `retired: [r15]` beside it. The spec itself only
+next free id of the capability, `r43`, in a new group `g43`, with `retired: [r15]` beside it. The spec itself only
 changes when a batch lays the line, in stop 5. [Writing requirements](writing-requirements.md) has the do's and
 don'ts this stop ran into.
 
@@ -221,11 +221,11 @@ batch brief: .../repo/.shop/worktrees/batch-34-driver/brief.md
 **What happened.** A *batch* is ready items built together on one branch and closed by one pull request.
 `work batch start` picked the ready items in rank order (here, one), moved b250 to `in-batch`, and made the branch
 `batch-34` in its own worktree. On that branch, one commit laid the item's lines into
-`spec/capabilities/backlog.md`: group g15 and line r15 out, g37 and r37 in, and `r37` added to the capability's
+`spec/capabilities/backlog.md`: group g15 and line r15 out, g43 and r43 in, and `r43` added to the capability's
 `unbuilt:` list. The same commit regenerated `features/backlog.feature`, where r15's scenario gave way to this one:
 
 ```gherkin
-  @g37 @r37
+  @g43 @r43
   Scenario: `work show` names an item by its title and its status
     When the person runs `work show` on the item i1
     Then the item i1 has the title t1
@@ -234,7 +234,7 @@ batch brief: .../repo/.shop/worktrees/batch-34-driver/brief.md
 ```
 
 Nobody wrote this scenario. `features generate` read it off the line's form: the When from the trigger, a Then for
-each thing `work` prints. The tags `@g37 @r37` tie it to its group and line. It's the item's acceptance test.
+each thing `work` prints. The tags `@g43 @r43` tie it to its group and line. It's the item's acceptance test.
 
 The last line of the output is the *batch brief*: one file holding the batch, its task, its worktree and branch, the
 rules every subagent follows, and where to stop.
@@ -247,19 +247,19 @@ rules every subagent follows, and where to stop.
 ```console
 $ work batch resume batch-34
 batch-34 building: plan .shop/batches/34/plan.md
-t1 b250 "work show prints the status of an item": running in .shop/worktrees/batch-34-t1 on batch-34-b250: build backlog#r37; then work batch done batch-34 t1, or work batch park batch-34 b250 --question <text>
+t1 b250 "work show prints the status of an item": running in .shop/worktrees/batch-34-t1 on batch-34-b250: build backlog#r43; then work batch done batch-34 t1, or work batch park batch-34 b250 --question <text>
 ```
 
-The task's subagent works in `.shop/worktrees/batch-34-t1`. It starts with red. While `r37` is in `unbuilt:`, its
+The task's subagent works in `.shop/worktrees/batch-34-t1`. It starts with red. While `r43` is in `unbuilt:`, its
 scenario runs as an expected failure:
 
 ```console
-$ python3 -m pytest -q tests/scenarios/test_backlog.py -m r37
+$ python3 -m pytest -q tests/scenarios/test_backlog.py -m r43
 x                                                                        [100%]
 1 xfailed in 2.11s
 ```
 
-It takes `r37` out of `unbuilt:` and runs the scenario again. Now it fails for real, on its last Then:
+It takes `r43` out of `unbuilt:` and runs the scenario again. Now it fails for real, on its last Then:
 
 ```text
 E       AssertionError: ('`work` prints the status of the item i1', 'b1 "Title of i1"\n  status: idea\n  provenance: own\n  value: medium-value\n  urgency: medium-urgency\n  size: medium\n  depends on: -\n')
@@ -269,7 +269,7 @@ FAILED tests/scenarios/test_backlog.py::test_work_show_names_an_item_by_its_titl
 
 Look at the output in that message: `work show` was already printing `status: idea`. The step's handler didn't know
 how to read `work show`'s fields, only `work backlog`'s table. So the build here is on the test side: the handler
-learns to check a `work show` field, and the grammar's corpus gets r37's reading in place of r15's.
+learns to check a `work show` field, and the grammar's corpus gets r43's reading in place of r15's.
 
 ```python
     elif " of the item " in np and W.runs(step)[-1]["args"][1:2] == ["show"]:
@@ -278,11 +278,11 @@ learns to check a `work show` field, and the grammar's corpus gets r37's reading
         assert "  %s: %s" % (attribute, wanted) in stdout.splitlines(), (step.text, stdout)
 ```
 
-The scenario passes, and the subagent commits. `r37` leaves `unbuilt:` in the same commit that makes it pass, and
+The scenario passes, and the subagent commits. `r43` leaves `unbuilt:` in the same commit that makes it pass, and
 the message ends with the item it builds:
 
 ```text
-a066f2764 work show prints the status of an item (backlog r37)
+a066f2764 work show prints the status of an item (backlog r43)
 
 Item: b250
 
@@ -300,7 +300,7 @@ batch-34 t1 b250 "work show prints the status of an item": done
 ```
 
 **What happened.** `work batch done` refuses a task until it's finished. It checked that the worktree is
-clean, that every commit cites `Item: b250`, that nothing under `.shop/` changed, that `r37` is no longer
+clean, that every commit cites `Item: b250`, that nothing under `.shop/` changed, that `r43` is no longer
 `unbuilt:`, and that the whole suite passes in the worktree. A refusal names which one failed and why. A question
 the subagent can't settle doesn't come to you mid-build: the driver parks the item with `work batch park`, the rest
 of the batch carries on, and you answer it later with `work answer`.
@@ -329,7 +329,7 @@ batch got, saved at the brief's findings path:
 ```markdown
 ## Verdict
 
-The batch builds b250: r37 replaces r15 and its scenario passes. No finding holds the merge.
+The batch builds b250: r43 replaces r15 and its scenario passes. No finding holds the merge.
 
 ## Findings
 
@@ -423,8 +423,8 @@ Here's where everything from the tour now lives:
 | what | where |
 |---|---|
 | your words | `.shop/quotes/24.md` |
-| the line, `backlog#r37`, in group g37 | `spec/capabilities/backlog.md`, with `r15` in its `retired:` |
-| its scenario, `@g37 @r37` | `features/backlog.feature` |
+| the line, `backlog#r43`, in group g43 | `spec/capabilities/backlog.md`, with `r15` in its `retired:` |
+| its scenario, `@g43 @r43` | `features/backlog.feature` |
 | the item, now `delivered`, with its history in `git log` | `.shop/backlog/b250.md` |
 | the batch, its task table and its review | `.shop/batches/34/plan.md`, `.shop/batches/34/review-1.md` |
 | what it cost | `.shop/records/measurements/2026-11-10-batch-34.md` |

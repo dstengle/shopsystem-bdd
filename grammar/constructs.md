@@ -298,7 +298,7 @@ a condition of history: an act that has happened
 
 - Form: <subject> has <past participle> ...
 - Functions: `k_\w+_Done`
-- Cited by: batches#r29, batches#r33, batches#r34, batches#r35, migration-tools#r54, migration-tools#r64
+- Cited by: batches#r29, batches#r38, batches#r34, batches#r35, migration-tools#r54, migration-tools#r68
 - Example and its reading:
 
 ```construct
@@ -1038,10 +1038,10 @@ shall [x3: tool `work` (constant)]
 
 ## attribute-is
 
-an attribute's value
+an attribute's value, the full form, which any value takes
 
-- Form: <np> is <value>; the <attribute> of <np> is <value>
-- Functions: `t_[a-z0-9_]+_\d+_k_\w+_Is|t_[a-z0-9_]+_\d+_IsOf`
+- Form: the <attribute> of <np> is <value>
+- Functions: `t_[a-z0-9_]+_\d+_IsOf`
 - Cited by: no line
 - Example and its reading:
 
@@ -1056,11 +1056,31 @@ shall [x3: tool `work` (constant)]
     print(e2, subject: x3, object: x1)
 ```
 
+## adjective-value
+
+an attribute's value in the short form, of a value its entry declares an adjective (`Values (adjective):`); a value declared a noun (`Values (noun):`) is refused in it, naming the full form (b257)
+
+- Form: <np> is <value>
+- Functions: `t_[a-z0-9_]+_\d+_k_\w+_Is`
+- Cited by: no line
+- Example and its reading:
+
+```construct
+While a stage is `open`, when a session ends the stage, `work` shall print the stage.
+shall [x3: tool `work` (constant)]
+  while [x1: stage]
+    status(x1) = `open`
+  when [x2: session]
+    end(e1, subject: x2, object: x1)
+  response
+    print(e2, subject: x3, object: x1)
+```
+
 ## attribute-code
 
-an attribute's value given as a code no entry lists
+an attribute's value given as a code no entry lists, a noun when the attribute declares its values' kinds
 
-- Form: <np> is `<code>`
+- Form: the <attribute> of <np> is `<code>`
 - Functions: `t_[a-z0-9_]+_\d+(?:_k_\w+)?_IsCode(?:Of)?`
 - Cited by: no line
 - Example and its reading:
@@ -1098,7 +1118,7 @@ shall [x3: tool `work` (constant)]
 
 one of a list of values, or none of them
 
-- Form: is one of <value> or <value>; is not <value> or <value>
+- Form: the <attribute> of <np> is one of <value> or <value>; is not <value> or <value> (after <np> alone, adjectives only)
 - Functions: `t_[a-z0-9_]+_\d+(?:_k_\w+)?_Is(?:One|None)Of|t_[a-z0-9_]+_\d+_Vals(?:\d+|More)`
 - Cited by: no line
 - Example and its reading:

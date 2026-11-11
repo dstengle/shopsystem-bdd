@@ -5,7 +5,7 @@ narrator: a person or session migrating a repository to the final layout or upgr
 group: service
 language: codified-2
 rests_on: [design-decision/migration-in-one-pass, design-decision/living-plan-to-work-items, design-decision/final-layout, design-decision/references-are-ids, design-decision/capability-ids-are-context-scoped, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/upgrades-between-plugin-releases, design-decision/work-items-named-by-ids, design-decision/answers-not-rulings, design-decision/the-ledger-is-tracked]
-retired: [g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12, g13, g14, g15, g16, g17, g18, g19, g20, g21, g24, g25, g29, g30, g40, g41, g45, g46, g57, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r29, r30, r40, r41, r45, r46, r57, g42, r42, g48, r48, g49, r49]
+retired: [g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12, g13, g14, g15, g16, g17, g18, g19, g20, g21, g24, g25, g29, g30, g40, g41, g45, g46, g57, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r29, r30, r40, r41, r45, r46, r57, g42, r42, g48, r48, g49, r49, g62, r62, g63, r63, g64, r64]
 unbuilt: []
 ---
 
@@ -40,16 +40,16 @@ what it needs to know at its start and before it is compacted.
 - **content** (noun): the text a file holds. Kind of: text.
 - **shop directory** (noun): the directory `.shop/` of a repository. Kind of: file.
 - **upgrade step** (noun): one step of `migrate upgrade` from one plugin release to the next, named by its title. Kind of: thing.
-- **release** (attribute of repository): Values: `0.23.1`, `0.24.0`, `0.25.0`, `0.29.0`, `1.0.0`, `2.0.0`, `3.0.0`, `3.0.1`, `4.0.0`, `9.0.0`. Order: by number.
-- **release** (attribute of upgrade step): Values: `0.24.0`, `0.25.0`, `1.0.0`, `2.0.0`, `3.0.0`, `4.0.0`. Order: by number.
+- **release** (attribute of repository): Values (noun): `0.23.1`, `0.24.0`, `0.25.0`, `0.29.0`, `1.0.0`, `2.0.0`, `3.0.0`, `3.0.1`, `4.0.0`, `4.1.0`, `9.0.0`. Order: by number.
+- **release** (attribute of upgrade step): Values (noun): `0.24.0`, `0.25.0`, `1.0.0`, `2.0.0`, `3.0.0`, `4.0.0`, `4.1.0`. Order: by number.
 - **work-item file** (noun): the file `.shop/work/<initiative>/<work-item>.md` of a work-item of plugin 1.x. Kind of: file.
 - **stage directory** (noun): the directory `.shop/work/<initiative>/runs/<work-item>/` of a work-item's stages. Kind of: file.
 - **initiative log** (noun): the file `.shop/work/<initiative>/log.jsonl` of an initiative of plugin 1.x. Kind of: file.
 - **restated file** (noun): the file `spec/restated.json`, the 0.29 requirements by id. Kind of: file.
 - **frozen notice** (noun): the file `.shop/work/FROZEN.md`, which says that the queue of plugin 1.x is frozen. Kind of: file.
 - **frozen request** (noun): a request of plugin 1.x under `.shop/work/requests/`. Kind of: file.
-- **status** (attribute of frozen request): Values: `open`, `awaiting-asker`, `awaiting-upstream`, `accepted`, `delivered`, `refused`, `withdrawn`.
-- **asker** (attribute of frozen request): the `asker:` of a frozen request, `internal` when the bounded context asked it of itself, else the id of the bounded context that asked it. Values: `internal`.
+- **status** (attribute of frozen request): Values (adjective): `open`, `awaiting-asker`, `awaiting-upstream`, `accepted`, `delivered`, `refused`, `withdrawn`.
+- **asker** (attribute of frozen request): the `asker:` of a frozen request, `internal` when the bounded context asked it of itself, else the id of the bounded context that asked it. Values (adjective): `internal`.
 - **index file** (noun): the file `spec/index.md` of a bounded context. Kind of: file.
 - **`no upgrade step is pending`** (proper noun): what `migrate upgrade` prints when no upgrade step is pending. Kind of: text.
 - **`only on the person's yes`** (proper noun): the SessionStart hook's note that a session runs a pending upgrade only on the person's yes. Kind of: text.
@@ -688,28 +688,28 @@ the tracked file `spec/capabilities/cart.md` holds:
   - [r1] When a shopper picks a cart, the shopper shall pick the cart.
 ```
 
-### [g62] `migrate upgrade` on a repository on the plugin's release says that no upgrade step is pending and changes nothing
+### [g66] `migrate upgrade` on a repository on the plugin's release says that no upgrade step is pending and changes nothing
 Restates: r27@0.29.
-- [r62] While the release of this repository is `4.0.0`, when the person runs `migrate upgrade`, `migrate` shall print `no upgrade step is pending` and change no file.
+- [r66] While the release of this repository is `4.1.0`, when the person runs `migrate upgrade`, `migrate` shall print `no upgrade step is pending` and change no file.
 
 ```given
-the tracked file `.shop/plugin-version` holds "4.0.0"
+the tracked file `.shop/plugin-version` holds "4.1.0"
 ```
 
-### [g63] the SessionStart hook tells a session to tell the person to update the plugin
+### [g67] the SessionStart hook tells a session to tell the person to update the plugin
 Restates: r23@0.29.
-- [r63] While the release of this repository is after `4.0.0`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print `update the plugin`.
+- [r67] While the release of this repository is after `4.1.0`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print `update the plugin`.
 
 ```given
 the tracked file `.shop/plugin-version` holds "9.0.0"
 ```
 
-### [g64] the SessionStart hook tells a session nothing on the plugin's release when no initiative is open
+### [g68] the SessionStart hook tells a session nothing on the plugin's release when no initiative is open
 Restates: r24@0.29.
-- [r64] While the release of this repository is `4.0.0` and every initiative of this repository is one of `done` or `abandoned`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall exit successfully, print no upgrade step and print no initiative.
+- [r68] While the release of this repository is `4.1.0` and every initiative of this repository is one of `done` or `abandoned`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall exit successfully, print no upgrade step and print no initiative.
 
 ```given
-the tracked file `.shop/plugin-version` holds "4.0.0"
+the tracked file `.shop/plugin-version` holds "4.1.0"
 the tracked file `.shop/work/i1/initiative.md` holds:
   ---
   id: initiative/example.org/acme/shop/i1
@@ -717,6 +717,23 @@ the tracked file `.shop/work/i1/initiative.md` holds:
   status: done
   ---
   # i1
+```
+
+### [g65] `migrate upgrade` on a repository from 4.0.0 names each attribute whose values are declared neither adjectives nor nouns
+- [r65] While the release of this repository is `4.0.0`, when the person runs `migrate upgrade`, `migrate` shall print every upgrade step whose release is `4.1.0` and every term that violates `w_value_kind`.
+
+```given
+the tracked file `.shop/plugin-version` holds "4.0.0"
+the tracked file `spec/index.md` holds:
+  ---
+  id: bounded-context/example.org/acme/shop
+  title: shop
+  language: codified-2
+  ---
+  # shop
+  ## Glossary
+  - **cart** (noun): the goods a shopper picks.
+  - **status** (attribute of cart): Values: `open`, `paid`.
 ```
 
 ## Implementation, may change

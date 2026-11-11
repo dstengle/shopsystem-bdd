@@ -88,11 +88,20 @@ instead. Each bullet has the same shape:
   `verb, action` or `verb, state`.
 - one sentence that says what it means;
 - then fields: `Kind of:` (the kind it is one of), `Plural:`, `Forms:` (a verb's other forms), `Frame:` (a verb's
-  subject, object and recipient by kind), `Values:` (an attribute's values), `Not:` (words to avoid),
+  subject, object and recipient by kind), `Values (adjective):` and `Values (noun):` (an attribute's values, by
+  how they read after "is"; see below), `Not:` (words to avoid),
   `Redefines:` (a pack's word this entry takes over).
 
 The grammar is built from these entries, so a term is a word you can use in a line. `model lexicon` lists every word
 the context has, by category.
+
+An attribute's values are declared by how they read after "is". `Values (adjective):` lists the ones that read as an
+adjective or a participle (`shaped`, `in-batch`): a line may say them the short way, "an item is `shaped`", or the
+full way, "the status of the item is `shaped`". `Values (noun):` lists every other value, a noun (`idea`, a tier
+`check`), a verb phrase (`needs-input`) or a release (`1.0.0`): a line says them only the full way, "the status of
+the item is `idea`" or "an item whose status is `idea`", and the short way is refused with that hint. One entry may
+give both. A plain `Values:` declares neither: its values keep the short way, and `model check` warns
+`w_value_kind`. The generated scenarios always say the full way, "the status of the item i1 is `idea`".
 
 ### Relations
 
@@ -132,21 +141,21 @@ This is the part everything else is generated from. Two groups from `backlog.md`
 ```markdown
 ## Behaviour
 
-### [g23] `work shape` shapes an idea
-- [r23] While an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
+### [g37] `work shape` shapes an idea
+- [r37] While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
 
-### [g24] `work shape` refuses an item that is not an idea
-- [r24] While an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
+### [g38] `work shape` refuses an item that is not an idea
+- [r38] While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
 ```
 
 A **group** is a heading `### [g<n>] <title>`. Its title becomes the scenario's name, so write it as a short
 sentence a reader can scan. Under it are one or more **requirement lines**, each a bullet `- [r<n>] <line>`. A
 line is one sentence of the controlled language; [writing requirements](../writing-requirements.md) teaches it.
 
-Every line must parse to exactly one meaning. Here is what g23's line means:
+Every line must parse to exactly one meaning. Here is what g37's line means:
 
 ```reading
-While an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
+While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
 shall [x2: agent the person (constant), x3: command `work shape` (parameter), x4: tool `work` (constant)]
   while [x1: item]
     status(x1) = `idea`
@@ -156,10 +165,10 @@ shall [x2: agent the person (constant), x3: command `work shape` (parameter), x4
     initiates(e2, subject: x4, status(x1) = `shaped`)
 ```
 
-And g24's, the refusal:
+And g38's, the refusal:
 
 ```reading
-While an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
+While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
 shall [x2: agent the person (constant), x3: command `work shape` (parameter), x4: tool `work` (constant)]
   while [x1: item]
     not
@@ -176,15 +185,15 @@ A line can mean more than it says. `model explain` shows what else follows, here
 "refuse" and from the universal condition U12:
 
 ```console
-$ model explain 'backlog#r24'
-backlog#r24  While an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
+$ model explain 'backlog#r38'
+backlog#r38  While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
 which also means:
   `work` shall exit with an error (by the definition of refuse in the pack cli)
   `work` shall change nothing (by U12)
   `work` shall exit with an error (by U12)
 ```
 
-That's why g24 doesn't say "exit with an error and change nothing": it would only repeat what is already true.
+That's why g38 doesn't say "exit with an error and change nothing": it would only repeat what is already true.
 
 ### The sections after Behaviour
 
@@ -245,7 +254,7 @@ A Claude Code plugin that runs a behaviour-driven workflow in a consuming reposi
 - **`work`** (proper noun): the command that writes statuses, transitions and requests. Kind of: tool.
 - **tool** (noun): any of the commands `work`, `features`, `tools`, `measure`, `migrate` and `model`. Kind of: agent. Redefines: cli.
 - **item** (noun): one file of the backlog, `.shop/backlog/b<n>.md`: ... Kind of: file.
-- **status** (attribute of item): Values: `idea`, `shaped`, `ready`, `in-batch`, `delivered`, `needs-input`, `refused`, `withdrawn`.
+- **status** (attribute of item): Values (adjective): `shaped`, `ready`, `in-batch`, `delivered`, `refused`, `withdrawn`. Values (noun): `idea`, `needs-input`.
 - **commit** (verb, action): a session or a tool records changed files, ... Forms: commits, committed. Frame: agent commits text.
 ...
 
@@ -272,7 +281,7 @@ The sections:
 - **Purpose, Constraints, Composition, Testing**: prose for people. Composition usually lists the capabilities as
   tables of `capability | narrator | group`.
 - **`## Glossary`**: the words every capability shares, in the same bullet shape as a capability's Terms. The
-  `status` entry above is what makes `` `idea` `` and `` `shaped` `` legal values in g23.
+  `status` entry above is what makes `` `idea` `` and `` `shaped` `` legal values in g37.
 - **`## Relations`**: rows shared by every capability, in the same table shape.
 - **`## Upstreams`**: the contexts this one asks for things, one bullet each. This repository has none, so here is
   the shape `work line --upstream` checks, from the plugin's tests:
@@ -342,14 +351,14 @@ standing; the rest of the file is record. A capability's `rests_on:` points at t
 ## The generated feature, beside its lines
 
 `features generate` reads each group and writes one scenario, tagged with the group's id and its lines' ids. Here are
-g23 and g24 again, then what they became in `features/backlog.feature`:
+g37 and g38 again, then what they became in `features/backlog.feature`:
 
 ```markdown
-### [g23] `work shape` shapes an idea
-- [r23] While an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
+### [g37] `work shape` shapes an idea
+- [r37] While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
 
-### [g24] `work shape` refuses an item that is not an idea
-- [r24] While an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
+### [g38] `work shape` refuses an item that is not an idea
+- [r38] While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
 ```
 
 ```gherkin
@@ -358,17 +367,17 @@ Feature: Backlog
   Narrator: a person or session keeping the backlog
   ...
 
-  @g23 @r23
+  @g37 @r37
   Scenario: `work shape` shapes an idea
     Given an item i1
-    And the item i1 is `idea`
+    And the status of the item i1 is `idea`
     When the person runs `work shape` on the item i1
     Then `work` sets the status of the item i1 to `shaped`
 
-  @g24 @r24
+  @g38 @r38
   Scenario: `work shape` refuses an item that is not an idea
     Given an item i1
-    And the item i1 is not `idea`
+    And the status of the item i1 is not `idea`
     When the person runs `work shape` on the item i1
     Then `work` refuses `work shape`
     And `work` names the status of the item i1
@@ -380,7 +389,7 @@ Read them side by side:
   steps can point at it.
 - **When** or **If** became the When.
 - **shall** became the Thens, one a response. "refuse the command and name ..." became two Thens.
-- The group's title became the scenario's name, and `@g24 @r24` tie it back to its lines.
+- The group's title became the scenario's name, and `@g38 @r38` tie it back to its lines.
 
 A given block comes first, as a Given with a docstring. batch-measurement's g24 opens like this:
 
@@ -410,7 +419,7 @@ the run until the id leaves `unbuilt:`.
 
 ## Ids: groups, requirements and `retired:`
 
-Ids are short and local to their file: `g23` and `r23` in `backlog.md`, written `backlog#r23` from elsewhere.
+Ids are short and local to their file: `g37` and `r37` in `backlog.md`, written `backlog#r37` from elsewhere.
 Universal conditions are `U<n>`. Three rules keep them meaningful:
 
 1. **A line is never edited in place.** A changed line gets a new id, and the old id goes to `retired:`. A scenario
@@ -427,7 +436,7 @@ b250 "`work show` prints the status too" idea
 $ work shape b250
 b250 "`work show` prints the status too" shaped
 $ work line b250 --into backlog --retires 'backlog#r15' --group '`work show` names an item by its title and status' 'When the person runs `work show` on an item, `work` shall print the title of the item and the status of the item.'
-b250 "`work show` prints the status too": backlog#r37 retires backlog#r15
+b250 "`work show` prints the status too": backlog#r43 retires backlog#r15
 ```
 
 `work line` gave the line the next free ids of the capability, and the item now holds a block for `backlog`:
@@ -439,16 +448,16 @@ b250 "`work show` prints the status too": backlog#r37 retires backlog#r15
 
 retired: [r15]
 
-#### [g37] `work show` names an item by its title and status
-- [r37] When the person runs `work show` on an item, `work` shall print the title of the item and the status of the item.
+#### [g43] `work show` names an item by its title and status
+- [r43] When the person runs `work show` on an item, `work` shall print the title of the item and the status of the item.
 ```
 
 Meanwhile a second item, b251, also took a line for `backlog`. It was written before b250 reached `spec/`, so it got
-`r37` too:
+`r43` too:
 
 ```console
 $ work line b251 --into backlog 'When the person runs `work show` on an item, `work` shall print the provenance of the item.'
-b251 "`work show` prints the provenance": backlog#r37
+b251 "`work show` prints the provenance": backlog#r43
 ```
 
 That's fine. Ids on an item are provisional. When both are rated, readied and picked, **`work batch start`
@@ -459,7 +468,7 @@ says so:
 $ work batch start
 batch-34 building: t1 b250 "`work show` prints the status too", t2 b251 "`work show` prints the provenance"
 batch brief: .../.shop/worktrees/batch-34-driver/brief.md
-b251 "`work show` prints the provenance" renumbered: backlog#g37 -> backlog#g38, backlog#r37 -> backlog#r38
+b251 "`work show` prints the provenance" renumbered: backlog#g43 -> backlog#g44, backlog#r43 -> backlog#r44
 ```
 
 On the new branch `batch-34`, `backlog.md` changed like this (from `git diff`):
@@ -468,24 +477,24 @@ On the new branch `batch-34`, `backlog.md` changed like this (from `git diff`):
 -retired: [g1, r1, ..., g21, r21]
 -unbuilt: []
 +retired: [g1, r1, ..., g21, r21, g15, r15]
-+unbuilt: [r37, r38]
++unbuilt: [r43, r44]
 ...
 -### [g15] `work show` names an item by its title
 -- [r15] When the person runs `work show` on an item, `work` shall print the title of the item.
 ...
-+### [g37] `work show` names an item by its title and status
-+- [r37] When the person runs `work show` on an item, `work` shall print the title of the item and the status of the item.
++### [g43] `work show` names an item by its title and status
++- [r43] When the person runs `work show` on an item, `work` shall print the title of the item and the status of the item.
 +
-+### [g38] `work show` prints the provenance
-+- [r38] When the person runs `work show` on an item, `work` shall print the provenance of the item.
++### [g44] `work show` prints the provenance
++- [r44] When the person runs `work show` on an item, `work` shall print the provenance of the item.
 ```
 
 Four things happened in one commit:
 
 - `r15` went to `retired:`, and its group `g15` with it, since the group had no line left.
-- `r37` and `r38` went into `unbuilt:`. Their scenarios run as expected failures until the task that builds each
+- `r43` and `r44` went into `unbuilt:`. Their scenarios run as expected failures until the task that builds each
   takes its id out, in the commit that makes it pass.
-- The feature was regenerated: `@g15 @r15` is gone, and `@g37 @r37` and `@g38 @r38` are new.
+- The feature was regenerated: `@g15 @r15` is gone, and `@g43 @r43` and `@g44 @r44` are new.
 - The commit cites both items (`Item: b250`, `Item: b251`).
 
 ## Who writes which file

@@ -37,6 +37,7 @@ Scripts: `<this skill's base directory>/../../scripts/`. The request's lines are
 | A line accepted with no `--into` | It names the capability it goes into |
 | A refusal with no reason | `--reason`: the asker reads it |
 | A counter-proposal that does not parse | Write it as raising-a-request says; `work outcome` refuses it otherwise |
+| A line that says a noun value the short way (`an item is `idea``) | It does not parse here once the attribute declares its values; counter-propose the full form, `the status of an item is `idea`` |
 | A line accepted because it parses, with a coined adjective or sample values in it | Counter-propose it in 4.0's rules; its values go in the given block |
 | A line accepted that rewords a line in `spec/` | Its item retires the old id: `work line --retires` |
 | `work ready` run on an item while a line of its request is unanswered | Answer every line first (step 3) |

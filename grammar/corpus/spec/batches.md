@@ -161,11 +161,11 @@ shall [x4: command `work batch park` (parameter), x5: tool `work` (constant)]
       initiates(e4, subject: x5, status(x2) = `abandoned`)
 ```
 
-## r27
-Retires: r7. From: b158 r25. Audit: distortion, fixed by the row `commit | in | pull request` (a pull request that does not hold the commit).
+## r37
+Retires: r27. From: b257. Audit: the short form of a noun value, said in the full form.
 
 ```reading
-While an item in a batch is `needs-input` and a commit cites the item, when the person runs `work batch review` on the batch, `work` shall publish a pull request of the batch that does not hold the commit.
+While the status of an item in a batch is `needs-input` and a commit cites the item, when the person runs `work batch review` on the batch, `work` shall publish a pull request of the batch that does not hold the commit.
 shall [x4: agent the person (constant), x5: command `work batch review` (parameter), x6: tool `work` (constant)]
   while [x1: item, x2: batch, x3: commit]
     in(x1, x2)
@@ -269,11 +269,11 @@ shall [x6: command `work batch park` (parameter), x7: tool `work` (constant)]
     remove(e2, subject: x7, object: x4, from: x3)
 ```
 
-## r33
-Retires: r18. From: b158 r31. Audit: fine.
+## r38
+Retires: r33. From: b257. Audit: the short form of a noun value, said in the full form.
 
 ```reading
-While an item in a batch is `in-batch` and a task of the item is `running` and an item in the batch is `needs-input` and a scenario of the item fails in the worktree of the task, when a session runs `work batch done` on the task, `work` shall set the status of the task to `done`.
+While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the batch is `needs-input` and a scenario of the item fails in the worktree of the task, when a session runs `work batch done` on the task, `work` shall set the status of the task to `done`.
 shall [x8: command `work batch done` (parameter), x9: tool `work` (constant)]
   while [x1: item, x2: batch, x3: task, x4: item, x5: scenario, x6: worktree]
     in(x1, x2)

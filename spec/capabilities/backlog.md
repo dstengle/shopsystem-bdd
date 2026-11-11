@@ -5,7 +5,7 @@ narrator: a person or session keeping the backlog
 group: service
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
-retired: [g1, r1, g2, r2, g3, r3, g4, r4, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g16, r16, g17, r17, g18, r18, g19, r19, g20, r20, g21, r21]
+retired: [g1, r1, g2, r2, g3, r3, g4, r4, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g16, r16, g17, r17, g18, r18, g19, r19, g20, r20, g21, r21, g23, r23, g24, r24, g28, r28, g29, r29, g30, r30, g31, r31]
 unbuilt: []
 ---
 
@@ -50,11 +50,11 @@ item. Adding an idea starts no work. The person reads an item by its title, not 
 ### [g22] `work idea` writes an item
 - [r22] When the person runs `work idea`, `work` shall write an item whose status is `idea` and commit the item.
 
-### [g23] `work shape` shapes an idea
-- [r23] While an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
+### [g37] `work shape` shapes an idea
+- [r37] While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
 
-### [g24] `work shape` refuses an item that is not an idea
-- [r24] While an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
+### [g38] `work shape` refuses an item that is not an idea
+- [r38] While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
 
 ### [g25] `work rate` sets an item's ratings
 - [r25] When the person runs `work rate --value high-value --urgency low-urgency --size small` on an item, `work` shall set the value of the item to `high-value`, set the urgency of the item to `low-urgency`, set the size of the item to `small` and commit the item.
@@ -65,17 +65,17 @@ item. Adding an idea starts no work. The person reads an item by its title, not 
 ### [g27] `work backlog --json` prints one JSON object
 - [r27] When the person runs `work backlog` with the `--json` option, `work` shall print one JSON object and exit successfully.
 
-### [g28] `work withdraw` withdraws an item that is an idea, shaped, ready or needs input
-- [r28] While an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person runs `work withdraw` on the item, `work` shall set the status of the item to `withdrawn`.
+### [g39] `work withdraw` withdraws an item that is an idea, shaped, ready or needs input
+- [r39] While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person runs `work withdraw` on the item, `work` shall set the status of the item to `withdrawn`.
 
-### [g29] `work refuse` refuses an item that is an idea or shaped
-- [r29] While an item is one of `idea` or `shaped`, when the person runs `work refuse` on the item, `work` shall set the status of the item to `refused`.
+### [g40] `work refuse` refuses an item that is an idea or shaped
+- [r40] While the status of an item is one of `idea` or `shaped`, when the person runs `work refuse` on the item, `work` shall set the status of the item to `refused`.
 
-### [g30] `work answer` returns an item that needs input to shaped
-- [r30] While an item is `needs-input`, when the person runs `work answer` on the item, `work` shall set the status of the item to `shaped` and commit the item.
+### [g41] `work answer` returns an item that needs input to shaped
+- [r41] While the status of an item is `needs-input`, when the person runs `work answer` on the item, `work` shall set the status of the item to `shaped` and commit the item.
 
-### [g31] `work backlog` prints the question of an item that needs input
-- [r31] While an item is `needs-input`, when the person runs `work backlog`, `work` shall print the item and every question on the item.
+### [g42] `work backlog` prints the question of an item that needs input
+- [r42] While the status of an item is `needs-input`, when the person runs `work backlog`, `work` shall print the item and every question on the item.
 
 ### [g32] `work idea` keeps its commit and names the remote that rejects its push
 - [r32] While the remote of this repository rejects the push of the command, when the person runs `work idea`, `work` shall write an item whose status is `idea`, commit the item, print the remote and exit successfully.

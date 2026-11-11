@@ -157,17 +157,22 @@ CONSTRUCTS = [
     c("attribute-of", "a thing's attribute", "the <attribute> of <np>; the <noun> <attribute>",
       r"%s_(?:Of_k_\w+|Cpd_k_\w+|Up)" % T,
       "When a session ends a stage, `work` shall print the status of the stage."),
-    c("attribute-is", "an attribute's value", "<np> is <value>; the <attribute> of <np> is <value>",
-      r"%s_k_\w+_Is|%s_IsOf" % (T, T),
+    c("attribute-is", "an attribute's value, the full form, which any value takes", "the <attribute> of <np> is <value>",
+      r"%s_IsOf" % T,
       "While the status of a stage is `open`, when a session ends the stage, `work` shall print the stage."),
-    c("attribute-code", "an attribute's value given as a code no entry lists", "<np> is `<code>`",
+    c("adjective-value", "an attribute's value in the short form, of a value its entry declares an adjective (`Values "
+      "(adjective):`); a value declared a noun (`Values (noun):`) is refused in it, naming the full form (b257)",
+      "<np> is <value>", r"%s_k_\w+_Is" % T,
+      "While a stage is `open`, when a session ends the stage, `work` shall print the stage."),
+    c("attribute-code", "an attribute's value given as a code no entry lists, a noun when the attribute declares its "
+      "values' kinds", "the <attribute> of <np> is `<code>`",
       r"%s(?:_k_\w+)?_IsCode(?:Of)?" % T,
       "While the version of a file is `1.0.1`, when the person runs `work start`, `work` shall print the "
       "file."),
     c("set-attribute", "a doer gives an attribute a value", "set the <attribute> of <np> to <value>", r"%s_Set" % T,
       "When a session ends a stage, `work` shall set the status of the stage to `done`."),
     c("value-set", "one of a list of values, or none of them",
-      "is one of <value> or <value>; is not <value> or <value>",
+      "the <attribute> of <np> is one of <value> or <value>; is not <value> or <value> (after <np> alone, adjectives only)",
       r"%s(?:_k_\w+)?_Is(?:One|None)Of|%s_Vals(?:\d+|More)" % (T, T),
       "While the priority of a stage is one of `low` or `high`, when the person runs `work start`, `work` "
       "shall end the stage."),

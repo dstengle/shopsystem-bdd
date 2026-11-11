@@ -141,7 +141,7 @@ def test_the_steps_of_every_construct_read_back_into_their_trees(tmp_path):
             assert spec_rgl_steps.text(spec_rgl_steps.load(tmp_path)[1], call.tree) == text
             read[text] = (call.template, call.term, call.nps)
     assert read["the stage s2 is on the worktree w1"] == ("GivenDoes", "on", ["the worktree w1"])
-    assert read["no stage is `done`"][:2] == ("GivenK_A", "stage")
+    assert read["no stage whose status is `done` exists"][:2] == ("GivenK_A", "stage")
     assert read["`work` prints the status of the stage s2"][:2] == ("ThenPrints", "`work`")
     assert "the session s2 follows the stage s1" in read     # or's second case
 
@@ -176,7 +176,7 @@ def test_what_parses_is_stepped(tmp_path):
     assert found["g3 @r3"][-1] == ("then", "`work` does not print the line l1")
     assert found["g4 @r4"][-1] == ("then", "`work` does not end the stage s1")
     assert ("given", "the stage s1 has no line") in found["g5 @r5"]
-    assert ("given", "no line is `accepted`") in found["g6 @r6"]
+    assert ("given", "no line whose outcome is `accepted` exists") in found["g6 @r6"]
     assert ("given", "no file covers the line l2") in found["g7 @r7"]
     assert (read["`work` does not print the line l1"], read["`work` does not end the stage s1"]) == ("ThenPrintsNot",
                                                                                           "ThenDoesNot")

@@ -14,11 +14,11 @@ shall [x1: tool `work` (constant), x4: dispatch `pr-reviewer` (constant)]
     write(e2, subject: x4, object: x5)
 ```
 
-## r4
-Kept.
+## r17
+Retires: r4. From: b257. Audit: the short form of a noun value, said in the full form.
 
 ```reading
-While a design-decision is `judgement`, when `pr-reviewer` writes a review of a pull request, `pr-reviewer` shall read the design-decision.
+While the tier of a design-decision is `judgement`, when `pr-reviewer` writes a review of a pull request, `pr-reviewer` shall read the design-decision.
 shall [x2: dispatch `pr-reviewer` (constant)]
   while [x1: design-decision]
     tier(x1) = `judgement`
@@ -84,11 +84,11 @@ shall [x1: dispatch `pr-reviewer` (constant)]
         read(e2, subject: x1, object: x5)
 ```
 
-## r13
-Retires: r5. From: b159 r13. Audit: fine.
+## r18
+Retires: r13. From: b257. Audit: the short form of a noun value, said in the full form.
 
 ```reading
-While a review finding on a pull request of a batch is `fix now`, when a session runs `work batch reviewed` on the batch, `work` shall set the status of the batch to `building`.
+While the triage of a review finding on a pull request of a batch is `fix now`, when a session runs `work batch reviewed` on the batch, `work` shall set the status of the batch to `building`.
 shall [x5: command `work batch reviewed` (parameter), x6: tool `work` (constant)]
   while [x1: review finding, x2: pull request, x3: batch]
     of(x2, x3)
@@ -100,11 +100,11 @@ shall [x5: command `work batch reviewed` (parameter), x6: tool `work` (constant)
     initiates(e2, subject: x6, status(x3) = `building`)
 ```
 
-## r14
-Retires: r6. From: b159 r14. Audit: fine.
+## r19
+Retires: r14. From: b257. Audit: the short form of a noun value, said in the full form.
 
 ```reading
-While a review finding on a pull request is `fix now`, when `pr-reviewer` writes a review of the pull request, `pr-reviewer` shall read every commit for the review finding.
+While the triage of a review finding on a pull request is `fix now`, when `pr-reviewer` writes a review of the pull request, `pr-reviewer` shall read every commit for the review finding.
 shall [x3: dispatch `pr-reviewer` (constant)]
   while [x1: review finding, x2: pull request]
     on(x1, x2)
@@ -119,17 +119,18 @@ shall [x3: dispatch `pr-reviewer` (constant)]
         read(e2, subject: x3, object: x5)
 ```
 
-## r15
-Retires: r7. From: b159 r15. Audit: fine.
+## r20
+Retires: r15. From: b257. Audit: the short form of a noun value, said in the full form, "no review finding ... exists".
 
 ```reading
-While a batch has a pull request and no review finding on the pull request is `fix now`, when a session runs `work batch reviewed` on the batch, `work` shall set the status of the batch to `awaiting-merge`.
+While a batch has a pull request and no review finding on the pull request whose triage is `fix now` exists, when a session runs `work batch reviewed` on the batch, `work` shall set the status of the batch to `awaiting-merge`.
 shall [x5: command `work batch reviewed` (parameter), x6: tool `work` (constant)]
   while [x1: batch, x2: pull request]
     of(x2, x1)
     not [x3: review finding]
       on(x3, x2)
       triage(x3) = `fix now`
+      exists(x3)
   when [x4: session]
     run(e1, subject: x4, object: x5, on: x1)
   response

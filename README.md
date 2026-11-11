@@ -11,22 +11,28 @@ This page is for everyone. It shows what the plugin does, how to install it, and
 
 ## Thirty seconds of it
 
-Here is a line from this repository's own spec (`spec/capabilities/backlog.md`, group g23):
+Here is a line from this repository's own spec (`spec/capabilities/backlog.md`, group g37):
 
 ```requirement
-While an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
+While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
 ```
 
 And here is the scenario the plugin wrote from it, in `features/backlog.feature`:
 
 ```gherkin
-  @g23 @r23
+  @g37 @r37
   Scenario: `work shape` shapes an idea
     Given an item i1
-    And the item i1 is `idea`
+    And the status of the item i1 is `idea`
     When the person runs `work shape` on the item i1
     Then `work` sets the status of the item i1 to `shaped`
 ```
+
+The line says "the status of an item" because `idea` is a noun. The glossary declares each attribute's values
+adjectives or nouns (the `status` entry of `spec/index.md` lists `shaped`, `ready` and the others under `Values
+(adjective):`, and `idea` and `needs-input` under `Values (noun):`): an adjective may also be said the short way, "an
+item is `shaped`", and a noun only the full way. The scenario always names the attribute, so whoever binds its steps
+never has to look it up.
 
 What happened in between:
 
@@ -65,8 +71,8 @@ $ claude plugin install shopsystem-bdd@shopsystem-bdd
 Then install the grammar tools once, from the installed plugin's directory:
 
 ```console
-$ python3 ~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/4.0.0/scripts/tools install
-$ python3 ~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/4.0.0/scripts/tools probe
+$ python3 ~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/4.1.0/scripts/tools install
+$ python3 ~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/4.1.0/scripts/tools probe
 ```
 
 `tools probe` shows what is installed. The rest of the docs write commands short, as `tools install` or

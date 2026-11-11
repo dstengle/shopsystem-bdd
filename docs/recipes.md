@@ -40,7 +40,7 @@ b250 "Items carry labels": a term of backlog
 $ work line b250 --into backlog --relation "| label | of | item | many |"
 b250 "Items carry labels": a relation row of backlog
 $ work line b250 --into backlog --group "work show prints an item's labels" "When the person runs \`work show\` on an item, \`work\` shall print every label of the item."
-b250 "Items carry labels": backlog#r37
+b250 "Items carry labels": backlog#r43
 ```
 
 A term bullet has the form `- **<term>** (<part of speech>): <one sentence>. Kind of: <kind>.` Leave off the
@@ -157,17 +157,17 @@ $ work idea "work refuse commits the item"
 b252 "work refuse commits the item" idea
 $ work shape b252
 b252 "work refuse commits the item" shaped
-$ work line b252 --into backlog --retires backlog#r29 "While an item is one of \`idea\` or \`shaped\`, when the person runs \`work refuse\` on the item, \`work\` shall set the status of the item to \`refused\` and commit the item."
-b252 "work refuse commits the item": backlog#r37 retires backlog#r29
+$ work line b252 --into backlog --retires backlog#r40 "While the status of an item is one of \`idea\` or \`shaped\`, when the person runs \`work refuse\` on the item, \`work\` shall set the status of the item to \`refused\` and commit the item."
+b252 "work refuse commits the item": backlog#r43 retires backlog#r40
 ```
 
-The item now holds `retired: [r29]` and the new line as `r37`. When a batch lays it, r29 goes into the capability's
+The item now holds `retired: [r40]` and the new line as `r43`. When a batch lays it, r40 goes into the capability's
 `retired:` and stays there for good. Why so strict? An id is a name other things hold on to: scenarios are tagged
-`@r29`, commits and findings cite it, other contexts' requests quote it. If r29 could come back meaning something
+`@r40`, commits and findings cite it, other contexts' requests quote it. If r40 could come back meaning something
 else, every one of those would silently point at the wrong line
 ([decision 0085](../spec/decisions/0085-requirements-retired-never-edited.md)).
 
-Three items each said `r37` on this page. That's fine: `work batch start` renumbers each item's ids past the
+Three items each said `r43` on this page. That's fine: `work batch start` renumbers each item's ids past the
 capability's and the other picked items' when it lays them. `--retires` names a live line, and only that:
 
 ```console
@@ -238,8 +238,8 @@ The [capability file reference](reference/capability-file.md) walks through ever
 and the universal conditions:
 
 ```console
-$ model explain backlog#r24
-backlog#r24  While an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
+$ model explain backlog#r38
+backlog#r38  While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
 which also means:
   `work` shall exit with an error (by the definition of refuse in the pack cli)
   `work` shall change nothing (by U12)

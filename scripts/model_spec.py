@@ -21,6 +21,7 @@ import spec_packs
 import spec_read
 import spec_read_given
 import spec_rgl_vocab
+import spec_value_kinds
 
 GRAMMAR_MISSING = object()
 
@@ -86,6 +87,8 @@ class SpecReading:
             if t.category == "condition" and spec_frames.relational(t, kinds):
                 self.fact("relational", ident)
             self.fact("linearises", ident, f"{t.category} {t.term} ({', '.join(t.kinds)})")
+            if t.category == "attribute" and spec_value_kinds.undeclared(t):     # b257
+                self.fact("undeclared_values", ident)
             if t.category == "attribute":
                 for k in t.kinds:
                     for v in t.values:

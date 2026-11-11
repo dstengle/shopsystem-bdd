@@ -91,7 +91,7 @@ A tool that is missing says so on its line, with what you can't do without it.
 Most days you won't type these commands. You talk with Claude, and Claude runs them from the plugin's `scripts/`
 folder. To run one yourself, you need that folder's path, which is why step 2 asked `claude plugin list --json`
 for the plugin's `installPath` and kept it in `$SHOP`. It's a path that ends in the version, such as
-`~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/4.0.0`. If you load a checkout with `claude --plugin-dir`, set `SHOP` to that checkout instead.
+`~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/4.1.0`. If you load a checkout with `claude --plugin-dir`, set `SHOP` to that checkout instead.
 
 Then give each tool a short name:
 

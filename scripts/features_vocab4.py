@@ -63,6 +63,21 @@ def _verb(names, vp):
     return names.verbs[n].term.term
 
 
+def owner(names, cond):
+    """The fun naming the kind whose value a value step says: of the full form "the T of x is v" (`T_IsOf`,
+    `T_IsCodeOf`, b257) its `T_Of_K`'s K, else the short form's or "has no T"'s own."""
+    rest = names.attr(cond[0])[1]
+    return names.attr(cond[2][0])[1][len("Of_"):] + "_" if rest in ("IsOf", "IsCodeOf") else rest
+
+
+def whose(cond):
+    """The "whose" node of "no K whose T is v exists", the value Given of "no K" (b257), or None."""
+    if cond[0] != "k_thing_Holds" or cond[3] != (spec_rgl_np.EXISTS,):
+        return None
+    found = [n for n in nodes(cond[2]) if "_Whose_t_" in n[0]]
+    return found[0] if found and any(n == ("DetNo",) for n in nodes(cond[2])) else None
+
+
 def template(names, keyword, tree):
     """(template, kind, attribute, term) of a step tree."""
     fun, args = tree[0], tree[1:]
@@ -78,12 +93,15 @@ def template(names, keyword, tree):
         return ("WhenRuns" if verb == "run" else "WhenHappens"), None, None, verb
     if fun == "SCond" and args[0][0] == "Count_Cmp":     # the number of Ks compared (b240)
         return keyword.capitalize() + "Count", None, None, None
+    if fun == "SCond" and whose(args[0]):     # "no item whose status is `idea` exists": a value (b257)
+        kind = names.kind(whose(args[0])[0])[0]
+        return keyword.capitalize() + "K_A", kind, names.attr(whose(args[0])[0].split("_Whose_")[1] + "_")[0].term, kind
     if fun == "SCond":
         cond = args[0]
-        t, rest = names.attr(cond[0])
+        t = names.attr(cond[0])[0]
         neg = cond[1] == ("PNeg",)
         if t is not None:
-            kind = names.kind(rest)[0]
+            kind = names.kind(owner(names, cond))[0]
             return keyword.capitalize() + "K_A", kind, t.term, kind
         verb = _verb(names, cond[0] if ROW.match(cond[0]) else cond[3])
         return keyword.capitalize() + ("DoesNot" if neg else "Does"), None, None, verb
@@ -128,6 +146,9 @@ def step(root, keyword, text):
     if name.endswith("Count"):
         call.subject = spec_rgl_steps.text(gram, tree[1][1])
         call.nps = [" ".join(spec_rgl_steps.text(gram, a) for a in tree[1][2:]).strip()]
+    elif name.endswith("K_A"):      # the thing whose value it is, as the step says it (b257)
+        np = tree[1][2] if whose(tree[1]) else next(a for a in tree[1][1:] if a not in (("PPos",), ("PNeg",)))
+        call.subject = spec_rgl_steps.text(gram, np[1] if tree[1][0].endswith(("IsOf", "IsCodeOf")) else np)
     elif tree[0].endswith("_Does") or tree[0] == "SCond" and (row or not tree[1][0].endswith(("_Is", "_IsCode", "_HasNo"))):
         clause = tree[1] if tree[0] == "SCond" else tree
         call.subject = spec_rgl_steps.text(gram, clause[2])

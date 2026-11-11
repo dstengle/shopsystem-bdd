@@ -10,11 +10,34 @@ been renamed or retired since.
 
 | Line | Releases |
 |---|---|
-| 4.x | [4.0.0](#400-the-controlled-language-4) |
+| 4.x | [4.1.0](#410-value-kinds-adjective-or-noun-and-gherkin-in-the-full-form) · [4.0.0](#400-the-controlled-language-4) |
 | 3.x | [3.0.1](#301-features-generate-writes-the-scenario-of-a-negated-response-with-a-recipient) · [3.0.0](#300-verb-frames-parts-of-speech-in-the-glossary-and-verbs-typed-by-kind) |
 | 2.x | [2.4.0](#240-the-request-watch-wakes-on-githubs-events-and-starts-with-the-session) · [2.3.1](#231-a-batch-runs-in-one-fresh-agent-and-a-parked-item-leaves-the-batch-at-once) · [2.3.0](#230-work-pushes-its-commits-requests-post-after-they-commit-and-work-watch) · [2.2.0](#220-decisions-and-records-written-by-command) · [2.1.0](#210-requests-exchanged-through-github-issues) · [2.0.0](#200-the-workflow-simplified) |
 | 1.x | [1.0.0](#100-codified-requirements) |
 | 0.x | [0.29.0](#0290-glossary-proposals-delegations-given-late-and-fewer-stops-from-outside-a-work-item) · [0.28.3](#0283-a-branch-review-that-runs-nothing) · [0.28.2](#0282-answers-a-round-cannot-hold-go-back-to-integration) · [0.28.1](#0281-work-run-stops-visibly-on-questions-and-spends-less-agent-time) · [0.28.0](#0280-one-set-of-request-commands-work-list-and-work-show-and-answers-that-redraft) · [0.27.0](#0270-transitions-from-how-a-session-ended-and-the-turn-of-an-accepted-request) · [0.26.0](#0260-requests-and-the-context-loop) · [0.25.0](#0250-work-items-side-by-side-answers-and-guarantees) · [0.24.0](#0240-work-items-named-by-ids-and-upgrades-between-plugin-releases) · [0.23.1](#0231---work-item-keeps-tests-that-are-not-scenarios) · [0.23.0](#0230-faults-settled-query-output-as-json-the-session-keeps-the-gate-measurement-on-v3) · [0.22.0](#0220-one-requirement-per-scenario-faults-and-the-lessons-of-a-blind-formulation) · [0.21.0](#0210-the-final-layout-and-delivery-by-work-run) |
+
+## 4.1.0: value kinds, adjective or noun, and Gherkin in the full form
+
+- **An attribute declares its values adjectives or nouns** (b257): `Values (adjective):` lists the values that read
+  after "is" as an adjective or a participle (`shaped`, `in-batch`), `Values (noun):` every other (a noun, a verb
+  phrase, a release: `idea`, `needs-input`, `check`, `1.0.0`); one entry may give both. `model lexicon` prints each
+  value with its kind.
+- **The short form only for an adjective**: "an item is `shaped`" parses; "an item is `idea`" is refused, naming the
+  full form, "the status of the item is `idea`" or "an item whose status is `idea`" (construct `adjective-value`;
+  `attribute-is` is the full form, which any value takes). A plain `Values:` declares neither and keeps 4.0's
+  reading, so nothing that parsed under 4.0 is refused until its attribute declares a value a noun; `model check`
+  warns `w_value_kind` of each such attribute.
+- **Generated Gherkin is always the full form**: `features generate` writes every value step as "the status of the
+  item i1 is `idea`", whatever the value's kind, and a value of "no K" as "no item whose status is `idea` exists",
+  so whoever binds a step reads the attribute in it. The step's template, kind and attribute are as before
+  (`GivenK_A`, `ThenK_A`); a handler that read the thing out of the step's text reads `step.subject`. Regenerate
+  the features after the upgrade (`features generate`).
+- **This repository**: every attribute declared; 17 lines that said a noun or verb-phrase value in the short form
+  (backlog r23, r24, r28-r31; batches r27, r33; decision-tiers r14-r17, r23; pr-review r4, r13-r15) reworded to the
+  full form under new ids, the old ones retired.
+- **Upgrade step 4.1.0 "value kinds"** changes no file: it names each attribute whose values are declared neither
+  way and each line that says one of its values in the short form, by file and id, for a session to declare the
+  values and reword each line whose value is a noun.
 
 ## 4.0.0: the controlled language 4
 

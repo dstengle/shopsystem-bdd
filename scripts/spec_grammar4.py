@@ -31,6 +31,7 @@ import spec_rgl_np
 import spec_rgl_rel
 import spec_rgl_time
 import spec_rgl_vocab
+import spec_value_kinds
 import tools_grammar
 
 MARKER = "codified-2"
@@ -199,8 +200,9 @@ def parse(root, line):
             kept, two = spec_meaning.one(trees, vocab)
         except ValueError as error:     # no tree of the line translates: refused, not a traceback
             return Parse(refusal="refused: %s" % error, trees=trees)
+        noun = kept and spec_value_kinds.refusal(vocab, kept)     # a noun value's short form (b257)
         if kept:
-            return Parse(tree=kept, trees=trees)
+            return Parse(refusal=noun, trees=[kept]) if noun else Parse(tree=kept, trees=trees)
         words = spec_gf.detokenise(gram.languages[GRAMMAR + "Eng"].linearize(_expr(two[0])).split(" "))
         words = words if words in spec_gf.normalise(line) else words[:1].lower() + words[1:]
         return Parse(refusal='refused: more than one meaning: "%s" reads %d ways' % (words, two[1]), trees=trees)

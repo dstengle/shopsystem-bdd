@@ -191,6 +191,7 @@ def given(r, item):
         import spec_steps4_boxes  # here: the steps import this module through spec_steps4
         raise spec_steps4_boxes.TraceError("no value of the %s of %s meets the line" % (term, x.name))
     T = "t_%s_%d" % (spec_rgl.slug(term), n)
+    owner = ("%s_Of_%s" % (T, spec_rgl.kid(k)), r.np(x, k))      # the full form, "the T of x is v" (b257)
     if value in t.values:
-        return ("%s_%s_Is" % (T, spec_rgl.kid(k)), ("PPos",), r.np(x, k), ("%s_v_%s" % (T, spec_rgl.slug(value)),))
-    return ("%s_%s_IsCode" % (T, spec_rgl.kid(k)), ("PPos",), r.np(x, k), ("CodeLit", value))
+        return (T + "_IsOf", ("PPos",), owner, ("%s_v_%s" % (T, spec_rgl.slug(value)),))
+    return (T + "_IsCodeOf", ("PPos",), owner, ("CodeLit", value))

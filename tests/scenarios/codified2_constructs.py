@@ -52,18 +52,18 @@ TERMS, ROWS = {}, {"linking": ["| stage | on | worktree |  |"]}
 # or; the row's Given; "the T of x" with no value; "no K" said, no K brought in; a K that does not meet a restriction
 HOLDS = {"distributing": r"^    Given a stage s1\n    And a stage s2\n.*\n    Then `work` prints the stage s1\n"
                          r"    And `work` prints the stage s2$",
-         "generalising": r"^    Given a stage s1\n    And the stage s1 is `done`\n    When the person runs `work start`$",
+         "generalising": r"^    Given a stage s1\n    And the status of the stage s1 is `done`\n    When the person runs `work start`$",
          "confining": (r"^    And the worktree w1 holds the file f1\n    When the session s1 ends the stage s2\n"
                        r"    Then the session s1 writes the file f1$"),
          "bounding": (r"^    Then `work` prints the stage s1\n    And `work` prints the stage s2\n(?s:.*)"
                       r"^    Given a stage s1\n    And a stage s2\n.*\n    Then `work` does not print the stage s2$"),
-         "tallying": r"^    Given a stage s1\n    And the stage s1 is `done`\n    And a stage s2\n    And the stage s2 is `done`$",
-         "branching": (r"^  Scenario: line 1 \(case 1\)\n    Given a stage s1\n    And the stage s1 is `done`\n(?s:.*)"
+         "tallying": r"^    Given a stage s1\n    And the status of the stage s1 is `done`\n    And a stage s2\n    And the status of the stage s2 is `done`$",
+         "branching": (r"^  Scenario: line 1 \(case 1\)\n    Given a stage s1\n    And the status of the stage s1 is `done`\n(?s:.*)"
                        r"^  Scenario: line 1 \(case 2\)\n.*\n.*\n    And the session s2 follows the stage s1$"),
          "linking": r"^    And the stage s2 is on the worktree w1\n    When the session s1 ends the stage s2$",
          "valued": r"^    When the session s1 ends the stage s2\n    Then `work` prints the status of the stage s2$",
-         "excluding": r"^    Given no stage is `done`\n    When the person runs `work start`$",
-         "exempting": (r"^    Given a stage s1\n    And the stage s1 is not `done`\n    When the person runs `work start`\n"
+         "excluding": r"^    Given no stage whose status is `done` exists\n    When the person runs `work start`$",
+         "exempting": (r"^    Given a stage s1\n    And the status of the stage s1 is not `done`\n    When the person runs `work start`\n"
                        r"    Then `work` prints the stage s1$")}
 
 

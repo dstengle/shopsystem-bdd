@@ -1,16 +1,11 @@
-"""The lexicon of a bounded context: the one reader of term entries (design §10.1).
-
-A term entry is a bullet of `spec/index.md`'s `## Glossary` or of a capability's `## Terms`:
-
-    - **status** (attribute of initiative): Values: `proposed`, `started`. Transitions: `proposed` → `started`: `work start`.
-
-The parentheses name the term's part of speech, read by PARTS into its category, the grammar slot the term fills
-(actor, kind, attribute, relation, event, resource, condition); plugin 2.x's categories name none (v_t4).
-Values belong to one attribute of one kind. `ident` names a term in GF (§9.6); `problems` gives v_t4–v_t10.
-The gloss is the text after the entry's `:` and before its first field, one sentence (v_t7, design-r2 §8); a kind's
-or an actor's `Kind of:` names the kind it is one of (spec_frames: a noun fills a verb's role of that kind).
-Relations are rows (spec_relations): a relation entry is read only to be a problem (v_t8), and so is a `Means:`
-field (v_t9).
+"""The lexicon of a bounded context: the one reader of term entries (design §10.1), each a bullet of `spec/index.md`'s
+`## Glossary` or a capability's `## Terms`, `- **status** (attribute of item): Values: `idea`, `shaped`.`, whose
+parentheses name its part of speech, read by PARTS into its category, the slot it fills (actor, kind, attribute,
+relation, event, resource, condition); plugin 2.x's categories name none (v_t4). Values belong to one attribute of one
+kind, declared adjectives or nouns or neither (spec_value_kinds, b257). `ident` names a term in GF (§9.6); `problems`
+gives v_t4–v_t10. The gloss is the text after the `:` and before the first field, one sentence (v_t7); `Kind of:`
+names the kind a kind or an actor is one of (spec_frames). A relation entry (v_t8) and a `Means:` field (v_t9) are
+read only to be problems; relations are spec_relations' rows.
 """
 import re
 from collections import defaultdict
@@ -19,6 +14,7 @@ from pathlib import Path
 
 import spec_frames
 import spec_relations
+import spec_value_kinds
 
 CATEGORIES = ("actor", "kind", "attribute", "value", "relation", "event", "resource", "condition")
 LETTER = {"actor": "a", "kind": "k", "attribute": "t", "value": "v", "relation": "r", "event": "e",
@@ -27,10 +23,11 @@ LETTER = {"actor": "a", "kind": "k", "attribute": "t", "value": "v", "relation":
 CORE_VERBS = {"run", "print", "hold", "exit", "become", "set", "be"}
 
 ENTRY = re.compile(r"^- \*\*(?P<term>.+?)\*\*\s*(?:\((?P<cat>[^)]*)\))?\s*:\s*(?P<text>.*)$", re.DOTALL)
-FIELDS = ("Values", "Transitions", "Means", "Forms", "Frame", "Plural", "Not", "Kind of", "This", "Redefines", "Schema",
+FIELDS = ("Values", "Values (adjective)", "Values (noun)", "Transitions", "Means", "Forms", "Frame", "Plural", "Not", "Kind of", "This", "Redefines", "Schema",
           "Field of", "Order")
 ASPECTS = ("state", "action")
-FIELD = re.compile(r"(?:^|\s)(?:%s):" % "|".join(FIELDS))
+NAMES = "|".join(map(re.escape, FIELDS))
+FIELD = re.compile(r"(?:^|\s)(?:%s):" % NAMES)
 
 
 @dataclass(frozen=True)
@@ -55,6 +52,7 @@ class Term:
     schema: tuple = ()    # an artifact's `Schema:` as (schema type, file), stored, checked by nothing yet (b241)
     field_of: str = ""    # an attribute's `Field of:`, the artifact it is a field of, stored (b241)
     order: str = ""       # an attribute's `Order:`, how its values are ordered (spec_lf_order, b240)
+    value_kinds: tuple = ()     # (value, adjective or noun) of each declared value (spec_value_kinds, b257)
 
     @property
     def key(self):
@@ -63,7 +61,7 @@ class Term:
 
 def _fields(text, name):
     """Every value of the field `name` in an entry's text, in order."""
-    found = re.finditer(r"(?:^|\s)%s:\s*(.+?)\.(?=\s+(?:%s):|\s*$)" % (name, "|".join(FIELDS)), text, re.DOTALL)
+    found = re.finditer(r"(?:^|\s)%s:\s*(.+?)\.(?=\s+(?:%s):|\s*$)" % (re.escape(name), NAMES), text, re.DOTALL)
     return tuple(" ".join(m.group(1).split()) for m in found)
 
 
@@ -130,8 +128,10 @@ def entry(bullet, where):
         step = re.match(r"\s*(.+?)\s*(?:→|->)\s*(.+?):\s*(.+?)\s*$", row)
         if step:
             transitions.append(step.groups())
-    return Term(term=term, category=category, kinds=kinds, text=text, where=where,
-                values=_list(_field(text, "Values")), transitions=tuple(transitions),
+    kinds_of = tuple((v, k) for k in sorted(spec_value_kinds.KINDS, key=lambda k: text.find("Values (%s)" % k))
+                     for v in _list(_field(text, "Values (%s)" % k)))     # in the entry's order
+    return Term(term=term, category=category, kinds=kinds, text=text, where=where, value_kinds=kinds_of,
+                values=_list(_field(text, "Values")) + tuple(v for v, _ in kinds_of), transitions=tuple(transitions),
                 forms=_list(_field(text, "Forms")), plural=_field(text, "Plural"), nots=_list(_field(text, "Not")),
                 resource=resource, supertype=_field(text, "Kind of") or ("artifact" if label == "artifact" else ""), frame=_field(text, "Frame"), label=label,
                 aspect=aspect, frames=_fields(text, "Frame"), this=_field(text, "This"),
@@ -275,8 +275,8 @@ def problems(lexicon, outer=frozenset()):
         elif any(k not in kinds for k in t.kinds):
             missing = ", ".join(k for k in t.kinds if k not in kinds)
             out.append(("v_t4", t.term, "%s: %s is not a kind" % (t.where, missing)))
-        elif t.category == "attribute" and not t.values:
-            out.append(("v_t4", t.term, "%s: the attribute gives no Values" % t.where))
+        elif t.category == "attribute" and (not t.values or spec_value_kinds.mixed(t)):
+            out.append(("v_t4", t.term, "%s: the attribute gives %s" % (t.where, spec_value_kinds.mixed(t) or "no Values")))
         if t.category == "event" and t.term in CORE_VERBS:
             out.append(("v_t6", t.term, "%s: the grammar spells `%s` itself" % (t.where, t.term)))
     seen = defaultdict(list)

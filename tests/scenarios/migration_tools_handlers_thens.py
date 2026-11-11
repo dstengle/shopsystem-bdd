@@ -187,7 +187,7 @@ def printed(step, np):
     return {"release of this repository": [M.held(step).get(".shop/plugin-version", "").strip()],
             "upgrade step": M.pending(step), "restated file": ["spec/restated.json"],
             "capability": ["spec/capabilities/cart.md"], "initiative": ["i1"], "frozen request": ["q1"],
-            "term": ["v_t11"], "content": ["banana"]}[what]
+            "term": step.context.get("violates") or ["v_t11"], "content": ["banana"]}[what]
 
 
 @local("ThenPrints")
