@@ -95,8 +95,10 @@ Here is the change it made to the fixture's glossary:
 ```diff
 -- **pick** (verb): a shopper puts goods in a cart. Forms: picks, picked. Frame: shopper picks cart.
 -- **own** (verb): a shopper has a cart. Forms: owns, owned. Frame: shopper owns cart.
+-- **watch** (verb): a shopper looks at a till. Forms: watches, watched. Frame: shopper watches till.
 +- **pick** (verb, action): a shopper puts goods in a cart. Forms: picks, picked. Frame: shopper picks cart.
 +- **own** (verb, state): a shopper has a cart. Forms: owns, owned. Frame: shopper owns cart.
++- **watch** (verb, action): a shopper looks at a till. Forms: watches, watched. Frame: shopper watches till.
   - **guard** (verb): a shopper keeps a cart. Forms: guards, guarded. Frame: shopper guards cart.
 ```
 
@@ -217,15 +219,17 @@ given block with `work line --given` (see [the given block](reference/capability
 by r10 and r11 together, so retire r1 or narrow the new lines.
 
 `features generate` rewrites each feature from grammar 4's reading, so expect new step wording. The reworded r4 is
-now a Given of its own:
+now a Given of its own. Here is the scenario of the item's group `g2` with r9 and r10 in it:
 
 ```gherkin
-  @g2 @r9 @r10 @r11 @r12 @r13
+  @g2 @r9 @r10
   Scenario: Reword buy for grammar 4
     Given a shopper s1
     And the shopper s1 owns no cart
     When the shopper s1 picks the cart c1
     Then the shopper s1 watches the till t1
+    And the till t2 is for the shopper s1
+    And the shopper s1 watches the till t2
 ```
 
 If your handlers are registered with the plugin's `handler` (`from vocab import handler`, in `world_*.py` and
