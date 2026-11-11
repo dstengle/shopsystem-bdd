@@ -484,7 +484,7 @@ shall [x1: repository "the repository the command runs in" (indexical), x2: agen
 ```
 
 ## r77
-Retires: r66. From: b264 (the version reset). Audit: fine; r66's releases renamed in the 0.y.z series of design-decision 0092.
+Retires: r66. From: b264 (the version reset). Audit: fine; r66's releases renamed in the 0.y.z series of design-decision 0092. Known limit: #6 (the plugin's release as a value).
 
 ```reading
 While the release of this repository is `0.34.1`, when the person runs `migrate upgrade`, `migrate` shall print `no upgrade step is pending` and change no file.
@@ -500,7 +500,7 @@ shall [x1: repository "the repository the command runs in" (indexical), x2: agen
 ```
 
 ## r78
-Retires: r67. From: b264 (the version reset). Audit: fine; r67's releases renamed in the 0.y.z series of design-decision 0092.
+Retires: r67. From: b264 (the version reset). Audit: fine; r67's releases renamed in the 0.y.z series of design-decision 0092. Known limit: #6 (the plugin's release as a value).
 
 ```reading
 While the release of this repository is after `0.34.1`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print `update the plugin`.
@@ -514,7 +514,7 @@ shall [x1: repository "the repository the command runs in" (indexical), x2: agen
 ```
 
 ## r79
-Retires: r68. From: b264 (the version reset). Audit: fine; r68's releases renamed in the 0.y.z series of design-decision 0092.
+Retires: r68. From: b264 (the version reset). Audit: fine; r68's releases renamed in the 0.y.z series of design-decision 0092. Known limit: #6 (the plugin's release as a value).
 
 ```reading
 While the release of this repository is `0.34.1` and every initiative of this repository is one of `done` or `abandoned`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall exit successfully, print no upgrade step and print no initiative.
@@ -540,7 +540,7 @@ shall [x1: repository "the repository the command runs in" (indexical), x3: agen
 ```
 
 ## r80
-Retires: r65. From: b264 (the version reset). Audit: fine; r65's releases renamed in the 0.y.z series of design-decision 0092.
+Retires: r65. From: b264 (the version reset). Audit: fine; r65's releases renamed in the 0.y.z series of design-decision 0092. Known limit: #6 (the plugin's release as a value).
 
 ```reading
 While the release of this repository is `0.33.0`, when the person runs `migrate upgrade`, `migrate` shall print every upgrade step whose release is `0.34.0` and every term that violates `w_value_kind`.
