@@ -626,7 +626,8 @@ does not parse at item (token 3 of 15)
   may follow: (none)
 ```
 
-How to read a refusal is in [Writing requirements](../writing-requirements.md).
+The second line is a counter-example: the grammar has no "an item is readied", so it is refused. How to read a
+refusal is in [Writing requirements](../writing-requirements.md).
 
 ### `model lexicon`
 
