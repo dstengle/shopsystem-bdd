@@ -361,6 +361,7 @@ The line names kinds; the group's given block holds the sample. Batch-measuremen
 
 ````markdown
 ### [g24] `measure show` prints the stage rows of a measurement whose stage row has no round trip without a round trip
+Restates: r56@0.29.
 - [r24] When the person runs `measure show` on a measurement that has a stage row that has no round trip, `measure` shall print every stage row of the measurement and not print a round trip.
 
 ```given
