@@ -227,14 +227,16 @@ batch brief: .../repo/.shop/worktrees/batch-34-driver/brief.md
 ```gherkin
   @g43 @r43
   Scenario: `work show` names an item by its title and its status
+    Given an item i1
     When the person runs `work show` on the item i1
     Then the item i1 has the title t1
     And `work` prints the title t1
     And `work` prints the status of the item i1
 ```
 
-Nobody wrote this scenario. `features generate` read it off the line's form: the When from the trigger, a Then for
-each thing `work` prints. The tags `@g43 @r43` tie it to its group and line. It's the item's acceptance test.
+Nobody wrote this scenario. `features generate` read it off the line's form: a Given for the item the trigger names,
+the When from the trigger, a Then for each thing `work` prints. The tags `@g43 @r43` tie it to its group and line.
+It's the item's acceptance test.
 
 The last line of the output is the *batch brief*: one file holding the batch, its task, its worktree and branch, the
 rules every subagent follows, and where to stop.

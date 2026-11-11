@@ -30,6 +30,7 @@ shows how to run them from the plugin's directory. Every command's full contract
 A new word arrives on an item, beside the lines that use it. Here's the whole thing, start to finish: an item, a
 term, a relation row that says how labels hang off items, and a line that uses both.
 
+<!-- docs: context tests/scripts/fixtures/docs-labels -->
 ```console
 $ work idea "Items carry labels" --note "the person wants to group items by a short word"
 b250 "Items carry labels" idea
@@ -77,6 +78,7 @@ Each `Frame:` names the subject's kind, the verb, the object's kind and any prep
 `- **tag** (verb, action): a tool gives an item a label. Forms: tags, tagged. Frame: tool tags item with label.`
 laid in, a line that fills the frame reads as you'd hope:
 
+<!-- docs: context tests/scripts/fixtures/docs-labels -->
 ```text
 When the person runs `work label` on an item, `work` shall tag the item with a label and commit the item.
   ...
@@ -216,6 +218,7 @@ $ features generate labels
 wrote features/labels.feature
 ```
 
+<!-- docs: context tests/scripts/fixtures/docs-labels -->
 ```gherkin
 Feature: Labels
   Narrator: a person grouping items

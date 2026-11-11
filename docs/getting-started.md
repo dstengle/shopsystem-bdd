@@ -24,6 +24,7 @@ Feature: Notes
 
   @g4 @r4
   Scenario: `notes remove` deletes a note
+    Given a note n1
     When the person runs `notes remove` on the note n1
     Then `notes` deletes the note n1
 ```
@@ -319,6 +320,7 @@ Feature: Notes
 
   @g4 @r4
   Scenario: `notes remove` deletes a note
+    Given a note n1
     When the person runs `notes remove` on the note n1
     Then `notes` deletes the note n1
 ```
@@ -351,16 +353,16 @@ from pytest_bdd import given, parsers, scenarios, then, when
 scenarios("../../features/notes.feature")
 
 
-@given(parsers.parse("the file `{name}` holds:"))
-def file_holds(world, name, docstring):
-    (world["dir"] / name).write_text(docstring)
+@given(parsers.parse("a note {n}"))
+def a_note(world, n):
+    if len(saved(world)) <= len(world["names"]):
+        notes(world, "add", "--title", "Note " + n)
+    world["names"][n] = saved(world)[len(world["names"])]["title"]
 
 
 @when(parsers.parse("the person runs `notes remove` on the note {n}"))
 def remove(world, n):
-    notes(world, "add", "--title", "Call the bank")
-    world["names"][n] = "Call the bank"
-    notes(world, "remove", "Call the bank")
+    notes(world, "remove", world["names"][n])
 
 
 @then(parsers.parse("`notes` deletes the note {n}"))
@@ -408,6 +410,8 @@ def file_holds(world, name, docstring):
 
 @given(parsers.parse("a note {n}"))
 def a_note(world, n):
+    if len(saved(world)) <= len(world["names"]):
+        notes(world, "add", "--title", "Note " + n)
     world["names"][n] = saved(world)[len(world["names"])]["title"]
 
 
@@ -428,9 +432,7 @@ def list_notes(world):
 
 @when(parsers.parse("the person runs `notes remove` on the note {n}"))
 def remove(world, n):
-    notes(world, "add", "--title", "Call the bank")
-    world["names"][n] = "Call the bank"
-    notes(world, "remove", "Call the bank")
+    notes(world, "remove", world["names"][n])
 
 
 @then(parsers.parse("the note {n} is under the tag {t}"))
