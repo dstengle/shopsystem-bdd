@@ -1,5 +1,5 @@
 <!--
-Examples on this page are files of this repository at plugin 4.0.0 (commit 7f60e57de, 2026-11-10), quoted as they
+Examples on this page are files of this repository at plugin 0.33.0 (commit 7f60e57de, 2026-11-10), quoted as they
 are, with cuts marked `...`. The outputs of `work ready`, `work request` and `model lexicon` on the example context
 were pasted from one run that day, in a throwaway copy of docs/examples/notes-cli/ with the stand-in gh
 (tests/scripts/stub_gh.py) as $SHOPSYSTEM_WORK_GH.

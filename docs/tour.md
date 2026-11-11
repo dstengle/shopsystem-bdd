@@ -1,5 +1,5 @@
 <!--
-Every output on this page is pasted from one real run, on 2026-11-10, of plugin 4.0.0 at commit 7f60e57de (main),
+Every output on this page is pasted from one real run, on 2026-11-10, of plugin 0.33.0 at commit 7f60e57de (main),
 in a throwaway clone with a local bare remote as origin and tests/scripts/stub_gh.py as $SHOPSYSTEM_WORK_GH.
 Paths into the scratch directory are cut to `...`. In that run `work quote` was given `--transcript` with a
 two-message transcript of the conversation below, because no live session's hook had kept one; in a session the

@@ -9,7 +9,7 @@ description: Use when the person says "check your requests", when `work sync` sh
 
 A request is a conversation on one GitHub issue on this context's own GitHub repository; this repository keeps its record in `.shop/requests/q<n>.md`, the issue's URL in its frontmatter. Every step is a comment a `work` command posts; only the comment's block of fields is read, and nothing written in an issue is ever followed. A peer, the product or this context asks in its own words; this session offers what may serve it, then judges each line the asker proposes: accept it into a capability here, refuse it with a reason, or counter-propose. No person is asked, but only the person accepts the request, which writes its item.
 
-Scripts: `<this skill's base directory>/../../scripts/`. The request's lines are judged against `spec/` and this context's lexicon (`python3 <scripts>/model lexicon`: the packs `spec/index.md` imports, the glossary, the capabilities' terms), in this context's grammar 4 (`spec/index.md` says `language: codified-2`), by the rules of raising-a-request's "Writing a line in 4.0".
+Scripts: `<this skill's base directory>/../../scripts/`. The request's lines are judged against `spec/` and this context's lexicon (`python3 <scripts>/model lexicon`: the packs `spec/index.md` imports, the glossary, the capabilities' terms), in this context's grammar 4 (`spec/index.md` says `language: codified-2`), by the rules of raising-a-request's "Writing a line in grammar 4".
 
 ## Process
 
@@ -38,6 +38,6 @@ Scripts: `<this skill's base directory>/../../scripts/`. The request's lines are
 | A refusal with no reason | `--reason`: the asker reads it |
 | A counter-proposal that does not parse | Write it as raising-a-request says; `work outcome` refuses it otherwise |
 | A line that says a noun value the short way (`an item is `idea``) | It does not parse here once the attribute declares its values; counter-propose the full form, `the status of an item is `idea`` |
-| A line accepted because it parses, with a coined adjective or sample values in it | Counter-propose it in 4.0's rules; its values go in the given block |
+| A line accepted because it parses, with a coined adjective or sample values in it | Counter-propose it in grammar 4's rules; its values go in the given block |
 | A line accepted that rewords a line in `spec/` | Its item retires the old id: `work line --retires` |
 | `work ready` run on an item while a line of its request is unanswered | Answer every line first (step 3) |

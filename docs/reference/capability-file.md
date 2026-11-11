@@ -1,4 +1,4 @@
-<!-- Outputs on this page come from plugin 4.0.0, commit 28abbd977 of branch plan-docs, run 2026-11-10 in a scratch
+<!-- Outputs on this page come from plugin 0.33.0, commit 28abbd977 of branch plan-docs, run 2026-11-10 in a scratch
 clone of this repository (no remote). Every requirement line quoted here is a live line of this repository's spec. -->
 
 # The files of a spec
@@ -8,7 +8,7 @@ requirement lines. It walks through the files a bounded context keeps under `spe
 at a time, and says which of them a command writes for you and which you write by hand.
 
 Every example is this repository's own spec, in `language: codified-2`. Files that still say `codified-1` are
-refused by plugin 4.0; [upgrading](../upgrading.md) shows how `migrate upgrade` moves them over.
+refused since plugin 0.33; [upgrading](../upgrading.md) shows how `migrate upgrade` moves them over.
 
 ## The layout at a glance
 
@@ -98,7 +98,7 @@ the context has, by category.
 An attribute's values are declared by how they read after "is". `Values (adjective):` lists the ones that read as an
 adjective or a participle (`shaped`, `in-batch`): a line may say them the short way, "an item is `shaped`", or the
 full way, "the status of the item is `shaped`". `Values (noun):` lists every other value, a noun (`idea`, a tier
-`check`), a verb phrase (`needs-input`) or a release (`1.0.0`): a line says them only the full way, "the status of
+`check`), a verb phrase (`needs-input`) or a release (`0.30.0`): a line says them only the full way, "the status of
 the item is `idea`" or "an item whose status is `idea`", and the short way is refused with that hint. One entry may
 give both. A plain `Values:` declares neither: its values keep the short way, and `model check` warns
 `w_value_kind`. The generated scenarios always say the full way, "the status of the item i1 is `idea`".
@@ -271,7 +271,7 @@ A Claude Code plugin that runs a behaviour-driven workflow in a consuming reposi
 The frontmatter:
 
 - **`id`**: `bounded-context/<owner>/<product>/<context name>`. Every other id in the context starts from this path.
-- **`language: codified-2`**: the language the context is written in. Plugin 4.0 reads only this.
+- **`language: codified-2`**: the language the context is written in. Plugin 0.33 and later read only this.
 - **`imports:`**: the packs the grammar starts from. A pack is a ready-made vocabulary: `cli` (commands, options,
   exit, refuse), `spec`, `time`. Their words are in [`grammar/packs/`](../../grammar/packs/). A glossary entry that
   takes a pack's word over says `Redefines: cli`.
@@ -510,7 +510,7 @@ Four things happened in one commit:
 ## Who writes which file
 
 `model forms` prints every file form a context keeps, its path, and the command that writes it. Where it says "no
-command yet", you write the file by hand. This is its output at 4.0.0, verbatim:
+command yet", you write the file by hand. This is its output at 0.33.0, verbatim:
 
 ```console
 $ model forms

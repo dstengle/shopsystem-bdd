@@ -1,6 +1,6 @@
 # How it works
 
-<!-- Outputs on this page are from plugin 4.0.0 at commit 7f60e57de, 2026-11-10: the read-only commands run in this
+<!-- Outputs on this page are from plugin 0.33.0 at commit 7f60e57de, 2026-11-10: the read-only commands run in this
 repository, the ones that write (work idea, line, ready, batch start, pytest) in a throwaway clone with no remote. -->
 
 This page is for the curious developer: what happens between a sentence in a capability file and a green test, and

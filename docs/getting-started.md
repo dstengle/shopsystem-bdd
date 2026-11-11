@@ -1,5 +1,5 @@
 <!--
-Outputs on this page are from real runs on 2026-11-10: plugin 4.0.0, its scripts as at commit 7f60e57de
+Outputs on this page are from real runs on 2026-11-10: plugin 0.33.0, its scripts as at commit 7f60e57de
 (branch plan-docs), Python 3.11, pytest 9.1.1, pytest-bdd 8.1.0, in a scratch repository built from
 docs/examples/notes-cli/. The home directory is written as ~, and long paths are cut with "...".
 -->
@@ -95,7 +95,7 @@ A tool that is missing says so on its line, with what you can't do without it.
 Most days you won't type these commands. You talk with Claude, and Claude runs them from the plugin's `scripts/`
 folder. To run one yourself, you need that folder's path, which is why step 2 asked `claude plugin list --json`
 for the plugin's `installPath` and kept it in `$SHOP`. It's a path that ends in the version, such as
-`~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/4.1.0`. If you load a checkout with `claude --plugin-dir`, set `SHOP` to that checkout instead.
+`~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.34.1`. If you load a checkout with `claude --plugin-dir`, set `SHOP` to that checkout instead.
 
 Then give each tool a short name:
 

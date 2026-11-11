@@ -373,7 +373,7 @@ are no pair, since where the If line's state holds its response replaces the oth
 If line does not fire. Two If lines on one trigger are still checked against each other. A universal condition holds
 in every trace, so it takes no precedence and none is taken over it: it is paired with each line it bears on, If or
 not, and a line whose response it forbids under that line's trigger is an L1 naming it (b117). A pair of two
-codified-1 lines keeps the reading of plugin 2.x (an If line never paired with a line of another form) until its
+codified-1 lines keeps the reading of plugin 0.31 (an If line never paired with a line of another form) until its
 files are reworded.
 
 Tested on backlog r20 and r21 (in a tasked repository `work idea` refuses, If; in a tracking one it writes, When).
@@ -779,11 +779,11 @@ A line says an attribute's value in the full form, "the T of X is v" ("the statu
 whose status is `idea`"), which any value takes. The short form "X is v" ("an item is `shaped`") leaves the attribute
 out, so it reads as English only when v reads after "is" as an adjective or a participle; with a noun ("an item is
 `idea`", "a design-decision is `check`"), a verb phrase ("an item is `needs-input`") or a release ("a repository is
-`1.0.0`") it does not. So an attribute entry declares the kind of its values (b257): `Values (adjective):` lists those
+`0.30.0`") it does not. So an attribute entry declares the kind of its values (b257): `Values (adjective):` lists those
 the short form takes, `Values (noun):` every other, and an entry may give both. A line that says a noun value in the
 short form, "is", "is not", "is one of" or "is not `a` or `b`" after the thing alone, is refused, naming the value,
 the attribute and the full form. An entry that gives a plain `Values:` declares neither, and its values keep the short
-form as they did in 4.0, which `model check` warns of (`w_value_kind`). Generated Gherkin says every value in the full
+form as they did in 0.33, which `model check` warns of (`w_value_kind`). Generated Gherkin says every value in the full
 form, "the status of the item i1 is `idea`", so that whoever binds a step reads the attribute in it; a value of "no K"
 is "no item whose status is `idea` exists". The constructs are `attribute-is` and `adjective-value`.
 
@@ -837,7 +837,7 @@ for "after `3.0.0`".
 Found by the audit in migration-tools r36, r39, r40, r41, r42, r45, r46, r51 and r55 (b156): each said a range of
 releases as one value of the release (`0.23.1` for "before `0.24.0`") or as "lacks the verb-frames step and does not
 lack the simplified-workflow step", which inverts what it means; and b161's line "While the release of the repository
-is after `3.0.0` and before `4.0.0`, ...". Each says the range with "after" and "before".
+is after `0.32.0` and before `0.33.0`, ..." (now r76). Each says the range with "after" and "before".
 
 ```reading
 While the version of a file is before `2.0.0`, when the person runs `work start`, `work` shall print the file.
@@ -1869,9 +1869,9 @@ placeholder, ...".
 
 "after v" compares a value with a value a line names; the language has no comparison of two things' values ("the
 release of the repository is after the release of the plugin"), which the check could not decide exactly over named
-points (design call 9). Lines: migration-tools r65, r66, r67 and r68, of the release 4.1.0 (r67 is b156's line of the
-repository's release `newer`, newer than the plugin's own; r62-r64 were 4.0.0's). They say instead the plugin's release the line is written for, as a value: "While the release of the repository
-is after `4.1.0`, ...", and the line gets a new id when the plugin's release moves on.
+points (design call 9). Lines: migration-tools r77, r78, r79 and r80, of the release 0.34.1 (r78 is b156's line of the
+repository's release `newer`, newer than the plugin's own; r62-r64 were 0.33.0's, r65-r68 0.34.0's). They say instead the plugin's release the line is written for, as a value: "While the release of the repository
+is after `0.34.1`, ...", and the line gets a new id when the plugin's release moves on.
 
 ### #8: a change of an attribute's value
 

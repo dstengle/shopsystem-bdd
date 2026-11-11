@@ -36,7 +36,7 @@ and its scenario in [`features/backlog.feature`](../features/backlog.feature).
 [getting started](getting-started.md), [the tour](tour.md), [the capability file](reference/capability-file.md),
 [commands](reference/commands.md), then [how it works](how-it-works.md).
 
-**If you maintain a repository on 3.x** and are moving it to 4.0:
+**If you maintain a repository on an older release** and are moving it to this one:
 [upgrading](upgrading.md), [writing requirements](writing-requirements.md),
 [troubleshooting](troubleshooting.md), then [`CHANGELOG.md`](../CHANGELOG.md).
 
@@ -50,7 +50,7 @@ flowchart LR
   I --> RC[Recipes]
   I --> REF[References]
   I --> TS[Troubleshooting]
-  I --> UP[Upgrading from 3.x]
+  I --> UP[Upgrading]
 ```
 
 Read left to right: the front door, then the walk from setting up to writing lines. The branches are the pages you
@@ -67,7 +67,7 @@ reach for when you need them.
 
 - [Talking with Claude](talking-with-claude.md): what to say, what Claude does, and what is asked of you.
 - [Recipes](recipes.md): short steps for the tasks that come up, from a new glossary word to a defect.
-- [Upgrading](upgrading.md): moving a repository from 3.x to 4.0 with `migrate upgrade`.
+- [Upgrading](upgrading.md): moving a repository from an older release with `migrate upgrade`, and the version numbering.
 - [Troubleshooting and FAQ](troubleshooting.md): a refusal you met, what it means, and what to do.
 
 **Knowing**, the ideas behind the workflow:

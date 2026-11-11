@@ -4,28 +4,57 @@ What changed in each release of shopsystem-bdd, newest first. Each section is th
 when the release shipped, so older sections use the words of their day: a command or file an old note names may have
 been renamed or retired since.
 
-- Upgrading from 3.x? The steps are in [Upgrading from 3.x to 4.0](docs/upgrading.md); `migrate upgrade` applies
-  every pending step in order.
+- Upgrading? The steps, and the old and new numbers of the releases renumbered in 0.34.1, are in
+  [Upgrading](docs/upgrading.md); `migrate upgrade` applies every pending step in order.
 - New here? Start at the [README](README.md).
 
 | Line | Releases |
 |---|---|
-| 4.x | [4.1.0](#410-value-kinds-adjective-or-noun-and-gherkin-in-the-full-form) · [4.0.0](#400-the-controlled-language-4) |
-| 3.x | [3.0.1](#301-features-generate-writes-the-scenario-of-a-negated-response-with-a-recipient) · [3.0.0](#300-verb-frames-parts-of-speech-in-the-glossary-and-verbs-typed-by-kind) |
-| 2.x | [2.4.0](#240-the-request-watch-wakes-on-githubs-events-and-starts-with-the-session) · [2.3.1](#231-a-batch-runs-in-one-fresh-agent-and-a-parked-item-leaves-the-batch-at-once) · [2.3.0](#230-work-pushes-its-commits-requests-post-after-they-commit-and-work-watch) · [2.2.0](#220-decisions-and-records-written-by-command) · [2.1.0](#210-requests-exchanged-through-github-issues) · [2.0.0](#200-the-workflow-simplified) |
-| 1.x | [1.0.0](#100-codified-requirements) |
-| 0.x | [0.29.0](#0290-glossary-proposals-delegations-given-late-and-fewer-stops-from-outside-a-work-item) · [0.28.3](#0283-a-branch-review-that-runs-nothing) · [0.28.2](#0282-answers-a-round-cannot-hold-go-back-to-integration) · [0.28.1](#0281-work-run-stops-visibly-on-questions-and-spends-less-agent-time) · [0.28.0](#0280-one-set-of-request-commands-work-list-and-work-show-and-answers-that-redraft) · [0.27.0](#0270-transitions-from-how-a-session-ended-and-the-turn-of-an-accepted-request) · [0.26.0](#0260-requests-and-the-context-loop) · [0.25.0](#0250-work-items-side-by-side-answers-and-guarantees) · [0.24.0](#0240-work-items-named-by-ids-and-upgrades-between-plugin-releases) · [0.23.1](#0231---work-item-keeps-tests-that-are-not-scenarios) · [0.23.0](#0230-faults-settled-query-output-as-json-the-session-keeps-the-gate-measurement-on-v3) · [0.22.0](#0220-one-requirement-per-scenario-faults-and-the-lessons-of-a-blind-formulation) · [0.21.0](#0210-the-final-layout-and-delivery-by-work-run) |
+| 0.34 | [0.34.1](#0341-the-version-reset-and-the-givens-of-a-triggers-referents) · [0.34.0](#0340-released-as-410-value-kinds-adjective-or-noun-and-gherkin-in-the-full-form) |
+| 0.33 | [0.33.0](#0330-released-as-400-the-controlled-language-4) |
+| 0.32 | [0.32.1](#0321-released-as-301-features-generate-writes-the-scenario-of-a-negated-response-with-a-recipient) · [0.32.0](#0320-released-as-300-verb-frames-parts-of-speech-in-the-glossary-and-verbs-typed-by-kind) |
+| 0.31 | [0.31.5](#0315-released-as-240-the-request-watch-wakes-on-githubs-events-and-starts-with-the-session) · [0.31.4](#0314-released-as-231-a-batch-runs-in-one-fresh-agent-and-a-parked-item-leaves-the-batch-at-once) · [0.31.3](#0313-released-as-230-work-pushes-its-commits-requests-post-after-they-commit-and-work-watch) · [0.31.2](#0312-released-as-220-decisions-and-records-written-by-command) · [0.31.1](#0311-released-as-210-requests-exchanged-through-github-issues) · [0.31.0](#0310-released-as-200-the-workflow-simplified) |
+| 0.30 | [0.30.0](#0300-released-as-100-codified-requirements) |
+| 0.29 and before | [0.29.0](#0290-glossary-proposals-delegations-given-late-and-fewer-stops-from-outside-a-work-item) · [0.28.3](#0283-a-branch-review-that-runs-nothing) · [0.28.2](#0282-answers-a-round-cannot-hold-go-back-to-integration) · [0.28.1](#0281-work-run-stops-visibly-on-questions-and-spends-less-agent-time) · [0.28.0](#0280-one-set-of-request-commands-work-list-and-work-show-and-answers-that-redraft) · [0.27.0](#0270-transitions-from-how-a-session-ended-and-the-turn-of-an-accepted-request) · [0.26.0](#0260-requests-and-the-context-loop) · [0.25.0](#0250-work-items-side-by-side-answers-and-guarantees) · [0.24.0](#0240-work-items-named-by-ids-and-upgrades-between-plugin-releases) · [0.23.1](#0231---work-item-keeps-tests-that-are-not-scenarios) · [0.23.0](#0230-faults-settled-query-output-as-json-the-session-keeps-the-gate-measurement-on-v3) · [0.22.0](#0220-one-requirement-per-scenario-faults-and-the-lessons-of-a-blind-formulation) · [0.21.0](#0210-the-final-layout-and-delivery-by-work-run) |
 
-## 4.1.0: value kinds, adjective or noun, and Gherkin in the full form
+## 0.34.1: the version reset and the Givens of a trigger's referents
+
+- **Versions are 0.y.z until 1.0** (design-decision 0092, b264): the releases made as 1.0.0-4.1.0 are renumbered into
+  the 0.y.z series, continuing the tagged 0.1-0.29 releases. y counts a large or incompatible change (past .9 to .10),
+  z a non-breaking update; 1.0.0 is a decision of its own. Each section below keeps the number it was released as in
+  brackets. The upgrade steps of `migrate upgrade` are keyed by the new numbers:
+
+  | released as | now |
+  |---|---|
+  | 1.0.0 codified requirements | 0.30.0 |
+  | 2.0.0 the workflow simplified | 0.31.0 |
+  | 2.1.0 requests exchanged through GitHub issues | 0.31.1 |
+  | 2.2.0 decisions and records written by command | 0.31.2 |
+  | 2.3.0 work pushes its commits | 0.31.3 |
+  | 2.3.1 a batch runs in one fresh agent | 0.31.4 |
+  | 2.4.0 the request watch wakes on GitHub's events | 0.31.5 |
+  | 3.0.0 verb frames | 0.32.0 |
+  | 3.0.1 the scenario of a negated response with a recipient | 0.32.1 |
+  | 4.0.0 the controlled language 4 | 0.33.0 |
+  | 4.1.0 value kinds | 0.34.0 |
+
+- **A Given for each referent of the trigger** (b263, PR #51): `features generate` writes, after the Givens of the
+  While and Where parts, a Given of each referent of the trigger's event not yet brought in
+  (`scripts/spec_steps4.py`), so that every instance a When names has a Given that brings it in.
+- **Upgrading:** `migrate` has no translation of an old number. A consuming repository rewrites its
+  `.shop/plugin-version` by hand with the table above (a repository on 3.0.1 writes `0.32.1`), then reinstalls the
+  plugin: Claude Code keeps installs by version and may not move from 4.1.0 down to 0.34.1. No upgrade step.
+
+## 0.34.0 (released as 4.1.0): value kinds, adjective or noun, and Gherkin in the full form
 
 - **An attribute declares its values adjectives or nouns** (b257): `Values (adjective):` lists the values that read
   after "is" as an adjective or a participle (`shaped`, `in-batch`), `Values (noun):` every other (a noun, a verb
-  phrase, a release: `idea`, `needs-input`, `check`, `1.0.0`); one entry may give both. `model lexicon` prints each
+  phrase, a release: `idea`, `needs-input`, `check`, `0.30.0`); one entry may give both. `model lexicon` prints each
   value with its kind.
 - **The short form only for an adjective**: "an item is `shaped`" parses; "an item is `idea`" is refused, naming the
   full form, "the status of the item is `idea`" or "an item whose status is `idea`" (construct `adjective-value`;
-  `attribute-is` is the full form, which any value takes). A plain `Values:` declares neither and keeps 4.0's
-  reading, so nothing that parsed under 4.0 is refused until its attribute declares a value a noun; `model check`
+  `attribute-is` is the full form, which any value takes). A plain `Values:` declares neither and keeps 0.33's
+  reading, so nothing that parsed under 0.33 is refused until its attribute declares a value a noun; `model check`
   warns `w_value_kind` of each such attribute.
 - **Generated Gherkin is always the full form**: `features generate` writes every value step as "the status of the
   item i1 is `idea`", whatever the value's kind, and a value of "no K" as "no item whose status is `idea` exists",
@@ -35,11 +64,11 @@ been renamed or retired since.
 - **This repository**: every attribute declared; 17 lines that said a noun or verb-phrase value in the short form
   (backlog r23, r24, r28-r31; batches r27, r33; decision-tiers r14-r17, r23; pr-review r4, r13-r15) reworded to the
   full form under new ids, the old ones retired.
-- **Upgrade step 4.1.0 "value kinds"** changes no file: it names each attribute whose values are declared neither
+- **Upgrade step 0.34.0 "value kinds"** changes no file: it names each attribute whose values are declared neither
   way and each line that says one of its values in the short form, by file and id, for a session to declare the
   values and reword each line whose value is a noun.
 
-## 4.0.0: the controlled language 4
+## 0.33.0 (released as 4.0.0): the controlled language 4
 
 - **One language, grammar 4** (b112, b240; design `.shop/records/2026-11-09-cnl-4/`): a requirement line is read by a
   grammar over GF's resource grammar library, generated per context from its glossary, and has one meaning or is
@@ -56,13 +85,13 @@ been renamed or retired since.
   atoms and boxes; `model explain <cap>#r<n>` what the other lines force with it. `model logic` reads the form (L1-L7,
   L8: a Then other lines entail); `features generate` writes the steps from it in the step grammar 4.
 - **New constructs** (`grammar/constructs.md`, each a code `model constructs` checks): conformance to a named
-  artifact, ordered comparison ("after `3.0.0` and before `4.0.0`"), value sets and a value's absence ("is one of",
+  artifact, ordered comparison ("after `0.32.0` and before `0.33.0`"), value sets and a value's absence ("is one of",
   "has no"), the number of Ks, identity and distinctness ("another", "two", "the same"), existence, a command's
   options in the trigger ("runs `x` with the `--json` option"), the run's own things ("this K", `This:`), counts,
   modality ("may", "always", "never") and time (the time pack).
 - **Example data out of lines**: a code or quoted string that names no declared constant is a parameter, bound in
   its group's given block (`w_example`).
-- **`migrate upgrade` 4.0.0, "the controlled language 4"** (b161, migration-tools r61): writes each file's marker
+- **`migrate upgrade` 0.33.0, "the controlled language 4"** (b161, migration-tools r61): writes each file's marker
   `codified-2`, imports the CLI pack when a line uses its words, and gives each verb its aspect where its lines
   decide it. It prints, by file and id, what a session rewords: each line grammar 4 refuses with the reason ("the"
   with no antecedent and a negated indefinite in a While clause among them), each condition (adjective) and the
@@ -79,19 +108,19 @@ been renamed or retired since.
   choice and up to a number in rank order; #15 an adjunct of a verb's frame; #16 liveness, an answer within a time,
   history and moments in `model logic` and `features generate`; #17 a default value; #18 the ratio of two figures.
 
-## 3.0.1: `features generate` writes the scenario of a negated response with a recipient
+## 0.32.1 (released as 3.0.1): `features generate` writes the scenario of a negated response with a recipient
 
 - **A negated response with a recipient gets its scenario** (b103, feature-file-tools r20): "`feed` shall not return
   the video to the caller" is written as the Then "`feed` does not return the video v1 to the caller c1" (the step
-  template `ThenDoesToNot`). In 3.0.0 its group got no scenario and `model check` reported v_s3. Run `features
+  template `ThenDoesToNot`). In 0.32.0 its group got no scenario and `model check` reported v_s3. Run `features
   generate` again, and give a consumer's `ThenDoesToNot` steps their handler.
 - **No upgrade step.**
 
-## 3.0.0: verb frames, parts of speech in the glossary, and verbs typed by kind
+## 0.32.0 (released as 3.0.0): verb frames, parts of speech in the glossary, and verbs typed by kind
 
 - **Every glossary term names its part of speech** (b83, design-model-check r67): `(noun)` for a kind, `(proper
   noun)` for an actor, `(adjective of <kind>)` for a condition, `(attribute of <kind>)` for an attribute with values,
-  `(noun, exclusive)` for a resource and `(verb)` for an event. Plugin 2.x's categories (`kind`, `event`,
+  `(noun, exclusive)` for a resource and `(verb)` for an event. Plugin 0.31's categories (`kind`, `event`,
   `condition of …`) are refused, each term named with the label it is to carry.
 - **A verb's entry gives its frame** (b82, r60): a `Frame:` field in the order the verb is read, its kinds glossary
   terms: `Frame: caller requests video.`, `Frame: feed returns video to caller.`, `Frame: session ends.`. `model check`
@@ -106,13 +135,13 @@ been renamed or retired since.
   the one form.
 - **A trigger with a recipient** (b86, r66): "when a feed returns a video to a caller", object then "to" recipient,
   the one order.
-- **`migrate upgrade` 3.0.0, "verb frames"** (b87, migration-tools r25): writes each glossary entry's and each
+- **`migrate upgrade` 0.32.0, "verb frames"** (b87, migration-tools r25): writes each glossary entry's and each
   capability term's category as its part of speech, and prints each verb that needs a `Frame:` (v_t11), each
   relational condition (v_t12) and each requirement that no longer parses, by file and id. It rewords no line. After
   it, give each verb its frame, write each relational condition as a verb, and reword each line it names, a changed
   line under a new id with its old id in `retired:`; then run `model check`, `model parse` and `features generate`.
 
-## 2.4.0: the request watch wakes on GitHub's events and starts with the session
+## 0.31.5 (released as 2.4.0): the request watch wakes on GitHub's events and starts with the session
 
 - **`work watch --forward`** (b78, requests r57, r58) wakes on GitHub's events instead of a 60-second poll. On each
   repository the account administers, it forwards the repository's issue and comment events to a local port with
@@ -126,7 +155,7 @@ been renamed or retired since.
   new session starts the watch. It prints nothing when every request is closed, and never fails a session start.
 - **No upgrade step.**
 
-## 2.3.1: a batch runs in one fresh agent, and a parked item leaves the batch at once
+## 0.31.4 (released as 2.3.1): a batch runs in one fresh agent, and a parked item leaves the batch at once
 
 - **A batch runs in one fresh agent** (b55, batches r14): `work batch start` writes a batch brief,
   `batch-<n>-driver/brief.md` under the worktrees directory (never committed), and prints its path. The session hands
@@ -141,7 +170,7 @@ been renamed or retired since.
   recorded, but a late comment no longer changes a delivered, refused or withdrawn request.
 - **No upgrade step.**
 
-## 2.3.0: work pushes its commits, requests post after they commit, and work watch
+## 0.31.3 (released as 2.3.0): work pushes its commits, requests post after they commit, and work watch
 
 - **`work` pushes every commit it makes** (b51, b56, b57): to the branch's upstream remote, else `origin`. A refused
   push prints `not pushed: <remote>: <reason>` and keeps the commit; a push never prompts, and it gives up after
@@ -161,7 +190,7 @@ been renamed or retired since.
   record` refuse an absent argument by name (b45).
 - **No upgrade step.**
 
-## 2.2.0: decisions and records written by command
+## 0.31.2 (released as 2.2.0): decisions and records written by command
 
 - **`work decision`** writes a design-decision whole from its arguments (b41, decision-tiers r7, r8): `work decision
   "<title>" --summary "<one sentence>" --tier check|requirement|judgement --decision "<text>"`, with `--context`,
@@ -177,7 +206,7 @@ been renamed or retired since.
   same as one object. The forms with no command yet name the plugin item that will give them one.
 - **No upgrade step.**
 
-## 2.1.0: requests exchanged through GitHub issues
+## 0.31.1 (released as 2.1.0): requests exchanged through GitHub issues
 
 - **A request is a conversation on one GitHub issue** on the upstream's repository (b26, requests r27-r41, intake
   r7). Each side keeps its record in its own repository, and nothing reads or writes the other side's checkout:
@@ -194,10 +223,10 @@ been renamed or retired since.
   now parses the line in this context's grammar and names its capability with `--into`.
 - **Not yet:** `work sync` applies a readable comment whoever posted it (b35). Until that is fixed, exchange
   requests only between your own contexts, or on private repositories.
-- **No upgrade step.** A 2.0.0 repository needs only `github:` on each upstream it asks. A request it already holds
+- **No upgrade step.** A 0.31.0 repository needs only `github:` on each upstream it asks. A request it already holds
   has no issue, and is read as before.
 
-## 2.0.0: the workflow simplified
+## 0.31.0 (released as 2.0.0): the workflow simplified
 
 - **One item, a backlog, batches, one review at the pull request** (design-decision/the-workflow-simplified): work is
   an item in `.shop/backlog/`, shaped and readied against the codified spec (`work idea`, `shape`, `line`, `ready`),
@@ -211,15 +240,15 @@ been renamed or retired since.
 - **`.shop/work/` frozen** (design-decision/the-2-0-layout): nothing writes it, and `model check` reads only the
   `source` of its initiatives and requests, as citations of observations. Live requests are `.shop/requests/q<n>.md`,
   numbered above the frozen ones.
-- **`migrate upgrade` 2.0.0, "the workflow simplified"**: a 1.0.x repository is moved to the new workflow in one
+- **`migrate upgrade` 0.31.0, "the workflow simplified"**: a 0.30.x repository is moved to the new workflow in one
   commit. It writes `.shop/work/FROZEN.md`, moves each open request of a peer to `.shop/requests/` with `git mv`, and
   rewrites `spec/decisions/index.md`. Nothing is deleted. It names each open initiative, each proposal never applied
-  and each internal request not closed, to be shaped as items with `work idea`. A 0.29.x repository reaches 2.0.0
-  through the 1.0.0 step in the same commit. From 0.29.x, write each scaffold's requirements and the typed glossary
+  and each internal request not closed, to be shaped as items with `work idea`. A 0.29.x repository reaches 0.31.0
+  through the 0.30.0 step in the same commit. From 0.29.x, write each scaffold's requirements and the typed glossary
   as `docs/capability-format.md` § Doing it says, checking with `model parse`, `model check`, `model logic` and
   `model restates`, then run `features generate`.
 
-## 1.0.0: codified requirements
+## 0.30.0 (released as 1.0.0): codified requirements
 
 - **Requirements are written in a controlled language** (design model v5, `docs/design-model/`): the glossary of
   `spec/index.md` is typed (`- **<term>** (<part of speech>): …`) and is the lexicon of a GF grammar; every Behaviour
@@ -239,7 +268,7 @@ been renamed or retired since.
   `migrate upgrade`.
 
 Upgrading a consuming repository from 0.29: update the plugin, run `python3 scripts/tools install`, then
-`python3 scripts/migrate upgrade` on a clean tree. Its 1.0.0 step writes `spec/restated.json` (the text of every 0.29
+`python3 scripts/migrate upgrade` on a clean tree. Its 0.30.0 step writes `spec/restated.json` (the text of every 0.29
 id), turns each capability's Behaviour into a scaffold of one group per old line with `Restates:` filled and the old
 text kept as a comment, deletes `@deprecated` scenarios, rewrites the old references in `.shop/work/` to
 `<cap>#r<n>@0.29`, and lists what is left for a session to write: the typed glossary, each scaffold's requirements and

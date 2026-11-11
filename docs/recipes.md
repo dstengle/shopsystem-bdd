@@ -1,4 +1,4 @@
-<!-- Outputs on this page are from real runs on 2026-11-10, plugin 4.0.0 (commit 7f60e57de), in a scratch clone of
+<!-- Outputs on this page are from real runs on 2026-11-10, plugin 0.33.0 (commit 7f60e57de), in a scratch clone of
 this repository with no remote and the suite's stand-in gh (tests/scripts/stub_gh.py). Item, batch, decision and
 quote numbers (b250-b252, batch-34, batch-35, 0092, quote-24) are the clone's. Long paths are cut with `...`. -->
 
