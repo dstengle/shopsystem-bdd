@@ -330,7 +330,7 @@ Feature: Design model check
     And a requirement r1
     And the requirement r1 has the precondition p1
     And a term t1
-    And the term t1 is `state`
+    And the aspect of the term t1 is `state`
     And the precondition p1 uses the term t1
     When the person runs `model parse` on the requirement r1
     Then `model` exits successfully
@@ -525,7 +525,7 @@ Feature: Design model check
     And a requirement r1
     And the requirement r1 has the precondition p1
     And a term t1
-    And the term t1 is `action`
+    And the aspect of the term t1 is `action`
     And the precondition p1 uses the term t1
     When the person runs `model parse` on the requirement r1
     Then `model` refuses `model parse`
@@ -797,7 +797,7 @@ Feature: Design model check
   @g261 @r261
   Scenario: `model logic` checks a capability in the new language
     Given a capability c1
-    And the capability c1 is `codified-2`
+    And the language of the capability c1 is `codified-2`
     When the person runs `model logic`
     Then `model` exits successfully
 
@@ -895,7 +895,7 @@ Feature: Design model check
     And a requirement r1
     And the requirement r1 has the trigger t1
     And a term t2
-    And the term t2 is `state`
+    And the aspect of the term t2 is `state`
     And the trigger t1 uses the term t2
     When the person runs `model parse` on the requirement r1
     Then `model` refuses `model parse`
@@ -911,7 +911,7 @@ Feature: Design model check
   @g287 @r287
   Scenario: `model check` refuses a capability in the old language, naming `migrate upgrade`
     Given a capability c1
-    And the capability c1 is `codified-1`
+    And the language of the capability c1 is `codified-1`
     When the person runs `model check` on the capability c1
     Then `model` refuses `model check`
     And `model` names `migrate upgrade`

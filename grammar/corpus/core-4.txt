@@ -179,3 +179,12 @@ If the person runs `work start` without the `--summary` option, then `work` shal
 If a session runs `work start` without the `--reason` option on a line, then `work` shall exit with an error naming `--reason`.
 When the person runs `work start` with the `--source` and `--thread` option, `work` shall exit successfully.
 = refused: does not parse at option
+# value kinds (b257): the short form "x is v" of an adjective value; a value declared a noun only in the full form
+While the tier of a stage is `review`, when the person runs `work start`, `work` shall end the stage.
+When a session ends a stage whose tier is not `check`, `work` shall print the stage.
+While a stage is `review`, when the person runs `work start`, `work` shall end the stage.
+= refused: `review` is a noun, a value of the tier of a stage
+While a stage is one of `check` or `review`, when the person runs `work start`, `work` shall end the stage.
+= refused: `check` is a noun, a value of the tier of a stage
+While a file is `1.0.1`, when the person runs `work start`, `work` shall print the file.
+= refused: `1.0.1` is a noun, a value of the version of a file

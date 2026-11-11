@@ -32,15 +32,16 @@ not this repository's spec. Its rows give grammar 4's noun phrases (I8): of, its
 - **line** (noun): a sentence a stage is to meet.
 - **worktree** (noun): a checkout a session works in.
 - **layout** (artifact): the files a worktree is to hold, and where each is.
-- **status** (attribute of stage): Values: `open`, `done`.
+- **status** (attribute of stage): Values (adjective): `open`, `done`.
+- **tier** (attribute of stage): what checks a stage. Values (noun): `check`, `review`.
 - **write** (verb, action): an agent puts text into a file. Forms: writes, written. Frame: agent writes file.
 - **end** (verb, action): an agent stops a stage. Frame: agent ends stage.
 - **follow** (verb, state): an agent keeps track of a stage. Frame: agent follows stage.
 - **give** (verb, action): an agent hands a file to an agent. Frame: agent gives file to agent.
-- **version** (attribute of file): the release a file was written for. Values: `1.0.0`, `2.0.0`, `2.5.0`. Order: by number.
-- **priority** (attribute of stage): how soon a stage is to be ended. Values: `low`, `high`, `urgent`. Order: as listed.
+- **version** (attribute of file): the release a file was written for. Values (noun): `1.0.0`, `2.0.0`, `2.5.0`. Order: by number.
+- **priority** (attribute of stage): how soon a stage is to be ended. Values (adjective): `low`, `high`, `urgent`. Order: as listed.
 - **push** (noun): the commits a command sends to a remote.
 - **commit** (noun): a change a command records in a repository. This: the commit the run makes.
 - **make** (verb, state): a command has brought a commit about. Frame: command makes commit.
-- **outcome** (attribute of line): what became of a line. Values: `proposed`, `accepted`, `refused`, `withdrawn`.
+- **outcome** (attribute of line): what became of a line. Values (adjective): `proposed`, `accepted`, `refused`, `withdrawn`.
 - **cover** (verb, state): a thing answers for a line. Forms: covers, covered. Frame: file covers line. Frame: stage covers line.

@@ -279,7 +279,7 @@ Feature: Feature file tools
   @g108 @r108
   Scenario: `features generate` writes a scenario of every requirement group of a capability in the language reference
     Given a capability c1
-    And the capability c1 is `codified-2`
+    And the language of the capability c1 is `codified-2`
     And a requirement r1
     And the capability c1 has the requirement r1
     And the requirement r1 conforms to the language reference
@@ -299,7 +299,7 @@ Feature: Feature file tools
   @g109 @r109
   Scenario: `features generate` leaves out a step that a universal condition entails
     Given a capability c1
-    And the capability c1 is `codified-2`
+    And the language of the capability c1 is `codified-2`
     And a step s1
     And a universal condition u1
     And the universal condition u1 entails the step s1
@@ -329,8 +329,8 @@ Feature: Feature file tools
       ## Dropped
       """
     And a capability c1
-    And the capability c1 is `service`
-    And the capability c1 is `codified-2`
+    And the group of the capability c1 is `service`
+    And the language of the capability c1 is `codified-2`
     When the person runs `features generate`
     Then the capability c1 has the feature f1
     And `features` writes the feature f1

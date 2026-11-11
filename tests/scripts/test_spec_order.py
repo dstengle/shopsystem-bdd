@@ -98,16 +98,16 @@ def generated(tmp_path, *lines):
     ("not before `2.0.0`", "`2.0.0`"),
 ])
 def test_the_given_is_one_value_on_the_right_side_of_every_point(tmp_path, said, value):
-    assert "the file f1 is %s" % value in generated(tmp_path, FILE % (said, "print"))
+    assert "the version of the file f1 is %s" % value in generated(tmp_path, FILE % (said, "print"))
 
 
 def test_a_value_no_entry_lists_reads_back_and_is_recorded(tmp_path):
     steps = generated(tmp_path, FILE % ("after `3.0.0`", "print"), STAGE % ("after `low`", "end"))
-    assert "the stage s1 is `high`" in steps
+    assert "the priority of the stage s1 is `high`" in steps
     gram = spec_rgl_steps.load(tmp_path)[1]
     vocab.load_handlers(pathlib.Path(__file__).resolve().parents[1] / "scenarios")
     context = {}
-    for text in ("the file f1 is `3.0.1`", "the stage s1 is `high`"):
+    for text in ("the file f1 is `3.0.1`", "the priority of the stage s1 is `high`"):
         call = features_vocab4.step(tmp_path, "given", text)
         assert spec_rgl_steps.text(gram, call.tree) == text
         assert call.template == "GivenK_A"

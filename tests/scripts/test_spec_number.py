@@ -103,7 +103,7 @@ def generated(tmp_path, *lines):
 def test_a_printed_number_brings_in_two_of_the_things_it_counts(tmp_path):
     steps = generated(tmp_path, PRINT % ("print", "lines of the stage whose outcome is `accepted`"))
     assert [s for s in steps if s.startswith("a line ")] == ["a line l1", "a line l2"]
-    assert "the line l2 is `accepted`" in steps
+    assert "the outcome of the line l2 is `accepted`" in steps
     assert steps[-1] == "`work` prints the number of lines of the stage s2 whose outcome is `accepted`"
 
 

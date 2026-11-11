@@ -100,11 +100,12 @@ def given_failing(step):
 
 @handler("GivenK_A", "analysis tool")
 def given_tool(step):
-    """`the analysis tool a1 is v`, `` `ruff` is v `` or `no analysis tool is v`: the stand-in has it or lacks it."""
+    """`the presence of the analysis tool a1 is v`, `the presence of `ruff` is v` or `no analysis tool whose presence
+    is v exists`: the stand-in has it or lacks it."""
     config, presence = stand_in(step), bare(step.values[0])
     if step.text.startswith("no "):
         return
-    tool = tool_of(step, step.names[0]) if step.names else bare(step.text.split(" is ")[0])
+    tool = tool_of(step, step.names[0]) if step.names else bare(step.subject)
     if presence in ("missing", "uninstallable"):
         config.setdefault("missing", []).append(tool)
         config.setdefault("block", []).append(tool)

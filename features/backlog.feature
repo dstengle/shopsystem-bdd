@@ -18,21 +18,21 @@ Feature: Backlog
   @g22 @r22
   Scenario: `work idea` writes an item
     When the person runs `work idea`
-    Then the item i1 is `idea`
+    Then the status of the item i1 is `idea`
     And `work` writes the item i1
     And `work` commits the item i1
 
   @g23 @r23
   Scenario: `work shape` shapes an idea
     Given an item i1
-    And the item i1 is `idea`
+    And the status of the item i1 is `idea`
     When the person runs `work shape` on the item i1
     Then `work` sets the status of the item i1 to `shaped`
 
   @g24 @r24
   Scenario: `work shape` refuses an item that is not an idea
     Given an item i1
-    And the item i1 is not `idea`
+    And the status of the item i1 is not `idea`
     When the person runs `work shape` on the item i1
     Then `work` refuses `work shape`
     And `work` names the status of the item i1
@@ -48,7 +48,7 @@ Feature: Backlog
   @g26 @r26
   Scenario: `work backlog` prints an item with its dependency on an item that is not delivered
     Given an item i1
-    And the item i1 is not `delivered`
+    And the status of the item i1 is not `delivered`
     And a dependency d1
     And the dependency d1 is on the item i1
     And the dependency d1 exists
@@ -68,49 +68,49 @@ Feature: Backlog
   @g28 @r28
   Scenario: `work withdraw` withdraws an item that is an idea, shaped, ready or needs input (case 1)
     Given an item i1
-    And the item i1 is `idea`
+    And the status of the item i1 is `idea`
     When the person runs `work withdraw` on the item i1
     Then `work` sets the status of the item i1 to `withdrawn`
 
   @g28 @r28
   Scenario: `work withdraw` withdraws an item that is an idea, shaped, ready or needs input (case 2)
     Given an item i1
-    And the item i1 is `shaped`
+    And the status of the item i1 is `shaped`
     When the person runs `work withdraw` on the item i1
     Then `work` sets the status of the item i1 to `withdrawn`
 
   @g28 @r28
   Scenario: `work withdraw` withdraws an item that is an idea, shaped, ready or needs input (case 3)
     Given an item i1
-    And the item i1 is `ready`
+    And the status of the item i1 is `ready`
     When the person runs `work withdraw` on the item i1
     Then `work` sets the status of the item i1 to `withdrawn`
 
   @g28 @r28
   Scenario: `work withdraw` withdraws an item that is an idea, shaped, ready or needs input (case 4)
     Given an item i1
-    And the item i1 is `needs-input`
+    And the status of the item i1 is `needs-input`
     When the person runs `work withdraw` on the item i1
     Then `work` sets the status of the item i1 to `withdrawn`
 
   @g29 @r29
   Scenario: `work refuse` refuses an item that is an idea or shaped (case 1)
     Given an item i1
-    And the item i1 is `idea`
+    And the status of the item i1 is `idea`
     When the person runs `work refuse` on the item i1
     Then `work` sets the status of the item i1 to `refused`
 
   @g29 @r29
   Scenario: `work refuse` refuses an item that is an idea or shaped (case 2)
     Given an item i1
-    And the item i1 is `shaped`
+    And the status of the item i1 is `shaped`
     When the person runs `work refuse` on the item i1
     Then `work` sets the status of the item i1 to `refused`
 
   @g30 @r30
   Scenario: `work answer` returns an item that needs input to shaped
     Given an item i1
-    And the item i1 is `needs-input`
+    And the status of the item i1 is `needs-input`
     When the person runs `work answer` on the item i1
     Then `work` sets the status of the item i1 to `shaped`
     And `work` commits the item i1
@@ -118,7 +118,7 @@ Feature: Backlog
   @g31 @r31
   Scenario: `work backlog` prints the question of an item that needs input
     Given an item i1
-    And the item i1 is `needs-input`
+    And the status of the item i1 is `needs-input`
     And a question q1
     And the question q1 is on the item i1
     And a question q2
@@ -136,7 +136,7 @@ Feature: Backlog
     And this command has the push p1
     And the remote r1 rejects the push p1
     When the person runs `work idea`
-    Then the item i1 is `idea`
+    Then the status of the item i1 is `idea`
     And `work` writes the item i1
     And `work` commits the item i1
     And `work` prints the remote r1
@@ -150,7 +150,7 @@ Feature: Backlog
     And this command has the push p1
     And the remote r1 does not answer the push p1
     When the person runs `work idea`
-    Then the item i1 is `idea`
+    Then the status of the item i1 is `idea`
     And `work` writes the item i1
     And `work` commits the item i1
     And `work` prints the remote r1
@@ -177,7 +177,7 @@ Feature: Backlog
     And a branch name b2
     And the upstream branch u1 has the branch name b2
     When the person runs `work idea`
-    Then the item i1 is `idea`
+    Then the status of the item i1 is `idea`
     And `work` writes the item i1
     And `work` commits the item i1
     And `work` keeps the upstream branch u1

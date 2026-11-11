@@ -1100,6 +1100,25 @@ a term an imported pack defines too has no `Redefines:` naming the pack
   category("t1","kind").
   ```
 
+## w_value_kind
+
+an attribute does not say whether its values are adjectives or nouns (Values (adjective): or Values (noun):)
+
+- Severity: warning
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  undeclared_values("status").
+  ```
+
+- Passes on:
+
+  ```prolog
+  category("status","attribute").
+  ```
+
 ## v_t17
 
 `spec/index.md` imports a pack that neither the plugin nor the bounded context has

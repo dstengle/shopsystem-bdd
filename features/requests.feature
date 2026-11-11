@@ -34,7 +34,7 @@ Feature: Requests
   @g63 @r63
   Scenario: `work outcome` writes a line outcome in the upstream's turn
     Given a request r1
-    And the request r1 is `open`
+    And the status of the request r1 is `open`
     And a request line r2
     And the request line r2 is proposed in the request r1
     When the person runs `work outcome accepted` on the request line r2
@@ -44,7 +44,7 @@ Feature: Requests
   @g64 @r64
   Scenario: A side writes nothing in the other side's turn
     Given a request r1
-    And the request r1 is `awaiting-asker`
+    And the status of the request r1 is `awaiting-asker`
     When the person runs `work outcome` on the request r1
     Then `work` refuses `work outcome`
     And `work` names the request r1
@@ -52,7 +52,7 @@ Feature: Requests
   @g65 @r65
   Scenario: The asker's repository does not write the upstream's part
     Given a request r1
-    And the request r1 is `open`
+    And the status of the request r1 is `open`
     And the request r1 does not address this bounded context
     When the person runs `work outcome` on the request r1
     Then `work` refuses `work outcome`
@@ -61,7 +61,7 @@ Feature: Requests
   @g66 @r66
   Scenario: `work ask` writes the upstream's question
     Given a request r1
-    And the request r1 is `open`
+    And the status of the request r1 is `open`
     When the person runs `work ask` on the request r1
     Then `work` writes the question q1
     And `work` commits the request r1
@@ -69,7 +69,7 @@ Feature: Requests
   @g67 @r67
   Scenario: `work reply` writes the asker's answer
     Given a request r1
-    And the request r1 is `awaiting-asker`
+    And the status of the request r1 is `awaiting-asker`
     And the request r1 originates from this bounded context
     When the person runs `work reply` on the request r1
     Then `work` writes the answer a1
@@ -78,7 +78,7 @@ Feature: Requests
   @g68 @r68
   Scenario: `work resolve` refuses a request that is not accepted
     Given a request r1
-    And the request r1 is not `accepted`
+    And the status of the request r1 is not `accepted`
     When the person runs `work resolve` on the request r1
     Then `work` refuses `work resolve`
     And `work` names the status of the request r1
@@ -118,7 +118,7 @@ Feature: Requests
   Scenario: `work request` opens the request's issue
     When the person runs `work request`
     Then `work` posts the issue i1
-    And the request r1 is `open`
+    And the status of the request r1 is `open`
     And `work` writes the request r1
     And `work` commits the request r1
 
@@ -133,7 +133,7 @@ Feature: Requests
   @g73 @r73
   Scenario: `work offer` answers an ask with what may serve it
     Given a request r1
-    And the request r1 is `open`
+    And the status of the request r1 is `open`
     When the session s1 runs `work offer` on the request r1
     Then `work` posts the comment c1
     And `work` sets the status of the request r1 to `awaiting-asker`
@@ -142,7 +142,7 @@ Feature: Requests
   @g74 @r74
   Scenario: `work fits` ends a request an offer serves
     Given a request r1
-    And the request r1 is `awaiting-asker`
+    And the status of the request r1 is `awaiting-asker`
     When the person runs `work fits` on the request r1
     Then `work` sets the status of the request r1 to `delivered`
     And `work` writes the resolution r2
@@ -154,7 +154,7 @@ Feature: Requests
   @g75 @r75
   Scenario: `work propose` writes the asker's lines
     Given a request r1
-    And the request r1 is `awaiting-asker`
+    And the status of the request r1 is `awaiting-asker`
     When the person runs `work propose` on the request r1
     Then `work` writes the request line r2
     And `work` commits the request r1
@@ -186,7 +186,7 @@ Feature: Requests
   @g78 @r78
   Scenario: `work turn` posts the asker's turn
     Given a request r1
-    And the request r1 is `awaiting-asker`
+    And the status of the request r1 is `awaiting-asker`
     When the person runs `work turn` on the request r1
     Then `work` sets the status of the request r1 to `awaiting-upstream`
     And `work` sets the side of the request r1 to `upstream`
@@ -195,12 +195,12 @@ Feature: Requests
   @g79 @r79
   Scenario: The upstream's turn ends with a line that has no outcome, posted
     Given a request r1
-    And the request r1 is `open`
+    And the status of the request r1 is `open`
     And a request line r2
     And the request line r2 is proposed in the request r1
-    And the request line r2 is not `accepted`
-    And the request line r2 is not `refused`
-    And the request line r2 is not `withdrawn`
+    And the line outcome of the request line r2 is not `accepted`
+    And the line outcome of the request line r2 is not `refused`
+    And the line outcome of the request line r2 is not `withdrawn`
     When the person runs `work turn` on the request r1
     Then `work` sets the status of the request r1 to `awaiting-asker`
     And `work` posts the comment c1
@@ -208,13 +208,13 @@ Feature: Requests
   @g80 @r80
   Scenario: The upstream's turn ends with every line accepted, refused or withdrawn and one accepted, posted for the person to accept (case 1)
     Given a request r1
-    And the request r1 is `open`
+    And the status of the request r1 is `open`
     And a request line r2
     And the request line r2 is proposed in the request r1
-    And the request line r2 is `accepted`
+    And the line outcome of the request line r2 is `accepted`
     And a request line r3
     And the request line r3 is proposed in the request r1
-    And the request line r3 is `accepted`
+    And the line outcome of the request line r3 is `accepted`
     When the person runs `work turn` on the request r1
     Then `work` posts the comment c1
     And `work` keeps the side of the request r1
@@ -222,13 +222,13 @@ Feature: Requests
   @g80 @r80
   Scenario: The upstream's turn ends with every line accepted, refused or withdrawn and one accepted, posted for the person to accept (case 2)
     Given a request r1
-    And the request r1 is `open`
+    And the status of the request r1 is `open`
     And a request line r2
     And the request line r2 is proposed in the request r1
-    And the request line r2 is `accepted`
+    And the line outcome of the request line r2 is `accepted`
     And a request line r3
     And the request line r3 is proposed in the request r1
-    And the request line r3 is `refused`
+    And the line outcome of the request line r3 is `refused`
     When the person runs `work turn` on the request r1
     Then `work` posts the comment c1
     And `work` keeps the side of the request r1
@@ -236,13 +236,13 @@ Feature: Requests
   @g80 @r80
   Scenario: The upstream's turn ends with every line accepted, refused or withdrawn and one accepted, posted for the person to accept (case 3)
     Given a request r1
-    And the request r1 is `open`
+    And the status of the request r1 is `open`
     And a request line r2
     And the request line r2 is proposed in the request r1
-    And the request line r2 is `accepted`
+    And the line outcome of the request line r2 is `accepted`
     And a request line r3
     And the request line r3 is proposed in the request r1
-    And the request line r3 is `withdrawn`
+    And the line outcome of the request line r3 is `withdrawn`
     When the person runs `work turn` on the request r1
     Then `work` posts the comment c1
     And `work` keeps the side of the request r1
@@ -250,13 +250,13 @@ Feature: Requests
   @g81 @r81
   Scenario: The upstream's turn ends with every line refused, and the issue closed
     Given a request r1
-    And the request r1 is `open`
+    And the status of the request r1 is `open`
     And a request line r2
     And the request line r2 is proposed in the request r1
-    And the request line r2 is `refused`
+    And the line outcome of the request line r2 is `refused`
     And a request line r3
     And the request line r3 is proposed in the request r1
-    And the request line r3 is `refused`
+    And the line outcome of the request line r3 is `refused`
     When the person runs `work turn` on the request r1
     Then `work` sets the status of the request r1 to `refused`
     And `work` posts the comment c1
@@ -276,16 +276,16 @@ Feature: Requests
   @g83 @r83
   Scenario: `work accept` accepts a request and writes its item (case 1)
     Given a request r1
-    And the request r1 is `open`
+    And the status of the request r1 is `open`
     And a request line r2
     And the request line r2 is proposed in the request r1
-    And the request line r2 is `accepted`
+    And the line outcome of the request line r2 is `accepted`
     And a request line r3
     And the request line r3 is proposed in the request r1
-    And the request line r3 is `accepted`
+    And the line outcome of the request line r3 is `accepted`
     When the person runs `work accept` on the request r1
     Then `work` sets the status of the request r1 to `accepted`
-    And the item i1 is `shaped`
+    And the status of the item i1 is `shaped`
     And `work` writes the item i1
     And `work` posts the comment c1
     And `work` commits the request r1
@@ -293,16 +293,16 @@ Feature: Requests
   @g83 @r83
   Scenario: `work accept` accepts a request and writes its item (case 2)
     Given a request r1
-    And the request r1 is `open`
+    And the status of the request r1 is `open`
     And a request line r2
     And the request line r2 is proposed in the request r1
-    And the request line r2 is `accepted`
+    And the line outcome of the request line r2 is `accepted`
     And a request line r3
     And the request line r3 is proposed in the request r1
-    And the request line r3 is `refused`
+    And the line outcome of the request line r3 is `refused`
     When the person runs `work accept` on the request r1
     Then `work` sets the status of the request r1 to `accepted`
-    And the item i1 is `shaped`
+    And the status of the item i1 is `shaped`
     And `work` writes the item i1
     And `work` posts the comment c1
     And `work` commits the request r1
@@ -310,16 +310,16 @@ Feature: Requests
   @g83 @r83
   Scenario: `work accept` accepts a request and writes its item (case 3)
     Given a request r1
-    And the request r1 is `open`
+    And the status of the request r1 is `open`
     And a request line r2
     And the request line r2 is proposed in the request r1
-    And the request line r2 is `accepted`
+    And the line outcome of the request line r2 is `accepted`
     And a request line r3
     And the request line r3 is proposed in the request r1
-    And the request line r3 is `withdrawn`
+    And the line outcome of the request line r3 is `withdrawn`
     When the person runs `work accept` on the request r1
     Then `work` sets the status of the request r1 to `accepted`
-    And the item i1 is `shaped`
+    And the status of the item i1 is `shaped`
     And `work` writes the item i1
     And `work` posts the comment c1
     And `work` commits the request r1
@@ -329,9 +329,9 @@ Feature: Requests
     Given a request line r1
     And a request r2
     And the request line r1 is proposed in the request r2
-    And the request line r1 is not `accepted`
-    And the request line r1 is not `refused`
-    And the request line r1 is not `withdrawn`
+    And the line outcome of the request line r1 is not `accepted`
+    And the line outcome of the request line r1 is not `refused`
+    And the line outcome of the request line r1 is not `withdrawn`
     When the person runs `work accept` on the request r2
     Then `work` refuses `work accept`
     And `work` names the request line r1
@@ -339,7 +339,7 @@ Feature: Requests
   @g85 @r85
   Scenario: `work resolve` posts the resolution and closes the issue
     Given a request r1
-    And the request r1 is `accepted`
+    And the status of the request r1 is `accepted`
     When the person runs `work resolve` on the request r1
     Then `work` sets the status of the request r1 to `delivered`
     And `work` writes the resolution r2
@@ -367,7 +367,7 @@ Feature: Requests
     And this bounded context has the GitHub repository g1
     And an issue i1
     And the GitHub repository g1 holds the issue i1
-    And the issue i1 is `open`
+    And the status of the issue i1 is `open`
     And the issue i1 conforms to the comment form
     And no request has the issue i1
     When the session s1 runs `work watch`
@@ -386,7 +386,7 @@ Feature: Requests
   Scenario: `work turn` posts nothing when its record is not committed
     Given this repository rejects this commit
     And a request r1
-    And the request r1 is `open`
+    And the status of the request r1 is `open`
     When the person runs `work turn` on the request r1
     Then `work` refuses `work turn`
     And `work` names this repository
@@ -398,7 +398,7 @@ Feature: Requests
   Scenario: `work fits` posts nothing when its record is not committed
     Given this repository rejects this commit
     And a request r1
-    And the request r1 is `awaiting-asker`
+    And the status of the request r1 is `awaiting-asker`
     When the person runs `work fits` on the request r1
     Then `work` refuses `work fits`
     And `work` names this repository
@@ -420,7 +420,7 @@ Feature: Requests
     Given a request r1
     And the request r1 addresses this bounded context
     And the request r1 does not originate from this bounded context
-    And the request r1 is `awaiting-asker`
+    And the status of the request r1 is `awaiting-asker`
     When the person runs `work turn` on the request r1
     Then `work` refuses `work turn`
     And `work` names the request r1
@@ -430,7 +430,7 @@ Feature: Requests
     Given a request r1
     And the request r1 originates from this bounded context
     And the request r1 does not address this bounded context
-    And the request r1 is `open`
+    And the status of the request r1 is `open`
     When the person runs `work turn` on the request r1
     Then `work` refuses `work turn`
     And `work` names the request r1
@@ -440,7 +440,7 @@ Feature: Requests
     Given a request r1
     And the request r1 originates from this bounded context
     And the request r1 does not address this bounded context
-    And the request r1 is `awaiting-upstream`
+    And the status of the request r1 is `awaiting-upstream`
     When the person runs `work turn` on the request r1
     Then `work` refuses `work turn`
     And `work` names the request r1
@@ -451,9 +451,9 @@ Feature: Requests
     And a request r1
     And the comment c1 is on the request r1
     And the comment c1 conforms to the comment form
-    And the comment c1 is `asker`
+    And the side of the comment c1 is `asker`
     And an entry e1
-    And the entry e1 is `upstream`
+    And the side of the entry e1 is `upstream`
     And the comment c1 holds the entry e1
     And the request r1 does not hold the comment c1
     When the session s1 runs `work sync`
@@ -463,7 +463,7 @@ Feature: Requests
   @g96 @r96
   Scenario: `work sync` reopens no request that is `delivered`, `refused` or `withdrawn` (case 1)
     Given a request r1
-    And the request r1 is `delivered`
+    And the status of the request r1 is `delivered`
     And a comment c1
     And the comment c1 is on the request r1
     And the comment c1 conforms to the comment form
@@ -476,7 +476,7 @@ Feature: Requests
   @g96 @r96
   Scenario: `work sync` reopens no request that is `delivered`, `refused` or `withdrawn` (case 2)
     Given a request r1
-    And the request r1 is `refused`
+    And the status of the request r1 is `refused`
     And a comment c1
     And the comment c1 is on the request r1
     And the comment c1 conforms to the comment form
@@ -489,7 +489,7 @@ Feature: Requests
   @g96 @r96
   Scenario: `work sync` reopens no request that is `delivered`, `refused` or `withdrawn` (case 3)
     Given a request r1
-    And the request r1 is `withdrawn`
+    And the status of the request r1 is `withdrawn`
     And a comment c1
     And the comment c1 is on the request r1
     And the comment c1 conforms to the comment form
@@ -504,7 +504,7 @@ Feature: Requests
     Given a request r1
     And the request r1 originates from this bounded context
     And the request r1 does not address this bounded context
-    And the request r1 is `awaiting-upstream`
+    And the status of the request r1 is `awaiting-upstream`
     When the SessionStart hook runs `work watch` with the `--hook` option
     Then `work` prints the request r1
 
@@ -513,7 +513,7 @@ Feature: Requests
     Given a request r1
     And the request r1 addresses this bounded context
     And the request r1 does not originate from this bounded context
-    And the request r1 is `awaiting-asker`
+    And the status of the request r1 is `awaiting-asker`
     When the SessionStart hook runs `work watch` with the `--hook` option
     Then `work` prints the request r1
 
@@ -543,7 +543,7 @@ Feature: Requests
     And this bounded context has the GitHub repository g1
     And an issue i1
     And the GitHub repository g1 holds the issue i1
-    And the issue i1 is `open`
+    And the status of the issue i1 is `open`
     And the issue i1 conforms to the comment form
     And no request has the issue i1
     When the session s1 runs `work watch` with the `--forward` option
@@ -564,9 +564,9 @@ Feature: Requests
     And a request r1
     And the comment c1 is on the request r1
     And the comment c1 conforms to the comment form
-    And the comment c1 is `upstream`
+    And the side of the comment c1 is `upstream`
     And an entry e1
-    And the entry e1 is `asker`
+    And the side of the entry e1 is `asker`
     And the comment c1 holds the entry e1
     And the request r1 does not hold the comment c1
     When the session s1 runs `work sync`

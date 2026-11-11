@@ -111,9 +111,9 @@ def generated(tmp_path, *lines):
 
 def test_a_set_is_a_scenario_a_value_and_none_of_them_each_value_negated(tmp_path):
     steps = generated(tmp_path, LINE % ("is one of `proposed` or `accepted`", "print"))
-    assert "the line l1 is `proposed`" in steps and "the line l1 is `accepted`" in steps
+    assert "the outcome of the line l1 is `proposed`" in steps and "the outcome of the line l1 is `accepted`" in steps
     steps = generated(tmp_path, LINE % ("is not `accepted` or `refused`", "print"))
-    assert "the line l1 is not `accepted`" in steps and "the line l1 is not `refused`" in steps
+    assert "the outcome of the line l1 is not `accepted`" in steps and "the outcome of the line l1 is not `refused`" in steps
 
 
 def test_has_no_reads_back_and_is_recorded(tmp_path):
@@ -122,7 +122,7 @@ def test_has_no_reads_back_and_is_recorded(tmp_path):
     gram = spec_rgl_steps.load(tmp_path)[1]
     vocab.load_handlers(pathlib.Path(__file__).resolve().parents[1] / "scenarios")
     context = {"values": {("l1", "outcome"): "`proposed`"}}
-    for text in ("the line l1 is not `refused`", "the line l1 has no outcome"):
+    for text in ("the outcome of the line l1 is not `refused`", "the line l1 has no outcome"):
         call = features_vocab4.step(tmp_path, "given", text)
         assert spec_rgl_steps.text(gram, call.tree) == text
         assert call.template == "GivenK_A"

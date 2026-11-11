@@ -5,7 +5,7 @@ Feature: Telemetry
   @g5 @r5
   Scenario: `measure batch` writes a merged batch's measurement with its wall time, session time, tokens and cost by role
     Given a batch b1
-    And the batch b1 is `merged`
+    And the status of the batch b1 is `merged`
     And a role r1
     And the batch b1 has the role r1
     And a role r2
@@ -31,22 +31,22 @@ Feature: Telemetry
     And the batch b1 has the pull request p1
     And a review finding r1
     And the review finding r1 is on the pull request p1
-    And the review finding r1 is `Critical`
+    And the grade of the review finding r1 is `Critical`
     And a review finding r2
     And the review finding r2 is on the pull request p1
-    And the review finding r2 is `Critical`
+    And the grade of the review finding r2 is `Critical`
     And a review finding r3
     And the review finding r3 is on the pull request p1
-    And the review finding r3 is `Important`
+    And the grade of the review finding r3 is `Important`
     And a review finding r4
     And the review finding r4 is on the pull request p1
-    And the review finding r4 is `Important`
+    And the grade of the review finding r4 is `Important`
     And a review finding r5
     And the review finding r5 is on the pull request p1
-    And the review finding r5 is `Minor`
+    And the grade of the review finding r5 is `Minor`
     And a review finding r6
     And the review finding r6 is on the pull request p1
-    And the review finding r6 is `Minor`
+    And the grade of the review finding r6 is `Minor`
     When the person runs `measure batch` on the batch b1
     Then the batch b1 has the measurement m1
     And the measurement m1 includes the number of review findings on the pull request p1 whose grade is `Critical`
@@ -59,7 +59,7 @@ Feature: Telemetry
     Given an item i1
     And a batch b1
     And the batch b1 holds the item i1
-    And the item i1 is `delivered`
+    And the status of the item i1 is `delivered`
     When the person runs `measure defect` on the item i1
     Then the defect d1 is for the batch b1
     And the item i1 has the defect d1
