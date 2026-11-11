@@ -16,7 +16,7 @@ is written once here, in the requirement grammar, and is never restated in a req
 one is dropped with the U as its reason. `model logic` adds each as an `always` constraint to the background
 of every check, and where a U is observable in a test (U12, U13, U16) the scenario conftest checks it after every
 scenario that makes its trigger true. They come from the domain model's §7 (`.shop/records/2026-11-02-domain-model/`).
-U1, U2, U6, U9 and U10 stated guarantees of `work run`, its stages and initiatives, and are retired in plugin 2.0.0
+U1, U2, U6, U9 and U10 stated guarantees of `work run`, its stages and initiatives, and are retired in plugin 0.31.0
 (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired). U11, U4, U5, U7 and U8 are
 reworded in grammar 4 (b155, b240) as U12, U16 and U13 to U15. Retired ids are in `retired:` and are never used again.
 

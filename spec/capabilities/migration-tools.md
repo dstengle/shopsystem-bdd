@@ -5,7 +5,7 @@ narrator: a person or session migrating a repository to the final layout or upgr
 group: service
 language: codified-2
 rests_on: [design-decision/migration-in-one-pass, design-decision/living-plan-to-work-items, design-decision/final-layout, design-decision/references-are-ids, design-decision/capability-ids-are-context-scoped, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/upgrades-between-plugin-releases, design-decision/work-items-named-by-ids, design-decision/answers-not-rulings, design-decision/the-ledger-is-tracked]
-retired: [g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12, g13, g14, g15, g16, g17, g18, g19, g20, g21, g24, g25, g29, g30, g40, g41, g45, g46, g57, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r29, r30, r40, r41, r45, r46, r57, g42, r42, g48, r48, g49, r49, g62, r62, g63, r63, g64, r64]
+retired: [g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12, g13, g14, g15, g16, g17, g18, g19, g20, g21, g24, g25, g29, g30, g40, g41, g45, g46, g57, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r29, r30, r40, r41, r45, r46, r57, g42, r42, g48, r48, g49, r49, g62, r62, g63, r63, g64, r64, g44, r44, g60, r60, g52, r52, g53, r53, g54, r54, g55, r55, g56, r56, g61, r61, g66, r66, g67, r67, g68, r68, g65, r65]
 unbuilt: []
 ---
 
@@ -40,14 +40,14 @@ what it needs to know at its start and before it is compacted.
 - **content** (noun): the text a file holds. Kind of: text.
 - **shop directory** (noun): the directory `.shop/` of a repository. Kind of: file.
 - **upgrade step** (noun): one step of `migrate upgrade` from one plugin release to the next, named by its title. Kind of: thing.
-- **release** (attribute of repository): Values (noun): `0.23.1`, `0.24.0`, `0.25.0`, `0.29.0`, `1.0.0`, `2.0.0`, `3.0.0`, `3.0.1`, `4.0.0`, `4.1.0`, `9.0.0`. Order: by number.
-- **release** (attribute of upgrade step): Values (noun): `0.24.0`, `0.25.0`, `1.0.0`, `2.0.0`, `3.0.0`, `4.0.0`, `4.1.0`. Order: by number.
-- **work-item file** (noun): the file `.shop/work/<initiative>/<work-item>.md` of a work-item of plugin 1.x. Kind of: file.
+- **release** (attribute of repository): Values (noun): `0.23.1`, `0.24.0`, `0.25.0`, `0.29.0`, `0.30.0`, `0.31.0`, `0.32.0`, `0.32.1`, `0.33.0`, `0.34.0`, `0.34.1`, `0.99.0`. Order: by number.
+- **release** (attribute of upgrade step): Values (noun): `0.24.0`, `0.25.0`, `0.30.0`, `0.31.0`, `0.32.0`, `0.33.0`, `0.34.0`. Order: by number.
+- **work-item file** (noun): the file `.shop/work/<initiative>/<work-item>.md` of a work-item of plugin 0.30. Kind of: file.
 - **stage directory** (noun): the directory `.shop/work/<initiative>/runs/<work-item>/` of a work-item's stages. Kind of: file.
-- **initiative log** (noun): the file `.shop/work/<initiative>/log.jsonl` of an initiative of plugin 1.x. Kind of: file.
+- **initiative log** (noun): the file `.shop/work/<initiative>/log.jsonl` of an initiative of plugin 0.30. Kind of: file.
 - **restated file** (noun): the file `spec/restated.json`, the 0.29 requirements by id. Kind of: file.
-- **frozen notice** (noun): the file `.shop/work/FROZEN.md`, which says that the queue of plugin 1.x is frozen. Kind of: file.
-- **frozen request** (noun): a request of plugin 1.x under `.shop/work/requests/`. Kind of: file.
+- **frozen notice** (noun): the file `.shop/work/FROZEN.md`, which says that the queue of plugin 0.30 is frozen. Kind of: file.
+- **frozen request** (noun): a request of plugin 0.30 under `.shop/work/requests/`. Kind of: file.
 - **status** (attribute of frozen request): Values (adjective): `open`, `awaiting-asker`, `awaiting-upstream`, `accepted`, `delivered`, `refused`, `withdrawn`.
 - **asker** (attribute of frozen request): the `asker:` of a frozen request, `internal` when the bounded context asked it of itself, else the id of the bounded context that asked it. Values (adjective): `internal`.
 - **index file** (noun): the file `spec/index.md` of a bounded context. Kind of: file.
@@ -340,8 +340,8 @@ the tracked file `.shop/work/i1/w1.md` holds:
   - yes
 ```
 
-### [g44] `migrate upgrade` on a repository before 1.0.0 writes the restated file and rewrites each capability with no language
-- [r44] While the release of this repository is after `0.25.0` and before `1.0.0` and a capability of this repository has no language, when the person runs `migrate upgrade`, `migrate` shall write a restated file, rewrite the capability and print the restated file and the capability.
+### [g69] `migrate upgrade` on a repository before 0.30.0 writes the restated file and rewrites each capability with no language
+- [r69] While the release of this repository is after `0.25.0` and before `0.30.0` and a capability of this repository has no language, when the person runs `migrate upgrade`, `migrate` shall write a restated file, rewrite the capability and print the restated file and the capability.
 
 ```given
 the tracked file `.shop/plugin-version` holds "0.29.0"
@@ -374,8 +374,8 @@ the tracked file `.shop/work/i1/w2.md` holds:
   # w2
 ```
 
-### [g60] `migrate upgrade` on a repository before 1.0.0 writes each reference of a work-item file to a requirement with its release and removes each scenario that has the `@deprecated` tag from its feature
-- [r60] While the release of this repository is after `0.25.0` and before `1.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite every work-item file that mentions a requirement and rewrite every feature that holds a scenario that has the `@deprecated` tag.
+### [g70] `migrate upgrade` on a repository before 0.30.0 writes each reference of a work-item file to a requirement with its release and removes each scenario that has the `@deprecated` tag from its feature
+- [r70] While the release of this repository is after `0.25.0` and before `0.30.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite every work-item file that mentions a requirement and rewrite every feature that holds a scenario that has the `@deprecated` tag.
 
 ```given
 the tracked file `.shop/plugin-version` holds "0.29.0"
@@ -432,11 +432,11 @@ Restates: r31@0.29.
 the tracked file `.shop/plugin-version` holds "banana"
 ```
 
-### [g52] `migrate upgrade` on a repository from 1.0.0 and before 2.0.0 writes the frozen notice and rewrites the decisions index
-- [r52] While the release of this repository is after `0.29.0` and before `2.0.0`, when the person runs `migrate upgrade`, `migrate` shall write a frozen notice and rewrite the decisions index of this repository.
+### [g71] `migrate upgrade` on a repository from 0.30.0 and before 0.31.0 writes the frozen notice and rewrites the decisions index
+- [r71] While the release of this repository is after `0.29.0` and before `0.31.0`, when the person runs `migrate upgrade`, `migrate` shall write a frozen notice and rewrite the decisions index of this repository.
 
 ```given
-the tracked file `.shop/plugin-version` holds "1.0.0"
+the tracked file `.shop/plugin-version` holds "0.30.0"
 the tracked file `spec/index.md` holds:
   ---
   id: bounded-context/example.org/acme/shop
@@ -484,11 +484,11 @@ the tracked file `.shop/work/requests/q2.md` holds:
   # A peer's request
 ```
 
-### [g53] `migrate upgrade` on a repository from 1.0.0 and before 2.0.0 relocates each frozen request another bounded context asked that is not closed
-- [r53] While the release of this repository is after `0.29.0` and before `2.0.0` and the asker of a frozen request is not `internal` and the frozen request is not `delivered`, `refused` or `withdrawn`, when the person runs `migrate upgrade`, `migrate` shall relocate the frozen request.
+### [g72] `migrate upgrade` on a repository from 0.30.0 and before 0.31.0 relocates each frozen request another bounded context asked that is not closed
+- [r72] While the release of this repository is after `0.29.0` and before `0.31.0` and the asker of a frozen request is not `internal` and the frozen request is not `delivered`, `refused` or `withdrawn`, when the person runs `migrate upgrade`, `migrate` shall relocate the frozen request.
 
 ```given
-the tracked file `.shop/plugin-version` holds "1.0.0"
+the tracked file `.shop/plugin-version` holds "0.30.0"
 the tracked file `spec/index.md` holds:
   ---
   id: bounded-context/example.org/acme/shop
@@ -536,11 +536,11 @@ the tracked file `.shop/work/requests/q2.md` holds:
   # A peer's request
 ```
 
-### [g54] `migrate upgrade` on a repository from 1.0.0 and before 2.0.0 names the upgrade step and each initiative that is not closed
-- [r54] While the release of this repository is after `0.29.0` and before `2.0.0` and an initiative of this repository is not `done` or `abandoned`, when the person runs `migrate upgrade`, `migrate` shall print every upgrade step whose release is `2.0.0` and the initiative.
+### [g73] `migrate upgrade` on a repository from 0.30.0 and before 0.31.0 names the upgrade step and each initiative that is not closed
+- [r73] While the release of this repository is after `0.29.0` and before `0.31.0` and an initiative of this repository is not `done` or `abandoned`, when the person runs `migrate upgrade`, `migrate` shall print every upgrade step whose release is `0.31.0` and the initiative.
 
 ```given
-the tracked file `.shop/plugin-version` holds "1.0.0"
+the tracked file `.shop/plugin-version` holds "0.30.0"
 the tracked file `spec/index.md` holds:
   ---
   id: bounded-context/example.org/acme/shop
@@ -588,11 +588,11 @@ the tracked file `.shop/work/requests/q2.md` holds:
   # A peer's request
 ```
 
-### [g55] `migrate upgrade` on a repository from 1.0.0 and before 2.0.0 names each frozen request it asked of itself that is not closed
-- [r55] While the release of this repository is after `0.29.0` and before `2.0.0` and the asker of a frozen request is `internal` and the frozen request is not `delivered`, `refused` or `withdrawn`, when the person runs `migrate upgrade`, `migrate` shall print the frozen request.
+### [g74] `migrate upgrade` on a repository from 0.30.0 and before 0.31.0 names each frozen request it asked of itself that is not closed
+- [r74] While the release of this repository is after `0.29.0` and before `0.31.0` and the asker of a frozen request is `internal` and the frozen request is not `delivered`, `refused` or `withdrawn`, when the person runs `migrate upgrade`, `migrate` shall print the frozen request.
 
 ```given
-the tracked file `.shop/plugin-version` holds "1.0.0"
+the tracked file `.shop/plugin-version` holds "0.30.0"
 the tracked file `spec/index.md` holds:
   ---
   id: bounded-context/example.org/acme/shop
@@ -640,11 +640,11 @@ the tracked file `.shop/work/requests/q2.md` holds:
   # A peer's request
 ```
 
-### [g56] `migrate upgrade` on a repository from 2.0.0 and before 3.0.0 rewrites the index file with each term's part of speech and names each term that violates `v_t11`
-- [r56] While the release of this repository is after `1.0.0` and before `3.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite the index file of this bounded context and print every upgrade step whose release is `3.0.0` and every term that violates `v_t11`.
+### [g75] `migrate upgrade` on a repository from 0.31.0 and before 0.32.0 rewrites the index file with each term's part of speech and names each term that violates `v_t11`
+- [r75] While the release of this repository is after `0.30.0` and before `0.32.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite the index file of this bounded context and print every upgrade step whose release is `0.32.0` and every term that violates `v_t11`.
 
 ```given
-the tracked file `.shop/plugin-version` holds "2.0.0"
+the tracked file `.shop/plugin-version` holds "0.31.0"
 the tracked file `spec/index.md` holds:
   ---
   id: bounded-context/example.org/acme/shop
@@ -658,11 +658,11 @@ the tracked file `spec/index.md` holds:
   - **pick** (event): a shopper puts goods in a cart. Forms: picks, picked.
 ```
 
-### [g61] `migrate upgrade` on a repository from 3.0.0 and before 4.0.0 rewrites the index file and every capability in the controlled language 4 and names what it cannot reword
-- [r61] While the release of this repository is after `3.0.0` and before `4.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite the index file of this bounded context, rewrite every capability and print every upgrade step whose release is `4.0.0`.
+### [g76] `migrate upgrade` on a repository from 0.32.0 and before 0.33.0 rewrites the index file and every capability in the controlled language 4 and names what it cannot reword
+- [r76] While the release of this repository is after `0.32.0` and before `0.33.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite the index file of this bounded context, rewrite every capability and print every upgrade step whose release is `0.33.0`.
 
 ```given
-the tracked file `.shop/plugin-version` holds "3.0.1"
+the tracked file `.shop/plugin-version` holds "0.32.1"
 the tracked file `spec/index.md` holds:
   ---
   id: bounded-context/example.org/acme/shop
@@ -688,28 +688,28 @@ the tracked file `spec/capabilities/cart.md` holds:
   - [r1] When a shopper picks a cart, the shopper shall pick the cart.
 ```
 
-### [g66] `migrate upgrade` on a repository on the plugin's release says that no upgrade step is pending and changes nothing
+### [g77] `migrate upgrade` on a repository on the plugin's release says that no upgrade step is pending and changes nothing
 Restates: r27@0.29.
-- [r66] While the release of this repository is `4.1.0`, when the person runs `migrate upgrade`, `migrate` shall print `no upgrade step is pending` and change no file.
+- [r77] While the release of this repository is `0.34.1`, when the person runs `migrate upgrade`, `migrate` shall print `no upgrade step is pending` and change no file.
 
 ```given
-the tracked file `.shop/plugin-version` holds "4.1.0"
+the tracked file `.shop/plugin-version` holds "0.34.1"
 ```
 
-### [g67] the SessionStart hook tells a session to tell the person to update the plugin
+### [g78] the SessionStart hook tells a session to tell the person to update the plugin
 Restates: r23@0.29.
-- [r67] While the release of this repository is after `4.1.0`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print `update the plugin`.
+- [r78] While the release of this repository is after `0.34.1`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print `update the plugin`.
 
 ```given
-the tracked file `.shop/plugin-version` holds "9.0.0"
+the tracked file `.shop/plugin-version` holds "0.99.0"
 ```
 
-### [g68] the SessionStart hook tells a session nothing on the plugin's release when no initiative is open
+### [g79] the SessionStart hook tells a session nothing on the plugin's release when no initiative is open
 Restates: r24@0.29.
-- [r68] While the release of this repository is `4.1.0` and every initiative of this repository is one of `done` or `abandoned`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall exit successfully, print no upgrade step and print no initiative.
+- [r79] While the release of this repository is `0.34.1` and every initiative of this repository is one of `done` or `abandoned`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall exit successfully, print no upgrade step and print no initiative.
 
 ```given
-the tracked file `.shop/plugin-version` holds "4.1.0"
+the tracked file `.shop/plugin-version` holds "0.34.1"
 the tracked file `.shop/work/i1/initiative.md` holds:
   ---
   id: initiative/example.org/acme/shop/i1
@@ -719,11 +719,11 @@ the tracked file `.shop/work/i1/initiative.md` holds:
   # i1
 ```
 
-### [g65] `migrate upgrade` on a repository from 4.0.0 names each attribute whose values are declared neither adjectives nor nouns
-- [r65] While the release of this repository is `4.0.0`, when the person runs `migrate upgrade`, `migrate` shall print every upgrade step whose release is `4.1.0` and every term that violates `w_value_kind`.
+### [g80] `migrate upgrade` on a repository from 0.33.0 names each attribute whose values are declared neither adjectives nor nouns
+- [r80] While the release of this repository is `0.33.0`, when the person runs `migrate upgrade`, `migrate` shall print every upgrade step whose release is `0.34.0` and every term that violates `w_value_kind`.
 
 ```given
-the tracked file `.shop/plugin-version` holds "4.0.0"
+the tracked file `.shop/plugin-version` holds "0.33.0"
 the tracked file `spec/index.md` holds:
   ---
   id: bounded-context/example.org/acme/shop
@@ -767,7 +767,7 @@ the tracked file `spec/index.md` holds:
   `work-item/<context path>/w<n>`, keeps or writes the heading, and rewrites the old name in `log.jsonl` and in every
   `blocked_by`, `depends_on` and `for`; free text in records is left as it is. The 0.25.0 step renames
   `awaiting-ruling` to `awaiting-answer` and `## Rulings` to `## Answers`.
-- The 1.0.0 step "codified requirements" (`migrate_upgrade_codified.py`): when `spec/restated.json` is missing, it
+- The 0.30.0 step "codified requirements" (`migrate_upgrade_codified.py`): when `spec/restated.json` is missing, it
   writes it from the live `[r<n>]` lines of each capability without `language: codified-1`, keyed `<cap>#r<n>` with the
   line's text (a table row's lead sentence and cells) and line number. Each such capability's Behaviour becomes one
   `### [g<n>]` group for each old line with `Restates: r<n>@0.29.` and the old text as an HTML comment, no requirement
@@ -777,16 +777,16 @@ the tracked file `spec/index.md` holds:
   `<cap>#r<n>@0.29`, a range id by id: in every file when the step writes `spec/restated.json`, else in the lines a
   file had at the commit that added `spec/restated.json`. It prints, and the commit message lists, what is left for
   a session to write: each scaffolded capability, and the glossary of an index without `language: codified-1`.
-- The 2.0.0 step "the workflow simplified" (`migrate_upgrade_simplified.py`): when `.shop/work/` exists, it writes
-  `.shop/work/FROZEN.md`, which says that the queue of plugin 1.x is frozen and where items, batches and live requests
+- The 0.31.0 step "the workflow simplified" (`migrate_upgrade_simplified.py`): when `.shop/work/` exists, it writes
+  `.shop/work/FROZEN.md`, which says that the queue of plugin 0.30 is frozen and where items, batches and live requests
   are. Each request of `.shop/work/requests/` that is not closed (`open`, `awaiting-asker`, `awaiting-upstream`,
   `accepted`) and whose asker is neither `internal` nor this context is moved to `.shop/requests/` with `git mv`, its
   name and id unchanged; a destination that exists is a change it cannot make. When `spec/decisions/` exists, it
   rewrites `spec/decisions/index.md` as `model decisions` writes it. Nothing is deleted, and nothing else under
   `.shop/work/` changes. It prints, and the commit message lists, each initiative neither `done` nor `abandoned`, each
   capability- or glossary-proposal never applied, each internal request not closed, and each request moved. In the
-  same upgrade as the 1.0.0 step, the 1.0.0 step's "left for a session to write" of a proposal under `.shop/work/` is
-  dropped: the queue is frozen, and the 2.0.0 step's note names the proposal.
+  same upgrade as the 0.30.0 step, the 0.30.0 step's "left for a session to write" of a proposal under `.shop/work/` is
+  dropped: the queue is frozen, and the 0.31.0 step's note names the proposal.
 - `migrate upgrade` refuses, before it plans any step, when git has no author or committer identity
   (`git var GIT_AUTHOR_IDENT`, `GIT_COMMITTER_IDENT`), naming `git config user.name` and `user.email`.
 - `migrate status` and `migrate upgrade` refuse a `.shop/plugin-version` that holds no version, naming an empty file
@@ -799,7 +799,7 @@ the tracked file `spec/index.md` holds:
   been by hand — trigger: a repository on a release before 0.23.1 needs an upgrade.
 
 ## Dropped
-- r3@0.29: the `@holding` tag is the old system's, and `migrate run` deprecated a held scenario through `features deprecate`, which is removed: the generator owns the feature files (the GF conversion's design §15), and the 1.0.0 upgrade deletes deprecated scenarios
-- r32@0.29: retired with migration-tools#r22 in 2.0.0 (the-old-workflow-retired).
-- r33@0.29: retired with migration-tools#r23 in 2.0.0 (the-old-workflow-retired).
-- r34@0.29: retired with migration-tools#r23 in 2.0.0 (the-old-workflow-retired).
+- r3@0.29: the `@holding` tag is the old system's, and `migrate run` deprecated a held scenario through `features deprecate`, which is removed: the generator owns the feature files (the GF conversion's design §15), and the 0.30.0 upgrade deletes deprecated scenarios
+- r32@0.29: retired with migration-tools#r22 in 0.31.0 (the-old-workflow-retired).
+- r33@0.29: retired with migration-tools#r23 in 0.31.0 (the-old-workflow-retired).
+- r34@0.29: retired with migration-tools#r23 in 0.31.0 (the-old-workflow-retired).

@@ -20,7 +20,7 @@ REPO = pathlib.Path(__file__).resolve().parents[2]
 collect_ignore = [] if os.environ.get("SHOPSYSTEM_TEST_GITHUB_REPO") else ["test_request_github.py"]
 
 # the questions of the live findings (report-S11.md, report-checker-gaps.md); every one was answered
-# (report-answers.md) or went with supervision, retired in 2.0.0 (workflow simplification plan 9)
+# (report-answers.md) or went with supervision, retired in 0.31.0 (workflow simplification plan 9)
 EXPECTED: dict[str, str] = {}
 
 

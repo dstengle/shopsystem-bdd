@@ -7,10 +7,10 @@ imports: [cli, spec]
 
 # shopsystem-bdd
 
-**Where it stands.** Plugin 2.0.0: the workflow simplified
+**Where it stands.** Plugin 0.31.0: the workflow simplified
 (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified,
 `.shop/records/2026-11-04-workflow-simplification/`). Work is items in a backlog, readied against the codified spec
-and built in batches, each closed by one review at its pull request. The old workflow of plugin 1.x (`work run`, its
+and built in batches, each closed by one review at its pull request. The old workflow of plugin 0.30 (`work run`, its
 stages, initiatives, work-items, proposals and delegations) is retired
 (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired), its capabilities kept as the
 record of their ids, and `.shop/work/` is frozen as history. Every capability file is codified (design model v5): the
@@ -32,7 +32,7 @@ runner, not a project manager, and keeps nothing of its own outside the consumin
 - The design model, version 5 (design model v5, `docs/design-model/`): the graph of standing artifacts, initiatives
   and parts, records, checked by `model check`, and the requirement language (the grammar, this glossary as its
   lexicon, the logic check `model logic`); grammar.md's rules are kept by this repository's files, in the layout of
-  design-decision/final-layout. Plugin 2.0 builds on design model v5 with items in place of initiatives.
+  design-decision/final-layout. Plugin 0.31 builds on design model v5 with items in place of initiatives.
 - Claude Code's plugin format: skills, agents with tool lists, `skills` preloading; a plugin agent's hooks
   and permissionMode are ignored, so a role's rules are enforced by its tools (design-decision/the-2-0-agents).
 - The dependencies the plugin needs, named in its documentation: clingo, pytest, pytest-bdd
@@ -40,9 +40,9 @@ runner, not a project manager, and keeps nothing of its own outside the consumin
 
 ## Composition
 
-The capabilities of plugin 1.x's stages are retired
+The capabilities of plugin 0.30's stages are retired
 (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired) and kept as records of their ids;
-`batch-measurement`, `requests`, `design-model-check` and `migration-tools` keep the lines that 2.0 still holds.
+`batch-measurement`, `requests`, `design-model-check` and `migration-tools` keep the lines that 0.31 still holds.
 
 Measurement:
 
@@ -75,7 +75,7 @@ The simplified workflow:
 | `telemetry` | a session measuring a batch | service |
 | `conversation` | the person reading why a piece of work was asked for | service |
 
-### Retired in 2.0.0
+### Retired in 0.31.0
 
 | capability | narrator | group |
 |---|---|---|
@@ -105,7 +105,7 @@ The simplified workflow:
 ## Glossary
 
 - **the person** (proper noun): the human who asks, answers and approves. Kind of: agent.
-- **`work run`** (proper noun): the supervisor of plugin 1.x that ran an initiative's work-items through their stages, removed in 2.0.0 with its record frozen under `.shop/work/`. Kind of: tool.
+- **`work run`** (proper noun): the supervisor of plugin 0.30 that ran an initiative's work-items through their stages, removed in 0.31.0 with its record frozen under `.shop/work/`. Kind of: tool.
 - **`work`** (proper noun): the command that writes statuses, transitions and requests. Kind of: tool.
 - **`features`** (proper noun): the tool that reads, edits and reports on feature files. Kind of: tool.
 - **`tools`** (proper noun): the tool that installs and probes the project's interpreter and grammar toolchain, and maps code to tests. Kind of: tool.
@@ -281,7 +281,7 @@ The simplified workflow:
 items), `.shop/batches/` (the batches), `.shop/requests/` (the requests), `.shop/quotes/` (the person's words kept),
 `.shop/records/` (observations, measurements, review-findings, decision-arguments, archive), `.shop/delivery.toml`
 (the batch settings and prices), `.shop/plugin-version` (the repository's plugin version), `.shop/work/` (plugin
-1.x's queue, frozen), `.shop/scratch/` and `.shop/worktrees/` (drafts, notes and the batches' worktrees, ignored by
+0.30's queue, frozen), `.shop/scratch/` and `.shop/worktrees/` (drafts, notes and the batches' worktrees, ignored by
 git), `docs/design-model/` (the model), `docs/capability-format.md` (the format the plugin teaches consuming
 repositories), `spec/universal.md` (the universal conditions), `spec/restated.json` (the 0.29 ids, frozen), `grammar/`
 (the plugin's core grammars and their corpus).

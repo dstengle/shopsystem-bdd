@@ -1,7 +1,7 @@
-"""The 3.0.0 upgrade step "verb frames" (migration-tools g25; design 2026-11-07-verb-frames, call 6). `plan` computes
+"""The 0.32.0 upgrade step "verb frames" (migration-tools g25; design 2026-11-07-verb-frames, call 6). `plan` computes
 every change and writes none:
 - each term entry of `spec/index.md`'s `## Glossary` and of each capability's `## Terms` whose category is one of
-  plugin 2.x's has it written as its part of speech, by `spec_lexicon.relabel` (`kind` -> `noun`, `event` -> `verb`,
+  plugin 0.31's has it written as its part of speech, by `spec_lexicon.relabel` (`kind` -> `noun`, `event` -> `verb`,
   `condition of stage` -> `adjective of stage`); nothing else in a file changes;
 - `notes`, read off the relabelled spec laid on a copy of `spec/`: each verb that needs a `Frame:` (v_t11) or whose
   `Frame:` does not read (v_t13) and each relational condition (v_t12), by file. It rewords no line: a session writes

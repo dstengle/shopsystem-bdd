@@ -139,7 +139,7 @@ A few fields do a lot of work:
 - **`Values (adjective):`** and **`Values (noun):`** list an attribute's values, by how they read after "is". Each
   value belongs to one attribute of one kind: `` `shaped` `` is an item's status, not a batch's. An adjective
   (`shaped`, `in-batch`) may be said the short way, "an item is `shaped`"; any other value, a noun, a verb phrase
-  or a release (`idea`, `needs-input`, `1.0.0`), only the full way, "the status of an item is `idea`" or "an item
+  or a release (`idea`, `needs-input`, `0.30.0`), only the full way, "the status of an item is `idea`" or "an item
   whose status is `idea`". The item's status gives both: `idea` and `needs-input` under `Values (noun):`, the rest
   under `Values (adjective):`. A plain `Values:` declares neither and keeps the short way, with a `model check`
   warning (`w_value_kind`). The short way of a noun is refused, naming the full way:

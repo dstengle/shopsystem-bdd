@@ -1,7 +1,7 @@
-"""The 2.0.0 upgrade step "the workflow simplified" (plan 9, D13; migration-tools g24): `.shop/work/` frozen with
+"""The 0.31.0 upgrade step "the workflow simplified" (plan 9, D13; migration-tools g24): `.shop/work/` frozen with
 `FROZEN.md`, a peer's open request moved to `.shop/requests/`, the decisions index rewritten, and every open
 initiative, unapplied proposal, internal request and moved request named; nothing is deleted, and a collision changes
-nothing. A 0.29 repository reaches 2.0.0 through the 1.0.0 step in the same commit (D23)."""
+nothing. A 0.29 repository reaches 0.31.0 through the 0.30.0 step in the same commit (D23)."""
 import contextlib
 import io
 import json
@@ -38,7 +38,7 @@ def request(n, asker, status):
 
 
 FILES = {
-    ".shop/plugin-version": "1.0.0\n", "spec/index.md": INDEX, "spec/capabilities/cart.md": CART,
+    ".shop/plugin-version": "0.30.0\n", "spec/index.md": INDEX, "spec/capabilities/cart.md": CART,
     "features/cart.feature": "Feature: Cart\n", "spec/decisions/0001-one.md": DECISION,
     "spec/decisions/index.md": "# Decisions\n\n| decision | summary | status |\n|---|---|---|\n",
     ".shop/records/observations.md": "# Observations\n\n" + OBSERVATIONS,
@@ -57,10 +57,10 @@ FILES = {
 
 
 def upgraded(root):
-    """`migrate upgrade` run in-process by a plugin on 2.0.0: (exit code, what it printed)."""
+    """`migrate upgrade` run in-process by a plugin on 0.31.0: (exit code, what it printed)."""
     out, err = io.StringIO(), io.StringIO()
     real = migrate_upgrade.plugin_version
-    migrate_upgrade.plugin_version = lambda: "2.0.0"
+    migrate_upgrade.plugin_version = lambda: "0.31.0"
     try:
         with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err), contextlib.chdir(root):
             code = migrate_upgrade.run("upgrade")
@@ -85,9 +85,9 @@ class AQueuedRepository(unittest.TestCase):
     def test_one_commit_freezes_the_queue(self):
         self.assertEqual(self.code, 0, self.said)
         self.assertEqual(git(self.root, "rev-parse", "HEAD~1").strip(), self.before)
-        self.assertTrue(self.message.startswith("migrate upgrade: 1.0.0 to 2.0.0\n"), self.message)
-        self.assertIn('upgrade step 2.0.0 "the workflow simplified"', self.message)
-        self.assertEqual((self.root / ".shop/plugin-version").read_text(), "2.0.0\n")
+        self.assertTrue(self.message.startswith("migrate upgrade: 0.30.0 to 0.31.0\n"), self.message)
+        self.assertIn('upgrade step 0.31.0 "the workflow simplified"', self.message)
+        self.assertEqual((self.root / ".shop/plugin-version").read_text(), "0.31.0\n")
         self.assertEqual((self.root / ".shop/work/FROZEN.md").read_text(), step.FROZEN_TEXT)
         self.assertEqual(git(self.root, "status", "--porcelain"), "")
 
@@ -179,18 +179,18 @@ class OtherRepositories(unittest.TestCase):
             ".shop/work/i1/cart.md": "---\nkind: capability-proposal\nstatus: awaiting-answer\n---\n# cart\n"})
         code, said = upgraded(root)
         self.assertEqual(code, 0, said)
-        # the 2.0.0 step names the proposal; the 1.0.0 step's "left for a session to write" of it would contradict
+        # the 0.31.0 step names the proposal; the 0.30.0 step's "left for a session to write" of it would contradict
         # FROZEN.md (plan-9 review S5)
         message = git(root, "log", "-1", "--format=%B")
         for text in (said, message):
             self.assertIn("the lines of proposal .shop/work/i1/cart.md were never applied", text)
             self.assertNotIn("left for a session to write: .shop/work/", text)
         self.assertEqual(git(root, "rev-list", "--count", "HEAD").strip(), "2")
-        self.assertIn("migrate upgrade: 0.29.0 to 2.0.0", git(root, "log", "-1", "--format=%B"))
+        self.assertIn("migrate upgrade: 0.29.0 to 0.31.0", git(root, "log", "-1", "--format=%B"))
         self.assertTrue((root / "spec/restated.json").is_file())
         self.assertIn("Restates: r1@0.29.", (root / "spec/capabilities/cart.md").read_text())
         self.assertEqual((root / ".shop/work/FROZEN.md").read_text(), step.FROZEN_TEXT)
-        self.assertEqual((root / ".shop/plugin-version").read_text(), "2.0.0\n")
+        self.assertEqual((root / ".shop/plugin-version").read_text(), "0.31.0\n")
         self.assertIn("accepts: [cart#r1@0.29]", (root / ".shop/work/i1/w2.md").read_text())
 
 

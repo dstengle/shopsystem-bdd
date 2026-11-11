@@ -1,4 +1,4 @@
-<!-- Outputs on this page are from real runs on 2026-11-10, plugin 4.0.0, branch plan-docs at 28abbd977. -->
+<!-- Outputs on this page are from real runs on 2026-11-10, plugin 0.33.0, branch plan-docs at 28abbd977. -->
 
 # Example context: a notes CLI
 

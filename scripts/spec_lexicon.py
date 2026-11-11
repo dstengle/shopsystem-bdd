@@ -1,7 +1,7 @@
 """The lexicon of a bounded context: the one reader of term entries (design §10.1), each a bullet of `spec/index.md`'s
 `## Glossary` or a capability's `## Terms`, `- **status** (attribute of item): Values: `idea`, `shaped`.`, whose
 parentheses name its part of speech, read by PARTS into its category, the slot it fills (actor, kind, attribute,
-relation, event, resource, condition); plugin 2.x's categories name none (v_t4). Values belong to one attribute of one
+relation, event, resource, condition); plugin 0.31's categories name none (v_t4). Values belong to one attribute of one
 kind, declared adjectives or nouns or neither (spec_value_kinds, b257). `ident` names a term in GF (§9.6); `problems`
 gives v_t4–v_t10. The gloss is the text after the `:` and before the first field, one sentence (v_t7); `Kind of:`
 names the kind a kind or an actor is one of (spec_frames). A relation entry (v_t8) and a `Means:` field (v_t9) are
@@ -74,14 +74,14 @@ def _list(text):
 
 
 # The part of speech an entry names, and the grammar slot (category) it fills: the one table of both, which the
-# reader and an upgrade's relabelling of plugin 2.x's categories (`relabel`) share.
+# reader and an upgrade's relabelling of plugin 0.31's categories (`relabel`) share.
 PARTS = (("proper noun", "actor"), ("noun", "kind"), ("adjective", "condition"), ("attribute", "attribute"),
          ("verb", "event"))
 SPEECH = {cat: part for part, cat in PARTS} | {"resource": "noun"}
 
 
 def relabel(raw):
-    """Plugin 2.x's category written as its part of speech: `kind` -> `noun`, `condition of stage` -> `adjective of
+    """Plugin 0.31's category written as its part of speech: `kind` -> `noun`, `condition of stage` -> `adjective of
     stage`, `resource, exclusive` -> `noun, exclusive`; None when `raw` is no such category (a relation's among
     them, which is no term)."""
     raw = " ".join(raw.split())
@@ -94,7 +94,7 @@ def relabel(raw):
 def _category(raw):
     """The part of speech of an entry as (category, kinds, resource): `noun` -> ("kind", (), ""), `attribute of
     initiative` -> ("attribute", ("initiative",), ""), `noun, exclusive` -> ("resource", (), "exclusive"); a relation
-    entry (a problem, v_t8) as a relation; anything else, plugin 2.x's categories among them, as no category ("")."""
+    entry (a problem, v_t8) as a relation; anything else, plugin 0.31's categories among them, as no category ("")."""
     raw = " ".join(raw.split())
     if raw == "artifact":   # one part of speech: "the comment form" a proper noun, "layout" a noun, under artifact
         return "artifact", (), ""

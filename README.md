@@ -71,8 +71,8 @@ $ claude plugin install shopsystem-bdd@shopsystem-bdd
 Then install the grammar tools once, from the installed plugin's directory:
 
 ```console
-$ python3 ~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/4.1.0/scripts/tools install
-$ python3 ~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/4.1.0/scripts/tools probe
+$ python3 ~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.34.1/scripts/tools install
+$ python3 ~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.34.1/scripts/tools probe
 ```
 
 `tools probe` shows what is installed. The rest of the docs write commands short, as `tools install` or
@@ -94,7 +94,7 @@ You need:
 | know what to say to Claude, and what you will be asked | [Talking with Claude](docs/talking-with-claude.md) |
 | write and review requirement lines | [Writing requirements](docs/writing-requirements.md) |
 | look up a command | [Commands](docs/reference/commands.md) |
-| move a repository from 3.x to 4.0 | [Upgrading](docs/upgrading.md) |
+| move a repository from an older release to this one | [Upgrading](docs/upgrading.md) |
 
 Every page is listed in [the docs' home](docs/index.md). For the largest worked example there is, read this
 repository's own spec, starting at [`spec/index.md`](spec/index.md): the plugin is built with itself.

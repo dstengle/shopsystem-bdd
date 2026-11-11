@@ -255,15 +255,15 @@ shall [x1: repository "the repository the command runs in" (indexical), x2: agen
         rewrite(e2, subject: x4, object: x5)
 ```
 
-## r44
-Retires: r16. From: b156 r43. Audit: distortion, fixed by ordered comparison and a value's absence (constructs `ordered`, `has-no-value`: "has no language", not `uncodified`).
+## r69
+Retires: r44. From: b264 (the version reset). Audit: fine; r44's releases renamed in the 0.y.z series of design-decision 0092.
 
 ```reading
-While the release of this repository is after `0.25.0` and before `1.0.0` and a capability of this repository has no language, when the person runs `migrate upgrade`, `migrate` shall write a restated file, rewrite the capability and print the restated file and the capability.
+While the release of this repository is after `0.25.0` and before `0.30.0` and a capability of this repository has no language, when the person runs `migrate upgrade`, `migrate` shall write a restated file, rewrite the capability and print the restated file and the capability.
 shall [x1: repository "the repository the command runs in" (indexical), x3: agent the person (constant), x4: command `migrate upgrade` (parameter), x5: tool `migrate` (constant)]
   while [x2: capability]
     cmp(release(x1)) after `0.25.0`
-    cmp(release(x1)) before `1.0.0`
+    cmp(release(x1)) before `0.30.0`
     of(x2, x1)
     language(x2) = none
   when
@@ -275,15 +275,15 @@ shall [x1: repository "the repository the command runs in" (indexical), x3: agen
     print(e5, subject: x5, object: x2)
 ```
 
-## r60
-Retires: r46, r57 (r16, r45). From: b240 r179, v15n (r46 and r57 shared their condition and trigger). Audit: fine; the tag said as r57 said it, "the `@deprecated` tag".
+## r70
+Retires: r60. From: b264 (the version reset). Audit: fine; r60's releases renamed in the 0.y.z series of design-decision 0092.
 
 ```reading
-While the release of this repository is after `0.25.0` and before `1.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite every work-item file that mentions a requirement and rewrite every feature that holds a scenario that has the `@deprecated` tag.
+While the release of this repository is after `0.25.0` and before `0.30.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite every work-item file that mentions a requirement and rewrite every feature that holds a scenario that has the `@deprecated` tag.
 shall [x1: repository "the repository the command runs in" (indexical), x2: agent the person (constant), x3: command `migrate upgrade` (parameter), x4: tool `migrate` (constant), x9: tag `@deprecated` (parameter)]
   while
     cmp(release(x1)) after `0.25.0`
-    cmp(release(x1)) before `1.0.0`
+    cmp(release(x1)) before `0.30.0`
   when
     run(e1, subject: x2, object: x3)
   response
@@ -350,15 +350,15 @@ shall [x2: repository "the repository the command runs in" (indexical), x4: agen
     print(e3, subject: x6, object: x8)
 ```
 
-## r52
-Retires: r24. From: b156 r51. Audit: distortion, fixed by ordered comparison (construct `ordered`).
+## r71
+Retires: r52. From: b264 (the version reset). Audit: fine; r52's releases renamed in the 0.y.z series of design-decision 0092.
 
 ```reading
-While the release of this repository is after `0.29.0` and before `2.0.0`, when the person runs `migrate upgrade`, `migrate` shall write a frozen notice and rewrite the decisions index of this repository.
+While the release of this repository is after `0.29.0` and before `0.31.0`, when the person runs `migrate upgrade`, `migrate` shall write a frozen notice and rewrite the decisions index of this repository.
 shall [x1: repository "the repository the command runs in" (indexical), x2: agent the person (constant), x3: command `migrate upgrade` (parameter), x4: tool `migrate` (constant)]
   while
     cmp(release(x1)) after `0.29.0`
-    cmp(release(x1)) before `2.0.0`
+    cmp(release(x1)) before `0.31.0`
   when
     run(e1, subject: x2, object: x3)
   response [x5: frozen notice, x6: decisions index]
@@ -367,15 +367,15 @@ shall [x1: repository "the repository the command runs in" (indexical), x2: agen
     rewrite(e3, subject: x4, object: x6)
 ```
 
-## r53
-Retires: r24. From: b156 r52. Audit: distortion, fixed by section 5 (the asker said of the frozen request, not a glossed "peer request") and a value set (construct `value-set`).
+## r72
+Retires: r53. From: b264 (the version reset). Audit: fine; r53's releases renamed in the 0.y.z series of design-decision 0092.
 
 ```reading
-While the release of this repository is after `0.29.0` and before `2.0.0` and the asker of a frozen request is not `internal` and the frozen request is not `delivered`, `refused` or `withdrawn`, when the person runs `migrate upgrade`, `migrate` shall relocate the frozen request.
+While the release of this repository is after `0.29.0` and before `0.31.0` and the asker of a frozen request is not `internal` and the frozen request is not `delivered`, `refused` or `withdrawn`, when the person runs `migrate upgrade`, `migrate` shall relocate the frozen request.
 shall [x1: repository "the repository the command runs in" (indexical), x3: agent the person (constant), x4: command `migrate upgrade` (parameter), x5: tool `migrate` (constant)]
   while [x2: frozen request]
     cmp(release(x1)) after `0.29.0`
-    cmp(release(x1)) before `2.0.0`
+    cmp(release(x1)) before `0.31.0`
     not
       asker(x2) = `internal`
     not
@@ -390,15 +390,15 @@ shall [x1: repository "the repository the command runs in" (indexical), x3: agen
     relocate(e2, subject: x5, object: x2)
 ```
 
-## r54
-Retires: r24. From: b156 r53. Audit: distortion, fixed by section 5 ("of this repository"), a value set and the step named by its release.
+## r73
+Retires: r54. From: b264 (the version reset). Audit: fine; r54's releases renamed in the 0.y.z series of design-decision 0092.
 
 ```reading
-While the release of this repository is after `0.29.0` and before `2.0.0` and an initiative of this repository is not `done` or `abandoned`, when the person runs `migrate upgrade`, `migrate` shall print every upgrade step whose release is `2.0.0` and the initiative.
+While the release of this repository is after `0.29.0` and before `0.31.0` and an initiative of this repository is not `done` or `abandoned`, when the person runs `migrate upgrade`, `migrate` shall print every upgrade step whose release is `0.31.0` and the initiative.
 shall [x1: repository "the repository the command runs in" (indexical), x3: agent the person (constant), x4: command `migrate upgrade` (parameter), x5: tool `migrate` (constant)]
   while [x2: initiative]
     cmp(release(x1)) after `0.29.0`
-    cmp(release(x1)) before `2.0.0`
+    cmp(release(x1)) before `0.31.0`
     of(x2, x1)
     not
       status(x2) = `done`
@@ -408,21 +408,21 @@ shall [x1: repository "the repository the command runs in" (indexical), x3: agen
     run(e1, subject: x3, object: x4)
   response
     every [x6: upgrade step]
-      release(x6) = `2.0.0`
+      release(x6) = `0.31.0`
       scope
         print(e2, subject: x5, object: x6)
     print(e3, subject: x5, object: x2)
 ```
 
-## r55
-Retires: r24. From: b156 r54. Audit: distortion, fixed by a value set (construct `value-set`), the asker said of the frozen request.
+## r74
+Retires: r55. From: b264 (the version reset). Audit: fine; r55's releases renamed in the 0.y.z series of design-decision 0092.
 
 ```reading
-While the release of this repository is after `0.29.0` and before `2.0.0` and the asker of a frozen request is `internal` and the frozen request is not `delivered`, `refused` or `withdrawn`, when the person runs `migrate upgrade`, `migrate` shall print the frozen request.
+While the release of this repository is after `0.29.0` and before `0.31.0` and the asker of a frozen request is `internal` and the frozen request is not `delivered`, `refused` or `withdrawn`, when the person runs `migrate upgrade`, `migrate` shall print the frozen request.
 shall [x1: repository "the repository the command runs in" (indexical), x3: agent the person (constant), x4: command `migrate upgrade` (parameter), x5: tool `migrate` (constant)]
   while [x2: frozen request]
     cmp(release(x1)) after `0.29.0`
-    cmp(release(x1)) before `2.0.0`
+    cmp(release(x1)) before `0.31.0`
     asker(x2) = `internal`
     not
       status(x2) = `delivered`
@@ -436,22 +436,22 @@ shall [x1: repository "the repository the command runs in" (indexical), x3: agen
     print(e2, subject: x5, object: x2)
 ```
 
-## r56
-Retires: r25. From: b156 r55. Audit: distortion, fixed by ordered comparison ("after `1.0.0` and before `3.0.0`", not "lacks ... and does not lack") and the rule named by its code (violates `v_t11`).
+## r75
+Retires: r56. From: b264 (the version reset). Audit: fine; r56's releases renamed in the 0.y.z series of design-decision 0092.
 
 ```reading
-While the release of this repository is after `1.0.0` and before `3.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite the index file of this bounded context and print every upgrade step whose release is `3.0.0` and every term that violates `v_t11`.
+While the release of this repository is after `0.30.0` and before `0.32.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite the index file of this bounded context and print every upgrade step whose release is `0.32.0` and every term that violates `v_t11`.
 shall [x1: repository "the repository the command runs in" (indexical), x2: agent the person (constant), x3: command `migrate upgrade` (parameter), x4: tool `migrate` (constant), x5: bounded context "the bounded context whose repository the command runs in" (indexical), x9: rule `v_t11` (parameter)]
   while
-    cmp(release(x1)) after `1.0.0`
-    cmp(release(x1)) before `3.0.0`
+    cmp(release(x1)) after `0.30.0`
+    cmp(release(x1)) before `0.32.0`
   when
     run(e1, subject: x2, object: x3)
   response [x6: index file]
     of(x6, x5)
     rewrite(e2, subject: x4, object: x6)
     every [x7: upgrade step]
-      release(x7) = `3.0.0`
+      release(x7) = `0.32.0`
       scope
         print(e3, subject: x4, object: x7)
     every [x8: term]
@@ -460,15 +460,15 @@ shall [x1: repository "the repository the command runs in" (indexical), x2: agen
         print(e4, subject: x4, object: x8)
 ```
 
-## r61
-From: b161 r26. Audit: the grammar 4 form b161's notes give, the coined "unpacked" said by ordered comparison (construct `ordered`: "after `3.0.0` and before `4.0.0`") and "the controlled language 4" said, as r56 says its step, as the upgrade step whose release is `4.0.0`.
+## r76
+Retires: r61. From: b264 (the version reset). Audit: fine; r61's releases renamed in the 0.y.z series of design-decision 0092.
 
 ```reading
-While the release of this repository is after `3.0.0` and before `4.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite the index file of this bounded context, rewrite every capability and print every upgrade step whose release is `4.0.0`.
+While the release of this repository is after `0.32.0` and before `0.33.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite the index file of this bounded context, rewrite every capability and print every upgrade step whose release is `0.33.0`.
 shall [x1: repository "the repository the command runs in" (indexical), x2: agent the person (constant), x3: command `migrate upgrade` (parameter), x4: tool `migrate` (constant), x5: bounded context "the bounded context whose repository the command runs in" (indexical)]
   while
-    cmp(release(x1)) after `3.0.0`
-    cmp(release(x1)) before `4.0.0`
+    cmp(release(x1)) after `0.32.0`
+    cmp(release(x1)) before `0.33.0`
   when
     run(e1, subject: x2, object: x3)
   response [x6: index file]
@@ -478,19 +478,19 @@ shall [x1: repository "the repository the command runs in" (indexical), x2: agen
       scope
         rewrite(e3, subject: x4, object: x7)
     every [x8: upgrade step]
-      release(x8) = `4.0.0`
+      release(x8) = `0.33.0`
       scope
         print(e4, subject: x4, object: x8)
 ```
 
-## r66
-Retires: r62. From: the release 4.1.0 (b257). Known limit: #6 (the plugin's release as a value).
+## r77
+Retires: r66. From: b264 (the version reset). Audit: fine; r66's releases renamed in the 0.y.z series of design-decision 0092. Known limit: #6 (the plugin's release as a value).
 
 ```reading
-While the release of this repository is `4.1.0`, when the person runs `migrate upgrade`, `migrate` shall print `no upgrade step is pending` and change no file.
+While the release of this repository is `0.34.1`, when the person runs `migrate upgrade`, `migrate` shall print `no upgrade step is pending` and change no file.
 shall [x1: repository "the repository the command runs in" (indexical), x2: agent the person (constant), x3: command `migrate upgrade` (parameter), x4: tool `migrate` (constant), x5: text `no upgrade step is pending` (constant)]
   while
-    release(x1) = `4.1.0`
+    release(x1) = `0.34.1`
   when
     run(e1, subject: x2, object: x3)
   response
@@ -499,28 +499,28 @@ shall [x1: repository "the repository the command runs in" (indexical), x2: agen
       change(e3, subject: x4, object: x6)
 ```
 
-## r67
-Retires: r63. From: the release 4.1.0 (b257). Known limit: #6 (the plugin's release as a value).
+## r78
+Retires: r67. From: b264 (the version reset). Audit: fine; r67's releases renamed in the 0.y.z series of design-decision 0092. Known limit: #6 (the plugin's release as a value).
 
 ```reading
-While the release of this repository is after `4.1.0`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print `update the plugin`.
+While the release of this repository is after `0.34.1`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print `update the plugin`.
 shall [x1: repository "the repository the command runs in" (indexical), x2: agent the SessionStart hook (constant), x3: command `migrate status --hook` (parameter), x4: tool `migrate` (constant), x5: text `update the plugin` (constant)]
   while
-    cmp(release(x1)) after `4.1.0`
+    cmp(release(x1)) after `0.34.1`
   when
     run(e1, subject: x2, object: x3)
   response
     print(e2, subject: x4, object: x5)
 ```
 
-## r68
-Retires: r64. From: the release 4.1.0 (b257). Known limit: #6 (the plugin's release as a value).
+## r79
+Retires: r68. From: b264 (the version reset). Audit: fine; r68's releases renamed in the 0.y.z series of design-decision 0092. Known limit: #6 (the plugin's release as a value).
 
 ```reading
-While the release of this repository is `4.1.0` and every initiative of this repository is one of `done` or `abandoned`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall exit successfully, print no upgrade step and print no initiative.
+While the release of this repository is `0.34.1` and every initiative of this repository is one of `done` or `abandoned`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall exit successfully, print no upgrade step and print no initiative.
 shall [x1: repository "the repository the command runs in" (indexical), x3: agent the SessionStart hook (constant), x4: command `migrate status --hook` (parameter), x5: tool `migrate` (constant)]
   while
-    release(x1) = `4.1.0`
+    release(x1) = `0.34.1`
     every [x2: initiative]
       of(x2, x1)
       scope
@@ -539,19 +539,19 @@ shall [x1: repository "the repository the command runs in" (indexical), x3: agen
       print(e4, subject: x5, object: x7)
 ```
 
-## r65
-New: the release 4.1.0's upgrade step "value kinds" (b257). Known limit: #6 (the plugin's release as a value).
+## r80
+Retires: r65. From: b264 (the version reset). Audit: fine; r65's releases renamed in the 0.y.z series of design-decision 0092. Known limit: #6 (the plugin's release as a value).
 
 ```reading
-While the release of this repository is `4.0.0`, when the person runs `migrate upgrade`, `migrate` shall print every upgrade step whose release is `4.1.0` and every term that violates `w_value_kind`.
+While the release of this repository is `0.33.0`, when the person runs `migrate upgrade`, `migrate` shall print every upgrade step whose release is `0.34.0` and every term that violates `w_value_kind`.
 shall [x1: repository "the repository the command runs in" (indexical), x2: agent the person (constant), x3: command `migrate upgrade` (parameter), x4: tool `migrate` (constant), x7: rule `w_value_kind` (parameter)]
   while
-    release(x1) = `4.0.0`
+    release(x1) = `0.33.0`
   when
     run(e1, subject: x2, object: x3)
   response
     every [x5: upgrade step]
-      release(x5) = `4.1.0`
+      release(x5) = `0.34.0`
       scope
         print(e2, subject: x4, object: x5)
     every [x6: term]

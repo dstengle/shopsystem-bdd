@@ -1,4 +1,4 @@
-<!-- Outputs on this page are from real runs on 2026-11-10, plugin 4.0.0 (commit 7f60e57de), in a scratch clone of
+<!-- Outputs on this page are from real runs on 2026-11-10, plugin 0.33.0 (commit 7f60e57de), in a scratch clone of
 this repository with a local bare remote and the suite's stand-in gh (tests/scripts/stub_gh.py). Item and batch
 numbers (b250-b257, batch-34) are the clone's. Long paths are cut with `...`. -->
 
@@ -291,8 +291,8 @@ v_p0  a spec file is not codified (no `language: codified-2`, or a capability in
     spec/capabilities/notes.md
 ```
 
-Plugin 4.0 reads only `codified-2`. Run `migrate status` to see the pending steps and `migrate upgrade` to apply
-them. [Upgrading from 3.x](upgrading.md) walks through the lines it asks you to reword.
+Plugin 0.33 and later read only `codified-2`. Run `migrate status` to see the pending steps and `migrate upgrade` to apply
+them. [Upgrading](upgrading.md) walks through the lines it asks you to reword.
 
 ## The tools
 

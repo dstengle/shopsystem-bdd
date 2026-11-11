@@ -2,7 +2,7 @@
 statement parses to exactly one tree in grammar 4, `model logic` finds no error in it (the one live run,
 `live_logic`, less its known findings), `model
 restates` finds every 0.29 id restated, dropped or moved, and none of them has a feature file. Of the 11 converted,
-only `trials` is left; the others are retired in 2.0.0 (test_spec_retired)."""
+only `trials` is left; the others are retired in 0.31.0 (test_spec_retired)."""
 import pathlib
 import re
 import sys

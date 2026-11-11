@@ -1,4 +1,4 @@
-"""The 4.0.0 upgrade step "the controlled language 4" (migration-tools g61; the CNL 4 design, I29 and call 15). `plan`
+"""The 0.33.0 upgrade step "the controlled language 4" (migration-tools g61; the CNL 4 design, I29 and call 15). `plan`
 computes every change and writes none. It rewrites only what is mechanical:
 - each file's marker `language: codified-1` to `language: codified-2` (`spec/index.md`, every capability,
   `spec/universal.md`), and `spec/index.md` given one when it has none;

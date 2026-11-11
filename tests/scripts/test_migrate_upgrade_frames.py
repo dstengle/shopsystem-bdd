@@ -1,4 +1,4 @@
-"""The 3.0.0 upgrade step "verb frames" (migration-tools g25): each term's category written as its part of speech in
+"""The 0.32.0 upgrade step "verb frames" (migration-tools g25): each term's category written as its part of speech in
 the glossary and a capability's `## Terms`, nothing else changed, and each verb with no frame, each relational
 condition named by file; no line is reworded."""
 import sys

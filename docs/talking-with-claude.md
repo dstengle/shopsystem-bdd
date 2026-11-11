@@ -70,8 +70,8 @@ Three hooks run as a session starts. Each prints nothing when there's nothing to
 **A pending upgrade.** `migrate status --hook` speaks only when the repository is behind the plugin:
 
 ```text
-This repository is on plugin version 3.0.0 and the plugin is on 4.0.0. Offer the person the upgrade from 3.0.0 to 4.0.0, which applies:
-  4.0.0 "the controlled language 4": write each file's marker codified-2, import the CLI pack and give each verb its aspect where its lines decide it, and name by file and id each line that no longer parses and what else a session rewords
+This repository is on plugin version 0.32.0 and the plugin is on 0.33.0. Offer the person the upgrade from 0.32.0 to 0.33.0, which applies:
+  0.33.0 "the controlled language 4": write each file's marker codified-2, import the CLI pack and give each verb its aspect where its lines decide it, and name by file and id each line that no longer parses and what else a session rewords
 Run `migrate upgrade` (python3 .../scripts/migrate upgrade) only on the person's yes.
 ```
 

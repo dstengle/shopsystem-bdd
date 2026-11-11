@@ -338,11 +338,11 @@ Restates: r30@0.29.
 - r56@0.29: not implemented; kept under Not yet.
 - r57@0.29: not implemented; kept under Not yet.
 - r72@0.29: what a session does with a delegation the person gives it is no behaviour of `work`; the hook that tells the session is `migrate prompting`'s (migration-tools).
-- r19@0.29: retired with requests#r3 in 2.0.0 (the-old-workflow-retired).
-- r22@0.29: retired with requests#r4 in 2.0.0 (the-old-workflow-retired).
-- r65@0.29: retired with requests#r10 in 2.0.0 (the-old-workflow-retired).
-- r66@0.29: retired with requests#r10 in 2.0.0 (the-old-workflow-retired).
-- r67@0.29: retired with requests#r12 in 2.0.0 (the-old-workflow-retired).
-- r68@0.29: retired with requests#r13 in 2.0.0 (the-old-workflow-retired).
-- r70@0.29: retired with requests#r11 in 2.0.0 (the-old-workflow-retired).
-- r71@0.29: retired with requests#r10 in 2.0.0 (the-old-workflow-retired).
+- r19@0.29: retired with requests#r3 in 0.31.0 (the-old-workflow-retired).
+- r22@0.29: retired with requests#r4 in 0.31.0 (the-old-workflow-retired).
+- r65@0.29: retired with requests#r10 in 0.31.0 (the-old-workflow-retired).
+- r66@0.29: retired with requests#r10 in 0.31.0 (the-old-workflow-retired).
+- r67@0.29: retired with requests#r12 in 0.31.0 (the-old-workflow-retired).
+- r68@0.29: retired with requests#r13 in 0.31.0 (the-old-workflow-retired).
+- r70@0.29: retired with requests#r11 in 0.31.0 (the-old-workflow-retired).
+- r71@0.29: retired with requests#r10 in 0.31.0 (the-old-workflow-retired).

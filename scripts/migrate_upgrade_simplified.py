@@ -1,6 +1,6 @@
-"""The 2.0.0 upgrade step "the workflow simplified" (plan 9, D13; migration-tools g24). `plan` computes every change
+"""The 0.31.0 upgrade step "the workflow simplified" (plan 9, D13; migration-tools g24). `plan` computes every change
 and writes none:
-- when `.shop/work/` exists, `.shop/work/FROZEN.md` holds `FROZEN_TEXT`: the queue of plugin 1.x is frozen;
+- when `.shop/work/` exists, `.shop/work/FROZEN.md` holds `FROZEN_TEXT`: the queue of plugin 0.30 is frozen;
 - each request of `.shop/work/requests/` that is not closed and whose asker is neither `internal` nor this context
   moves to `.shop/requests/`, its name and id unchanged (D8); a peer's negotiation in flight goes on;
 - when `spec/decisions/` exists, `spec/decisions/index.md` is rewritten as `model decisions` writes it (plan-6 M5);
@@ -20,7 +20,7 @@ from shop_files import Refused, context_path
 
 WORK = Path(".shop/work")
 MARKER = WORK / "FROZEN.md"
-FROZEN_TEXT = ("# Frozen\n\nThe request, initiative and work-item queue of plugin 1.x, frozen by `migrate upgrade` 2.0.0. "
+FROZEN_TEXT = ("# Frozen\n\nThe request, initiative and work-item queue of plugin 0.30, frozen by `migrate upgrade` 0.31.0. "
                "Nothing writes here and `model check` reads nothing here but the `source` of its initiatives and "
                "requests. Items are in `.shop/backlog/`, batches in `.shop/batches/` and live requests in "
                "`.shop/requests/`.\n")
@@ -32,7 +32,7 @@ EARLIER = "left for a session to write: %s/" % WORK.as_posix()   # an earlier st
 
 
 def superseded(note):
-    """Whether an earlier step's note (1.0.0's proposal "in 0.29 lines") asks for a write into the queue this step
+    """Whether an earlier step's note (0.30.0's proposal "in 0.29 lines") asks for a write into the queue this step
     freezes: in the same upgrade it is dropped, since `FROZEN.md` says nothing writes there (plan-9 review S5)."""
     return note.startswith(EARLIER)
 

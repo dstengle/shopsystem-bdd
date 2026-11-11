@@ -11,7 +11,7 @@ retired: [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16,
 # Supervision
 
 ## Purpose
-**Retired in plugin 2.0.0** (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired): every requirement of this capability is retired, and the file is kept as the record of its ids and of where its 0.29 lines went.
+**Retired in plugin 0.31.0** (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired): every requirement of this capability is retired, and the file is kept as the record of its ids and of where its 0.29 lines went.
 
 `work run` takes a bounded context's initiatives through their transitions: `work run <initiative>` that
 initiative, `work run` with no initiative every initiative that is neither `done` nor `abandoned`. It starts the
@@ -48,7 +48,7 @@ decide goes to the person as a question.
 ## Behaviour
 
 ## Implementation, may change
-- None: retired in plugin 2.0.0.
+- None: retired in plugin 0.31.0.
 
 ## Not yet
 - None.
@@ -71,161 +71,161 @@ decide goes to the person as a question.
 - r186@0.29: the `formulate` round is a script and gives no question, and a formulation that formulates nothing is gone (design §13.1).
 - r152@0.29: the `formulate` round is a script and gives no question, and a formulation that formulates nothing is gone (design §13.1).
 - r153@0.29: the `formulate` round is a script and gives no question, and a formulation that formulates nothing is gone (design §13.1).
-- r1@0.29: retired with supervision#r1 in 2.0.0 (the-old-workflow-retired).
-- r2@0.29: retired with supervision#r2, #r3, #r4, #r5 in 2.0.0 (the-old-workflow-retired).
-- r4@0.29: retired with supervision#r14, #r15 in 2.0.0 (the-old-workflow-retired).
-- r6@0.29: retired with supervision#r21 in 2.0.0 (the-old-workflow-retired).
-- r7@0.29: retired with supervision#r24 in 2.0.0 (the-old-workflow-retired).
-- r8@0.29: retired with supervision#r6 in 2.0.0 (the-old-workflow-retired).
-- r10@0.29: retired with supervision#r37 in 2.0.0 (the-old-workflow-retired).
-- r11@0.29: retired with supervision#r6 in 2.0.0 (the-old-workflow-retired).
-- r12@0.29: retired with supervision#r6 in 2.0.0 (the-old-workflow-retired).
-- r13@0.29: retired with supervision#r6 in 2.0.0 (the-old-workflow-retired).
-- r14@0.29: retired with supervision#r6 in 2.0.0 (the-old-workflow-retired).
-- r15@0.29: retired with supervision#r14 in 2.0.0 (the-old-workflow-retired).
-- r17@0.29: retired with supervision#r6 in 2.0.0 (the-old-workflow-retired).
-- r18@0.29: retired with supervision#r16 in 2.0.0 (the-old-workflow-retired).
-- r19@0.29: retired with supervision#r6 in 2.0.0 (the-old-workflow-retired).
-- r20@0.29: retired with supervision#r82, #r83 in 2.0.0 (the-old-workflow-retired).
-- r21@0.29: retired with supervision#r36 in 2.0.0 (the-old-workflow-retired).
-- r23@0.29: retired with supervision#r24 in 2.0.0 (the-old-workflow-retired).
-- r24@0.29: retired with supervision#r14 in 2.0.0 (the-old-workflow-retired).
-- r25@0.29: retired with supervision#r6 in 2.0.0 (the-old-workflow-retired).
-- r26@0.29: retired with supervision#r17 in 2.0.0 (the-old-workflow-retired).
-- r27@0.29: retired with supervision#r39 in 2.0.0 (the-old-workflow-retired).
-- r30@0.29: retired with supervision#r6 in 2.0.0 (the-old-workflow-retired).
-- r31@0.29: retired with supervision#r25 in 2.0.0 (the-old-workflow-retired).
-- r33@0.29: retired with supervision#r24 in 2.0.0 (the-old-workflow-retired).
-- r34@0.29: retired with supervision#r21 in 2.0.0 (the-old-workflow-retired).
-- r35@0.29: retired with supervision#r33 in 2.0.0 (the-old-workflow-retired).
-- r36@0.29: retired with supervision#r10 in 2.0.0 (the-old-workflow-retired).
-- r37@0.29: retired with supervision#r27, #r28 in 2.0.0 (the-old-workflow-retired).
-- r38@0.29: retired with supervision#r24 in 2.0.0 (the-old-workflow-retired).
-- r39@0.29: retired with supervision#r33 in 2.0.0 (the-old-workflow-retired).
-- r40@0.29: retired with supervision#r13 in 2.0.0 (the-old-workflow-retired).
-- r41@0.29: retired with supervision#r19 in 2.0.0 (the-old-workflow-retired).
-- r44@0.29: retired with supervision#r6 in 2.0.0 (the-old-workflow-retired).
-- r45@0.29: retired with supervision#r13 in 2.0.0 (the-old-workflow-retired).
-- r46@0.29: retired with supervision#r35 in 2.0.0 (the-old-workflow-retired).
-- r47@0.29: retired with supervision#r39 in 2.0.0 (the-old-workflow-retired).
-- r48@0.29: retired with supervision#r39 in 2.0.0 (the-old-workflow-retired).
-- r49@0.29: retired with supervision#r39 in 2.0.0 (the-old-workflow-retired).
-- r50@0.29: retired with supervision#r40 in 2.0.0 (the-old-workflow-retired).
-- r51@0.29: retired with supervision#r34 in 2.0.0 (the-old-workflow-retired).
-- r52@0.29: retired with supervision#r28 in 2.0.0 (the-old-workflow-retired).
-- r53@0.29: retired with supervision#r34 in 2.0.0 (the-old-workflow-retired).
-- r54@0.29: retired with supervision#r32 in 2.0.0 (the-old-workflow-retired).
-- r57@0.29: retired with supervision#r6 in 2.0.0 (the-old-workflow-retired).
-- r58@0.29: retired with supervision#r18 in 2.0.0 (the-old-workflow-retired).
-- r59@0.29: retired with supervision#r82 in 2.0.0 (the-old-workflow-retired).
-- r60@0.29: retired with supervision#r82 in 2.0.0 (the-old-workflow-retired).
-- r61@0.29: retired with supervision#r83 in 2.0.0 (the-old-workflow-retired).
-- r62@0.29: retired with supervision#r6 in 2.0.0 (the-old-workflow-retired).
-- r63@0.29: retired with supervision#r38 in 2.0.0 (the-old-workflow-retired).
-- r66@0.29: retired with supervision#r30, #r81 in 2.0.0 (the-old-workflow-retired).
-- r67@0.29: retired with supervision#r51 in 2.0.0 (the-old-workflow-retired).
-- r68@0.29: retired with supervision#r65 in 2.0.0 (the-old-workflow-retired).
-- r69@0.29: retired with supervision#r67 in 2.0.0 (the-old-workflow-retired).
-- r70@0.29: retired with supervision#r70 in 2.0.0 (the-old-workflow-retired).
-- r72@0.29: retired with supervision#r79 in 2.0.0 (the-old-workflow-retired).
-- r74@0.29: retired with supervision#r42 in 2.0.0 (the-old-workflow-retired).
-- r75@0.29: retired with supervision#r43 in 2.0.0 (the-old-workflow-retired).
-- r76@0.29: retired with supervision#r43 in 2.0.0 (the-old-workflow-retired).
-- r78@0.29: retired with supervision#r46 in 2.0.0 (the-old-workflow-retired).
-- r79@0.29: retired with supervision#r54 in 2.0.0 (the-old-workflow-retired).
-- r81@0.29: retired with supervision#r31 in 2.0.0 (the-old-workflow-retired).
-- r82@0.29: retired with supervision#r30 in 2.0.0 (the-old-workflow-retired).
-- r83@0.29: retired with supervision#r76 in 2.0.0 (the-old-workflow-retired).
-- r84@0.29: retired with supervision#r54 in 2.0.0 (the-old-workflow-retired).
-- r85@0.29: retired with supervision#r67 in 2.0.0 (the-old-workflow-retired).
-- r86@0.29: retired with supervision#r78 in 2.0.0 (the-old-workflow-retired).
-- r87@0.29: retired with supervision#r78 in 2.0.0 (the-old-workflow-retired).
-- r88@0.29: retired with supervision#r78 in 2.0.0 (the-old-workflow-retired).
-- r89@0.29: retired with supervision#r50 in 2.0.0 (the-old-workflow-retired).
-- r90@0.29: retired with supervision#r50 in 2.0.0 (the-old-workflow-retired).
-- r91@0.29: retired with supervision#r57 in 2.0.0 (the-old-workflow-retired).
-- r94@0.29: retired with supervision#r41 in 2.0.0 (the-old-workflow-retired).
-- r95@0.29: retired with supervision#r80 in 2.0.0 (the-old-workflow-retired).
-- r96@0.29: retired with supervision#r56 in 2.0.0 (the-old-workflow-retired).
-- r97@0.29: retired with supervision#r41 in 2.0.0 (the-old-workflow-retired).
-- r98@0.29: retired with supervision#r18 in 2.0.0 (the-old-workflow-retired).
-- r100@0.29: retired with supervision#r52 in 2.0.0 (the-old-workflow-retired).
-- r101@0.29: retired with supervision#r29 in 2.0.0 (the-old-workflow-retired).
-- r102@0.29: retired with supervision#r54 in 2.0.0 (the-old-workflow-retired).
-- r103@0.29: retired with supervision#r53 in 2.0.0 (the-old-workflow-retired).
-- r106@0.29: retired with supervision#r43 in 2.0.0 (the-old-workflow-retired).
-- r107@0.29: retired with supervision#r61 in 2.0.0 (the-old-workflow-retired).
-- r108@0.29: retired with supervision#r65, #r70 in 2.0.0 (the-old-workflow-retired).
-- r109@0.29: retired with supervision#r44 in 2.0.0 (the-old-workflow-retired).
-- r110@0.29: retired with supervision#r39 in 2.0.0 (the-old-workflow-retired).
-- r111@0.29: retired with supervision#r1, #r44 in 2.0.0 (the-old-workflow-retired).
-- r115@0.29: retired with supervision#r78 in 2.0.0 (the-old-workflow-retired).
-- r117@0.29: retired with supervision#r68 in 2.0.0 (the-old-workflow-retired).
-- r118@0.29: retired with supervision#r48 in 2.0.0 (the-old-workflow-retired).
-- r119@0.29: retired with supervision#r49 in 2.0.0 (the-old-workflow-retired).
-- r120@0.29: retired with supervision#r48, #r49 in 2.0.0 (the-old-workflow-retired).
-- r121@0.29: retired with supervision#r43 in 2.0.0 (the-old-workflow-retired).
-- r128@0.29: retired with supervision#r13 in 2.0.0 (the-old-workflow-retired).
-- r129@0.29: retired with supervision#r10, #r11 in 2.0.0 (the-old-workflow-retired).
-- r130@0.29: retired with supervision#r7 in 2.0.0 (the-old-workflow-retired).
-- r131@0.29: retired with supervision#r12 in 2.0.0 (the-old-workflow-retired).
-- r132@0.29: retired with supervision#r7, #r12 in 2.0.0 (the-old-workflow-retired).
-- r133@0.29: retired with supervision#r9 in 2.0.0 (the-old-workflow-retired).
-- r134@0.29: retired with supervision#r52 in 2.0.0 (the-old-workflow-retired).
-- r135@0.29: retired with supervision#r59 in 2.0.0 (the-old-workflow-retired).
-- r136@0.29: retired with supervision#r60 in 2.0.0 (the-old-workflow-retired).
-- r141@0.29: retired with supervision#r54 in 2.0.0 (the-old-workflow-retired).
-- r142@0.29: retired with supervision#r63 in 2.0.0 (the-old-workflow-retired).
-- r143@0.29: retired with supervision#r63 in 2.0.0 (the-old-workflow-retired).
-- r144@0.29: retired with supervision#r76 in 2.0.0 (the-old-workflow-retired).
-- r145@0.29: retired with supervision#r76 in 2.0.0 (the-old-workflow-retired).
-- r146@0.29: retired with supervision#r76 in 2.0.0 (the-old-workflow-retired).
-- r147@0.29: retired with supervision#r73 in 2.0.0 (the-old-workflow-retired).
-- r148@0.29: retired with supervision#r63 in 2.0.0 (the-old-workflow-retired).
-- r150@0.29: retired with supervision#r73 in 2.0.0 (the-old-workflow-retired).
-- r151@0.29: retired with supervision#r73 in 2.0.0 (the-old-workflow-retired).
-- r154@0.29: retired with supervision#r39 in 2.0.0 (the-old-workflow-retired).
-- r155@0.29: retired with supervision#r39 in 2.0.0 (the-old-workflow-retired).
-- r156@0.29: retired with supervision#r39 in 2.0.0 (the-old-workflow-retired).
-- r157@0.29: retired with supervision#r39 in 2.0.0 (the-old-workflow-retired).
-- r159@0.29: retired with supervision#r57 in 2.0.0 (the-old-workflow-retired).
-- r161@0.29: retired with supervision#r45 in 2.0.0 (the-old-workflow-retired).
-- r164@0.29: retired with supervision#r66 in 2.0.0 (the-old-workflow-retired).
-- r165@0.29: retired with supervision#r71 in 2.0.0 (the-old-workflow-retired).
-- r166@0.29: retired with supervision#r75 in 2.0.0 (the-old-workflow-retired).
-- r167@0.29: retired with supervision#r75 in 2.0.0 (the-old-workflow-retired).
-- r168@0.29: retired with supervision#r65 in 2.0.0 (the-old-workflow-retired).
-- r169@0.29: retired with supervision#r69 in 2.0.0 (the-old-workflow-retired).
-- r170@0.29: retired with supervision#r66, #r71 in 2.0.0 (the-old-workflow-retired).
-- r171@0.29: retired with supervision#r58 in 2.0.0 (the-old-workflow-retired).
-- r172@0.29: retired with supervision#r72 in 2.0.0 (the-old-workflow-retired).
-- r173@0.29: retired with supervision#r69 in 2.0.0 (the-old-workflow-retired).
-- r180@0.29: retired with supervision#r55 in 2.0.0 (the-old-workflow-retired).
-- r184@0.29: retired with supervision#r27 in 2.0.0 (the-old-workflow-retired).
-- r185@0.29: retired with supervision#r8 in 2.0.0 (the-old-workflow-retired).
-- r187@0.29: retired with supervision#r63 in 2.0.0 (the-old-workflow-retired).
-- r188@0.29: retired with supervision#r63 in 2.0.0 (the-old-workflow-retired).
-- r189@0.29: retired with supervision#r64 in 2.0.0 (the-old-workflow-retired).
-- r209@0.29: retired with supervision#r47 in 2.0.0 (the-old-workflow-retired).
-- r210@0.29: retired with supervision#r46 in 2.0.0 (the-old-workflow-retired).
-- r211@0.29: retired with supervision#r46 in 2.0.0 (the-old-workflow-retired).
-- r212@0.29: retired with supervision#r26 in 2.0.0 (the-old-workflow-retired).
-- r213@0.29: retired with supervision#r44 in 2.0.0 (the-old-workflow-retired).
-- r214@0.29: retired with supervision#r23 in 2.0.0 (the-old-workflow-retired).
-- r215@0.29: retired with supervision#r23 in 2.0.0 (the-old-workflow-retired).
-- r216@0.29: retired with supervision#r23 in 2.0.0 (the-old-workflow-retired).
-- r218@0.29: retired with supervision#r22 in 2.0.0 (the-old-workflow-retired).
-- r219@0.29: retired with supervision#r20 in 2.0.0 (the-old-workflow-retired).
-- r221@0.29: retired with supervision#r74 in 2.0.0 (the-old-workflow-retired).
-- r222@0.29: retired with supervision#r20 in 2.0.0 (the-old-workflow-retired).
-- formulation#r1@0.29: retired with supervision#r76 in 2.0.0 (the-old-workflow-retired).
-- formulation#r2@0.29: retired with supervision#r76 in 2.0.0 (the-old-workflow-retired).
-- formulation#r6@0.29: retired with supervision#r76 in 2.0.0 (the-old-workflow-retired).
-- formulation#r7@0.29: retired with supervision#r76 in 2.0.0 (the-old-workflow-retired).
-- formulation#r11@0.29: retired with supervision#r76 in 2.0.0 (the-old-workflow-retired).
-- formulation#r22@0.29: retired with supervision#r77 in 2.0.0 (the-old-workflow-retired).
-- spec-integration#r44@0.29: retired with supervision#r59 in 2.0.0 (the-old-workflow-retired).
-- spec-integration#r45@0.29: retired with supervision#r63 in 2.0.0 (the-old-workflow-retired).
-- spec-integration#r46@0.29: retired with supervision#r73 in 2.0.0 (the-old-workflow-retired).
-- spec-integration#r54@0.29: retired with supervision#r58 in 2.0.0 (the-old-workflow-retired).
-- spec-integration#r55@0.29: retired with supervision#r72 in 2.0.0 (the-old-workflow-retired).
+- r1@0.29: retired with supervision#r1 in 0.31.0 (the-old-workflow-retired).
+- r2@0.29: retired with supervision#r2, #r3, #r4, #r5 in 0.31.0 (the-old-workflow-retired).
+- r4@0.29: retired with supervision#r14, #r15 in 0.31.0 (the-old-workflow-retired).
+- r6@0.29: retired with supervision#r21 in 0.31.0 (the-old-workflow-retired).
+- r7@0.29: retired with supervision#r24 in 0.31.0 (the-old-workflow-retired).
+- r8@0.29: retired with supervision#r6 in 0.31.0 (the-old-workflow-retired).
+- r10@0.29: retired with supervision#r37 in 0.31.0 (the-old-workflow-retired).
+- r11@0.29: retired with supervision#r6 in 0.31.0 (the-old-workflow-retired).
+- r12@0.29: retired with supervision#r6 in 0.31.0 (the-old-workflow-retired).
+- r13@0.29: retired with supervision#r6 in 0.31.0 (the-old-workflow-retired).
+- r14@0.29: retired with supervision#r6 in 0.31.0 (the-old-workflow-retired).
+- r15@0.29: retired with supervision#r14 in 0.31.0 (the-old-workflow-retired).
+- r17@0.29: retired with supervision#r6 in 0.31.0 (the-old-workflow-retired).
+- r18@0.29: retired with supervision#r16 in 0.31.0 (the-old-workflow-retired).
+- r19@0.29: retired with supervision#r6 in 0.31.0 (the-old-workflow-retired).
+- r20@0.29: retired with supervision#r82, #r83 in 0.31.0 (the-old-workflow-retired).
+- r21@0.29: retired with supervision#r36 in 0.31.0 (the-old-workflow-retired).
+- r23@0.29: retired with supervision#r24 in 0.31.0 (the-old-workflow-retired).
+- r24@0.29: retired with supervision#r14 in 0.31.0 (the-old-workflow-retired).
+- r25@0.29: retired with supervision#r6 in 0.31.0 (the-old-workflow-retired).
+- r26@0.29: retired with supervision#r17 in 0.31.0 (the-old-workflow-retired).
+- r27@0.29: retired with supervision#r39 in 0.31.0 (the-old-workflow-retired).
+- r30@0.29: retired with supervision#r6 in 0.31.0 (the-old-workflow-retired).
+- r31@0.29: retired with supervision#r25 in 0.31.0 (the-old-workflow-retired).
+- r33@0.29: retired with supervision#r24 in 0.31.0 (the-old-workflow-retired).
+- r34@0.29: retired with supervision#r21 in 0.31.0 (the-old-workflow-retired).
+- r35@0.29: retired with supervision#r33 in 0.31.0 (the-old-workflow-retired).
+- r36@0.29: retired with supervision#r10 in 0.31.0 (the-old-workflow-retired).
+- r37@0.29: retired with supervision#r27, #r28 in 0.31.0 (the-old-workflow-retired).
+- r38@0.29: retired with supervision#r24 in 0.31.0 (the-old-workflow-retired).
+- r39@0.29: retired with supervision#r33 in 0.31.0 (the-old-workflow-retired).
+- r40@0.29: retired with supervision#r13 in 0.31.0 (the-old-workflow-retired).
+- r41@0.29: retired with supervision#r19 in 0.31.0 (the-old-workflow-retired).
+- r44@0.29: retired with supervision#r6 in 0.31.0 (the-old-workflow-retired).
+- r45@0.29: retired with supervision#r13 in 0.31.0 (the-old-workflow-retired).
+- r46@0.29: retired with supervision#r35 in 0.31.0 (the-old-workflow-retired).
+- r47@0.29: retired with supervision#r39 in 0.31.0 (the-old-workflow-retired).
+- r48@0.29: retired with supervision#r39 in 0.31.0 (the-old-workflow-retired).
+- r49@0.29: retired with supervision#r39 in 0.31.0 (the-old-workflow-retired).
+- r50@0.29: retired with supervision#r40 in 0.31.0 (the-old-workflow-retired).
+- r51@0.29: retired with supervision#r34 in 0.31.0 (the-old-workflow-retired).
+- r52@0.29: retired with supervision#r28 in 0.31.0 (the-old-workflow-retired).
+- r53@0.29: retired with supervision#r34 in 0.31.0 (the-old-workflow-retired).
+- r54@0.29: retired with supervision#r32 in 0.31.0 (the-old-workflow-retired).
+- r57@0.29: retired with supervision#r6 in 0.31.0 (the-old-workflow-retired).
+- r58@0.29: retired with supervision#r18 in 0.31.0 (the-old-workflow-retired).
+- r59@0.29: retired with supervision#r82 in 0.31.0 (the-old-workflow-retired).
+- r60@0.29: retired with supervision#r82 in 0.31.0 (the-old-workflow-retired).
+- r61@0.29: retired with supervision#r83 in 0.31.0 (the-old-workflow-retired).
+- r62@0.29: retired with supervision#r6 in 0.31.0 (the-old-workflow-retired).
+- r63@0.29: retired with supervision#r38 in 0.31.0 (the-old-workflow-retired).
+- r66@0.29: retired with supervision#r30, #r81 in 0.31.0 (the-old-workflow-retired).
+- r67@0.29: retired with supervision#r51 in 0.31.0 (the-old-workflow-retired).
+- r68@0.29: retired with supervision#r65 in 0.31.0 (the-old-workflow-retired).
+- r69@0.29: retired with supervision#r67 in 0.31.0 (the-old-workflow-retired).
+- r70@0.29: retired with supervision#r70 in 0.31.0 (the-old-workflow-retired).
+- r72@0.29: retired with supervision#r79 in 0.31.0 (the-old-workflow-retired).
+- r74@0.29: retired with supervision#r42 in 0.31.0 (the-old-workflow-retired).
+- r75@0.29: retired with supervision#r43 in 0.31.0 (the-old-workflow-retired).
+- r76@0.29: retired with supervision#r43 in 0.31.0 (the-old-workflow-retired).
+- r78@0.29: retired with supervision#r46 in 0.31.0 (the-old-workflow-retired).
+- r79@0.29: retired with supervision#r54 in 0.31.0 (the-old-workflow-retired).
+- r81@0.29: retired with supervision#r31 in 0.31.0 (the-old-workflow-retired).
+- r82@0.29: retired with supervision#r30 in 0.31.0 (the-old-workflow-retired).
+- r83@0.29: retired with supervision#r76 in 0.31.0 (the-old-workflow-retired).
+- r84@0.29: retired with supervision#r54 in 0.31.0 (the-old-workflow-retired).
+- r85@0.29: retired with supervision#r67 in 0.31.0 (the-old-workflow-retired).
+- r86@0.29: retired with supervision#r78 in 0.31.0 (the-old-workflow-retired).
+- r87@0.29: retired with supervision#r78 in 0.31.0 (the-old-workflow-retired).
+- r88@0.29: retired with supervision#r78 in 0.31.0 (the-old-workflow-retired).
+- r89@0.29: retired with supervision#r50 in 0.31.0 (the-old-workflow-retired).
+- r90@0.29: retired with supervision#r50 in 0.31.0 (the-old-workflow-retired).
+- r91@0.29: retired with supervision#r57 in 0.31.0 (the-old-workflow-retired).
+- r94@0.29: retired with supervision#r41 in 0.31.0 (the-old-workflow-retired).
+- r95@0.29: retired with supervision#r80 in 0.31.0 (the-old-workflow-retired).
+- r96@0.29: retired with supervision#r56 in 0.31.0 (the-old-workflow-retired).
+- r97@0.29: retired with supervision#r41 in 0.31.0 (the-old-workflow-retired).
+- r98@0.29: retired with supervision#r18 in 0.31.0 (the-old-workflow-retired).
+- r100@0.29: retired with supervision#r52 in 0.31.0 (the-old-workflow-retired).
+- r101@0.29: retired with supervision#r29 in 0.31.0 (the-old-workflow-retired).
+- r102@0.29: retired with supervision#r54 in 0.31.0 (the-old-workflow-retired).
+- r103@0.29: retired with supervision#r53 in 0.31.0 (the-old-workflow-retired).
+- r106@0.29: retired with supervision#r43 in 0.31.0 (the-old-workflow-retired).
+- r107@0.29: retired with supervision#r61 in 0.31.0 (the-old-workflow-retired).
+- r108@0.29: retired with supervision#r65, #r70 in 0.31.0 (the-old-workflow-retired).
+- r109@0.29: retired with supervision#r44 in 0.31.0 (the-old-workflow-retired).
+- r110@0.29: retired with supervision#r39 in 0.31.0 (the-old-workflow-retired).
+- r111@0.29: retired with supervision#r1, #r44 in 0.31.0 (the-old-workflow-retired).
+- r115@0.29: retired with supervision#r78 in 0.31.0 (the-old-workflow-retired).
+- r117@0.29: retired with supervision#r68 in 0.31.0 (the-old-workflow-retired).
+- r118@0.29: retired with supervision#r48 in 0.31.0 (the-old-workflow-retired).
+- r119@0.29: retired with supervision#r49 in 0.31.0 (the-old-workflow-retired).
+- r120@0.29: retired with supervision#r48, #r49 in 0.31.0 (the-old-workflow-retired).
+- r121@0.29: retired with supervision#r43 in 0.31.0 (the-old-workflow-retired).
+- r128@0.29: retired with supervision#r13 in 0.31.0 (the-old-workflow-retired).
+- r129@0.29: retired with supervision#r10, #r11 in 0.31.0 (the-old-workflow-retired).
+- r130@0.29: retired with supervision#r7 in 0.31.0 (the-old-workflow-retired).
+- r131@0.29: retired with supervision#r12 in 0.31.0 (the-old-workflow-retired).
+- r132@0.29: retired with supervision#r7, #r12 in 0.31.0 (the-old-workflow-retired).
+- r133@0.29: retired with supervision#r9 in 0.31.0 (the-old-workflow-retired).
+- r134@0.29: retired with supervision#r52 in 0.31.0 (the-old-workflow-retired).
+- r135@0.29: retired with supervision#r59 in 0.31.0 (the-old-workflow-retired).
+- r136@0.29: retired with supervision#r60 in 0.31.0 (the-old-workflow-retired).
+- r141@0.29: retired with supervision#r54 in 0.31.0 (the-old-workflow-retired).
+- r142@0.29: retired with supervision#r63 in 0.31.0 (the-old-workflow-retired).
+- r143@0.29: retired with supervision#r63 in 0.31.0 (the-old-workflow-retired).
+- r144@0.29: retired with supervision#r76 in 0.31.0 (the-old-workflow-retired).
+- r145@0.29: retired with supervision#r76 in 0.31.0 (the-old-workflow-retired).
+- r146@0.29: retired with supervision#r76 in 0.31.0 (the-old-workflow-retired).
+- r147@0.29: retired with supervision#r73 in 0.31.0 (the-old-workflow-retired).
+- r148@0.29: retired with supervision#r63 in 0.31.0 (the-old-workflow-retired).
+- r150@0.29: retired with supervision#r73 in 0.31.0 (the-old-workflow-retired).
+- r151@0.29: retired with supervision#r73 in 0.31.0 (the-old-workflow-retired).
+- r154@0.29: retired with supervision#r39 in 0.31.0 (the-old-workflow-retired).
+- r155@0.29: retired with supervision#r39 in 0.31.0 (the-old-workflow-retired).
+- r156@0.29: retired with supervision#r39 in 0.31.0 (the-old-workflow-retired).
+- r157@0.29: retired with supervision#r39 in 0.31.0 (the-old-workflow-retired).
+- r159@0.29: retired with supervision#r57 in 0.31.0 (the-old-workflow-retired).
+- r161@0.29: retired with supervision#r45 in 0.31.0 (the-old-workflow-retired).
+- r164@0.29: retired with supervision#r66 in 0.31.0 (the-old-workflow-retired).
+- r165@0.29: retired with supervision#r71 in 0.31.0 (the-old-workflow-retired).
+- r166@0.29: retired with supervision#r75 in 0.31.0 (the-old-workflow-retired).
+- r167@0.29: retired with supervision#r75 in 0.31.0 (the-old-workflow-retired).
+- r168@0.29: retired with supervision#r65 in 0.31.0 (the-old-workflow-retired).
+- r169@0.29: retired with supervision#r69 in 0.31.0 (the-old-workflow-retired).
+- r170@0.29: retired with supervision#r66, #r71 in 0.31.0 (the-old-workflow-retired).
+- r171@0.29: retired with supervision#r58 in 0.31.0 (the-old-workflow-retired).
+- r172@0.29: retired with supervision#r72 in 0.31.0 (the-old-workflow-retired).
+- r173@0.29: retired with supervision#r69 in 0.31.0 (the-old-workflow-retired).
+- r180@0.29: retired with supervision#r55 in 0.31.0 (the-old-workflow-retired).
+- r184@0.29: retired with supervision#r27 in 0.31.0 (the-old-workflow-retired).
+- r185@0.29: retired with supervision#r8 in 0.31.0 (the-old-workflow-retired).
+- r187@0.29: retired with supervision#r63 in 0.31.0 (the-old-workflow-retired).
+- r188@0.29: retired with supervision#r63 in 0.31.0 (the-old-workflow-retired).
+- r189@0.29: retired with supervision#r64 in 0.31.0 (the-old-workflow-retired).
+- r209@0.29: retired with supervision#r47 in 0.31.0 (the-old-workflow-retired).
+- r210@0.29: retired with supervision#r46 in 0.31.0 (the-old-workflow-retired).
+- r211@0.29: retired with supervision#r46 in 0.31.0 (the-old-workflow-retired).
+- r212@0.29: retired with supervision#r26 in 0.31.0 (the-old-workflow-retired).
+- r213@0.29: retired with supervision#r44 in 0.31.0 (the-old-workflow-retired).
+- r214@0.29: retired with supervision#r23 in 0.31.0 (the-old-workflow-retired).
+- r215@0.29: retired with supervision#r23 in 0.31.0 (the-old-workflow-retired).
+- r216@0.29: retired with supervision#r23 in 0.31.0 (the-old-workflow-retired).
+- r218@0.29: retired with supervision#r22 in 0.31.0 (the-old-workflow-retired).
+- r219@0.29: retired with supervision#r20 in 0.31.0 (the-old-workflow-retired).
+- r221@0.29: retired with supervision#r74 in 0.31.0 (the-old-workflow-retired).
+- r222@0.29: retired with supervision#r20 in 0.31.0 (the-old-workflow-retired).
+- formulation#r1@0.29: retired with supervision#r76 in 0.31.0 (the-old-workflow-retired).
+- formulation#r2@0.29: retired with supervision#r76 in 0.31.0 (the-old-workflow-retired).
+- formulation#r6@0.29: retired with supervision#r76 in 0.31.0 (the-old-workflow-retired).
+- formulation#r7@0.29: retired with supervision#r76 in 0.31.0 (the-old-workflow-retired).
+- formulation#r11@0.29: retired with supervision#r76 in 0.31.0 (the-old-workflow-retired).
+- formulation#r22@0.29: retired with supervision#r77 in 0.31.0 (the-old-workflow-retired).
+- spec-integration#r44@0.29: retired with supervision#r59 in 0.31.0 (the-old-workflow-retired).
+- spec-integration#r45@0.29: retired with supervision#r63 in 0.31.0 (the-old-workflow-retired).
+- spec-integration#r46@0.29: retired with supervision#r73 in 0.31.0 (the-old-workflow-retired).
+- spec-integration#r54@0.29: retired with supervision#r58 in 0.31.0 (the-old-workflow-retired).
+- spec-integration#r55@0.29: retired with supervision#r72 in 0.31.0 (the-old-workflow-retired).

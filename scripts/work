@@ -4,7 +4,7 @@ Keep the person's words with the turns around them in .shop/quotes/, named `quot
 Keep the requests between bounded contexts in .shop/requests/, named `q<n>` (capability requests).
 Write a design-decision under spec/decisions/ with `work decision` (capability decision-tiers), and a
 record under .shop/records/ with `work record` (capability design-model-check).
-Plugin 1.x's queue of initiatives and work-items is frozen under .shop/work/ and read as files (workflow simplification
+Plugin 0.30's queue of initiatives and work-items is frozen under .shop/work/ and read as files (workflow simplification
 plan 9)."""
 import argparse
 import os

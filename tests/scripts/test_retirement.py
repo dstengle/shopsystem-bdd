@@ -1,4 +1,4 @@
-"""What the retirement of plugin 1.x's workflow must not break (workflow simplification plan 9, Review Focus 1 and 5):
+"""What the retirement of plugin 0.30's workflow must not break (workflow simplification plan 9, Review Focus 1 and 5):
 every `work` command still answers, and no kept skill, agent or doc names a deleted agent, skill or command."""
 import re
 import subprocess
@@ -14,8 +14,8 @@ DELETED_SKILLS = ("delivering-an-initiative", "formulating-features", "integrati
                   "checking-spec-consistency", "migrating-to-capabilities", "bdd-red-green")
 DELETED_NAMES = ("work run", "--work-item", "supervise_", "work add", "work status", "work note", "work start",
                  "work delegate", "work retry", "migrate prompting", "migrate compacting")
-HISTORY = re.compile(r"^## \d+\.\d+\.\d+:")
-OLD_EXAMPLE = "plugin 1.x's vocabulary"     # the note above a fenced example of docs/capability-format.md it allows
+HISTORY = re.compile(r"^## \d+\.\d+\.\d+( \(released as \d+\.\d+\.\d+\))?:")
+OLD_EXAMPLE = "plugin 0.30's vocabulary"     # the note above a fenced example of docs/capability-format.md it allows
 
 
 def work(*args):
@@ -31,7 +31,7 @@ def test_every_work_command_answers_help():
 
 
 def readme_less_history(name="README.md"):
-    """A page's lines less its history sections, `## x.y.z: ...` (CHANGELOG.md's rule: each release's note is kept as
+    """A page's lines less its history sections, `## x.y.z: ...` or `## x.y.z (released as a.b.c): ...` (CHANGELOG.md's rule: each release's note is kept as
     it was written, in the words of its day)."""
     kept, history = [], False
     for line in (REPO / name).read_text(encoding="utf-8").splitlines():
@@ -43,7 +43,7 @@ def readme_less_history(name="README.md"):
 
 
 def doc_less_old_examples(path):
-    """A doc's lines, each fenced block that a line naming plugin 1.x's vocabulary introduces blanked (kept as an
+    """A doc's lines, each fenced block that a line naming plugin 0.30's vocabulary introduces blanked (kept as an
     illustration, plan-9 review M3); the line numbers stay."""
     kept, fenced, allowed, noted = [], False, False, False
     for line in path.read_text(encoding="utf-8").splitlines():

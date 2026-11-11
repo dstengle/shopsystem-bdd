@@ -44,10 +44,10 @@ def test_the_live_decisions_keep_their_tiers():
 
 def test_the_sort_holds_its_totals():
     found = model_decisions.decisions(ROOT)
-    assert len(found) == 90, len(found)
-    assert collections.Counter(d.status for d in found) == {"accepted": 37, "superseded": 51, "rejected": 2}
+    assert len(found) == 91, len(found)
+    assert collections.Counter(d.status for d in found) == {"accepted": 38, "superseded": 51, "rejected": 2}
     tiers = collections.Counter(d.tier for d in found if d.status == "accepted")
-    assert tiers == {"check": 9, "requirement": 13, "judgement": 15}, tiers
+    assert tiers == {"check": 9, "requirement": 13, "judgement": 16}, tiers
     assert [d.rel for d in found if d.status != "accepted" and d.tier] == []
 
 
@@ -63,7 +63,8 @@ def test_the_judgement_decisions_reach_the_brief():
     assert "spec/decisions/0085-requirements-retired-never-edited.md" in found, found
     assert "spec/decisions/0089-u5-is-a-judgement.md" in found, found
     assert "spec/decisions/0090-u7-is-a-judgement.md" in found, found
-    assert len(found) == 15, found
+    assert "spec/decisions/0092-versions-are-0-y-z-until-1-0.md" in found, found
+    assert len(found) == 16, found
 
 
 def test_0060_is_superseded_by_measure_a_batch():

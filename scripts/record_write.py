@@ -13,7 +13,7 @@ from model_facts import KINDS as NODE_KINDS
 
 RECORDS = Path(".shop") / "records"
 # The record kinds `model` reads under .shop/records/ (model_work.RECORD_KINDS) that a record file holds: an
-# observation is a heading of observations.md, and initiative-archive is plugin 1.x's.
+# observation is a heading of observations.md, and initiative-archive is plugin 0.30's.
 KINDS = ("analysis", "design", "measurement", "review-finding", "decision-argument")
 HISTORY = {"design": "record", "analysis": "record"}     # their ids are record/<path>/<name>
 README_HEAD = ("# Records\n\nDated, never edited. Paths are under `.shop/records/`.\n\n| path | record | kind |\n"

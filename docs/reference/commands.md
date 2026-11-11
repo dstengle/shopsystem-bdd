@@ -1,5 +1,5 @@
 <!--
-Outputs on this page are from real runs on 2026-11-10: plugin 4.0.0, its scripts as at commit 7f60e57de
+Outputs on this page are from real runs on 2026-11-10: plugin 0.33.0, its scripts as at commit 7f60e57de
 (branch plan-docs). Read-only commands ran in this repository. Commands that write ran in two scratch clones of it,
 each with a local bare remote as `origin` and the suite's stand-in gh (tests/scripts/stub_gh.py as
 $SHOPSYSTEM_WORK_GH), so batches, pull requests and request issues were real runs that touched no GitHub. Long scratch
@@ -501,7 +501,7 @@ Writes which requirement holds each accepted line, and in which version; the req
 Synopsis: `work resolve [--line N REQUIREMENT VERSION] request`
 
 ```console
-$ work resolve q48 --line 1 backlog#r43 4.1.0
+$ work resolve q48 --line 1 backlog#r43 0.34.0
 ```
 
 #### `work list`
@@ -839,7 +839,7 @@ g4 1
 
 ### `features deprecated`
 
-Lists each deprecated scenario, a leftover of plugin 1.x, and what replaces it.\
+Lists each deprecated scenario, a leftover of plugin 0.30, and what replaces it.\
 Synopsis: `features deprecated [--json]`
 
 ```console
@@ -1015,13 +1015,13 @@ Synopsis: `migrate status [--hook]`
 
 ```console
 $ migrate status
-the repository's plugin version: 4.0.0
-the plugin's version: 4.0.0
+the repository's plugin version: 0.33.0
+the plugin's version: 0.33.0
 ```
 
 ### `migrate upgrade`
 
-Applies each pending upgrade step in order (for 4.0.0, the `codified-2` marker, the CLI pack import, verbs'
+Applies each pending upgrade step in order (for 0.33.0, the `codified-2` marker, the CLI pack import, verbs'
 aspects), commits it all, and reports what is left for you to reword, by file and id.\
 Synopsis: `migrate upgrade`
 
@@ -1032,7 +1032,7 @@ no upgrade step is pending
 
 ### `migrate run`
 
-Moves a repository from the pre-1.0 layout to the current one, every mechanical change or none. It is for
+Moves a repository from the old system's layout (before 0.21) to the current one, every mechanical change or none. It is for
 repositories on the old system only; nothing is committed.\
 Synopsis: `migrate run --context CONTEXT`, the context written `<owner>/<product>/<context>`.
 

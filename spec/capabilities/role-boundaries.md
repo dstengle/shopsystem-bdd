@@ -11,7 +11,7 @@ retired: [r1, r2, r3, r4, r5, r6]
 # Role boundaries
 
 ## Purpose
-**Retired in plugin 2.0.0** (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired): every requirement of this capability is retired, and the file is kept as the record of its ids and of where its 0.29 lines went.
+**Retired in plugin 0.31.0** (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired): every requirement of this capability is retired, and the file is kept as the record of its ids and of where its 0.29 lines went.
 
 What the plugin's agent definitions guarantee about each role, whatever its input asks. Each is verified by reading
 the definitions under `agents/`, not by a scenario. Tool lists bound what a session started as an agent can do directly: one with
@@ -26,16 +26,16 @@ Bash can still write files through the shell, which is why `work run` verifies t
 ## Behaviour
 
 ## Implementation, may change
-- None: retired in plugin 2.0.0.
+- None: retired in plugin 0.31.0.
 
 ## Not yet
 - None.
 
 ## Dropped
-- r1@0.29: retired with role-boundaries#r1 in 2.0.0 (the-old-workflow-retired).
-- r2@0.29: retired with role-boundaries#r2 in 2.0.0 (the-old-workflow-retired).
-- r3@0.29: retired with role-boundaries#r3 in 2.0.0 (the-old-workflow-retired).
-- r4@0.29: retired with role-boundaries#r4 in 2.0.0 (the-old-workflow-retired).
-- r5@0.29: retired with role-boundaries#r5 in 2.0.0 (the-old-workflow-retired).
-- r6@0.29: retired with role-boundaries#r6 in 2.0.0 (the-old-workflow-retired).
-- r7@0.29: retired with role-boundaries#r6 in 2.0.0 (the-old-workflow-retired).
+- r1@0.29: retired with role-boundaries#r1 in 0.31.0 (the-old-workflow-retired).
+- r2@0.29: retired with role-boundaries#r2 in 0.31.0 (the-old-workflow-retired).
+- r3@0.29: retired with role-boundaries#r3 in 0.31.0 (the-old-workflow-retired).
+- r4@0.29: retired with role-boundaries#r4 in 0.31.0 (the-old-workflow-retired).
+- r5@0.29: retired with role-boundaries#r5 in 0.31.0 (the-old-workflow-retired).
+- r6@0.29: retired with role-boundaries#r6 in 0.31.0 (the-old-workflow-retired).
+- r7@0.29: retired with role-boundaries#r6 in 0.31.0 (the-old-workflow-retired).

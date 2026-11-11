@@ -204,7 +204,7 @@ The glossary is the lexicon every line is parsed with, so its entries are checke
 | `v18d` | an id of a kind kept in .shop/work/ with another context's path, other than the request a request is raised for | Remove the reference to another context's frozen work. |
 | `v_d4` | a delivered request has an accepted line its resolution does not name | Name, in the resolution, the requirement each accepted line became. |
 | `w_many_requests` | more than five open requests to one upstream | A hint to settle some before raising more. |
-| `w_uncited_obs` | an observation no initiative cites | A note, nothing to fix. It is how 1.x observations without a plan show up. |
+| `w_uncited_obs` | an observation no initiative cites | A note, nothing to fix. It is how 0.30 observations without a plan show up. |
 
 ### Example data in a line
 
@@ -214,25 +214,25 @@ The glossary is the lexicon every line is parsed with, so its entries are checke
 
 A line says what is true for every value; the given block holds the value a scenario runs with.
 
-### Kept from the 1.x graph
+### Kept from the 0.30 graph
 
-Plugin 1.x kept jobs, seams, job-threads and pinned dependencies between contexts. These rules still guard those
-edges. A 4.0 repository writes none of them, so in practice only the parts on today's kinds can fire.
+Plugin 0.30 kept jobs, seams, job-threads and pinned dependencies between contexts. These rules still guard those
+edges. A 0.33 repository writes none of them, so in practice only the parts on today's kinds can fire.
 
 | code | `model rules` says | when it fires |
 |---|---|---|
 | `v2` | a standing edge touches something that is not standing | An `in`, `member_of`, `generates`, `rests_on` or `supersedes` names a record or another non-standing node. Point it at a standing one. |
-| `v4` | a depends_on that no using gives | 1.x only. |
-| `v5` | a using against the pin | 1.x only. |
-| `v6` | a crossing names no seam | 1.x only. |
-| `v6b` | a job-thread is mapped with a crossing that names no seam | 1.x only. |
+| `v4` | a depends_on that no using gives | 0.30 only. |
+| `v5` | a using against the pin | 0.30 only. |
+| `v6` | a crossing names no seam | 0.30 only. |
+| `v6b` | a job-thread is mapped with a crossing that names no seam | 0.30 only. |
 | `v7` | a request between two contexts is across no seam between them | Judged only once the repository maps seams. |
-| `v7c` | an upstream names a downstream client | 1.x only. |
+| `v7c` | an upstream names a downstream client | 0.30 only. |
 | `v11` | a capability without exactly one narrator | Give the capability file one `narrator:`. |
-| `v_d2` | a built job-thread has a request not delivered | 1.x only. |
+| `v_d2` | a built job-thread has a request not delivered | 0.30 only. |
 | `w_unserved_cap` | a capability serves no job | Judged only once the repository has jobs. |
-| `w_unserved_job` | a job nothing serves | 1.x only. |
-| `w_seam_unused` | a seam nothing crosses | 1.x only. |
+| `w_unserved_job` | a job nothing serves | 0.30 only. |
+| `w_seam_unused` | a seam nothing crosses | 0.30 only. |
 
 ## A rule is a line too
 
@@ -254,8 +254,8 @@ shall [x2: rule `v15c` (parameter), x3: agent the person (constant), x4: command
 
 ## Where this came from
 
-The graph began as design model v5 (2026-11-03), written for plugin 1.x. That document is kept as it was in
-[`docs/history/design-model-v5/`](../history/design-model-v5/); it explains the 1.x kinds above, but its workflow and
+The graph began as design model v5 (2026-11-03), written for plugin 0.30. That document is kept as it was in
+[`docs/history/design-model-v5/`](../history/design-model-v5/); it explains the 0.30 kinds above, but its workflow and
 language are retired. The rules themselves live in `scripts/model.lp`, solved with clingo.
 
 Next: [how it works](../how-it-works.md), [the capability file](capability-file.md),

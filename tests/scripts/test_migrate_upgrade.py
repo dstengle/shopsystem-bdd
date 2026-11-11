@@ -93,11 +93,11 @@ class ALargeNoteList(unittest.TestCase):
     """The upgrade's commit message is passed on stdin: notes over Linux's 128 KB limit for one argument (b240 review)."""
 
     def test_notes_over_one_arguments_limit_are_committed(self):
-        root = repository({"spec/index.md": INDEX, ".shop/plugin-version": "3.0.1\n"})
+        root = repository({"spec/index.md": INDEX, ".shop/plugin-version": "0.32.1\n"})
         notes = ["spec/capabilities/x.md r%d: a note of some length to make the message large enough" % i
                  for i in range(3000)]
         step = types.SimpleNamespace(plan=lambda _root: types.SimpleNamespace(failures=[], moves=[], texts={}, notes=notes))
-        with mock.patch.object(migrate_upgrade, "pending", return_value=[("4.0.0", "big", "notes", step)]), \
+        with mock.patch.object(migrate_upgrade, "pending", return_value=[("0.33.0", "big", "notes", step)]), \
                 mock.patch.object(migrate_upgrade.shop_files, "pushed"), mock.patch("builtins.print"):
             self.assertEqual(migrate_upgrade.upgrade(root), 0)
         message = subprocess.run(["git", "log", "-1", "--format=%B"], cwd=root, capture_output=True,
@@ -110,7 +110,7 @@ class NoIdentity(unittest.TestCase):
     """With no git identity to commit with, `migrate upgrade` refuses before it plans a step (plan-9 review M1)."""
 
     def test_no_identity_is_refused_before_any_step_naming_git_config(self):
-        root = repository({"spec/index.md": INDEX, ".shop/plugin-version": "1.0.0\n", ".shop/work/README.md": "q\n"})
+        root = repository({"spec/index.md": INDEX, ".shop/plugin-version": "0.30.0\n", ".shop/work/README.md": "q\n"})
         subprocess.run(["git", "config", "--unset", "user.name"], cwd=root, check=True)
         subprocess.run(["git", "config", "--unset", "user.email"], cwd=root, check=True)
         env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_") and k != "EMAIL"}

@@ -1,4 +1,4 @@
-"""The 4.0.0 upgrade step "the controlled language 4" (migration-tools g61): each file's marker, `imports: [cli]` and
+"""The 0.33.0 upgrade step "the controlled language 4" (migration-tools g61): each file's marker, `imports: [cli]` and
 each verb's aspect rewritten where that is mechanical, and what it cannot reword named by file and id; no line is
 reworded."""
 import sys

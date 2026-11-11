@@ -5,7 +5,7 @@ its own capability's `## Dropped` with a reason, or listed there as `moved to <c
 group of `<cap>` once `<cap>` is codified, and is pending until then. An uncodified capability has nothing dropped, so
 its ids are missing until it is converted. An id that another capability's `## Dropped` lists qualified
 (`<cap>#r<n>@0.29: <reason>`, a reason that is not a move) is dropped with that reason, as a capability retired in
-2.0.0 records the ids moved into it (workflow simplification plan 9, D11); restated by a group still wins."""
+0.31.0 records the ids moved into it (workflow simplification plan 9, D11); restated by a group still wins."""
 
 import json
 import re

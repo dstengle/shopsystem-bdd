@@ -1,17 +1,56 @@
-<!-- Outputs on this page are from real runs on 2026-11-10, plugin 4.0.0 (commit 7f60e57de): a 3.0.1 repository
-built from the 4.0.0 upgrade's test fixture (tests/scripts/test_migrate_upgrade_cnl4.py), upgraded and reworded. -->
+<!-- Outputs on this page are from real runs on 2026-11-10, plugin 0.33.0 (commit 7f60e57de): a 0.32.1 repository
+built from the 0.33.0 upgrade's test fixture (tests/scripts/test_migrate_upgrade_cnl4.py), upgraded and reworded. -->
 
-# Upgrading from 3.x to 4.0
+# Upgrading
 
-This page is for the maintainer of a repository on plugin 3.x. It takes you from `migrate status` to a green suite
-on 4.0, one step at a time. Most of the work is rewording lines, and Claude can do that with you.
+This page takes a repository from an older plugin release to this one. Read [Versions](#versions) first if your
+`.shop/plugin-version` says a number from 1.0.0 to 4.1.0.
+
+## Versions
+
+The plugin's versions are 0.y.z until 1.0 (design-decision 0092, "Versions are 0.y.z until 1.0"):
+
+- **y** goes up for a large or incompatible change: one that needs `migrate upgrade`, or rewording lines, or that
+  removes a command. It counts past .9 to .10 (0.9, 0.10, 0.11).
+- **z** goes up for a non-breaking update: a fix, or something new that changes nothing that works.
+- **1.0.0** is a decision of its own, taken when the plugin is ready for it, not the next step of y.
+
+A release bumps `version` in `.claude-plugin/plugin.json` by that rule, and its section in the
+[changelog](../CHANGELOG.md) is headed with the new number.
+
+The releases made as 1.0.0 to 4.1.0 were renumbered into this series in 0.34.1, continuing the releases 0.1 to 0.29:
+
+| released as | now |
+|---|---|
+| 1.0.0 codified requirements | 0.30.0 |
+| 2.0.0 the workflow simplified | 0.31.0 |
+| 2.1.0 requests exchanged through GitHub issues | 0.31.1 |
+| 2.2.0 decisions and records written by command | 0.31.2 |
+| 2.3.0 work pushes its commits | 0.31.3 |
+| 2.3.1 a batch runs in one fresh agent | 0.31.4 |
+| 2.4.0 the request watch wakes on GitHub's events | 0.31.5 |
+| 3.0.0 verb frames | 0.32.0 |
+| 3.0.1 the scenario of a negated response with a recipient | 0.32.1 |
+| 4.0.0 the controlled language 4 | 0.33.0 |
+| 4.1.0 value kinds | 0.34.0 |
+
+`migrate` reads only the new numbers. A repository whose `.shop/plugin-version` holds an old one reads as above
+the plugin, and the session is told to update the plugin. Rewrite the file by hand with the table: a repository on
+3.0.1 writes `0.32.1`, one on 4.1.0 writes `0.34.0`. Commit it, then reinstall the plugin once: Claude Code keeps
+installs by version and may not move from 4.1.0 down to 0.34.1. `migrate status` then lists what is pending, if
+anything.
+
+## From 0.32 to 0.33
+
+This page's walk-through is for the maintainer of a repository on plugin 0.32. It takes you from `migrate status` to a green suite
+on 0.33, one step at a time. Most of the work is rewording lines, and Claude can do that with you.
 
 Here is the whole job in one picture. `migrate upgrade` changes what is mechanical and names, by file and id, every
 line you have to reword:
 
 ```console
 $ migrate upgrade
-upgraded to 4.0.0: the controlled language 4
+upgraded to 0.33.0: the controlled language 4
 ...
 the controlled language 4: spec/capabilities/buy.md r4 says a negated indefinite in a While clause: refused: the While clause says "does not own a cart", which reads two ways: say "owns no cart" or "a cart that the shopper does not own"
 ...
@@ -34,9 +73,9 @@ While a shopper owns no cart, when the shopper picks a cart, the shopper shall w
 (These lines use the fixture's glossary, a toy shop with shoppers, carts and tills, so they are read there, not in
 this repository.)
 
-## What changed in 4.0
+## What changed in 0.33
 
-The full note is [4.0.0 in the changelog](../CHANGELOG.md#400-the-controlled-language-4). What it means for you:
+The full note is [0.33.0 in the changelog](../CHANGELOG.md#0330-released-as-400-the-controlled-language-4). What it means for you:
 
 - **One grammar.** Lines are read by grammar 4, built from your glossary. A line has one meaning or is refused.
 - **A new marker.** Spec files say `language: codified-2`. Every tool refuses a `codified-1` file and names
@@ -57,7 +96,7 @@ The full note is [4.0.0 in the changelog](../CHANGELOG.md#400-the-controlled-lan
 ## Before you start
 
 Start from a clean checkout of your default branch, with no batch building. `migrate upgrade` commits, and a batch
-started on 3.x lays lines in the old language.
+started on 0.32 lays lines in the old language.
 
 ## Step 1: update the plugin and the grammar tools
 
@@ -73,16 +112,16 @@ grammar:
   gf-rgl 20250812 (/home/vscode/.local/share/shopsystem-bdd/gf-rgl-20250812)
 ```
 
-Run `tools install` again even if 3.x had it working. Grammar 4 is built on GF's resource grammar library, the
-`gf-rgl` line, which 3.x never installed. Grammar 4 is compiled against it.
+Run `tools install` again even if 0.32 had it working. Grammar 4 is built on GF's resource grammar library, the
+`gf-rgl` line, which 0.32 never installed. Grammar 4 is compiled against it.
 
 Then ask what is pending:
 
 ```console
 $ migrate status
-the repository's plugin version: 3.0.1
-the plugin's version: 4.0.0
-pending upgrade step 4.0.0 "the controlled language 4": write each file's marker codified-2, import the CLI pack and give each verb its aspect where its lines decide it, and name by file and id each line that no longer parses and what else a session rewords
+the repository's plugin version: 0.32.1
+the plugin's version: 0.33.0
+pending upgrade step 0.33.0 "the controlled language 4": write each file's marker codified-2, import the CLI pack and give each verb its aspect where its lines decide it, and name by file and id each line that no longer parses and what else a session rewords
 ```
 
 A new session tells Claude the same thing, and Claude offers you the upgrade. It runs it only when you say yes.
@@ -115,7 +154,7 @@ Everything it cannot decide, it prints. This is the fixture's full report, which
 
 ```console
 $ migrate upgrade
-upgraded to 4.0.0: the controlled language 4
+upgraded to 0.33.0: the controlled language 4
 the controlled language 4: v_t14 guard, spec/index.md: a state in r7 and an action in r8; write (verb, state) or (verb, action)
 the controlled language 4: spec/capabilities/buy.md r3 says "the" with no antecedent: refused: "the till" has no antecedent: no earlier noun phrase, functional relation or declared indexical gives a till
 the controlled language 4: spec/capabilities/buy.md r4 says a negated indefinite in a While clause: refused: the While clause says "does not own a cart", which reads two ways: say "owns no cart" or "a cart that the shopper does not own"
@@ -260,9 +299,9 @@ A new id in `unbuilt:` runs as an expected failure until it is built. A reworded
 may pass at once: check its steps test the line as now worded, then take its id out of `unbuilt:`. The handlers of a
 retired line's steps that no scenario reaches any more can go.
 
-## From 4.0 to 4.1
+## From 0.33 to 0.34
 
-4.1 changes no line that parses: `migrate upgrade` applies the step 4.1.0 "value kinds", which writes no file and
+0.34 changes no line that parses: `migrate upgrade` applies the step 0.34.0 "value kinds", which writes no file and
 names each attribute whose `Values:` declares neither kind and each line that says one of its values the short way
 ("an item is `idea`"), by file and id. Declare each attribute's values in the glossary, `Values (adjective):` for
 those that read after "is" as an adjective (`shaped`, `in-batch`) and `Values (noun):` for the rest (`idea`,
@@ -274,26 +313,31 @@ and every line parses as before.
 whose status is `idea` exists" for "no K"). Regenerate your features; a handler keyed by `GivenK_A` or `ThenK_A`
 keeps its key, and one that read the thing out of the step's text reads `step.subject` instead.
 
-## Older than 3.0?
+## From 0.34.0 to 0.34.1
+
+No upgrade step. If `.shop/plugin-version` holds an old number, rewrite it first (see [Versions](#versions)). Then
+run `features generate`: a scenario now has a Given for each thing its When names that no earlier Given brought in.
+
+## Older than 0.32?
 
 `migrate upgrade` applies every pending step in order, oldest first, in one commit. `migrate status` lists them:
 
 ```console
 $ migrate status
-the repository's plugin version: 1.0.0
-the plugin's version: 4.0.0
-pending upgrade step 2.0.0 "the workflow simplified": freeze .shop/work/, move the live requests to .shop/requests/ and write the decisions index
-pending upgrade step 3.0.0 "verb frames": write each glossary entry's category as its part of speech and name each verb with no Frame:, each relational condition and each requirement that no longer parses
-pending upgrade step 4.0.0 "the controlled language 4": write each file's marker codified-2, import the CLI pack and give each verb its aspect where its lines decide it, and name by file and id each line that no longer parses and what else a session rewords
+the repository's plugin version: 0.30.0
+the plugin's version: 0.33.0
+pending upgrade step 0.31.0 "the workflow simplified": freeze .shop/work/, move the live requests to .shop/requests/ and write the decisions index
+pending upgrade step 0.32.0 "verb frames": write each glossary entry's category as its part of speech and name each verb with no Frame:, each relational condition and each requirement that no longer parses
+pending upgrade step 0.33.0 "the controlled language 4": write each file's marker codified-2, import the CLI pack and give each verb its aspect where its lines decide it, and name by file and id each line that no longer parses and what else a session rewords
 ```
 
-**From 2.x**, the 3.0.0 step runs first. It writes each glossary term's part of speech and names each verb with no
-`Frame:` and each condition that relates two kinds. Give each verb its frame by hand before you read the 4.0 notes:
-a verb with no frame can't be given an aspect. See [3.0.0](../CHANGELOG.md#300-verb-frames-parts-of-speech-in-the-glossary-and-verbs-typed-by-kind).
+**From 0.31**, the 0.32.0 step runs first. It writes each glossary term's part of speech and names each verb with no
+`Frame:` and each condition that relates two kinds. Give each verb its frame by hand before you read the 0.33 notes:
+a verb with no frame can't be given an aspect. See [0.32.0](../CHANGELOG.md#0320-released-as-300-verb-frames-parts-of-speech-in-the-glossary-and-verbs-typed-by-kind).
 
-**From 1.x**, the 2.0.0 step runs before that. It freezes plugin 1.x's `.shop/work/`, moves the live requests to
+**From 0.30**, the 0.31.0 step runs before that. It freezes plugin 0.30's `.shop/work/`, moves the live requests to
 `.shop/requests/` and writes the decisions index. Nothing there needs rewording. See
-[2.0.0](../CHANGELOG.md#200-the-workflow-simplified).
+[0.31.0](../CHANGELOG.md#0310-released-as-200-the-workflow-simplified).
 
 ## On the old system?
 
@@ -304,7 +348,7 @@ mechanical change of the move in one run, or none, and commits nothing:
 $ migrate run --context <owner/product/context>
 ```
 
-Review and commit what it did. Then `migrate upgrade` takes the repository from there through every step to 4.0.
+Review and commit what it did. Then `migrate upgrade` takes the repository from there through every step to 0.33.
 
 Next: [writing requirements](writing-requirements.md) for the language you're rewording into,
 [troubleshooting](troubleshooting.md) when a line keeps being refused, or the [changelog](../CHANGELOG.md).
