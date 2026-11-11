@@ -237,7 +237,7 @@ The simplified workflow:
 - **dependency** (noun): one item's need of another item, written in the item that needs it. Plural: dependencies. Kind of: text.
 - **well-formed** (adjective of item): an item whose every requirement parses, has no L0 or L1 finding of `model logic` with the item's lines laid over `spec/`, and has its scenarios written by `features generate`, and whose capabilities' `check` design-decisions pass their tests.
 - **passing** (adjective of item): An item is passing when the item is well-formed and every request line of the item is settled.
-- **clean** (adjective of pull request): A pull request is clean when no review finding on the pull request is `fix now`.
+- **clean** (adjective of pull request): A pull request is clean when no review finding on the pull request whose triage is `fix now` exists.
 - **pick** (verb, action): `work batch start` takes a ready item into the batch it writes. Forms: picks, picked. Frame: `work` picks item.
 - **park** (verb, action): a batch sets an item it cannot finish without an answer to `needs-input`. Forms: parks, parked. Frame: batch parks item.
 - **publish** (verb, action): `work` puts a thing on GitHub: a batch's branch as a pull request, with its commits. Forms: publishes, published. Frame: `work` publishes thing.

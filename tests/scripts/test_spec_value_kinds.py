@@ -1,6 +1,7 @@
 """spec_value_kinds (b257): an attribute's values declared adjectives or nouns, the short form "x is `v`" refused of
 a noun value with the full form in its hint, and an attribute that declares neither read as in 4.0."""
 import pathlib
+import re
 import shutil
 
 import pytest
@@ -84,3 +85,22 @@ def test_an_undeclared_attribute_keeps_the_short_form(tmp_path, root):
     index.write_text(index.read_text().replace("Values (noun): `check`", "Values: `check`"))
     line = "While a stage is `review`, when the person runs `work start`, `work` shall end the stage."
     assert spec_grammar4.parse(tmp_path / "ctx", line).tree
+
+
+def test_no_definition_of_this_repository_says_a_noun_value_in_the_short_form():
+    lexicon = spec_lexicon.read(pathlib.Path(__file__).parents[2])
+    nouns = {}
+    for t in lexicon.terms:
+        for value, k in t.value_kinds:
+            if k == "noun":
+                nouns.setdefault(value, []).append(t.term)
+    short = []
+    for t in lexicon.terms:
+        if t.category != "condition":
+            continue
+        for value, terms in nouns.items():
+            for m in re.finditer(r"\bis (?:not )?(?:one of )?(?:`[^`]+`(?:, | or ))*" + re.escape(value), t.text):
+                clause = re.split(r"\bwhen\b|,", t.text[:m.start()])[-1]
+                if not any(term in clause for term in terms):
+                    short.append((t.term, t.text))
+    assert not short, short
