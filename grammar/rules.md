@@ -991,7 +991,7 @@ a verb's entry gives no frame: the kinds of its subject and object, or that it t
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/migrate_upgrade_frames.py`, `scripts/spec_frames.py`
-- Cited by: migration-tools#r56
+- Cited by: migration-tools#r75
 - Fails on:
 
   ```prolog
@@ -1106,7 +1106,7 @@ an attribute does not say whether its values are adjectives or nouns (Values (ad
 
 - Severity: warning
 - Implemented in: `scripts/model.lp`
-- Cited by: migration-tools#r65
+- Cited by: migration-tools#r80
 - Fails on:
 
   ```prolog
