@@ -21,7 +21,7 @@ meaning. It reads nothing but `spec/` and `features/`, and integration and formu
 ## Behaviour
 
 ## Implementation, may change
-- None: retired in plugin 2.0.0.
+- None: retired in plugin 0.31.0.
 
 ## Not yet
 - None.
@@ -29,19 +29,19 @@ meaning. It reads nothing but `spec/` and `features/`, and integration and formu
 ## Dropped
 - r6@0.29: scenarios are generated from parsed statements, so no scenario uses a word the glossary avoids and none is reworded by hand.
 - r7@0.29: no statement has two readings: one that does not parse to exactly one tree is refused (v_p1, v_p2).
-- r1@0.29: retired with spec-consistency#r1 in 2.0.0 (the-old-workflow-retired).
-- r2@0.29: retired with spec-consistency#r1 in 2.0.0 (the-old-workflow-retired).
-- r3@0.29: retired with spec-consistency#r2 in 2.0.0 (the-old-workflow-retired).
-- r4@0.29: retired with spec-consistency#r3, #r4, #r17 in 2.0.0 (the-old-workflow-retired).
-- r8@0.29: retired with spec-consistency#r6 in 2.0.0 (the-old-workflow-retired).
-- r9@0.29: retired with spec-consistency#r7 in 2.0.0 (the-old-workflow-retired).
-- r10@0.29: retired with spec-consistency#r8 in 2.0.0 (the-old-workflow-retired).
-- r11@0.29: retired with spec-consistency#r9 in 2.0.0 (the-old-workflow-retired).
-- r21@0.29: retired with spec-consistency#r10 in 2.0.0 (the-old-workflow-retired).
-- r22@0.29: retired with spec-consistency#r11 in 2.0.0 (the-old-workflow-retired).
-- r23@0.29: retired with spec-consistency#r12 in 2.0.0 (the-old-workflow-retired).
-- r24@0.29: retired with spec-consistency#r13 in 2.0.0 (the-old-workflow-retired).
-- r25@0.29: retired with spec-consistency#r14 in 2.0.0 (the-old-workflow-retired).
-- r26@0.29: retired with spec-consistency#r15 in 2.0.0 (the-old-workflow-retired).
-- r27@0.29: retired with spec-consistency#r16 in 2.0.0 (the-old-workflow-retired).
-- r28@0.29: retired with spec-consistency#r5 in 2.0.0 (the-old-workflow-retired).
+- r1@0.29: retired with spec-consistency#r1 in 0.31.0 (the-old-workflow-retired).
+- r2@0.29: retired with spec-consistency#r1 in 0.31.0 (the-old-workflow-retired).
+- r3@0.29: retired with spec-consistency#r2 in 0.31.0 (the-old-workflow-retired).
+- r4@0.29: retired with spec-consistency#r3, #r4, #r17 in 0.31.0 (the-old-workflow-retired).
+- r8@0.29: retired with spec-consistency#r6 in 0.31.0 (the-old-workflow-retired).
+- r9@0.29: retired with spec-consistency#r7 in 0.31.0 (the-old-workflow-retired).
+- r10@0.29: retired with spec-consistency#r8 in 0.31.0 (the-old-workflow-retired).
+- r11@0.29: retired with spec-consistency#r9 in 0.31.0 (the-old-workflow-retired).
+- r21@0.29: retired with spec-consistency#r10 in 0.31.0 (the-old-workflow-retired).
+- r22@0.29: retired with spec-consistency#r11 in 0.31.0 (the-old-workflow-retired).
+- r23@0.29: retired with spec-consistency#r12 in 0.31.0 (the-old-workflow-retired).
+- r24@0.29: retired with spec-consistency#r13 in 0.31.0 (the-old-workflow-retired).
+- r25@0.29: retired with spec-consistency#r14 in 0.31.0 (the-old-workflow-retired).
+- r26@0.29: retired with spec-consistency#r15 in 0.31.0 (the-old-workflow-retired).
+- r27@0.29: retired with spec-consistency#r16 in 0.31.0 (the-old-workflow-retired).
+- r28@0.29: retired with spec-consistency#r5 in 0.31.0 (the-old-workflow-retired).

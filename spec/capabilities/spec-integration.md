@@ -28,7 +28,7 @@ It is not formulation and not planning; it writes nothing a client can run.
 ## Behaviour
 
 ## Implementation, may change
-- None: retired in plugin 2.0.0.
+- None: retired in plugin 0.31.0.
 
 ## Not yet
 - None.
@@ -42,21 +42,21 @@ It is not formulation and not planning; it writes nothing a client can run.
 - r46@0.29: moved to supervision
 - r54@0.29: moved to supervision
 - r55@0.29: moved to supervision
-- r1@0.29: retired with spec-integration#r1, #r2 in 2.0.0 (the-old-workflow-retired).
-- r2@0.29: retired with spec-integration#r3 in 2.0.0 (the-old-workflow-retired).
-- r3@0.29: retired with spec-integration#r4 in 2.0.0 (the-old-workflow-retired).
-- r4@0.29: retired with spec-integration#r5 in 2.0.0 (the-old-workflow-retired).
-- r6@0.29: retired with spec-integration#r6 in 2.0.0 (the-old-workflow-retired).
-- r7@0.29: retired with spec-integration#r7 in 2.0.0 (the-old-workflow-retired).
-- r12@0.29: retired with spec-integration#r1 in 2.0.0 (the-old-workflow-retired).
-- r14@0.29: retired with spec-integration#r8 in 2.0.0 (the-old-workflow-retired).
-- r15@0.29: retired with spec-integration#r6 in 2.0.0 (the-old-workflow-retired).
-- r19@0.29: retired with spec-integration#r10 in 2.0.0 (the-old-workflow-retired).
-- r20@0.29: retired with spec-integration#r11 in 2.0.0 (the-old-workflow-retired).
-- r21@0.29: retired with spec-integration#r11 in 2.0.0 (the-old-workflow-retired).
-- r33@0.29: retired with spec-integration#r16 in 2.0.0 (the-old-workflow-retired).
-- r35@0.29: retired with spec-integration#r12 in 2.0.0 (the-old-workflow-retired).
-- r39@0.29: retired with spec-integration#r13 in 2.0.0 (the-old-workflow-retired).
-- r40@0.29: retired with spec-integration#r14 in 2.0.0 (the-old-workflow-retired).
-- r43@0.29: retired with spec-integration#r15 in 2.0.0 (the-old-workflow-retired).
-- r59@0.29: retired with spec-integration#r9 in 2.0.0 (the-old-workflow-retired).
+- r1@0.29: retired with spec-integration#r1, #r2 in 0.31.0 (the-old-workflow-retired).
+- r2@0.29: retired with spec-integration#r3 in 0.31.0 (the-old-workflow-retired).
+- r3@0.29: retired with spec-integration#r4 in 0.31.0 (the-old-workflow-retired).
+- r4@0.29: retired with spec-integration#r5 in 0.31.0 (the-old-workflow-retired).
+- r6@0.29: retired with spec-integration#r6 in 0.31.0 (the-old-workflow-retired).
+- r7@0.29: retired with spec-integration#r7 in 0.31.0 (the-old-workflow-retired).
+- r12@0.29: retired with spec-integration#r1 in 0.31.0 (the-old-workflow-retired).
+- r14@0.29: retired with spec-integration#r8 in 0.31.0 (the-old-workflow-retired).
+- r15@0.29: retired with spec-integration#r6 in 0.31.0 (the-old-workflow-retired).
+- r19@0.29: retired with spec-integration#r10 in 0.31.0 (the-old-workflow-retired).
+- r20@0.29: retired with spec-integration#r11 in 0.31.0 (the-old-workflow-retired).
+- r21@0.29: retired with spec-integration#r11 in 0.31.0 (the-old-workflow-retired).
+- r33@0.29: retired with spec-integration#r16 in 0.31.0 (the-old-workflow-retired).
+- r35@0.29: retired with spec-integration#r12 in 0.31.0 (the-old-workflow-retired).
+- r39@0.29: retired with spec-integration#r13 in 0.31.0 (the-old-workflow-retired).
+- r40@0.29: retired with spec-integration#r14 in 0.31.0 (the-old-workflow-retired).
+- r43@0.29: retired with spec-integration#r15 in 0.31.0 (the-old-workflow-retired).
+- r59@0.29: retired with spec-integration#r9 in 0.31.0 (the-old-workflow-retired).

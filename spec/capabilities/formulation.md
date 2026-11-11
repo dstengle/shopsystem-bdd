@@ -23,7 +23,7 @@ record of where its lines went.
 ## Behaviour
 
 ## Implementation, may change
-- None: retired in plugin 2.0.0.
+- None: retired in plugin 0.31.0.
 
 ## Not yet
 - None.

@@ -27,7 +27,7 @@ work-item's status; `work run` (supervision) takes them through it. It judges no
 ## Behaviour
 
 ## Implementation, may change
-- None: retired in plugin 2.0.0.
+- None: retired in plugin 0.31.0.
 
 ## Not yet
 - None.
@@ -36,33 +36,33 @@ work-item's status; `work run` (supervision) takes them through it. It judges no
 - r12@0.29: the numbering of a work-item's id is `work add`'s implementation, kept under Implementation, may change.
 - r39@0.29: the grammar cannot say a condition on a relation between an initiative and a request; kept under Not yet.
 - r59@0.29: moved to requests.
-- r1@0.29: retired with work-queue#r1 in 2.0.0 (the-old-workflow-retired).
-- r4@0.29: retired with work-queue#r15 in 2.0.0 (the-old-workflow-retired).
-- r5@0.29: retired with work-queue#r15 in 2.0.0 (the-old-workflow-retired).
-- r6@0.29: retired with work-queue#r17 in 2.0.0 (the-old-workflow-retired).
-- r7@0.29: retired with work-queue#r4 in 2.0.0 (the-old-workflow-retired).
-- r8@0.29: retired with work-queue#r18 in 2.0.0 (the-old-workflow-retired).
-- r9@0.29: retired with work-queue#r1 in 2.0.0 (the-old-workflow-retired).
-- r10@0.29: retired with work-queue#r15, #r16 in 2.0.0 (the-old-workflow-retired).
-- r13@0.29: retired with work-queue#r19, #r20 in 2.0.0 (the-old-workflow-retired).
-- r14@0.29: retired with work-queue#r20, #r21, #r22 in 2.0.0 (the-old-workflow-retired).
-- r15@0.29: retired with work-queue#r26 in 2.0.0 (the-old-workflow-retired).
-- r19@0.29: retired with work-queue#r13 in 2.0.0 (the-old-workflow-retired).
-- r20@0.29: retired with work-queue#r13 in 2.0.0 (the-old-workflow-retired).
-- r21@0.29: retired with work-queue#r14 in 2.0.0 (the-old-workflow-retired).
-- r22@0.29: retired with work-queue#r3 in 2.0.0 (the-old-workflow-retired).
-- r24@0.29: retired with work-queue#r19 in 2.0.0 (the-old-workflow-retired).
-- r25@0.29: retired with work-queue#r3 in 2.0.0 (the-old-workflow-retired).
-- r26@0.29: retired with work-queue#r23 in 2.0.0 (the-old-workflow-retired).
-- r27@0.29: retired with work-queue#r24 in 2.0.0 (the-old-workflow-retired).
-- r28@0.29: retired with work-queue#r25 in 2.0.0 (the-old-workflow-retired).
-- r30@0.29: retired with work-queue#r19 in 2.0.0 (the-old-workflow-retired).
-- r31@0.29: retired with work-queue#r6 in 2.0.0 (the-old-workflow-retired).
-- r32@0.29: retired with work-queue#r2 in 2.0.0 (the-old-workflow-retired).
-- r36@0.29: retired with work-queue#r10 in 2.0.0 (the-old-workflow-retired).
-- r37@0.29: retired with work-queue#r11 in 2.0.0 (the-old-workflow-retired).
-- r38@0.29: retired with work-queue#r12 in 2.0.0 (the-old-workflow-retired).
-- r47@0.29: retired with work-queue#r7 in 2.0.0 (the-old-workflow-retired).
-- r60@0.29: retired with work-queue#r8 in 2.0.0 (the-old-workflow-retired).
-- r61@0.29: retired with work-queue#r9 in 2.0.0 (the-old-workflow-retired).
-- r62@0.29: retired with work-queue#r5 in 2.0.0 (the-old-workflow-retired).
+- r1@0.29: retired with work-queue#r1 in 0.31.0 (the-old-workflow-retired).
+- r4@0.29: retired with work-queue#r15 in 0.31.0 (the-old-workflow-retired).
+- r5@0.29: retired with work-queue#r15 in 0.31.0 (the-old-workflow-retired).
+- r6@0.29: retired with work-queue#r17 in 0.31.0 (the-old-workflow-retired).
+- r7@0.29: retired with work-queue#r4 in 0.31.0 (the-old-workflow-retired).
+- r8@0.29: retired with work-queue#r18 in 0.31.0 (the-old-workflow-retired).
+- r9@0.29: retired with work-queue#r1 in 0.31.0 (the-old-workflow-retired).
+- r10@0.29: retired with work-queue#r15, #r16 in 0.31.0 (the-old-workflow-retired).
+- r13@0.29: retired with work-queue#r19, #r20 in 0.31.0 (the-old-workflow-retired).
+- r14@0.29: retired with work-queue#r20, #r21, #r22 in 0.31.0 (the-old-workflow-retired).
+- r15@0.29: retired with work-queue#r26 in 0.31.0 (the-old-workflow-retired).
+- r19@0.29: retired with work-queue#r13 in 0.31.0 (the-old-workflow-retired).
+- r20@0.29: retired with work-queue#r13 in 0.31.0 (the-old-workflow-retired).
+- r21@0.29: retired with work-queue#r14 in 0.31.0 (the-old-workflow-retired).
+- r22@0.29: retired with work-queue#r3 in 0.31.0 (the-old-workflow-retired).
+- r24@0.29: retired with work-queue#r19 in 0.31.0 (the-old-workflow-retired).
+- r25@0.29: retired with work-queue#r3 in 0.31.0 (the-old-workflow-retired).
+- r26@0.29: retired with work-queue#r23 in 0.31.0 (the-old-workflow-retired).
+- r27@0.29: retired with work-queue#r24 in 0.31.0 (the-old-workflow-retired).
+- r28@0.29: retired with work-queue#r25 in 0.31.0 (the-old-workflow-retired).
+- r30@0.29: retired with work-queue#r19 in 0.31.0 (the-old-workflow-retired).
+- r31@0.29: retired with work-queue#r6 in 0.31.0 (the-old-workflow-retired).
+- r32@0.29: retired with work-queue#r2 in 0.31.0 (the-old-workflow-retired).
+- r36@0.29: retired with work-queue#r10 in 0.31.0 (the-old-workflow-retired).
+- r37@0.29: retired with work-queue#r11 in 0.31.0 (the-old-workflow-retired).
+- r38@0.29: retired with work-queue#r12 in 0.31.0 (the-old-workflow-retired).
+- r47@0.29: retired with work-queue#r7 in 0.31.0 (the-old-workflow-retired).
+- r60@0.29: retired with work-queue#r8 in 0.31.0 (the-old-workflow-retired).
+- r61@0.29: retired with work-queue#r9 in 0.31.0 (the-old-workflow-retired).
+- r62@0.29: retired with work-queue#r5 in 0.31.0 (the-old-workflow-retired).

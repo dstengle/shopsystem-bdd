@@ -23,30 +23,30 @@ It changes the meaning of no approved scenario.
 ## Behaviour
 
 ## Implementation, may change
-- None: retired in plugin 2.0.0.
+- None: retired in plugin 0.31.0.
 
 ## Not yet
 - None.
 
 ## Dropped
-- r1@0.29: retired with spec-migration#r1, #r2 in 2.0.0 (the-old-workflow-retired).
-- r2@0.29: retired with spec-migration#r3 in 2.0.0 (the-old-workflow-retired).
-- r4@0.29: retired with spec-migration#r6 in 2.0.0 (the-old-workflow-retired).
-- r5@0.29: retired with spec-migration#r6 in 2.0.0 (the-old-workflow-retired).
-- r6@0.29: retired with spec-migration#r7 in 2.0.0 (the-old-workflow-retired).
-- r7@0.29: retired with spec-migration#r8 in 2.0.0 (the-old-workflow-retired).
-- r8@0.29: retired with spec-migration#r6 in 2.0.0 (the-old-workflow-retired).
-- r9@0.29: retired with spec-migration#r9 in 2.0.0 (the-old-workflow-retired).
-- r10@0.29: retired with spec-migration#r4 in 2.0.0 (the-old-workflow-retired).
-- r11@0.29: retired with spec-migration#r10 in 2.0.0 (the-old-workflow-retired).
-- r14@0.29: retired with spec-migration#r4 in 2.0.0 (the-old-workflow-retired).
-- r15@0.29: retired with spec-migration#r4 in 2.0.0 (the-old-workflow-retired).
-- r16@0.29: retired with spec-migration#r3 in 2.0.0 (the-old-workflow-retired).
-- r17@0.29: retired with spec-migration#r11 in 2.0.0 (the-old-workflow-retired).
-- r18@0.29: retired with spec-migration#r12 in 2.0.0 (the-old-workflow-retired).
-- r19@0.29: retired with spec-migration#r13 in 2.0.0 (the-old-workflow-retired).
-- r20@0.29: retired with spec-migration#r6 in 2.0.0 (the-old-workflow-retired).
-- r21@0.29: retired with spec-migration#r14 in 2.0.0 (the-old-workflow-retired).
-- r22@0.29: retired with spec-migration#r4, #r5 in 2.0.0 (the-old-workflow-retired).
-- r23@0.29: retired with spec-migration#r6 in 2.0.0 (the-old-workflow-retired).
-- r26@0.29: retired with spec-migration#r3 in 2.0.0 (the-old-workflow-retired).
+- r1@0.29: retired with spec-migration#r1, #r2 in 0.31.0 (the-old-workflow-retired).
+- r2@0.29: retired with spec-migration#r3 in 0.31.0 (the-old-workflow-retired).
+- r4@0.29: retired with spec-migration#r6 in 0.31.0 (the-old-workflow-retired).
+- r5@0.29: retired with spec-migration#r6 in 0.31.0 (the-old-workflow-retired).
+- r6@0.29: retired with spec-migration#r7 in 0.31.0 (the-old-workflow-retired).
+- r7@0.29: retired with spec-migration#r8 in 0.31.0 (the-old-workflow-retired).
+- r8@0.29: retired with spec-migration#r6 in 0.31.0 (the-old-workflow-retired).
+- r9@0.29: retired with spec-migration#r9 in 0.31.0 (the-old-workflow-retired).
+- r10@0.29: retired with spec-migration#r4 in 0.31.0 (the-old-workflow-retired).
+- r11@0.29: retired with spec-migration#r10 in 0.31.0 (the-old-workflow-retired).
+- r14@0.29: retired with spec-migration#r4 in 0.31.0 (the-old-workflow-retired).
+- r15@0.29: retired with spec-migration#r4 in 0.31.0 (the-old-workflow-retired).
+- r16@0.29: retired with spec-migration#r3 in 0.31.0 (the-old-workflow-retired).
+- r17@0.29: retired with spec-migration#r11 in 0.31.0 (the-old-workflow-retired).
+- r18@0.29: retired with spec-migration#r12 in 0.31.0 (the-old-workflow-retired).
+- r19@0.29: retired with spec-migration#r13 in 0.31.0 (the-old-workflow-retired).
+- r20@0.29: retired with spec-migration#r6 in 0.31.0 (the-old-workflow-retired).
+- r21@0.29: retired with spec-migration#r14 in 0.31.0 (the-old-workflow-retired).
+- r22@0.29: retired with spec-migration#r4, #r5 in 0.31.0 (the-old-workflow-retired).
+- r23@0.29: retired with spec-migration#r6 in 0.31.0 (the-old-workflow-retired).
+- r26@0.29: retired with spec-migration#r3 in 0.31.0 (the-old-workflow-retired).

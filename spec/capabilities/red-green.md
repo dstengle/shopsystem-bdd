@@ -24,22 +24,22 @@ a scenario should have said, and it never writes a work-item's transition: `work
 ## Behaviour
 
 ## Implementation, may change
-- None: retired in plugin 2.0.0.
+- None: retired in plugin 0.31.0.
 
 ## Not yet
 - None.
 
 ## Dropped
-- r1@0.29: retired with red-green#r1, #r2 in 2.0.0 (the-old-workflow-retired).
-- r2@0.29: retired with red-green#r3 in 2.0.0 (the-old-workflow-retired).
-- r3@0.29: retired with red-green#r4 in 2.0.0 (the-old-workflow-retired).
-- r5@0.29: retired with red-green#r5, #r6 in 2.0.0 (the-old-workflow-retired).
-- r6@0.29: retired with red-green#r7 in 2.0.0 (the-old-workflow-retired).
-- r7@0.29: retired with red-green#r8 in 2.0.0 (the-old-workflow-retired).
-- r9@0.29: retired with red-green#r9 in 2.0.0 (the-old-workflow-retired).
-- r10@0.29: retired with red-green#r10 in 2.0.0 (the-old-workflow-retired).
-- r11@0.29: retired with red-green#r11 in 2.0.0 (the-old-workflow-retired).
-- r15@0.29: retired with red-green#r12 in 2.0.0 (the-old-workflow-retired).
-- r16@0.29: retired with red-green#r13 in 2.0.0 (the-old-workflow-retired).
-- r17@0.29: retired with red-green#r14 in 2.0.0 (the-old-workflow-retired).
-- r18@0.29: retired with red-green#r15 in 2.0.0 (the-old-workflow-retired).
+- r1@0.29: retired with red-green#r1, #r2 in 0.31.0 (the-old-workflow-retired).
+- r2@0.29: retired with red-green#r3 in 0.31.0 (the-old-workflow-retired).
+- r3@0.29: retired with red-green#r4 in 0.31.0 (the-old-workflow-retired).
+- r5@0.29: retired with red-green#r5, #r6 in 0.31.0 (the-old-workflow-retired).
+- r6@0.29: retired with red-green#r7 in 0.31.0 (the-old-workflow-retired).
+- r7@0.29: retired with red-green#r8 in 0.31.0 (the-old-workflow-retired).
+- r9@0.29: retired with red-green#r9 in 0.31.0 (the-old-workflow-retired).
+- r10@0.29: retired with red-green#r10 in 0.31.0 (the-old-workflow-retired).
+- r11@0.29: retired with red-green#r11 in 0.31.0 (the-old-workflow-retired).
+- r15@0.29: retired with red-green#r12 in 0.31.0 (the-old-workflow-retired).
+- r16@0.29: retired with red-green#r13 in 0.31.0 (the-old-workflow-retired).
+- r17@0.29: retired with red-green#r14 in 0.31.0 (the-old-workflow-retired).
+- r18@0.29: retired with red-green#r15 in 0.31.0 (the-old-workflow-retired).

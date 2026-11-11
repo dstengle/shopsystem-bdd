@@ -92,7 +92,7 @@ the measurement `m3` holds:
 ## Implementation, may change
 - A measurement is a record whose frontmatter id is of kind `measurement`; its figures are one JSON block in its
   body, which `show` and `compare` read back. `measure initiative`, which wrote an initiative's, was retired in
-  plugin 2.0.0 with r1-r17 (the-old-workflow-retired); the records it wrote are still shown and compared.
+  plugin 0.31.0 with r1-r17 (the-old-workflow-retired); the records it wrote are still shown and compared.
 
 ## Not yet
 - Figures beyond what `work run` already records: the skeleton grows from the measurements of 0.21.0's, 0.22.0's
@@ -100,26 +100,26 @@ the measurement `m3` holds:
   give.
 
 ## Dropped
-- r39@0.29: retired with batch-measurement#r1 in 2.0.0 (the-old-workflow-retired).
-- r40@0.29: retired with batch-measurement#r1 in 2.0.0 (the-old-workflow-retired).
-- r41@0.29: retired with batch-measurement#r9 in 2.0.0 (the-old-workflow-retired).
-- r42@0.29: retired with batch-measurement#r9 in 2.0.0 (the-old-workflow-retired).
-- r43@0.29: retired with batch-measurement#r17 in 2.0.0 (the-old-workflow-retired).
-- r46@0.29: retired with batch-measurement#r2 in 2.0.0 (the-old-workflow-retired).
-- r47@0.29: retired with batch-measurement#r6, #r7 in 2.0.0 (the-old-workflow-retired).
-- r48@0.29: retired with batch-measurement#r10 in 2.0.0 (the-old-workflow-retired).
-- r49@0.29: retired with batch-measurement#r17 in 2.0.0 (the-old-workflow-retired).
-- r50@0.29: retired with batch-measurement#r2 in 2.0.0 (the-old-workflow-retired).
-- r51@0.29: retired with batch-measurement#r12 in 2.0.0 (the-old-workflow-retired).
-- r52@0.29: retired with batch-measurement#r11 in 2.0.0 (the-old-workflow-retired).
-- r53@0.29: retired with batch-measurement#r8 in 2.0.0 (the-old-workflow-retired).
-- r55@0.29: retired with batch-measurement#r14 in 2.0.0 (the-old-workflow-retired).
-- r57@0.29: retired with batch-measurement#r13 in 2.0.0 (the-old-workflow-retired).
-- r58@0.29: retired with batch-measurement#r8 in 2.0.0 (the-old-workflow-retired).
-- r59@0.29: retired with batch-measurement#r9 in 2.0.0 (the-old-workflow-retired).
-- r60@0.29: retired with batch-measurement#r17 in 2.0.0 (the-old-workflow-retired).
-- r63@0.29: retired with batch-measurement#r15 in 2.0.0 (the-old-workflow-retired).
-- r64@0.29: retired with batch-measurement#r16 in 2.0.0 (the-old-workflow-retired).
-- r65@0.29: retired with batch-measurement#r3 in 2.0.0 (the-old-workflow-retired).
-- r66@0.29: retired with batch-measurement#r4 in 2.0.0 (the-old-workflow-retired).
-- r67@0.29: retired with batch-measurement#r5 in 2.0.0 (the-old-workflow-retired).
+- r39@0.29: retired with batch-measurement#r1 in 0.31.0 (the-old-workflow-retired).
+- r40@0.29: retired with batch-measurement#r1 in 0.31.0 (the-old-workflow-retired).
+- r41@0.29: retired with batch-measurement#r9 in 0.31.0 (the-old-workflow-retired).
+- r42@0.29: retired with batch-measurement#r9 in 0.31.0 (the-old-workflow-retired).
+- r43@0.29: retired with batch-measurement#r17 in 0.31.0 (the-old-workflow-retired).
+- r46@0.29: retired with batch-measurement#r2 in 0.31.0 (the-old-workflow-retired).
+- r47@0.29: retired with batch-measurement#r6, #r7 in 0.31.0 (the-old-workflow-retired).
+- r48@0.29: retired with batch-measurement#r10 in 0.31.0 (the-old-workflow-retired).
+- r49@0.29: retired with batch-measurement#r17 in 0.31.0 (the-old-workflow-retired).
+- r50@0.29: retired with batch-measurement#r2 in 0.31.0 (the-old-workflow-retired).
+- r51@0.29: retired with batch-measurement#r12 in 0.31.0 (the-old-workflow-retired).
+- r52@0.29: retired with batch-measurement#r11 in 0.31.0 (the-old-workflow-retired).
+- r53@0.29: retired with batch-measurement#r8 in 0.31.0 (the-old-workflow-retired).
+- r55@0.29: retired with batch-measurement#r14 in 0.31.0 (the-old-workflow-retired).
+- r57@0.29: retired with batch-measurement#r13 in 0.31.0 (the-old-workflow-retired).
+- r58@0.29: retired with batch-measurement#r8 in 0.31.0 (the-old-workflow-retired).
+- r59@0.29: retired with batch-measurement#r9 in 0.31.0 (the-old-workflow-retired).
+- r60@0.29: retired with batch-measurement#r17 in 0.31.0 (the-old-workflow-retired).
+- r63@0.29: retired with batch-measurement#r15 in 0.31.0 (the-old-workflow-retired).
+- r64@0.29: retired with batch-measurement#r16 in 0.31.0 (the-old-workflow-retired).
+- r65@0.29: retired with batch-measurement#r3 in 0.31.0 (the-old-workflow-retired).
+- r66@0.29: retired with batch-measurement#r4 in 0.31.0 (the-old-workflow-retired).
+- r67@0.29: retired with batch-measurement#r5 in 0.31.0 (the-old-workflow-retired).

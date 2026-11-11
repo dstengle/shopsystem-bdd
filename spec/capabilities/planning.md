@@ -24,17 +24,17 @@ work-item; it plans from the researcher's notes and gives intent, never code. A 
 ## Behaviour
 
 ## Implementation, may change
-- None: retired in plugin 2.0.0.
+- None: retired in plugin 0.31.0.
 
 ## Not yet
 - None.
 
 ## Dropped
-- r1@0.29: retired with planning#r1 in 2.0.0 (the-old-workflow-retired).
-- r2@0.29: retired with planning#r2 in 2.0.0 (the-old-workflow-retired).
-- r3@0.29: retired with planning#r2 in 2.0.0 (the-old-workflow-retired).
-- r4@0.29: retired with planning#r3 in 2.0.0 (the-old-workflow-retired).
-- r5@0.29: retired with planning#r4 in 2.0.0 (the-old-workflow-retired).
-- r6@0.29: retired with planning#r5 in 2.0.0 (the-old-workflow-retired).
-- r7@0.29: retired with planning#r6 in 2.0.0 (the-old-workflow-retired).
-- r8@0.29: retired with planning#r7 in 2.0.0 (the-old-workflow-retired).
+- r1@0.29: retired with planning#r1 in 0.31.0 (the-old-workflow-retired).
+- r2@0.29: retired with planning#r2 in 0.31.0 (the-old-workflow-retired).
+- r3@0.29: retired with planning#r2 in 0.31.0 (the-old-workflow-retired).
+- r4@0.29: retired with planning#r3 in 0.31.0 (the-old-workflow-retired).
+- r5@0.29: retired with planning#r4 in 0.31.0 (the-old-workflow-retired).
+- r6@0.29: retired with planning#r5 in 0.31.0 (the-old-workflow-retired).
+- r7@0.29: retired with planning#r6 in 0.31.0 (the-old-workflow-retired).
+- r8@0.29: retired with planning#r7 in 0.31.0 (the-old-workflow-retired).
