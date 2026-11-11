@@ -32,5 +32,6 @@ Feature: Notes
 
   @g4 @r4
   Scenario: `notes remove` deletes a note
+    Given a note n1
     When the person runs `notes remove` on the note n1
     Then `notes` deletes the note n1

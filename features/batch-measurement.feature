@@ -84,6 +84,8 @@ Feature: Measurement of an initiative's deliveries
       """
       {"stages": [], "work_items": [], "totals": {"stages": 0, "sessions": 0}, "sessions": [{"session": "s-9", "started": null, "dispatched_by": null, "output_tokens": 9000, "new_input_tokens": 4000, "cache_read_tokens": 80000, "round_trips": 6, "tool_uses": {"Bash": 2}, "dispatched": ["s-11"], "compactions": 1}]}
       """
+    And a measurement m1
+    And a measurement m2
     When the person runs `measure compare` on the measurement m1
     And the person runs `measure compare` on the measurement m2
     Then `measure` prints the total row t1

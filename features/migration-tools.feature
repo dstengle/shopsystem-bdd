@@ -79,6 +79,7 @@ Feature: Migration tools
       """
     And an old-layout directory o1
     And this repository holds the old-layout directory o1
+    And a bounded context b1
     And an old-layout directory o2
     And an old-layout directory o3
     And a file f1
@@ -121,6 +122,7 @@ Feature: Migration tools
     And this repository has the decision ledger d1
     And a ledger entry l1
     And the decision ledger d1 has the ledger entry l1
+    And a bounded context b1
     When the person runs `migrate run` on the bounded context b1
     Then the ledger entry l1 has the design-decision d2
     And `migrate` writes the design-decision d2
@@ -148,6 +150,7 @@ Feature: Migration tools
     And the ledger entry l1 has the qualifier q1
     And a ledger entry l2
     And the ledger entry l1 supersedes the ledger entry l2
+    And a bounded context b1
     When the person runs `migrate run` on the bounded context b1
     Then the design-decision d1 holds the qualifier q1
     And `migrate` writes the design-decision d1
@@ -169,6 +172,7 @@ Feature: Migration tools
     And a decision ledger d1
     And the decision ledger d1 has the ledger entry l1
     And the ledger entry l1 has no ledger number
+    And a bounded context b1
     When the person runs `migrate run` on the bounded context b1
     Then `migrate` gives the ledger number l2 to the ledger entry l1
 
@@ -194,6 +198,7 @@ Feature: Migration tools
     And a capability c1
     And the capability c1 has the Behaviour line b1
     And the Behaviour line b1 has no line id
+    And a bounded context b2
     When the person runs `migrate run` on the bounded context b2
     Then `migrate` gives the line id l1 to the Behaviour line b1
 
@@ -221,6 +226,7 @@ Feature: Migration tools
     And an old-layout directory o1
     And the old-layout directory o1 holds the tracked file t1
     And the tracked file t1 has the stem s1
+    And a bounded context b1
     When the person runs `migrate run` on the bounded context b1
     Then `migrate` refuses `migrate run`
     And `migrate` names the tracked file t1
@@ -230,6 +236,7 @@ Feature: Migration tools
     Given the tracked file `decisions/0001-a.md` holds "# a"
     And an uncommitted change u1
     And this repository holds the uncommitted change u1
+    And a bounded context b1
     When the person runs `migrate run` on the bounded context b1
     Then `migrate` refuses `migrate run`
     And `migrate` names the uncommitted change u1
@@ -706,6 +713,7 @@ Feature: Migration tools
     And a ledger entry l1
     And a ledger entry l2
     And the ledger entry l1 supersedes the ledger entry l2
+    And a bounded context b1
     When the person runs `migrate run` on the bounded context b1
     Then the ledger entry l2 has the design-decision d1
     And the status of the design-decision d1 is `superseded`

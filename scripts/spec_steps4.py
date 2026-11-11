@@ -2,23 +2,21 @@
 I14a), the one meaning `model logic` reads (spec_lf), in the step grammar 4's trees (spec_rgl_steps).
 
 - Givens: what the While and Where parts say, then what the trigger says of its referents besides its event, each a
-  condition (`SCond`), a referent brought in at its first mention (`K_Given`, "a stage s1"); a `not` with no
-  referents of its own is its condition negated; "has no T" spec_lf_values' Given.
-- When: the trigger's event (`STrig`).
+  condition (`SCond`), a referent brought in at its first mention (`K_Given`, "a stage s1"), then each referent the
+  event names not yet brought in (b263); a `not` with no referents of its own is its condition negated; "has no T"
+  spec_lf_values' Given. When: the trigger's event (`STrig`).
 - Thens: each act of the response in the present (`S_Does`; setting an attribute spec_lf_set's), its polarity kept:
   "change nothing" is "changes nothing", a `not` over an act on a referent of its own "does not V a K"; a condition of
   the response a condition, a row's atom its frame ("the session s1 has the worktree w1", "the worktree w1 holds the
   file f1"). An `every` box gives two Ks, so the line is not met vacuously (R6): each brought in by a Given with its
-  restrictor, its scope's Thens said of each (b221). An act a universal condition entails (`entailed`, by the act's
-  number as spec_lf_facts numbers it: each act in order, "change nothing" one) is left out, a comment `# entailed:
-  <premise>` in its place.
+  restrictor, its scope's Thens said of each (b221). An act a universal condition entails (`entailed`, by its number
+  as spec_lf_facts numbers acts, "change nothing" one) is left out, `# entailed: <premise>` in its place.
 Givens and the When are the first requirement's; a later one's While and trigger referent of a kind is the first
 one's of that kind and rank. A referent is named by its kind's first letter and a count, in order of first mention;
 an actor by its fun, a code by the slot's `K_Code`, the run's own thing by `K_This`. Two referents `distinct`
 ("another K", "two Ks", b240) are two instances of two names, which says they differ; a trigger of one act on each of
-two Ks a When each. A construct with no step
-(`only`, a count, `or`, the atom of a row whose word is neither `of` nor `in`, a negated restriction, a line of "may",
-"always" or "never") is a TraceError naming it.
+two Ks a When each. A construct with no step (`only`, a count, `or`, the atom of a row whose word is neither `of` nor
+`in`, a negated restriction, a line of "may", "always" or "never") is a TraceError naming it.
 """
 from dataclasses import replace
 
@@ -194,12 +192,14 @@ class Reader:
         if boxes.image(self, item) or item.pred == spec_lf_distinct.PRED:      # two names are two things (b240)
             return []
         cond = self.cond(item, pos)
-        out = []
-        for r in mentioned(item):
-            if r not in self.known and r not in self.dets and r.origin in ("while", "trigger"):
-                self.known.add(r)
-                out.append((kid(r.kind) + "_Given", (kid(r.kind) + "_n",), ("NameLit", self.name(r))))
-        return out + [("SCond", cond)]
+        return self.introduce(item) + [("SCond", cond)]
+
+    def introduce(self, item):
+        """The `K_Given` of each While or trigger referent an atom mentions first (b263)."""
+        new = [r for r in mentioned(item) if r.origin in ("while", "trigger") and r not in self.known
+               and not any(r in s for s in (self.dets, self.images, self.numbers))]
+        self.known.update(new)
+        return [(kid(r.kind) + "_Given", (kid(r.kind) + "_n",), ("NameLit", self.name(r))) for r in new]
 
     def acts(self, body, pos=True):
         """[(act number or None, Then tree)] of a response's items, numbered as spec_lf_facts numbers its acts."""
@@ -287,6 +287,7 @@ def read(vocab, forms, entailed=None, r=None):
                 events = [i for i in part.body if isinstance(i, Atom) and i.pred == "event"]
                 givens += [g for item in part.body if item not in events for g in r.given(item)]
                 for event in events:      # one act on each of "two Ks" (b240): a When each
+                    givens += r.introduce(event)
                     subject, s, vp = r.clause(event)
                     when.append(("STrig", (kid(subject) + "_Event", s, vp)))
             elif part.op == "response":

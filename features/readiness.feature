@@ -4,6 +4,7 @@ Feature: Readiness
 
   @g4 @r4
   Scenario: `work ready` asks no question
+    Given an item i1
     When the person runs `work ready` on the item i1
     Then `work` does not ask a question
 
@@ -42,6 +43,7 @@ Feature: Readiness
   @g26 @r26
   Scenario: `work line --relation` writes a relation row in an item
     Given a relation row r1
+    And an item i1
     When the person runs `work line` with the `--relation` option set to the relation row r1 on the item i1
     Then the item i1 holds the relation row r1
     And `work` writes the relation row r1
@@ -58,6 +60,7 @@ Feature: Readiness
   @g28 @r28
   Scenario: `work line --universal` writes a universal condition in an item
     Given a universal condition u1
+    And an item i1
     When the person runs `work line` with the `--universal` option set to the universal condition u1 on the item i1
     Then the item i1 holds the universal condition u1
     And `work` writes the universal condition u1
@@ -66,6 +69,7 @@ Feature: Readiness
   @g29 @r29
   Scenario: `work line --upstream` writes an upstream entry in an item
     Given an upstream entry u1
+    And an item i1
     When the person runs `work line` with the `--upstream` option set to the upstream entry u1 on the item i1
     Then the item i1 holds the upstream entry u1
     And `work` writes the upstream entry u1
@@ -82,6 +86,7 @@ Feature: Readiness
   @g31 @r31
   Scenario: `work line --given` writes a given block in an item
     Given a given block g1
+    And an item i1
     When the person runs `work line` with the `--given` option set to the given block g1 on the item i1
     Then the item i1 holds the given block g1
     And `work` writes the given block g1
@@ -97,6 +102,7 @@ Feature: Readiness
 
   @g34 @r34
   Scenario: `work line --retires` writes a requirement in an item
+    Given an item i1
     When the person runs `work line` with the `--retires` option on the item i1
     Then the item i1 holds the requirement r1
     And `work` writes the requirement r1
@@ -126,6 +132,7 @@ Feature: Readiness
   @g37 @r37
   Scenario: `work line --recodify` sets the language of a capability in an item
     Given a capability c1
+    And an item i1
     When the person runs `work line` with the `--recodify` option set to the capability c1 on the item i1
     Then the item i1 holds the capability c1
     And `work` sets the language of the capability c1 to `codified-2`
@@ -133,6 +140,7 @@ Feature: Readiness
 
   @g38 @r38
   Scenario: `work line --recodify universal` sets the language of the universal conditions in an item
+    Given an item i1
     When the person runs `work line` with the `--recodify` option set to `universal` on the item i1
     Then the item i1 holds `universal`
     And `work` sets the language of `universal` to `codified-2`
@@ -140,6 +148,7 @@ Feature: Readiness
 
   @g39 @r39
   Scenario: `work line --universal --retires` writes a universal condition in an item
+    Given an item i1
     When the person runs `work line` with the `--universal` and `--retires` options on the item i1
     Then the item i1 holds the universal condition u1
     And `work` writes the universal condition u1
