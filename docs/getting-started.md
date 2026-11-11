@@ -19,6 +19,9 @@ Here is where you're heading. You write one line like this:
 and the plugin writes its test scenario for you:
 
 ```gherkin
+Feature: Notes
+  Narrator: the person
+
   @g4 @r4
   Scenario: `notes remove` deletes a note
     When the person runs `notes remove` on the note n1
