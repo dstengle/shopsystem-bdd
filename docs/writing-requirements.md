@@ -430,7 +430,7 @@ $ model parse "When the person runs `work ready` on a shaped item, `work` shall 
 refused: the verb run takes as its object command or command or command or command or command or command or a kind of it: agent runs command; agent runs command with option; agent runs command on thing; agent runs command with option on thing; agent runs command without option; agent runs command without option on thing
   parsed up to: When the person runs `work ready` on a
   nearest words: shaped, shape, `shaped`, shapes, shadowed
-  may follow: act, agent, answer, antecedent, artifact, backlog, batch, ...
+  may follow: agent, answer, batch, capability, capability-proposal, command, comment, dependency, design-decision, entry, feature, file, frame, glossary-proposal, initiative, issue, item, ...
 ```
 
 - The first line names the verb (*run*) and lists its frames. (It repeats "command" once a frame; that is the

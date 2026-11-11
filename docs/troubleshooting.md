@@ -81,7 +81,7 @@ refused: "the batch" has no antecedent: no earlier noun phrase, functional relat
 
 "The batch" means a batch the line has already mentioned, and this line mentions none. Either introduce it first
 ("a batch", or a relation that gives one, such as "the batch of the item" when a relation says an item has one
-batch), or say "a batch". "The batch status" is refused for the same reason: write "the status of the batch".
+batch), or say "a batch".
 
 ### "… reads two ways" (R4)
 

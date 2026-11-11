@@ -228,7 +228,11 @@ now a Given of its own:
     Then the shopper s1 watches the till t1
 ```
 
-`features vocab --check` lists each step no handler matches. Write a handler for each, then run your suite:
+If your handlers are registered with the plugin's `handler` (`from vocab import handler`, in `world_*.py` and
+`*_handlers*.py` files under `tests/scenarios`), `features vocab --check` lists each step no handler matches.
+Write a handler for each, then run your suite. If you bind steps with plain pytest-bdd, as
+[getting started](getting-started.md) does, `--check` cannot see your steps and reports every one: skip it and
+run your suite, whose missing steps fail by name.
 
 ```console
 $ features vocab --check

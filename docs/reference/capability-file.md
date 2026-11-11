@@ -56,8 +56,9 @@ unbuilt: []
 | `retired` | Group and requirement ids that are no longer live. They are never used again. |
 | `unbuilt` | Requirement ids laid by a batch whose code isn't built yet. Their scenarios run as strict expected failures. |
 
-`retired:` and `unbuilt:` are the two keys you'll see change most. Both are written by commands, never by hand
-(see [ids](#ids-groups-requirements-and-retired) below).
+`retired:` and `unbuilt:` are the two keys you'll see change most. Commands write both; the one hand edit is a
+task taking its id out of `unbuilt:` in the commit that makes its scenario pass (see
+[ids](#ids-groups-requirements-and-retired) below).
 
 ### Purpose
 

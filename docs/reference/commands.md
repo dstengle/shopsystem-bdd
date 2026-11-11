@@ -789,10 +789,12 @@ $ features generate --check
 ### `features vocab`
 
 Prints the step vocabulary: each function of the step grammar with its type. With `--check`, it checks that every
-generated step parses and has exactly one handler in your tests.\
+generated step parses and has exactly one handler registered with the plugin's `handler` (`from vocab import
+handler`), loading the `world_*.py` and `*_handlers*.py` files under `--tests`. Steps bound with plain pytest-bdd
+are not seen, so every one is reported: run your suite instead.\
 Synopsis: `features vocab [--check] [--tests TESTS] [--root ROOT] [FEATURE ...]`
 
-- `--tests <dir>`: where the step handlers are (default `tests`).
+- `--tests <dir>`: where the step handlers are (default `tests/scenarios`).
 
 ```console
 $ features vocab --check features/backlog.feature
