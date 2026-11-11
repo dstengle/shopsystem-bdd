@@ -1,6 +1,6 @@
 """The docs test (the user docs' design, §9): README.md, CHANGELOG.md's newest section and every docs/**/*.md but
-docs/history/ kept true. A ```reading block reads as it says in this repository's grammar 4; a ```requirement line
-parses to one meaning and a ```refused line is refused; a ```console line of a plugin tool names subcommands and
+docs/history/ kept true. A ```reading block reads as it says in this repository's grammar 4 (every other requirement
+line and every Gherkin block is test_docs_lines.py's); a ```console line of a plugin tool names subcommands and
 options its argparse knows; every subcommand has its subsection in docs/reference/commands.md, every relative link
 resolves, and the example context docs/examples/notes-cli/ passes `model check` and `features generate --check`."""
 import pathlib
@@ -10,7 +10,6 @@ import sys
 
 import pytest
 import spec_grammar4
-import spec_lf_read
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import toolchain
@@ -24,7 +23,6 @@ from docs_testing import (
     console_commands,
     fenced,
     leaves,
-    lines_of,
     link_problem,
     links,
     pages,
@@ -42,15 +40,6 @@ PAGES = ("README.md", "docs/index.md", "docs/getting-started.md", "docs/tour.md"
 def vocab():
     toolchain.require()
     return spec_grammar4.load(REPO)[0]
-
-
-def refusal(vocab, line):
-    """The refusal of a line in this repository's grammar 4, or None when it parses to one meaning that no reading
-    rule refuses."""
-    p = spec_grammar4.parse(REPO, line)
-    if not p.tree:
-        return p.refusal or "refused"
-    return spec_lf_read.refusal(vocab, p.tree)
 
 
 def test_the_pages_of_the_design_are_there():
@@ -78,19 +67,6 @@ def test_each_reading_block_reads_as_it_says(vocab):
         if got != said:
             wrong.append("%s: %s\n--- the page says:\n%s\n--- grammar 4 reads:\n%s" % (where, line, said, got))
     assert wrong == [], "\n\n".join(wrong)
-
-
-def test_each_requirement_line_parses_to_one_meaning(vocab):
-    """(2) Each line of a ```requirement block parses to one meaning in this repository's grammar 4."""
-    refused = ["%s: %s\n  %s" % (where, line, why) for where, line in lines_of("requirement")
-               if (why := refusal(vocab, line))]
-    assert refused == [], "\n".join(refused)
-
-
-def test_each_refused_line_is_refused(vocab):
-    """(3) Each line of a ```refused block is refused by `model parse` in this repository."""
-    parsed = ["%s: %s" % (where, line) for where, line in lines_of("refused") if not refusal(vocab, line)]
-    assert parsed == [], "these lines parse:\n" + "\n".join(parsed)
 
 
 def test_each_console_command_of_a_plugin_tool_exists():

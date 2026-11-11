@@ -178,7 +178,8 @@ which also means:
 
 `features generate` reads the same logical form a second time, for Gherkin. Givens come from the While part and
 from what the trigger says of its referents, the When from the trigger, and the Thens from the response. Referents
-become named instances in order of first mention: `x1: item` becomes "the item i1".
+become named instances in order of first mention: `x1: item` becomes "the item i1". A Given brings in each instance
+before a Given or the When names it ("an item i1"), so the steps can be bound from the feature file alone.
 
 Every step is written in **step grammar 4** (`grammar/Steps4.gf`, extended per context like the base grammar). So a
 step is never free text: `features vocab` can read each one back into a template and a term, which is how a step is

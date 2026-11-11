@@ -64,11 +64,6 @@ def blocks_of(kind):
             for lang, body, n in fenced(text)[0] if lang == kind]
 
 
-def lines_of(kind):
-    """[(page:line, line)] of each non-blank line of every ```<kind> block."""
-    return [(where, line.strip()) for where, body in blocks_of(kind) for line in body if line.strip()]
-
-
 class _Caught(Exception):
     def __init__(self, parser):
         self.parser = parser

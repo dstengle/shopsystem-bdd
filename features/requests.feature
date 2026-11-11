@@ -105,7 +105,8 @@ Feature: Requests
 
   @g70 @r70
   Scenario: `work show` on a request prints its status and its lines
-    Given a request line r2
+    Given a request r1
+    And a request line r2
     And the request line r2 is proposed in the request r1
     And a request line r3
     And the request line r3 is proposed in the request r1
@@ -134,6 +135,7 @@ Feature: Requests
   Scenario: `work offer` answers an ask with what may serve it
     Given a request r1
     And the status of the request r1 is `open`
+    And a session s1
     When the session s1 runs `work offer` on the request r1
     Then `work` posts the comment c1
     And `work` sets the status of the request r1 to `awaiting-asker`
@@ -166,6 +168,7 @@ Feature: Requests
     And the comment c1 is on the request r1
     And the comment c1 conforms to the comment form
     And the request r1 does not hold the comment c1
+    And a session s1
     And a request r2
     And a request r3
     When the session s1 runs `work sync`
@@ -179,6 +182,7 @@ Feature: Requests
     And a request r1
     And the comment c1 is on the request r1
     And the comment c1 does not conform to the comment form
+    And a session s1
     When the session s1 runs `work sync`
     Then `work` prints the comment c1
     And `work` does not write the comment c1
@@ -269,6 +273,7 @@ Feature: Requests
     And this bounded context has the requirement grammar r2
     And a request line r1
     And the request line r1 does not conform to the requirement grammar r2
+    And a session s1
     When the session s1 runs `work outcome accepted` on the request line r1
     Then `work` refuses `work outcome accepted`
     And `work` names the request line r1
@@ -356,6 +361,7 @@ Feature: Requests
     And the comment c1 is on the request r1
     And the comment c1 conforms to the comment form
     And the request r1 does not hold the comment c1
+    And a session s1
     When the session s1 runs `work watch`
     Then `work` prints the comment c1
     And `work` exits successfully
@@ -370,6 +376,7 @@ Feature: Requests
     And the status of the issue i1 is `open`
     And the issue i1 conforms to the comment form
     And no request has the issue i1
+    And a session s1
     When the session s1 runs `work watch`
     Then `work` prints the issue i1
     And `work` exits successfully
@@ -456,6 +463,7 @@ Feature: Requests
     And the side of the entry e1 is `upstream`
     And the comment c1 holds the entry e1
     And the request r1 does not hold the comment c1
+    And a session s1
     When the session s1 runs `work sync`
     Then `work` writes the comment c1
     And `work` does not write the entry e1
@@ -468,6 +476,7 @@ Feature: Requests
     And the comment c1 is on the request r1
     And the comment c1 conforms to the comment form
     And the request r1 does not hold the comment c1
+    And a session s1
     When the session s1 runs `work sync`
     Then `work` writes the comment c1
     And `work` keeps the status of the request r1
@@ -481,6 +490,7 @@ Feature: Requests
     And the comment c1 is on the request r1
     And the comment c1 conforms to the comment form
     And the request r1 does not hold the comment c1
+    And a session s1
     When the session s1 runs `work sync`
     Then `work` writes the comment c1
     And `work` keeps the status of the request r1
@@ -494,6 +504,7 @@ Feature: Requests
     And the comment c1 is on the request r1
     And the comment c1 conforms to the comment form
     And the request r1 does not hold the comment c1
+    And a session s1
     When the session s1 runs `work sync`
     Then `work` writes the comment c1
     And `work` keeps the status of the request r1
@@ -532,6 +543,7 @@ Feature: Requests
     And the comment c1 is on the request r1
     And the comment c1 conforms to the comment form
     And the request r1 does not hold the comment c1
+    And a session s1
     When the session s1 runs `work watch` with the `--forward` option
     Then `work` prints the comment c1
     And `work` exits successfully
@@ -546,6 +558,7 @@ Feature: Requests
     And the status of the issue i1 is `open`
     And the issue i1 conforms to the comment form
     And no request has the issue i1
+    And a session s1
     When the session s1 runs `work watch` with the `--forward` option
     Then `work` prints the issue i1
     And `work` exits successfully
@@ -569,6 +582,7 @@ Feature: Requests
     And the side of the entry e1 is `asker`
     And the comment c1 holds the entry e1
     And the request r1 does not hold the comment c1
+    And a session s1
     When the session s1 runs `work sync`
     Then `work` writes the comment c1
     And `work` does not write the entry e1

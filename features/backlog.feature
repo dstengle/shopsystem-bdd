@@ -4,6 +4,7 @@ Feature: Backlog
 
   @g5 @r5
   Scenario: `work depend` records a dependency
+    Given an item i1
     When the person runs `work depend` on the item i1
     Then the item i1 has the dependency d1
     And `work` writes the dependency d1
@@ -11,6 +12,7 @@ Feature: Backlog
 
   @g15 @r15
   Scenario: `work show` names an item by its title
+    Given an item i1
     When the person runs `work show` on the item i1
     Then the item i1 has the title t1
     And `work` prints the title t1
@@ -24,6 +26,7 @@ Feature: Backlog
 
   @g25 @r25
   Scenario: `work rate` sets an item's ratings
+    Given an item i1
     When the person runs `work rate --value high-value --urgency low-urgency --size small` on the item i1
     Then `work` sets the value of the item i1 to `high-value`
     And `work` sets the urgency of the item i1 to `low-urgency`

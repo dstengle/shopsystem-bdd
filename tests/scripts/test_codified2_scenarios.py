@@ -109,7 +109,7 @@ def seen(step):
         out.write("%%s %%s\\n" %% (step.template, step.term))
 
 
-for key in (("WhenHappens", "end"), ("ThenPrints", "`work`"), ("WhenRuns", "`work start`"),
+for key in (("GivenK", "session"), ("GivenK", "stage"), ("WhenHappens", "end"), ("ThenPrints", "`work`"), ("WhenRuns", "`work start`"),
             ("ThenExitsErr", "`work`"), ("ThenChangesNothing", "`work`")):
     handler(*key)(seen)
 '''
@@ -133,6 +133,7 @@ def test_pytest_bdd_runs_a_codified2_feature_through_its_handlers(tmp_path, bind
                            "/dev/null", "--rootdir", str(tests), str(tests)], cwd=tests, capture_output=True,
                           text=True, timeout=600)
     assert "2 passed" in done.stdout, done.stdout[-3000:] + done.stderr[-2000:]
-    assert sorted(seen.read_text().splitlines()) == sorted(["WhenHappens end", "ThenPrints `work`",
+    assert sorted(seen.read_text().splitlines()) == sorted(["GivenK session", "GivenK stage", "WhenHappens end",
+                                                            "ThenPrints `work`",
                                                             "WhenRuns `work start`", "ThenExitsErr `work`",
                                                             "ThenChangesNothing `work`"])

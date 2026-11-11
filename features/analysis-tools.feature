@@ -144,6 +144,7 @@ Feature: Analysis tools
   Scenario: `tools tests-of` prints each test that executed its function
     Given a coverage map c1
     And the coverage map c1 exists
+    And a function f1
     And a test t1
     And the test t1 executes the function f1
     And a test t2
@@ -163,6 +164,7 @@ Feature: Analysis tools
   Scenario: `tools tests-of --by-file` prints each Python file that holds a test that executed the function
     Given a coverage map c1
     And the coverage map c1 exists
+    And a function f1
     And a Python file p1
     And a test t1
     And the test t1 executes the function f1
@@ -190,6 +192,7 @@ Feature: Analysis tools
   Scenario: `tools tests-of --json` prints the tests, their number and the commit of the coverage map
     Given a coverage map c1
     And the coverage map c1 exists
+    And a function f1
     And a test t1
     And the test t1 executes the function f1
     And a test t2
@@ -218,6 +221,7 @@ Feature: Analysis tools
   @g55 @r55
   Scenario: `tools tests-of` refuses when there is no coverage map
     Given no coverage map exists
+    And a function f1
     When the person runs `tools tests-of` on the function f1
     Then `tools` refuses `tools tests-of`
     And `tools` names `tools map`
@@ -226,6 +230,7 @@ Feature: Analysis tools
   Scenario: `tools untested` prints each function of a Python file that no test executed
     Given a coverage map c1
     And the coverage map c1 exists
+    And a Python file p1
     And a function f1
     And the Python file p1 has the function f1
     And no test executes the function f1
@@ -243,6 +248,7 @@ Feature: Analysis tools
   Scenario: `tools untested --json` prints the functions, their number and the commit of the coverage map
     Given a coverage map c1
     And the coverage map c1 exists
+    And a Python file p1
     And a function f1
     And the Python file p1 has the function f1
     And no test executes the function f1
@@ -304,6 +310,7 @@ Feature: Analysis tools
   @g62 @r62
   Scenario: `tools tests-of` refuses when `coverage` is missing, naming `tools install`
     Given the presence of `coverage` is `missing`
+    And a function f1
     When the person runs `tools tests-of` on the function f1
     Then `tools` refuses `tools tests-of`
     And `tools` names `coverage`
@@ -312,6 +319,7 @@ Feature: Analysis tools
   @g63 @r63
   Scenario: `tools refs` refuses when `jedi` is missing, naming `tools install`
     Given the presence of `jedi` is `missing`
+    And an identifier i1
     When the person runs `tools refs` on the identifier i1
     Then `tools` refuses `tools refs`
     And `tools` names `jedi`

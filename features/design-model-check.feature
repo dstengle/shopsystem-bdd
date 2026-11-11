@@ -33,6 +33,7 @@ Feature: Design model check
 
   @g156 @r156
   Scenario: `model explain` prints a requirement
+    Given a requirement r1
     When the person runs `model explain` on the requirement r1
     Then `model` prints the requirement r1
     And `model` exits successfully
@@ -640,6 +641,7 @@ Feature: Design model check
 
   @g245 @r245
   Scenario: `model parse` refuses a fragment with the terms that may follow
+    Given a fragment f1
     When the person runs `model parse` on the fragment f1
     Then `model` refuses `model parse`
     And `model` names the fragment f1

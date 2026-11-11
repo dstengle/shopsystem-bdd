@@ -100,6 +100,7 @@ def generated(tmp_path, *lines):
 
 def test_the_steps_name_two_distinct_things_with_two_names(tmp_path):
     assert generated(tmp_path, GIVE % ("another session", "print")) == [
+        "Given a session s1", "And a file f1", "And a session s2",
         "When the session s1 gives the file f1 to the session s2", "Then `work` prints the file f1"]
 
 

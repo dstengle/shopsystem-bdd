@@ -32,7 +32,8 @@ Feature: Batches
 
   @g15 @r15
   Scenario: `work batch abandon` removes the batch's review folders
-    Given a review folder r1
+    Given a batch b1
+    And a review folder r1
     And the batch b1 has the review folder r1
     And a review folder r2
     And the batch b1 has the review folder r2
@@ -80,6 +81,7 @@ Feature: Batches
   Scenario: `work batch resume` carries on without a person
     Given a batch b1
     And the status of the batch b1 is `building`
+    And a session s1
     When the session s1 runs `work batch resume` on the batch b1
     Then the batch b1 has the batch plan b2
     And `work` uses the batch plan b2
@@ -91,6 +93,7 @@ Feature: Batches
     And a batch b1
     And the batch b1 holds the item i1
     And the status of the item i1 is `in-batch`
+    And a session s1
     When the session s1 runs `work batch park` on the item i1
     Then `work` sets the status of the item i1 to `needs-input`
     And the question q1 is on the item i1
@@ -160,6 +163,7 @@ Feature: Batches
     And a requirement r1
     And the item i1 has the requirement r1
     And the git branch g1 holds the requirement r1
+    And a session s1
     When the session s1 runs `work batch park` on the item i1
     Then `work` removes the requirement r1 from the git branch g1
 
@@ -180,6 +184,7 @@ Feature: Batches
     And a worktree w1
     And the task t1 has the worktree w1
     And the scenario s1 passes in the worktree w1
+    And a session s2
     When the session s2 runs `work batch done` on the task t1
     Then `work` sets the status of the task t1 to `done`
 
@@ -237,5 +242,6 @@ Feature: Batches
     And a worktree w1
     And the task t1 has the worktree w1
     And the scenario s1 fails in the worktree w1
+    And a session s2
     When the session s2 runs `work batch done` on the task t1
     Then `work` sets the status of the task t1 to `done`

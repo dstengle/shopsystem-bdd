@@ -4,6 +4,7 @@ Feature: Conversation
 
   @g1 @r1
   Scenario: `work quote` keeps the turns
+    Given a session s1
     When the session s1 runs `work quote`
     Then the quote q1 is from the session s1
     And the quote q1 cites the message m1
@@ -20,7 +21,8 @@ Feature: Conversation
 
   @g7 @r7
   Scenario: `work show` on a quote prints its messages
-    Given a message m1
+    Given a quote q1
+    And a message m1
     And the quote q1 cites the message m1
     And a message m2
     And the quote q1 cites the message m2

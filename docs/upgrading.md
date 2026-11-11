@@ -19,12 +19,19 @@ the controlled language 4: spec/capabilities/buy.md r4 says a negated indefinite
 
 You then write a new line under a new id, and the old id is retired:
 
-```text
-before  [r4] While a shopper does not own a cart, when the shopper picks a cart, the shopper shall watch a till.
-after   [r9] While a shopper owns no cart, when the shopper picks a cart, the shopper shall watch a till.
+<!-- docs: context tests/scripts/fixtures/docs-shop -->
+```refused
+While a shopper does not own a cart, when the shopper picks a cart, the shopper shall watch a till.
 ```
 
-(These two lines use the fixture's glossary, a toy shop with shoppers, carts and tills, so they parse there, not in
+becomes r9:
+
+<!-- docs: context tests/scripts/fixtures/docs-shop -->
+```requirement
+While a shopper owns no cart, when the shopper picks a cart, the shopper shall watch a till.
+```
+
+(These lines use the fixture's glossary, a toy shop with shoppers, carts and tills, so they are read there, not in
 this repository.)
 
 ## What changed in 4.0
@@ -95,8 +102,10 @@ Here is the change it made to the fixture's glossary:
 ```diff
 -- **pick** (verb): a shopper puts goods in a cart. Forms: picks, picked. Frame: shopper picks cart.
 -- **own** (verb): a shopper has a cart. Forms: owns, owned. Frame: shopper owns cart.
+-- **watch** (verb): a shopper looks at a till. Forms: watches, watched. Frame: shopper watches till.
 +- **pick** (verb, action): a shopper puts goods in a cart. Forms: picks, picked. Frame: shopper picks cart.
 +- **own** (verb, state): a shopper has a cart. Forms: owns, owned. Frame: shopper owns cart.
++- **watch** (verb, action): a shopper looks at a till. Forms: watches, watched. Frame: shopper watches till.
   - **guard** (verb): a shopper keeps a cart. Forms: guards, guarded. Frame: shopper guards cart.
 ```
 
@@ -151,6 +160,7 @@ parses unchanged and means the same keeps its id.
 **Then the lines, as one item.** A line in `spec/` is never edited in place. Each named line gets a new line with a
 new id, and its old id goes to the capability's `retired:`. `work line --retires` does both:
 
+<!-- docs: context tests/scripts/fixtures/docs-shop -->
 ```console
 $ work idea "Reword buy for grammar 4"
 b1 "Reword buy for grammar 4" idea
@@ -217,15 +227,19 @@ given block with `work line --given` (see [the given block](reference/capability
 by r10 and r11 together, so retire r1 or narrow the new lines.
 
 `features generate` rewrites each feature from grammar 4's reading, so expect new step wording. The reworded r4 is
-now a Given of its own:
+now a Given of its own. Here is the scenario of the item's group `g2` with r9 and r10 in it:
 
+<!-- docs: context tests/scripts/fixtures/docs-shop -->
 ```gherkin
-  @g2 @r9 @r10 @r11 @r12 @r13
+  @g2 @r9 @r10
   Scenario: Reword buy for grammar 4
     Given a shopper s1
     And the shopper s1 owns no cart
+    And a cart c1
     When the shopper s1 picks the cart c1
     Then the shopper s1 watches the till t1
+    And the till t2 is for the shopper s1
+    And the shopper s1 watches the till t2
 ```
 
 If your handlers are registered with the plugin's `handler` (`from vocab import handler`, in `world_*.py` and
