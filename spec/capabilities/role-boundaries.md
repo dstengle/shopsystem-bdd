@@ -11,7 +11,7 @@ retired: [r1, r2, r3, r4, r5, r6]
 # Role boundaries
 
 ## Purpose
-**Retired in plugin 2.0.0** (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired): every requirement of this capability is retired, and the file is kept as the record of its ids and of where its 0.29 lines went.
+**Retired in plugin 0.31.0** (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired): every requirement of this capability is retired, and the file is kept as the record of its ids and of where its 0.29 lines went.
 
 What the plugin's agent definitions guarantee about each role, whatever its input asks. Each is verified by reading
 the definitions under `agents/`, not by a scenario. Tool lists bound what a session started as an agent can do directly: one with

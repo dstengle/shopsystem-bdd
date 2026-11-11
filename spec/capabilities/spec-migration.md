@@ -11,7 +11,7 @@ retired: [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14]
 # Spec migration
 
 ## Purpose
-**Retired in plugin 2.0.0** (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired): every requirement of this capability is retired, and the file is kept as the record of its ids and of where its 0.29 lines went.
+**Retired in plugin 0.31.0** (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired): every requirement of this capability is retired, and the file is kept as the record of its ids and of where its 0.29 lines went.
 
 Takes a repository onto the final layout of design model v3 (design-decision/final-layout) in one pass,
 whatever it has of the old system: design notes and approved feature files with no `spec/`, capability files

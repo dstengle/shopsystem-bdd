@@ -11,7 +11,7 @@ retired: [r1, r2, r3, r4, r5, r6, r7]
 # Planning
 
 ## Purpose
-**Retired in plugin 2.0.0** (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired): every requirement of this capability is retired, and the file is kept as the record of its ids and of where its 0.29 lines went.
+**Retired in plugin 0.31.0** (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired): every requirement of this capability is retired, and the file is kept as the record of its ids and of where its 0.29 lines went.
 
 Turns one researched work-item into a plan an implementer can follow alone: the decisions the spec leaves open,
 the tests they break, and the final file set. It is `bdd-planner`, started by `work run` on a `researched`

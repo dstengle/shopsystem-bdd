@@ -1,4 +1,4 @@
-"""The capabilities retired in plugin 2.0.0 (workflow simplification plan 9, D3; design-decision/the-old-workflow-retired):
+"""The capabilities retired in plugin 0.31.0 (workflow simplification plan 9, D3; design-decision/the-old-workflow-retired):
 each keeps its file with no group, lists in `retired:` every id it had before the retirement, carries the notice in
 its Purpose, and leaves no 0.29 id of its own missing or pending in `model restates`."""
 import pathlib
@@ -11,7 +11,7 @@ import spec_read
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
 BEFORE = "19e9fee5"
-NOTICE = "**Retired in plugin 2.0.0** (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired)"
+NOTICE = "**Retired in plugin 0.31.0** (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired)"
 RETIRED = ("code-research", "delivery", "formulation", "planning", "red-green", "review", "role-boundaries",
            "spec-consistency", "spec-integration", "spec-migration")
 

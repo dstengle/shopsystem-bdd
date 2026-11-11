@@ -9,7 +9,7 @@ import tempfile
 
 CONTEXT = "example.org/acme/shop"
 PLUGIN = pathlib.Path(__file__).resolve().parents[2]
-TARGET = "2.0.0"     # the release migration-tools' scenarios describe
+TARGET = "0.31.0"     # the release migration-tools' scenarios describe
 _copy = {}
 
 

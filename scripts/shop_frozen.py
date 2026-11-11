@@ -1,4 +1,4 @@
-"""What is still read of plugin 1.x's frozen queue, `.shop/work/` (workflow simplification plan 9, D5, D6): only the
+"""What is still read of plugin 0.30's frozen queue, `.shop/work/` (workflow simplification plan 9, D5, D6): only the
 `source:` ids of its initiatives and requests, as citations of observations. Frozen history is never checked, so a
 file whose frontmatter does not read is passed over, never refused. Standard library only."""
 import re

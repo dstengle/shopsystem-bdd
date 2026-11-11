@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Measure a batch from git and its sessions' transcripts, record a defect found after a merge, and show and compare
-measurements, a batch's or a plugin 1.x initiative's (`measure initiative` went with `work run` in 2.0.0)."""
+measurements, a batch's or a plugin 0.30 initiative's (`measure initiative` went with `work run` in 0.31.0)."""
 import argparse
 import os
 import sys
@@ -27,7 +27,7 @@ contract:
     refused, changing nothing.
 
   - show <record> prints a measurement's figures as tables: a batch's, or a
-    plugin 1.x initiative's stages, work-items, totals and sessions.
+    plugin 0.30 initiative's stages, work-items, totals and sessions.
   - compare <a> <b> prints the two measurements' totals side by side with the
     ratio of b to a. Each is a record or batch-<n>, the batch's newest
     measurement; two batches give wall time, session time, tokens, cost,

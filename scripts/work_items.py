@@ -1,7 +1,7 @@
 """The plugin's pytest plugin: on every run, a scenario of a requirement its codified capability lists in `unbuilt:`
 is a strict xfail (spec_unbuilt). Standard library and pytest only.
 
-It keeps the name of plugin 1.x's `--work-item` plugin, whose options went with `work run` in 2.0.0 (workflow
+It keeps the name of plugin 0.30's `--work-item` plugin, whose options went with `work run` in 0.31.0 (workflow
 simplification plan 9, D14), because `batch_tasks`' default test command and consumers' `[batch] tests` load it as
 `-p work_items`, the scripts directory on PYTHONPATH; this repository's conftest.py loads it the same way.
 

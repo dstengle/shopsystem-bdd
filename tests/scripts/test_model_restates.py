@@ -64,7 +64,7 @@ class RestatesTest(CodifiedTest):
     def test_a_moved_id_retired_in_its_target_is_dropped(self):
         self.write("spec/capabilities/wq.md", codified("wq", self.group("r1@0.29, r2@0.29, r3@0.29"),
                                                        dropped=["- r4@0.29: moved to other."]))
-        why = "retired with other#r3 in 2.0.0 (the-old-workflow-retired)."
+        why = "retired with other#r3 in 0.31.0 (the-old-workflow-retired)."
         self.write("spec/capabilities/other.md", codified("other", ["### [g1] Abandon", "Restates: other#r1@0.29.",
                                                                      f"- [r1] {OTHER}"], dropped=[f"- wq#r4@0.29: {why}"]))
         r = self.run_model("restates", "--json")

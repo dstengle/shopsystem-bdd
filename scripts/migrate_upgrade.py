@@ -25,20 +25,20 @@ BATCH = 500  # paths a `git add` stages at once: one process per batch, not one 
 STEPS = [("0.24.0", "work-items named by ids", "give every work-item the id w<n>", migrate_upgrade_ids),
          ("0.25.0", "answers, not rulings",
           "rename awaiting-ruling to awaiting-answer and `## Rulings` to `## Answers`", migrate_upgrade_answers),
-         ("1.0.0", "codified requirements",
+         ("0.30.0", "codified requirements",
           ("write spec/restated.json, scaffold each uncodified capability's Behaviour as groups, delete @deprecated "
           "scenarios and write old references <cap>#r<n>@0.29"), migrate_upgrade_codified),
-         ("2.0.0", "the workflow simplified",
+         ("0.31.0", "the workflow simplified",
           "freeze .shop/work/, move the live requests to .shop/requests/ and write the decisions index",
           migrate_upgrade_simplified),
-         ("3.0.0", "verb frames",
+         ("0.32.0", "verb frames",
           ("write each glossary entry's category as its part of speech and name each verb with no Frame:, each "
            "relational condition and each requirement that no longer parses"), migrate_upgrade_frames),
-         ("4.0.0", "the controlled language 4",
+         ("0.33.0", "the controlled language 4",
           ("write each file's marker codified-2, import the CLI pack and give each verb its aspect where its lines "
            "decide it, and name by file and id each line that no longer parses and what else a session rewords"),
           migrate_upgrade_cnl4),
-         ("4.1.0", "value kinds",
+         ("0.34.0", "value kinds",
           ("name each attribute whose values are declared neither adjectives nor nouns and each line that says one of "
            "its values in the short form, by file and id"), migrate_upgrade_values)]
 
@@ -118,7 +118,7 @@ def apply(root, changes):
         git(root, "mv", old, temporary)
         held.append((temporary, new))
     for temporary, new in held:
-        (root / new).parent.mkdir(parents=True, exist_ok=True)     # a request moved to .shop/requests/ (2.0.0)
+        (root / new).parent.mkdir(parents=True, exist_ok=True)     # a request moved to .shop/requests/ (0.31.0)
         git(root, "mv", temporary, new)
     for rel, text in changes.texts.items():
         with open(root / rel, "w", newline="") as handle:

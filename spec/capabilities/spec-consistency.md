@@ -11,7 +11,7 @@ retired: [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16,
 # Spec consistency
 
 ## Purpose
-**Retired in plugin 2.0.0** (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired): every requirement of this capability is retired, and the file is kept as the record of its ids and of where its 0.29 lines went.
+**Retired in plugin 0.31.0** (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired): every requirement of this capability is retired, and the file is kept as the record of its ids and of where its 0.29 lines went.
 
 Verifies a bounded context's spec against itself: that one word means one thing, that one thing has one word,
 that a line has one reading, that the lines leave nothing to infer and that a scenario says what its line says. It is `checking-spec-consistency`,

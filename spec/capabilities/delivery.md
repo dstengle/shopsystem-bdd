@@ -11,7 +11,7 @@ retired: [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11]
 # Delivery
 
 ## Purpose
-**Retired in plugin 2.0.0** (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired): every requirement of this capability is retired, and the file is kept as the record of its ids and of where its 0.29 lines went.
+**Retired in plugin 0.31.0** (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired): every requirement of this capability is retired, and the file is kept as the record of its ids and of where its 0.29 lines went.
 
 Has `work run` deliver an initiative and shows the person what it ends with. It is `delivering-an-initiative`; it
 drafts no work-item but a trial's fix (`work run` drafts the rest, supervision), starts no `claude -p` session and

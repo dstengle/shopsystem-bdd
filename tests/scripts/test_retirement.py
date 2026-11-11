@@ -1,4 +1,4 @@
-"""What the retirement of plugin 1.x's workflow must not break (workflow simplification plan 9, Review Focus 1 and 5):
+"""What the retirement of plugin 0.30's workflow must not break (workflow simplification plan 9, Review Focus 1 and 5):
 every `work` command still answers, and no kept skill, agent or doc names a deleted agent, skill or command."""
 import re
 import subprocess
@@ -15,7 +15,7 @@ DELETED_SKILLS = ("delivering-an-initiative", "formulating-features", "integrati
 DELETED_NAMES = ("work run", "--work-item", "supervise_", "work add", "work status", "work note", "work start",
                  "work delegate", "work retry", "migrate prompting", "migrate compacting")
 HISTORY = re.compile(r"^## \d+\.\d+\.\d+:")
-OLD_EXAMPLE = "plugin 1.x's vocabulary"     # the note above a fenced example of docs/capability-format.md it allows
+OLD_EXAMPLE = "plugin 0.30's vocabulary"     # the note above a fenced example of docs/capability-format.md it allows
 
 
 def work(*args):
@@ -43,7 +43,7 @@ def readme_less_history(name="README.md"):
 
 
 def doc_less_old_examples(path):
-    """A doc's lines, each fenced block that a line naming plugin 1.x's vocabulary introduces blanked (kept as an
+    """A doc's lines, each fenced block that a line naming plugin 0.30's vocabulary introduces blanked (kept as an
     illustration, plan-9 review M3); the line numbers stay."""
     kept, fenced, allowed, noted = [], False, False, False
     for line in path.read_text(encoding="utf-8").splitlines():

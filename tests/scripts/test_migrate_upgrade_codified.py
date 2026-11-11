@@ -1,4 +1,4 @@
-"""The 1.0.0 upgrade step "codified requirements" (the GF conversion's design §13.4, §15; migration-tools g29):
+"""The 0.30.0 upgrade step "codified requirements" (the GF conversion's design §13.4, §15; migration-tools g29):
 `spec/restated.json` written when missing, each uncodified capability's Behaviour scaffolded, `@deprecated` scenarios
 deleted, the 0.29 references of `.shop/work/**` written `<cap>#r<n>@0.29`, and what is left for a session reported."""
 import atexit
@@ -137,10 +137,10 @@ def git(root, *args):
 
 
 def upgraded(root):
-    """`migrate upgrade` run in-process by a plugin on 1.0.0: (exit code, what it printed)."""
+    """`migrate upgrade` run in-process by a plugin on 0.30.0: (exit code, what it printed)."""
     out, err = io.StringIO(), io.StringIO()
     real = migrate_upgrade.plugin_version
-    migrate_upgrade.plugin_version = lambda: "1.0.0"
+    migrate_upgrade.plugin_version = lambda: "0.30.0"
     try:
         with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err), contextlib.chdir(root):
             code = migrate_upgrade.run("upgrade")
@@ -228,7 +228,7 @@ class AConvertedRepository(unittest.TestCase):
         self.assertEqual((root / ".shop/work/i1/w1.md").read_text(), "Names till#r2@0.29.\n")
         self.assertEqual((root / ".shop/work/i1/log.jsonl").read_text(),
                          '{"line": "till#r1@0.29"}\n{"line": "till#r1, new"}\n')
-        self.assertEqual((root / ".shop/plugin-version").read_text(), "1.0.0\n")
+        self.assertEqual((root / ".shop/plugin-version").read_text(), "0.30.0\n")
         self.assertNotIn("left for a session", said)
 
 

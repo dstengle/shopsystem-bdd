@@ -1,4 +1,4 @@
-"""migrate_upgrade_values (b257): the 4.1.0 upgrade step "value kinds" changes no file and names each attribute that
+"""migrate_upgrade_values (b257): the 0.34.0 upgrade step "value kinds" changes no file and names each attribute that
 declares neither adjective nor noun values, and each line that says one of its values in the short form."""
 import pathlib
 import shutil

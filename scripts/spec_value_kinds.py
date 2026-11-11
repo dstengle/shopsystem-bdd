@@ -3,7 +3,7 @@ after "is" as an adjective or a participle: `shaped`, `in-batch`) and `Values (n
 phrase, a code), or as a plain `Values:` of no declared kind. The short form "x is `v`" (grammar 4's `<t>_<K>_Is`,
 `_IsOneOf`, `_IsNoneOf` and `_IsCode`) is good English of an adjective value only, so a line that says it of a noun
 value is refused, naming the full form "the T of x is `v`" or "a K whose T is `v`" (`refusal`); a value of no
-declared kind keeps 4.0's reading, which `model check` warns of (`w_value_kind`, `undeclared`)."""
+declared kind keeps 0.33's reading, which `model check` warns of (`w_value_kind`, `undeclared`)."""
 import re
 
 KINDS = ("adjective", "noun")

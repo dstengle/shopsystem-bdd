@@ -1,4 +1,4 @@
-"""The 1.0.0 upgrade step "codified requirements" (the GF conversion's design §13.4, §15; migration-tools g29).
+"""The 0.30.0 upgrade step "codified requirements" (the GF conversion's design §13.4, §15; migration-tools g29).
 
 `plan` computes every change and writes none:
 - `spec/restated.json`, when it is missing, from the live 0.29 ids of each capability without `language: codified-1`:
@@ -105,7 +105,7 @@ def scaffold(text):
     found, loose = old_lines(text)
     start, end = behaviour(text)
     lines = text.splitlines()
-    body = ["", comment("written by the 1.0.0 upgrade: write each group's requirements, then add `language: "
+    body = ["", comment("written by the 0.30.0 upgrade: write each group's requirements, then add `language: "
                         "codified-1` to the frontmatter")]
     body += [comment("no id: " + t) for t in loose]
     for g, (n, said, _, heading) in enumerate(found, 1):

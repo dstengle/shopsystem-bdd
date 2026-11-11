@@ -12,7 +12,7 @@ STATUSES = {     # design model v5's lifecycles of what is still read (GF conver
     "request": {"open", "awaiting-asker", "awaiting-upstream", "accepted", "refused", "delivered", "withdrawn"},
     "design-decision": {"proposed", "accepted", "rejected", "superseded"},
 }
-# The kinds of plugin 1.x's queue, frozen under .shop/work/ (plan 9, D5): a reference to one is history, never resolved.
+# The kinds of plugin 0.30's queue, frozen under .shop/work/ (plan 9, D5): a reference to one is history, never resolved.
 FROZEN_KINDS = {"initiative", "work-item", "capability-proposal", "glossary-proposal", "job-proposal", "map-proposal",
                 "vision-proposal", "map-escalation"}
 RECORD_KINDS = {"observation", "measurement", "review-finding", "decision-argument", "initiative-archive",

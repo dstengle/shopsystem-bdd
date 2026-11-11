@@ -1,4 +1,4 @@
-"""An initiative's measurement of plugin 1.x is still shown and compared after `measure initiative` is retired
+"""An initiative's measurement of plugin 0.30 is still shown and compared after `measure initiative` is retired
 (workflow simplification plan 9, Task 7; batch-measurement r18-r22 kept, so history stays readable)."""
 import re
 import shutil
@@ -11,7 +11,7 @@ MEASURE = REPO / "scripts" / "measure"
 
 
 def newest():
-    """The newest real 1.x initiative record of this repository."""
+    """The newest real 0.30 initiative record of this repository."""
     found = sorted(p for p in (REPO / ".shop/records/measurements").glob("*.md") if re.search(r"-i\d+(-|\.md$)", p.name))
     return found[-1]
 

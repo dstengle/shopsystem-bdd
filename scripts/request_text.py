@@ -10,7 +10,7 @@ from pathlib import Path
 
 from shop_files import frontmatter, read
 
-# Where a live request is kept, and where plugin 1.x kept them, frozen (workflow simplification plan 9, D7).
+# Where a live request is kept, and where plugin 0.30 kept them, frozen (workflow simplification plan 9, D7).
 REQUESTS = Path(".shop") / "requests"
 FROZEN = Path(".shop") / "work" / "requests"
 SETTLED = ("accepted", "refused", "withdrawn")

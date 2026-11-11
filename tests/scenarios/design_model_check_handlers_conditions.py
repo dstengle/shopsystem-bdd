@@ -218,7 +218,7 @@ def term(step):
         path.write_text(text.replace("- **%s** (noun): a thing.\n" % name,
                                      "- **%s** (verb, action): a stage is followed. Frame: agent %ss widget.\n" % (name, name)))
         H.says(step, name, '%s, the Frame: does not read at "widget"' % name)
-    elif word == "unlabelled":     # the category of plugin 2.x, which names no part of speech
+    elif word == "unlabelled":     # the category of plugin 0.31, which names no part of speech
         path.write_text(text.replace("- **%s** (noun): a thing.\n" % name, "- **%s** (kind): a thing.\n" % name))
     elif word == "relational":     # a condition of a stage whose definition names the session
         path.write_text(text.replace("- **%s** (noun): a thing.\n" % name,

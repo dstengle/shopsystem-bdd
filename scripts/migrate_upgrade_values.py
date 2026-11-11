@@ -1,11 +1,11 @@
-"""The 4.1.0 upgrade step "value kinds" (b257): it changes no file, and reports, as `notes`, what a session declares and
+"""The 0.34.0 upgrade step "value kinds" (b257): it changes no file, and reports, as `notes`, what a session declares and
 rewords now that an attribute's values are adjectives or nouns (spec_value_kinds):
 - each attribute entry of the glossary or a capability's `## Terms` that gives a plain `Values:` (`w_value_kind`), by
   file, for a session to write as `Values (adjective):` and `Values (noun):`;
 - each line of a codified-2 file that says a value of such an attribute in the short form "x is `v`", by file and
   id with the value: once its attribute declares `v` a noun, the line is refused until it says the full form, "the T
   of the K is `v`" or "a K whose T is `v`".
-Until a session declares them, every line parses as it did under 4.0."""
+Until a session declares them, every line parses as it did under 0.33."""
 import re
 from pathlib import Path
 

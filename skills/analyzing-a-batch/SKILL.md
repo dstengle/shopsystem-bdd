@@ -21,7 +21,7 @@ Scripts: this plugin's `scripts/`, at `<this skill's base directory>/../../scrip
    - **Each parked item**: its question, and whether the readiness bar could have caught it before the batch.
 4. **Write the report** in the shape below to a scratch file, then keep it as a record: `python3 <scripts>/work record "<repository>, <batch>: analysis" --kind analysis --summary "<one line for the records index>" --body <file>` writes `.shop/records/<date>-<slug>.md`, adds its row to `.shop/records/README.md` and commits both. Commit the measurement with `git` if it is not committed yet.
 
-An initiative of plugin 1.x's frozen queue keeps the measurement it was given: `measure show` and `measure compare` still read it, with its work-items for the batch's items.
+An initiative of plugin 0.30's frozen queue keeps the measurement it was given: `measure show` and `measure compare` still read it, with its work-items for the batch's items.
 
 ## The Report
 

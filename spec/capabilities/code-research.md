@@ -11,7 +11,7 @@ retired: [r1, r2, r3, r4, r5, r6]
 # Code research
 
 ## Purpose
-**Retired in plugin 2.0.0** (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired): every requirement of this capability is retired, and the file is kept as the record of its ids and of where its 0.29 lines went.
+**Retired in plugin 0.31.0** (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired): every requirement of this capability is retired, and the file is kept as the record of its ids and of where its 0.29 lines went.
 
 Reads the code and runs the system for one drafted work-item, so that its planner does not have to: why each
 accepted scenario is red today, what the system answers today, the tests the change would break, and the file set
