@@ -1106,7 +1106,7 @@ an attribute does not say whether its values are adjectives or nouns (Values (ad
 
 - Severity: warning
 - Implemented in: `scripts/model.lp`
-- Cited by: no line
+- Cited by: migration-tools#r65
 - Fails on:
 
   ```prolog

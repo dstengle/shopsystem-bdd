@@ -863,24 +863,54 @@ Feature: Migration tools
     And `migrate` prints the upgrade step u1
     And `migrate` prints the upgrade step u2
 
-  @g62 @r62
-  Scenario: `migrate upgrade` on a repository on the plugin's release says that no upgrade step is pending and changes nothing
+  @g65 @r65
+  Scenario: `migrate upgrade` on a repository from 4.0.0 names each attribute whose values are declared neither adjectives nor nouns
     Given the tracked file `.shop/plugin-version` holds "4.0.0"
+    And the tracked file `spec/index.md` holds:
+      """
+      ---
+      id: bounded-context/example.org/acme/shop
+      title: shop
+      language: codified-2
+      ---
+      # shop
+      ## Glossary
+      - **cart** (noun): the goods a shopper picks.
+      - **status** (attribute of cart): Values: `open`, `paid`.
+      """
     And the release of this repository is `4.0.0`
+    And an upgrade step u1
+    And the release of the upgrade step u1 is `4.1.0`
+    And an upgrade step u2
+    And the release of the upgrade step u2 is `4.1.0`
+    And a term t1
+    And the term t1 violates `w_value_kind`
+    And a term t2
+    And the term t2 violates `w_value_kind`
+    When the person runs `migrate upgrade`
+    Then `migrate` prints the upgrade step u1
+    And `migrate` prints the upgrade step u2
+    And `migrate` prints the term t1
+    And `migrate` prints the term t2
+
+  @g66 @r66
+  Scenario: `migrate upgrade` on a repository on the plugin's release says that no upgrade step is pending and changes nothing
+    Given the tracked file `.shop/plugin-version` holds "4.1.0"
+    And the release of this repository is `4.1.0`
     When the person runs `migrate upgrade`
     Then `migrate` prints `no upgrade step is pending`
     And `migrate` does not change a file
 
-  @g63 @r63
+  @g67 @r67
   Scenario: the SessionStart hook tells a session to tell the person to update the plugin
     Given the tracked file `.shop/plugin-version` holds "9.0.0"
     And the release of this repository is `9.0.0`
     When the SessionStart hook runs `migrate status --hook`
     Then `migrate` prints `update the plugin`
 
-  @g64 @r64
+  @g68 @r68
   Scenario: the SessionStart hook tells a session nothing on the plugin's release when no initiative is open (case 1)
-    Given the tracked file `.shop/plugin-version` holds "4.0.0"
+    Given the tracked file `.shop/plugin-version` holds "4.1.0"
     And the tracked file `.shop/work/i1/initiative.md` holds:
       """
       ---
@@ -890,7 +920,7 @@ Feature: Migration tools
       ---
       # i1
       """
-    And the release of this repository is `4.0.0`
+    And the release of this repository is `4.1.0`
     And an initiative i1
     And this repository has the initiative i1
     And the status of the initiative i1 is `done`
@@ -899,9 +929,9 @@ Feature: Migration tools
     And `migrate` does not print an upgrade step
     And `migrate` does not print an initiative
 
-  @g64 @r64
+  @g68 @r68
   Scenario: the SessionStart hook tells a session nothing on the plugin's release when no initiative is open (case 2)
-    Given the tracked file `.shop/plugin-version` holds "4.0.0"
+    Given the tracked file `.shop/plugin-version` holds "4.1.0"
     And the tracked file `.shop/work/i1/initiative.md` holds:
       """
       ---
@@ -911,7 +941,7 @@ Feature: Migration tools
       ---
       # i1
       """
-    And the release of this repository is `4.0.0`
+    And the release of this repository is `4.1.0`
     And an initiative i1
     And this repository has the initiative i1
     And the status of the initiative i1 is `abandoned`

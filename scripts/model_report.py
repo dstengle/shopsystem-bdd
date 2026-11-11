@@ -135,7 +135,9 @@ def cmd_lexicon(args):
         if terms:
             print(f"{cat or 'no category'} ({len(terms)})")
         for layer, t in terms:
-            more = {"attribute": f" (of {', '.join(t.kinds)}): {', '.join(t.values)}",
+            kinds = dict(t.value_kinds)     # a value's kind, b257: `idea` (noun)
+            values = ", ".join(v + (f" ({kinds[v]})" if v in kinds else "") for v in t.values)
+            more = {"attribute": f" (of {', '.join(t.kinds)}): {values}",
                     "condition": f" (of {', '.join(t.kinds)})", "relation": f" ({' → '.join(t.kinds)})",
                     "resource": f" ({t.resource})" if t.resource else ""}.get(t.category, "")
             marks = ([layer] if layer.startswith("pack ") else []) + [f"redefines {p}" for p in spec_packs.redefines(t)]

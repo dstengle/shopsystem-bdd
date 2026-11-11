@@ -14,10 +14,10 @@ reviews.
 
 ## One line, all the way through
 
-Here is a line from this repository's own spec, `spec/capabilities/backlog.md`, group g23:
+Here is a line from this repository's own spec, `spec/capabilities/backlog.md`, group g37:
 
 ```reading
-While an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
+While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
 shall [x2: agent the person (constant), x3: command `work shape` (parameter), x4: tool `work` (constant)]
   while [x1: item]
     status(x1) = `idea`
@@ -30,10 +30,10 @@ shall [x2: agent the person (constant), x3: command `work shape` (parameter), x4
 And here is the scenario `features generate` wrote from it, in `features/backlog.feature`:
 
 ```gherkin
-  @g23 @r23
+  @g37 @r37
   Scenario: `work shape` shapes an idea
     Given an item i1
-    And the item i1 is `idea`
+    And the status of the item i1 is `idea`
     When the person runs `work shape` on the item i1
     Then `work` sets the status of the item i1 to `shaped`
 ```
@@ -133,16 +133,16 @@ Every rule is written out, with the real lines it was tested on, in
 ### 4. Facts, and one solve
 
 `scripts/spec_lf_facts.py` translates each form into ground facts for [clingo](https://potassco.org/clingo/), an
-answer-set solver. These are the facts of r23, printed from that module:
+answer-set solver. These are the facts of r37, printed from that module:
 
 ```text
-form("backlog#r23",while_when).
-cnl4("backlog#r23").
-role("backlog#r23",x1,k_item).
-cond("backlog#r23",x1,t_status_8,v_idea,pos).
-trig("backlog#r23",ran,"`work shape`",a_the_person,x1).
-set("backlog#r23",1,x1,t_status_8,v_shaped).
-resp("backlog#r23",1,pos,set(t_status_8,v_shaped),a_work,x1).
+form("backlog#r37",while_when).
+cnl4("backlog#r37").
+role("backlog#r37",x1,k_item).
+cond("backlog#r37",x1,t_status_8,v_idea,pos).
+trig("backlog#r37",ran,"`work shape`",a_the_person,x1).
+set("backlog#r37",1,x1,t_status_8,v_shaped).
+resp("backlog#r37",1,pos,set(t_status_8,v_shaped),a_work,x1).
 ```
 
 `model logic` puts the facts of every line in the context, and of `spec/universal.md`, together with one fixed
@@ -166,8 +166,8 @@ L8 comes from a second program, `grammar/entail.lp`. It is also what `model expl
 once the universal conditions and the packs' definitions are taken into account:
 
 ```console
-$ model explain backlog#r24
-backlog#r24  While an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
+$ model explain backlog#r38
+backlog#r38  While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
 which also means:
   `work` shall exit with an error (by the definition of refuse in the pack cli)
   `work` shall change nothing (by U12)
@@ -199,9 +199,9 @@ not built yet runs red without failing the suite; once it passes, strict means y
 `unbuilt:`, or the XPASS fails the run. Here is the new scenario of a batch, before its task has built it:
 
 ```console
-$ python3 -m pytest -q tests/scenarios/test_backlog.py -m "r37" -rx
+$ python3 -m pytest -q tests/scenarios/test_backlog.py -m "r43" -rx
 ...
-XFAIL tests/scenarios/test_backlog.py::test_work_show_prints_the_status_of_an_item - unbuilt: backlog#r37
+XFAIL tests/scenarios/test_backlog.py::test_work_show_prints_the_status_of_an_item - unbuilt: backlog#r43
 1 xfailed in 3.68s
 ```
 
@@ -218,10 +218,10 @@ Here is an item whose line contradicts a delivered one:
 
 ```console
 $ work line b250 --into backlog --group "\`work show\` keeps quiet about an item's title" "When the person runs \`work show\` on an item, \`work\` shall not print the title of the item."
-b250 "work show prints the status of an item": backlog#r37
+b250 "work show prints the status of an item": backlog#r43
 $ work ready b250
 work: work ready: b250 "work show prints the status of an item" is not passing:
-  L1 backlog#r15 and #r37 clash: on "the person runs `work show` on an item", r15 obliges and r37 forbids `work` to print
+  L1 backlog#r15 and #r43 clash: on "the person runs `work show` on an item", r15 obliges and r43 forbids `work` to print
 ```
 
 The bar is why Claude does not ask you to approve lines one by one. A line that clears it is well-formed and

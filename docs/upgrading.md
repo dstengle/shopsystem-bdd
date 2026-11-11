@@ -246,6 +246,20 @@ A new id in `unbuilt:` runs as an expected failure until it is built. A reworded
 may pass at once: check its steps test the line as now worded, then take its id out of `unbuilt:`. The handlers of a
 retired line's steps that no scenario reaches any more can go.
 
+## From 4.0 to 4.1
+
+4.1 changes no line that parses: `migrate upgrade` applies the step 4.1.0 "value kinds", which writes no file and
+names each attribute whose `Values:` declares neither kind and each line that says one of its values the short way
+("an item is `idea`"), by file and id. Declare each attribute's values in the glossary, `Values (adjective):` for
+those that read after "is" as an adjective (`shaped`, `in-batch`) and `Values (noun):` for the rest (`idea`,
+`needs-input`, a release), then reword each named line whose value is a noun to the full form, "the status of an
+item is `idea`", as an item with `work line --retires`. Until you declare them, `model check` warns `w_value_kind`
+and every line parses as before.
+
+`features generate` now writes every value step the full way, "the status of the item i1 is `idea`" (and "no item
+whose status is `idea` exists" for "no K"). Regenerate your features; a handler keyed by `GivenK_A` or `ThenK_A`
+keeps its key, and one that read the thing out of the step's text reads `step.subject` instead.
+
 ## Older than 3.0?
 
 `migrate upgrade` applies every pending step in order, oldest first, in one commit. `migrate status` lists them:

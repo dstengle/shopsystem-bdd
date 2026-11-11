@@ -162,10 +162,10 @@ once, so you can fix them in one go.
 ```console
 $ work ready b250
 work: work ready: b250 "work show hides the title" is not passing:
-  L1 backlog#r15 and #r37 clash: on "the person runs `work show` on an item", r15 obliges and r37 forbids `work` to print
+  L1 backlog#r15 and #r43 clash: on "the person runs `work show` on an item", r15 obliges and r43 forbids `work` to print
 ```
 
-Your new line (r37) and a delivered one (r15) can't both hold: one says print, the other says don't. If you mean to
+Your new line (r43) and a delivered one (r15) can't both hold: one says print, the other says don't. If you mean to
 change r15, say so: `work line b250 --into backlog --retires backlog#r15 "<the new line>"` puts r15 under
 `retired:` and your line takes its place. If you didn't mean to contradict it, narrow your line with a While.
 
@@ -174,7 +174,7 @@ change r15, say so: `work line b250 --into backlog --retires backlog#r15 "<the n
 ```console
 $ work ready b255
 work: work ready: b255 "probe steps 3" is not passing:
-  backlog: backlog#r38: refused: no translation of no there
+  backlog: backlog#r44: refused: no translation of no there
 ```
 
 The line parses, but `features generate` can't write its scenario, so nothing could test it. The bar names the
@@ -222,7 +222,7 @@ the commit's message (or reword it during a rebase) to add that line.
 
 ```console
 $ work batch done batch-34 t1
-work: work batch done: t1 b251 "work show prints the status": still in unbuilt: backlog#r37
+work: work batch done: t1 b251 "work show prints the status": still in unbuilt: backlog#r43
 ```
 
 `work batch start` put the item's ids into the capability's `unbuilt:`, so their scenarios run as expected

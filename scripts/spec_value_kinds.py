@@ -35,7 +35,7 @@ def _article(word):
     return "an" if word[:1] in "aeiou" else "a"
 
 
-def _values(tree, attribute, prefix):
+def values_of(tree, attribute, prefix):
     """The values a short form's tree names: the value funs under it, a code literal's text."""
     fun = tree if isinstance(tree, str) else tree[0]
     if fun.startswith(prefix + "_v_"):
@@ -45,10 +45,10 @@ def _values(tree, attribute, prefix):
         return []
     if tree[0] == "CodeLit":
         return [tree[1].strip('"')]
-    return [v for a in tree[1:] for v in _values(a, attribute, prefix)]
+    return [v for a in tree[1:] for v in values_of(a, attribute, prefix)]
 
 
-def _short(tree):
+def short_forms(tree):
     """Every (fun, polarity, its value subtree) of a short form in a tree (nested lists)."""
     if isinstance(tree, str):
         return []
@@ -56,7 +56,7 @@ def _short(tree):
     if SHORT.match(tree[0]):
         neg = len(tree) > 3 and tree[1] == "PNeg"
         found.append((tree[0], neg, tree[-1]))
-    return found + [f for a in tree[1:] for f in _short(a)]
+    return found + [f for a in tree[1:] for f in short_forms(a)]
 
 
 def refusal(vocab, text):
@@ -66,10 +66,10 @@ def refusal(vocab, text):
     attributes = {"t_%s_%d" % (re.sub(r"[^a-z0-9]+", "_", t.term.lower()).strip("_") or "x", n): t
                   for n, (t, _) in enumerate(vocab.attributes, 1)}
     kinds = {"k_" + (re.sub(r"[^a-z0-9]+", "_", k.lower()).strip("_") or "x"): k for k in vocab.kinds}
-    for fun, neg, values in _short(tree):
+    for fun, neg, values in short_forms(tree):
         T, K, form = SHORT.match(fun).groups()
         t = attributes.get(T)
-        named = _values(values, t, T) if t else []
+        named = values_of(values, t, T) if t else []
         nouns = [v for v in named if kind(t, v) == "noun"]
         if nouns:
             return full(t.term, kinds.get(K, K), nouns[0], form, neg, named)

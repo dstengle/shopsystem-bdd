@@ -98,7 +98,7 @@ def template(names, keyword, tree):
         return keyword.capitalize() + "K_A", kind, names.attr(whose(args[0])[0].split("_Whose_")[1] + "_")[0].term, kind
     if fun == "SCond":
         cond = args[0]
-        t, rest = names.attr(cond[0])
+        t = names.attr(cond[0])[0]
         neg = cond[1] == ("PNeg",)
         if t is not None:
             kind = names.kind(owner(names, cond))[0]

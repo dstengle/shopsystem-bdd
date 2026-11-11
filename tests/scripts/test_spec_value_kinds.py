@@ -4,7 +4,6 @@ import pathlib
 import shutil
 
 import pytest
-
 import spec_grammar4
 import spec_lexicon
 import spec_value_kinds

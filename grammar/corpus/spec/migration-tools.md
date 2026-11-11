@@ -483,14 +483,14 @@ shall [x1: repository "the repository the command runs in" (indexical), x2: agen
         print(e4, subject: x4, object: x8)
 ```
 
-## r62
-Retires: r42. From: the release 4.0.0 (b161). Known limit: #6 (a value compared with the plugin's release).
+## r66
+Retires: r62. From: the release 4.1.0 (b257). Known limit: #6 (the plugin's release as a value).
 
 ```reading
-While the release of this repository is `4.0.0`, when the person runs `migrate upgrade`, `migrate` shall print `no upgrade step is pending` and change no file.
+While the release of this repository is `4.1.0`, when the person runs `migrate upgrade`, `migrate` shall print `no upgrade step is pending` and change no file.
 shall [x1: repository "the repository the command runs in" (indexical), x2: agent the person (constant), x3: command `migrate upgrade` (parameter), x4: tool `migrate` (constant), x5: text `no upgrade step is pending` (constant)]
   while
-    release(x1) = `4.0.0`
+    release(x1) = `4.1.0`
   when
     run(e1, subject: x2, object: x3)
   response
@@ -499,28 +499,28 @@ shall [x1: repository "the repository the command runs in" (indexical), x2: agen
       change(e3, subject: x4, object: x6)
 ```
 
-## r63
-Retires: r48. From: the release 4.0.0 (b161). Known limit: #6 ("after `4.0.0`", the plugin's release as a value).
+## r67
+Retires: r63. From: the release 4.1.0 (b257). Known limit: #6 (the plugin's release as a value).
 
 ```reading
-While the release of this repository is after `4.0.0`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print `update the plugin`.
+While the release of this repository is after `4.1.0`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print `update the plugin`.
 shall [x1: repository "the repository the command runs in" (indexical), x2: agent the SessionStart hook (constant), x3: command `migrate status --hook` (parameter), x4: tool `migrate` (constant), x5: text `update the plugin` (constant)]
   while
-    cmp(release(x1)) after `4.0.0`
+    cmp(release(x1)) after `4.1.0`
   when
     run(e1, subject: x2, object: x3)
   response
     print(e2, subject: x4, object: x5)
 ```
 
-## r64
-Retires: r49. From: the release 4.0.0 (b161). Known limit: #6 (the plugin's release as a value).
+## r68
+Retires: r64. From: the release 4.1.0 (b257). Known limit: #6 (the plugin's release as a value).
 
 ```reading
-While the release of this repository is `4.0.0` and every initiative of this repository is one of `done` or `abandoned`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall exit successfully, print no upgrade step and print no initiative.
+While the release of this repository is `4.1.0` and every initiative of this repository is one of `done` or `abandoned`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall exit successfully, print no upgrade step and print no initiative.
 shall [x1: repository "the repository the command runs in" (indexical), x3: agent the SessionStart hook (constant), x4: command `migrate status --hook` (parameter), x5: tool `migrate` (constant)]
   while
-    release(x1) = `4.0.0`
+    release(x1) = `4.1.0`
     every [x2: initiative]
       of(x2, x1)
       scope
@@ -537,4 +537,25 @@ shall [x1: repository "the repository the command runs in" (indexical), x3: agen
       print(e3, subject: x5, object: x6)
     not [x7: initiative]
       print(e4, subject: x5, object: x7)
+```
+
+## r65
+New: the release 4.1.0's upgrade step "value kinds" (b257). Known limit: #6 (the plugin's release as a value).
+
+```reading
+While the release of this repository is `4.0.0`, when the person runs `migrate upgrade`, `migrate` shall print every upgrade step whose release is `4.1.0` and every term that violates `w_value_kind`.
+shall [x1: repository "the repository the command runs in" (indexical), x2: agent the person (constant), x3: command `migrate upgrade` (parameter), x4: tool `migrate` (constant), x7: rule `w_value_kind` (parameter)]
+  while
+    release(x1) = `4.0.0`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    every [x5: upgrade step]
+      release(x5) = `4.1.0`
+      scope
+        print(e2, subject: x4, object: x5)
+    every [x6: term]
+      violate(subject: x6, object: x7)
+      scope
+        print(e3, subject: x4, object: x6)
 ```

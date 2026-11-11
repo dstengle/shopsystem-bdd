@@ -1,7 +1,7 @@
 {
   "name": "shopsystem-bdd",
   "description": "BDD workflow for the shopsystem harness: keep one spec of capability files, write requirements in a controlled language (GF), logic-check them, generate one Gherkin feature per capability, keep a backlog of items, build ready items in batches closed by one reviewed pull request, measure each batch, and upgrade repositories between releases.",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "author": {
     "name": "David Stenglein"
   },

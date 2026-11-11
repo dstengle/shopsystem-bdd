@@ -14,6 +14,7 @@ import migrate_upgrade_codified
 import migrate_upgrade_frames
 import migrate_upgrade_ids
 import migrate_upgrade_simplified
+import migrate_upgrade_values
 import shop_files
 from migrate_write import check_moves, git, top_level, uncommitted
 
@@ -36,7 +37,10 @@ STEPS = [("0.24.0", "work-items named by ids", "give every work-item the id w<n>
          ("4.0.0", "the controlled language 4",
           ("write each file's marker codified-2, import the CLI pack and give each verb its aspect where its lines "
            "decide it, and name by file and id each line that no longer parses and what else a session rewords"),
-          migrate_upgrade_cnl4)]
+          migrate_upgrade_cnl4),
+         ("4.1.0", "value kinds",
+          ("name each attribute whose values are declared neither adjectives nor nouns and each line that says one of "
+           "its values in the short form, by file and id"), migrate_upgrade_values)]
 
 
 def number(version):

@@ -74,6 +74,8 @@ def recorded(step):
     if step.kind == "uncommitted change":
         rel = "%s.md" % step.names[0]
         step.context.setdefault("untracked", {})[rel] = "not committed\n"
+    for code in re.findall(r" violates `([vw]_\w+)`", step.text):   # the rule a term violates, which migrate names
+        step.context.setdefault("violates", []).append(code)
     if step.kind == "repository":
         version = held(step).get(".shop/plugin-version", "").strip()
         assert step.values and bare(step.values[0]) == version, (step.text, version)
