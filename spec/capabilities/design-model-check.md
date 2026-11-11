@@ -13,7 +13,7 @@ unbuilt: []
 
 ## Purpose
 `scripts/model` reads a bounded context's files — spec, feature files, decisions, work and records, in the final
-layout and no other — as the facts of design model v5 (`docs/design-model/`), and prints what the model refuses,
+layout and no other — as the facts of design model v5 (`docs/reference/design-model.md`), and prints what the model refuses,
 each rule by its code and its plain label. It also writes the generated decisions index, lists the rules, and traces
 a requirement to why it exists. It does not edit the spec, the work or the records, and it verifies one bounded
 context: product-level artifacts are read only where the files contain them.

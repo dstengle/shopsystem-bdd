@@ -97,11 +97,13 @@ class CodifiedFlow(unittest.TestCase):
                 self.assertNotIn(FORMULATOR, path.read_text())
 
     def test_no_doc_names_telingo_as_current(self):
-        """Revision 3: `model logic` is one clingo solve of `grammar/check.lp`; telingo is history, kept only in
-        `design-model.md` and `how-we-got-here.md`."""
+        """Revision 3: `model logic` is one clingo solve of `grammar/check.lp`; telingo is history, kept only under
+        `docs/history/` (design model v5, b247), which no current page is."""
         root = AGENTS.parent
-        for name in ("README.md", "docs/capability-format.md", "docs/design-model/grammar.md"):
-            with self.subTest(path=name):
-                hits = [line for line in (root / name).read_text().splitlines()
+        pages = [root / "README.md"] + [path for path in sorted((root / "docs").rglob("*.md"))
+                                        if "history" not in path.relative_to(root / "docs").parts[:1]]
+        for path in pages:
+            with self.subTest(path=str(path.relative_to(root))):
+                hits = [line for line in path.read_text().splitlines()
                         if "telingo" in line or "&tel" in line]
                 self.assertEqual(hits, [])

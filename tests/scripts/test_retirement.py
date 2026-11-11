@@ -30,9 +30,11 @@ def test_every_work_command_answers_help():
     assert failed == []
 
 
-def readme_less_history():
+def readme_less_history(name="README.md"):
+    """A page's lines less its history sections, `## x.y.z: ...` (CHANGELOG.md's rule: each release's note is kept as
+    it was written, in the words of its day)."""
     kept, history = [], False
-    for line in (REPO / "README.md").read_text(encoding="utf-8").splitlines():
+    for line in (REPO / name).read_text(encoding="utf-8").splitlines():
         if line.startswith("## "):
             history = bool(HISTORY.match(line))
         if not history:
@@ -63,6 +65,7 @@ def texts():
         if path.is_file():
             yield path.relative_to(REPO).as_posix(), path.read_text(encoding="utf-8")
     yield "README.md", readme_less_history()
+    yield "CHANGELOG.md", readme_less_history("CHANGELOG.md")
     yield "CLAUDE.md", (REPO / "CLAUDE.md").read_text(encoding="utf-8")
     yield "docs/capability-format.md", doc_less_old_examples(REPO / "docs" / "capability-format.md")
 

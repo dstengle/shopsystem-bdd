@@ -26,9 +26,10 @@ def vocab():
     return spec_grammar4.load(FIXTURE)[0]
 
 
-def reading(vocab, line):
-    """What grammar 4 reads a line as: its refusal, else its logical form as `model parse --form` prints it."""
-    p = spec_grammar4.parse(FIXTURE, line)
+def reading(vocab, line, root=FIXTURE):
+    """What grammar 4 reads a line as in a context (the fixture's unless `root` names another): its refusal, else its
+    logical form as `model parse --form` prints it."""
+    p = spec_grammar4.parse(root, line)
     if not p.tree:
         return p.refusal
     return spec_lf_read.refusal(vocab, p.tree) or spec_lf.show(spec_lf.form(vocab, p.tree))

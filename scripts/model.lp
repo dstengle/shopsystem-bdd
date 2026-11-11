@@ -1,4 +1,4 @@
-% model.lp: the graph of design model v5 (docs/design-model/grammar.md §1-§4), in clingo.
+% model.lp: the graph of design model v5, in clingo; docs/reference/design-model.md explains its kinds, edges and rules.
 %
 % v5 is v4 fitted to the domain model; the changes from v4 are the GF conversion design's §7.1 (C1-C32) and its rule
 % codes §7.2, each with one meaning. "C<n>" below names the change a clause makes. Facts come from `model facts`, which
