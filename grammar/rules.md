@@ -726,7 +726,7 @@ a check decision names no test
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: decision-tiers#r14
+- Cited by: decision-tiers#r26
 - Fails on:
 
   ```prolog
@@ -746,7 +746,7 @@ a requirement decision names no requirement
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: decision-tiers#r15
+- Cited by: decision-tiers#r27
 - Fails on:
 
   ```prolog

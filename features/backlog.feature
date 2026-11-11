@@ -22,21 +22,6 @@ Feature: Backlog
     And `work` writes the item i1
     And `work` commits the item i1
 
-  @g23 @r23
-  Scenario: `work shape` shapes an idea
-    Given an item i1
-    And the status of the item i1 is `idea`
-    When the person runs `work shape` on the item i1
-    Then `work` sets the status of the item i1 to `shaped`
-
-  @g24 @r24
-  Scenario: `work shape` refuses an item that is not an idea
-    Given an item i1
-    And the status of the item i1 is not `idea`
-    When the person runs `work shape` on the item i1
-    Then `work` refuses `work shape`
-    And `work` names the status of the item i1
-
   @g25 @r25
   Scenario: `work rate` sets an item's ratings
     When the person runs `work rate --value high-value --urgency low-urgency --size small` on the item i1
@@ -64,69 +49,6 @@ Feature: Backlog
     When the person runs `work backlog` with the `--json` option
     Then `work` prints the JSON object j1
     And `work` exits successfully
-
-  @g28 @r28
-  Scenario: `work withdraw` withdraws an item that is an idea, shaped, ready or needs input (case 1)
-    Given an item i1
-    And the status of the item i1 is `idea`
-    When the person runs `work withdraw` on the item i1
-    Then `work` sets the status of the item i1 to `withdrawn`
-
-  @g28 @r28
-  Scenario: `work withdraw` withdraws an item that is an idea, shaped, ready or needs input (case 2)
-    Given an item i1
-    And the status of the item i1 is `shaped`
-    When the person runs `work withdraw` on the item i1
-    Then `work` sets the status of the item i1 to `withdrawn`
-
-  @g28 @r28
-  Scenario: `work withdraw` withdraws an item that is an idea, shaped, ready or needs input (case 3)
-    Given an item i1
-    And the status of the item i1 is `ready`
-    When the person runs `work withdraw` on the item i1
-    Then `work` sets the status of the item i1 to `withdrawn`
-
-  @g28 @r28
-  Scenario: `work withdraw` withdraws an item that is an idea, shaped, ready or needs input (case 4)
-    Given an item i1
-    And the status of the item i1 is `needs-input`
-    When the person runs `work withdraw` on the item i1
-    Then `work` sets the status of the item i1 to `withdrawn`
-
-  @g29 @r29
-  Scenario: `work refuse` refuses an item that is an idea or shaped (case 1)
-    Given an item i1
-    And the status of the item i1 is `idea`
-    When the person runs `work refuse` on the item i1
-    Then `work` sets the status of the item i1 to `refused`
-
-  @g29 @r29
-  Scenario: `work refuse` refuses an item that is an idea or shaped (case 2)
-    Given an item i1
-    And the status of the item i1 is `shaped`
-    When the person runs `work refuse` on the item i1
-    Then `work` sets the status of the item i1 to `refused`
-
-  @g30 @r30
-  Scenario: `work answer` returns an item that needs input to shaped
-    Given an item i1
-    And the status of the item i1 is `needs-input`
-    When the person runs `work answer` on the item i1
-    Then `work` sets the status of the item i1 to `shaped`
-    And `work` commits the item i1
-
-  @g31 @r31
-  Scenario: `work backlog` prints the question of an item that needs input
-    Given an item i1
-    And the status of the item i1 is `needs-input`
-    And a question q1
-    And the question q1 is on the item i1
-    And a question q2
-    And the question q2 is on the item i1
-    When the person runs `work backlog`
-    Then `work` prints the item i1
-    And `work` prints the question q1
-    And `work` prints the question q2
 
   @g32 @r32
   Scenario: `work idea` keeps its commit and names the remote that rejects its push
@@ -195,3 +117,81 @@ Feature: Backlog
     And `work` prints the value of the item i1
     And `work` prints the urgency of the item i1
     And `work` prints the size of the item i1
+
+  @g37 @r37
+  Scenario: `work shape` shapes an idea
+    Given an item i1
+    And the status of the item i1 is `idea`
+    When the person runs `work shape` on the item i1
+    Then `work` sets the status of the item i1 to `shaped`
+
+  @g38 @r38
+  Scenario: `work shape` refuses an item that is not an idea
+    Given an item i1
+    And the status of the item i1 is not `idea`
+    When the person runs `work shape` on the item i1
+    Then `work` refuses `work shape`
+    And `work` names the status of the item i1
+
+  @g39 @r39
+  Scenario: `work withdraw` withdraws an item that is an idea, shaped, ready or needs input (case 1)
+    Given an item i1
+    And the status of the item i1 is `idea`
+    When the person runs `work withdraw` on the item i1
+    Then `work` sets the status of the item i1 to `withdrawn`
+
+  @g39 @r39
+  Scenario: `work withdraw` withdraws an item that is an idea, shaped, ready or needs input (case 2)
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    When the person runs `work withdraw` on the item i1
+    Then `work` sets the status of the item i1 to `withdrawn`
+
+  @g39 @r39
+  Scenario: `work withdraw` withdraws an item that is an idea, shaped, ready or needs input (case 3)
+    Given an item i1
+    And the status of the item i1 is `ready`
+    When the person runs `work withdraw` on the item i1
+    Then `work` sets the status of the item i1 to `withdrawn`
+
+  @g39 @r39
+  Scenario: `work withdraw` withdraws an item that is an idea, shaped, ready or needs input (case 4)
+    Given an item i1
+    And the status of the item i1 is `needs-input`
+    When the person runs `work withdraw` on the item i1
+    Then `work` sets the status of the item i1 to `withdrawn`
+
+  @g40 @r40
+  Scenario: `work refuse` refuses an item that is an idea or shaped (case 1)
+    Given an item i1
+    And the status of the item i1 is `idea`
+    When the person runs `work refuse` on the item i1
+    Then `work` sets the status of the item i1 to `refused`
+
+  @g40 @r40
+  Scenario: `work refuse` refuses an item that is an idea or shaped (case 2)
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    When the person runs `work refuse` on the item i1
+    Then `work` sets the status of the item i1 to `refused`
+
+  @g41 @r41
+  Scenario: `work answer` returns an item that needs input to shaped
+    Given an item i1
+    And the status of the item i1 is `needs-input`
+    When the person runs `work answer` on the item i1
+    Then `work` sets the status of the item i1 to `shaped`
+    And `work` commits the item i1
+
+  @g42 @r42
+  Scenario: `work backlog` prints the question of an item that needs input
+    Given an item i1
+    And the status of the item i1 is `needs-input`
+    And a question q1
+    And the question q1 is on the item i1
+    And a question q2
+    And the question q2 is on the item i1
+    When the person runs `work backlog`
+    Then `work` prints the item i1
+    And `work` prints the question q1
+    And `work` prints the question q2

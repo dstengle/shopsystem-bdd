@@ -21,10 +21,10 @@ file; it prints what the tools found and names a tool that is missing rather tha
 - **Python interpreter** (noun): the Python `tools` runs the analysis tools with: the one `--python` gives, else the
   first of `.venv/bin/python`, `venv/bin/python` and `$VIRTUAL_ENV/bin/python` under the current directory that
   exists, else the one that executes `scripts/tools`. Kind of: file. This: the Python interpreter `tools` runs the analysis tools with.
-- **environment** (attribute of Python interpreter): whether pip installs into a virtualenv. Values: `virtualenv`, `system`.
+- **environment** (attribute of Python interpreter): whether pip installs into a virtualenv. Values (noun): `virtualenv`, `system`.
 - **analysis tool** (noun): a package `tools` probes and installs. Kind of: thing.
 - **presence** (attribute of analysis tool): whether the interpreter has the tool, and whether pip can install it.
-  Values: `installed`, `missing`, `uninstallable`.
+  Values (adjective): `installed`, `missing`, `uninstallable`.
 - **`ruff`** (proper noun): the linter ruff. Kind of: analysis tool.
 - **`vulture`** (proper noun): the dead-code finder vulture. Kind of: analysis tool.
 - **`coverage`** (proper noun): coverage.py, which `tools map` runs the tests under. Kind of: analysis tool.

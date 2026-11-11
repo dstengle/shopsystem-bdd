@@ -40,16 +40,16 @@ what it needs to know at its start and before it is compacted.
 - **content** (noun): the text a file holds. Kind of: text.
 - **shop directory** (noun): the directory `.shop/` of a repository. Kind of: file.
 - **upgrade step** (noun): one step of `migrate upgrade` from one plugin release to the next, named by its title. Kind of: thing.
-- **release** (attribute of repository): Values: `0.23.1`, `0.24.0`, `0.25.0`, `0.29.0`, `1.0.0`, `2.0.0`, `3.0.0`, `3.0.1`, `4.0.0`, `9.0.0`. Order: by number.
-- **release** (attribute of upgrade step): Values: `0.24.0`, `0.25.0`, `1.0.0`, `2.0.0`, `3.0.0`, `4.0.0`. Order: by number.
+- **release** (attribute of repository): Values (noun): `0.23.1`, `0.24.0`, `0.25.0`, `0.29.0`, `1.0.0`, `2.0.0`, `3.0.0`, `3.0.1`, `4.0.0`, `9.0.0`. Order: by number.
+- **release** (attribute of upgrade step): Values (noun): `0.24.0`, `0.25.0`, `1.0.0`, `2.0.0`, `3.0.0`, `4.0.0`. Order: by number.
 - **work-item file** (noun): the file `.shop/work/<initiative>/<work-item>.md` of a work-item of plugin 1.x. Kind of: file.
 - **stage directory** (noun): the directory `.shop/work/<initiative>/runs/<work-item>/` of a work-item's stages. Kind of: file.
 - **initiative log** (noun): the file `.shop/work/<initiative>/log.jsonl` of an initiative of plugin 1.x. Kind of: file.
 - **restated file** (noun): the file `spec/restated.json`, the 0.29 requirements by id. Kind of: file.
 - **frozen notice** (noun): the file `.shop/work/FROZEN.md`, which says that the queue of plugin 1.x is frozen. Kind of: file.
 - **frozen request** (noun): a request of plugin 1.x under `.shop/work/requests/`. Kind of: file.
-- **status** (attribute of frozen request): Values: `open`, `awaiting-asker`, `awaiting-upstream`, `accepted`, `delivered`, `refused`, `withdrawn`.
-- **asker** (attribute of frozen request): the `asker:` of a frozen request, `internal` when the bounded context asked it of itself, else the id of the bounded context that asked it. Values: `internal`.
+- **status** (attribute of frozen request): Values (adjective): `open`, `awaiting-asker`, `awaiting-upstream`, `accepted`, `delivered`, `refused`, `withdrawn`.
+- **asker** (attribute of frozen request): the `asker:` of a frozen request, `internal` when the bounded context asked it of itself, else the id of the bounded context that asked it. Values (adjective): `internal`.
 - **index file** (noun): the file `spec/index.md` of a bounded context. Kind of: file.
 - **`no upgrade step is pending`** (proper noun): what `migrate upgrade` prints when no upgrade step is pending. Kind of: text.
 - **`only on the person's yes`** (proper noun): the SessionStart hook's note that a session runs a pending upgrade only on the person's yes. Kind of: text.

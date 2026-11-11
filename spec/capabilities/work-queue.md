@@ -21,8 +21,8 @@ work-item's status; `work run` (supervision) takes them through it. It judges no
 
 ## Terms
 - **note** (noun): the one line `work note` appends to a ledger after the date it writes.
-- **form** (attribute of note): Values: `one-line`, `multi-line`.
-- **form** (attribute of answer): Values: `one-line`, `multi-line`.
+- **form** (attribute of note): Values (adjective): `one-line`, `multi-line`.
+- **form** (attribute of answer): Values (adjective): `one-line`, `multi-line`.
 
 ## Behaviour
 

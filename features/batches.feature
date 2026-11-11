@@ -97,19 +97,6 @@ Feature: Batches
     And `work` writes the question q1
     And `work` does not set the status of the batch b1 to `abandoned`
 
-  @g27 @r27
-  Scenario: A parked item's commits stay out of the pull request
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `needs-input`
-    And a commit c1
-    And the commit c1 cites the item i1
-    When the person runs `work batch review` on the batch b1
-    Then the batch b1 has the pull request p1
-    And the pull request p1 does not hold the commit c1
-    And `work` publishes the pull request p1
-
   @g28 @r28
   Scenario: `work batch abandon` returns the batch's items
     Given a batch b1
@@ -176,26 +163,6 @@ Feature: Batches
     When the session s1 runs `work batch park` on the item i1
     Then `work` removes the requirement r1 from the git branch g1
 
-  @g33 @r33
-  Scenario: A parked item's failing scenario does not hold up another item's task
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a task t1
-    And the item i1 has the task t1
-    And the status of the task t1 is `running`
-    And an item i2
-    And the batch b1 holds the item i2
-    And the status of the item i2 is `needs-input`
-    And a scenario s1
-    And the item i2 has the scenario s1
-    And a worktree w1
-    And the task t1 has the worktree w1
-    And the scenario s1 fails in the worktree w1
-    When the session s2 runs `work batch done` on the task t1
-    Then `work` sets the status of the task t1 to `done`
-
   @g34 @r34
   Scenario: Another item's passing scenario does not hold up a task
     Given an item i1
@@ -239,3 +206,36 @@ Feature: Batches
     Then `work` prints the item i1
     And `work` prints the task t1
     And `work` prints the status of the task t1
+
+  @g37 @r37
+  Scenario: A parked item's commits stay out of the pull request
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `needs-input`
+    And a commit c1
+    And the commit c1 cites the item i1
+    When the person runs `work batch review` on the batch b1
+    Then the batch b1 has the pull request p1
+    And the pull request p1 does not hold the commit c1
+    And `work` publishes the pull request p1
+
+  @g38 @r38
+  Scenario: A parked item's failing scenario does not hold up another item's task
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And an item i2
+    And the batch b1 holds the item i2
+    And the status of the item i2 is `needs-input`
+    And a scenario s1
+    And the item i2 has the scenario s1
+    And a worktree w1
+    And the task t1 has the worktree w1
+    And the scenario s1 fails in the worktree w1
+    When the session s2 runs `work batch done` on the task t1
+    Then `work` sets the status of the task t1 to `done`

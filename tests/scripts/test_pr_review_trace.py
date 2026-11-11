@@ -83,14 +83,14 @@ def test_r3_named_but_not_marked():
     pass
 
 class TestIn:
-    @pytest.mark.requirement("pr-review#r4")
+    @pytest.mark.requirement("pr-review#r17")
     def test_in_a_class(self):
         pass
 '''
 
 
 def test_the_marks_are_read_by_capability_and_in_a_class():
-    assert marked(MARKED, "pr-review") == {"r1", "r4"}
+    assert marked(MARKED, "pr-review") == {"r1", "r17"}
 
 
 @pytest.mark.parametrize("skip", ["skip", "xfail", 'skipif(True, reason="x")'])

@@ -27,12 +27,12 @@ def test_r11_r12_the_reviewer_reads_the_items_lines_and_only_the_batchs_commits(
     assert definition(PATH)["tools"] == ["Read", "Glob", "Grep"]
 
 
-@pytest.mark.requirement("pr-review#r4")
+@pytest.mark.requirement("pr-review#r17")
 def test_r4_the_reviewer_reads_every_judgement_decision():
     has("Read every design-decision the brief's `## Judgement decisions` lists, and check the change against each.")
 
 
-@pytest.mark.requirement("pr-review#r14")
+@pytest.mark.requirement("pr-review#r19")
 def test_r14_the_re_review_reads_every_commit_for_each_finding():
     has("On a re-review, read every commit the brief lists under each finding of `## Earlier findings`, and write "
         "`fixed` or `not fixed: <why>` for each.")

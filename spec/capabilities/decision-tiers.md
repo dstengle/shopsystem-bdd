@@ -5,7 +5,7 @@ narrator: a person or session keeping the decisions
 group: service
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
-retired: [g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12]
+retired: [g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g14, r14, g15, r15, g16, r16, g17, r17, g23, r23]
 unbuilt: []
 ---
 
@@ -19,10 +19,10 @@ to its tier, and keeps a superseded decision marked so.
 
 ## Terms
 - **enforce** (verb, state): a design-decision names a test or a requirement under its `enforced_by` as what holds it. Forms: enforces, enforced. Frame: test enforces design-decision. Frame: requirement enforces design-decision.
-- **outcome** (attribute of test): Values: `passed`, `failed`.
+- **outcome** (attribute of test): Values (adjective): `passed`, `failed`.
 - **supersede** (verb, state): a design-decision names another under its `supersedes` as the one it takes the place of. Forms: supersedes, superseded. Frame: design-decision supersedes design-decision.
 - **route** (noun): a way a design-decision is verified, named under its `verified_by`. Kind of: text.
-- **kind** (attribute of route): the word that names the route. Values: `scenario`, `check`, `judgement`, `monitor`.
+- **kind** (attribute of route): the word that names the route. Values (noun): `scenario`, `check`, `judgement`, `monitor`.
 - **verify** (verb, state): a design-decision names a universal condition under its `rests_on` and a route under its `verified_by`. Forms: verifies, verified. Frame: design-decision verifies universal condition.
 
 ## Relations
@@ -36,17 +36,17 @@ to its tier, and keeps a superseded decision marked so.
 ### [g13] A decision in force with no tier is a warning
 - [r13] While a design-decision is not `superseded` or `rejected` and the design-decision has no tier, when the person runs `model check`, `model` shall print `w_untiered`.
 
-### [g14] A `check` decision names its test
-- [r14] While a design-decision is `check` and no test enforces the design-decision, if the person runs `model check`, then `model` shall exit with an error naming `v_d6`.
+### [g26] A `check` decision names its test
+- [r26] While the tier of a design-decision is `check` and no test enforces the design-decision, if the person runs `model check`, then `model` shall exit with an error naming `v_d6`.
 
-### [g15] A `requirement` decision names its requirement
-- [r15] While a design-decision is `requirement` and no requirement enforces the design-decision, if the person runs `model check`, then `model` shall exit with an error naming `v_d7`.
+### [g27] A `requirement` decision names its requirement
+- [r27] While the tier of a design-decision is `requirement` and no requirement enforces the design-decision, if the person runs `model check`, then `model` shall exit with an error naming `v_d7`.
 
-### [g16] `model decisions --check` runs the tests of the `check` decisions
-- [r16] While a design-decision is `check` and a test enforces the design-decision, when the person runs `model decisions --check`, `model` shall run `pytest` on the test.
+### [g28] `model decisions --check` runs the tests of the `check` decisions
+- [r28] While the tier of a design-decision is `check` and a test enforces the design-decision, when the person runs `model decisions --check`, `model` shall run `pytest` on the test.
 
-### [g17] `model decisions --check` names each failing decision
-- [r17] While a design-decision is `check` and a test whose outcome is `failed` enforces the design-decision, if the person runs `model decisions --check`, then `model` shall exit with an error naming the design-decision.
+### [g29] `model decisions --check` names each failing decision
+- [r29] While the tier of a design-decision is `check` and a test whose outcome is `failed` enforces the design-decision, if the person runs `model decisions --check`, then `model` shall exit with an error naming the design-decision.
 
 ### [g18] An accepted decision supersedes no accepted decision
 - [r18] While a design-decision whose status is `accepted` supersedes a design-decision whose status is `accepted`, if the person runs `model check`, then `model` shall exit with an error naming `v_d8`.
@@ -69,8 +69,8 @@ to its tier, and keeps a superseded decision marked so.
 ### [g22] `model check` names a universal condition no decision verifies
 - [r22] When the person runs `model check`, `model` shall print every universal condition that no design-decision verifies.
 
-### [g23] `model check` refuses a route outside the four
-- [r23] While a route of a design-decision is not `scenario`, `check`, `judgement` or `monitor`, if the person runs `model check`, then `model` shall exit with an error naming the design-decision.
+### [g30] `model check` refuses a route outside the four
+- [r30] While the kind of a route of a design-decision is not `scenario`, `check`, `judgement` or `monitor`, if the person runs `model check`, then `model` shall exit with an error naming the design-decision.
 
 ## Implementation, may change
 

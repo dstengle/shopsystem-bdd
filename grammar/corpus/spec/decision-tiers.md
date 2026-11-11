@@ -18,11 +18,11 @@ shall [x2: agent the person (constant), x3: command `model check` (parameter), x
     print(e2, subject: x4, object: x5)
 ```
 
-## r14
-Retires: r2. From: b159 r14. Audit: fine.
+## r26
+Retires: r14. From: b257. Audit: the short form of a noun value, said in the full form.
 
 ```reading
-While a design-decision is `check` and no test enforces the design-decision, if the person runs `model check`, then `model` shall exit with an error naming `v_d6`.
+While the tier of a design-decision is `check` and no test enforces the design-decision, if the person runs `model check`, then `model` shall exit with an error naming `v_d6`.
 shall [x3: agent the person (constant), x4: command `model check` (parameter), x5: tool `model` (constant), x6: thing `v_d6` (parameter)]
   while [x1: design-decision]
     tier(x1) = `check`
@@ -34,11 +34,11 @@ shall [x3: agent the person (constant), x4: command `model check` (parameter), x
     exit(e2, subject: x5, with an error naming: x6)
 ```
 
-## r15
-Retires: r3. From: b159 r15. Audit: fine (enforce's second frame is read since b236).
+## r27
+Retires: r15. From: b257. Audit: the short form of a noun value, said in the full form.
 
 ```reading
-While a design-decision is `requirement` and no requirement enforces the design-decision, if the person runs `model check`, then `model` shall exit with an error naming `v_d7`.
+While the tier of a design-decision is `requirement` and no requirement enforces the design-decision, if the person runs `model check`, then `model` shall exit with an error naming `v_d7`.
 shall [x3: agent the person (constant), x4: command `model check` (parameter), x5: tool `model` (constant), x6: thing `v_d7` (parameter)]
   while [x1: design-decision]
     tier(x1) = `requirement`
@@ -50,11 +50,11 @@ shall [x3: agent the person (constant), x4: command `model check` (parameter), x
     exit(e2, subject: x5, with an error naming: x6)
 ```
 
-## r16
-Retires: r4. From: b159 r16. Audit: fine.
+## r28
+Retires: r16. From: b257. Audit: the short form of a noun value, said in the full form.
 
 ```reading
-While a design-decision is `check` and a test enforces the design-decision, when the person runs `model decisions --check`, `model` shall run `pytest` on the test.
+While the tier of a design-decision is `check` and a test enforces the design-decision, when the person runs `model decisions --check`, `model` shall run `pytest` on the test.
 shall [x3: agent the person (constant), x4: command `model decisions --check` (parameter), x5: tool `model` (constant), x6: command `pytest` (parameter)]
   while [x1: design-decision, x2: test]
     tier(x1) = `check`
@@ -65,11 +65,11 @@ shall [x3: agent the person (constant), x4: command `model decisions --check` (p
     run(e2, subject: x5, object: x6, on: x2)
 ```
 
-## r17
-Retires: r5. From: b159 r17. Known limit: #11 (the outcome of the response's own act: the test's outcome `failed` stands for the test failing when `model` runs it).
+## r29
+Retires: r17. From: b257. Audit: the short form of a noun value, said in the full form.
 
 ```reading
-While a design-decision is `check` and a test whose outcome is `failed` enforces the design-decision, if the person runs `model decisions --check`, then `model` shall exit with an error naming the design-decision.
+While the tier of a design-decision is `check` and a test whose outcome is `failed` enforces the design-decision, if the person runs `model decisions --check`, then `model` shall exit with an error naming the design-decision.
 shall [x3: agent the person (constant), x4: command `model decisions --check` (parameter), x5: tool `model` (constant)]
   while [x1: design-decision, x2: test]
     tier(x1) = `check`
@@ -155,11 +155,11 @@ shall [x1: agent the person (constant), x2: command `model check` (parameter), x
         print(e2, subject: x3, object: x4)
 ```
 
-## r23
-Retires: r12. From: b159 r23. Audit: coined ("a route that the route list does not list"), fixed by section 5 (the route's values declared, `Values:` on the kind of a route: "is not `scenario`, `check`, `judgement` or `monitor`").
+## r30
+Retires: r23. From: b257. Audit: the short form of a noun value, said in the full form.
 
 ```reading
-While a route of a design-decision is not `scenario`, `check`, `judgement` or `monitor`, if the person runs `model check`, then `model` shall exit with an error naming the design-decision.
+While the kind of a route of a design-decision is not `scenario`, `check`, `judgement` or `monitor`, if the person runs `model check`, then `model` shall exit with an error naming the design-decision.
 shall [x3: agent the person (constant), x4: command `model check` (parameter), x5: tool `model` (constant)]
   while [x1: route, x2: design-decision]
     of(x1, x2)

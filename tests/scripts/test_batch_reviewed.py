@@ -40,7 +40,7 @@ def record(repo, k=1):
     return batch_findings.parse((repo / rel).read_text(), rel)
 
 
-@pytest.mark.requirement("pr-review#r13")
+@pytest.mark.requirement("pr-review#r18")
 def test_r13_a_fix_now_finding_sends_the_batch_back_to_building(briefed, batch_outside):
     done = ok(reviewed(briefed, FIX_NOW_B1))
     assert batch_plan.find(briefed, "batch-1").status == "building"
@@ -58,7 +58,7 @@ def test_r13_a_fix_now_finding_sends_the_batch_back_to_building(briefed, batch_o
         '  open f1 Important b1 "Abandon" src/b1.txt:1: abandon leaves the initiative started']
 
 
-@pytest.mark.requirement("pr-review#r15")
+@pytest.mark.requirement("pr-review#r20")
 def test_r15_a_clean_review_awaits_the_merge(briefed, batch_outside):
     done = ok(reviewed(briefed, CLEAN))
     assert batch_plan.find(briefed, "batch-1").status == "awaiting-merge"
