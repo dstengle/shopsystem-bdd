@@ -365,7 +365,7 @@ g37 and g38 again, then what they became in `features/backlog.feature`:
 # generated from spec/capabilities/backlog.md by features generate; do not edit
 Feature: Backlog
   Narrator: a person or session keeping the backlog
-  ...
+  # ... the scenarios before g37
 
   @g37 @r37
   Scenario: `work shape` shapes an idea
@@ -391,7 +391,7 @@ Read them side by side:
 - **shall** became the Thens, one a response. "refuse the command and name ..." became two Thens.
 - The group's title became the scenario's name, and `@g38 @r38` tie it back to its lines.
 
-A given block comes first, as a Given with a docstring. batch-measurement's g24 opens like this:
+A given block comes first, as a Given with a docstring. Here is batch-measurement's g24, whole:
 
 ```gherkin
   @g24 @r24
@@ -401,7 +401,17 @@ A given block comes first, as a Given with a docstring. batch-measurement's g24 
       {"stages": [{"work-item": "cart-1", "stage": "research", "agent": "researcher", "session": "s-1", "turns": 14}], "work_items": [], "totals": {"stages": 1, "sessions": 1, "turns": 14}}
       """
     And a stage row s1
-    ...
+    And the stage row s1 has no round trip
+    And a measurement m1
+    And the measurement m1 has the stage row s1
+    And a stage row s2
+    And the measurement m1 has the stage row s2
+    And a stage row s3
+    And the measurement m1 has the stage row s3
+    When the person runs `measure show` on the measurement m1
+    Then `measure` prints the stage row s2
+    And `measure` prints the stage row s3
+    And `measure` does not print a round trip
 ```
 
 The output is byte-stable: generate twice and you get the same file. `features generate --check` prints nothing and
