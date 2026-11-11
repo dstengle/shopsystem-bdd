@@ -306,54 +306,6 @@ Feature: Migration tools
     Then `migrate` rewrites the work-item file w1
     And `migrate` rewrites the work-item file w2
 
-  @g44 @r44
-  Scenario: `migrate upgrade` on a repository before 1.0.0 writes the restated file and rewrites each capability with no language
-    Given the tracked file `.shop/plugin-version` holds "0.29.0"
-    And the tracked file `spec/index.md` holds:
-      """
-      ---
-      id: bounded-context/example.org/acme/shop
-      title: shop
-      ---
-      # shop
-      """
-    And the tracked file `spec/capabilities/cart.md` holds:
-      """
-      ---
-      id: capability/example.org/acme/shop/cart
-      title: Cart
-      retired: []
-      ---
-      # Cart
-      ## Behaviour
-      - [r1] **When** the shopper applies a code, `cart` shall take ten percent off.
-      """
-    And the tracked file `features/cart.feature` holds:
-      """
-      Feature: Cart
-        @r1 @deprecated
-        Scenario: a code takes ten percent off (deprecated)
-          Given a cart
-      """
-    And the tracked file `.shop/work/i1/w2.md` holds:
-      """
-      ---
-      id: work-item/example.org/acme/shop/w2
-      kind: work-item
-      accepts: [cart#r1]
-      ---
-      # w2
-      """
-    And the release of this repository is `0.29.0`
-    And a capability c1
-    And this repository has the capability c1
-    And the capability c1 has no language
-    When the person runs `migrate upgrade`
-    Then `migrate` writes the restated file r1
-    And `migrate` rewrites the capability c1
-    And `migrate` prints the restated file r1
-    And `migrate` prints the capability c1
-
   @g47 @r47
   Scenario: the SessionStart hook tells a session to offer the upgrade steps of a repository before 0.24.0, and to run them only on the person's yes
     Given the tracked file `.shop/plugin-version` holds "0.23.1"
@@ -383,317 +335,6 @@ Feature: Migration tools
     Then `migrate` prints `holds no version`
     And the plugin version file p1 has the content c1
     And `migrate` prints the content c1
-
-  @g52 @r52
-  Scenario: `migrate upgrade` on a repository from 1.0.0 and before 2.0.0 writes the frozen notice and rewrites the decisions index
-    Given the tracked file `.shop/plugin-version` holds "1.0.0"
-    And the tracked file `spec/index.md` holds:
-      """
-      ---
-      id: bounded-context/example.org/acme/shop
-      title: shop
-      ---
-      # shop
-      """
-    And the tracked file `spec/decisions/0001-one.md` holds:
-      """
-      ---
-      id: design-decision/example.org/acme/shop/one
-      summary: One decision.
-      status: accepted
-      tier: judgement
-      ---
-      # One
-      ## Decision
-      One.
-      """
-    And the tracked file `spec/decisions/index.md` holds:
-      """
-      # Decisions
-      Written by hand, with no tier.
-      """
-    And the tracked file `.shop/work/i1/initiative.md` holds:
-      """
-      ---
-      id: initiative/example.org/acme/shop/i1
-      kind: initiative
-      title: A cart
-      status: started
-      ---
-      # i1
-      """
-    And the tracked file `.shop/work/requests/q1.md` holds:
-      """
-      ---
-      id: request/example.org/acme/shop/q1
-      kind: request
-      asker: internal
-      status: open
-      turn: upstream
-      ---
-      # An intention
-      """
-    And the tracked file `.shop/work/requests/q2.md` holds:
-      """
-      ---
-      id: request/example.org/acme/shop/q2
-      kind: request
-      asker: bounded-context/example.org/acme/web
-      status: open
-      turn: upstream
-      ---
-      # A peer's request
-      """
-    And the release of this repository is `1.0.0`
-    When the person runs `migrate upgrade`
-    Then `migrate` writes the frozen notice f1
-    And this repository has the decisions index d1
-    And `migrate` rewrites the decisions index d1
-
-  @g53 @r53
-  Scenario: `migrate upgrade` on a repository from 1.0.0 and before 2.0.0 relocates each frozen request another bounded context asked that is not closed
-    Given the tracked file `.shop/plugin-version` holds "1.0.0"
-    And the tracked file `spec/index.md` holds:
-      """
-      ---
-      id: bounded-context/example.org/acme/shop
-      title: shop
-      ---
-      # shop
-      """
-    And the tracked file `spec/decisions/0001-one.md` holds:
-      """
-      ---
-      id: design-decision/example.org/acme/shop/one
-      summary: One decision.
-      status: accepted
-      tier: judgement
-      ---
-      # One
-      ## Decision
-      One.
-      """
-    And the tracked file `spec/decisions/index.md` holds:
-      """
-      # Decisions
-      Written by hand, with no tier.
-      """
-    And the tracked file `.shop/work/i1/initiative.md` holds:
-      """
-      ---
-      id: initiative/example.org/acme/shop/i1
-      kind: initiative
-      title: A cart
-      status: started
-      ---
-      # i1
-      """
-    And the tracked file `.shop/work/requests/q1.md` holds:
-      """
-      ---
-      id: request/example.org/acme/shop/q1
-      kind: request
-      asker: internal
-      status: open
-      turn: upstream
-      ---
-      # An intention
-      """
-    And the tracked file `.shop/work/requests/q2.md` holds:
-      """
-      ---
-      id: request/example.org/acme/shop/q2
-      kind: request
-      asker: bounded-context/example.org/acme/web
-      status: open
-      turn: upstream
-      ---
-      # A peer's request
-      """
-    And the release of this repository is `1.0.0`
-    And a frozen request f1
-    And the asker of the frozen request f1 is not `internal`
-    And the status of the frozen request f1 is not `delivered`
-    And the status of the frozen request f1 is not `refused`
-    And the status of the frozen request f1 is not `withdrawn`
-    When the person runs `migrate upgrade`
-    Then `migrate` relocates the frozen request f1
-
-  @g54 @r54
-  Scenario: `migrate upgrade` on a repository from 1.0.0 and before 2.0.0 names the upgrade step and each initiative that is not closed
-    Given the tracked file `.shop/plugin-version` holds "1.0.0"
-    And the tracked file `spec/index.md` holds:
-      """
-      ---
-      id: bounded-context/example.org/acme/shop
-      title: shop
-      ---
-      # shop
-      """
-    And the tracked file `spec/decisions/0001-one.md` holds:
-      """
-      ---
-      id: design-decision/example.org/acme/shop/one
-      summary: One decision.
-      status: accepted
-      tier: judgement
-      ---
-      # One
-      ## Decision
-      One.
-      """
-    And the tracked file `spec/decisions/index.md` holds:
-      """
-      # Decisions
-      Written by hand, with no tier.
-      """
-    And the tracked file `.shop/work/i1/initiative.md` holds:
-      """
-      ---
-      id: initiative/example.org/acme/shop/i1
-      kind: initiative
-      title: A cart
-      status: started
-      ---
-      # i1
-      """
-    And the tracked file `.shop/work/requests/q1.md` holds:
-      """
-      ---
-      id: request/example.org/acme/shop/q1
-      kind: request
-      asker: internal
-      status: open
-      turn: upstream
-      ---
-      # An intention
-      """
-    And the tracked file `.shop/work/requests/q2.md` holds:
-      """
-      ---
-      id: request/example.org/acme/shop/q2
-      kind: request
-      asker: bounded-context/example.org/acme/web
-      status: open
-      turn: upstream
-      ---
-      # A peer's request
-      """
-    And the release of this repository is `1.0.0`
-    And an initiative i1
-    And this repository has the initiative i1
-    And the status of the initiative i1 is not `done`
-    And the status of the initiative i1 is not `abandoned`
-    And an upgrade step u1
-    And the release of the upgrade step u1 is `2.0.0`
-    And an upgrade step u2
-    And the release of the upgrade step u2 is `2.0.0`
-    When the person runs `migrate upgrade`
-    Then `migrate` prints the upgrade step u1
-    And `migrate` prints the upgrade step u2
-    And `migrate` prints the initiative i1
-
-  @g55 @r55
-  Scenario: `migrate upgrade` on a repository from 1.0.0 and before 2.0.0 names each frozen request it asked of itself that is not closed
-    Given the tracked file `.shop/plugin-version` holds "1.0.0"
-    And the tracked file `spec/index.md` holds:
-      """
-      ---
-      id: bounded-context/example.org/acme/shop
-      title: shop
-      ---
-      # shop
-      """
-    And the tracked file `spec/decisions/0001-one.md` holds:
-      """
-      ---
-      id: design-decision/example.org/acme/shop/one
-      summary: One decision.
-      status: accepted
-      tier: judgement
-      ---
-      # One
-      ## Decision
-      One.
-      """
-    And the tracked file `spec/decisions/index.md` holds:
-      """
-      # Decisions
-      Written by hand, with no tier.
-      """
-    And the tracked file `.shop/work/i1/initiative.md` holds:
-      """
-      ---
-      id: initiative/example.org/acme/shop/i1
-      kind: initiative
-      title: A cart
-      status: started
-      ---
-      # i1
-      """
-    And the tracked file `.shop/work/requests/q1.md` holds:
-      """
-      ---
-      id: request/example.org/acme/shop/q1
-      kind: request
-      asker: internal
-      status: open
-      turn: upstream
-      ---
-      # An intention
-      """
-    And the tracked file `.shop/work/requests/q2.md` holds:
-      """
-      ---
-      id: request/example.org/acme/shop/q2
-      kind: request
-      asker: bounded-context/example.org/acme/web
-      status: open
-      turn: upstream
-      ---
-      # A peer's request
-      """
-    And the release of this repository is `1.0.0`
-    And a frozen request f1
-    And the asker of the frozen request f1 is `internal`
-    And the status of the frozen request f1 is not `delivered`
-    And the status of the frozen request f1 is not `refused`
-    And the status of the frozen request f1 is not `withdrawn`
-    When the person runs `migrate upgrade`
-    Then `migrate` prints the frozen request f1
-
-  @g56 @r56
-  Scenario: `migrate upgrade` on a repository from 2.0.0 and before 3.0.0 rewrites the index file with each term's part of speech and names each term that violates `v_t11`
-    Given the tracked file `.shop/plugin-version` holds "2.0.0"
-    And the tracked file `spec/index.md` holds:
-      """
-      ---
-      id: bounded-context/example.org/acme/shop
-      title: shop
-      language: codified-1
-      ---
-      # shop
-      ## Glossary
-      - **cart** (kind): the goods a shopper picks.
-      - **shopper** (kind): a person who buys.
-      - **pick** (event): a shopper puts goods in a cart. Forms: picks, picked.
-      """
-    And the release of this repository is `2.0.0`
-    And an upgrade step u1
-    And the release of the upgrade step u1 is `3.0.0`
-    And an upgrade step u2
-    And the release of the upgrade step u2 is `3.0.0`
-    And a term t1
-    And the term t1 violates `v_t11`
-    And a term t2
-    And the term t2 violates `v_t11`
-    When the person runs `migrate upgrade`
-    Then this bounded context has the index file i1
-    And `migrate` rewrites the index file i1
-    And `migrate` prints the upgrade step u1
-    And `migrate` prints the upgrade step u2
-    And `migrate` prints the term t1
-    And `migrate` prints the term t2
 
   @g58 @r58
   Scenario: `migrate run` writes the design-decision of a ledger entry that another supersedes with the status `superseded` and a design-decision that supersedes it
@@ -767,8 +408,56 @@ Feature: Migration tools
     And `migrate` rewrites the initiative log i1
     And `migrate` rewrites the initiative log i2
 
-  @g60 @r60
-  Scenario: `migrate upgrade` on a repository before 1.0.0 writes each reference of a work-item file to a requirement with its release and removes each scenario that has the `@deprecated` tag from its feature
+  @g69 @r69
+  Scenario: `migrate upgrade` on a repository before 0.30.0 writes the restated file and rewrites each capability with no language
+    Given the tracked file `.shop/plugin-version` holds "0.29.0"
+    And the tracked file `spec/index.md` holds:
+      """
+      ---
+      id: bounded-context/example.org/acme/shop
+      title: shop
+      ---
+      # shop
+      """
+    And the tracked file `spec/capabilities/cart.md` holds:
+      """
+      ---
+      id: capability/example.org/acme/shop/cart
+      title: Cart
+      retired: []
+      ---
+      # Cart
+      ## Behaviour
+      - [r1] **When** the shopper applies a code, `cart` shall take ten percent off.
+      """
+    And the tracked file `features/cart.feature` holds:
+      """
+      Feature: Cart
+        @r1 @deprecated
+        Scenario: a code takes ten percent off (deprecated)
+          Given a cart
+      """
+    And the tracked file `.shop/work/i1/w2.md` holds:
+      """
+      ---
+      id: work-item/example.org/acme/shop/w2
+      kind: work-item
+      accepts: [cart#r1]
+      ---
+      # w2
+      """
+    And the release of this repository is `0.29.0`
+    And a capability c1
+    And this repository has the capability c1
+    And the capability c1 has no language
+    When the person runs `migrate upgrade`
+    Then `migrate` writes the restated file r1
+    And `migrate` rewrites the capability c1
+    And `migrate` prints the restated file r1
+    And `migrate` prints the capability c1
+
+  @g70 @r70
+  Scenario: `migrate upgrade` on a repository before 0.30.0 writes each reference of a work-item file to a requirement with its release and removes each scenario that has the `@deprecated` tag from its feature
     Given the tracked file `.shop/plugin-version` holds "0.29.0"
     And the tracked file `spec/index.md` holds:
       """
@@ -826,9 +515,320 @@ Feature: Migration tools
     And `migrate` rewrites the feature f1
     And `migrate` rewrites the feature f2
 
-  @g61 @r61
-  Scenario: `migrate upgrade` on a repository from 3.0.0 and before 4.0.0 rewrites the index file and every capability in the controlled language 4 and names what it cannot reword
-    Given the tracked file `.shop/plugin-version` holds "3.0.1"
+  @g71 @r71
+  Scenario: `migrate upgrade` on a repository from 0.30.0 and before 0.31.0 writes the frozen notice and rewrites the decisions index
+    Given the tracked file `.shop/plugin-version` holds "0.30.0"
+    And the tracked file `spec/index.md` holds:
+      """
+      ---
+      id: bounded-context/example.org/acme/shop
+      title: shop
+      ---
+      # shop
+      """
+    And the tracked file `spec/decisions/0001-one.md` holds:
+      """
+      ---
+      id: design-decision/example.org/acme/shop/one
+      summary: One decision.
+      status: accepted
+      tier: judgement
+      ---
+      # One
+      ## Decision
+      One.
+      """
+    And the tracked file `spec/decisions/index.md` holds:
+      """
+      # Decisions
+      Written by hand, with no tier.
+      """
+    And the tracked file `.shop/work/i1/initiative.md` holds:
+      """
+      ---
+      id: initiative/example.org/acme/shop/i1
+      kind: initiative
+      title: A cart
+      status: started
+      ---
+      # i1
+      """
+    And the tracked file `.shop/work/requests/q1.md` holds:
+      """
+      ---
+      id: request/example.org/acme/shop/q1
+      kind: request
+      asker: internal
+      status: open
+      turn: upstream
+      ---
+      # An intention
+      """
+    And the tracked file `.shop/work/requests/q2.md` holds:
+      """
+      ---
+      id: request/example.org/acme/shop/q2
+      kind: request
+      asker: bounded-context/example.org/acme/web
+      status: open
+      turn: upstream
+      ---
+      # A peer's request
+      """
+    And the release of this repository is `0.30.0`
+    When the person runs `migrate upgrade`
+    Then `migrate` writes the frozen notice f1
+    And this repository has the decisions index d1
+    And `migrate` rewrites the decisions index d1
+
+  @g72 @r72
+  Scenario: `migrate upgrade` on a repository from 0.30.0 and before 0.31.0 relocates each frozen request another bounded context asked that is not closed
+    Given the tracked file `.shop/plugin-version` holds "0.30.0"
+    And the tracked file `spec/index.md` holds:
+      """
+      ---
+      id: bounded-context/example.org/acme/shop
+      title: shop
+      ---
+      # shop
+      """
+    And the tracked file `spec/decisions/0001-one.md` holds:
+      """
+      ---
+      id: design-decision/example.org/acme/shop/one
+      summary: One decision.
+      status: accepted
+      tier: judgement
+      ---
+      # One
+      ## Decision
+      One.
+      """
+    And the tracked file `spec/decisions/index.md` holds:
+      """
+      # Decisions
+      Written by hand, with no tier.
+      """
+    And the tracked file `.shop/work/i1/initiative.md` holds:
+      """
+      ---
+      id: initiative/example.org/acme/shop/i1
+      kind: initiative
+      title: A cart
+      status: started
+      ---
+      # i1
+      """
+    And the tracked file `.shop/work/requests/q1.md` holds:
+      """
+      ---
+      id: request/example.org/acme/shop/q1
+      kind: request
+      asker: internal
+      status: open
+      turn: upstream
+      ---
+      # An intention
+      """
+    And the tracked file `.shop/work/requests/q2.md` holds:
+      """
+      ---
+      id: request/example.org/acme/shop/q2
+      kind: request
+      asker: bounded-context/example.org/acme/web
+      status: open
+      turn: upstream
+      ---
+      # A peer's request
+      """
+    And the release of this repository is `0.30.0`
+    And a frozen request f1
+    And the asker of the frozen request f1 is not `internal`
+    And the status of the frozen request f1 is not `delivered`
+    And the status of the frozen request f1 is not `refused`
+    And the status of the frozen request f1 is not `withdrawn`
+    When the person runs `migrate upgrade`
+    Then `migrate` relocates the frozen request f1
+
+  @g73 @r73
+  Scenario: `migrate upgrade` on a repository from 0.30.0 and before 0.31.0 names the upgrade step and each initiative that is not closed
+    Given the tracked file `.shop/plugin-version` holds "0.30.0"
+    And the tracked file `spec/index.md` holds:
+      """
+      ---
+      id: bounded-context/example.org/acme/shop
+      title: shop
+      ---
+      # shop
+      """
+    And the tracked file `spec/decisions/0001-one.md` holds:
+      """
+      ---
+      id: design-decision/example.org/acme/shop/one
+      summary: One decision.
+      status: accepted
+      tier: judgement
+      ---
+      # One
+      ## Decision
+      One.
+      """
+    And the tracked file `spec/decisions/index.md` holds:
+      """
+      # Decisions
+      Written by hand, with no tier.
+      """
+    And the tracked file `.shop/work/i1/initiative.md` holds:
+      """
+      ---
+      id: initiative/example.org/acme/shop/i1
+      kind: initiative
+      title: A cart
+      status: started
+      ---
+      # i1
+      """
+    And the tracked file `.shop/work/requests/q1.md` holds:
+      """
+      ---
+      id: request/example.org/acme/shop/q1
+      kind: request
+      asker: internal
+      status: open
+      turn: upstream
+      ---
+      # An intention
+      """
+    And the tracked file `.shop/work/requests/q2.md` holds:
+      """
+      ---
+      id: request/example.org/acme/shop/q2
+      kind: request
+      asker: bounded-context/example.org/acme/web
+      status: open
+      turn: upstream
+      ---
+      # A peer's request
+      """
+    And the release of this repository is `0.30.0`
+    And an initiative i1
+    And this repository has the initiative i1
+    And the status of the initiative i1 is not `done`
+    And the status of the initiative i1 is not `abandoned`
+    And an upgrade step u1
+    And the release of the upgrade step u1 is `0.31.0`
+    And an upgrade step u2
+    And the release of the upgrade step u2 is `0.31.0`
+    When the person runs `migrate upgrade`
+    Then `migrate` prints the upgrade step u1
+    And `migrate` prints the upgrade step u2
+    And `migrate` prints the initiative i1
+
+  @g74 @r74
+  Scenario: `migrate upgrade` on a repository from 0.30.0 and before 0.31.0 names each frozen request it asked of itself that is not closed
+    Given the tracked file `.shop/plugin-version` holds "0.30.0"
+    And the tracked file `spec/index.md` holds:
+      """
+      ---
+      id: bounded-context/example.org/acme/shop
+      title: shop
+      ---
+      # shop
+      """
+    And the tracked file `spec/decisions/0001-one.md` holds:
+      """
+      ---
+      id: design-decision/example.org/acme/shop/one
+      summary: One decision.
+      status: accepted
+      tier: judgement
+      ---
+      # One
+      ## Decision
+      One.
+      """
+    And the tracked file `spec/decisions/index.md` holds:
+      """
+      # Decisions
+      Written by hand, with no tier.
+      """
+    And the tracked file `.shop/work/i1/initiative.md` holds:
+      """
+      ---
+      id: initiative/example.org/acme/shop/i1
+      kind: initiative
+      title: A cart
+      status: started
+      ---
+      # i1
+      """
+    And the tracked file `.shop/work/requests/q1.md` holds:
+      """
+      ---
+      id: request/example.org/acme/shop/q1
+      kind: request
+      asker: internal
+      status: open
+      turn: upstream
+      ---
+      # An intention
+      """
+    And the tracked file `.shop/work/requests/q2.md` holds:
+      """
+      ---
+      id: request/example.org/acme/shop/q2
+      kind: request
+      asker: bounded-context/example.org/acme/web
+      status: open
+      turn: upstream
+      ---
+      # A peer's request
+      """
+    And the release of this repository is `0.30.0`
+    And a frozen request f1
+    And the asker of the frozen request f1 is `internal`
+    And the status of the frozen request f1 is not `delivered`
+    And the status of the frozen request f1 is not `refused`
+    And the status of the frozen request f1 is not `withdrawn`
+    When the person runs `migrate upgrade`
+    Then `migrate` prints the frozen request f1
+
+  @g75 @r75
+  Scenario: `migrate upgrade` on a repository from 0.31.0 and before 0.32.0 rewrites the index file with each term's part of speech and names each term that violates `v_t11`
+    Given the tracked file `.shop/plugin-version` holds "0.31.0"
+    And the tracked file `spec/index.md` holds:
+      """
+      ---
+      id: bounded-context/example.org/acme/shop
+      title: shop
+      language: codified-1
+      ---
+      # shop
+      ## Glossary
+      - **cart** (kind): the goods a shopper picks.
+      - **shopper** (kind): a person who buys.
+      - **pick** (event): a shopper puts goods in a cart. Forms: picks, picked.
+      """
+    And the release of this repository is `0.31.0`
+    And an upgrade step u1
+    And the release of the upgrade step u1 is `0.32.0`
+    And an upgrade step u2
+    And the release of the upgrade step u2 is `0.32.0`
+    And a term t1
+    And the term t1 violates `v_t11`
+    And a term t2
+    And the term t2 violates `v_t11`
+    When the person runs `migrate upgrade`
+    Then this bounded context has the index file i1
+    And `migrate` rewrites the index file i1
+    And `migrate` prints the upgrade step u1
+    And `migrate` prints the upgrade step u2
+    And `migrate` prints the term t1
+    And `migrate` prints the term t2
+
+  @g76 @r76
+  Scenario: `migrate upgrade` on a repository from 0.32.0 and before 0.33.0 rewrites the index file and every capability in the controlled language 4 and names what it cannot reword
+    Given the tracked file `.shop/plugin-version` holds "0.32.1"
     And the tracked file `spec/index.md` holds:
       """
       ---
@@ -856,13 +856,13 @@ Feature: Migration tools
       ### [g1] picking
       - [r1] When a shopper picks a cart, the shopper shall pick the cart.
       """
-    And the release of this repository is `3.0.1`
+    And the release of this repository is `0.32.1`
     And a capability c1
     And a capability c2
     And an upgrade step u1
-    And the release of the upgrade step u1 is `4.0.0`
+    And the release of the upgrade step u1 is `0.33.0`
     And an upgrade step u2
-    And the release of the upgrade step u2 is `4.0.0`
+    And the release of the upgrade step u2 is `0.33.0`
     When the person runs `migrate upgrade`
     Then this bounded context has the index file i1
     And `migrate` rewrites the index file i1
@@ -871,9 +871,66 @@ Feature: Migration tools
     And `migrate` prints the upgrade step u1
     And `migrate` prints the upgrade step u2
 
-  @g65 @r65
-  Scenario: `migrate upgrade` on a repository from 4.0.0 names each attribute whose values are declared neither adjectives nor nouns
-    Given the tracked file `.shop/plugin-version` holds "4.0.0"
+  @g77 @r77
+  Scenario: `migrate upgrade` on a repository on the plugin's release says that no upgrade step is pending and changes nothing
+    Given the tracked file `.shop/plugin-version` holds "0.34.1"
+    And the release of this repository is `0.34.1`
+    When the person runs `migrate upgrade`
+    Then `migrate` prints `no upgrade step is pending`
+    And `migrate` does not change a file
+
+  @g78 @r78
+  Scenario: the SessionStart hook tells a session to tell the person to update the plugin
+    Given the tracked file `.shop/plugin-version` holds "0.99.0"
+    And the release of this repository is `0.99.0`
+    When the SessionStart hook runs `migrate status --hook`
+    Then `migrate` prints `update the plugin`
+
+  @g79 @r79
+  Scenario: the SessionStart hook tells a session nothing on the plugin's release when no initiative is open (case 1)
+    Given the tracked file `.shop/plugin-version` holds "0.34.1"
+    And the tracked file `.shop/work/i1/initiative.md` holds:
+      """
+      ---
+      id: initiative/example.org/acme/shop/i1
+      kind: initiative
+      status: done
+      ---
+      # i1
+      """
+    And the release of this repository is `0.34.1`
+    And an initiative i1
+    And this repository has the initiative i1
+    And the status of the initiative i1 is `done`
+    When the SessionStart hook runs `migrate status --hook`
+    Then `migrate` exits successfully
+    And `migrate` does not print an upgrade step
+    And `migrate` does not print an initiative
+
+  @g79 @r79
+  Scenario: the SessionStart hook tells a session nothing on the plugin's release when no initiative is open (case 2)
+    Given the tracked file `.shop/plugin-version` holds "0.34.1"
+    And the tracked file `.shop/work/i1/initiative.md` holds:
+      """
+      ---
+      id: initiative/example.org/acme/shop/i1
+      kind: initiative
+      status: done
+      ---
+      # i1
+      """
+    And the release of this repository is `0.34.1`
+    And an initiative i1
+    And this repository has the initiative i1
+    And the status of the initiative i1 is `abandoned`
+    When the SessionStart hook runs `migrate status --hook`
+    Then `migrate` exits successfully
+    And `migrate` does not print an upgrade step
+    And `migrate` does not print an initiative
+
+  @g80 @r80
+  Scenario: `migrate upgrade` on a repository from 0.33.0 names each attribute whose values are declared neither adjectives nor nouns
+    Given the tracked file `.shop/plugin-version` holds "0.33.0"
     And the tracked file `spec/index.md` holds:
       """
       ---
@@ -886,11 +943,11 @@ Feature: Migration tools
       - **cart** (noun): the goods a shopper picks.
       - **status** (attribute of cart): Values: `open`, `paid`.
       """
-    And the release of this repository is `4.0.0`
+    And the release of this repository is `0.33.0`
     And an upgrade step u1
-    And the release of the upgrade step u1 is `4.1.0`
+    And the release of the upgrade step u1 is `0.34.0`
     And an upgrade step u2
-    And the release of the upgrade step u2 is `4.1.0`
+    And the release of the upgrade step u2 is `0.34.0`
     And a term t1
     And the term t1 violates `w_value_kind`
     And a term t2
@@ -900,60 +957,3 @@ Feature: Migration tools
     And `migrate` prints the upgrade step u2
     And `migrate` prints the term t1
     And `migrate` prints the term t2
-
-  @g66 @r66
-  Scenario: `migrate upgrade` on a repository on the plugin's release says that no upgrade step is pending and changes nothing
-    Given the tracked file `.shop/plugin-version` holds "4.1.0"
-    And the release of this repository is `4.1.0`
-    When the person runs `migrate upgrade`
-    Then `migrate` prints `no upgrade step is pending`
-    And `migrate` does not change a file
-
-  @g67 @r67
-  Scenario: the SessionStart hook tells a session to tell the person to update the plugin
-    Given the tracked file `.shop/plugin-version` holds "9.0.0"
-    And the release of this repository is `9.0.0`
-    When the SessionStart hook runs `migrate status --hook`
-    Then `migrate` prints `update the plugin`
-
-  @g68 @r68
-  Scenario: the SessionStart hook tells a session nothing on the plugin's release when no initiative is open (case 1)
-    Given the tracked file `.shop/plugin-version` holds "4.1.0"
-    And the tracked file `.shop/work/i1/initiative.md` holds:
-      """
-      ---
-      id: initiative/example.org/acme/shop/i1
-      kind: initiative
-      status: done
-      ---
-      # i1
-      """
-    And the release of this repository is `4.1.0`
-    And an initiative i1
-    And this repository has the initiative i1
-    And the status of the initiative i1 is `done`
-    When the SessionStart hook runs `migrate status --hook`
-    Then `migrate` exits successfully
-    And `migrate` does not print an upgrade step
-    And `migrate` does not print an initiative
-
-  @g68 @r68
-  Scenario: the SessionStart hook tells a session nothing on the plugin's release when no initiative is open (case 2)
-    Given the tracked file `.shop/plugin-version` holds "4.1.0"
-    And the tracked file `.shop/work/i1/initiative.md` holds:
-      """
-      ---
-      id: initiative/example.org/acme/shop/i1
-      kind: initiative
-      status: done
-      ---
-      # i1
-      """
-    And the release of this repository is `4.1.0`
-    And an initiative i1
-    And this repository has the initiative i1
-    And the status of the initiative i1 is `abandoned`
-    When the SessionStart hook runs `migrate status --hook`
-    Then `migrate` exits successfully
-    And `migrate` does not print an upgrade step
-    And `migrate` does not print an initiative
