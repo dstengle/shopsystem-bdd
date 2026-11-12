@@ -1,6 +1,8 @@
-"""What the pull request review's script tests share (plan 5, Task 1): a batch published as a pull request, the
-scratch findings file `pr-reviewer` would write, and findings texts in D9's form."""
+"""What the pull request review's script tests share (plan 5, Task 1): a batch published as a pull request (built
+once a worker by batch_templates and copied into each test), the scratch findings file `pr-reviewer` would write, and
+findings texts in D9's form."""
 from backlog_testing import git, work
+from batch_templates import templated
 from batch_testing import commit_on, ready_item
 from test_backlog_lines import ABANDON
 from test_batch_pick import SECOND
@@ -47,7 +49,12 @@ def ok(done):
 
 def published(repo, park=False):
     """`batch_repo` with b1 and b2 ready, a batch started and resumed, both tasks built (b1 with `src/b1.txt`) and
-    done (b2 parked instead when `park`), and the batch reviewed: its pull request's URL."""
+    done (b2 parked instead when `park`), and the batch reviewed: its pull request's URL. The state is built once a
+    worker for each `park` and committed state of `repo` and copied into `repo` (batch_templates)."""
+    return templated(repo, ("published", park), lambda built, _outside: _publish(built, park))
+
+
+def _publish(repo, park):
     ready_item(repo, "b1", "Abandon", ABANDON, value="high-value", urgency="high-urgency", size="small")
     ready_item(repo, "b2", "Exit", SECOND)
     ok(work(repo, "batch", "start"))

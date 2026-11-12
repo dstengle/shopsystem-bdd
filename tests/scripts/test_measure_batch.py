@@ -13,6 +13,7 @@ import measure_batch_sessions as S
 import measure_cost
 import pytest
 from backlog_testing import SCRIPTS, git, work
+from batch_templates import templated
 from measure_batch_testing import store_rows, write_agent, write_session
 from review_testing import FIX_NOW_B1, FIXED_F1, findings, ok, published
 from test_batch_close import merge
@@ -38,17 +39,22 @@ def reviewed_once(repo):
 
 
 @pytest.fixture
-def merged(batch_repo, batch_outside, store):
-    """batch-1 reviewed with a fix-now finding on b1, fixed, reviewed clean, merged into main and `merged`."""
-    reviewed_once(batch_repo)
-    fix(batch_repo)
-    ok(work(batch_repo, "batch", "review", "batch-1"))
-    ok(work(batch_repo, "batch", "brief", "batch-1"))
-    findings(batch_repo, 2).write_text(FIXED_F1)
-    ok(work(batch_repo, "batch", "reviewed", "batch-1"))
-    merge(batch_repo, batch_outside)
-    ok(work(batch_repo, "batch", "merged", "batch-1"))
+def merged(batch_repo, store):
+    """batch-1 reviewed with a fix-now finding on b1, fixed, reviewed clean, merged into main and `merged`: built once
+    a worker and copied into the test's own repository and outside directory (batch_templates)."""
+    templated(batch_repo, "merged", merging)
     return batch_repo
+
+
+def merging(repo, outside):
+    reviewed_once(repo)
+    fix(repo)
+    ok(work(repo, "batch", "review", "batch-1"))
+    ok(work(repo, "batch", "brief", "batch-1"))
+    findings(repo, 2).write_text(FIXED_F1)
+    ok(work(repo, "batch", "reviewed", "batch-1"))
+    merge(repo, outside)
+    ok(work(repo, "batch", "merged", "batch-1"))
 
 
 def measure(repo, *args):

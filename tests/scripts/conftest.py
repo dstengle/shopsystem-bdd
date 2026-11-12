@@ -42,6 +42,13 @@ def live_expected():
     return expected
 
 
+@pytest.fixture(scope="session", autouse=True)
+def batch_templates(tmp_path_factory):
+    """batch_templates' templates kept under the session's (the xdist worker's) temporary directory."""
+    import batch_templates
+    batch_templates.FACTORY = tmp_path_factory
+
+
 @pytest.fixture
 def backlog_repo(tmp_path):
     """A git repository with an identity whose spec/index.md names the context `ex.com/prod/ctx`, all committed: the
