@@ -18,9 +18,9 @@ GitHub's events (`work watch --forward`, requests r57, r58): `repo view <r> --js
 else `WRITE` for a repository `$STUB_GH_NOT_ADMIN` names (comma-separated); `extension list` names cli/gh-webhook
 unless `$STUB_GH_NO_WEBHOOK` is set, and `extension install` prints nothing. What a test keeps pending in the file
 `gh-pending.json` beside the calls (the issues file's form: issues, and comments on issues) is brought back into the
-issues by `webhook forward --repo <r> --url <u>`, for `<r>`'s issues once a later call has listed issues (the end of the
-check at the watch's start), and posted to `<u>` as an `issues` event; the forward then stays, as gh's does, until it
-is killed (at most 60 s). `api --include ... notifications` with no If-Modified-Since (the baseline) prints a 200
+issues by `webhook forward --repo <r> --url <u>`, for `<r>`'s issues once a call after the watch's `repo view <r>`
+(made just before it spawns the forward) has listed issues (the end of the check at the watch's start), and posted
+to `<u>` as an `issues` event; the forward then stays, as gh's does, until it is killed (at most 60 s). `api --include ... notifications` with no If-Modified-Since (the baseline) prints a 200
 with no notifications, or, when `$STUB_GH_BASELINE` is set, a 200 bringing all that is pending back (a comment that
 came before the baseline); with one, a 200 bringing all that is pending back, one notification a repository, else a
 304 (exit 1, as gh exits on a status over 299), each with `X-Poll-Interval: 0`. When `$STUB_GH_FAIL` equals the call's first two words (`pr
@@ -97,9 +97,19 @@ def bring_back(repo=None):
     return back
 
 
+def spawned(repo):
+    """Where the calls after this forward's spawn start: after the last `repo view <repo>`, which the watch makes just
+    before it spawns the forward of `repo` (an `issue list` it makes once the forward is spawned counts even when it
+    is written before this process has started), else after this call's own line."""
+    found = calls()
+    views = [k for k, c in enumerate(found) if c["argv"][:3] == ["repo", "view", repo]]
+    return views[-1] + 1 if views else len(found)
+
+
 def forward(argv):
     """Once a later call lists the repository's issues, the pending ones back and an event posted; then stay."""
-    repo, url, start = opt(argv, "--repo"), opt(argv, "--url"), len(calls())
+    repo, url = opt(argv, "--repo"), opt(argv, "--url")
+    start = spawned(repo)
     end = time.time() + 60
     while time.time() < end and not any(c["argv"][:2] == ["issue", "list"] for c in calls()[start:]):
         time.sleep(0.05)

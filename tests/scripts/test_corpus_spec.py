@@ -61,8 +61,9 @@ def ident(stem, rid):
     return rid if stem == "universal" else "%s#%s" % (stem, rid)
 
 
-def reading(root, stem, rid, line):
-    """What is wrong with one block's line, by checks 1, 2 and 4: [] when nothing, and the line's form."""
+def reading(root, stem, rid, line, four=None):
+    """What is wrong with one block's line, by checks 1, 2 and 4: [] when nothing, and the line's form; `four` the
+    root's spec_context.Four, made here when not given."""
     parsed = spec_grammar4.parse(root, line)
     if not parsed.tree:
         return ["(1) %s" % parsed.refusal], None
@@ -73,7 +74,7 @@ def reading(root, stem, rid, line):
     form = spec_lf.form(vocab, parsed.tree)
     wrong = []
     try:
-        _, why = spec_context.Four(root).facts(ident(stem, rid), line)
+        _, why = (four or spec_context.Four(root)).facts(ident(stem, rid), line)
     except CRASH as err:        # a translator that fails is a fault of the corpus, named as a refusal is
         why = "%s: %s" % (type(err).__name__, err)
     if why:
@@ -95,6 +96,7 @@ def reading(root, stem, rid, line):
 def faults(root):
     """Every fault of the corpus under `root` against its spec, each "<file> <id>: (n) why"."""
     out, have, spec = [], corpus(root), live(root)
+    four = spec_context.Four(root)      # one lexicon for every line of the run
     for stem, blocks in sorted(have.items()):
         for rid, (trace, line, form) in blocks.items():
             if not trace or trace.startswith("```"):
@@ -102,7 +104,7 @@ def faults(root):
             if line is None:
                 out.append("%s %s: not one reading block" % (stem, rid))
                 continue
-            wrong, shown = reading(root, stem, rid, line)
+            wrong, shown = reading(root, stem, rid, line, four)
             if shown is not None and shown != form:
                 wrong.insert(0, "(1) reads as\n%s" % shown)
             out += ["%s %s: %s" % (stem, rid, w) for w in wrong]

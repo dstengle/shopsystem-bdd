@@ -10,7 +10,6 @@ import subprocess
 import sys
 import tarfile
 import tempfile
-import urllib.request
 
 import shop_refused
 
@@ -152,6 +151,7 @@ def install_wheels(python=None):
 
 
 def download(url, into, what="GF", by_hand=BY_HAND):
+    import urllib.request
     try:
         with urllib.request.urlopen(url, timeout=120) as response, open(into, "wb") as out:
             shutil.copyfileobj(response, out)

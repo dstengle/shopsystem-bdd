@@ -4,11 +4,7 @@ import argparse
 import json
 import sys
 
-import backlog_forms
 import backlog_items
-import backlog_lines
-import backlog_moves
-import backlog_view
 
 
 class _LineParser(argparse.ArgumentParser):
@@ -73,6 +69,7 @@ def add_parsers(sub):
 
 
 def cmd_idea(args):
+    import backlog_moves
     item = backlog_moves.idea(args.root, args.title, args.provenance, args.note)
     return moved(item)
 
@@ -83,18 +80,22 @@ def moved(item):
 
 
 def cmd_shape(args):
+    import backlog_moves
     return moved(backlog_moves.shape(args.root, args.name, args.note))
 
 
 def cmd_refuse(args):
+    import backlog_moves
     return moved(backlog_moves.refuse(args.root, args.name, args.reason))
 
 
 def cmd_rate(args):
+    import backlog_moves
     return moved(backlog_moves.rate(args.root, args.name, args.value, args.urgency, args.size))
 
 
 def cmd_depend(args):
+    import backlog_moves
     if args.drop is not None:
         item = backlog_moves.undepend(args.root, args.name, args.drop)
         try:
@@ -113,6 +114,8 @@ PIECES = ("text", "term", "relation", "given", "universal", "upstream", "recodif
 
 def cmd_line(args):
     """`work line`: it parses nothing; `work ready` is the check (D5). One piece a run: a line, or one flag's piece."""
+    import backlog_forms
+    import backlog_lines
     given = [k for k in PIECES if getattr(args, k) is not None]
     if len(given) != 1:
         raise backlog_items.Refused("work line: give one of a requirement line, --term, --relation, --given, "
@@ -162,6 +165,7 @@ def cmd_line(args):
 
 def cmd_ready(args):
     """`work ready`: the bar's warnings on stderr, the item's label and `ready` on stdout."""
+    import backlog_moves
     item, warnings = backlog_moves.ready(args.root, args.name)
     for warning in warnings:
         print("work ready: warning: %s" % warning, file=sys.stderr)
@@ -170,6 +174,7 @@ def cmd_ready(args):
 
 def cmd_backlog(args):
     """`work backlog`: it only reads, and commits nothing."""
+    import backlog_view
     if args.json:
         print(json.dumps(backlog_view.as_json(args.root)))
     else:
@@ -179,11 +184,13 @@ def cmd_backlog(args):
 
 def withdraw(args):
     """`work withdraw b<n>`."""
+    import backlog_moves
     return moved(backlog_moves.withdraw(args.root, args.name))
 
 
 def answer(args):
     """`work answer b<n> TEXT`."""
+    import backlog_moves
     return moved(backlog_moves.answer(args.root, args.name, args.answer))
 
 
@@ -193,6 +200,7 @@ COMMANDS = {"idea": cmd_idea, "shape": cmd_shape, "refuse": cmd_refuse, "rate": 
 
 def show(args):
     """`work show b<n>`: the item, its label first; with --json one object `{"item": {...}}`."""
+    import backlog_view
     item = backlog_items.find(args.root, args.target)
     if args.json:
         items = backlog_items.items(args.root)

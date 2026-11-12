@@ -42,6 +42,13 @@ def live_expected():
     return expected
 
 
+@pytest.fixture(scope="session", autouse=True)
+def batch_templates(tmp_path_factory):
+    """batch_templates' templates kept under the session's (the xdist worker's) temporary directory."""
+    import batch_templates
+    batch_templates.FACTORY = tmp_path_factory
+
+
 @pytest.fixture
 def backlog_repo(tmp_path):
     """A git repository with an identity whose spec/index.md names the context `ex.com/prod/ctx`, all committed: the
@@ -89,7 +96,8 @@ def batch_outside(tmp_path_factory):
 @pytest.fixture
 def batch_repo(ready_repo, batch_outside, monkeypatch):
     """`ready_repo` with a bare repository in `batch_outside` as its `origin` (`main` pushed) and a committed
-    `.shop/delivery.toml` whose `[batch] tests` is `python3 -c pass`; `gh` is the stand-in (D20), and no git or gh
+    `.shop/delivery.toml` whose `[batch] tests` is `python3 -c pass` and whose `[review] checks` is empty (a test of
+    the brief's runs sets its own: test_batch_brief's `configure`); `gh` is the stand-in (D20), and no git or gh
     reaches a network or asks for a password (plan 4, Task 1)."""
     import subprocess
 
@@ -98,7 +106,7 @@ def batch_repo(ready_repo, batch_outside, monkeypatch):
     def git(*args):
         subprocess.run(["git", *args], cwd=ready_repo, capture_output=True, text=True, check=True)
     (ready_repo / ".shop").mkdir(exist_ok=True)
-    (ready_repo / ".shop" / "delivery.toml").write_text('[batch]\ntests = "python3 -c pass"\n')
+    (ready_repo / ".shop" / "delivery.toml").write_text('[batch]\ntests = "python3 -c pass"\n\n[review]\nchecks = []\n')
     git("add", "-A")
     git("commit", "-q", "-m", "delivery")
     subprocess.run(["git", "init", "-q", "--bare", str(batch_outside / "origin.git")], check=True, capture_output=True)

@@ -5,7 +5,6 @@ import subprocess
 import sys
 
 import shop_refused
-import tools_grammar
 
 # name, pip package, what it is for, what the workflow does without it
 TOOLS = (
@@ -76,6 +75,7 @@ def probed(args):
 
 
 def cmd_probe(args):
+    import tools_grammar
     python, why, found = probed(args)
     grammar, binary = tools_grammar.probed()
     missing = [name for name, package, _, _ in TOOLS if not found[package]]
@@ -96,6 +96,7 @@ def cmd_probe(args):
 
 def cmd_install(args):
     """The analysis tools into the project's interpreter, then the grammar tools; exit 1 when either fails."""
+    import tools_grammar
     analysis = install_analysis(args)
     try:
         tools_grammar.install()

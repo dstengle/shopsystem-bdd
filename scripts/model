@@ -9,11 +9,9 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from model_check import check, needing_clingo, rules
-from model_facts import Model
 from model_forms import cmd_forms
 
-# what scripts/migrate, scripts/shop_files and the migration steps read by loading this file
+# what scripts/migrate and the migration steps read by loading this file
 from model_parse import as_list, frontmatter, scenarios, section  # noqa: F401
 from model_report import (  # noqa: F401
     cmd_decisions,
@@ -23,7 +21,6 @@ from model_report import (  # noqa: F401
     render_decisions,
 )
 from model_restates import cmd_restates
-from model_rules import catalogue
 
 CONTRACT = """\
 contract:
@@ -208,19 +205,24 @@ contract:
 
 
 def cmd_facts(args):
+    from model_facts import Model
     print(Model(args.root).read().asp())
     return 0
 
 
 def cmd_check(args):
+    from model_check import check, needing_clingo
     return needing_clingo("check", lambda: check(args))
 
 
 def cmd_explain(args):
+    from model_check import needing_clingo
     return needing_clingo("explain", lambda: __import__("model_explain").explain(args.root, args.requirement))
 
 
 def cmd_rules(args):
+    from model_check import needing_clingo, rules
+    from model_rules import catalogue
     if args.write or args.check:
         return needing_clingo("rules", lambda: catalogue(args.root, write=args.write, check=args.check))
     return needing_clingo("rules", lambda: rules(args.json))

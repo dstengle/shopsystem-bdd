@@ -11,12 +11,14 @@ from review_testing import findings, ok, published, scratch
 from test_backlog_lines import ABANDON
 from test_batch_pick import SECOND
 
-CHECKS = '\n[review]\nchecks = ["python3 -c \\"print(\'ran\')\\""]\n'
+CHECKS = 'checks = ["python3 -c \\"print(\'ran\')\\""]\n'
 
 
 def configure(repo, extra=CHECKS):
+    """`extra` in batch_repo's `[review]` table: `checks = [...]` in place of its empty checks, else appended."""
     path = repo / ".shop" / "delivery.toml"
-    path.write_text(path.read_text() + extra)
+    text = path.read_text()
+    path.write_text(text.replace("checks = []\n", extra) if extra.startswith("checks = ") else text + extra)
     git(repo, "commit", "-q", "-am", "review checks")
 
 
@@ -161,7 +163,7 @@ def test_each_run_gives_the_bases_exit_code_once_a_batch(batch_repo):
     told apart from one it did."""
     (batch_repo / "check.py").write_text(BASE_CHECK)
     git(batch_repo, "add", "check.py")
-    configure(batch_repo, '\n[review]\nchecks = ["python3 check.py"]\n')
+    configure(batch_repo, 'checks = ["python3 check.py"]\n')
     published(batch_repo)
     before = state(batch_repo)
     assert "Exit code: 0 (base: 1)" in section(brief(batch_repo)[2], "Runs")

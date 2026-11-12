@@ -4,13 +4,7 @@ dispatch, so that scripts/work stays small. An item is named by its label, a bat
 import json
 
 import backlog_items
-import batch_brief
-import batch_close
 import batch_plan
-import batch_review
-import batch_reviewed
-import batch_start
-import batch_tasks
 from shop_files import Refused
 
 
@@ -57,6 +51,7 @@ def task_label(root, task):
 
 
 def status_text(root, batch):
+    import batch_reviewed
     out = ["%s %s, base %s, pull request %s" % (batch.name, batch.status, batch.base, batch.pull_request or "-"),
            "plan: %s" % batch_plan.rel_of(batch.name)]
     if batch.pull_request:      # a batch with no pull request has no review to show (plan 4's lines kept)
@@ -69,6 +64,7 @@ def status_text(root, batch):
 
 
 def as_json(root, batch):
+    import batch_reviewed
     items = [(t.item, _item(root, t.item)) for t in batch.tasks]
     return {"batch": {"name": batch.name, "status": batch.status, "base": batch.base,
                       "pull_request": batch.pull_request, "plan": batch_plan.rel_of(batch.name),
@@ -91,30 +87,35 @@ def status(args):
 
 
 def start(args):
+    import batch_start
     batch, pick = batch_start.start(args.root)
     print(batch_start.said(args.root, batch, pick))
     return 0
 
 
 def resume(args):
+    import batch_tasks
     batch, out = batch_tasks.resume(args.root, args.batch)
     print(batch_tasks.resume_said(args.root, batch, out))
     return 0
 
 
 def done(args):
+    import batch_tasks
     task = batch_tasks.done(args.root, args.batch, args.task)
     print("%s %s: done" % (args.batch, batch_tasks.task_label(args.root, task)))
     return 0
 
 
 def park(args):
+    import batch_tasks
     item = batch_tasks.park(args.root, args.batch, args.item, args.question, args.discard)
     print("%s %s -> needs-input: %s" % (args.batch, backlog_items.label(item), item.question))
     return 0
 
 
 def review(args):
+    import batch_review
     url = batch_review.review(args.root, args.batch)
     print("next: work batch brief %s, the pr-reviewer on it, then work batch reviewed %s" % (args.batch, args.batch))
     print(url)
@@ -122,6 +123,7 @@ def review(args):
 
 
 def brief(args):
+    import batch_brief
     path, removed = batch_brief.brief(args.root, args.batch)
     for name in removed:
         print("removed an old %s" % name)
@@ -130,17 +132,20 @@ def brief(args):
 
 
 def reviewed(args):
+    import batch_reviewed
     print(batch_reviewed.said(args.root, batch_reviewed.reviewed(args.root, args.batch)))
     return 0
 
 
 def merged(args):
+    import batch_close
     batch = batch_close.merged(args.root, args.batch)
     print("%s merged" % batch.name)
     return 0
 
 
 def abandon(args):
+    import batch_close
     batch = batch_close.abandon(args.root, args.batch, args.discard)
     print("%s abandoned" % batch.name)
     return 0

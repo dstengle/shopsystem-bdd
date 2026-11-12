@@ -6,11 +6,6 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import features_generate
-import features_vocab4
-import spec_gf
-import spec_read
-import spec_unbuilt
 from features_bindings import cmd_bindings
 from features_gherkin import load
 from features_report import cmd_count, cmd_deprecated, cmd_list
@@ -80,6 +75,9 @@ def read(path):
 
 def cmd_generate(args):
     """`features generate`: write, check or preview the features of codified service capabilities (§13.4)."""
+    import features_generate
+    import features_vocab4
+    import spec_read
     root = args.root
     caps = os.path.join(root, "spec", "capabilities")
     out_dir = args.dir if os.path.isabs(args.dir) else os.path.join(root, args.dir)
@@ -160,6 +158,9 @@ def steps_of(path):
 def cmd_vocab(args):
     """`features vocab [--check]`: the step grammar 4's functions, or the steps of generated features with no
     handler."""
+    import features_vocab4
+    import spec_gf
+    import spec_unbuilt
     root = os.path.abspath(args.root)
     if not args.check:
         import spec_rgl_steps

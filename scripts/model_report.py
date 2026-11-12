@@ -6,11 +6,11 @@ import os
 from pathlib import Path
 
 import model_decisions
-from model_facts import Model
 from model_parse import DECISIONS, as_list, decision_files, frontmatter
 
 
 def render_decisions(root):
+    from model_facts import Model
     index = Model(root)
     index.read_index()
     rows = []
