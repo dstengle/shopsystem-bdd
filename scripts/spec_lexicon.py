@@ -28,6 +28,7 @@ FIELDS = ("Values", "Values (adjective)", "Values (noun)", "Transitions", "Means
 ASPECTS = ("state", "action")
 NAMES = "|".join(map(re.escape, FIELDS))
 FIELD = re.compile(r"(?:^|\s)(?:%s):" % NAMES)
+PATTERNS = {f: re.compile(r"(?:^|\s)%s:\s*(.+?)\.(?=\s+(?:%s):|\s*$)" % (re.escape(f), NAMES), re.DOTALL) for f in FIELDS}
 
 
 @dataclass(frozen=True)
@@ -60,9 +61,8 @@ class Term:
 
 
 def _fields(text, name):
-    """Every value of the field `name` in an entry's text, in order."""
-    found = re.finditer(r"(?:^|\s)%s:\s*(.+?)\.(?=\s+(?:%s):|\s*$)" % (re.escape(name), NAMES), text, re.DOTALL)
-    return tuple(" ".join(m.group(1).split()) for m in found)
+    """Every value of the field `name` (one of FIELDS, its pattern compiled once) in an entry's text, in order."""
+    return tuple(" ".join(m.group(1).split()) for m in PATTERNS[name].finditer(text))
 
 
 def _field(text, name):
