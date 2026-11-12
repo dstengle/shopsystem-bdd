@@ -4,12 +4,11 @@ simplification plan 1). `unbuilt(root)` reads the ids of every codified capabili
 is not codified (they mark nothing), and `mark(items, root)` puts a strict xfail on each pytest-bdd scenario of a
 listed requirement, so a scenario that starts passing fails the suite until its id leaves `unbuilt:`; non-strict when
 `$SHOPSYSTEM_UNBUILT_NONSTRICT` names `root`, as `work batch done` sets it for a task's run, where another in-batch
-item's scenario that passes is no fault of the task (batches r19). Standard library and pytest only."""
+item's scenario that passes is no fault of the task (batches r19). Standard library, and pytest in `mark` only."""
 import os
 import pathlib
 import re
 
-import pytest
 from model_parse import frontmatter
 from spec_read import MARKERS, capability
 
@@ -89,6 +88,7 @@ def strict(root):
 def mark(items, root):
     """An xfail on each scenario item whose feature's capability lists one of the item's r<n> marks, strict unless
     `strict(root)` says not."""
+    import pytest
     found = unbuilt(root)
     if not found:
         return

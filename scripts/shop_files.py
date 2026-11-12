@@ -1,15 +1,17 @@
 """The plumbing of .shop/ that every command shares: the one refusal, frontmatter read with scripts/model's own reader
 (so the two never disagree on a file), the context's path, a file's text, git, a commit of named files only and its
 push (U4, backlog r18; to the branch's upstream, r21; refused on a task's branch, r20), bounded in time (r19), and an
-append to a log whole or not at all. Standard library and shop_refused."""
-import importlib.machinery
-import importlib.util
+append to a log whole or not at all. Standard library, shop_refused and model_parse."""
 import os
 import re
 import signal
 import subprocess
 import sys
 from pathlib import Path
+
+# scripts/model's own reader (model_parse, standard library only), not the whole of scripts/model, which imports every
+# check: so the two never disagree on a file, and a command starts without the checks
+from model_parse import frontmatter
 
 # the one refusal, re-exported (b145): shop_files.Refused is shop_refused.Refused
 from shop_refused import Refused
@@ -19,17 +21,6 @@ TASK_BRANCH = re.compile(r"(batch-[1-9]\d*)-(b[1-9]\d*)")
 # Unicode's mandatory line breaks: LF, VT, FF, CR, NEL, LS, PS.
 LINE_BREAKS = "\n\x0b\x0c\r\x85  "
 
-
-def _load_model():
-    path = Path(__file__).resolve().with_name("model")
-    loader = importlib.machinery.SourceFileLoader("shopsystem_model", str(path))
-    spec = importlib.util.spec_from_loader(loader.name, loader)
-    module = importlib.util.module_from_spec(spec)
-    loader.exec_module(module)
-    return module
-
-
-frontmatter = _load_model().frontmatter
 
 
 def context_path(root):

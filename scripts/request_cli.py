@@ -1,10 +1,5 @@
 """The commands of `work` for the steps of a request's conversation on its issue (capability requests, r29-r33,
 r39, r43, r44, r54-r58): `offer`, `fits`, `propose`, `accept`, `sync` and `watch`, their parsers, dispatch and what they print."""
-import request_accept
-import request_forward
-import request_steps
-import request_sync
-import request_watch
 
 
 def add_parsers(sub):
@@ -31,32 +26,39 @@ def add_parsers(sub):
 
 
 def cmd_offer(args):
+    import request_steps
     request_steps.offer(args.root, args.request, args.capability, args.note)
     return 0
 
 
 def cmd_fits(args):
+    import request_steps
     request_steps.fits(args.root, args.request, args.serves)
     return 0
 
 
 def cmd_propose(args):
+    import request_steps
     request_steps.propose(args.root, args.request, args.lines)
     return 0
 
 
 def cmd_accept(args):
     import backlog_items
+    import request_accept
     item = request_accept.accept(args.root, args.request)
     print("%s shaped" % backlog_items.label(item))
     return 0
 
 
 def cmd_sync(args):
+    import request_sync
     return request_sync.sync(args.root)
 
 
 def cmd_watch(args):
+    import request_forward
+    import request_watch
     if args.hook:
         import request_watch_hook
         return request_watch_hook.hook(args.root)

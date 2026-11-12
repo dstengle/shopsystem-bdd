@@ -9,7 +9,6 @@ import sys
 from pathlib import Path
 
 import shop_files
-from model_facts import KINDS as NODE_KINDS
 
 RECORDS = Path(".shop") / "records"
 # The record kinds `model` reads under .shop/records/ (model_work.RECORD_KINDS) that a record file holds: an
@@ -62,6 +61,7 @@ def one_line(text, what):
 def attributed(about):
     """An `--about` as the frontmatter holds it: one line, `<kind>/<...>` of a kind of node `model` knows (a design or
     an analysis is `record/...`)."""
+    from model_facts import KINDS as NODE_KINDS
     kind, _, rest = about.strip().partition("/")
     if (any(ch in about for ch in shop_files.LINE_BREAKS) or not rest or not re.fullmatch(r"\S+", rest)
             or kind not in NODE_KINDS | set(HISTORY.values())):

@@ -11,7 +11,6 @@ from pathlib import Path
 import shop_files
 from model_decisions import ROUTES
 from model_parse import DECISIONS, decision_files
-from model_report import render_decisions
 
 TIERS = ("check", "requirement", "judgement")
 HELP = ("write a design-decision, spec/decisions/<nnnn>-<slug>.md, with its frontmatter (id, summary, date, status "
@@ -143,6 +142,8 @@ def write(args):
     rel = (DECISIONS / ("%04d-%s.md" % (number, slug))).as_posix()
     index = (DECISIONS / "index.md").as_posix()
     text = render(number, title, ident, args, sections, date)
+
+    from model_report import render_decisions
 
     def put():
         (root / rel).parent.mkdir(parents=True, exist_ok=True)
