@@ -162,7 +162,44 @@ def pytest_bdd_step_error(request):
     request.node._shop_failed = True
 
 
+def _deferring(step_func):
+    """The Thens of a scenario are one statement of the outcome, in any order (b268: a thing's description follows
+    the act that brings it in, and a handler may bind an instance only at the description): a Then that fails is
+    tried again after each later Then and at the scenario's end (`_settle`), where it fails if it still does."""
+    import functools
+
+    @functools.wraps(step_func)
+    def then(text, request, docstring=None, datatable=None):
+        args = (text, request, docstring, datatable)
+        try:
+            step_func(*args)
+        except Exception as err:  # noqa: BLE001  (a pytest.fail is no Exception: never deferred)
+            request.node.__dict__.setdefault("_shop_deferred", []).append((step_func, args, err))
+            return
+        _settle(request.node, final=False)
+    return then
+
+
+def _settle(node, final=True):
+    """Each deferred Then tried again until none passes; at the scenario's end the first that still fails raised."""
+    pending, moved = node.__dict__.get("_shop_deferred", []), True
+    while pending and moved:
+        moved, left = False, []
+        for fn, args, err in pending:
+            try:
+                fn(*args)
+                moved = True
+            except Exception as again:  # noqa: BLE001
+                left.append((fn, args, again))
+        pending = node.__dict__["_shop_deferred"] = left
+    if final and pending:
+        node._shop_failed = True
+        raise pending[0][2]
+
+
 def pytest_bdd_after_scenario(request):
+    if not getattr(request.node, "_shop_failed", False):
+        _settle(request.node)
     if getattr(request.node, "_shop_failed", False) or not generated(request.node):
         return
     problems = u_problems(request.node.__dict__.get("_shop_runs", []),
@@ -185,7 +222,11 @@ def _step_function(root, keyword):
 
 
 def _marker(context):
-    """The fixture pytest-bdd finds a step definition by, as its own `step` decorator makes it."""
+    """The fixture pytest-bdd finds a step definition by, as its own `step` decorator makes it; a Then's deferred
+    (`_deferring`)."""
+    if context.type == "then":
+        context.step_func = _deferring(context.step_func)
+
     def step_function_marker():
         return context
     step_function_marker._pytest_bdd_step_context = context

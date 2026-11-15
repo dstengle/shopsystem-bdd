@@ -59,6 +59,6 @@ def test_their_thens_say_the_property_of_the_object(tmp_path):
     import features_generate
     world(tmp_path, ONLY, AT_MOST, RUN.replace("start", "stop") + "print a worktree that holds exactly three files.")
     text = features_generate.generate(str(tmp_path), str(tmp_path / "spec" / "capabilities" / "thing.md"))
-    assert "    Then the worktree w1 holds only files whose version is `2.0.0`\n" in text
-    assert "    Then the worktree w1 holds at most three files\n" in text
-    assert "    Then the worktree w1 holds exactly three files\n" in text
+    assert "    Then `work` prints the worktree w1\n    And the worktree w1 holds only files whose version is `2.0.0`\n" in text
+    assert "    Then `work` prints the worktree w1\n    And the worktree w1 holds at most three files\n" in text
+    assert "    Then `work` prints the worktree w1\n    And the worktree w1 holds exactly three files\n" in text

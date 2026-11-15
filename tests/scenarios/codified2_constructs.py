@@ -67,8 +67,8 @@ HOLDS = {"distributing": r"^    Given a stage s1\n    And a stage s2\n.*\n    Th
          "linking": r"^    And the stage s2 is on the worktree w1\n    When the session s1 ends the stage s2$",
          "valued": r"^    When the session s1 ends the stage s2\n    Then `work` prints the status of the stage s2$",
          "excluding": r"^    Given no stage whose status is `done` exists\n    When the person runs `work start`$",
-         "holding": r"^    Then the worktree w1 holds only files whose version is `2.0.0`$",
-         "capping": r"^    Then the worktree w1 holds at most three files$",
+         "holding": r"^    Then `work` prints the worktree w1\n    And the worktree w1 holds only files whose version is `2.0.0`$",
+         "capping": r"^    Then `work` prints the worktree w1\n    And the worktree w1 holds at most three files$",
          "exempting": (r"^    Given a stage s1\n    And the status of the stage s1 is not `done`\n    When the person runs `work start`\n"
                        r"    Then `work` prints the stage s1$")}
 

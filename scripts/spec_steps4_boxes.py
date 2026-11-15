@@ -12,7 +12,7 @@ spec_steps4, whose Reader (`r`) they extend:
   meet it, the K brought in;
 - "V a K that holds only Ks2 that P" and "... that holds at most n Ks2" (a box over the row or state of a response's
   object, b272) its Then the property said of the object: "the worktree w1 holds only files whose version is
-  `2.0.0`", "the worktree w1 holds at most three files" (`held`), its Ks2 brought in by no Given;
+  `2.0.0`", "the worktree w1 holds at most three files" (spec_steps4_held), its Ks2 brought in by no Given;
 - "the number of Ks that P" printed two Ks brought in, compared with a parameter the Given of the comparison
   (spec_lf_number, b240);
 - "the T of x" whose value is a referent (an image): no step of its own, the referent named "the T of x" where a
@@ -24,6 +24,7 @@ from dataclasses import replace
 import spec_lf_number
 import spec_lf_option
 import spec_lf_quant
+import spec_lf_set
 import spec_rgl
 from spec_lf_core import Atom, Box, Ref, least
 
@@ -134,7 +135,8 @@ def acts(r, box, pos):
             spec_lf_number.bring(r, b)
         return r.acts([box.body[-1]], False)
     if box.op in ("only", "count") and pos and spec_lf_quant.held(box):     # over a row of the object (b272)
-        return [(None, ("SCond", held(r, box)))]
+        import spec_steps4_held
+        return [(None, ("SCond", spec_steps4_held.cond(r, box)))]
     if box.op == "only" and pos:
         bring(r, box)
         return r.acts(box.scope.body)
@@ -161,46 +163,48 @@ def acts(r, box, pos):
     raise TraceError("no Then of %s" % box.op)
 
 
-BOUNDS = {"at least": "AtLeast", "at most": "AtMost", "exactly": "Exactly", "more than": "MoreThan",
-          "fewer than": "FewerThan"}
+def order(body):
+    """A response's items with each that says something of a response referent no earlier act names (an attribute
+    value, a row, a relative clause, the scope of an every box in it) held back and written after the first act that
+    names it, so that a Then never describes a thing before the act that brings it in (b268); an act, an image, a
+    printed number's box and an item of referents brought in before keep their place."""
+    later = {x for i in body if acting(i) for x in free(i)}
+    out, held, seen = [], [], set()
+    for item in body:
+        image = isinstance(item, Atom) and item.pred == "attr" and isinstance(item.args[2], Ref) or \
+            isinstance(item, Box) and item.op == "number"      # how a step names the referent: kept before it
+        wanted = set() if acting(item) or image else \
+            {x for x in free(item) if x.origin == "response" and x not in seen and x in later}
+        if wanted:
+            held.append((item, wanted))
+            continue
+        out.append(item)
+        if acting(item):
+            seen.update(free(item))
+            out += [i for i, w in held if w <= seen]
+            held = [(i, w) for i, w in held if not w <= seen]
+    return tuple(out + [i for i, _ in held])
 
 
-def held(r, box):
-    """The `Cond` tree of an `only` or a `count` box over the row or state of a response's object, said of the
-    object: its K's slot an `only` noun phrase ("only files whose version is `2.0.0`") or a counted one ("at most
-    three files"), its restrictor a "whose" of each value."""
-    k = box.refs[0]
-    r.names[k] = "\0held"     # a placeholder in the slot of k, replaced below; k is named by no step
-    cond = r.cond(box.scope.body[0])
-    del r.names[k]
-    K, cn = kid(k.kind), (kid(k.kind) + "_UseN", (kid(k.kind) + "_n",))
-    for c in box.body:
-        if not (isinstance(c, Atom) and c.pred == "attr" and not isinstance(c.args[2], Ref) and c.args[0] == k):
-            raise TraceError("no Then of %s with a restriction of that" % box.op)
-        T = next(("t_%s_%d" % (spec_rgl.slug(t.term), n) for n, (t, kinds) in enumerate(r.vocab.attributes, 1)
-                  if t.term == c.args[1] and any(x in r.vocab.ancestors(k.kind) for x in kinds)), None)
-        if T is None:
-            raise TraceError("no Then of the %s of a %s" % (c.args[1], k.kind))
-        cn = (K + "_Whose_" + T, ("PPos",), cn, ("%s_v_%s" % (T, spec_rgl.slug(c.args[2])),))
-    if box.op == "only":
-        det = ("DetPl",)
-    elif box.count[0] in BOUNDS and isinstance(box.count[1], int) and 1 <= box.count[1] <= 10:
-        det = ("DetCount", (BOUNDS[box.count[0]],), ("Many%d" % box.count[1],))
-    else:
-        raise TraceError("no Then of a count of %s" % (box.count,))
-    return _slot(cond, (K + "_Det", det, cn), box.op == "only")
+def acting(x):
+    """True for an act, or a box that holds one."""
+    if isinstance(x, Atom):
+        return x.pred in ("event", spec_lf_set.PRED)
+    return isinstance(x, Box) and any(acting(i) for i in x.body + ((x.scope,) if x.scope else ()))
 
 
-def _slot(tree, np0, only):
-    """`tree` with the argument that names the placeholder given `np0` in place of its instance (`K_Only` for
-    "only")."""
-    if not isinstance(tree, tuple):
-        return tree
-    if len(tree) == 2 and tree[0].endswith("_One") and isinstance(tree[1], tuple) and len(tree[1]) == 2 and \
-            isinstance(tree[1][1], tuple) and ("NameLit", "\0held") in tree[1][1]:
-        S = tree[0][:-len("_One")]
-        return (S + ("_Only" if only else "_One"), (tree[1][0], np0))
-    return tuple(_slot(t, np0, only) for t in tree)
+def free(x):
+    """The referents `x` names that it does not make (a box's own)."""
+    if isinstance(x, Ref):
+        return [x]
+    if isinstance(x, Atom):
+        return free(x.args)
+    if isinstance(x, Box):
+        own = set(x.refs) | set(x.scope.refs if x.scope else ())
+        return [r for r in free((x.body, x.scope, x.count)) if r not in own]
+    if isinstance(x, (tuple, list)):
+        return [r for i in x for r in free(i)]
+    return []
 
 
 def restriction(box):

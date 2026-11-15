@@ -8,7 +8,8 @@ I14a), the one meaning `model logic` reads (spec_lf), in the step grammar 4's tr
 - Thens: each act of the response in the present (`S_Does`; setting an attribute spec_lf_set's), its polarity kept:
   "change nothing" is "changes nothing", a `not` over an act on a referent of its own "does not V a K"; a condition of
   the response a condition, a row's atom its frame ("the session s1 has the worktree w1", "the worktree w1 holds the
-  file f1"). An `every` box gives two Ks, so the line is not met vacuously (R6): each brought in by a Given with its
+  file f1"), what is said of a thing after the act that brings it in (spec_steps4_boxes' `order`, b268). An `every`
+  box gives two Ks, so the line is not met vacuously (R6): each brought in by a Given with its
   restrictor, its scope's Thens said of each (b221). An act a universal condition entails (`entailed`, by its number
   as spec_lf_facts numbers acts, "change nothing" one) is left out, `# entailed: <premise>` in its place.
 Givens and the When are the first requirement's; a later one's While and trigger referent of a kind is the first
@@ -33,8 +34,7 @@ import spec_steps4_boxes as boxes
 from spec_lf_core import Atom, Box
 
 kid = spec_rgl.kid
-TraceError = boxes.TraceError
-subst = boxes.subst
+TraceError, subst = boxes.TraceError, boxes.subst
 
 
 class Reader:
@@ -204,7 +204,7 @@ class Reader:
     def acts(self, body, pos=True):
         """[(act number or None, Then tree)] of a response's items, numbered as spec_lf_facts numbers its acts."""
         out = []
-        for item in body:
+        for item in boxes.order(body):     # what is said of a thing after the act that brings it in (b268)
             if isinstance(item, Atom) and item.pred in ("event", spec_lf_set.PRED):
                 out.append((True, self.does(item, pos)))
             elif isinstance(item, Atom) and item.pred == spec_lf_distinct.PRED:     # two names (b240)

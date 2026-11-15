@@ -25,8 +25,8 @@ Feature: Measurement of an initiative's deliveries
     Then `measure` prints the number of round trips of the stage row s1
     And `measure` prints the stage row s2
     And `measure` prints the stage row s3
-    And the measurement m1 has the total row t1
     And `measure` prints the total row t1
+    And the measurement m1 has the total row t1
 
   @g24 @r24
   Scenario: `measure show` prints the stage rows of a measurement whose stage row has no round trip without a round trip
