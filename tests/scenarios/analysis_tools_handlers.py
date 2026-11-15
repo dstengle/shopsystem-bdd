@@ -165,6 +165,11 @@ def given_holds(step):
         named(step)[step.names[0]], named(step)[step.names[1]] = FINDING.split(":")[0], FINDING
 
 
+@four("GivenDoesNot", "holds", "analysis-tools")
+def given_holds_not(step):
+    """A Python file that does not hold a test (a counter-example, b273): the test is in its own file, not that one."""
+
+
 @handler("GivenDoes", "execute")
 def given_executes(step):
     """A test executes the function f1 (src/cart.py's `total`), or no test does (its `refund`)."""

@@ -238,6 +238,12 @@ def make_review_folders(step, name):
         for file in ("brief.md", "change.diff", "findings.md"):
             (path / file).write_text("%s of %s\n" % (file, folder))
         step.context.setdefault("review_folders", {})[folder] = path
+    others = [f for f, found in step.context["given"].get("review folder", {}).items() if found.get("batch") == (
+        "not", name)]
+    for k, folder in enumerate(others, 1):     # another batch's review folders (b273)
+        path = batch_git.trees_dir(step.repo) / ("batch-0-review-%d" % k)
+        path.mkdir()
+        step.context.setdefault("review_folders", {})[folder] = path
 
 
 def task_id(step, name):

@@ -88,11 +88,15 @@ Feature: Migration tools
     And a file f2
     And an old-layout directory o5
     And the file f2 mentions the old-layout directory o5
+    And a file f3
+    And an old-layout directory o6
+    And the file f3 does not mention the old-layout directory o6
     When the person runs `migrate run` on the bounded context b1
     Then `migrate` relocates the old-layout directory o2
     And `migrate` relocates the old-layout directory o3
     And `migrate` rewrites the file f1
     And `migrate` rewrites the file f2
+    And `migrate` does not rewrite the file f3
 
   @g28 @r28
   Scenario: `migrate run` writes a design-decision of each ledger entry, removes the decision ledger and rewrites the decisions index
@@ -355,6 +359,8 @@ Feature: Migration tools
     And a ledger entry l2
     And the ledger entry l1 supersedes the ledger entry l2
     And a bounded context b1
+    And a design-decision d1
+    And a design-decision d2
     When the person runs `migrate run` on the bounded context b1
     Then `migrate` writes the design-decision d1
     And the ledger entry l2 has the design-decision d1
@@ -501,6 +507,9 @@ Feature: Migration tools
     And a work-item file w2
     And a requirement r2
     And the work-item file w2 mentions the requirement r2
+    And a work-item file w3
+    And a requirement r3
+    And the work-item file w3 does not mention the requirement r3
     And a feature f1
     And a scenario s1
     And the scenario s1 has `@deprecated`
@@ -509,11 +518,17 @@ Feature: Migration tools
     And a scenario s2
     And the scenario s2 has `@deprecated`
     And the feature f2 holds the scenario s2
+    And a feature f3
+    And a scenario s3
+    And the scenario s3 has `@deprecated`
+    And the feature f3 does not hold the scenario s3
     When the person runs `migrate upgrade`
     Then `migrate` rewrites the work-item file w1
     And `migrate` rewrites the work-item file w2
+    And `migrate` does not rewrite the work-item file w3
     And `migrate` rewrites the feature f1
     And `migrate` rewrites the feature f2
+    And `migrate` does not rewrite the feature f3
 
   @g71 @r71
   Scenario: `migrate upgrade` on a repository from 0.30.0 and before 0.31.0 writes the frozen notice and rewrites the decisions index
@@ -719,9 +734,12 @@ Feature: Migration tools
     And the release of the upgrade step u1 is `0.31.0`
     And an upgrade step u2
     And the release of the upgrade step u2 is `0.31.0`
+    And an upgrade step u3
+    And the release of the upgrade step u3 is `0.24.0`
     When the person runs `migrate upgrade`
     Then `migrate` prints the upgrade step u1
     And `migrate` prints the upgrade step u2
+    And `migrate` does not print the upgrade step u3
     And `migrate` prints the initiative i1
 
   @g74 @r74
@@ -814,17 +832,23 @@ Feature: Migration tools
     And the release of the upgrade step u1 is `0.32.0`
     And an upgrade step u2
     And the release of the upgrade step u2 is `0.32.0`
+    And an upgrade step u3
+    And the release of the upgrade step u3 is `0.24.0`
     And a term t1
     And the term t1 violates `v_t11`
     And a term t2
     And the term t2 violates `v_t11`
+    And a term t3
+    And the term t3 does not violate `v_t11`
     When the person runs `migrate upgrade`
     Then `migrate` rewrites the index file i1
     And this bounded context has the index file i1
     And `migrate` prints the upgrade step u1
     And `migrate` prints the upgrade step u2
+    And `migrate` does not print the upgrade step u3
     And `migrate` prints the term t1
     And `migrate` prints the term t2
+    And `migrate` does not print the term t3
 
   @g76 @r76
   Scenario: `migrate upgrade` on a repository from 0.32.0 and before 0.33.0 rewrites the index file and every capability in the controlled language 4 and names what it cannot reword
@@ -863,6 +887,8 @@ Feature: Migration tools
     And the release of the upgrade step u1 is `0.33.0`
     And an upgrade step u2
     And the release of the upgrade step u2 is `0.33.0`
+    And an upgrade step u3
+    And the release of the upgrade step u3 is `0.24.0`
     When the person runs `migrate upgrade`
     Then `migrate` rewrites the index file i1
     And this bounded context has the index file i1
@@ -870,6 +896,7 @@ Feature: Migration tools
     And `migrate` rewrites the capability c2
     And `migrate` prints the upgrade step u1
     And `migrate` prints the upgrade step u2
+    And `migrate` does not print the upgrade step u3
 
   @g77 @r77
   Scenario: `migrate upgrade` on a repository on the plugin's release says that no upgrade step is pending and changes nothing
@@ -948,12 +975,18 @@ Feature: Migration tools
     And the release of the upgrade step u1 is `0.34.0`
     And an upgrade step u2
     And the release of the upgrade step u2 is `0.34.0`
+    And an upgrade step u3
+    And the release of the upgrade step u3 is `0.24.0`
     And a term t1
     And the term t1 violates `w_value_kind`
     And a term t2
     And the term t2 violates `w_value_kind`
+    And a term t3
+    And the term t3 does not violate `w_value_kind`
     When the person runs `migrate upgrade`
     Then `migrate` prints the upgrade step u1
     And `migrate` prints the upgrade step u2
+    And `migrate` does not print the upgrade step u3
     And `migrate` prints the term t1
     And `migrate` prints the term t2
+    And `migrate` does not print the term t3

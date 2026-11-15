@@ -110,10 +110,13 @@ Feature: Requests
     And the request line r2 is proposed in the request r1
     And a request line r3
     And the request line r3 is proposed in the request r1
+    And a request line r4
+    And the request line r4 is not proposed in the request r1
     When the person runs `work show` on the request r1
     Then `work` prints the status of the request r1
     And `work` prints the request line r2
     And `work` prints the request line r3
+    And `work` does not print the request line r4
 
   @g71 @r71
   Scenario: `work request` opens the request's issue
@@ -258,9 +261,6 @@ Feature: Requests
     And a request line r2
     And the request line r2 is proposed in the request r1
     And the line outcome of the request line r2 is `refused`
-    And a request line r3
-    And the request line r3 is proposed in the request r1
-    And the line outcome of the request line r3 is `refused`
     When the person runs `work turn` on the request r1
     Then `work` sets the status of the request r1 to `refused`
     And `work` posts the comment c1

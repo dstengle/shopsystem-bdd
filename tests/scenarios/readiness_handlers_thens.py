@@ -110,6 +110,18 @@ THENS = {"refuse": lambda step: _done(step, 1), "name": named, "write": written,
          "commit": committed, "set": sets}
 
 
+@local("ThenDoesNot")
+def then_does_not(step):
+    """`work` does not name the bar check b3 (a counter-example, b273): what it is named by is not in the output."""
+    if not R.mine(step) or step.term != "name":
+        return False
+    done = step.context["result"]
+    for np in step.nps:
+        word = step.context.get("says", {}).get(np.rsplit(" ", 1)[-1])
+        assert word and word not in done.stdout + done.stderr, (step.text, word)
+    return None
+
+
 @local("ThenDoes")
 def then_does(step):
     if not R.mine(step) or step.term not in THENS:

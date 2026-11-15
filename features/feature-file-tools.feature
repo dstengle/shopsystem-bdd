@@ -64,9 +64,12 @@ Feature: Feature file tools
     And the feature file f1 has the scenario s1
     And a scenario s2
     And the feature file f1 has the scenario s2
+    And a scenario s3
+    And the feature file f1 does not have the scenario s3
     When the person runs `features list` with the `--tag` option set to the tag t1
     Then `features` prints the scenario s1
     And `features` prints the scenario s2
+    And `features` does not print the scenario s3
 
   @g93 @r93
   Scenario: `features list --tag` prints a scenario that has the tag
@@ -87,9 +90,14 @@ Feature: Feature file tools
     And a scenario title s5
     And the scenario s4 has the scenario title s5
     And the scenario title s5 contains the search text s1
+    And a scenario s6
+    And a scenario title s7
+    And the scenario s6 has the scenario title s7
+    And the scenario title s7 does not contain the search text s1
     When the person runs `features list` with the `--title` option set to the search text s1
     Then `features` prints the scenario s2
     And `features` prints the scenario s4
+    And `features` does not print the scenario s6
 
   @g95 @r95
   Scenario: `features list --json` prints the scenarios it found as one JSON object
@@ -102,9 +110,14 @@ Feature: Feature file tools
     And a scenario title s5
     And the scenario s4 has the scenario title s5
     And the scenario title s5 contains the search text s1
+    And a scenario s6
+    And a scenario title s7
+    And the scenario s6 has the scenario title s7
+    And the scenario title s7 does not contain the search text s1
     When the person runs `features list` with the `--json` option and the `--title` option set to the search text s1
     Then `features` prints the scenario s2
     And `features` prints the scenario s4
+    And `features` does not print the scenario s6
 
   @g96 @r96
   Scenario: a feature file with a rule block is refused
@@ -127,10 +140,13 @@ Feature: Feature file tools
     And the replacement r1 has the requirement tag r3
     And a requirement tag r4
     And the replacement r1 has the requirement tag r4
+    And a requirement tag r5
+    And the replacement r1 does not have the requirement tag r5
     When the person runs `features deprecated`
     Then `features` prints the scenario s1
     And `features` prints the requirement tag r3
     And `features` prints the requirement tag r4
+    And `features` does not print the requirement tag r5
 
   @g98 @r98
   Scenario: `features deprecated` says when nothing is deprecated
