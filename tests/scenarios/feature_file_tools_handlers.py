@@ -135,8 +135,13 @@ def said(step, np):
 
 @W.own("ThenPrints", "`features`")
 def prints(step):
-    out = result(step).stdout
+    out, w = result(step).stdout, W.world(step)
     for np in step.nps:
+        if np.startswith("the scenario title ") and W.ref(np) not in w["values"] and not any(
+                t == W.ref(np) for _, t in W.facts(w, "has", W.SCENARIOS, ("scenario title",))):
+            shown = [W.title(w, s) for s, k in w["kinds"].items() if k in W.SCENARIOS and W.title(w, s) in out]
+            assert shown, (np, out)      # first named here: the title of a scenario it printed
+            w["values"][W.ref(np)] = shown[0]
         assert said(step, np) in out, (said(step, np), out)
 
 

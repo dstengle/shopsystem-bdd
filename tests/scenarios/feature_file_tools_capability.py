@@ -131,6 +131,8 @@ def has(step, w):
     elif step.nps[0].startswith(("the counter-example", "the boundary")):    # b273
         if step.subject.startswith("the scenario"):
             collections(step, w, step.nps[0].split()[1])
+    elif b in w["values"]:      # a title printed before: the scenario's own
+        assert w["values"][b] == W.value(w, a), (step.text, w["values"][b], W.value(w, a))
     else:       # `the scenario s1 has the scenario title s2`: the title it was written with
         w["values"][b] = W.value(w, a)
 
