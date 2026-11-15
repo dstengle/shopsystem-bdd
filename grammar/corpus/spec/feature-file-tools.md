@@ -412,3 +412,37 @@ shall [x5: agent the person (constant), x6: command `features generate` (paramet
       precede(subject: x9, object: x1)
       write(e3, subject: x7, object: x9)
 ```
+
+## r112
+From: b272 (a count over a row of a response's object written). Not in the audit (b272 is no reword item).
+
+```reading
+While a requirement of a capability uses `count` and the requirement uses `holds-relation`, when the person runs `features generate` on the capability, `features` shall write a scenario that uses `count`.
+shall [x3: thing `count` (constant), x4: thing `holds-relation` (parameter), x5: agent the person (constant), x6: command `features generate` (parameter), x7: tool `features` (constant)]
+  while [x1: requirement, x2: capability]
+    of(x1, x2)
+    use#2(subject: x1, object: x3)
+    use#2(subject: x1, object: x4)
+  when
+    run(e1, subject: x5, object: x6, on: x2)
+  response [x8: scenario]
+    use#2(subject: x8, object: x3)
+    write(e2, subject: x7, object: x8)
+```
+
+## r113
+From: b272 (only over a row of a response's object written). Not in the audit (b272 is no reword item).
+
+```reading
+While a requirement of a capability uses `only` and the requirement uses `holds-relation`, when the person runs `features generate` on the capability, `features` shall write a scenario that uses `only`.
+shall [x3: thing `only` (constant), x4: thing `holds-relation` (parameter), x5: agent the person (constant), x6: command `features generate` (parameter), x7: tool `features` (constant)]
+  while [x1: requirement, x2: capability]
+    of(x1, x2)
+    use#2(subject: x1, object: x3)
+    use#2(subject: x1, object: x4)
+  when
+    run(e1, subject: x5, object: x6, on: x2)
+  response [x8: scenario]
+    use#2(subject: x8, object: x3)
+    write(e2, subject: x7, object: x8)
+```

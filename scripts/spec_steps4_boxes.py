@@ -10,6 +10,9 @@ spec_steps4, whose Reader (`r`) they extend:
   "at most n" and "fewer than n" one past the most it admits (n + 1, n) with the Then on the last of them negated; a
   `not` over a response object's attribute ("a stage whose status is not `done`") a Given of the K that does not
   meet it, the K brought in;
+- "V a K that holds only Ks2 that P" and "... that holds at most n Ks2" (a box over the row or state of a response's
+  object, b272) its Then the property said of the object: "the worktree w1 holds only files whose version is
+  `2.0.0`", "the worktree w1 holds at most three files" (spec_steps4_held), its Ks2 brought in by no Given;
 - "the number of Ks that P" printed two Ks brought in, compared with a parameter the Given of the comparison
   (spec_lf_number, b240);
 - "the T of x" whose value is a referent (an image): no step of its own, the referent named "the T of x" where a
@@ -20,6 +23,7 @@ from dataclasses import replace
 
 import spec_lf_number
 import spec_lf_option
+import spec_lf_quant
 import spec_lf_set
 import spec_rgl
 from spec_lf_core import Atom, Box, Ref, least
@@ -130,6 +134,9 @@ def acts(r, box, pos):
         for b in numbers:
             spec_lf_number.bring(r, b)
         return r.acts([box.body[-1]], False)
+    if box.op in ("only", "count") and pos and spec_lf_quant.held(box):     # over a row of the object (b272)
+        import spec_steps4_held
+        return [(None, ("SCond", spec_steps4_held.cond(r, box)))]
     if box.op == "only" and pos:
         bring(r, box)
         return r.acts(box.scope.body)

@@ -217,7 +217,7 @@ def named(step):
     Given said it is named by (else what its kind prints, else its name)."""
     out = [q.strip('"') for q in step.quoted]
     for np in step.nps:
-        out += [w.strip("`") for w in np.split() if w.startswith("`")]
+        out += re.findall(r"`([^`]+)`", np)      # a code whole: `no findings`, `migrate upgrade`
         out += [step.context.get("says", {}).get(w) or unsaid(step, w, np) for w in np.split() if w in step.names]
     return out
 

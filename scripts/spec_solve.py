@@ -21,7 +21,10 @@ The shown atoms are the findings:
       every other pair's findings kept. (warning)
 
 `run(root, capability=None, extra=None)` gives the findings (`capability` a capability's name, or a requirement's id
-`<capability>#r<n>`: the findings that name it), `report(findings, as_json)` their text and exit code.
+`<capability>#r<n>`: the findings that name it), `unread` the requirements in the same scope that the check has no
+translation of (spec_context's `refused`, b272), `report(findings, as_json, unread)` their text and exit code: each
+unread requirement printed by its id with what it has no translation of, and never `no findings` while one is unread;
+the exit stays the findings'.
 """
 import json
 from collections import Counter, defaultdict
@@ -145,14 +148,34 @@ def run(root, capability=None, extra=None):
     return sorted(found, key=lambda f: (f.code, _order(f.ids[0]) if f.ids else ()))
 
 
-def report(findings, as_json):
-    """(text, exit code): one line a finding and a count, or one JSON object; exit 1 on an L0, L1 or L3."""
+def unread(root, capability=None, extra=None):
+    """[(requirement id, what the check has no translation of)] of the requirements `run` reads in the same scope
+    that spec_context could not translate: a capability's, a requirement's, or with neither every one, universal
+    conditions among them."""
+    ctx = spec_context.load(root, extra or ())
+    if capability and "#" in capability:
+        keep = lambda i: i == capability      # noqa: E731
+    elif capability:
+        keep = lambda i: i.rpartition("#")[0] == capability      # noqa: E731
+    else:
+        keep = lambda i: True      # noqa: E731
+    out = [(i, why[len("refused: "):] if why.startswith("refused: ") else why) for i, why in ctx.refused.items()
+           if keep(i)]
+    return sorted(out, key=lambda iw: _order(iw[0]))
+
+
+def report(findings, as_json, unread=()):
+    """(text, exit code): one line a finding, one an unread requirement and a count, or one JSON object; exit 1 on an
+    L0, L1 or L3."""
     code = 1 if any(f.code in ERRORS for f in findings) else 0
     if as_json:
-        return json.dumps({"findings": [f._asdict() for f in findings], "exit": code}), code
+        return json.dumps({"findings": [f._asdict() for f in findings],
+                           "unread": [{"id": i, "text": why} for i, why in unread], "exit": code}), code
+    lines = ["unread %s: %s" % (i, why) for i, why in unread]
+    more = "%d requirement%s unread" % (len(unread), "" if len(unread) == 1 else "s") if unread else ""
     if not findings:
-        return "no findings", code
+        return "\n".join(lines + ["0 findings; " + more] if unread else ["no findings"]), code
     counts = Counter(f.code for f in findings)
     tail = "%d finding%s: %s" % (len(findings), "" if len(findings) == 1 else "s",
                                  ", ".join("%d %s" % (counts[c], c) for c in sorted(counts)))
-    return "\n".join(["%s %s" % (f.code, f.text) for f in findings] + [tail]), code
+    return "\n".join(["%s %s" % (f.code, f.text) for f in findings] + lines + [tail + ("; " + more if more else "")]), code
