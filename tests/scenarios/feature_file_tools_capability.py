@@ -7,6 +7,8 @@ before the command (`prepare`) and read by its Thens:
   context `grammar/corpus/constructs/`, three of its groups with a given block of example data (a docstring, a table
   and one value);
 - a capability one of whose steps a universal condition entails (r109): codified2_world's declining lines and U1;
+- a capability whose requirement uses `holds-relation` and `only` or `count` (r113, r112, b272): codified2_constructs'
+  holding or capping line, and the Then its feature must hold (`uses`);
 - else the capability of the example data, run on by no name.
 
 `has` (`the requirement group r3 has the scenario s1`: every group of the capability has its scenario in the feature;
@@ -74,10 +76,22 @@ def constructs(repo):
     return len(groups)
 
 
+# (the constructs a requirement uses) -> codified2_constructs' world of them
+HELD = {frozenset({"`holds-relation`", "`only`"}): "holding", frozenset({"`holds-relation`", "`count`"}): "capping"}
+
+
 def prepare(step):
     """The capability the Givens describe, written; the names the command runs on."""
     w = W.world(step)
     verbs = {v for v, *_ in w["facts"]}
+    used = frozenset(b for v, a, b, pos in w["facts"] if v == "use" and pos and W.kind(w, a) == "requirement")
+    if used in HELD:
+        held = shared("shop_codified2_constructs", "codified2_constructs.py")
+        held.capability(step, PATH, HELD[used])
+        w["uses"] = step.context["holds"]["features/%s.feature" % held.NAME]
+        for c in [n for n, k in w["kinds"].items() if k == "capability"]:
+            w["values"][c] = held.NAME
+        return [held.NAME]
     if "entail" in verbs:
         C2 = _codified2()
         C2.context(step.repo, PATH, C2.CAPABILITIES["declining"], NAME, C2.UNIVERSAL["declining"])
@@ -133,6 +147,19 @@ def collections(step, w, what):
     done = step.context["result"]
     assert done.returncode == 0, done.stderr
     COL.check(w["lines"], (step.repo / "features" / ("%s.feature" % NAME)).read_text(), what)
+
+
+def uses(step, w):
+    """`the scenario s1 uses `only``: the feature written holds the Then of the construct's world."""
+    assert result_ok(step)
+    text = (step.repo / "features" / "shelf.feature").read_text()
+    assert w["uses"].search(text), (w["uses"].pattern, text)
+
+
+def result_ok(step):
+    done = step.context["result"]
+    assert done.returncode == 0, done.stderr
+    return True
 
 
 def writes_not(step, w):

@@ -43,7 +43,11 @@ LINES.update({"distributing": [RUN + "`work` shall print every stage."],
               "linking": ["When a session ends a stage on a worktree, `work` shall print the stage."],
               "valued": ["When a session ends a stage, `work` shall print the status of the stage."],
               "excluding": ["While no stage is `done`, w" + RUN[1:] + "`work` shall exit successfully."],
-              "exempting": [RUN + "`work` shall print a stage whose status is not `done`."]})
+              "exempting": [RUN + "`work` shall print a stage whose status is not `done`."],
+              # b272: only and a count over a row of the response's object, and a line `model logic` cannot read
+              "holding": [RUN + "`work` shall print a worktree that holds only files whose version is `2.0.0`."],
+              "capping": [RUN + "`work` shall print a worktree that holds at most three files."],
+              "unread": [RUN + "at least two sessions shall write a file."]})
 # condition -> glossary entries and `## Relations` rows it adds
 TERMS, ROWS = {}, {"linking": ["| stage | on | worktree |  |"]}
 # condition -> the steps the feature `features/shelf.feature` must hold: two Ks of every in a response (R6); one K
@@ -63,6 +67,8 @@ HOLDS = {"distributing": r"^    Given a stage s1\n    And a stage s2\n.*\n    Th
          "linking": r"^    And the stage s2 is on the worktree w1\n    When the session s1 ends the stage s2$",
          "valued": r"^    When the session s1 ends the stage s2\n    Then `work` prints the status of the stage s2$",
          "excluding": r"^    Given no stage whose status is `done` exists\n    When the person runs `work start`$",
+         "holding": r"^    Then `work` prints the worktree w1\n    And the worktree w1 holds only files whose version is `2.0.0`$",
+         "capping": r"^    Then `work` prints the worktree w1\n    And the worktree w1 holds at most three files$",
          "exempting": (r"^    Given a stage s1\n    And the status of the stage s1 is not `done`\n    When the person runs `work start`\n"
                        r"    Then `work` prints the stage s1$")}
 
