@@ -159,8 +159,8 @@ Feature: Feature file tools
     Given a scenario s1
     And the scenario s1 has `@deprecated`
     When the person runs `features deprecated` with the `--json` option
-    Then the scenario s1 has the scenario title s2
-    And `features` prints the scenario title s2
+    Then `features` prints the scenario title s2
+    And the scenario s1 has the scenario title s2
 
   @g100 @r100
   Scenario: `features bindings` says so when every binding names a scenario
@@ -307,10 +307,10 @@ Feature: Feature file tools
     And a requirement group r4
     And the capability c1 has the requirement group r4
     When the person runs `features generate` on the capability c1
-    Then the requirement group r3 has the scenario s1
-    And `features` writes the scenario s1
-    And the requirement group r4 has the scenario s2
+    Then `features` writes the scenario s1
+    And the requirement group r3 has the scenario s1
     And `features` writes the scenario s2
+    And the requirement group r4 has the scenario s2
 
   @g109 @r109
   Scenario: `features generate` leaves out a step that a universal condition entails
@@ -348,8 +348,8 @@ Feature: Feature file tools
     And the group of the capability c1 is `service`
     And the language of the capability c1 is `codified-2`
     When the person runs `features generate`
-    Then the capability c1 has the feature f1
-    And `features` writes the feature f1
+    Then `features` writes the feature f1
+    And the capability c1 has the feature f1
     And `features` prints the feature f1
 
   @g111 @r111
@@ -389,9 +389,9 @@ Feature: Feature file tools
     And the referent r2 has the description d2
     And the description d2 precedes the act a1
     When the person runs `features generate` on the capability c1
-    Then the referent r2 has the description d1
+    Then `features` writes the description d1
+    And the referent r2 has the description d1
     And the description d1 follows the act a1
-    And `features` writes the description d1
     And `features` does not write the description d2
 
   @g112 @r112
@@ -402,8 +402,8 @@ Feature: Feature file tools
     And the requirement r1 uses `count`
     And the requirement r1 uses `holds-relation`
     When the person runs `features generate` on the capability c1
-    Then the scenario s1 uses `count`
-    And `features` writes the scenario s1
+    Then `features` writes the scenario s1
+    And the scenario s1 uses `count`
 
   @g113 @r113
   Scenario: `features generate` writes only over a relation in a response
@@ -413,8 +413,8 @@ Feature: Feature file tools
     And the requirement r1 uses `only`
     And the requirement r1 uses `holds-relation`
     When the person runs `features generate` on the capability c1
-    Then the scenario s1 uses `only`
-    And `features` writes the scenario s1
+    Then `features` writes the scenario s1
+    And the scenario s1 uses `only`
 
   @g114 @r114
   Scenario: `features generate` writes Givens that satisfy a precondition that uses every
@@ -427,9 +427,9 @@ Feature: Feature file tools
     And the requirement r1 has the precondition p1
     And the precondition p1 uses `every`
     When the person runs `features generate` on the capability c1
-    Then the requirement group r2 has the scenario s1
+    Then `features` writes the scenario s1
+    And the requirement group r2 has the scenario s1
     And the scenario s1 satisfies the precondition p1
-    And `features` writes the scenario s1
 
   @g115 @r115
   Scenario: `features generate` gives a count in a precondition at its boundary
@@ -443,10 +443,10 @@ Feature: Feature file tools
     And a count c2
     And the precondition p1 holds the count c2
     When the person runs `features generate` on the capability c1
-    Then the requirement group r2 has the scenario s1
-    And the count c2 has the boundary b1
-    And the scenario s1 has the boundary b1
+    Then the count c2 has the boundary b1
     And `features` writes the scenario s1
+    And the requirement group r2 has the scenario s1
+    And the scenario s1 has the boundary b1
 
   @g116 @r116
   Scenario: `features generate` introduces each instance of two Ks
@@ -474,9 +474,9 @@ Feature: Feature file tools
     And a restriction r3
     And the requirement r1 has the restriction r3
     When the person runs `features generate` on the capability c1
-    Then the requirement group r2 has the scenario s1
+    Then `features` writes the scenario s1
+    And the requirement group r2 has the scenario s1
     And the scenario s1 has the counter-example c2
-    And `features` writes the scenario s1
 
   @g118 @r118
   Scenario: `features generate` writes a counter-example of only and asserts no act that only allows
@@ -493,9 +493,9 @@ Feature: Feature file tools
     And the requirement r1 allows the act a1
     And the step s2 asserts the act a1
     When the person runs `features generate` on the capability c1
-    Then the requirement group r2 has the scenario s1
+    Then `features` writes the scenario s1
+    And the requirement group r2 has the scenario s1
     And the scenario s1 has the counter-example c2
-    And `features` writes the scenario s1
     And `features` does not write the step s2
 
   @g119 @r119
@@ -508,9 +508,9 @@ Feature: Feature file tools
     And an upper bound u1
     And the requirement r1 has the upper bound u1
     When the person runs `features generate` on the capability c1
-    Then the requirement group r2 has the scenario s1
+    Then `features` writes the scenario s1
+    And the requirement group r2 has the scenario s1
     And the scenario s1 has the counter-example c2
-    And `features` writes the scenario s1
 
   @g120 @r120
   Scenario: `features generate` writes the member a collection must not hold
@@ -519,9 +519,9 @@ Feature: Feature file tools
     And the capability c1 has the requirement r1
     And the requirement r1 uses `holds-exactly`
     When the person runs `features generate` on the capability c1
-    Then the scenario s1 has the step s2
-    And the step s2 uses `not-condition`
-    And `features` writes the scenario s1
+    Then the step s1 uses `not-condition`
+    And `features` writes the scenario s2
+    And the scenario s2 has the step s1
 
   @g121 @r121
   Scenario: `features generate` writes `nothing` in a precondition
@@ -532,6 +532,6 @@ Feature: Feature file tools
     And the requirement r1 has the precondition p1
     And the precondition p1 uses `nothing`
     When the person runs `features generate` on the capability c1
-    Then the scenario s1 has the step s2
-    And the step s2 uses `nothing`
-    And `features` writes the scenario s1
+    Then the step s1 uses `nothing`
+    And `features` writes the scenario s2
+    And the scenario s2 has the step s1

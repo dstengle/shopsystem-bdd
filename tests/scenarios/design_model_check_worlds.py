@@ -250,7 +250,7 @@ TABLE = [
     (("`model` not unify code",), capability("unpairable"), {"r5": "r1"}),
     (("requirement use `every`",), capability("exhaustive"), {}),
     (("capability has requirement", "requirement override requirement"), capability("overriding"), {}),
-    (("requirement override requirement",), requirement("overridden"), {"r4": "r2"}),
+    (("requirement override requirement",), requirement("overridden"), {"r3": "r2"}),
     (("universal condition forbid act",), capability("contravening"), {}),
     (("requirement permit act",), capability("forbidding"), {}),
     (("requirement add no consequence",), requirement("restating"), {}),

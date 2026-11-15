@@ -6,22 +6,22 @@ Feature: Backlog
   Scenario: `work depend` records a dependency
     Given an item i1
     When the person runs `work depend` on the item i1
-    Then the item i1 has the dependency d1
-    And `work` writes the dependency d1
+    Then `work` writes the dependency d1
+    And the item i1 has the dependency d1
     And `work` commits the item i1
 
   @g15 @r15
   Scenario: `work show` names an item by its title
     Given an item i1
     When the person runs `work show` on the item i1
-    Then the item i1 has the title t1
-    And `work` prints the title t1
+    Then `work` prints the title t1
+    And the item i1 has the title t1
 
   @g22 @r22
   Scenario: `work idea` writes an item
     When the person runs `work idea`
-    Then the status of the item i1 is `idea`
-    And `work` writes the item i1
+    Then `work` writes the item i1
+    And the status of the item i1 is `idea`
     And `work` commits the item i1
 
   @g25 @r25
@@ -62,8 +62,8 @@ Feature: Backlog
     And this command has the push p1
     And the remote r1 rejects the push p1
     When the person runs `work idea`
-    Then the status of the item i1 is `idea`
-    And `work` writes the item i1
+    Then `work` writes the item i1
+    And the status of the item i1 is `idea`
     And `work` commits the item i1
     And `work` prints the remote r1
     And `work` exits successfully
@@ -76,8 +76,8 @@ Feature: Backlog
     And this command has the push p1
     And the remote r1 does not answer the push p1
     When the person runs `work idea`
-    Then the status of the item i1 is `idea`
-    And `work` writes the item i1
+    Then `work` writes the item i1
+    And the status of the item i1 is `idea`
     And `work` commits the item i1
     And `work` prints the remote r1
     And `work` exits successfully
@@ -103,8 +103,8 @@ Feature: Backlog
     And a branch name b2
     And the upstream branch u1 has the branch name b2
     When the person runs `work idea`
-    Then the status of the item i1 is `idea`
-    And `work` writes the item i1
+    Then `work` writes the item i1
+    And the status of the item i1 is `idea`
     And `work` commits the item i1
     And `work` keeps the upstream branch u1
 
@@ -114,8 +114,8 @@ Feature: Backlog
     And the item i1 exists
     When the person runs `work backlog`
     Then `work` prints the item i1
-    And the item i1 has the title t1
     And `work` prints the title t1
+    And the item i1 has the title t1
     And `work` prints the status of the item i1
     And `work` prints the provenance of the item i1
     And `work` prints the value of the item i1

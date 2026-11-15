@@ -9,5 +9,5 @@ Feature: buy
     And a cart c1
     When the shopper s1 picks the cart c1
     Then the shopper s1 watches the till t1
-    And the till t2 is for the shopper s1
     And the shopper s1 watches the till t2
+    And the till t2 is for the shopper s1

@@ -6,8 +6,8 @@ Feature: Requests
   Scenario: `work request` writes the request it is raised for
     Given a request r1
     When the person runs `work request` with the `--raised-for` option set to the request r1
-    Then the request r2 is raised for the request r1
-    And `work` writes the request r2
+    Then `work` writes the request r2
+    And the request r2 is raised for the request r1
 
   @g60 @r60
   Scenario: `work request` refuses a request with no origin
@@ -122,8 +122,8 @@ Feature: Requests
   Scenario: `work request` opens the request's issue
     When the person runs `work request`
     Then `work` posts the issue i1
-    And the status of the request r1 is `open`
     And `work` writes the request r1
+    And the status of the request r1 is `open`
     And `work` commits the request r1
 
   @g72 @r72
@@ -152,8 +152,8 @@ Feature: Requests
     Then `work` sets the status of the request r1 to `delivered`
     And `work` writes the resolution r2
     And `work` posts the comment c1
-    And the request r1 has the issue i1
     And `work` closes the issue i1
+    And the request r1 has the issue i1
     And `work` commits the request r1
 
   @g75 @r75
@@ -264,8 +264,8 @@ Feature: Requests
     When the person runs `work turn` on the request r1
     Then `work` sets the status of the request r1 to `refused`
     And `work` posts the comment c1
-    And the request r1 has the issue i1
     And `work` closes the issue i1
+    And the request r1 has the issue i1
 
   @g82 @r82
   Scenario: A line that does not parse is not accepted
@@ -290,8 +290,8 @@ Feature: Requests
     And the line outcome of the request line r3 is `accepted`
     When the person runs `work accept` on the request r1
     Then `work` sets the status of the request r1 to `accepted`
-    And the status of the item i1 is `shaped`
     And `work` writes the item i1
+    And the status of the item i1 is `shaped`
     And `work` posts the comment c1
     And `work` commits the request r1
 
@@ -307,8 +307,8 @@ Feature: Requests
     And the line outcome of the request line r3 is `refused`
     When the person runs `work accept` on the request r1
     Then `work` sets the status of the request r1 to `accepted`
-    And the status of the item i1 is `shaped`
     And `work` writes the item i1
+    And the status of the item i1 is `shaped`
     And `work` posts the comment c1
     And `work` commits the request r1
 
@@ -324,8 +324,8 @@ Feature: Requests
     And the line outcome of the request line r3 is `withdrawn`
     When the person runs `work accept` on the request r1
     Then `work` sets the status of the request r1 to `accepted`
-    And the status of the item i1 is `shaped`
     And `work` writes the item i1
+    And the status of the item i1 is `shaped`
     And `work` posts the comment c1
     And `work` commits the request r1
 
@@ -350,8 +350,8 @@ Feature: Requests
     And `work` writes the resolution r2
     And `work` sets the side of the request r1 to `asker`
     And `work` posts the comment c1
-    And the request r1 has the issue i1
     And `work` closes the issue i1
+    And the request r1 has the issue i1
     And `work` commits the request r1
 
   @g86 @r86
@@ -398,8 +398,8 @@ Feature: Requests
     Then `work` refuses `work turn`
     And `work` names this repository
     And `work` does not post a comment
-    And the request r1 has the issue i1
     And `work` does not close the issue i1
+    And the request r1 has the issue i1
 
   @g90 @r90
   Scenario: `work fits` posts nothing when its record is not committed
@@ -410,8 +410,8 @@ Feature: Requests
     Then `work` refuses `work fits`
     And `work` names this repository
     And `work` does not post a comment
-    And the request r1 has the issue i1
     And `work` does not close the issue i1
+    And the request r1 has the issue i1
 
   @g91 @r91
   Scenario: `work reply` refuses a request this bounded context is asked
