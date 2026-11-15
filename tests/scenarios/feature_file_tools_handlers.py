@@ -149,11 +149,13 @@ def exits_err(step):
         assert said(step, np) in done.stdout + done.stderr, (said(step, np), done.stdout, done.stderr)
 
 
-@W.own("ThenDoes", "write", registry=False)
+@W.own("ThenDoes", "write", "use", registry=False)
 @W.own("ThenDoes", "refuse", "name", "has")
 def then_does(step):
     done, w = result(step), W.world(step)
-    if step.term == "refuse":
+    if step.term == "use":      # the scenario s1 uses `only` (b272)
+        GEN.uses(step, w)
+    elif step.term == "refuse":
         assert done.returncode != 0, done.stdout
     elif step.term == "name":
         assert said(step, step.nps[0]) in done.stdout + done.stderr, (step.nps[0], done.stdout, done.stderr)
