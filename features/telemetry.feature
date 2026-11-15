@@ -11,18 +11,18 @@ Feature: Telemetry
     And a role r2
     And the batch b1 has the role r2
     When the person runs `measure batch` on the batch b1
-    Then the batch b1 has the measurement m1
-    And the batch b1 has the wall time w1
-    And the measurement m1 includes the wall time w1
+    Then the batch b1 has the wall time w1
     And the batch b1 has the session time s1
-    And the measurement m1 includes the session time s1
     And the batch b1 has the token t1
+    And `measure` writes the measurement m1
+    And the batch b1 has the measurement m1
+    And the measurement m1 includes the wall time w1
+    And the measurement m1 includes the session time s1
     And the measurement m1 includes the token t1
     And the role r1 has the cost c1
     And the measurement m1 includes the cost c1
     And the role r2 has the cost c2
     And the measurement m1 includes the cost c2
-    And `measure` writes the measurement m1
 
   @g6 @r6
   Scenario: The measurement of a batch counts the review findings on its pull request by grade
@@ -48,11 +48,11 @@ Feature: Telemetry
     And the review finding r6 is on the pull request p1
     And the grade of the review finding r6 is `Minor`
     When the person runs `measure batch` on the batch b1
-    Then the batch b1 has the measurement m1
+    Then `measure` writes the measurement m1
+    And the batch b1 has the measurement m1
     And the measurement m1 includes the number of review findings on the pull request p1 whose grade is `Critical`
     And the measurement m1 includes the number of review findings on the pull request p1 whose grade is `Important`
     And the measurement m1 includes the number of review findings on the pull request p1 whose grade is `Minor`
-    And `measure` writes the measurement m1
 
   @g7 @r7
   Scenario: A defect after the merge is traced to its item and batch
@@ -61,9 +61,9 @@ Feature: Telemetry
     And the batch b1 holds the item i1
     And the status of the item i1 is `delivered`
     When the person runs `measure defect` on the item i1
-    Then the defect d1 is for the batch b1
+    Then `measure` writes the defect d1
+    And the defect d1 is for the batch b1
     And the item i1 has the defect d1
-    And `measure` writes the defect d1
 
   @g8 @r8
   Scenario: `measure compare` sets the measurements of two batches side by side with their ratio

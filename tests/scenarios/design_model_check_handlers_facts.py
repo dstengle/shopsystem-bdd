@@ -112,7 +112,7 @@ def value(step):
 def then_does(step):
     """What a tool did: refused the command (an error exit), named an instance (by what a Given said it is named by)
     or a code; `model` used the compiled grammar, read the parse cache, wrote the rule catalogue or the parse cache;
-    the requirement r4 uses the refusal r3 (its line in `model explain`'s output says the tool shall refuse)."""
+    the requirement r3 uses the refusal r4 (its line in `model explain`'s output says the tool shall refuse)."""
     if not ours(step):
         return False
     done = step.context["result"]

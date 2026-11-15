@@ -148,6 +148,8 @@ class Walk(Terms):
                 for c in item.body:
                     self.restrict(c, own | set(item.refs))
                 self.response(item.scope.body, own | set(item.refs) | set(item.scope.refs))
+            elif item.op in ("only", "count") and pos and spec_lf_quant.held(item):     # over a row (b272)
+                spec_lf_quant.holding(self, item, own)
             elif item.op == "only" and pos and not self.may:
                 self.only(item)
             elif item.op == "count" and pos:

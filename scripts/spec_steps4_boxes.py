@@ -12,6 +12,9 @@ spec_steps4, whose Reader (`r`) they extend:
   meet it, the K brought in;
 - "y holds nothing" a Given said of y, "y holds no K that is not P" in a response a K that is not P brought in and
   the Then that y does not hold it (spec_lf_member, b274);
+- "V a K that holds only Ks2 that P" and "... that holds at most n Ks2" (a box over the row or state of a response's
+  object, b272) its Then the property said of the object: "the worktree w1 holds only files whose version is
+  `2.0.0`", "the worktree w1 holds at most three files" (spec_steps4_held), its Ks2 brought in by no Given;
 - "the number of Ks that P" printed two Ks brought in, compared with a parameter the Given of the comparison
   (spec_lf_number, b240);
 - "the T of x" whose value is a referent (an image): no step of its own, the referent named "the T of x" where a
@@ -23,6 +26,8 @@ from dataclasses import replace
 import spec_lf_member
 import spec_lf_number
 import spec_lf_option
+import spec_lf_quant
+import spec_lf_set
 import spec_rgl
 from spec_lf_core import Atom, Box, Ref, least
 
@@ -135,6 +140,9 @@ def acts(r, box, pos):
         for b in numbers:
             spec_lf_number.bring(r, b)
         return r.acts([box.body[-1]], False)
+    if box.op in ("only", "count") and pos and spec_lf_quant.held(box):     # over a row of the object (b272)
+        import spec_steps4_held
+        return [(None, ("SCond", spec_steps4_held.cond(r, box)))]
     if box.op == "only" and pos:
         bring(r, box)
         return r.acts(box.scope.body)
@@ -162,6 +170,50 @@ def acts(r, box, pos):
     if absent is not None:      # "holds no K that is not P" (b274): a K that is not P, and y does not hold it
         return absent
     raise TraceError("no Then of %s" % box.op)
+
+
+def order(body):
+    """A response's items with each that says something of a response referent no earlier act names (an attribute
+    value, a row, a relative clause, the scope of an every box in it) held back and written after the first act that
+    names it, so that a Then never describes a thing before the act that brings it in (b268); an act, an image, a
+    printed number's box and an item of referents brought in before keep their place."""
+    later = {x for i in body if acting(i) for x in free(i)}
+    out, held, seen = [], [], set()
+    for item in body:
+        image = isinstance(item, Atom) and item.pred == "attr" and isinstance(item.args[2], Ref) or \
+            isinstance(item, Box) and item.op == "number"      # how a step names the referent: kept before it
+        wanted = set() if acting(item) or image else \
+            {x for x in free(item) if x.origin == "response" and x not in seen and x in later}
+        if wanted:
+            held.append((item, wanted))
+            continue
+        out.append(item)
+        if acting(item):
+            seen.update(free(item))
+            out += [i for i, w in held if w <= seen]
+            held = [(i, w) for i, w in held if not w <= seen]
+    return tuple(out + [i for i, _ in held])
+
+
+def acting(x):
+    """True for an act, or a box that holds one."""
+    if isinstance(x, Atom):
+        return x.pred in ("event", spec_lf_set.PRED)
+    return isinstance(x, Box) and any(acting(i) for i in x.body + ((x.scope,) if x.scope else ()))
+
+
+def free(x):
+    """The referents `x` names that it does not make (a box's own)."""
+    if isinstance(x, Ref):
+        return [x]
+    if isinstance(x, Atom):
+        return free(x.args)
+    if isinstance(x, Box):
+        own = set(x.refs) | set(x.scope.refs if x.scope else ())
+        return [r for r in free((x.body, x.scope, x.count)) if r not in own]
+    if isinstance(x, (tuple, list)):
+        return [r for i in x for r in free(i)]
+    return []
 
 
 def restriction(box):

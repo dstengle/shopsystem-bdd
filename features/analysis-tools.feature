@@ -52,8 +52,8 @@ Feature: Analysis tools
     And the `venv/bin/python` Python interpreter does not exist
     And the `$VIRTUAL_ENV/bin/python` Python interpreter does not exist
     When the person runs `tools probe` without the `--python` option
-    Then the Python interpreter p1 executes `scripts/tools`
-    And `tools` prints the Python interpreter p1
+    Then `tools` prints the Python interpreter p1
+    And the Python interpreter p1 executes `scripts/tools`
 
   @g41 @r41
   Scenario: `.venv/bin/python` comes before `venv/bin/python`
@@ -90,9 +90,9 @@ Feature: Analysis tools
     Given the presence of `ruff` is `missing`
     And the environment of this Python interpreter is `virtualenv`
     When the person runs `tools install`
-    Then `ruff` has the version v1
+    Then `tools` installs the version v1
+    And `ruff` has the version v1
     And the plugin pins the version v1
-    And `tools` installs the version v1
 
   @g45 @r45
   Scenario: `tools install` refuses to install into a Python interpreter that is not a virtualenv
@@ -109,8 +109,8 @@ Feature: Analysis tools
     And the presence of the analysis tool a1 is `uninstallable`
     And the environment of this Python interpreter is `virtualenv`
     When the person runs `tools install`
-    Then the analysis tool a1 has the pip command p1
-    And `tools` prints the pip command p1
+    Then `tools` prints the pip command p1
+    And the analysis tool a1 has the pip command p1
     And `tools` exits with an error naming the analysis tool a1
 
   @g47 @r47
@@ -136,8 +136,8 @@ Feature: Analysis tools
     And the coverage map c1 holds the test t2
     When the person runs `tools map` with the `--json` option
     Then `tools` makes the coverage map c1
-    And the coverage map c1 has the commit c2
     And `tools` prints the commit c2
+    And the coverage map c1 has the commit c2
     And `tools` prints the number of tests in the coverage map c1
 
   @g50 @r50
@@ -157,8 +157,8 @@ Feature: Analysis tools
     Then `tools` prints the test t1
     And `tools` prints the test t2
     And `tools` prints the number of tests that execute the function f1
-    And the coverage map c1 has the commit c2
     And `tools` prints the commit c2
+    And the coverage map c1 has the commit c2
 
   @g51 @r51
   Scenario: `tools tests-of --by-file` prints each Python file that holds a test that executed the function
@@ -184,8 +184,8 @@ Feature: Analysis tools
     And a function f1
     And no test executes the function f1
     When the person runs `tools tests-of` on the function f1
-    Then the coverage map c1 has the commit c2
-    And `tools` prints the commit c2
+    Then `tools` prints the commit c2
+    And the coverage map c1 has the commit c2
     And `tools` exits successfully
 
   @g53 @r53
@@ -205,8 +205,8 @@ Feature: Analysis tools
     Then `tools` prints the test t1
     And `tools` prints the test t2
     And `tools` prints the number of tests that execute the function f1
-    And the coverage map c1 has the commit c2
     And `tools` prints the commit c2
+    And the coverage map c1 has the commit c2
 
   @g54 @r54
   Scenario: `tools tests-of` refuses a function its file does not define
@@ -240,8 +240,8 @@ Feature: Analysis tools
     When the person runs `tools untested` on the Python file p1
     Then `tools` prints the function f1
     And `tools` prints the function f2
-    And the coverage map c1 has the commit c2
     And `tools` prints the commit c2
+    And the coverage map c1 has the commit c2
     And `tools` exits successfully
 
   @g57 @r57
@@ -258,8 +258,8 @@ Feature: Analysis tools
     When the person runs `tools untested` with the `--json` option on the Python file p1
     Then `tools` prints the function f1
     And `tools` prints the function f2
-    And the coverage map c1 has the commit c2
     And `tools` prints the commit c2
+    And the coverage map c1 has the commit c2
 
   @g58 @r58
   Scenario: `tools refs` prints each reference to an identifier and their number
@@ -296,8 +296,8 @@ Feature: Analysis tools
     And a file f1
     And the file f1 holds the finding f2
     When the person runs `tools check` on the file f1
-    Then the analysis tool a1 has the heading h1
-    And `tools` prints the heading h1
+    Then `tools` prints the heading h1
+    And the analysis tool a1 has the heading h1
     And `tools` prints the finding f2
     And `tools` exits with an error naming the finding f2
 

@@ -293,8 +293,8 @@ Feature: Notes
   @g1 @r1
   Scenario: `notes add` adds a note under a tag
     When the person runs `notes add` with the `--title` and `--tag` options
-    Then the note n1 is under the tag t1
-    And `notes` adds the note n1
+    Then `notes` adds the note n1
+    And the note n1 is under the tag t1
     And `notes` exits successfully
 
   @g2 @r2
@@ -313,10 +313,10 @@ Feature: Notes
     And a note n1
     And a note n2
     When the person runs `notes list`
-    Then the note n1 has the title t1
-    And `notes` prints the title t1
-    And the note n2 has the title t2
+    Then `notes` prints the title t1
+    And the note n1 has the title t1
     And `notes` prints the title t2
+    And the note n2 has the title t2
 
   @g4 @r4
   Scenario: `notes remove` deletes a note
@@ -466,14 +466,14 @@ def names_option(world, option):
     assert option in world["run"].stderr
 
 
-@then(parsers.parse("the note {n} has the title {t}"))
-def has_title(world, n, t):
-    world["names"][t] = world["names"][n]
-
-
 @then(parsers.parse("`notes` prints the title {t}"))
 def prints_title(world, t):
-    assert world["names"][t] in world["run"].stdout
+    assert world["run"].returncode == 0 and world["run"].stdout
+
+
+@then(parsers.parse("the note {n} has the title {t}"))
+def has_title(world, n, t):
+    assert world["names"][n] in world["run"].stdout
 ```
 
 </details>

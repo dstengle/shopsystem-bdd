@@ -104,8 +104,8 @@ Feature: Readiness
   Scenario: `work line --retires` writes a requirement in an item
     Given an item i1
     When the person runs `work line` with the `--retires` option on the item i1
-    Then the item i1 holds the requirement r1
-    And `work` writes the requirement r1
+    Then `work` writes the requirement r1
+    And the item i1 holds the requirement r1
     And `work` commits the item i1
 
   @g35 @r35
@@ -150,8 +150,8 @@ Feature: Readiness
   Scenario: `work line --universal --retires` writes a universal condition in an item
     Given an item i1
     When the person runs `work line` with the `--universal` and `--retires` options on the item i1
-    Then the item i1 holds the universal condition u1
-    And `work` writes the universal condition u1
+    Then `work` writes the universal condition u1
+    And the item i1 holds the universal condition u1
     And `work` commits the item i1
 
   @g40 @r40

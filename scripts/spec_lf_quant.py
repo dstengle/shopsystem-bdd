@@ -14,7 +14,12 @@ section 7.4), beside spec_lf_facts, whose walk (`w`) emits them:
 - "a K whose T is not v" on a response's object: `onattr(R,X,T,V)`, which check.lp's `gap` and `pag` read as they read
   `oattr`, so a line on a K that is not v clashes only with one on a K known not to be v; "a K that x does not V"
   and "a K that no K2 Vs" `onrel(R,X,Q,D,O)`, read the same way (b240 phase 12); "a K that holds no K2 that is not
-  P" (holds-exactly's second half) spec_lf_member's `onrel` to `such(K2,...)` (b274).
+  P" (holds-exactly's second half) spec_lf_member's `onrel` to `such(K2,...)` (b274);
+- "only" and a count over a row or a state on a response's object ("print a worktree that holds only files whose
+  version is `2.0.0`", "holds at most three files", R5, R7; b272): restrictions of that object, `oonly(R,X,Q,D,Y)`
+  and `ocount(R,X,Q,D,Y,B,N)` (D as `onrel`'s, Y the box's K with its restrictor `yattr(R,Y,T,V)`, `yrel(R,Q,Y,Z)`),
+  which check.lp keeps and proves nothing of (decision 0093): they oblige no act, agree with any line on the act and
+  clash with nothing; a count that admits no K obliges no row.
 
 Anything else in such a box has no translation: a ValueError naming it.
 """
@@ -134,3 +139,28 @@ def unrelated(w, item, own, theirs):
     if obj not in own or other is None or other in own or len(theirs) > 1 or theirs and other not in theirs:
         raise ValueError(NEGATED)
     w.emit("onrel", w.term(obj), q, d, "kind(%s)" % w.ids.kind(other.kind) if other in theirs else w.term(other))
+
+
+def held(box):
+    """True for an `only` or a `count` box whose scope is one row or state of its K and nothing else (b272)."""
+    return (len(box.refs) == 1 and not box.scope.refs and len(box.scope.body) == 1
+            and isinstance(box.scope.body[0], Atom) and box.scope.body[0].pred in ("rel", "state"))
+
+
+def holding(w, box, own):
+    """"a worktree that holds only files whose version is `2.0.0`", "... that holds at most three files": `oonly` or
+    `ocount` of the response's object, the box's K a role with its restrictor (`yattr`, `yrel`)."""
+    k = box.refs[0]
+    q, x, y = w.edge(box.scope.body[0])
+    obj, d, other = (x, "s", y) if x in own else (y, "o", x)
+    if obj not in own or other != k:
+        raise ValueError("no translation of %s over that" % ("only" if box.op == "only" else "a count"))
+    w.roles(box.refs)
+    for c in box.body:
+        if not (isinstance(c, Atom) and c.pred in ("attr", "rel", "state")):
+            raise ValueError("no translation of %s on a restriction of %s" % (getattr(c, "op", c.pred), box.op))
+        w.restrict(c, {k}, ("yattr", "yrel"))
+    if box.op == "only":
+        w.emit("oonly", w.term(obj), q, d, k.name)
+    else:
+        w.emit("ocount", w.term(obj), q, d, k.name, BOUNDS[box.count[0]], box.count[1])

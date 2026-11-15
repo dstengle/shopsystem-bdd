@@ -230,6 +230,10 @@ TABLE = [
     # model parse: the constructs
     (("capability has requirement", "requirement use `only`", "requirement allow act"), capability("restricting"),
      {}),
+    (("capability has requirement", "requirement use `only`", "requirement use `holds-relation`"),
+     capability("holding"), {}),
+    (("capability has requirement", "requirement use `count`", "requirement use `holds-relation`"),
+     capability("capping"), {}),
     (("requirement use `not-condition`",), requirement("negating"), {}),
     (("requirement use `bare-plural`",), requirement("plural"), {}),
     (("requirement use `option-set-to`",), requirement("optioned"), {}),
@@ -264,7 +268,7 @@ TABLE = [
     (("`model` not unify code",), capability("unpairable"), {"r5": "r1"}),
     (("requirement use `every`",), capability("exhaustive"), {}),
     (("capability has requirement", "requirement override requirement"), capability("overriding"), {}),
-    (("requirement override requirement",), requirement("overridden"), {"r4": "r2"}),
+    (("requirement override requirement",), requirement("overridden"), {"r3": "r2"}),
     (("universal condition forbid act",), capability("contravening"), {}),
     (("requirement permit act",), capability("forbidding"), {}),
     (("requirement add no consequence",), requirement("restating"), {}),
@@ -272,6 +276,7 @@ TABLE = [
     (("capability is `codified-2`",), capability("recodified"), {}),
     (("capability is `codified-1`",), capability("old"), {}),
     (("capability has requirement", "requirement conform language reference"), capability("recodified"), {}),
+    (("capability has requirement", "requirement has no translation"), capability("unread"), {"r1": "shelf#r1"}),
     (("no capability holds requirement id",), old(C.requirement, "requirement id", "r1", "nonexistent"), {}),
 ]
 

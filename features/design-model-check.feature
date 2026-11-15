@@ -818,8 +818,8 @@ Feature: Design model check
     And a requirement r1
     And the requirement r2 overrides the requirement r1
     When the person runs `model explain` on the requirement r1
-    Then the requirement r4 uses the refusal r3
-    And `model` prints the requirement r4
+    Then `model` prints the requirement r3
+    And the requirement r3 uses the refusal r4
 
   @g264 @r264
   Scenario: `model explain` refuses an id that no capability holds

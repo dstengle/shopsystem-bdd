@@ -391,6 +391,62 @@ shall [x2: agent the person (constant), x3: command `features generate` (paramet
     print(e3, subject: x4, object: x5)
 ```
 
+## r111
+From: b268 r111. A new line: what a requirement says of a referent its act brings in is written after the act.
+
+```reading
+While an act of a requirement of a capability brings in a referent, when the person runs `features generate` on the capability, `features` shall write a description of the referent that follows the act and not write a description of the referent that precedes the act.
+shall [x5: agent the person (constant), x6: command `features generate` (parameter), x7: tool `features` (constant)]
+  while [x1: act, x2: requirement, x3: capability, x4: referent]
+    of(x2, x3)
+    of(x1, x2)
+    bring in(subject: x1, object: x4)
+  when
+    run(e1, subject: x5, object: x6, on: x3)
+  response [x8: description]
+    of(x8, x4)
+    follow(subject: x8, object: x1)
+    write(e2, subject: x7, object: x8)
+    not [x9: description]
+      of(x9, x4)
+      precede(subject: x9, object: x1)
+      write(e3, subject: x7, object: x9)
+```
+
+## r112
+From: b272 (a count over a row of a response's object written). Not in the audit (b272 is no reword item).
+
+```reading
+While a requirement of a capability uses `count` and the requirement uses `holds-relation`, when the person runs `features generate` on the capability, `features` shall write a scenario that uses `count`.
+shall [x3: thing `count` (constant), x4: thing `holds-relation` (parameter), x5: agent the person (constant), x6: command `features generate` (parameter), x7: tool `features` (constant)]
+  while [x1: requirement, x2: capability]
+    of(x1, x2)
+    use#2(subject: x1, object: x3)
+    use#2(subject: x1, object: x4)
+  when
+    run(e1, subject: x5, object: x6, on: x2)
+  response [x8: scenario]
+    use#2(subject: x8, object: x3)
+    write(e2, subject: x7, object: x8)
+```
+
+## r113
+From: b272 (only over a row of a response's object written). Not in the audit (b272 is no reword item).
+
+```reading
+While a requirement of a capability uses `only` and the requirement uses `holds-relation`, when the person runs `features generate` on the capability, `features` shall write a scenario that uses `only`.
+shall [x3: thing `only` (constant), x4: thing `holds-relation` (parameter), x5: agent the person (constant), x6: command `features generate` (parameter), x7: tool `features` (constant)]
+  while [x1: requirement, x2: capability]
+    of(x1, x2)
+    use#2(subject: x1, object: x3)
+    use#2(subject: x1, object: x4)
+  when
+    run(e1, subject: x5, object: x6, on: x2)
+  response [x8: scenario]
+    use#2(subject: x8, object: x3)
+    write(e2, subject: x7, object: x8)
+```
+
 ## r120
 From: b274 r111. Not in the audit (b274 is no reword item).
 

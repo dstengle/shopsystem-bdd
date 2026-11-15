@@ -1708,7 +1708,14 @@ Nothing new is said here; these are the shapes the check or the steps had no rea
 - "every K that no K2 Vs" and "every K that x does not V" in a response (the audit's "every function of the Python
   file that no test executes") are, in the check, a negated restriction of the object as "whose T is not v" is
   (`onrel`: it agrees only with the same restriction on the other line's object), and in the steps a Given said of
-  "no K2" for each K brought in.
+  "no K2" for each K brought in;
+- "V a K that holds only K2s that P" and "V a K that holds at most n K2s" (`only` and `count` over the row or state
+  of a response's object, R5 and R7, `holds-relation`) are, in the check, restrictions of that object it keeps and
+  proves nothing of (`oonly`, `ocount`, decision 0093): they oblige no act of their own, agree with any line on the
+  act and clash with nothing, and a Then on such an object is never asked of the entailment check; in the steps, the
+  Then is the property said of the object, "the worktree w1 holds only files whose version is `2.0.0`", "the
+  worktree w1 holds at most three files" (b272). `model logic` prints each line it has no translation of, `unread
+  <id>: <what it cannot read>`, and never `no findings` beside one.
 
 ```reading
 While a stage covers a line, when the person runs `work start`, `work` shall end the stage.
@@ -1849,6 +1856,31 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x4
         follow(subject: x3, object: x5)
       scope
         print(e2, subject: x4, object: x5)
+```
+
+```reading
+When the person runs `work start`, `work` shall print a worktree that holds only files whose version is `2.0.0`.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response [x4: worktree]
+    only [x5: file]
+      version(x5) = `2.0.0`
+      scope
+        in(x5, x4)
+    print(e2, subject: x3, object: x4)
+```
+
+```reading
+When the person runs `work start`, `work` shall print a worktree that holds at most three files.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response [x4: worktree]
+    count at most 3 [x5: file]
+      scope
+        in(x5, x4)
+    print(e2, subject: x3, object: x4)
 ```
 
 ## What the language cannot say yet
