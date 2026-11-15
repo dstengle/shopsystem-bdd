@@ -1,0 +1,159 @@
+=== c1
+wrote features/c1.feature
+# generated from spec/capabilities/c1.md by features generate; do not edit
+Feature: C1
+  Narrator: the tool `work`
+
+  @g1 @r1
+  Scenario: every in response
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And an item i2
+    And the status of the item i2 is `ready`
+    When the person runs `work batch start`
+    Then the batch b1 holds the item i1
+    And the batch b1 holds the item i2
+    And `work` prints the batch b1
+=== c2
+wrote features/c2.feature
+# generated from spec/capabilities/c2.md by features generate; do not edit
+Feature: C2
+  Narrator: the tool `work`
+
+  @g1 @r1
+  Scenario: membership condition
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    When the person runs `work batch status`
+    Then `work` prints the item i1
+=== c3
+wrote features/c3.feature
+# generated from spec/capabilities/c3.md by features generate; do not edit
+Feature: C3
+  Narrator: the tool `work`
+
+  @g1 @r1
+  Scenario: empty
+    Given a batch b1
+    And the batch b1 holds no item
+    When the person runs `work batch status`
+    Then `work` prints the batch b1
+=== c4
+features: c4#r1: refused: no translation of only over that
+=== c5
+features: c5#r1: refused: no translation of a count over that
+=== c6
+wrote features/c6.feature
+# generated from spec/capabilities/c6.md by features generate; do not edit
+Feature: C6
+  Narrator: the tool `work`
+
+  @g1 @r1
+  Scenario: at least cond
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And an item i2
+    And the batch b1 holds the item i2
+    When the person runs `work batch status`
+    Then `work` prints the batch b1
+=== c7
+wrote features/c7.feature
+# generated from spec/capabilities/c7.md by features generate; do not edit
+Feature: C7
+  Narrator: the tool `work`
+
+  @g1 @r1
+  Scenario: exactly print
+    Given a batch b1
+    And an item i1
+    And an item i2
+    And an item i3
+    When the person runs `work batch status` on the batch b1
+    Then `work` prints the item i1
+    And `work` prints the item i2
+    And `work` prints the item i3
+=== c8
+wrote features/c8.feature
+# generated from spec/capabilities/c8.md by features generate; do not edit
+Feature: C8
+  Narrator: the tool `work`
+
+  @g1 @r1
+  Scenario: number printed
+    Given a batch b1
+    And an item i1
+    And the batch b1 holds the item i1
+    And an item i2
+    And the batch b1 holds the item i2
+    When the person runs `work batch status` on the batch b1
+    Then `work` prints the number of items in the batch b1
+=== c9
+wrote features/c9.feature
+# generated from spec/capabilities/c9.md by features generate; do not edit
+Feature: C9
+  Narrator: the tool `work`
+
+  @g1 @r1
+  Scenario: number compared
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And an item i2
+    And the batch b1 holds the item i2
+    And an item i3
+    And the batch b1 holds the item i3
+    And an item i4
+    And the batch b1 holds the item i4
+    And an item i5
+    And the batch b1 holds the item i5
+    When the person runs `work batch status`
+    Then `work` prints the batch b1
+=== c10
+wrote features/c10.feature
+# generated from spec/capabilities/c10.md by features generate; do not edit
+Feature: C10
+  Narrator: the tool `work`
+
+  @g1 @r1
+  Scenario: every cond
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And an item i2
+    And the batch b1 holds the item i2
+    And the status of the item i2 is `ready`
+    When the person runs `work batch status`
+    Then `work` prints the batch b1
+=== c11
+wrote features/c11.feature
+# generated from spec/capabilities/c11.md by features generate; do not edit
+Feature: C11
+  Narrator: the tool `work`
+
+  @g1 @r1
+  Scenario: every printed
+    Given a batch b1
+    And an item i1
+    And the batch b1 holds the item i1
+    And an item i2
+    And the batch b1 holds the item i2
+    When the person runs `work batch status` on the batch b1
+    Then `work` prints the item i1
+    And `work` prints the item i2
+=== c12
+wrote features/c12.feature
+# generated from spec/capabilities/c12.md by features generate; do not edit
+Feature: C12
+  Narrator: the tool `work`
+
+  @g1 @r1
+  Scenario: two
+    When the person runs `work batch status`
+    Then `work` prints the item i1
+    And `work` prints the item i2
+=== c13
+features: c13#r1: refused: "the batch" has no antecedent: a batch is made inside "exactly zero items ...", which gives nothing outside it
+=== c14
+features: c14#r1: refused: no translation of a count over that

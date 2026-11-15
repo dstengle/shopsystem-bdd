@@ -1,0 +1,65 @@
+=== c15
+wrote features/c15.feature
+  @g1 @r1
+  Scenario: empty
+    Given a batch b1
+    And an item i1
+    And the batch b1 holds the item i1
+    When the person runs `work batch status` on the batch b1
+    Then `work` prints the item i1
+=== c16
+wrote features/c16.feature
+  @g1 @r1
+  Scenario: empty
+    Given a batch b1
+    And an item i1
+    And the batch b1 holds the item i1
+    And an item i2
+    And the batch b1 holds the item i2
+    And an item i3
+    And the batch b1 does not hold the item i3
+    When the person runs `work batch status` on the batch b1
+    Then `work` prints the item i1
+    And `work` prints the item i2
+    And `work` does not print the item i3
+=== c17
+features: c17#r1: refused: no translation of a negated restriction (not) on an object
+=== c18
+wrote features/c18.feature
+  @g1 @r1
+  Scenario: empty
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    When the person runs `work batch status` on the batch b1
+    Then `work` prints the batch b1
+=== c19
+wrote features/c19.feature
+  @g1 @r1
+  Scenario: empty
+    When the person runs `work batch start`
+    Then the batch b1 holds the item i1
+    And the batch b1 holds the item i2
+    And `work` prints the batch b1
+=== c20
+wrote features/c20.feature
+  @g1 @r1
+  Scenario: empty
+    Given an item i1
+    When the person runs `work batch status`
+    Then `work` prints the item i1
+=== c21
+wrote features/c21.feature
+  @g1 @r1
+  Scenario: empty
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    When the person runs `work batch status` on the batch b1
+    Then `work` prints the batch b1
+=== c22
+wrote features/c22.feature
+  @g1 @r1
+  Scenario: empty
+    Given a batch b1
+    When the person runs `work batch status` on the batch b1
+    Then `work` prints the batch b1

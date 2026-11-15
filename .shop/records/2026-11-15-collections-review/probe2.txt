@@ -1,0 +1,9 @@
+While a batch holds an item and the number of items in the batch is more than three, when the person runs `work batch status`, `work` shall print the batch.
+While a batch holds an item and every item in the batch is `ready`, when the person runs `work batch status`, `work` shall print the batch.
+When the person runs `work batch status` on a batch, `work` shall print every item in the batch.
+When the person runs `work batch status` on a batch, `work` shall print the number of items in the batch.
+When the person runs `work batch status` on a batch, `work` shall print every item that the batch holds and print no other item.
+When the person runs `work batch status` on a batch, `work` shall print exactly three items.
+When the person runs `work batch status` on a batch, `work` shall print two items.
+When the person runs `work batch status` on a batch, `work` shall print an item twice.
+When the person runs `work batch status` on a batch, `work` shall print the highest score.

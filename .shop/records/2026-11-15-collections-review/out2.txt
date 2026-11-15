@@ -1,0 +1,124 @@
+=== While a batch is `building` and the number of items in the batch is `0`, when the person runs `work batch status` on the batch, `work` shall print the batch.
+shall [x3: agent the person (constant), x4: command `work batch status` (parameter), x5: tool `work` (constant)]
+  while [x1: batch]
+    status(x1) = `building`
+    count exactly 0 [x2: item]
+      in(x2, x1)
+  when
+    run(e1, subject: x3, object: x4, on: x1)
+  response
+    print(e2, subject: x5, object: x1)
+=== When the person runs `work batch status` on a batch, `work` shall print every item in the batch and not print an item that the batch does not hold.
+shall [x1: agent the person (constant), x2: command `work batch status` (parameter), x4: tool `work` (constant)]
+  when [x3: batch]
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    every [x5: item]
+      in(x5, x3)
+      scope
+        print(e2, subject: x4, object: x5)
+    not [x6: item]
+      not
+        in(x6, x3)
+      print(e3, subject: x4, object: x6)
+=== When the person runs `work batch status` on a batch, `work` shall print only items in the batch.
+shall [x1: agent the person (constant), x2: command `work batch status` (parameter), x4: tool `work` (constant)]
+  when [x3: batch]
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    only [x5: item]
+      in(x5, x3)
+      scope
+        print(e2, subject: x4, object: x5)
+=== When the person runs `work batch status` on a batch, `work` shall not print an item that the batch does not hold.
+shall [x1: agent the person (constant), x2: command `work batch status` (parameter), x4: tool `work` (constant)]
+  when [x3: batch]
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    not [x5: item]
+      not
+        in(x5, x3)
+      print(e2, subject: x4, object: x5)
+=== While an item in a batch is `ready`, when the person runs `work batch status`, `work` shall print the item.
+shall [x3: agent the person (constant), x4: command `work batch status` (parameter), x5: tool `work` (constant)]
+  while [x1: item, x2: batch]
+    in(x1, x2)
+    status(x1) = `ready`
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    print(e2, subject: x5, object: x1)
+=== When the person runs `work batch start`, `work` shall print a batch that holds two items.
+shall [x1: agent the person (constant), x2: command `work batch start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response [x4: batch, x5: item, x6: item]
+    in(x5, x4)
+    distinct(x6, x5)
+    in(x6, x4)
+    print(e2, subject: x3, object: x4)
+=== While every item in a batch is `ready`, when the person runs `work batch status` on the batch, `work` shall print the batch.
+refused: "the batch" has no antecedent: a batch is made inside "every item ...", which gives nothing outside it
+=== When the person runs `work batch status` on a batch, `work` shall print every item in the batch whose status is `ready`.
+shall [x1: agent the person (constant), x2: command `work batch status` (parameter), x4: tool `work` (constant)]
+  when [x3: batch]
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    every [x5: item]
+      in(x5, x3)
+      status(x5) = `ready`
+      scope
+        print(e2, subject: x4, object: x5)
+=== While the release of a repository is after `0.34.1`, when the person runs `migrate status`, `migrate` shall print the repository.
+shall [x2: agent the person (constant), x3: command `migrate status` (parameter), x4: tool `migrate` (constant)]
+  while [x1: repository]
+    cmp(release(x1)) after `0.34.1`
+  when
+    run(e1, subject: x2, object: x3)
+  response
+    print(e2, subject: x4, object: x1)
+=== While the release of a repository is after the release of an upgrade step, when the person runs `migrate status`, `migrate` shall print the repository.
+does not parse at the (token 9 of 27)
+  parsed up to: While the release of a repository is after
+  nearest words: batches
+=== When the person runs `work batch status`, `work` shall print every item whose status is `ready` and not print an item whose status is not `ready`.
+shall [x1: agent the person (constant), x2: command `work batch status` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response
+    every [x4: item]
+      status(x4) = `ready`
+      scope
+        print(e2, subject: x3, object: x4)
+    not [x5: item]
+      not
+        status(x5) = `ready`
+      print(e3, subject: x3, object: x5)
+=== While a batch holds exactly one item, when the person runs `work batch status` on the batch, `work` shall print the batch.
+shall [x3: agent the person (constant), x4: command `work batch status` (parameter), x5: tool `work` (constant)]
+  while [x1: batch]
+    count exactly 1 [x2: item]
+      scope
+        in(x2, x1)
+  when
+    run(e1, subject: x3, object: x4, on: x1)
+  response
+    print(e2, subject: x5, object: x1)
+=== When the person runs `work batch start`, `work` shall print a batch that holds no item whose status is not `ready`.
+shall [x1: agent the person (constant), x2: command `work batch start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response [x4: batch]
+    not [x5: item]
+      not
+        status(x5) = `ready`
+      in(x5, x4)
+    print(e2, subject: x3, object: x4)
+=== When the person runs `work batch status`, `work` shall print one item.
+shall [x1: agent the person (constant), x2: command `work batch status` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response
+    count exactly 1 [x4: item]
+      scope
+        print(e2, subject: x3, object: x4)

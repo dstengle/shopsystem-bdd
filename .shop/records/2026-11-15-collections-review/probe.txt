@@ -1,0 +1,17 @@
+When the person runs `work batch start`, `work` shall print a batch that holds every item whose status is `ready`.
+When the person runs `work batch start`, `work` shall print a batch that holds only items whose status is `ready`.
+When the person runs `work batch start`, `work` shall print a batch that holds at most three items.
+When the person runs `work batch start`, `work` shall print a batch that holds exactly the items whose status is `ready`.
+While a batch holds an item, when the person runs `work batch status`, `work` shall print the item.
+While a batch holds no item, when the person runs `work batch status`, `work` shall print the batch.
+While the number of items in the batch is more than three, when the person runs `work batch status`, `work` shall print the batch.
+While the number of items of a batch is more than three, when the person runs `work batch status`, `work` shall print the batch.
+While every item in a batch is `ready`, when the person runs `work batch status`, `work` shall print the batch.
+While a batch holds at least two items, when the person runs `work batch status`, `work` shall print the batch.
+When the person runs `work batch status`, `work` shall print the number of items in the batch.
+When the person runs `work batch status`, `work` shall print every item in the batch.
+While an item is in a batch, when the person runs `work batch status`, `work` shall print the item.
+While a batch does not hold an item, when the person runs `work batch status`, `work` shall print the item.
+When the person runs `work backlog`, `work` shall print every item, ordered by score, in descending order.
+While the release of a repository is after the release of the plugin, when the person runs `migrate status`, `migrate` shall print the release.
+When the person runs `work backlog`, `work` shall print the first item.

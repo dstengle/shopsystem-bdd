@@ -1,0 +1,30 @@
+When the person runs `work batch start`, `work` shall print a batch that holds every item whose status is `ready`.
+While a batch holds an item, when the person runs `work batch status`, `work` shall print the item.
+When the person runs `work batch start`, `work` shall print a batch that holds only items whose status is `ready`.
+When the person runs `work batch start`, `work` shall print a batch that holds at most three items.
+While a batch holds at least two items, when the person runs `work batch status`, `work` shall print the batch.
+When the person runs `work batch status` on a batch, `work` shall print exactly three items.
+When the person runs `work batch status` on a batch, `work` shall print the number of items in the batch.
+While a batch holds an item and the number of items in the batch is more than three, when the person runs `work batch status`, `work` shall print the batch.
+While a batch holds an item and every item in the batch is `ready`, when the person runs `work batch status`, `work` shall print the batch.
+When the person runs `work batch status` on a batch, `work` shall print every item in the batch.
+When the person runs `work batch status`, `work` shall print two items.
+When the person runs `work batch status`, `work` shall print every item, ordered by score, in descending order.
+When the person runs `work batch start`, `work` shall print a batch that holds exactly the items whose status is `ready`.
+When the person runs `work batch status` on a batch, `work` shall print every item that the batch holds and print no other item.
+While an item is in a batch, when the person runs `work batch status`, `work` shall print the item.
+When the person runs `work batch status`, `work` shall print the first item.
+When the person runs `work batch status`, `work` shall print the highest score.
+When the person runs `work batch status`, `work` shall print every item with its title.
+When the person runs `work batch status`, `work` shall print the number of items of a batch.
+While a batch holds no thing, when the person runs `work batch status`, `work` shall print the batch.
+While no item is in a batch, when the person runs `work batch status`, `work` shall print the batch.
+While the number of items in a batch is `0`, when the person runs `work batch status`, `work` shall print the batch.
+While the number of items in a batch is zero, when the person runs `work batch status`, `work` shall print the batch.
+When the person runs `work batch status` on a batch, `work` shall print every item that the batch holds.
+When the person runs `work batch status` on a batch, `work` shall print only items that the batch holds.
+When the person runs `work batch status` on a batch, `work` shall print the batch and print every item in it.
+When the person runs `work batch start`, `work` shall print a batch that holds no item whose status is not `ready`.
+When the person runs `work batch status`, `work` shall print one item.
+When the person runs `work batch status`, `work` shall print at least two items.
+When the person runs `work batch status`, `work` shall print a different item.

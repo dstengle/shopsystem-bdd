@@ -1,0 +1,14 @@
+While a batch is `building` and the number of items in the batch is `0`, when the person runs `work batch status` on the batch, `work` shall print the batch.
+When the person runs `work batch status` on a batch, `work` shall print every item in the batch and not print an item that the batch does not hold.
+When the person runs `work batch status` on a batch, `work` shall print only items in the batch.
+When the person runs `work batch status` on a batch, `work` shall not print an item that the batch does not hold.
+While an item in a batch is `ready`, when the person runs `work batch status`, `work` shall print the item.
+When the person runs `work batch start`, `work` shall print a batch that holds two items.
+While every item in a batch is `ready`, when the person runs `work batch status` on the batch, `work` shall print the batch.
+When the person runs `work batch status` on a batch, `work` shall print every item in the batch whose status is `ready`.
+While the release of a repository is after `0.34.1`, when the person runs `migrate status`, `migrate` shall print the repository.
+While the release of a repository is after the release of an upgrade step, when the person runs `migrate status`, `migrate` shall print the repository.
+When the person runs `work batch status`, `work` shall print every item whose status is `ready` and not print an item whose status is not `ready`.
+While a batch holds exactly one item, when the person runs `work batch status` on the batch, `work` shall print the batch.
+When the person runs `work batch start`, `work` shall print a batch that holds no item whose status is not `ready`.
+When the person runs `work batch status`, `work` shall print one item.

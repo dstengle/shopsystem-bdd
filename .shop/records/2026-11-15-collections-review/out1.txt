@@ -1,0 +1,208 @@
+=== When the person runs `work batch start`, `work` shall print a batch that holds every item whose status is `ready`.
+shall [x1: agent the person (constant), x2: command `work batch start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response [x4: batch]
+    every [x5: item]
+      status(x5) = `ready`
+      scope
+        in(x5, x4)
+    print(e2, subject: x3, object: x4)
+=== While a batch holds an item, when the person runs `work batch status`, `work` shall print the item.
+shall [x3: agent the person (constant), x4: command `work batch status` (parameter), x5: tool `work` (constant)]
+  while [x1: batch, x2: item]
+    in(x2, x1)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    print(e2, subject: x5, object: x2)
+=== When the person runs `work batch start`, `work` shall print a batch that holds only items whose status is `ready`.
+shall [x1: agent the person (constant), x2: command `work batch start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response [x4: batch]
+    only [x5: item]
+      status(x5) = `ready`
+      scope
+        in(x5, x4)
+    print(e2, subject: x3, object: x4)
+=== When the person runs `work batch start`, `work` shall print a batch that holds at most three items.
+shall [x1: agent the person (constant), x2: command `work batch start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response [x4: batch]
+    count at most 3 [x5: item]
+      scope
+        in(x5, x4)
+    print(e2, subject: x3, object: x4)
+=== While a batch holds at least two items, when the person runs `work batch status`, `work` shall print the batch.
+shall [x3: agent the person (constant), x4: command `work batch status` (parameter), x5: tool `work` (constant)]
+  while [x1: batch]
+    count at least 2 [x2: item]
+      scope
+        in(x2, x1)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    print(e2, subject: x5, object: x1)
+=== When the person runs `work batch status` on a batch, `work` shall print exactly three items.
+shall [x1: agent the person (constant), x2: command `work batch status` (parameter), x4: tool `work` (constant)]
+  when [x3: batch]
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    count exactly 3 [x5: item]
+      scope
+        print(e2, subject: x4, object: x5)
+=== When the person runs `work batch status` on a batch, `work` shall print the number of items in the batch.
+shall [x1: agent the person (constant), x2: command `work batch status` (parameter), x4: tool `work` (constant)]
+  when [x3: batch]
+    run(e1, subject: x1, object: x2, on: x3)
+  response [x5: number]
+    number x5 of [x6: item]
+      in(x6, x3)
+    print(e2, subject: x4, object: x5)
+=== While a batch holds an item and the number of items in the batch is more than three, when the person runs `work batch status`, `work` shall print the batch.
+shall [x4: agent the person (constant), x5: command `work batch status` (parameter), x6: tool `work` (constant)]
+  while [x1: batch, x2: item]
+    in(x2, x1)
+    count more than 3 [x3: item]
+      in(x3, x1)
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    print(e2, subject: x6, object: x1)
+=== While a batch holds an item and every item in the batch is `ready`, when the person runs `work batch status`, `work` shall print the batch.
+shall [x4: agent the person (constant), x5: command `work batch status` (parameter), x6: tool `work` (constant)]
+  while [x1: batch, x2: item]
+    in(x2, x1)
+    every [x3: item]
+      in(x3, x1)
+      scope
+        status(x3) = `ready`
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    print(e2, subject: x6, object: x1)
+=== When the person runs `work batch status` on a batch, `work` shall print every item in the batch.
+shall [x1: agent the person (constant), x2: command `work batch status` (parameter), x4: tool `work` (constant)]
+  when [x3: batch]
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    every [x5: item]
+      in(x5, x3)
+      scope
+        print(e2, subject: x4, object: x5)
+=== When the person runs `work batch status`, `work` shall print two items.
+shall [x1: agent the person (constant), x2: command `work batch status` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response [x4: item, x5: item]
+    print(e2, subject: x3, object: x4)
+    distinct(x5, x4)
+    print(e3, subject: x3, object: x5)
+=== When the person runs `work batch status`, `work` shall print every item, ordered by score, in descending order.
+does not parse at ordered (token 13 of 20)
+  parsed up to: When the person runs `work batch status`, `work` shall print every item,
+  nearest words: retired, referred, countered, worker, merged
+  may follow: `L1`, `L7`, `L8`, `clingo`, `coverage`, `features`, `gf-rgl`, `holds no version`, `jedi`, `measure`, `migrate`, `model`, `no upgrade step is pending`, `only on the person's yes`, `pr-reviewer`, `ruff`, `tools`, `trial-runner`, `universal`, `update the plugin`, `vulture`, `work`, `work run`, act, agent, answer, antecedent, artifact, ask, backlog, batch, binding, by-phrase, capability, capability-proposal, change, check, close, code, command, comment, commit, compaction, consequence, construct, content, corpus, cost, count, defect, dependency, design-decision, discard, dispatch, docstring, draft, end, entry, exit, fact, feature, file, finding, fragment, frame, function, give, glossary-proposal, handler, heading, identifier, id, initiative, install, interpreter, issue, item, job, keep, ledger, log, make, measurement, merge, message, module, name, node, note, number, object, observation, option, output, pack, parse, perfect, pick, plan, post, precondition, preposition, print, proposal, publish, push, qualifier, question, quote, ratio, read, reason, recipient, record, reference, refusal, refuse, relocate, remote, remove, rename, replace, replacement, reply, report, repository, request, requirement, resolution, result, review, rewrite, role, round, route, rule, run, scenario, section, sense, session, stage, stem, step, subdirectory, subject, tag, take, target, task, term, test, text, thing, title, token, tool, transcript, transition, translate, trial, trigger, turn, unit, use, verb, version, violation, work-item, worker, worktree, write
+=== When the person runs `work batch start`, `work` shall print a batch that holds exactly the items whose status is `ready`.
+does not parse at the (token 15 of 21)
+  parsed up to: When the person runs `work batch start`, `work` shall print a batch that holds exactly
+  nearest words: batches
+  may follow: (none)
+=== When the person runs `work batch status` on a batch, `work` shall print every item that the batch holds and print no other item.
+does not parse at other (token 22 of 24)
+  parsed up to: When the person runs `work batch status` on a batch, `work` shall print every item that the batch holds and print no
+  nearest words: tier, term, note, counter, counters
+  may follow: act, agent, answer, antecedent, artifact, backlog, batch, binding, by-phrase, capability, capability-proposal, check, code, command, comment, commit, compaction, consequence, construct, content, corpus, cost, count, defect, dependency, design-decision, dispatch, docstring, draft, entry, fact, feature, file, finding, fragment, frame, function, glossary-proposal, handler, heading, id, identifier, initiative, interpreter, issue, item, job, ledger, measurement, message, module, node, note, number, object, observation, option, output, pack, parse, perfect, plan, precondition, preposition, proposal, push, qualifier, question, quote, ratio, reason, recipient, record, reference, refusal, remote, replacement, reply, report, repository, request, requirement, resolution, result, review, role, round, route, rule, scenario, section, sense, session, stage, stem, step, subdirectory, subject, tag, target, task, term, test, text, thing, title, token, tool, transcript, transition, trial, trigger, turn, unit, verb, version, violation, work-item, worker, worktree
+=== While an item is in a batch, when the person runs `work batch status`, `work` shall print the item.
+does not parse at in (token 5 of 20)
+  parsed up to: While an item is
+  nearest words: in, pin, pins, kind, bind
+  may follow: (none)
+=== When the person runs `work batch status`, `work` shall print the first item.
+does not parse at first (token 11 of 13)
+  parsed up to: When the person runs `work batch status`, `work` shall print the
+  nearest words: list, lists, files, fails
+  may follow: aspect
+=== When the person runs `work batch status`, `work` shall print the highest score.
+does not parse at highest (token 11 of 13)
+  parsed up to: When the person runs `work batch status`, `work` shall print the
+  nearest words: things
+  may follow: aspect
+=== When the person runs `work batch status`, `work` shall print every item with its title.
+does not parse at with (token 12 of 15)
+  parsed up to: When the person runs `work batch status`, `work` shall print every item
+  nearest words: with, write, writes
+  may follow: dependency, provenance, scenario, size, status, task, urgency, value
+=== When the person runs `work batch status`, `work` shall print the number of items of a batch.
+=== While a batch holds no thing, when the person runs `work batch status`, `work` shall print the batch.
+does not parse at thing (token 6 of 19)
+  parsed up to: While a batch holds no
+  nearest words: thing, things, this, setting, heading
+  may follow: finding, item
+=== While no item is in a batch, when the person runs `work batch status`, `work` shall print the batch.
+does not parse at in (token 5 of 20)
+  parsed up to: While no item is
+  nearest words: in, pin, pins, kind, bind
+  may follow: (none)
+=== While the number of items in a batch is `0`, when the person runs `work batch status`, `work` shall print the batch.
+refused: "the batch" has no antecedent: a batch is made inside "exactly zero items ...", which gives nothing outside it
+  tree: When (While (OneCond (Count_Cmp (k_item_NumberOf (r15_in_Mod k_item_n (k_batch_Simple (k_batch_Det DetA (k_batch_UseN k_batch_n))))) Count_OpIs (Count_Code (CodeLit "`0`"))))) (k_agent_Event (k_agent_One (k_agent_Simple a_the_person_1)) (e_run_action_1_1 (k_command_One (k_command_Code (CodeLit "`workbatchstatus`"))))) (OneResp (k_tool_Shall a_work_3 (k_tool_OneAct (k_tool_Act_k_tool PPos (e_print_action_2_1 (k_thing_One (k_batch_Up_k_thing (k_batch_Det DetThe (k_batch_UseN k_batch_n)))))))))
+=== While the number of items in a batch is zero, when the person runs `work batch status`, `work` shall print the batch.
+does not parse at zero (token 10 of 23)
+  parsed up to: While the number of items in a batch is
+  nearest words: (none)
+  may follow: (none)
+=== When the person runs `work batch status` on a batch, `work` shall print every item that the batch holds.
+shall [x1: agent the person (constant), x2: command `work batch status` (parameter), x4: tool `work` (constant)]
+  when [x3: batch]
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    every [x5: item]
+      in(x5, x3)
+      scope
+        print(e2, subject: x4, object: x5)
+=== When the person runs `work batch status` on a batch, `work` shall print only items that the batch holds.
+shall [x1: agent the person (constant), x2: command `work batch status` (parameter), x4: tool `work` (constant)]
+  when [x3: batch]
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    only [x5: item]
+      in(x5, x3)
+      scope
+        print(e2, subject: x4, object: x5)
+=== When the person runs `work batch status` on a batch, `work` shall print the batch and print every item in it.
+does not parse at it (token 20 of 21)
+  parsed up to: When the person runs `work batch status` on a batch, `work` shall print the batch and print every item in
+  nearest words: its, with, unit, omit, list
+  may follow: batch
+=== When the person runs `work batch start`, `work` shall print a batch that holds no item whose status is not `ready`.
+shall [x1: agent the person (constant), x2: command `work batch start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response [x4: batch]
+    not [x5: item]
+      not
+        status(x5) = `ready`
+      in(x5, x4)
+    print(e2, subject: x3, object: x4)
+=== When the person runs `work batch status`, `work` shall print one item.
+shall [x1: agent the person (constant), x2: command `work batch status` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response
+    count exactly 1 [x4: item]
+      scope
+        print(e2, subject: x3, object: x4)
+=== When the person runs `work batch status`, `work` shall print at least two items.
+shall [x1: agent the person (constant), x2: command `work batch status` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response
+    count at least 2 [x4: item]
+      scope
+        print(e2, subject: x3, object: x4)
+=== When the person runs `work batch status`, `work` shall print a different item.
+refused: "a different item" has no antecedent: no earlier noun phrase gives an item
+  tree: When NoPre (k_agent_Event (k_agent_One (k_agent_Simple a_the_person_1)) (e_run_action_1_1 (k_command_One (k_command_Code (CodeLit "`workbatchstatus`"))))) (OneResp (k_tool_Shall a_work_3 (k_tool_OneAct (k_tool_Act_k_tool PPos (e_print_action_2_1 (k_thing_One (k_item_Up_k_thing (k_item_Det DetDifferent (k_item_UseN k_item_n)))))))))
