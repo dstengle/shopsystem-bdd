@@ -146,13 +146,13 @@ def cmd_lexicon(args):
 
 
 def cmd_logic(args):
-    """The temporal check: spec_solve's findings and its report."""
+    """The temporal check: spec_solve's findings, the requirements it has no translation of, and its report."""
     try:
         import spec_solve
     except ImportError:
         print("model logic needs scripts/spec_solve.py (the logic check), which this plugin lacks")
         return 2
     findings = spec_solve.run(args.root, capability=args.capability)
-    text, code = spec_solve.report(findings, args.json)
+    text, code = spec_solve.report(findings, args.json, spec_solve.unread(args.root, args.capability))
     print(text, end="" if text.endswith("\n") else "\n")
     return code
