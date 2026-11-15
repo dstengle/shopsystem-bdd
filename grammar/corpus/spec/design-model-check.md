@@ -1583,3 +1583,53 @@ shall [x1: agent the person (constant), x2: command `model check` (parameter), x
     refuse(e2, subject: x4, object: x2)
     name(e3, subject: x4, object: x5)
 ```
+
+## r288
+From: b272 (only over a row of a response's object translated). Not in the audit (b272 is no reword item).
+
+```reading
+While a requirement of a capability uses `only` and the requirement uses `holds-relation`, when the person runs `model logic` on the capability, `model` shall translate the requirement.
+shall [x3: thing `only` (constant), x4: thing `holds-relation` (parameter), x5: agent the person (constant), x6: command `model logic` (parameter), x7: tool `model` (constant)]
+  while [x1: requirement, x2: capability]
+    of(x1, x2)
+    use#2(subject: x1, object: x3)
+    use#2(subject: x1, object: x4)
+  when
+    run(e1, subject: x5, object: x6, on: x2)
+  response
+    translate(e2, subject: x7, object: x1)
+```
+
+## r289
+From: b272 (a count over a row of a response's object translated). Not in the audit (b272 is no reword item).
+
+```reading
+While a requirement of a capability uses `count` and the requirement uses `holds-relation`, when the person runs `model logic` on the capability, `model` shall translate the requirement.
+shall [x3: thing `count` (constant), x4: thing `holds-relation` (parameter), x5: agent the person (constant), x6: command `model logic` (parameter), x7: tool `model` (constant)]
+  while [x1: requirement, x2: capability]
+    of(x1, x2)
+    use#2(subject: x1, object: x3)
+    use#2(subject: x1, object: x4)
+  when
+    run(e1, subject: x5, object: x6, on: x2)
+  response
+    translate(e2, subject: x7, object: x1)
+```
+
+## r290
+From: b272 (`model logic` names each requirement it has no translation of). Not in the audit (b272 is no reword item).
+
+```reading
+While a requirement of a capability has no translation, when the person runs `model logic` on the capability, `model` shall print the requirement and not print `no findings`.
+shall [x4: agent the person (constant), x5: command `model logic` (parameter), x6: tool `model` (constant), x7: text `no findings` (constant)]
+  while [x1: requirement, x2: capability]
+    of(x1, x2)
+    not [x3: translation]
+      of(x3, x1)
+  when
+    run(e1, subject: x4, object: x5, on: x2)
+  response
+    print(e2, subject: x6, object: x1)
+    not
+      print(e3, subject: x6, object: x7)
+```
