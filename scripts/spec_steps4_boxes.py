@@ -10,6 +10,8 @@ spec_steps4, whose Reader (`r`) they extend:
   "at most n" and "fewer than n" one past the most it admits (n + 1, n) with the Then on the last of them negated; a
   `not` over a response object's attribute ("a stage whose status is not `done`") a Given of the K that does not
   meet it, the K brought in;
+- "y holds nothing" a Given said of y, "y holds no K that is not P" in a response a K that is not P brought in and
+  the Then that y does not hold it (spec_lf_member, b274);
 - "the number of Ks that P" printed two Ks brought in, compared with a parameter the Given of the comparison
   (spec_lf_number, b240);
 - "the T of x" whose value is a referent (an image): no step of its own, the referent named "the T of x" where a
@@ -18,6 +20,7 @@ A box of any other shape is a TraceError naming it.
 """
 from dataclasses import replace
 
+import spec_lf_member
 import spec_lf_number
 import spec_lf_option
 import spec_rgl
@@ -54,6 +57,9 @@ def no(r, box):
     outside it ("the item i1 has no dependency"), else a value of its K ("no line is `accepted`"), which makes the
     box's state hold, unless another Given says the link of that thing."""
     atoms = [i for i in box.body if isinstance(i, Atom) and i.pred != "event"]
+    if len(atoms) == len(box.body) == 1 and spec_lf_member.nothing(atoms[0], box.refs):     # "holds nothing" (b274)
+        r.dets[box.refs[0]] = "DetNo"
+        return r.introduce(atoms[0]) + [("SCond", spec_lf_member.given(r, atoms[0], ("PPos",)))]
     if len(atoms) != len(box.body) or len(atoms) != 1:
         atoms, refs = link(r, box)
     else:
@@ -152,6 +158,9 @@ def acts(r, box, pos):
             r.bring_in(x)
         r.brought += r.given(box, pos)
         return []
+    absent = spec_lf_member.absent(r, box, bring) if box.op == "not" and pos else None
+    if absent is not None:      # "holds no K that is not P" (b274): a K that is not P, and y does not hold it
+        return absent
     raise TraceError("no Then of %s" % box.op)
 
 

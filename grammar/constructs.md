@@ -277,7 +277,7 @@ a condition that does not hold
 
 - Form: <subject> does not <verb> ...; ... is not <value>
 - Functions: `PNeg`
-- Cited by: design-model-check#r209
+- Cited by: design-model-check#r209, feature-file-tools#r120
 - Example and its reading:
 
 ```construct
@@ -554,7 +554,7 @@ each one
 
 - Form: every <noun>
 - Functions: `DetEvery`
-- Cited by: design-model-check#r248
+- Cited by: design-model-check#r248, feature-file-tools#r117, feature-file-tools#r114
 - Example and its reading:
 
 ```construct
@@ -631,7 +631,7 @@ a number of them, bounded
 
 - Form: at least|at most|exactly|more than|fewer than <number> <nouns>
 - Functions: `DetCount|AtLeast|AtMost|Exactly|MoreThan|FewerThan`
-- Cited by: design-model-check#r252
+- Cited by: design-model-check#r252, design-model-check#r289, feature-file-tools#r112, feature-file-tools#r112
 - Example and its reading:
 
 ```construct
@@ -731,7 +731,7 @@ two distinct ones
 
 - Form: two <nouns>
 - Functions: `DetTwo`
-- Cited by: no line
+- Cited by: feature-file-tools#r116
 - Example and its reading:
 
 ```construct
@@ -794,7 +794,7 @@ nothing but these
 
 - Form: only <np>
 - Functions: `k_\w+_Only`
-- Cited by: design-model-check#r236, design-model-check#r247
+- Cited by: design-model-check#r236, design-model-check#r247, design-model-check#r288, feature-file-tools#r113, feature-file-tools#r113, feature-file-tools#r118
 - Example and its reading:
 
 ```construct
@@ -848,21 +848,23 @@ shall [x1: agent the person (constant), x2: command "the command the run runs" (
 
 ## nothing
 
-no thing at all
+no thing at all: after change, and after holds of each kind a relation row "in" lets it hold
 
 - Form: nothing
 - Functions: `k_\w+_Nothing`
-- Cited by: no line
+- Cited by: design-model-check#r295, feature-file-tools#r121, feature-file-tools#r121
 - Example and its reading:
 
 ```construct
-If `work` refuses a command, then `work` shall change nothing.
-shall [x1: tool `work` (constant)]
-  if [x2: command]
-    refuse(e1, subject: x1, object: x2)
+While a worktree holds nothing, when the person runs `work start` on the worktree, `work` shall print the worktree.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: worktree]
+    not [x2: thing]
+      in(x2, x1)
+  when
+    run(e1, subject: x3, object: x4, on: x1)
   response
-    not [x3: thing]
-      change(e2, subject: x1, object: x3)
+    print(e2, subject: x5, object: x1)
 ```
 
 ## code
@@ -1003,7 +1005,7 @@ a state: the other noun of a relation row "in"
 
 - Form: <np> holds <np>
 - Functions: `r\d+_\w+_Holds`
-- Cited by: no line
+- Cited by: design-model-check#r288, design-model-check#r289, design-model-check#r292, feature-file-tools#r113, feature-file-tools#r112
 - Example and its reading:
 
 ```construct
@@ -1015,6 +1017,52 @@ shall [x4: tool `work` (constant)]
     write(e1, subject: x3, object: x2)
   response
     print(e2, subject: x4, object: x1)
+```
+
+## is-in
+
+a state: a relation row "in" said from the member's side, as holds-relation
+
+- Form: <np> is in <np>
+- Functions: `r\d+_\w+_In`
+- Cited by: design-model-check#r291, design-model-check#r292
+- Example and its reading:
+
+```construct
+While a file is in a worktree, when the person runs `work start` on the worktree, `work` shall print the file.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: file, x2: worktree]
+    in(x1, x2)
+  when
+    run(e1, subject: x3, object: x4, on: x2)
+  response
+    print(e2, subject: x5, object: x1)
+```
+
+## holds-exactly
+
+a state: every one that P is held and no one that is not P is, by a relation row "in"
+
+- Form: <np> holds exactly the <nouns> that|whose ...
+- Functions: `r\d+_\w+_Exactly`
+- Cited by: design-model-check#r293, design-model-check#r294, feature-file-tools#r120
+- Example and its reading:
+
+```construct
+When the person runs `work start`, `work` shall print a worktree that holds exactly the files whose version is `2.0.0`.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response [x4: worktree]
+    every [x5: file]
+      version(x5) = `2.0.0`
+      scope
+        in(x5, x4)
+    not [x6: file]
+      not
+        version(x6) = `2.0.0`
+      in(x6, x4)
+    print(e2, subject: x3, object: x4)
 ```
 
 ## attribute-of

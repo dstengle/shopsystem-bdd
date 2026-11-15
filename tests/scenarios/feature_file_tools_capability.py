@@ -7,6 +7,7 @@ before the command (`prepare`) and read by its Thens:
   context `grammar/corpus/constructs/`, three of its groups with a given block of example data (a docstring, a table
   and one value);
 - a capability one of whose steps a universal condition entails (r109): codified2_world's declining lines and U1;
+- a capability whose requirement uses a construct (b274): its catalogue example (feature_file_tools_uses);
 - else the capability of the example data, run on by no name.
 
 `has` (`the requirement group r3 has the scenario s1`: every group of the capability has its scenario in the feature;
@@ -34,6 +35,7 @@ def shared(name, file):
 
 
 W = shared("shop_feature_file_tools_world", "feature_file_tools_world.py")
+USES = shared("shop_feature_file_tools_uses", "feature_file_tools_uses.py")
 
 
 def _codified2():
@@ -78,7 +80,7 @@ def prepare(step):
         w["entailed"] = tuple(re.compile(p, re.MULTILINE) for p in C2.GENERATED["declining"])
     elif "conform" in verbs:
         w["groups"] = constructs(step.repo)
-    else:
+    elif not USES.prepare(step, w, W._write, NAME, PATH):     # a capability of one construct (b274)
         return []
     for c in [n for n, k in w["kinds"].items() if k == "capability"]:
         w["values"][c] = NAME

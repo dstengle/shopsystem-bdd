@@ -150,10 +150,12 @@ def exits_err(step):
 
 
 @W.own("ThenDoes", "write", registry=False)
-@W.own("ThenDoes", "refuse", "name", "has")
+@W.own("ThenDoes", "refuse", "name", "has", "use")
 def then_does(step):
     done, w = result(step), W.world(step)
-    if step.term == "refuse":
+    if step.term == "use":      # the step s2 uses `not-condition` (b274)
+        GEN.USES.uses(step, GEN.NAME)
+    elif step.term == "refuse":
         assert done.returncode != 0, done.stdout
     elif step.term == "name":
         assert said(step, step.nps[0]) in done.stdout + done.stderr, (step.nps[0], done.stdout, done.stderr)
