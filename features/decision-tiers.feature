@@ -38,8 +38,8 @@ Feature: Decision tiers
   @g21 @r21
   Scenario: `work decision` with `--verified-by` writes a route
     When the person runs `work decision` with the `--verified-by` option
-    Then the design-decision d1 has the route r1
-    And `work` writes the design-decision d1
+    Then `work` writes the design-decision d1
+    And the design-decision d1 has the route r1
     And `work` commits the design-decision d1
 
   @g22 @r22

@@ -277,8 +277,8 @@ now a Given of its own. Here is the scenario of the item's group `g2` with r9 an
     And a cart c1
     When the shopper s1 picks the cart c1
     Then the shopper s1 watches the till t1
-    And the till t2 is for the shopper s1
     And the shopper s1 watches the till t2
+    And the till t2 is for the shopper s1
 ```
 
 If your handlers are registered with the plugin's `handler` (`from vocab import handler`, in `world_*.py` and
