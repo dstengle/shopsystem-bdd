@@ -32,22 +32,22 @@ LINES = {
          [r"And the worktree w1 holds the file f4\n", r"Then `work` prints at most three files in the worktree w1\n"],
          [r"a file f5", r"print the file"])],
     "satisfy": [
-        ("While a stage has a line and every line of the stage is `accepted`, when the person runs `work status`, "
-         "`work` shall print the stage.",
+        (("While a stage has a line and every line of the stage is `accepted`, when the person runs `work status`, "
+         "`work` shall print the stage."),
          [r"And the outcome of the line l1 is `accepted`\n"], [r"line l2"])],
     "boundary": [
-        ("While a worktree holds at least two files, when the person runs `work status`, `work` shall print the "
-         "worktree.", 2),
-        ("While a worktree holds at most two files, when the person runs `work status`, `work` shall print the "
-         "worktree.", 2),
-        ("While a worktree holds exactly two files, when the person runs `work status`, `work` shall print the "
-         "worktree.", 2),
-        ("While a worktree holds more than two files, when the person runs `work status`, `work` shall print the "
-         "worktree.", 3),
-        ("While a worktree holds fewer than two files, when the person runs `work status`, `work` shall print the "
-         "worktree.", 1),
-        ("While a worktree holds a file and the number of files in the worktree is more than three, when the person "
-         "runs `work status`, `work` shall print the worktree.", 4)],
+        (("While a worktree holds at least two files, when the person runs `work status`, `work` shall print the "
+         "worktree."), 2),
+        (("While a worktree holds at most two files, when the person runs `work status`, `work` shall print the "
+         "worktree."), 2),
+        (("While a worktree holds exactly two files, when the person runs `work status`, `work` shall print the "
+         "worktree."), 2),
+        (("While a worktree holds more than two files, when the person runs `work status`, `work` shall print the "
+         "worktree."), 3),
+        (("While a worktree holds fewer than two files, when the person runs `work status`, `work` shall print the "
+         "worktree."), 1),
+        (("While a worktree holds a file and the number of files in the worktree is more than three, when the person "
+         "runs `work status`, `work` shall print the worktree."), 4)],
     "two": [
         ("When the person runs `work status`, `work` shall print two files.", [], []),
         ("When the person runs `work status`, `work` shall print a worktree that holds two files.", [], [])],
