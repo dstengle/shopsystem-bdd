@@ -21,6 +21,9 @@
 #defined ccount/4. #defined csig/5.  #defined csiga/5.  #defined distinct/3.
 #defined onrel/5.  #defined nobox/4. #defined nbrel/5.  #defined nbattr/6.
 #defined uscope/5. #defined uex/4.
+% "only" and a count over a row or a state on a response's object (b272, spec_lf_quant's `holding`): kept, read by no rule
+% (decision 0093: a requirement requires a standard operation, the check does not define it)
+#defined oonly/5.  #defined ocount/7. #defined yattr/4. #defined yrel/4.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
