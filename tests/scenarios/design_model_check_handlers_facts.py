@@ -78,6 +78,8 @@ def state(step):
     """`the requirement r1 uses the negation n1`: "requirement use negation"; negated, "not" before the verb."""
     verb = ("not " if step.template.endswith("Not") else "") + step.event
     remember(step, " ".join([phrase(step.subject), verb] + [phrase(np) for np in step.nps]))
+    if step.template.endswith("Not") and len(step.names) == 2:     # a counter-example's thing (b273), by its name
+        step.context.setdefault("outside", []).append(step.names[1])
 
 
 OWN = {"GivenDoes": ("add", "allow", "contradict", "exist", "forbid", "import", "lack", "oblige", "omit",
@@ -166,6 +168,10 @@ def prints(step):
     if step.template != "ThenPrintsNot":
         return False
     done = step.context["result"]
+    if step.nps and step.nps[0].startswith("the term "):     # a term the pack has not (b273): not shown as the pack's
+        for word in H.named(step):
+            assert not re.search(r"^\s*%s\s+\[pack " % re.escape(word), done.stdout, re.MULTILINE), done.stdout
+        return None
     for word in H.named(step):
         assert word not in done.stdout, (step.text, word, done.stdout)
     return None

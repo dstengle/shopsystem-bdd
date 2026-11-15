@@ -27,10 +27,14 @@ Feature: Readiness
     And a bar check b2
     And this readiness bar has the bar check b2
     And the item i1 does not meet the bar check b2
+    And a bar check b3
+    And the item i1 does not meet the bar check b3
+    And this readiness bar does not have the bar check b3
     When the person runs `work ready` on the item i1
     Then `work` refuses `work ready`
     And `work` names the bar check b1
     And `work` names the bar check b2
+    And `work` does not name the bar check b3
 
   @g25 @r25
   Scenario: `work ready` refuses an item that is not shaped

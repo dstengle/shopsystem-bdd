@@ -34,6 +34,7 @@ def shared(name, file):
 
 
 W = shared("shop_feature_file_tools_world", "feature_file_tools_world.py")
+COL = shared("shop_feature_file_tools_collections", "feature_file_tools_collections.py")
 
 
 def _codified2():
@@ -55,16 +56,21 @@ def examples():
     return [(code, line) for code, line, form in found if form.startswith("shall") and code not in out]
 
 
+def capability(repo, groups):
+    """The capability c1 of the groups' text, in the construct catalogue's context."""
+    cap = ("---\nid: capability/%s/%s\ntitle: %s\nnarrator: a client\ngroup: service\nlanguage: codified-2\n"
+           "rests_on: []\nretired: []\n---\n\n# %s\n\n## Purpose\nSomething.\n\n## Behaviour\n\n%s\n## Not yet\n"
+           % (PATH, NAME, NAME, NAME, groups))
+    W._write(repo / "spec" / "index.md", CONTEXT.read_text())
+    W._write(repo / "spec" / "capabilities" / ("%s.md" % NAME), cap)
+
+
 def constructs(repo):
     groups = []
     for k, (code, line) in enumerate(examples(), 1):
         block = "\n```given\n%s\n```\n" % "\n".join(GIVEN[k - 1]) if k <= len(GIVEN) else ""
         groups.append("### [g%d] %s\n- [r%d] %s\n%s" % (k, code, k, line, block))
-    cap = ("---\nid: capability/%s/%s\ntitle: %s\nnarrator: a client\ngroup: service\nlanguage: codified-2\n"
-           "rests_on: []\nretired: []\n---\n\n# %s\n\n## Purpose\nSomething.\n\n## Behaviour\n\n%s\n## Not yet\n"
-           % (PATH, NAME, NAME, NAME, "\n".join(groups)))
-    W._write(repo / "spec" / "index.md", CONTEXT.read_text())
-    W._write(repo / "spec" / "capabilities" / ("%s.md" % NAME), cap)
+    capability(repo, "\n".join(groups))
     return len(groups)
 
 
@@ -78,6 +84,10 @@ def prepare(step):
         w["entailed"] = tuple(re.compile(p, re.MULTILINE) for p in C2.GENERATED["declining"])
     elif "conform" in verbs:
         w["groups"] = constructs(step.repo)
+    elif COL.kind(w, W.kind):     # every, only, counts and two (b273)
+        w["lines"] = COL.kind(w, W.kind)
+        capability(step.repo, COL.groups(w["lines"]))
+        w["groups"] = len(COL.LINES[w["lines"]])
     else:
         return []
     for c in [n for n, k in w["kinds"].items() if k == "capability"]:
@@ -102,6 +112,9 @@ def has(step, w):
         text = (step.repo / "features" / ("%s.feature" % NAME)).read_text()
         missing = [g for g in range(1, w["groups"] + 1) if not re.search(r"^  @g%d @" % g, text, re.MULTILINE)]
         assert not missing, "no scenario of the groups %s" % missing
+    elif step.nps[0].startswith(("the counter-example", "the boundary")):    # b273
+        if step.subject.startswith("the scenario"):
+            collections(step, w, step.nps[0].split()[1])
     else:       # `the scenario s1 has the scenario title s2`: the title it was written with
         w["values"][b] = W.value(w, a)
 
@@ -114,9 +127,19 @@ def writes(step, w):
         assert (step.repo / w["values"][name]).is_file(), w["values"][name]
 
 
+def collections(step, w, what):
+    """The feature of the lines of every, only, counts and two read back for `what` (feature_file_tools_collections'
+    `check`)."""
+    done = step.context["result"]
+    assert done.returncode == 0, done.stderr
+    COL.check(w["lines"], (step.repo / "features" / ("%s.feature" % NAME)).read_text(), what)
+
+
 def writes_not(step, w):
     done = step.context["result"]
     assert done.returncode == 0, done.stderr
+    if w.get("lines"):      # a step that asserts what only allows (r118), one that names an unbrought instance (r116)
+        return collections(step, w, "assert" if w["lines"] == "only" else "introduce")
     kept, entailed = w["entailed"]
     text = (step.repo / "features" / ("%s.feature" % NAME)).read_text()
     assert kept.search(text) and not entailed.search(text), text

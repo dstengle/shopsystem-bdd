@@ -54,15 +54,17 @@ def item_is(step):
 
 
 @four("ThenDoes", "set", *BOTH)
+@four("ThenDoesNot", "set", *BOTH)
 def sets(step):
-    """`work` sets the T of the item i1 to `v`: the item's file says it; the batches' kinds are theirs."""
-    found = re.match(r"^`work` sets the (\w+) of the item (i\d+) to `([^`]+)`$", step.text)
+    """`work` sets (does not set, a counter-example's, b273) the T of the item i1 to `v`: the item's file says it
+    (says another value); the batches' kinds are theirs."""
+    found = re.match(r"^`work` (sets|does not set) the (\w+) of the item (i\d+) to `([^`]+)`$", step.text)
     if not found:
         return False
-    attribute, name, value = found.groups()
+    said, attribute, name, value = found.groups()
     done_ok(step)
-    assert W.field(B.item_file(step, name), attribute) == value, (step.text, W.field(B.item_file(step, name),
-                                                                                       attribute))
+    got = W.field(B.item_file(step, name), attribute)
+    assert (got == value) == (said == "sets"), (step.text, got)
 
 
 @four("ThenDoes", "write", *BOTH)

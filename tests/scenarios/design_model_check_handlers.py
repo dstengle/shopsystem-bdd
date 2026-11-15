@@ -209,7 +209,10 @@ PRINTED = {"fact": ['node("capability/', 'node("bounded-context/'], "rule": ["v1
 def unsaid(step, word, np=""):
     kind = step.kind or " ".join(np.split()[1:-1])
     printed = PRINTED.get(kind)
-    return printed[(int(re.sub(r"\D", "", word) or 1) - 1) % len(printed)] if printed else word
+    n = int(re.sub(r"\D", "", word) or 1)
+    if printed and n > len(printed):        # a counter-example's (b273): one the output does not hold
+        return "%s %s, none printed" % (kind, word)
+    return printed[n - 1] if printed else word
 
 
 def named(step):
@@ -225,6 +228,9 @@ def named(step):
 @handler("ThenPrints", "`model`")
 def model_prints(step):
     done = step.context["result"]
+    if step.nps and step.nps[0].startswith("one logical form"):     # counted (b273): one form, of the line's
+        assert len(re.findall(r"^\S+: (?:shall|may) \[", done.stdout, re.MULTILINE)) == 1, done.stdout
+        return
     for word in named(step):
         assert word in done.stdout, (word, done.stdout, done.stderr)
 

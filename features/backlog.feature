@@ -49,8 +49,9 @@ Feature: Backlog
   @g27 @r27
   Scenario: `work backlog --json` prints one JSON object
     Given a JSON object j1
+    And a JSON object j2
     When the person runs `work backlog` with the `--json` option
-    Then `work` prints the JSON object j1
+    Then `work` prints one JSON object
     And `work` exits successfully
 
   @g32 @r32
@@ -194,7 +195,10 @@ Feature: Backlog
     And the question q1 is on the item i1
     And a question q2
     And the question q2 is on the item i1
+    And a question q3
+    And the question q3 is not on the item i1
     When the person runs `work backlog`
     Then `work` prints the item i1
     And `work` prints the question q1
     And `work` prints the question q2
+    And `work` does not print the question q3

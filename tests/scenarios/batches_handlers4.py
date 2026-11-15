@@ -52,6 +52,16 @@ def has_given(step):
         return False
 
 
+@four("GivenDoesNot", "has", *BOTH)
+def has_not_given(step):
+    """`the batch b1 does not have the review folder r3` (a counter-example, b273): a review folder of another batch,
+    which the world makes beside the batch's (`make_review_folders`)."""
+    (k1, n1), (k2, n2) = parts(step)
+    if (k1, k2) != ("batch", "review folder"):
+        return False
+    T.given(step, "review folder", n2)["batch"] = ("not", n1)
+
+
 @four("GivenK", "worktree", *BOTH)
 def given_worktree(step):
     """The task's worktree, which the world makes for a running task."""

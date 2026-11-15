@@ -408,9 +408,12 @@ A given block comes first, as a Given with a docstring. Here is batch-measuremen
     And the measurement m1 has the stage row s2
     And a stage row s3
     And the measurement m1 has the stage row s3
+    And a stage row s4
+    And the measurement m1 does not have the stage row s4
     When the person runs `measure show` on the measurement m1
     Then `measure` prints the stage row s2
     And `measure` prints the stage row s3
+    And `measure` does not print the stage row s4
     And `measure` does not print a round trip
 ```
 

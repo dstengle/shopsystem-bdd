@@ -241,9 +241,12 @@ Feature: Design model check
     And this bounded context has the fact f1
     And a fact f2
     And this bounded context has the fact f2
+    And a fact f3
+    And this bounded context does not have the fact f3
     When the person runs `model facts`
     Then `model` prints the fact f1
     And `model` prints the fact f2
+    And `model` does not print the fact f3
 
   @g202 @r202
   Scenario: `model decisions --check` refuses an index that lacks an index entry
@@ -473,9 +476,12 @@ Feature: Design model check
     And the pack p1 has the term t1
     And a term t2
     And the pack p1 has the term t2
+    And a term t3
+    And the pack p1 does not have the term t3
     When the person runs `model lexicon`
     Then `model` prints the term t1
     And `model` prints the term t2
+    And `model` does not print the term t3
     And `model` exits successfully
 
   @g226 @r226
@@ -598,8 +604,10 @@ Feature: Design model check
     And the requirement r1 conforms to the language reference
     And a logical form l1
     And the requirement r1 has the logical form l1
+    And a logical form l2
+    And the requirement r1 has the logical form l2
     When the person runs `model parse` with the `--form` option on the requirement r1
-    Then `model` prints the logical form l1
+    Then `model` prints one logical form of the requirement r1
     And `model` exits successfully
 
   @g241 @r241

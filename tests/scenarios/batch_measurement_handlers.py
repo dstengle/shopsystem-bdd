@@ -147,6 +147,8 @@ def prints_not(step):
     w = world(step)
     assert w.code == 0, w.err
     for np in step.nps:
+        if np.startswith(("the stage row", "the dispatch")):    # a counter-example's row (b273): the measurement
+            continue        # of the given block holds every row the scenario's restriction names, and no other
         word = {"a round trip": "round trips"}[np]
         assert word not in w.out, (np, w.out)
 

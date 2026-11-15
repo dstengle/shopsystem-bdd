@@ -65,10 +65,11 @@ Feature: Analysis tools
   @g42 @r42
   Scenario: `tools probe --log` prints one log line for a researcher's notes
     Given a log line l1
+    And a log line l2
     And an analysis tool a1
     And an analysis tool a2
     When the person runs `tools probe` with the `--log` option
-    Then `tools` prints the log line l1
+    Then `tools` prints one log line
     And `tools` prints the analysis tool a1
     And `tools` prints the analysis tool a2
 
@@ -80,9 +81,12 @@ Feature: Analysis tools
     And the presence of the analysis tool a1 is `missing`
     And an analysis tool a2
     And the presence of the analysis tool a2 is `missing`
+    And an analysis tool a3
+    And the presence of the analysis tool a3 is `installed`
     When the person runs `tools install`
     Then `tools` installs the analysis tool a1
     And `tools` installs the analysis tool a2
+    And `tools` does not install the analysis tool a3
     And `tools` does not change a dependency file
 
   @g44 @r44
@@ -150,12 +154,15 @@ Feature: Analysis tools
     And a test t2
     And the test t2 executes the function f1
     And a test t3
-    And the test t3 executes the function f1
+    And the test t3 does not execute the function f1
     And a test t4
     And the test t4 executes the function f1
+    And a test t5
+    And the test t5 executes the function f1
     When the person runs `tools tests-of` on the function f1
     Then `tools` prints the test t1
     And `tools` prints the test t2
+    And `tools` does not print the test t3
     And `tools` prints the number of tests that execute the function f1
     And the coverage map c1 has the commit c2
     And `tools` prints the commit c2
@@ -173,9 +180,14 @@ Feature: Analysis tools
     And a test t2
     And the test t2 executes the function f1
     And the Python file p2 holds the test t2
+    And a Python file p3
+    And a test t3
+    And the test t3 executes the function f1
+    And the Python file p3 does not hold the test t3
     When the person runs `tools tests-of` with the `--by-file` option on the function f1
     Then `tools` prints the Python file p1
     And `tools` prints the Python file p2
+    And `tools` does not print the Python file p3
 
   @g52 @r52
   Scenario: `tools tests-of` says that no test executed its function, and exits successfully
@@ -198,12 +210,15 @@ Feature: Analysis tools
     And a test t2
     And the test t2 executes the function f1
     And a test t3
-    And the test t3 executes the function f1
+    And the test t3 does not execute the function f1
     And a test t4
     And the test t4 executes the function f1
+    And a test t5
+    And the test t5 executes the function f1
     When the person runs `tools tests-of` with the `--json` option on the function f1
     Then `tools` prints the test t1
     And `tools` prints the test t2
+    And `tools` does not print the test t3
     And `tools` prints the number of tests that execute the function f1
     And the coverage map c1 has the commit c2
     And `tools` prints the commit c2
@@ -237,9 +252,13 @@ Feature: Analysis tools
     And a function f2
     And the Python file p1 has the function f2
     And no test executes the function f2
+    And a function f3
+    And no test executes the function f3
+    And the Python file p1 does not have the function f3
     When the person runs `tools untested` on the Python file p1
     Then `tools` prints the function f1
     And `tools` prints the function f2
+    And `tools` does not print the function f3
     And the coverage map c1 has the commit c2
     And `tools` prints the commit c2
     And `tools` exits successfully
@@ -255,9 +274,13 @@ Feature: Analysis tools
     And a function f2
     And the Python file p1 has the function f2
     And no test executes the function f2
+    And a function f3
+    And no test executes the function f3
+    And the Python file p1 does not have the function f3
     When the person runs `tools untested` with the `--json` option on the Python file p1
     Then `tools` prints the function f1
     And `tools` prints the function f2
+    And `tools` does not print the function f3
     And the coverage map c1 has the commit c2
     And `tools` prints the commit c2
 
@@ -271,12 +294,15 @@ Feature: Analysis tools
     And a reference r2
     And the reference r2 is to the identifier i1
     And a reference r3
-    And the reference r3 is to the identifier i1
+    And the reference r3 is not to the identifier i1
     And a reference r4
     And the reference r4 is to the identifier i1
+    And a reference r5
+    And the reference r5 is to the identifier i1
     When the person runs `tools refs` on the identifier i1
     Then `tools` prints the reference r1
     And `tools` prints the reference r2
+    And `tools` does not print the reference r3
     And `tools` prints the number of references to the identifier i1
     And `tools` exits successfully
 
@@ -362,10 +388,13 @@ Feature: Analysis tools
     And a reference r2
     And the reference r2 is to the identifier i1
     And a reference r3
-    And the reference r3 is to the identifier i1
+    And the reference r3 is not to the identifier i1
     And a reference r4
     And the reference r4 is to the identifier i1
+    And a reference r5
+    And the reference r5 is to the identifier i1
     When the person runs `tools refs` with the `--json` option on the identifier i1
     Then `tools` prints the reference r1
     And `tools` prints the reference r2
+    And `tools` does not print the reference r3
     And `tools` prints the number of references to the identifier i1

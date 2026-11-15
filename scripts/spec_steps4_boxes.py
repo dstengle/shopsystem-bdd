@@ -1,13 +1,12 @@
 """The steps of the boxes and images of a codified-2 group's forms (b197; the CNL 4 design, sections 7.2-7.4), beside
 spec_steps4, whose Reader (`r`) they extend:
 
-- in a While or Where clause or a trigger: "every K that P is Q" one K brought in with a Given of its restrictor and
-  of its scope; a count of Ks the fewest Ks it admits (`spec_lf_core.least`: none for at most and fewer than), each
-  brought in so; "no K that P" no Given of a K, its condition a Given said of "no K" ("no stage is `done`"); an `or`
+- in a While or Where clause or a trigger: "every K that P is Q" and a count of Ks spec_steps4_counter's (b273: the
+  Ks the line's parts give, a count at its boundary); "no K that P" no Given of a K, its condition a Given said of "no K" ("no stage is `done`"); an `or`
   the case its scenario takes (`Reader.pick`: one scenario a case, as codified-1's R#n);
-- in a response: "V only Ks that P" a K brought in with its restrictor and the Then on it (R5); a count the bound's
-  number of Ks (one past it for "more than"), each brought in with its restrictor and the Thens said of each, or for
-  "at most n" and "fewer than n" one past the most it admits (n + 1, n) with the Then on the last of them negated; a
+- in a response: "V only Ks that P" and a count with an upper bound spec_steps4_counter's counter-example (b273); a
+  count of no upper bound the bound's number of Ks (one past it for "more than"), each brought in with its
+  restrictor and the Thens said of each; a
   `not` over a response object's attribute ("a stage whose status is not `done`") a Given of the K that does not
   meet it, the K brought in;
 - "the number of Ks that P" printed two Ks brought in, compared with a parameter the Given of the comparison
@@ -36,13 +35,11 @@ def given(r, box, pos):
         return [s for sub in box.body for s in r.given(sub, not pos)]
     if box.op == "not" and pos:     # "no K that P": said of "no K", no K brought in
         return no(r, box)
-    if box.op == "every" and pos:
-        return [s for sub in list(box.body) + list(box.scope.body) for s in r.given(sub)]
     if box.op == "count" and pos and isinstance(box.count[1], Ref):    # compared with a parameter (b240)
         return spec_lf_number.compared(r, box)
-    if box.op == "count" and pos:
-        return [s for c in copies(box, least(box.count)) for sub in list(c.body) + list(c.scope.body)
-                for s in r.given(sub)]
+    if box.op in ("every", "count") and pos:     # its members, a count at its boundary (b273)
+        import spec_steps4_counter  # here: it imports this module
+        return spec_steps4_counter.given(r, box)
     if box.op == "or" and pos:
         case = box.body[r.pick(len(box.body))]
         return [s for sub in case.body for s in r.given(sub)]
@@ -129,18 +126,18 @@ def acts(r, box, pos):
         for b in numbers:
             spec_lf_number.bring(r, b)
         return r.acts([box.body[-1]], False)
-    if box.op == "only" and pos:
-        bring(r, box)
-        return r.acts(box.scope.body)
+    import spec_steps4_counter as counter  # here: it imports this module
+    if box.op == "only" and pos:     # its counter-example (b273)
+        return counter.only(r, box)
     if box.op == "count" and pos:
-        bound, n = box.count
-        upper = {"at most": n + 1, "fewer than": n}.get(bound)
+        found = counter.upper(r, box)     # an upper bound's counter-example (b273)
+        if found is not None:
+            return found
         out = []
-        for k, c in enumerate(copies(box, upper or least(box.count)), 1):
+        for c in copies(box, least(box.count)):
             bring(r, c)
-            if upper is None or k == upper:
-                found = r.acts(c.scope.body, upper is None)
-                out += found if not out else [("again" if act else act, tree) for act, tree in found]
+            found = r.acts(c.scope.body)
+            out += found if not out else [("again" if act else act, tree) for act, tree in found]
         return out
     events = [i for i in box.body if isinstance(i, Atom) and i.pred == "event"]
     if box.op == "not" and pos and box.refs and len(events) == 1 and not any(
@@ -192,6 +189,9 @@ def np_image(r, ref, slot):
     """The `K_NP` tree of an image in a slot: "the T of x", a thing; a printed number's spec_lf_number's."""
     if ref in r.numbers:
         return spec_lf_number.step_np(r, ref, slot)
+    if ref in r.counted:     # "at most three files" (b273)
+        import spec_steps4_counter  # here: it imports this module
+        return spec_steps4_counter.np(r, ref, slot)
     T, k, owner = r.images[ref]
     if slot != "thing":
         raise TraceError("no step of the %s of a %s in a slot of %s" % (T, k, slot))
