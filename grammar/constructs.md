@@ -277,7 +277,7 @@ a condition that does not hold
 
 - Form: <subject> does not <verb> ...; ... is not <value>
 - Functions: `PNeg`
-- Cited by: design-model-check#r209
+- Cited by: design-model-check#r209, feature-file-tools#r120
 - Example and its reading:
 
 ```construct
@@ -554,7 +554,7 @@ each one
 
 - Form: every <noun>
 - Functions: `DetEvery`
-- Cited by: design-model-check#r248
+- Cited by: design-model-check#r248, feature-file-tools#r117, feature-file-tools#r114
 - Example and its reading:
 
 ```construct
@@ -631,7 +631,7 @@ a number of them, bounded
 
 - Form: at least|at most|exactly|more than|fewer than <number> <nouns>
 - Functions: `DetCount|AtLeast|AtMost|Exactly|MoreThan|FewerThan`
-- Cited by: design-model-check#r252
+- Cited by: design-model-check#r252, design-model-check#r289, feature-file-tools#r112, feature-file-tools#r112
 - Example and its reading:
 
 ```construct
@@ -731,7 +731,7 @@ two distinct ones
 
 - Form: two <nouns>
 - Functions: `DetTwo`
-- Cited by: no line
+- Cited by: feature-file-tools#r116
 - Example and its reading:
 
 ```construct
@@ -794,7 +794,7 @@ nothing but these
 
 - Form: only <np>
 - Functions: `k_\w+_Only`
-- Cited by: design-model-check#r236, design-model-check#r247
+- Cited by: design-model-check#r236, design-model-check#r247, design-model-check#r288, feature-file-tools#r113, feature-file-tools#r113, feature-file-tools#r118
 - Example and its reading:
 
 ```construct
@@ -852,7 +852,7 @@ no thing at all
 
 - Form: nothing
 - Functions: `k_\w+_Nothing`
-- Cited by: no line
+- Cited by: design-model-check#r295, feature-file-tools#r121, feature-file-tools#r121
 - Example and its reading:
 
 ```construct
@@ -1003,7 +1003,7 @@ a state: the other noun of a relation row "in"
 
 - Form: <np> holds <np>
 - Functions: `r\d+_\w+_Holds`
-- Cited by: no line
+- Cited by: design-model-check#r288, design-model-check#r289, design-model-check#r292, feature-file-tools#r113, feature-file-tools#r112
 - Example and its reading:
 
 ```construct
