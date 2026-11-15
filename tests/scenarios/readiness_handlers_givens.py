@@ -55,6 +55,9 @@ def _bar_check(step, item, check):
 def given_does_not(step):
     """`the item i1 does not pass this readiness bar`: its one line does not parse; `the item i1 does not meet the
     bar check b1`: the item fails that check (`_bar_check`)."""
+    if R.mine(step) and step.term == "has" and step.nps[0].startswith("the bar check "):
+        says(step, step.names[-1], "a bar check no bar has")    # a counter-example's (b273): no check `work` names
+        return None
     if not R.mine(step) or step.term not in ("pass", "meet"):
         return False
     item = step.names[0]

@@ -104,7 +104,7 @@ def printed(step, want):
 @handler("ThenPrints", "`tools`")
 def prints(step):
     for np in step.nps:
-        if np.startswith("the log line"):
+        if np.startswith("the log line") or np == "one log line":     # one, counted (b273)
             lines = [line for line in output(step).splitlines() if line.startswith(LOG)]
             assert len(lines) == 1 and all(name in lines[0] for name in w.NAMES), output(step, err=True)
             continue
@@ -197,3 +197,11 @@ def installs(step):
             continue
         want = expected(step, np)
         assert PACKAGES.get(want, want) in w.pip_calls(step.context["python"]), (np, w.pip_calls(step.context["python"]))
+
+
+@handler("ThenDoesNot", "install")
+def installs_not(step):
+    """A counter-example's tool (b273): one already installed, which `tools install` does not ask pip for."""
+    for np in step.nps:
+        want = expected(step, np)
+        assert PACKAGES.get(want, want) not in w.pip_calls(step.context["python"]), (np, w.pip_calls(step.context["python"]))

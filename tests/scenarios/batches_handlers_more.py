@@ -202,4 +202,7 @@ def removes_review_folder(step):
     done = step.context["result"]
     assert done.returncode == 0, done.stderr
     path = step.context["review_folders"][step.names[0]]
+    if step.template == "ThenDoesNot":      # another batch's (a counter-example, b273): left where it was
+        assert path.is_dir(), step.text
+        return None
     assert not path.exists(), (step.text, sorted(p.name for p in path.iterdir()))

@@ -52,6 +52,7 @@ def question_on(step):
 
 
 @four("ThenDoes", "remove", *BOTH)
+@four("ThenDoesNot", "remove", *BOTH)
 def removes(step):
     k = parts(step)[1][0]
     if k == "review folder":

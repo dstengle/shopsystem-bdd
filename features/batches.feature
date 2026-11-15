@@ -37,9 +37,12 @@ Feature: Batches
     And the batch b1 has the review folder r1
     And a review folder r2
     And the batch b1 has the review folder r2
+    And a review folder r3
+    And the batch b1 does not have the review folder r3
     When the person runs `work batch abandon` on the batch b1
     Then `work` removes the review folder r1
     And `work` removes the review folder r2
+    And `work` does not remove the review folder r3
 
   @g22 @r22
   Scenario: `work batch start` picks a ready item that passes the readiness bar and has no dependency on an item that is not delivered
@@ -110,10 +113,14 @@ Feature: Batches
     And an item i2
     And the batch b1 holds the item i2
     And the status of the item i2 is `in-batch`
+    And an item i3
+    And the batch b1 holds the item i3
+    And the status of the item i3 is `shaped`
     When the person runs `work batch abandon` on the batch b1
     Then `work` sets the status of the batch b1 to `abandoned`
     And `work` sets the status of the item i1 to `ready`
     And `work` sets the status of the item i2 to `ready`
+    And `work` does not set the status of the item i3 to `ready`
 
   @g29 @r29
   Scenario: `work batch review` refuses a batch with a task that is not done
@@ -148,9 +155,12 @@ Feature: Batches
     And the batch b1 has the review folder r1
     And a review folder r2
     And the batch b1 has the review folder r2
+    And a review folder r3
+    And the batch b1 does not have the review folder r3
     When the person merges the pull request p1
     Then `work` removes the review folder r1
     And `work` removes the review folder r2
+    And `work` does not remove the review folder r3
 
   @g32 @r32
   Scenario: `work batch park` takes the parked item's lines out of the batch

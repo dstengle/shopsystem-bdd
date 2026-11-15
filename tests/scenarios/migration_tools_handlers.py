@@ -155,6 +155,13 @@ def entries(step):
     return {"l%d" % k: name for k, (name, _) in enumerate(ordered, 1)}
 
 
+def applied(step):
+    """The titles of the upgrade steps of the repository's release and before, which `migrate upgrade` passes over."""
+    sys.path.insert(0, str(plugin()[0] / "scripts"))
+    import migrate_upgrade
+    return [title for _, title, *_ in migrate_upgrade.STEPS if title not in pending(step)]
+
+
 def pending(step):
     """The titles of the upgrade steps after the repository's release, up to the plugin's."""
     sys.path.insert(0, str(plugin()[0] / "scripts"))

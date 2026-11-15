@@ -69,6 +69,9 @@ Feature: Telemetry
   Scenario: `measure compare` sets the measurements of two batches side by side with their ratio
     Given a batch b1
     And a batch b2
+    And a measurement m1
+    And a measurement m2
+    And a ratio r1
     When the person runs `measure compare` on the batch b1
     And the person runs `measure compare` on the batch b2
     Then `measure` prints the measurement m1

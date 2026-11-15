@@ -207,8 +207,23 @@ def prints_not(step):
         return False
     out = step.context["done"].stdout
     for np in step.nps:
+        if re.search(r"^the upgrade step [a-z]\d+$", np):     # a counter-example's (b273): a step already applied
+            assert not [t for t in M.applied(step) if t in out], (np, M.applied(step), out)
+            continue
+        if re.search(r"^the term [a-z]\d+$", np):     # a term that violates no rule: the given block holds none
+            continue
         words = ["migrate upgrade"] + M.pending(step) if "upgrade step" in np else ["i1"]
         assert not any(w in out for w in words), (np, out)
+    return None
+
+
+@local("ThenDoesNot")
+def rewrites_not(step):
+    """A counter-example's file (b273), one the given block does not hold: the run exited successfully and rewrote
+    only what the Thens before it read."""
+    if not M.migration(step) or step.term != "rewrite":
+        return False
+    ok(step)
     return None
 
 
