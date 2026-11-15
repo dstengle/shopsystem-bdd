@@ -217,6 +217,22 @@ shall [x3: agent the person (constant), x4: command `work start` (parameter), x5
     exit(e2, subject: x5, with an error naming: x1)
 ```
 
+"holds nothing" (b274) is the same box over a thing of any kind: no thing at all is in the collection, which `model
+logic` reads as no K of each kind a relation row `K | in | S` lets it hold. "holds no K" keeps its meaning (no K;
+things of other kinds may be held), and "holds no thing" is refused: "nothing" is the one way to say it.
+
+```reading
+While a worktree holds nothing, when the person runs `work start` on the worktree, `work` shall print the worktree.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: worktree]
+    not [x2: thing]
+      in(x2, x1)
+  when
+    run(e1, subject: x3, object: x4, on: x1)
+  response
+    print(e2, subject: x5, object: x1)
+```
+
 ## R4. "does not V a K" in a condition is refused; under "shall not", "a K" is any K
 
 In a While or Where clause, "X does not V a K" (or a bare plural) reads two ways: "X Vs no K", and "there is a K that

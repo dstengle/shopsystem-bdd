@@ -565,3 +565,38 @@ shall [x5: agent the person (constant), x6: command `features generate` (paramet
     of(x9, x8)
     write(e2, subject: x7, object: x8)
 ```
+
+## r120
+From: b274 r111. Not in the audit (b274 is no reword item).
+
+```reading
+While a requirement of a capability uses `holds-exactly`, when the person runs `features generate` on the capability, `features` shall write a scenario whose step uses `not-condition`.
+shall [x3: thing `holds-exactly` (parameter), x4: agent the person (constant), x5: command `features generate` (parameter), x6: tool `features` (constant), x9: thing `not-condition` (parameter)]
+  while [x1: requirement, x2: capability]
+    of(x1, x2)
+    use#2(subject: x1, object: x3)
+  when
+    run(e1, subject: x4, object: x5, on: x2)
+  response [x7: scenario, x8: step]
+    of(x8, x7)
+    use#2(subject: x8, object: x9)
+    write(e2, subject: x6, object: x7)
+```
+
+## r121
+From: b274 r112. Not in the audit (b274 is no reword item).
+
+```reading
+While the precondition of a requirement of a capability uses `nothing`, when the person runs `features generate` on the capability, `features` shall write a scenario whose step uses `nothing`.
+shall [x4: thing `nothing` (parameter), x5: agent the person (constant), x6: command `features generate` (parameter), x7: tool `features` (constant)]
+  while [x1: requirement, x2: capability, x3: precondition]
+    of(x1, x2)
+    of(x3, x1)
+    use#2(subject: x3, object: x4)
+  when
+    run(e1, subject: x5, object: x6, on: x2)
+  response [x8: scenario, x9: step]
+    of(x9, x8)
+    use#2(subject: x9, object: x4)
+    write(e2, subject: x7, object: x8)
+```

@@ -161,6 +161,8 @@ def then_does(step):
     done, w = result(step), W.world(step)
     if ORDER.mine(w, step):     # the order of a scenario's Thens (r111)
         getattr(ORDER, {"has": "has", "follow": "follows"}.get(step.term, "writes"))(step, w)
+    elif step.term == "use" and step.subject.startswith("the step"):     # the step s2 uses `nothing` (b274)
+        GEN.USES.uses(step, GEN.NAME)
     elif step.term == "use":      # the scenario s1 uses `only` (b272)
         GEN.uses(step, w)
     elif step.term == "refuse":

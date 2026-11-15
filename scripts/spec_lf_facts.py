@@ -19,6 +19,7 @@ spec_lf_facts_atoms'. An `or` box splits it (`R#n`,
 """
 import spec_lf_distinct
 import spec_lf_exist
+import spec_lf_member
 import spec_lf_modal
 import spec_lf_none
 import spec_lf_number
@@ -67,7 +68,9 @@ class Walk(Terms):
         def side(r):
             return "kind(%s)" % self.ids.kind(r.kind) if r in own else self.term(r)
         for item in body:
-            if isinstance(item, Atom) and item.pred == "attr" and item.args[0] in own:
+            if spec_lf_member.nothing(item, own):     # "holds nothing" (b274): no K of each row
+                spec_lf_member.none(self, item)
+            elif isinstance(item, Atom) and item.pred == "attr" and item.args[0] in own:
                 x, term, value = item.args
                 self.emit("none", self.ids.kind(x.kind), *self.ids.attr(x.kind, term, value))
             elif isinstance(item, Atom) and item.pred in ("rel", "state"):
@@ -136,6 +139,8 @@ class Walk(Terms):
             elif item.op == "not":
                 self.roles(item.refs)
                 self.response(item.body, own | set(item.refs), not pos)
+            elif item.op == "every" and spec_lf_member.every(self, item, own):     # holds-exactly (b274)
+                continue
             elif item.op == "every" and pos:
                 self.roles(item.refs)
                 for r in item.refs:

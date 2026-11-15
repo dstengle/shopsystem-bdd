@@ -50,7 +50,7 @@ class Names:
         return next(v for v in t.values if "v_" + spec_rgl.slug(v) == rest)
 
     def row(self, name):
-        m = re.match(r"^r(\d+)_.*_(Mod|Has|Holds|Cpd|Gap)$", name)
+        m = re.match(r"^r(\d+)_.*_(Mod|Has|Holds|Cpd|Gap|In|Exactly)$", name)
         return (self.rows[int(m.group(1))], m.group(2)) if m else (None, None)
 
 

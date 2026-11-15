@@ -9,6 +9,7 @@ before the command (`prepare`) and read by its Thens:
 - a capability one of whose steps a universal condition entails (r109): codified2_world's declining lines and U1;
 - a capability whose requirement uses `holds-relation` and `only` or `count` (r113, r112, b272): codified2_constructs'
   holding or capping line, and the Then its feature must hold (`uses`);
+- a capability whose requirement uses a construct (b274): its catalogue example (feature_file_tools_uses);
 - else the capability of the example data, run on by no name.
 
 `has` (`the requirement group r3 has the scenario s1`: every group of the capability has its scenario in the feature;
@@ -36,6 +37,7 @@ def shared(name, file):
 
 
 W = shared("shop_feature_file_tools_world", "feature_file_tools_world.py")
+USES = shared("shop_feature_file_tools_uses", "feature_file_tools_uses.py")
 COL = shared("shop_feature_file_tools_collections", "feature_file_tools_collections.py")
 
 
@@ -102,7 +104,7 @@ def prepare(step):
         w["lines"] = COL.kind(w, W.kind)
         capability(step.repo, COL.groups(w["lines"]))
         w["groups"] = len(COL.LINES[w["lines"]])
-    else:
+    elif not USES.prepare(step, w, W._write, NAME, PATH):     # a capability of one construct (b274)
         return []
     for c in [n for n, k in w["kinds"].items() if k == "capability"]:
         w["values"][c] = NAME
