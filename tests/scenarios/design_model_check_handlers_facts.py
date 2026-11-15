@@ -80,6 +80,21 @@ def state(step):
     remember(step, " ".join([phrase(step.subject), verb] + [phrase(np) for np in step.nps]))
     if step.template.endswith("Not") and len(step.names) == 2:     # a counter-example's thing (b273), by its name
         step.context.setdefault("outside", []).append(step.names[1])
+    if step.subject.startswith("the pack") and step.event == "has" and step.nps[0].startswith("the term ") \
+            and not step.template.endswith("Not"):       # what the world's pack p1 defines (design_model_check_worlds)
+        step.context.setdefault("pack_terms", []).append(step.names[1])
+    if step.subject == "this bounded context" and step.nps and step.nps[0].startswith("the fact "):
+        fact(step, step.names[0], not step.template.endswith("Not"))
+
+
+def fact(step, name, had):
+    """A fact past those every world prints (`H.PRINTED`): the node of a capability of its own, in the context's
+    `spec/capabilities/` (had) or in a folder below it, which `model facts` does not read (a counter-example's, b273)."""
+    if int(re.sub(r"\D", "", name)) <= len(H.PRINTED["fact"]):
+        return
+    folder = "spec/capabilities/" if had else "spec/capabilities/drafts/"
+    H.write(step.repo, "%sfact-%s.md" % (folder, name), H.cap("fact-%s" % name, ["- [r1] **When** asked, it is."]))
+    H.says(step, name, 'node("%s"' % H.full("capability", "fact-%s" % name))
 
 
 OWN = {"GivenDoes": ("add", "allow", "contradict", "exist", "forbid", "import", "lack", "oblige", "omit",

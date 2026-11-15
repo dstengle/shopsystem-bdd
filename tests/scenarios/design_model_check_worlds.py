@@ -100,7 +100,8 @@ def importing(step):
     """The context imports the CLI pack and its own pack p1, which defines t1 and t2, not a term a Given says it does
     not have."""
     H.base(step.repo, step.context)
-    terms = [t for t in step.context.get("kinds", {}).get("term", ["t1"]) if t not in step.context.get("outside", ())]
+    terms = [t for t in step.context.get("pack_terms") or step.context.get("kinds", {}).get("term", ["t1"])
+             if t not in step.context.get("outside", ())]
     P.pack(step.repo, first(step, "pack", "p1"), *terms)
     P.imports(step.repo, "cli", first(step, "pack", "p1"))
 

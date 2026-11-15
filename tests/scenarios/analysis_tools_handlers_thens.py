@@ -150,9 +150,12 @@ def prints(step):
 
 @handler("ThenPrintsNot", "`tools`")
 def prints_not(step):
-    for np in step.nps:   # "python: <path> (<how it was found>)"
+    for np in step.nps:
         want = expected(step, np)
-        assert not any(line.startswith(want + " ") for line in output(step).splitlines()), (np, output(step))
+        if interpreter(step, np) is not None:     # "python: <path> (<how it was found>)"
+            assert not any(line.startswith(want + " ") for line in output(step).splitlines()), (np, output(step))
+        else:     # a counter-example's test, Python file, function or reference (b273)
+            assert not printed(step, want), (np, want, output(step, err=True))
 
 
 @handler("ThenExitsOk", "`tools`")

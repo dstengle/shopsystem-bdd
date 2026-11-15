@@ -130,6 +130,30 @@ def has_given(step):
         return False
 
 
+@four("GivenDoesNot", "on", *BOTH)
+def question_elsewhere(step):
+    """`the question q3 is not on the item i1` (a counter-example, b273): the question is another item's, one whose
+    status is `shaped`, so that `work backlog` prints its row and not its question."""
+    (k1, n1), (k2, _) = parts(step)
+    if (k1, k2) != ("question", "item"):
+        return False
+    text = "Which of the two is meant in %s?" % n1
+    B.write_item(step, "i9%s" % n1[1:], status="shaped", sections={"Question": text})
+    step.context.setdefault("asked_elsewhere", {})[n1] = text
+
+
+@four("ThenPrintsNot", "`work`", *BOTH)
+def prints_not(step):
+    """A counter-example's question (b273): its words are nowhere in what `work backlog` printed."""
+    k, name = kind(step.nps[0])
+    if k != "question":
+        return False
+    text = step.context.get("asked_elsewhere", {}).get(name) or (
+        B.QUESTION if name in step.context.get("questions", {}) else None)
+    assert text is not None, (step.text, "no question q3 in the world")
+    assert text not in done_ok(step), (step.text, text, step.context["result"].stdout)
+
+
 @four("GivenDoes", "exist", *BOTH)
 def exists(step):
     k, name = parts(step)[0]
@@ -184,7 +208,7 @@ def prints(step):
     np = step.nps[0]
     k, name = kind(np)
     stdout = done_ok(step)
-    if k == "JSON object":
+    if k == "JSON object" or np == "one JSON object":     # one, counted (b273): a second is extra data
         assert isinstance(json.loads(stdout), dict), stdout
     elif k == "title":     # a title named first here: the titles of the items it printed
         items = step.context.setdefault("titles", {}).get(name) or list(step.context.get("items", {}))

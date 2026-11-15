@@ -210,8 +210,7 @@ def unsaid(step, word, np=""):
     kind = step.kind or " ".join(np.split()[1:-1])
     printed = PRINTED.get(kind)
     n = int(re.sub(r"\D", "", word) or 1)
-    if printed and n > len(printed):        # a counter-example's (b273): one the output does not hold
-        return "%s %s, none printed" % (kind, word)
+    assert not printed or n <= len(printed), "%s %s: no Given said what it is printed as" % (kind, word)
     return printed[n - 1] if printed else word
 
 

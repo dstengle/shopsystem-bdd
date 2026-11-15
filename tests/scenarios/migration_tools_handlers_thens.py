@@ -9,6 +9,7 @@ import subprocess
 import sys
 
 from scenarios import migration_tools_handlers as M
+from scenarios import migration_tools_handlers_counter as C
 from scenarios.migration_old import CONTEXT, plugin
 
 local = M.local
@@ -208,9 +209,10 @@ def prints_not(step):
     out = step.context["done"].stdout
     for np in step.nps:
         if re.search(r"^the upgrade step [a-z]\d+$", np):     # a counter-example's (b273): a step already applied
-            assert not [t for t in M.applied(step) if t in out], (np, M.applied(step), out)
+            C.step_not_printed(step, np.split()[-1])
             continue
-        if re.search(r"^the term [a-z]\d+$", np):     # a term that violates no rule: the given block holds none
+        if re.search(r"^the term [a-z]\d+$", np):     # a counter-example's term, which violates no rule
+            C.term_not_printed(step, np.split()[-1])
             continue
         words = ["migrate upgrade"] + M.pending(step) if "upgrade step" in np else ["i1"]
         assert not any(w in out for w in words), (np, out)
@@ -219,11 +221,11 @@ def prints_not(step):
 
 @local("ThenDoesNot")
 def rewrites_not(step):
-    """A counter-example's file (b273), one the given block does not hold: the run exited successfully and rewrote
-    only what the Thens before it read."""
+    """A counter-example's file (b273), which its Given wrote: left byte for byte."""
     if not M.migration(step) or step.term != "rewrite":
         return False
     ok(step)
+    C.unchanged(step, step.names[0])
     return None
 
 
