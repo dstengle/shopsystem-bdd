@@ -154,13 +154,12 @@ def unread(root, capability=None, extra=None):
     conditions among them."""
     ctx = spec_context.load(root, extra or ())
     if capability and "#" in capability:
-        keep = lambda i: i == capability      # noqa: E731
+        keep = lambda i: i == capability
     elif capability:
-        keep = lambda i: i.rpartition("#")[0] == capability      # noqa: E731
+        keep = lambda i: i.rpartition("#")[0] == capability
     else:
-        keep = lambda i: True      # noqa: E731
-    out = [(i, why[len("refused: "):] if why.startswith("refused: ") else why) for i, why in ctx.refused.items()
-           if keep(i)]
+        keep = lambda i: True
+    out = [(i, why.removeprefix("refused: ")) for i, why in ctx.refused.items() if keep(i)]
     return sorted(out, key=lambda iw: _order(iw[0]))
 
 
