@@ -14,9 +14,10 @@ REFUSED = sorted((command, status) for command, row in backlog_moves.TRANSITIONS
 
 
 def args_of(command):
-    """The command line of `work <verb> b1`, with the text it takes."""
+    """The command line of `work <verb> b1`, with the text it takes (`work shape` its shaping note, r43)."""
     verb = command.split()[1]
-    return [verb, "b1"] + {"refuse": ["out of scope"], "answer": ["The first"]}.get(verb, [])
+    return [verb, "b1"] + {"refuse": ["out of scope"], "answer": ["The first"],
+                           "shape": ["--note", "Parse every line."]}.get(verb, [])
 
 
 # `work ready` moves only an item that passes the bar: test_readiness_bar.py's test_ready_readies_a_passing_item.

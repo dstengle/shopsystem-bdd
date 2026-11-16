@@ -1,5 +1,6 @@
 """`work backlog` (capability backlog r6-r8, r17): every item of the backlog in one table a state, in rank order,
-with what each item waits on, and the same as one JSON object (workflow simplification plan 2, D7-D9).
+with what each item waits on (an idea with no shaping note its grooming, r44), and the same as one JSON object
+(workflow simplification plan 2, D7-D9).
 
 The score is (value + urgency) / size, low = small = 1, medium = 2, high = large = 3 (D7). Within a state items go by
 score from high to low, ties to the item added first; an item missing a rating has no score and ranks after the
@@ -59,6 +60,8 @@ def waiting_on(item, by_name, root=None):
     question = first_line(item)
     found = progress(root, item) if root is not None else None
     said += ["in %(name)s (%(status)s): %(tasks_done)d of %(tasks)d tasks done" % found] if found else []
+    ungroomed = item.status == "idea" and not backlog_items.shaping_note(item)     # r44
+    said += ["no shaping note: groom it with work shape --note"] if ungroomed else []
     return said + (["question: %s" % question] if question else [])
 
 

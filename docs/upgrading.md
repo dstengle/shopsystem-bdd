@@ -214,7 +214,7 @@ Put every named line of a capability into the one item. The readiness bar checks
 item's lines laid in, so a line left behind stops it:
 
 ```console
-$ work shape b1
+$ work shape b1 --note "Reword the lines of buy that grammar 4 refuses."
 b1 "Reword buy for grammar 4" shaped
 $ work ready b1
 work: work ready: b1 "Reword buy for grammar 4" is not passing:
