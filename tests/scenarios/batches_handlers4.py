@@ -19,7 +19,8 @@ def _module(stem):
 @four("GivenDoes", "holds", *BOTH)
 def holds_given(step):
     """A batch holds an item (in it, `in-batch` unless a Given says otherwise); a git branch holds a requirement (the
-    world lays the item's lines on the batch's branch)."""
+    world lays the item's lines on the batch's branch); an item holds a universal condition (its `U1`, which `model
+    logic` reads, beside a passing line, b203)."""
     (k1, n1), (k2, n2) = parts(step)
     if (k1, k2) == ("batch", "item"):
         T.given(step, "batch", n1)
@@ -28,6 +29,8 @@ def holds_given(step):
             B.write_item(step, n2)
         if T.status_of(step, n2) == "idea":
             B.write_item(step, n2, status="in-batch")
+    elif (k1, k2) == ("item", "universal condition"):
+        sys.modules["shop_readiness_world"].give_universal(step, n1, sys.modules["shop_readiness_world"].TRANSLATED_U)
     elif (k1, k2) != ("git branch", "requirement"):
         return False
 
@@ -62,6 +65,16 @@ def has_not_given(step):
     T.given(step, "review folder", n2)["batch"] = ("not", n1)
 
 
+@four("GivenDoesNot", "exist", *BOTH)
+def universal_absent(step):
+    """`` `universal` does not exist``: the world's codified spec, which has no spec/universal.md (b203)."""
+    if step.subject != "`universal`":
+        return False
+    sys.modules["shop_readiness_world"].codify(step)
+    (step.repo / "spec" / "universal.md").unlink(missing_ok=True)
+
+
+@four("GivenK", "universal condition", *BOTH)
 @four("GivenK", "worktree", *BOTH)
 def given_worktree(step):
     """The task's worktree, which the world makes for a running task."""

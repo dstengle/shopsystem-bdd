@@ -92,6 +92,22 @@ def block(title, text, terms=(), capability=CAPABILITY):
     return "### %s\n\n%s#### [g4] %s\n- [r5] %s" % (capability, "".join("%s\n\n" % t for t in terms), title, text)
 
 
+# A universal condition of an item that `model logic` reads a translation of, in the fixture's spec, and the id the
+# item's universal block gives it, or UNREAD's (b203).
+TRANSLATED_U = "When the person runs `work start` on an initiative, `work` shall commit the initiative."
+ITEM_U = "U1"
+
+
+def give_universal(step, name, condition):
+    """The item `name` given the passing line and the universal condition `condition` as `U1` of its universal
+    block."""
+    codify(step)
+    fields = step.context.get("item_fields", {}).get(name, {})
+    text = block(fields.get("title", "Title of %s" % name), PASSING) + "\n\n### universal\n\n- [%s] %s" % (
+        ITEM_U, condition)
+    B().write_item(step, name, sections={"Requirements": text})
+
+
 def give_lines(step, name, text, terms=(), capability=CAPABILITY):
     """The item `name` given the one requirement line `text`, as `<capability>#r5` (work-queue's by default) in a
     group `g4`, after the term bullets `terms`."""
