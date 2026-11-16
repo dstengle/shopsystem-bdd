@@ -277,7 +277,7 @@ a condition that does not hold
 
 - Form: <subject> does not <verb> ...; ... is not <value>
 - Functions: `PNeg`
-- Cited by: design-model-check#r209, design-model-check#r316, feature-file-tools#r120, feature-file-tools#r125, feature-file-tools#r129
+- Cited by: design-model-check#r209, design-model-check#r316, feature-file-tools#r120, feature-file-tools#r125, feature-file-tools#r129, feature-file-tools#r135
 - Example and its reading:
 
 ```construct
@@ -947,7 +947,7 @@ a noun of another by a relation row
 
 - Form: <noun> of|in <np>
 - Functions: `r\d+_\w+_Mod`
-- Cited by: design-model-check#r233, design-model-check#r318, feature-file-tools#r133
+- Cited by: design-model-check#r233, design-model-check#r318, design-model-check#r323, feature-file-tools#r133, feature-file-tools#r135
 - Example and its reading:
 
 ```construct
@@ -1045,7 +1045,7 @@ a state: every one that P is held and no one that is not P is, by a relation row
 
 - Form: <np> holds exactly the <nouns> that|whose ...
 - Functions: `r\d+_\w+_Exactly`
-- Cited by: design-model-check#r293, design-model-check#r294, design-model-check#r314, feature-file-tools#r120, feature-file-tools#r125
+- Cited by: design-model-check#r293, design-model-check#r294, design-model-check#r314, design-model-check#r323, feature-file-tools#r120, feature-file-tools#r125, feature-file-tools#r135
 - Example and its reading:
 
 ```construct
