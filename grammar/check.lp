@@ -398,10 +398,15 @@ gap(A,B,X,Y) :- map(A,B,Y,X), orel(B,Q,Z,Y), not relbyi(A,B,X,Q,Z), not each(A,X
 relbyi(A,B,X,Q,Z) :- map(A,B,Y,X), orel(B,Q,Z,Y), orel(A,Q,X2,X), same(A,B,X2,Z).
 pag(A,B,X,Y) :- map(A,B,Y,X), orel(A,Q,X2,X), not relofi(A,B,Y,Q,X2), not each(B,Y).
 relofi(A,B,Y,Q,X2) :- map(A,B,Y,X), orel(A,Q,X2,X), orel(B,Q,Z,Y), same(A,B,X2,Z).
-% a negated restriction of an object (`onattr(R,X,T,V)`: its T is not V, spec_lf_quant, b197) is entailed only by
-% the same negated restriction on the other side's object
-gap(A,B,X,Y) :- map(A,B,Y,X), onattr(B,Y,T,W), not onattr(A,X,T,W), not each(A,X).
-pag(A,B,X,Y) :- map(A,B,Y,X), onattr(A,X,T,W), not onattr(B,Y,T,W), not each(B,Y).
+% a negated restriction of an object (`onattr(R,X,T,V)`: its T is not V, spec_lf_quant, b197) is entailed by the
+% same negated restriction on the other side's object, or by a value of T there other than V: an attribute holds one
+% value, so a value rules out every other, `absent` included (b232)
+gap(A,B,X,Y) :- map(A,B,Y,X), onattr(B,Y,T,W), not onattrby(A,B,X,T,W), not each(A,X).
+onattrby(A,B,X,T,W) :- map(A,B,Y,X), onattr(B,Y,T,W), onattr(A,X,T,W).
+onattrby(A,B,X,T,W) :- map(A,B,Y,X), onattr(B,Y,T,W), oattr(A,X,T,V), V != W.
+pag(A,B,X,Y) :- map(A,B,Y,X), onattr(A,X,T,W), not onattrof(A,B,Y,T,W), not each(B,Y).
+onattrof(A,B,Y,T,W) :- map(A,B,Y,X), onattr(A,X,T,W), onattr(B,Y,T,W).
+onattrof(A,B,Y,T,W) :- map(A,B,Y,X), onattr(A,X,T,W), oattr(B,Y,T,V), V != W.
 % so is one over a row or a state (`onrel(R,X,Q,D,O)`: X is not related by Q to O, a term or kind(K) for "no K"; D
 % the side X is on; spec_lf_quant, b240 phase 12)
 gap(A,B,X,Y) :- map(A,B,Y,X), onrel(B,Y,Q,D,O), not onrelby(A,B,X,Q,D,O), not each(A,X).

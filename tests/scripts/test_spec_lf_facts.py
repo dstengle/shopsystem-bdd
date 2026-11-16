@@ -204,3 +204,12 @@ def test_a_negated_attribute_of_an_object_is_onattr(tmp_path):
     assert codes(tmp_path, pos % "not `done`", neg % " whose status is not `done`") == ["L1"]
     assert codes(tmp_path, pos % "not `done`", neg % " whose status is `done`") == []
     assert codes(tmp_path, RUN + "`work` shall print a stage.", neg % " whose status is not `done`") == []
+
+
+def test_a_value_entails_a_negated_attribute_of_another(tmp_path):
+    """b232: "a stage whose status is `open`" rules out `done`, so it clashes with "not ... whose status is not `done`"
+    in either order; with the value `done` it does not."""
+    pos, neg = RUN + "`work` shall print a stage whose status is %s.", RUN + "`work` shall not print a stage%s."
+    assert codes(tmp_path, pos % "`open`", neg % " whose status is not `done`") == ["L1"]
+    assert codes(tmp_path, neg % " whose status is not `done`", pos % "`open`") == ["L1"]
+    assert codes(tmp_path, pos % "`done`", neg % " whose status is not `done`") == []

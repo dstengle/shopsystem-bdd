@@ -26,6 +26,7 @@ C2 = _sibling("codified2_world.py", "shop_codified2_world")
 CACHE = _sibling("design_model_check_handlers_cache.py", "shop_design_model_check_handlers_cache")
 ORDER = _sibling("design_model_check_worlds_order.py", "shop_design_model_check_worlds_order")     # b275
 MEMBER = _sibling("design_model_check_worlds_member.py", "shop_design_model_check_worlds_member")     # b274, b297
+NEGATED = _sibling("design_model_check_worlds_negated.py", "shop_design_model_check_worlds_negated")     # b232
 
 
 class As:
@@ -219,7 +220,7 @@ TABLE = ORDER.ROWS + [
     (("precondition use term", "term is `state`"), requirement("verbal"), {}),
     (("trigger use recipient",), requirement("addressed"), {}),
     (("requirement not conform language reference",), line(NONCONFORMING), {}),
-] + MEMBER.ROWS + [
+] + MEMBER.ROWS + NEGATED.ROWS + [
     # model parse: the constructs
     (("capability has requirement", "requirement use `only`", "requirement allow act"), capability("restricting"),
      {}),
