@@ -282,3 +282,21 @@ shall [x1: agent the person (constant), x2: command `work line` (parameter), x3:
     refuse(e2, subject: x7, object: x2)
     name(e3, subject: x7, object: x5)
 ```
+
+## r41
+From: b307 r41. A requirement of the item that `model logic` reads no translation of refuses the bar, named by its id.
+
+```reading
+While an item is `shaped` and a requirement in the item has no translation, if the person runs `work ready` on the item, then `work` shall refuse the command and name the requirement.
+shall [x4: agent the person (constant), x5: command `work ready` (parameter), x6: tool `work` (constant)]
+  while [x1: item, x2: requirement]
+    status(x1) = `shaped`
+    in(x2, x1)
+    not [x3: translation]
+      of(x3, x2)
+  if
+    run(e1, subject: x4, object: x5, on: x1)
+  response
+    refuse(e2, subject: x6, object: x5)
+    name(e3, subject: x6, object: x2)
+```
