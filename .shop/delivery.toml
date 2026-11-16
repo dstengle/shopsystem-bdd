@@ -1,0 +1,10 @@
+# This repository is the plugin itself: a batch's review checks run the batch tree's own
+# scripts (paths relative to the tree each check runs in), not the main checkout's (b173).
+[review]
+checks = [
+  "python3 scripts/tools size --limit 300",
+  "python3 scripts/tools check --base {forked_from}",
+  "python3 scripts/features generate --check",
+  "python3 scripts/features bindings --unbound",
+  "python3 scripts/model decisions --check",
+]
