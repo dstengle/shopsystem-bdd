@@ -1387,3 +1387,61 @@ Feature: Design model check
     And the writer of the file form f1 is `hand`
     When the person runs `model forms` with the `--check` option
     Then `model` exits with an error naming the file form f1
+
+  @g325 @r325
+  Scenario: `model parse` still reads an order before the recipient with no closing comma
+    Given a requirement r1
+    And the requirement r1 uses `order-by`
+    And a recipient r2
+    And the requirement r1 uses the recipient r2
+    And the requirement r1 uses no closing comma
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g326 @r326
+  Scenario: `model parse` reads an order that a closing comma ends before the recipient
+    Given a requirement r1
+    And the requirement r1 uses `order-by`
+    And a closing comma c1
+    And the requirement r1 uses the closing comma c1
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g327 @r327
+  Scenario: `model parse` reads an order on every K that a closing comma ends before the recipient
+    Given a requirement r1
+    And the requirement r1 uses `order-by-every`
+    And a closing comma c1
+    And the requirement r1 uses the closing comma c1
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g328 @r328
+  Scenario: `model logic` finds the clash of a forbidden object whose value is not one code with an obliged object of another value
+    Given a requirement r1
+    And the requirement r1 uses `not-relative`
+    And a code c1
+    And the requirement r1 uses the code c1
+    And an act a1
+    And the requirement r1 forbids the act a1
+    And a requirement r2
+    And the requirement r2 obliges the act a1
+    And the requirement r2 uses `rc-whose`
+    And the requirement r2 does not use the code c1
+    When the person runs `model logic`
+    Then `model` prints `L1`
+
+  @g329 @r329
+  Scenario: `model logic` finds no clash of a forbidden object whose value is not one code with an obliged object of that value
+    Given a requirement r1
+    And the requirement r1 uses `not-relative`
+    And a code c1
+    And the requirement r1 uses the code c1
+    And an act a1
+    And the requirement r1 forbids the act a1
+    And a requirement r2
+    And the requirement r2 obliges the act a1
+    And the requirement r2 uses `rc-whose`
+    And the requirement r2 uses the code c1
+    When the person runs `model logic`
+    Then `model` exits successfully

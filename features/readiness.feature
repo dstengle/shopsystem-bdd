@@ -190,17 +190,6 @@ Feature: Readiness
     And the item i1 holds the requirement r3
     And `work` commits the item i1
 
-  @g43 @r43
-  Scenario: `work line --remove` removes a requirement of an item
-    Given a requirement r1
-    And an item i1
-    And the item i1 holds the requirement r1
-    And a requirement id r2
-    And the requirement r1 has the requirement id r2
-    When the person runs `work line` with the `--remove` option set to the requirement id r2 on the item i1
-    Then `work` removes the requirement r1
-    And `work` commits the item i1
-
   @g44 @r44
   Scenario: `work line --reword` refuses a requirement of a capability
     Given a requirement r1
@@ -358,3 +347,18 @@ Feature: Readiness
     When the person runs `work line` with the `--capability` option set to the capability c1
     Then `work` refuses `work line`
     And `work` names the capability c1
+
+  @g57 @r57
+  Scenario: `work line --remove` removes a requirement of an item and keeps a requirement id it does not retire
+    Given a requirement r1
+    And an item i1
+    And the item i1 holds the requirement r1
+    And a requirement id r2
+    And the requirement r1 has the requirement id r2
+    And a requirement id r3
+    And the item i1 holds the requirement id r3
+    And the requirement r1 does not retire the requirement id r3
+    When the person runs `work line` with the `--remove` option set to the requirement id r2 on the item i1
+    Then `work` removes the requirement r1
+    And `work` does not remove the requirement id r3
+    And `work` commits the item i1
