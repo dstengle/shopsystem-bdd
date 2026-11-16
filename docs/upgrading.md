@@ -371,10 +371,12 @@ an attribute whose entry gives no value order, neither `Order:` nor `Type:`, is 
 
 ## From 0.35.0 to 0.35.1
 
-No upgrade step, and no scenario `features generate` wrote in 0.35.0 changes. Lines that 0.35.0 parsed but did not
-translate on a response's object, of `print` or any other act, are now read by `model logic` and get scenarios:
-holds-exactly with a relative clause or a negated value as its restriction, "holds nothing", "holds no K", and an
-order on the object of a verb whose frame names the collection's kind. Run `features generate` and write the
+No upgrade step, and no scenario `features generate` wrote in 0.35.0 changes. On a response's object, of `print` or any other
+act, holds-exactly with a relative clause or a negated value as its restriction and "holds nothing" are now read by
+`model logic`, and they, "holds no K" and an order on the object of a verb whose frame names the collection's kind
+now get scenarios. `features generate` only warned of the last two in 0.35.0 (`no scenario: ...`) and exited 0, so a
+repository may hold such lines: after the upgrade `features generate --check` finds its features stale until it is
+run. Run `features generate` and write the
 handlers of the new scenarios. `work ready` now refuses an item a requirement of which `model logic` names
 `unread`, naming the requirement.
 

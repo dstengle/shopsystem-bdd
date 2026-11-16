@@ -255,8 +255,9 @@ shall [x1: agent the person (constant), x2: command `work batch start` (paramete
 ([`nothing`](../grammar/constructs.md#nothing)). "holds no item" says only that no item is in it.
 
 Each of these reads on the object of any act of a response, `write` as above, `print`, or a verb of your own whose
-frame names the collection's kind, and "holds exactly" with any restriction "every" reads: a value, a negated value or
-a relative clause. A holds-exactly scenario gives the K that fails the restriction and the Then that the collection
+frame names the collection's kind, and "holds exactly" with a value, a negated value or a relative clause over one row
+or state to a thing of its own ("that a session keeps"); a relative clause that reaches a second thing ("that cover
+the line of a stage") is not read yet. A holds-exactly scenario gives the K that fails the restriction and the Then that the collection
 does not hold it; "holds nothing" on a response's object gets the Then "the batch b1 holds nothing", and "holds no
 item" the Then "the batch b1 holds no item" with an item the batch does not hold.
 
@@ -320,7 +321,8 @@ shall [x1: agent the person (constant), x2: command `migrate status` (parameter)
         ordered(x4, release, ascending)
 ```
 
-An order is a property of a response's object, whatever the act. In a While clause, in the trigger, or after
+An order on a collection is a property of a response's object, whatever the act; "every K, ordered by ..." reads
+after a verb whose frame takes `thing`, such as `print`. In a While clause, in the trigger, or after
 "shall not" it is refused, and so is an order by an attribute with no value order. An item's status has none:
 
 ```refused

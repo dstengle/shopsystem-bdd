@@ -20,17 +20,19 @@ been renamed or retired since.
 
 ## 0.35.1: collections on any response's object
 
-- **Holds-exactly with any restriction, and holds nothing, on a response's object** (b297, PR #59): in 0.35.0
+- **Holds-exactly with a relative clause or a negated value, and holds nothing, on a response's object** (b297, PR #59): in 0.35.0
   holds-exactly on a response's object read only a value restriction ("a worktree that holds exactly the files whose
   version is `2.0.0`"); with a relative clause or a negated value ("... the files that a session keeps") `model logic`
-  and `features generate` had no translation of it. Now its only half is read for any restriction its every half
-  reads, and its scenario gets the file that fails the restriction and the Then that the worktree does not hold it.
+  and `features generate` had no translation of it. Now its only half is read for a value, a negated value, or a
+  relative clause over one row or state to a thing of its own ("that a session keeps", "that do not cover a line"),
+  and its scenario gets the file that fails the restriction and the Then that the worktree does not hold it.
   "A worktree that holds nothing" on a response's object had no translation either; now `model logic` reads it and
   its scenario says "the worktree w1 holds nothing". Both hold on the object of any act, `print` or another.
 - **An order on the object of any verb** (b298, PR #59): an order on a collection (`order-by`) had no scenario when
   the act's verb has a frame that names the collection's kind and no frame on `thing` ("return a worktree that
   holds every file, ordered by version, in descending order to the person"). Now it gets its Then of the order and
-  its counter-example, as on `print`.
+  its counter-example, as on `print`. An order after "every K" of such a verb is still refused or gets no scenario
+  (b300, b312).
 - **Holds no K on a response's object** (b299, PR #59): "a worktree that holds no file" on a response's object had
   no scenario ("no Then of not"). Now its Then says "the worktree w1 holds no file", after the act that brings the
   worktree in, and a counter-example brings in a file the worktree does not hold.
