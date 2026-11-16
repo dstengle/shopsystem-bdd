@@ -843,3 +843,126 @@ shall [x3: artifact the comment form (constant), x6: command `work sync` (parame
     not
       write(e3, subject: x7, object: x4)
 ```
+
+## r104
+From: b39 r104. Not in the audit (b39 is no reword item).
+
+```reading
+While a request line proposed in a request has a line reason, when the person runs `work show` on the request, `work` shall print the line reason.
+shall [x4: agent the person (constant), x5: command `work show` (parameter), x6: tool `work` (constant)]
+  while [x1: request line, x2: request, x3: line reason]
+    proposed in(x1, x2)
+    of(x3, x1)
+  when
+    run(e1, subject: x4, object: x5, on: x2)
+  response
+    print(e2, subject: x6, object: x3)
+```
+
+## r105
+Retires: r77. From: b39 r105. Not in the audit (b39 is no reword item).
+
+```reading
+While a comment on a request does not conform to the comment form and the request does not hold the comment, when a session runs `work sync`, `work` shall print the comment, write the comment and keep the status of the request.
+shall [x3: artifact the comment form (constant), x5: command `work sync` (parameter), x6: tool `work` (constant)]
+  while [x1: comment, x2: request]
+    on(x1, x2)
+    not
+      conforms(x1, x3)
+    not
+      in(x1, x2)
+  when [x4: session]
+    run(e1, subject: x4, object: x5)
+  response [x7: status]
+    print(e2, subject: x6, object: x1)
+    write(e3, subject: x6, object: x1)
+    status(x2) = x7
+    keep(e4, subject: x6, object: x7)
+```
+
+## r106
+From: b39 r106. Not in the audit (b39 is no reword item).
+
+```reading
+While a comment on a request does not conform to the comment form and the request holds the comment, when a session runs `work sync`, `work` shall not print the comment.
+shall [x3: artifact the comment form (constant), x5: command `work sync` (parameter), x6: tool `work` (constant)]
+  while [x1: comment, x2: request]
+    on(x1, x2)
+    not
+      conforms(x1, x3)
+    in(x1, x2)
+  when [x4: session]
+    run(e1, subject: x4, object: x5)
+  response
+    not
+      print(e2, subject: x6, object: x1)
+```
+
+## r107
+From: b39 r107. Not in the audit (b39 is no reword item).
+
+```reading
+When the person runs `work offer` on a request, `work` shall print the request and the status of the request.
+shall [x1: agent the person (constant), x2: command `work offer` (parameter), x4: tool `work` (constant)]
+  when [x3: request]
+    run(e1, subject: x1, object: x2, on: x3)
+  response [x5: status]
+    print(e2, subject: x4, object: x3)
+    status(x3) = x5
+    print(e3, subject: x4, object: x5)
+```
+
+## r108
+From: b39 r108. Not in the audit (b39 is no reword item).
+
+```reading
+When the person runs `work propose` on a request, `work` shall print the request and the status of the request.
+shall [x1: agent the person (constant), x2: command `work propose` (parameter), x4: tool `work` (constant)]
+  when [x3: request]
+    run(e1, subject: x1, object: x2, on: x3)
+  response [x5: status]
+    print(e2, subject: x4, object: x3)
+    status(x3) = x5
+    print(e3, subject: x4, object: x5)
+```
+
+## r109
+From: b39 r109. Not in the audit (b39 is no reword item).
+
+```reading
+When the person runs `work reply` on a request, `work` shall print the request and the status of the request.
+shall [x1: agent the person (constant), x2: command `work reply` (parameter), x4: tool `work` (constant)]
+  when [x3: request]
+    run(e1, subject: x1, object: x2, on: x3)
+  response [x5: status]
+    print(e2, subject: x4, object: x3)
+    status(x3) = x5
+    print(e3, subject: x4, object: x5)
+```
+
+## r110
+From: b39 r110. Not in the audit (b39 is no reword item).
+
+```reading
+When the person runs `work turn` on a request, `work` shall print the request and the status of the request.
+shall [x1: agent the person (constant), x2: command `work turn` (parameter), x4: tool `work` (constant)]
+  when [x3: request]
+    run(e1, subject: x1, object: x2, on: x3)
+  response [x5: status]
+    print(e2, subject: x4, object: x3)
+    status(x3) = x5
+    print(e3, subject: x4, object: x5)
+```
+
+## r111
+From: b39 r111. Not in the audit (b39 is no reword item).
+
+```reading
+When the person runs `work request` without the `--from` option, `work` shall write a request that originates from this bounded context.
+shall [x1: agent the person (constant), x2: command `work request` (parameter), x3: option `--from` (parameter), x4: tool `work` (constant), x6: bounded context "the bounded context whose repository the command runs in" (indexical)]
+  when
+    run(e1, subject: x1, object: x2, without: x3)
+  response [x5: request]
+    originate(subject: x5, from: x6)
+    write(e2, subject: x4, object: x5)
+```
