@@ -3,7 +3,8 @@ one thing's value compared with another's (`value-compare`, `value-same`), of an
 (refused, naming it), under a line that forbids what it obliges (an L1) and beside one whose comparison of the same
 two values contradicts it (none); an order on a collection (`order-by`) and on a printed every (`order-by-every`), of
 an attribute with no value order (refused, naming it), printed by `model parse --form`, and two in opposite directions
-on one trigger (an L1). Each world is codified2_world's, its r1 (r2) the lines here."""
+on one trigger (an L1); an order in a precondition, in a trigger and in a forbidden act (b285, refused, naming it).
+Each world is codified2_world's, its r1 (r2) the lines here."""
 import importlib.util
 import sys
 from pathlib import Path
@@ -41,6 +42,13 @@ HELD = ("When the person runs `work start`, `work` shall print a worktree that h
         "descending order.")
 EVERY = "When the person runs `work start`, `work` shall print every file, ordered by version, in ascending order."
 DESCENDING = "When the person runs `work start`, `work` shall print every file, ordered by version, in descending order."
+PRECONDITION = ("While a session has a worktree that holds a file, ordered by version, in descending order, when the "
+                "person runs `work start`, `work` shall print the worktree.")
+TRIGGER = ("When the person runs `work start` on a worktree that holds a file, ordered by version, in descending order, "
+           "`work` shall print the worktree.")
+FORBIDDEN = ("When the person runs `work start`, `work` shall not print a worktree that holds a file, ordered by "
+             "version, in descending order.")
+NAMED = {"o1": "ordered by version, in descending order"}
 OUTCOMES = "When the person runs `work start`, `work` shall print every line, ordered by outcome, in ascending order."
 
 # two senses of one attribute word (b287): the version of a worktree beside the fixture's version of a file, of the
@@ -72,6 +80,9 @@ ROWS = [
      senses(CROSS_AFTER, UNPRINTED), {}),
     (SENSED + ("requirement use `value-compare`",), senses(CROSS), {"t1": "the senses of version"}),
     (SENSED + ("requirement use `value-same`",), senses(CROSS_SAME), {"t1": "the senses of version"}),
+    (("requirement has precondition", "precondition use order"), line(PRECONDITION), NAMED),
+    (("requirement has trigger", "trigger use order"), line(TRIGGER), NAMED),
+    (("act holds order", "requirement forbid act"), line(FORBIDDEN), NAMED),
     (("requirement use `value-compare`", "requirement use term", "term has no value order"), line(UNORDERED),
      {"t1": "status"}),
     (("requirement use `value-compare`", "requirement oblige act", "requirement forbid act"), line(AFTER, UNPRINTED),

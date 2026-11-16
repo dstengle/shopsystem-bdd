@@ -4,6 +4,10 @@ of these steps first; these are what is left when none does. The Given records n
 nothing another feature read: the When's handler reads the scenario's text. A Then or a When no feature's handler
 took fails, naming the step, so that no step passes unchecked. The keys of requests' codified-2 steps (read in the
 step grammar 4, whose terms are the verbs and row words) are here too: requests' locals take each of its steps."""
+import importlib.util
+import sys
+from pathlib import Path
+
 from vocab import handler
 
 
@@ -80,3 +84,18 @@ for _template, _term in (("GivenDoes", "has"), ("GivenDoes", "holds"), ("GivenDo
                          ("GivenDoesNot", "holds"), ("GivenK", "rule"), ("GivenK", "requirement id"),
                          ):
     handler(_template, _term)(untaken)
+
+
+def _shared(module, name):
+    """The module every handler module shares, loaded by its path when none has loaded it yet."""
+    if module not in sys.modules:
+        spec = importlib.util.spec_from_file_location(module, Path(__file__).with_name(name))
+        sys.modules[module] = loaded = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(loaded)
+    return sys.modules[module]
+
+
+# The Then that states an order (b285, decision 0093), in any feature: world_order's check of what the command printed,
+# a `local` of ThenPrints tried after every feature's own, which takes no step whose `order` is set.
+_shared("shop_work_queue_world", "work_queue_world.py").local("ThenPrints")(
+    _shared("shop_world_order", "world_order.py").then)

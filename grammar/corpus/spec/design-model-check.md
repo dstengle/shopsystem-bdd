@@ -1840,6 +1840,51 @@ shall [x1: agent the person (constant), x2: command `model parse` (parameter), x
     exit(e3, subject: x6, successfully)
 ```
 
+## r306
+From: b285 r306. Not in the audit (b285 is no reword item).
+
+```reading
+If the person runs `model parse` on a requirement whose precondition uses an order, then `model` shall refuse the command and name the order.
+shall [x1: agent the person (constant), x2: command `model parse` (parameter), x6: tool `model` (constant)]
+  if [x3: requirement, x4: precondition, x5: order]
+    of(x4, x3)
+    use#2(subject: x4, object: x5)
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    refuse(e2, subject: x6, object: x2)
+    name(e3, subject: x6, object: x5)
+```
+
+## r307
+From: b285 r307. Not in the audit (b285 is no reword item).
+
+```reading
+If the person runs `model parse` on a requirement whose trigger uses an order, then `model` shall refuse the command and name the order.
+shall [x1: agent the person (constant), x2: command `model parse` (parameter), x6: tool `model` (constant)]
+  if [x3: requirement, x4: trigger, x5: order]
+    of(x4, x3)
+    use#2(subject: x4, object: x5)
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    refuse(e2, subject: x6, object: x2)
+    name(e3, subject: x6, object: x5)
+```
+
+## r308
+From: b285 r308. Not in the audit (b285 is no reword item).
+
+```reading
+If the person runs `model parse` on a requirement that forbids an act that holds an order, then `model` shall refuse the command and name the order.
+shall [x1: agent the person (constant), x2: command `model parse` (parameter), x6: tool `model` (constant)]
+  if [x3: requirement, x4: act, x5: order]
+    in(x5, x4)
+    forbid(subject: x3, object: x4)
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    refuse(e2, subject: x6, object: x2)
+    name(e3, subject: x6, object: x5)
+```
+
 ## r296
 From: b275 r296. Not in the audit (b275 is no reword item).
 
