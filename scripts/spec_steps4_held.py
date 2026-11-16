@@ -1,16 +1,31 @@
 """The Then of "V a K that holds only K2s that P" and "... that holds at most n K2s" (b272), beside spec_steps4_boxes:
 an `only` or a `count` box over the row or state of a response's object said of the object, "the worktree w1 holds
 only files whose version is `2.0.0`", "the worktree w1 holds at most three files" (`cond`); its K2s are named by no
-step. A restrictor other than values of the K2, or a count past ten, is a TraceError naming it.
+step. A count with an upper bound ("at most n", "exactly n", "fewer than n") has its counter-example (b296): one K2
+past the bound brought in before the When, each with the restriction's values, held by no step, so a program that
+puts every given K2 into the object fails the Then (`then`). A restrictor other than values of the K2, or a count past
+ten, is a TraceError naming it.
 """
 import spec_rgl
 from spec_lf_core import Atom, Ref
+import spec_steps4_boxes as boxes
 from spec_steps4_boxes import TraceError
 
 kid = spec_rgl.kid
 
 BOUNDS = {"at least": "AtLeast", "at most": "AtMost", "exactly": "Exactly", "more than": "MoreThan",
           "fewer than": "FewerThan"}
+
+
+def then(r, box):
+    """[(None, Then)] of an `only` or a `count` box over the row or state of a response's object: the Then said of
+    the object, and of a count with an upper bound, one K2 past it brought in with the restriction."""
+    tree = cond(r, box)
+    import spec_steps4_counter as counter  # here: it imports spec_steps4_boxes, which imports this module
+    if box.op == "count" and box.count[0] in counter.UPPER:
+        for c in boxes.copies(box, box.count[1] + counter.UPPER[box.count[0]] + 1):
+            boxes.bring(r, c)
+    return [(None, ("SCond", tree))]
 
 
 def cond(r, box):

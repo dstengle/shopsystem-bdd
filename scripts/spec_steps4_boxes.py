@@ -15,7 +15,8 @@ spec_steps4, whose Reader (`r`) they extend:
   the Then that y does not hold it (spec_lf_member, b274);
 - "V a K that holds only Ks2 that P" and "... that holds at most n Ks2" (a box over the row or state of a response's
   object, b272) its Then the property said of the object: "the worktree w1 holds only files whose version is
-  `2.0.0`", "the worktree w1 holds at most three files" (spec_steps4_held), its Ks2 brought in by no Given;
+  `2.0.0`", "the worktree w1 holds at most three files" (spec_steps4_held), its Ks2 brought in by no Given but,
+  of a count with an upper bound, one past it, each with the restriction (b296);
 - "the number of Ks that P" printed two Ks brought in, compared with a parameter the Given of the comparison
   (spec_lf_number, b240);
 - "the T of x" whose value is a referent (an image): no step of its own, the referent named "the T of x" where a
@@ -161,7 +162,7 @@ def acts(r, box, pos):
         return r.acts([box.body[-1]], False)
     if box.op in ("only", "count") and pos and spec_lf_quant.held(box):     # over a row of the object (b272)
         import spec_steps4_held
-        return [(None, ("SCond", spec_steps4_held.cond(r, box)))]
+        return spec_steps4_held.then(r, box)
     import spec_steps4_counter as counter  # here: it imports this module
     if box.op == "only" and pos:     # its counter-example (b273)
         return counter.only(r, box)

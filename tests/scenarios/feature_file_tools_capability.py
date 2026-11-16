@@ -87,7 +87,7 @@ def prepare(step):
     w = W.world(step)
     verbs = {v for v, *_ in w["facts"]}
     used = frozenset(b for v, a, b, pos in w["facts"] if v == "use" and pos and W.kind(w, a) == "requirement")
-    if used in HELD:
+    if used in HELD and COL.kind(w, W.kind) != "capped":     # with an upper bound, its counter-example (b296)
         held = shared("shop_codified2_constructs", "codified2_constructs.py")
         held.capability(step, PATH, HELD[used])
         w["uses"] = step.context["holds"]["features/%s.feature" % held.NAME]
