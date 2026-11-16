@@ -380,6 +380,14 @@ run. Run `features generate` and write the
 handlers of the new scenarios. `work ready` now refuses an item a requirement of which `model logic` names
 `unread`, naming the requirement.
 
+## From 0.35.1 to 0.35.2
+
+No upgrade step, and no scenario `features generate` wrote in 0.35.1 changes. Run `migrate upgrade` once: where
+0.35.1 printed `no upgrade step is pending` and left `.shop/plugin-version` behind, it now writes the release,
+commits and pushes it. A line with "every K is not `v`" in a While clause, or "every K, ordered by ..." after a verb
+whose frame names K, no longer crashes or goes without a scenario: run `features generate` and write the handlers
+of their new scenarios.
+
 ## Older than 0.32?
 
 `migrate upgrade` applies every pending step in order, oldest first, in one commit. `migrate status` lists them:
