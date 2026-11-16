@@ -10,13 +10,40 @@ been renamed or retired since.
 
 | Line | Releases |
 |---|---|
-| 0.35 | [0.35.1](#0351-collections-on-any-responses-object) · [0.35.0](#0350-collections-comparisons-and-orders) |
+| 0.35 | [0.35.2](#0352-migrate-records-the-version-orders-after-any-act-and-line-commands) · [0.35.1](#0351-collections-on-any-responses-object) · [0.35.0](#0350-collections-comparisons-and-orders) |
 | 0.34 | [0.34.1](#0341-the-version-reset-and-the-givens-of-a-triggers-referents) · [0.34.0](#0340-released-as-410-value-kinds-adjective-or-noun-and-gherkin-in-the-full-form) |
 | 0.33 | [0.33.0](#0330-released-as-400-the-controlled-language-4) |
 | 0.32 | [0.32.1](#0321-released-as-301-features-generate-writes-the-scenario-of-a-negated-response-with-a-recipient) · [0.32.0](#0320-released-as-300-verb-frames-parts-of-speech-in-the-glossary-and-verbs-typed-by-kind) |
 | 0.31 | [0.31.5](#0315-released-as-240-the-request-watch-wakes-on-githubs-events-and-starts-with-the-session) · [0.31.4](#0314-released-as-231-a-batch-runs-in-one-fresh-agent-and-a-parked-item-leaves-the-batch-at-once) · [0.31.3](#0313-released-as-230-work-pushes-its-commits-requests-post-after-they-commit-and-work-watch) · [0.31.2](#0312-released-as-220-decisions-and-records-written-by-command) · [0.31.1](#0311-released-as-210-requests-exchanged-through-github-issues) · [0.31.0](#0310-released-as-200-the-workflow-simplified) |
 | 0.30 | [0.30.0](#0300-released-as-100-codified-requirements) |
 | 0.29 and before | [0.29.0](#0290-glossary-proposals-delegations-given-late-and-fewer-stops-from-outside-a-work-item) · [0.28.3](#0283-a-branch-review-that-runs-nothing) · [0.28.2](#0282-answers-a-round-cannot-hold-go-back-to-integration) · [0.28.1](#0281-work-run-stops-visibly-on-questions-and-spends-less-agent-time) · [0.28.0](#0280-one-set-of-request-commands-work-list-and-work-show-and-answers-that-redraft) · [0.27.0](#0270-transitions-from-how-a-session-ended-and-the-turn-of-an-accepted-request) · [0.26.0](#0260-requests-and-the-context-loop) · [0.25.0](#0250-work-items-side-by-side-answers-and-guarantees) · [0.24.0](#0240-work-items-named-by-ids-and-upgrades-between-plugin-releases) · [0.23.1](#0231---work-item-keeps-tests-that-are-not-scenarios) · [0.23.0](#0230-faults-settled-query-output-as-json-the-session-keeps-the-gate-measurement-on-v3) · [0.22.0](#0220-one-requirement-per-scenario-faults-and-the-lessons-of-a-blind-formulation) · [0.21.0](#0210-the-final-layout-and-delivery-by-work-run) |
+
+## 0.35.2: migrate records the version, orders after any act, and line commands
+
+- **`migrate upgrade` records the release** (b303, PR #61): on a repository behind the plugin's release with no
+  upgrade step pending, it printed `no upgrade step is pending` and left `.shop/plugin-version` as it was, so the
+  SessionStart hook kept offering the upgrade. Now it writes the plugin's version, commits and pushes it; with the
+  two releases the same it still changes nothing.
+- **Every over a negated value in a precondition** (b310, PR #61): "While every work-item is not `ready`, ..."
+  crashed `model logic` and `features generate` (and so `work ready`). Now `model logic` translates it and the
+  scenario's Givens meet it.
+- **`work line --reword` and `--remove`** (b14, PR #61): `--reword <cap>#r<n> "<line>"` puts a new text in place of
+  one of an item's own lines, keeping its id and group; `--remove <cap>#r<n>` takes one out, its group too when it
+  was the last line. Each refuses an id that is no line of the item, a live requirement's among them.
+- **`spec/universal.md` written in `codified-2`** (b203, PR #61): laying an item's universal conditions on a spec
+  with no `spec/universal.md` (`work ready`, `work batch start`) wrote it as `codified-1`, so its conditions were
+  read in no grammar and never checked. Now it is written as `codified-2`.
+- **`work decision --supersedes`** (b179, PR #62): a decision is amended by a new one that names it; the old one is
+  set `superseded` and committed with the new one. A decision not accepted, or an id that names none, is refused.
+- **`work line --retires <cap>#r<n> --no-line`** (b271, PR #62): a live requirement retired with no line in its
+  place, its id under the item's `retired:`.
+- **"Every K, ordered by ..." after any act** (b300, PR #62): an order on a printed every read only after a verb
+  whose frame takes `thing`, such as `print`; "return every video from the channel, ordered by ..." did not parse,
+  and with a frame naming the collection's kind it got no scenario. Now it reads after any verb whose frame takes
+  K, and gets its Then of the order and its counter-example.
+- **Upgrading:** no upgrade step; `migrate upgrade` now records the release even when nothing is pending. No
+  scenario `features generate` wrote in 0.35.1 changes; a line that crashed it or got no scenario now gets one. See
+  [From 0.35.1 to 0.35.2](docs/upgrading.md#from-0351-to-0352).
 
 ## 0.35.1: collections on any response's object
 
