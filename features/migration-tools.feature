@@ -936,8 +936,8 @@ Feature: Migration tools
 
   @g81 @r81
   Scenario: `migrate upgrade` on a repository on the plugin's release says that no upgrade step is pending and changes nothing
-    Given the release of this repository is `0.23.1`
-    And the release of `migrate` is `0.23.1`
+    Given the release of this repository is `0.34.1`
+    And the release of `migrate` is `0.34.1`
     When the person runs `migrate upgrade`
     Then `migrate` prints `no upgrade step is pending`
     And `migrate` does not change a file
@@ -960,8 +960,8 @@ Feature: Migration tools
       ---
       # i1
       """
-    And the release of this repository is `0.25.0`
-    And the release of `migrate` is `0.25.0`
+    And the release of this repository is `0.34.1`
+    And the release of `migrate` is `0.34.1`
     And an initiative i1
     And this repository has the initiative i1
     And the status of the initiative i1 is `done`
@@ -981,8 +981,8 @@ Feature: Migration tools
       ---
       # i1
       """
-    And the release of this repository is `0.25.0`
-    And the release of `migrate` is `0.25.0`
+    And the release of this repository is `0.34.1`
+    And the release of `migrate` is `0.34.1`
     And an initiative i1
     And this repository has the initiative i1
     And the status of the initiative i1 is `abandoned`

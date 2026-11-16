@@ -6,7 +6,8 @@ printed and the files it left.
 
 The scenario's instances are its lines' things; their example data is the given block. So a Given of an instance or
 a link records nothing (a `local` of work_queue_world's table, which keeps the other worlds' Givens out of this
-repository), "this repository is `v`" checks the release the given block's `.shop/plugin-version` holds, and the
+repository), "the release of this repository is `v`" writes `.shop/plugin-version` holding v, "the release of
+`migrate` is `v`" runs `migrate` and the hooks from a copy of the plugin whose plugin.json says v (`ours`), and the
 Thens find the files a noun phrase names by its kind (`FILES`, `ledger`)."""
 import json
 import os
@@ -76,9 +77,10 @@ def recorded(step):
         step.context.setdefault("untracked", {})[rel] = "not committed\n"
     for code in re.findall(r" violates `([vw]_\w+)`", step.text):   # the rule a term violates, which migrate names
         step.context.setdefault("violates", []).append(code)
-    if step.kind == "repository":
-        version = held(step).get(".shop/plugin-version", "").strip()
-        assert step.values and bare(step.values[0]) == version, (step.text, version)
+    if step.attribute == "release" and step.kind == "repository":     # the release `migrate` reads of it
+        held(step)[".shop/plugin-version"] = bare(step.values[0]) + "\n"
+    if step.attribute == "release" and step.kind == "tool" and bare(step.subject or "") == "migrate":
+        step.context["migrate"] = bare(step.values[0])                 # the plugin `migrate` runs from says it
     return None
 
 
@@ -92,8 +94,13 @@ for _kind in ("capability", "feature", "requirement", "scenario", "term", "initi
 # --- the When ---
 
 
+def ours(step):
+    """(root, version) of the plugin `migrate` runs from: of the release of `migrate` a Given gave, else the default."""
+    return plugin(step.context.get("migrate"))
+
+
 def hook(step, name):
-    root = plugin()[0]
+    root = ours(step)[0]
     command = json.loads((root / "hooks/hooks.json").read_text())["hooks"][name][0]["hooks"][0]["command"]
     env = dict(os.environ, CLAUDE_PLUGIN_ROOT=str(root), PYTHON=sys.executable, **WHO)
     return subprocess.run(command, shell=True, cwd=step.repo, env=env, capture_output=True, text=True)
@@ -115,7 +122,7 @@ def runs_migrate(step):
     args = shlex.split(bare(step.command))[1:]
     if args == ["run"]:
         args += ["--context", CONTEXT]
-    run = runner(step.repo, step.request, scripts=plugin()[0] / "scripts")
+    run = runner(step.repo, step.request, scripts=ours(step)[0] / "scripts")
     step.context["done"] = run("migrate", *args, env=dict(os.environ, **WHO))
 
 
@@ -157,9 +164,9 @@ def entries(step):
 
 def pending(step):
     """The titles of the upgrade steps after the repository's release, up to the plugin's."""
-    sys.path.insert(0, str(plugin()[0] / "scripts"))
+    sys.path.insert(0, str(ours(step)[0] / "scripts"))
     import migrate_upgrade
     version = held(step).get(".shop/plugin-version", "0.23.1").strip()
     key = tuple(int(p) for p in version.split(".")) if re.fullmatch(r"[\d.]+", version) else (0, 23, 1)
     return [title for release, title, *_ in migrate_upgrade.STEPS
-            if key < tuple(int(p) for p in release.split(".")) <= tuple(int(p) for p in plugin()[1].split("."))]
+            if key < tuple(int(p) for p in release.split(".")) <= tuple(int(p) for p in ours(step)[1].split("."))]

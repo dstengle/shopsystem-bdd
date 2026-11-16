@@ -9,7 +9,6 @@ import re
 import sys
 
 from scenarios import migration_tools_handlers as M
-from scenarios.migration_old import plugin
 
 local = M.local
 ID = "example.org/acme/shop"
@@ -66,7 +65,7 @@ def unchanged(step, name):
 
 def step_not_printed(step, name):
     """The titles of the plugin's upgrade steps of the release the Given gave the step: none printed."""
-    sys.path.insert(0, str(plugin()[0] / "scripts"))
+    sys.path.insert(0, str(M.ours(step)[0] / "scripts"))
     import migrate_upgrade
     release = step.context.get("releases", {}).get(name)
     titles = [title for r, title, *_ in migrate_upgrade.STEPS if r == release]

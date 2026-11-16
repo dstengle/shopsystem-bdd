@@ -6,7 +6,7 @@ group: service
 language: codified-2
 rests_on: [design-decision/migration-in-one-pass, design-decision/living-plan-to-work-items, design-decision/final-layout, design-decision/references-are-ids, design-decision/capability-ids-are-context-scoped, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/upgrades-between-plugin-releases, design-decision/work-items-named-by-ids, design-decision/answers-not-rulings, design-decision/the-ledger-is-tracked]
 retired: [g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12, g13, g14, g15, g16, g17, g18, g19, g20, g21, g24, g25, g29, g30, g40, g41, g45, g46, g57, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r29, r30, r40, r41, r45, r46, r57, g42, r42, g48, r48, g49, r49, g62, r62, g63, r63, g64, r64, g44, r44, g60, r60, g52, r52, g53, r53, g54, r54, g55, r55, g56, r56, g61, r61, g66, r66, g67, r67, g68, r68, g65, r65, g77, r77, g78, r78, g79, r79]
-unbuilt: [r81, r82, r83]
+unbuilt: []
 ---
 
 # Migration tools
@@ -708,12 +708,15 @@ the tracked file `spec/index.md` holds:
 ```
 
 ### [g81] `migrate upgrade` on a repository on the plugin's release says that no upgrade step is pending and changes nothing
+Restates: r27@0.29.
 - [r81] While the release of this repository is the same as the release of `migrate`, when the person runs `migrate upgrade`, `migrate` shall print `no upgrade step is pending` and change no file.
 
 ### [g82] the SessionStart hook tells a session to tell the person to update the plugin
+Restates: r23@0.29.
 - [r82] While the release of this repository is after the release of `migrate`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print `update the plugin`.
 
 ### [g83] the SessionStart hook tells a session nothing on the plugin's release when no initiative is open
+Restates: r24@0.29.
 - [r83] While the release of this repository is the same as the release of `migrate` and the release of this repository is after `0.24.0` and every initiative of this repository is one of `done` or `abandoned`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall exit successfully, print no upgrade step and print no initiative.
 
 ```given

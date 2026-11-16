@@ -2017,11 +2017,12 @@ placeholder, ...".
 ### #6: a value compared with another thing's value
 
 The language says it now (b275, `value-compare` and `value-same`: "the release of the repository is after the release
-of `migrate`"), and the lines that waited on it keep their plain wording until a reword item retires them:
-migration-tools r77, r78, r79 and r80, of the release 0.34.1 (r78 is b156's line of the repository's release `newer`,
-newer than the plugin's own; r62-r64 were 0.33.0's, r65-r68 0.34.0's). They say the plugin's release the line is
-written for, as a value: "While the release of the repository is after `0.34.1`, ...", and the line gets a new id
-when the plugin's release moves on.
+of `migrate`"; b287, over two senses of one term). b284 reworded the lines that said the plugin's own release as a
+value (r77, r78 and r79 retired for r81, r82 and r83: "While the release of this repository is the same as the release
+of `migrate`, ..."), so they no longer get a new id when the plugin's release moves on. The line that still waits on
+it keeps its plain wording until a reword item retires it: migration-tools r80, of the release 0.34.1 (r62-r64 were
+0.33.0's, r65-r68 0.34.0's). It says the release the line is written for, as a value: "While the release of this
+repository is `0.33.0`, ...".
 
 ### #8: a change of an attribute's value
 
