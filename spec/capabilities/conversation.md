@@ -6,7 +6,7 @@ group: service
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: [g2, r2, g3, r3, g4, r4]
-unbuilt: [r9, r10, r11, r12, r13, r14, r15]
+unbuilt: []
 ---
 
 # Conversation
@@ -23,15 +23,11 @@ of every item and batch a session names (design goal 10).
 - **git directory** (noun): the directory in which git keeps the data of a repository, which is never committed. Kind of: thing. This: the git directory of the repository the command runs in.
 - **transcript** (noun): the file in which Claude Code keeps the messages of a session. Kind of: file.
 
-- **directive** (noun): a file under `.shop/directives/` that cites a quote of the person's words which every session follows until the directive is promoted or dropped. Kind of: file.
-- **status** (attribute of directive): Values (adjective): `live`, `promoted`, `dropped`. Transitions: `live` → `promoted`: `work promote`; `live` → `dropped`: `work drop`.
-
 ## Relations
 | from | word | to | cardinality |
 |---|---|---|---|
 | file | in | git directory | one |
 | transcript | of | session | one |
-| quote | of | directive | one |
 
 ## Behaviour
 
@@ -47,21 +43,6 @@ of every item and batch a session names (design goal 10).
 
 ### [g8] The names table at SessionStart
 - [r8] When the SessionStart hook runs `work names`, `work` shall print every item, every title of an item and every batch.
-
-### [g9] `work directive` keeps the person's words as a live directive
-- [r9] When a session runs `work directive`, `work` shall write a directive whose quote cites a message and commit the directive.
-
-### [g10] The SessionStart hook shows the live directives
-- [r10] When the SessionStart hook runs `work directives` with the `--hook` option, `work` shall print the quote of every directive whose status is `live`.
-
-### [g11] `work promote` promotes a live directive to what it became
-- [r11] When a session runs `work promote` with the `--to` option set to an item on a directive whose status is `live`, `work` shall set the status of the directive to `promoted` and commit the directive.
-- [r12] When a session runs `work promote` with the `--to` option on a directive whose status is not `live`, `work` shall refuse the command and name the directive.
-- [r13] When a session runs `work promote` with the `--to` option set to an item that does not exist on a directive, `work` shall refuse the command and name the item.
-
-### [g12] `work drop` drops a live directive with its reason
-- [r14] When a session runs `work drop` with the `--why` option on a directive whose status is `live`, `work` shall set the status of the directive to `dropped` and commit the directive.
-- [r15] When a session runs `work drop` with the `--why` option on a directive whose status is not `live`, `work` shall refuse the command and name the directive.
 
 ## Implementation, may change
 
