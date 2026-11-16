@@ -15,6 +15,12 @@ PASSING = ("While an initiative is `started`, when the person runs `work abandon
            "`abandoned`.")
 FAILING = ("While an initiative is `proposed`, when the person runs `work start` on the initiative, `work` shall frobnicate the "
            "initiative.")
+# A line that parses there but that `model logic` has no translation of (a count of other than an object), which
+# the bar's `features generate` does not see: a line of the guarantees capability `review`, which has no scenarios
+# (r41); the id the item's block gives it.
+UNREAD = ("When the person runs `work start` on an initiative, `work` shall give a brief to at most two stages.")
+UNREAD_CAPABILITY = "review"
+UNREAD_ID = "review#r5"
 # A term bullet that brings a lexicon problem the fixture's lexicon does not have (v_t12: a condition whose gloss
 # names another kind, the brief, with "the"), and its term.
 ILL_TERM = "briefed"
@@ -82,17 +88,17 @@ def codify(step, old=False):
     step.context["codified"] = True
 
 
-def block(title, text, terms=()):
-    return "### work-queue\n\n%s#### [g4] %s\n- [r5] %s" % ("".join("%s\n\n" % t for t in terms), title, text)
+def block(title, text, terms=(), capability=CAPABILITY):
+    return "### %s\n\n%s#### [g4] %s\n- [r5] %s" % (capability, "".join("%s\n\n" % t for t in terms), title, text)
 
 
-def give_lines(step, name, text, terms=()):
-    """The item `name` given the one requirement line `text`, as `work-queue#r5` in a group `g4`, after the term
-    bullets `terms`."""
+def give_lines(step, name, text, terms=(), capability=CAPABILITY):
+    """The item `name` given the one requirement line `text`, as `<capability>#r5` (work-queue's by default) in a
+    group `g4`, after the term bullets `terms`."""
     codify(step)
     fields = step.context.get("item_fields", {}).get(name, {})
     B().write_item(step, name, sections={"Requirements": block(fields.get("title", "Title of %s" % name), text,
-                                                               terms)})
+                                                               terms, capability)})
 
 
 # The world's own request, which a request line of an item is a line of: a peer's, in the upstream's turn.

@@ -1,8 +1,8 @@
 """The readiness bar (capability readiness; workflow simplification plan 3, D6-D9, D11): an item is passing when every
 request line of the item is settled and its requirement lines are well-formed: they parse in grammar 4
 (spec_language), they bring no problem of the lexicon (v_t4 to v_t13) that the lexicon without them does
-not have (readiness r15), `model logic` finds no L0 and no L1 naming them, and `features generate` writes a scenario
-for each of their groups that has a step. The lines are checked on a copy of `spec/` under the temporary directory
+not have (readiness r15), `model logic` finds no L0 and no L1 naming them and reads each of them (r41), and
+`features generate` writes a scenario for each of their groups that has a step. The lines are checked on a copy of `spec/` under the temporary directory
 with the item's lines laid in, removed afterwards whatever happens; `spec/` itself is never written. The `check` design-decisions that a
 capability of the item's lines rests on run their tests on the root checkout, each once a process (plan 6, D13)."""
 import contextlib
@@ -57,9 +57,10 @@ def _parses(copy, blocks):
     return reasons
 
 
-def _logic(copy, mine):
-    """(reasons, warnings) of `model logic` on the copy: an L0, and an L1 naming one of `mine`, refuse (D6); an L3
-    naming one of them is a warning."""
+def _logic(copy, mine, conditions=()):
+    """(reasons, warnings) of `model logic` on the copy: an L0, and an L1 naming one of `mine`, refuse (D6), and so
+    does each of `mine` and of the item's universal conditions `conditions` (`U<n>`) that it reads no translation of
+    (`spec_solve.unread`, r41), an unread requirement elsewhere not; an L3 naming one of them is a warning."""
     reasons, warnings = [], []
     for f in spec_solve.run(copy):
         said = "%s %s" % (f.code, f.text)
@@ -67,6 +68,8 @@ def _logic(copy, mine):
             reasons.append(said)
         elif f.code == "L3" and set(f.ids) & mine:
             warnings.append(said)
+    named = {**{i: i for i in mine}, **{u: "universal#%s" % u for u in conditions}}
+    reasons += ["%s: no translation: %s" % (named[i], why) for i, why in spec_solve.unread(copy) if i in named]
     return list(dict.fromkeys(reasons)), list(dict.fromkeys(warnings))
 
 
@@ -115,7 +118,7 @@ def well_formed(root, item, others=()):
         reasons = reasons or _parses(copy, blocks)
         if reasons:
             return reasons, []
-        reasons, warnings = _logic(copy, mine)
+        reasons, warnings = _logic(copy, mine, [uid for uid, _ in blocks.universal])
         return reasons + _scenarios(copy, blocks), warnings
     finally:
         shutil.rmtree(copy, ignore_errors=True)
