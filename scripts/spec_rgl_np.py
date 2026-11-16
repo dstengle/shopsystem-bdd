@@ -5,7 +5,7 @@ A row `| k1 | word | k2 |` gives a modifier on k1's bare noun, "a file in its wo
 -> k1_CN`: modifiers take a bare head, so they never stack to the left). A row whose word is `of` also gives "its k1"
 (`k1_Its`), the frame "k2 has k1" (a state of k2, `r<n>_Has`) and the compound "a k2 k1" (`r<n>_Cpd`, "a request
 comment", which means "a comment of a request"); a row whose word is `in` gives the frame "k2 holds k1"
-(`r<n>_Holds`). An attribute T of a kind K gives its noun phrases (`T_NP`): "the T of x" (`T_Of_K`), "its T"
+(`r<n>_Holds`), "k1 is in k2", "k2 holds exactly the k1s that P" and "k2 holds nothing" (`collections`, b274). An attribute T of a kind K gives its noun phrases (`T_NP`): "the T of x" (`T_Of_K`), "its T"
 (`T_Its`) and the compound "the K T" (`T_Cpd_K`), each a thing (`T_Up`), and the condition "the T of x is v"
 (`T_IsOf`). An attribute whose entry says `Order:` (b240) also gives a point `T_Pt`, one of its values (`T_PtVal`) or a
 code (`T_PtCode`), "the T of x is after v" (`T_Cmp`), "the T of x is after v and before w" (`T_Between`), and, ordered
@@ -29,7 +29,7 @@ def compound(head, before):
 def rows(w, vocab):
     """The modifier, its, has, holds and compound funs of each relation row; the kinds given a state frame, in the
     order of their rows (a set's order changes with the process, and the sources with it)."""
-    states, its, seen = {}, set(), set()
+    states, its, seen, nothing = {}, set(), set(), set()
     for n, (k1, word, k2) in enumerate(vocab.rows, 1):
         K1, K2, R = spec_rgl.kid(k1), spec_rgl.kid(k2), "r%d_%s" % (n, spec_rgl.slug(word))
         w.fun(R + "_Mod", "%s_N -> %s_NP -> %s_CN" % (K1, K2, K1),
@@ -41,12 +41,28 @@ def rows(w, vocab):
         w.cat(K2 + "_St", "VP")
         states[k2] = None
         w.fun(R + ("_Has" if word == "of" else "_Holds"), "%s_Arg -> %s_St" % (K1, K2), "mkVP (%s) x" % verb, "x")
+        if word == "in":       # is-in, holds-exactly and "holds nothing" (b274)
+            states.setdefault(k1, None)
+            collections(w, R, K1, K2, K2 in nothing)
+            nothing.add(K2)
         if word == "of":
             w.fun(R + "_Cpd", K1 + "_CN", "mkCN (%s)" % compound(k1, k2))
             if k1 not in its:
                 its.add(k1)
                 w.fun(K1 + "_Its", "%s_N -> %s_NP0" % (K1, K1), "mkNP (SyntaxEng.mkQuant it_Pron) n", "n")
     return list(states)
+
+
+def collections(w, R, K1, K2, said):
+    """Of a row `K1 | in | K2` (b274): "x is in y", a state of K1 (`R_In`, is-in); "y holds exactly the K1s that P"
+    (`R_Exactly`, holds-exactly), a state of K2; and, once a K2 (`said`: an earlier row gave it), "y holds nothing"
+    (`K2_Holds_Nothing`), no thing of any kind a row lets K2 hold."""
+    w.cat(K1 + "_St", "VP")
+    w.fun(R + "_In", "%s_Arg -> %s_St" % (K2, K1), "mkVP (SyntaxEng.mkAdv in_Prep x)", "x")
+    w.fun(R + "_Exactly", "%s_CN -> %s_St" % (K1, K2),
+          'mkVP (mkV2 (mkV "hold" "holds" "held" "held" "holding") (mkPrep "exactly")) (mkNP thePl_Det cn)', "cn")
+    if not said:
+        w.fun(K2 + "_Holds_Nothing", K2 + "_St", "mkVP (%s) nothing_NP" % HOLD)
 
 
 def attributes(w, vocab):

@@ -8,8 +8,10 @@ I14a), the one meaning `model logic` reads (spec_lf), in the step grammar 4's tr
 - Thens: each act of the response in the present (`S_Does`; setting an attribute spec_lf_set's), its polarity kept:
   "change nothing" is "changes nothing", a `not` over an act on a referent of its own "does not V a K"; a condition of
   the response a condition, a row's atom its frame ("the session s1 has the worktree w1", "the worktree w1 holds the
-  file f1"). An `every` box gives two Ks, so the line is not met vacuously (R6): each brought in by a Given with its
-  restrictor, its scope's Thens said of each (b221). An act a universal condition entails (`entailed`, by its number
+  file f1"), what is said of a thing after the act that brings it in (spec_steps4_boxes' `order`, b268). An `every`
+  box gives two Ks, so the line is not met vacuously (R6): each brought in by a Given with its
+  restrictor, its scope's Thens said of each (b221), and a counter-example (spec_steps4_counter, b273); each
+  referent of a response with "two Ks" brought in before the When (b273). An act a universal condition entails (`entailed`, by its number
   as spec_lf_facts numbers acts, "change nothing" one) is left out, `# entailed: <premise>` in its place.
 Givens and the When are the first requirement's; a later one's While and trigger referent of a kind is the first
 one's of that kind and rank. A referent is named by its kind's first letter and a count, in order of first mention;
@@ -18,7 +20,6 @@ an actor by its fun, a code by the slot's `K_Code`, the run's own thing by `K_Th
 two Ks a When each. A construct with no step (`only`, a count, `or`, the atom of a row whose word is neither `of` nor
 `in`, a negated restriction, a line of "may", "always" or "never") is a TraceError naming it.
 """
-from dataclasses import replace
 
 import spec_lf
 import spec_lf_core
@@ -30,11 +31,11 @@ import spec_lf_set
 import spec_lf_values
 import spec_rgl
 import spec_steps4_boxes as boxes
+import spec_steps4_counter as counter
 from spec_lf_core import Atom, Box
 
 kid = spec_rgl.kid
-TraceError = boxes.TraceError
-subst = boxes.subst
+TraceError, subst = boxes.TraceError, boxes.subst
 
 
 class Reader:
@@ -44,7 +45,7 @@ class Reader:
         self.vocab, self.names, self.counts, self.shared, self.known = vocab, {}, {}, {}, set()
         self.brought = []       # the Givens of the response's boxes: each K brought in, its restrictor
         self.dets, self.images = {}, {}     # a referent said "no K"; an image's "the T of x" (spec_steps4_boxes)
-        self.numbers = {}       # a printed number's referent: its `number` box (spec_lf_number, b240)
+        self.numbers, self.counted = {}, {}     # a printed number's `number` box (b240); a counted K's (b273)
         self.arguments = {}     # an option's referent: its argument (spec_lf_option, b240)
         self.choices, self.taken, self.options = list(choices), [], []      # the case of each `or` box
         self.pre = []           # the first line's While, Where and trigger parts: what a value Given meets
@@ -98,7 +99,7 @@ class Reader:
     def np(self, ref, slot, a=False):
         """The `K_NP` tree of a referent in a slot of kind `slot`; with `a`, "a K" of its kind."""
         S = kid(slot)
-        if ref in self.images or ref in self.numbers:
+        if ref in self.images or ref in self.numbers or ref in self.counted:
             return boxes.np_image(self, ref, slot)
         if ref in self.dets:
             a = self.dets[ref]
@@ -204,7 +205,7 @@ class Reader:
     def acts(self, body, pos=True):
         """[(act number or None, Then tree)] of a response's items, numbered as spec_lf_facts numbers its acts."""
         out = []
-        for item in body:
+        for item in boxes.order(body):     # what is said of a thing after the act that brings it in (b268)
             if isinstance(item, Atom) and item.pred in ("event", spec_lf_set.PRED):
                 out.append((True, self.does(item, pos)))
             elif isinstance(item, Atom) and item.pred == spec_lf_distinct.PRED:     # two names (b240)
@@ -218,23 +219,10 @@ class Reader:
                 out.append((True, self.does(item.body[0], not pos, set(item.refs))))
             elif item.op == "not" and not item.refs and not boxes.restriction(item):
                 out += self.acts(item.body, not pos)
-            elif item.op == "every" and pos:
-                out += self.each(item)
+            elif item.op == "every" and pos:     # two members and a counter-example (b273)
+                out += counter.each(self, item)
             else:
                 out += boxes.acts(self, item, pos)
-        return out
-
-    def each(self, box):
-        """The Thens of an `every` box said of two Ks, each brought in with its restrictor (`brought`); the second
-        K's acts marked `again`, numbered as the first's (spec_lf_facts reads the box's acts once)."""
-        out = []
-        for copy in (1, 2):
-            m = {r: replace(r, name="%s.%d" % (r.name, copy)) for r in box.refs + box.scope.refs}
-            for r in box.refs:
-                self.brought.append((kid(r.kind) + "_Given", (kid(r.kind) + "_n",), ("NameLit", self.name(m[r]))))
-            self.brought += [s for c in subst(box.body, m) for s in boxes.restrictor(self, c)]
-            acts = self.acts(subst(box.scope.body, m))
-            out += acts if copy == 1 else [("again" if act else act, tree) for act, tree in acts]
         return out
 
     def does(self, atom, pos, a=()):
@@ -291,6 +279,9 @@ def read(vocab, forms, entailed=None, r=None):
                     subject, s, vp = r.clause(event)
                     when.append(("STrig", (kid(subject) + "_Event", s, vp)))
             elif part.op == "response":
+                if any(isinstance(i, Atom) and i.pred == spec_lf_distinct.PRED for i in part.body):
+                    for x in part.refs:     # each of "two Ks" brought in before the When (b273)
+                        r.bring_in(x)
                 for act, tree in r.acts(part.body):
                     number += act is True
                     thens.append(("#", "entailed: %s" % gone[number]) if act and number in gone else ("then", tree))

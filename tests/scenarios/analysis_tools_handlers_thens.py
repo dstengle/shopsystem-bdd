@@ -101,10 +101,46 @@ def printed(step, want):
     return want in out
 
 
+# A thing a Then names before the Then that says what it is ("`tools` prints the commit c2" before "the coverage map
+# c1 has the commit c2", b268): what the output shows of its kind, the one it is kept for the Thens after it, or the
+# several it may be (`ONE_OF`) until a Then says which.
+SHOWN = {"the commit ": r'"commit": "([0-9a-f]+)"|made at ([0-9a-f]+)', "the heading ": r"(?m)^(== .+ ==)$",
+         "the pip command ": r"Tried: (.+ -m pip install \S+)", "the Python interpreter ": r"(?m)^(python: \S+)"}
+
+
+def one_of(step):
+    return step.context.setdefault("one_of", {})
+
+
+def observe(step, np, found):
+    """Bind the instance `np` names, named first here, to the things of its kind `found` lists; none is a failure."""
+    name = h.name_of(np)
+    if name is None or name in h.named(step) or name in one_of(step):
+        return
+    assert found, (np, "none in", output(step, err=True))
+    one_of(step)[name] = sorted(set(found))
+    if len(one_of(step)[name]) == 1:
+        h.named(step)[name] = one_of(step)[name][0]
+
+
+def bind(step, name, value):
+    """A Then that says what `name` is: the one, or one of those, an earlier Then found; else bound here."""
+    if name in one_of(step):
+        assert value in one_of(step)[name], (step.text, value, one_of(step)[name])
+    elif name in h.named(step):
+        assert h.named(step)[name] == value, (step.text, value, h.named(step)[name])
+    h.named(step)[name] = value
+
+
 @handler("ThenPrints", "`tools`")
 def prints(step):
     for np in step.nps:
-        if np.startswith("the log line"):
+        prefix = next((p for p in SHOWN if np.startswith(p)), None)
+        if prefix:
+            observe(step, np, [next(g for g in m.groups() if g) for m in re.finditer(SHOWN[prefix], output(step, True))])
+            if h.name_of(np) not in h.named(step):     # several printed: a later Then says which
+                continue
+        if np.startswith("the log line") or np == "one log line":     # one, counted (b273)
             lines = [line for line in output(step).splitlines() if line.startswith(LOG)]
             assert len(lines) == 1 and all(name in lines[0] for name in w.NAMES), output(step, err=True)
             continue
@@ -114,9 +150,12 @@ def prints(step):
 
 @handler("ThenPrintsNot", "`tools`")
 def prints_not(step):
-    for np in step.nps:   # "python: <path> (<how it was found>)"
+    for np in step.nps:
         want = expected(step, np)
-        assert not any(line.startswith(want + " ") for line in output(step).splitlines()), (np, output(step))
+        if interpreter(step, np) is not None:     # "python: <path> (<how it was found>)"
+            assert not any(line.startswith(want + " ") for line in output(step).splitlines()), (np, output(step))
+        else:     # a counter-example's test, Python file, function or reference (b273)
+            assert not printed(step, want), (np, want, output(step, err=True))
 
 
 @handler("ThenExitsOk", "`tools`")
@@ -158,7 +197,7 @@ def has(step, owner, np):
 
 @four("ThenDoes", "has", "analysis-tools")
 def then_has(step):
-    h.named(step)[step.names[-1]] = has(step, step.subject, step.nps[0])
+    bind(step, step.names[-1], has(step, step.subject, step.nps[0]))
 
 
 @handler("ThenDoes", "pin")
@@ -171,7 +210,7 @@ def pins(step):
 @handler("ThenDoes", "execute")
 def executes(step):
     """The Python interpreter p1 executes `scripts/tools`: the one the scenario runs `tools` with, printed so."""
-    h.named(step)[step.names[0]] = "python: %s" % sys.executable
+    bind(step, step.names[0], "python: %s" % sys.executable)
 
 
 @handler("ThenDoes", "make")
@@ -195,5 +234,15 @@ def installs(step):
             assert "gf-rgl 20250812 built" in output(step), output(step, err=True)
             assert (rgl / "alltenses" / "AllEng.gfo").is_file() and (rgl / "release").is_file(), output(step, True)
             continue
+        if np.startswith("the version "):     # named first here: a pinned version pip was asked for
+            observe(step, np, [c for c in w.pip_calls(step.context["python"]) if "==" in c])
         want = expected(step, np)
         assert PACKAGES.get(want, want) in w.pip_calls(step.context["python"]), (np, w.pip_calls(step.context["python"]))
+
+
+@handler("ThenDoesNot", "install")
+def installs_not(step):
+    """A counter-example's tool (b273): one already installed, which `tools install` does not ask pip for."""
+    for np in step.nps:
+        want = expected(step, np)
+        assert PACKAGES.get(want, want) not in w.pip_calls(step.context["python"]), (np, w.pip_calls(step.context["python"]))

@@ -24,12 +24,12 @@ Feature: Intake
     And a session s1
     When the session s1 runs `work outcome rewritten` on the request line r1
     Then `work` sets the line outcome of the request line r1 to `rewritten`
+    And `work` writes the request line r3
     And the request r2 has the request line r3
     And the request line r3 counters the request line r1
-    And `work` writes the request line r3
     And `work` sets the side of the request r2 to `asker`
-    And the comment c1 is on the request r2
     And `work` posts the comment c1
+    And the comment c1 is on the request r2
 
   @g12 @r12
   Scenario: `work outcome refused` writes the reason
@@ -39,8 +39,8 @@ Feature: Intake
     And a session s1
     When the session s1 runs `work outcome refused` on the request line r1
     Then `work` sets the line outcome of the request line r1 to `refused`
-    And the reason r3 is for the request line r1
     And `work` writes the reason r3
+    And the reason r3 is for the request line r1
     And `work` commits the request r2
 
   @g13 @r13

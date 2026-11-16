@@ -54,15 +54,17 @@ def item_is(step):
 
 
 @four("ThenDoes", "set", *BOTH)
+@four("ThenDoesNot", "set", *BOTH)
 def sets(step):
-    """`work` sets the T of the item i1 to `v`: the item's file says it; the batches' kinds are theirs."""
-    found = re.match(r"^`work` sets the (\w+) of the item (i\d+) to `([^`]+)`$", step.text)
+    """`work` sets (does not set, a counter-example's, b273) the T of the item i1 to `v`: the item's file says it
+    (says another value); the batches' kinds are theirs."""
+    found = re.match(r"^`work` (sets|does not set) the (\w+) of the item (i\d+) to `([^`]+)`$", step.text)
     if not found:
         return False
-    attribute, name, value = found.groups()
+    said, attribute, name, value = found.groups()
     done_ok(step)
-    assert W.field(B.item_file(step, name), attribute) == value, (step.text, W.field(B.item_file(step, name),
-                                                                                       attribute))
+    got = W.field(B.item_file(step, name), attribute)
+    assert (got == value) == (said == "sets"), (step.text, got)
 
 
 @four("ThenDoes", "write", *BOTH)
@@ -74,9 +76,18 @@ def writes_item(step):
         if step.term == "commit":
             B.in_commits(step, rel)
     elif k == "dependency" and step.term == "write":
-        assert name in step.context.get("deps", {}), (step.text, "no item gained the dependency")
+        if name not in step.context.get("deps", {}):     # first named here: the dependency an item gained
+            gains = [(item, d) for item in step.context.get("items", {}) for d in gained(step, item)]
+            assert gains, (step.text, "no item gained the dependency", B.changed(step))
+            step.context.setdefault("deps", {})[name] = {"of": gains[0][0], "on": gains[0][1]}
     else:
         return False
+
+
+def gained(step, item):
+    """The dependencies the item's file has that it had not before the run."""
+    return [d for d in B.depends_on(B.item_file(step, item))
+            if d not in step.context.get("item_fields", {}).get(item, {}).get("depends_on", [])]
 
 
 @four("ThenDoes", "has", *BOTH)
@@ -85,14 +96,19 @@ def has_then(step):
     (k1, item), (k2, name) = parts(step)
     if k1 != "item" or k2 not in ("dependency", "title"):
         return False
+    titles, deps = step.context.setdefault("titles", {}), step.context.setdefault("deps", {})
     if k2 == "title":
-        step.context.setdefault("titles", {})[name] = item
+        if name in titles:     # a title printed before: the item's is one of those
+            assert item in titles[name], (step.text, B.title_of(step, item), titles[name])
+        titles[name] = [item]
         return
     done_ok(step)
-    gained = [d for d in B.depends_on(B.item_file(step, item))
-              if d not in step.context.get("item_fields", {}).get(item, {}).get("depends_on", [])]
-    assert gained, (step.text, B.changed(step))
-    step.context.setdefault("deps", {})[name] = {"of": item, "on": gained[0]}
+    if name in deps:     # a dependency written before: the item's
+        assert deps[name]["of"] == item and deps[name]["on"] in gained(step, item), (step.text, deps[name])
+        return
+    found = gained(step, item)
+    assert found, (step.text, B.changed(step))
+    deps[name] = {"of": item, "on": found[0]}
 
 
 @four("GivenDoes", "has", *BOTH)
@@ -112,6 +128,30 @@ def has_given(step):
         step.context.setdefault("questions", {})[n1] = [n2]
     else:
         return False
+
+
+@four("GivenDoesNot", "on", *BOTH)
+def question_elsewhere(step):
+    """`the question q3 is not on the item i1` (a counter-example, b273): the question is another item's, one whose
+    status is `shaped`, so that `work backlog` prints its row and not its question."""
+    (k1, n1), (k2, _) = parts(step)
+    if (k1, k2) != ("question", "item"):
+        return False
+    text = "Which of the two is meant in %s?" % n1
+    B.write_item(step, "i9%s" % n1[1:], status="shaped", sections={"Question": text})
+    step.context.setdefault("asked_elsewhere", {})[n1] = text
+
+
+@four("ThenPrintsNot", "`work`", *BOTH)
+def prints_not(step):
+    """A counter-example's question (b273): its words are nowhere in what `work backlog` printed."""
+    k, name = kind(step.nps[0])
+    if k != "question":
+        return False
+    text = step.context.get("asked_elsewhere", {}).get(name) or (
+        B.QUESTION if name in step.context.get("questions", {}) else None)
+    assert text is not None, (step.text, "no question q3 in the world")
+    assert text not in done_ok(step), (step.text, text, step.context["result"].stdout)
 
 
 @four("GivenDoes", "exist", *BOTH)
@@ -168,13 +208,14 @@ def prints(step):
     np = step.nps[0]
     k, name = kind(np)
     stdout = done_ok(step)
-    if k == "JSON object":
+    if k == "JSON object" or np == "one JSON object":     # one, counted (b273): a second is extra data
         assert isinstance(json.loads(stdout), dict), stdout
-    elif k == "title":
-        item = step.context["titles"][name]
-        assert B.title_of(step, item) in stdout, (step.text, stdout)
-        line = B.row(stdout, item)
-        assert line is None or B.title_of(step, item) in B.cells(line), (step.text, line)
+    elif k == "title":     # a title named first here: the titles of the items it printed
+        items = step.context.setdefault("titles", {}).get(name) or list(step.context.get("items", {}))
+        shown = [item for item in items if B.title_of(step, item) in stdout
+                 and ((line := B.row(stdout, item)) is None or B.title_of(step, item) in B.cells(line))]
+        assert shown, (step.text, stdout)
+        step.context["titles"][name] = shown
     elif k == "dependency":
         dep = step.context["deps"][name]
         assert "blocked by %s" % B.ident(dep["on"]) in row_of(step, dep["of"]), (step.text, stdout)

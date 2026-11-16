@@ -184,7 +184,12 @@ def given_cites(step):
     quote, message = step.names
     cites = talk(step).setdefault("cites", {}).setdefault(quote, [])
     cites.append(message)
-    name = "quote-1"
+    talk(step)["quotes"][quote] = write_quote(step, "quote-1", cites)
+
+
+def write_quote(step, name, cites):
+    """The quote's file `name`, written with conversation_quote.render, its first cited message the one it is cited
+    for, after one message of the session, and each other it cites after it; committed. Its path."""
     at = datetime.datetime.fromisoformat(T.at(3))
     said = [conversation_quote.C.Message(talk(step)["messages"][m], "person", at + datetime.timedelta(minutes=k),
                                          talk(step)["texts"][m]) for k, m in enumerate(cites)]
@@ -195,9 +200,9 @@ def given_cites(step):
     path = step.repo / rel
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(conversation_quote.render(found))
-    talk(step)["quotes"][quote] = rel
     B.index(step)
     step.context["head"] = W.init(step.repo)
+    return rel
 
 
 @local("WhenRuns")

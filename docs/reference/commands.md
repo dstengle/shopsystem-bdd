@@ -684,7 +684,9 @@ What each rule guards is in [the design model reference](design-model.md).
 ### `model logic`
 
 The temporal and entailment check of the codified lines: clashes between requirements (L1 to L8). Give a capability,
-or a requirement id for the findings that name it.\
+or a requirement id for the findings that name it. A requirement it has no translation of is printed
+`unread <id>: <what it cannot read>`, and the count says how many are unread in place of `no findings`; the exit is
+the findings' alone.\
 Synopsis: `model logic [--json] [capability]`
 
 ```console

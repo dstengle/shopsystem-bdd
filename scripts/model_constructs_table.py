@@ -131,8 +131,10 @@ CONSTRUCTS = [
       "When a session writes a file in its worktree, `work` shall print the file."),
     c("this", "the run's own thing", "this <noun>", r"%s_This" % K,
       "When the person runs this command, `work` shall print this command."),
-    c("nothing", "no thing at all", "nothing", r"%s_Nothing" % K,
-      "If `work` refuses a command, then `work` shall change nothing."),
+    c("nothing", "no thing at all: after change, and after holds of each kind a relation row \"in\" lets it hold",
+      "nothing", r"%s_Nothing" % K,
+      "While a worktree holds nothing, when the person runs `work start` on the worktree, `work` shall print the "
+      "worktree."),
     c("code", "a code as a thing", "`<code>`", r"%s_Code" % K,
       "`work` shall not change `spec/index.md`."),
     c("named", "a noun named by a code", "the <noun> `<code>`", r"%s_Named" % K,
@@ -153,6 +155,14 @@ CONSTRUCTS = [
       "While a session has a worktree, when the person runs `work start`, `work` shall print the worktree."),
     c("holds-relation", "a state: the other noun of a relation row \"in\"", "<np> holds <np>", r"r\d+_\w+_Holds",
       "While a worktree holds a file, when a session writes the file, `work` shall print the worktree."),
+    c("is-in", "a state: a relation row \"in\" said from the member's side, as holds-relation", "<np> is in <np>",
+      r"r\d+_\w+_In",
+      "While a file is in a worktree, when the person runs `work start` on the worktree, `work` shall print the "
+      "file."),
+    c("holds-exactly", "a state: every one that P is held and no one that is not P is, by a relation row \"in\"",
+      "<np> holds exactly the <nouns> that|whose ...", r"r\d+_\w+_Exactly",
+      "When the person runs `work start`, `work` shall print a worktree that holds exactly the files whose version "
+      "is `2.0.0`."),
     # attributes
     c("attribute-of", "a thing's attribute", "the <attribute> of <np>; the <noun> <attribute>",
       r"%s_(?:Of_k_\w+|Cpd_k_\w+|Up)" % T,

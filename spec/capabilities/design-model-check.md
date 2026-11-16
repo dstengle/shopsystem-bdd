@@ -100,8 +100,10 @@ context: product-level artifacts are read only where the files contain them.
 - **setting** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, whose response says that an agent shall set an attribute of a thing the line names earlier to a value, as in "set the status of the request to `delivered`" or "set its status to `delivered`".
 - **duplicated** (adjective of term): a term that two glossary entries have as their term.
 
-## Relations
+- **`no findings`** (proper noun): what `model logic` prints when it finds nothing and reads every requirement it checks. Kind of: text.
+- **translation** (noun): the facts of the check of `model logic` that it reads a requirement into, which a requirement of a construct it has no reading of lacks. Kind of: thing.
 
+## Relations
 | from | word | to | cardinality |
 |---|---|---|---|
 | subject | of | term |  |
@@ -138,6 +140,7 @@ context: product-level artifacts are read only where the files contain them.
 | parse | of | requirement | one |
 | parse | in | parse cache |  |
 | compiled grammar | of | requirement | one |
+| translation | of | requirement | one |
 
 ## Behaviour
 
@@ -484,6 +487,30 @@ Restates: r37@0.29.
 
 ### [g287] `model check` refuses a capability in the old language, naming `migrate upgrade`
 - [r287] If the person runs `model check` on a capability whose language is `codified-1`, then `model` shall refuse the command and name `migrate upgrade`.
+
+### [g288] `model logic` translates only over a relation in a response
+- [r288] While a requirement of a capability uses `only` and the requirement uses `holds-relation`, when the person runs `model logic` on the capability, `model` shall translate the requirement.
+
+### [g289] `model logic` translates a count over a relation in a response
+- [r289] While a requirement of a capability uses `count` and the requirement uses `holds-relation`, when the person runs `model logic` on the capability, `model` shall translate the requirement.
+
+### [g290] `model logic` names a requirement it has no translation of
+- [r290] While a requirement of a capability has no translation, when the person runs `model logic` on the capability, `model` shall print the requirement and not print `no findings`.
+
+### [g293] `model parse` reads `holds-exactly`
+- [r293] When the person runs `model parse` on a requirement that uses `holds-exactly`, `model` shall exit successfully.
+
+### [g294] `model logic` reads `holds-exactly` as every and only
+- [r294] While a requirement of a capability uses `holds-exactly` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
+
+### [g295] `model parse` reads `nothing` in a precondition
+- [r295] When the person runs `model parse` on a requirement whose precondition uses `nothing`, `model` shall exit successfully.
+
+### [g291] `model parse` reads `is-in`
+- [r291] When the person runs `model parse` on a requirement whose precondition uses `is-in`, `model` shall exit successfully.
+
+### [g292] `model logic` reads `is-in` as `holds-relation`
+- [r292] While a requirement uses `is-in` and the requirement obliges an act and another requirement that forbids the act uses `holds-relation`, when the person runs `model logic`, `model` shall print `L1`.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a

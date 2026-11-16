@@ -21,8 +21,8 @@ Feature: Batches
     And the batch b1 holds the item i1
     And the status of the item i1 is `in-batch`
     When the person runs `work batch review` on the batch b1
-    Then the pull request p1 cites the item i1
-    And `work` publishes the pull request p1
+    Then `work` publishes the pull request p1
+    And the pull request p1 cites the item i1
 
   @g14 @r14
   Scenario: `work batch start` writes the batch brief for a fresh agent
@@ -37,9 +37,12 @@ Feature: Batches
     And the batch b1 has the review folder r1
     And a review folder r2
     And the batch b1 has the review folder r2
+    And a review folder r3
+    And the batch b1 does not have the review folder r3
     When the person runs `work batch abandon` on the batch b1
     Then `work` removes the review folder r1
     And `work` removes the review folder r2
+    And `work` does not remove the review folder r3
 
   @g22 @r22
   Scenario: `work batch start` picks a ready item that passes the readiness bar and has no dependency on an item that is not delivered
@@ -50,10 +53,10 @@ Feature: Batches
     When the person runs `work batch start`
     Then `work` picks the item i1
     And `work` sets the status of the item i1 to `in-batch`
-    And the status of the batch b1 is `building`
     And `work` writes the batch b1
-    And the batch b1 has the batch plan b2
+    And the status of the batch b1 is `building`
     And `work` writes the batch plan b2
+    And the batch b1 has the batch plan b2
 
   @g23 @r23
   Scenario: A ready item that no longer passes the readiness bar is returned
@@ -83,8 +86,8 @@ Feature: Batches
     And the status of the batch b1 is `building`
     And a session s1
     When the session s1 runs `work batch resume` on the batch b1
-    Then the batch b1 has the batch plan b2
-    And `work` uses the batch plan b2
+    Then `work` uses the batch plan b2
+    And the batch b1 has the batch plan b2
     And `work` does not ask a question
 
   @g26 @r26
@@ -96,8 +99,8 @@ Feature: Batches
     And a session s1
     When the session s1 runs `work batch park` on the item i1
     Then `work` sets the status of the item i1 to `needs-input`
-    And the question q1 is on the item i1
     And `work` writes the question q1
+    And the question q1 is on the item i1
     And `work` does not set the status of the batch b1 to `abandoned`
 
   @g28 @r28
@@ -110,10 +113,14 @@ Feature: Batches
     And an item i2
     And the batch b1 holds the item i2
     And the status of the item i2 is `in-batch`
+    And an item i3
+    And the batch b1 holds the item i3
+    And the status of the item i3 is `shaped`
     When the person runs `work batch abandon` on the batch b1
     Then `work` sets the status of the batch b1 to `abandoned`
     And `work` sets the status of the item i1 to `ready`
     And `work` sets the status of the item i2 to `ready`
+    And `work` does not set the status of the item i3 to `ready`
 
   @g29 @r29
   Scenario: `work batch review` refuses a batch with a task that is not done
@@ -148,9 +155,12 @@ Feature: Batches
     And the batch b1 has the review folder r1
     And a review folder r2
     And the batch b1 has the review folder r2
+    And a review folder r3
+    And the batch b1 does not have the review folder r3
     When the person merges the pull request p1
     Then `work` removes the review folder r1
     And `work` removes the review folder r2
+    And `work` does not remove the review folder r3
 
   @g32 @r32
   Scenario: `work batch park` takes the parked item's lines out of the batch
@@ -196,8 +206,8 @@ Feature: Batches
     And the batch b1 has the task t1
     And the status of the task t1 is `done`
     When the person runs `work batch review` on the batch b1
-    Then the batch b1 has the pull request p1
-    And `work` publishes the pull request p1
+    Then `work` publishes the pull request p1
+    And the batch b1 has the pull request p1
     And `work` sets the status of the batch b1 to `in-review`
 
   @g36 @r36
@@ -221,9 +231,9 @@ Feature: Batches
     And a commit c1
     And the commit c1 cites the item i1
     When the person runs `work batch review` on the batch b1
-    Then the batch b1 has the pull request p1
+    Then `work` publishes the pull request p1
+    And the batch b1 has the pull request p1
     And the pull request p1 does not hold the commit c1
-    And `work` publishes the pull request p1
 
   @g38 @r38
   Scenario: A parked item's failing scenario does not hold up another item's task

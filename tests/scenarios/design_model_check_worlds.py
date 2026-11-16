@@ -91,15 +91,18 @@ def sectionless(step):
     H.says(step, name, "%s.md" % name)
 
 
-def line(text):
-    """A builder: the smallest codified-2 world whose r1 is `text`."""
-    return lambda step: C2.context(step.repo, H.PATH, [text])
+def line(*texts):
+    """A builder: the smallest codified-2 world whose r1 (r2 ...) is `texts`."""
+    return lambda step: C2.context(step.repo, H.PATH, list(texts))
 
 
 def importing(step):
-    """The context imports the CLI pack and its own pack p1, which defines t1 and t2."""
+    """The context imports the CLI pack and its own pack p1, which defines t1 and t2, not a term a Given says it does
+    not have."""
     H.base(step.repo, step.context)
-    P.pack(step.repo, first(step, "pack", "p1"), *step.context.get("kinds", {}).get("term", ["t1"]))
+    terms = [t for t in step.context.get("pack_terms") or step.context.get("kinds", {}).get("term", ["t1"])
+             if t not in step.context.get("outside", ())]
+    P.pack(step.repo, first(step, "pack", "p1"), *terms)
     P.imports(step.repo, "cli", first(step, "pack", "p1"))
 
 
@@ -146,6 +149,16 @@ def nothing(step):
 
 WHILE_ACTION = "While a session ends a stage, when the person runs `work start`, `work` shall print the stage."
 NONCONFORMING = "When a session ends a stage, `work` shall banana the stage."
+# membership and emptiness (b274): a file said in a worktree from its own side (is-in), and r2 forbidding of the
+# worktree's file what r1 obliges (holds-relation); a worktree that holds exactly some files, and one that holds nothing
+IS_IN = "While a file is in a worktree, when the person runs `work start` on the worktree, `work` shall print the file."
+HOLDS = ("While a worktree holds a file, when the person runs `work start` on the worktree, `work` shall not print the "
+         "file.")
+EXACTLY = ("When the person runs `work start`, `work` shall print a worktree that holds exactly the files whose version "
+           "is `2.0.0`.")
+UNPRINTED = "When the person runs `work start`, `work` shall not print a worktree."
+NOTHING = ("While a worktree holds nothing, when the person runs `work start` on the worktree, `work` shall print the "
+           "worktree.")
 TABLE = [
     # the base world: nothing violates a rule, and it has facts
     (("no thing violate rule",), nothing, {}),
@@ -211,9 +224,19 @@ TABLE = [
     (("precondition use term", "term is `state`"), requirement("verbal"), {}),
     (("trigger use recipient",), requirement("addressed"), {}),
     (("requirement not conform language reference",), line(NONCONFORMING), {}),
+    # model parse and model logic: membership and emptiness (b274)
+    (("requirement use `is-in`", "requirement forbid act", "requirement use `holds-relation`"), line(IS_IN, HOLDS), {}),
+    (("precondition use `is-in`",), line(IS_IN), {}),
+    (("requirement use `holds-exactly`", "requirement forbid act"), line(EXACTLY, UNPRINTED), {}),
+    (("requirement use `holds-exactly`",), line(EXACTLY), {}),
+    (("precondition use `nothing`",), line(NOTHING), {}),
     # model parse: the constructs
     (("capability has requirement", "requirement use `only`", "requirement allow act"), capability("restricting"),
      {}),
+    (("capability has requirement", "requirement use `only`", "requirement use `holds-relation`"),
+     capability("holding"), {}),
+    (("capability has requirement", "requirement use `count`", "requirement use `holds-relation`"),
+     capability("capping"), {}),
     (("requirement use `not-condition`",), requirement("negating"), {}),
     (("requirement use `bare-plural`",), requirement("plural"), {}),
     (("requirement use `option-set-to`",), requirement("optioned"), {}),
@@ -248,7 +271,7 @@ TABLE = [
     (("`model` not unify code",), capability("unpairable"), {"r5": "r1"}),
     (("requirement use `every`",), capability("exhaustive"), {}),
     (("capability has requirement", "requirement override requirement"), capability("overriding"), {}),
-    (("requirement override requirement",), requirement("overridden"), {"r4": "r2"}),
+    (("requirement override requirement",), requirement("overridden"), {"r3": "r2"}),
     (("universal condition forbid act",), capability("contravening"), {}),
     (("requirement permit act",), capability("forbidding"), {}),
     (("requirement add no consequence",), requirement("restating"), {}),
@@ -256,6 +279,7 @@ TABLE = [
     (("capability is `codified-2`",), capability("recodified"), {}),
     (("capability is `codified-1`",), capability("old"), {}),
     (("capability has requirement", "requirement conform language reference"), capability("recodified"), {}),
+    (("capability has requirement", "requirement has no translation"), capability("unread"), {"r1": "shelf#r1"}),
     (("no capability holds requirement id",), old(C.requirement, "requirement id", "r1", "nonexistent"), {}),
 ]
 

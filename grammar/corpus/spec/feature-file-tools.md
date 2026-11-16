@@ -390,3 +390,213 @@ shall [x2: agent the person (constant), x3: command `features generate` (paramet
     write(e2, subject: x4, object: x5)
     print(e3, subject: x4, object: x5)
 ```
+
+## r111
+From: b268 r111. A new line: what a requirement says of a referent its act brings in is written after the act.
+
+```reading
+While an act of a requirement of a capability brings in a referent, when the person runs `features generate` on the capability, `features` shall write a description of the referent that follows the act and not write a description of the referent that precedes the act.
+shall [x5: agent the person (constant), x6: command `features generate` (parameter), x7: tool `features` (constant)]
+  while [x1: act, x2: requirement, x3: capability, x4: referent]
+    of(x2, x3)
+    of(x1, x2)
+    bring in(subject: x1, object: x4)
+  when
+    run(e1, subject: x5, object: x6, on: x3)
+  response [x8: description]
+    of(x8, x4)
+    follow(subject: x8, object: x1)
+    write(e2, subject: x7, object: x8)
+    not [x9: description]
+      of(x9, x4)
+      precede(subject: x9, object: x1)
+      write(e3, subject: x7, object: x9)
+```
+
+## r112
+From: b272 (a count over a row of a response's object written). Not in the audit (b272 is no reword item).
+
+```reading
+While a requirement of a capability uses `count` and the requirement uses `holds-relation`, when the person runs `features generate` on the capability, `features` shall write a scenario that uses `count`.
+shall [x3: thing `count` (constant), x4: thing `holds-relation` (parameter), x5: agent the person (constant), x6: command `features generate` (parameter), x7: tool `features` (constant)]
+  while [x1: requirement, x2: capability]
+    of(x1, x2)
+    use#2(subject: x1, object: x3)
+    use#2(subject: x1, object: x4)
+  when
+    run(e1, subject: x5, object: x6, on: x2)
+  response [x8: scenario]
+    use#2(subject: x8, object: x3)
+    write(e2, subject: x7, object: x8)
+```
+
+## r113
+From: b272 (only over a row of a response's object written). Not in the audit (b272 is no reword item).
+
+```reading
+While a requirement of a capability uses `only` and the requirement uses `holds-relation`, when the person runs `features generate` on the capability, `features` shall write a scenario that uses `only`.
+shall [x3: thing `only` (constant), x4: thing `holds-relation` (parameter), x5: agent the person (constant), x6: command `features generate` (parameter), x7: tool `features` (constant)]
+  while [x1: requirement, x2: capability]
+    of(x1, x2)
+    use#2(subject: x1, object: x3)
+    use#2(subject: x1, object: x4)
+  when
+    run(e1, subject: x5, object: x6, on: x2)
+  response [x8: scenario]
+    use#2(subject: x8, object: x3)
+    write(e2, subject: x7, object: x8)
+```
+
+## r114
+From: b273 r114. Audit: review claim 9 (c10): every in a precondition said of the K the While brings in.
+
+```reading
+While the precondition of a requirement of a requirement group of a capability uses `every`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that satisfies the precondition.
+shall [x5: thing `every` (parameter), x6: agent the person (constant), x7: command `features generate` (parameter), x8: tool `features` (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability, x4: precondition]
+    of(x2, x3)
+    of(x1, x2)
+    of(x4, x1)
+    use#2(subject: x4, object: x5)
+  when
+    run(e1, subject: x6, object: x7, on: x3)
+  response [x9: scenario]
+    of(x9, x2)
+    satisfy(subject: x9, object: x4)
+    write(e2, subject: x8, object: x9)
+```
+
+## r115
+From: b273 r115. Audit: review claims 5 and 8 (c6, c9): a count in a precondition given at its boundary.
+
+```reading
+While the precondition of a requirement of a requirement group of a capability holds a count, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has the boundary of the count.
+shall [x6: agent the person (constant), x7: command `features generate` (parameter), x8: tool `features` (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability, x4: precondition, x5: count]
+    of(x2, x3)
+    of(x1, x2)
+    of(x4, x1)
+    in(x5, x4)
+  when
+    run(e1, subject: x6, object: x7, on: x3)
+  response [x9: scenario, x10: boundary]
+    of(x9, x2)
+    of(x10, x5)
+    of(x10, x9)
+    write(e2, subject: x8, object: x9)
+```
+
+## r116
+From: b273 r116. Audit: review claim 11 (c12, c19): each of two Ks brought in by a Given.
+
+```reading
+While a requirement of a requirement group of a capability uses `two`, when the person runs `features generate` on the capability, `features` shall not write a step that mentions an instance that no given step introduces.
+shall [x4: thing `two` (parameter), x5: agent the person (constant), x6: command `features generate` (parameter), x7: tool `features` (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability]
+    of(x2, x3)
+    of(x1, x2)
+    use#2(subject: x1, object: x4)
+  when
+    run(e1, subject: x5, object: x6, on: x3)
+  response
+    not [x8: step, x9: instance]
+      not [x10: given step]
+        introduce(subject: x10, object: x9)
+      mention(subject: x8, object: x9)
+      write(e2, subject: x7, object: x8)
+```
+
+## r117
+From: b273 r111. Audit: review claims 1 and 10 (c1, c11, c16): a counter-example of every with a restriction.
+
+```reading
+While a requirement of a requirement group of a capability uses `every` and the requirement has a restriction, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has a counter-example.
+shall [x4: thing `every` (parameter), x6: agent the person (constant), x7: command `features generate` (parameter), x8: tool `features` (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability, x5: restriction]
+    of(x2, x3)
+    of(x1, x2)
+    use#2(subject: x1, object: x4)
+    of(x5, x1)
+  when
+    run(e1, subject: x6, object: x7, on: x3)
+  response [x9: scenario, x10: counter-example]
+    of(x9, x2)
+    of(x10, x9)
+    write(e2, subject: x8, object: x9)
+```
+
+## r118
+From: b273 r112. Audit: review claim 4 (c15): a counter-example of only, and no act only allows asserted.
+
+```reading
+While a requirement of a requirement group of a capability uses `only` and the requirement has a restriction, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has a counter-example and not write a step that asserts an act that the requirement allows.
+shall [x4: thing `only` (constant), x6: agent the person (constant), x7: command `features generate` (parameter), x8: tool `features` (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability, x5: restriction]
+    of(x2, x3)
+    of(x1, x2)
+    use#2(subject: x1, object: x4)
+    of(x5, x1)
+  when
+    run(e1, subject: x6, object: x7, on: x3)
+  response [x9: scenario, x10: counter-example]
+    of(x9, x2)
+    of(x10, x9)
+    write(e2, subject: x8, object: x9)
+    not [x11: step, x12: act]
+      allow(subject: x1, object: x12)
+      assert(subject: x11, object: x12)
+      write(e3, subject: x8, object: x11)
+```
+
+## r119
+From: b273 r113. Audit: review claims 6 and g (c7, c20): a counter-example of an upper bound.
+
+```reading
+While a requirement of a requirement group of a capability has an upper bound, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has a counter-example.
+shall [x5: agent the person (constant), x6: command `features generate` (parameter), x7: tool `features` (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability, x4: upper bound]
+    of(x2, x3)
+    of(x1, x2)
+    of(x4, x1)
+  when
+    run(e1, subject: x5, object: x6, on: x3)
+  response [x8: scenario, x9: counter-example]
+    of(x8, x2)
+    of(x9, x8)
+    write(e2, subject: x7, object: x8)
+```
+
+## r120
+From: b274 r111. Not in the audit (b274 is no reword item).
+
+```reading
+While a requirement of a capability uses `holds-exactly`, when the person runs `features generate` on the capability, `features` shall write a scenario whose step uses `not-condition`.
+shall [x3: thing `holds-exactly` (parameter), x4: agent the person (constant), x5: command `features generate` (parameter), x6: tool `features` (constant), x9: thing `not-condition` (parameter)]
+  while [x1: requirement, x2: capability]
+    of(x1, x2)
+    use#2(subject: x1, object: x3)
+  when
+    run(e1, subject: x4, object: x5, on: x2)
+  response [x7: scenario, x8: step]
+    of(x8, x7)
+    use#2(subject: x8, object: x9)
+    write(e2, subject: x6, object: x7)
+```
+
+## r121
+From: b274 r112. Not in the audit (b274 is no reword item).
+
+```reading
+While the precondition of a requirement of a capability uses `nothing`, when the person runs `features generate` on the capability, `features` shall write a scenario whose step uses `nothing`.
+shall [x4: thing `nothing` (parameter), x5: agent the person (constant), x6: command `features generate` (parameter), x7: tool `features` (constant)]
+  while [x1: requirement, x2: capability, x3: precondition]
+    of(x1, x2)
+    of(x3, x1)
+    use#2(subject: x3, object: x4)
+  when
+    run(e1, subject: x5, object: x6, on: x2)
+  response [x8: scenario, x9: step]
+    of(x9, x8)
+    use#2(subject: x9, object: x4)
+    write(e2, subject: x7, object: x8)
+```

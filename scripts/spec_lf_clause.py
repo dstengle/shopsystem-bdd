@@ -13,6 +13,7 @@ While clause is (any K). A line that says both "shall" and "may", or "may not", 
 """
 import spec_lf_core as core
 import spec_lf_exist
+import spec_lf_member
 import spec_lf_np as nps
 import spec_lf_number
 import spec_lf_option
@@ -57,6 +58,9 @@ def vp(st, tree):
     row, suffix = st.names.row(name)
     if suffix in ("Has", "Holds"):
         return [nps.np(st, a[0])], lambda s, r: Atom("rel", (row[1], r[0], s))
+    member = spec_lf_member.vp(st, tree, nps)     # is-in, holds-exactly, "holds nothing" (b274)
+    if member is not None:
+        return member
     if name.startswith("e_"):
         n, m = numbers(name, 2)
         found = spec_lf_option.together(st, n, m, [nps.np(st, x) for x in a])     # a run's options (b240)

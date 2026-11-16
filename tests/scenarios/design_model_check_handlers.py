@@ -209,7 +209,9 @@ PRINTED = {"fact": ['node("capability/', 'node("bounded-context/'], "rule": ["v1
 def unsaid(step, word, np=""):
     kind = step.kind or " ".join(np.split()[1:-1])
     printed = PRINTED.get(kind)
-    return printed[(int(re.sub(r"\D", "", word) or 1) - 1) % len(printed)] if printed else word
+    n = int(re.sub(r"\D", "", word) or 1)
+    assert not printed or n <= len(printed), "%s %s: no Given said what it is printed as" % (kind, word)
+    return printed[n - 1] if printed else word
 
 
 def named(step):
@@ -217,7 +219,7 @@ def named(step):
     Given said it is named by (else what its kind prints, else its name)."""
     out = [q.strip('"') for q in step.quoted]
     for np in step.nps:
-        out += [w.strip("`") for w in np.split() if w.startswith("`")]
+        out += re.findall(r"`([^`]+)`", np)      # a code whole: `no findings`, `migrate upgrade`
         out += [step.context.get("says", {}).get(w) or unsaid(step, w, np) for w in np.split() if w in step.names]
     return out
 
@@ -225,6 +227,9 @@ def named(step):
 @handler("ThenPrints", "`model`")
 def model_prints(step):
     done = step.context["result"]
+    if step.nps and step.nps[0].startswith("one logical form"):     # counted (b273): one form, of the line's
+        assert len(re.findall(r"^\S+: (?:shall|may) \[", done.stdout, re.MULTILINE)) == 1, done.stdout
+        return
     for word in named(step):
         assert word in done.stdout, (word, done.stdout, done.stderr)
 

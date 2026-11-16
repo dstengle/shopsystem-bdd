@@ -147,8 +147,11 @@ def prints_not(step):
     w = world(step)
     assert w.code == 0, w.err
     for np in step.nps:
-        word = {"a round trip": "round trips"}[np]
-        assert word not in w.out, (np, w.out)
+        if np.startswith(("the stage row", "the dispatch")):    # a counter-example's row (b273): what the row of
+            word = step.context["elsewhere"][np.split()[-1]]     # another measurement shows
+        else:
+            word = {"a round trip": "round trips"}[np]
+        assert word not in w.out, (np, word, w.out)
 
 
 @local("ThenDoes")
@@ -172,4 +175,20 @@ def given_has(step):
         return False
     if step.term not in ("has", "holds"):
         return False
+    if step.template == "GivenDoesNot" and step.nps[0].startswith(("the stage row", "the dispatch")):
+        elsewhere(step, step.names[-1], step.nps[0].startswith("the dispatch"))
     return None
+
+
+def elsewhere(step, name, dispatch):
+    """A counter-example's row (b273): a stage row (its work item `cart-<name>`) or a dispatch (`s-<name>`) that the
+    measurement does not have, written in another measurement in the same repository, which `measure show` on the
+    scenario's measurement does not read."""
+    word = ("s-%s" if dispatch else "cart-%s") % name
+    step.context.setdefault("elsewhere", {})[name] = word
+    row = ({"session": "s-x", "started": None, "dispatched_by": None, "round_trips": 1, "tool_uses": {},
+            "dispatched": [word], "compactions": 0} if dispatch else
+           {"work-item": word, "stage": "build", "agent": "builder", "session": "s-x", "turns": 3, "round_trips": 2})
+    figures = {"stages": [] if dispatch else [row], "work_items": [], "totals": {"stages": 1, "sessions": 1},
+               "sessions": [row] if dispatch else []}
+    (step.repo / "elsewhere.md").write_text("# Measurement\n\n```json\n%s\n```\n" % json.dumps(figures))

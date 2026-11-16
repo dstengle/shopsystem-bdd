@@ -52,8 +52,8 @@ Feature: Analysis tools
     And the `venv/bin/python` Python interpreter does not exist
     And the `$VIRTUAL_ENV/bin/python` Python interpreter does not exist
     When the person runs `tools probe` without the `--python` option
-    Then the Python interpreter p1 executes `scripts/tools`
-    And `tools` prints the Python interpreter p1
+    Then `tools` prints the Python interpreter p1
+    And the Python interpreter p1 executes `scripts/tools`
 
   @g41 @r41
   Scenario: `.venv/bin/python` comes before `venv/bin/python`
@@ -65,10 +65,11 @@ Feature: Analysis tools
   @g42 @r42
   Scenario: `tools probe --log` prints one log line for a researcher's notes
     Given a log line l1
+    And a log line l2
     And an analysis tool a1
     And an analysis tool a2
     When the person runs `tools probe` with the `--log` option
-    Then `tools` prints the log line l1
+    Then `tools` prints one log line
     And `tools` prints the analysis tool a1
     And `tools` prints the analysis tool a2
 
@@ -80,9 +81,12 @@ Feature: Analysis tools
     And the presence of the analysis tool a1 is `missing`
     And an analysis tool a2
     And the presence of the analysis tool a2 is `missing`
+    And an analysis tool a3
+    And the presence of the analysis tool a3 is `installed`
     When the person runs `tools install`
     Then `tools` installs the analysis tool a1
     And `tools` installs the analysis tool a2
+    And `tools` does not install the analysis tool a3
     And `tools` does not change a dependency file
 
   @g44 @r44
@@ -90,9 +94,9 @@ Feature: Analysis tools
     Given the presence of `ruff` is `missing`
     And the environment of this Python interpreter is `virtualenv`
     When the person runs `tools install`
-    Then `ruff` has the version v1
+    Then `tools` installs the version v1
+    And `ruff` has the version v1
     And the plugin pins the version v1
-    And `tools` installs the version v1
 
   @g45 @r45
   Scenario: `tools install` refuses to install into a Python interpreter that is not a virtualenv
@@ -109,8 +113,8 @@ Feature: Analysis tools
     And the presence of the analysis tool a1 is `uninstallable`
     And the environment of this Python interpreter is `virtualenv`
     When the person runs `tools install`
-    Then the analysis tool a1 has the pip command p1
-    And `tools` prints the pip command p1
+    Then `tools` prints the pip command p1
+    And the analysis tool a1 has the pip command p1
     And `tools` exits with an error naming the analysis tool a1
 
   @g47 @r47
@@ -136,8 +140,8 @@ Feature: Analysis tools
     And the coverage map c1 holds the test t2
     When the person runs `tools map` with the `--json` option
     Then `tools` makes the coverage map c1
-    And the coverage map c1 has the commit c2
     And `tools` prints the commit c2
+    And the coverage map c1 has the commit c2
     And `tools` prints the number of tests in the coverage map c1
 
   @g50 @r50
@@ -150,15 +154,18 @@ Feature: Analysis tools
     And a test t2
     And the test t2 executes the function f1
     And a test t3
-    And the test t3 executes the function f1
+    And the test t3 does not execute the function f1
     And a test t4
     And the test t4 executes the function f1
+    And a test t5
+    And the test t5 executes the function f1
     When the person runs `tools tests-of` on the function f1
     Then `tools` prints the test t1
     And `tools` prints the test t2
+    And `tools` does not print the test t3
     And `tools` prints the number of tests that execute the function f1
-    And the coverage map c1 has the commit c2
     And `tools` prints the commit c2
+    And the coverage map c1 has the commit c2
 
   @g51 @r51
   Scenario: `tools tests-of --by-file` prints each Python file that holds a test that executed the function
@@ -173,9 +180,14 @@ Feature: Analysis tools
     And a test t2
     And the test t2 executes the function f1
     And the Python file p2 holds the test t2
+    And a Python file p3
+    And a test t3
+    And the test t3 executes the function f1
+    And the Python file p3 does not hold the test t3
     When the person runs `tools tests-of` with the `--by-file` option on the function f1
     Then `tools` prints the Python file p1
     And `tools` prints the Python file p2
+    And `tools` does not print the Python file p3
 
   @g52 @r52
   Scenario: `tools tests-of` says that no test executed its function, and exits successfully
@@ -184,8 +196,8 @@ Feature: Analysis tools
     And a function f1
     And no test executes the function f1
     When the person runs `tools tests-of` on the function f1
-    Then the coverage map c1 has the commit c2
-    And `tools` prints the commit c2
+    Then `tools` prints the commit c2
+    And the coverage map c1 has the commit c2
     And `tools` exits successfully
 
   @g53 @r53
@@ -198,15 +210,18 @@ Feature: Analysis tools
     And a test t2
     And the test t2 executes the function f1
     And a test t3
-    And the test t3 executes the function f1
+    And the test t3 does not execute the function f1
     And a test t4
     And the test t4 executes the function f1
+    And a test t5
+    And the test t5 executes the function f1
     When the person runs `tools tests-of` with the `--json` option on the function f1
     Then `tools` prints the test t1
     And `tools` prints the test t2
+    And `tools` does not print the test t3
     And `tools` prints the number of tests that execute the function f1
-    And the coverage map c1 has the commit c2
     And `tools` prints the commit c2
+    And the coverage map c1 has the commit c2
 
   @g54 @r54
   Scenario: `tools tests-of` refuses a function its file does not define
@@ -237,11 +252,15 @@ Feature: Analysis tools
     And a function f2
     And the Python file p1 has the function f2
     And no test executes the function f2
+    And a function f3
+    And no test executes the function f3
+    And the Python file p1 does not have the function f3
     When the person runs `tools untested` on the Python file p1
     Then `tools` prints the function f1
     And `tools` prints the function f2
-    And the coverage map c1 has the commit c2
+    And `tools` does not print the function f3
     And `tools` prints the commit c2
+    And the coverage map c1 has the commit c2
     And `tools` exits successfully
 
   @g57 @r57
@@ -255,11 +274,15 @@ Feature: Analysis tools
     And a function f2
     And the Python file p1 has the function f2
     And no test executes the function f2
+    And a function f3
+    And no test executes the function f3
+    And the Python file p1 does not have the function f3
     When the person runs `tools untested` with the `--json` option on the Python file p1
     Then `tools` prints the function f1
     And `tools` prints the function f2
-    And the coverage map c1 has the commit c2
+    And `tools` does not print the function f3
     And `tools` prints the commit c2
+    And the coverage map c1 has the commit c2
 
   @g58 @r58
   Scenario: `tools refs` prints each reference to an identifier and their number
@@ -271,12 +294,15 @@ Feature: Analysis tools
     And a reference r2
     And the reference r2 is to the identifier i1
     And a reference r3
-    And the reference r3 is to the identifier i1
+    And the reference r3 is not to the identifier i1
     And a reference r4
     And the reference r4 is to the identifier i1
+    And a reference r5
+    And the reference r5 is to the identifier i1
     When the person runs `tools refs` on the identifier i1
     Then `tools` prints the reference r1
     And `tools` prints the reference r2
+    And `tools` does not print the reference r3
     And `tools` prints the number of references to the identifier i1
     And `tools` exits successfully
 
@@ -296,8 +322,8 @@ Feature: Analysis tools
     And a file f1
     And the file f1 holds the finding f2
     When the person runs `tools check` on the file f1
-    Then the analysis tool a1 has the heading h1
-    And `tools` prints the heading h1
+    Then `tools` prints the heading h1
+    And the analysis tool a1 has the heading h1
     And `tools` prints the finding f2
     And `tools` exits with an error naming the finding f2
 
@@ -362,10 +388,13 @@ Feature: Analysis tools
     And a reference r2
     And the reference r2 is to the identifier i1
     And a reference r3
-    And the reference r3 is to the identifier i1
+    And the reference r3 is not to the identifier i1
     And a reference r4
     And the reference r4 is to the identifier i1
+    And a reference r5
+    And the reference r5 is to the identifier i1
     When the person runs `tools refs` with the `--json` option on the identifier i1
     Then `tools` prints the reference r1
     And `tools` prints the reference r2
+    And `tools` does not print the reference r3
     And `tools` prints the number of references to the identifier i1

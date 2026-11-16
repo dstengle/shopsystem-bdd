@@ -1583,3 +1583,133 @@ shall [x1: agent the person (constant), x2: command `model check` (parameter), x
     refuse(e2, subject: x4, object: x2)
     name(e3, subject: x4, object: x5)
 ```
+
+## r288
+From: b272 (only over a row of a response's object translated). Not in the audit (b272 is no reword item).
+
+```reading
+While a requirement of a capability uses `only` and the requirement uses `holds-relation`, when the person runs `model logic` on the capability, `model` shall translate the requirement.
+shall [x3: thing `only` (constant), x4: thing `holds-relation` (parameter), x5: agent the person (constant), x6: command `model logic` (parameter), x7: tool `model` (constant)]
+  while [x1: requirement, x2: capability]
+    of(x1, x2)
+    use#2(subject: x1, object: x3)
+    use#2(subject: x1, object: x4)
+  when
+    run(e1, subject: x5, object: x6, on: x2)
+  response
+    translate(e2, subject: x7, object: x1)
+```
+
+## r289
+From: b272 (a count over a row of a response's object translated). Not in the audit (b272 is no reword item).
+
+```reading
+While a requirement of a capability uses `count` and the requirement uses `holds-relation`, when the person runs `model logic` on the capability, `model` shall translate the requirement.
+shall [x3: thing `count` (constant), x4: thing `holds-relation` (parameter), x5: agent the person (constant), x6: command `model logic` (parameter), x7: tool `model` (constant)]
+  while [x1: requirement, x2: capability]
+    of(x1, x2)
+    use#2(subject: x1, object: x3)
+    use#2(subject: x1, object: x4)
+  when
+    run(e1, subject: x5, object: x6, on: x2)
+  response
+    translate(e2, subject: x7, object: x1)
+```
+
+## r290
+From: b272 (`model logic` names each requirement it has no translation of). Not in the audit (b272 is no reword item).
+
+```reading
+While a requirement of a capability has no translation, when the person runs `model logic` on the capability, `model` shall print the requirement and not print `no findings`.
+shall [x4: agent the person (constant), x5: command `model logic` (parameter), x6: tool `model` (constant), x7: text `no findings` (constant)]
+  while [x1: requirement, x2: capability]
+    of(x1, x2)
+    not [x3: translation]
+      of(x3, x1)
+  when
+    run(e1, subject: x4, object: x5, on: x2)
+  response
+    print(e2, subject: x6, object: x1)
+    not
+      print(e3, subject: x6, object: x7)
+```
+
+## r291
+From: b274 r291. Not in the audit (b274 is no reword item).
+
+```reading
+When the person runs `model parse` on a requirement whose precondition uses `is-in`, `model` shall exit successfully.
+shall [x1: agent the person (constant), x2: command `model parse` (parameter), x5: thing `is-in` (parameter), x6: tool `model` (constant)]
+  when [x3: requirement, x4: precondition]
+    of(x4, x3)
+    use#2(subject: x4, object: x5)
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    exit(e2, subject: x6, successfully)
+```
+
+## r292
+From: b274 r292. Not in the audit (b274 is no reword item).
+
+```reading
+While a requirement uses `is-in` and the requirement obliges an act and another requirement that forbids the act uses `holds-relation`, when the person runs `model logic`, `model` shall print `L1`.
+shall [x2: thing `is-in` (parameter), x5: thing `holds-relation` (parameter), x6: agent the person (constant), x7: command `model logic` (parameter), x8: tool `model` (constant), x9: thing `L1` (constant)]
+  while [x1: requirement, x3: act, x4: requirement]
+    use#2(subject: x1, object: x2)
+    oblige(subject: x1, object: x3)
+    distinct(x4, x1)
+    forbid(subject: x4, object: x3)
+    use#2(subject: x4, object: x5)
+  when
+    run(e1, subject: x6, object: x7)
+  response
+    print(e2, subject: x8, object: x9)
+```
+
+## r293
+From: b274 r288. Not in the audit (b274 is no reword item).
+
+```reading
+When the person runs `model parse` on a requirement that uses `holds-exactly`, `model` shall exit successfully.
+shall [x1: agent the person (constant), x2: command `model parse` (parameter), x4: thing `holds-exactly` (parameter), x5: tool `model` (constant)]
+  when [x3: requirement]
+    use#2(subject: x3, object: x4)
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    exit(e2, subject: x5, successfully)
+```
+
+## r294
+From: b274 r289. Not in the audit (b274 is no reword item).
+
+```reading
+While a requirement of a capability uses `holds-exactly` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
+shall [x3: thing `holds-exactly` (parameter), x7: agent the person (constant), x8: command `model logic` (parameter), x9: tool `model` (constant), x10: thing `L1` (constant)]
+  while [x1: requirement, x2: capability, x4: act, x5: requirement, x6: trigger]
+    of(x1, x2)
+    use#2(subject: x1, object: x3)
+    oblige(subject: x1, object: x4)
+    distinct(x5, x1)
+    of(x5, x2)
+    of(x6, x1)
+    of(x6, x5)
+    forbid(subject: x5, object: x4)
+  when
+    run(e1, subject: x7, object: x8)
+  response
+    print(e2, subject: x9, object: x10)
+```
+
+## r295
+From: b274 r290. Not in the audit (b274 is no reword item).
+
+```reading
+When the person runs `model parse` on a requirement whose precondition uses `nothing`, `model` shall exit successfully.
+shall [x1: agent the person (constant), x2: command `model parse` (parameter), x5: thing `nothing` (parameter), x6: tool `model` (constant)]
+  when [x3: requirement, x4: precondition]
+    of(x4, x3)
+    use#2(subject: x4, object: x5)
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    exit(e2, subject: x6, successfully)
+```

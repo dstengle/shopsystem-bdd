@@ -3,7 +3,8 @@
 meant to have. Four checks: (1) the line parses in grammar 4 to one meaning whose form `model parse --form` prints as
 the block's; (2) that form translates to the check's facts and, for a "shall" line, to steps, with no refusal; (3) for
 each file whose marker is codified-2, its corpus file holds a block for every live id and no other, each block's line
-the file's line word for word; (4) the line's tree linearises back to the line.
+the file's line word for word, an id its capability lists `unbuilt:` needing none yet only in the tree
+`$SHOPSYSTEM_UNBUILT_NONSTRICT` names (a block it has is still checked); (4) the line's tree linearises back to the line.
 
 The checks are proved on a copy of tests/scripts/fixtures/codified-2/ with one capability and its corpus file."""
 import pathlib
@@ -19,6 +20,7 @@ import spec_lf_read
 import spec_read
 import spec_rgl_steps
 import spec_steps4
+import spec_unbuilt
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import toolchain
@@ -96,6 +98,7 @@ def reading(root, stem, rid, line, four=None):
 def faults(root):
     """Every fault of the corpus under `root` against its spec, each "<file> <id>: (n) why"."""
     out, have, spec = [], corpus(root), live(root)
+    unbuilt = {} if spec_unbuilt.strict(root) else spec_unbuilt.unbuilt(root)     # a task's tree, as `work batch done`
     four = spec_context.Four(root)      # one lexicon for every line of the run
     for stem, blocks in sorted(have.items()):
         for rid, (trace, line, form) in blocks.items():
@@ -110,7 +113,7 @@ def faults(root):
             out += ["%s %s: %s" % (stem, rid, w) for w in wrong]
     for stem, lines in sorted(spec.items()):
         blocks = have.get(stem, {})
-        for rid in sorted(set(lines) - set(blocks)):
+        for rid in sorted(set(lines) - set(blocks) - unbuilt.get(stem, set())):
             out.append("%s %s: (3) a live line with no block" % (stem, rid))
         for rid in sorted(set(blocks) - set(lines)):
             out.append("%s %s: (3) a block of no live line" % (stem, rid))
@@ -240,6 +243,22 @@ def test_a_live_line_with_no_block_or_another_line_fails_check_3(world, tmp_path
     assert world(good[0]) == ["shelf r2: (3) a live line with no block"]
     other = block("r2", LINES[0], FORMS[0])
     assert world(good[0], other) == ["shelf r2: (3) the block's line is not the file's"]
+
+
+def test_an_unbuilt_line_needs_no_block_yet_and_its_block_is_checked(world, tmp_path, monkeypatch):
+    """Check 3 leaves out an id its capability lists `unbuilt:` only in the tree `$SHOPSYSTEM_UNBUILT_NONSTRICT`
+    names, as `work batch done` sets it (b268); elsewhere it needs a block. A block it has is read by 1, 2 and 4."""
+    good = right(tmp_path)
+    path = tmp_path / "spec" / "capabilities" / "shelf.md"
+    path.write_text(path.read_text().replace("retired: []\n", "retired: []\nunbuilt: [r2]\n"))
+    monkeypatch.delenv(spec_unbuilt.NONSTRICT, raising=False)
+    assert world(good[0]) == ["shelf r2: (3) a live line with no block"]
+    monkeypatch.setenv(spec_unbuilt.NONSTRICT, str(tmp_path / "elsewhere"))
+    assert world(good[0]) == ["shelf r2: (3) a live line with no block"]
+    monkeypatch.setenv(spec_unbuilt.NONSTRICT, str(tmp_path))
+    assert world(good[0]) == []
+    wrong = block("r2", LINES[1], FORMS[0])
+    assert world(good[0], wrong)[0].startswith("shelf r2: (1) reads as")
 
 
 def test_a_block_with_no_trace_fails(world, tmp_path):

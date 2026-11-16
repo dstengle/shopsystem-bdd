@@ -46,15 +46,34 @@ def _bar_check(step, item, check):
         R.write_request(step)
         B.write_item(step, item, request=R.REQUEST)
         says(step, check, "line 1 of request %s" % R.REQUEST)
-    else:
+    elif len(failed) == 2:
         R.give_lines(step, item, R.FAILING)
         says(step, check, "frobnicate")
+    else:       # a counter-example's (b273): the lexicon problem of an ill term, the bar's or the spec's own
+        step.context["ill"] = item
+        says(step, check, R.ILL_TERM)
+
+
+def _ill_term(step, item, of_the_bar):
+    """The ill term (v_t12) of the item's third bar check: the item's lines bring it (a check of this bar, which
+    `work ready` names), or the spec's glossary has it already (no check of the bar: the item brings no problem the
+    spec without it has not)."""
+    if of_the_bar:
+        R.give_lines(step, item, R.FAILING, [R.ILL_TERMED])
+        return
+    R.codify(step)
+    index = step.repo / "spec" / "index.md"
+    index.write_text(index.read_text().rstrip("\n") + "\n" + R.ILL_TERMED + "\n")
 
 
 @local("GivenDoesNot")
 def given_does_not(step):
     """`the item i1 does not pass this readiness bar`: its one line does not parse; `the item i1 does not meet the
     bar check b1`: the item fails that check (`_bar_check`)."""
+    if R.mine(step) and step.term == "has" and step.nps[0].startswith("the bar check "):
+        assert step.context.get("ill"), "no bar check the item does not meet before: %s" % step.text
+        _ill_term(step, step.context["ill"], of_the_bar=False)
+        return None
     if not R.mine(step) or step.term not in ("pass", "meet"):
         return False
     item = step.names[0]
@@ -74,6 +93,8 @@ def given_does(step):
         return False
     if step.term == "pass":
         R.give_lines(step, step.names[0], R.PASSING)
+    elif step.term == "has" and step.context.get("says", {}).get(step.names[-1]) == R.ILL_TERM:
+        _ill_term(step, step.context["ill"], of_the_bar=True)     # the ill term's check one of this bar
     elif step.term == "has" and step.subject.startswith("no "):
         wrong = R.NONEXISTENT_U if "universal condition" in step.subject else R.NONEXISTENT
         step.context.setdefault("retires", {})[step.names[-1]] = wrong

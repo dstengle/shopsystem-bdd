@@ -24,12 +24,17 @@ def shared(name, file):
 
 W = shared("shop_feature_file_tools_world", "feature_file_tools_world.py")
 GEN = shared("shop_feature_file_tools_capability", "feature_file_tools_capability.py")
+ORDER = shared("shop_feature_file_tools_order", "feature_file_tools_order.py")
 
-INDEX = "---\nid: bounded-context/ex.com/prod/ctx\n---\n# ctx\n\n## Glossary\n\n"
+INDEX = ("---\nid: bounded-context/ex.com/prod/ctx\nlanguage: codified-2\nimports: [cli]\n---\n# ctx\n\n## Glossary\n\n"
+         "- **the person** (proper noun): the human who runs the tools. Kind of: agent.\n"     # what r1 of g111's
+         "- **`shelf`** (proper noun): the tool of the shelf. Kind of: tool.\n"                # example data says
+         "- **write** (verb, action): a tool keeps a thing. Forms: writes, written. Frame: tool writes thing.\n")
 KINDS = ("feature file", "scenario", "scenario title", "tag", "requirement tag", "docstring", "scenario line",
          "scenario outline", "examples row", "rule block", "subdirectory", "replacement", "search text", "binding",
          "scenarios call", "test module", "step", "feature", "requirement", "requirement group", "universal condition",
-         "capability", "handler")
+         "capability", "handler", "act", "referent", "description", "precondition", "count", "restriction",
+         "upper bound", "instance", "counter-example", "boundary", "given step")
 FILES = ("`features count`", "`features list`", "`features deprecated`", "`features bindings`")
 
 
@@ -60,7 +65,8 @@ def given_k(step):
         w["values"][name] = caps[0].stem
 
 
-@W.own("GivenDoes", "has", "contain", "bind", "use", "conform", "entail", "holds")
+@W.own("GivenDoes", "has", "contain", "bind", "use", "conform", "entail", "holds", "bring in", "precede", "allow",
+       "assert", "mention")
 def given_does(step):
     W.record(step)
     w = W.world(step)
@@ -74,7 +80,7 @@ def given_does(step):
         w["values"][b] = re.findall(pattern, text, re.MULTILINE)[0]
 
 
-@W.own("GivenDoesNot", "has")
+@W.own("GivenDoesNot", "has", "introduce")
 def given_does_not(step):
     W.record(step, False)
 
@@ -129,8 +135,13 @@ def said(step, np):
 
 @W.own("ThenPrints", "`features`")
 def prints(step):
-    out = result(step).stdout
+    out, w = result(step).stdout, W.world(step)
     for np in step.nps:
+        if np.startswith("the scenario title ") and W.ref(np) not in w["values"] and not any(
+                t == W.ref(np) for _, t in W.facts(w, "has", W.SCENARIOS, ("scenario title",))):
+            shown = [W.title(w, s) for s, k in w["kinds"].items() if k in W.SCENARIOS and W.title(w, s) in out]
+            assert shown, (np, out)      # first named here: the title of a scenario it printed
+            w["values"][W.ref(np)] = shown[0]
         assert said(step, np) in out, (said(step, np), out)
 
 
@@ -149,23 +160,32 @@ def exits_err(step):
         assert said(step, np) in done.stdout + done.stderr, (said(step, np), done.stdout, done.stderr)
 
 
-@W.own("ThenDoes", "write", registry=False)
-@W.own("ThenDoes", "refuse", "name", "has")
+@W.own("ThenDoes", "write", "use", registry=False)
+@W.own("ThenDoes", "refuse", "name", "has", "follow", "satisfy")
 def then_does(step):
     done, w = result(step), W.world(step)
-    if step.term == "refuse":
+    if ORDER.mine(w, step):     # the order of a scenario's Thens (r111)
+        getattr(ORDER, {"has": "has", "follow": "follows"}.get(step.term, "writes"))(step, w)
+    elif step.term == "use" and step.subject.startswith("the step"):     # the step s2 uses `nothing` (b274)
+        GEN.USES.uses(step, GEN.NAME)
+    elif step.term == "use":      # the scenario s1 uses `only` (b272)
+        GEN.uses(step, w)
+    elif step.term == "refuse":
         assert done.returncode != 0, done.stdout
     elif step.term == "name":
         assert said(step, step.nps[0]) in done.stdout + done.stderr, (step.nps[0], done.stdout, done.stderr)
     elif step.term == "has":
         GEN.has(step, w)
+    elif step.term == "satisfy":
+        GEN.collections(step, w, "satisfy")
     else:
         GEN.writes(step, w)
 
 
 @W.own("ThenDoesNot", "write", registry=False)
 def then_does_not(step):
-    GEN.writes_not(step, W.world(step))
+    w = W.world(step)
+    (ORDER.writes_not if ORDER.mine(w, step) else GEN.writes_not)(step, w)
 
 
 def unoverstated(step):

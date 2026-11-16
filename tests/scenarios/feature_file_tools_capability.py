@@ -7,6 +7,9 @@ before the command (`prepare`) and read by its Thens:
   context `grammar/corpus/constructs/`, three of its groups with a given block of example data (a docstring, a table
   and one value);
 - a capability one of whose steps a universal condition entails (r109): codified2_world's declining lines and U1;
+- a capability whose requirement uses `holds-relation` and `only` or `count` (r113, r112, b272): codified2_constructs'
+  holding or capping line, and the Then its feature must hold (`uses`);
+- a capability whose requirement uses a construct (b274): its catalogue example (feature_file_tools_uses);
 - else the capability of the example data, run on by no name.
 
 `has` (`the requirement group r3 has the scenario s1`: every group of the capability has its scenario in the feature;
@@ -34,6 +37,8 @@ def shared(name, file):
 
 
 W = shared("shop_feature_file_tools_world", "feature_file_tools_world.py")
+USES = shared("shop_feature_file_tools_uses", "feature_file_tools_uses.py")
+COL = shared("shop_feature_file_tools_collections", "feature_file_tools_collections.py")
 
 
 def _codified2():
@@ -55,30 +60,51 @@ def examples():
     return [(code, line) for code, line, form in found if form.startswith("shall") and code not in out]
 
 
+def capability(repo, groups):
+    """The capability c1 of the groups' text, in the construct catalogue's context."""
+    cap = ("---\nid: capability/%s/%s\ntitle: %s\nnarrator: a client\ngroup: service\nlanguage: codified-2\n"
+           "rests_on: []\nretired: []\n---\n\n# %s\n\n## Purpose\nSomething.\n\n## Behaviour\n\n%s\n## Not yet\n"
+           % (PATH, NAME, NAME, NAME, groups))
+    W._write(repo / "spec" / "index.md", CONTEXT.read_text())
+    W._write(repo / "spec" / "capabilities" / ("%s.md" % NAME), cap)
+
+
 def constructs(repo):
     groups = []
     for k, (code, line) in enumerate(examples(), 1):
         block = "\n```given\n%s\n```\n" % "\n".join(GIVEN[k - 1]) if k <= len(GIVEN) else ""
         groups.append("### [g%d] %s\n- [r%d] %s\n%s" % (k, code, k, line, block))
-    cap = ("---\nid: capability/%s/%s\ntitle: %s\nnarrator: a client\ngroup: service\nlanguage: codified-2\n"
-           "rests_on: []\nretired: []\n---\n\n# %s\n\n## Purpose\nSomething.\n\n## Behaviour\n\n%s\n## Not yet\n"
-           % (PATH, NAME, NAME, NAME, "\n".join(groups)))
-    W._write(repo / "spec" / "index.md", CONTEXT.read_text())
-    W._write(repo / "spec" / "capabilities" / ("%s.md" % NAME), cap)
+    capability(repo, "\n".join(groups))
     return len(groups)
+
+
+# (the constructs a requirement uses) -> codified2_constructs' world of them
+HELD = {frozenset({"`holds-relation`", "`only`"}): "holding", frozenset({"`holds-relation`", "`count`"}): "capping"}
 
 
 def prepare(step):
     """The capability the Givens describe, written; the names the command runs on."""
     w = W.world(step)
     verbs = {v for v, *_ in w["facts"]}
+    used = frozenset(b for v, a, b, pos in w["facts"] if v == "use" and pos and W.kind(w, a) == "requirement")
+    if used in HELD:
+        held = shared("shop_codified2_constructs", "codified2_constructs.py")
+        held.capability(step, PATH, HELD[used])
+        w["uses"] = step.context["holds"]["features/%s.feature" % held.NAME]
+        for c in [n for n, k in w["kinds"].items() if k == "capability"]:
+            w["values"][c] = held.NAME
+        return [held.NAME]
     if "entail" in verbs:
         C2 = _codified2()
         C2.context(step.repo, PATH, C2.CAPABILITIES["declining"], NAME, C2.UNIVERSAL["declining"])
         w["entailed"] = tuple(re.compile(p, re.MULTILINE) for p in C2.GENERATED["declining"])
     elif "conform" in verbs:
         w["groups"] = constructs(step.repo)
-    else:
+    elif COL.kind(w, W.kind):     # every, only, counts and two (b273)
+        w["lines"] = COL.kind(w, W.kind)
+        capability(step.repo, COL.groups(w["lines"]))
+        w["groups"] = len(COL.LINES[w["lines"]])
+    elif not USES.prepare(step, w, W._write, NAME, PATH):     # a capability of one construct (b274)
         return []
     for c in [n for n, k in w["kinds"].items() if k == "capability"]:
         w["values"][c] = NAME
@@ -102,6 +128,11 @@ def has(step, w):
         text = (step.repo / "features" / ("%s.feature" % NAME)).read_text()
         missing = [g for g in range(1, w["groups"] + 1) if not re.search(r"^  @g%d @" % g, text, re.MULTILINE)]
         assert not missing, "no scenario of the groups %s" % missing
+    elif step.nps[0].startswith(("the counter-example", "the boundary")):    # b273
+        if step.subject.startswith("the scenario"):
+            collections(step, w, step.nps[0].split()[1])
+    elif b in w["values"]:      # a title printed before: the scenario's own
+        assert w["values"][b] == W.value(w, a), (step.text, w["values"][b], W.value(w, a))
     else:       # `the scenario s1 has the scenario title s2`: the title it was written with
         w["values"][b] = W.value(w, a)
 
@@ -114,9 +145,32 @@ def writes(step, w):
         assert (step.repo / w["values"][name]).is_file(), w["values"][name]
 
 
+def collections(step, w, what):
+    """The feature of the lines of every, only, counts and two read back for `what` (feature_file_tools_collections'
+    `check`)."""
+    done = step.context["result"]
+    assert done.returncode == 0, done.stderr
+    COL.check(w["lines"], (step.repo / "features" / ("%s.feature" % NAME)).read_text(), what)
+
+
+def uses(step, w):
+    """`the scenario s1 uses `only``: the feature written holds the Then of the construct's world."""
+    assert result_ok(step)
+    text = (step.repo / "features" / "shelf.feature").read_text()
+    assert w["uses"].search(text), (w["uses"].pattern, text)
+
+
+def result_ok(step):
+    done = step.context["result"]
+    assert done.returncode == 0, done.stderr
+    return True
+
+
 def writes_not(step, w):
     done = step.context["result"]
     assert done.returncode == 0, done.stderr
+    if w.get("lines"):      # a step that asserts what only allows (r118), one that names an unbrought instance (r116)
+        return collections(step, w, "assert" if w["lines"] == "only" else "introduce")
     kept, entailed = w["entailed"]
     text = (step.repo / "features" / ("%s.feature" % NAME)).read_text()
     assert kept.search(text) and not entailed.search(text), text

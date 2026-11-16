@@ -57,7 +57,8 @@ def given_recorded(step):
 for _template, _term in (("ThenDoes", "has"), ("ThenDoes", "holds"), ("ThenDoes", "for"), ("ThenDoes", "give"),
                          ("ThenDoes", "supersede"),
                          ("ThenDoes", "include"), ("ThenDoes", "rewrite"), ("GivenK_C", "repository"),
-                         ("ThenDoes", "relocate"), ("ThenDoes", "rename"), ("ThenK_A", "design-decision")):
+                         ("ThenDoes", "relocate"), ("ThenDoes", "rename"), ("ThenK_A", "design-decision"),
+                         ("ThenDoesNot", "rewrite"), ("ThenDoesNot", "name")):     # counter-examples' (b273)
     handler(_template, _term)(untaken)
 
 # The keys of grammar 4's steps that more than one codified-2 feature may say (b240 phase 20): a feature's own `local`

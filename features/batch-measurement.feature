@@ -21,12 +21,15 @@ Feature: Measurement of an initiative's deliveries
     And the measurement m1 has the stage row s2
     And a stage row s3
     And the measurement m1 has the stage row s3
+    And a stage row s4
+    And the measurement m1 does not have the stage row s4
     When the person runs `measure show` on the measurement m1
     Then `measure` prints the number of round trips of the stage row s1
     And `measure` prints the stage row s2
     And `measure` prints the stage row s3
-    And the measurement m1 has the total row t1
+    And `measure` does not print the stage row s4
     And `measure` prints the total row t1
+    And the measurement m1 has the total row t1
 
   @g24 @r24
   Scenario: `measure show` prints the stage rows of a measurement whose stage row has no round trip without a round trip
@@ -42,9 +45,12 @@ Feature: Measurement of an initiative's deliveries
     And the measurement m1 has the stage row s2
     And a stage row s3
     And the measurement m1 has the stage row s3
+    And a stage row s4
+    And the measurement m1 does not have the stage row s4
     When the person runs `measure show` on the measurement m1
     Then `measure` prints the stage row s2
     And `measure` prints the stage row s3
+    And `measure` does not print the stage row s4
     And `measure` does not print a round trip
 
   @g25 @r25
@@ -64,6 +70,8 @@ Feature: Measurement of an initiative's deliveries
     And the session row s1 has the dispatch d1
     And a dispatch d2
     And the session row s1 has the dispatch d2
+    And a dispatch d3
+    And the session row s1 does not have the dispatch d3
     And a compaction c1
     And the session row s1 has the compaction c1
     And a compaction c2
@@ -72,6 +80,7 @@ Feature: Measurement of an initiative's deliveries
     Then `measure` prints the number of tool uses of the session row s1
     And `measure` prints the dispatch d1
     And `measure` prints the dispatch d2
+    And `measure` does not print the dispatch d3
     And `measure` prints the number of compactions of the session row s1
 
   @g26 @r26
@@ -86,6 +95,9 @@ Feature: Measurement of an initiative's deliveries
       """
     And a measurement m1
     And a measurement m2
+    And a total row t1
+    And a total row t2
+    And a ratio r1
     When the person runs `measure compare` on the measurement m1
     And the person runs `measure compare` on the measurement m2
     Then `measure` prints the total row t1

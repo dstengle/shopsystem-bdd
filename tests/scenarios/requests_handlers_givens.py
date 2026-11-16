@@ -24,6 +24,7 @@ local = W.local
 OTHER = "bounded-context/ex.com/prod/other"
 FOREIGN = "ctx-elsewhere"
 BAD = "the queue is nice and quick"
+ELSEWHERE = "a line of another request"
 
 
 def says(step, key, word):
@@ -213,5 +214,9 @@ def given_does_not(step):
     elif term == "conform":                             # a request line that does not parse
         step.context["unparsed"] = True
         says(step, step.names[0], BAD)
+    elif term == "proposed in":                         # a counter-example's (b273): a line of another request
+        path = request(step, "%s-elsewhere" % step.names[0])
+        path.write_text(path.read_text().replace("\n1. line 1\n", "\n1. %s\n" % ELSEWHERE, 1))
+        says(step, step.names[0], ELSEWHERE)
     elif term != "holds":                               # a request that does not hold a comment: as written
         return False

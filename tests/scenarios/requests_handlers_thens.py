@@ -156,10 +156,17 @@ def then_prints(step):
 
 @local("ThenPrintsNot")
 def then_prints_not(step):
-    """`work` does not print a request: no `q<n>` in its output."""
-    if not ours(step) or step.nps != ["a request"]:
+    """`work` does not print a request: no `q<n>` in its output; nor the request line r4: not what a Given said it is
+    (a line of another request, b273)."""
+    if not ours(step):
         return False
     done = step.context["result"]
+    if step.nps and step.nps[0].startswith("the request line "):
+        for word in words(step):
+            assert word not in done.stdout, (step.text, word, done.stdout)
+        return None
+    if step.nps != ["a request"]:
+        return False
     assert not re.search(r"\bq\d+\b", done.stdout), (step.text, done.stdout)
 
 

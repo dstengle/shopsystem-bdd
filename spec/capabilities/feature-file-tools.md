@@ -42,8 +42,23 @@ not a line here for each construct.
 - **bind** (verb, state): a binding names a scenario, by its title or by its feature file, so that a test runs the scenario. Forms: binds, bound. Frame: binding binds scenario.
 - **entail** (verb, state): a universal condition gives a step from the other steps of its scenario. Forms: entails, entailed. Frame: universal condition entails step.
 
-## Relations
+- **referent** (noun): a thing that a noun phrase of a requirement names, which a step of its scenario names by an instance name such as `i1`. Kind of: thing.
+- **bring in** (verb, state): an act of a requirement's response names a referent that no part of the requirement before the act names. Forms: brings in, brought in. Frame: act brings in referent.
+- **description** (noun): a step that says a value of an attribute of a referent, a relation of the referent or a relative clause on the referent, which the requirement of its scenario says beside the act that brings in the referent, written as a Then line of the scenario. Kind of: text.
+- **precede** (verb, state): a line of a scenario comes before the step that says an act in the scenario. Forms: precedes, preceded. Frame: text precedes act.
+- **follow** (verb, state): a line of a scenario comes after the step that says an act in the scenario. Forms: follows, followed. Frame: text follows act.
 
+- **restriction** (noun): the words after the noun of `every`, `only` or a count in the response of a requirement that narrow the things it ranges over, as "in the batch" of "every item in the batch" or "whose status is `ready`" of "only items whose status is `ready`". Kind of: text.
+- **upper bound** (noun): the most things that `one` or a count of "at most", "exactly" or "fewer than" in the response of a requirement admits, as three of "exactly three items" and two of "fewer than three items". Kind of: thing.
+- **counter-example** (noun): the Givens and a Then of a scenario that a program doing the act of its requirement to too many things fails: a thing that does not meet a restriction of the requirement, with a Then that the act is not done to it or that the relation does not hold of it, or, of an upper bound, one thing more than the upper bound, with a Then that the act is done to no more things than the upper bound. Kind of: text.
+- **assert** (verb, state): a step of a scenario says that an act is done, so that the scenario fails when the act is not done. Forms: asserts, asserted. Frame: step asserts act.
+- **given step** (noun): a step of a scenario that opens with `Given`, or with `And` or `But` under one. Kind of: step.
+- **instance** (noun): a thing that a step names by its kind and a name, as "the item i1", one thing within its scenario. Kind of: thing.
+- **introduce** (verb, state): a scenario, or a given step of it, brings a thing into the scenario, as "Given an item i1" brings in the item i1. Forms: introduces, introduced. Frame: text introduces instance.
+- **satisfy** (verb, state): the given steps of a scenario make a precondition true of the instances they introduce, every part of it, before its When. Forms: satisfies, satisfied. Frame: scenario satisfies precondition.
+- **boundary** (noun): as many things as a count in a precondition admits nearest to a number it does not admit: n of "at least n", "at most n" and "exactly n", n+1 of "more than n", n-1 of "fewer than n", which a scenario has when its given steps introduce that many things that the count counts and satisfy the precondition. Kind of: thing.
+
+## Relations
 | from | word | to | cardinality |
 |---|---|---|---|
 | docstring | of | feature file |  |
@@ -67,6 +82,14 @@ not a line here for each construct.
 | requirement group | of | capability |  |
 | requirement | of | requirement group |  |
 | scenario | of | requirement group | one |
+| act | of | requirement |  |
+| description | of | referent |  |
+| restriction | of | requirement |  |
+| upper bound | of | requirement | one |
+| counter-example | of | scenario |  |
+| boundary | of | count | one |
+| boundary | of | scenario |  |
+| count | in | precondition |  |
 
 ## Behaviour
 
@@ -242,6 +265,64 @@ the capability `shelf` holds:
   ## Not yet
   ## Dropped
 ```
+
+### [g111] `features generate` writes what a requirement says of a referent after the act that brings it in
+- [r111] While an act of a requirement of a capability brings in a referent, when the person runs `features generate` on the capability, `features` shall write a description of the referent that follows the act and not write a description of the referent that precedes the act.
+
+```given
+the capability `shelf` holds:
+  ---
+  id: capability/ex.com/prod/ctx/shelf
+  title: shelf
+  narrator: a client
+  group: service
+  language: codified-2
+  rests_on: []
+  retired: []
+  ---
+  # shelf
+  ## Purpose
+  Something.
+  ## Terms
+  - **book** (noun): a thing. Kind of: thing.
+  - **status** (attribute of book): where a book is. Values (adjective): `shelved`, `lent`.
+  - **lend** (verb, action): a client gives a book to a reader. Forms: lends, lent. Frame: client lends book.
+  ## Behaviour
+  ### [g1] Lending
+  - [r1] When the person runs `shelf add`, `shelf` shall write a book whose status is `shelved` and print the book.
+  ## Not yet
+  ## Dropped
+```
+
+### [g113] `features generate` writes only over a relation in a response
+- [r113] While a requirement of a capability uses `only` and the requirement uses `holds-relation`, when the person runs `features generate` on the capability, `features` shall write a scenario that uses `only`.
+
+### [g112] `features generate` writes a count over a relation in a response
+- [r112] While a requirement of a capability uses `count` and the requirement uses `holds-relation`, when the person runs `features generate` on the capability, `features` shall write a scenario that uses `count`.
+
+### [g117] `features generate` writes a counter-example of every
+- [r117] While a requirement of a requirement group of a capability uses `every` and the requirement has a restriction, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has a counter-example.
+
+### [g118] `features generate` writes a counter-example of only and asserts no act that only allows
+- [r118] While a requirement of a requirement group of a capability uses `only` and the requirement has a restriction, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has a counter-example and not write a step that asserts an act that the requirement allows.
+
+### [g119] `features generate` writes a counter-example of an upper bound
+- [r119] While a requirement of a requirement group of a capability has an upper bound, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has a counter-example.
+
+### [g114] `features generate` writes Givens that satisfy a precondition that uses every
+- [r114] While the precondition of a requirement of a requirement group of a capability uses `every`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that satisfies the precondition.
+
+### [g115] `features generate` gives a count in a precondition at its boundary
+- [r115] While the precondition of a requirement of a requirement group of a capability holds a count, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has the boundary of the count.
+
+### [g116] `features generate` introduces each instance of two Ks
+- [r116] While a requirement of a requirement group of a capability uses `two`, when the person runs `features generate` on the capability, `features` shall not write a step that mentions an instance that no given step introduces.
+
+### [g120] `features generate` writes the member a collection must not hold
+- [r120] While a requirement of a capability uses `holds-exactly`, when the person runs `features generate` on the capability, `features` shall write a scenario whose step uses `not-condition`.
+
+### [g121] `features generate` writes `nothing` in a precondition
+- [r121] While the precondition of a requirement of a capability uses `nothing`, when the person runs `features generate` on the capability, `features` shall write a scenario whose step uses `nothing`.
 
 ## Implementation, may change
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three

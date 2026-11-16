@@ -241,9 +241,12 @@ Feature: Design model check
     And this bounded context has the fact f1
     And a fact f2
     And this bounded context has the fact f2
+    And a fact f3
+    And this bounded context does not have the fact f3
     When the person runs `model facts`
     Then `model` prints the fact f1
     And `model` prints the fact f2
+    And `model` does not print the fact f3
 
   @g202 @r202
   Scenario: `model decisions --check` refuses an index that lacks an index entry
@@ -473,9 +476,12 @@ Feature: Design model check
     And the pack p1 has the term t1
     And a term t2
     And the pack p1 has the term t2
+    And a term t3
+    And the pack p1 does not have the term t3
     When the person runs `model lexicon`
     Then `model` prints the term t1
     And `model` prints the term t2
+    And `model` does not print the term t3
     And `model` exits successfully
 
   @g226 @r226
@@ -598,8 +604,10 @@ Feature: Design model check
     And the requirement r1 conforms to the language reference
     And a logical form l1
     And the requirement r1 has the logical form l1
+    And a logical form l2
+    And the requirement r1 has the logical form l2
     When the person runs `model parse` with the `--form` option on the requirement r1
-    Then `model` prints the logical form l1
+    Then `model` prints one logical form of the requirement r1
     And `model` exits successfully
 
   @g241 @r241
@@ -818,8 +826,8 @@ Feature: Design model check
     And a requirement r1
     And the requirement r2 overrides the requirement r1
     When the person runs `model explain` on the requirement r1
-    Then the requirement r4 uses the refusal r3
-    And `model` prints the requirement r4
+    Then `model` prints the requirement r3
+    And the requirement r3 uses the refusal r4
 
   @g264 @r264
   Scenario: `model explain` refuses an id that no capability holds
@@ -917,3 +925,87 @@ Feature: Design model check
     When the person runs `model check` on the capability c1
     Then `model` refuses `model check`
     And `model` names `migrate upgrade`
+
+  @g288 @r288
+  Scenario: `model logic` translates only over a relation in a response
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And the requirement r1 uses `only`
+    And the requirement r1 uses `holds-relation`
+    When the person runs `model logic` on the capability c1
+    Then `model` translates the requirement r1
+
+  @g289 @r289
+  Scenario: `model logic` translates a count over a relation in a response
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And the requirement r1 uses `count`
+    And the requirement r1 uses `holds-relation`
+    When the person runs `model logic` on the capability c1
+    Then `model` translates the requirement r1
+
+  @g290 @r290
+  Scenario: `model logic` names a requirement it has no translation of
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And the requirement r1 has no translation
+    When the person runs `model logic` on the capability c1
+    Then `model` prints the requirement r1
+    And `model` does not print `no findings`
+
+  @g291 @r291
+  Scenario: `model parse` reads `is-in`
+    Given a precondition p1
+    And a requirement r1
+    And the requirement r1 has the precondition p1
+    And the precondition p1 uses `is-in`
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g292 @r292
+  Scenario: `model logic` reads `is-in` as `holds-relation`
+    Given a requirement r1
+    And the requirement r1 uses `is-in`
+    And an act a1
+    And the requirement r1 obliges the act a1
+    And a requirement r2
+    And the requirement r2 forbids the act a1
+    And the requirement r2 uses `holds-relation`
+    When the person runs `model logic`
+    Then `model` prints `L1`
+
+  @g293 @r293
+  Scenario: `model parse` reads `holds-exactly`
+    Given a requirement r1
+    And the requirement r1 uses `holds-exactly`
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g294 @r294
+  Scenario: `model logic` reads `holds-exactly` as every and only
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And the requirement r1 uses `holds-exactly`
+    And an act a1
+    And the requirement r1 obliges the act a1
+    And a requirement r2
+    And the capability c1 has the requirement r2
+    And a trigger t1
+    And the requirement r1 has the trigger t1
+    And the requirement r2 has the trigger t1
+    And the requirement r2 forbids the act a1
+    When the person runs `model logic`
+    Then `model` prints `L1`
+
+  @g295 @r295
+  Scenario: `model parse` reads `nothing` in a precondition
+    Given a precondition p1
+    And a requirement r1
+    And the requirement r1 has the precondition p1
+    And the precondition p1 uses `nothing`
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
