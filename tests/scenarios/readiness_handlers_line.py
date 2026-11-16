@@ -53,6 +53,27 @@ def _shaped(step, item):
     B.write_item(step, item, status="shaped")
 
 
+def _changed(step, item, line, options):
+    """b14's `--reword` or `--remove` of the requirement id a Given gave a requirement: the item's own line (the
+    world's `work-queue#r5` of the passing line), or a live requirement of the capability (`work-queue#r1`)."""
+    flag = "--reword" if "--reword" in options else "--remove"
+    name = _name(options[flag])
+    owner = step.context.get("owner", {}).get(step.context.get("id_of", {}).get(name), ("capability", None))
+    if owner[0] == "item":
+        R.give_lines(step, item, R.PASSING)
+        ident = "%s#r5" % R.CAPABILITY
+    else:
+        R.codify(step)
+        ident = R.LIVE
+    _shaped(step, item)
+    step.context.setdefault("says", {})[name] = ident
+    line.update(changed=flag, ident=ident, old=R.PASSING)
+    if flag == "--reword":
+        line["written"] = R.LINE
+        return ["--reword", ident, R.LINE]
+    return ["--remove", ident]
+
+
 @handler("WhenRuns", "`work line`")
 def work_line(step):
     options = {code.strip("`"): value for code, value in step.options}
@@ -66,6 +87,8 @@ def work_line(step):
         _shaped(step, item)
         line["recodified"] = capability
         args = ["--recodify", capability]
+    elif "--reword" in options or "--remove" in options:
+        args = _changed(step, item, line, options)
     elif "--retires" in options and "--universal" in options:
         R.universal(step)
         _shaped(step, item)

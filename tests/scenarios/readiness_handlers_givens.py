@@ -88,6 +88,23 @@ def given_does_not(step):
         _bar_check(step, item, step.names[1])
 
 
+def _owned(step):
+    """b14's Givens: the item i1 holds the requirement r1 (a line of the item), the capability c1 has the requirement r1
+    (a live requirement of a capability), the requirement r1 has the requirement id r2; kept for the When of
+    `work line --reword` and `--remove`, which writes each."""
+    if len(step.nps) != 1 or not step.nps[0].startswith(("the requirement ", "the requirement id ")):
+        return False
+    if step.term == "holds" and step.subject.startswith("the item "):
+        step.context.setdefault("owner", {})[step.names[-1]] = ("item", step.names[0])
+    elif step.term == "has" and step.subject.startswith("the capability "):
+        step.context.setdefault("owner", {})[step.names[-1]] = ("capability", step.names[0])
+    elif step.term == "has" and step.subject.startswith("the requirement ") and "requirement id" in step.nps[0]:
+        step.context.setdefault("id_of", {})[step.names[-1]] = step.names[0]
+    else:
+        return False
+    return True
+
+
 @local("GivenDoes")
 def given_does(step):
     """pass: the item's one line passes the bar; has: "no requirement has the requirement id r1" (and of a universal
@@ -98,6 +115,8 @@ def given_does(step):
     (b203); holds a universal condition: the item's `U1`, one `model logic` reads, beside a passing line."""
     if not R.mine(step) or step.term not in ("pass", "has", "holds", "violate"):
         return False
+    if _owned(step):
+        return None
     if step.term == "pass":
         R.give_lines(step, step.names[0], R.PASSING)
     elif step.term == "holds" and step.nps[0].startswith("the universal condition "):       # b203
