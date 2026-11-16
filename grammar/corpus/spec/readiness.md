@@ -300,3 +300,69 @@ shall [x4: agent the person (constant), x5: command `work ready` (parameter), x6
     refuse(e2, subject: x6, object: x5)
     name(e3, subject: x6, object: x2)
 ```
+
+## r42
+From: b14 r42. An item's own line given a new text under its id: the old text removed, the new one written in the item, the item committed.
+
+```reading
+When the person runs `work line` with the `--reword` option set to the requirement id of a requirement in an item on the item, `work` shall remove the requirement, write a requirement in the item and commit the item.
+shall [x1: agent the person (constant), x2: command `work line` (parameter), x3: option `--reword` (parameter), x7: tool `work` (constant)]
+  when [x4: requirement, x5: item, x6: requirement id]
+    in(x4, x5)
+    of(x6, x4)
+    argument(x3, x6)
+    run(e1, subject: x1, object: x2, with: x3, on: x5)
+  response [x8: requirement]
+    remove(e2, subject: x7, object: x4)
+    in(x8, x5)
+    write(e3, subject: x7, object: x8)
+    commit(e4, subject: x7, object: x5)
+```
+
+## r43
+From: b14 r43. An item's own line taken out of the item, and the item committed.
+
+```reading
+When the person runs `work line` with the `--remove` option set to the requirement id of a requirement in an item on the item, `work` shall remove the requirement and commit the item.
+shall [x1: agent the person (constant), x2: command `work line` (parameter), x3: option `--remove` (parameter), x7: tool `work` (constant)]
+  when [x4: requirement, x5: item, x6: requirement id]
+    in(x4, x5)
+    of(x6, x4)
+    argument(x3, x6)
+    run(e1, subject: x1, object: x2, with: x3, on: x5)
+  response
+    remove(e2, subject: x7, object: x4)
+    commit(e3, subject: x7, object: x5)
+```
+
+## r44
+From: b14 r44. A live requirement of a capability is no line of an item: `--reword` refuses it, named by its id.
+
+```reading
+If the person runs `work line` with the `--reword` option set to the requirement id of a requirement of a capability on an item, then `work` shall refuse the command and name the requirement id.
+shall [x1: agent the person (constant), x2: command `work line` (parameter), x3: option `--reword` (parameter), x8: tool `work` (constant)]
+  if [x4: requirement, x5: capability, x6: requirement id, x7: item]
+    of(x4, x5)
+    of(x6, x4)
+    argument(x3, x6)
+    run(e1, subject: x1, object: x2, with: x3, on: x7)
+  response
+    refuse(e2, subject: x8, object: x2)
+    name(e3, subject: x8, object: x6)
+```
+
+## r45
+From: b14 r45. A live requirement of a capability is no line of an item: `--remove` refuses it, named by its id.
+
+```reading
+If the person runs `work line` with the `--remove` option set to the requirement id of a requirement of a capability on an item, then `work` shall refuse the command and name the requirement id.
+shall [x1: agent the person (constant), x2: command `work line` (parameter), x3: option `--remove` (parameter), x8: tool `work` (constant)]
+  if [x4: requirement, x5: capability, x6: requirement id, x7: item]
+    of(x4, x5)
+    of(x6, x4)
+    argument(x3, x6)
+    run(e1, subject: x1, object: x2, with: x3, on: x7)
+  response
+    refuse(e2, subject: x8, object: x2)
+    name(e3, subject: x8, object: x6)
+```

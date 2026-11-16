@@ -57,6 +57,10 @@ def add_parsers(sub):
     p.add_argument("--retires", metavar="CAP#rN", help="the live requirement `<capability>#r<n>` the line replaces: "
                    "its id goes under the block's retired:, the line into that capability; with --universal, the "
                    "live universal condition `universal#U<n>` it replaces")
+    p.add_argument("--reword", metavar="CAP#rN", help="the item's own line `<capability>#r<n>` the requirement line "
+                   "takes the place of, keeping its id and group")
+    p.add_argument("--remove", metavar="CAP#rN", help="the item's own line `<capability>#r<n>` taken out of it, its "
+                   "group too when it was the last line")
     p.add_argument("--term", help="a term bullet for the capability's ## Terms, in place of a line")
     p.add_argument("--recodify", metavar="CAP", help="the codified capability the item switches to the new language: "
                    "`language: codified-2` written into its block (`universal`: spec/universal.md)")
@@ -112,10 +116,32 @@ def cmd_depend(args):
 PIECES = ("text", "term", "relation", "given", "universal", "upstream", "recodify")
 
 
+def _changed(args):
+    """`work line --reword <cap>#r<n> <line>` and `work line --remove <cap>#r<n>` (b14): an item's own line."""
+    import backlog_reword
+    others = [k for k in PIECES[1:] + ("into", "retires", "group", "in_group") if getattr(args, k) is not None]
+    if (args.reword is not None) == (args.remove is not None) or others:
+        raise backlog_items.Refused("work line: --reword takes a requirement line and --remove none, one of them, "
+                                    "with no other option")
+    if args.reword is not None:
+        if args.text is None:
+            raise backlog_items.Refused("work line: --reword %s takes the requirement line" % args.reword)
+        item = backlog_reword.reword(args.root, args.name, args.reword, args.text)
+        print("%s: %s reworded" % (backlog_items.label(item), args.reword))
+    else:
+        if args.text is not None:
+            raise backlog_items.Refused("work line: --remove %s takes no requirement line" % args.remove)
+        item = backlog_reword.remove(args.root, args.name, args.remove)
+        print("%s: %s removed" % (backlog_items.label(item), args.remove))
+    return 0
+
+
 def cmd_line(args):
     """`work line`: it parses nothing; `work ready` is the check (D5). One piece a run: a line, or one flag's piece."""
     import backlog_forms
     import backlog_lines
+    if args.reword is not None or args.remove is not None:
+        return _changed(args)
     given = [k for k in PIECES if getattr(args, k) is not None]
     if len(given) != 1:
         raise backlog_items.Refused("work line: give one of a requirement line, --term, --relation, --given, "

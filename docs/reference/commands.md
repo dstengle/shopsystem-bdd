@@ -82,12 +82,15 @@ b250 "work show prints the status of an item" shaped
 #### `work line`
 
 Writes a requirement line into an item's `## Requirements`, under the capability it goes into, and commits it.\
-Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--term TERM] [--recodify CAP] [--relation RELATION] [--given GROUP BLOCK] [--universal UNIVERSAL] [--upstream UPSTREAM] name [text]`
+Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--reword CAP#rN] [--remove CAP#rN] [--term TERM] [--recodify CAP] [--relation RELATION] [--given GROUP BLOCK] [--universal UNIVERSAL] [--upstream UPSTREAM] name [text]`
 
 - `--into <capability>`: the codified capability the line goes into.
 - `--group "<title>"`: open a new group with this title (default: the item's title). `--in g<n>` joins one of the
   item's groups instead.
 - `--retires <cap>#r<n>`: the line replaces a live requirement, whose id goes to `retired:`. Ids are never reused.
+- `--reword <cap>#r<n>`: the line takes the place of one of the item's own lines, keeping its id and group.
+  `--remove <cap>#r<n>` takes one of them out, its group with it when it was the last line, and the id it
+  retires. Either refuses an id that is no line of the item, a live requirement's among them.
 - `--term "<bullet>"`: a glossary term for the capability's `## Terms`, in place of a line.
 - `--relation`, `--given`, `--universal`, `--upstream`: the other spec pieces an item can carry: a relation row, a
   group's given block, a universal condition, an upstream entry.

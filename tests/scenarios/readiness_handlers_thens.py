@@ -60,6 +60,9 @@ def written(step):
     held, line = _requirements(step), step.context["line"]
     if "recodified" in line:
         _block(held, line["recodified"])
+    elif line.get("changed") == "--reword":
+        capability, rid = line["ident"].split("#")
+        assert re.search(r"(?m)^- \[%s\] %s$" % (rid, re.escape(line["written"])), _block(held, capability)), held
     elif "retiring" in line:
         _retiring(step, held)
     else:
@@ -106,8 +109,18 @@ def sets(step):
     assert "language: codified-1" in (step.repo / own).read_text(), own
 
 
+def removed(step):
+    """`work` removes the requirement r1: the item file the run wrote no longer holds its line; with `--remove`, nor
+    the requirement's id, nor its group, whose last line it was."""
+    held, line = _requirements(step), step.context["line"]
+    assert line["old"] not in held, held
+    if line["changed"] == "--remove":
+        rid = line["ident"].split("#")[1]
+        assert "[%s]" % rid not in held and "[g4]" not in held, held
+
+
 THENS = {"refuse": lambda step: _done(step, 1), "name": named, "write": written, "holds": written,
-         "commit": committed, "set": sets}
+         "commit": committed, "set": sets, "remove": removed}
 
 
 @local("ThenDoesNot")
