@@ -237,7 +237,7 @@ def given(r, item):
     and, of a thing compared with another (b275), the value spec_lf_compare chose of both."""
     import spec_lf_compare  # here: spec_lf_compare imports this module
     x, term = item.args[0], item.args[1]
-    t = next(t for t, _ in r.vocab.attributes if t.term == term)
+    t = own(r, x, term)
     said = bounds(r.pre, x, term)
     value = spec_lf_compare.value_of(r, x, t) or next((v for v in candidates(t, [w for _, w, _ in said if key(t, w)])
                                                        if all(meets(t, v, op, w) == pos for op, w, pos in said)), None)
@@ -247,10 +247,17 @@ def given(r, item):
     return value_cond(r, x, term, value)
 
 
-def value_cond(r, x, term, value):
-    """The Cond tree "the T of x is `v`", the full form (b257), of a listed value or a code."""
+def own(r, x, term, numbered=False):
+    """The entry of `term` whose owner kind x is of, up grammar 4's kind tree (b287: two entries of one word); with
+    `numbered`, (its number, the entry, its owner kinds)."""
     n, t, ks = next((n, t, ks) for n, (t, ks) in enumerate(r.vocab.attributes, 1) if t.term == term
                     and any(k in ks for k in r.vocab.ancestors(x.kind)))
+    return (n, t, ks) if numbered else t
+
+
+def value_cond(r, x, term, value):
+    """The Cond tree "the T of x is `v`", the full form (b257), of a listed value or a code."""
+    n, t, ks = own(r, x, term, True)
     k = next(k for k in r.vocab.ancestors(x.kind) if k in ks)
     T = "t_%s_%d" % (spec_rgl.slug(term), n)
     owner = ("%s_Of_%s" % (T, spec_rgl.kid(k)), named(r, x, k) or r.np(x, k))

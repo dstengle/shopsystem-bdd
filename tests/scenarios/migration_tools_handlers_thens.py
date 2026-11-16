@@ -10,7 +10,7 @@ import sys
 
 from scenarios import migration_tools_handlers as M
 from scenarios import migration_tools_handlers_counter as C
-from scenarios.migration_old import CONTEXT, plugin
+from scenarios.migration_old import CONTEXT
 
 local = M.local
 RELOCATED = {"decisions/": "spec/decisions/", "work/": ".shop/work/", "records/": ".shop/records/",
@@ -59,7 +59,7 @@ def relocated(step, what):
 def rewritten(step, what):
     ok(step)
     if what == "plugin version file":
-        assert M.read(step, ".shop/plugin-version").strip() == plugin()[1]
+        assert M.read(step, ".shop/plugin-version").strip() == M.ours(step)[1]
         old = step.context["old"]
         assert len(old.git("log", "--oneline").stdout.splitlines()) == step.context["commits"] + 1
         assert old.git("status", "--porcelain").stdout == ""

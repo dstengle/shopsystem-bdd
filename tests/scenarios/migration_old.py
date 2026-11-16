@@ -17,21 +17,24 @@ def number(version):
     return tuple(int(p) for p in version.split("."))
 
 
-def plugin():
-    """(root, version) of the plugin the scenarios run: this one, or, while its version is below TARGET, a copy of its
-    scripts and hooks whose plugin.json says TARGET, made once."""
+def plugin(version=None):
+    """(root, version) of the plugin the scenarios run: a copy of this one's scripts and hooks whose plugin.json says
+    `version` (the release of `migrate` a Given gave), made once a version; with none, this one, or, while its
+    version is below TARGET, such a copy of TARGET."""
     data = json.loads((PLUGIN / ".claude-plugin/plugin.json").read_text())
-    if number(data["version"]) >= number(TARGET):
-        return PLUGIN, data["version"]
-    if not _copy:
+    if version is None:
+        if number(data["version"]) >= number(TARGET):
+            return PLUGIN, data["version"]
+        version = TARGET
+    if version not in _copy:
         root = pathlib.Path(tempfile.mkdtemp())
         atexit.register(shutil.rmtree, root, True)
         for part in ("scripts", "hooks"):
             shutil.copytree(PLUGIN / part, root / part, ignore=shutil.ignore_patterns("__pycache__"))
         (root / ".claude-plugin").mkdir()
-        (root / ".claude-plugin/plugin.json").write_text(json.dumps(dict(data, version=TARGET), indent=2) + "\n")
-        _copy["root"] = root
-    return _copy["root"], TARGET
+        (root / ".claude-plugin/plugin.json").write_text(json.dumps(dict(data, version=version), indent=2) + "\n")
+        _copy[version] = root
+    return _copy[version], version
 
 
 class Old:
