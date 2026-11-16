@@ -218,7 +218,110 @@ Look here before writing a line, and again when a line is refused at a word. If 
 it is a new glossary entry, never a nearby word that means something else. The
 [capability file reference](reference/capability-file.md#terms) shows where terms go.
 
-## 3. Do and don't
+## 3. Collections, counts, comparisons and orders
+
+### Membership: holds, is in, holds exactly, holds nothing
+
+A relation row whose word is `in` makes one kind a collection of another. This repository's `item | in | batch`
+gives "a batch holds an item", and from the member's side, "an item is in a batch"
+([`holds-relation`](../grammar/constructs.md#holds-relation), [`is-in`](../grammar/constructs.md#is-in)):
+
+```requirement
+When the person runs `work batch status` on a batch, `work` shall print every item that the batch holds.
+While an item is in a batch, if the person runs `work shape` on the item, then `work` shall refuse the command and name the batch.
+```
+
+"holds exactly the Ks that P" says both halves: every K that meets P is held, and no K that does not is
+([`holds-exactly`](../grammar/constructs.md#holds-exactly)). The form shows the two boxes:
+
+```reading
+When the person runs `work batch start`, `work` shall write a batch that holds exactly the items whose status is `in-batch`.
+shall [x1: agent the person (constant), x2: command `work batch start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response [x4: batch]
+    every [x5: item]
+      status(x5) = `in-batch`
+      scope
+        in(x5, x4)
+    not [x6: item]
+      not
+        status(x6) = `in-batch`
+      in(x6, x4)
+    write(e2, subject: x3, object: x4)
+```
+
+"holds nothing" is an empty collection: no thing of any kind its rows let it hold
+([`nothing`](../grammar/constructs.md#nothing)). "holds no item" says only that no item is in it.
+
+```requirement
+While a batch holds nothing, when the person runs `work batch status` on the batch, `work` shall print the batch.
+```
+
+### Size: at least, at most, exactly, the number of Ks
+
+A count before a number and a plural noun bounds how many: "at least", "at most", "exactly", "more than", "fewer
+than" ([R7](../grammar/language.md#r7-one-k-is-exactly-one-a-k-at-least-one), [`count`](../grammar/constructs.md#count)).
+"one K" alone is exactly one.
+
+```requirement
+When the person runs `work batch start`, `work` shall write a batch that holds at least one item.
+When the person runs `work batch start`, `work` shall write a batch that holds at most three items.
+```
+
+"the number of Ks" is the count as a value, to print or to compare
+([the number of Ks](../grammar/language.md#the-number-of-ks-that-p-a-count-as-a-value)):
+
+```requirement
+When the person runs `work batch status` on a batch, `work` shall print the number of items that the batch holds.
+```
+
+A generated scenario of a count gives the bound's number of things and, for an upper bound, one past it, with a
+negated Then; a scenario of every and of only gives a thing that fails the restriction.
+
+### Comparing two things' values
+
+"the T of X is after the T of Y", "is before", and "is the same as" compare two things' values of one attribute
+([`value-compare`, `value-same`](../grammar/language.md#the-t-of-x-is-after-the-t-of-y-is-the-same-as-the-t-of-y-one-things-value-compared-with-anothers)).
+Migration-tools r81 and r82, where a repository's release and `migrate`'s are two senses of one word:
+
+```requirement
+While the release of this repository is the same as the release of `migrate`, when the person runs `migrate upgrade`, `migrate` shall print `no upgrade step is pending` and change no file.
+While the release of this repository is after the release of `migrate`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print `update the plugin`.
+```
+
+"after" and "before" need a **value order** on the attribute: its entry's `Order: by number.` or `Order: as
+listed.`, or a `Type:`, `number`, `time` or `text`, whose values are any literal of the type
+([A value order](../grammar/language.md#a-value-order-order-or-type)). The release's entries say
+`Order: by number.` "is the same as" takes any attribute. An attribute with no value order is refused, naming it.
+
+### An order
+
+", ordered by T, in ascending order" or "in descending order" says the order a response prints a collection, or a
+printed every, in ([`order-by`](../grammar/constructs.md#order-by), [`order-by-every`](../grammar/constructs.md#order-by-every)):
+
+```reading
+When the person runs `migrate status`, `migrate` shall print every upgrade step, ordered by release, in ascending order.
+shall [x1: agent the person (constant), x2: command `migrate status` (parameter), x3: tool `migrate` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response
+    every [x4: upgrade step]
+      scope
+        print(e2, subject: x3, object: x4)
+        ordered(x4, release, ascending)
+```
+
+An order is a property of what a response prints. In a While clause, in the trigger, or after "shall not" it is
+refused, and so is an order by an attribute with no value order. An item's status has none:
+
+```refused
+When the person runs `work batch status` on a batch, `work` shall print the batch, ordered by status, in ascending order.
+```
+
+A position ("the first item", the top three) and a second key are not said yet.
+
+## 4. Do and don't
 
 This is the heart of the page. Each pair is a line writers try first, and the line that says it. Some don'ts are
 refused by `model parse`. Others parse but break a writing rule; those sit in a plain block, and the sentence above
@@ -411,7 +514,7 @@ When the person runs `work batch status` on a batch, `work` shall print the stat
 
 A compound that is a thing of its own ("pull request", "git branch") is a declared noun, and that's fine.
 
-## 4. Reading a refusal
+## 5. Reading a refusal
 
 `model parse` refuses in two ways. Either the words stop fitting the grammar at some token, or the line parses and
 a reading rule turns it down. Both say where.
@@ -465,7 +568,7 @@ While a batch holds no item, when the person runs `work batch status` on the bat
 
 The rest of the refusals, one by one, are in [troubleshooting](troubleshooting.md#a-line-is-refused).
 
-## 5. Reading a line's meaning
+## 6. Reading a line's meaning
 
 A line that parses is not done. A parse says the words fit; the meaning says what they claim. Read it with
 `model parse --form`:
@@ -526,7 +629,7 @@ That is what its group's title says: it prints an item with its dependency on an
 the form had bound to `x1`, the line would mean something else, and only the form would tell you.
 
 For a line already in a capability, `model explain` adds what the line also means (through a pack or a universal
-condition, as under §3) and which lines take precedence over it in some state:
+condition, as under §4) and which lines take precedence over it in some state:
 
 ```console
 $ model explain readiness#r23
@@ -541,7 +644,7 @@ taking precedence over it, where its state holds:
 Each of those refusals wins over r23 in the state it names. Reading them tells you the whole behaviour of
 `work ready`, not one line of it.
 
-## 6. What the language cannot say yet
+## 7. What the language cannot say yet
 
 The language has gaps, and [`grammar/language.md`](../grammar/language.md#what-the-language-cannot-say-yet) lists
 each one with the lines that meet it. These are the four writers meet most:
