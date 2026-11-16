@@ -73,7 +73,7 @@ def test_a_blocked_item_names_its_blocker_in_its_row(backlog_repo):
 
 
 def test_a_dependency_on_a_missing_or_withdrawn_item_blocks_with_its_status(backlog_repo):
-    write_item(backlog_repo, "b1", depends_on="b9, b3")
+    write_item(backlog_repo, "b1", depends_on="b9, b3", body="\n## Notes\n\nParse every line.\n")   # a shaping note
     write_item(backlog_repo, "b3", title="Gone", status="withdrawn")
     done = work(backlog_repo, "backlog")
     assert done.returncode == 0, done.stderr

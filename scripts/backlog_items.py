@@ -174,6 +174,11 @@ def next_name(root):
     return "b%d" % (max(map(number, names(root)), default=0) + 1)
 
 
+def shaping_note(item):
+    """Whether the item has a shaping note: a paragraph under its `## Notes` (r43, r44)."""
+    return bool((item.sections.get("Notes") or "").strip())
+
+
 def label(item):
     """How `work` names an item: its id and its title, `b3 "Fix the parser"` (design goal 10)."""
     return '%s "%s"' % (item.name, item.title)
