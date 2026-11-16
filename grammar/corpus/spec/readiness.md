@@ -300,3 +300,23 @@ shall [x4: agent the person (constant), x5: command `work ready` (parameter), x6
     refuse(e2, subject: x6, object: x5)
     name(e3, subject: x6, object: x2)
 ```
+
+## r46
+From: b203 r42. A universal condition of the item that `model logic` reads no translation of refuses the bar when spec/universal.md does not exist, named by its id.
+
+```reading
+While `universal` does not exist and an item is `shaped` and a universal condition in the item has no translation, if the person runs `work ready` on the item, then `work` shall refuse the command and name the universal condition.
+shall [x1: capability `universal` (constant), x5: agent the person (constant), x6: command `work ready` (parameter), x7: tool `work` (constant)]
+  while [x2: item, x3: universal condition]
+    not
+      exists(x1)
+    status(x2) = `shaped`
+    in(x3, x2)
+    not [x4: translation]
+      of(x4, x3)
+  if
+    run(e1, subject: x5, object: x6, on: x2)
+  response
+    refuse(e2, subject: x7, object: x6)
+    name(e3, subject: x7, object: x3)
+```
