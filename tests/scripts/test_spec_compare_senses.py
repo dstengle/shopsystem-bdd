@@ -56,3 +56,15 @@ def test_a_comparison_across_two_senses_is_given_a_value_of_each_sense(tmp_path)
     assert done.returncode == 0 and done.stderr == "", done.stderr
     text = (tmp_path / "features" / "c1.feature").read_text()
     assert "the version of the `a` worktree is `1.0.0`" in text and "the version of the file f1 is `0.0.0`" in text, text
+
+
+def test_two_senses_ordered_as_listed_with_different_lists_are_not_compared(tmp_path):
+    codified2_world.context(tmp_path, "ex.com/prod/ctx", [LINE % ("the priority of a stage is after the priority of "
+                                                                  "a file", "print")], "thing")
+    index = tmp_path / "spec" / "index.md"
+    index.write_text(index.read_text() + "- **priority** (attribute of file): how soon a file is wanted. Values "
+                     "(adjective): `a`, `b`. Order: as listed.\n")
+    ctx = spec_context.load(tmp_path)
+    assert "the senses of priority have different value orders" in str(ctx.refused), ctx.refused
+    cans = [f for f in ctx.domain if f.startswith("tcan(t_priority")]
+    assert len(cans) == 2 and len({f.split(",")[1] for f in cans}) == 2, cans

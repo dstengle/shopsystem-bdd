@@ -32,7 +32,7 @@ def cond(st, t, rest, a):
     else:
         return None
     t2 = dict(st.names.attrs).get(other) if other else None
-    if t2 is not None and spec_lf_order.order(t) != spec_lf_order.order(t2):
+    if t2 is not None and spec_lf_order.same(t) != spec_lf_order.same(t2):
         st.notes.append("the senses of %s have different value orders: the %s of a %s is %s, the %s of a %s %s, so "
                         "one is never compared with the other" % (t.term, t.term, t.kinds[0], said_order(t), t2.term,
                                                                   t2.kinds[0], said_order(t2)))
