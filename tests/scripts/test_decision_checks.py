@@ -44,11 +44,14 @@ def test_the_live_decisions_keep_their_tiers():
 
 def test_the_sort_holds_its_totals():
     found = model_decisions.decisions(ROOT)
-    assert len(found) == 92, len(found)
-    assert collections.Counter(d.status for d in found) == {"accepted": 39, "superseded": 51, "rejected": 2}
+    assert len(found) == 95, len(found)
+    assert collections.Counter(d.status for d in found) == {"accepted": 39, "superseded": 54, "rejected": 2}
     tiers = collections.Counter(d.tier for d in found if d.status == "accepted")
     assert tiers == {"check": 9, "requirement": 13, "judgement": 17}, tiers
-    assert [d.rel for d in found if d.status != "accepted" and d.tier] == []
+    # `work decision --supersedes` (b179) sets only the status of the decision it replaces, so a decision out of force
+    # keeps its tier only when it was superseded so; `model decisions --check` runs none of them.
+    kept = [d.rel for d in found if d.status != "accepted" and d.tier]
+    assert kept and all(d.status == "superseded" for d in found if d.rel in kept), kept
 
 
 def test_the_judgement_decisions_reach_the_brief():
