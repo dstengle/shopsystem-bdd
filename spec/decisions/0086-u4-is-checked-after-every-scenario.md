@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/u4-is-checked-after-every-scenario
 summary: "U4 (work commits every transition and pushes the commit) is verified by the check that runs after every generated scenario."
 date: 2026-11-10
-status: accepted
+status: superseded
 tier: check
 enforced_by: [tests/scenarios/vocab.py]
 verified_by: [check]
