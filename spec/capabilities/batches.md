@@ -6,7 +6,7 @@ group: service
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: [g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g10, r10, g12, r12, g13, r13, g16, r16, g17, r17, g18, r18, g19, r19, g27, r27, g33, r33]
-unbuilt: []
+unbuilt: [r39]
 ---
 
 # Batches
@@ -96,6 +96,9 @@ question while building parks its item and the rest of the batch carries on. The
 
 ### [g36] `work batch status` prints where the batch stands
 - [r36] While a batch holds an item and the batch has a task, when the person runs `work batch status` on the batch, `work` shall print the item, the task and the status of the task.
+
+### [g39] `work batch start` writes `spec/universal.md` in `codified-2` when it does not exist
+- [r39] While `universal` does not exist and an item is `ready` and the item passes the readiness bar and a universal condition is in the item, when the person runs `work batch start`, `work` shall write `universal` and set the language of `universal` to `codified-2`.
 
 ## Implementation, may change
 

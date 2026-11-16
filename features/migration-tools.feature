@@ -990,3 +990,13 @@ Feature: Migration tools
     Then `migrate` exits successfully
     And `migrate` does not print an upgrade step
     And `migrate` does not print an initiative
+
+  @g84 @r84
+  Scenario: `migrate upgrade` on a repository behind the plugin's release with no upgrade step pending records the plugin's release
+    Given the release of this repository is `0.34.0`
+    And the release of `migrate` is `0.34.1`
+    When the person runs `migrate upgrade`
+    Then `migrate` prints `no upgrade step is pending`
+    And `migrate` rewrites the plugin version file p1
+    And this repository has the plugin version file p1
+    And `migrate` commits the plugin version file p1

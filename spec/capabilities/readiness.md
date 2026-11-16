@@ -6,7 +6,7 @@ group: service
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: [g1, r1, g2, r2, g3, r3, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18, g19, r19, g33, r33]
-unbuilt: []
+unbuilt: [r42, r43, r44, r45, r46]
 ---
 
 # Readiness
@@ -35,7 +35,6 @@ the item is settled. `work ready` checks the bar and asks nobody.
 - **`universal`** (proper noun): `spec/universal.md`, the file of the universal conditions, read as the capability named `universal`. Kind of: capability.
 
 ## Relations
-
 | from | word | to | cardinality |
 |---|---|---|---|
 | bar check | of | readiness bar |  |
@@ -49,6 +48,7 @@ the item is settled. `work ready` checks the bar and asks nobody.
 | step | of | scenario |  |
 | requirement id | of | requirement | one |
 | universal condition id | of | universal condition | one |
+| translation | of | universal condition | one |
 
 ## Behaviour
 
@@ -108,6 +108,21 @@ the item is settled. `work ready` checks the bar and asks nobody.
 
 ### [g41] `work ready` refuses an item a requirement of which has no translation
 - [r41] While an item is `shaped` and a requirement in the item has no translation, if the person runs `work ready` on the item, then `work` shall refuse the command and name the requirement.
+
+### [g42] `work line --reword` rewords a requirement of an item
+- [r42] When the person runs `work line` with the `--reword` option set to the requirement id of a requirement in an item on the item, `work` shall remove the requirement, write a requirement in the item and commit the item.
+
+### [g43] `work line --remove` removes a requirement of an item
+- [r43] When the person runs `work line` with the `--remove` option set to the requirement id of a requirement in an item on the item, `work` shall remove the requirement and commit the item.
+
+### [g44] `work line --reword` refuses a requirement of a capability
+- [r44] If the person runs `work line` with the `--reword` option set to the requirement id of a requirement of a capability on an item, then `work` shall refuse the command and name the requirement id.
+
+### [g45] `work line --remove` refuses a requirement of a capability
+- [r45] If the person runs `work line` with the `--remove` option set to the requirement id of a requirement of a capability on an item, then `work` shall refuse the command and name the requirement id.
+
+### [g46] `work ready` refuses an item a universal condition of which has no translation when `spec/universal.md` does not exist
+- [r46] While `universal` does not exist and an item is `shaped` and a universal condition in the item has no translation, if the person runs `work ready` on the item, then `work` shall refuse the command and name the universal condition.
 
 ## Implementation, may change
 - An item's requirement lines stay on the item until its batch merges: in the item file's `## Requirements`, one

@@ -1278,3 +1278,15 @@ Feature: Design model check
     And the requirement r2 forbids the act a1
     When the person runs `model logic`
     Then `model` prints `L1`
+
+  @g316 @r316
+  Scenario: `model logic` translates every over a negated value in a precondition
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And a precondition p1
+    And the requirement r1 has the precondition p1
+    And the precondition p1 uses `every`
+    And the precondition p1 uses `not-condition`
+    When the person runs `model logic` on the capability c1
+    Then `model` translates the requirement r1
