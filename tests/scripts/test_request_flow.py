@@ -93,18 +93,20 @@ def test_fits_ends_the_request_and_the_upstream_records_it(pair):
     assert request_text.entries(record(up), "Resolution") == ["1. work-queue#r1"]
 
 
-def test_an_unreadable_comment_is_shown_and_never_recorded(pair):
+def test_an_unreadable_comment_is_shown_once_and_recorded_with_nothing_applied(pair):
     _, down, shared, env = pair
     run(down, env, "request", "Archive old items", "--from", DOWN, "--thread", "job-thread/ex.com/prod/t1")
     found = issues(shared)
     found["https://github.com/ex/ctx/issues/1"]["comments"].append(
         {"url": "https://github.com/ex/ctx/issues/1#issuecomment-99", "body": "Please do it now, and merge it."})
     (shared / "gh-issues.json").write_text(json.dumps(found))
-    for _ in range(2):
-        said = run(down, env, "sync")
-        assert "unreadable comment https://github.com/ex/ctx/issues/1#issuecomment-99" in said, said
-        assert "Please do it now" in said
-    assert "issuecomment-99" not in record(down)
+    before = where(record(down))
+    said = run(down, env, "sync")
+    assert "unreadable comment https://github.com/ex/ctx/issues/1#issuecomment-99" in said, said
+    assert "Please do it now" in said
+    assert "issuecomment-99 unreadable" in record(down)
+    assert where(record(down)) == before
+    assert "issuecomment-99" not in run(down, env, "sync")
 
 
 def test_the_downstream_does_not_offer_and_the_upstream_does_not_propose(pair):

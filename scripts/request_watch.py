@@ -7,7 +7,8 @@ is woken when it ends: it runs `work sync`, the skill the request's turn calls f
 
 It writes nothing in the repository and commits nothing; `work sync` records. A readable comment and an untaken ask
 are printed by every watch that finds them, until sync has recorded or taken them. An unreadable comment (its block of
-fields missing or not parsing, as sync reads it) is never recorded by sync, so it is printed once and kept by its URL
+fields missing or not parsing, as sync reads it) is recorded by sync with nothing of it applied; until then it is
+printed once and kept by its URL
 in `<git dir>/shopsystem/watched.json` (the worktree's own git dir, as conversation_prompt keeps its pointer, never
 committed), and a later watch passes over it: it does not wake the session in a loop. A poll whose gh fails is said
 on stderr and tried again at the next; it does not end the watch. `--polls <n>` ends a watch that has found nothing
