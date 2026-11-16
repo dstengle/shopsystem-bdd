@@ -195,6 +195,40 @@ shall [x2: agent the person (constant), x3: command `work backlog` (parameter), 
         print(e3, subject: x4, object: x5)
 ```
 
+## r43
+From: b65. An idea with no shaping note is groomed (given one by `--note`) before it is shaped.
+
+```reading
+While the status of an item is `idea` and the item has no shaping note, if the person runs `work shape` without the `--note` option on the item, then `work` shall refuse the command and name the `--note` option.
+shall [x3: agent the person (constant), x4: command `work shape` (parameter), x5: option `--note` (parameter), x6: tool `work` (constant)]
+  while [x1: item]
+    status(x1) = `idea`
+    not [x2: shaping note]
+      of(x2, x1)
+  if
+    run(e1, subject: x3, object: x4, without: x5, on: x1)
+  response
+    refuse(e2, subject: x6, object: x4)
+    name(e3, subject: x6, object: x5)
+```
+
+## r44
+From: b65. `work backlog` shows an idea with no shaping note as needing grooming, naming `--note`.
+
+```reading
+While the status of an item is `idea` and the item has no shaping note, when the person runs `work backlog`, `work` shall print the item and name the `--note` option.
+shall [x3: agent the person (constant), x4: command `work backlog` (parameter), x5: tool `work` (constant), x6: option `--note` (parameter)]
+  while [x1: item]
+    status(x1) = `idea`
+    not [x2: shaping note]
+      of(x2, x1)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    print(e2, subject: x5, object: x1)
+    name(e3, subject: x5, object: x6)
+```
+
 ## r32
 Retires: r18. From: b158 r36. Audit: distortion, fixed by section 5 (the remote of this repository) and the push of the command.
 
