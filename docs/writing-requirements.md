@@ -254,6 +254,12 @@ shall [x1: agent the person (constant), x2: command `work batch start` (paramete
 "holds nothing" is an empty collection: no thing of any kind its rows let it hold
 ([`nothing`](../grammar/constructs.md#nothing)). "holds no item" says only that no item is in it.
 
+Each of these reads on the object of any act of a response, `write` as above, `print`, or a verb of your own whose
+frame names the collection's kind, and "holds exactly" with any restriction "every" reads: a value, a negated value or
+a relative clause. A holds-exactly scenario gives the K that fails the restriction and the Then that the collection
+does not hold it; "holds nothing" on a response's object gets the Then "the batch b1 holds nothing", and "holds no
+item" the Then "the batch b1 holds no item" with an item the batch does not hold.
+
 ```requirement
 While a batch holds nothing, when the person runs `work batch status` on the batch, `work` shall print the batch.
 ```
@@ -299,8 +305,8 @@ listed.`, or a `Type:`, `number`, `time` or `text`, whose values are any literal
 
 ### An order
 
-", ordered by T, in ascending order" or "in descending order" says the order a response prints a collection, or a
-printed every, in ([`order-by`](../grammar/constructs.md#order-by), [`order-by-every`](../grammar/constructs.md#order-by-every)):
+", ordered by T, in ascending order" or "in descending order" says the order of a collection a response's act
+takes as its object, printed, written or returned, or of a printed every ([`order-by`](../grammar/constructs.md#order-by), [`order-by-every`](../grammar/constructs.md#order-by-every)):
 
 ```reading
 When the person runs `migrate status`, `migrate` shall print every upgrade step, ordered by release, in ascending order.
@@ -314,8 +320,8 @@ shall [x1: agent the person (constant), x2: command `migrate status` (parameter)
         ordered(x4, release, ascending)
 ```
 
-An order is a property of what a response prints. In a While clause, in the trigger, or after "shall not" it is
-refused, and so is an order by an attribute with no value order. An item's status has none:
+An order is a property of a response's object, whatever the act. In a While clause, in the trigger, or after
+"shall not" it is refused, and so is an order by an attribute with no value order. An item's status has none:
 
 ```refused
 When the person runs `work batch status` on a batch, `work` shall print the batch, ordered by status, in ascending order.
