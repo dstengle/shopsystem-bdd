@@ -11,7 +11,8 @@ I14a), the one meaning `model logic` reads (spec_lf), in the step grammar 4's tr
   file f1"), what is said of a thing after the act that brings it in (spec_steps4_boxes' `order`, b268). An `every`
   box gives two Ks, so the line is not met vacuously (R6): each brought in by a Given with its
   restrictor, its scope's Thens said of each (b221), and a counter-example (spec_steps4_counter, b273); each
-  referent of a response with "two Ks" brought in before the When (b273). An act a universal condition entails (`entailed`, by its number
+  referent of a response with "two Ks", and a held thing only described with its holder ("print a worktree that
+  holds a file"), brought in before the When (b273, b286). An act a universal condition entails (`entailed`, by its number
   as spec_lf_facts numbers acts, "change nothing" one) is left out, `# entailed: <premise>` in its place.
 Givens and the When are the first requirement's; a later one's While and trigger referent of a kind is the first
 one's of that kind and rank. A referent is named by its kind's first letter and a count, in order of first mention;
@@ -287,9 +288,7 @@ def read(vocab, forms, entailed=None, r=None):
                     subject, s, vp = r.clause(event)
                     when.append(("STrig", (kid(subject) + "_Event", s, vp)))
             elif part.op == "response":
-                if any(isinstance(i, Atom) and i.pred == spec_lf_distinct.PRED for i in part.body):
-                    for x in part.refs:     # each of "two Ks" brought in before the When (b273)
-                        r.bring_in(x)
+                boxes.bring_response(r, part)     # brought in before the When (b273, b286)
                 for act, tree in r.acts(part.body):
                     number += act is True
                     thens.append(("#", "entailed: %s" % gone[number]) if act and number in gone else ("then", tree))

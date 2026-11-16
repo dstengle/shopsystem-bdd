@@ -24,6 +24,7 @@ A box of any other shape is a TraceError naming it.
 """
 from dataclasses import replace
 
+import spec_lf_distinct
 import spec_lf_member
 import spec_lf_number
 import spec_lf_option
@@ -59,6 +60,20 @@ def given(r, box, pos):
         case = box.body[r.pick(len(box.body))]
         return [s for sub in case.body for s in r.given(sub)]
     raise TraceError("no Given of %s" % box.op)
+
+
+def bring_response(r, part):
+    """Each referent of a response with "two Ks" (b273), and the things of an atom of a row `K1 | in | K2` of the
+    response whose K1 no act names, as "print a worktree that holds a file" says them (b286), brought in by a Given
+    before the When; a K1 an act names ("write a file that a directory holds") is the act's own."""
+    if any(isinstance(i, Atom) and i.pred == spec_lf_distinct.PRED for i in part.body):
+        for x in part.refs:
+            r.bring_in(x)
+    events = [z[1] for i in part.body if isinstance(i, Atom) and i.pred == "event" for z in i.args[-1] if len(z) == 2]
+    for atom in (i for i in part.body if isinstance(i, Atom) and i.pred == "rel" and i.args[0] == "in"):
+        if all(x in part.refs for x in atom.args[1:]) and atom.args[1] not in events:     # a held thing only described
+            for x in atom.args[1:]:
+                r.bring_in(x)
 
 
 def no(r, box):
