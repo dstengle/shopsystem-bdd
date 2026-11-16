@@ -68,3 +68,15 @@ def test_two_senses_ordered_as_listed_with_different_lists_are_not_compared(tmp_
     assert "the senses of priority have different value orders" in str(ctx.refused), ctx.refused
     cans = [f for f in ctx.domain if f.startswith("tcan(t_priority")]
     assert len(cans) == 2 and len({f.split(",")[1] for f in cans}) == 2, cans
+
+
+def test_two_senses_said_the_same_are_given_a_value_neither_sense_lists_for_the_other(tmp_path):
+    world(tmp_path, [LINE % ("%s is the same as %s" % (WORKTREE, FILE), "print")], "c1")
+    index = tmp_path / "spec" / "index.md"
+    index.write_text(index.read_text().replace("`1.0.0`, `3.0.0`. Order", "`3.0.0`. Order"))
+    done = subprocess.run([sys.executable, str(FEATURES), "generate", "c1"], cwd=tmp_path, capture_output=True,
+                          text=True)
+    assert done.returncode == 0 and done.stderr == "", done.stderr
+    text = (tmp_path / "features" / "c1.feature").read_text()
+    # `1.0.0`, a value of the file's sense, is a word, never a code of the worktree's: a literal neither lists
+    assert "the version of the `a` worktree is `0.0.0`" in text and "the version of the file f1 is `0.0.0`" in text, text

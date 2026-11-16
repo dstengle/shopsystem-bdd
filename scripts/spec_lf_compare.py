@@ -83,7 +83,8 @@ def values(r, t, refs):
     value and point spec_lf_order's bounds say of each, the first in candidate order; None when none does."""
     comps = [c for c in said(r.pre) if c[1] == t.term]
     own = {x: spec_lf_order.bounds(r.pre, x, t.term) for x in refs}
-    pool = spec_lf_order.candidates(t, [w for b in own.values() for _, w, _ in b if spec_lf_order.key(t, w)])
+    points = [w for b in own.values() for _, w, _ in b if spec_lf_order.key(t, w)]
+    pools = {x: pool(r, spec_lf_order.own(r, x, t.term), points) for x in refs}
     chosen = {}
 
     def fits(x, v):
@@ -96,7 +97,7 @@ def values(r, t, refs):
     def go(i):
         if i == len(refs):
             return True
-        for v in pool:
+        for v in pools[refs[i]]:
             if fits(refs[i], v):
                 chosen[refs[i]] = v
                 if go(i + 1):
@@ -104,6 +105,15 @@ def values(r, t, refs):
                 del chosen[refs[i]]
         return False
     return dict(chosen) if go(0) else None
+
+
+def pool(r, t, points):
+    """The values a Given may give a thing's `t`, its own entry's (b287): those it lists, and of the others each
+    literal around them, the points said and the other senses' values that no other entry lists, since a value word
+    of the vocabulary is never a code."""
+    words = {v for e, _ in r.vocab.attributes if e is not t for v in e.values}
+    around = points + [v for e, _ in r.vocab.attributes if e is not t and e.term == t.term for v in e.values]
+    return [v for v in spec_lf_order.candidates(t, around) if v in t.values or v not in words]
 
 
 def value_of(r, x, t):
