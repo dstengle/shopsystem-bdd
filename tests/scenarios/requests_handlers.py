@@ -191,9 +191,10 @@ def work_request(step):
 @handler("WhenRuns", "`work turn`")
 @handler("WhenRuns", "`work resolve`")
 def work_request_command(step):
-    name = step.names[-1]
+    name, word = step.names[-1], step.term.strip("`").split()[1]
+    if word == "reply":
+        givens().asker_turn(step, name)
     q = prepare(step, name)
-    word = step.term.strip("`").split()[1]
     if word == "outcome":     # an accepted line parses here and names the capability it goes into
         path = path_of(step, name)
         path.write_text(path.read_text().replace("1. line 1\n", "1. %s\n" % GOOD, 1))

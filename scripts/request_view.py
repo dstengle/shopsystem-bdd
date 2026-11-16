@@ -72,3 +72,12 @@ def show(root, name, as_json):
                 parts(root, name, turn)
             return 0
     raise Refused("%s is no request, item or quote that work show shows" % name)
+
+
+def said(root, name):
+    """What `work offer`, `propose`, `reply` and `turn` print once done: `work show`'s first line of the request
+    `name`, `<request> <status> <turn>` (r107-r110); returns 0."""
+    for request, status, turn, _ in request_text.requests(root):
+        if request == name:
+            print("%s %s %s" % (name, status, turn))
+    return 0

@@ -143,10 +143,21 @@ def given_request_is(step):
     if not step.names:
         return None
     path, value = request(step, step.names[0]), step.values[0].strip("`")
+    step.context.setdefault("status_given", set()).add(step.names[0])
     if " is not " not in step.text:
         set_field(path, "status", value)
     elif W.field(path, "status") == value:
         set_field(path, "status", "open" if value != "open" else "awaiting-asker")
+
+
+def asker_turn(step, name):
+    """A request no Given gave a status to, before `work propose` or `work reply` on it: in the asker's turn, and
+    raised by this bounded context where no Given said who raised it, so that the command takes it (r108, r109)."""
+    path = request(step, name)
+    if name not in step.context.get("status_given", set()):
+        set_field(path, "status", "awaiting-asker")
+    if W.field(path, "asker") == "other":
+        set_field(path, "asker", Q.OWN)
 
 
 @local("GivenK_A", "request line")

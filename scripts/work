@@ -66,12 +66,12 @@ def cmd_ask(args):
 
 def cmd_reply(args):
     request_moves.reply(args.root, args.request, args.question, args.answer)
-    return 0
+    return request_view.said(args.root, args.request)
 
 
 def cmd_turn(args):
     request_moves.turn(args.root, args.request)
-    return 0
+    return request_view.said(args.root, args.request)
 
 
 def cmd_resolve(args):
