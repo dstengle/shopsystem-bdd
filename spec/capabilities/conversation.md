@@ -6,7 +6,7 @@ group: service
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: [g2, r2, g3, r3, g4, r4]
-unbuilt: [r9]
+unbuilt: []
 ---
 
 # Conversation
@@ -56,7 +56,9 @@ of every item and batch a session names (design goal 10).
   backtick run in its text.
 - The words are matched, whitespace collapsed, against the person's messages of the session's transcript, the newest
   holding them cited, with the two messages before it and the two after it, of either side; a message is the
-  person's prompt or the session's text of one turn, without tool uses, tool results, thinking, reminders,
+  person's prompt, a queued message (Claude Code's `attachment` row of a `queued_command` whose `commandMode` is
+  `prompt` and whose origin is `human`, closing the session's turn as a prompt does; a subagent's hand-back or a task
+  notification of that shape is none) or the session's text of one turn, without tool uses, tool results, thinking, reminders,
   notifications, `!` bash-mode rows or interruption markers, a slash command read as `/<name> <args>`, and one other
   than the cited message is cut at 2,000 characters.
 - `work quote "<words>"` prints the quote's label, `quote-<n> "<its words>"`, and commits the quote's file alone on the
