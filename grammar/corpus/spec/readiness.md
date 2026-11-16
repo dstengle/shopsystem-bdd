@@ -438,3 +438,36 @@ shall [x3: rule `v15n` (parameter), x4: agent the person (constant), x5: command
     name(e3, subject: x6, object: x2)
     name(e4, subject: x6, object: x3)
 ```
+
+## r50
+From: b305 r47. The bar runs every stage after the lexicon whatever the parse found: one run names each line of the item that does not parse and each that has no translation.
+
+```reading
+While an item is `shaped` and a requirement in the item has no parse and a different requirement in the item has no translation, if the person runs `work ready` on the item, then `work` shall refuse the command and name every requirement in the item that has no parse and every requirement in the item that has no translation.
+shall [x6: agent the person (constant), x7: command `work ready` (parameter), x8: tool `work` (constant)]
+  while [x1: item, x2: requirement, x4: requirement]
+    status(x1) = `shaped`
+    in(x2, x1)
+    not [x3: parse]
+      of(x3, x2)
+    distinct(x4, x2)
+    in(x4, x1)
+    not [x5: translation]
+      of(x5, x4)
+  if
+    run(e1, subject: x6, object: x7, on: x1)
+  response
+    refuse(e2, subject: x8, object: x7)
+    every [x9: requirement]
+      in(x9, x1)
+      not [x10: parse]
+        of(x10, x9)
+      scope
+        name(e3, subject: x8, object: x9)
+    every [x11: requirement]
+      in(x11, x1)
+      not [x12: translation]
+        of(x12, x11)
+      scope
+        name(e4, subject: x8, object: x11)
+```
