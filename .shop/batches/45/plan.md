@@ -17,7 +17,7 @@ pull_request:
 | t1 | b289 | pending | batch-45-b289 |
 | t2 | b301 | running | batch-45-b301 |
 | t3 | b323 | running | batch-45-b323 |
-| t4 | b232 | running | batch-45-b232 |
+| t4 | b232 | done | batch-45-b232 |
 
 ## Plan
 
