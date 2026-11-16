@@ -36,7 +36,7 @@ for _template, _term in (("ThenDoes", "keep"), ("ThenDoes", "remove"), ("ThenR",
                        ("GivenDoes", "on"), ("GivenDoes", "originate"), ("GivenDoes", "proposed in"),
                        ("GivenDoes", "reject"), ("GivenDoesNot", "address"), ("GivenDoesNot", "holds"),
                        ("GivenDoesNot", "identify"), ("GivenDoesNot", "originate"), ("ThenDoes", "has"),
-                       ("ThenDoes", "proposed in"), ("ThenDoes", "raised for"),
+                       ("ThenDoes", "originate"), ("ThenDoes", "proposed in"), ("ThenDoes", "raised for"),
                        ("ThenDoes", "set")):
     handler(_template, _term)(untaken)
 
