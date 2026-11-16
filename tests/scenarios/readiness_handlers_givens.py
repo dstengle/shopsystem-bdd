@@ -99,7 +99,9 @@ def _owned(step):
     `work line --reword` and `--remove`, which writes each."""
     if len(step.nps) != 1 or not step.nps[0].startswith(("the requirement ", "the requirement id ")):
         return False
-    if step.term == "holds" and step.subject.startswith("the item "):
+    if step.term == "holds" and step.subject.startswith("the item ") and "requirement id" in step.nps[0]:
+        step.context.setdefault("held_ids", {})[step.names[-1]] = step.names[0]       # b323: an id under retired:
+    elif step.term == "holds" and step.subject.startswith("the item "):
         step.context.setdefault("owner", {})[step.names[-1]] = ("item", step.names[0])
     elif step.term == "has" and step.subject.startswith("the capability "):
         step.context.setdefault("owner", {})[step.names[-1]] = ("capability", step.names[0])
@@ -154,6 +156,17 @@ def given_does(step):
         says(step, step.nps[0], step.nps[0].strip("`"))
     elif step.term == "violate":
         says(step, step.names[1], "v_t12")
+
+
+@local("GivenDoes")
+@local("GivenDoesNot")
+def given_retires(step):
+    """b323: the requirement r1 retires (or does not retire) the requirement id r3 the item holds; kept for the When
+    of `work line --remove`, which writes the item's history so."""
+    if not R.mine(step) or step.term != "retire" or not step.nps[0].startswith("the requirement id "):
+        return False
+    step.context.setdefault("retires_id", {})[step.names[-1]] = step.template == "GivenDoes"
+    return None
 
 
 @local("GivenK_A", "item")

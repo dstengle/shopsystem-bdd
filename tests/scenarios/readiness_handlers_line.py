@@ -60,19 +60,48 @@ def _changed(step, item, line, options):
     flag = "--reword" if "--reword" in options else "--remove"
     name = _name(options[flag])
     owner = step.context.get("owner", {}).get(step.context.get("id_of", {}).get(name), ("capability", None))
-    if owner[0] == "item":
+    if owner[0] == "item" and flag == "--remove" and step.context.get("held_ids"):
+        ident = _history(step, item, line, step.context["held_ids"])
+    elif owner[0] == "item":
         R.give_lines(step, item, R.PASSING)
+        _shaped(step, item)
         ident = "%s#r5" % R.CAPABILITY
     else:
         R.codify(step)
+        _shaped(step, item)
         ident = R.LIVE
-    _shaped(step, item)
     step.context.setdefault("says", {})[name] = ident
     line.update(changed=flag, ident=ident, old=R.PASSING)
     if flag == "--reword":
         line["written"] = R.LINE
         return ["--reword", ident, R.LINE]
     return ["--remove", ident]
+
+
+def _work(step, item, *args):
+    """`work line` run on the item before the When, its new line's `<cap>#r<n>`, or None."""
+    done = B.run_work(step, "line", B.ident(item), *args, **R.NO_INPUT)
+    assert done.returncode == 0, (args, done.stdout, done.stderr)
+    found = re.search(r"\b(%s#r\d+)\b" % R.CAPABILITY, done.stdout.split(":", 1)[1])
+    return found.group(1) if found else None
+
+
+def _history(step, item, line, held):
+    """b323: the item, holding the live id the Givens' requirement id names (`R.LIVE`'s) under `retired:`, and the
+    line the Givens' requirement names, made with `work line`. A line that retires the id writes both with
+    `--retires`; one that does not is the defect's history (b323's notes): a `--retires` line of the same id written
+    and removed, the id retired with `--no-line`, then a plain line given the reused id."""
+    R.codify(step)
+    B.write_item(step, item, status="shaped")
+    name = next(iter(held))
+    line["kept"] = R.LIVE.split("#")[1]
+    step.context.setdefault("says", {})[name] = R.LIVE
+    if step.context.get("retires_id", {}).get(name):
+        line["kept"] = None
+        return _work(step, item, "--retires", R.LIVE, R.PASSING)
+    _work(step, item, "--remove", _work(step, item, "--retires", R.LIVE, R.LINE))
+    _work(step, item, "--no-line", "--retires", R.LIVE)
+    return _work(step, item, "--into", R.CAPABILITY, "--group", "Plain", R.PASSING)
 
 
 NEW = ("shelf", "a person shelving things", "Things kept on a shelf, each found by its name.")

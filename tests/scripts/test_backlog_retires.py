@@ -42,13 +42,33 @@ def test_a_retired_line_after_the_terms_is_refused():
         raise AssertionError("a retired: line after the terms was read")
 
 
+def test_which_line_retires_which_id_reads_back_byte_stable_and_moves_with_its_line(ready_repo):
+    """b323: the block's `retires:` pairs, after `retired:`, read back as written; renumbering moves the line's id
+    of a pair, never the retired id; and an id `--no-line` retired is in no pair."""
+    found = Block("work-queue", [], [Group("g4", "T", [("r5", LINE)])], (), ("r1", "r3"), retires=(("r5", "r1"),))
+    text = backlog_section.render([found])
+    assert text.startswith("### work-queue\n\nretired: [r1, r3]\nretires: [r5 r1]\n\n#### [g4]")
+    reader = backlog_section._Reader("t")
+    for line in text.split("\n"):
+        reader.line(line)
+    assert reader.blocks == [found]
+    write_item(ready_repo, "b1", status="shaped")
+    assert work(ready_repo, "line", "b1", "--retires", "work-queue#r1", LINE).returncode == 0
+    assert work(ready_repo, "line", "b1", "--no-line", "--retires", "work-queue#r2").returncode == 0
+    assert blocks(ready_repo)[0].retires == (("r5", "r1"),)
+    moved = item(ready_repo)
+    assert backlog_lines.renumber(ready_repo, moved, {"work-queue": {"g4", "r5"}})[-1] == ("work-queue#r5",
+                                                                                       "work-queue#r6")
+    assert backlog_lines.read(moved, "b1")[0].retires == (("r6", "r1"),)
+
+
 def test_retires_writes_the_line_and_the_old_id_and_commits(ready_repo):
     write_item(ready_repo, "b1", status="shaped")
     done = work(ready_repo, "line", "b1", "--retires", "work-queue#r1", LINE)
     assert done.returncode == 0, done.stderr
     assert done.stdout == 'b1 "Fix the parser": work-queue#r5 retires work-queue#r1\n'
     assert blocks(ready_repo) == [Block("work-queue", [], [Group("g4", "Fix the parser", [("r5", LINE)])], (),
-                                        ("r1",))]
+                                        ("r1",), retires=(("r5", "r1"),))]
     assert git(ready_repo, "show", "--name-only", "--format=", "HEAD").split() == [".shop/backlog/b1.md"]
 
 

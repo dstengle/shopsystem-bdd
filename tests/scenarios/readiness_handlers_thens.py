@@ -132,6 +132,14 @@ def removed(step):
     if line["changed"] == "--remove":
         rid = line["ident"].split("#")[1]
         assert "[%s]" % rid not in held and "[g4]" not in held, held
+    if line.get("kept", ()) is None:       # b323: the id the line retired, out of `retired:` with it
+        assert "retired:" not in held, held
+
+
+def kept(step):
+    """b323's `work` does not remove the requirement id r3: the id stays under the item's block's `retired:`."""
+    held = _requirements(step)
+    assert re.search(r"(?m)^retired: \[%s\]$" % step.context["line"]["kept"], held), (step.text, held)
 
 
 THENS = {"refuse": lambda step: _done(step, 1), "name": named, "write": written, "holds": written,
@@ -141,9 +149,12 @@ THENS = {"refuse": lambda step: _done(step, 1), "name": named, "write": written,
 @local("ThenDoesNot")
 def then_does_not(step):
     """`work` does not name the bar check b3 (a counter-example, b273): what it is named by is not in the output;
-    does not write the requirement r2 (b271): no line added to the item."""
-    if not R.mine(step) or step.term not in ("name", "write"):
+    does not write the requirement r2 (b271): no line added to the item; does not remove the requirement id r3
+    (b323): the id kept under `retired:`."""
+    if not R.mine(step) or step.term not in ("name", "write", "remove"):
         return False
+    if step.term == "remove":
+        return kept(step)
     if step.term == "write":
         return _unwritten(step)
     done = step.context["result"]
