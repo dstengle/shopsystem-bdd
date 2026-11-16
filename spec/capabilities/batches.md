@@ -152,6 +152,13 @@ question while building parks its item and the rest of the batch carries on. The
   deletes the merged item branches. `work batch abandon` takes a batch that is `building` or `in-review`: it closes
   the pull request when there is one (refused, with nothing changed, if gh fails), sets every `in-batch` item `ready`
   and the batch `abandoned`, removes the worktrees and keeps the branches.
+- `work accept` records on the item it makes which line of the request each of its requirements came from, as
+  `request_lines: [<cap>#r<n>=<k>, ...]` in the item's frontmatter, kept under the new ids when a batch renumbers
+  them. After the merge is recorded, `work batch merged` resolves the request of each delivered item taken in from
+  one by `work resolve`'s path, each recorded line delivered as `<cap>#r<n> <merge commit>`, and prints
+  `<q> resolved: delivered by <item>`. A request that is not `accepted`, an item that records no line of it, or a
+  resolve that is refused is left alone and named as `<q> not resolved (<why>); run work resolve`, for a later
+  `work resolve`.
 
 ## Not yet
 - Tasks finer than an item: a batch has one task for each item, and the batch session splits a task further among
