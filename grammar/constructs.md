@@ -453,7 +453,7 @@ a relative clause on the noun's attribute
 
 - Form: <noun> whose <attribute> is <value>
 - Functions: `k_\w+_Whose_t_\w+`
-- Cited by: design-model-check#r238
+- Cited by: design-model-check#r238, design-model-check#r328, design-model-check#r329
 - Example and its reading:
 
 ```construct
@@ -496,7 +496,7 @@ a relative clause that does not hold
 
 - Form: <noun> that does not ...; <noun> whose ... is not
 - Functions: `PNeg`
-- Cited by: no line
+- Cited by: design-model-check#r328, design-model-check#r329
 - Example and its reading:
 
 ```construct
@@ -1272,7 +1272,7 @@ a collection's members ordered by their attribute (b275)
 
 - Form: <np>, ordered by <attribute>, in ascending|descending order
 - Functions: `r\d+_\w+_By_t_[a-z0-9_]+_\d+|Ascending|Descending`
-- Cited by: design-model-check#r303, feature-file-tools#r123, feature-file-tools#r127, feature-file-tools#r131
+- Cited by: design-model-check#r303, design-model-check#r326, design-model-check#r325, feature-file-tools#r123, feature-file-tools#r127, feature-file-tools#r131
 - Example and its reading:
 
 ```construct
@@ -1292,7 +1292,7 @@ a printed every ordered by its attribute (b275)
 
 - Form: every <noun>, ordered by <attribute>, in ascending|descending order
 - Functions: `t_[a-z0-9_]+_\d+_k_\w+_Every`
-- Cited by: design-model-check#r304, design-model-check#r317, design-model-check#r318, feature-file-tools#r124, feature-file-tools#r130, feature-file-tools#r133
+- Cited by: design-model-check#r304, design-model-check#r317, design-model-check#r318, design-model-check#r327, feature-file-tools#r124, feature-file-tools#r130, feature-file-tools#r133
 - Example and its reading:
 
 ```construct
