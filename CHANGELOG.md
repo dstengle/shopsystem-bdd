@@ -10,12 +10,45 @@ been renamed or retired since.
 
 | Line | Releases |
 |---|---|
+| 0.35 | [0.35.0](#0350-collections-comparisons-and-orders) |
 | 0.34 | [0.34.1](#0341-the-version-reset-and-the-givens-of-a-triggers-referents) · [0.34.0](#0340-released-as-410-value-kinds-adjective-or-noun-and-gherkin-in-the-full-form) |
 | 0.33 | [0.33.0](#0330-released-as-400-the-controlled-language-4) |
 | 0.32 | [0.32.1](#0321-released-as-301-features-generate-writes-the-scenario-of-a-negated-response-with-a-recipient) · [0.32.0](#0320-released-as-300-verb-frames-parts-of-speech-in-the-glossary-and-verbs-typed-by-kind) |
 | 0.31 | [0.31.5](#0315-released-as-240-the-request-watch-wakes-on-githubs-events-and-starts-with-the-session) · [0.31.4](#0314-released-as-231-a-batch-runs-in-one-fresh-agent-and-a-parked-item-leaves-the-batch-at-once) · [0.31.3](#0313-released-as-230-work-pushes-its-commits-requests-post-after-they-commit-and-work-watch) · [0.31.2](#0312-released-as-220-decisions-and-records-written-by-command) · [0.31.1](#0311-released-as-210-requests-exchanged-through-github-issues) · [0.31.0](#0310-released-as-200-the-workflow-simplified) |
 | 0.30 | [0.30.0](#0300-released-as-100-codified-requirements) |
 | 0.29 and before | [0.29.0](#0290-glossary-proposals-delegations-given-late-and-fewer-stops-from-outside-a-work-item) · [0.28.3](#0283-a-branch-review-that-runs-nothing) · [0.28.2](#0282-answers-a-round-cannot-hold-go-back-to-integration) · [0.28.1](#0281-work-run-stops-visibly-on-questions-and-spends-less-agent-time) · [0.28.0](#0280-one-set-of-request-commands-work-list-and-work-show-and-answers-that-redraft) · [0.27.0](#0270-transitions-from-how-a-session-ended-and-the-turn-of-an-accepted-request) · [0.26.0](#0260-requests-and-the-context-loop) · [0.25.0](#0250-work-items-side-by-side-answers-and-guarantees) · [0.24.0](#0240-work-items-named-by-ids-and-upgrades-between-plugin-releases) · [0.23.1](#0231---work-item-keeps-tests-that-are-not-scenarios) · [0.23.0](#0230-faults-settled-query-output-as-json-the-session-keeps-the-gate-measurement-on-v3) · [0.22.0](#0220-one-requirement-per-scenario-faults-and-the-lessons-of-a-blind-formulation) · [0.21.0](#0210-the-final-layout-and-delivery-by-work-run) |
+
+## 0.35.0: collections, comparisons and orders
+
+- **`model logic` reads what parses** (b272, PR #54): only and a count over a relation in a response ("print only
+  worktrees that hold a file", "a batch that holds at most three items") are translated for `model logic` and
+  `features generate`, and `model logic` names each requirement it has no translation of (`unread <id>: ...`)
+  instead of printing `no findings` over lines it skipped.
+- **Generated scenarios that can fail** (b273, PR #54): an every or only line's scenario gets a counter-example,
+  the Givens of a thing that fails the restriction and a negated Then of it, which a program that ignores the
+  restriction fails. A count on what a response prints gets one thing past an upper bound, and its Then states the
+  count ("`notes` prints at most three notes"); a count that restricts a written thing gets none. An every in a
+  condition, and two Ks, get the Givens that meet them.
+- **Exact membership, nothing, and the member's side** (b274, PR #54): "a worktree that holds exactly the files
+  whose version is `2.0.0`" (`holds-exactly`), "a worktree holds nothing" (`nothing`, no thing of any kind a row
+  `K | in | S` lets it hold) and "a file is in a worktree" (`is-in`, the row read from the member's side).
+- **The Thens of a response's thing after its act** (b268, PR #54): `features generate` writes the Thens that
+  restrict a thing the response brings in after the act that brings it in, not before.
+- **Value order, comparisons and orders** (b275, PR #55; b287, b288, PR #56): an attribute's value order is its
+  `Order:` or the type its new `Type: number|time|text` declares, whose values are any literal of the type. Two
+  things' values compare, "the release of this repository is after the release of `migrate`" (`value-compare`) and
+  "is the same as" (`value-same`), also across two senses of one word whose entries have one value order. An order,
+  ", ordered by <attribute>, in ascending order" or "in descending order", on a collection (`order-by`) or on a
+  printed every (`order-by-every`), is kept as one atom; two opposite orders on one trigger are an L1, and the
+  scenario gets a Then that states the order, which a handler checks by a sorted comparison. An order, or an
+  after/before comparison, on an attribute with no value order is refused, naming the attribute.
+- **An order only in what a response prints** (b285, PR #56): an order in a precondition, in the trigger, or in an
+  act under "shall not" is refused, naming the order.
+- **This repository**: migration-tools' release lines compare the repository's release with the release of
+  `migrate` (r77, r78, r79 retired for r81, r82, r83: b284, PR #57), so they no longer take a new id when the
+  plugin's release moves on.
+- **Upgrading:** no upgrade step. Regenerate the features and update the step handlers they now need: see
+  [From 0.34.1 to 0.35.0](docs/upgrading.md#from-0341-to-0350).
 
 ## 0.34.1: the version reset and the Givens of a trigger's referents
 

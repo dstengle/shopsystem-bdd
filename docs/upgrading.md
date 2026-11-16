@@ -11,7 +11,8 @@ This page takes a repository from an older plugin release to this one. Read [Ver
 The plugin's versions are 0.y.z until 1.0 (design-decision 0092, "Versions are 0.y.z until 1.0"):
 
 - **y** goes up for a large or incompatible change: one that needs `migrate upgrade`, or rewording lines, or that
-  removes a command. It counts past .9 to .10 (0.9, 0.10, 0.11).
+  removes a command, or changes the scenarios `features generate` writes so that a repository's handlers must
+  change. It counts past .9 to .10 (0.9, 0.10, 0.11).
 - **z** goes up for a non-breaking update: a fix, or something new that changes nothing that works.
 - **1.0.0** is a decision of its own, taken when the plugin is ready for it, not the next step of y.
 
@@ -317,6 +318,56 @@ keeps its key, and one that read the thing out of the step's text reads `step.su
 
 No upgrade step. If `.shop/plugin-version` holds an old number, rewrite it first (see [Versions](#versions)). Then
 run `features generate`: a scenario now has a Given for each thing its When names that no earlier Given brought in.
+
+## From 0.34.1 to 0.35.0
+
+No upgrade step, and no line that parsed before is refused.
+It is a y release because the scenarios `features generate` writes change in ways a consuming repository's step
+handlers must meet. Run `features generate`, then run the suite and update the handlers it fails on:
+
+- **A Then after the act that brings its thing in.** The Thens that restrict a thing a response brings in now come
+  after the act that brings it in, not before. A handler that read the thing before that act reads it after.
+- **Counter-examples.** An every or only line's scenario now gives a thing that fails the restriction, and a
+  negated Then of it:
+
+  ```gherkin
+  @g7 @r7
+  Scenario: `work show` on a quote prints its messages
+    Given a quote q1
+    And a message m1
+    And the quote q1 cites the message m1
+    And a message m2
+    And the quote q1 cites the message m2
+    And a message m3
+    And the quote q1 does not cite the message m3
+    When the person runs `work show` on the quote q1
+    Then `work` prints the message m1
+    And `work` prints the message m2
+    And `work` does not print the message m3
+  ```
+
+  Each negated Then needs a handler that brings its thing into the world (here a message the quote does not cite)
+  and checks that the output does not hold it. A handler that passes whatever the output is lets the scenario pass
+  a program that ignores the restriction. The Givens of a counter-example are negated too: a Given handler must
+  accept "X does not V Y" (here "the quote q1 does not cite the message m3") and "the T of X is not `v`" ("the
+  colour of the note n4 is not `red`").
+- **A count's Then.** A count on what a response prints, with an upper bound, now gives one thing past the bound,
+  and its Then states the count ("`notes` prints at most three notes"). Its handler counts the Ks in the output.
+  A count that restricts a written thing ("write a batch that holds at most three items") gets no counter-example.
+- **An order's Then.** A `ThenPrints` whose `step.order` is set, a (term, direction) pair, states an order. Its
+  handler checks the output's order against the values the Givens set, not strictly, so that members with one value
+  pass in either order.
+- **`unread <id>`.** `model logic` now names each requirement it has no translation of, `unread <id>: ...`, with
+  a count after the findings, where it printed `no findings` before over lines it skipped. Each one it names is a
+  line `model logic` does not check; reword it if a construct it has a translation of says the same.
+
+Two things are new to write. An attribute entry may say `Type: number.`, `Type: time.` or `Type: text.`: any
+literal of the type is a value of it, and the type orders them, with no `Values:` or `Order:`. And a line may
+compare two things' values ("the release of this repository is after the release of `migrate`") or print a
+collection in an order (", ordered by release, in ascending order"). An order, or an after/before comparison, on
+an attribute whose entry gives no value order, neither `Order:` nor `Type:`, is refused, naming the attribute;
+"is the same as" takes any attribute. See
+[Writing requirements](writing-requirements.md#3-collections-counts-comparisons-and-orders).
 
 ## Older than 0.32?
 
