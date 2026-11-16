@@ -175,6 +175,10 @@ question while building parks its item and the rest of the batch carries on. The
   `<q> resolved: delivered by <item>`. A request that is not `accepted`, an item that records no line of it, or a
   resolve that is refused is left alone and named as `<q> not resolved (<why>); run work resolve`, for a later
   `work resolve`.
+- A chore item's task names its chore in place of requirement ids: `work batch resume` prints the chore's files and
+  check where it prints an item's ids, and the batch brief `work batch start` writes, and the brief `work batch brief`
+  writes for `pr-reviewer`, hold the chore's files and check under the item. `work batch done` runs the check in the
+  task's worktree after the tests (b316).
 
 ## Not yet
 - Tasks finer than an item: a batch has one task for each item, and the batch session splits a task further among
