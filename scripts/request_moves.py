@@ -42,10 +42,10 @@ def path_of(root, ident):
 
 
 def sections(root, ident):
-    """Request `ident`'s Lines, Outcomes, Questions, Answers and Resolution, each as {number: text}."""
+    """Request `ident`'s Lines, Outcomes, Reasons, Questions, Answers and Resolution, each as {number: text}."""
     text = shop_files.read(path_of(root, ident), root)
     return {name: dict(e.split(". ", 1) for e in entries(text, name) if ". " in e)
-            for name in ("Lines", "Outcomes", "Questions", "Answers", "Resolution")}
+            for name in ("Lines", "Outcomes", "Reasons", "Questions", "Answers", "Resolution")}
 
 
 def accepted_lines(root, ident):
