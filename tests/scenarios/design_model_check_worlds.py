@@ -151,6 +151,7 @@ def nothing(step):
 
 WHILE_ACTION = "While a session ends a stage, when the person runs `work start`, `work` shall print the stage."
 NONCONFORMING = "When a session ends a stage, `work` shall banana the stage."
+UNDONE = "While every stage is not `done`, when the person runs `work start`, `work` shall exit successfully."
 TABLE = ORDER.ROWS + [
     # the base world: nothing violates a rule, and it has facts
     (("no thing violate rule",), nothing, {}),
@@ -256,6 +257,7 @@ TABLE = ORDER.ROWS + [
     (("no parse cache holds parse",), CACHE.unheld, {}),
     # model logic and model explain
     (("`model` not unify code",), capability("unpairable"), {"r5": "r1"}),
+    (("precondition use `every`", "precondition use `not-condition`"), line(UNDONE), {}),     # b310
     (("requirement use `every`",), capability("exhaustive"), {}),
     (("capability has requirement", "requirement override requirement"), capability("overriding"), {}),
     (("requirement override requirement",), requirement("overridden"), {"r3": "r2"}),
