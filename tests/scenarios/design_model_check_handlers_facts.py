@@ -50,9 +50,9 @@ def remember(step, fact):
 
 
 # The kinds only this feature's Givens bring in: nothing is written of one, the world its facts pick writes it.
-KINDS = ("act", "catalogue entry", "clock trigger", "code", "compiled grammar", "consequence", "count",
+KINDS = ("act", "catalogue entry", "clock trigger", "code", "comparison", "compiled grammar", "consequence", "count",
          "definite noun phrase", "fact", "file form", "frame", "index entry", "logical form", "negated indefinite",
-         "noun phrase", "number", "object", "pack", "parse", "parse cache", "passive form", "perfect", "precondition",
+         "noun phrase", "number", "object", "order", "pack", "parse", "parse cache", "passive form", "perfect", "precondition",
          "preposition", "recipient", "refusal", "sense", "subject", "trigger", "verb")
 SHARED = ("rule", "requirement id", "text", "universal condition")
 
@@ -108,8 +108,9 @@ for _template, _verbs in OWN.items():
 @local("GivenDoes")
 @local("GivenDoesNot")
 def shared_state(step):
-    """`has`, `holds` and `violate` of this feature (world_fallbacks' keys), and `conform` (codified2_world's)."""
-    if not ours(step) or step.term not in ("has", "holds", "violate", "conform"):
+    """`has`, `holds` and `violate` of this feature (world_fallbacks' keys), `conform` (codified2_world's) and a row's
+    `on` ("the order o1 is on the term t1", b275)."""
+    if not ours(step) or step.term not in ("has", "holds", "violate", "conform", "on"):
         return False
     state(step)
 

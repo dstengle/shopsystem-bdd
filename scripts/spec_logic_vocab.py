@@ -47,7 +47,7 @@ class Vocab:
         self.attrs, self.attr_values, self.value_text, seen = {}, {}, {}, set()
         for t in lexicon.of("attribute"):
             for kind in t.kinds:
-                if kind not in by_term or not t.values or any((kind, v) in seen for v in t.values):
+                if kind not in by_term or not (t.values or t.type) or any((kind, v) in seen for v in t.values):
                     continue
                 seen |= {(kind, v) for v in t.values}
                 tid = ids[t.key] if len(t.kinds) == 1 else "%s_%s" % (ids[t.key], by_term[kind])

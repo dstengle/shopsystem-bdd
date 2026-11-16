@@ -6,6 +6,7 @@ The reading rules (R1-R12) and their refusals are spec_lf_read's (I11b): "the", 
 resolved or noted as they are translated, and `spec_lf_read.refusal` reads the form and the notes.
 """
 import spec_lf_clause
+import spec_lf_compare
 import spec_lf_core
 import spec_lf_distinct
 import spec_lf_exist
@@ -13,6 +14,7 @@ import spec_lf_np
 import spec_lf_number
 import spec_lf_option
 import spec_lf_order
+import spec_lf_ordered
 import spec_lf_set
 import spec_lf_time
 import spec_meaning
@@ -60,6 +62,10 @@ def atom(a):
     if a.pred == "rel":
         word, x, y = a.args
         return "%s(%s, %s)" % (word, term(x), term(y))
+    if a.pred == spec_lf_ordered.PRED:     # an order (b275)
+        return spec_lf_ordered.show(a, term)
+    if a.pred == spec_lf_compare.PRED:     # one thing's value compared with another's (b275)
+        return spec_lf_compare.show(a, term)
     if a.pred == "cmp" and len(a.args) == 4:     # an attribute's value compared (b240)
         return spec_lf_order.show(a, term)
     if a.pred in ("history", "cmp"):

@@ -24,7 +24,7 @@ CORE_VERBS = {"run", "print", "hold", "exit", "become", "set", "be"}
 
 ENTRY = re.compile(r"^- \*\*(?P<term>.+?)\*\*\s*(?:\((?P<cat>[^)]*)\))?\s*:\s*(?P<text>.*)$", re.DOTALL)
 FIELDS = ("Values", "Values (adjective)", "Values (noun)", "Transitions", "Means", "Forms", "Frame", "Plural", "Not", "Kind of", "This", "Redefines", "Schema",
-          "Field of", "Order")
+          "Field of", "Order", "Type")
 ASPECTS = ("state", "action")
 NAMES = "|".join(map(re.escape, FIELDS))
 FIELD = re.compile(r"(?:^|\s)(?:%s):" % NAMES)
@@ -53,6 +53,7 @@ class Term:
     schema: tuple = ()    # an artifact's `Schema:` as (schema type, file), stored, checked by nothing yet (b241)
     field_of: str = ""    # an attribute's `Field of:`, the artifact it is a field of, stored (b241)
     order: str = ""       # an attribute's `Order:`, how its values are ordered (spec_lf_order, b240)
+    type: str = ""        # an attribute's `Type:`, number, time or text: its values any literal of it (b275)
     value_kinds: tuple = ()     # (value, adjective or noun) of each declared value (spec_value_kinds, b257)
 
     @property
@@ -119,8 +120,7 @@ def entry(bullet, where):
     label = " ".join((found.group("cat") or "").split())
     category, kinds, resource = _category(label)
     text, term = found.group("text").strip(), found.group("term").strip()
-    if category == "artifact":
-        category = "actor" if term.startswith(("the ", "`")) else "kind"
+    category = ("actor" if term.startswith(("the ", "`")) else "kind") if category == "artifact" else category
     schema = re.match(r"(.+?),?\s*`([^`]+)`$", _field(text, "Schema"))
     aspect = label.partition(", ")[2] if category == "event" else ""
     transitions = []
@@ -136,7 +136,7 @@ def entry(bullet, where):
                 resource=resource, supertype=_field(text, "Kind of") or ("artifact" if label == "artifact" else ""), frame=_field(text, "Frame"), label=label,
                 aspect=aspect, frames=_fields(text, "Frame"), this=_field(text, "This"),
                 schema=schema.groups() if schema else (), field_of=_field(text, "Field of"),
-                order=_field(text, "Order"))
+                order=_field(text, "Order"), type=_field(text, "Type").lower())
 
 
 def gloss(text):
@@ -275,7 +275,7 @@ def problems(lexicon, outer=frozenset()):
         elif any(k not in kinds for k in t.kinds):
             missing = ", ".join(k for k in t.kinds if k not in kinds)
             out.append(("v_t4", t.term, "%s: %s is not a kind" % (t.where, missing)))
-        elif t.category == "attribute" and (not t.values or spec_value_kinds.mixed(t)):
+        elif t.category == "attribute" and (not t.values and not t.type or spec_value_kinds.mixed(t)):
             out.append(("v_t4", t.term, "%s: the attribute gives %s" % (t.where, spec_value_kinds.mixed(t) or "no Values")))
         if t.category == "event" and t.term in CORE_VERBS:
             out.append(("v_t6", t.term, "%s: the grammar spells `%s` itself" % (t.where, t.term)))

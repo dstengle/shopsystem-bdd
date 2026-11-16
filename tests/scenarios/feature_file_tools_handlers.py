@@ -34,7 +34,7 @@ KINDS = ("feature file", "scenario", "scenario title", "tag", "requirement tag",
          "scenario outline", "examples row", "rule block", "subdirectory", "replacement", "search text", "binding",
          "scenarios call", "test module", "step", "feature", "requirement", "requirement group", "universal condition",
          "capability", "handler", "act", "referent", "description", "precondition", "count", "restriction",
-         "upper bound", "instance", "counter-example", "boundary", "given step")
+         "upper bound", "instance", "counter-example", "boundary", "given step", "order")
 FILES = ("`features count`", "`features list`", "`features deprecated`", "`features bindings`")
 
 

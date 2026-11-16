@@ -9,7 +9,7 @@ imports: [cli, time]
 
 The words `model constructs` parses each example of the construct catalogue (`grammar/constructs.md`) in: the
 smallest codified-2 context (tests/scripts/fixtures/codified-2/) with the time pack imported too and a stage's
-deadline, a moment of the stage, so that its grammar holds every family of functions grammar 4 generates. It is
+deadline, a moment of the stage, and a stage's score, a number (b275), so that its grammar holds every family of functions grammar 4 generates. It is
 part of the acceptance corpus, not a spec of this repository.
 
 ## Relations
@@ -47,3 +47,4 @@ part of the acceptance corpus, not a spec of this repository.
 - **make** (verb, state): a command has brought a commit about. Frame: command makes commit.
 - **outcome** (attribute of line): what became of a line. Values (adjective): `proposed`, `accepted`, `refused`, `withdrawn`.
 - **cover** (verb, state): a thing answers for a line. Forms: covers, covered. Frame: file covers line. Frame: stage covers line.
+- **score** (attribute of stage): how high a stage ranks among the stages. Type: number.

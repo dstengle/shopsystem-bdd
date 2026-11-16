@@ -1713,3 +1713,161 @@ shall [x1: agent the person (constant), x2: command `model parse` (parameter), x
   response
     exit(e2, subject: x6, successfully)
 ```
+
+## r298
+From: b275 r288. Not in the audit (b275 is no reword item).
+
+```reading
+When the person runs `model parse` on a requirement that uses `value-compare`, `model` shall exit successfully.
+shall [x1: agent the person (constant), x2: command `model parse` (parameter), x4: thing `value-compare` (parameter), x5: tool `model` (constant)]
+  when [x3: requirement]
+    use#2(subject: x3, object: x4)
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    exit(e2, subject: x5, successfully)
+```
+
+## r299
+From: b275 r289. Not in the audit (b275 is no reword item).
+
+```reading
+When the person runs `model parse` on a requirement that uses `value-same`, `model` shall exit successfully.
+shall [x1: agent the person (constant), x2: command `model parse` (parameter), x4: thing `value-same` (parameter), x5: tool `model` (constant)]
+  when [x3: requirement]
+    use#2(subject: x3, object: x4)
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    exit(e2, subject: x5, successfully)
+```
+
+## r300
+From: b275 r290. Not in the audit (b275 is no reword item).
+
+```reading
+While a term has no value order and a requirement uses the term and `value-compare`, if the person runs `model parse` on the requirement, then `model` shall refuse the command and name the term.
+shall [x4: thing `value-compare` (parameter), x5: agent the person (constant), x6: command `model parse` (parameter), x7: tool `model` (constant)]
+  while [x1: term, x3: requirement]
+    not [x2: value order]
+      of(x2, x1)
+    use#2(subject: x3, object: x1)
+    use#2(subject: x3, object: x4)
+  if
+    run(e1, subject: x5, object: x6, on: x3)
+  response
+    refuse(e2, subject: x7, object: x6)
+    name(e3, subject: x7, object: x1)
+```
+
+## r301
+From: b275 r291. Not in the audit (b275 is no reword item).
+
+```reading
+While a requirement of a capability uses `value-compare` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
+shall [x3: thing `value-compare` (parameter), x7: agent the person (constant), x8: command `model logic` (parameter), x9: tool `model` (constant), x10: thing `L1` (constant)]
+  while [x1: requirement, x2: capability, x4: act, x5: requirement, x6: trigger]
+    of(x1, x2)
+    use#2(subject: x1, object: x3)
+    oblige(subject: x1, object: x4)
+    distinct(x5, x1)
+    of(x5, x2)
+    of(x6, x1)
+    of(x6, x5)
+    forbid(subject: x5, object: x4)
+  when
+    run(e1, subject: x7, object: x8)
+  response
+    print(e2, subject: x9, object: x10)
+```
+
+## r302
+From: b275 r292. Not in the audit (b275 is no reword item).
+
+```reading
+While a requirement of a capability obliges an act that another requirement of the capability forbids and a comparison of the precondition of the requirement contradicts a comparison, when the person runs `model logic`, `model` shall exit successfully.
+shall [x8: agent the person (constant), x9: command `model logic` (parameter), x10: tool `model` (constant)]
+  while [x1: requirement, x2: capability, x3: act, x4: requirement, x5: comparison, x6: precondition, x7: comparison]
+    of(x1, x2)
+    distinct(x4, x1)
+    of(x4, x2)
+    forbid(subject: x4, object: x3)
+    oblige(subject: x1, object: x3)
+    of(x6, x4)
+    of(x5, x6)
+    contradict#2(subject: x5, object: x7)
+  when
+    run(e1, subject: x8, object: x9)
+  response
+    exit(e2, subject: x10, successfully)
+```
+
+## r303
+From: b275 r293. Not in the audit (b275 is no reword item).
+
+```reading
+When the person runs `model parse` on a requirement that uses `order-by`, `model` shall exit successfully.
+shall [x1: agent the person (constant), x2: command `model parse` (parameter), x4: thing `order-by` (parameter), x5: tool `model` (constant)]
+  when [x3: requirement]
+    use#2(subject: x3, object: x4)
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    exit(e2, subject: x5, successfully)
+```
+
+## r304
+From: b275 r294. Not in the audit (b275 is no reword item).
+
+```reading
+When the person runs `model parse` on a requirement that uses `order-by-every`, `model` shall exit successfully.
+shall [x1: agent the person (constant), x2: command `model parse` (parameter), x4: thing `order-by-every` (parameter), x5: tool `model` (constant)]
+  when [x3: requirement]
+    use#2(subject: x3, object: x4)
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    exit(e2, subject: x5, successfully)
+```
+
+## r305
+From: b275 r295. Not in the audit (b275 is no reword item).
+
+```reading
+When the person runs `model parse` with the `--form` option on a requirement that uses an order, `model` shall print the order and exit successfully.
+shall [x1: agent the person (constant), x2: command `model parse` (parameter), x3: option `--form` (parameter), x6: tool `model` (constant)]
+  when [x4: requirement, x5: order]
+    use#2(subject: x4, object: x5)
+    run(e1, subject: x1, object: x2, with: x3, on: x4)
+  response
+    print(e2, subject: x6, object: x5)
+    exit(e3, subject: x6, successfully)
+```
+
+## r296
+From: b275 r296. Not in the audit (b275 is no reword item).
+
+```reading
+If the person runs `model parse` on a requirement that uses an order on a term that has no value order, then `model` shall refuse the command and name the term.
+shall [x1: agent the person (constant), x2: command `model parse` (parameter), x7: tool `model` (constant)]
+  if [x3: requirement, x4: order, x5: term]
+    not [x6: value order]
+      of(x6, x5)
+    on(x4, x5)
+    use#2(subject: x3, object: x4)
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    refuse(e2, subject: x7, object: x2)
+    name(e3, subject: x7, object: x5)
+```
+
+## r297
+From: b275 r297. Not in the audit (b275 is no reword item).
+
+```reading
+While a capability holds an order that contradicts an order, when the person runs `model logic`, `model` shall print `L1`.
+shall [x4: agent the person (constant), x5: command `model logic` (parameter), x6: tool `model` (constant), x7: thing `L1` (constant)]
+  while [x1: capability, x2: order, x3: order]
+    contradict#3(subject: x2, object: x3)
+    in(x2, x1)
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    print(e2, subject: x6, object: x7)
+```

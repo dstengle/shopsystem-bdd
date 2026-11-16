@@ -22,11 +22,13 @@ two Ks a When each. A construct with no step (`only`, a count, `or`, the atom of
 """
 
 import spec_lf
+import spec_lf_compare
 import spec_lf_core
 import spec_lf_distinct
 import spec_lf_exist
 import spec_lf_option
 import spec_lf_order
+import spec_lf_ordered
 import spec_lf_set
 import spec_lf_values
 import spec_rgl
@@ -190,6 +192,8 @@ class Reader:
             return boxes.given(self, item, pos)
         if item.pred == spec_lf_option.PRED:     # an option's argument, said with it in the When (b240)
             return spec_lf_option.given(self, item)
+        if item.pred == spec_lf_compare.PRED:     # each thing's value (b275)
+            return spec_lf_compare.given(self, item)
         if boxes.image(self, item) or item.pred == spec_lf_distinct.PRED:      # two names are two things (b240)
             return []
         cond = self.cond(item, pos)
@@ -210,6 +214,8 @@ class Reader:
                 out.append((True, self.does(item, pos)))
             elif isinstance(item, Atom) and item.pred == spec_lf_distinct.PRED:     # two names (b240)
                 continue
+            elif isinstance(item, Atom) and item.pred == spec_lf_ordered.PRED:     # an order (b275)
+                out += spec_lf_ordered.then(self, item, body)
             elif isinstance(item, Atom) and not boxes.image(self, item):
                 out.append((None, ("SCond", self.cond(item, pos))))
             elif isinstance(item, Atom):
@@ -219,6 +225,8 @@ class Reader:
                 out.append((True, self.does(item.body[0], not pos, set(item.refs))))
             elif item.op == "not" and not item.refs and not boxes.restriction(item):
                 out += self.acts(item.body, not pos)
+            elif item.op == "every" and pos and spec_lf_ordered.of(item):     # three members in order (b275)
+                out += spec_lf_ordered.every(self, item)
             elif item.op == "every" and pos:     # two members and a counter-example (b273)
                 out += counter.each(self, item)
             else:

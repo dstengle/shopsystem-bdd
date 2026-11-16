@@ -16,28 +16,53 @@ import re
 
 import spec_lf_np as nps
 import spec_rgl
+import spec_value_kinds
 from spec_lf_core import Atom, Box, const
 
-NUMBER, LISTED, WIDTH = "by number", "as listed", 6
+NUMBER, LISTED, WIDTH, TEXT = "by number", "as listed", 6, 64
 ORDER = {"After": "after", "Before": "before"}
+TIME = re.compile(r"(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2}))?Z?)?")
 
 
 def order(t):
-    """NUMBER, LISTED or None: how the attribute entry `t` orders its values."""
-    said = " ".join(getattr(t, "order", "").lower().split())
-    return said if said in (NUMBER, LISTED) else None
+    """How the attribute entry `t` orders its values, its value order (spec_value_kinds, b275): NUMBER, LISTED, a
+    type's name (`number`, `time`, `text`) or None."""
+    return spec_value_kinds.value_order(t)
+
+
+def dense(t):
+    """True when any literal of its kind is a value of `t`: ordered by number, or of a type (b275)."""
+    return order(t) not in (None, LISTED)
 
 
 def key(t, value):
-    """The point of `value` (with or without its backticks) in `t`'s order, a tuple of WIDTH numbers, or None."""
-    v, how = value.strip("`"), order(t)
+    """The point of `value` (with or without its backticks or quotes) in `t`'s order, a tuple of numbers (WIDTH of
+    them, TEXT of a text), or None."""
+    v, how = value.strip("`\""), order(t)
     if how == NUMBER and re.fullmatch(r"\d+(?:\.\d+)*", v):
         parts = [int(n) for n in v.split(".")][:WIDTH]
         return tuple(parts + [0] * (WIDTH - len(parts)))
+    if how == "number" and re.fullmatch(r"-?\d+(?:\.\d+)?", v):     # a decimal: its floor and fraction (b275)
+        whole, _, frac = v.lstrip("-").partition(".")
+        n, f = int(whole), int((frac + "0" * 9)[:9])
+        n, f = (-n - (1 if f else 0), (10 ** 9 - f) % 10 ** 9) if v.startswith("-") else (n, f)
+        return (n, f) + (0,) * (WIDTH - 2)
+    if how == "time" and TIME.fullmatch(v):
+        return tuple(int(n or 0) for n in TIME.fullmatch(v).groups())
+    if how == "text":
+        return tuple(ord(c) for c in v[:TEXT]) + (0,) * (TEXT - len(v[:TEXT]))
     bare = [x.strip("`") for x in t.values]
     if how == LISTED and v in bare:
         return (bare.index(v),) + (0,) * (WIDTH - 1)
     return None
+
+
+def described(t):
+    """How `t`'s values are ordered, in words: "ordered by number", "ordered as listed: `a`, `b`", "a number"."""
+    how = order(t)
+    if how in (NUMBER, LISTED):
+        return "ordered " + how + ("" if how == NUMBER else ": " + ", ".join(t.values))
+    return "a %s" % how
 
 
 def point(st, t, tree):
@@ -46,8 +71,7 @@ def point(st, t, tree):
         return st.names.value(nps.fun(nps.args(tree)[0]))
     value = code(nps.args(tree)[0])
     if key(t, value) is None:
-        how = order(t) + ("" if order(t) == NUMBER else ": " + ", ".join(t.values))
-        st.notes.append("%s is no value of the %s of a %s, which is ordered %s" % (value, t.term, t.kinds[0], how))
+        st.notes.append("%s is no value of the %s of a %s, which is %s" % (value, t.term, t.kinds[0], described(t)))
     return value
 
 
@@ -61,6 +85,9 @@ def cond(st, t, rest, a):
         x, value = nps.np(st, a[1]) if rest != "IsCodeOf" else nps.owner(st, a[1]), code(a[2])
         return st.apply([x], lambda r: Atom("attr", (r[0], t.term, value)),
                         1 if a[0] == "PNeg" else None)
+    if rest in ("CmpT", "SameAs"):     # one thing's value compared with another's (b275)
+        import spec_lf_compare  # here: spec_lf_compare imports this module
+        return spec_lf_compare.cond(st, t, rest, a)
     if rest == "Cmp":
         op, value = ORDER[nps.fun(a[2])], point(st, t, a[3])
         return st.apply([nps.owner(st, a[1])], lambda r: Atom("cmp", (r[0], t.term, op, value)),
@@ -121,7 +148,7 @@ def value_ids(terms, kind, term, value):
         return terms.ids.attr(kind, term, value)
     except ValueError:
         tid, t = entry(terms.ids, kind, term)
-        if tid is None or order(t) != NUMBER or key(t, value) is None:
+        if tid is None or not dense(t) or key(t, value) is None:
             raise
         terms.emit("ckey", tid, const(value), tup(key(t, value)))
         return tid, const(value)
@@ -135,7 +162,7 @@ def domain(vocab):
     """`dense(T)` of each attribute ordered by number, `vkey(T, V, Key)` of each of an ordered attribute's values."""
     out = []
     for tid, (_, t) in sorted(vocab.attrs.items()):
-        if order(t) == NUMBER:
+        if dense(t):
             out.append("dense(%s)." % tid)
         for vid in vocab.attr_values[tid] if order(t) else ():
             k = key(t, vocab.value_text[vid])
@@ -161,6 +188,8 @@ def bounds(items, x, term, pos=True):
 def candidates(t, said):
     """The values a Given may give, those the entry lists first, each in its order."""
     listed = sorted(t.values, key=lambda v: key(t, v) or ())
+    if order(t) in ("number", "time", "text"):     # a value of a type: any literal of it (b275)
+        return listed + typed(order(t), [v.strip("`\"") for v in said])
     if order(t) != NUMBER:
         return listed
     more = set()
@@ -173,6 +202,20 @@ def candidates(t, said):
     return listed + sorted(("`%s`" % v for v in more), key=lambda v: (v.count("."), key(t, v)))
 
 
+def typed(how, said):
+    """Literals of the type `how` a Given may give: around each value said, then a few of their own, each a code."""
+    import datetime
+    if how == "number":
+        ns = [int(float(s)) + d for s in said for d in (-1, 0, 1)] + [1, 2, 3]
+        out = [str(n) for n in ns] + [s for s in said]
+    elif how == "time":
+        days = [datetime.date.fromisoformat(s[:10]) + datetime.timedelta(days=d) for s in said for d in (-1, 1)]
+        out = [d.isoformat() for d in days] + ["2026-01-0%d" % n for n in (1, 2, 3)]
+    else:
+        out = [s + "a" for s in said] + [s[:-1] for s in said if s[:-1]] + ["a", "b", "c"]
+    return ["`%s`" % v for v in dict.fromkeys(out)]
+
+
 def meets(t, v, op, w):
     if op == "=":
         return v == w or key(t, v) is not None and key(t, v) == key(t, w)
@@ -180,18 +223,36 @@ def meets(t, v, op, w):
 
 
 def given(r, item):
-    """The Cond tree of the Given of x's value: one on the right side of every point the scenario's first line names."""
+    """The Cond tree of the Given of x's value: one on the right side of every point the scenario's first line names
+    and, of a thing compared with another (b275), the value spec_lf_compare chose of both."""
+    import spec_lf_compare  # here: spec_lf_compare imports this module
     x, term = item.args[0], item.args[1]
-    n, t, ks = next((n, t, ks) for n, (t, ks) in enumerate(r.vocab.attributes, 1) if t.term == term)
-    k = next(k for k in r.vocab.ancestors(x.kind) if k in ks)
+    t = next(t for t, _ in r.vocab.attributes if t.term == term)
     said = bounds(r.pre, x, term)
-    value = next((v for v in candidates(t, [w for _, w, _ in said if key(t, w)])
-                  if all(meets(t, v, op, w) == pos for op, w, pos in said)), None)
+    value = spec_lf_compare.value_of(r, x, t) or next((v for v in candidates(t, [w for _, w, _ in said if key(t, w)])
+                                                       if all(meets(t, v, op, w) == pos for op, w, pos in said)), None)
     if value is None:
         import spec_steps4_boxes  # here: the steps import this module through spec_steps4
         raise spec_steps4_boxes.TraceError("no value of the %s of %s meets the line" % (term, x.name))
+    return value_cond(r, x, term, value)
+
+
+def value_cond(r, x, term, value):
+    """The Cond tree "the T of x is `v`", the full form (b257), of a listed value or a code."""
+    n, t, ks = next((n, t, ks) for n, (t, ks) in enumerate(r.vocab.attributes, 1) if t.term == term
+                    and any(k in ks for k in r.vocab.ancestors(x.kind)))
+    k = next(k for k in r.vocab.ancestors(x.kind) if k in ks)
     T = "t_%s_%d" % (spec_rgl.slug(term), n)
-    owner = ("%s_Of_%s" % (T, spec_rgl.kid(k)), r.np(x, k))      # the full form, "the T of x is v" (b257)
+    owner = ("%s_Of_%s" % (T, spec_rgl.kid(k)), named(r, x, k) or r.np(x, k))
     if value in t.values:
         return (T + "_IsOf", ("PPos",), owner, ("%s_v_%s" % (T, spec_rgl.slug(value)),))
     return (T + "_IsCodeOf", ("PPos",), owner, ("CodeLit", value))
+
+
+def named(r, x, k):
+    """The K_NP of a code's thing said "the `a` file", in a slot of kind `k`, or None of any other referent."""
+    if x.origin not in ("constant", "parameter") or x.value in r.actors:
+        return None
+    K = spec_rgl.kid(x.kind)
+    tree = (K + "_Named", ("CodeLit", x.value), (K + "_UseN", (K + "_n",)))
+    return (K + "_Simple", tree) if k == x.kind else ("%s_Up_%s" % (K, spec_rgl.kid(k)), tree)

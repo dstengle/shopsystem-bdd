@@ -3,12 +3,29 @@ after "is" as an adjective or a participle: `shaped`, `in-batch`) and `Values (n
 phrase, a code), or as a plain `Values:` of no declared kind. The short form "x is `v`" (grammar 4's `<t>_<K>_Is`,
 `_IsOneOf`, `_IsNoneOf` and `_IsCode`) is good English of an adjective value only, so a line that says it of a noun
 value is refused, naming the full form "the T of x is `v`" or "a K whose T is `v`" (`refusal`); a value of no
-declared kind keeps 0.33's reading, which `model check` warns of (`w_value_kind`, `undeclared`)."""
+declared kind keeps 0.33's reading, which `model check` warns of (`w_value_kind`, `undeclared`).
+
+An attribute's value order (b275, `value_order`): the order its entry's `Order:` gives (`by number`, `as listed`), or
+the order of the type its entry's `Type:` declares (`number`, `time` or `text`), whose values are any literal of the
+type, listed or not; an attribute of neither has none, and a comparison or an order on it is refused."""
 import re
 
 KINDS = ("adjective", "noun")
 SHORT = re.compile(r"^(t_[a-z0-9_]+?_\d+)_(k_\w+?)_(Is|IsOneOf|IsNoneOf|IsCode)$")
 SAID = {"Is": "is %s", "IsCode": "is %s", "IsOneOf": "is one of %s", "IsNoneOf": "is not %s"}
+
+
+TYPES = ("number", "time", "text")
+ORDERS = ("by number", "as listed")
+
+
+def value_order(term):
+    """`by number`, `as listed`, `number`, `time` or `text`: the value order of the attribute entry `term`, or None."""
+    said = " ".join(getattr(term, "order", "").lower().split())
+    if said in ORDERS:
+        return said
+    typed = getattr(term, "type", "")
+    return typed if typed in TYPES else None
 
 
 def kind(term, value):
