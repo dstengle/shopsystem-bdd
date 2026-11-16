@@ -4,7 +4,7 @@ catalogue's context (`grammar/corpus/constructs/`), one group each, and what the
 each must hold.
 
 `kind` picks the lines a scenario's Givens describe (`LINES`' key); `check` reads the feature back for its Then: a
-counter-example (r117-r119), the precondition satisfied (r114), the boundary of a count (r115), each instance a Given
+counter-example (r117-r119, r128), the precondition satisfied (r114), the boundary of a count (r115), each instance a Given
 introduces (r116) and no step that asserts an act `only` allows (r118)."""
 import re
 
@@ -48,6 +48,10 @@ LINES = {
          "worktree."), 1),
         (("While a worktree holds a file and the number of files in the worktree is more than three, when the person "
          "runs `work status`, `work` shall print the worktree."), 4)],
+    "noholds": [     # b299: the counter-example a file the worktree does not hold, the Then said of no file
+        ("When the person runs `work status`, `work` shall print a worktree that holds no file.",
+         [r"Given a file f1\n", r"Then `work` prints the worktree w1\n", r"And the worktree w1 holds no file\n"],
+         [r"holds the file f1", r"Given a worktree"])],
     "two": [
         ("When the person runs `work status`, `work` shall print two files.", [], []),
         ("When the person runs `work status`, `work` shall print a worktree that holds two files.", [], [])],
@@ -56,9 +60,10 @@ LINES = {
 
 def kind(w, K):
     """The lines the Givens describe: a precondition that uses every or holds a count, a requirement that uses two,
-    every or only with a restriction, or has an upper bound; None for none of these."""
+    every or only with a restriction, or no-noun (b299), or has an upper bound; None for none of these."""
     facts = {(v, K(w, a), b if str(b).startswith("`") else K(w, b)) for v, a, b, pos in w["facts"] if pos}
-    for fact, name in ((("use", "precondition", "`every`"), "satisfy"), (("holds", "precondition", "count"), "boundary"),
+    for fact, name in ((("use", "precondition", "`every`"), "satisfy"), (("use", "requirement", "`no-noun`"), "noholds"),
+                       (("holds", "precondition", "count"), "boundary"),
                        (("use", "requirement", "`two`"), "two"), (("has", "requirement", "upper bound"), "upper"),
                        (("use", "requirement", "`only`"), "only"), (("use", "requirement", "`every`"), "every")):
         if fact in facts:
