@@ -101,13 +101,13 @@ def _link(item, k):
 
 def _opaque(w, k, refs, links, rest, own, name):
     """The `onrel` of the object a box's K is linked to by its one row, the K's restriction its term: each value
-    `(T,V,Pol)`, each row or state to another thing `(Q,D,O,Pol)` (O `kind(K2)` of a K2 of the box's own); or None."""
+    `(T,V,Pol)`, each row or state to another thing `(Q,D,O,Pol)` (O `kind(K2)` of a K2 of the box's own, or
+    `such(K2,...)` of one the box restricts in its turn, b315); or None."""
     if k is None or len(links) != 1 or not rest:
         return None
     said = []
-    for item in rest:
-        if not _said(w, k, set(refs) - {k}, item, "pos", said):
-            return None
+    if not _said(w, k, set(refs) - {k}, rest, "pos", said):
+        return None
     q, x, y = w.edge(links[0])
     obj, d = (y, "o") if x == k else (x, "s")
     if obj not in own:
@@ -116,22 +116,49 @@ def _opaque(w, k, refs, links, rest, own, name):
     return True
 
 
-def _said(w, k, theirs, item, pol, said, inner=()):
-    """Append to `said` what `item` says of k under `pol`; False for what has no such reading."""
+def _touches(w, item, k):
+    """True when `item` is a value of k, or a row or a state with k on one side."""
+    if isinstance(item, Atom) and item.pred == "attr":
+        return item.args[0] == k
+    return isinstance(item, Atom) and item.pred in ("rel", "state") and k in w.edge(item)[1:]
+
+
+def _said(w, k, theirs, items, pol, said, inner=(), hop=0):
+    """Append to `said` what `items` say of k under `pol`, each thing of the box's own that k reaches by a row or a
+    state and that the items restrict in their turn (by a value, or a row or state to a third thing) said as
+    `such(K2,...)`, one hop and no further (b315); False for what has no such reading, an item left unsaid among them."""
     flip = "neg" if pol == "pos" else "pos"
-    if isinstance(item, Box) and item.op == "not" and len(item.body) == 1:
-        return _said(w, k, theirs | set(item.refs), item.body[0], flip, said, tuple(inner) + tuple(item.refs))
-    if isinstance(item, Atom) and item.pred == "attr" and item.args[0] == k and not isinstance(item.args[2], Ref):
-        said.append("(%s,%s,%s)" % (*w.ids.attr(k.kind, item.args[1], item.args[2]), pol))
-        return not inner
-    if not (isinstance(item, Atom) and item.pred in ("rel", "state")):
-        return False
+    loose = [i for i in items if not isinstance(i, Box) and not _touches(w, i, k)]
+    for item in [i for i in items if i not in loose]:
+        if isinstance(item, Box):
+            body = list(item.body)      # a not box of several items: one says k, the rest the things it reaches
+            if item.op != "not" or len(body) > 1 and sum(_touches(w, i, k) for i in body) != 1:
+                return False
+            if not _said(w, k, theirs | set(item.refs), body, flip, said, tuple(inner) + tuple(item.refs), hop):
+                return False
+        elif item.pred == "attr":
+            if isinstance(item.args[2], Ref):
+                return False
+            said.append("(%s,%s,%s)" % (*w.ids.attr(k.kind, item.args[1], item.args[2]), pol))
+        elif not _reach(w, k, theirs, item, pol, said, inner, hop, loose):
+            return False
+    return not loose
+
+
+def _reach(w, k, theirs, item, pol, said, inner, hop, loose):
     q, x, y = w.edge(item)
-    d, other = ("s", y) if x == k else ("o", x) if y == k else (None, None)
-    if d is None or other is None or other == k or (inner and other not in inner):
+    d, other = ("s", y) if x == k else ("o", x)
+    if other is None or other == k or (inner and other not in inner):
         return False
-    said.append("(%s,%s,%s,%s)" % (q, d, "kind(%s)" % w.ids.kind(other.kind) if other in theirs else w.term(other),
-                                   pol))
+    term = "kind(%s)" % w.ids.kind(other.kind) if other in theirs else w.term(other)
+    own = [i for i in loose if other in theirs and _touches(w, i, other)]
+    if own:
+        sub = []
+        if hop or not _said(w, other, theirs - {other}, own, "pos", sub, inner, hop + 1):
+            return False
+        term = "such(%s,%s)" % (w.ids.kind(other.kind), ",".join(sub))
+        loose[:] = [i for i in loose if i not in own]
+    said.append("(%s,%s,%s,%s)" % (q, d, term, pol))
     return True
 
 
