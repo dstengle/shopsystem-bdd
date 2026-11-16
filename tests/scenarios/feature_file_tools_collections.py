@@ -4,7 +4,7 @@ catalogue's context (`grammar/corpus/constructs/`), one group each, and what the
 each must hold.
 
 `kind` picks the lines a scenario's Givens describe (`LINES`' key); `check` reads the feature back for its Then: a
-counter-example (r117-r119, r128), the precondition satisfied (r114), the boundary of a count (r115), each instance a Given
+counter-example (r117-r119, r128), the precondition satisfied (r114, r129), the boundary of a count (r115), each instance a Given
 introduces (r116) and no step that asserts an act `only` allows (r118)."""
 import re
 
@@ -35,6 +35,10 @@ LINES = {
         (("While a stage has a line and every line of the stage is `accepted`, when the person runs `work status`, "
          "`work` shall print the stage."),
          [r"And the outcome of the line l1 is `accepted`\n"], [r"line l2"])],
+    "negated": [     # b310: every over a negated value, satisfied by a Given of the value negated
+        (("While a stage has a line and every line of the stage is not `refused`, when the person runs `work status`, "
+         "`work` shall print the stage."),
+         [r"And the outcome of the line l1 is not `refused`\n", r"Then `work` prints the stage s1\n"], [r"line l2"])],
     "boundary": [
         (("While a worktree holds at least two files, when the person runs `work status`, `work` shall print the "
          "worktree."), 2),
@@ -60,8 +64,11 @@ LINES = {
 
 def kind(w, K):
     """The lines the Givens describe: a precondition that uses every or holds a count, a requirement that uses two,
-    every or only with a restriction, or no-noun (b299), or has an upper bound; None for none of these."""
+    every or only with a restriction, or no-noun (b299), or has an upper bound, a precondition of every over a not
+    (b310); None for none of these."""
     facts = {(v, K(w, a), b if str(b).startswith("`") else K(w, b)) for v, a, b, pos in w["facts"] if pos}
+    if {("use", "precondition", "`every`"), ("use", "precondition", "`not-condition`")} <= facts:
+        return "negated"
     for fact, name in ((("use", "precondition", "`every`"), "satisfy"), (("use", "requirement", "`no-noun`"), "noholds"),
                        (("holds", "precondition", "count"), "boundary"),
                        (("use", "requirement", "`two`"), "two"), (("has", "requirement", "upper bound"), "upper"),

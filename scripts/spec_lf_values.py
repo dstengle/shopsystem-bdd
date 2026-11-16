@@ -62,7 +62,9 @@ def spread(conds, made, fn):
 
 def members(u, box):
     """[(attribute, value)] of an `or` box of an `every` box's scope whose every case says one value of `u`'s
-    attribute, or None."""
+    attribute, or None (a `not` box's body is atoms, not cases: b310)."""
+    if box.op != "or":
+        return None
     out = []
     for case in box.body:
         item = case.body[0] if len(case.body) == 1 and not case.refs else None
@@ -70,7 +72,7 @@ def members(u, box):
                 and not isinstance(item.args[2], Ref)):
             return None
         out.append(item.args[1:])
-    return out if box.op == "or" and len({t for t, _ in out}) == 1 else None
+    return out if len({t for t, _ in out}) == 1 else None
 
 
 def given(r, item, pos):
