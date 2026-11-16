@@ -150,14 +150,16 @@ def ensure_batch(step, resume=False):
 
 
 def give_batch_lines(step, items):
-    """Each item of a batch that has no lines given one, in work-queue, with a group and an id of its own."""
+    """Each item of a batch that has no lines given one, in work-queue, with a group and an id of its own; an item
+    taken in from a request records that line as its request's line 1 (`request_lines`, b6)."""
     for item in items:
         if has_lines(step, item):
             continue
         k = step.context["laid_count"] = step.context.get("laid_count", 0) + 1
         fields = step.context["item_fields"][item]
         lines = "### work-queue\n\n#### [g%d] %s\n- [r%d] %s" % (3 + k, fields["title"], 4 + k, (R().PASSING, SECOND)[k % 2])
-        B().write_item(step, item, sections=dict(fields.get("sections", {}), Requirements=lines))
+        recorded = {"request_lines": ["work-queue#r%d=1" % (4 + k)]} if fields.get("request") else {}
+        B().write_item(step, item, sections=dict(fields.get("sections", {}), Requirements=lines), **recorded)
 
 
 def lay(step, tree, items):

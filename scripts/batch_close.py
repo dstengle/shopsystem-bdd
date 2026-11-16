@@ -7,7 +7,13 @@ and the merged item branches deleted. `abandon` closes the pull request when the
 item to `ready` and removes the worktrees; the branches are kept. It refuses while a task worktree has uncommitted
 changes, unless `--discard`; `merged` removes them as they are, their work merged. Both remove the batch brief's
 folder `batch-<n>-driver` (r14) and the batch's review folders, `batch-<n>-review-<k>` beside its worktrees, whose
-findings the review's record already holds (r15, r16)."""
+findings the review's record already holds (r15, r16).
+
+`merged` then resolves the request each delivered item was taken in from (r40, b6): an `accepted` request gets each
+line the item recorded (`request_lines`) as its requirement id at the batch's merge commit, `delivered` in the asker's
+turn, posted on its issue and the issue closed (request_moves.resolve). A request that is not `accepted`, an item that
+records no line, or a resolve that is refused (its record put back by request_post) leaves the item delivered and is
+named in what `merged` prints, for a later `work resolve`."""
 import re
 import shutil
 import subprocess
@@ -15,6 +21,8 @@ import subprocess
 import backlog_items
 import batch_gh
 import batch_plan
+import request_moves
+import shop_files
 from batch_git import locked, remove_tree, trees_path
 from batch_tasks import refuse_loose
 from shop_files import Refused
@@ -43,8 +51,31 @@ def _remove_trees(root, batch):
             shutil.rmtree(folder)
 
 
+def _resolve(root, items, oid):
+    """Resolve the request of each delivered item taken in from one (r40); the line naming each left alone."""
+    said = []
+    for item in (i for i in items if i.request):
+        why = None
+        try:
+            status = request_moves.field(shop_files.read(request_moves.path_of(root, item.request), root), "status")
+            if status != "accepted":
+                why = "it is %s, not accepted" % status
+            elif not item.request_lines:
+                why = "%s records no line of it" % item.name
+            else:
+                request_moves.resolve(root, item.request, sorted(
+                    (n, ident, oid) for ident, n in item.request_lines.items()))
+                said.append("%s resolved: delivered by %s" % (item.request, backlog_items.label(item)))
+        except Refused as refused:
+            why = str(refused)
+        if why:
+            said.append("%s not resolved (%s); run work resolve" % (item.request, why))
+    return said
+
+
 def merged(root, name):
-    """The batch `merged` and its in-batch items `delivered` (D13)."""
+    """The batch `merged` and its in-batch items `delivered` (D13); then the requests they were taken in from resolved
+    (r40). The batch and what to print of the requests."""
     command = "work batch merged"
     with locked(root):
         batch = _open(root, name, command, ("in-review", "awaiting-merge"))
@@ -68,7 +99,7 @@ def merged(root, name):
         for task in batch.tasks:
             if task.item in {i.name for i in items}:
                 subprocess.run(["git", "branch", "-q", "-d", task.branch], cwd=root, capture_output=True)
-        return batch
+    return batch, _resolve(root, items, oid)
 
 
 def abandon(root, name, discard=False):

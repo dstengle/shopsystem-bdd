@@ -6,7 +6,7 @@ import json
 import backlog_items
 import batch_plan
 import pytest
-from backlog_testing import git, state, work
+from backlog_testing import git, state, work, write_request
 from batch_testing import gh_calls
 from test_batch_review import URL, both_done  # noqa: F401  (the fixture)
 from test_batch_tasks import started  # noqa: F401  (the fixture)
@@ -101,3 +101,18 @@ def test_abandon_refuses_a_merged_batch(reviewed, batch_outside):
     done = work(reviewed, "batch", "abandon", "batch-1")
     assert done.returncode == 1 and "batch-1 is merged" in done.stderr, done.stderr
     assert state(reviewed) == before
+
+
+def test_merged_names_a_request_it_leaves_alone(reviewed, batch_outside):
+    """b6 (r40): an item taken in from a request that is not `accepted` is delivered, and the request, left as it was,
+    is named for a later `work resolve`."""
+    path = reviewed / ".shop" / "backlog" / "b1.md"
+    path.write_text(path.read_text().replace("\n---\n", "\nrequest: q1\nrequest_lines: [work-queue#r5=1]\n---\n", 1))
+    write_request(reviewed, "q1")
+    before = (reviewed / ".shop" / "requests" / "q1.md").read_text()
+    merge(reviewed, batch_outside)
+    done = work(reviewed, "batch", "merged", "batch-1")
+    assert done.returncode == 0, done.stderr
+    assert statuses(reviewed, "b1") == ["delivered"]
+    assert "q1 not resolved (it is open, not accepted); run work resolve" in done.stdout
+    assert (reviewed / ".shop" / "requests" / "q1.md").read_text() == before

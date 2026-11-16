@@ -6,7 +6,7 @@ group: service
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: [g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g10, r10, g12, r12, g13, r13, g16, r16, g17, r17, g18, r18, g19, r19, g27, r27, g33, r33]
-unbuilt: [r40]
+unbuilt: []
 ---
 
 # Batches
@@ -157,6 +157,5 @@ question while building parks its item and the rest of the batch carries on. The
 - Tasks finer than an item: a batch has one task for each item, and the batch session splits a task further among
   its own subagents.
 - A task set `failed` by a command.
-- The request a delivered item was taken in from resolved (`work resolve`) at the merge.
 - A session `work` starts itself: the batch session is a Claude Code session following the `building-a-batch`
   skill, and `work batch` keeps the state.
