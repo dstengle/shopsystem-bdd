@@ -130,7 +130,8 @@ def value(step):
 def then_does(step):
     """What a tool did: refused the command (an error exit), named an instance (by what a Given said it is named by)
     or a code; `model` used the compiled grammar, read the parse cache, wrote the rule catalogue or the parse cache;
-    the requirement r3 uses the refusal r4 (its line in `model explain`'s output says the tool shall refuse)."""
+    the requirement r3 uses the refusal r4 (its line in `model explain`'s output says the tool shall refuse); the
+    requirement r1 has the trigger t2 (its line opens with When or If)."""
     if not ours(step):
         return False
     done = step.context["result"]
@@ -143,6 +144,10 @@ def then_does(step):
         ident = step.context["says"][step.names[0]]
         lines = [line for line in done.stdout.splitlines() if line.strip().startswith(ident + "  ")]
         assert lines and any(" shall refuse " in line for line in lines), (ident, done.stdout)
+    elif step.event == "has" and step.nps[0].startswith("the trigger"):     # b175: r1's line opens a trigger
+        lines = [line for path in sorted((step.repo / "spec" / "capabilities").glob("*.md"))
+                 for line in path.read_text().splitlines() if line.startswith("- [r1] ")]
+        assert lines and re.match(r"- \[r1\] (When|If) ", lines[0]), lines
     elif step.event == "write" and step.nps[0].startswith("the rule catalogue"):
         assert done.returncode == 0 and (step.repo / "grammar" / "rules.md").is_file(), (done.stdout, done.stderr)
     elif step.event in ("use", "read", "write"):
@@ -153,10 +158,16 @@ def then_does(step):
 
 @local("ThenDoesNot")
 def then_does_not(step):
-    """`model` does not write a compiled grammar (design_model_check_handlers_cache)."""
-    if not ours(step) or step.event != "write":
+    """`model` does not write a compiled grammar (design_model_check_handlers_cache); `model` does not name the trigger
+    t2: what a Given said it is named by is not in the output (b175)."""
+    if not ours(step) or step.event not in ("write", "name"):
         return False
-    return CACHE.then(step, step.context["result"])
+    done = step.context["result"]
+    if step.event == "name":
+        for word in H.named(step):
+            assert word not in done.stdout + done.stderr, (step.text, word, done.stdout, done.stderr)
+        return None
+    return CACHE.then(step, done)
 
 
 @handler("ThenDoes", "read")
