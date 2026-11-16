@@ -2088,3 +2088,21 @@ shall [x4: thing `every` (parameter), x5: thing `not-condition` (parameter), x6:
   response
     translate(e2, subject: x8, object: x1)
 ```
+
+## r317
+From: b300 r316. Not in the audit (b300 is no reword item).
+
+```reading
+While a requirement uses `order-by-every` and the requirement uses a verb that has no frame that takes `thing`, when the person runs `model parse` on the requirement, `model` shall exit successfully.
+shall [x2: thing `order-by-every` (parameter), x5: noun phrase `thing` (constant), x6: agent the person (constant), x7: command `model parse` (parameter), x8: tool `model` (constant)]
+  while [x1: requirement, x3: verb]
+    use#2(subject: x1, object: x2)
+    not [x4: frame]
+      take(subject: x4, object: x5)
+      of(x4, x3)
+    use#2(subject: x1, object: x3)
+  when
+    run(e1, subject: x6, object: x7, on: x1)
+  response
+    exit(e2, subject: x8, successfully)
+```

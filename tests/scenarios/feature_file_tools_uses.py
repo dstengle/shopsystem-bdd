@@ -28,6 +28,9 @@ RETURN_WORKTREE = ("- **return** (verb, action): an agent hands a worktree back 
                    "Frame: agent returns worktree to agent.\n")
 ORDERED_RETURN = ("When the person runs `work start`, `work` shall return a worktree that holds a file, ordered by "
                   "version, in descending order to the person.")
+# b300: the order-by-every example said with give
+ORDERED_GIVE = ("When the person runs `work start`, `work` shall give every file, ordered by version, in ascending "
+                "order to the person.")
 
 
 def construct(w):
@@ -64,6 +67,8 @@ def prepare(step, w, write, name, path):
     line, index = line or example(code), index + (RETURNING if line else "")
     if code == "order-by" and unthinged(w):
         line, index = ORDERED_RETURN, index.replace("\n- **give** (verb", "\n%s- **give** (verb" % RETURN_WORKTREE, 1)
+    if code == "order-by-every" and unthinged(w):
+        line = ORDERED_GIVE
     cap = ("---\nid: capability/%s/%s\ntitle: %s\nnarrator: a client\ngroup: service\nlanguage: codified-2\n"
            "rests_on: []\nretired: []\n---\n\n# %s\n\n## Purpose\nSomething.\n\n## Behaviour\n\n### [g1] %s\n"
            "- [r1] %s\n\n## Not yet\n" % (path, name, name, name, code, line))

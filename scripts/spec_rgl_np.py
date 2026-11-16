@@ -150,8 +150,8 @@ def by(t):
 def orders(w, vocab):
     """An order (b275): of a row `K1 | in | K2` and an attribute T of K1 (up the kind tree) "x, ordered by T, in
     ascending order" of a K2 (`R_By_T`, order-by), the order of the K1s it holds; of a kind K and an attribute T of
-    it, "every K, ordered by T, in descending order" (`T_K_Every`, order-by-every), a thing only, so that no frame of
-    a K takes it and what a collection holds is never read as one."""
+    it, "every K, ordered by T, in descending order" (`T_K_Every`, order-by-every), a K's own noun phrase, so that a
+    frame that names K or a kind above it takes it as order-by's (b300)."""
     attrs = [("t_%s_%d" % (spec_rgl.slug(t.term), n), t, ks) for n, (t, ks) in enumerate(vocab.attributes, 1)]
     for n, (k1, word, k2) in enumerate(vocab.rows, 1):
         for T, t, ks in attrs if word == "in" else ():
@@ -159,11 +159,11 @@ def orders(w, vocab):
                 K2 = spec_rgl.kid(k2)
                 w.fun("r%d_%s_By_%s" % (n, spec_rgl.slug(word), T), "%s_NP0 -> Dir -> %s_NP0" % (K2, K2),
                       "mkNP x (%s)" % by(t), "x d")
-    for k in vocab.kinds if "thing" in vocab.kinds else ():
+    for k in vocab.kinds:
         for T, t, ks in attrs:
             if any(a in ks for a in vocab.ancestors(k)):
                 K = spec_rgl.kid(k)
-                w.fun("%s_%s_Every" % (T, K), "%s_CN -> Dir -> k_thing_Arg" % K,
+                w.fun("%s_%s_Every" % (T, K), "%s_CN -> Dir -> %s_NP0" % (K, K),
                       "mkNP (mkNP every_Det cn) (%s)" % by(t), "cn d")
 
 
