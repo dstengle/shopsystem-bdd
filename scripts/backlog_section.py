@@ -20,7 +20,8 @@ SECTION = "Requirements"
 UNIVERSAL, INDEX = "universal", "index"
 TAKES = ("idea", "shaped")
 Group = namedtuple("Group", "id title requirements given", defaults=((),))
-Block = namedtuple("Block", "capability terms groups relations retired language", defaults=((), (), None))
+Block = namedtuple("Block", "capability terms groups relations retired language new", defaults=((), (), None, None))
+NEW_FIELDS = ("narrator", "group", "purpose")      # a new capability's block (`work line --capability`, b317)
 
 CAP = re.compile(r"^### ([a-z0-9]+(?:-[a-z0-9]+)*)$")
 GROUP = re.compile(r"^#### \[(g[1-9]\d*)\] (\S.*)$")
@@ -29,6 +30,7 @@ U = re.compile(r"^- \[(U[1-9]\d*)\] (\S.*)$")
 RETIRED = re.compile(r"^retired: \[(r[1-9]\d*(?:, r[1-9]\d*)*)\]$")
 U_RETIRED = re.compile(r"^retired: \[(U[1-9]\d*(?:, U[1-9]\d*)*)\]$")
 LANGUAGE = re.compile(r"^language: (codified-2)$")
+NEW = re.compile(r"^(%s): (\S.*)$" % "|".join(NEW_FIELDS))
 FENCE, CLOSE = "```given", "```"
 
 
@@ -95,6 +97,16 @@ class _Reader:
         elif line.strip():
             self.fence.append(line.rstrip())
 
+    def new(self, m):
+        """`narrator:`, `group:` and `purpose:`, in that order, first in the block of a capability the item makes."""
+        blocks = self.blocks
+        have = (blocks[-1].new or ()) if blocks else ()
+        if not blocks or blocks[-1]._replace(new=None) != Block(blocks[-1].capability, [], []) or len(have) == 3 \
+                or NEW_FIELDS[len(have)] != m.group(1):
+            self.refuse("a `%s:` line that is not in the order %s first in a `### <capability>` block: %s"
+                        % (m.group(1), ", ".join(NEW_FIELDS), m.group(0)))
+        blocks[-1] = blocks[-1]._replace(new=have + (m.group(2).strip(),))
+
     def capability_line(self, line):
         blocks = self.blocks
         if (m := CAP.match(line)):
@@ -105,6 +117,8 @@ class _Reader:
             if not blocks or blocks[-1] != Block(blocks[-1].capability, [], []):
                 self.refuse("a `language:` line that is not the first line of a `### <capability>` block: %s" % line)
             blocks[-1] = blocks[-1]._replace(language=m.group(1))
+        elif (m := NEW.match(line)):
+            self.new(m)
         elif (m := RETIRED.match(line)):
             if not blocks or blocks[-1].terms or blocks[-1].relations or blocks[-1].groups or blocks[-1].retired:
                 self.refuse("a `retired:` line that is not the first line of a `### <capability>` block, or after its "
@@ -149,6 +163,8 @@ def read(item, rel):
         reader.line(line)
     if reader.fence is not None:
         reader.refuse("a given block is not closed")
+    if any(b.new and len(b.new) != len(NEW_FIELDS) for b in reader.blocks):
+        reader.refuse("a new capability's block without each of %s" % ", ".join(NEW_FIELDS))
     return reader.blocks
 
 
@@ -163,6 +179,7 @@ def render(blocks):
     out = []
     for block in blocks:
         parts = ["### %s" % block.capability] + (["language: %s" % block.language] if block.language else [])
+        parts += ["\n".join("%s: %s" % f for f in zip(NEW_FIELDS, block.new))] if block.new else []
         parts += (["retired: [%s]" % ", ".join(block.retired)] if block.retired else [])
         parts += ["\n".join(block.terms)] if block.terms else []
         parts += ["\n".join(block.relations)] if block.relations else []

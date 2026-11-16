@@ -45,7 +45,7 @@ FORMS = [
     Form("feature", "features/<capability>.feature", "features generate"),
     Form("plugin version", ".shop/plugin-version", "migrate upgrade"),
     Form("restated ids", "spec/restated.json", "migrate upgrade"),
-    Form("capability", "spec/capabilities/<name>.md", "plugin item b13 (no command yet)"),
+    Form("capability", "spec/capabilities/<name>.md", "work line --capability"),
     Form("glossary term", "spec/index.md ## Glossary", "plugin item b13 (no command yet)"),
     Form("relation row", "spec/capabilities/<name>.md ## Relations", "work line --relation"),
     Form("glossary relation row", "spec/index.md ## Relations", "plugin item b13 (no command yet)"),
