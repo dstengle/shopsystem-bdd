@@ -177,6 +177,15 @@ $ work line b252 --into backlog --retires backlog#r1 "When the person runs \`wor
 work: work line: backlog#r1 is nonexistent: backlog holds no live requirement r1
 ```
 
+A line retired with nothing in its place takes `--no-line` in place of the new line:
+
+```console
+$ work line b252 --into backlog --retires backlog#r40 --no-line
+b252 "work refuse commits the item": retires backlog#r40
+```
+
+The item holds `retired: [r40]` and no new line; when a batch lays it, r40 and its scenario go.
+
 ## Start a new capability
 
 **When:** the behaviour you want doesn't belong in any capability you have.
