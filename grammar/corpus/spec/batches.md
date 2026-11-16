@@ -395,3 +395,19 @@ shall [x5: agent the person (constant), x7: tool `work` (constant)]
     close(e6, subject: x7, object: x10)
     commit(e7, subject: x7, object: x4)
 ```
+
+## r44
+From: b317 r44. `work batch start` writes a capability an item makes: its file, with the item's lines, and its row under `## Composition`.
+
+```reading
+While an item is `ready` and the item passes the readiness bar and the item holds a capability, when the person runs `work batch start`, `work` shall write the capability.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x4: agent the person (constant), x5: command `work batch start` (parameter), x6: tool `work` (constant)]
+  while [x1: item, x3: capability]
+    status(x1) = `ready`
+    pass#2(subject: x1, object: x2)
+    in(x3, x1)
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    write(e2, subject: x6, object: x3)
+```

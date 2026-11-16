@@ -471,3 +471,33 @@ shall [x6: agent the person (constant), x7: command `work ready` (parameter), x8
       scope
         name(e4, subject: x8, object: x11)
 ```
+
+## r55
+From: b317 r55. `work line --capability` writes a new capability's block (narrator, group, purpose) in the item and commits the item.
+
+```reading
+When the person runs `work line` with the `--capability` option set to a capability on an item, `work` shall write the capability in the item and commit the item.
+shall [x1: agent the person (constant), x2: command `work line` (parameter), x3: option `--capability` (parameter), x6: tool `work` (constant)]
+  when [x4: capability, x5: item]
+    argument(x3, x4)
+    run(e1, subject: x1, object: x2, with: x3, on: x5)
+  response
+    in(x4, x5)
+    write(e2, subject: x6, object: x4)
+    commit(e3, subject: x6, object: x5)
+```
+
+## r56
+From: b317 r56. `work line --capability` refuses a capability whose file `spec/capabilities/<name>.md` exists, naming it.
+
+```reading
+If the person runs `work line` with the `--capability` option set to a capability that exists, then `work` shall refuse the command and name the capability.
+shall [x1: agent the person (constant), x2: command `work line` (parameter), x3: option `--capability` (parameter), x5: tool `work` (constant)]
+  if [x4: capability]
+    exists(x4)
+    argument(x3, x4)
+    run(e1, subject: x1, object: x2, with: x3)
+  response
+    refuse(e2, subject: x5, object: x2)
+    name(e3, subject: x5, object: x4)
+```

@@ -2198,3 +2198,17 @@ shall [x2: thing `no-noun` (parameter), x3: thing `holds-relation` (parameter), 
   response
     exit(e2, subject: x8, successfully)
 ```
+
+## r324
+From: b317 r324. `model forms --check` exits with an error naming each file form whose writer is `hand`; one whose writer is a command or a plugin item passes.
+
+```reading
+While the writer of a file form is `hand`, when the person runs `model forms` with the `--check` option, `model` shall exit with an error naming the file form.
+shall [x2: agent the person (constant), x3: command `model forms` (parameter), x4: option `--check` (parameter), x5: tool `model` (constant)]
+  while [x1: file form]
+    writer(x1) = `hand`
+  when
+    run(e1, subject: x2, object: x3, with: x4)
+  response
+    exit(e2, subject: x5, with an error naming: x1)
+```
