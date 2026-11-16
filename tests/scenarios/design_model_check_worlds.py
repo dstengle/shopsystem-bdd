@@ -25,6 +25,7 @@ F = _sibling("design_model_check_handlers_forms.py", "shop_design_model_check_ha
 C2 = _sibling("codified2_world.py", "shop_codified2_world")
 CACHE = _sibling("design_model_check_handlers_cache.py", "shop_design_model_check_handlers_cache")
 ORDER = _sibling("design_model_check_worlds_order.py", "shop_design_model_check_worlds_order")     # b275
+MEMBER = _sibling("design_model_check_worlds_member.py", "shop_design_model_check_worlds_member")     # b274, b297
 
 
 class As:
@@ -150,16 +151,6 @@ def nothing(step):
 
 WHILE_ACTION = "While a session ends a stage, when the person runs `work start`, `work` shall print the stage."
 NONCONFORMING = "When a session ends a stage, `work` shall banana the stage."
-# membership and emptiness (b274): a file said in a worktree from its own side (is-in), and r2 forbidding of the
-# worktree's file what r1 obliges (holds-relation); a worktree that holds exactly some files, and one that holds nothing
-IS_IN = "While a file is in a worktree, when the person runs `work start` on the worktree, `work` shall print the file."
-HOLDS = ("While a worktree holds a file, when the person runs `work start` on the worktree, `work` shall not print the "
-         "file.")
-EXACTLY = ("When the person runs `work start`, `work` shall print a worktree that holds exactly the files whose version "
-           "is `2.0.0`.")
-UNPRINTED = "When the person runs `work start`, `work` shall not print a worktree."
-NOTHING = ("While a worktree holds nothing, when the person runs `work start` on the worktree, `work` shall print the "
-           "worktree.")
 TABLE = ORDER.ROWS + [
     # the base world: nothing violates a rule, and it has facts
     (("no thing violate rule",), nothing, {}),
@@ -225,12 +216,7 @@ TABLE = ORDER.ROWS + [
     (("precondition use term", "term is `state`"), requirement("verbal"), {}),
     (("trigger use recipient",), requirement("addressed"), {}),
     (("requirement not conform language reference",), line(NONCONFORMING), {}),
-    # model parse and model logic: membership and emptiness (b274)
-    (("requirement use `is-in`", "requirement forbid act", "requirement use `holds-relation`"), line(IS_IN, HOLDS), {}),
-    (("precondition use `is-in`",), line(IS_IN), {}),
-    (("requirement use `holds-exactly`", "requirement forbid act"), line(EXACTLY, UNPRINTED), {}),
-    (("requirement use `holds-exactly`",), line(EXACTLY), {}),
-    (("precondition use `nothing`",), line(NOTHING), {}),
+] + MEMBER.ROWS + [
     # model parse: the constructs
     (("capability has requirement", "requirement use `only`", "requirement allow act"), capability("restricting"),
      {}),

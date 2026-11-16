@@ -4,10 +4,13 @@
 - is-in, "x is in y": the row's atom `in(x, y)`, the one "y holds x" gives, so every reader reads it as holds-relation;
 - holds-exactly, "y holds exactly the Ks that P": every plus only, `every [k: K] P scope in(k, y)` beside
   `not [k2: K] not P, in(k2, y)` (`vp`); the check reads the every half as an `every` object and the "no K that is not
-  P" half on a response's object as `onrel(R,X,Q,D,such(K,(T,V,Pol),...))` and its every half as `onrel(R,X,Q,D,
-  all(K,...))`, each entailed only by the same restriction on the other side (`negated`, `every`); the steps bring in a K that is not P and say that y does not hold it (`absent`);
+  P" half on a response's object, of an act of any frame, as `onrel(R,X,Q,D,such(K,...))` and its every half as
+  `onrel(R,X,Q,D,all(K,...))`, P each value `(T,V,Pol)` and each row or state to another thing `(Q,D,O,Pol)` (b297),
+  each entailed only by the same restriction on the other side (`negated`, `every`); the steps bring in a K that is
+  not P and say that y does not hold it (`absent`);
 - "y holds nothing": `not [t: thing] in(t, y)`, no thing of any kind a row lets y's kind hold; the check's
-  pre-state an `rnone` of each such kind (`none`), the steps' Given "the worktree w1 holds nothing" (`given`).
+  pre-state an `rnone` of each such kind (`none`), on a response's object an `onrel` to `kind(K)` of each (b297,
+  `nothing_on`); the steps' Given "the worktree w1 holds nothing" (`given`), on a response's object its Then.
 """
 from spec_lf_core import NP, Atom, Box, NPList, Ref
 
@@ -64,42 +67,71 @@ def none(w, item):
 
 def negated(w, box, own):
     """"y holds no K that is not P" on a response's object y (holds-exactly's second half, or said so): `onrel` of y
-    to `such(K,(T,V,Pol),...)`, its values (`neg` under the inner `not`); None for a box of another shape."""
-    links = [i for i in box.body if _link(i, box.refs)]
-    return _opaque(w, box.refs, links, [i for i in box.body if i not in links], own, "such")
+    to `such(K,...)`, P's values and rows (`neg` under the inner `not`); None for a box of another shape."""
+    k = next((r for r in box.refs if any(_link(i, r) for i in box.body)), None)
+    links = [i for i in box.body if _link(i, k)]
+    return _opaque(w, k, box.refs, links, [i for i in box.body if i not in links], own, "such")
 
 
 def every(w, box, own):
     """"y holds every K that P" on a response's object y (holds-exactly's first half): `onrel` of y to
-    `all(K,(T,V,Pol),...)`, a restriction check.lp matches only with the same one on the other side, as it matches
-    `such`; None for a box of another shape."""
+    `all(K,...)`, a restriction check.lp matches only with the same one on the other side, as it matches `such`; None
+    for a box of another shape."""
     links = list(box.scope.body)
-    if box.scope.refs or len(links) != 1 or not _link(links[0], box.refs):
+    if box.scope.refs or len(links) != 1:
         return None
-    return _opaque(w, box.refs, links, list(box.body), own, "all")
+    k = next((r for r in box.refs if _link(links[0], r)), None)
+    return _opaque(w, k, box.refs, links, list(box.body), own, "all")
 
 
-def _link(item, refs):
-    return len(refs) == 1 and isinstance(item, Atom) and item.pred == "rel" and refs[0] in item.args[1:]
-
-
-def _opaque(w, refs, links, rest, own, name):
-    """The `onrel` of the object a box's one K is linked to by its one row, the K's values its term; or None."""
-    if len(refs) != 1 or len(links) != 1 or not rest:
+def nothing_on(w, box, own):
+    """"a worktree that holds nothing" on a response's object y: `onrel` of y to `kind(K)` of each kind a row lets
+    y's kind hold; None for a box of another shape."""
+    if len(box.body) != 1 or not nothing(box.body[0], set(box.refs)) or box.body[0].args[2] not in own:
         return None
-    k, values = refs[0], []
+    y = box.body[0].args[2]
+    for q, k1 in held(w, y.kind):
+        w.emit("onrel", w.term(y), q, "o", "kind(%s)" % w.ids.kind(k1))
+    return True
+
+
+def _link(item, k):
+    return k is not None and isinstance(item, Atom) and item.pred == "rel" and k in item.args[1:]
+
+
+def _opaque(w, k, refs, links, rest, own, name):
+    """The `onrel` of the object a box's K is linked to by its one row, the K's restriction its term: each value
+    `(T,V,Pol)`, each row or state to another thing `(Q,D,O,Pol)` (O `kind(K2)` of a K2 of the box's own); or None."""
+    if k is None or len(links) != 1 or not rest:
+        return None
+    said = []
     for item in rest:
-        pol, atoms = ("neg", item.body) if isinstance(item, Box) and item.op == "not" and not item.refs else (
-            "pos", (item,))
-        for a in atoms:
-            if not (isinstance(a, Atom) and a.pred == "attr" and a.args[0] == k and not isinstance(a.args[2], Ref)):
-                return None
-            values.append("(%s,%s,%s)" % (*w.ids.attr(k.kind, a.args[1], a.args[2]), pol))
+        if not _said(w, k, set(refs) - {k}, item, "pos", said):
+            return None
     q, x, y = w.edge(links[0])
     obj, d = (y, "o") if x == k else (x, "s")
     if obj not in own:
         return None
-    w.emit("onrel", w.term(obj), q, d, "%s(%s,%s)" % (name, w.ids.kind(k.kind), ",".join(values)))
+    w.emit("onrel", w.term(obj), q, d, "%s(%s,%s)" % (name, w.ids.kind(k.kind), ",".join(said)))
+    return True
+
+
+def _said(w, k, theirs, item, pol, said, inner=()):
+    """Append to `said` what `item` says of k under `pol`; False for what has no such reading."""
+    flip = "neg" if pol == "pos" else "pos"
+    if isinstance(item, Box) and item.op == "not" and len(item.body) == 1:
+        return _said(w, k, theirs | set(item.refs), item.body[0], flip, said, tuple(inner) + tuple(item.refs))
+    if isinstance(item, Atom) and item.pred == "attr" and item.args[0] == k and not isinstance(item.args[2], Ref):
+        said.append("(%s,%s,%s)" % (*w.ids.attr(k.kind, item.args[1], item.args[2]), pol))
+        return not inner
+    if not (isinstance(item, Atom) and item.pred in ("rel", "state")):
+        return False
+    q, x, y = w.edge(item)
+    d, other = ("s", y) if x == k else ("o", x) if y == k else (None, None)
+    if d is None or other is None or other == k or (inner and other not in inner):
+        return False
+    said.append("(%s,%s,%s,%s)" % (q, d, "kind(%s)" % w.ids.kind(other.kind) if other in theirs else w.term(other),
+                                   pol))
     return True
 
 

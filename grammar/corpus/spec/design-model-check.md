@@ -2027,3 +2027,47 @@ shall [x7: thing `value-compare` (parameter), x8: agent the person (constant), x
     refuse(e2, subject: x10, object: x9)
     name(e3, subject: x10, object: x2)
 ```
+
+## r314
+From: b297 r314. Not in the audit (b297 is no reword item).
+
+```reading
+While a requirement of a capability uses `holds-exactly` and `rc-object` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
+shall [x3: thing `holds-exactly` (parameter), x4: thing `rc-object` (parameter), x8: agent the person (constant), x9: command `model logic` (parameter), x10: tool `model` (constant), x11: thing `L1` (constant)]
+  while [x1: requirement, x2: capability, x5: act, x6: requirement, x7: trigger]
+    of(x1, x2)
+    use#2(subject: x1, object: x3)
+    use#2(subject: x1, object: x4)
+    oblige(subject: x1, object: x5)
+    distinct(x6, x1)
+    of(x6, x2)
+    of(x7, x1)
+    of(x7, x6)
+    forbid(subject: x6, object: x5)
+  when
+    run(e1, subject: x8, object: x9)
+  response
+    print(e2, subject: x10, object: x11)
+```
+
+## r315
+From: b297 r315. Not in the audit (b297 is no reword item).
+
+```reading
+While a requirement of a capability uses `nothing` and `rc-subject` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
+shall [x3: thing `nothing` (parameter), x4: thing `rc-subject` (parameter), x8: agent the person (constant), x9: command `model logic` (parameter), x10: tool `model` (constant), x11: thing `L1` (constant)]
+  while [x1: requirement, x2: capability, x5: act, x6: requirement, x7: trigger]
+    of(x1, x2)
+    use#2(subject: x1, object: x3)
+    use#2(subject: x1, object: x4)
+    oblige(subject: x1, object: x5)
+    distinct(x6, x1)
+    of(x6, x2)
+    of(x7, x1)
+    of(x7, x6)
+    forbid(subject: x6, object: x5)
+  when
+    run(e1, subject: x8, object: x9)
+  response
+    print(e2, subject: x10, object: x11)
+```

@@ -9,8 +9,9 @@ spec_steps4, whose Reader (`r`) they extend:
   restrictor and the Thens said of each; a
   `not` over a response object's attribute ("a stage whose status is not `done`") a Given of the K that does not
   meet it, the K brought in;
-- "y holds nothing" a Given said of y, "y holds no K" in a response a K y does not hold and the Then said of no K
-  (b299), "y holds no K that is not P" in a response a K that is not P brought in and
+- "y holds nothing" a Given said of y, and on a response's object the Then said of y (b297), "y holds no K"
+  in a response a K y does not hold and the Then said of no K (b299), "y holds no K that is not P" in a
+  response a K that is not P brought in and
   the Then that y does not hold it (spec_lf_member, b274);
 - "V a K that holds only Ks2 that P" and "... that holds at most n Ks2" (a box over the row or state of a response's
   object, b272) its Then the property said of the object: "the worktree w1 holds only files whose version is
@@ -44,6 +45,11 @@ def given(r, box, pos):
         return [s for sub in box.body for s in r.given(sub, not pos)]
     if box.op == "not" and pos:     # "no K that P": said of "no K", no K brought in
         return no(r, box)
+    if box.op == "not" and not any(isinstance(i, Box) for i in box.body):     # not "no K that P": a K that P (b297)
+        new = [x for x in box.refs if x not in r.known]
+        r.known.update(new)
+        return ([(kid(x.kind) + "_Given", (kid(x.kind) + "_n",), ("NameLit", r.name(x))) for x in new]
+                + [s for sub in box.body for s in r.given(sub)])
     if box.op == "count" and pos and isinstance(box.count[1], Ref):    # compared with a parameter (b240)
         return spec_lf_number.compared(r, box)
     if box.op in ("every", "count") and pos:     # its members, a count at its boundary (b273)
@@ -164,6 +170,9 @@ def acts(r, box, pos):
             r.bring_in(x)
         r.brought += r.given(box, pos)
         return []
+    if box.op == "not" and pos and len(box.body) == 1 and spec_lf_member.nothing(box.body[0], box.refs):
+        r.dets[box.refs[0]] = "DetNo"       # "a worktree that holds nothing" (b297): the Then said of y
+        return [(None, ("SCond", spec_lf_member.given(r, box.body[0], ("PPos",))))]
     absent = spec_lf_member.absent(r, box, bring) or spec_lf_member.no_member(r, box) if box.op == "not" and pos \
         else None
     if absent is not None:      # "holds no K that is not P" (b274), "holds no K" (b299): a K y does not hold

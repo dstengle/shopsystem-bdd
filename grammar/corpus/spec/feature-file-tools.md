@@ -662,6 +662,64 @@ shall [x7: thing `order-by-every` (parameter), x8: agent the person (constant), 
     write(e2, subject: x10, object: x11)
 ```
 
+## r125
+From: b297 r125. Not in the audit (b297 is no reword item).
+
+```reading
+While a requirement of a capability uses `holds-exactly` and `rc-object`, when the person runs `features generate` on the capability, `features` shall write a scenario whose step uses `not-condition`.
+shall [x3: thing `holds-exactly` (parameter), x4: thing `rc-object` (parameter), x5: agent the person (constant), x6: command `features generate` (parameter), x7: tool `features` (constant), x10: thing `not-condition` (parameter)]
+  while [x1: requirement, x2: capability]
+    of(x1, x2)
+    use#2(subject: x1, object: x3)
+    use#2(subject: x1, object: x4)
+  when
+    run(e1, subject: x5, object: x6, on: x2)
+  response [x8: scenario, x9: step]
+    of(x9, x8)
+    use#2(subject: x9, object: x10)
+    write(e2, subject: x7, object: x8)
+```
+
+## r126
+From: b297 r126. Not in the audit (b297 is no reword item).
+
+```reading
+While a requirement of a capability uses `nothing` and `rc-subject`, when the person runs `features generate` on the capability, `features` shall write a scenario whose step uses `nothing`.
+shall [x3: thing `nothing` (parameter), x4: thing `rc-subject` (parameter), x5: agent the person (constant), x6: command `features generate` (parameter), x7: tool `features` (constant)]
+  while [x1: requirement, x2: capability]
+    of(x1, x2)
+    use#2(subject: x1, object: x3)
+    use#2(subject: x1, object: x4)
+  when
+    run(e1, subject: x5, object: x6, on: x2)
+  response [x8: scenario, x9: step]
+    of(x9, x8)
+    use#2(subject: x9, object: x3)
+    write(e2, subject: x7, object: x8)
+```
+
+## r127
+From: b298 r125. Not in the audit (b298 is no reword item).
+
+```reading
+While a requirement of a requirement group of a capability uses `order-by` and the requirement uses a verb that has no frame that takes `thing`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has an order counter-example.
+shall [x4: thing `order-by` (parameter), x7: noun phrase `thing` (constant), x8: agent the person (constant), x9: command `features generate` (parameter), x10: tool `features` (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability, x5: verb]
+    of(x2, x3)
+    of(x1, x2)
+    use#2(subject: x1, object: x4)
+    not [x6: frame]
+      take(subject: x6, object: x7)
+      of(x6, x5)
+    use#2(subject: x1, object: x5)
+  when
+    run(e1, subject: x8, object: x9, on: x3)
+  response [x11: scenario, x12: order counter-example]
+    of(x11, x2)
+    of(x12, x11)
+    write(e2, subject: x10, object: x11)
+```
+
 ## r128
 From: b299 r125. Not in the audit (b299 is no reword item).
 
