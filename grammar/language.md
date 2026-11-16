@@ -1019,6 +1019,25 @@ When the person runs `work start`, `work` shall print every line, ordered by out
 refused: the outcome of a line has no value order: its entry says neither Order: nor Type:, so no outcome comes before another, and nothing is ordered by it
 ```
 
+An order has a reading only as a property of what a response prints (b285): one in a While or Where clause, in the
+trigger, or in an act the line forbids ("shall not print ..., ordered by T": "not in this order" is no operation the
+check or a scenario has) is refused, naming the order.
+
+```reading
+While a session has a worktree that holds a file, ordered by version, in descending order, when the person runs `work start`, `work` shall print the worktree.
+refused: "ordered by version, in descending order" is in a precondition: an order is a property of what a response prints, and has no reading there
+```
+
+```reading
+When the person runs `work start` on a worktree that holds a file, ordered by version, in descending order, `work` shall print the worktree.
+refused: "ordered by version, in descending order" is in the trigger: an order is a property of what a response prints, and has no reading there
+```
+
+```reading
+When the person runs `work start`, `work` shall not print every file, ordered by version, in ascending order.
+refused: "ordered by version, in ascending order" is in an act the line forbids: an order is a property of what a response prints, and "not in this order" has no reading
+```
+
 ### "is one of `a` or `b`", "is not `a` or `b`", "has no T": value sets and a value's absence
 
 A line may name a set of an attribute's values: "the T of X is one of `a`, `b` or `c`" and "X is one of `a`, `b` or

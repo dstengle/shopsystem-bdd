@@ -7,6 +7,8 @@ a line is read:
 - the form (`np`): one atom `ordered(x, T, ascending|descending)` beside the clause's atom (spec_lf_core's NP
   `order`), x the collection or the every's K; an order on an attribute with no value order (spec_value_kinds) a note
   naming the attribute, which spec_lf_read gives as the line's refusal; `show` its line in `model parse --form`;
+  an order only where it has a reading (b285, decision 0093: a property of what a response prints): one in a While
+  or Where clause, a trigger, or an act the line forbids (inside a `not` box) refused naming it (`misplaced`);
 - the check (`facts`): `ordered(R, I, T, Dir)` of the response's act I, a fact: two lines that require one
   collection, or one printing, in opposite orders on one trigger are an L1 (grammar/check.lp), and nothing else is
   proved of it;
@@ -48,6 +50,36 @@ def np(st, tree, nps):
 def show(a, term):
     x, t, d = a.args
     return "ordered(%s, %s, %s)" % (term(x), t, d)
+
+
+PLACES = {"while": "a precondition", "where": "a precondition", "when": "the trigger", "if": "the trigger"}
+
+
+def _within(conds, negated):
+    """(the order atom, whether a `not` box holds it) of each order in `conds`."""
+    for c in conds:
+        if isinstance(c, Box):
+            inner = negated or c.op == "not"
+            yield from _within(c.body, inner)
+            if c.scope is not None:
+                yield from _within([c.scope], inner)
+        elif isinstance(c, Atom) and c.pred == PRED:
+            yield c, negated
+
+
+def misplaced(form):
+    """The refusal of an order with no reading (b285): in a precondition, in the trigger or in a forbidden act; or
+    None. An order is a property of what a response prints (decision 0093)."""
+    for part in form.parts:
+        for atom, negated in _within([part], False):
+            said = '"ordered by %s, in %s order"' % (atom.args[1], atom.args[2])
+            if part.op in PLACES:
+                return ("%s is in %s: an order is a property of what a response prints, and has no reading there"
+                        % (said, PLACES[part.op]))
+            if negated:
+                return ("%s is in an act the line forbids: an order is a property of what a response prints, and "
+                        "\"not in this order\" has no reading" % said)
+    return None
 
 
 # --- the check -----------------------------------------------------------------------------------------------------

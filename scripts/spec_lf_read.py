@@ -24,10 +24,14 @@ precedence, inertia) the check's (I12a, I12b). This module holds the rest, and t
   `not` or `only` box) is refused: it would oblige in every state. A "shall not" or "only" line with no trigger
   forbids or restricts in every state, which is its meaning (`refusal`). A "may" line obliges nothing (I17).
 
+An order (", ordered by T, in ascending order") in a While or Where clause, a trigger or an act the line forbids is
+refused naming it (spec_lf_ordered's `misplaced`, b285): it has a reading only as a property of what a response prints.
+
 The translation keeps the refusals of R2, R4 and R8 in its State's `notes` as it meets them; `refusal` gives the
 first of them, else R12's.
 """
 import spec_frames
+import spec_lf_ordered
 import spec_lf_core as core
 from spec_lf_core import NP, Atom, Box, NPList
 
@@ -206,7 +210,7 @@ def refusal(vocab, tree):
     form, st = spec_lf.translate(vocab, tree)
     if st.notes:
         return "refused: " + st.notes[0]
-    leak = outside(st, form)
+    leak = outside(st, form) or spec_lf_ordered.misplaced(form)
     if leak:
         return "refused: " + leak
     ops = {p.op for p in form.parts}
