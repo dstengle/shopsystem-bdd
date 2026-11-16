@@ -483,62 +483,6 @@ shall [x1: repository "the repository the command runs in" (indexical), x2: agen
         print(e4, subject: x4, object: x8)
 ```
 
-## r77
-Retires: r66. From: b264 (the version reset). Audit: fine; r66's releases renamed in the 0.y.z series of design-decision 0092. Known limit: #6 (the plugin's release as a value).
-
-```reading
-While the release of this repository is `0.34.1`, when the person runs `migrate upgrade`, `migrate` shall print `no upgrade step is pending` and change no file.
-shall [x1: repository "the repository the command runs in" (indexical), x2: agent the person (constant), x3: command `migrate upgrade` (parameter), x4: tool `migrate` (constant), x5: text `no upgrade step is pending` (constant)]
-  while
-    release(x1) = `0.34.1`
-  when
-    run(e1, subject: x2, object: x3)
-  response
-    print(e2, subject: x4, object: x5)
-    not [x6: file]
-      change(e3, subject: x4, object: x6)
-```
-
-## r78
-Retires: r67. From: b264 (the version reset). Audit: fine; r67's releases renamed in the 0.y.z series of design-decision 0092. Known limit: #6 (the plugin's release as a value).
-
-```reading
-While the release of this repository is after `0.34.1`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print `update the plugin`.
-shall [x1: repository "the repository the command runs in" (indexical), x2: agent the SessionStart hook (constant), x3: command `migrate status --hook` (parameter), x4: tool `migrate` (constant), x5: text `update the plugin` (constant)]
-  while
-    cmp(release(x1)) after `0.34.1`
-  when
-    run(e1, subject: x2, object: x3)
-  response
-    print(e2, subject: x4, object: x5)
-```
-
-## r79
-Retires: r68. From: b264 (the version reset). Audit: fine; r68's releases renamed in the 0.y.z series of design-decision 0092. Known limit: #6 (the plugin's release as a value).
-
-```reading
-While the release of this repository is `0.34.1` and every initiative of this repository is one of `done` or `abandoned`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall exit successfully, print no upgrade step and print no initiative.
-shall [x1: repository "the repository the command runs in" (indexical), x3: agent the SessionStart hook (constant), x4: command `migrate status --hook` (parameter), x5: tool `migrate` (constant)]
-  while
-    release(x1) = `0.34.1`
-    every [x2: initiative]
-      of(x2, x1)
-      scope
-        or
-          case
-            status(x2) = `done`
-          case
-            status(x2) = `abandoned`
-  when
-    run(e1, subject: x3, object: x4)
-  response
-    exit(e2, subject: x5, successfully)
-    not [x6: upgrade step]
-      print(e3, subject: x5, object: x6)
-    not [x7: initiative]
-      print(e4, subject: x5, object: x7)
-```
-
 ## r80
 Retires: r65. From: b264 (the version reset). Audit: fine; r65's releases renamed in the 0.y.z series of design-decision 0092. Known limit: #6 (the plugin's release as a value).
 
@@ -558,4 +502,61 @@ shall [x1: repository "the repository the command runs in" (indexical), x2: agen
       violate(subject: x6, object: x7)
       scope
         print(e3, subject: x4, object: x6)
+```
+
+## r81
+Retires: r77. From: b284 r81. Audit: fine; r77's release `0.34.1` said as the release of `migrate` (value-same), so the line no longer moves at a release.
+
+```reading
+While the release of this repository is the same as the release of `migrate`, when the person runs `migrate upgrade`, `migrate` shall print `no upgrade step is pending` and change no file.
+shall [x1: repository "the repository the command runs in" (indexical), x2: tool `migrate` (constant), x3: agent the person (constant), x4: command `migrate upgrade` (parameter), x5: text `no upgrade step is pending` (constant)]
+  while
+    cmp(release(x1), same, release(x2))
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    print(e2, subject: x2, object: x5)
+    not [x6: file]
+      change(e3, subject: x2, object: x6)
+```
+
+## r82
+Retires: r78. From: b284 r82. Audit: fine; r78's "after `0.34.1`" said as after the release of `migrate` (value-compare).
+
+```reading
+While the release of this repository is after the release of `migrate`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print `update the plugin`.
+shall [x1: repository "the repository the command runs in" (indexical), x2: tool `migrate` (constant), x3: agent the SessionStart hook (constant), x4: command `migrate status --hook` (parameter), x5: text `update the plugin` (constant)]
+  while
+    cmp(release(x1), after, release(x2))
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    print(e2, subject: x2, object: x5)
+```
+
+## r83
+Retires: r79. From: b284 r83. Audit: fine; r79's release `0.34.1` said as the release of `migrate` (value-same), bounded after `0.24.0`, r47's own release, so that `model logic` finds no L1 with r47.
+
+```reading
+While the release of this repository is the same as the release of `migrate` and the release of this repository is after `0.24.0` and every initiative of this repository is one of `done` or `abandoned`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall exit successfully, print no upgrade step and print no initiative.
+shall [x1: repository "the repository the command runs in" (indexical), x2: tool `migrate` (constant), x4: agent the SessionStart hook (constant), x5: command `migrate status --hook` (parameter)]
+  while
+    cmp(release(x1), same, release(x2))
+    cmp(release(x1)) after `0.24.0`
+    every [x3: initiative]
+      of(x3, x1)
+      scope
+        or
+          case
+            status(x3) = `done`
+          case
+            status(x3) = `abandoned`
+  when
+    run(e1, subject: x4, object: x5)
+  response
+    exit(e2, subject: x2, successfully)
+    not [x6: upgrade step]
+      print(e3, subject: x2, object: x6)
+    not [x7: initiative]
+      print(e4, subject: x2, object: x7)
 ```

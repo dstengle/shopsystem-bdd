@@ -708,12 +708,15 @@ the tracked file `spec/index.md` holds:
 ```
 
 ### [g81] `migrate upgrade` on a repository on the plugin's release says that no upgrade step is pending and changes nothing
+Restates: r27@0.29.
 - [r81] While the release of this repository is the same as the release of `migrate`, when the person runs `migrate upgrade`, `migrate` shall print `no upgrade step is pending` and change no file.
 
 ### [g82] the SessionStart hook tells a session to tell the person to update the plugin
+Restates: r23@0.29.
 - [r82] While the release of this repository is after the release of `migrate`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print `update the plugin`.
 
 ### [g83] the SessionStart hook tells a session nothing on the plugin's release when no initiative is open
+Restates: r24@0.29.
 - [r83] While the release of this repository is the same as the release of `migrate` and the release of this repository is after `0.24.0` and every initiative of this repository is one of `done` or `abandoned`, when the SessionStart hook runs `migrate status --hook`, `migrate` shall exit successfully, print no upgrade step and print no initiative.
 
 ```given
