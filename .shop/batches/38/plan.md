@@ -14,10 +14,10 @@ pull_request:
 
 | task | item | status | branch |
 |---|---|---|---|
-| t1 | b297 | pending | batch-38-b297 |
-| t2 | b298 | pending | batch-38-b298 |
-| t3 | b299 | pending | batch-38-b299 |
-| t4 | b307 | pending | batch-38-b307 |
+| t1 | b297 | running | batch-38-b297 |
+| t2 | b298 | running | batch-38-b298 |
+| t3 | b299 | running | batch-38-b299 |
+| t4 | b307 | running | batch-38-b307 |
 
 ## Plan
 
