@@ -103,6 +103,12 @@ context: product-level artifacts are read only where the files contain them.
 - **`no findings`** (proper noun): what `model logic` prints when it finds nothing and reads every requirement it checks. Kind of: text.
 - **translation** (noun): the facts of the check of `model logic` that it reads a requirement into, which a requirement of a construct it has no reading of lacks. Kind of: thing.
 
+- **comparison** (noun): one thing's value of an attribute said against another thing's value of the attribute, as "the release of x is after the release of y" or "is the same as", in the precondition of a requirement. Kind of: thing.
+- **contradict** (verb, state): no values of two things meet both of two comparisons of the same two things' values of one attribute. Forms: contradicts, contradicted. Frame: comparison contradicts comparison.
+- **value order** (noun): the order of an attribute's values: the order its entry's `Order:` gives, or the order of the type its entry's `Type:` declares (a number, a time or a text). Kind of: thing.
+- **order** (noun): "ordered by" an attribute and "in ascending order" or "in descending order" after a noun phrase, which a requirement that uses `order-by` or `order-by-every` requires of a collection or of what an agent prints, and which its logical form keeps as one atom `ordered(x, T, ascending)` or `ordered(x, T, descending)`. Kind of: thing.
+- **contradict** (verb, state): two orders of one collection, or of one printing, under one trigger and condition have opposite directions. Forms: contradicts, contradicted. Frame: order contradicts order.
+
 ## Relations
 | from | word | to | cardinality |
 |---|---|---|---|
@@ -141,6 +147,10 @@ context: product-level artifacts are read only where the files contain them.
 | parse | in | parse cache |  |
 | compiled grammar | of | requirement | one |
 | translation | of | requirement | one |
+| comparison | of | precondition |  |
+| value order | of | term | one |
+| order | in | capability |  |
+| order | on | term | one |
 
 ## Behaviour
 
@@ -511,6 +521,36 @@ Restates: r37@0.29.
 
 ### [g292] `model logic` reads `is-in` as `holds-relation`
 - [r292] While a requirement uses `is-in` and the requirement obliges an act and another requirement that forbids the act uses `holds-relation`, when the person runs `model logic`, `model` shall print `L1`.
+
+### [g298] `model parse` reads one thing's value compared with another's
+- [r298] When the person runs `model parse` on a requirement that uses `value-compare`, `model` shall exit successfully.
+
+### [g299] `model parse` reads one thing's value said to be the same as another's
+- [r299] When the person runs `model parse` on a requirement that uses `value-same`, `model` shall exit successfully.
+
+### [g300] `model parse` refuses a comparison of an attribute that has no order
+- [r300] While a term has no value order and a requirement uses the term and `value-compare`, if the person runs `model parse` on the requirement, then `model` shall refuse the command and name the term.
+
+### [g301] `model logic` finds the clash of two lines under one comparison
+- [r301] While a requirement of a capability uses `value-compare` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
+
+### [g302] `model logic` finds no clash between two lines whose comparisons contradict
+- [r302] While a requirement of a capability obliges an act that another requirement of the capability forbids and a comparison of the precondition of the requirement contradicts a comparison, when the person runs `model logic`, `model` shall exit successfully.
+
+### [g303] `model parse` reads an order on a collection
+- [r303] When the person runs `model parse` on a requirement that uses `order-by`, `model` shall exit successfully.
+
+### [g304] `model parse` reads an order on a printed every
+- [r304] When the person runs `model parse` on a requirement that uses `order-by-every`, `model` shall exit successfully.
+
+### [g305] `model parse --form` prints an order as one atom
+- [r305] When the person runs `model parse` with the `--form` option on a requirement that uses an order, `model` shall print the order and exit successfully.
+
+### [g296] `model parse` refuses an order on an attribute whose values have no order
+- [r296] If the person runs `model parse` on a requirement that uses an order on a term that has no value order, then `model` shall refuse the command and name the term.
+
+### [g297] `model logic` finds two contradicting orders
+- [r297] While a capability holds an order that contradicts an order, when the person runs `model logic`, `model` shall print `L1`.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a

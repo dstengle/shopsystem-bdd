@@ -17,6 +17,7 @@ determiner `DetNo`; lists with and/or and "only" are spec_rgl's `K_Arg`.
 """
 import spec_rgl
 import spec_rgl_vocab
+import spec_value_kinds
 
 HOLD = 'mkV2 (mkV "hold" "holds" "held" "held" "holding")'
 
@@ -75,12 +76,16 @@ def attributes(w, vocab):
         w.fun(T + "_Up", "%s_NP -> k_thing_NP" % T, "x", "x")
         w.fun(T + "_IsOf", "Pol -> %s_NP -> %s_Val -> Cond" % (T, T),
               "mkS p (mkCl x (mkVP (ParadigmsEng.mkAdv v.s)))", "p x v")
+        w.fun(T + "_CmpT", "Pol -> %s_NP -> Order -> %s_NP -> Cond" % (T, T),     # value-compare (b275)
+              "mkS p (mkCl x (mkVP (SyntaxEng.mkAdv (mkPrep o.s) y)))", "p x o y")
+        w.fun(T + "_SameAs", "Pol -> %s_NP -> %s_NP -> Cond" % (T, T),            # value-same (b275)
+              'mkS p (mkCl x (mkVP (SyntaxEng.mkAdv (mkPrep ("the" ++ "same" ++ "as")) y)))', "p x y")
         for k in ks:
             K = spec_rgl.kid(k)
             w.fun("%s_Of_%s" % (T, K), "%s_NP -> %s_NP" % (K, T),
                   "mkNP the_Det (mkCN (%s) (SyntaxEng.mkAdv (mkPrep \"of\") x))" % noun.split(" ", 1)[1], "x")
             w.fun("%s_Cpd_%s" % (T, K), "Det -> %s_NP" % T, "mkNP d (mkCN (%s))" % compound(t.term, k), "d")
-        if t.order:
+        if spec_value_kinds.value_order(t):     # an Order: or a Type: (b275)
             ordered(w, T, t, ks)
         if t.values:
             sets(w, T, ks, noun)
@@ -112,12 +117,38 @@ def ordered(w, T, t, ks):
           "mkS p (mkCl x (mkVP (ParadigmsEng.mkAdv (o.s ++ v.s))))", "p x o v")
     w.fun(T + "_Between", "%s_NP -> Order -> %s_Pt -> Order -> %s_Pt -> Cond" % (T, T, T),
           'mkS (mkCl x (mkVP (ParadigmsEng.mkAdv (o.s ++ v.s ++ "and" ++ o2.s ++ v2.s))))', "x o v o2 v2")
-    if "number" in t.order.lower():
+    if spec_value_kinds.value_order(t) not in (None, "as listed"):     # any literal of its order a value
         w.fun(T + "_IsCodeOf", "Pol -> %s_NP -> Code -> Cond" % T, "mkS p (mkCl x (mkVP (ParadigmsEng.mkAdv c.s)))",
               "p x c")
         for k in ks:
             w.fun("%s_%s_IsCode" % (T, spec_rgl.kid(k)), "Pol -> %s_NP -> Code -> Cond" % spec_rgl.kid(k),
                   "mkS p (mkCl x (mkVP (ParadigmsEng.mkAdv c.s)))", "p x c")
+
+
+def by(t):
+    """", ordered by T, in <direction> order" after a noun phrase (b275)."""
+    return 'ParadigmsEng.mkAdv ("," ++ "ordered" ++ "by" ++ %s ++ "," ++ "in" ++ d.s ++ "order")' % (
+        spec_rgl.s(t.term))
+
+
+def orders(w, vocab):
+    """An order (b275): of a row `K1 | in | K2` and an attribute T of K1 (up the kind tree) "x, ordered by T, in
+    ascending order" of a K2 (`R_By_T`, order-by), the order of the K1s it holds; of a kind K and an attribute T of
+    it, "every K, ordered by T, in descending order" (`T_K_Every`, order-by-every), a thing only, so that no frame of
+    a K takes it and what a collection holds is never read as one."""
+    attrs = [("t_%s_%d" % (spec_rgl.slug(t.term), n), t, ks) for n, (t, ks) in enumerate(vocab.attributes, 1)]
+    for n, (k1, word, k2) in enumerate(vocab.rows, 1):
+        for T, t, ks in attrs if word == "in" else ():
+            if any(k in ks for k in vocab.ancestors(k1)):
+                K2 = spec_rgl.kid(k2)
+                w.fun("r%d_%s_By_%s" % (n, spec_rgl.slug(word), T), "%s_NP0 -> Dir -> %s_NP0" % (K2, K2),
+                      "mkNP x (%s)" % by(t), "x d")
+    for k in vocab.kinds if "thing" in vocab.kinds else ():
+        for T, t, ks in attrs:
+            if any(a in ks for a in vocab.ancestors(k)):
+                K = spec_rgl.kid(k)
+                w.fun("%s_%s_Every" % (T, K), "%s_CN -> Dir -> k_thing_Arg" % K,
+                      "mkNP (mkNP every_Det cn) (%s)" % by(t), "cn d")
 
 
 NUMBERS = ("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")
@@ -158,6 +189,7 @@ def noun_phrases(w, vocab):
     """Every noun-phrase fun of `vocab` written to `w`; the kinds a row gave a state frame (spec_rgl's `S_Holds`),
     `thing` among them for "x exists"."""
     attributes(w, vocab)
+    orders(w, vocab)
     counts(w, vocab)
     exists(w)
     states = rows(w, vocab)

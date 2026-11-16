@@ -12,6 +12,7 @@ concrete BaseEng of Base = open SyntaxEng, ParadigmsEng, (E = ExtraEng), (R = Re
     Det = SyntaxEng.Det ;
     Bound = AdN ;
     Many = Card ;
+    Dir = {s : Str} ;
   oper
     -- "a" or "an": the RGL's a_Det writes "a" before "up"; "an" before "up", "ur" and "un" but "uni" ("an upstream
     -- entry", "an urgency", "an unparsed line", "a universal condition"; b240), else as the RGL does
@@ -72,6 +73,8 @@ concrete BaseEng of Base = open SyntaxEng, ParadigmsEng, (E = ExtraEng), (R = Re
     Exactly = mkAdN "exactly" ;
     MoreThan = mkAdN "more than" ;
     FewerThan = mkAdN "fewer than" ;
+    Ascending = {s = "ascending"} ;
+    Descending = {s = "descending"} ;
     Many1 = mkCard n1_Numeral ;
     Many2 = mkCard n2_Numeral ;
     Many3 = mkCard n3_Numeral ;

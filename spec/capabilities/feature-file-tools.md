@@ -58,6 +58,8 @@ not a line here for each construct.
 - **satisfy** (verb, state): the given steps of a scenario make a precondition true of the instances they introduce, every part of it, before its When. Forms: satisfies, satisfied. Frame: scenario satisfies precondition.
 - **boundary** (noun): as many things as a count in a precondition admits nearest to a number it does not admit: n of "at least n", "at most n" and "exactly n", n+1 of "more than n", n-1 of "fewer than n", which a scenario has when its given steps introduce that many things that the count counts and satisfy the precondition. Kind of: thing.
 
+- **order counter-example** (noun): the steps of a scenario that state an order: its Then that the members are ordered by the order's attribute in its direction, and the Givens of at least three members with distinct values of that attribute, given in neither that direction nor the opposite one, so that the Then fails when the members are not so ordered. Kind of: text.
+
 ## Relations
 | from | word | to | cardinality |
 |---|---|---|---|
@@ -90,6 +92,7 @@ not a line here for each construct.
 | boundary | of | count | one |
 | boundary | of | scenario |  |
 | count | in | precondition |  |
+| order counter-example | of | scenario |  |
 
 ## Behaviour
 
@@ -323,6 +326,9 @@ the capability `shelf` holds:
 
 ### [g121] `features generate` writes `nothing` in a precondition
 - [r121] While the precondition of a requirement of a capability uses `nothing`, when the person runs `features generate` on the capability, `features` shall write a scenario whose step uses `nothing`.
+
+### [g122] `features generate` writes an order's Then and Givens that can fail it
+- [r122] While a requirement of a requirement group of a capability uses an order, when the person runs `features generate` on the capability, `features` shall write a scenario that has an order counter-example.
 
 ## Implementation, may change
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three

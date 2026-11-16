@@ -1226,6 +1226,88 @@ shall [x2: agent the person (constant), x3: command `work start` (parameter), x4
     end(e2, subject: x4, object: x1)
 ```
 
+## value-compare
+
+one thing's value compared with another's, of one attribute with a value order (b275)
+
+- Form: the <attribute> of <np> is after|before the <attribute> of <np>
+- Functions: `t_[a-z0-9_]+_\d+_CmpT`
+- Cited by: design-model-check#r298, design-model-check#r300, design-model-check#r301
+- Example and its reading:
+
+```construct
+While the version of the `a` file is after the version of a file, when a session writes the file, `work` shall print the file.
+shall [x1: file `a` (parameter), x4: tool `work` (constant)]
+  while [x2: file]
+    cmp(version(x1), after, version(x2))
+  when [x3: session]
+    write(e1, subject: x3, object: x2)
+  response
+    print(e2, subject: x4, object: x2)
+```
+
+## value-same
+
+one thing's value the same as another's, of any attribute (b275)
+
+- Form: the <attribute> of <np> is the same as the <attribute> of <np>
+- Functions: `t_[a-z0-9_]+_\d+_SameAs`
+- Cited by: design-model-check#r299
+- Example and its reading:
+
+```construct
+While the status of a stage is the same as the status of another stage, when the person runs `work start`, `work` shall print the stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: stage, x2: stage]
+    distinct(x2, x1)
+    cmp(status(x1), same, status(x2))
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    print(e2, subject: x5, object: x2)
+```
+
+## order-by
+
+a collection's members ordered by their attribute (b275)
+
+- Form: <np>, ordered by <attribute>, in ascending|descending order
+- Functions: `r\d+_\w+_By_t_[a-z0-9_]+_\d+|Ascending|Descending`
+- Cited by: design-model-check#r303
+- Example and its reading:
+
+```construct
+When the person runs `work start`, `work` shall print a worktree that holds a file, ordered by version, in descending order.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response [x4: worktree, x5: file]
+    in(x5, x4)
+    print(e2, subject: x3, object: x4)
+    ordered(x4, version, descending)
+```
+
+## order-by-every
+
+a printed every ordered by its attribute (b275)
+
+- Form: every <noun>, ordered by <attribute>, in ascending|descending order
+- Functions: `t_[a-z0-9_]+_\d+_k_\w+_Every`
+- Cited by: design-model-check#r304
+- Example and its reading:
+
+```construct
+When the person runs `work start`, `work` shall print every file, ordered by version, in ascending order.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response
+    every [x4: file]
+      scope
+        print(e2, subject: x3, object: x4)
+        ordered(x4, version, ascending)
+```
+
 ## number-of
 
 a count as a value

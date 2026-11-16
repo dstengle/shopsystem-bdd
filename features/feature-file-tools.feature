@@ -535,3 +535,16 @@ Feature: Feature file tools
     Then the step s1 uses `nothing`
     And `features` writes the scenario s2
     And the scenario s2 has the step s1
+
+  @g122 @r122
+  Scenario: `features generate` writes an order's Then and Givens that can fail it
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And an order o1
+    And the requirement r1 uses the order o1
+    When the person runs `features generate` on the capability c1
+    Then `features` writes the scenario s1
+    And the scenario s1 has the order counter-example o2

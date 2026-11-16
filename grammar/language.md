@@ -940,6 +940,85 @@ While the priority of a stage is before `soon`, when the person runs `work start
 refused: `soon` is no value of the priority of a stage, which is ordered as listed: `low`, `high`, `urgent`
 ```
 
+### A value order: `Order:` or `Type:`
+
+An attribute's value order (b275) is the order its entry's `Order:` gives (`by number`, `as listed`), or the order
+of the type its entry's `Type:` declares: `Type: number.` (any decimal, `-2`, `3.5`), `Type: time.` (a date or a
+moment, `2026-01-01`, `2026-01-01T10:00`) or `Type: text.` (any text, in the order of its characters). A value of a
+typed attribute is any literal of its type, listed or not, and a typed attribute needs no `Values:` and no `Order:`.
+Every comparison and every order below is of an attribute with a value order; on one with none it is refused,
+naming the attribute.
+
+```reading
+While the status of a stage is after the status of another stage, when the person runs `work start`, `work` shall print the stage.
+refused: the status of a stage has no value order: its entry says neither Order: nor Type:, so one status is never after or before another
+```
+
+### "the T of X is after the T of Y", "is the same as the T of Y": one thing's value compared with another's
+
+"the T of X is after the T of Y" and "is before" (`value-compare`) compare two things' values of one attribute with a
+value order; "the T of X is the same as the T of Y" (`value-same`) says them equal, of any attribute. Each is one atom,
+`cmp(T(x), after, T(y))`, `cmp(T(x), same, T(y))`, under `not` when the line says "is not". In `model logic` it is
+`ccmp2(R, x, T, Op, y, Pol)`, read over the cells of the points the pair names: two lines whose comparisons of the
+same two values contradict (one says after, the other before) never fire together, so their opposite acts are no L1.
+A cycle of comparisons through three or more things in one gap of a dense order is taken as able to hold: an L1 may
+be reported that could never fire, but none is hidden. In a scenario each thing is given a value that meets every
+comparison and value the line names ("the version of the `a` file is `1.0.0`", "the version of the file f1 is
+`0.0.0`"). The comparison words are after and before for every order; "more than", "at least" and the others between
+two values are not yet said.
+
+```reading
+While the version of the `a` file is after the version of a file, when a session writes the file, `work` shall print the file.
+shall [x1: file `a` (parameter), x4: tool `work` (constant)]
+  while [x2: file]
+    cmp(version(x1), after, version(x2))
+  when [x3: session]
+    write(e1, subject: x3, object: x2)
+  response
+    print(e2, subject: x4, object: x2)
+```
+
+```reading
+While the status of a stage is the same as the status of another stage, when the person runs `work start`, `work` shall print the stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: stage, x2: stage]
+    distinct(x2, x1)
+    cmp(status(x1), same, status(x2))
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    print(e2, subject: x5, object: x2)
+```
+
+### ", ordered by T, in ascending order": a collection or a printed every in order
+
+", ordered by T, in ascending order" or "in descending order" after a collection that holds members by a row `K1 |
+in | K2` (`order-by`, T an attribute of K1: "a worktree that holds a file, ordered by version, in descending order")
+or after a printed "every K" (`order-by-every`, T an attribute of K) requires the members, or what the agent prints,
+in that order. The form keeps one atom, `ordered(x, T, ascending)`, beside the act; `model logic` keeps it as a fact
+of the act, and two lines that require one collection, or one printing, in opposite orders on one trigger are an L1;
+nothing else is proved of an order. A scenario gives three members distinct values of T, in neither the order nor
+its reverse, and a Then that states the order ("`work` prints every file, ordered by version, in ascending order"),
+which a handler checks by a sorted comparison of the output, not strictly, so that members of one value pass in
+either order. A then-by key, a position ("the first K"), the top n and words such as "newest first" are not yet said.
+
+```reading
+When the person runs `work start`, `work` shall print every file, ordered by version, in ascending order.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response
+    every [x4: file]
+      scope
+        print(e2, subject: x3, object: x4)
+        ordered(x4, version, ascending)
+```
+
+```reading
+When the person runs `work start`, `work` shall print every line, ordered by outcome, in ascending order.
+refused: the outcome of a line has no value order: its entry says neither Order: nor Type:, so no outcome comes before another, and nothing is ordered by it
+```
+
 ### "is one of `a` or `b`", "is not `a` or `b`", "has no T": value sets and a value's absence
 
 A line may name a set of an attribute's values: "the T of X is one of `a`, `b` or `c`" and "X is one of `a`, `b` or
@@ -1915,11 +1994,12 @@ placeholder, ...".
 
 ### #6: a value compared with another thing's value
 
-"after v" compares a value with a value a line names; the language has no comparison of two things' values ("the
-release of the repository is after the release of the plugin"), which the check could not decide exactly over named
-points (design call 9). Lines: migration-tools r77, r78, r79 and r80, of the release 0.34.1 (r78 is b156's line of the
-repository's release `newer`, newer than the plugin's own; r62-r64 were 0.33.0's, r65-r68 0.34.0's). They say instead the plugin's release the line is written for, as a value: "While the release of the repository
-is after `0.34.1`, ...", and the line gets a new id when the plugin's release moves on.
+The language says it now (b275, `value-compare` and `value-same`: "the release of the repository is after the release
+of `migrate`"), and the lines that waited on it keep their plain wording until a reword item retires them:
+migration-tools r77, r78, r79 and r80, of the release 0.34.1 (r78 is b156's line of the repository's release `newer`,
+newer than the plugin's own; r62-r64 were 0.33.0's, r65-r68 0.34.0's). They say the plugin's release the line is
+written for, as a value: "While the release of the repository is after `0.34.1`, ...", and the line gets a new id
+when the plugin's release moves on.
 
 ### #8: a change of an attribute's value
 
@@ -1941,7 +2021,8 @@ reason to the refusal is in the gloss of *reason* only.
 
 ### #14: ordered choice
 
-A rule that takes the first of a list that meets a condition ("the first of `.venv/bin/python`, `venv/bin/python`
+An order of a collection or of a printed every is said (b275, `order-by`, `order-by-every`); a choice by position over
+an order is not. A rule that takes the first of a list that meets a condition ("the first of `.venv/bin/python`, `venv/bin/python`
 and `$VIRTUAL_ENV/bin/python` that exists, else the interpreter running the script") has no construct: the language
 has no "the first K that P" over an order the line gives. Lines: analysis-tools r37-r41 (b154: the Python
 interpreter `tools probe` takes when `--python` is not given). Each case is a line of its own, said with existence

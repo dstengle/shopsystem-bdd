@@ -12,11 +12,13 @@ atoms, an attribute's value an `attr` atom; a relative clause restricts its noun
 polarity.
 """
 import re
+import sys
 
 import spec_gf
 import spec_lf_core as core
 import spec_lf_distinct
 import spec_lf_option
+import spec_lf_ordered
 import spec_lf_read
 import spec_rgl
 from spec_lf_core import NP, Atom, Box, NPList
@@ -76,6 +78,10 @@ def code(st, kind, lit):
 def np(st, tree):
     """An argument or a noun phrase (K_Arg, K_NP, K_NP0, T_NP) as an NP or an NPList."""
     name, a = fun(tree), args(tree)
+    ordered = spec_lf_ordered.np(st, tree, sys.modules[__name__]) if "_By_" in name or name.endswith("_Every") \
+        else None     # an order (b275)
+    if ordered is not None:
+        return ordered
     if name in st.names.actors:
         term, kind = st.names.actors[name]
         return core.fixed(st.constant(kind, term, "constant"))

@@ -24,6 +24,9 @@
 % "only" and a count over a row or a state on a response's object (b272, spec_lf_quant's `holding`): kept, read by no rule
 % (decision 0093: a requirement requires a standard operation, the check does not define it)
 #defined oonly/5.  #defined ocount/7. #defined yattr/4. #defined yrel/4.
+% comparisons of two things' values and orders (b275): `ccmp2(R,X,T,Op,Y,P)`, X's T is (P) after, before or the same
+% as Y's; `ordered(R,I,T,Dir)`, act I of R requires its object (a collection, or each K of a printed every) in Dir by T
+#defined ccmp2/6. #defined ordered/4.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
@@ -61,6 +64,9 @@ dem(R,ev(neg,E)) :- key(R,ev(may,E)).  dem(R,ev(may,E)) :- key(R,ev(neg,E)).
 dem(R,ev(pos,E)) :- key(R,ev(pos,change_nothing)), posev(E), not quiet(E), not own(R,E).
 % "D shall V only Ks that P" (`only`, spec_lf_facts) obliges no V: it can clash only with a V, by the V's keys
 key(R,ev(only,E)) :- only(R,_,E,_,_).  dem(R,ev(pos,E)) :- key(R,ev(only,E)).  dem(R,ev(only,E)) :- key(R,ev(pos,E)).
+% an order (`ordered`, b275) can clash only with an order of its act E
+ordx(R,I,E,D,X,T,Dir) :- ordered(R,I,T,Dir), resp(R,I,pos,E,D,X).
+key(R,ev(ord,E)) :- ordx(R,_,E,_,_,_,_).  dem(R,ev(ord,E)) :- key(R,ev(ord,E)).
 % a count (`count(R,I,E,D,X,B,N)`, CNL 4's call 4, I15) can clash only with a count of its act E
 key(R,ev(cnt,E)) :- count(R,_,E,_,_,_,_).  dem(R,ev(cnt,E)) :- key(R,ev(cnt,E)).
 % cc(A,B) holds exactly when dem(A,K), key(B,K) for some K; a pair can clash when either way holds.
@@ -261,6 +267,42 @@ obad(A,B,N,Z,T,C) :- oz(A,B,N,Z,T), ocell(A,B,T,C), has(A,B,N,Z,T,V,pos), not ok
 obad(A,B,N,Z,T,c(K)) :- oz(A,B,N,Z,T), has(A,B,N,Z,T,V,neg), okey(A,B,T,V,K).
 ofit(A,B,N,Z,T) :- oz(A,B,N,Z,T), ocell(A,B,T,C), not obad(A,B,N,Z,T,C).
 out(A,B) :- oz(A,B,N,Z,T), not ofit(A,B,N,Z,T).
+% one thing's value compared with another's (b275, `ccmp2(R,X,T,Op,Y,P)`): the two instances' cells that fit each
+% (`fitc`) and the relations a pair of cells allows (`crel2`: lt, eq, gt, or none of a value of no number; two values in
+% one gap, or both below every point, any of lt, eq and gt); a pair is out when no two fitting cells and no relation
+% they allow meet every comparison its sides say of the two. A cycle through three or more things in one gap is taken
+% as able to hold: an L1 may be reported that could never fire, none is hidden. Of an attribute with no value order
+% ("is the same as", any attribute) two values known apart, or one known and the other known not to be it.
+ordt(T) :- dense(T).  ordt(T) :- vkey(T,_,_).
+c2w(A,B,N,Z1,T,O,Z2,P) :- side(A,B,S), state(A,B,S,N), ccmp2(S,Y1,T,O,Y2,P), at(A,B,S,Y1,Z1), at(A,B,S,Y2,Z2).
+oz(A,B,N,Z,T) :- c2w(A,B,N,Z,T,_,_,_), ordt(T).  oz(A,B,N,Z,T) :- c2w(A,B,N,_,T,_,Z,_), ordt(T).
+zp(A,B,N,Z1,Z2,T) :- c2w(A,B,N,Z1,T,_,Z2,_), ordt(T).
+fitc(A,B,N,Z,T,C) :- oz(A,B,N,Z,T), ocell(A,B,T,C), not obad(A,B,N,Z,T,C).
+cpt(A,B,T,c(K),K,1) :- ocell(A,B,T,c(K)).  cpt(A,B,T,g(K),K,2) :- ocell(A,B,T,g(K)).
+crel2(A,B,T,C1,C2,lt) :- cpt(A,B,T,C1,K,M), cpt(A,B,T,C2,L,M2), (K,M) < (L,M2).
+crel2(A,B,T,C1,C2,gt) :- cpt(A,B,T,C1,K,M), cpt(A,B,T,C2,L,M2), (K,M) > (L,M2).
+crel2(A,B,T,c(K),c(K),eq) :- cpt(A,B,T,c(K),K,1).
+crel2(A,B,T,g(K),g(K),R) :- cpt(A,B,T,g(K),K,2), rel3(R).
+crel2(A,B,T,lo,C,lt) :- ocell(A,B,T,lo), cpt(A,B,T,C,_,_).  crel2(A,B,T,C,lo,gt) :- ocell(A,B,T,lo), cpt(A,B,T,C,_,_).
+crel2(A,B,T,lo,lo,R) :- ocell(A,B,T,lo), rel3(R).
+crel2(A,B,T,u,C,none) :- ocell(A,B,T,u), ocell(A,B,T,C), C != u.
+crel2(A,B,T,C,u,none) :- ocell(A,B,T,u), ocell(A,B,T,C), C != u.
+crel2(A,B,T,u,u,eq) :- ocell(A,B,T,u).  crel2(A,B,T,u,u,none) :- ocell(A,B,T,u).
+rel3(lt). rel3(eq). rel3(gt).
+rev(lt,gt). rev(gt,lt). rev(eq,eq). rev(none,none).
+allow(after,pos,gt). allow(before,pos,lt). allow(same,pos,eq).
+allow(O,neg,R) :- allow(O,pos,R0), rev(R,_), R != R0.
+ok2(A,B,N,Z1,Z2,T,C1,C2,R) :- zp(A,B,N,Z1,Z2,T), Z1 != Z2, fitc(A,B,N,Z1,T,C1), fitc(A,B,N,Z2,T,C2),
+                              crel2(A,B,T,C1,C2,R).
+ok2(A,B,N,Z,Z,T,C,C,eq) :- zp(A,B,N,Z,Z,T), fitc(A,B,N,Z,T,C).
+bad2(A,B,N,Z1,Z2,T,C1,C2,R) :- ok2(A,B,N,Z1,Z2,T,C1,C2,R), c2w(A,B,N,Z1,T,O,Z2,P), not allow(O,P,R).
+bad2(A,B,N,Z1,Z2,T,C1,C2,R) :- ok2(A,B,N,Z1,Z2,T,C1,C2,R), c2w(A,B,N,Z2,T,O,Z1,P), rev(R,R2), not allow(O,P,R2).
+sat2(A,B,N,Z1,Z2,T) :- ok2(A,B,N,Z1,Z2,T,C1,C2,R), not bad2(A,B,N,Z1,Z2,T,C1,C2,R).
+out(A,B) :- zp(A,B,N,Z1,Z2,T), not sat2(A,B,N,Z1,Z2,T).
+out(A,B) :- c2w(A,B,N,Z1,T,same,Z2,pos), not ordt(T), has(A,B,N,Z1,T,V,pos), has(A,B,N,Z2,T,W,pos), V != W.
+out(A,B) :- c2w(A,B,N,Z1,T,same,Z2,pos), not ordt(T), has(A,B,N,Z1,T,V,pos), has(A,B,N,Z2,T,V,neg).
+out(A,B) :- c2w(A,B,N,Z1,T,same,Z2,pos), not ordt(T), has(A,B,N,Z1,T,V,neg), has(A,B,N,Z2,T,V,pos).
+out(A,B) :- c2w(A,B,N,Z1,T,same,Z2,neg), not ordt(T), has(A,B,N,Z1,T,V,pos), has(A,B,N,Z2,T,V,pos).
 
 % ---- a defined condition read through its definition (`dalt(C,N)`, `dlit(C,N,Attr,Val,Pol)`: the ways through a
 % Def whose literals are all on its own subject) under `no`, `every` and a negation --------
@@ -383,6 +425,11 @@ adm(R,I,M) :- count(R,I,_,_,_,fewer,N), num(M), M < N.
 ka(A,B,I,E,D,X) :- pair(A,B), count(A,I,E,D,X,_,_).  kb(A,B,J,E,D,Y) :- pair(A,B), count(B,J,E,D,Y,_,_).
 cl(A,B,count) :- ok(A,B), ka(A,B,I,E,D1,X), kb(A,B,J,E,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y), not gap(A,B,X,Y),
                     not pag(A,B,X,Y), #count{ M : adm(A,I,M), adm(B,J,M) } = 0.
+% orders: two orders of one act by one doer on one thing, by one attribute in opposite directions (b275); nothing else
+% is proved of an order (decision 0093)
+oxa(A,B,E,D,X,T,Dir) :- pair(A,B), ordx(A,_,E,D,X,T,Dir).  oxb(A,B,E,D,Y,T,Dir) :- pair(A,B), ordx(B,_,E,D,Y,T,Dir).
+opp(ascending,descending).  opp(descending,ascending).
+cl(A,B,order) :- ok(A,B), oxa(A,B,E,D1,X,T,O1), oxb(A,B,E,D2,Y,T,O2), opp(O1,O2), doer(A,B,D1,D2), same(A,B,X,Y).
 ua(A,B,D,X) :- pair(A,B), uses(A,D,X).   ub(A,B,D,Y) :- pair(A,B), uses(B,D,Y).
 xa(A,B,D,X) :- pair(A,B), nouse(A,D,X).  xb(A,B,D,Y) :- pair(A,B), nouse(B,D,Y).
 cl(A,B,use) :- ok(A,B), ua(A,B,D1,X), xb(A,B,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y).

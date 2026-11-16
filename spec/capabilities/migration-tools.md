@@ -56,6 +56,8 @@ what it needs to know at its start and before it is compacted.
 - **`update the plugin`** (proper noun): the SessionStart hook's note to a session in a repository on a release after the plugin's. Kind of: text.
 - **`holds no version`** (proper noun): the SessionStart hook's note on a plugin version file that holds no version. Kind of: text.
 
+- **release** (attribute of tool): the plugin release a tool of the plugin is part of, the `version` of the plugin's `.claude-plugin/plugin.json`. Values (noun): `0.34.1`. Order: by number.
+
 ## Relations
 
 | from | word | to | cardinality |

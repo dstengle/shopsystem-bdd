@@ -95,6 +95,7 @@ def text(gram, tree):
     """A step tree (nested tuples) written out, as it reads after its keyword; the colon that ends a Given of a block
     against the word before it."""
     out = " ".join(gram.languages[GRAMMAR + "Eng"].linearize(spec_gf.expr(tree)).split())
+    out = re.sub(r" , (ordered by|in (?:a|de)scending order)", r", \1", out)     # an order's commas (b275)
     return (out[:-2] + ":" if out.endswith(" :") else out).replace(spec_rgl.TOKEN, " ")
 
 

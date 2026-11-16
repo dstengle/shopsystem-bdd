@@ -6,13 +6,14 @@ and `GivenCode` (one value, in `quoted`); a value `GivenK_A`, `ThenK_A`; the num
 (its noun phrase the subject, the comparison its one noun phrase, b240); a state `GivenDoes`, `GivenDoesNot`,
 `ThenDoes`, `ThenDoesNot` ("x exists" of the verb exist, b240); a run `WhenRuns` (its options, spec_lf_option), any other trigger `WhenHappens`;
 an act `ThenPrints`, `ThenPrintsNot`, `ThenExitsOk`, `ThenExitsErr`, `ThenChangesNothing`, else `ThenDoes`,
-`ThenDoesNot`. A step of more than one reading under its keyword (the same text read with a code of two kinds is
+`ThenDoesNot`; a Then that states an order its `order` (spec_lf_ordered's `read`). A step of more than one reading under its keyword (the same text read with a code of two kinds is
 one) is refused; a Given read as example data is that, not a holds condition on the same words (b154).
 """
 import re
 
 import spec_lf_np
 import spec_lf_option
+import spec_lf_ordered
 import spec_rgl_np
 import spec_rgl_steps
 
@@ -154,6 +155,7 @@ def step(root, keyword, text):
         call.subject = spec_rgl_steps.text(gram, clause[2])
         call.nps = [spec_rgl_steps.text(gram, a) for a in (clause[3:] if row else clause[3][1:])]
         call.event = _verb(names, clause[0] if row else clause[3])
+    call.order = spec_lf_ordered.read(names, lambda t: spec_rgl_steps.text(gram, t), tree)     # b275
     if name == "WhenRuns":      # each option given with its argument, each not given (b240)
         call.options, call.without = spec_lf_option.read(names, lambda t: spec_rgl_steps.text(gram, t), tree[1][2])
     if name == "WhenHappens":
