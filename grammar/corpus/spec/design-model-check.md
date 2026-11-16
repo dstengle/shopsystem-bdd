@@ -2141,3 +2141,60 @@ shall [x1: agent the person (constant), x2: command `model parse` (parameter), x
     not
       name(e5, subject: x6, object: x7)
 ```
+
+## r320
+From: b314 r320. Not in the audit (b314 is no reword item).
+
+```reading
+While a requirement uses `holds-relation` and `rc-subject` and the requirement obliges an act and another requirement that forbids the act uses `holds-relation`, when the person runs `model logic`, `model` shall print `L1`.
+shall [x2: thing `holds-relation` (parameter), x3: thing `rc-subject` (parameter), x6: agent the person (constant), x7: command `model logic` (parameter), x8: tool `model` (constant), x9: thing `L1` (constant)]
+  while [x1: requirement, x4: act, x5: requirement]
+    use#2(subject: x1, object: x2)
+    use#2(subject: x1, object: x3)
+    oblige(subject: x1, object: x4)
+    distinct(x5, x1)
+    forbid(subject: x5, object: x4)
+    use#2(subject: x5, object: x2)
+  when
+    run(e1, subject: x6, object: x7)
+  response
+    print(e2, subject: x8, object: x9)
+```
+
+## r321
+From: b314 r318. Not in the audit (b314 is no reword item).
+
+```reading
+While a requirement uses `nothing` and `rc-subject` and the requirement obliges an act and another requirement that forbids the act uses `holds-relation`, when the person runs `model logic`, `model` shall exit successfully.
+shall [x2: thing `nothing` (parameter), x3: thing `rc-subject` (parameter), x6: thing `holds-relation` (parameter), x7: agent the person (constant), x8: command `model logic` (parameter), x9: tool `model` (constant)]
+  while [x1: requirement, x4: act, x5: requirement]
+    use#2(subject: x1, object: x2)
+    use#2(subject: x1, object: x3)
+    oblige(subject: x1, object: x4)
+    distinct(x5, x1)
+    forbid(subject: x5, object: x4)
+    use#2(subject: x5, object: x6)
+  when
+    run(e1, subject: x7, object: x8)
+  response
+    exit(e2, subject: x9, successfully)
+```
+
+## r322
+From: b314 r319. Not in the audit (b314 is no reword item).
+
+```reading
+While a requirement uses `no-noun` and `holds-relation` and the requirement obliges an act and another requirement that forbids the act uses `holds-relation`, when the person runs `model logic`, `model` shall exit successfully.
+shall [x2: thing `no-noun` (parameter), x3: thing `holds-relation` (parameter), x6: agent the person (constant), x7: command `model logic` (parameter), x8: tool `model` (constant)]
+  while [x1: requirement, x4: act, x5: requirement]
+    use#2(subject: x1, object: x2)
+    use#2(subject: x1, object: x3)
+    oblige(subject: x1, object: x4)
+    distinct(x5, x1)
+    forbid(subject: x5, object: x4)
+    use#2(subject: x5, object: x3)
+  when
+    run(e1, subject: x6, object: x7)
+  response
+    exit(e2, subject: x8, successfully)
+```

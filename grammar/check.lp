@@ -141,10 +141,15 @@ tmap(A,B,Y) :- map(A,B,Y,X), the(A,X).
 side(A,B,A) :- pair(A,B).  side(A,B,B) :- pair(A,B).
 mapped(A,B,Y) :- map(A,B,Y,_).
 at(A,B,A,X,Z) :- pair(A,B), term(A,X), canon(A,X,Z).
-at(A,B,A,X,X) :- pair(A,B), term(A,X), not role(A,X,_).
+at(A,B,A,X,X) :- pair(A,B), term(A,X), not role(A,X,_), not ispair(A,X).
 at(A,B,B,Y,X) :- pair(A,B), canon(B,Y,Y0), map(A,B,Y0,X).
 at(A,B,B,Y,b(Y0)) :- pair(A,B), canon(B,Y,Y0), not mapped(A,B,Y0).
-at(A,B,B,Y,Y) :- pair(A,B), term(B,Y), not role(B,Y,_).
+at(A,B,B,Y,Y) :- pair(A,B), term(B,Y), not role(B,Y,_), not ispair(B,Y).
+% an act's object with its recipient, `pair(X,D)` (spec_lf_facts), is no term of its own: it is its two parts, each
+% where the unification puts it, so two such objects are one only when both their parts are (b314)
+ispair(S,pair(X1,X2)) :- term(S,pair(X1,X2)).
+term(S,X1) :- ispair(S,pair(X1,_)).  term(S,X2) :- ispair(S,pair(_,X2)).
+at(A,B,S,pair(X1,X2),pair(Z1,Z2)) :- side(A,B,S), ispair(S,pair(X1,X2)), at(A,B,S,X1,Z1), at(A,B,S,X2,Z2).
 same(A,B,X,Y) :- at(A,B,A,X,Z), at(A,B,B,Y,Z).
 kindof(A,B,Z,K) :- side(A,B,S), role(S,Y,K), at(A,B,S,Y,Z).
 doer(A,B,X,Y) :- same(A,B,X,Y).
@@ -387,6 +392,12 @@ relby(A,B,X,Q,Z) :- map(A,B,Y,X), orel(B,Q,Y,Z), orel(A,Q,X,X2), same(A,B,X2,Z).
 pag(A,B,X,Y) :- map(A,B,Y,X), oattr(A,X,T,W), not oattr(B,Y,T,W), not each(B,Y).
 pag(A,B,X,Y) :- map(A,B,Y,X), orel(A,Q,X,X2), not relof(A,B,Y,Q,X2), not each(B,Y).
 relof(A,B,Y,Q,X2) :- map(A,B,Y,X), orel(A,Q,X,X2), orel(B,Q,Y,Z), same(A,B,X2,Z).
+% and a row's restriction on the object in its second place ("a worktree that holds a file": orel(R,Q,file,worktree)),
+% read the same way (b314)
+gap(A,B,X,Y) :- map(A,B,Y,X), orel(B,Q,Z,Y), not relbyi(A,B,X,Q,Z), not each(A,X).
+relbyi(A,B,X,Q,Z) :- map(A,B,Y,X), orel(B,Q,Z,Y), orel(A,Q,X2,X), same(A,B,X2,Z).
+pag(A,B,X,Y) :- map(A,B,Y,X), orel(A,Q,X2,X), not relofi(A,B,Y,Q,X2), not each(B,Y).
+relofi(A,B,Y,Q,X2) :- map(A,B,Y,X), orel(A,Q,X2,X), orel(B,Q,Z,Y), same(A,B,X2,Z).
 % a negated restriction of an object (`onattr(R,X,T,V)`: its T is not V, spec_lf_quant, b197) is entailed only by
 % the same negated restriction on the other side's object
 gap(A,B,X,Y) :- map(A,B,Y,X), onattr(B,Y,T,W), not onattr(A,X,T,W), not each(A,X).
@@ -399,6 +410,11 @@ onrelby(A,B,X,Q,D,O) :- map(A,B,Y,X), onrel(B,Y,Q,D,O), onrel(A,X,Q,D,O2), same(
 pag(A,B,X,Y) :- map(A,B,Y,X), onrel(A,X,Q,D,O), not onrelof(A,B,Y,Q,D,O), not each(B,Y).
 onrelof(A,B,Y,Q,D,O) :- map(A,B,Y,X), onrel(A,X,Q,D,O), onrel(B,Y,Q,D,O).
 onrelof(A,B,Y,Q,D,O) :- map(A,B,Y,X), onrel(A,X,Q,D,O), onrel(B,Y,Q,D,O2), same(A,B,O,O2).
+% an object with its recipient (`pair`) is restricted as its parts are: a gap of either part is the pair's (b314)
+gap(A,B,pair(X1,X2),pair(Y1,Y2)) :- same(A,B,pair(X1,X2),pair(Y1,Y2)), gap(A,B,X1,Y1).
+gap(A,B,pair(X1,X2),pair(Y1,Y2)) :- same(A,B,pair(X1,X2),pair(Y1,Y2)), gap(A,B,X2,Y2).
+pag(A,B,pair(X1,X2),pair(Y1,Y2)) :- same(A,B,pair(X1,X2),pair(Y1,Y2)), pag(A,B,X1,Y1).
+pag(A,B,pair(X1,X2),pair(Y1,Y2)) :- same(A,B,pair(X1,X2),pair(Y1,Y2)), pag(A,B,X2,Y2).
 % each side's responses lifted to the pair first (`ra`, `rb`, `sa`, `sb`, `ua`, `ub`, `xa`, `xb`), so a clash is joined on the pair and the
 % event at once, never on an event (print, exit_error) that thousands of lines share
 ra(A,B,P,E,D,X) :- pair(A,B), resp(A,_,P,E,D,X).  rb(A,B,P,E,D,Y) :- pair(A,B), resp(B,_,P,E,D,Y).

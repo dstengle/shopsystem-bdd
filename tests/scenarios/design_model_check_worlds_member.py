@@ -1,7 +1,8 @@
 """design-model-check's worlds of membership and emptiness (b274, b297), rows design_model_check_worlds' TABLE takes
 in its place: a file said in a worktree from its own side (is-in), and r2 forbidding of the worktree's file what r1
 obliges (holds-relation); a worktree that holds exactly some files, and one that holds nothing, in a precondition and
-on a response's object. On a response's object (b297) the act is one with a recipient, as a feed's "return ... to",
+on a response's object; an object that holds nothing or no file beside a forbidden one that holds a file, which
+no worktree meets both of, and two that hold a file (b314). On a response's object (b297) the act is one with a recipient, as a feed's "return ... to",
 and the files a relative clause's, so the context has the verbs `keep` and `return` too (`RETURNING`). Each world is
 codified2_world's, its r1 (r2) the lines here."""
 import importlib.util
@@ -45,12 +46,22 @@ KEPT = ("When the person runs `work start`, `work` shall return a worktree that 
         "keeps to the person.")
 EMPTY = "When the person runs `work start`, `work` shall return a worktree that holds nothing to the person."
 UNRETURNED = "When the person runs `work start`, `work` shall not return a worktree to the person."
+FULL = "When the person runs `work start`, `work` shall return a worktree that holds a file to the person."
+UNFULL = "When the person runs `work start`, `work` shall not return a worktree that holds a file to the person."
+FILELESS = "When the person runs `work start`, `work` shall print a worktree that holds no file."
+UNFILLED = "When the person runs `work start`, `work` shall not print a worktree that holds a file."
 
 ROWS = [
     (("requirement use `is-in`", "requirement forbid act", "requirement use `holds-relation`"), line(IS_IN, HOLDS), {}),
     (("precondition use `is-in`",), line(IS_IN), {}),
     (("requirement use `holds-exactly`", "requirement use `rc-object`", "requirement forbid act"),
      line(KEPT, UNRETURNED, terms=RETURNING), {}),
+    (("requirement use `nothing`", "requirement use `rc-subject`", "requirement forbid act",
+      "requirement use `holds-relation`"), line(EMPTY, UNFULL, terms=RETURNING), {}),     # b314
+    (("requirement use `holds-relation`", "requirement use `rc-subject`", "requirement forbid act"),
+     line(FULL, UNFULL, terms=RETURNING), {}),
+    (("requirement use `no-noun`", "requirement use `holds-relation`", "requirement forbid act"),
+     line(FILELESS, UNFILLED), {}),
     (("requirement use `nothing`", "requirement use `rc-subject`", "requirement forbid act"),
      line(EMPTY, UNRETURNED, terms=RETURNING), {}),
     (("requirement use `holds-exactly`", "requirement forbid act"), line(EXACTLY, UNPRINTED), {}),
