@@ -8,6 +8,7 @@ test_conversation.py, which binds with `bind_all`; each returns False for a step
 conversation (every conversation When and Given sets `step.context["conversation"]`), which then goes on to the
 registry. The steps are grammar 4's (b240 phase 15)."""
 import datetime
+import hashlib
 import importlib.util
 import json
 import os
@@ -59,15 +60,17 @@ def transcript(step, session):
     """CONVERSATION written as the transcript of the scenario's session `session`, in the repository's project
     directory of the scenario's store; the person's message m1 is the one its words come from."""
     ident = "session-%s" % session
-    rows = [dict(row, sessionId=ident) for row in T.CONVERSATION]
+    rows = [dict(row, sessionId=ident) for row in queued().rows(step)]
     path = T.write(store(step) / "projects" / measure_batch_read.project_dir(step.repo).name, ident, rows)
     talk(step)["sessions"][session] = ident
     talk(step)["messages"].setdefault("m1", T.IDENTS[CITED])
     return path
 
 
-def words():
-    return T.TEXTS[CITED]
+def queued():
+    """conversation_handlers_queued, loaded after this module."""
+    return sys.modules["shop_handlers_%s" % hashlib.sha256(str(HERE / "conversation_handlers_queued.py").encode())
+                       .hexdigest()[:12]]
 
 
 @handler("WhenRuns", "`work quote`")
@@ -76,7 +79,7 @@ def work_quote(step):
     if any(o.strip("`") == "--hook" for o, _ in getattr(step, "options", None) or ()):
         return prompt_hook(step)
     transcript(step, step.names[0])
-    B.run_work(step, "quote", words(), "--session", talk(step)["sessions"][step.names[0]], env=env(step))
+    B.run_work(step, "quote", queued().words(step), "--session", talk(step)["sessions"][step.names[0]], env=env(step))
 
 
 def quote_file(step, name):

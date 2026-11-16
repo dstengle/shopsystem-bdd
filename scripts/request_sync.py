@@ -10,7 +10,7 @@ status and turn set, an offer kept under `## Offer`. The poster is the asker of 
 an `offer`, an `accept` or a `resolve`, and of a `turn` the side whose turn the request was; an entry of the other
 side's part (`own`) is recorded with its comment and never applied. A closed request's status and turn are never
 set by a comment (r53), so a late comment reopens no request. A comment whose block does not parse, or that
-holds none, is printed and never recorded, so it is printed again on the next sync. A comment recorded already is
+holds none, is printed and recorded as `unreadable`, nothing of it applied, so the next sync passes over it (r105, r106). A comment recorded already is
 passed over: sync is safe to run again. A record with no issue whose issue was opened but its URL never committed
 (b36, f6) is given it, before the asks are read, so that it is not taken as a new request. The changed records are
 one commit."""
@@ -90,8 +90,9 @@ def taken(root, url, title, form, name):
     return text
 
 
-def unreadable(out, url, where, why, body):
-    out.append("unreadable comment %s on %s, not recorded (%s):" % (url, where, why))
+def unreadable(out, url, where, why, body, recorded=False):
+    out.append("unreadable comment %s on %s, %s (%s):" % (
+        url, where, "recorded, nothing of it applied" if recorded else "not recorded", why))
     out.extend("    " + line for line in (body or "").strip().splitlines()[:20])
 
 
@@ -150,14 +151,16 @@ def new_requests(root, writes, out):
 
 
 def caught_up(root, name, text, out):
-    """`text` with each comment of its issue it does not hold yet that is readable recorded."""
+    """`text` with each comment of its issue it does not hold yet recorded: a readable one applied, an unreadable one
+    printed and recorded as `unreadable`, nothing of it applied."""
     for url, body in unheld_comments(root, text):
         try:
             form = request_form.parse(body)
             if form is None:
                 raise request_form.Unreadable("it holds no block of fields")
         except request_form.Unreadable as why:
-            unreadable(out, url, name, why, body)
+            unreadable(out, url, name, why, body, recorded=True)
+            text = request_post.with_comment(text, url, "unreadable")
             continue
         text = applied(text, form, url)
     return text

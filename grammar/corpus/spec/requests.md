@@ -297,24 +297,6 @@ shall [x3: artifact the comment form (constant), x5: command `work sync` (parame
         print(e3, subject: x6, object: x7)
 ```
 
-## r77
-Retires: r33. From: b153 r77. Audit: coined, fixed by "does not conform to the comment form" (conformance).
-
-```reading
-While a comment on a request does not conform to the comment form, when a session runs `work sync`, `work` shall print the comment and not write the comment.
-shall [x3: artifact the comment form (constant), x5: command `work sync` (parameter), x6: tool `work` (constant)]
-  while [x1: comment, x2: request]
-    on(x1, x2)
-    not
-      conforms(x1, x3)
-  when [x4: session]
-    run(e1, subject: x4, object: x5)
-  response
-    print(e2, subject: x6, object: x1)
-    not
-      write(e3, subject: x6, object: x1)
-```
-
 ## r78
 Retires: r34. From: b153 r78. Audit: fine.
 
@@ -842,4 +824,198 @@ shall [x3: artifact the comment form (constant), x6: command `work sync` (parame
     write(e2, subject: x7, object: x1)
     not
       write(e3, subject: x7, object: x4)
+```
+
+## r104
+From: b39 r104. Not in the audit (b39 is no reword item).
+
+```reading
+While a request line proposed in a request has a line reason, when the person runs `work show` on the request, `work` shall print the line reason.
+shall [x4: agent the person (constant), x5: command `work show` (parameter), x6: tool `work` (constant)]
+  while [x1: request line, x2: request, x3: line reason]
+    proposed in(x1, x2)
+    of(x3, x1)
+  when
+    run(e1, subject: x4, object: x5, on: x2)
+  response
+    print(e2, subject: x6, object: x3)
+```
+
+## r105
+Retires: r77. From: b39 r105. Not in the audit (b39 is no reword item).
+
+```reading
+While a comment on a request does not conform to the comment form and the request does not hold the comment, when a session runs `work sync`, `work` shall print the comment, write the comment and keep the status of the request.
+shall [x3: artifact the comment form (constant), x5: command `work sync` (parameter), x6: tool `work` (constant)]
+  while [x1: comment, x2: request]
+    on(x1, x2)
+    not
+      conforms(x1, x3)
+    not
+      in(x1, x2)
+  when [x4: session]
+    run(e1, subject: x4, object: x5)
+  response [x7: status]
+    print(e2, subject: x6, object: x1)
+    write(e3, subject: x6, object: x1)
+    status(x2) = x7
+    keep(e4, subject: x6, object: x7)
+```
+
+## r106
+From: b39 r106. Not in the audit (b39 is no reword item).
+
+```reading
+While a comment on a request does not conform to the comment form and the request holds the comment, when a session runs `work sync`, `work` shall not print the comment.
+shall [x3: artifact the comment form (constant), x5: command `work sync` (parameter), x6: tool `work` (constant)]
+  while [x1: comment, x2: request]
+    on(x1, x2)
+    not
+      conforms(x1, x3)
+    in(x1, x2)
+  when [x4: session]
+    run(e1, subject: x4, object: x5)
+  response
+    not
+      print(e2, subject: x6, object: x1)
+```
+
+## r107
+From: b39 r107. Not in the audit (b39 is no reword item).
+
+```reading
+When the person runs `work offer` on a request, `work` shall print the request and the status of the request.
+shall [x1: agent the person (constant), x2: command `work offer` (parameter), x4: tool `work` (constant)]
+  when [x3: request]
+    run(e1, subject: x1, object: x2, on: x3)
+  response [x5: status]
+    print(e2, subject: x4, object: x3)
+    status(x3) = x5
+    print(e3, subject: x4, object: x5)
+```
+
+## r108
+From: b39 r108. Not in the audit (b39 is no reword item).
+
+```reading
+When the person runs `work propose` on a request, `work` shall print the request and the status of the request.
+shall [x1: agent the person (constant), x2: command `work propose` (parameter), x4: tool `work` (constant)]
+  when [x3: request]
+    run(e1, subject: x1, object: x2, on: x3)
+  response [x5: status]
+    print(e2, subject: x4, object: x3)
+    status(x3) = x5
+    print(e3, subject: x4, object: x5)
+```
+
+## r109
+From: b39 r109. Not in the audit (b39 is no reword item).
+
+```reading
+When the person runs `work reply` on a request, `work` shall print the request and the status of the request.
+shall [x1: agent the person (constant), x2: command `work reply` (parameter), x4: tool `work` (constant)]
+  when [x3: request]
+    run(e1, subject: x1, object: x2, on: x3)
+  response [x5: status]
+    print(e2, subject: x4, object: x3)
+    status(x3) = x5
+    print(e3, subject: x4, object: x5)
+```
+
+## r110
+From: b39 r110. Not in the audit (b39 is no reword item).
+
+```reading
+When the person runs `work turn` on a request, `work` shall print the request and the status of the request.
+shall [x1: agent the person (constant), x2: command `work turn` (parameter), x4: tool `work` (constant)]
+  when [x3: request]
+    run(e1, subject: x1, object: x2, on: x3)
+  response [x5: status]
+    print(e2, subject: x4, object: x3)
+    status(x3) = x5
+    print(e3, subject: x4, object: x5)
+```
+
+## r111
+From: b39 r111. Not in the audit (b39 is no reword item).
+
+```reading
+When the person runs `work request` without the `--from` option, `work` shall write a request that originates from this bounded context.
+shall [x1: agent the person (constant), x2: command `work request` (parameter), x3: option `--from` (parameter), x4: tool `work` (constant), x6: bounded context "the bounded context whose repository the command runs in" (indexical)]
+  when
+    run(e1, subject: x1, object: x2, without: x3)
+  response [x5: request]
+    originate(subject: x5, from: x6)
+    write(e2, subject: x4, object: x5)
+```
+
+## r112
+From: b40 r104.
+
+```reading
+When a session runs `work offer` with the `--capability` option set to a capability on a request, `work` shall post a comment that holds every requirement of the capability.
+shall [x2: command `work offer` (parameter), x3: option `--capability` (parameter), x6: tool `work` (constant)]
+  when [x1: session, x4: capability, x5: request]
+    argument(x3, x4)
+    run(e1, subject: x1, object: x2, with: x3, on: x5)
+  response [x7: comment]
+    every [x8: requirement]
+      of(x8, x4)
+      scope
+        in(x8, x7)
+    post(e2, subject: x6, object: x7)
+```
+
+## r113
+From: b40 r105.
+
+```reading
+While a requirement of a capability mentions a term, when a session runs `work offer` with the `--capability` option set to the capability on a request, `work` shall post a comment that holds the term.
+shall [x5: command `work offer` (parameter), x6: option `--capability` (parameter), x8: tool `work` (constant)]
+  while [x1: requirement, x2: capability, x3: term]
+    of(x1, x2)
+    mention(subject: x1, object: x3)
+  when [x4: session, x7: request]
+    argument(x6, x2)
+    run(e1, subject: x4, object: x5, with: x6, on: x7)
+  response [x9: comment]
+    in(x3, x9)
+    post(e2, subject: x8, object: x9)
+```
+
+## r114
+From: b40 r106.
+
+```reading
+While a capability holds a given block, when a session runs `work offer` with the `--capability` option set to the capability on a request, `work` shall post a comment that does not hold the given block.
+shall [x4: command `work offer` (parameter), x5: option `--capability` (parameter), x7: tool `work` (constant)]
+  while [x1: capability, x2: given block]
+    in(x2, x1)
+  when [x3: session, x6: request]
+    argument(x5, x1)
+    run(e1, subject: x3, object: x4, with: x5, on: x6)
+  response [x8: comment]
+    not
+      in(x2, x8)
+    post(e2, subject: x7, object: x8)
+```
+
+## r115
+From: b40 r107.
+
+```reading
+While a term is in the bounded context and a capability has no requirement that mentions the term, when a session runs `work offer` with the `--capability` option set to the capability on a request, `work` shall post a comment that does not hold the term.
+shall [x2: bounded context "the bounded context whose repository the command runs in" (indexical), x6: command `work offer` (parameter), x7: option `--capability` (parameter), x9: tool `work` (constant)]
+  while [x1: term, x3: capability]
+    in(x1, x2)
+    not [x4: requirement]
+      mention(subject: x4, object: x1)
+      of(x4, x3)
+  when [x5: session, x8: request]
+    argument(x7, x3)
+    run(e1, subject: x5, object: x6, with: x7, on: x8)
+  response [x10: comment]
+    not
+      in(x1, x10)
+    post(e2, subject: x9, object: x10)
 ```

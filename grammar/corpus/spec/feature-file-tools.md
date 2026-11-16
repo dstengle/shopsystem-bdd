@@ -824,3 +824,22 @@ shall [x4: thing `holds-relation` (parameter), x5: thing `rc-subject` (parameter
       mention(subject: x9, object: x10)
       write(e2, subject: x8, object: x9)
 ```
+
+## r133
+From: b328 r131. Not in the audit (b328 is no reword item).
+
+```reading
+While a requirement of a requirement group of a capability uses `order-by-every` and `of-relation`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has an order counter-example.
+shall [x4: thing `order-by-every` (parameter), x5: thing `of-relation` (parameter), x6: agent the person (constant), x7: command `features generate` (parameter), x8: tool `features` (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability]
+    of(x2, x3)
+    of(x1, x2)
+    use#2(subject: x1, object: x4)
+    use#2(subject: x1, object: x5)
+  when
+    run(e1, subject: x6, object: x7, on: x3)
+  response [x9: scenario, x10: order counter-example]
+    of(x9, x2)
+    of(x10, x9)
+    write(e2, subject: x8, object: x9)
+```

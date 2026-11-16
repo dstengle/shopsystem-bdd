@@ -396,9 +396,9 @@ URL. The examples follow one request, `q48`, that this repository raised to itse
 #### `work request`
 
 Asks an upstream (or this context): writes the request, opens its issue, and commits both.\
-Synopsis: `work request --from ASKER [--ask ASK] [--to TO] [--source SOURCE] [--thread THREAD] [--raised-for RAISED_FOR] title`
+Synopsis: `work request [--from ASKER] [--ask ASK] [--to TO] [--source SOURCE] [--thread THREAD] [--raised-for RAISED_FOR] title`
 
-- `--from`: the asker, a bounded context or product id.
+- `--from`: the asker, this bounded context's id (default: this context).
 - `--ask`: what the asker needs, in its own words (default: the title).
 - `--to`: the upstream, one of `spec/index.md`'s `## Upstreams` (default: the one upstream, or this context).
 - `--source`: the origin of a request this context asks itself; `--thread` or `--raised-for` for one another
