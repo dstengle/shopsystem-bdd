@@ -110,3 +110,21 @@ Feature: Decision tiers
     And the kind of the route r1 is not `monitor`
     When the person runs `model check`
     Then `model` exits with an error naming the design-decision d1
+
+  @g31 @r31
+  Scenario: `work decision --supersedes` marks the decision it replaces superseded
+    Given a design-decision d1
+    And the status of the design-decision d1 is `accepted`
+    When the person runs `work decision` with the `--supersedes` option set to the design-decision d1
+    Then `work` sets the status of the design-decision d1 to `superseded`
+    And `work` commits the design-decision d1
+    And `work` writes the design-decision d2
+    And the design-decision d2 supersedes the design-decision d1
+
+  @g32 @r32
+  Scenario: `work decision --supersedes` refuses a decision not in force
+    Given a design-decision d1
+    And the status of the design-decision d1 is not `accepted`
+    When the person runs `work decision` with the `--supersedes` option set to the design-decision d1
+    Then `work` refuses `work decision`
+    And `work` names the design-decision d1

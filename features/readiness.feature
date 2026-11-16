@@ -236,3 +236,23 @@ Feature: Readiness
     When the person runs `work ready` on the item i1
     Then `work` refuses `work ready`
     And `work` names the universal condition u1
+
+  @g47 @r47
+  Scenario: `work line --retires --no-line` retires a requirement in an item with no line replacing it
+    Given a requirement id r1
+    And an item i1
+    And a requirement r2
+    And the item i1 holds the requirement r2
+    When the person runs `work line` with the `--no-line` option and the `--retires` option set to the requirement id r1 on the item i1
+    Then the item i1 holds the requirement id r1
+    And `work` writes the requirement id r1
+    And `work` does not write the requirement r2
+    And `work` commits the item i1
+
+  @g48 @r48
+  Scenario: `work line --retires --no-line` refuses a requirement id that no requirement has
+    Given a requirement id r1
+    And no requirement has the requirement id r1
+    When the person runs `work line` with the `--no-line` option and the `--retires` option set to the requirement id r1
+    Then `work` refuses `work line`
+    And `work` names the requirement id r1

@@ -6,7 +6,7 @@ group: service
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: [g1, r1, g2, r2, g3, r3, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18, g19, r19, g33, r33]
-unbuilt: []
+unbuilt: [r47, r48]
 ---
 
 # Readiness
@@ -49,6 +49,7 @@ the item is settled. `work ready` checks the bar and asks nobody.
 | requirement id | of | requirement | one |
 | universal condition id | of | universal condition | one |
 | translation | of | universal condition | one |
+| requirement id | in | item |  |
 
 ## Behaviour
 
@@ -123,6 +124,12 @@ the item is settled. `work ready` checks the bar and asks nobody.
 
 ### [g46] `work ready` refuses an item a universal condition of which has no translation when `spec/universal.md` does not exist
 - [r46] While `universal` does not exist and an item is `shaped` and a universal condition in the item has no translation, if the person runs `work ready` on the item, then `work` shall refuse the command and name the universal condition.
+
+### [g47] `work line --retires --no-line` retires a requirement in an item with no line replacing it
+- [r47] When the person runs `work line` with the `--no-line` option and the `--retires` option set to a requirement id on an item, `work` shall write the requirement id in the item, not write a requirement in the item and commit the item.
+
+### [g48] `work line --retires --no-line` refuses a requirement id that no requirement has
+- [r48] If the person runs `work line` with the `--no-line` option and the `--retires` option set to a requirement id that no requirement has, then `work` shall refuse the command and name the requirement id.
 
 ## Implementation, may change
 - An item's requirement lines stay on the item until its batch merges: in the item file's `## Requirements`, one
