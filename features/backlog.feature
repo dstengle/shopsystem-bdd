@@ -202,3 +202,21 @@ Feature: Backlog
     And `work` prints the question q1
     And `work` prints the question q2
     And `work` does not print the question q3
+
+  @g43 @r43
+  Scenario: `work shape` refuses an idea with no shaping note
+    Given an item i1
+    And the status of the item i1 is `idea`
+    And the item i1 has no shaping note
+    When the person runs `work shape` without the `--note` option on the item i1
+    Then `work` refuses `work shape`
+    And `work` names the `--note` option
+
+  @g44 @r44
+  Scenario: `work backlog` names how to groom an idea with no shaping note
+    Given an item i1
+    And the status of the item i1 is `idea`
+    And the item i1 has no shaping note
+    When the person runs `work backlog`
+    Then `work` prints the item i1
+    And `work` names the `--note` option

@@ -267,3 +267,25 @@ Feature: Batches
     When the person runs `work batch start`
     Then `work` writes `universal`
     And `work` sets the language of `universal` to `codified-2`
+
+  @g40 @r40
+  Scenario: The merge resolves the request a delivered item was taken in from
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a request line r1
+    And a request r2
+    And the request r2 has the request line r1
+    And the item i1 has the request line r1
+    And the status of the request r2 is `accepted`
+    And a pull request p1
+    And the batch b1 has the pull request p1
+    When the person merges the pull request p1
+    Then `work` sets the status of the request r2 to `delivered`
+    And `work` writes the resolution r3
+    And `work` sets the side of the request r2 to `asker`
+    And `work` posts the comment c1
+    And `work` closes the issue i2
+    And the request r2 has the issue i2
+    And `work` commits the request r2
