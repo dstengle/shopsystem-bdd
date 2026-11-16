@@ -399,7 +399,8 @@ URL. The examples follow one request, `q48`, that this repository raised to itse
 Asks an upstream (or this context): writes the request, opens its issue, and commits both.\
 Synopsis: `work request [--from ASKER] [--ask ASK] [--to TO] [--source SOURCE] [--thread THREAD] [--raised-for RAISED_FOR] title`
 
-- `--from`: the asker, this bounded context's id (default: this context).
+- `--from`: the asker: this bounded context's id, or `internal` for a request this context raises to itself
+  (optional; default: this context).
 - `--ask`: what the asker needs, in its own words (default: the title).
 - `--to`: the upstream, one of `spec/index.md`'s `## Upstreams` (default: the one upstream, or this context).
 - `--source`: the origin of a request this context asks itself; `--thread` or `--raised-for` for one another
@@ -412,12 +413,15 @@ q48 https://github.com/ex/ctx/issues/1
 
 #### `work offer`
 
-The upstream's offer: the capabilities that may serve the request, quoted whole under `## Offer` with the glossary,
-so the asker can write lines in the upstream's words.\
+The upstream's offer, under `## Offer`: each capability that may serve the request quoted by its groups and
+requirements, with only the terms they mention, so the asker can write lines in the upstream's words. With no
+`--capability` the offer is the note alone, no glossary. It passes the turn to the asker and prints the request, its
+status and its turn.\
 Synopsis: `work offer [--capability CAPABILITY] [--note NOTE] request`
 
 ```console
 $ work offer q48 --capability backlog --note "work show prints an item's title and rating today; the backlog capability would hold the status too."
+q48 awaiting-asker asker
 ```
 
 #### `work fits`
@@ -436,20 +440,22 @@ it is the asker's turn, on https://github.com/ex/ctx/issues/2
 
 #### `work propose`
 
-The asker's lines, one `--line` each, in the upstream's words.\
+The asker's lines, one `--line` each, in the upstream's words; it prints the request, its status and its turn.\
 Synopsis: `work propose [--line LINES] request`
 
 ```console
 $ work propose q48 --line 'When the person runs `work show` on an item, `work` shall print the status of the item.'
+q48 awaiting-asker asker
 ```
 
 #### `work turn`
 
-Passes a request's turn to the other side, and posts it.\
+Passes a request's turn to the other side, posts it, and prints the request, its status and its turn.\
 Synopsis: `work turn request`
 
 ```console
 $ work turn q48
+q48 awaiting-upstream upstream
 ```
 
 #### `work ask`
@@ -463,7 +469,7 @@ $ work ask q48 1 "Should the status be the item's state, such as ready?"
 
 #### `work reply`
 
-The asker's answer to a question of a request.\
+The asker's answer to a question of a request; it prints the request, its status and its turn.\
 Synopsis: `work reply request question answer`
 
 ```console

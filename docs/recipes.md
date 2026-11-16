@@ -155,7 +155,7 @@ b251 "work backlog shows labels": an upstream entry
 A delivered line is never edited in place. The new wording gets a new id, and the old id is retired:
 
 ```console
-$ work idea "work refuse commits the item"
+$ work idea "work refuse commits the item" --note "the refusal is committed with the item, as every other move is"
 b252 "work refuse commits the item" idea
 $ work shape b252
 b252 "work refuse commits the item" shaped
