@@ -277,7 +277,7 @@ a condition that does not hold
 
 - Form: <subject> does not <verb> ...; ... is not <value>
 - Functions: `PNeg`
-- Cited by: design-model-check#r209, feature-file-tools#r120
+- Cited by: design-model-check#r209, feature-file-tools#r120, feature-file-tools#r125
 - Example and its reading:
 
 ```construct
@@ -411,7 +411,7 @@ a relative clause whose subject is the noun
 
 - Form: <noun> that <verb> ...
 - Functions: `k_\w+_Rel_k_\w+`
-- Cited by: no line
+- Cited by: design-model-check#r315, feature-file-tools#r126
 - Example and its reading:
 
 ```construct
@@ -432,7 +432,7 @@ a relative clause whose object is the noun
 
 - Form: <noun> that <subject> <verb>
 - Functions: `k_\w+_Obj_k_\w+|g_\w+|r\d+_\w+_Gap`
-- Cited by: design-model-check#r237
+- Cited by: design-model-check#r237, design-model-check#r314, feature-file-tools#r125
 - Example and its reading:
 
 ```construct
@@ -610,7 +610,7 @@ there is none
 
 - Form: no <noun>
 - Functions: `DetNo`
-- Cited by: design-model-check#r234
+- Cited by: design-model-check#r234, feature-file-tools#r128, feature-file-tools#r128
 - Example and its reading:
 
 ```construct
@@ -852,7 +852,7 @@ no thing at all: after change, and after holds of each kind a relation row "in" 
 
 - Form: nothing
 - Functions: `k_\w+_Nothing`
-- Cited by: design-model-check#r295, feature-file-tools#r121, feature-file-tools#r121
+- Cited by: design-model-check#r295, design-model-check#r315, feature-file-tools#r121, feature-file-tools#r121, feature-file-tools#r126, feature-file-tools#r126
 - Example and its reading:
 
 ```construct
@@ -1005,7 +1005,7 @@ a state: the other noun of a relation row "in"
 
 - Form: <np> holds <np>
 - Functions: `r\d+_\w+_Holds`
-- Cited by: design-model-check#r288, design-model-check#r289, design-model-check#r292, feature-file-tools#r113, feature-file-tools#r112
+- Cited by: design-model-check#r288, design-model-check#r289, design-model-check#r292, feature-file-tools#r113, feature-file-tools#r112, feature-file-tools#r128
 - Example and its reading:
 
 ```construct
@@ -1045,7 +1045,7 @@ a state: every one that P is held and no one that is not P is, by a relation row
 
 - Form: <np> holds exactly the <nouns> that|whose ...
 - Functions: `r\d+_\w+_Exactly`
-- Cited by: design-model-check#r293, design-model-check#r294, feature-file-tools#r120
+- Cited by: design-model-check#r293, design-model-check#r294, design-model-check#r314, feature-file-tools#r120, feature-file-tools#r125
 - Example and its reading:
 
 ```construct
@@ -1272,7 +1272,7 @@ a collection's members ordered by their attribute (b275)
 
 - Form: <np>, ordered by <attribute>, in ascending|descending order
 - Functions: `r\d+_\w+_By_t_[a-z0-9_]+_\d+|Ascending|Descending`
-- Cited by: design-model-check#r303, feature-file-tools#r123
+- Cited by: design-model-check#r303, feature-file-tools#r123, feature-file-tools#r127
 - Example and its reading:
 
 ```construct
