@@ -128,6 +128,8 @@ def has(step, w):
         text = (step.repo / "features" / ("%s.feature" % NAME)).read_text()
         missing = [g for g in range(1, w["groups"] + 1) if not re.search(r"^  @g%d @" % g, text, re.MULTILINE)]
         assert not missing, "no scenario of the groups %s" % missing
+    elif step.nps[0].startswith("the order counter-example"):      # b275
+        USES.counter(step, NAME)
     elif step.nps[0].startswith(("the counter-example", "the boundary")):    # b273
         if step.subject.startswith("the scenario"):
             collections(step, w, step.nps[0].split()[1])

@@ -24,6 +24,7 @@ import spec_lf_modal
 import spec_lf_none
 import spec_lf_number
 import spec_lf_option
+import spec_lf_ordered
 import spec_lf_quant
 import spec_lf_set
 from spec_lf_core import Atom, Box, const, least, next_choice
@@ -128,6 +129,8 @@ class Walk(Terms):
         for item in body:
             if isinstance(item, Atom) and item.pred in ("event", spec_lf_set.PRED):
                 self.act(item, pos)
+            elif isinstance(item, Atom) and item.pred == spec_lf_ordered.PRED:     # an order of the act before it (b275)
+                spec_lf_ordered.facts(self, item, self.acts)
             elif isinstance(item, Atom):
                 self.restrict(item, own)
             elif item.op == "not" and not self.acting(item):

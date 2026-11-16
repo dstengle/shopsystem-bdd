@@ -178,6 +178,11 @@ class Words:
                         act += "" if act.endswith(obj) else " " + obj
                         return "%s counts %s %s and %s %s %s (%s): no number meets both" % (
                             lx, BOUNDS[b.name], n, ly, BOUNDS[b2.name], n2, act)
+        if kind == "order":     # two orders of one act in opposite directions (b275)
+            for i, a, d in self.of(x, "ordered"):
+                for _, p, e, d2, o in (r for r in rx if r[0] == i):
+                    return "%s orders %s by %s, %s, and %s in the opposite order" % (
+                        lx, self.does(x, e, d2, o), a.string, d.name, ly)
         return "%s and %s demand opposite things" % (lx, ly)
 
     def bad_set(self, base, t, frm, to):

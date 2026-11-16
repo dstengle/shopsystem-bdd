@@ -7,7 +7,7 @@
 -- over one clause (`Necessary`, its clause a subject's `Nec`).
 abstract Base = {
   flags startcat = Req ;
-  cat Req ; Pre ; Cond ; Conds ; Trig ; Resp ; Resps ; Pol ; Det ; Code ; Codes ; Bound ; Many ; Mod ; Nec ;
+  cat Req ; Pre ; Cond ; Conds ; Trig ; Resp ; Resps ; Pol ; Det ; Code ; Codes ; Bound ; Many ; Mod ; Nec ; Dir ;
   fun
     Ubiq : Pre -> Resps -> Req ;               -- R.
     When : Pre -> Trig -> Resps -> Req ;       -- When T, R.
@@ -35,5 +35,7 @@ abstract Base = {
     -- identity and distinctness (b240, construct #2): "the same K", "another K", "a different K", "two Ks"
     DetSame, DetAnother, DetDifferent, DetTwo : Det ;
     AtLeast, AtMost, Exactly, MoreThan, FewerThan : Bound ;
+    -- an order's direction (b275, order-by): "in ascending order", "in descending order"
+    Ascending, Descending : Dir ;
     Many1, Many2, Many3, Many4, Many5, Many6, Many7, Many8, Many9, Many10 : Many ;
 }

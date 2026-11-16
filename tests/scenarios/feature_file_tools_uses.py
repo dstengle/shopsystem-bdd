@@ -2,7 +2,10 @@
 (`the requirement r1 uses `holds-exactly``, `the precondition p1 uses `nothing``) is the construct catalogue's example
 of it, the one requirement of the capability c1 in the catalogue's context `grammar/corpus/constructs/` (`prepare`);
 "the step s2 uses `not-condition`" holds when a step of the feature `features generate` wrote reads, in the step
-grammar 4, as a tree that uses the construct as `model constructs` tells it (`uses`)."""
+grammar 4, as a tree that uses the construct as `model constructs` tells it (`uses`). A requirement that uses an
+order (b275) is the example of `order-by-every`, and "the scenario s1 has the order counter-example o2" holds when
+the feature's Then states the order and its Givens give at least three members distinct values in neither that order
+nor its reverse, so that world_order's check of the Then fails on the members printed as given (`counter`)."""
 import re
 import sys
 from pathlib import Path
@@ -14,6 +17,8 @@ CODES = ("holds-exactly", "nothing")
 def construct(w):
     """The code of the construct a Given says the requirement or its precondition uses, or None."""
     used = [o.strip("`") for v, _, o, pos in w["facts"] if v == "use" and pos and isinstance(o, str)]
+    if any(w["kinds"].get(o) == "order" for o in used):     # the requirement r1 uses the order o1 (b275)
+        return "order-by-every"
     return next((c for c in used if c in CODES), None)
 
 
@@ -52,3 +57,37 @@ def uses(step, name):
     found = [line for line in lines for t in spec_rgl_steps.trees(step.repo, line)
              if model_constructs.uses(entry, str(spec_gf.expr(t)), frames)]
     assert found, "no step uses %s:\n%s" % (code, text)
+
+
+def counter(step, name):
+    """Assert that the feature of `name` has an order counter-example (b275)."""
+    if str(PLUGIN / "scripts") not in sys.path:
+        sys.path.insert(0, str(PLUGIN / "scripts"))
+    import features_vocab4
+    import spec_lf_order
+    import spec_rgl_vocab
+    if str(Path(__file__).parent) not in sys.path:
+        sys.path.insert(0, str(Path(__file__).parent))
+    import world_order
+    text = (step.repo / "features" / ("%s.feature" % name)).read_text()
+    thens = [features_vocab4.step(step.repo, "then", s) for s in re.findall(r"^\s*(?:Then|And) (.*ordered by.*)$",
+                                                                            text, re.MULTILINE)]
+    order = next((c.order for c in thens if c.order), None)
+    assert order, "no Then states an order:\n%s" % text
+    term, direction, _ = order
+    values = dict(re.findall(r"^\s*(?:Given|And) the %s of the \w+ (\w+) is `([^`]+)`$" % re.escape(term), text,
+                             re.MULTILINE))
+    entry = next(t for t, _ in spec_rgl_vocab.read(step.repo).attributes if t.term == term)
+
+    def key(v):
+        return spec_lf_order.key(entry, v)
+    assert len(set(map(key, values.values()))) >= 3, "fewer than three members of distinct values:\n%s" % text
+    given = " ".join(values)
+    for way in ("ascending", "descending"):
+        try:
+            world_order.ordered(given, values, way, key)
+        except AssertionError:
+            continue
+        raise AssertionError("the members are given in %s order:\n%s" % (way, text))
+    world_order.ordered(" ".join(sorted(values, key=lambda m: key(values[m]), reverse=direction == "descending")),
+                        values, direction, key)

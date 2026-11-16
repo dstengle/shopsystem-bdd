@@ -6,6 +6,7 @@ restriction of a response's object as `oattr`, `orel`; an attribute's value comp
 atom refused naming it (`TIME`). The boxes, the rule and
 the response are spec_lf_facts'.
 """
+import spec_lf_compare
 import spec_lf_distinct
 import spec_lf_exist
 import spec_lf_order
@@ -78,6 +79,8 @@ class Terms:
         elif item.pred in ("rel", "state"):
             q, x, y = self.edge(item)
             self.emit("crel", q, self.term(x), self.term(y), "pos" if pos else "neg")
+        elif item.pred == spec_lf_compare.PRED:     # one thing's value compared with another's (b275)
+            spec_lf_compare.literal(self, item, pos)
         elif item.pred == "cmp" and len(item.args) == 4:     # an attribute's value compared (b240)
             spec_lf_order.literal(self, item, pos)
         elif item.pred == spec_lf_distinct.PRED:     # two things told apart (b240): never one thing

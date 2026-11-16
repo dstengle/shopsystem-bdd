@@ -24,6 +24,7 @@ P = _sibling("design_model_check_handlers_packs.py", "shop_design_model_check_ha
 F = _sibling("design_model_check_handlers_forms.py", "shop_design_model_check_handlers_forms")
 C2 = _sibling("codified2_world.py", "shop_codified2_world")
 CACHE = _sibling("design_model_check_handlers_cache.py", "shop_design_model_check_handlers_cache")
+ORDER = _sibling("design_model_check_worlds_order.py", "shop_design_model_check_worlds_order")     # b275
 
 
 class As:
@@ -159,7 +160,7 @@ EXACTLY = ("When the person runs `work start`, `work` shall print a worktree tha
 UNPRINTED = "When the person runs `work start`, `work` shall not print a worktree."
 NOTHING = ("While a worktree holds nothing, when the person runs `work start` on the worktree, `work` shall print the "
            "worktree.")
-TABLE = [
+TABLE = ORDER.ROWS + [
     # the base world: nothing violates a rule, and it has facts
     (("no thing violate rule",), nothing, {}),
     (("this bounded context has fact",), nothing, {}),

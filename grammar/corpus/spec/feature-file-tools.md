@@ -600,3 +600,20 @@ shall [x4: thing `nothing` (parameter), x5: agent the person (constant), x6: com
     use#2(subject: x9, object: x4)
     write(e2, subject: x7, object: x8)
 ```
+
+## r122
+From: b275 r111. Not in the audit (b275 is no reword item).
+
+```reading
+While a requirement of a requirement group of a capability uses an order, when the person runs `features generate` on the capability, `features` shall write a scenario that has an order counter-example.
+shall [x5: agent the person (constant), x6: command `features generate` (parameter), x7: tool `features` (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability, x4: order]
+    of(x2, x3)
+    of(x1, x2)
+    use#2(subject: x1, object: x4)
+  when
+    run(e1, subject: x5, object: x6, on: x3)
+  response [x8: scenario, x9: order counter-example]
+    of(x9, x8)
+    write(e2, subject: x7, object: x8)
+```

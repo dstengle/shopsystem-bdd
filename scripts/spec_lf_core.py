@@ -82,6 +82,8 @@ class NP:
     count: tuple = None     # a count's (bound, number): quant "count"
     image: bool = False     # a functional image ("the K of x", "its K", "the T of x") made here: under a negated
     #                         clause it stays outside the `not` (it is there whether or not the clause holds)
+    order: object = None    # an order said after it, `ordered(x, T, direction)` (spec_lf_ordered, b275): placed
+    #                         beside the clause's atom, in the scope of an every box its determiner makes
 
 
 @dataclass
@@ -186,14 +188,14 @@ def _go(items, build, chosen, neg_at, i):
     if a.deps:
         return _go([(d, False) for d in a.deps] + [(replace(a, deps=[]), main)] + rest, build, chosen, neg_at, i)
     refs, conds = _go(rest, build, chosen + [a.ref] if main else chosen, neg_at, i + 1 if main else i)
-    own = ([a.ref] if a.new else []) + a.inner
+    own, order = ([a.ref] if a.new else []) + a.inner, [a.order] if a.order is not None else []
     if a.quant in ("every", "only"):
-        return [], [Box(a.quant, _uniq(own), _uniq(a.restr), Box("scope", _uniq(refs), _uniq(conds)))]
+        return [], [Box(a.quant, _uniq(own), _uniq(a.restr), Box("scope", _uniq(refs), _uniq(conds + order)))]
     if a.quant == "count":
         return [], [Box("count", _uniq(own), _uniq(a.restr), Box("scope", _uniq(refs), _uniq(conds)), a.count)]
     if a.quant == "no":
         return [], [Box("not", _uniq(own + refs), _uniq(a.restr + conds))]
-    return own + refs, a.restr + conds
+    return own + refs, a.restr + conds + order
 
 
 CLOSING = ("not", "every", "only", "count", "number", "case")
