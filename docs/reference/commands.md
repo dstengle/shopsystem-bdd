@@ -205,8 +205,8 @@ $ work backlog
 
 #### `work show`
 
-Prints where an item, a request or a quote stands. With no target it prints what `work list` prints.\
-Synopsis: `work show [--json] [target]`, where the target is `b<n>`, `q<n>` or `quote-<n>`.
+Prints where an item, a request, a quote or a directive stands. With no target it prints what `work list` prints.\
+Synopsis: `work show [--json] [target]`, where the target is `b<n>`, `q<n>`, `quote-<n>` or `directive-<n>`.
 
 ```console
 $ work show b250
@@ -579,6 +579,43 @@ quote-20 "Once 4.0 is done, take a new backlog item to make some nice …"
   date: 2026-11-10
 ...
 ```
+
+#### `work directive`
+
+Keeps a short-term direction of the person in the repository, never in a session's memory: their words as a quote
+(found as `work quote` finds them) and a `live` directive citing it, `.shop/directives/<n>.md`, in one commit. With
+`--quote`, a directive of a quote already kept.\
+Synopsis: `work directive [--session SESSION] [--transcript TRANSCRIPT] [--quote QUOTE] [words]`
+
+```console
+$ work directive --quote quote-42
+directive-1 "Merge and release while I am away." citing quote-42
+```
+
+#### `work directives`
+
+Prints the live directives, each with its id, date, age and words. Writes nothing.\
+Synopsis: `work directives [--all] [--hook]`
+
+- `--all`: every directive, with its status.
+- `--hook`: the SessionStart hook's form: the live directives' words under one line telling the session to follow
+  them and pass them on in every brief, nothing when none is live. See [Hooks](#hooks).
+
+#### `work promote`
+
+Promotes a live directive to what it became, once the session has written it: an item, a design-decision or a
+line of `CLAUDE.md`. A directive that is not live, or a target that does not exist, is refused, naming it.\
+Synopsis: `work promote --to TO name`
+
+```console
+$ work promote directive-1 --to b20
+directive-1 "Merge and release while I am away." promoted to b20
+```
+
+#### `work drop`
+
+Drops a live directive, with the reason. A directive that is not live is refused, naming it.\
+Synopsis: `work drop --why WHY name`
 
 #### `work decision`
 
@@ -1055,13 +1092,14 @@ Synopsis: `migrate run --context CONTEXT`, the context written `<owner>/<product
 
 ## Hooks
 
-The plugin installs four hooks (`hooks/hooks.json`). Each runs at a fixed moment, prints little or nothing, and never
+The plugin installs five hooks (`hooks/hooks.json`). Each runs at a fixed moment, prints little or nothing, and never
 fails a session: any error exits 0 silently.
 
 | when | hook | what it does |
 |---|---|---|
 | a session starts | `migrate status --hook` | says when the repository's plugin version is behind and `migrate upgrade` is pending; nothing when it is current |
 | a session starts | `conversation_hook names` | prints the `work names --hook` table, so the session names items as `b3 "Fix the parser"`, never by id alone |
+| a session starts | `conversation_hook directives` | prints the live directives' words (`work directives --hook`), to be followed and passed on in every brief; nothing with none |
 | a session starts | `request_hook watch` | prints each request waiting on the other side, and the line to start `work watch --forward` with the Monitor tool; nothing with none |
 | you send a prompt | `conversation_hook quote` | keeps the session and its transcript in the git dir for `work quote`; prints nothing, commits nothing |
 

@@ -130,9 +130,10 @@ def test_the_names_hook_never_fails(backlog_repo, case):
 def test_the_hook_is_wired():
     hooks = json.loads((T.Path(__file__).resolve().parents[2] / "hooks/hooks.json").read_text())["hooks"]
     commands = [h["command"] for group in hooks["SessionStart"] for h in group["hooks"]]
-    assert len(commands) == 3       # the third, the requests' `request_hook watch` (b79, r54-r56)
+    assert len(commands) == 4       # the requests' `request_hook watch` (b79, r54-r56), the directives' (b20)
     assert commands[0].endswith('migrate" status --hook') and commands[1].endswith('conversation_hook" names'), commands
-    assert commands[2].endswith('request_hook" watch'), commands
+    assert commands[2].endswith('conversation_hook" directives'), commands
+    assert commands[3].endswith('request_hook" watch'), commands
 
 
 @pytest.mark.timing

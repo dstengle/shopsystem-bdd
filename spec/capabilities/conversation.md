@@ -6,7 +6,6 @@ group: service
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: [g2, r2, g3, r3, g4, r4]
-unbuilt: [r16, r10, r11, r14, r12, r13, r15]
 ---
 
 # Conversation
@@ -96,5 +95,15 @@ of every item and batch a session names (design goal 10).
 - `work names` prints one table of every item and then every batch, each with its name beside its id, a batch named
   by the labels of its items; the SessionStart hook runs `scripts/conversation_hook names`, the same as `work names --hook`, which prints the table under one line
   telling the session to name things by their names, prints nothing when there is nothing to name, and never fails.
+- A directive is the file `.shop/directives/<n>.md`, named `directive-<n>`: its frontmatter holds its status, its
+  date, the quote it cites and, once promoted, `promoted_to` (`b<n>`, a design-decision's id or `CLAUDE.md`); its body
+  the person's words and, once dropped, the reason under `## Why dropped`. `work directive "<words>"` writes the
+  quote as `work quote` does and the directive in one commit; `work directive --quote quote-<n>` one of a kept quote.
+- `work directives` prints the live directives with id, date, age and words (`--all` every one); the SessionStart hook
+  runs `scripts/conversation_hook directives`, the same as `work directives --hook`, which prints each live
+  directive's quote and words under one line telling the session to follow them and pass them on in every brief,
+  prints nothing with none, and never fails. A live directive is shown until it is reviewed; none expires.
+- `work promote directive-<n> --to <target>` is refused when the directive is not live or the target does not exist;
+  `work drop directive-<n> --why "<reason>"` when it is not live.
 - `scripts/conversation_hook` imports only the standard library and the conversation's modules, so the hooks run under
   any `python3`, and exits 0 whatever goes wrong.

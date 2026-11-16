@@ -36,7 +36,7 @@ def cmd_show(args):
         return request_view.listing(args.root, args.json)
     if backlog_items.is_item(args.target):
         return backlog_cli.show(args)
-    if conversation_cli.is_quote(args.target):
+    if conversation_cli.is_quote(args.target) or conversation_cli.is_directive(args.target):
         return conversation_cli.show(args)
     return request_view.show(args.root, args.target, args.json)
 
@@ -86,8 +86,8 @@ def main(argv=None):
     sub = ap.add_subparsers(dest="cmd", required=True)
     li = sub.add_parser("list", help="each request with its status, and each observation no source cites")
     li.add_argument("--json", action="store_true", help="print one JSON object instead of lines")
-    s = sub.add_parser("show", help="where an item, a request or a quote stands (default: as `work list`)")
-    s.add_argument("target", nargs="?", help="an item b<n>, a request q<n> or a quote quote-<n>")
+    s = sub.add_parser("show", help="where an item, a request, a quote or a directive stands (default: as `work list`)")
+    s.add_argument("target", nargs="?", help="an item b<n>, a request q<n>, a quote quote-<n> or a directive directive-<n>")
     s.add_argument("--json", action="store_true", help="print one JSON object instead of lines")
     w = sub.add_parser("withdraw", help="move an item b<n> to withdrawn")
     w.add_argument("name")
