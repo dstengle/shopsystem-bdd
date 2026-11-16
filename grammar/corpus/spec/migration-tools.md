@@ -560,3 +560,21 @@ shall [x1: repository "the repository the command runs in" (indexical), x2: tool
     not [x7: initiative]
       print(e4, subject: x2, object: x7)
 ```
+
+## r84
+From: b303 r84. Audit: fine; the releases named, as r80 does, since "no upgrade step whose release is after the release of this repository" does not read yet (b303's notes); r81 kept, its precondition (the same release) disjoint from this one's.
+
+```reading
+While the release of this repository is `0.34.0` and the release of `migrate` is `0.34.1`, when the person runs `migrate upgrade`, `migrate` shall print `no upgrade step is pending`, rewrite the plugin version file of this repository and commit the plugin version file.
+shall [x1: repository "the repository the command runs in" (indexical), x2: tool `migrate` (constant), x3: agent the person (constant), x4: command `migrate upgrade` (parameter), x5: text `no upgrade step is pending` (constant)]
+  while
+    release(x1) = `0.34.0`
+    release(x2) = `0.34.1`
+  when
+    run(e1, subject: x3, object: x4)
+  response [x6: plugin version file]
+    print(e2, subject: x2, object: x5)
+    of(x6, x1)
+    rewrite(e3, subject: x2, object: x6)
+    commit(e4, subject: x2, object: x6)
+```

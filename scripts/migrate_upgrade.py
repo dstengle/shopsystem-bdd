@@ -157,7 +157,7 @@ def upgrade(root):
               file=sys.stderr)
         return 1
     steps = pending(root)
-    if not steps:
+    if not steps and number(repository_version(root)) >= number(plugin_version()):
         print("no upgrade step is pending")
         return 0
     if not identity(root):
@@ -183,8 +183,8 @@ def upgrade(root):
             notes = [note for note in notes if not migrate_upgrade_simplified.superseded(note)]
         (root / VERSION_FILE).write_text(plugin_version() + "\n")
         git(root, "add", "-f", "--", VERSION_FILE)
-        message = "migrate upgrade: %s to %s\n\n%s" % (
-            before, plugin_version(), "\n".join(["upgrade step " + step_line(s) for s in steps] + notes))
+        message = ("migrate upgrade: %s to %s\n\n%s" % (
+            before, plugin_version(), "\n".join(["upgrade step " + step_line(s) for s in steps] + notes))).rstrip()
         # on stdin: the notes of a large spec are over Linux's 128 KB limit for one argument
         subprocess.run(["git", "commit", "-q", "-F", "-"], cwd=root, input=message, capture_output=True, text=True,
                        check=True)
@@ -195,6 +195,9 @@ def upgrade(root):
               % (getattr(error, "stderr", None) or error), file=sys.stderr)
         return 1
     shop_files.pushed(root)   # U4: after the try, so a push git refuses keeps the upgrade's commit
+    if not steps:  # r84: behind the plugin with no step between, only the version recorded
+        print("no upgrade step is pending")
+        return 0
     print("upgraded to %s: %s" % (plugin_version(), ", ".join(s[1] for s in steps)))
     for note in notes:
         print(note)
