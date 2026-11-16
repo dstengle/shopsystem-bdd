@@ -2,7 +2,9 @@
 `spec/decisions/<nnnn>-<slug>.md`, the next number after the highest there, the decisions index rewritten as
 `model decisions` writes it, and the two committed together; its verification routes (`--verified-by`, r10) and the
 ids it rests on (`--rests-on`, a universal condition among them) written beside `enforced_by`. A decision missing --summary, --decision or --tier is
-refused before anything is written, every one absent named in one error (r20, r24, r25)."""
+refused before anything is written, every one absent named in one error (r20, r24, r25). A decision that supersedes
+another (`--supersedes`, r31, r32) names it under `supersedes:`, and the one superseded, accepted until then, is set
+`superseded` in the same commit; one that is not accepted, or an id that names no decision, refused, naming it."""
 import datetime
 import re
 import sys
@@ -28,6 +30,7 @@ The file written:
   enforced_by: [<--enforced-by>, ...]      (when given)
   verified_by: [<--verified-by>, ...]      (when given)
   rests_on: [<--rests-on>, ...]            (when given)
+  supersedes: [<--supersedes>, ...]        (when given)
   source: [<--source>, ...]                (when given)
   by: "<--by>"                             (when given)
   ---
@@ -42,7 +45,9 @@ The file written:
 the tests that enforce it (--enforced-by <path>.py::<test>), a requirement decision the requirements
 (--enforced-by <capability>#r<n>), a judgement decision none (design-decision/decision-tiers). A decision that
 routes a universal condition rests on it (--rests-on universal-condition/u<n>) and names how it is verified
-(--verified-by scenario, check, judgement or monitor). With any of --summary,
+(--verified-by scenario, check, judgement or monitor). A decision that replaces one in force names it
+(--supersedes <id>, its id, its path or its number): that decision's status is set to superseded and committed with
+the new one; one whose status is not accepted, or an id that names no decision, is refused and nothing is written. With any of --summary,
 --decision and --tier missing the command is refused, naming each one missing, and writes nothing. It prints the path
 written."""
 
@@ -63,6 +68,9 @@ def add_parser(sub):
                    help="how what it decides is verified: scenario, check, judgement or monitor; repeatable")
     p.add_argument("--rests-on", dest="rests_on", action="append", default=[],
                    help="an id the decision rests on, such as the universal condition it routes; repeatable")
+    p.add_argument("--supersedes", action="append", default=[],
+                   help="an accepted design-decision this one replaces (its id, path or number), set superseded; "
+                        "repeatable")
     p.add_argument("--source", action="append", default=[], help="an id the decision rests on; repeatable")
     p.add_argument("--by", help="who decided, and when")
     p.add_argument("--slug", help="the file's and id's name after its number (default: from the title)")
@@ -100,11 +108,39 @@ def next_number(root):
     return max(found, default=0) + 1
 
 
+def superseded(root, refs):
+    """[(path, id)] of each decision `--supersedes` names, by its id, its path or its number; an id that names none,
+    or a decision whose status is not accepted, refused naming it."""
+    found = []
+    for ref in refs:
+        hits = []
+        for path in decision_files(root):
+            data, _ = shop_files.frontmatter(shop_files.read(path, root))
+            rel = path.relative_to(root).as_posix()
+            if ref in (data.get("id"), rel, path.name, path.stem) or path.name.startswith(ref + "-"):
+                hits.append((path, rel, data))
+        if len(hits) != 1:
+            raise shop_files.Refused("--supersedes %s names %s design-decision" % (ref, "no" if not hits else "more than one"))
+        path, rel, data = hits[0]
+        if data.get("status") != "accepted":
+            raise shop_files.Refused("%s (%s) is %s, not accepted: only a design-decision in force is superseded"
+                                     % (rel, data.get("id"), data.get("status") or "of no status"))
+        found.append((path, data.get("id")))
+    return found
+
+
+def marked(text):
+    """A decision's text with the status in its frontmatter `superseded`, nothing else of it changed."""
+    head, rest = text[4:].split("\n---\n", 1)
+    head = re.sub(r"^status: .*$", "status: superseded", head, count=1, flags=re.MULTILINE)
+    return "---\n%s\n---\n%s" % (head, rest)
+
+
 def render(number, title, ident, args, sections, date):
     head = ["id: %s" % ident, "summary: %s" % quoted(args.summary, "summary"), "date: %s" % date,
             "status: accepted", "tier: %s" % args.tier]
     for key, values in (("enforced_by", args.enforced_by), ("verified_by", args.verified_by),
-                        ("rests_on", args.rests_on), ("source", args.source)):
+                        ("rests_on", args.rests_on), ("supersedes", args.superseding), ("source", args.source)):
         if values:
             head.append("%s: [%s]" % (key, ", ".join(values)))
     if args.by:
@@ -133,6 +169,8 @@ def write(args):
         data, _ = shop_files.frontmatter(shop_files.read(path, root))
         if data.get("id") == ident or path.name.split("-", 1)[-1] == slug + ".md":
             raise shop_files.Refused("%s already has the id %s: give another --slug" % (path.relative_to(root), ident))
+    olds = superseded(root, getattr(args, "supersedes", None) or [])
+    args.superseding = [old for _, old in olds]
     sections = [("Context", text_of(args.context, root, "--context")),
                 ("Decision", text_of(args.decision, root, "--decision")),
                 ("Alternatives", text_of(args.alternatives, root, "--alternatives"))]
@@ -148,8 +186,11 @@ def write(args):
     def put():
         (root / rel).parent.mkdir(parents=True, exist_ok=True)
         (root / rel).write_text(text, encoding="utf-8")
+        for path, _ in olds:
+            path.write_text(marked(path.read_text(encoding="utf-8")), encoding="utf-8")
         (root / index).write_text(render_decisions(root), encoding="utf-8")
-    shop_files.committed(root, [rel, index], "work decision: %04d. %s" % (number, title), put)
+    paths = [rel, index] + [path.relative_to(root).as_posix() for path, _ in olds]
+    shop_files.committed(root, paths, "work decision: %04d. %s" % (number, title), put)
     return rel
 
 

@@ -659,3 +659,19 @@ Feature: Feature file tools
     Then `features` writes the scenario s1
     And the requirement group r2 has the scenario s1
     And the scenario s1 satisfies the precondition p1
+
+  @g130 @r130
+  Scenario: `features generate` writes the scenario of `order-by-every` on the object of a verb whose frames name its kind
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And the requirement r1 uses `order-by-every`
+    And no frame takes `thing`
+    And a verb v1
+    And the requirement r1 uses the verb v1
+    When the person runs `features generate` on the capability c1
+    Then `features` writes the scenario s1
+    And the requirement group r2 has the scenario s1
+    And the scenario s1 has the order counter-example o1

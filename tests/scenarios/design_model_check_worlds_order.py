@@ -3,7 +3,7 @@ one thing's value compared with another's (`value-compare`, `value-same`), of an
 (refused, naming it), under a line that forbids what it obliges (an L1) and beside one whose comparison of the same
 two values contradicts it (none); an order on a collection (`order-by`) and on a printed every (`order-by-every`), of
 an attribute with no value order (refused, naming it), printed by `model parse --form`, and two in opposite directions
-on one trigger (an L1); an order in a precondition, in a trigger and in a forbidden act (b285, refused, naming it).
+on one trigger (an L1), and on every K that a verb whose one frame names K takes (b300); an order in a precondition, in a trigger and in a forbidden act (b285, refused, naming it).
 Each world is codified2_world's, its r1 (r2) the lines here."""
 import importlib.util
 import sys
@@ -41,6 +41,9 @@ UNPRINTED = "When a session writes a file, `work` shall not print the file."
 HELD = ("When the person runs `work start`, `work` shall print a worktree that holds a file, ordered by version, in "
         "descending order.")
 EVERY = "When the person runs `work start`, `work` shall print every file, ordered by version, in ascending order."
+# b300: an order on every K that a verb whose one frame names K (give: agent gives file to agent) takes
+GIVEN = ("When the person runs `work start`, `work` shall give every file, ordered by version, in ascending order to "
+         "the person.")
 DESCENDING = "When the person runs `work start`, `work` shall print every file, ordered by version, in descending order."
 PRECONDITION = ("While a session has a worktree that holds a file, ordered by version, in descending order, when the "
                 "person runs `work start`, `work` shall print the worktree.")
@@ -93,6 +96,7 @@ ROWS = [
     (("requirement use order", "order on term", "term has no value order"), line(OUTCOMES), {"t1": "outcome"}),
     (("capability holds order", "order contradict order"), line(EVERY, DESCENDING), {}),
     (("requirement use `order-by`",), line(HELD), {}),
+    (("requirement use `order-by-every`", "no frame take `thing`", "requirement use verb"), line(GIVEN), {}),
     (("requirement use `order-by-every`",), line(EVERY), {}),
     (("requirement use order",), line(EVERY), {"o1": "ordered(x4, version, ascending)"}),
 ]

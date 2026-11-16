@@ -202,3 +202,38 @@ shall [x1: agent the person (constant), x2: command `work decision` (parameter),
     refuse(e2, subject: x4, object: x2)
     name(e3, subject: x4, object: x3)
 ```
+
+## r31
+From: b179 r31.
+
+```reading
+While the status of a design-decision is `accepted`, when the person runs `work decision` with the `--supersedes` option set to the design-decision, `work` shall set the status of the design-decision to `superseded`, commit the design-decision and write a design-decision that supersedes the design-decision.
+shall [x2: agent the person (constant), x3: command `work decision` (parameter), x4: option `--supersedes` (parameter), x5: tool `work` (constant)]
+  while [x1: design-decision]
+    status(x1) = `accepted`
+  when
+    argument(x4, x1)
+    run(e1, subject: x2, object: x3, with: x4)
+  response [x6: design-decision]
+    initiates(e2, subject: x5, status(x1) = `superseded`)
+    commit(e3, subject: x5, object: x1)
+    supersede(subject: x6, object: x1)
+    write(e4, subject: x5, object: x6)
+```
+
+## r32
+From: b179 r32.
+
+```reading
+While the status of a design-decision is not `accepted`, if the person runs `work decision` with the `--supersedes` option set to the design-decision, then `work` shall refuse the command and name the design-decision.
+shall [x2: agent the person (constant), x3: command `work decision` (parameter), x4: option `--supersedes` (parameter), x5: tool `work` (constant)]
+  while [x1: design-decision]
+    not
+      status(x1) = `accepted`
+  if
+    argument(x4, x1)
+    run(e1, subject: x2, object: x3, with: x4)
+  response
+    refuse(e2, subject: x5, object: x3)
+    name(e3, subject: x5, object: x1)
+```

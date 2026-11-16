@@ -97,10 +97,11 @@ def _scenarios(copy, blocks):
 
 def well_formed(root, item, others=()):
     """(reasons, warnings) of the item's requirement lines, checked on a copy of `spec/` with them laid in (D6, D7, D9),
-    over the lines of `others` (a batch's items picked before it, plan 4 D7). An item with no line is not passing."""
+    over the lines of `others` (a batch's items picked before it, plan 4 D7). An item with no line is not passing,
+    unless it retires a requirement (b271)."""
     blocks = backlog_lines.read(item, rel_of(item.name))
     mine = set(backlog_lines.ids(blocks))
-    if not mine:
+    if not mine and not any(b.retired for b in blocks):
         return ["it has no requirement line: give it one with `work line`"], []
     copy = Path(tempfile.mkdtemp(prefix="readiness-"))
     try:

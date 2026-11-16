@@ -1290,3 +1290,13 @@ Feature: Design model check
     And the precondition p1 uses `not-condition`
     When the person runs `model logic` on the capability c1
     Then `model` translates the requirement r1
+
+  @g317 @r317
+  Scenario: `model parse` reads an order on every K that a verb whose frames name its kind takes
+    Given a requirement r1
+    And the requirement r1 uses `order-by-every`
+    And no frame takes `thing`
+    And a verb v1
+    And the requirement r1 uses the verb v1
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully

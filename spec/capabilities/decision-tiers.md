@@ -72,6 +72,12 @@ to its tier, and keeps a superseded decision marked so.
 ### [g30] `model check` refuses a route outside the four
 - [r30] While the kind of a route of a design-decision is not `scenario`, `check`, `judgement` or `monitor`, if the person runs `model check`, then `model` shall exit with an error naming the design-decision.
 
+### [g31] `work decision --supersedes` marks the decision it replaces superseded
+- [r31] While the status of a design-decision is `accepted`, when the person runs `work decision` with the `--supersedes` option set to the design-decision, `work` shall set the status of the design-decision to `superseded`, commit the design-decision and write a design-decision that supersedes the design-decision.
+
+### [g32] `work decision --supersedes` refuses a decision not in force
+- [r32] While the status of a design-decision is not `accepted`, if the person runs `work decision` with the `--supersedes` option set to the design-decision, then `work` shall refuse the command and name the design-decision.
+
 ## Implementation, may change
 
 - `w_untiered` is a warning; a decision gives its tier as `tier:` in its frontmatter.

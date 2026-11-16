@@ -49,6 +49,7 @@ the item is settled. `work ready` checks the bar and asks nobody.
 | requirement id | of | requirement | one |
 | universal condition id | of | universal condition | one |
 | translation | of | universal condition | one |
+| requirement id | in | item |  |
 
 ## Behaviour
 
@@ -124,6 +125,12 @@ the item is settled. `work ready` checks the bar and asks nobody.
 ### [g46] `work ready` refuses an item a universal condition of which has no translation when `spec/universal.md` does not exist
 - [r46] While `universal` does not exist and an item is `shaped` and a universal condition in the item has no translation, if the person runs `work ready` on the item, then `work` shall refuse the command and name the universal condition.
 
+### [g47] `work line --retires --no-line` retires a requirement in an item with no line replacing it
+- [r47] When the person runs `work line` with the `--no-line` option and the `--retires` option set to a requirement id on an item, `work` shall write the requirement id in the item, not write a requirement in the item and commit the item.
+
+### [g48] `work line --retires --no-line` refuses a requirement id that no requirement has
+- [r48] If the person runs `work line` with the `--no-line` option and the `--retires` option set to a requirement id that no requirement has, then `work` shall refuse the command and name the requirement id.
+
 ## Implementation, may change
 - An item's requirement lines stay on the item until its batch merges: in the item file's `## Requirements`, one
   `### <capability>` block for each codified capability they go into, term bullets first, then `#### [g<n>]` groups of
@@ -132,7 +139,8 @@ the item is settled. `work ready` checks the bar and asks nobody.
 - The bar is checked on a copy of `spec/` under the temporary directory with the item's lines laid in, removed
   afterwards; `spec/` is never written. `model logic` refuses an L0, and an L1 naming one of the item's lines; an L1
   elsewhere in `spec/` is not the item's, and an L3 naming the item's line is printed as a warning and does not refuse.
-- An item with no requirement line is not passing: the reason says to give it one with `work line`.
+- An item with no requirement line is not passing, unless it retires a requirement (`work line --no-line --retires`):
+  the reason says to give it one with `work line`.
 - `work ready` names every reason at once, one a line after `work ready: <item> is not passing:`: the request lines
   not settled first, then the lines that do not parse, the logic findings and the groups with no scenario. An item that
   is not `shaped` is refused first, naming its status, with no check run.

@@ -67,7 +67,7 @@ def fields(step, name):
 @handler("GivenK_A", "design-decision")
 def given_decision_is(step):
     """A value among the tiers is the decision's tier (it is accepted); any other is its status. "is not v" leaves the
-    decision as it is unless it is v (its status `accepted`, no tier); "has no tier" takes its tier away."""
+    decision as it is unless it is v (its status then `accepted`, or `proposed` in place of `accepted`; no tier); "has no tier" takes its tier away."""
     name = bare(step.names[0])
     path = step.repo / "spec" / "decisions" / ("%s.md" % name)
     if not path.is_file():
@@ -79,7 +79,7 @@ def given_decision_is(step):
     key = "tier" if value in TIERS else "status"
     if " is not " in step.text:
         if fields(step, name).get(key) == value:
-            field(step, name, key, "accepted" if key == "status" else None)
+            field(step, name, key, ("proposed" if value == "accepted" else "accepted") if key == "status" else None)
     else:
         field(step, name, key, value)
 
@@ -139,11 +139,16 @@ ARGUMENTS = (("--summary", "One sentence."), ("--decision", "So it is."), ("--ti
 @handler("WhenRuns", "`work decision`")
 def work_decision(step):
     """`work decision` in the repository, committed first, with a title, a summary, the decision's text and the tier
-    `judgement`, but each option the step runs it without; with `--verified-by`, the route `check`."""
+    `judgement`, but each option the step runs it without; with `--verified-by`, the route `check`; with `--supersedes`
+    set to a design-decision, that decision's id."""
     H.base(step.repo, step.context)
     step.context["head"] = W.init(step.repo)
     gone = {bare(o) for o in getattr(step, "without", None) or ()}
     given = [word for option, value in ARGUMENTS if option not in gone for word in (option, value)]
-    if "--verified-by" in {bare(o) for o, _ in getattr(step, "options", None) or ()}:
+    options = {bare(o): v for o, v in getattr(step, "options", None) or ()}
+    if "--verified-by" in options:
         given += ["--verified-by", "check"]
+    if "--supersedes" in options:
+        step.context["superseding"] = old = options["--supersedes"].split()[-1]
+        given += ["--supersedes", "design-decision/%s/%s" % (PATH, old)]
     step.context["result"] = step.run("work", "decision", "Decided once", *given)

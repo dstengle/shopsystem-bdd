@@ -57,6 +57,8 @@ def add_parsers(sub):
     p.add_argument("--retires", metavar="CAP#rN", help="the live requirement `<capability>#r<n>` the line replaces: "
                    "its id goes under the block's retired:, the line into that capability; with --universal, the "
                    "live universal condition `universal#U<n>` it replaces")
+    p.add_argument("--no-line", action="store_true", help="with --retires: the live requirement retired with no line "
+                   "replacing it, its id under the block's retired: and no line written")
     p.add_argument("--reword", metavar="CAP#rN", help="the item's own line `<capability>#r<n>` the requirement line "
                    "takes the place of, keeping its id and group")
     p.add_argument("--remove", metavar="CAP#rN", help="the item's own line `<capability>#r<n>` taken out of it, its "
@@ -136,10 +138,24 @@ def _changed(args):
     return 0
 
 
+def _unreplaced(args):
+    """`work line --no-line --retires <cap>#r<n>` (b271): the live requirement retired with no line replacing it."""
+    import backlog_lines
+    others = [k for k in PIECES + ("reword", "remove", "group", "in_group") if getattr(args, k) is not None]
+    if args.retires is None or others:
+        raise backlog_items.Refused("work line: --no-line takes --retires <capability>#r<n> (and --into), with no "
+                                    "requirement line or other piece")
+    item = backlog_lines.retire(args.root, args.name, args.retires, None, args.into)[0]
+    print("%s: retires %s" % (backlog_items.label(item), args.retires))
+    return 0
+
+
 def cmd_line(args):
     """`work line`: it parses nothing; `work ready` is the check (D5). One piece a run: a line, or one flag's piece."""
     import backlog_forms
     import backlog_lines
+    if args.no_line:
+        return _unreplaced(args)
     if args.reword is not None or args.remove is not None:
         return _changed(args)
     given = [k for k in PIECES if getattr(args, k) is not None]

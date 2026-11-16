@@ -1,6 +1,6 @@
 """Orders (b275, `order-by` and `order-by-every`): ", ordered by T, in ascending order" (or "in descending order")
 after a collection that holds members by a row `K1 | in | K2`, T an attribute of K1 ("a worktree that holds a file,
-ordered by version, in descending order": spec_rgl_np's `r<n>_in_By_<T>`), or after a printed "every K", T an
+ordered by version, in descending order": spec_rgl_np's `r<n>_in_By_<T>`), or after "every K" of any act (b300), T an
 attribute of K ("every file, ordered by version, in ascending order": `<T>_<K>_Every`). One translation in each place
 a line is read:
 
@@ -137,14 +137,14 @@ def swap(tree, old, new):
 
 
 def said(r, event, x, arg):
-    """The Then of `event` (its object x) said of the order's noun phrase: `arg` a `k_thing_Arg` tree, or a function
-    of a slot's kind giving the order's argument in that slot. The collection is found in the Then by the slot its
-    frame takes, x's kind or a kind above it (b298: "return a worktree", whose frame names no `thing`)."""
+    """The Then of `event` (its object x) said of the order's noun phrase: `arg` a function of a slot's kind giving
+    the order's argument in that slot. The collection is found in the Then by the slot its frame takes, x's kind or a
+    kind above it (b298: "return a worktree", b300: "give every file", whose frames name no `thing`)."""
     tree = r.does(event, True)
-    for slot in r.vocab.ancestors(x.kind) if callable(arg) else ["thing"]:
+    for slot in r.vocab.ancestors(x.kind):
         old = r.arg(x, slot)
         if _holds(tree, old):
-            return swap(tree, old, arg(slot) if callable(arg) else arg)
+            return swap(tree, old, arg(slot))
     import spec_steps4_boxes  # here: the steps import this module through spec_steps4
     raise spec_steps4_boxes.TraceError("no step of an order of %s there" % x.kind)
 
@@ -174,8 +174,18 @@ def every(r, box):
         first = first or m
     event = next(i for i in boxes().subst(plain.scope.body, first) if isinstance(i, Atom) and i.pred == "event")
     K = spec_rgl.kid(x.kind)
-    arg = ("t_%s_%d_%s_Every" % (spec_rgl.slug(term), n, K), (K + "_UseN", (K + "_n",)), (FUNS[d],))
-    return out + [(None, said(r, event, first[x], arg))]
+    np0 = ("t_%s_%d_%s_Every" % (spec_rgl.slug(term), n, K), (K + "_UseN", (K + "_n",)), (FUNS[d],))
+    return out + [(None, said(r, event, first[x], _slotted(x.kind, np0)))]
+
+
+def _slotted(kind, np0):
+    """The order's argument in a slot of kind `slot`, `kind`'s own or one above it (b298, b300)."""
+    K = spec_rgl.kid(kind)
+
+    def arg(slot):
+        S = spec_rgl.kid(slot)
+        return (S + "_One", (K + ("_Simple" if slot == kind else "_Up_" + S), np0))
+    return arg
 
 
 def then(r, atom, body):
@@ -190,13 +200,8 @@ def then(r, atom, body):
         r.brought += [("SCond", r.cond(Atom("rel", ("in", y, x)))), ("SCond", spec_lf_order.value_cond(r, y, term, v))]
     event = next(i for i in body if isinstance(i, Atom) and i.pred == "event" and x in [z for _, z in i.args[3]])
     R = next(j for j, w in enumerate(r.vocab.rows, 1) if w == row)
-    K = spec_rgl.kid(x.kind)
     by = ("r%d_in_By_t_%s_%d" % (R, spec_rgl.slug(term), n), r.np0(x)[1], (FUNS[d],))
-
-    def arg(slot):      # the order's noun phrase in a slot of kind `slot`, x's own or one above it
-        S = spec_rgl.kid(slot)
-        return (S + "_One", (K + ("_Simple" if slot == x.kind else "_Up_" + S), by))
-    return [(None, said(r, event, x, arg))]
+    return [(None, said(r, event, x, _slotted(x.kind, by)))]
 
 
 def boxes():

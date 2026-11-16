@@ -24,7 +24,6 @@ of every item and batch a session names (design goal 10).
 - **transcript** (noun): the file in which Claude Code keeps the messages of a session. Kind of: file.
 
 ## Relations
-
 | from | word | to | cardinality |
 |---|---|---|---|
 | file | in | git directory | one |
