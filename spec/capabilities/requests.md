@@ -5,8 +5,8 @@ narrator: a context taking in or raising a request
 group: service
 language: codified-2
 rests_on: [design-decision/requests-written-through-work, design-decision/exits-are-successful-or-errors, design-decision/an-asker-is-told-by-its-registered-asker-id]
-retired: [r1, r3, r4, r5, r10, r11, r12, r13, r19, r20, r21, r22, r23, r42, g42, g2, r2, g6, r6, g7, r7, g8, r8, g9, r9, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18, g24, r24, g25, r25, g26, r26, g27, r27, g28, r28, g29, r29, g30, r30, g31, r31, g32, r32, g33, r33, g34, r34, g35, r35, g36, r36, g37, r37, g38, r38, g39, r39, g40, r40, g41, r41, g44, r44, g43, r43, g45, r45, g46, r46, g47, r47, g49, r49, g50, r50, g51, r51, g48, r48, g52, r52, g53, r53, g54, r54, g55, r55, g56, r56, g57, r57, g58, r58]
-unbuilt: []
+retired: [r1, r3, r4, r5, r10, r11, r12, r13, r19, r20, r21, r22, r23, r42, g42, g2, r2, g6, r6, g7, r7, g8, r8, g9, r9, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18, g24, r24, g25, r25, g26, r26, g27, r27, g28, r28, g29, r29, g30, r30, g31, r31, g32, r32, g33, r33, g34, r34, g35, r35, g36, r36, g37, r37, g38, r38, g39, r39, g40, r40, g41, r41, g44, r44, g43, r43, g45, r45, g46, r46, g47, r47, g49, r49, g50, r50, g51, r51, g48, r48, g52, r52, g53, r53, g54, r54, g55, r55, g56, r56, g57, r57, g58, r58, g77, r77]
+unbuilt: [r104, r105, r106, r107, r108, r109, r110, r111, r112, r113, r114, r115]
 ---
 
 # Requests
@@ -39,8 +39,9 @@ a request (backlog, batches).
 - **side** (attribute of entry): Values (noun): `asker`, `upstream`.
 - **status** (attribute of issue): Values (adjective): `open`, `closed`.
 
-## Relations
+- **line reason** (noun): the upstream's reason for the line outcome of a request line, under a request's `## Reasons`. Kind of: text.
 
+## Relations
 | from | word | to | cardinality |
 |---|---|---|---|
 | issue | of | request | one |
@@ -51,6 +52,12 @@ a request (backlog, batches).
 | GitHub repository | of | bounded context | one |
 | issue | in | GitHub repository | one |
 | upstream entry | in | bounded context |  |
+| line reason | of | request line | one |
+| requirement | in | comment |  |
+| term | in | comment |  |
+| given block | in | comment |  |
+| term | in | bounded context |  |
+| given block | in | capability |  |
 
 ## Behaviour
 
@@ -120,10 +127,6 @@ Restates: r12@0.29, r4@0.29, r44@0.29, r28@0.29.
 
 ### [g76] `work sync` records what the other side posted
 - [r76] While a comment on a request conforms to the comment form and the request does not hold the comment, when a session runs `work sync`, `work` shall write the comment and print every request.
-
-### [g77] `work sync` acts on no comment that does not conform to the comment form
-Restates: r58@0.29.
-- [r77] While a comment on a request does not conform to the comment form, when a session runs `work sync`, `work` shall print the comment and not write the comment.
 
 ### [g78] `work turn` posts the asker's turn
 Restates: r18@0.29, r7@0.29.
@@ -209,6 +212,38 @@ Restates: r30@0.29.
 
 ### [g103] `work sync` writes no entry of the asker's part that the upstream posted
 - [r103] While a comment on a request conforms to the comment form and the side of the comment is `upstream` and the comment holds an entry whose side is `asker` and the request does not hold the comment, when a session runs `work sync`, `work` shall write the comment and not write the entry.
+
+### [g104] `work show` on a request prints each line's reason
+- [r104] While a request line proposed in a request has a line reason, when the person runs `work show` on the request, `work` shall print the line reason.
+
+### [g105] `work sync` records a comment that does not conform to the comment form, and applies nothing of it
+- [r105] While a comment on a request does not conform to the comment form and the request does not hold the comment, when a session runs `work sync`, `work` shall print the comment, write the comment and keep the status of the request.
+
+### [g106] `work sync` prints a comment that does not conform to the comment form once
+- [r106] While a comment on a request does not conform to the comment form and the request holds the comment, when a session runs `work sync`, `work` shall not print the comment.
+
+### [g107] `work offer` says what it did
+- [r107] When the person runs `work offer` on a request, `work` shall print the request and the status of the request.
+
+### [g108] `work propose` says what it did
+- [r108] When the person runs `work propose` on a request, `work` shall print the request and the status of the request.
+
+### [g109] `work reply` says what it did
+- [r109] When the person runs `work reply` on a request, `work` shall print the request and the status of the request.
+
+### [g110] `work turn` says what it did
+- [r110] When the person runs `work turn` on a request, `work` shall print the request and the status of the request.
+
+### [g111] `work request` raises a request as this bounded context by default
+- [r111] When the person runs `work request` without the `--from` option, `work` shall write a request that originates from this bounded context.
+
+### [g112] `work offer` quotes a capability's requirements and the terms they mention
+- [r112] When a session runs `work offer` with the `--capability` option set to a capability on a request, `work` shall post a comment that holds every requirement of the capability.
+- [r113] While a requirement of a capability mentions a term, when a session runs `work offer` with the `--capability` option set to the capability on a request, `work` shall post a comment that holds the term.
+- [r114] While a capability holds a given block, when a session runs `work offer` with the `--capability` option set to the capability on a request, `work` shall post a comment that does not hold the given block.
+
+### [g113] `work offer` leaves out a term no requirement of the capability mentions
+- [r115] While a term is in the bounded context and a capability has no requirement that mentions the term, when a session runs `work offer` with the `--capability` option set to the capability on a request, `work` shall post a comment that does not hold the term.
 
 ## Implementation, may change
 - A request between two bounded contexts, each in its own git repository, is one conversation on one GitHub issue on
