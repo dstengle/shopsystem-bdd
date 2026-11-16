@@ -386,3 +386,37 @@ shall [x1: capability `universal` (constant), x5: agent the person (constant), x
     refuse(e2, subject: x7, object: x6)
     name(e3, subject: x7, object: x3)
 ```
+
+## r47
+From: b271 r42. A live requirement retired with no line replacing it: its id written in the item, no requirement written.
+
+```reading
+When the person runs `work line` with the `--no-line` option and the `--retires` option set to a requirement id on an item, `work` shall write the requirement id in the item, not write a requirement in the item and commit the item.
+shall [x1: agent the person (constant), x2: command `work line` (parameter), x3: option `--no-line` (parameter), x4: option `--retires` (parameter), x7: tool `work` (constant)]
+  when [x5: requirement id, x6: item]
+    argument(x4, x5)
+    run(e1, subject: x1, object: x2, with: x3, with: x4, on: x6)
+  response
+    in(x5, x6)
+    write(e2, subject: x7, object: x5)
+    not [x8: requirement]
+      in(x8, x6)
+      write(e3, subject: x7, object: x8)
+    commit(e4, subject: x7, object: x6)
+```
+
+## r48
+From: b271 r43. As r35, with `--no-line`: an id no requirement has is refused, named.
+
+```reading
+If the person runs `work line` with the `--no-line` option and the `--retires` option set to a requirement id that no requirement has, then `work` shall refuse the command and name the requirement id.
+shall [x1: agent the person (constant), x2: command `work line` (parameter), x3: option `--no-line` (parameter), x4: option `--retires` (parameter), x7: tool `work` (constant)]
+  if [x5: requirement id]
+    not [x6: requirement]
+      of(x5, x6)
+    argument(x4, x5)
+    run(e1, subject: x1, object: x2, with: x3, with: x4)
+  response
+    refuse(e2, subject: x7, object: x2)
+    name(e3, subject: x7, object: x5)
+```
