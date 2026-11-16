@@ -369,6 +369,15 @@ an attribute whose entry gives no value order, neither `Order:` nor `Type:`, is 
 "is the same as" takes any attribute. See
 [Writing requirements](writing-requirements.md#3-collections-counts-comparisons-and-orders).
 
+## From 0.35.0 to 0.35.1
+
+No upgrade step, and no scenario `features generate` wrote in 0.35.0 changes. Lines that 0.35.0 parsed but did not
+translate on a response's object, of `print` or any other act, are now read by `model logic` and get scenarios:
+holds-exactly with a relative clause or a negated value as its restriction, "holds nothing", "holds no K", and an
+order on the object of a verb whose frame names the collection's kind. Run `features generate` and write the
+handlers of the new scenarios. `work ready` now refuses an item a requirement of which `model logic` names
+`unread`, naming the requirement.
+
 ## Older than 0.32?
 
 `migrate upgrade` applies every pending step in order, oldest first, in one commit. `migrate status` lists them:
