@@ -135,6 +135,9 @@ the item is settled. `work ready` checks the bar and asks nobody.
 ### [g49] `work ready` refuses an item a requirement group of which shares its condition and trigger with another group (`v15n`)
 - [r49] While an item is `shaped` and a requirement group in the item violates `v15n`, if the person runs `work ready` on the item, then `work` shall refuse the command and name the requirement group and `v15n`.
 
+### [g50] `work ready` names every requirement of an item that has no parse and every one that has no translation in one run
+- [r50] While an item is `shaped` and a requirement in the item has no parse and a different requirement in the item has no translation, if the person runs `work ready` on the item, then `work` shall refuse the command and name every requirement in the item that has no parse and every requirement in the item that has no translation.
+
 ## Implementation, may change
 - An item's requirement lines stay on the item until its batch merges: in the item file's `## Requirements`, one
   `### <capability>` block for each codified capability they go into, term bullets first, then `#### [g<n>]` groups of

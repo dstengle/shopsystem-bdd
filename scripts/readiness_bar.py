@@ -3,7 +3,8 @@ request line of the item is settled and its requirement lines are well-formed: t
 (spec_language), they bring no problem of the lexicon (v_t4 to v_t13) that the lexicon without them does
 not have (readiness r15), no group of theirs shares its condition and trigger with another group of
 its capability (`model.lp`'s v15n, b77), `model logic` finds no L0 and no L1 naming them and reads each of them (r41), and
-`features generate` writes a scenario for each of their groups that has a step. The lines are checked on a copy of `spec/` under the temporary directory
+`features generate` writes a scenario for each of their groups that has a step; every stage after the lexicon's runs
+whatever the stages before it found, so one run names every failing line (b305). The lines are checked on a copy of `spec/` under the temporary directory
 with the item's lines laid in, removed afterwards whatever happens; `spec/` itself is never written. The `check` design-decisions that a
 capability of the item's lines rests on run their tests on the root checkout, each once a process (plan 6, D13)."""
 import contextlib
@@ -44,17 +45,17 @@ def unsettled(root, item):
 
 
 def _parses(copy, blocks):
-    """A reason for each of the item's requirements, and universal conditions (b43), that does not parse in grammar
-    4 (spec_language)."""
-    reasons = []
+    """The id of each of the item's requirements, and universal conditions (b43), that does not parse in grammar 4
+    (spec_language), with its reason."""
+    reasons = {}
     statements = [("%s#%s" % (b.capability, rid), text) for b in blocks for g in b.groups
                   for rid, text in g.requirements] + [("universal#%s" % uid, text) for uid, text in blocks.universal]
     for ident, text in statements:
         parsed = spec_language.parse(copy, text)
         if parsed.tree is None:
             hint = spec_language.hint(copy, text)
-            reasons.append("%s: %s; parsed up to: %s; nearest words: %s" % (
-                ident, parsed.refusal, hint["prefix"] or "nothing", ", ".join(hint["near"]) or "none"))
+            reasons[ident] = "%s: %s; parsed up to: %s; nearest words: %s" % (
+                ident, parsed.refusal, hint["prefix"] or "nothing", ", ".join(hint["near"]) or "none")
     return reasons
 
 
@@ -80,10 +81,11 @@ def _v15n(copy, blocks, before):
     return reasons
 
 
-def _logic(copy, mine, conditions=()):
+def _logic(copy, mine, conditions=(), unparsed=()):
     """(reasons, warnings) of `model logic` on the copy: an L0, and an L1 naming one of `mine`, refuse (D6), and so
     does each of `mine` and of the item's universal conditions `conditions` (`U<n>`) that it reads no translation of
-    (`spec_solve.unread`, r41), an unread requirement elsewhere not; an L3 naming one of them is a warning."""
+    (`spec_solve.unread`, r41), an unread requirement elsewhere not, nor one named in `unparsed` already (b305); an L3
+    naming one of them is a warning."""
     reasons, warnings = [], []
     for f in spec_solve.run(copy):
         said = "%s %s" % (f.code, f.text)
@@ -92,17 +94,21 @@ def _logic(copy, mine, conditions=()):
         elif f.code == "L3" and set(f.ids) & mine:
             warnings.append(said)
     named = {**{i: i for i in mine}, **{u: "universal#%s" % u for u in conditions}}
-    reasons += ["%s: no translation: %s" % (named[i], why) for i, why in spec_solve.unread(copy) if i in named]
+    reasons += ["%s: no translation: %s" % (named[i], why) for i, why in spec_solve.unread(copy)
+                if i in named and named[i] not in unparsed]
     return list(dict.fromkeys(reasons)), list(dict.fromkeys(warnings))
 
 
-def _scenarios(copy, blocks):
+def _scenarios(copy, blocks, unparsed=()):
     """A reason for each group of a service capability that `features generate` writes no scenario for, unless it is
-    logic-only (D9); a guarantees capability has no scenarios."""
+    logic-only (D9); a guarantees capability has no scenarios, and a capability a line of which is in `unparsed`
+    (`<capability>#r<n>`) none checked, its parse named already (b305)."""
     reasons = []
+    broken = {ident.split("#", 1)[0] for ident in unparsed}
     for block in blocks:
         path = backlog_lines.capability_file(copy, block.capability)
-        if spec_read.capability(path).frontmatter.get("group") == "guarantees" or not block.groups:
+        if (spec_read.capability(path).frontmatter.get("group") == "guarantees" or not block.groups
+                or block.capability in broken):
             continue
         skipped = {}
         try:
@@ -140,11 +146,12 @@ def well_formed(root, item, others=()):
         reasons += ["universal.md: %s" % p for p in spec_read.read_universal(copy).problems] if blocks.universal else []
         reasons += ["the lexicon: %s %s: %s" % found for found in spec_lexicon.problems(spec_lexicon.read(copy), outer)
                     if found not in before]                                                             # r15
-        reasons = reasons or _parses(copy, blocks)
-        if reasons:
+        if reasons:                  # a broken lexicon breaks grammar 4's compile: no stage after it runs
             return reasons, []
-        reasons, warnings = _logic(copy, mine, [uid for uid, _ in blocks.universal])
-        return _v15n(copy, blocks, shared) + reasons + _scenarios(copy, blocks), warnings
+        unparsed = _parses(copy, blocks)       # every stage after it runs whatever it finds, each line named once (b305)
+        reasons, warnings = _logic(copy, mine, [uid for uid, _ in blocks.universal], unparsed)
+        return (list(unparsed.values()) + _v15n(copy, blocks, shared) + reasons + _scenarios(copy, blocks, unparsed),
+                warnings)
     finally:
         shutil.rmtree(copy, ignore_errors=True)
 

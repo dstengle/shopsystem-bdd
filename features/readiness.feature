@@ -268,3 +268,40 @@ Feature: Readiness
     Then `work` refuses `work ready`
     And `work` names the requirement group r1
     And `work` names `v15n`
+
+  @g50 @r50
+  Scenario: `work ready` names every requirement of an item that has no parse and every one that has no translation in one run
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    And a requirement r1
+    And the item i1 holds the requirement r1
+    And the requirement r1 has no parse
+    And a requirement r2
+    And the item i1 holds the requirement r2
+    And the requirement r2 has no translation
+    And a requirement r3
+    And the item i1 holds the requirement r3
+    And the requirement r3 has no parse
+    And a requirement r4
+    And the item i1 holds the requirement r4
+    And the requirement r4 has no parse
+    And a requirement r5
+    And the requirement r5 has no parse
+    And the item i1 does not hold the requirement r5
+    And a requirement r6
+    And the item i1 holds the requirement r6
+    And the requirement r6 has no translation
+    And a requirement r7
+    And the item i1 holds the requirement r7
+    And the requirement r7 has no translation
+    And a requirement r8
+    And the requirement r8 has no translation
+    And the item i1 does not hold the requirement r8
+    When the person runs `work ready` on the item i1
+    Then `work` refuses `work ready`
+    And `work` names the requirement r3
+    And `work` names the requirement r4
+    And `work` does not name the requirement r5
+    And `work` names the requirement r6
+    And `work` names the requirement r7
+    And `work` does not name the requirement r8

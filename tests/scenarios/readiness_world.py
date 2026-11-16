@@ -22,10 +22,39 @@ SHARING = ("While an initiative is `proposed`, when the person runs `work start`
 SHARING_GROUP = "work-queue#g4"
 # A line that parses there but that `model logic` has no translation of (a count of other than an object), which
 # the bar's `features generate` does not see: a line of the guarantees capability `review`, which has no scenarios
-# (r41); the id the item's block gives it.
+# (r41).
 UNREAD = ("When the person runs `work start` on an initiative, `work` shall give a brief to at most two stages.")
 UNREAD_CAPABILITY = "review"
-UNREAD_ID = "review#r5"
+# Lines of a requirement that has no parse (in work-queue) and of one that has no translation (in review), one of each
+# for each such requirement a scenario names, in the order it names them (r41, r50); an item's ids from r5 on, and a
+# requirement no Given puts in the item an id of the world's other item `OTHER` (b305).
+NO_PARSE = [FAILING] + [FAILING.replace("frobnicate", w) for w in ("wibble", "zorble")]
+NO_TRANSLATION = [UNREAD] + [UNREAD.replace("two", w) for w in ("three", "four")]
+OTHER = "i8"
+
+
+def give_faults(step):
+    """Each item a Given put a requirement of no parse or no translation in (`owner`, `fault`) written with one line
+    for each, by capability, as `<capability>#r5` on (g4); one a Given kept out of the item in the world's other item
+    `OTHER`, as `<capability>#r8` on; what `work` names each requirement by."""
+    codify(step)
+    owner, fault = step.context.get("owner", {}), step.context.get("fault", {})
+    items = {}
+    for req, kind in fault.items():
+        if req in owner:
+            item = owner[req][1] if owner[req][0] == "item" else OTHER
+            items.setdefault(item, {}).setdefault(kind, []).append(req)
+    for item, kinds in items.items():
+        blocks, first = [], 8 if item == OTHER else 5
+        for kind, reqs in kinds.items():
+            capability, texts = (CAPABILITY, NO_PARSE) if kind == "parse" else (UNREAD_CAPABILITY, NO_TRANSLATION)
+            lines = ["- [r%d] %s" % (first + k, texts[k]) for k in range(len(reqs))]
+            blocks.append("### %s\n\n#### [g4] Lines of %s\n%s" % (capability, kind, "\n".join(lines)))
+            for k, req in enumerate(reqs):
+                step.context.setdefault("says", {})[req] = "%s#r%d" % (capability, first + k)
+        B().write_item(step, item, status="shaped", sections={"Requirements": "\n\n".join(blocks)})
+
+
 # A term bullet that brings a lexicon problem the fixture's lexicon does not have (v_t12: a condition whose gloss
 # names another kind, the brief, with "the"), and its term.
 ILL_TERM = "briefed"

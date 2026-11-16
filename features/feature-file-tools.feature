@@ -720,3 +720,19 @@ Feature: Feature file tools
     Then `features` writes the scenario s1
     And the requirement group r2 has the scenario s1
     And the scenario s1 has the order counter-example o1
+
+  @g134 @r134
+  Scenario: `features generate` writes a counter-example of a count over a relation in a response
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And the requirement r1 uses `count`
+    And the requirement r1 uses `holds-relation`
+    And an upper bound u1
+    And the requirement r1 has the upper bound u1
+    When the person runs `features generate` on the capability c1
+    Then `features` writes the scenario s1
+    And the requirement group r2 has the scenario s1
+    And the scenario s1 has the counter-example c2

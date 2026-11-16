@@ -26,6 +26,8 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
          "triggerless": ("`work` shall write a file.", None),
          "misaspected": ("When a session follows a stage, `work` shall print the stage.",
                          "the verb follow is a state, and a trigger takes an action"),
+         # a state verb after shall (b175): refused as the response's, not the trigger's
+         "unresponsive": ("When a session ends a stage, `work` shall follow the stage.", "the verb follow is a state"),
          "genitive": (("When a session ends a stage, `work` shall print the status of the stage and the worktree of "
                        "the session."), None),
          "denying": (("While a session has no worktree, when the person runs `work start`, `work` shall exit with an "

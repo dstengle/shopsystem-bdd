@@ -109,6 +109,8 @@ context: product-level artifacts are read only where the files contain them.
 - **order** (noun): "ordered by" an attribute and "in ascending order" or "in descending order" after a noun phrase, which a requirement that uses `order-by` or `order-by-every` requires of a collection or of what an agent prints, and which its logical form keeps as one atom `ordered(x, T, ascending)` or `ordered(x, T, descending)`. Kind of: thing.
 - **contradict** (verb, state): two orders of one collection, or of one printing, under one trigger and condition have opposite directions. Forms: contradicts, contradicted. Frame: order contradicts order.
 
+- **response** (noun): the part of a requirement after shall: what its agent does. Kind of: text.
+
 ## Relations
 | from | word | to | cardinality |
 |---|---|---|---|
@@ -153,6 +155,7 @@ context: product-level artifacts are read only where the files contain them.
 | order | on | term | one |
 | order | in | act |  |
 | value order | of | sense | one |
+| response | of | requirement | one |
 
 ## Behaviour
 
@@ -592,6 +595,18 @@ Restates: r37@0.29.
 
 ### [g318] `model parse` reads an order after every K in a collection one way
 - [r318] While a requirement uses `order-by-every` and `of-relation`, when the person runs `model parse` on the requirement, `model` shall exit successfully.
+
+### [g319] `model parse` refuses a state verb in a response as the response's
+- [r319] If the person runs `model parse` on a requirement whose response uses a term whose aspect is `state`, then `model` shall refuse the command, name the term and the response and not name the trigger.
+
+### [g321] `model logic` finds no clash between an object that holds nothing and a forbidden object that holds a thing
+- [r321] While a requirement uses `nothing` and `rc-subject` and the requirement obliges an act and another requirement that forbids the act uses `holds-relation`, when the person runs `model logic`, `model` shall exit successfully.
+
+### [g322] `model logic` finds no clash between an object that holds no thing of a kind and a forbidden object that holds one
+- [r322] While a requirement uses `no-noun` and `holds-relation` and the requirement obliges an act and another requirement that forbids the act uses `holds-relation`, when the person runs `model logic`, `model` shall exit successfully.
+
+### [g320] `model logic` finds the clash of two objects that hold a thing
+- [r320] While a requirement uses `holds-relation` and `rc-subject` and the requirement obliges an act and another requirement that forbids the act uses `holds-relation`, when the person runs `model logic`, `model` shall print `L1`.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a

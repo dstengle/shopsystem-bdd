@@ -213,6 +213,8 @@ TABLE = ORDER.ROWS + [
     (("term not agree subject",), requirement("disagreeing"), {}),
     (("passive form has no by-phrase",), requirement("agentless"), {"p1": "t1"}),
     (("precondition use term", "term is `action`"), line(WHILE_ACTION), {}),
+    (("requirement has response", "response use term", "term is `state`"), requirement("unresponsive"),
+     {"r2": "a response takes an action", "t2": "trigger"}),
     (("trigger use term", "term is `state`"), requirement("misaspected"), {}),
     (("precondition use term", "term is `state`"), requirement("verbal"), {}),
     (("trigger use recipient",), requirement("addressed"), {}),

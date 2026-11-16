@@ -4,7 +4,7 @@ catalogue's context (`grammar/corpus/constructs/`), one group each, and what the
 each must hold.
 
 `kind` picks the lines a scenario's Givens describe (`LINES`' key); `check` reads the feature back for its Then: a
-counter-example (r117-r119, r128), the precondition satisfied (r114, r129), the boundary of a count (r115), each instance a Given
+counter-example (r117-r119, r128, r134), the precondition satisfied (r114, r129), the boundary of a count (r115), each instance a Given
 introduces (r116; of a printed thing's holds and of an order, r131, r132) and no step that asserts an act `only` allows (r118)."""
 import re
 
@@ -31,6 +31,16 @@ LINES = {
         ("When the person runs `work status` on a worktree, `work` shall print at most three files in the worktree.",
          [r"And the worktree w1 holds the file f4\n", r"Then `work` prints at most three files in the worktree w1\n"],
          [r"a file f5", r"print the file"])],
+    "capped": [     # b296: one K2 past the bound of a count over the row of a response's object, held by no step
+        ("When the person runs `work status`, `work` shall print a worktree that holds at most three files.",
+         [r"Given a file f1\n", r"And a file f4\n",
+          r"Then `work` prints the worktree w1\n    And the worktree w1 holds at most three files\n"],
+         [r"a file f5", r"holds the file"]),
+        (("When the person runs `work status`, `work` shall print a worktree that holds fewer than three files "
+          "whose version is `2.0.0`."),
+         [r"Given a file f1\n", r"And a file f3\n", r"And the version of the file f3 is `2.0.0`\n",
+          r"And the worktree w1 holds fewer than three files whose version is `2.0.0`\n"],
+         [r"a file f4", r"holds the file"])],
     "satisfy": [
         (("While a stage has a line and every line of the stage is `accepted`, when the person runs `work status`, "
          "`work` shall print the stage."),
@@ -69,11 +79,15 @@ LINES = {
 
 def kind(w, K):
     """The lines the Givens describe: a precondition that uses every or holds a count, a requirement that uses two,
-    every or only with a restriction, or no-noun (b299), or has an upper bound, a precondition of every over a not
+    every or only with a restriction, or no-noun (b299), or has an upper bound (of a count over a row of a response's
+    object: b296), a precondition of every over a not
     (b310); None for none of these."""
     facts = {(v, K(w, a), b if str(b).startswith("`") else K(w, b)) for v, a, b, pos in w["facts"] if pos}
     if {("use", "precondition", "`every`"), ("use", "precondition", "`not-condition`")} <= facts:
         return "negated"
+    if {("use", "requirement", "`count`"), ("use", "requirement", "`holds-relation`"),
+            ("has", "requirement", "upper bound")} <= facts:     # b296
+        return "capped"
     if ("mention", "step", "instance") in facts:     # b286: a step that mentions an instance no Given introduces
         if ("use", "requirement", "`order-by`") in facts:
             return "ordered"

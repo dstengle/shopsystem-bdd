@@ -363,6 +363,9 @@ the capability `shelf` holds:
 ### [g133] `features generate` writes the scenario of `order-by-every` on every K in a collection
 - [r133] While a requirement of a requirement group of a capability uses `order-by-every` and `of-relation`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has an order counter-example.
 
+### [g134] `features generate` writes a counter-example of a count over a relation in a response
+- [r134] While a requirement of a requirement group of a capability uses `count` and `holds-relation` and the requirement has an upper bound, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has a counter-example.
+
 ## Implementation, may change
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three
   backticks. A scenario's block is its tag lines, its `Scenario:` line and everything up to the next scenario's tag
