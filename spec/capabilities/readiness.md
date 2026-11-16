@@ -179,6 +179,12 @@ the item is settled. `work ready` checks the bar and asks nobody.
   segment) runs its tests on the root checkout, as `model decisions --check` runs them, once a process: a failing one is
   the reason `design-decision <slug> (check) fails: <tests>: exit <code>` (or `names no test`), after the well-formed
   reasons. A decision no capability of the item rests on is not run (decision-tiers; plan 6, D13).
+- A chore is kept in the item file's `## Chore` section: `Files:` with a `- <path>` bullet for each file or
+  directory its work changes, then the line ``Check: `<command>` ``. `work chore` refuses a `--file` under `spec/`,
+  `features/` or `.shop/` (requirement lines own the first two, `work` the third), or outside the repository, naming
+  it; run again on an item that holds a chore, it replaces the chore (b316).
+- An item that holds a chore and requirement lines too, written into its file by hand, is not passing: the reason is
+  `it holds a chore and requirement lines, which exclude each other: take one of them out` (b316).
 
 ## Not yet
 - A new capability, and a term for the glossary of `spec/index.md`, proposed by an item: its lines go only into a
