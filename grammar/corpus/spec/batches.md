@@ -370,3 +370,28 @@ shall [x1: capability `universal` (constant), x3: readiness bar "the readiness b
     write(e2, subject: x7, object: x1)
     initiates(e3, subject: x7, language(x1) = `codified-2`)
 ```
+
+## r40
+From: b6 r40. The merge resolves the request a delivered item was taken in from, in place of a `work resolve` by hand.
+
+```reading
+While an item in a batch is `in-batch` and the item has a request line of a request and the request is `accepted`, when the person merges the pull request of the batch, `work` shall set the status of the request to `delivered`, write a resolution, set the side of the request to `asker`, post a comment, close the issue of the request and commit the request.
+shall [x5: agent the person (constant), x7: tool `work` (constant)]
+  while [x1: item, x2: batch, x3: request line, x4: request]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    of(x3, x4)
+    of(x3, x1)
+    status(x4) = `accepted`
+  when [x6: pull request]
+    of(x6, x2)
+    merge(e1, subject: x5, object: x6)
+  response [x8: resolution, x9: comment, x10: issue]
+    initiates(e2, subject: x7, status(x4) = `delivered`)
+    write(e3, subject: x7, object: x8)
+    initiates(e4, subject: x7, side(x4) = `asker`)
+    post(e5, subject: x7, object: x9)
+    of(x10, x4)
+    close(e6, subject: x7, object: x10)
+    commit(e7, subject: x7, object: x4)
+```
