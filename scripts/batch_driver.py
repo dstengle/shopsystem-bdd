@@ -29,6 +29,8 @@ RULES = (
     ("Worktrees of older work (`.shop/worktrees/*` of other or earlier batches, `.claude/worktrees/`) are never "
      "reference material: the reference is the base branch and its own worktree."),
     "Don't chain `cp` and `rm` in one shell command; keep shell variables few.",
+    ("Never use `git stash`: every worktree shares one stash list, so two tasks' stashes swap; to see a test "
+     "red, put files back with `git checkout <commit> -- <path>` or a scratch copy."),
     "Don't push and don't run `work` commands that commit.",
     "A scenario that passes before it is built (an XPASS) means a test step is too loose: say so in the reply.",
     ("There is no brief or result file: reply with what was built and its commits, or with one question, never a "
