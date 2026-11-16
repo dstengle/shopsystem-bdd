@@ -318,6 +318,47 @@ keeps its key, and one that read the thing out of the step's text reads `step.su
 No upgrade step. If `.shop/plugin-version` holds an old number, rewrite it first (see [Versions](#versions)). Then
 run `features generate`: a scenario now has a Given for each thing its When names that no earlier Given brought in.
 
+## From 0.34.1 to 0.35.0
+
+No upgrade step, and no line that parsed is refused unless it orders or compares an attribute with no value order.
+It is a y release because the scenarios `features generate` writes change in ways a consuming repository's step
+handlers must meet. Run `features generate`, then run the suite and update the handlers it fails on:
+
+- **A Then after the act that brings its thing in.** The Thens that restrict a thing a response brings in now come
+  after the act that brings it in, not before. A handler that read the thing before that act reads it after.
+- **Counter-examples.** An every, only or count line's scenario now gives a thing that fails the restriction, or
+  one past the bound, and a negated Then of it:
+
+  ```gherkin
+  @g7 @r7
+  Scenario: `work show` on a quote prints its messages
+    Given a quote q1
+    And a message m1
+    And the quote q1 cites the message m1
+    And a message m2
+    And the quote q1 cites the message m2
+    And a message m3
+    And the quote q1 does not cite the message m3
+    When the person runs `work show` on the quote q1
+    Then `work` prints the message m1
+    And `work` prints the message m2
+    And `work` does not print the message m3
+  ```
+
+  Each negated Then needs a handler that brings its thing into the world (here a message the quote does not cite)
+  and checks that the output does not hold it. A handler that passes whatever the output is lets the scenario pass
+  a program that ignores the restriction.
+- **`unread <id>`.** `model logic` now names each requirement it has no translation of, `unread <id>: ...`, with
+  a count after the findings, where it printed `no findings` before over lines it skipped. Each one it names is a
+  line `model logic` does not check; reword it if a construct it has a translation of says the same.
+
+Two things are new to write. An attribute entry may say `Type: number.`, `Type: time.` or `Type: text.`: any
+literal of the type is a value of it, and the type orders them, with no `Values:` or `Order:`. And a line may
+compare two things' values ("the release of this repository is after the release of `migrate`") or print a
+collection in an order (", ordered by release, in ascending order"); either on an attribute whose entry gives no
+value order, neither `Order:` nor `Type:`, is refused, naming the attribute. See
+[Writing requirements](writing-requirements.md#3-collections-counts-comparisons-and-orders).
+
 ## Older than 0.32?
 
 `migrate upgrade` applies every pending step in order, oldest first, in one commit. `migrate status` lists them:
