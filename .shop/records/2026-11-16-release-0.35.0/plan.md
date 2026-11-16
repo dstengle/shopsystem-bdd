@@ -1,10 +1,3 @@
----
-id: record/missingmass.io/shopsystem/shopsystem-bdd/2026-11-16-release-0.35.0
-kind: design
-about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
-date: 2026-11-16
----
-
 # Release 0.35.0: collections, comparisons and orders
 
 The person, 2026-11-16: "Please follow through on merging pull requests and continuing work until the comparison and collections work is released". The release ships what batches 34 to 37 delivered:
