@@ -36,7 +36,24 @@ def writes(step):
     if k == "`universal`":
         assert universal(step), (step.text, step.context["result"].stdout)
         return None
+    if k == "capability":
+        return capability(step)
     return False
+
+
+def capability(step):
+    """The new capability's file on the batch's branch (b317): its frontmatter, the item's line unbuilt, and its row
+    under `## Composition` of spec/index.md."""
+    name = step.context["new_capability"][parts(step)[1][1]]
+    done = step.context["result"]
+    assert done.returncode == 0, (step.text, done.stdout, done.stderr)
+    branch = T.git(step, "branch", "--list", "batch-*", "--format=%(refname:short)").split()[0]
+    text = T.git(step, "show", "%s:spec/capabilities/%s.md" % (branch, name))
+    for field in ("id: capability/ex.com/prod/ctx/%s" % name, "group: service", "language: codified-2",
+                  "unbuilt: [r1]", "## Purpose", "## Behaviour", "- [r1] "):
+        assert field in text, (field, text)
+    index = T.git(step, "show", "%s:spec/index.md" % branch)
+    assert re.search(r"(?ms)^## Composition$.*^\| `%s` \|" % name, index), index
 
 
 def universal(step):

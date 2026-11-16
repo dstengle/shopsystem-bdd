@@ -119,7 +119,11 @@ def given_does(step):
     condition and trigger with g1's (b77), the group named by its id; has no translation or no parse: the requirement a
     line of the item that holds it which `model logic` reads no translation of (r41) or grammar 4 no parse of (r50)
     (`R.give_faults`), or the universal condition the item's one, beside a passing line
-    (b203); holds a universal condition: the item's `U1`, one `model logic` reads, beside a passing line."""
+    (b203); holds a universal condition: the item's `U1`, one `model logic` reads, beside a passing line; the capability
+    c1 exists: the When names a capability of the spec (b317)."""
+    if R.mine(step) and step.term == "exist" and step.subject.startswith("the capability "):     # b317's r56
+        step.context.setdefault("exists", set()).add(step.names[0])
+        return None
     if not R.mine(step) or step.term not in ("pass", "has", "holds", "violate"):
         return False
     if _owned(step):

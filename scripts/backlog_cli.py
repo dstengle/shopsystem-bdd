@@ -70,6 +70,9 @@ def add_parsers(sub):
     p.add_argument("--given", nargs=2, metavar=("GROUP", "BLOCK"),
                    help="the given block of the item's group g<n> in the capability: example data, one line a row")
     p.add_argument("--universal", help="a universal condition for spec/universal.md, with no --into")
+    p.add_argument("--capability", help="a capability new to the context, written as a block of the item with "
+                   "--narrator, --group (service or guarantees, default service) and its purpose as the text")
+    p.add_argument("--narrator", help="with --capability: who the new capability's lines speak for")
     p.add_argument("--upstream", help="an upstream entry `bounded-context/<path>: ..., github: <owner>/<name>` for "
                    "spec/index.md's ## Upstreams, with no --into")
 
@@ -156,6 +159,9 @@ def cmd_line(args):
     import backlog_forms
     import backlog_lines
     backlog_chore.refuse_line(args.root, args.name)
+    if args.capability is not None:
+        import backlog_capability
+        return backlog_capability.cmd(args)
     if args.no_line:
         return _unreplaced(args)
     if args.reword is not None or args.remove is not None:

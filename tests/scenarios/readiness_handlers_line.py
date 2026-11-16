@@ -1,7 +1,8 @@
 """The When of features/readiness.feature's `work line` scenarios in grammar 4 (b240 phase 20): `work line` run on an
 item of the codified spec readiness_world.py writes, with the options the step names (b43's `--relation`,
 `--universal`, `--upstream` and `--given`; b128's `--retires`; I19's `--recodify`; b220's `--recodify universal` and
-`--universal --retires`; b271's `--no-line --retires`, on an item holding the passing line), each given what readiness_world says of it: a piece that conforms to its form unless a
+`--universal --retires`; b271's `--no-line --retires`, on an item holding the passing line; b317's `--capability`),
+each given what readiness_world says of it: a piece that conforms to its form unless a
 Given said it does not, a live id unless a Given said no requirement has it. What it ran is kept under `line` for
 readiness_handlers_thens.py."""
 import importlib.util
@@ -74,6 +75,22 @@ def _changed(step, item, line, options):
     return ["--remove", ident]
 
 
+NEW = ("shelf", "a person shelving things", "Things kept on a shelf, each found by its name.")
+
+
+def _capability(step, item, line, value):
+    """b317's `--capability`: a capability new to the fixture's spec (`NEW`), or its `work-queue` when a Given said
+    the capability exists; the block the item is to hold kept as the piece written."""
+    R.codify(step)
+    _shaped(step, item)
+    name, narrator, purpose = NEW
+    if _name(value) in step.context.get("exists", ()):
+        name = R.CAPABILITY
+    step.context.setdefault("says", {})[_name(value)] = name
+    line["piece"] = ("capability", "### %s\n\nnarrator: %s\ngroup: service\npurpose: %s" % (name, narrator, purpose))
+    return ["--capability", name, "--narrator", narrator, purpose]
+
+
 @handler("WhenRuns", "`work line`")
 def work_line(step):
     options = {code.strip("`"): value for code, value in step.options}
@@ -87,6 +104,8 @@ def work_line(step):
         _shaped(step, item)
         line["recodified"] = capability
         args = ["--recodify", capability]
+    elif "--capability" in options:
+        args = _capability(step, item, line, options["--capability"])
     elif "--reword" in options or "--remove" in options:
         args = _changed(step, item, line, options)
     elif "--retires" in options and "--universal" in options:
