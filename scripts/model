@@ -192,10 +192,12 @@ contract:
     and under "taking precedence over it" each If requirement of its trigger
     (when it is of another form), and exits 0; an id no capability holds is
     refused, naming it, with exit 1 and nothing written (model_explain).
-  - forms [--json] prints one line for each file form a bounded context
+  - forms [--json | --check] prints one line for each file form a bounded context
     keeps: its name, its path pattern and the command that writes it (or
     the plugin's item that will give it one, or "by hand"), and exits 0;
-    --json prints {"forms": [{"name", "path", "writer"}]}.
+    --json prints {"forms": [{"name", "path", "writer"}]}; --check prints
+    nothing and exits 0 unless a form is written by hand, which it names,
+    exiting 1.
   - restates [--json] [<capability>] exits 0 when every 0.29 id (of the
     capability, or of every one) is restated by a group, dropped, or moved
     (a move into a codified capability must be restated there; one into an
@@ -266,6 +268,7 @@ def main(argv=None):
     e.add_argument("requirement", help="a requirement's id <capability>#r<n>")
     f = sub.add_parser("forms", help="print every file form: its name, its path pattern and the command that writes it")
     f.add_argument("--json", action="store_true")
+    f.add_argument("--check", action="store_true", help="exit 1 naming each form written by hand")
     args = ap.parse_args(argv)
     if args.cmd == "parse" and (args.line is None) == (args.file is None):
         ap.error("parse takes a line or --file, not both")

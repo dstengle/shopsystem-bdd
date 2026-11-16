@@ -1,8 +1,13 @@
 """Handlers of features/design-model-check.feature for the commands that write a file form (b41): `model forms`, which
 prints every file form, and `work record`, which writes a record and its index row and commits them. What `work`
 wrote and committed is read back by work_queue_handlers' Thens (a record is `.shop/records/<date>-<slug>.md`)."""
+import argparse
 import importlib.util
+import io
+import subprocess
 import sys
+from contextlib import redirect_stderr, redirect_stdout
+from unittest import mock
 from pathlib import Path
 
 from vocab import handler
@@ -24,10 +29,38 @@ H = shared("shop_design_model_check_handlers", "design_model_check_handlers.py")
 local = W.local
 
 
+@handler("GivenK_A", "file form")
+def given_writer(step):
+    """`the writer of the file form f1 is `hand``: the writer a form of the scenario's own is given (r324)."""
+    step.context.setdefault("writers", {})[step.names[0]] = step.values[0].strip("`")
+
+
 @handler("WhenRuns", "`model forms`")
 def model_forms(step):
-    H.run_model(step, "forms")
-    step.context["forms_run"] = True
+    """`model forms`; with the `--check` option run in-process, with a form of the writer each Given gave it added
+    to the table (`F.FORMS`), named in the output by its name (r324)."""
+    if "--check" not in H.flag(step, "--check"):
+        H.run_model(step, "forms")
+        step.context["forms_run"] = True
+        return
+    F = forms_module()
+    writers = {"hand": "by hand (no command yet)", "item": "plugin item b44 (no command yet)", "command": "work idea"}
+    added = [F.Form("scenario form %s" % name, "scenario/%s.md" % name, writers[writer])
+             for name, writer in step.context.get("writers", {}).items()]
+    for form in added:
+        H.says(step, form.path.split("/")[1][:-3], form.name)
+    out, err = io.StringIO(), io.StringIO()
+    with mock.patch.object(F, "FORMS", F.FORMS + added), redirect_stdout(out), redirect_stderr(err):
+        code = F.cmd_forms(argparse.Namespace(json=False, check=True))
+    step.context["result"] = subprocess.CompletedProcess(["model", "forms", "--check"], code, out.getvalue(),
+                                                         err.getvalue())
+
+
+def forms_module():
+    if str(SCRIPTS) not in sys.path:
+        sys.path.insert(0, str(SCRIPTS))
+    import model_forms
+    return model_forms
 
 
 @local("ThenPrints", "file form")
@@ -35,9 +68,7 @@ def prints_every_form(step):
     """Every file form of the table, each on its line with its path pattern and what writes it."""
     if not step.context.get("forms_run"):
         return False
-    if str(SCRIPTS) not in sys.path:
-        sys.path.insert(0, str(SCRIPTS))
-    import model_forms as F
+    F = forms_module()
     done = step.context["result"]
     lines = done.stdout.splitlines()
     for form in F.FORMS:
