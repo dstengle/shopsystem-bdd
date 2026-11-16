@@ -118,7 +118,7 @@ def test_a_guarantees_line_is_not_generated(shaped, monkeypatch):
 def test_a_line_with_the_items_term_readies(shaped):
     """plan-3 review M4: a missing word written as the item's own term bullet (D4)."""
     assert work(shaped, "line", "b1", "--into", "work-queue", "--term", TERM).returncode == 0
-    line(shaped, FROBNICATE)
+    line(shaped, FROBNICATE.replace("`proposed`", "`abandoned`").replace("`work start`", "`work abandon`"))  # v15n
     done = work(shaped, "ready", "b1")
     assert done.returncode == 0, done.stderr
 

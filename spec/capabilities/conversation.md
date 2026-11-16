@@ -23,6 +23,8 @@ of every item and batch a session names (design goal 10).
 - **git directory** (noun): the directory in which git keeps the data of a repository, which is never committed. Kind of: thing. This: the git directory of the repository the command runs in.
 - **transcript** (noun): the file in which Claude Code keeps the messages of a session. Kind of: file.
 
+- **queued message** (noun): a message of the person that Claude Code gives a session while the session works on a turn, kept in its transcript apart from the person's prompts. Kind of: message.
+
 ## Relations
 | from | word | to | cardinality |
 |---|---|---|---|
@@ -44,6 +46,9 @@ of every item and batch a session names (design goal 10).
 ### [g8] The names table at SessionStart
 - [r8] When the SessionStart hook runs `work names`, `work` shall print every item, every title of an item and every batch.
 
+### [g9] `work quote` finds a message sent mid-turn
+- [r9] When a session runs `work quote` on a queued message, `work` shall write a quote that cites the queued message and commit the quote.
+
 ## Implementation, may change
 
 - A quote is the file `.shop/quotes/<n>.md`, named `quote-<n>`: its frontmatter holds the session id, the cited
@@ -51,7 +56,9 @@ of every item and batch a session names (design goal 10).
   backtick run in its text.
 - The words are matched, whitespace collapsed, against the person's messages of the session's transcript, the newest
   holding them cited, with the two messages before it and the two after it, of either side; a message is the
-  person's prompt or the session's text of one turn, without tool uses, tool results, thinking, reminders,
+  person's prompt, a queued message (Claude Code's `attachment` row of a `queued_command` whose `commandMode` is
+  `prompt` and whose origin is `human`, closing the session's turn as a prompt does; a subagent's hand-back or a task
+  notification of that shape is none) or the session's text of one turn, without tool uses, tool results, thinking, reminders,
   notifications, `!` bash-mode rows or interruption markers, a slash command read as `/<name> <args>`, and one other
   than the cited message is cut at 2,000 characters.
 - `work quote "<words>"` prints the quote's label, `quote-<n> "<its words>"`, and commits the quote's file alone on the

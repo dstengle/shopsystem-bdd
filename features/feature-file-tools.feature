@@ -675,3 +675,48 @@ Feature: Feature file tools
     Then `features` writes the scenario s1
     And the requirement group r2 has the scenario s1
     And the scenario s1 has the order counter-example o1
+
+  @g131 @r131
+  Scenario: `features generate` introduces each instance of an order
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And the requirement r1 uses `order-by`
+    And a step s1
+    And an instance i1
+    And no given step introduces the instance i1
+    And the step s1 mentions the instance i1
+    When the person runs `features generate` on the capability c1
+    Then `features` does not write the step s1
+
+  @g132 @r132
+  Scenario: `features generate` introduces the thing a printed thing holds
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And the requirement r1 uses `holds-relation`
+    And the requirement r1 uses `rc-subject`
+    And a step s1
+    And an instance i1
+    And no given step introduces the instance i1
+    And the step s1 mentions the instance i1
+    When the person runs `features generate` on the capability c1
+    Then `features` does not write the step s1
+
+  @g133 @r133
+  Scenario: `features generate` writes the scenario of `order-by-every` on every K in a collection
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And the requirement r1 uses `order-by-every`
+    And the requirement r1 uses `of-relation`
+    When the person runs `features generate` on the capability c1
+    Then `features` writes the scenario s1
+    And the requirement group r2 has the scenario s1
+    And the scenario s1 has the order counter-example o1

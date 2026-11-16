@@ -42,6 +42,11 @@ NOISE = {
     "system": {"type": "system", "uuid": "n1", "timestamp": T.at(4), "content": "SYSTEM"},
     "attachment": {"type": "attachment", "uuid": "n1", "timestamp": T.at(4), "attachment": {"x": "ATTACHED"}},
     "queue operation": {"type": "queue-operation", "operation": "enqueue", "content": "QUEUED"},
+    "queued hand-back": T.queued("[Subagent hand-back] REPORT", "n1", T.at(4),
+                                 origin={"kind": "peer", "name": "general-purpose", "handback": True}),
+    "queued task notification": T.queued("<task-notification>RESULT</task-notification>", "n1", T.at(4),
+                                         mode="task-notification", origin={"kind": "task-notification"}),
+    "queued sidechain": T.queued("SIDE", "n1", T.at(4), isSidechain=True),
 }
 
 
@@ -52,6 +57,16 @@ def test_only_the_words_are_messages(tmp_path, kind):
     found = read(tmp_path, rows)
     assert [m.text for m in found] == T.TEXTS
     assert [m.ident for m in found] == T.IDENTS
+
+
+def test_a_message_sent_mid_turn_is_the_persons(tmp_path):
+    """b52: a queued message of the person closes the session's turn and is cited by its words."""
+    rows = T.CONVERSATION[:4] + [T.queued("Add a backlog item, mid-turn.", "q1", T.at(4))] + T.CONVERSATION[4:]
+    found = read(tmp_path, rows)
+    assert [(m.who, m.ident) for m in found][2:5] == [("person", "u2"), ("person", "q1"), ("session", "a3")]
+    assert found[3].text == "Add a backlog item, mid-turn."
+    assert found[3].at.isoformat() == "2026-11-05T10:04:00+00:00"
+    assert C.cited(found, "Add a backlog item,") == 3
 
 
 def test_a_turn_split_over_rows_is_one_message(tmp_path):

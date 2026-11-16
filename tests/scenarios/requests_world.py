@@ -11,6 +11,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import request_text
+
 STUB = Path(__file__).resolve().parents[1] / "scripts" / "stub_gh.py"
 OWN_REPO = "ex/ctx"
 ISSUE = "https://github.com/%s/issues/1" % OWN_REPO
@@ -109,7 +111,7 @@ def feature(step):
 
 def comment(step, name):
     """What the Givens said of the comment `name`: its request, its body (`readable` or `unreadable`), the side that
-    posts it and the entry it holds. No request holds it: requests' Givens say only that one does not."""
+    posts it, the entry it holds and whether its request holds it (`held`)."""
     return step.context.setdefault("comment", {}).setdefault(name, {"request": None, "body": "readable"})
 
 
@@ -126,7 +128,7 @@ def body(step, said):
 
 def put_comments(step, path_of):
     """Each comment a Given put on a request posted on that request's issue (`<issue>#issuecomment-<k>`); its URL is
-    what names it."""
+    what names it. One its request holds is under the request's `## Comments` too."""
     found = issues(step)
     for name, said in step.context.get("comment", {}).items():
         if said["request"] is None or name in step.context.get("comments", {}):
@@ -138,4 +140,9 @@ def put_comments(step, path_of):
         comments.append({"url": link, "body": body(step, said)})
         step.context.setdefault("comments", {})[name] = link
         step.context.setdefault("says", {})[name] = link
+        if said.get("held"):        # the request holds it already, recorded as `work sync` records one
+            held = request_text.entries(path.read_text(), "Comments")
+            mark = "unreadable" if said["body"] == "unreadable" else "turn"
+            path.write_text(request_text.with_entries(path.read_text(), "Comments",
+                                                      held + ["%d. %s %s" % (len(held) + 1, link, mark)]))
     write_issues(step, found)

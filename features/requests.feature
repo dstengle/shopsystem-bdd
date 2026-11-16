@@ -179,17 +179,6 @@ Feature: Requests
     And `work` prints the request r2
     And `work` prints the request r3
 
-  @g77 @r77
-  Scenario: `work sync` acts on no comment that does not conform to the comment form
-    Given a comment c1
-    And a request r1
-    And the comment c1 is on the request r1
-    And the comment c1 does not conform to the comment form
-    And a session s1
-    When the session s1 runs `work sync`
-    Then `work` prints the comment c1
-    And `work` does not write the comment c1
-
   @g78 @r78
   Scenario: `work turn` posts the asker's turn
     Given a request r1
@@ -586,3 +575,124 @@ Feature: Requests
     When the session s1 runs `work sync`
     Then `work` writes the comment c1
     And `work` does not write the entry e1
+
+  @g104 @r104
+  Scenario: `work show` on a request prints each line's reason
+    Given a request line r1
+    And a request r2
+    And the request line r1 is proposed in the request r2
+    And a line reason l1
+    And the request line r1 has the line reason l1
+    When the person runs `work show` on the request r2
+    Then `work` prints the line reason l1
+
+  @g105 @r105
+  Scenario: `work sync` records a comment that does not conform to the comment form, and applies nothing of it
+    Given a comment c1
+    And a request r1
+    And the comment c1 is on the request r1
+    And the comment c1 does not conform to the comment form
+    And the request r1 does not hold the comment c1
+    And a session s1
+    When the session s1 runs `work sync`
+    Then `work` prints the comment c1
+    And `work` writes the comment c1
+    And `work` keeps the status of the request r1
+
+  @g106 @r106
+  Scenario: `work sync` prints a comment that does not conform to the comment form once
+    Given a comment c1
+    And a request r1
+    And the comment c1 is on the request r1
+    And the comment c1 does not conform to the comment form
+    And the request r1 holds the comment c1
+    And a session s1
+    When the session s1 runs `work sync`
+    Then `work` does not print the comment c1
+
+  @g107 @r107
+  Scenario: `work offer` says what it did
+    Given a request r1
+    When the person runs `work offer` on the request r1
+    Then `work` prints the request r1
+    And `work` prints the status of the request r1
+
+  @g108 @r108
+  Scenario: `work propose` says what it did
+    Given a request r1
+    When the person runs `work propose` on the request r1
+    Then `work` prints the request r1
+    And `work` prints the status of the request r1
+
+  @g109 @r109
+  Scenario: `work reply` says what it did
+    Given a request r1
+    When the person runs `work reply` on the request r1
+    Then `work` prints the request r1
+    And `work` prints the status of the request r1
+
+  @g110 @r110
+  Scenario: `work turn` says what it did
+    Given a request r1
+    When the person runs `work turn` on the request r1
+    Then `work` prints the request r1
+    And `work` prints the status of the request r1
+
+  @g111 @r111
+  Scenario: `work request` raises a request as this bounded context by default
+    When the person runs `work request` without the `--from` option
+    Then `work` writes the request r1
+    And the request r1 originates from this bounded context
+
+  @g112 @r112
+  Scenario: `work offer` quotes every requirement of a capability
+    Given a capability c1
+    And a session s1
+    And a request r1
+    And a requirement r2
+    And the capability c1 has the requirement r2
+    And a requirement r3
+    And the capability c1 has the requirement r3
+    And a requirement r4
+    And the capability c1 does not have the requirement r4
+    When the session s1 runs `work offer` with the `--capability` option set to the capability c1 on the request r1
+    Then `work` posts the comment c2
+    And the comment c2 holds the requirement r2
+    And the comment c2 holds the requirement r3
+    And the comment c2 does not hold the requirement r4
+
+  @g113 @r115
+  Scenario: `work offer` leaves out a term no requirement of the capability mentions
+    Given a term t1
+    And this bounded context holds the term t1
+    And no requirement mentions the term t1
+    And a capability c1
+    And a session s1
+    And a request r1
+    When the session s1 runs `work offer` with the `--capability` option set to the capability c1 on the request r1
+    Then `work` posts the comment c2
+    And the comment c2 does not hold the term t1
+
+  @g114 @r113
+  Scenario: `work offer` quotes the terms a capability's requirements mention
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And a term t1
+    And the requirement r1 mentions the term t1
+    And a session s1
+    And a request r2
+    When the session s1 runs `work offer` with the `--capability` option set to the capability c1 on the request r2
+    Then `work` posts the comment c2
+    And the comment c2 holds the term t1
+
+  @g115 @r114
+  Scenario: `work offer` leaves out a capability's given blocks
+    Given a given block g1
+    And a capability c1
+    And the capability c1 holds the given block g1
+    And a session s1
+    And a request r1
+    When the session s1 runs `work offer` with the `--capability` option set to the capability c1 on the request r1
+    Then `work` posts the comment c2
+    And the comment c2 does not hold the given block g1

@@ -48,6 +48,16 @@ def tool_result(text, uuid, at, session="s-1", tool="t-1", **extra):
     return _row("user", [{"type": "tool_result", "tool_use_id": tool, "content": text}], uuid, at, session, **extra)
 
 
+def queued(text, uuid, at, session="s-1", mode="prompt", origin=None, **extra):
+    """A message Claude Code gives the session while it works on a turn: an `attachment` row of type `queued_command`,
+    the person's (`origin` of kind `human`) unless `origin` says another's."""
+    command = {"type": "queued_command", "prompt": text, "commandMode": mode, "origin": origin or {"kind": "human"}}
+    row = {"type": "attachment", "uuid": uuid, "timestamp": at, "sessionId": session, "isSidechain": False,
+           "attachment": command}
+    row.update(extra)
+    return row
+
+
 def write(project, session, rows):
     """`<project>/<session>.jsonl` holding `rows`, one JSON object a line."""
     project = Path(project)

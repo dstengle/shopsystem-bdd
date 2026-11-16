@@ -411,7 +411,7 @@ a relative clause whose subject is the noun
 
 - Form: <noun> that <verb> ...
 - Functions: `k_\w+_Rel_k_\w+`
-- Cited by: design-model-check#r315, feature-file-tools#r126
+- Cited by: design-model-check#r315, feature-file-tools#r126, feature-file-tools#r132
 - Example and its reading:
 
 ```construct
@@ -947,7 +947,7 @@ a noun of another by a relation row
 
 - Form: <noun> of|in <np>
 - Functions: `r\d+_\w+_Mod`
-- Cited by: design-model-check#r233
+- Cited by: design-model-check#r233, design-model-check#r318, feature-file-tools#r133
 - Example and its reading:
 
 ```construct
@@ -1005,7 +1005,7 @@ a state: the other noun of a relation row "in"
 
 - Form: <np> holds <np>
 - Functions: `r\d+_\w+_Holds`
-- Cited by: design-model-check#r288, design-model-check#r289, design-model-check#r292, feature-file-tools#r113, feature-file-tools#r112, feature-file-tools#r128
+- Cited by: design-model-check#r288, design-model-check#r289, design-model-check#r292, feature-file-tools#r113, feature-file-tools#r112, feature-file-tools#r128, feature-file-tools#r132
 - Example and its reading:
 
 ```construct
@@ -1272,7 +1272,7 @@ a collection's members ordered by their attribute (b275)
 
 - Form: <np>, ordered by <attribute>, in ascending|descending order
 - Functions: `r\d+_\w+_By_t_[a-z0-9_]+_\d+|Ascending|Descending`
-- Cited by: design-model-check#r303, feature-file-tools#r123, feature-file-tools#r127
+- Cited by: design-model-check#r303, feature-file-tools#r123, feature-file-tools#r127, feature-file-tools#r131
 - Example and its reading:
 
 ```construct
@@ -1292,7 +1292,7 @@ a printed every ordered by its attribute (b275)
 
 - Form: every <noun>, ordered by <attribute>, in ascending|descending order
 - Functions: `t_[a-z0-9_]+_\d+_k_\w+_Every`
-- Cited by: design-model-check#r304, design-model-check#r317, feature-file-tools#r124, feature-file-tools#r130
+- Cited by: design-model-check#r304, design-model-check#r317, design-model-check#r318, feature-file-tools#r124, feature-file-tools#r130, feature-file-tools#r133
 - Example and its reading:
 
 ```construct

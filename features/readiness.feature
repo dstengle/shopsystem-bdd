@@ -256,3 +256,15 @@ Feature: Readiness
     When the person runs `work line` with the `--no-line` option and the `--retires` option set to the requirement id r1
     Then `work` refuses `work line`
     And `work` names the requirement id r1
+
+  @g49 @r49
+  Scenario: `work ready` refuses an item a requirement group of which shares its condition and trigger with another group (`v15n`)
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    And a requirement group r1
+    And the item i1 holds the requirement group r1
+    And the requirement group r1 violates `v15n`
+    When the person runs `work ready` on the item i1
+    Then `work` refuses `work ready`
+    And `work` names the requirement group r1
+    And `work` names `v15n`

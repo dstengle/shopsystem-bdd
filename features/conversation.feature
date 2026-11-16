@@ -56,3 +56,12 @@ Feature: Conversation
     And `work` does not print the title t3
     And `work` prints the batch b1
     And `work` prints the batch b2
+
+  @g9 @r9
+  Scenario: `work quote` finds a message sent mid-turn
+    Given a session s1
+    And a queued message q1
+    When the session s1 runs `work quote` on the queued message q1
+    Then `work` writes the quote q2
+    And the quote q2 cites the queued message q1
+    And `work` commits the quote q2

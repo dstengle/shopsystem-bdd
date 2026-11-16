@@ -232,8 +232,8 @@ def restrict(st, cn, ref):
 def restricting(st, cn, ref):
     name, a = fun(cn), args(cn)
     row, suffix = st.names.row(name)
-    if suffix == "Mod":
-        return st.apply([np(st, a[1])], lambda r: Atom("rel", (row[1], ref, r[0])))
+    if suffix == "Mod":     # an order on the modifier's noun phrase no meaning (b328)
+        return st.apply([spec_lf_ordered.unmodified(np(st, a[1]))], lambda r: Atom("rel", (row[1], ref, r[0])))
     if suffix == "Cpd":
         owner_np = det(st, "DetThe", ["%s_UseN" % spec_rgl.kid(row[2]), ""])
         return st.apply([owner_np], lambda r: Atom("rel", ("of", ref, r[0])))

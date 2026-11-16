@@ -14,7 +14,9 @@ from test_backlog_lines import ABANDON, FROBNICATE
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import toolchain
 
-SECOND = "While an initiative is `started`, when the person runs `work abandon` on the initiative, `work` shall exit successfully."
+# SECOND and THIRD share their condition and trigger with no other line (v15n, b77).
+SECOND = "While an initiative is `proposed`, when the person runs `work abandon` on the initiative, `work` shall exit successfully."
+THIRD = "While an initiative is `abandoned`, when the person runs `work abandon` on the initiative, `work` shall exit successfully."
 CLASH = ("While an initiative is `started`, when the person runs `work abandon` on the initiative, `work` shall set the status of the initiative to "
          "`done`.")
 
@@ -41,7 +43,7 @@ def test_pick_takes_ready_items_in_rank_order_up_to_the_size(repo):
                "b3": ("high-value", "high-urgency"), "b4": ("low-value", "low-urgency"),
                "b5": ("medium-value", "medium-urgency")}
     for name, (value, urgency) in ratings.items():
-        ready_item(repo, name, "Item %s" % name, ABANDON if name in ("b3", "b5") else SECOND, value=value,
+        ready_item(repo, name, "Item %s" % name, {"b3": ABANDON, "b5": THIRD}.get(name, SECOND), value=value,
                    urgency=urgency, size="small")
     size(repo, 3)
     found = batch_pick.pick(repo)

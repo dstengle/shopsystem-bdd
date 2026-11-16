@@ -50,6 +50,7 @@ the item is settled. `work ready` checks the bar and asks nobody.
 | universal condition id | of | universal condition | one |
 | translation | of | universal condition | one |
 | requirement id | in | item |  |
+| requirement group | in | item |  |
 
 ## Behaviour
 
@@ -130,6 +131,9 @@ the item is settled. `work ready` checks the bar and asks nobody.
 
 ### [g48] `work line --retires --no-line` refuses a requirement id that no requirement has
 - [r48] If the person runs `work line` with the `--no-line` option and the `--retires` option set to a requirement id that no requirement has, then `work` shall refuse the command and name the requirement id.
+
+### [g49] `work ready` refuses an item a requirement group of which shares its condition and trigger with another group (`v15n`)
+- [r49] While an item is `shaped` and a requirement group in the item violates `v15n`, if the person runs `work ready` on the item, then `work` shall refuse the command and name the requirement group and `v15n`.
 
 ## Implementation, may change
 - An item's requirement lines stay on the item until its batch merges: in the item file's `## Requirements`, one

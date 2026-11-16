@@ -47,6 +47,16 @@ def np(st, tree, nps):
     return replace(found, order=Atom(PRED, (found.ref, t.term, DIRS[nps.fun(a[1])])))
 
 
+def unmodified(found):
+    """`found`, the noun phrase of a modifier ("every file in the worktree"); an order on it is no meaning (b328): the
+    order after "every K in the Y" is the every's (`<T>_<K>_Every`), never the Y's inside the modifier, which no act
+    acts on (decision 0093), so spec_meaning.one drops that tree."""
+    if getattr(found, "order", None) is not None:
+        raise ValueError("an order on the noun phrase of a modifier has no reading: an order is a property of what a "
+                         "response acts on")
+    return found
+
+
 def show(a, term):
     x, t, d = a.args
     return "ordered(%s, %s, %s)" % (term(x), t, d)
@@ -189,13 +199,16 @@ def _slotted(kind, np0):
 
 
 def then(r, atom, body):
-    """[(act, Then)] of an order on a collection (b275): three members it holds brought in, each with a value of T
-    in neither the order nor its reverse, and the Then of the act on the collection that states the order."""
+    """[(act, Then)] of an order on a collection (b275): three members it holds brought in (the first the K the line
+    says it holds, b286), each with a value of T in neither the order nor its reverse, and the Then of the act on the
+    collection that states the order."""
     x, term, d = atom.args
     row, (n, t, _) = member(r.vocab, atom, held=True)     # the members' sense, though the collection has one too
     r.bring_in(x)
-    for k, v in enumerate(values(t), 1):
-        y = Ref("%s.m%d" % (x.name, k), row[0], "response")
+    held = [i.args[1] for i in body if isinstance(i, Atom) and i.pred == "rel" and i.args[0] == "in"
+            and i.args[2] == x and row[0] in r.vocab.ancestors(i.args[1].kind)]
+    for k, v in enumerate(values(t), 1):     # the K the line says it holds the first member (b286)
+        y = held[0] if k == 1 and held else Ref("%s.m%d" % (x.name, k), row[0], "response")
         r.bring_in(y)
         r.brought += [("SCond", r.cond(Atom("rel", ("in", y, x)))), ("SCond", spec_lf_order.value_cond(r, y, term, v))]
     event = next(i for i in body if isinstance(i, Atom) and i.pred == "event" and x in [z for _, z in i.args[3]])

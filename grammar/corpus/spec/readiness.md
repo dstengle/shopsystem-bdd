@@ -420,3 +420,21 @@ shall [x1: agent the person (constant), x2: command `work line` (parameter), x3:
     refuse(e2, subject: x7, object: x2)
     name(e3, subject: x7, object: x5)
 ```
+
+## r49
+From: b77 r42. The bar runs v15n on the laid copy: a group of the item sharing its condition and trigger with another group of its capability is refused, named with the rule.
+
+```reading
+While an item is `shaped` and a requirement group in the item violates `v15n`, if the person runs `work ready` on the item, then `work` shall refuse the command and name the requirement group and `v15n`.
+shall [x3: rule `v15n` (parameter), x4: agent the person (constant), x5: command `work ready` (parameter), x6: tool `work` (constant)]
+  while [x1: item, x2: requirement group]
+    status(x1) = `shaped`
+    in(x2, x1)
+    violate(subject: x2, object: x3)
+  if
+    run(e1, subject: x4, object: x5, on: x1)
+  response
+    refuse(e2, subject: x6, object: x5)
+    name(e3, subject: x6, object: x2)
+    name(e4, subject: x6, object: x3)
+```

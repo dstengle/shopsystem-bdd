@@ -1300,3 +1300,11 @@ Feature: Design model check
     And the requirement r1 uses the verb v1
     When the person runs `model parse` on the requirement r1
     Then `model` exits successfully
+
+  @g318 @r318
+  Scenario: `model parse` reads an order after every K in a collection one way
+    Given a requirement r1
+    And the requirement r1 uses `order-by-every`
+    And the requirement r1 uses `of-relation`
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully

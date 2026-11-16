@@ -84,3 +84,15 @@ def test_accept_refuses_a_request_in_the_askers_turn(asked):
     git(repo, "commit", "-qam", "the asker's turn")
     done = work(repo, "accept", "q1")
     assert done.returncode == 1 and "the asker's turn" in done.stderr, done.stderr
+
+
+def test_accept_records_each_line_s_request_line_and_renumber_carries_it(asked):
+    """b6: the item records which request line each of its lines came from; `work batch start`'s renumbering keeps
+    the record on the new ids."""
+    repo, _, write = asked
+    write(("refused", "accepted"))
+    assert work(repo, "accept", "q1").returncode == 0
+    item = backlog_items.find(repo, "b1")
+    assert item.request_lines == {"work-queue#r5": 2}
+    assert backlog_lines.renumber(repo, item, {"work-queue": {"r5", "g4"}})
+    assert item.request_lines == {"work-queue#r6": 2}

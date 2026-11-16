@@ -237,7 +237,8 @@ def renumber(root, item, taken):
     """New group, requirement and universal ids for the item's wherever they collide with its capability in `spec/`
     (groups, requirements, `retired:`), with `spec/universal.md`'s, or with `taken` ({capability, or "universal":
     ids} of the items picked before it), each the next free in file order (plan 4, D8). `taken` gains the item's ids;
-    the item's `## Requirements` is rewritten. The (`<cap>#<old>`, `<cap>#<new>`) pairs."""
+    the item's `## Requirements` is rewritten, and its `request_lines` keyed by the new ids (b6). The (`<cap>#<old>`,
+    `<cap>#<new>`) pairs."""
     blocks, pairs = read(item, "the item %s" % item.name), []
     out = Blocks(upstreams=blocks.upstreams, universal_language=blocks.universal_language,
                  universal_retired=blocks.universal_retired)
@@ -262,4 +263,6 @@ def renumber(root, item, taken):
         taken.setdefault("universal", set()).update(u for u, _ in out.universal)
     if pairs:
         item.sections[SECTION] = render(out)
+        moved = dict(pairs)
+        item.request_lines = {moved.get(i, i): n for i, n in item.request_lines.items()}
     return pairs
