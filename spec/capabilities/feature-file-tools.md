@@ -6,7 +6,7 @@ group: service
 language: codified-2
 rests_on: [design-decision/plugin-takes-the-dependencies-it-needs, design-decision/plugin-scenarios-run-as-pytest-bdd, design-decision/query-commands-answer-in-their-output]
 retired: [g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18, g19, r19, g20, r20, g21, r21, g22, r22, g23, r23, g24, r24, g25, r25, g26, r26, g27, r27, g28, r28, g29, r29, g30, r30, g31, r31, g32, r32, g33, r33, g34, r34, g35, r35, g36, r36, g37, r37, g38, r38, g39, r39, g40, r40, g41, r41, g42, r42, g43, r43, g44, r44, g105, r105]
-unbuilt: []
+unbuilt: [r135]
 ---
 
 # Feature file tools
@@ -365,6 +365,9 @@ the capability `shelf` holds:
 
 ### [g134] `features generate` writes a counter-example of a count over a relation in a response
 - [r134] While a requirement of a requirement group of a capability uses `count` and `holds-relation` and the requirement has an upper bound, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has a counter-example.
+
+### [g135] `features generate` writes the member outside a restriction that reaches a second thing
+- [r135] While a requirement of a capability uses `holds-exactly` and `of-relation`, when the person runs `features generate` on the capability, `features` shall write a scenario whose step uses `not-condition`.
 
 ## Implementation, may change
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three

@@ -6,7 +6,7 @@ group: service
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: [g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g10, r10, g12, r12, g13, r13, g16, r16, g17, r17, g18, r18, g19, r19, g27, r27, g33, r33]
-unbuilt: []
+unbuilt: [r42, r43, r41, r44]
 ---
 
 # Batches
@@ -24,6 +24,9 @@ question while building parks its item and the rest of the batch carries on. The
 - **fail** (verb, state): the test that binds a scenario fails when it runs in a worktree. Forms: fails, failed. Frame: scenario fails in worktree.
 - **cite** (verb, state): a commit's message or a pull request's body names an item by its `Item: b<n>` line. Forms: cites, cited. Frame: commit cites item. Frame: pull request cites item.
 
+- **fail** (verb, state): the command of a chore exits with an error when it runs in a worktree. Forms: fails, failed. Frame: chore fails in worktree.
+- **touch** (verb, state): a commit's change adds, removes or alters a file. Forms: touches, touched. Frame: commit touches file.
+
 ## Relations
 | from | word | to | cardinality |
 |---|---|---|---|
@@ -37,6 +40,7 @@ question while building parks its item and the rest of the batch carries on. The
 | task | of | item | one |
 | worktree | of | task | one |
 | git branch | of | batch | one |
+| chore | in | batch brief |  |
 
 ## Behaviour
 
@@ -102,6 +106,18 @@ question while building parks its item and the rest of the batch carries on. The
 
 ### [g40] The merge resolves the request a delivered item was taken in from
 - [r40] While an item in a batch is `in-batch` and the item has a request line of a request and the request is `accepted`, when the person merges the pull request of the batch, `work` shall set the status of the request to `delivered`, write a resolution, set the side of the request to `asker`, post a comment, close the issue of the request and commit the request.
+
+### [g42] `work batch done` refuses a task whose chore fails
+- [r42] While a task of an item is `running` and the item holds a chore and the chore fails in the worktree of the task, if a session runs `work batch done` on the task, then `work` shall refuse the command and name the chore.
+
+### [g43] `work batch done` refuses a commit that touches a file the chore does not name
+- [r43] While a task of an item is `running` and the item holds a chore and a commit of the git branch of the task touches a file that is not in the chore, if a session runs `work batch done` on the task, then `work` shall refuse the command and name the file.
+
+### [g41] The batch brief holds the chore of a chore item
+- [r41] While an item is `ready` and the item holds a chore and the item passes the readiness bar, when the person runs `work batch start`, `work` shall write a batch brief that holds the chore.
+
+### [g44] `work batch start` writes the capability an item holds
+- [r44] While an item is `ready` and the item passes the readiness bar and the item holds a capability, when the person runs `work batch start`, `work` shall write the capability.
 
 ## Implementation, may change
 

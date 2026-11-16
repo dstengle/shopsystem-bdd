@@ -289,3 +289,60 @@ Feature: Batches
     And `work` closes the issue i2
     And the request r2 has the issue i2
     And `work` commits the request r2
+
+  @g41 @r41
+  Scenario: The batch brief holds the chore of a chore item
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And a chore c1
+    And the item i1 holds the chore c1
+    And the item i1 passes this readiness bar
+    When the person runs `work batch start`
+    Then `work` writes the batch brief b1
+    And the batch brief b1 holds the chore c1
+
+  @g42 @r42
+  Scenario: `work batch done` refuses a task whose chore fails
+    Given a task t1
+    And an item i1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And a chore c1
+    And the item i1 holds the chore c1
+    And a worktree w1
+    And the task t1 has the worktree w1
+    And the chore c1 fails in the worktree w1
+    And a session s1
+    When the session s1 runs `work batch done` on the task t1
+    Then `work` refuses `work batch done`
+    And `work` names the chore c1
+
+  @g43 @r43
+  Scenario: `work batch done` refuses a commit that touches a file the chore does not name
+    Given a task t1
+    And an item i1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And a chore c1
+    And the item i1 holds the chore c1
+    And a git branch g1
+    And the task t1 has the git branch g1
+    And a commit c2
+    And the git branch g1 has the commit c2
+    And a file f1
+    And the chore c1 does not hold the file f1
+    And the commit c2 touches the file f1
+    And a session s1
+    When the session s1 runs `work batch done` on the task t1
+    Then `work` refuses `work batch done`
+    And `work` names the file f1
+
+  @g44 @r44
+  Scenario: `work batch start` writes the capability an item holds
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 passes this readiness bar
+    And a capability c1
+    And the item i1 holds the capability c1
+    When the person runs `work batch start`
+    Then `work` writes the capability c1
