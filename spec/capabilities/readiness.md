@@ -6,7 +6,7 @@ group: service
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: [g1, r1, g2, r2, g3, r3, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18, g19, r19, g33, r33]
-unbuilt: []
+unbuilt: [r50]
 ---
 
 # Readiness
@@ -134,6 +134,9 @@ the item is settled. `work ready` checks the bar and asks nobody.
 
 ### [g49] `work ready` refuses an item a requirement group of which shares its condition and trigger with another group (`v15n`)
 - [r49] While an item is `shaped` and a requirement group in the item violates `v15n`, if the person runs `work ready` on the item, then `work` shall refuse the command and name the requirement group and `v15n`.
+
+### [g50] `work ready` names every requirement of an item that has no parse and every one that has no translation in one run
+- [r50] While an item is `shaped` and a requirement in the item has no parse and a different requirement in the item has no translation, if the person runs `work ready` on the item, then `work` shall refuse the command and name every requirement in the item that has no parse and every requirement in the item that has no translation.
 
 ## Implementation, may change
 - An item's requirement lines stay on the item until its batch merges: in the item file's `## Requirements`, one

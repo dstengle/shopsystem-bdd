@@ -1308,3 +1308,57 @@ Feature: Design model check
     And the requirement r1 uses `of-relation`
     When the person runs `model parse` on the requirement r1
     Then `model` exits successfully
+
+  @g319 @r319
+  Scenario: `model parse` refuses a state verb in a response as the response's
+    Given a response r2
+    And a requirement r1
+    And the requirement r1 has the response r2
+    And a term t1
+    And the aspect of the term t1 is `state`
+    And the response r2 uses the term t1
+    When the person runs `model parse` on the requirement r1
+    Then `model` refuses `model parse`
+    And `model` names the term t1
+    And `model` names the response r2
+    And `model` does not name the trigger t2
+    And the requirement r1 has the trigger t2
+
+  @g320 @r320
+  Scenario: `model logic` finds the clash of two objects that hold a thing
+    Given a requirement r1
+    And the requirement r1 uses `holds-relation`
+    And the requirement r1 uses `rc-subject`
+    And an act a1
+    And the requirement r1 obliges the act a1
+    And a requirement r2
+    And the requirement r2 forbids the act a1
+    And the requirement r2 uses `holds-relation`
+    When the person runs `model logic`
+    Then `model` prints `L1`
+
+  @g321 @r321
+  Scenario: `model logic` finds no clash between an object that holds nothing and a forbidden object that holds a thing
+    Given a requirement r1
+    And the requirement r1 uses `nothing`
+    And the requirement r1 uses `rc-subject`
+    And an act a1
+    And the requirement r1 obliges the act a1
+    And a requirement r2
+    And the requirement r2 forbids the act a1
+    And the requirement r2 uses `holds-relation`
+    When the person runs `model logic`
+    Then `model` exits successfully
+
+  @g322 @r322
+  Scenario: `model logic` finds no clash between an object that holds no thing of a kind and a forbidden object that holds one
+    Given a requirement r1
+    And the requirement r1 uses `no-noun`
+    And the requirement r1 uses `holds-relation`
+    And an act a1
+    And the requirement r1 obliges the act a1
+    And a requirement r2
+    And the requirement r2 forbids the act a1
+    And the requirement r2 uses `holds-relation`
+    When the person runs `model logic`
+    Then `model` exits successfully
