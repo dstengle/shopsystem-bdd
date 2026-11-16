@@ -10,7 +10,7 @@ been renamed or retired since.
 
 | Line | Releases |
 |---|---|
-| 0.35 | [0.35.2](#0352-migrate-records-the-version-orders-after-any-act-and-line-commands) · [0.35.1](#0351-collections-on-any-responses-object) · [0.35.0](#0350-collections-comparisons-and-orders) |
+| 0.35 | [0.35.2](#0352-migrate-records-the-version-orders-after-any-act-line-commands-groomed-ideas-and-requests-resolved-offered-and-confirmed) · [0.35.1](#0351-collections-on-any-responses-object) · [0.35.0](#0350-collections-comparisons-and-orders) |
 | 0.34 | [0.34.1](#0341-the-version-reset-and-the-givens-of-a-triggers-referents) · [0.34.0](#0340-released-as-410-value-kinds-adjective-or-noun-and-gherkin-in-the-full-form) |
 | 0.33 | [0.33.0](#0330-released-as-400-the-controlled-language-4) |
 | 0.32 | [0.32.1](#0321-released-as-301-features-generate-writes-the-scenario-of-a-negated-response-with-a-recipient) · [0.32.0](#0320-released-as-300-verb-frames-parts-of-speech-in-the-glossary-and-verbs-typed-by-kind) |
@@ -18,7 +18,7 @@ been renamed or retired since.
 | 0.30 | [0.30.0](#0300-released-as-100-codified-requirements) |
 | 0.29 and before | [0.29.0](#0290-glossary-proposals-delegations-given-late-and-fewer-stops-from-outside-a-work-item) · [0.28.3](#0283-a-branch-review-that-runs-nothing) · [0.28.2](#0282-answers-a-round-cannot-hold-go-back-to-integration) · [0.28.1](#0281-work-run-stops-visibly-on-questions-and-spends-less-agent-time) · [0.28.0](#0280-one-set-of-request-commands-work-list-and-work-show-and-answers-that-redraft) · [0.27.0](#0270-transitions-from-how-a-session-ended-and-the-turn-of-an-accepted-request) · [0.26.0](#0260-requests-and-the-context-loop) · [0.25.0](#0250-work-items-side-by-side-answers-and-guarantees) · [0.24.0](#0240-work-items-named-by-ids-and-upgrades-between-plugin-releases) · [0.23.1](#0231---work-item-keeps-tests-that-are-not-scenarios) · [0.23.0](#0230-faults-settled-query-output-as-json-the-session-keeps-the-gate-measurement-on-v3) · [0.22.0](#0220-one-requirement-per-scenario-faults-and-the-lessons-of-a-blind-formulation) · [0.21.0](#0210-the-final-layout-and-delivery-by-work-run) |
 
-## 0.35.2: migrate records the version, orders after any act, and line commands
+## 0.35.2: migrate records the version, orders after any act, line commands, groomed ideas, and requests resolved, offered and confirmed
 
 - **`migrate upgrade` records the release** (b303, PR #61): on a repository behind the plugin's release with no
   upgrade step pending, it printed `no upgrade step is pending` and left `.shop/plugin-version` as it was, so
@@ -37,12 +37,39 @@ been renamed or retired since.
   set `superseded` and committed with the new one. A decision not accepted, or an id that names none, is refused.
 - **`work line --retires <cap>#r<n> --no-line`** (b271, PR #62): a live requirement retired with no line in its
   place, its id under the item's `retired:`.
-- **"Every K, ordered by ..." after any act** (b300, PR #62): an order on a printed every read only after a verb
-  whose frame takes `thing`, such as `print`; "return every video from the channel, ordered by ..." did not parse,
-  and with a frame naming the collection's kind it got no scenario. Now it reads after any verb whose frame takes
-  K, and gets its Then of the order and its counter-example.
-- **Upgrading:** no upgrade step; `migrate upgrade` now records the release even when nothing is pending. No
-  scenario `features generate` wrote in 0.35.1 changes; a line that crashed it or got no scenario now gets one. See
+- **"Every K, ordered by ..." after any act** (b300, PR #62; b328, PR #64): an order on a printed every read only
+  after a verb whose frame takes `thing`, such as `print`; "return every video from the channel, ordered by ..." did
+  not parse, and with a frame naming the collection's kind it got no scenario. Now it reads after any verb whose
+  frame takes K, and gets its Then of the order and its counter-example. "Every K in the Y, ordered by T" after such
+  a verb reads one way, with the order on the Ks, as 0.35.1 read it (b328).
+- **An idea is groomed before it is shaped** (b65, PR #63): `work shape` on an idea with no shaping note under
+  `## Notes` and no `--note` shaped it all the same. Now it refuses, naming `--note`, and `work backlog` prints such an
+  idea with `--note` beside it.
+- **The readiness bar runs v15n** (b77, PR #63): an item whose group repeated another group's condition and trigger
+  went `ready`, and `model check` found the two groups (v15n) only once the lines were laid on a batch. Now `work
+  ready` refuses the item, naming its group and `v15n`.
+- **The merge resolves the request** (b6, PR #63): `work batch merged` set each item `delivered` and left the request
+  it was taken in from `accepted` until someone ran `work resolve`. Now it resolves each `accepted` request of a
+  delivered item: the request `delivered`, its resolution written and posted, its issue closed. A request not
+  `accepted` is left as it is and named.
+- **The things a printed thing holds brought in** (b286, PR #63): the scenario of "print a worktree that holds a
+  file" said "the worktree w1 holds the file f1" with no Given of either, and an order on a collection ("a worktree
+  that holds a file, ordered by version, ...") added a fourth file beside the three members. Now both things are
+  brought in by a Given before the When, and the file the line names is the first member.
+- **Requests' output** (b39, PR #64): `work show <request>` prints each line's reason beside its outcome; `work sync`
+  records a comment that does not conform to the comment form under the record's `## Comments`, applying nothing of
+  it, and so prints it once, not on every run; `work offer`, `propose`, `reply` and `turn` print the request and its
+  status; `work request` takes `--from` as optional, this context its default.
+- **An offer quotes lines, not files** (b40, PR #64): `work offer --capability` pasted the capability file whole,
+  frontmatter, prose and given blocks too, and the glossary with it. Now it quotes each named capability's groups
+  and requirements and only the terms they mention; an offer with no `--capability` posts no glossary.
+- **`work quote` finds a message sent mid-turn** (b52, PR #64): a message the person sent while the session worked
+  is kept in the transcript apart from the prompts, and `work quote` refused its words. Now it quotes and cites it.
+- **Upgrading:** no upgrade step; `migrate upgrade` now records the release even when nothing is pending. Run
+  `features generate`: a line that crashed it or got no scenario now gets one, and a scenario of a printed thing
+  that holds another, or of an order on a collection, gains the Givens of both things ("a file f1", "a worktree w1"),
+  for which a repository with no Given of those kinds writes a handler. `work shape` now needs `--note` on an idea
+  with no shaping note. An offer with no `--capability` posts no glossary. See
   [From 0.35.1 to 0.35.2](docs/upgrading.md#from-0351-to-0352).
 
 ## 0.35.1: collections on any response's object
