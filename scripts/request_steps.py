@@ -3,15 +3,18 @@ upstream's offer (`work offer`), and the asker's answer to it, that an offered c
 lines it proposes (`work propose`). Each step is written into this side's record and committed; the offer and the fit
 are posted on the issue (request_post), the proposed lines with the asker's turn (`work turn`).
 
-An offer quotes the capabilities it names, whole, and the glossary of spec/index.md, for the asker to write its lines
-in this context's terms; the record keeps the offer under `## Offer`, each line quoted (`> `)."""
+An offer quotes each capability it names by its groups, each a title over its requirements (no frontmatter, prose,
+terms or given blocks), and of the imported packs, the glossary and the capabilities' `## Terms` only the entries those
+requirements mention (b40), for the asker to write its lines in this context's terms; the record keeps the offer under
+`## Offer`, each line quoted (`> `)."""
 import re
-from pathlib import Path
 
 import backlog_lines
 import request_moves
 import request_post
 import shop_files
+import spec_packs
+import spec_read
 from backlog_items import one_line
 from request_text import entries, field, with_entries, with_field
 from shop_files import Refused
@@ -28,15 +31,41 @@ def with_offer(text, offer):
         text.rstrip("\n") + "\n\n" + section
 
 
+def _spellings(term):
+    """The words a line mentions `term` by: its own, its plural or forms, and its values."""
+    words = {term.term, term.term + "s", term.term + "es", term.plural, *term.forms, *term.values}
+    return [w for w in words if w]
+
+
+def mentions(text, word):
+    return re.search(r"(?<![\w-])%s(?![\w-])" % re.escape(word), text, re.IGNORECASE) is not None
+
+
+def mentioned(root, lines):
+    """The term entries, over every layer (packs, glossary, capabilities' `## Terms`), that `lines` mention, each
+    once, a later layer's entry of a word in place of an earlier one's."""
+    text, found = "\n".join(lines), {}
+    for _, term in spec_packs.layers(root):
+        if any(mentions(text, w) for w in _spellings(term)):
+            found[(term.term, term.label)] = "- **%s**%s: %s" % (
+                term.term, " (%s)" % term.label if term.label else "", term.text)
+    return list(found.values())
+
+
 def offer_text(root, capabilities, note):
-    """The offer: the note, each named capability's file whole, and the glossary."""
-    parts = [note.strip()] if note and note.strip() else []
+    """The offer: the note, each named capability's groups and requirements, and the terms they mention."""
+    parts, lines = ([note.strip()] if note and note.strip() else []), []
     for name in capabilities:
-        parts.append("Capability %s:\n\n%s" % (name, backlog_lines.capability_file(root, name).read_text().strip()))
-    index = Path(root) / "spec" / "index.md"
-    glossary = re.search(r"(?ms)^## Glossary\s*$.*?(?=^## |\Z)", index.read_text() if index.is_file() else "")
-    if glossary:
-        parts.append(glossary.group(0).strip())
+        cap = spec_read.capability(backlog_lines.capability_file(root, name))
+        block = ["Capability %s:" % name]
+        for group in cap.groups:
+            block.append("\n### [%s] %s" % (group.id, group.title))
+            block += ["- [%s] %s" % (r.id, r.text) for r in group.requirements]
+            lines += [r.text for r in group.requirements]
+        parts.append("\n".join(block))
+    terms = mentioned(root, lines)
+    if terms:
+        parts.append("Terms they use:\n\n" + "\n".join(terms))
     parts.append("Does any of this serve the request? If one serves it, say so with `work fits`; if not, propose "
                  "lines in these terms with `work propose`.")
     return "\n\n".join(parts)

@@ -86,6 +86,9 @@ def work_step(step):
     q = HANDLERS.prepare(step, name)
     rest = {"offer": ["--note", "This may serve."], "fits": ["--serves", "thing#r1"],
             "propose": ["--line", HANDLERS.GOOD], "accept": []}[word]
+    if word == "offer":         # the capabilities `--capability` names (requests_handlers_offer)
+        rest += next(m for m in list(sys.modules.values()) if getattr(m, "__file__", "").endswith(
+            "requests_handlers_offer.py")).args(step, HANDLERS.options(step)[0])
     HANDLERS.run_work(step, word, q, *rest)
 
 
