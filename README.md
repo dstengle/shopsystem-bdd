@@ -71,8 +71,8 @@ $ claude plugin install shopsystem-bdd@shopsystem-bdd
 Then install the grammar tools once, from the installed plugin's directory:
 
 ```console
-$ python3 ~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.35.2/scripts/tools install
-$ python3 ~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.35.2/scripts/tools probe
+$ python3 ~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.36.0/scripts/tools install
+$ python3 ~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.36.0/scripts/tools probe
 ```
 
 `tools probe` shows what is installed. The rest of the docs write commands short, as `tools install` or

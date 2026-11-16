@@ -10,7 +10,8 @@ been renamed or retired since.
 
 | Line | Releases |
 |---|---|
-| 0.35 | [0.35.2](#0352-migrate-records-the-version-orders-after-any-act-line-commands-groomed-ideas-and-requests-resolved-offered-and-confirmed) · [0.35.1](#0351-collections-on-any-responses-object) · [0.35.0](#0350-collections-comparisons-and-orders) |
+| 0.36 | [0.36.0](#0360-migrate-records-the-version-orders-after-any-act-line-commands-groomed-ideas-and-requests-resolved-offered-and-confirmed) |
+| 0.35 | [0.35.1](#0351-collections-on-any-responses-object) · [0.35.0](#0350-collections-comparisons-and-orders) |
 | 0.34 | [0.34.1](#0341-the-version-reset-and-the-givens-of-a-triggers-referents) · [0.34.0](#0340-released-as-410-value-kinds-adjective-or-noun-and-gherkin-in-the-full-form) |
 | 0.33 | [0.33.0](#0330-released-as-400-the-controlled-language-4) |
 | 0.32 | [0.32.1](#0321-released-as-301-features-generate-writes-the-scenario-of-a-negated-response-with-a-recipient) · [0.32.0](#0320-released-as-300-verb-frames-parts-of-speech-in-the-glossary-and-verbs-typed-by-kind) |
@@ -18,7 +19,7 @@ been renamed or retired since.
 | 0.30 | [0.30.0](#0300-released-as-100-codified-requirements) |
 | 0.29 and before | [0.29.0](#0290-glossary-proposals-delegations-given-late-and-fewer-stops-from-outside-a-work-item) · [0.28.3](#0283-a-branch-review-that-runs-nothing) · [0.28.2](#0282-answers-a-round-cannot-hold-go-back-to-integration) · [0.28.1](#0281-work-run-stops-visibly-on-questions-and-spends-less-agent-time) · [0.28.0](#0280-one-set-of-request-commands-work-list-and-work-show-and-answers-that-redraft) · [0.27.0](#0270-transitions-from-how-a-session-ended-and-the-turn-of-an-accepted-request) · [0.26.0](#0260-requests-and-the-context-loop) · [0.25.0](#0250-work-items-side-by-side-answers-and-guarantees) · [0.24.0](#0240-work-items-named-by-ids-and-upgrades-between-plugin-releases) · [0.23.1](#0231---work-item-keeps-tests-that-are-not-scenarios) · [0.23.0](#0230-faults-settled-query-output-as-json-the-session-keeps-the-gate-measurement-on-v3) · [0.22.0](#0220-one-requirement-per-scenario-faults-and-the-lessons-of-a-blind-formulation) · [0.21.0](#0210-the-final-layout-and-delivery-by-work-run) |
 
-## 0.35.2: migrate records the version, orders after any act, line commands, groomed ideas, and requests resolved, offered and confirmed
+## 0.36.0: migrate records the version, orders after any act, line commands, groomed ideas, and requests resolved, offered and confirmed
 
 - **`migrate upgrade` records the release** (b303, PR #61): on a repository behind the plugin's release with no
   upgrade step pending, it printed `no upgrade step is pending` and left `.shop/plugin-version` as it was, so
@@ -65,12 +66,12 @@ been renamed or retired since.
   and requirements and only the terms they mention; an offer with no `--capability` posts no glossary.
 - **`work quote` finds a message sent mid-turn** (b52, PR #64): a message the person sent while the session worked
   is kept in the transcript apart from the prompts, and `work quote` refused its words. Now it quotes and cites it.
-- **Upgrading:** no upgrade step; `migrate upgrade` now records the release even when nothing is pending. Run
+- **Upgrading:** a y release, because regenerated features change for lines that read the same (decision 0092): no upgrade step; `migrate upgrade` now records the release even when nothing is pending. Run
   `features generate`: a line that crashed it or got no scenario now gets one, and a scenario of a printed thing
   that holds another, or of an order on a collection, gains the Givens of both things ("a file f1", "a worktree w1"),
   for which a repository with no Given of those kinds writes a handler. `work shape` now needs `--note` on an idea
   with no shaping note. An offer with no `--capability` posts no glossary. See
-  [From 0.35.1 to 0.35.2](docs/upgrading.md#from-0351-to-0352).
+  [From 0.35.1 to 0.36.0](docs/upgrading.md#from-0351-to-0360).
 
 ## 0.35.1: collections on any response's object
 

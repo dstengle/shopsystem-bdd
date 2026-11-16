@@ -380,14 +380,16 @@ run. Run `features generate` and write the
 handlers of the new scenarios. `work ready` now refuses an item a requirement of which `model logic` names
 `unread`, naming the requirement.
 
-## From 0.35.1 to 0.35.2
+## From 0.35.1 to 0.36.0
 
-No upgrade step. Run `migrate upgrade` once: where 0.35.1 printed `no upgrade step is pending` and left
+A y release: no upgrade step, but regenerated features change for lines that read the same, and step
+handlers may need a Given (below). Run `migrate upgrade` once: where 0.35.1 printed `no upgrade step is pending` and left
 `.shop/plugin-version` behind, it now writes the release, commits and pushes it.
 
 Run `features generate`. A line with "every K is not `v`" in a While clause, or "every K, ordered by ..." after a
 verb whose frame names K, no longer crashes or goes without a scenario: write the handlers of their new scenarios.
-"Every K in the Y, ordered by T" after such a verb reads as 0.35.1 read it, with the order on the Ks. A scenario of
+"Every K in the Y, ordered by T" after such a verb reads one way, with the order on the Ks (0.35.1 put it on
+the Y). A scenario of
 a printed thing that holds another ("print a worktree that holds a file"), or of an order on a collection, now
 brings both things in by a Given before the When ("a file f1", "a worktree w1"), and an order's first member is the
 thing the line names: a repository whose handlers have no Given of those kinds writes one.
