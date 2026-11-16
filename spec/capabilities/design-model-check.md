@@ -578,6 +578,12 @@ Restates: r37@0.29.
 ### [g310] `model logic` finds the clash of two lines under a comparison of two senses of one term
 - [r310] While a sense of a term has a value order and another sense of the term has the value order and a requirement of a capability uses the term and `value-compare` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
 
+### [g314] `model logic` reads `holds-exactly` whose restriction is a relative clause
+- [r314] While a requirement of a capability uses `holds-exactly` and `rc-object` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
+
+### [g315] `model logic` reads `nothing` on a response's object
+- [r315] While a requirement of a capability uses `nothing` and `rc-subject` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
+
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a
   fact `label("<code>", "<label>")` beside the rule, the one place it is written; `check` and `rules` read the labels

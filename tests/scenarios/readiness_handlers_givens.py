@@ -88,11 +88,15 @@ def given_does(step):
     """pass: the item's one line passes the bar; has: "no requirement has the requirement id r1" (and of a universal
     condition id) makes the id one that `work line --retires` is refused, any other has (a bar check of the bar, a
     scenario of the item, a step of the scenario) nothing; holds: a term the item holds one that violates `v_t12`; violate: the
-    rule the term violates, named by its code."""
+    rule the term violates, named by its code; has no translation: the requirement the item's one line, which
+    `model logic` reads no translation of (r41)."""
     if not R.mine(step) or step.term not in ("pass", "has", "holds", "violate"):
         return False
     if step.term == "pass":
         R.give_lines(step, step.names[0], R.PASSING)
+    elif step.term == "has" and step.subject.startswith("the requirement ") and step.nps == ["no translation"]:
+        R.give_lines(step, step.context.get("item", "i1"), R.UNREAD, capability=R.UNREAD_CAPABILITY)     # r41
+        says(step, step.names[0], R.UNREAD_ID)
     elif step.term == "has" and step.context.get("says", {}).get(step.names[-1]) == R.ILL_TERM:
         _ill_term(step, step.context["ill"], of_the_bar=True)     # the ill term's check one of this bar
     elif step.term == "has" and step.subject.startswith("no "):

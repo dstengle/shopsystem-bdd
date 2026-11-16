@@ -336,6 +336,18 @@ the capability `shelf` holds:
 ### [g124] `features generate` writes the scenario of `order-by-every` on a term of two senses
 - [r124] While a term has two senses and a requirement of a requirement group of a capability uses the term and `order-by-every`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has an order counter-example.
 
+### [g125] `features generate` writes the member outside a relative clause's restriction
+- [r125] While a requirement of a capability uses `holds-exactly` and `rc-object`, when the person runs `features generate` on the capability, `features` shall write a scenario whose step uses `not-condition`.
+
+### [g126] `features generate` writes `nothing` on a response's object
+- [r126] While a requirement of a capability uses `nothing` and `rc-subject`, when the person runs `features generate` on the capability, `features` shall write a scenario whose step uses `nothing`.
+
+### [g127] `features generate` writes the scenario of `order-by` on the object of a verb whose frames name its kind
+- [r127] While a requirement of a requirement group of a capability uses `order-by` and the requirement uses a verb that has no frame that takes `thing`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has an order counter-example.
+
+### [g128] `features generate` writes the Then of a response's object that holds no K
+- [r128] While a requirement of a requirement group of a capability uses `no-noun` and `holds-relation` and the precondition of the requirement does not use `no-noun`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has a counter-example.
+
 ## Implementation, may change
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three
   backticks. A scenario's block is its tag lines, its `Scenario:` line and everything up to the next scenario's tag

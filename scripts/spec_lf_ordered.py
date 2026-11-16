@@ -137,13 +137,16 @@ def swap(tree, old, new):
 
 
 def said(r, event, x, arg):
-    """The Then of `event` (its object x) said of the order's noun phrase `arg`, a `k_thing_Arg` tree."""
+    """The Then of `event` (its object x) said of the order's noun phrase: `arg` a `k_thing_Arg` tree, or a function
+    of a slot's kind giving the order's argument in that slot. The collection is found in the Then by the slot its
+    frame takes, x's kind or a kind above it (b298: "return a worktree", whose frame names no `thing`)."""
     tree = r.does(event, True)
-    old = r.arg(x, "thing")
-    if not _holds(tree, old):
-        import spec_steps4_boxes  # here: the steps import this module through spec_steps4
-        raise spec_steps4_boxes.TraceError("no step of an order of %s there" % x.kind)
-    return swap(tree, old, arg)
+    for slot in r.vocab.ancestors(x.kind) if callable(arg) else ["thing"]:
+        old = r.arg(x, slot)
+        if _holds(tree, old):
+            return swap(tree, old, arg(slot) if callable(arg) else arg)
+    import spec_steps4_boxes  # here: the steps import this module through spec_steps4
+    raise spec_steps4_boxes.TraceError("no step of an order of %s there" % x.kind)
 
 
 def _holds(tree, sub):
@@ -189,7 +192,11 @@ def then(r, atom, body):
     R = next(j for j, w in enumerate(r.vocab.rows, 1) if w == row)
     K = spec_rgl.kid(x.kind)
     by = ("r%d_in_By_t_%s_%d" % (R, spec_rgl.slug(term), n), r.np0(x)[1], (FUNS[d],))
-    return [(None, said(r, event, x, ("k_thing_One", (K + "_Up_k_thing", by) if x.kind != "thing" else by)))]
+
+    def arg(slot):      # the order's noun phrase in a slot of kind `slot`, x's own or one above it
+        S = spec_rgl.kid(slot)
+        return (S + "_One", (K + ("_Simple" if slot == x.kind else "_Up_" + S), by))
+    return [(None, said(r, event, x, arg))]
 
 
 def boxes():

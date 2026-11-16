@@ -14,7 +14,8 @@ section 7.4), beside spec_lf_facts, whose walk (`w`) emits them:
 - "a K whose T is not v" on a response's object: `onattr(R,X,T,V)`, which check.lp's `gap` and `pag` read as they read
   `oattr`, so a line on a K that is not v clashes only with one on a K known not to be v; "a K that x does not V"
   and "a K that no K2 Vs" `onrel(R,X,Q,D,O)`, read the same way (b240 phase 12); "a K that holds no K2 that is not
-  P" (holds-exactly's second half) spec_lf_member's `onrel` to `such(K2,...)` (b274);
+  P" (holds-exactly's second half, P values, rows or states, b297) spec_lf_member's `onrel` to `such(K2,...)` (b274),
+  and "a K that holds nothing" its `onrel` to `kind(K2)` of each K2 a row `K2 | in | K` lets it hold (b297);
 - "only" and a count over a row or a state on a response's object ("print a worktree that holds only files whose
   version is `2.0.0`", "holds at most three files", R5, R7; b272): restrictions of that object, `oonly(R,X,Q,D,Y)`
   and `ocount(R,X,Q,D,Y,B,N)` (D as `onrel`'s, Y the box's K with its restrictor `yattr(R,Y,T,V)`, `yrel(R,Q,Y,Z)`),
@@ -119,6 +120,8 @@ def negated(w, box, own):
     state ("a stage that the session does not follow", "a line that no file covers"): `onrel` (b240 phase 12)."""
     item = box.body[0] if len(box.body) == 1 else None
     if item is None and spec_lf_member.negated(w, box, own):     # "holds no K that is not P" (b274)
+        return None
+    if spec_lf_member.nothing_on(w, box, own):      # "a worktree that holds nothing" (b297)
         return None
     if isinstance(item, Atom) and item.pred in ("rel", "state"):
         return unrelated(w, item, own, set(box.refs))

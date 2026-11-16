@@ -106,6 +106,9 @@ the item is settled. `work ready` checks the bar and asks nobody.
 ### [g40] `work line --universal --retires` refuses a universal condition id that no universal condition has
 - [r40] If the person runs `work line` with the `--universal` option and the `--retires` option set to a universal condition id that no universal condition has, then `work` shall refuse the command and name the universal condition id.
 
+### [g41] `work ready` refuses an item a requirement of which has no translation
+- [r41] While an item is `shaped` and a requirement in the item has no translation, if the person runs `work ready` on the item, then `work` shall refuse the command and name the requirement.
+
 ## Implementation, may change
 - An item's requirement lines stay on the item until its batch merges: in the item file's `## Requirements`, one
   `### <capability>` block for each codified capability they go into, term bullets first, then `#### [g<n>]` groups of
