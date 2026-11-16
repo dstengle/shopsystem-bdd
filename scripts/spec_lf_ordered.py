@@ -90,15 +90,15 @@ def facts(walk, atom, act):
 
 
 # --- the steps -----------------------------------------------------------------------------------------------------
-def member(vocab, atom):
+def member(vocab, atom, held=False):
     """(the member kind's row, the attribute entry and its kinds) of an order: the entry of its word that is the
-    every's own kind's, up its kind tree, else the K1's of a row `K1 | in | K2` of the collection's kind, up K1's kind
+    every's own kind's, up its kind tree, else (and always of a collection's members, `held`) the K1's of a row `K1 | in | K2` of the collection's kind, up K1's kind
     tree (b288: of a word of two senses, the member kind's sense, not the first entry of the word); an order no entry
     of its word is a member's of refused naming the term."""
     x, term, _ = atom.args
     entries = [(n, t, ks) for n, (t, ks) in enumerate(vocab.attributes, 1) if t.term == term]
     up = vocab.ancestors(x.kind)
-    own = next((e for e in entries if any(k in e[2] for k in up)), None)
+    own = None if held else next((e for e in entries if any(k in e[2] for k in up)), None)
     if own:
         return None, own
     for row in (r for r in vocab.rows if r[1] == "in" and r[2] in up):
@@ -179,7 +179,7 @@ def then(r, atom, body):
     """[(act, Then)] of an order on a collection (b275): three members it holds brought in, each with a value of T
     in neither the order nor its reverse, and the Then of the act on the collection that states the order."""
     x, term, d = atom.args
-    row, (n, t, _) = member(r.vocab, atom)
+    row, (n, t, _) = member(r.vocab, atom, held=True)     # the members' sense, though the collection has one too
     r.bring_in(x)
     for k, v in enumerate(values(t), 1):
         y = Ref("%s.m%d" % (x.name, k), row[0], "response")
