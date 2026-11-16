@@ -8,6 +8,7 @@ the agent follows (building-a-batch), the command prefix every push and gh call 
 session that started the batch dispatches the agent with the brief's path as its whole prompt."""
 from pathlib import Path
 
+import backlog_chore
 import backlog_items
 import backlog_lines
 import batch_plan
@@ -56,12 +57,13 @@ def _tasks(root, batch, picked):
         tests = "; ".join("`python3 -m pytest -q tests/scenarios/test_%s.py -m \"%s\"`" % (
             c.replace("-", "_"), " or ".join("r%s" % i.split("#r")[1] for i in ids if i.startswith(c + "#")))
             for c in caps) or "none"
+        chore = ["- %s" % said for said in backlog_chore.said(item)]       # in place of ids (b316)
         out += ["### %s %s" % (task.task, backlog_items.label(item)), "",
                 "- Worktree: %s (made by `work batch resume`)" % (trees_dir(root) / ("%s-%s" % (batch.name, task.task))),
                 "- Branch: %s" % task.branch,
                 "- Item file: %s" % (Path(root) / backlog_items.rel_of(item.name)),
-                "- Requirement ids: %s" % (", ".join(ids) or "none"),
-                "- Acceptance tests (in the worktree): %s" % tests,
+                *(chore or ["- Requirement ids: %s" % (", ".join(ids) or "none"),
+                            "- Acceptance tests (in the worktree): %s" % tests]),
                 "- Subagent description: `%s %s %s`" % (batch.name, task.task, item.name), ""]
     return out
 

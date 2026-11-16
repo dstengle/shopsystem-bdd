@@ -75,3 +75,14 @@ def test_an_item_making_a_capability_passes_the_bar(ready_repo):
     assert work(ready_repo, "line", "b1", "--into", "shelf", LINE).returncode == 0
     reasons, _ = readiness_bar.check(ready_repo, backlog_items.find(ready_repo, "b1"))
     assert reasons == []
+
+
+def test_a_new_capability_and_a_chore_exclude_each_other(ready_repo):
+    """b316's chore and b317's capability block: each refused on an item holding the other."""
+    made(ready_repo)
+    done = work(ready_repo, "chore", "b1", "--file", "scripts/x.py", "--check", "true")
+    assert done.returncode == 1 and "### shelf" in done.stderr, done.stderr
+    write_item(ready_repo, "b2", status="shaped")
+    assert work(ready_repo, "chore", "b2", "--file", "scripts/x.py", "--check", "true").returncode == 0
+    done = work(ready_repo, "line", "b2", "--capability", "shelf", "--narrator", "n", "p")
+    assert done.returncode == 1 and "a chore and requirement lines exclude each other" in done.stderr, done.stderr

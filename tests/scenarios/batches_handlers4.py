@@ -114,6 +114,8 @@ def passes_given(step):
     """An item passes the readiness bar (the lines `work batch start` gives a ready item) or does not (a line that
     does not parse); a scenario of an item fails or passes in the worktree of the task (the batch's tests)."""
     k, name = parts(step)[0]
+    if k == "chore":           # batches_handlers_chore's (b316)
+        return False
     if k == "item":
         if step.template == "GivenDoesNot":
             sys.modules["shop_readiness_world"].give_lines(step, name, sys.modules["shop_readiness_world"].FAILING)

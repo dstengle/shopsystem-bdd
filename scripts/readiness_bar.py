@@ -13,6 +13,7 @@ import shutil
 import tempfile
 from pathlib import Path
 
+import backlog_chore
 import backlog_lines
 import features_generate
 import model_decisions
@@ -128,6 +129,8 @@ def well_formed(root, item, others=()):
     """(reasons, warnings) of the item's requirement lines, checked on a copy of `spec/` with them laid in (D6, D7, D9),
     over the lines of `others` (a batch's items picked before it, plan 4 D7). An item with no line is not passing,
     unless it retires a requirement (b271)."""
+    if backlog_chore.read(item) is not None:        # a chore in place of lines (b316): its check is done's to run
+        return backlog_chore.unlined(item), []
     blocks = backlog_lines.read(item, rel_of(item.name))
     mine = set(backlog_lines.ids(blocks))
     if not mine and not any(b.retired for b in blocks):

@@ -155,8 +155,10 @@ def _unreplaced(args):
 
 def cmd_line(args):
     """`work line`: it parses nothing; `work ready` is the check (D5). One piece a run: a line, or one flag's piece."""
+    import backlog_chore
     import backlog_forms
     import backlog_lines
+    backlog_chore.refuse_line(args.root, args.name)
     if args.capability is not None:
         import backlog_capability
         return backlog_capability.cmd(args)

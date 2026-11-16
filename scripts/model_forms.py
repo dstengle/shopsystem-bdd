@@ -29,6 +29,7 @@ class Form(NamedTuple):
 FORMS = [
     Form("item", ".shop/backlog/b<n>.md", "work idea"),
     Form("item's requirement line", ".shop/backlog/b<n>.md ## Requirements", "work line"),
+    Form("item's chore", ".shop/backlog/b<n>.md ## Chore", "work chore"),
     Form("item's term bullet", ".shop/backlog/b<n>.md ## Requirements", "work line --term"),
     Form("requirement line in spec", "spec/capabilities/<name>.md ## Behaviour", "work batch start"),
     Form("batch plan", ".shop/batches/<n>/plan.md", "work batch start"),
