@@ -168,14 +168,16 @@ def disagreeing(gram, vocab, tokens, at, name=None):
     return None
 
 
-# the aspect a clause takes, by the word that opens it (call 3): a trigger an action, a While clause a state
-CLAUSES = {"when": ("action", "a trigger"), "if": ("action", "a trigger"), "while": ("state", "a While clause")}
+# the aspect a clause takes, by the word that opens it (call 3): a trigger an action, a While clause a state, and the
+# response after shall an action (b175)
+CLAUSES = {"when": ("action", "a trigger"), "if": ("action", "a trigger"), "while": ("state", "a While clause"),
+           "shall": ("action", "a response")}
 ASPECT = {"action": "an action", "state": "a state"}
 
 
 def misaspected(vocab, tokens, at):
     """The refusal of a verb at token `at` whose aspect is not the one its clause takes, or None: the clause is the
-    one the nearest When, If or While before it opens."""
+    one the nearest When, If, While or shall before it opens."""
     if at is None or at >= len(tokens):
         return None
     clause = next((CLAUSES[w.lower()] for w in reversed(tokens[:at]) if w.lower() in CLAUSES), None)

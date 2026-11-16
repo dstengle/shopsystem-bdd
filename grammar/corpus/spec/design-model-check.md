@@ -2122,6 +2122,26 @@ shall [x2: thing `order-by-every` (parameter), x3: thing `of-relation` (paramete
     exit(e2, subject: x6, successfully)
 ```
 
+## r319
+From: b175 r317. Not in the audit (b175 is no reword item).
+
+```reading
+If the person runs `model parse` on a requirement whose response uses a term whose aspect is `state`, then `model` shall refuse the command, name the term and the response and not name the trigger.
+shall [x1: agent the person (constant), x2: command `model parse` (parameter), x6: tool `model` (constant)]
+  if [x3: requirement, x4: response, x5: term]
+    of(x4, x3)
+    aspect(x5) = `state`
+    use#2(subject: x4, object: x5)
+    run(e1, subject: x1, object: x2, on: x3)
+  response [x7: trigger]
+    refuse(e2, subject: x6, object: x2)
+    name(e3, subject: x6, object: x5)
+    name(e4, subject: x6, object: x4)
+    of(x7, x3)
+    not
+      name(e5, subject: x6, object: x7)
+```
+
 ## r320
 From: b314 r320. Not in the audit (b314 is no reword item).
 
