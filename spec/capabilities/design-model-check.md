@@ -6,7 +6,7 @@ group: service
 language: codified-2
 rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/query-commands-answer-in-their-output, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items, design-decision/work-items-named-by-ids, design-decision/the-glossary-is-a-target-of-spec-work]
 retired: [r8, r9, r12, r13, r14, r15, r16, r17, r18, r21, r26, r27, r29, r31, r32, r33, r34, r35, r37, r39, r45, r46, r53, g73, r73, g72, r72, g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g10, r10, g11, r11, g19, r19, g20, r20, g22, r22, g23, r23, g24, r24, g25, r25, g28, r28, g30, r30, g36, r36, g38, r38, g40, r40, g41, r41, g42, r42, g43, r43, g44, r44, g47, r47, g48, r48, g49, r49, g51, r51, g52, r52, g57, r57, g58, r58, g59, r59, g60, r60, g61, r61, g62, r62, g63, r63, g66, r66, g64, r64, g65, r65, g67, r67, g68, r68, g69, r69, g70, r70, g71, r71, g74, r74, g75, r75, g76, r76, g77, r77, g78, r78, g79, r79, g80, r80, g81, r81, g82, r82, g83, r83, g84, r84, g85, r85, g86, r86, g87, r87, g88, r88, g89, r89, g90, r90, g91, r91, g92, r92, g93, r93, g94, r94, g95, r95, g96, r96, g97, r97, g98, r98, g99, r99, g100, r100, g101, r101, g131, r131, g132, r132, g133, r133, g134, r134, g135, r135, g136, r136, g137, r137, g138, r138, g139, r139, g140, r140, g141, r141, g142, r142, g143, r143, g144, r144, g145, r145, g157, r157, g158, r158, g159, r159, g160, r160, g161, r161, g162, r162, g163, r163, g164, r164, g165, r165, g166, r166, g167, r167, g168, r168, g169, r169, g170, r170, g171, r171, g172, r172, g173, r173]
-unbuilt: []
+unbuilt: [r306, r307, r308, r311, r312, r313, r309, r310]
 ---
 
 # Design model check
@@ -151,6 +151,8 @@ context: product-level artifacts are read only where the files contain them.
 | value order | of | term | one |
 | order | in | capability |  |
 | order | on | term | one |
+| order | in | act |  |
+| value order | of | sense | one |
 
 ## Behaviour
 
@@ -551,6 +553,30 @@ Restates: r37@0.29.
 
 ### [g297] `model logic` finds two contradicting orders
 - [r297] While a capability holds an order that contradicts an order, when the person runs `model logic`, `model` shall print `L1`.
+
+### [g306] `model parse` refuses an order in a precondition
+- [r306] If the person runs `model parse` on a requirement whose precondition uses an order, then `model` shall refuse the command and name the order.
+
+### [g307] `model parse` refuses an order in a trigger
+- [r307] If the person runs `model parse` on a requirement whose trigger uses an order, then `model` shall refuse the command and name the order.
+
+### [g308] `model parse` refuses an order in a forbidden act
+- [r308] If the person runs `model parse` on a requirement that forbids an act that holds an order, then `model` shall refuse the command and name the order.
+
+### [g311] `model parse` reads a comparison of two senses of one term with one value order
+- [r311] While a sense of a term has a value order and another sense of the term has the value order and a requirement uses the term and `value-compare`, when the person runs `model parse` on the requirement, `model` shall exit successfully.
+
+### [g312] `model parse` reads two senses of one term with one value order said to be the same
+- [r312] While a sense of a term has a value order and another sense of the term has the value order and a requirement uses the term and `value-same`, when the person runs `model parse` on the requirement, `model` shall exit successfully.
+
+### [g313] `model parse` refuses a comparison of two senses of one term with different value orders
+- [r313] While a sense of a term has a value order and another sense of the term has a different value order and a requirement uses the term and `value-compare`, if the person runs `model parse` on the requirement, then `model` shall refuse the command and name the term.
+
+### [g309] `model parse` refuses two senses of one term with different value orders said to be the same
+- [r309] While a sense of a term has a value order and another sense of the term has a different value order and a requirement uses the term and `value-same`, if the person runs `model parse` on the requirement, then `model` shall refuse the command and name the term.
+
+### [g310] `model logic` finds the clash of two lines under a comparison of two senses of one term
+- [r310] While a sense of a term has a value order and another sense of the term has the value order and a requirement of a capability uses the term and `value-compare` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a
