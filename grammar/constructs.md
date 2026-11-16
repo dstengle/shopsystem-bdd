@@ -1232,7 +1232,7 @@ one thing's value compared with another's, of one attribute with a value order (
 
 - Form: the <attribute> of <np> is after|before the <attribute> of <np>
 - Functions: `t_[a-z0-9_]+_\d+_CmpT`
-- Cited by: design-model-check#r298, design-model-check#r300, design-model-check#r301
+- Cited by: design-model-check#r298, design-model-check#r300, design-model-check#r301, design-model-check#r311, design-model-check#r313, design-model-check#r310
 - Example and its reading:
 
 ```construct
@@ -1252,7 +1252,7 @@ one thing's value the same as another's, of any attribute (b275)
 
 - Form: the <attribute> of <np> is the same as the <attribute> of <np>
 - Functions: `t_[a-z0-9_]+_\d+_SameAs`
-- Cited by: design-model-check#r299
+- Cited by: design-model-check#r299, design-model-check#r312, design-model-check#r309
 - Example and its reading:
 
 ```construct
