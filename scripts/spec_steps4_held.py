@@ -7,8 +7,8 @@ puts every given K2 into the object fails the Then (`then`). A restrictor other 
 ten, is a TraceError naming it.
 """
 import spec_rgl
-from spec_lf_core import Atom, Ref
 import spec_steps4_boxes as boxes
+from spec_lf_core import Atom, Ref
 from spec_steps4_boxes import TraceError
 
 kid = spec_rgl.kid

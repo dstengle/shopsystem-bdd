@@ -36,8 +36,8 @@ LINES = {
          [r"Given a file f1\n", r"And a file f4\n",
           r"Then `work` prints the worktree w1\n    And the worktree w1 holds at most three files\n"],
          [r"a file f5", r"holds the file"]),
-        ("When the person runs `work status`, `work` shall print a worktree that holds fewer than three files whose "
-         "version is `2.0.0`.",
+        (("When the person runs `work status`, `work` shall print a worktree that holds fewer than three files "
+          "whose version is `2.0.0`."),
          [r"Given a file f1\n", r"And a file f3\n", r"And the version of the file f3 is `2.0.0`\n",
           r"And the worktree w1 holds fewer than three files whose version is `2.0.0`\n"],
          [r"a file f4", r"holds the file"])],
