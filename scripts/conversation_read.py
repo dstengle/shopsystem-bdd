@@ -3,7 +3,10 @@ person's prompts and the session's text of each turn, read from Claude Code's `<
 tool uses, tool results, thinking, system reminders, meta, sidechain, compaction-summary, local-command or `!`
 bash-mode rows, notifications of background tasks or any row Claude Code wrote rather than the person (an `origin` of
 a kind other than `human`, an interruption marker); a slash command is the person's message `/<name> <args>`
-(plan 8's review, Q1); a carriage return is a newline, so what is rendered reads back as it is (M2). The
+(plan 8's review, Q1); a message the person sent while the session worked on a turn (Claude Code's `attachment` row
+of a `queued_command` whose `commandMode` is `prompt` and whose origin is the person's) is the person's too, and closes
+the session's turn as a prompt does, a subagent's hand-back and a task notification of the same shape left out (b52);
+a carriage return is a newline, so what is rendered reads back as it is (M2). The
 message of the person a quote's words cite, and the messages around it. A row with no type is refused naming the file
 and line (0018). Standard library only."""
 import re
@@ -58,6 +61,17 @@ def _persons(row):
     return "" if text.startswith(COMMAND) else text
 
 
+def _queued(row):
+    """The person's words of an `attachment` row of a message sent mid-turn, or "" when the row is no such message."""
+    command = row.get("attachment")
+    if not isinstance(command, dict) or command.get("type") != "queued_command" or command.get("isMeta"):
+        return ""
+    origin = command.get("origin")
+    if command.get("commandMode") != "prompt" or not isinstance(origin, dict) or origin.get("kind") != "human":
+        return ""
+    return _persons({"message": {"content": command.get("prompt")}})
+
+
 def _lines(path):
     """The number of each non-blank line of `path`, in the order json_rows gives their rows."""
     return [n for n, line in enumerate(path.read_text(encoding="utf-8", errors="replace").split("\n"), 1)
@@ -78,10 +92,10 @@ def messages(path):
         kind = row.get("type")
         if not isinstance(kind, str):
             raise Refused("%s has no type; the shape of %s is not known" % (where, path.name))
-        if kind not in ("user", "assistant") or row.get("isSidechain"):
+        if kind not in ("user", "assistant", "attachment") or row.get("isSidechain"):
             continue
-        if kind == "user":
-            text = _persons(row)
+        if kind != "assistant":
+            text = _persons(row) if kind == "user" else _queued(row)
             if text:
                 close()
                 turn = None
