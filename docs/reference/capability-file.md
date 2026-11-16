@@ -444,7 +444,7 @@ Here is the whole path in a scratch clone of this repository. Say you want `work
 as the title. That changes `backlog#r15`, so the new line retires it:
 
 ```console
-$ work idea '`work show` prints the status too'
+$ work idea '`work show` prints the status too' --note 'the person wants to see where an item stands beside its title'
 b250 "`work show` prints the status too" idea
 $ work shape b250
 b250 "`work show` prints the status too" shaped

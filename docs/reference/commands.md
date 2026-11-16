@@ -83,12 +83,13 @@ b250 "work show prints the status of an item" shaped
 #### `work line`
 
 Writes a requirement line into an item's `## Requirements`, under the capability it goes into, and commits it.\
-Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--reword CAP#rN] [--remove CAP#rN] [--term TERM] [--recodify CAP] [--relation RELATION] [--given GROUP BLOCK] [--universal UNIVERSAL] [--upstream UPSTREAM] name [text]`
+Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--no-line] [--reword CAP#rN] [--remove CAP#rN] [--term TERM] [--recodify CAP] [--relation RELATION] [--given GROUP BLOCK] [--universal UNIVERSAL] [--upstream UPSTREAM] name [text]`
 
 - `--into <capability>`: the codified capability the line goes into.
 - `--group "<title>"`: open a new group with this title (default: the item's title). `--in g<n>` joins one of the
   item's groups instead.
 - `--retires <cap>#r<n>`: the line replaces a live requirement, whose id goes to `retired:`. Ids are never reused.
+  With `--no-line` and no line, the requirement is retired with nothing in its place.
 - `--reword <cap>#r<n>`: the line takes the place of one of the item's own lines, keeping its id and group.
   `--remove <cap>#r<n>` takes one of them out, its group with it when it was the last line, and the id it
   retires. Either refuses an id that is no line of the item, a live requirement's among them.
@@ -398,7 +399,8 @@ URL. The examples follow one request, `q48`, that this repository raised to itse
 Asks an upstream (or this context): writes the request, opens its issue, and commits both.\
 Synopsis: `work request [--from ASKER] [--ask ASK] [--to TO] [--source SOURCE] [--thread THREAD] [--raised-for RAISED_FOR] title`
 
-- `--from`: the asker, this bounded context's id (default: this context).
+- `--from`: the asker: this bounded context's id, or `internal` for a request this context raises to itself
+  (optional; default: this context).
 - `--ask`: what the asker needs, in its own words (default: the title).
 - `--to`: the upstream, one of `spec/index.md`'s `## Upstreams` (default: the one upstream, or this context).
 - `--source`: the origin of a request this context asks itself; `--thread` or `--raised-for` for one another
@@ -411,12 +413,15 @@ q48 https://github.com/ex/ctx/issues/1
 
 #### `work offer`
 
-The upstream's offer: the capabilities that may serve the request, quoted whole under `## Offer` with the glossary,
-so the asker can write lines in the upstream's words.\
+The upstream's offer, under `## Offer`: each capability that may serve the request quoted by its groups and
+requirements, with only the terms they mention, so the asker can write lines in the upstream's words. With no
+`--capability` the offer is the note alone, no glossary. It passes the turn to the asker and prints the request, its
+status and its turn.\
 Synopsis: `work offer [--capability CAPABILITY] [--note NOTE] request`
 
 ```console
 $ work offer q48 --capability backlog --note "work show prints an item's title and rating today; the backlog capability would hold the status too."
+q48 awaiting-asker asker
 ```
 
 #### `work fits`
@@ -435,20 +440,22 @@ it is the asker's turn, on https://github.com/ex/ctx/issues/2
 
 #### `work propose`
 
-The asker's lines, one `--line` each, in the upstream's words.\
+The asker's lines, one `--line` each, in the upstream's words; it prints the request, its status and its turn.\
 Synopsis: `work propose [--line LINES] request`
 
 ```console
 $ work propose q48 --line 'When the person runs `work show` on an item, `work` shall print the status of the item.'
+q48 awaiting-asker asker
 ```
 
 #### `work turn`
 
-Passes a request's turn to the other side, and posts it.\
+Passes a request's turn to the other side, posts it, and prints the request, its status and its turn.\
 Synopsis: `work turn request`
 
 ```console
 $ work turn q48
+q48 awaiting-upstream upstream
 ```
 
 #### `work ask`
@@ -462,7 +469,7 @@ $ work ask q48 1 "Should the status be the item's state, such as ready?"
 
 #### `work reply`
 
-The asker's answer to a question of a request.\
+The asker's answer to a question of a request; it prints the request, its status and its turn.\
 Synopsis: `work reply request question answer`
 
 ```console
@@ -1031,7 +1038,8 @@ the plugin's version: 0.33.0
 ### `migrate upgrade`
 
 Applies each pending upgrade step in order (for 0.33.0, the `codified-2` marker, the CLI pack import, verbs'
-aspects), commits it all, and reports what is left for you to reword, by file and id.\
+aspects), commits it all, and reports what is left for you to reword, by file and id. With no step pending and
+the repository behind the plugin, it records the plugin's release in `.shop/plugin-version` and commits it.\
 Synopsis: `migrate upgrade`
 
 ```console
