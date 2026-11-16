@@ -644,8 +644,8 @@ Feature: Requests
     Then `work` writes the request r1
     And the request r1 originates from this bounded context
 
-  @g112 @r112 @r113 @r114
-  Scenario: `work offer` quotes a capability's requirements and the terms they mention
+  @g112 @r112
+  Scenario: `work offer` quotes every requirement of a capability
     Given a capability c1
     And a session s1
     And a request r1
@@ -660,10 +660,6 @@ Feature: Requests
     And the comment c2 holds the requirement r2
     And the comment c2 holds the requirement r3
     And the comment c2 does not hold the requirement r4
-    And `work` posts the comment c3
-    And the comment c3 holds the term t1
-    And `work` posts the comment c4
-    And the comment c4 does not hold the given block g1
 
   @g113 @r115
   Scenario: `work offer` leaves out a term no requirement of the capability mentions
@@ -676,3 +672,27 @@ Feature: Requests
     When the session s1 runs `work offer` with the `--capability` option set to the capability c1 on the request r1
     Then `work` posts the comment c2
     And the comment c2 does not hold the term t1
+
+  @g114 @r113
+  Scenario: `work offer` quotes the terms a capability's requirements mention
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And a term t1
+    And the requirement r1 mentions the term t1
+    And a session s1
+    And a request r2
+    When the session s1 runs `work offer` with the `--capability` option set to the capability c1 on the request r2
+    Then `work` posts the comment c2
+    And the comment c2 holds the term t1
+
+  @g115 @r114
+  Scenario: `work offer` leaves out a capability's given blocks
+    Given a given block g1
+    And a capability c1
+    And the capability c1 holds the given block g1
+    And a session s1
+    And a request r1
+    When the session s1 runs `work offer` with the `--capability` option set to the capability c1 on the request r1
+    Then `work` posts the comment c2
+    And the comment c2 does not hold the given block g1

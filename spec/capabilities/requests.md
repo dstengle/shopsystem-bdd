@@ -238,9 +238,13 @@ Restates: r58@0.29.
 ### [g111] `work request` raises a request as this bounded context by default
 - [r111] When the person runs `work request` without the `--from` option, `work` shall write a request that originates from this bounded context.
 
-### [g112] `work offer` quotes a capability's requirements and the terms they mention
+### [g112] `work offer` quotes every requirement of a capability
 - [r112] When a session runs `work offer` with the `--capability` option set to a capability on a request, `work` shall post a comment that holds every requirement of the capability.
+
+### [g114] `work offer` quotes the terms a capability's requirements mention
 - [r113] While a requirement of a capability mentions a term, when a session runs `work offer` with the `--capability` option set to the capability on a request, `work` shall post a comment that holds the term.
+
+### [g115] `work offer` leaves out a capability's given blocks
 - [r114] While a capability holds a given block, when a session runs `work offer` with the `--capability` option set to the capability on a request, `work` shall post a comment that does not hold the given block.
 
 ### [g113] `work offer` leaves out a term no requirement of the capability mentions
