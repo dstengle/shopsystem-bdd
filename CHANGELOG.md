@@ -23,8 +23,8 @@ been renamed or retired since.
 
 - **`migrate upgrade` records the release** (b303, PR #61): on a repository behind the plugin's release with no
   upgrade step pending, it printed `no upgrade step is pending` and left `.shop/plugin-version` as it was, so
-  `migrate status` kept showing the repository behind the plugin. Now it writes the plugin's version, commits and pushes it; with the
-  two releases the same it still changes nothing.
+  `migrate status` kept showing the repository behind the plugin. Now it writes the plugin's version, commits and
+  pushes it; with the two releases the same it still changes nothing.
 - **Every over a negated value in a precondition** (b310, PR #61): "While every work-item is not `ready`, ..."
   crashed `model logic` and `features generate` (and so `work ready`). Now `model logic` translates it and the
   scenario's Givens meet it.
@@ -42,7 +42,7 @@ been renamed or retired since.
   after a verb whose frame takes `thing`, such as `print`; "return every video from the channel, ordered by ..." did
   not parse, and with a frame naming the collection's kind it got no scenario. Now it reads after any verb whose
   frame takes K, and gets its Then of the order and its counter-example. "Every K in the Y, ordered by T" after such
-  a verb reads one way, with the order on the Ks, as 0.35.1 read it (b328).
+  a verb reads one way, with the order on the Ks (b328; 0.35.1 put it on the Y).
 - **An idea is groomed before it is shaped** (b65, PR #63): `work shape` on an idea with no shaping note under
   `## Notes` and no `--note` shaped it all the same. Now it refuses, naming `--note`, and `work backlog` prints such an
   idea with `--note` beside it.
@@ -52,7 +52,8 @@ been renamed or retired since.
 - **The merge resolves the request** (b6, PR #63): `work batch merged` set each item `delivered` and left the request
   it was taken in from `accepted` until someone ran `work resolve`. Now it resolves each `accepted` request of a
   delivered item: the request `delivered`, its resolution written and posted, its issue closed. A request not
-  `accepted` is left as it is and named.
+  `accepted` is left as it is and named, and so is one whose item was accepted before 0.36.0 (it records no request
+  line): resolve those with `work resolve`.
 - **The things a printed thing holds brought in** (b286, PR #63): the scenario of "print a worktree that holds a
   file" said "the worktree w1 holds the file f1" with no Given of either, and an order on a collection ("a worktree
   that holds a file, ordered by version, ...") added a fourth file beside the three members. Now both things are
@@ -66,10 +67,13 @@ been renamed or retired since.
   and requirements and only the terms they mention; an offer with no `--capability` posts no glossary.
 - **`work quote` finds a message sent mid-turn** (b52, PR #64): a message the person sent while the session worked
   is kept in the transcript apart from the prompts, and `work quote` refused its words. Now it quotes and cites it.
-- **Upgrading:** a y release, because regenerated features change for lines that read the same (decision 0092): no upgrade step; `migrate upgrade` now records the release even when nothing is pending. Run
+- **Upgrading:** a y release, because regenerated features change for lines that read the same (decision 0092):
+  no upgrade step; `migrate upgrade` now records the release even when nothing is pending. Run
   `features generate`: a line that crashed it or got no scenario now gets one, and a scenario of a printed thing
   that holds another, or of an order on a collection, gains the Givens of both things ("a file f1", "a worktree w1"),
-  for which a repository with no Given of those kinds writes a handler. `work shape` now needs `--note` on an idea
+  for which a repository with no Given of those kinds writes a handler. An item already `ready` whose group shares
+  another group's condition and trigger (v15n) is now refused at its next `work ready` or `work batch start`: put
+  the two groups' lines in one. `work shape` now needs `--note` on an idea
   with no shaping note. An offer with no `--capability` posts no glossary. See
   [From 0.35.1 to 0.36.0](docs/upgrading.md#from-0351-to-0360).
 

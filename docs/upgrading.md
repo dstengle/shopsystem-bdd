@@ -394,6 +394,10 @@ a printed thing that holds another ("print a worktree that holds a file"), or of
 brings both things in by a Given before the When ("a file f1", "a worktree w1"), and an order's first member is the
 thing the line names: a repository whose handlers have no Given of those kinds writes one.
 
+An item already `ready` whose group shares another group's condition and trigger (v15n) is refused at its next
+`work ready` or `work batch start`: put the two groups' lines in one group. `work batch merged` resolves only a request
+whose item `work accept` wrote from 0.36.0 on; resolve a request accepted before with `work resolve`.
+
 Two commands ask for more. `work shape` on an idea with no shaping note under `## Notes` refuses without `--note`;
 `work backlog` names `--note` beside such an idea. `work offer` with no `--capability` posts no glossary; with one,
 it quotes the capability's requirements and only the terms they mention, so name each capability the asker needs.
