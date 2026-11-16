@@ -5,13 +5,20 @@ of it, the one requirement of the capability c1 in the catalogue's context `gram
 grammar 4, as a tree that uses the construct as `model constructs` tells it (`uses`). A requirement that uses an
 order (b275) is the example of `order-by-every`, and "the scenario s1 has the order counter-example o2" holds when
 the feature's Then states the order and its Givens give at least three members distinct values in neither that order
-nor its reverse, so that world_order's check of the Then fails on the members printed as given (`counter`)."""
+nor its reverse, so that world_order's check of the Then fails on the members printed as given (`counter`). A
+requirement that uses `order-by` and a verb while no frame takes `thing` (b298) is the example said with the verb
+"return", whose one frame names the collection's kind (`agent returns worktree to agent`), added to the context."""
 import re
 import sys
 from pathlib import Path
 
 PLUGIN = Path(__file__).resolve().parents[2]
 CODES = ("holds-exactly", "nothing", "order-by", "order-by-every")
+# b298: a verb with no frame on `thing`, and the order-by example said with it
+RETURN = ("- **return** (verb, action): an agent hands a worktree back to an agent. "
+          "Frame: agent returns worktree to agent.\n")
+RETURNED = ("When the person runs `work start`, `work` shall return a worktree that holds a file, ordered by version, "
+            "in descending order to the person.")
 
 
 def construct(w):
@@ -20,6 +27,12 @@ def construct(w):
     if any(w["kinds"].get(o) == "order" for o in used):     # the requirement r1 uses the order o1 (b275)
         return "order-by-every"
     return next((c for c in used if c in CODES), None)
+
+
+def unthinged(w):
+    """True when a Given says no frame takes `thing` and the requirement uses a verb (b298)."""
+    return (any(v == "take" and a == ("no", "frame") and o == "`thing`" for v, a, o, _ in w["facts"])
+            and any(v == "use" and w["kinds"].get(o) == "verb" for v, _, o, _ in w["facts"]))
 
 
 def example(code):
@@ -32,11 +45,13 @@ def prepare(step, w, write, name, path):
     code = construct(w)
     if code is None:
         return False
+    line, index = example(code), (PLUGIN / "grammar" / "corpus" / "constructs" / "spec" / "index.md").read_text()
+    if code == "order-by" and unthinged(w):
+        line, index = RETURNED, index.replace("\n- **give** (verb", "\n%s- **give** (verb" % RETURN, 1)
     cap = ("---\nid: capability/%s/%s\ntitle: %s\nnarrator: a client\ngroup: service\nlanguage: codified-2\n"
            "rests_on: []\nretired: []\n---\n\n# %s\n\n## Purpose\nSomething.\n\n## Behaviour\n\n### [g1] %s\n"
-           "- [r1] %s\n\n## Not yet\n" % (path, name, name, name, code, example(code)))
-    write(step.repo / "spec" / "index.md", (PLUGIN / "grammar" / "corpus" / "constructs" / "spec" / "index.md")
-          .read_text())
+           "- [r1] %s\n\n## Not yet\n" % (path, name, name, name, code, line))
+    write(step.repo / "spec" / "index.md", index)
     write(step.repo / "spec" / "capabilities" / ("%s.md" % name), cap)
     return True
 
