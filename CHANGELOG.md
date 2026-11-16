@@ -24,9 +24,11 @@ been renamed or retired since.
   worktrees that hold a file", "a batch that holds at most three items") are translated for `model logic` and
   `features generate`, and `model logic` names each requirement it has no translation of (`unread <id>: ...`)
   instead of printing `no findings` over lines it skipped.
-- **Generated scenarios that can fail** (b273, PR #54): an every, only or count line's scenario gets a
-  counter-example, Givens of a thing that fails the restriction or of one past the bound, with negated Thens that a
-  program which ignores the restriction fails; an every in a condition, and two Ks, get the Givens that meet them.
+- **Generated scenarios that can fail** (b273, PR #54): an every or only line's scenario gets a counter-example,
+  the Givens of a thing that fails the restriction and a negated Then of it, which a program that ignores the
+  restriction fails. A count on what a response prints gets one thing past an upper bound, and its Then states the
+  count ("`notes` prints at most three notes"); a count that restricts a written thing gets none. An every in a
+  condition, and two Ks, get the Givens that meet them.
 - **Exact membership, nothing, and the member's side** (b274, PR #54): "a worktree that holds exactly the files
   whose version is `2.0.0`" (`holds-exactly`), "a worktree holds nothing" (`nothing`, no thing of any kind a row
   `K | in | S` lets it hold) and "a file is in a worktree" (`is-in`, the row read from the member's side).
@@ -38,8 +40,8 @@ been renamed or retired since.
   "is the same as" (`value-same`), also across two senses of one word whose entries have one value order. An order,
   ", ordered by <attribute>, in ascending order" or "in descending order", on a collection (`order-by`) or on a
   printed every (`order-by-every`), is kept as one atom; two opposite orders on one trigger are an L1, and the
-  scenario's Then is checked by a sorted comparison of the output. An order or a comparison on an attribute with no
-  value order is refused, naming the attribute.
+  scenario gets a Then that states the order, which a handler checks by a sorted comparison. An order, or an
+  after/before comparison, on an attribute with no value order is refused, naming the attribute.
 - **An order only in what a response prints** (b285, PR #56): an order in a precondition, in the trigger, or in an
   act under "shall not" is refused, naming the order.
 - **This repository**: migration-tools' release lines compare the repository's release with the release of

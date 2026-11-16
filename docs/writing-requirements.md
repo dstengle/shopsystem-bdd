@@ -276,8 +276,10 @@ When the person runs `work batch start`, `work` shall write a batch that holds a
 When the person runs `work batch status` on a batch, `work` shall print the number of items that the batch holds.
 ```
 
-A generated scenario of a count gives the bound's number of things and, for an upper bound, one past it, with a
-negated Then; a scenario of every and of only gives a thing that fails the restriction.
+A generated scenario of every and of only gives a thing that fails the restriction, with a negated Then. A count
+on what a response prints, with an upper bound, gets one thing past the bound, and its Then states the count
+("`work` prints at most three items"), which a handler checks by counting the items in the output. A count that
+restricts a thing the response writes, as in the lines above, gets no counter-example.
 
 ### Comparing two things' values
 
