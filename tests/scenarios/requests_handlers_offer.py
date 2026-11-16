@@ -29,8 +29,10 @@ def ours(step):
     return Q.feature(step) == "requests"
 
 
-def line(name):
-    return "When the person runs `work start-%s` on a %s, `work` shall print the %s." % (name, TERM, TERM)
+def line(name, mentions=()):
+    """The requirement `name`'s line: it mentions the term of the capability's `## Terms` and each of `mentions`."""
+    more = "".join(" It mentions %s." % t for t in mentions)
+    return "When the person runs `work start-%s` on a %s, `work` shall print the %s.%s" % (name, TERM, TERM, more)
 
 
 def capability(name, lines, given=False):
@@ -41,15 +43,26 @@ def capability(name, lines, given=False):
             "## Behaviour\n\n### [g1] A %s is printed\n%s%s\n## Dropped\n" % (TERM, TERM, reqs, block))
 
 
+@local("GivenK", "given block")
+def given_block(step):
+    """A given block: the one the capability the When names is written with (`GIVEN`)."""
+    return None if ours(step) else False
+
+
 @local("GivenDoes")
 @local("GivenDoesNot")
 def given_has(step):
     """`the capability c1 has the requirement r2`, or `does not have`: the requirement's line in it, or elsewhere;
-    `this bounded context holds the term t1`: the term an entry of the glossary, written at the When."""
+    `this bounded context holds the term t1`: the term an entry of the glossary, written at the When;
+    `the requirement r1 mentions the term t1`: the term in the glossary and in the requirement's line."""
     if not ours(step):
         return False
     if step.event == "holds" and step.subject == "this bounded context" and step.nps[-1].startswith("the term "):
         step.context.setdefault("glossed", []).append(step.names[-1])
+        return None
+    if step.event == "mention" and step.subject.startswith("the requirement ") and step.template == "GivenDoes":
+        step.context.setdefault("glossed", []).append(step.names[-1])
+        step.context.setdefault("mentions", {}).setdefault(step.names[0], []).append(step.names[-1])
         return None
     if step.event != "has" or not step.subject.startswith("the capability "):
         return False
@@ -67,7 +80,7 @@ def glossary(step):
     if not text.startswith(handlers.HEAD):
         text = handlers.INDEX + text.partition("## Glossary\n")[2]
     entries = "".join("- **%s** (noun): a thing the context names. Kind of: thing.\n" % t
-                      for t in step.context.get("glossed", []))
+                      for t in dict.fromkeys(step.context.get("glossed", [])) if "- **%s** (" % t not in text)
     index.write_text(text.replace("## Glossary\n", "## Glossary\n\n" + entries, 1))
     says = step.context.setdefault("says", {})
     for name in step.context.get("glossed", []):
@@ -81,7 +94,8 @@ def args(step, given):
         return []
     name = next(n for n in step.names if (step.repo / "spec" / "capabilities" / ("%s.md" % n)).is_file())
     held = step.context.get("offer_lines", {})
-    mine = [line(r) for r, where in held.items() if where == name] or [line("default")]
+    said = step.context.get("mentions", {})
+    mine = [line(r, said.get(r, ())) for r, where in held.items() if where == name] or [line("default")]
     (step.repo / "spec" / "capabilities" / ("%s.md" % name)).write_text(capability(name, mine, given=True))
     others = [line(r) for r, where in held.items() if where == "elsewhere"]
     if others:
