@@ -2199,8 +2199,30 @@ shall [x2: thing `no-noun` (parameter), x3: thing `holds-relation` (parameter), 
     exit(e2, subject: x8, successfully)
 ```
 
+## r323
+From: b315 r317. Not in the audit (b315 is no reword item).
+
+```reading
+While a requirement of a capability uses `holds-exactly` and `of-relation` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
+shall [x3: thing `holds-exactly` (parameter), x4: thing `of-relation` (parameter), x8: agent the person (constant), x9: command `model logic` (parameter), x10: tool `model` (constant), x11: thing `L1` (constant)]
+  while [x1: requirement, x2: capability, x5: act, x6: requirement, x7: trigger]
+    of(x1, x2)
+    use#2(subject: x1, object: x3)
+    use#2(subject: x1, object: x4)
+    oblige(subject: x1, object: x5)
+    distinct(x6, x1)
+    of(x6, x2)
+    of(x7, x1)
+    of(x7, x6)
+    forbid(subject: x6, object: x5)
+  when
+    run(e1, subject: x8, object: x9)
+  response
+    print(e2, subject: x10, object: x11)
+```
+
 ## r324
-From: b317 r324. `model forms --check` exits with an error naming each file form whose writer is `hand`; one whose writer is a command or a plugin item passes.
+From: b317 r316. Not in the audit (b317 is no reword item).
 
 ```reading
 While the writer of a file form is `hand`, when the person runs `model forms` with the `--check` option, `model` shall exit with an error naming the file form.

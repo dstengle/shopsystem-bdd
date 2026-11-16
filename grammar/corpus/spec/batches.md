@@ -396,8 +396,66 @@ shall [x5: agent the person (constant), x7: tool `work` (constant)]
     commit(e7, subject: x7, object: x4)
 ```
 
+## r41
+From: b316 r41. Not in the audit (b316 is no reword item).
+
+```reading
+While an item is `ready` and the item holds a chore and the item passes the readiness bar, when the person runs `work batch start`, `work` shall write a batch brief that holds the chore.
+shall [x3: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x4: agent the person (constant), x5: command `work batch start` (parameter), x6: tool `work` (constant)]
+  while [x1: item, x2: chore]
+    status(x1) = `ready`
+    in(x2, x1)
+    pass#2(subject: x1, object: x3)
+  when
+    run(e1, subject: x4, object: x5)
+  response [x7: batch brief]
+    in(x2, x7)
+    write(e2, subject: x6, object: x7)
+```
+
+## r42
+From: b316 r39. Not in the audit (b316 is no reword item).
+
+```reading
+While a task of an item is `running` and the item holds a chore and the chore fails in the worktree of the task, if a session runs `work batch done` on the task, then `work` shall refuse the command and name the chore.
+shall [x6: command `work batch done` (parameter), x7: tool `work` (constant)]
+  while [x1: task, x2: item, x3: chore, x4: worktree]
+    of(x1, x2)
+    status(x1) = `running`
+    in(x3, x2)
+    of(x4, x1)
+    fail#3(subject: x3, in: x4)
+  if [x5: session]
+    run(e1, subject: x5, object: x6, on: x1)
+  response
+    refuse(e2, subject: x7, object: x6)
+    name(e3, subject: x7, object: x3)
+```
+
+## r43
+From: b316 r40. Not in the audit (b316 is no reword item).
+
+```reading
+While a task of an item is `running` and the item holds a chore and a commit of the git branch of the task touches a file that is not in the chore, if a session runs `work batch done` on the task, then `work` shall refuse the command and name the file.
+shall [x8: command `work batch done` (parameter), x9: tool `work` (constant)]
+  while [x1: task, x2: item, x3: chore, x4: commit, x5: git branch, x6: file]
+    of(x1, x2)
+    status(x1) = `running`
+    in(x3, x2)
+    of(x5, x1)
+    of(x4, x5)
+    not
+      in(x6, x3)
+    touch(subject: x4, object: x6)
+  if [x7: session]
+    run(e1, subject: x7, object: x8, on: x1)
+  response
+    refuse(e2, subject: x9, object: x8)
+    name(e3, subject: x9, object: x6)
+```
+
 ## r44
-From: b317 r44. `work batch start` writes a capability an item makes: its file, with the item's lines, and its row under `## Composition`.
+From: b317 r39. Not in the audit (b317 is no reword item).
 
 ```reading
 While an item is `ready` and the item passes the readiness bar and the item holds a capability, when the person runs `work batch start`, `work` shall write the capability.

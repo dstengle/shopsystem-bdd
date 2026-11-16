@@ -472,8 +472,67 @@ shall [x6: agent the person (constant), x7: command `work ready` (parameter), x8
         name(e4, subject: x8, object: x11)
 ```
 
+## r51
+From: b316 r42. Not in the audit (b316 is no reword item).
+
+```reading
+When the person runs `work chore` with the `--file` and `--check` options on an item, `work` shall write a chore in the item and commit the item.
+shall [x1: agent the person (constant), x2: command `work chore` (parameter), x3: option `--file` (parameter), x4: option `--check` (parameter), x6: tool `work` (constant)]
+  when [x5: item]
+    run(e1, subject: x1, object: x2, with: x3, with: x4, on: x5)
+  response [x7: chore]
+    in(x7, x5)
+    write(e2, subject: x6, object: x7)
+    commit(e3, subject: x6, object: x5)
+```
+
+## r52
+From: b316 r43. Not in the audit (b316 is no reword item).
+
+```reading
+If the person runs `work chore` on an item that holds a requirement, then `work` shall refuse the command and name the requirement.
+shall [x1: agent the person (constant), x2: command `work chore` (parameter), x5: tool `work` (constant)]
+  if [x3: item, x4: requirement]
+    in(x4, x3)
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    refuse(e2, subject: x5, object: x2)
+    name(e3, subject: x5, object: x4)
+```
+
+## r53
+From: b316 r44. Not in the audit (b316 is no reword item).
+
+```reading
+If the person runs `work line` on an item that holds a chore, then `work` shall refuse the command and name the chore.
+shall [x1: agent the person (constant), x2: command `work line` (parameter), x5: tool `work` (constant)]
+  if [x3: item, x4: chore]
+    in(x4, x3)
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    refuse(e2, subject: x5, object: x2)
+    name(e3, subject: x5, object: x4)
+```
+
+## r54
+From: b316 r45. Not in the audit (b316 is no reword item).
+
+```reading
+While an item is `shaped` and the item holds a chore and the item holds no requirement, when the person runs `work ready` on the item, `work` shall set the status of the item to `ready`.
+shall [x4: agent the person (constant), x5: command `work ready` (parameter), x6: tool `work` (constant)]
+  while [x1: item, x2: chore]
+    status(x1) = `shaped`
+    in(x2, x1)
+    not [x3: requirement]
+      in(x3, x1)
+  when
+    run(e1, subject: x4, object: x5, on: x1)
+  response
+    initiates(e2, subject: x6, status(x1) = `ready`)
+```
+
 ## r55
-From: b317 r55. `work line --capability` writes a new capability's block (narrator, group, purpose) in the item and commits the item.
+From: b317 r42. Not in the audit (b317 is no reword item).
 
 ```reading
 When the person runs `work line` with the `--capability` option set to a capability on an item, `work` shall write the capability in the item and commit the item.
@@ -488,7 +547,7 @@ shall [x1: agent the person (constant), x2: command `work line` (parameter), x3:
 ```
 
 ## r56
-From: b317 r56. `work line --capability` refuses a capability whose file `spec/capabilities/<name>.md` exists, naming it.
+From: b317 r43. Not in the audit (b317 is no reword item).
 
 ```reading
 If the person runs `work line` with the `--capability` option set to a capability that exists, then `work` shall refuse the command and name the capability.
