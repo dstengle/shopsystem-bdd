@@ -6,7 +6,7 @@ group: service
 language: codified-2
 rests_on: [design-decision/requests-written-through-work, design-decision/exits-are-successful-or-errors, design-decision/an-asker-is-told-by-its-registered-asker-id]
 retired: [r1, r3, r4, r5, r10, r11, r12, r13, r19, r20, r21, r22, r23, r42, g42, g2, r2, g6, r6, g7, r7, g8, r8, g9, r9, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18, g24, r24, g25, r25, g26, r26, g27, r27, g28, r28, g29, r29, g30, r30, g31, r31, g32, r32, g33, r33, g34, r34, g35, r35, g36, r36, g37, r37, g38, r38, g39, r39, g40, r40, g41, r41, g44, r44, g43, r43, g45, r45, g46, r46, g47, r47, g49, r49, g50, r50, g51, r51, g48, r48, g52, r52, g53, r53, g54, r54, g55, r55, g56, r56, g57, r57, g58, r58, g77, r77]
-unbuilt: [r111, r112, r113, r114, r115]
+unbuilt: [r112, r113, r114, r115]
 ---
 
 # Requests
@@ -273,9 +273,9 @@ Restates: r30@0.29.
   that posted its step (the asker of an `ask` or a `fits`, the upstream of an `offer`, an `accept` or a `resolve`, and of
   a `turn` the side whose turn the request was); the side of an entry is the side whose part holds it (the asker's
   `line` and `answer`, the upstream's `question`, `outcome`, `counter`, `reason`, `into` and `resolution`).
-- `work request <title> --from <asker> [--ask <words>] [--to <upstream>]` with `--source <id>`, `--thread <id>` or
+- `work request <title> [--from <asker>] [--ask <words>] [--to <upstream>]` with `--source <id>`, `--thread <id>` or
   `--raised-for <request>` opens the issue, its body the `ask` form, and writes the record open in the upstream's
-  turn; it prints the request's id and the issue's URL. `--to` defaults to the one upstream of a request to an
+  turn; it prints the request's id and the issue's URL. `--from` defaults to this context (r111). `--to` defaults to the one upstream of a request to an
   upstream (no `--source`), else this context.
 - `work offer <request> [--capability <c>]... [--note <words>]` (the upstream, on an open request) posts the note,
   each named capability's file whole and the glossary of `spec/index.md`, and passes the turn to the asker. `work

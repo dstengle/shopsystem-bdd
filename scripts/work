@@ -46,6 +46,7 @@ def cmd_answer(args):
 
 
 def cmd_request(args):
+    args.asker = args.asker or "bounded-context/" + shop_files.context_path(args.root)
     request_moves.gate(args.root, args.asker, args.source, args.thread, args.raised_for)
     name, url = request_moves.request(args.root, args.title, args.asker, args.ask, args.source, args.thread,
                                       args.raised_for, args.to)
@@ -95,7 +96,7 @@ def main(argv=None):
     n.add_argument("answer")
     q = sub.add_parser("request", help="ask an upstream (or this context): open the request's issue, and the request")
     q.add_argument("title")
-    q.add_argument("--from", dest="asker", required=True)
+    q.add_argument("--from", dest="asker", help="the asker: this context, its default (r111)")
     q.add_argument("--ask", help="what the asker needs, in its own words (default: the title)")
     q.add_argument("--to", help="the upstream asked, under ## Upstreams (default: the one upstream, or this context)")
     q.add_argument("--source", action="append", default=[])

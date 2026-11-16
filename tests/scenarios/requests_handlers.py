@@ -166,11 +166,12 @@ def options(step):
 def work_request(step):
     """`work request` with the options the When gives (codified-2): `--from` the asker a Given made (a text that does
     not identify this bounded context), `--raised-for` set to a request, `--to` set to the upstream a Given gave no
-    GitHub repository, `--source` with `--thread` or `--raised-for`; none of `--source`, `--thread` and `--raised-for`
-    where the When says so; else a job-thread to an upstream (where this bounded context has one), or an observation."""
+    GitHub repository, `--source` with `--thread` or `--raised-for`; none of `--from`, or of `--source`, `--thread` and
+    `--raised-for`, where the When says so; else a job-thread to an upstream (where this bounded context has one), or an observation."""
     given, without = options(step)
     asker = step.context.get("from") or (OWN if step.context.get("downstream") else "internal")
-    args = ["request", "a request", "--from", asker, "--ask", "I need to do something like this"]
+    args = ["request", "a request"] + ([] if "--from" in without else ["--from", asker])
+    args += ["--ask", "I need to do something like this"]
     if given.get("--raised-for"):
         args += ["--raised-for", path_of(step, step.names[0]).stem]
     elif "--source" in given:

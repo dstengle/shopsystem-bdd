@@ -93,6 +93,9 @@ def does(step):
         url = W.field(bound(step, step.names[0]), "issue")
         assert url, step.text
         step.context.setdefault("issues", {})[step.names[1]] = url
+    elif term == "originate":                            # the request r1 originates from this bounded context
+        got = W.field(bound(step, step.names[0]), "asker")
+        assert got == Q.OWN, (step.text, got)
     elif term in ("proposed in", "raised for"):
         return proposed(step) if term == "proposed in" else raised(step)
     elif term == "write" and np.startswith("the request line"):
