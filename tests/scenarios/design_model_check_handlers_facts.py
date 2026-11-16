@@ -53,7 +53,7 @@ def remember(step, fact):
 KINDS = ("act", "catalogue entry", "clock trigger", "code", "comparison", "compiled grammar", "consequence", "count",
          "definite noun phrase", "fact", "file form", "frame", "index entry", "logical form", "negated indefinite",
          "noun phrase", "number", "object", "order", "pack", "parse", "parse cache", "passive form", "perfect", "precondition",
-         "preposition", "recipient", "refusal", "sense", "subject", "trigger", "verb")
+         "preposition", "recipient", "refusal", "sense", "subject", "trigger", "value order", "verb")
 SHARED = ("rule", "requirement id", "text", "universal condition")
 
 

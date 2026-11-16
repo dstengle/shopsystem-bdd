@@ -89,6 +89,22 @@ def attributes(w, vocab):
             ordered(w, T, t, ks)
         if t.values:
             sets(w, T, ks, noun)
+    senses(w, vocab)
+
+
+def senses(w, vocab):
+    """value-compare and value-same over two entries of one attribute word (b287): "the T of x is after the T of y",
+    x of one entry's kind and y of the other's, `T1_CmpT_T2` and `T1_SameAs_T2`, of every ordered pair of entries;
+    spec_lf_compare refuses a pair whose value orders differ, naming the term."""
+    ids = [("t_%s_%d" % (spec_rgl.slug(t.term), n), t) for n, (t, _) in enumerate(vocab.attributes, 1)]
+    for T1, t1 in ids:
+        for T2, t2 in ids:
+            if T1 == T2 or t1.term != t2.term:
+                continue
+            w.fun("%s_CmpT_%s" % (T1, T2), "Pol -> %s_NP -> Order -> %s_NP -> Cond" % (T1, T2),
+                  "mkS p (mkCl x (mkVP (SyntaxEng.mkAdv (mkPrep o.s) y)))", "p x o y")
+            w.fun("%s_SameAs_%s" % (T1, T2), "Pol -> %s_NP -> %s_NP -> Cond" % (T1, T2),
+                  'mkS p (mkCl x (mkVP (SyntaxEng.mkAdv (mkPrep ("the" ++ "same" ++ "as")) y)))', "p x y")
 
 
 def sets(w, T, ks, noun):

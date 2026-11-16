@@ -965,7 +965,10 @@ A cycle of comparisons through three or more things in one gap of a dense order 
 be reported that could never fire, but none is hidden. In a scenario each thing is given a value that meets every
 comparison and value the line names ("the version of the `a` file is `1.0.0`", "the version of the file f1 is
 `0.0.0`"). The comparison words are after and before for every order; "more than", "at least" and the others between
-two values are not yet said.
+two values are not yet said. The two sides may be two senses of one attribute word, each of its own entry's kind ("the
+version of a worktree is after the version of a file", b287): read so when the two entries have one value order (the
+same `Order:` or the same `Type:`), over that order's cells in `model logic`, and refused naming the word when their
+orders differ, for `value-compare` and `value-same` alike.
 
 ```reading
 While the version of the `a` file is after the version of a file, when a session writes the file, `work` shall print the file.

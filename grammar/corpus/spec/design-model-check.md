@@ -1871,3 +1871,114 @@ shall [x4: agent the person (constant), x5: command `model logic` (parameter), x
   response
     print(e2, subject: x6, object: x7)
 ```
+
+## r309
+From: b287 r309. Not in the audit (b287 is no reword item).
+
+```reading
+While a sense of a term has a value order and another sense of the term has a different value order and a requirement uses the term and `value-same`, if the person runs `model parse` on the requirement, then `model` shall refuse the command and name the term.
+shall [x7: thing `value-same` (parameter), x8: agent the person (constant), x9: command `model parse` (parameter), x10: tool `model` (constant)]
+  while [x1: sense, x2: term, x3: value order, x4: sense, x5: value order, x6: requirement]
+    of(x1, x2)
+    of(x3, x1)
+    distinct(x4, x1)
+    of(x4, x2)
+    distinct(x5, x3)
+    of(x5, x4)
+    use#2(subject: x6, object: x2)
+    use#2(subject: x6, object: x7)
+  if
+    run(e1, subject: x8, object: x9, on: x6)
+  response
+    refuse(e2, subject: x10, object: x9)
+    name(e3, subject: x10, object: x2)
+```
+
+## r310
+From: b287 r310. Not in the audit (b287 is no reword item).
+
+```reading
+While a sense of a term has a value order and another sense of the term has the value order and a requirement of a capability uses the term and `value-compare` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
+shall [x7: thing `value-compare` (parameter), x11: agent the person (constant), x12: command `model logic` (parameter), x13: tool `model` (constant), x14: thing `L1` (constant)]
+  while [x1: sense, x2: term, x3: value order, x4: sense, x5: requirement, x6: capability, x8: act, x9: requirement, x10: trigger]
+    of(x1, x2)
+    of(x3, x1)
+    distinct(x4, x1)
+    of(x4, x2)
+    of(x3, x4)
+    of(x5, x6)
+    use#2(subject: x5, object: x2)
+    use#2(subject: x5, object: x7)
+    oblige(subject: x5, object: x8)
+    distinct(x9, x5)
+    of(x9, x6)
+    of(x10, x5)
+    of(x10, x9)
+    forbid(subject: x9, object: x8)
+  when
+    run(e1, subject: x11, object: x12)
+  response
+    print(e2, subject: x13, object: x14)
+```
+
+## r311
+From: b287 r306. Not in the audit (b287 is no reword item).
+
+```reading
+While a sense of a term has a value order and another sense of the term has the value order and a requirement uses the term and `value-compare`, when the person runs `model parse` on the requirement, `model` shall exit successfully.
+shall [x6: thing `value-compare` (parameter), x7: agent the person (constant), x8: command `model parse` (parameter), x9: tool `model` (constant)]
+  while [x1: sense, x2: term, x3: value order, x4: sense, x5: requirement]
+    of(x1, x2)
+    of(x3, x1)
+    distinct(x4, x1)
+    of(x4, x2)
+    of(x3, x4)
+    use#2(subject: x5, object: x2)
+    use#2(subject: x5, object: x6)
+  when
+    run(e1, subject: x7, object: x8, on: x5)
+  response
+    exit(e2, subject: x9, successfully)
+```
+
+## r312
+From: b287 r307. Not in the audit (b287 is no reword item).
+
+```reading
+While a sense of a term has a value order and another sense of the term has the value order and a requirement uses the term and `value-same`, when the person runs `model parse` on the requirement, `model` shall exit successfully.
+shall [x6: thing `value-same` (parameter), x7: agent the person (constant), x8: command `model parse` (parameter), x9: tool `model` (constant)]
+  while [x1: sense, x2: term, x3: value order, x4: sense, x5: requirement]
+    of(x1, x2)
+    of(x3, x1)
+    distinct(x4, x1)
+    of(x4, x2)
+    of(x3, x4)
+    use#2(subject: x5, object: x2)
+    use#2(subject: x5, object: x6)
+  when
+    run(e1, subject: x7, object: x8, on: x5)
+  response
+    exit(e2, subject: x9, successfully)
+```
+
+## r313
+From: b287 r308. Not in the audit (b287 is no reword item).
+
+```reading
+While a sense of a term has a value order and another sense of the term has a different value order and a requirement uses the term and `value-compare`, if the person runs `model parse` on the requirement, then `model` shall refuse the command and name the term.
+shall [x7: thing `value-compare` (parameter), x8: agent the person (constant), x9: command `model parse` (parameter), x10: tool `model` (constant)]
+  while [x1: sense, x2: term, x3: value order, x4: sense, x5: value order, x6: requirement]
+    of(x1, x2)
+    of(x3, x1)
+    distinct(x4, x1)
+    of(x4, x2)
+    distinct(x5, x3)
+    of(x5, x4)
+    use#2(subject: x6, object: x2)
+    use#2(subject: x6, object: x7)
+  if
+    run(e1, subject: x8, object: x9, on: x6)
+  response
+    refuse(e2, subject: x10, object: x9)
+    name(e3, subject: x10, object: x2)
+```

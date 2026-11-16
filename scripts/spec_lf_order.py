@@ -85,7 +85,7 @@ def cond(st, t, rest, a):
         x, value = nps.np(st, a[1]) if rest != "IsCodeOf" else nps.owner(st, a[1]), code(a[2])
         return st.apply([x], lambda r: Atom("attr", (r[0], t.term, value)),
                         1 if a[0] == "PNeg" else None)
-    if rest in ("CmpT", "SameAs"):     # one thing's value compared with another's (b275)
+    if rest.split("_")[0] in ("CmpT", "SameAs"):     # one thing's value compared with another's (b275, b287)
         import spec_lf_compare  # here: spec_lf_compare imports this module
         return spec_lf_compare.cond(st, t, rest, a)
     if rest == "Cmp":
@@ -159,9 +159,12 @@ def tup(k):
 
 
 def domain(vocab):
-    """`dense(T)` of each attribute ordered by number, `vkey(T, V, Key)` of each of an ordered attribute's values."""
-    out = []
+    """`dense(T)` of each attribute ordered by number, `vkey(T, V, Key)` of each of an ordered attribute's values, and
+    `tcan(T, C)` of each attribute, C the first entry of its word with its value order (b287: two senses of one word
+    compared over one order's cells), T itself when it has none (its values' ids are its own, never another's)."""
+    out, first = [], {}
     for tid, (_, t) in sorted(vocab.attrs.items()):
+        out.append("tcan(%s,%s)." % (tid, first.setdefault((t.term, order(t)), tid) if order(t) else tid))
         if dense(t):
             out.append("dense(%s)." % tid)
         for vid in vocab.attr_values[tid] if order(t) else ():

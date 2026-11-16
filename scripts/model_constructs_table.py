@@ -192,14 +192,16 @@ CONSTRUCTS = [
       r"%s_(?:Cmp|Between|PtCode|PtVal)|After|Before" % T,
       "While the priority of a stage is after `low`, when the person runs `work start`, `work` shall end "
       "the stage.", r"%s_(?:Cmp|Between)" % T),
-    c("value-compare", "one thing's value compared with another's, of one attribute with a value order (b275)",
-      "the <attribute> of <np> is after|before the <attribute> of <np>", r"%s_CmpT" % T,
-      "While the version of the `a` file is after the version of a file, when a session writes the file, `work` shall "
-      "print the file."),
-    c("value-same", "one thing's value the same as another's, of any attribute (b275)",
-      "the <attribute> of <np> is the same as the <attribute> of <np>", r"%s_SameAs" % T,
-      "While the status of a stage is the same as the status of another stage, when the person runs `work start`, "
-      "`work` shall print the stage."),
+    c("value-compare", "one thing's value compared with another's, of one attribute word with one value order, the "
+      "two of one entry or of two (b275, b287)",
+      "the <attribute> of <np> is after|before the <attribute> of <np>", r"%s_CmpT(?:_%s)?" % (T, T),
+      "While the version of the `a` worktree is after the version of a file, when a session writes the file, `work` "
+      "shall print the file.", r"%s_CmpT_%s" % (T, T)),
+    c("value-same", "one thing's value the same as another's, of any attribute word, the two of one entry or of two "
+      "with one value order (b275, b287)",
+      "the <attribute> of <np> is the same as the <attribute> of <np>", r"%s_SameAs(?:_%s)?" % (T, T),
+      "While the version of a worktree is the same as the version of a file, when the person runs `work start`, "
+      "`work` shall print the file.", r"%s_SameAs_%s" % (T, T)),
     c("order-by", "a collection's members ordered by their attribute (b275)",
       "<np>, ordered by <attribute>, in ascending|descending order", r"r\d+_\w+_By_%s|Ascending|Descending" % T,
       "When the person runs `work start`, `work` shall print a worktree that holds a file, ordered by version, in "
