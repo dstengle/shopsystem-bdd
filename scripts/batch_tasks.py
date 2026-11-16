@@ -15,6 +15,7 @@ import shlex
 import subprocess
 from pathlib import Path
 
+import backlog_chore
 import backlog_items
 import backlog_lines
 import backlog_moves
@@ -147,7 +148,8 @@ def resume_said(root, batch, out):
         label = "%s %s" % (task.task, backlog_items.label(item))
         if tree is not None:
             said.append("%s: running in %s on %s: build %s; then work batch done %s %s, or work batch park %s %s "
-                        "--question <text>" % (label, tree, task.branch, ", ".join(item_ids(root, item)), batch.name,
+                        "--question <text>" % (label, tree, task.branch, "; ".join(backlog_chore.said(item)[1:]) or
+                                               ", ".join(item_ids(root, item)), batch.name,
                                                task.task, batch.name, item.name))
         elif item.status != "in-batch":
             said.append("%s: parked (%s)" % (label, item.status))
@@ -177,6 +179,8 @@ def checked(root, batch, task):
     if bare:
         raise Refused("%s: %s: a commit on %s cites no item (an `Item: %s` line): %s" % (
             command, label, task.branch, task.item, "; ".join(bare)))
+    item = backlog_items.find(root, task.item)
+    backlog_chore.in_scope(root, since, task.branch, item, "%s: %s" % (command, label))      # b316
     left = spec_unbuilt.unbuilt(tree)
     unbuilt = [i for i in item_ids(root, backlog_items.find(root, task.item))
                if i.split("#")[1] in left.get(i.split("#")[0], ())]
@@ -185,6 +189,7 @@ def checked(root, batch, task):
     head = git(tree, "rev-parse", "HEAD").stdout.strip()
     with batch_parked.tested_tree(root, batch, task, tree, head, command) as tested:     # no parked lines (r18)
         tests_pass(root, tested, "%s: %s" % (command, label), strict=False)   # its own ids are built (r19)
+    backlog_chore.passes(item, tree, "%s: %s" % (command, label))     # a chore's check, after the tests (b316)
     return head
 
 

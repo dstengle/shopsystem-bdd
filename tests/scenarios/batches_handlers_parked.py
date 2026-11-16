@@ -99,6 +99,7 @@ def batch_done(step):
         step.context["delivery"] = passing_tests(step, step.names[-1])
     T.prepare(step)
     T.ensure_batch(step)
+    T.batch_git.trees_dir(step.repo)        # its `.gitignore`, as `work batch resume` leaves it
     task = step.names[-1]
     for name, found in step.context["given"]["task"].items():
         if found["status"] == "running":

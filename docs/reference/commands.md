@@ -109,6 +109,26 @@ b250 "work show prints the status of an item": backlog#r43
 How to write a good line is in [Writing requirements](../writing-requirements.md); the file format is in
 [the capability file](capability-file.md).
 
+#### `work chore`
+
+Writes a chore into an item in place of requirement lines, and commits the item: the files its work changes and the
+command whose exit code 0 shows the work done. For an item with no behaviour a scenario checks (docs, skill text, a
+refactor).\
+Synopsis: `work chore [--file FILE] --check CHECK name`
+
+- `--file <path>`: a file or a directory the work changes; give it once for each. A path under `spec/`,
+  `features/` or `.shop/` is refused.
+- `--check "<command>"`: the command that fails now and passes once the work is done.
+
+Run again, it replaces the chore. A chore and requirement lines exclude each other: `work chore` refuses an item that
+holds a requirement, and `work line` an item that holds a chore. [`work ready`](#work-ready) readies a chore item
+without running its check; [`work batch done`](#work-batch-done) runs it.
+
+```console
+$ work chore b34 --file skills/shaping-items/SKILL.md --check "grep -q 'work chore' skills/shaping-items/SKILL.md"
+b34 "The shaping skill names work chore": the chore of b34 "The shaping skill names work chore" (check: `grep -q 'work chore' skills/shaping-items/SKILL.md`)
+```
+
 #### `work rate`
 
 Sets an item's value, urgency or size; the backlog ranks items by the score they make.\
@@ -302,7 +322,9 @@ Sets a running task done, once its worktree is clean, its commits cite the item 
 Synopsis: `work batch done batch task`
 
 The tests are `[batch] tests` of `.shop/delivery.toml` (default `python3 -m pytest -q -p work_items`), run in the
-task's worktree. A refusal names what is missing:
+task's worktree. For an item that holds a chore, it then runs the chore's check there and refuses while it exits
+non-zero, and refuses a commit of the task that touches a path the chore does not name. A refusal names what is
+missing:
 
 ```console
 $ work batch done batch-34 t1
