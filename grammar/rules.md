@@ -562,7 +562,7 @@ a given line is not example data
 two groups of a capability share features, condition and trigger
 
 - Severity: violation
-- Implemented in: `scripts/model.lp`
+- Implemented in: `scripts/model.lp`, `scripts/readiness_bar.py`
 - Cited by: design-model-check#r179, readiness#r49
 - Fails on:
 
