@@ -58,6 +58,7 @@ def write_item(step, name, **fields):
     rel = "%s/%s.md" % (BACKLOG, b)
     head = "".join("%s: %s\n" % (k, had[k]) for k in DEFAULTS)
     tail = "request: %s\n" % had["request"] if had.get("request") else ""
+    tail += "request_lines: [%s]\n" % ", ".join(had["request_lines"]) if had.get("request_lines") else ""
     body = "\n## Question\n\n%s\n" % QUESTION if had["status"] == "needs-input" else ""
     body += "".join("\n## %s\n\n%s\n" % kv for kv in had.get("sections", {}).items())
     path = step.repo / rel

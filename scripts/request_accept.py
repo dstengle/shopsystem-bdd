@@ -51,15 +51,16 @@ def _refusals(root, ident, text):
 
 def _write_lines(root, item, accepted):
     """Each accepted line into the item, under its capability; the lines of one capability with no group named share
-    one new group, titled by the item."""
+    one new group, titled by the item; the item records the request's line each came from (`request_lines`, b6)."""
     shared = {}
-    for _, line, into in accepted:
+    for number, line, into in accepted:
         capability, _, group = into.partition(" ")
         in_group = group if re.fullmatch(r"g[1-9]\d*", group) else None
         if not group and capability in shared:
             in_group = shared[capability]
         title = None if in_group is not None else (group or None)
-        backlog_lines.add_line_to(root, item, capability, line, title, in_group, command="work accept")
+        ident = backlog_lines.add_line_to(root, item, capability, line, title, in_group, command="work accept")
+        item.request_lines[ident] = number
         if not group and capability not in shared:
             block = next(b for b in backlog_lines.read(item, rel_of(item.name)) if b.capability == capability)
             shared[capability] = block.groups[-1].id

@@ -33,6 +33,7 @@ class Item:
     sections: dict = field(default_factory=dict)
     request: str | None = None      # the request the item was taken in from (plan 3, D10)
     asked_by: str | None = None     # that request's asker
+    request_lines: dict = field(default_factory=dict)   # {<cap>#r<n>: the request's line number} (b6)
 
     @property
     def question(self):
@@ -85,6 +86,16 @@ def _body(text, rel):
     return title, {h: "\n".join(body).strip("\n") for h, body in sections.items()}
 
 
+def _request_lines(value, rel):
+    """{<cap>#r<n>: line number} of the field `request_lines: [<cap>#r<n>=<k>, ...]`: which line of its request each
+    of the item's requirements was taken in from (b6); refused naming the field when malformed."""
+    found = [re.fullmatch(r"([\w-]+#r[1-9]\d*)=([1-9]\d*)", e) if isinstance(e, str) else None
+             for e in (value if isinstance(value, list) else [None])]
+    if not all(found):
+        raise Refused("%s: request_lines %r is not a list of <capability>#r<n>=<line>" % (rel, value))
+    return {m.group(1): int(m.group(2)) for m in found}
+
+
 def parse(text, rel):
     """The item of a file's text; a malformed file is refused as `<rel>: <field> ...` (D16)."""
     data, body = shop_files.frontmatter(text)
@@ -102,11 +113,13 @@ def parse(text, rel):
     asked_by = data.get("asked_by")
     if asked_by is not None and not isinstance(asked_by, str):
         raise Refused("%s: asked_by %r is not an asker's id" % (rel, asked_by))
+    request_lines = _request_lines(data.get("request_lines", []), rel)
     title, sections = _body(body, rel)
     return Item(name=ident.rsplit("/", 1)[-1], ident=ident, title=title, status=_choice(data, rel, "status", STATUSES),
                 provenance=_choice(data, rel, "provenance", PROVENANCES),
                 **{k: _choice(data, rel, k, allowed, optional=True) for k, allowed in RATINGS.items()},
-                depends_on=tuple(depends), sections=sections, request=request, asked_by=asked_by)
+                depends_on=tuple(depends), sections=sections, request=request, asked_by=asked_by,
+                request_lines=request_lines)
 
 
 def render(item):
@@ -116,6 +129,8 @@ def render(item):
     head = [line("id", item.ident), "kind: item", line("status", item.status), line("provenance", item.provenance)]
     head += [line(k, getattr(item, k)) for k in RATINGS] + ["depends_on: [%s]" % ", ".join(item.depends_on)]
     head += [line(k, getattr(item, k)) for k in ("request", "asked_by") if getattr(item, k)]
+    if item.request_lines:
+        head.append("request_lines: [%s]" % ", ".join("%s=%d" % kv for kv in item.request_lines.items()))
     body = "".join("\n## %s\n\n%s\n" % (h, t) if t else "\n## %s\n" % h for h, t in item.sections.items())
     return "---\n%s\n---\n\n# %s\n%s" % ("\n".join(head), item.title, body)
 
