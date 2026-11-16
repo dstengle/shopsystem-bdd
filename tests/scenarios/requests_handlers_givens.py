@@ -96,13 +96,14 @@ def given_comment(step):
     Q.comment(step, step.names[0])
 
 
+@local("GivenK", "line reason")
 @local("GivenK", "commit")
 @local("GivenK", "upstream entry")
 @local("GivenK", "requirement grammar")
 @local("GivenK", "GitHub repository")
 @local("GivenK", "entry")
 def given_bare(step):
-    """A commit, an upstream entry, the requirement grammar or the GitHub repository of this bounded context, an entry
+    """A line reason (its request line's Given writes it), a commit, an upstream entry, the requirement grammar or the GitHub repository of this bounded context, an entry
     of a comment: what the condition that names it says is all the scenario keeps of it."""
     return None if ours(step) else False
 
@@ -142,10 +143,21 @@ def given_request_is(step):
     if not step.names:
         return None
     path, value = request(step, step.names[0]), step.values[0].strip("`")
+    step.context.setdefault("status_given", set()).add(step.names[0])
     if " is not " not in step.text:
         set_field(path, "status", value)
     elif W.field(path, "status") == value:
         set_field(path, "status", "open" if value != "open" else "awaiting-asker")
+
+
+def asker_turn(step, name):
+    """A request no Given gave a status to, before `work propose` or `work reply` on it: in the asker's turn, and
+    raised by this bounded context where no Given said who raised it, so that the command takes it (r108, r109)."""
+    path = request(step, name)
+    if name not in step.context.get("status_given", set()):
+        set_field(path, "status", "awaiting-asker")
+    if W.field(path, "asker") == "other":
+        set_field(path, "asker", Q.OWN)
 
 
 @local("GivenK_A", "request line")
@@ -156,7 +168,12 @@ def given_line_is(step):
 
 
 def has(step):
-    if step.subject.startswith("the bounded context"):     # no GitHub repository: the upstream, unhosted
+    if step.subject.startswith("the request line"):     # its line reason, under its request's `## Reasons`
+        request_name, k = step.context["line_of"][step.names[0]]
+        path, words = request(step, request_name), "the reason of %s" % step.names[1]
+        path.write_text(path.read_text().rstrip("\n") + "\n\n## Reasons\n%d. %s\n" % (k, words))
+        says(step, step.names[1], words)
+    elif step.subject.startswith("the bounded context"):     # no GitHub repository: the upstream, unhosted
         upstream(step, hosted=False)
         says(step, step.names[0], Q.UP)
 
@@ -166,6 +183,8 @@ def holds(step):
         upstream(step)
     elif step.subject.startswith("the comment"):       # an entry of a side's part
         Q.comment(step, step.names[0])["entry"] = step.names[1]
+    elif step.subject.startswith("the request"):       # a comment it holds, under `## Comments` once posted
+        Q.comment(step, step.names[1])["held"] = True
 
 
 @local("GivenDoes")

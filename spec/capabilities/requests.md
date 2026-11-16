@@ -6,7 +6,7 @@ group: service
 language: codified-2
 rests_on: [design-decision/requests-written-through-work, design-decision/exits-are-successful-or-errors, design-decision/an-asker-is-told-by-its-registered-asker-id]
 retired: [r1, r3, r4, r5, r10, r11, r12, r13, r19, r20, r21, r22, r23, r42, g42, g2, r2, g6, r6, g7, r7, g8, r8, g9, r9, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18, g24, r24, g25, r25, g26, r26, g27, r27, g28, r28, g29, r29, g30, r30, g31, r31, g32, r32, g33, r33, g34, r34, g35, r35, g36, r36, g37, r37, g38, r38, g39, r39, g40, r40, g41, r41, g44, r44, g43, r43, g45, r45, g46, r46, g47, r47, g49, r49, g50, r50, g51, r51, g48, r48, g52, r52, g53, r53, g54, r54, g55, r55, g56, r56, g57, r57, g58, r58, g77, r77]
-unbuilt: [r104, r105, r106, r107, r108, r109, r110, r111]
+unbuilt: []
 ---
 
 # Requests
@@ -278,9 +278,9 @@ Restates: r58@0.29.
   that posted its step (the asker of an `ask` or a `fits`, the upstream of an `offer`, an `accept` or a `resolve`, and of
   a `turn` the side whose turn the request was); the side of an entry is the side whose part holds it (the asker's
   `line` and `answer`, the upstream's `question`, `outcome`, `counter`, `reason`, `into` and `resolution`).
-- `work request <title> --from <asker> [--ask <words>] [--to <upstream>]` with `--source <id>`, `--thread <id>` or
+- `work request <title> [--from <asker>] [--ask <words>] [--to <upstream>]` with `--source <id>`, `--thread <id>` or
   `--raised-for <request>` opens the issue, its body the `ask` form, and writes the record open in the upstream's
-  turn; it prints the request's id and the issue's URL. `--to` defaults to the one upstream of a request to an
+  turn; it prints the request's id and the issue's URL. `--from` defaults to this context (r111). `--to` defaults to the one upstream of a request to an
   upstream (no `--source`), else this context.
 - `work offer <request> [--capability <c>]... [--note <words>]` (the upstream, on an open request) posts the note,
   each named capability's groups (each title over its requirements; no frontmatter, prose or given blocks) and, of the
@@ -307,8 +307,8 @@ Restates: r58@0.29.
   status and turn set, an offer quoted under `## Offer`. The poster is the asker of an `ask` or a `fits`, the
   upstream of an `offer`, an `accept` or a `resolve`, and of a `turn` the side whose turn the request was; an entry
   of the other side's part is recorded with its comment, so no watch wakes on it again, and never applied. A comment on a request
-  that is `delivered`, `refused` or `withdrawn` sets neither its status nor its turn (r96), so a late comment reopens no request. A comment that does not conform to the comment form is printed and never
-  recorded. The records changed are one commit, on the current branch; then every request is printed with its status
+  that is `delivered`, `refused` or `withdrawn` sets neither its status nor its turn (r96), so a late comment reopens no request. A comment that does not conform to the comment form is printed once
+  and recorded under `## Comments` marked `unreadable`, nothing of it applied (r105, r106). The records changed are one commit, on the current branch; then every request is printed with its status
   and, unless it is `delivered`, `refused` or `withdrawn`, whose move it waits on.
 - `work watch [--every <seconds>] [--polls <n>]` polls GitHub every `--every` seconds (default 60), as `work sync`
   reads it: the issue of each request not `delivered`, `refused` or `withdrawn`, and the open issues of this context's
@@ -316,7 +316,7 @@ Restates: r58@0.29.
   prints one line for each and exits successfully, so a session runs it in the background and is woken when it ends;
   the session then runs `work sync` and starts the watch again. A comment that conforms to the comment form and an open issue that no request has are printed by
   every watch that finds them, until `work sync` records or takes them in (r86, r87). A comment that does not
-  conform, which `work sync` prints and never records (r77), is printed by one watch only and passed over by later ones, so it does
+  conform, which `work sync` prints once and records with nothing of it applied (r105), is printed by one watch only and passed over by later ones, so it does
   not wake a session in a loop; r86's condition leaves it out: its URL is kept in `<git dir>/shopsystem/watched.json`, the file holding only comments that do not conform, never
   committed. A poll whose `gh` fails is said on stderr and tried again at the next. `--polls <n>` makes a bounded
   watch, used by the tests: it stops after n polls that found nothing and exits 1, so a caller tells "nothing new"

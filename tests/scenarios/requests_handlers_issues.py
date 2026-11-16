@@ -75,6 +75,8 @@ def work_step(step):
     name = step.names[-1]
     word = step.term.strip("`").split()[1]
     path = HANDLERS.path_of(step, name)
+    if word == "propose":
+        HANDLERS.givens().asker_turn(step, name)
     if word == "accept":        # each line a line that parses, going into the capability work-queue
         R.codify(step)
         text, k = path.read_text(), 0

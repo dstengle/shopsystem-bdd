@@ -93,6 +93,9 @@ def does(step):
         url = W.field(bound(step, step.names[0]), "issue")
         assert url, step.text
         step.context.setdefault("issues", {})[step.names[1]] = url
+    elif term == "originate":                            # the request r1 originates from this bounded context
+        got = W.field(bound(step, step.names[0]), "asker")
+        assert got == Q.OWN, (step.text, got)
     elif term in ("proposed in", "raised for"):
         return proposed(step) if term == "proposed in" else raised(step)
     elif term == "write" and np.startswith("the request line"):
@@ -157,11 +160,11 @@ def then_prints(step):
 @local("ThenPrintsNot")
 def then_prints_not(step):
     """`work` does not print a request: no `q<n>` in its output; nor the request line r4: not what a Given said it is
-    (a line of another request, b273)."""
+    (a line of another request, b273); nor the comment c1: its URL."""
     if not ours(step):
         return False
     done = step.context["result"]
-    if step.nps and step.nps[0].startswith("the request line "):
+    if step.nps and step.nps[0].startswith(("the request line ", "the comment ")):
         for word in words(step):
             assert word not in done.stdout, (step.text, word, done.stdout)
         return None
