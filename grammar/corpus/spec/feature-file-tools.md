@@ -783,3 +783,44 @@ shall [x4: thing `order-by-every` (parameter), x7: noun phrase `thing` (constant
     of(x12, x11)
     write(e2, subject: x10, object: x11)
 ```
+
+## r131
+From: b286 r131. Not in the audit (b286 is no reword item).
+
+```reading
+While a requirement of a requirement group of a capability uses `order-by`, when the person runs `features generate` on the capability, `features` shall not write a step that mentions an instance that no given step introduces.
+shall [x4: thing `order-by` (parameter), x5: agent the person (constant), x6: command `features generate` (parameter), x7: tool `features` (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability]
+    of(x2, x3)
+    of(x1, x2)
+    use#2(subject: x1, object: x4)
+  when
+    run(e1, subject: x5, object: x6, on: x3)
+  response
+    not [x8: step, x9: instance]
+      not [x10: given step]
+        introduce(subject: x10, object: x9)
+      mention(subject: x8, object: x9)
+      write(e2, subject: x7, object: x8)
+```
+
+## r132
+From: b286 r130. Not in the audit (b286 is no reword item).
+
+```reading
+While a requirement of a requirement group of a capability uses `holds-relation` and `rc-subject`, when the person runs `features generate` on the capability, `features` shall not write a step that mentions an instance that no given step introduces.
+shall [x4: thing `holds-relation` (parameter), x5: thing `rc-subject` (parameter), x6: agent the person (constant), x7: command `features generate` (parameter), x8: tool `features` (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability]
+    of(x2, x3)
+    of(x1, x2)
+    use#2(subject: x1, object: x4)
+    use#2(subject: x1, object: x5)
+  when
+    run(e1, subject: x6, object: x7, on: x3)
+  response
+    not [x9: step, x10: instance]
+      not [x11: given step]
+        introduce(subject: x11, object: x10)
+      mention(subject: x9, object: x10)
+      write(e2, subject: x8, object: x9)
+```
