@@ -2106,3 +2106,18 @@ shall [x2: thing `order-by-every` (parameter), x5: noun phrase `thing` (constant
   response
     exit(e2, subject: x8, successfully)
 ```
+
+## r318
+From: b328 r318. Not in the audit (b328 is no reword item).
+
+```reading
+While a requirement uses `order-by-every` and `of-relation`, when the person runs `model parse` on the requirement, `model` shall exit successfully.
+shall [x2: thing `order-by-every` (parameter), x3: thing `of-relation` (parameter), x4: agent the person (constant), x5: command `model parse` (parameter), x6: tool `model` (constant)]
+  while [x1: requirement]
+    use#2(subject: x1, object: x2)
+    use#2(subject: x1, object: x3)
+  when
+    run(e1, subject: x4, object: x5, on: x1)
+  response
+    exit(e2, subject: x6, successfully)
+```
