@@ -574,12 +574,14 @@ quote-20 "Once 4.0 is done, take a new backlog item to make some nice …"
 #### `work decision`
 
 Writes a design-decision, `spec/decisions/<nnnn>-<slug>.md`, rewrites `spec/decisions/index.md`, and commits both.\
-Synopsis: `work decision [--summary SUMMARY] [--tier {check,requirement,judgement}] [--decision DECISION] [--context CONTEXT] [--alternatives ALTERNATIVES] [--enforced-by ENFORCED_BY] [--verified-by {scenario,check,judgement,monitor}] [--rests-on RESTS_ON] [--source SOURCE] [--by BY] [--slug SLUG] [--date DATE] title`
+Synopsis: `work decision [--summary SUMMARY] [--tier {check,requirement,judgement}] [--decision DECISION] [--context CONTEXT] [--alternatives ALTERNATIVES] [--enforced-by ENFORCED_BY] [--verified-by {scenario,check,judgement,monitor}] [--rests-on RESTS_ON] [--supersedes SUPERSEDES] [--source SOURCE] [--by BY] [--slug SLUG] [--date DATE] title`
 
 - `--summary`, `--tier`, `--decision`: required; it is refused, naming each one missing.
 - `--context`, `--alternatives`: the other sections. These three take text, or `@<file>`.
 - `--enforced-by`: a test (`check` tier) or a requirement (`requirement` tier); repeatable.
 - `--rests-on`, `--verified-by`: for a decision that routes a universal condition.
+- `--supersedes <id>`: an accepted decision this one replaces (its id, path or number); it is set `superseded`
+  and committed with the new one. A decision not accepted, or an id that names none, is refused, naming it; repeatable.
 
 ```console
 $ work decision "The command reference defers to --help" --summary "Where the command reference and --help differ, --help wins." --tier judgement --decision "Each command's --help is its contract; the reference page links to it and never overrides it."
