@@ -947,7 +947,7 @@ a noun of another by a relation row
 
 - Form: <noun> of|in <np>
 - Functions: `r\d+_\w+_Mod`
-- Cited by: design-model-check#r233
+- Cited by: design-model-check#r233, design-model-check#r318, feature-file-tools#r133
 - Example and its reading:
 
 ```construct
@@ -1292,7 +1292,7 @@ a printed every ordered by its attribute (b275)
 
 - Form: every <noun>, ordered by <attribute>, in ascending|descending order
 - Functions: `t_[a-z0-9_]+_\d+_k_\w+_Every`
-- Cited by: design-model-check#r304, design-model-check#r317, feature-file-tools#r124, feature-file-tools#r130
+- Cited by: design-model-check#r304, design-model-check#r317, design-model-check#r318, feature-file-tools#r124, feature-file-tools#r130, feature-file-tools#r133
 - Example and its reading:
 
 ```construct

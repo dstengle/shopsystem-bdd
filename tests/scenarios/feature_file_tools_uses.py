@@ -8,7 +8,8 @@ order (b275) is the example of `order-by-every`, and "the scenario s1 has the or
 the feature's Then states the order and its Givens give at least three members distinct values in neither that order
 nor its reverse, so that world_order's check of the Then fails on the members printed as given (`counter`). A
 requirement that uses `order-by` and a verb while no frame takes `thing` (b298) is the example said with the verb
-"return", whose one frame names the collection's kind (`agent returns worktree to agent`), added to the context."""
+"return", whose one frame names the collection's kind (`agent returns worktree to agent`), added to the context; one
+that uses `order-by-every` and `of-relation` (b328) the example said after "every file in the worktree"."""
 import re
 import sys
 from pathlib import Path
@@ -31,6 +32,10 @@ ORDERED_RETURN = ("When the person runs `work start`, `work` shall return a work
 # b300: the order-by-every example said with give
 ORDERED_GIVE = ("When the person runs `work start`, `work` shall give every file, ordered by version, in ascending "
                 "order to the person.")
+
+# b328: the order-by-every example after every K in a collection, a modifier by the row file | in | worktree
+ORDERED_IN = ("When the person runs `work start` on a worktree, `work` shall print every file in the worktree, "
+              "ordered by version, in ascending order.")
 
 
 def construct(w):
@@ -69,6 +74,8 @@ def prepare(step, w, write, name, path):
         line, index = ORDERED_RETURN, index.replace("\n- **give** (verb", "\n%s- **give** (verb" % RETURN_WORKTREE, 1)
     if code == "order-by-every" and unthinged(w):
         line = ORDERED_GIVE
+    if code == "order-by-every" and any(v == "use" and o == "`of-relation`" for v, _, o, _ in w["facts"]):
+        line = ORDERED_IN
     cap = ("---\nid: capability/%s/%s\ntitle: %s\nnarrator: a client\ngroup: service\nlanguage: codified-2\n"
            "rests_on: []\nretired: []\n---\n\n# %s\n\n## Purpose\nSomething.\n\n## Behaviour\n\n### [g1] %s\n"
            "- [r1] %s\n\n## Not yet\n" % (path, name, name, name, code, line))

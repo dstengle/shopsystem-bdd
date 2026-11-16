@@ -47,6 +47,16 @@ def np(st, tree, nps):
     return replace(found, order=Atom(PRED, (found.ref, t.term, DIRS[nps.fun(a[1])])))
 
 
+def unmodified(found):
+    """`found`, the noun phrase of a modifier ("every file in the worktree"); an order on it is no meaning (b328): the
+    order after "every K in the Y" is the every's (`<T>_<K>_Every`), never the Y's inside the modifier, which no act
+    acts on (decision 0093), so spec_meaning.one drops that tree."""
+    if getattr(found, "order", None) is not None:
+        raise ValueError("an order on the noun phrase of a modifier has no reading: an order is a property of what a "
+                         "response acts on")
+    return found
+
+
 def show(a, term):
     x, t, d = a.args
     return "ordered(%s, %s, %s)" % (term(x), t, d)

@@ -297,24 +297,6 @@ shall [x3: artifact the comment form (constant), x5: command `work sync` (parame
         print(e3, subject: x6, object: x7)
 ```
 
-## r77
-Retires: r33. From: b153 r77. Audit: coined, fixed by "does not conform to the comment form" (conformance).
-
-```reading
-While a comment on a request does not conform to the comment form, when a session runs `work sync`, `work` shall print the comment and not write the comment.
-shall [x3: artifact the comment form (constant), x5: command `work sync` (parameter), x6: tool `work` (constant)]
-  while [x1: comment, x2: request]
-    on(x1, x2)
-    not
-      conforms(x1, x3)
-  when [x4: session]
-    run(e1, subject: x4, object: x5)
-  response
-    print(e2, subject: x6, object: x1)
-    not
-      write(e3, subject: x6, object: x1)
-```
-
 ## r78
 Retires: r34. From: b153 r78. Audit: fine.
 
