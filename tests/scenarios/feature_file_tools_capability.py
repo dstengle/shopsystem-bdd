@@ -106,6 +106,8 @@ def prepare(step):
         w["groups"] = len(COL.LINES[w["lines"]])
     elif not USES.prepare(step, w, W._write, NAME, PATH):     # a capability of one construct (b274)
         return []
+    else:
+        w["groups"] = 1     # its one group, the construct's (b288)
     for c in [n for n, k in w["kinds"].items() if k == "capability"]:
         w["values"][c] = NAME
     return [NAME]
