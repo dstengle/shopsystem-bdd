@@ -94,12 +94,19 @@ def add_line(root, name, capability, text, group=None, in_group=None):
 def retire(root, name, ident, text, into=None, group=None, in_group=None):
     """`work line --retires <cap>#r<n> <line>`: the line written into the item `name` as `work line` writes it, and the
     old id under its block's `retired:` (backlog_retires), committed; refused, changing nothing, when the capability
-    holds no live requirement of that id. The item and the new line's `<cap>#r<n>`."""
+    holds no live requirement of that id. The item and the new line's `<cap>#r<n>`; with no `text` (`--no-line`,
+    b271) the old id alone, the block made when the item has none, and None."""
     item = find(root, name)
     capability, rid = backlog_retires.check(root, item, ident, into)
-    new = add_line_to(root, item, capability, text, group, in_group)
+    if text is None:
+        blocks = read(item, "the item %s" % item.name)
+        _block(blocks, capability)
+        item.sections[SECTION] = render(blocks)
+        new = None
+    else:
+        new = add_line_to(root, item, capability, text, group, in_group)
     backlog_retires.with_retired(item, capability, rid)
-    commit(root, item, "work line: %s %s retires %s" % (label(item), new, ident))
+    commit(root, item, "work line: %s %s %s" % (label(item), "%s retires" % new if new else "retires", ident))
     return item, new
 
 

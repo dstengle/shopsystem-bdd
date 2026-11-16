@@ -2,7 +2,7 @@
 step of readiness's scenarios (`mine`) and returns False on any other: refuse (the run exited 1, not a usage error),
 name (what the Givens and the When said each thing is named by, or the item's status, in what the run printed),
 write and holds (the item file the run changed holds the piece, the line under a fresh id with the id it retires
-under `retired:`, or the block of the capability it recodified), commit (the run committed the item's file) and set
+under `retired:` (with `--no-line`, no line added), or the block of the capability it recodified), commit (the run committed the item's file) and set
 (the item's status, or the language of the capability's block in the item, the capability's own file untouched)."""
 import importlib.util
 import re
@@ -55,6 +55,19 @@ def _retiring(step, held):
     assert "%s#%s" % (capability, found.group(1)) in step.context["result"].stdout, step.context["result"].stdout
 
 
+def _bare(step, held):
+    """`--no-line --retires` (b271): the id it retires under the block's `retired:`, printed."""
+    capability, old = step.context["line"]["retiring"].split("#")
+    assert re.search(r"(?m)^retired: \[%s\]$" % old, _block(held, capability)), held
+    assert step.context["line"]["retiring"] in step.context["result"].stdout, step.context["result"].stdout
+
+
+def _unwritten(step):
+    """`work` does not write the requirement r2 (b271): the item's lines are the one it held, no line added."""
+    held = _requirements(step)
+    assert re.findall(r"(?m)^- \[r[1-9]\d*\] (.*)$", held) == [R.PASSING], held
+
+
 def written(step):
     """`work` writes ..., the item i1 holds ...: the item file the run wrote holds it."""
     held, line = _requirements(step), step.context["line"]
@@ -63,6 +76,8 @@ def written(step):
     elif line.get("changed") == "--reword":
         capability, rid = line["ident"].split("#")
         assert re.search(r"(?m)^- \[%s\] %s$" % (rid, re.escape(line["written"])), _block(held, capability)), held
+    elif line.get("no_line"):
+        _bare(step, held)
     elif "retiring" in line:
         _retiring(step, held)
     else:
@@ -125,9 +140,12 @@ THENS = {"refuse": lambda step: _done(step, 1), "name": named, "write": written,
 
 @local("ThenDoesNot")
 def then_does_not(step):
-    """`work` does not name the bar check b3 (a counter-example, b273): what it is named by is not in the output."""
-    if not R.mine(step) or step.term != "name":
+    """`work` does not name the bar check b3 (a counter-example, b273): what it is named by is not in the output;
+    does not write the requirement r2 (b271): no line added to the item."""
+    if not R.mine(step) or step.term not in ("name", "write"):
         return False
+    if step.term == "write":
+        return _unwritten(step)
     done = step.context["result"]
     for np in step.nps:
         word = step.context.get("says", {}).get(np.rsplit(" ", 1)[-1])

@@ -1,7 +1,7 @@
 """The When of features/readiness.feature's `work line` scenarios in grammar 4 (b240 phase 20): `work line` run on an
 item of the codified spec readiness_world.py writes, with the options the step names (b43's `--relation`,
 `--universal`, `--upstream` and `--given`; b128's `--retires`; I19's `--recodify`; b220's `--recodify universal` and
-`--universal --retires`), each given what readiness_world says of it: a piece that conforms to its form unless a
+`--universal --retires`; b271's `--no-line --retires`, on an item holding the passing line), each given what readiness_world says of it: a piece that conforms to its form unless a
 Given said it does not, a live id unless a Given said no requirement has it. What it ran is kept under `line` for
 readiness_handlers_thens.py."""
 import importlib.util
@@ -95,6 +95,12 @@ def work_line(step):
         line["retiring"] = _retired(step, options["--retires"], R.LIVE_U)
         line["written"] = R.CONDITION
         args = ["--universal", R.CONDITION, "--retires", line["retiring"]]
+    elif "--retires" in options and "--no-line" in options:
+        R.give_lines(step, item, R.PASSING)
+        _shaped(step, item)
+        line["retiring"] = _retired(step, options["--retires"], R.LIVE)
+        line["no_line"] = True
+        args = ["--no-line", "--retires", line["retiring"]]
     elif "--retires" in options:
         R.codify(step)
         _shaped(step, item)

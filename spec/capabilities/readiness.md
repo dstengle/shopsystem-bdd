@@ -6,7 +6,7 @@ group: service
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: [g1, r1, g2, r2, g3, r3, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18, g19, r19, g33, r33]
-unbuilt: [r47, r48]
+unbuilt: []
 ---
 
 # Readiness
@@ -139,7 +139,8 @@ the item is settled. `work ready` checks the bar and asks nobody.
 - The bar is checked on a copy of `spec/` under the temporary directory with the item's lines laid in, removed
   afterwards; `spec/` is never written. `model logic` refuses an L0, and an L1 naming one of the item's lines; an L1
   elsewhere in `spec/` is not the item's, and an L3 naming the item's line is printed as a warning and does not refuse.
-- An item with no requirement line is not passing: the reason says to give it one with `work line`.
+- An item with no requirement line is not passing, unless it retires a requirement (`work line --no-line --retires`):
+  the reason says to give it one with `work line`.
 - `work ready` names every reason at once, one a line after `work ready: <item> is not passing:`: the request lines
   not settled first, then the lines that do not parse, the logic findings and the groups with no scenario. An item that
   is not `shaped` is refused first, naming its status, with no check run.
