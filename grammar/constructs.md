@@ -411,7 +411,7 @@ a relative clause whose subject is the noun
 
 - Form: <noun> that <verb> ...
 - Functions: `k_\w+_Rel_k_\w+`
-- Cited by: design-model-check#r315, feature-file-tools#r126, feature-file-tools#r132
+- Cited by: design-model-check#r315, design-model-check#r321, design-model-check#r320, feature-file-tools#r126, feature-file-tools#r132
 - Example and its reading:
 
 ```construct
@@ -610,7 +610,7 @@ there is none
 
 - Form: no <noun>
 - Functions: `DetNo`
-- Cited by: design-model-check#r234, feature-file-tools#r128, feature-file-tools#r128
+- Cited by: design-model-check#r234, design-model-check#r322, feature-file-tools#r128, feature-file-tools#r128
 - Example and its reading:
 
 ```construct
@@ -631,7 +631,7 @@ a number of them, bounded
 
 - Form: at least|at most|exactly|more than|fewer than <number> <nouns>
 - Functions: `DetCount|AtLeast|AtMost|Exactly|MoreThan|FewerThan`
-- Cited by: design-model-check#r252, design-model-check#r289, feature-file-tools#r112, feature-file-tools#r112
+- Cited by: design-model-check#r252, design-model-check#r289, feature-file-tools#r112, feature-file-tools#r112, feature-file-tools#r134
 - Example and its reading:
 
 ```construct
@@ -852,7 +852,7 @@ no thing at all: after change, and after holds of each kind a relation row "in" 
 
 - Form: nothing
 - Functions: `k_\w+_Nothing`
-- Cited by: design-model-check#r295, design-model-check#r315, feature-file-tools#r121, feature-file-tools#r121, feature-file-tools#r126, feature-file-tools#r126
+- Cited by: design-model-check#r295, design-model-check#r315, design-model-check#r321, feature-file-tools#r121, feature-file-tools#r121, feature-file-tools#r126, feature-file-tools#r126
 - Example and its reading:
 
 ```construct
@@ -1005,7 +1005,7 @@ a state: the other noun of a relation row "in"
 
 - Form: <np> holds <np>
 - Functions: `r\d+_\w+_Holds`
-- Cited by: design-model-check#r288, design-model-check#r289, design-model-check#r292, feature-file-tools#r113, feature-file-tools#r112, feature-file-tools#r128, feature-file-tools#r132
+- Cited by: design-model-check#r288, design-model-check#r289, design-model-check#r292, design-model-check#r321, design-model-check#r322, design-model-check#r322, design-model-check#r320, design-model-check#r320, feature-file-tools#r113, feature-file-tools#r112, feature-file-tools#r128, feature-file-tools#r132, feature-file-tools#r134
 - Example and its reading:
 
 ```construct
