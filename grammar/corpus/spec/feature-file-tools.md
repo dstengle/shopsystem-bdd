@@ -741,3 +741,23 @@ shall [x4: thing `no-noun` (parameter), x5: thing `holds-relation` (parameter), 
     of(x11, x10)
     write(e2, subject: x9, object: x10)
 ```
+
+## r129
+From: b310 r129. Not in the audit (b310 is no reword item).
+
+```reading
+While the precondition of a requirement of a requirement group of a capability uses `every` and `not-condition`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that satisfies the precondition.
+shall [x5: thing `every` (parameter), x6: thing `not-condition` (parameter), x7: agent the person (constant), x8: command `features generate` (parameter), x9: tool `features` (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability, x4: precondition]
+    of(x2, x3)
+    of(x1, x2)
+    of(x4, x1)
+    use#2(subject: x4, object: x5)
+    use#2(subject: x4, object: x6)
+  when
+    run(e1, subject: x7, object: x8, on: x3)
+  response [x10: scenario]
+    of(x10, x2)
+    satisfy(subject: x10, object: x4)
+    write(e2, subject: x9, object: x10)
+```

@@ -277,7 +277,7 @@ a condition that does not hold
 
 - Form: <subject> does not <verb> ...; ... is not <value>
 - Functions: `PNeg`
-- Cited by: design-model-check#r209, feature-file-tools#r120, feature-file-tools#r125
+- Cited by: design-model-check#r209, design-model-check#r316, feature-file-tools#r120, feature-file-tools#r125, feature-file-tools#r129
 - Example and its reading:
 
 ```construct
@@ -554,7 +554,7 @@ each one
 
 - Form: every <noun>
 - Functions: `DetEvery`
-- Cited by: design-model-check#r248, feature-file-tools#r117, feature-file-tools#r114
+- Cited by: design-model-check#r248, design-model-check#r316, feature-file-tools#r117, feature-file-tools#r114, feature-file-tools#r129
 - Example and its reading:
 
 ```construct

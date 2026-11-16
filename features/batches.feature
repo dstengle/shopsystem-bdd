@@ -255,3 +255,15 @@ Feature: Batches
     And a session s2
     When the session s2 runs `work batch done` on the task t1
     Then `work` sets the status of the task t1 to `done`
+
+  @g39 @r39
+  Scenario: `work batch start` writes `spec/universal.md` in `codified-2` when it does not exist
+    Given `universal` does not exist
+    And an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 passes this readiness bar
+    And a universal condition u1
+    And the item i1 holds the universal condition u1
+    When the person runs `work batch start`
+    Then `work` writes `universal`
+    And `work` sets the language of `universal` to `codified-2`

@@ -2071,3 +2071,20 @@ shall [x3: thing `nothing` (parameter), x4: thing `rc-subject` (parameter), x8: 
   response
     print(e2, subject: x10, object: x11)
 ```
+
+## r316
+From: b310 r316. Not in the audit (b310 is no reword item).
+
+```reading
+While the precondition of a requirement of a capability uses `every` and `not-condition`, when the person runs `model logic` on the capability, `model` shall translate the requirement.
+shall [x4: thing `every` (parameter), x5: thing `not-condition` (parameter), x6: agent the person (constant), x7: command `model logic` (parameter), x8: tool `model` (constant)]
+  while [x1: requirement, x2: capability, x3: precondition]
+    of(x1, x2)
+    of(x3, x1)
+    use#2(subject: x3, object: x4)
+    use#2(subject: x3, object: x5)
+  when
+    run(e1, subject: x6, object: x7, on: x2)
+  response
+    translate(e2, subject: x8, object: x1)
+```

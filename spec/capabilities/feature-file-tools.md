@@ -348,6 +348,9 @@ the capability `shelf` holds:
 ### [g128] `features generate` writes the Then of a response's object that holds no K
 - [r128] While a requirement of a requirement group of a capability uses `no-noun` and `holds-relation` and the precondition of the requirement does not use `no-noun`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has a counter-example.
 
+### [g129] `features generate` satisfies every over a negated value in a precondition
+- [r129] While the precondition of a requirement of a requirement group of a capability uses `every` and `not-condition`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that satisfies the precondition.
+
 ## Implementation, may change
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three
   backticks. A scenario's block is its tag lines, its `Scenario:` line and everything up to the next scenario's tag

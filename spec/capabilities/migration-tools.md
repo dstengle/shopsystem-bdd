@@ -729,6 +729,9 @@ the tracked file `.shop/work/i1/initiative.md` holds:
   # i1
 ```
 
+### [g84] `migrate upgrade` on a repository behind the plugin's release with no upgrade step pending records the plugin's release
+- [r84] While the release of this repository is `0.34.0` and the release of `migrate` is `0.34.1`, when the person runs `migrate upgrade`, `migrate` shall print `no upgrade step is pending`, rewrite the plugin version file of this repository and commit the plugin version file.
+
 ## Implementation, may change
 - r17's `by`: the entry's source, then `; supersedes <id> <qualifier>`.
 - Python 3 with the standard library; it relocates with `git mv`; `migrate run` does not commit, `migrate upgrade`

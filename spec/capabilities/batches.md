@@ -97,6 +97,9 @@ question while building parks its item and the rest of the batch carries on. The
 ### [g36] `work batch status` prints where the batch stands
 - [r36] While a batch holds an item and the batch has a task, when the person runs `work batch status` on the batch, `work` shall print the item, the task and the status of the task.
 
+### [g39] `work batch start` writes `spec/universal.md` in `codified-2` when it does not exist
+- [r39] While `universal` does not exist and an item is `ready` and the item passes the readiness bar and a universal condition is in the item, when the person runs `work batch start`, `work` shall write `universal` and set the language of `universal` to `codified-2`.
+
 ## Implementation, may change
 
 - `work batch start` takes the ready items in rank order (the backlog's WSJF, ties to the item added first), up to

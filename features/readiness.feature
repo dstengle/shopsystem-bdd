@@ -176,3 +176,63 @@ Feature: Readiness
     When the person runs `work ready` on the item i1
     Then `work` refuses `work ready`
     And `work` names the requirement r1
+
+  @g42 @r42
+  Scenario: `work line --reword` rewords a requirement of an item
+    Given a requirement r1
+    And an item i1
+    And the item i1 holds the requirement r1
+    And a requirement id r2
+    And the requirement r1 has the requirement id r2
+    When the person runs `work line` with the `--reword` option set to the requirement id r2 on the item i1
+    Then `work` removes the requirement r1
+    And `work` writes the requirement r3
+    And the item i1 holds the requirement r3
+    And `work` commits the item i1
+
+  @g43 @r43
+  Scenario: `work line --remove` removes a requirement of an item
+    Given a requirement r1
+    And an item i1
+    And the item i1 holds the requirement r1
+    And a requirement id r2
+    And the requirement r1 has the requirement id r2
+    When the person runs `work line` with the `--remove` option set to the requirement id r2 on the item i1
+    Then `work` removes the requirement r1
+    And `work` commits the item i1
+
+  @g44 @r44
+  Scenario: `work line --reword` refuses a requirement of a capability
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And a requirement id r2
+    And the requirement r1 has the requirement id r2
+    And an item i1
+    When the person runs `work line` with the `--reword` option set to the requirement id r2 on the item i1
+    Then `work` refuses `work line`
+    And `work` names the requirement id r2
+
+  @g45 @r45
+  Scenario: `work line --remove` refuses a requirement of a capability
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And a requirement id r2
+    And the requirement r1 has the requirement id r2
+    And an item i1
+    When the person runs `work line` with the `--remove` option set to the requirement id r2 on the item i1
+    Then `work` refuses `work line`
+    And `work` names the requirement id r2
+
+  @g46 @r46
+  Scenario: `work ready` refuses an item a universal condition of which has no translation when `spec/universal.md` does not exist
+    Given `universal` does not exist
+    And an item i1
+    And the status of the item i1 is `shaped`
+    And a universal condition u1
+    And the item i1 holds the universal condition u1
+    And the universal condition u1 has no translation
+    When the person runs `work ready` on the item i1
+    Then `work` refuses `work ready`
+    And `work` names the universal condition u1

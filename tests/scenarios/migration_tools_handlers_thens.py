@@ -157,9 +157,21 @@ def then_does(step):
         assert "- [r5] **When** b" in M.read(step, "spec/capabilities/thing.md")
     elif step.term in ("refuse", "name"):
         refused(step, what)
+    elif step.term == "commit" and what == "plugin version file":
+        committed(step)
     else:
         return False
     return None
+
+
+def committed(step):
+    """The plugin version file in the one commit `migrate upgrade` made, named for the releases it went between."""
+    ok(step)
+    old = step.context["old"]
+    assert len(old.git("log", "--oneline").stdout.splitlines()) == step.context["commits"] + 1
+    files = old.git("show", "--name-only", "--format=%s", "HEAD").stdout.split()
+    assert ".shop/plugin-version" in files, files
+    assert old.git("log", "-1", "--format=%s").stdout.strip().startswith("migrate upgrade: "), files
 
 
 def refused(step, what):

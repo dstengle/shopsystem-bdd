@@ -643,3 +643,19 @@ Feature: Feature file tools
     Then `features` writes the scenario s1
     And the requirement group r2 has the scenario s1
     And the scenario s1 has the counter-example c2
+
+  @g129 @r129
+  Scenario: `features generate` satisfies every over a negated value in a precondition
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And a precondition p1
+    And the requirement r1 has the precondition p1
+    And the precondition p1 uses `every`
+    And the precondition p1 uses `not-condition`
+    When the person runs `features generate` on the capability c1
+    Then `features` writes the scenario s1
+    And the requirement group r2 has the scenario s1
+    And the scenario s1 satisfies the precondition p1

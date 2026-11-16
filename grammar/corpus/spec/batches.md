@@ -351,3 +351,22 @@ shall [x4: agent the person (constant), x5: command `work batch status` (paramet
     status(x3) = x7
     print(e4, subject: x6, object: x7)
 ```
+
+## r39
+From: b203 r39. A spec/universal.md that `work batch start` makes to lay an item's universal conditions says `codified-2`, the one language.
+
+```reading
+While `universal` does not exist and an item is `ready` and the item passes the readiness bar and a universal condition is in the item, when the person runs `work batch start`, `work` shall write `universal` and set the language of `universal` to `codified-2`.
+shall [x1: capability `universal` (constant), x3: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x6: command `work batch start` (parameter), x7: tool `work` (constant)]
+  while [x2: item, x4: universal condition]
+    not
+      exists(x1)
+    status(x2) = `ready`
+    pass#2(subject: x2, object: x3)
+    in(x4, x2)
+  when
+    run(e1, subject: x5, object: x6)
+  response
+    write(e2, subject: x7, object: x1)
+    initiates(e3, subject: x7, language(x1) = `codified-2`)
+```

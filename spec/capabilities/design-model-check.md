@@ -584,6 +584,9 @@ Restates: r37@0.29.
 ### [g315] `model logic` reads `nothing` on a response's object
 - [r315] While a requirement of a capability uses `nothing` and `rc-subject` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
 
+### [g316] `model logic` translates every over a negated value in a precondition
+- [r316] While the precondition of a requirement of a capability uses `every` and `not-condition`, when the person runs `model logic` on the capability, `model` shall translate the requirement.
+
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a
   fact `label("<code>", "<label>")` beside the rule, the one place it is written; `check` and `rules` read the labels
