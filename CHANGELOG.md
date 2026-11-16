@@ -21,8 +21,8 @@ been renamed or retired since.
 ## 0.35.2: migrate records the version, orders after any act, and line commands
 
 - **`migrate upgrade` records the release** (b303, PR #61): on a repository behind the plugin's release with no
-  upgrade step pending, it printed `no upgrade step is pending` and left `.shop/plugin-version` as it was, so the
-  SessionStart hook kept offering the upgrade. Now it writes the plugin's version, commits and pushes it; with the
+  upgrade step pending, it printed `no upgrade step is pending` and left `.shop/plugin-version` as it was, so
+  `migrate status` kept showing the repository behind the plugin. Now it writes the plugin's version, commits and pushes it; with the
   two releases the same it still changes nothing.
 - **Every over a negated value in a precondition** (b310, PR #61): "While every work-item is not `ready`, ..."
   crashed `model logic` and `features generate` (and so `work ready`). Now `model logic` translates it and the

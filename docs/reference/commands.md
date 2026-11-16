@@ -1030,7 +1030,8 @@ the plugin's version: 0.33.0
 ### `migrate upgrade`
 
 Applies each pending upgrade step in order (for 0.33.0, the `codified-2` marker, the CLI pack import, verbs'
-aspects), commits it all, and reports what is left for you to reword, by file and id.\
+aspects), commits it all, and reports what is left for you to reword, by file and id. With no step pending and
+the repository behind the plugin, it records the plugin's release in `.shop/plugin-version` and commits it.\
 Synopsis: `migrate upgrade`
 
 ```console
