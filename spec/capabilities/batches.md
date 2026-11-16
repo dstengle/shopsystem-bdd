@@ -100,6 +100,9 @@ question while building parks its item and the rest of the batch carries on. The
 ### [g39] `work batch start` writes `spec/universal.md` in `codified-2` when it does not exist
 - [r39] While `universal` does not exist and an item is `ready` and the item passes the readiness bar and a universal condition is in the item, when the person runs `work batch start`, `work` shall write `universal` and set the language of `universal` to `codified-2`.
 
+### [g40] The merge resolves the request a delivered item was taken in from
+- [r40] While an item in a batch is `in-batch` and the item has a request line of a request and the request is `accepted`, when the person merges the pull request of the batch, `work` shall set the status of the request to `delivered`, write a resolution, set the side of the request to `asker`, post a comment, close the issue of the request and commit the request.
+
 ## Implementation, may change
 
 - `work batch start` takes the ready items in rank order (the backlog's WSJF, ties to the item added first), up to
@@ -149,11 +152,17 @@ question while building parks its item and the rest of the batch carries on. The
   deletes the merged item branches. `work batch abandon` takes a batch that is `building` or `in-review`: it closes
   the pull request when there is one (refused, with nothing changed, if gh fails), sets every `in-batch` item `ready`
   and the batch `abandoned`, removes the worktrees and keeps the branches.
+- `work accept` records on the item it makes which line of the request each of its requirements came from, as
+  `request_lines: [<cap>#r<n>=<k>, ...]` in the item's frontmatter, kept under the new ids when a batch renumbers
+  them. After the merge is recorded, `work batch merged` resolves the request of each delivered item taken in from
+  one by `work resolve`'s path, each recorded line delivered as `<cap>#r<n> <merge commit>`, and prints
+  `<q> resolved: delivered by <item>`. A request that is not `accepted`, an item that records no line of it, or a
+  resolve that is refused is left alone and named as `<q> not resolved (<why>); run work resolve`, for a later
+  `work resolve`.
 
 ## Not yet
 - Tasks finer than an item: a batch has one task for each item, and the batch session splits a task further among
   its own subagents.
 - A task set `failed` by a command.
-- The request a delivered item was taken in from resolved (`work resolve`) at the merge.
 - A session `work` starts itself: the batch session is a Claude Code session following the `building-a-batch`
   skill, and `work batch` keeps the state.

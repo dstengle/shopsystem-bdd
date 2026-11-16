@@ -139,8 +139,10 @@ def reviewed(args):
 
 def merged(args):
     import batch_close
-    batch = batch_close.merged(args.root, args.batch)
+    batch, requests = batch_close.merged(args.root, args.batch)
     print("%s merged" % batch.name)
+    for line in requests:
+        print(line)
     return 0
 
 

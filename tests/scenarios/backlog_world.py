@@ -3,7 +3,8 @@ written as files of `.shop/backlog/`, the scenario's item `i<n>` kept as the fil
 run in the repository committed first.
 
 An item the scenario names that no Given wrote is written before the command runs (D15): `idea`, `own`, rated
-`medium-value`, `medium-urgency`, `medium`, titled `Title of i<n>`. Under `work idea` the item a Then names is the
+`medium-value`, `medium-urgency`, `medium`, titled `Title of i<n>`, with a shaping note under `## Notes` unless a
+Given says it has none. Under `work idea` the item a Then names is the
 one the command writes, so nothing is written for it. backlog_handlers.py loads this module by path as
 `shop_backlog_world`."""
 import re
@@ -15,6 +16,8 @@ INDEX = "---\nid: bounded-context/ex.com/prod/ctx\n---\n# ctx\n"
 DEFAULTS = {"status": "idea", "provenance": "own", "value": "medium-value", "urgency": "medium-urgency",
             "size": "medium"}
 QUESTION = "Which reading holds, the first or the second?"
+# The shaping note an item is written with unless a Given says it has none (r37, r43, r44).
+NOTE = "What the item is to do."
 # `the x is of the y`, by the kind of x, each handler module adding its own: a dependency of an item (backlog), a
 # request line of an item (intake); plan 4 adds a task of a batch.
 OF_GIVENS = {}
@@ -52,12 +55,14 @@ def write_item(step, name, **fields):
     text) are written after the `## Question`, and `request` as a frontmatter line `request: q<n>` (plan 3)."""
     index(step)
     had = step.context.setdefault("item_fields", {}).setdefault(name, dict(DEFAULTS, depends_on=[],
-                                                                          title="Title of %s" % name))
+                                                                          title="Title of %s" % name,
+                                                                          sections={"Notes": NOTE}))
     had.update(fields)
     b = ident(name)
     rel = "%s/%s.md" % (BACKLOG, b)
     head = "".join("%s: %s\n" % (k, had[k]) for k in DEFAULTS)
     tail = "request: %s\n" % had["request"] if had.get("request") else ""
+    tail += "request_lines: [%s]\n" % ", ".join(had["request_lines"]) if had.get("request_lines") else ""
     body = "\n## Question\n\n%s\n" % QUESTION if had["status"] == "needs-input" else ""
     body += "".join("\n## %s\n\n%s\n" % kv for kv in had.get("sections", {}).items())
     path = step.repo / rel

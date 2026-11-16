@@ -119,3 +119,14 @@ def test_label_names_the_item_by_id_and_title():
 def test_find_refuses_a_missing_item(backlog_repo):
     with pytest.raises(shop_files.Refused, match="there is no item b2 in .shop/backlog/"):
         backlog_items.find(backlog_repo, "b2")
+
+
+def test_request_lines_round_trip_and_a_malformed_one_is_refused():
+    """b6: `request_lines: [<cap>#r<n>=<k>, ...]`, the request line each requirement of the item came from."""
+    item = backlog_items.Item(name="b3", ident="item/ex.com/prod/ctx/b3", title="T", status="shaped",
+                              provenance="peer", request="q1", request_lines={"work-queue#r5": 1, "intake#r9": 3})
+    text = backlog_items.render(item)
+    assert "request_lines: [work-queue#r5=1, intake#r9=3]\n" in text
+    assert backlog_items.parse(text, "b3.md") == item
+    with pytest.raises(shop_files.Refused, match="b3.md: request_lines"):
+        backlog_items.parse(text.replace("intake#r9=3", "intake#r9"), "b3.md")

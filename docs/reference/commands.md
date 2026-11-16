@@ -71,7 +71,8 @@ Writes `.shop/backlog/b<n>.md`, numbered after the highest. The example is in [A
 
 #### `work shape`
 
-Moves an item from `idea` to `shaped`: it is understood well enough to be given lines.\
+Moves an item from `idea` to `shaped`: it is understood well enough to be given lines. An idea with no shaping note
+(nothing under its `## Notes`) is groomed first: `work shape` without `--note` refuses it, naming the option.\
 Synopsis: `work shape [--note NOTE] name`
 
 ```console
@@ -185,7 +186,8 @@ b253 "work names prints every item" shaped
 
 #### `work backlog`
 
-Prints every item, one table a state, in rank order, with what each waits on. Writes nothing.\
+Prints every item, one table a state, in rank order, with what each waits on; an idea with no shaping note waits on
+`work shape --note`. Writes nothing.\
 Synopsis: `work backlog [--json]`
 
 ```console

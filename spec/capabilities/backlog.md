@@ -27,8 +27,9 @@ item. Adding an idea starts no work. The person reads an item by its title, not 
 - **reject** (verb, state): a remote declines a push made to it. Forms: rejects, rejected. Frame: remote rejects push.
 - **answer** (verb, state): a remote replies to a push made to it, taking it or declining it. Forms: answers, answered. Frame: remote answers push.
 
-## Relations
+- **shaping note** (noun): a paragraph under an item's `## Notes` that says what the item is to do, which `work shape` writes from its `--note` option. Kind of: text.
 
+## Relations
 | from | word | to | cardinality |
 |---|---|---|---|
 | title | of | item | one |
@@ -38,6 +39,7 @@ item. Adding an idea starts no work. The person reads an item by its title, not 
 | branch name | of | upstream branch | one |
 | remote | of | repository | one |
 | push | of | command | one |
+| shaping note | of | item | many |
 
 ## Behaviour
 
@@ -91,6 +93,12 @@ item. Adding an idea starts no work. The person reads an item by its title, not 
 
 ### [g36] `work backlog` prints every item with its title, status, provenance and ratings
 - [r36] While an item exists, when the person runs `work backlog`, `work` shall print the item, the title of the item, the status of the item, the provenance of the item, the value of the item, the urgency of the item and the size of the item.
+
+### [g43] `work shape` refuses an idea with no shaping note
+- [r43] While the status of an item is `idea` and the item has no shaping note, if the person runs `work shape` without the `--note` option on the item, then `work` shall refuse the command and name the `--note` option.
+
+### [g44] `work backlog` names how to groom an idea with no shaping note
+- [r44] While the status of an item is `idea` and the item has no shaping note, when the person runs `work backlog`, `work` shall print the item and name the `--note` option.
 
 ## Implementation, may change
 - Each item is the file `.shop/backlog/b<n>.md`, and each change to it is one commit of that file, whose history is

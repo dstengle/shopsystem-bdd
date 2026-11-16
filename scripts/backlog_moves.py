@@ -12,6 +12,7 @@ from backlog_items import (
     label,
     next_name,
     one_line,
+    shaping_note,
 )
 
 # The moves of an item's status that a command makes, before -> after: the glossary's transitions of `status` of item
@@ -72,9 +73,15 @@ def add_note(item, note):
 
 
 def shape(root, name, note=None):
-    """`idea` -> `shaped` (r2), with a line under ## Notes when one is given."""
+    """`idea` -> `shaped` (r37), with a line under ## Notes when one is given; an idea with no shaping note and no
+    `--note` refused, naming the option (r43)."""
     note = text_line(note, "note") if note is not None else None
-    return move(root, name, "work shape", lambda item: add_note(item, note))
+
+    def write(item):
+        if note is None and not shaping_note(item):
+            raise Refused("work shape: %s has no shaping note; give it one with the --note option" % label(item))
+        add_note(item, note)
+    return move(root, name, "work shape", write)
 
 
 def refuse(root, name, reason):

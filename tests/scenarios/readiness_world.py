@@ -15,6 +15,11 @@ PASSING = ("While an initiative is `started`, when the person runs `work abandon
            "`abandoned`.")
 FAILING = ("While an initiative is `proposed`, when the person runs `work start` on the initiative, `work` shall frobnicate the "
            "initiative.")
+# A line that passes the bar but for v15n: it shares its While and its trigger with g1's lines (b77), and the id of
+# the group the item's block gives it.
+SHARING = ("While an initiative is `proposed`, when the person runs `work start` on the initiative, `work` shall commit "
+           "the initiative.")
+SHARING_GROUP = "work-queue#g4"
 # A line that parses there but that `model logic` has no translation of (a count of other than an object), which
 # the bar's `features generate` does not see: a line of the guarantees capability `review`, which has no scenarios
 # (r41); the id the item's block gives it.

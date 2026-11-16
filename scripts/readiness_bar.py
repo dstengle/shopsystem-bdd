@@ -1,7 +1,8 @@
 """The readiness bar (capability readiness; workflow simplification plan 3, D6-D9, D11): an item is passing when every
 request line of the item is settled and its requirement lines are well-formed: they parse in grammar 4
 (spec_language), they bring no problem of the lexicon (v_t4 to v_t13) that the lexicon without them does
-not have (readiness r15), `model logic` finds no L0 and no L1 naming them and reads each of them (r41), and
+not have (readiness r15), no group of theirs shares its condition and trigger with another group of
+its capability (`model.lp`'s v15n, b77), `model logic` finds no L0 and no L1 naming them and reads each of them (r41), and
 `features generate` writes a scenario for each of their groups that has a step. The lines are checked on a copy of `spec/` under the temporary directory
 with the item's lines laid in, removed afterwards whatever happens; `spec/` itself is never written. The `check` design-decisions that a
 capability of the item's lines rests on run their tests on the root checkout, each once a process (plan 6, D13)."""
@@ -54,6 +55,28 @@ def _parses(copy, blocks):
             hint = spec_language.hint(copy, text)
             reasons.append("%s: %s; parsed up to: %s; nearest words: %s" % (
                 ident, parsed.refusal, hint["prefix"] or "nothing", ", ".join(hint["near"]) or "none"))
+    return reasons
+
+
+def _shared(copy):
+    """The pairs of groups `model.lp`'s v15n finds in the copy, read through `model`'s facts as `model check` reads
+    them."""
+    from model_check import solve
+    from model_facts import Model
+    relations, labels = solve(Model(copy).read())
+    return {tuple(args) for name, args in relations if name == "v15n"}, labels.get("v15n", "")
+
+
+def _v15n(copy, blocks, before):
+    """A reason for each pair of groups v15n finds with a group of the item's in it, naming that group, unless the pair
+    is in `before`, the copy's pairs before the item's lines were laid (b77)."""
+    groups = {"%s#%s" % (b.capability, g.id) for b in blocks for g in b.groups}
+    pairs, label = _shared(copy)
+    reasons = []
+    for pair in sorted(pairs - before):
+        short = [gid.rsplit("/", 1)[-1] for gid in pair]       # capability/<context>/<name>#g<n> as <name>#g<n>
+        reasons += ["%s: v15n %s: with %s" % (mine, label, other) for mine, other in (short, short[::-1])
+                    if mine in groups]
     return reasons
 
 
@@ -110,6 +133,7 @@ def well_formed(root, item, others=()):
             backlog_lines.lay_onto(copy, other)
         outer = spec_rgl_vocab.outer(copy)
         before = set(spec_lexicon.problems(spec_lexicon.read(copy), outer))
+        shared, _ = _shared(copy)
         backlog_lines.lay_onto(copy, item)
         reasons = ["%s.md: %s" % (b.capability, p) for b in blocks
                    for p in spec_read.capability(backlog_lines.capability_file(copy, b.capability)).problems]
@@ -120,7 +144,7 @@ def well_formed(root, item, others=()):
         if reasons:
             return reasons, []
         reasons, warnings = _logic(copy, mine, [uid for uid, _ in blocks.universal])
-        return reasons + _scenarios(copy, blocks), warnings
+        return _v15n(copy, blocks, shared) + reasons + _scenarios(copy, blocks), warnings
     finally:
         shutil.rmtree(copy, ignore_errors=True)
 
