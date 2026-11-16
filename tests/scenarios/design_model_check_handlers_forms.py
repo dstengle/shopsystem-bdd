@@ -7,8 +7,8 @@ import io
 import subprocess
 import sys
 from contextlib import redirect_stderr, redirect_stdout
-from unittest import mock
 from pathlib import Path
+from unittest import mock
 
 from vocab import handler
 

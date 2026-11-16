@@ -10,6 +10,7 @@ import re
 import shutil
 from pathlib import Path
 
+import backlog_capability
 import backlog_forms
 import backlog_recodify
 import backlog_retires
@@ -39,11 +40,19 @@ def _number(ident):
 def next_ids(root, capability, blocks):
     """The next `g<n>` and `r<n>` free in the capability: one above the highest over its file's groups, requirements
     and retired ids, and the item's own block for it (D3)."""
-    cap = spec_read.capability(capability_file(root, capability))
+    cap = _spec_of(root, capability, blocks)
     groups = [g.id for g in cap.groups] + [g.id for b in blocks if b.capability == capability for g in b.groups]
     reqs = [r.id for g in cap.groups for r in g.requirements] + [r for r in cap.retired if re.fullmatch(r"r\d+", r)]
     reqs += [r for b in blocks if b.capability == capability for g in b.groups for r, _ in g.requirements]
     return "g%d" % (max(map(_number, groups), default=0) + 1), "r%d" % (max(map(_number, reqs), default=0) + 1)
+
+
+def _spec_of(root, capability, blocks):
+    """The capability as spec/ holds it, or, for a capability a block of the item makes (b317), one of no groups and
+    no retired ids."""
+    if any(b.capability == capability and b.new for b in blocks):
+        return spec_read.Capability(None, capability, {}, [], [], [], [])
+    return spec_read.capability(capability_file(root, capability))
 
 
 def _text(text, what, item, command="work line"):
@@ -65,10 +74,10 @@ def add_line_to(root, item, capability, text, group=None, in_group=None, command
     """Write one requirement into the item's block for `capability`, in the group `in_group` or a new group titled
     `group` (else the item's title); nothing is committed. Its `<capability>#r<n>`. `command` names the refusals."""
     takes(item, command)
-    capability_file(root, capability)
-    text = _text(text, "line", item, command)
     rel = "the item %s" % item.name
     blocks = read(item, rel)
+    _spec_of(root, capability, blocks)
+    text = _text(text, "line", item, command)
     g_next, r_next = next_ids(root, capability, blocks)
     block = _block(blocks, capability)
     if in_group is not None:
@@ -129,11 +138,11 @@ def add_term(root, name, capability, bullet):
     """`work line --term`: one term bullet written into the item's block for `capability` and committed."""
     item = find(root, name)
     takes(item)
-    capability_file(root, capability)
+    blocks = read(item, "the item %s" % item.name)
+    _spec_of(root, capability, blocks)
     bullet = one_line(bullet, "term bullet")
     if spec_lexicon.entry(bullet, capability) is None:
         raise Refused("work line: the term bullet %s is not a term entry `- **<term>** (<part of speech>): <text>`" % bullet)
-    blocks = read(item, "the item %s" % item.name)
     _block(blocks, capability).terms.append(bullet)
     item.sections[SECTION] = render(blocks)
     commit(root, item, "work line: %s a term of %s" % (label(item), capability))
@@ -157,10 +166,14 @@ def lay_onto(into, item, files=None):
     """The item's blocks laid over `into/spec`: term bullets at the end of the capability file's `## Terms`, relation
     rows at the end of its `## Relations` table (made when it has none), the lines it retires out of its `## Behaviour`
     and into its `retired:` (backlog_retires), groups (headings raised to `### `, each with its given block) at the end
-    of its `## Behaviour`, its marker switched when the block says `language:` (backlog_recodify); its universal conditions and upstream entries by `backlog_forms.lay_spec`, the paths they
+    of its `## Behaviour`, its marker switched when the block says `language:` (backlog_recodify); a capability the
+    block makes written first, with its Composition row (backlog_capability, b317); its universal conditions and upstream entries by `backlog_forms.lay_spec`, the paths they
     change added to `files`. The names of the capabilities laid."""
     blocks = read(item, "the item %s" % item.name)
+    files = [] if files is None else files
     for block in blocks:
+        if block.new:
+            backlog_capability.lay(into, block, files)
         path = capability_file(into, block.capability)
         text = path.read_text()
         if block.language:
@@ -174,7 +187,6 @@ def lay_onto(into, item, files=None):
         if block.groups:
             text = _append(text, "Behaviour", "\n\n".join(laid_group(g) for g in block.groups))
         path.write_text(text)
-    files = [] if files is None else files
     backlog_forms.lay_spec(into, blocks, files)
     backlog_universal.lay(into, blocks, files)
     return [b.capability for b in blocks]
@@ -189,10 +201,15 @@ def _cut(text, chunk):
 
 def unlay(into, item, files=None):
     """The reverse of `lay_onto` (plan 4 review, B1): the item's pieces taken out of `into/spec` where they are as
-    `lay_onto` laid them, the paths outside spec/capabilities/ changed added to `files`. The names of the
+    `lay_onto` laid them, the paths outside spec/capabilities/ changed added to `files`; a capability the item made
+    removed whole, its paths added to `files` too (backlog_capability, b317). The names of the
     capabilities whose file changed."""
     changed, blocks = [], read(item, "the item %s" % item.name)
+    files = [] if files is None else files
     for block in blocks:
+        if block.new:
+            backlog_capability.unlay(into, block, files)
+            continue
         path = capability_file(into, block.capability)
         text = was = path.read_text()
         for chunk in [laid_group(g) for g in block.groups] + block.terms:
@@ -206,7 +223,6 @@ def unlay(into, item, files=None):
         if text != was:
             path.write_text(text.rstrip("\n") + "\n")
             changed.append(block.capability)
-    files = [] if files is None else files
     backlog_forms.unlay_spec(into, blocks, files)
     backlog_universal.unlay(into, blocks, files)
     return changed
@@ -243,7 +259,7 @@ def renumber(root, item, taken):
     out = Blocks(upstreams=blocks.upstreams, universal_language=blocks.universal_language,
                  universal_retired=blocks.universal_retired)
     for block in blocks:
-        cap = spec_read.capability(capability_file(root, block.capability))
+        cap = _spec_of(root, block.capability, blocks)
         used = {g.id for g in cap.groups} | {r.id for g in cap.groups for r in g.requirements}
         used |= {r for r in cap.retired if re.fullmatch(r"[gr][1-9]\d*", r)} | taken.get(block.capability, set())
         seen = used | {g.id for g in block.groups} | {r for g in block.groups for r, _ in g.requirements}

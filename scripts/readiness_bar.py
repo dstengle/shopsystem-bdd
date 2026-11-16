@@ -163,7 +163,7 @@ def rested_on(root, blocks):
     """The `check` decisions that a capability of the blocks rests on, matched by the id's last segment (a capability
     writes `design-decision/<slug>` or the full id), in file order, each once."""
     slugs = set()
-    for block in blocks:
+    for block in (b for b in blocks if not b.new):       # a capability the item makes rests on nothing yet (b317)
         path = backlog_lines.capability_file(root, block.capability)
         if path.is_file():
             slugs |= {str(d).rstrip("/").rsplit("/", 1)[-1]
