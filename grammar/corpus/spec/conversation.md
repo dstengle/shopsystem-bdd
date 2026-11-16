@@ -65,3 +65,17 @@ shall [x1: agent the SessionStart hook (constant), x2: command `work names` (par
       scope
         print(e4, subject: x3, object: x7)
 ```
+
+## r9
+From: b52 r9. Not in the audit (b52 is no reword item).
+
+```reading
+When a session runs `work quote` on a queued message, `work` shall write a quote that cites the queued message and commit the quote.
+shall [x2: command `work quote` (parameter), x4: tool `work` (constant)]
+  when [x1: session, x3: queued message]
+    run(e1, subject: x1, object: x2, on: x3)
+  response [x5: quote]
+    cite#2(subject: x5, object: x3)
+    write(e2, subject: x4, object: x5)
+    commit(e3, subject: x4, object: x5)
+```
