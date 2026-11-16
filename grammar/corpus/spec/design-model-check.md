@@ -2234,3 +2234,91 @@ shall [x2: agent the person (constant), x3: command `model forms` (parameter), x
   response
     exit(e2, subject: x5, with an error naming: x1)
 ```
+
+## r325
+From: b301 r325. Not in the audit (b301 is no reword item).
+
+```reading
+While a requirement uses `order-by` and a recipient and the requirement uses no closing comma, when the person runs `model parse` on the requirement, `model` shall exit successfully.
+shall [x2: thing `order-by` (parameter), x5: agent the person (constant), x6: command `model parse` (parameter), x7: tool `model` (constant)]
+  while [x1: requirement, x3: recipient]
+    use#2(subject: x1, object: x2)
+    use#2(subject: x1, object: x3)
+    not [x4: closing comma]
+      use#2(subject: x1, object: x4)
+  when
+    run(e1, subject: x5, object: x6, on: x1)
+  response
+    exit(e2, subject: x7, successfully)
+```
+
+## r326
+From: b301 r323. Not in the audit (b301 is no reword item).
+
+```reading
+While a requirement uses `order-by` and a closing comma, when the person runs `model parse` on the requirement, `model` shall exit successfully.
+shall [x2: thing `order-by` (parameter), x4: agent the person (constant), x5: command `model parse` (parameter), x6: tool `model` (constant)]
+  while [x1: requirement, x3: closing comma]
+    use#2(subject: x1, object: x2)
+    use#2(subject: x1, object: x3)
+  when
+    run(e1, subject: x4, object: x5, on: x1)
+  response
+    exit(e2, subject: x6, successfully)
+```
+
+## r327
+From: b301 r324. Not in the audit (b301 is no reword item).
+
+```reading
+While a requirement uses `order-by-every` and a closing comma, when the person runs `model parse` on the requirement, `model` shall exit successfully.
+shall [x2: thing `order-by-every` (parameter), x4: agent the person (constant), x5: command `model parse` (parameter), x6: tool `model` (constant)]
+  while [x1: requirement, x3: closing comma]
+    use#2(subject: x1, object: x2)
+    use#2(subject: x1, object: x3)
+  when
+    run(e1, subject: x4, object: x5, on: x1)
+  response
+    exit(e2, subject: x6, successfully)
+```
+
+## r328
+From: b232 r323. Not in the audit (b232 is no reword item).
+
+```reading
+While a requirement uses `not-relative` and a code and the requirement forbids an act and another requirement obliges the act and the requirement uses `rc-whose` and the requirement does not use the code, when the person runs `model logic`, `model` shall print `L1`.
+shall [x2: thing `not-relative` (parameter), x6: thing `rc-whose` (parameter), x7: agent the person (constant), x8: command `model logic` (parameter), x9: tool `model` (constant), x10: thing `L1` (constant)]
+  while [x1: requirement, x3: code, x4: act, x5: requirement]
+    use#2(subject: x1, object: x2)
+    use#2(subject: x1, object: x3)
+    forbid(subject: x1, object: x4)
+    distinct(x5, x1)
+    oblige(subject: x5, object: x4)
+    use#2(subject: x5, object: x6)
+    not
+      use#2(subject: x5, object: x3)
+  when
+    run(e1, subject: x7, object: x8)
+  response
+    print(e2, subject: x9, object: x10)
+```
+
+## r329
+From: b232 r324. Not in the audit (b232 is no reword item).
+
+```reading
+While a requirement uses `not-relative` and a code and the requirement forbids an act and another requirement obliges the act and the requirement uses `rc-whose` and the code, when the person runs `model logic`, `model` shall exit successfully.
+shall [x2: thing `not-relative` (parameter), x6: thing `rc-whose` (parameter), x7: agent the person (constant), x8: command `model logic` (parameter), x9: tool `model` (constant)]
+  while [x1: requirement, x3: code, x4: act, x5: requirement]
+    use#2(subject: x1, object: x2)
+    use#2(subject: x1, object: x3)
+    forbid(subject: x1, object: x4)
+    distinct(x5, x1)
+    oblige(subject: x5, object: x4)
+    use#2(subject: x5, object: x6)
+    use#2(subject: x5, object: x3)
+  when
+    run(e1, subject: x7, object: x8)
+  response
+    exit(e2, subject: x9, successfully)
+```
