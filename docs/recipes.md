@@ -155,7 +155,7 @@ b251 "work backlog shows labels": an upstream entry
 A delivered line is never edited in place. The new wording gets a new id, and the old id is retired:
 
 ```console
-$ work idea "work refuse commits the item"
+$ work idea "work refuse commits the item" --note "the refusal is committed with the item, as every other move is"
 b252 "work refuse commits the item" idea
 $ work shape b252
 b252 "work refuse commits the item" shaped
@@ -176,6 +176,15 @@ capability's and the other picked items' when it lays them. `--retires` names a 
 $ work line b252 --into backlog --retires backlog#r1 "When the person runs \`work show\` on an item, \`work\` shall print the title of the item."
 work: work line: backlog#r1 is nonexistent: backlog holds no live requirement r1
 ```
+
+A line retired with nothing in its place takes `--no-line` in place of the new line:
+
+```console
+$ work line b252 --into backlog --retires backlog#r40 --no-line
+b252 "work refuse commits the item": retires backlog#r40
+```
+
+The item holds `retired: [r40]` and no new line; when a batch lays it, r40 and its scenario go.
 
 ## Start a new capability
 

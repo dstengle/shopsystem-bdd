@@ -322,7 +322,7 @@ shall [x1: agent the person (constant), x2: command `migrate status` (parameter)
 ```
 
 An order on a collection is a property of a response's object, whatever the act; "every K, ordered by ..." reads
-after a verb whose frame takes `thing`, such as `print`. In a While clause, in the trigger, or after
+after any verb whose frame takes K, `print` or another. In a While clause, in the trigger, or after
 "shall not" it is refused, and so is an order by an attribute with no value order. An item's status has none:
 
 ```refused
