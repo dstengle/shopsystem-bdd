@@ -10,13 +10,34 @@ been renamed or retired since.
 
 | Line | Releases |
 |---|---|
-| 0.35 | [0.35.0](#0350-collections-comparisons-and-orders) |
+| 0.35 | [0.35.1](#0351-collections-on-any-responses-object) · [0.35.0](#0350-collections-comparisons-and-orders) |
 | 0.34 | [0.34.1](#0341-the-version-reset-and-the-givens-of-a-triggers-referents) · [0.34.0](#0340-released-as-410-value-kinds-adjective-or-noun-and-gherkin-in-the-full-form) |
 | 0.33 | [0.33.0](#0330-released-as-400-the-controlled-language-4) |
 | 0.32 | [0.32.1](#0321-released-as-301-features-generate-writes-the-scenario-of-a-negated-response-with-a-recipient) · [0.32.0](#0320-released-as-300-verb-frames-parts-of-speech-in-the-glossary-and-verbs-typed-by-kind) |
 | 0.31 | [0.31.5](#0315-released-as-240-the-request-watch-wakes-on-githubs-events-and-starts-with-the-session) · [0.31.4](#0314-released-as-231-a-batch-runs-in-one-fresh-agent-and-a-parked-item-leaves-the-batch-at-once) · [0.31.3](#0313-released-as-230-work-pushes-its-commits-requests-post-after-they-commit-and-work-watch) · [0.31.2](#0312-released-as-220-decisions-and-records-written-by-command) · [0.31.1](#0311-released-as-210-requests-exchanged-through-github-issues) · [0.31.0](#0310-released-as-200-the-workflow-simplified) |
 | 0.30 | [0.30.0](#0300-released-as-100-codified-requirements) |
 | 0.29 and before | [0.29.0](#0290-glossary-proposals-delegations-given-late-and-fewer-stops-from-outside-a-work-item) · [0.28.3](#0283-a-branch-review-that-runs-nothing) · [0.28.2](#0282-answers-a-round-cannot-hold-go-back-to-integration) · [0.28.1](#0281-work-run-stops-visibly-on-questions-and-spends-less-agent-time) · [0.28.0](#0280-one-set-of-request-commands-work-list-and-work-show-and-answers-that-redraft) · [0.27.0](#0270-transitions-from-how-a-session-ended-and-the-turn-of-an-accepted-request) · [0.26.0](#0260-requests-and-the-context-loop) · [0.25.0](#0250-work-items-side-by-side-answers-and-guarantees) · [0.24.0](#0240-work-items-named-by-ids-and-upgrades-between-plugin-releases) · [0.23.1](#0231---work-item-keeps-tests-that-are-not-scenarios) · [0.23.0](#0230-faults-settled-query-output-as-json-the-session-keeps-the-gate-measurement-on-v3) · [0.22.0](#0220-one-requirement-per-scenario-faults-and-the-lessons-of-a-blind-formulation) · [0.21.0](#0210-the-final-layout-and-delivery-by-work-run) |
+
+## 0.35.1: collections on any response's object
+
+- **Holds-exactly with any restriction, and holds nothing, on a response's object** (b297, PR #59): in 0.35.0
+  holds-exactly on a response's object read only a value restriction ("a worktree that holds exactly the files whose
+  version is `2.0.0`"); with a relative clause or a negated value ("... the files that a session keeps") `model logic`
+  and `features generate` had no translation of it. Now its only half is read for any restriction its every half
+  reads, and its scenario gets the file that fails the restriction and the Then that the worktree does not hold it.
+  "A worktree that holds nothing" on a response's object had no translation either; now `model logic` reads it and
+  its scenario says "the worktree w1 holds nothing". Both hold on the object of any act, `print` or another.
+- **An order on the object of any verb** (b298, PR #59): an order on a collection (`order-by`) had no scenario when
+  the act's verb has a frame that names the collection's kind and no frame on `thing` ("return a worktree that
+  holds every file, ordered by version, in descending order to the person"). Now it gets its Then of the order and
+  its counter-example, as on `print`.
+- **Holds no K on a response's object** (b299, PR #59): "a worktree that holds no file" on a response's object had
+  no scenario ("no Then of not"). Now its Then says "the worktree w1 holds no file", after the act that brings the
+  worktree in, and a counter-example brings in a file the worktree does not hold.
+- **`work ready` refuses what `model logic` cannot read** (b307, PR #59): an item a requirement of which
+  `model logic` names `unread` is refused, naming the requirement, where the bar passed it before.
+- **Upgrading:** no upgrade step. Run `features generate` and write the handlers of the new scenarios; `work ready`
+  may now refuse an item `model logic` cannot read. See [From 0.35.0 to 0.35.1](docs/upgrading.md#from-0350-to-0351).
 
 ## 0.35.0: collections, comparisons and orders
 
