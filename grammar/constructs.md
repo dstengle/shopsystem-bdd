@@ -1273,7 +1273,7 @@ a collection's members ordered by their attribute (b275)
 
 - Form: <np>, ordered by <attribute>, in ascending|descending order
 - Functions: `r\d+_\w+_By_t_[a-z0-9_]+_\d+|Ascending|Descending`
-- Cited by: design-model-check#r303
+- Cited by: design-model-check#r303, feature-file-tools#r123
 - Example and its reading:
 
 ```construct
@@ -1293,7 +1293,7 @@ a printed every ordered by its attribute (b275)
 
 - Form: every <noun>, ordered by <attribute>, in ascending|descending order
 - Functions: `t_[a-z0-9_]+_\d+_k_\w+_Every`
-- Cited by: design-model-check#r304
+- Cited by: design-model-check#r304, feature-file-tools#r124
 - Example and its reading:
 
 ```construct

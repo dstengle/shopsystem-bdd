@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 PLUGIN = Path(__file__).resolve().parents[2]
-CODES = ("holds-exactly", "nothing")
+CODES = ("holds-exactly", "nothing", "order-by", "order-by-every")
 
 
 def construct(w):
@@ -75,9 +75,14 @@ def counter(step, name):
     order = next((c.order for c in thens if c.order), None)
     assert order, "no Then states an order:\n%s" % text
     term, direction, _ = order
-    values = dict(re.findall(r"^\s*(?:Given|And) the %s of the \w+ (\w+) is `([^`]+)`$" % re.escape(term), text,
+    found = re.findall(r"^\s*(?:Given|And) the %s of the (.+?) \w+ is `[^`]+`$" % re.escape(term), text, re.MULTILINE)
+    values = dict(re.findall(r"^\s*(?:Given|And) the %s of the .+? (\w+) is `([^`]+)`$" % re.escape(term), text,
                              re.MULTILINE))
-    entry = next(t for t, _ in spec_rgl_vocab.read(step.repo).attributes if t.term == term)
+    vocab = spec_rgl_vocab.read(step.repo)
+    kinds = {k for k, (one, _) in vocab.nouns.items() if one in found}
+    # of a word of two senses (b288), the entry of the members' kind
+    entry = next(t for t, ks in vocab.attributes if t.term == term
+                 and any(a in ks for k in kinds for a in vocab.ancestors(k)))
 
     def key(v):
         return spec_lf_order.key(entry, v)

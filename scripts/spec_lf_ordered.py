@@ -59,15 +59,22 @@ def facts(walk, atom, act):
 
 # --- the steps -----------------------------------------------------------------------------------------------------
 def member(vocab, atom):
-    """(the member kind, the attribute entry and its kinds) of an order: the K1 of a row `K1 | in | K2` of the
-    collection's kind whose K1 has the attribute, or the every's own kind."""
+    """(the member kind's row, the attribute entry and its kinds) of an order: the entry of its word that is the
+    every's own kind's, up its kind tree, else the K1's of a row `K1 | in | K2` of the collection's kind, up K1's kind
+    tree (b288: of a word of two senses, the member kind's sense, not the first entry of the word); an order no entry
+    of its word is a member's of refused naming the term."""
     x, term, _ = atom.args
-    n, t, ks = next((n, t, ks) for n, (t, ks) in enumerate(vocab.attributes, 1) if t.term == term)
-    if any(k in ks for k in vocab.ancestors(x.kind)):
-        return None, (n, t, ks)
-    row = next(r for r in vocab.rows if r[1] == "in" and r[2] in vocab.ancestors(x.kind)
-               and any(k in ks for k in vocab.ancestors(r[0])))
-    return row, (n, t, ks)
+    entries = [(n, t, ks) for n, (t, ks) in enumerate(vocab.attributes, 1) if t.term == term]
+    up = vocab.ancestors(x.kind)
+    own = next((e for e in entries if any(k in e[2] for k in up)), None)
+    if own:
+        return None, own
+    for row in (r for r in vocab.rows if r[1] == "in" and r[2] in up):
+        found = next((e for e in entries if any(k in e[2] for k in vocab.ancestors(row[0]))), None)
+        if found:
+            return row, found
+    raise boxes().TraceError("no member of a %s has a %s: no entry of %s is an attribute of its kind or of a kind "
+                             "it holds" % (x.kind, term, term))
 
 
 def values(t):
