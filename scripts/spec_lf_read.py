@@ -31,8 +31,8 @@ The translation keeps the refusals of R2, R4 and R8 in its State's `notes` as it
 first of them, else R12's.
 """
 import spec_frames
-import spec_lf_ordered
 import spec_lf_core as core
+import spec_lf_ordered
 from spec_lf_core import NP, Atom, Box, NPList
 
 PARTS = ("while", "trigger", "response")
