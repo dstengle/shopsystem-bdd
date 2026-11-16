@@ -948,3 +948,74 @@ shall [x1: agent the person (constant), x2: command `work request` (parameter), 
     originate(subject: x5, from: x6)
     write(e2, subject: x4, object: x5)
 ```
+
+## r112
+From: b40 r104.
+
+```reading
+When a session runs `work offer` with the `--capability` option set to a capability on a request, `work` shall post a comment that holds every requirement of the capability.
+shall [x2: command `work offer` (parameter), x3: option `--capability` (parameter), x6: tool `work` (constant)]
+  when [x1: session, x4: capability, x5: request]
+    argument(x3, x4)
+    run(e1, subject: x1, object: x2, with: x3, on: x5)
+  response [x7: comment]
+    every [x8: requirement]
+      of(x8, x4)
+      scope
+        in(x8, x7)
+    post(e2, subject: x6, object: x7)
+```
+
+## r113
+From: b40 r105.
+
+```reading
+While a requirement of a capability mentions a term, when a session runs `work offer` with the `--capability` option set to the capability on a request, `work` shall post a comment that holds the term.
+shall [x5: command `work offer` (parameter), x6: option `--capability` (parameter), x8: tool `work` (constant)]
+  while [x1: requirement, x2: capability, x3: term]
+    of(x1, x2)
+    mention(subject: x1, object: x3)
+  when [x4: session, x7: request]
+    argument(x6, x2)
+    run(e1, subject: x4, object: x5, with: x6, on: x7)
+  response [x9: comment]
+    in(x3, x9)
+    post(e2, subject: x8, object: x9)
+```
+
+## r114
+From: b40 r106.
+
+```reading
+While a capability holds a given block, when a session runs `work offer` with the `--capability` option set to the capability on a request, `work` shall post a comment that does not hold the given block.
+shall [x4: command `work offer` (parameter), x5: option `--capability` (parameter), x7: tool `work` (constant)]
+  while [x1: capability, x2: given block]
+    in(x2, x1)
+  when [x3: session, x6: request]
+    argument(x5, x1)
+    run(e1, subject: x3, object: x4, with: x5, on: x6)
+  response [x8: comment]
+    not
+      in(x2, x8)
+    post(e2, subject: x7, object: x8)
+```
+
+## r115
+From: b40 r107.
+
+```reading
+While a term is in the bounded context and a capability has no requirement that mentions the term, when a session runs `work offer` with the `--capability` option set to the capability on a request, `work` shall post a comment that does not hold the term.
+shall [x2: bounded context "the bounded context whose repository the command runs in" (indexical), x6: command `work offer` (parameter), x7: option `--capability` (parameter), x9: tool `work` (constant)]
+  while [x1: term, x3: capability]
+    in(x1, x2)
+    not [x4: requirement]
+      mention(subject: x4, object: x1)
+      of(x4, x3)
+  when [x5: session, x8: request]
+    argument(x7, x3)
+    run(e1, subject: x5, object: x6, with: x7, on: x8)
+  response [x10: comment]
+    not
+      in(x1, x10)
+    post(e2, subject: x9, object: x10)
+```
