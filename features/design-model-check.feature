@@ -1009,3 +1009,109 @@ Feature: Design model check
     And the precondition p1 uses `nothing`
     When the person runs `model parse` on the requirement r1
     Then `model` exits successfully
+
+  @g296 @r296
+  Scenario: `model parse` refuses an order on an attribute whose values have no order
+    Given a term t1
+    And the term t1 has no value order
+    And an order o1
+    And the order o1 is on the term t1
+    And a requirement r1
+    And the requirement r1 uses the order o1
+    When the person runs `model parse` on the requirement r1
+    Then `model` refuses `model parse`
+    And `model` names the term t1
+
+  @g297 @r297
+  Scenario: `model logic` finds two contradicting orders
+    Given an order o1
+    And an order o2
+    And the order o1 contradicts the order o2
+    And a capability c1
+    And the capability c1 holds the order o1
+    When the person runs `model logic`
+    Then `model` prints `L1`
+
+  @g298 @r298
+  Scenario: `model parse` reads one thing's value compared with another's
+    Given a requirement r1
+    And the requirement r1 uses `value-compare`
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g299 @r299
+  Scenario: `model parse` reads one thing's value said to be the same as another's
+    Given a requirement r1
+    And the requirement r1 uses `value-same`
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g300 @r300
+  Scenario: `model parse` refuses a comparison of an attribute that has no order
+    Given a term t1
+    And the term t1 has no value order
+    And a requirement r1
+    And the requirement r1 uses the term t1
+    And the requirement r1 uses `value-compare`
+    When the person runs `model parse` on the requirement r1
+    Then `model` refuses `model parse`
+    And `model` names the term t1
+
+  @g301 @r301
+  Scenario: `model logic` finds the clash of two lines under one comparison
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And the requirement r1 uses `value-compare`
+    And an act a1
+    And the requirement r1 obliges the act a1
+    And a requirement r2
+    And the capability c1 has the requirement r2
+    And a trigger t1
+    And the requirement r1 has the trigger t1
+    And the requirement r2 has the trigger t1
+    And the requirement r2 forbids the act a1
+    When the person runs `model logic`
+    Then `model` prints `L1`
+
+  @g302 @r302
+  Scenario: `model logic` finds no clash between two lines whose comparisons contradict
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And a requirement r2
+    And the capability c1 has the requirement r2
+    And an act a1
+    And the requirement r2 forbids the act a1
+    And the requirement r1 obliges the act a1
+    And a precondition p1
+    And the requirement r2 has the precondition p1
+    And a comparison c2
+    And the precondition p1 has the comparison c2
+    And a comparison c3
+    And the comparison c2 contradicts the comparison c3
+    When the person runs `model logic`
+    Then `model` exits successfully
+
+  @g303 @r303
+  Scenario: `model parse` reads an order on a collection
+    Given a requirement r1
+    And the requirement r1 uses `order-by`
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g304 @r304
+  Scenario: `model parse` reads an order on a printed every
+    Given a requirement r1
+    And the requirement r1 uses `order-by-every`
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g305 @r305
+  Scenario: `model parse --form` prints an order as one atom
+    Given a requirement r1
+    And an order o1
+    And the requirement r1 uses the order o1
+    When the person runs `model parse` with the `--form` option on the requirement r1
+    Then `model` prints the order o1
+    And `model` exits successfully
