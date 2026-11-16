@@ -83,7 +83,7 @@ b250 "work show prints the status of an item" shaped
 #### `work line`
 
 Writes a requirement line into an item's `## Requirements`, under the capability it goes into, and commits it.\
-Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--no-line] [--reword CAP#rN] [--remove CAP#rN] [--term TERM] [--recodify CAP] [--relation RELATION] [--given GROUP BLOCK] [--universal UNIVERSAL] [--upstream UPSTREAM] name [text]`
+Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--no-line] [--reword CAP#rN] [--remove CAP#rN] [--term TERM] [--recodify CAP] [--relation RELATION] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--upstream UPSTREAM] name [text]`
 
 - `--into <capability>`: the codified capability the line goes into.
 - `--group "<title>"`: open a new group with this title (default: the item's title). `--in g<n>` joins one of the
@@ -97,6 +97,10 @@ Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CA
 - `--relation`, `--given`, `--universal`, `--upstream`: the other spec pieces an item can carry: a relation row, a
   group's given block, a universal condition, an upstream entry.
 - `--recodify <cap>`: switch a capability's block to the current language (`codified-2`).
+- `--capability <name> --narrator "<who>" [--group service|guarantees] "<purpose>"`: a capability new to the
+  context, written as a block of the item (its narrator, group, default `service`, and purpose); refused when
+  `spec/capabilities/<name>.md` exists. Lines and terms go into it with `--into <name>`; `work batch start` writes
+  its file and its row under `## Composition` of `spec/index.md`.
 
 The line gets the next free id of its capability (`backlog#r43`). It goes into `spec/` only when a batch starts.
 `work line` does not parse the line; [`work ready`](#work-ready) does.
@@ -724,15 +728,19 @@ v3  a request's resolution names something that is not a requirement of the spec
 
 ### `model forms`
 
-Prints every file form a context keeps: its name, its path and the command that writes it (or "by hand").\
-Synopsis: `model forms [--json]`
+Prints every file form a context keeps: its name, its path and the command that writes it (or the plugin's item
+that will give it one).\
+Synopsis: `model forms [--json] [--check]`
+
+- `--check`: print nothing and exit 0 unless a form is written by hand; each such form is named on stderr and it
+  exits 1.
 
 ```console
 $ model forms
 item                      .shop/backlog/b<n>.md                                work idea
 item's requirement line   .shop/backlog/b<n>.md ## Requirements                work line
 ...
-capability                spec/capabilities/<name>.md                          plugin item b13 (no command yet)
+capability                spec/capabilities/<name>.md                          work line --capability
 ...
 ```
 

@@ -33,7 +33,7 @@ motion first, take [the tour](tour.md).
 A bounded context is one repository's spec: the words it uses and the behaviour it promises.
 
 - **Lives in:** `spec/index.md`, with everything under `spec/`.
-- **Written by:** hand, for now (`model forms` says "plugin item b13 (no command yet)").
+- **Written by:** hand, for now (plugin item b318 gives `spec/index.md` its command).
 
 Its frontmatter names it, says which language its lines are written in, and which packs of words it imports. This
 repository's own:
@@ -99,8 +99,8 @@ Read more: [Writing requirements](writing-requirements.md), and the packs themse
 A capability is one area of behaviour, kept as one file of requirement lines.
 
 - **Lives in:** `spec/capabilities/<name>.md`.
-- **Written by:** hand to start one (`model forms`: "plugin item b13 (no command yet)"); its lines arrive by
-  `work batch start`.
+- **Written by:** `work line --capability` on an item to start one, and `work batch start`, which writes the file
+  and its lines.
 
 The frontmatter of [`spec/capabilities/backlog.md`](../spec/capabilities/backlog.md):
 
