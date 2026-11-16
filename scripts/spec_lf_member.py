@@ -128,3 +128,22 @@ def absent(r, box, bring):
         return None
     bring(r, Box("not", box.refs, tuple(i for i in box.body if i is not links[0])))
     return [(None, ("SCond", r.cond(links[0], False)))]
+
+
+def no_member(r, box):
+    """[(None, Then)] of "y holds no K" in a response (b299): a K brought in that y does not hold, its counter-example
+    (a tool that puts every K into y fails the Then), and the Then "the worktree w1 holds no file" said of no K; None
+    for a box of another shape ("holds nothing" of no thing is b297's, a K that P `absent`'s)."""
+    if len(box.refs) != 1 or len(box.body) != 1:
+        return None
+    k, link = box.refs[0], box.body[0]
+    if not (isinstance(link, Atom) and link.pred == "rel" and link.args[:2] == (IN, k)) or k.kind == "thing":
+        return None
+    import spec_rgl
+    K = spec_rgl.kid(k.kind)
+    r.brought.append((K + "_Given", (K + "_n",), ("NameLit", r.name(k))))
+    r.dets[k] = "DetNo"
+    try:
+        return [(None, ("SCond", r.cond(link)))]
+    finally:
+        r.dets.pop(k)
