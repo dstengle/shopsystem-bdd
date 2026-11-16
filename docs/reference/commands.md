@@ -83,7 +83,7 @@ b250 "work show prints the status of an item" shaped
 #### `work line`
 
 Writes a requirement line into an item's `## Requirements`, under the capability it goes into, and commits it.\
-Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--no-line] [--reword CAP#rN] [--remove CAP#rN] [--term TERM] [--recodify CAP] [--relation RELATION] [--given GROUP BLOCK] [--universal UNIVERSAL] [--upstream UPSTREAM] name [text]`
+Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--no-line] [--reword CAP#rN] [--remove CAP#rN] [--term TERM] [--recodify CAP] [--relation RELATION] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--upstream UPSTREAM] name [text]`
 
 - `--into <capability>`: the codified capability the line goes into.
 - `--group "<title>"`: open a new group with this title (default: the item's title). `--in g<n>` joins one of the
@@ -97,6 +97,10 @@ Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CA
 - `--relation`, `--given`, `--universal`, `--upstream`: the other spec pieces an item can carry: a relation row, a
   group's given block, a universal condition, an upstream entry.
 - `--recodify <cap>`: switch a capability's block to the current language (`codified-2`).
+- `--capability <name> --narrator "<who>" [--group service|guarantees] "<purpose>"`: a capability new to the
+  context, written as a block of the item (its narrator, group, default `service`, and purpose); refused when
+  `spec/capabilities/<name>.md` exists. Lines and terms go into it with `--into <name>`; `work batch start` writes
+  its file and its row under `## Composition` of `spec/index.md`.
 
 The line gets the next free id of its capability (`backlog#r43`). It goes into `spec/` only when a batch starts.
 `work line` does not parse the line; [`work ready`](#work-ready) does.
@@ -108,6 +112,26 @@ b250 "work show prints the status of an item": backlog#r43
 
 How to write a good line is in [Writing requirements](../writing-requirements.md); the file format is in
 [the capability file](capability-file.md).
+
+#### `work chore`
+
+Writes a chore into an item in place of requirement lines, and commits the item: the files its work changes and the
+command whose exit code 0 shows the work done. For an item with no behaviour a scenario checks (docs, skill text, a
+refactor).\
+Synopsis: `work chore [--file FILE] --check CHECK name`
+
+- `--file <path>`: a file or a directory the work changes; give it once for each. A path under `spec/`,
+  `features/` or `.shop/` is refused.
+- `--check "<command>"`: the command that fails now and passes once the work is done.
+
+Run again, it replaces the chore. A chore and requirement lines exclude each other: `work chore` refuses an item that
+holds a requirement, and `work line` an item that holds a chore. [`work ready`](#work-ready) readies a chore item
+without running its check; [`work batch done`](#work-batch-done) runs it.
+
+```console
+$ work chore b34 --file skills/shaping-items/SKILL.md --check "grep -q 'work chore' skills/shaping-items/SKILL.md"
+b34 "The shaping skill names work chore": the chore of b34 "The shaping skill names work chore" (check: `grep -q 'work chore' skills/shaping-items/SKILL.md`)
+```
 
 #### `work rate`
 
@@ -205,8 +229,8 @@ $ work backlog
 
 #### `work show`
 
-Prints where an item, a request or a quote stands. With no target it prints what `work list` prints.\
-Synopsis: `work show [--json] [target]`, where the target is `b<n>`, `q<n>` or `quote-<n>`.
+Prints where an item, a request, a quote or a directive stands. With no target it prints what `work list` prints.\
+Synopsis: `work show [--json] [target]`, where the target is `b<n>`, `q<n>`, `quote-<n>` or `directive-<n>`.
 
 ```console
 $ work show b250
@@ -302,7 +326,9 @@ Sets a running task done, once its worktree is clean, its commits cite the item 
 Synopsis: `work batch done batch task`
 
 The tests are `[batch] tests` of `.shop/delivery.toml` (default `python3 -m pytest -q -p work_items`), run in the
-task's worktree. A refusal names what is missing:
+task's worktree. For an item that holds a chore, it then runs the chore's check there and refuses while it exits
+non-zero, and refuses a commit of the task that touches a path the chore does not name. A refusal names what is
+missing:
 
 ```console
 $ work batch done batch-34 t1
@@ -580,6 +606,43 @@ quote-20 "Once 4.0 is done, take a new backlog item to make some nice …"
 ...
 ```
 
+#### `work directive`
+
+Keeps a short-term direction of the person in the repository, never in a session's memory: their words as a quote
+(found as `work quote` finds them) and a `live` directive citing it, `.shop/directives/<n>.md`, in one commit. With
+`--quote`, a directive of a quote already kept.\
+Synopsis: `work directive [--session SESSION] [--transcript TRANSCRIPT] [--quote QUOTE] [words]`
+
+```console
+$ work directive --quote quote-42
+directive-1 "Merge and release while I am away." citing quote-42
+```
+
+#### `work directives`
+
+Prints the live directives, each with its id, date, age and words. Writes nothing.\
+Synopsis: `work directives [--all] [--hook]`
+
+- `--all`: every directive, with its status.
+- `--hook`: the SessionStart hook's form: the live directives' words under one line telling the session to follow
+  them and pass them on in every brief, nothing when none is live. See [Hooks](#hooks).
+
+#### `work promote`
+
+Promotes a live directive to what it became, once the session has written it: an item, a design-decision or a
+line of `CLAUDE.md`. A directive that is not live, or a target that does not exist, is refused, naming it.\
+Synopsis: `work promote --to TO name`
+
+```console
+$ work promote directive-1 --to b20
+directive-1 "Merge and release while I am away." promoted to b20
+```
+
+#### `work drop`
+
+Drops a live directive, with the reason. A directive that is not live is refused, naming it.\
+Synopsis: `work drop --why WHY name`
+
 #### `work decision`
 
 Writes a design-decision, `spec/decisions/<nnnn>-<slug>.md`, rewrites `spec/decisions/index.md`, and commits both.\
@@ -724,15 +787,19 @@ v3  a request's resolution names something that is not a requirement of the spec
 
 ### `model forms`
 
-Prints every file form a context keeps: its name, its path and the command that writes it (or "by hand").\
-Synopsis: `model forms [--json]`
+Prints every file form a context keeps: its name, its path and the command that writes it (or the plugin's item
+that will give it one).\
+Synopsis: `model forms [--json] [--check]`
+
+- `--check`: print nothing and exit 0 unless a form is written by hand; each such form is named on stderr and it
+  exits 1.
 
 ```console
 $ model forms
 item                      .shop/backlog/b<n>.md                                work idea
 item's requirement line   .shop/backlog/b<n>.md ## Requirements                work line
 ...
-capability                spec/capabilities/<name>.md                          plugin item b13 (no command yet)
+capability                spec/capabilities/<name>.md                          work line --capability
 ...
 ```
 
@@ -1055,13 +1122,14 @@ Synopsis: `migrate run --context CONTEXT`, the context written `<owner>/<product
 
 ## Hooks
 
-The plugin installs four hooks (`hooks/hooks.json`). Each runs at a fixed moment, prints little or nothing, and never
+The plugin installs five hooks (`hooks/hooks.json`). Each runs at a fixed moment, prints little or nothing, and never
 fails a session: any error exits 0 silently.
 
 | when | hook | what it does |
 |---|---|---|
 | a session starts | `migrate status --hook` | says when the repository's plugin version is behind and `migrate upgrade` is pending; nothing when it is current |
 | a session starts | `conversation_hook names` | prints the `work names --hook` table, so the session names items as `b3 "Fix the parser"`, never by id alone |
+| a session starts | `conversation_hook directives` | prints the live directives' words (`work directives --hook`), to be followed and passed on in every brief; nothing with none |
 | a session starts | `request_hook watch` | prints each request waiting on the other side, and the line to start `work watch --forward` with the Monitor tool; nothing with none |
 | you send a prompt | `conversation_hook quote` | keeps the session and its transcript in the git dir for `work quote`; prints nothing, commits nothing |
 

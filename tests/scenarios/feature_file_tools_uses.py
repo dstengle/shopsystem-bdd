@@ -1,7 +1,7 @@
 """feature-file-tools' capability of one construct (b274): a requirement r1 that uses a construct a Given names
 (`the requirement r1 uses `holds-exactly``, `the precondition p1 uses `nothing``) is the construct catalogue's example
 of it, the one requirement of the capability c1 in the catalogue's context `grammar/corpus/constructs/` (`prepare`), or
-of holds-exactly with `rc-object` and of nothing with `rc-subject` b297's line on a response's object (`returned`);
+of holds-exactly with `rc-object` or `of-relation` (b315) and of nothing with `rc-subject` b297's line on a response's object (`returned`);
 "the step s2 uses `not-condition`" holds when a step of the feature `features generate` wrote reads, in the step
 grammar 4, as a tree that uses the construct as `model constructs` tells it (`uses`). A requirement that uses an
 order (b275) is the example of `order-by-every`, and "the scenario s1 has the order counter-example o2" holds when
@@ -22,6 +22,9 @@ RETURNING = ("- **keep** (verb, state): an agent holds on to a file. Frame: agen
              "agent.\n")
 RETURNED = {("holds-exactly", "rc-object"): "When the person runs `work start`, `work` shall return a worktree that "
             "holds exactly the files that a session keeps to the person.",
+            # b315: the restriction reaches a second thing, the line of a stage
+            ("holds-exactly", "of-relation"): "When the person runs `work start`, `work` shall return a worktree that "
+            "holds exactly the files that cover the line of a stage to the person.",
             ("nothing", "rc-subject"): "When the person runs `work start`, `work` shall return a worktree that holds "
             "nothing to the person."}
 # b298: a verb with no frame on `thing`, and the order-by example said with it

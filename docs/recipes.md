@@ -190,42 +190,31 @@ The item holds `retired: [r40]` and no new line; when a batch lays it, r40 and i
 
 **When:** the behaviour you want doesn't belong in any capability you have.
 
-There's no command for this yet (`model forms` says `plugin item b13 (no command yet)`), so you write the file by
-hand: `spec/capabilities/<name>.md`, with frontmatter, a purpose, and empty sections.
-
-```markdown
----
-id: capability/missingmass.io/shopsystem/shopsystem-bdd/labels
-title: Labels
-narrator: a person grouping items
-group: service
-language: codified-2
-retired: []
-unbuilt: []
----
-
-# Labels
-
-## Purpose
-The person gives items short words, labels, to group them, and reads the backlog by them.
-
-## Terms
-
-## Behaviour
-```
-
-The `id` is your context's id (the `id:` of `spec/index.md`) with `capability/` in front and the file's name at the
-end. `narrator` is who the scenarios are told for, and `group` is its kind of capability (`service` or `guarantees`),
-as the tables of `spec/index.md`'s `## Composition` list them. Run `model check`: an empty capability passes with `0 violations`. Commit it, then add terms and lines
-through items with `work line <item> --into labels`, as in the first recipe.
-
-Once a group is laid, `model check` wants its scenario (`v_s3  a group has no scenario`) until `features generate`
-writes it:
+A new capability starts on an item, like its lines. `work line --capability` writes it into the item: its name,
+its narrator (who the scenarios are told for), its group (`service`, the default, or `guarantees` with `--group`)
+and its purpose, one line. It refuses a name `spec/capabilities/` holds already.
 
 ```console
-$ features generate labels
-wrote features/labels.feature
+$ work line b260 --capability labels --narrator "a person grouping items" "The person gives items short words, labels, to group them, and reads the backlog by them."
+b260 "Give items labels": a new capability labels
 ```
+
+The item now holds the capability's block:
+
+```markdown
+### labels
+
+narrator: a person grouping items
+group: service
+purpose: The person gives items short words, labels, to group them, and reads the backlog by them.
+```
+
+Then add its terms and lines through the same item with `work line b260 --into labels`, as in the first recipe; they
+take the ids `g1` and `r1` on. `work ready` checks them with the capability laid over a copy of `spec/`. When the
+batch starts, `work batch start` writes `spec/capabilities/labels.md` (its id your context's with `capability/` in
+front and the name at the end, its title, narrator and group, `language: codified-2`, `## Purpose`, `## Terms`,
+`## Behaviour`, the item's lines with their ids in `unbuilt:`), its row in `spec/index.md`'s `## Composition`, and
+its feature:
 
 <!-- docs: context tests/scripts/fixtures/docs-labels -->
 ```gherkin

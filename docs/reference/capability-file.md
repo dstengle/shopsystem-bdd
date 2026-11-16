@@ -513,7 +513,8 @@ Four things happened in one commit:
 ## Who writes which file
 
 `model forms` prints every file form a context keeps, its path, and the command that writes it. Where it says "no
-command yet", you write the file by hand. This is its output at 0.33.0, verbatim:
+command yet", it names the plugin's item that will give the form one; `model forms --check` fails on any form left
+to be written by hand. This is its output at b317, verbatim:
 
 ```console
 $ model forms
@@ -535,21 +536,24 @@ records index row         .shop/records/README.md                              w
 feature                   features/<capability>.feature                        features generate
 plugin version            .shop/plugin-version                                 migrate upgrade
 restated ids              spec/restated.json                                   migrate upgrade
-capability                spec/capabilities/<name>.md                          plugin item b13 (no command yet)
+capability                spec/capabilities/<name>.md                          work line --capability
 glossary term             spec/index.md ## Glossary                            plugin item b13 (no command yet)
 relation row              spec/capabilities/<name>.md ## Relations             work line --relation
 glossary relation row     spec/index.md ## Relations                           plugin item b13 (no command yet)
 universal condition       spec/universal.md                                    work line --universal
 upstream entry            spec/index.md ## Upstreams                           work line --upstream
 given block               spec/capabilities/<name>.md, a group's fenced given  work line --given
-observation               .shop/records/observations.md ## <id>                by hand (no command yet)
-delivery settings         .shop/delivery.toml                                  by hand (no command yet)
+observation               .shop/records/observations.md ## <id>                plugin item b44 (no command yet)
+delivery settings         .shop/delivery.toml                                  plugin item b44 (no command yet)
+design record folder      .shop/records/<date>-<topic>/design.md               plugin item b44 (no command yet)
+plan record folder        .shop/records/<date>-<topic>/plan-<k>.md             plugin item b44 (no command yet)
 ```
 
-In short: a new capability file, a glossary term and a glossary relation row are by hand today, and so are the
-prose sections (Purpose, Implementation, Not yet). Lines, terms of a capability, relation rows of a capability,
-given blocks, universal conditions and upstreams go on an item with `work line`, and reach `spec/` through
-`work batch start`. After a hand edit, run `model check` and `model lexicon --check` to catch a malformed entry.
+In short: a new capability is written on an item by `work line --capability` and reaches `spec/` through
+`work batch start`, as do lines, terms of a capability, relation rows of a capability, given blocks, universal
+conditions and upstreams, each by its `work line` option. A glossary term and a glossary relation row wait on plugin
+item b13, and the prose sections (Implementation, Not yet) are edited by hand. After a hand edit, run `model check`
+and `model lexicon --check` to catch a malformed entry.
 
 Next: [writing requirements](../writing-requirements.md) for the language of a line,
 [the commands](commands.md) for every option of `work line` and `features generate`, or

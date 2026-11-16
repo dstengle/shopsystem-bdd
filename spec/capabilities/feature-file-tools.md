@@ -366,6 +366,9 @@ the capability `shelf` holds:
 ### [g134] `features generate` writes a counter-example of a count over a relation in a response
 - [r134] While a requirement of a requirement group of a capability uses `count` and `holds-relation` and the requirement has an upper bound, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has a counter-example.
 
+### [g135] `features generate` writes the member outside a restriction that reaches a second thing
+- [r135] While a requirement of a capability uses `holds-exactly` and `of-relation`, when the person runs `features generate` on the capability, `features` shall write a scenario whose step uses `not-condition`.
+
 ## Implementation, may change
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three
   backticks. A scenario's block is its tag lines, its `Scenario:` line and everything up to the next scenario's tag

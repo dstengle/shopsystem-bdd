@@ -20,7 +20,7 @@ def _module(stem):
 def holds_given(step):
     """A batch holds an item (in it, `in-batch` unless a Given says otherwise); a git branch holds a requirement (the
     world lays the item's lines on the batch's branch); an item holds a universal condition (its `U1`, which `model
-    logic` reads, beside a passing line, b203)."""
+    logic` reads, beside a passing line, b203); an item holds a capability (a new one, `shelf`, b317)."""
     (k1, n1), (k2, n2) = parts(step)
     if (k1, k2) == ("batch", "item"):
         T.given(step, "batch", n1)
@@ -29,10 +29,27 @@ def holds_given(step):
             B.write_item(step, n2)
         if T.status_of(step, n2) == "idea":
             B.write_item(step, n2, status="in-batch")
+    elif (k1, k2) == ("item", "capability"):          # b317: a new capability, its block with the passing line
+        new_capability(step, n1, n2)
     elif (k1, k2) == ("item", "universal condition"):
         sys.modules["shop_readiness_world"].give_universal(step, n1, sys.modules["shop_readiness_world"].TRANSLATED_U)
     elif (k1, k2) != ("git branch", "requirement"):
         return False
+
+
+NEW = ("shelf", "a person shelving things", "Things kept on a shelf, each found by its name.")
+
+
+def new_capability(step, item, name):
+    """The item's one block a capability new to the world's spec (`work line --capability`), its one group the
+    passing line under g1, r1."""
+    R = sys.modules["shop_readiness_world"]
+    R.codify(step)
+    capability, narrator, purpose = NEW
+    step.context.setdefault("new_capability", {})[name] = capability
+    lines = ("### %s\n\nnarrator: %s\ngroup: service\npurpose: %s\n\n#### [g1] Shelving\n- [r1] %s"
+             % (capability, narrator, purpose, R.PASSING))
+    B.write_item(step, item, sections={"Requirements": lines})
 
 
 @four("GivenDoes", "has", *BOTH)
@@ -97,6 +114,8 @@ def passes_given(step):
     """An item passes the readiness bar (the lines `work batch start` gives a ready item) or does not (a line that
     does not parse); a scenario of an item fails or passes in the worktree of the task (the batch's tests)."""
     k, name = parts(step)[0]
+    if k == "chore":           # batches_handlers_chore's (b316)
+        return False
     if k == "item":
         if step.template == "GivenDoesNot":
             sys.modules["shop_readiness_world"].give_lines(step, name, sys.modules["shop_readiness_world"].FAILING)

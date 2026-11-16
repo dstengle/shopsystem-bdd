@@ -1362,3 +1362,28 @@ Feature: Design model check
     And the requirement r2 uses `holds-relation`
     When the person runs `model logic`
     Then `model` exits successfully
+
+  @g323 @r323
+  Scenario: `model logic` reads `holds-exactly` whose restriction reaches a second thing
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And the requirement r1 uses `holds-exactly`
+    And the requirement r1 uses `of-relation`
+    And an act a1
+    And the requirement r1 obliges the act a1
+    And a requirement r2
+    And the capability c1 has the requirement r2
+    And a trigger t1
+    And the requirement r1 has the trigger t1
+    And the requirement r2 has the trigger t1
+    And the requirement r2 forbids the act a1
+    When the person runs `model logic`
+    Then `model` prints `L1`
+
+  @g324 @r324
+  Scenario: `model forms --check` refuses a file form written by hand
+    Given a file form f1
+    And the writer of the file form f1 is `hand`
+    When the person runs `model forms` with the `--check` option
+    Then `model` exits with an error naming the file form f1

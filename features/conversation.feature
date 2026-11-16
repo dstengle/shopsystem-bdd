@@ -65,3 +65,71 @@ Feature: Conversation
     Then `work` writes the quote q2
     And the quote q2 cites the queued message q1
     And `work` commits the quote q2
+
+  @g10 @r10
+  Scenario: The SessionStart hook shows the live directives
+    Given a directive d1
+    And the status of the directive d1 is `live`
+    And a directive d2
+    And the status of the directive d2 is `live`
+    When the SessionStart hook runs `work directives` with the `--hook` option
+    Then `work` prints the quote q1
+    And the directive d1 has the quote q1
+    And `work` prints the quote q2
+    And the directive d2 has the quote q2
+
+  @g11 @r11
+  Scenario: `work promote` promotes a live directive to what it became
+    Given an item i1
+    And a directive d1
+    And the status of the directive d1 is `live`
+    And a session s1
+    When the session s1 runs `work promote` with the `--to` option set to the item i1 on the directive d1
+    Then `work` sets the status of the directive d1 to `promoted`
+    And `work` commits the directive d1
+
+  @g12 @r14
+  Scenario: `work drop` drops a live directive with its reason
+    Given a directive d1
+    And the status of the directive d1 is `live`
+    And a session s1
+    When the session s1 runs `work drop` with the `--why` option on the directive d1
+    Then `work` sets the status of the directive d1 to `dropped`
+    And `work` commits the directive d1
+
+  @g13 @r12
+  Scenario: `work promote` refuses a directive that is not live
+    Given a directive d1
+    And the status of the directive d1 is not `live`
+    And a session s1
+    When the session s1 runs `work promote` with the `--to` option on the directive d1
+    Then `work` refuses `work promote`
+    And `work` names the directive d1
+
+  @g14 @r13
+  Scenario: `work promote` refuses an item that does not exist
+    Given an item i1
+    And the item i1 does not exist
+    And a session s1
+    And a directive d1
+    When the session s1 runs `work promote` with the `--to` option set to the item i1 on the directive d1
+    Then `work` refuses `work promote`
+    And `work` names the item i1
+
+  @g15 @r15
+  Scenario: `work drop` refuses a directive that is not live
+    Given a directive d1
+    And the status of the directive d1 is not `live`
+    And a session s1
+    When the session s1 runs `work drop` with the `--why` option on the directive d1
+    Then `work` refuses `work drop`
+    And `work` names the directive d1
+
+  @g16 @r16
+  Scenario: `work directive` keeps the person's words as a live directive
+    Given a session s1
+    When the session s1 runs `work directive`
+    Then the quote q1 cites the message m1
+    And `work` writes the directive d1
+    And the directive d1 has the quote q1
+    And `work` commits the directive d1

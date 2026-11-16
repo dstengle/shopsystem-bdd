@@ -2,7 +2,7 @@
 in its place: a file said in a worktree from its own side (is-in), and r2 forbidding of the worktree's file what r1
 obliges (holds-relation); a worktree that holds exactly some files, and one that holds nothing, in a precondition and
 on a response's object; an object that holds nothing or no file beside a forbidden one that holds a file, which
-no worktree meets both of, and two that hold a file (b314). On a response's object (b297) the act is one with a recipient, as a feed's "return ... to",
+no worktree meets both of, and two that hold a file (b314); a worktree that holds exactly the files that cover the line of a stage (b315). On a response's object (b297) the act is one with a recipient, as a feed's "return ... to",
 and the files a relative clause's, so the context has the verbs `keep` and `return` too (`RETURNING`). Each world is
 codified2_world's, its r1 (r2) the lines here."""
 import importlib.util
@@ -44,6 +44,9 @@ NOTHING = ("While a worktree holds nothing, when the person runs `work start` on
            "worktree.")
 KEPT = ("When the person runs `work start`, `work` shall return a worktree that holds exactly the files that a session "
         "keeps to the person.")
+# b315: the restriction reaches a second thing, the line of a stage
+COVERING = ("When the person runs `work start`, `work` shall return a worktree that holds exactly the files that cover "
+            "the line of a stage to the person.")
 EMPTY = "When the person runs `work start`, `work` shall return a worktree that holds nothing to the person."
 UNRETURNED = "When the person runs `work start`, `work` shall not return a worktree to the person."
 FULL = "When the person runs `work start`, `work` shall return a worktree that holds a file to the person."
@@ -54,6 +57,8 @@ UNFILLED = "When the person runs `work start`, `work` shall not print a worktree
 ROWS = [
     (("requirement use `is-in`", "requirement forbid act", "requirement use `holds-relation`"), line(IS_IN, HOLDS), {}),
     (("precondition use `is-in`",), line(IS_IN), {}),
+    (("requirement use `holds-exactly`", "requirement use `of-relation`", "requirement forbid act"),
+     line(COVERING, UNRETURNED, terms=RETURNING), {}),     # b315
     (("requirement use `holds-exactly`", "requirement use `rc-object`", "requirement forbid act"),
      line(KEPT, UNRETURNED, terms=RETURNING), {}),
     (("requirement use `nothing`", "requirement use `rc-subject`", "requirement forbid act",

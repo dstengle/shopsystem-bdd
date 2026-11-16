@@ -14,6 +14,7 @@ import shlex
 import subprocess
 from pathlib import Path
 
+import backlog_chore
 import backlog_items
 import backlog_lines
 import batch_findings
@@ -147,6 +148,7 @@ def _items(root, batch):
         if item.status != "in-batch":
             continue
         out.append("- %s: %s" % (backlog_items.label(item), backlog_items.rel_of(item.name)))
+        out += ["  - %s" % said for said in backlog_chore.said(item)]       # a chore in place of lines (b316)
         for block in backlog_lines.read(item, backlog_items.rel_of(item.name)):
             for group in block.groups:
                 out += ["  - %s#%s: %s" % (block.capability, rid, text) for rid, text in group.requirements]

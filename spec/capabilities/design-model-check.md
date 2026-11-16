@@ -111,6 +111,8 @@ context: product-level artifacts are read only where the files contain them.
 
 - **response** (noun): the part of a requirement after shall: what its agent does. Kind of: text.
 
+- **writer** (attribute of file form): what writes a file form: a command of the plugin, the item of the plugin's backlog that will give the form a command, or a person by hand. Values (noun): `command`, `item`, `hand`.
+
 ## Relations
 | from | word | to | cardinality |
 |---|---|---|---|
@@ -607,6 +609,12 @@ Restates: r37@0.29.
 
 ### [g320] `model logic` finds the clash of two objects that hold a thing
 - [r320] While a requirement uses `holds-relation` and `rc-subject` and the requirement obliges an act and another requirement that forbids the act uses `holds-relation`, when the person runs `model logic`, `model` shall print `L1`.
+
+### [g323] `model logic` reads `holds-exactly` whose restriction reaches a second thing
+- [r323] While a requirement of a capability uses `holds-exactly` and `of-relation` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
+
+### [g324] `model forms --check` refuses a file form written by hand
+- [r324] While the writer of a file form is `hand`, when the person runs `model forms` with the `--check` option, `model` shall exit with an error naming the file form.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a

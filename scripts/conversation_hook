@@ -1,21 +1,23 @@
 #!/usr/bin/env python3
-"""The conversation's two hooks (capability conversation; plan 8's review, S2), apart from `work` so that they import
+"""The conversation's three hooks (capability conversation; plan 8's review, S2), apart from `work` so that they import
 only what they need, the standard library and the conversation's own modules, and so run under any `python3`, site
 packages or none:
 - `conversation_hook quote`, the UserPromptSubmit hook: keep the session and transcript its stdin gives for
   `work quote`, printing nothing (`work quote --hook` does the same);
 - `conversation_hook names`, the SessionStart hook: the names table under one line, nothing when there is nothing to
-  name (`work names --hook` does the same).
+  name (`work names --hook` does the same);
+- `conversation_hook directives`, the SessionStart hook: the live directives' words under one line, nothing when none
+  is live (`work directives --hook` does the same).
 Whatever goes wrong, an import included, the hook prints nothing more and exits 0: a hook never fails a prompt or a
 session's start."""
 import os
 import sys
 
-USAGE = "usage: conversation_hook quote|names"
+USAGE = "usage: conversation_hook quote|names|directives"
 
 
 def main(argv):
-    if argv not in (["quote"], ["names"]):
+    if argv not in (["quote"], ["names"], ["directives"]):
         print(USAGE, file=sys.stderr)
         return 2
     try:
@@ -25,8 +27,12 @@ def main(argv):
             import conversation_prompt
             conversation_prompt.keep(Path.cwd(), sys.stdin.read())
             return 0
-        import conversation_names
-        text = conversation_names.hook_text(Path.cwd())
+        if argv == ["directives"]:
+            import directive
+            text = directive.hook_text(Path.cwd())
+        else:
+            import conversation_names
+            text = conversation_names.hook_text(Path.cwd())
         if text:
             print(text)
     except BaseException:  # noqa: BLE001  (a hook never fails: D5, D8)

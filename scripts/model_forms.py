@@ -1,8 +1,9 @@
 """`model forms` (capability design-model-check r55): every file form a bounded context keeps, with its path pattern
 and the command that writes it, so that a session writes a file by its command and never copies one to learn its
 form. A form no command writes yet names the item of the plugin's backlog that will give it one, or says it is
-written by hand."""
+written by hand; `model forms --check` refuses a form written by hand (design-model-check r324)."""
 import json
+import sys
 from typing import NamedTuple
 
 SCRIPTS = ("work", "model", "measure", "features", "migrate", "tools")
@@ -19,10 +20,16 @@ class Form(NamedTuple):
         words = self.writer.split()
         return words if words and words[0] in SCRIPTS else None
 
+    @property
+    def kind(self):
+        """What writes the form: `command`, `item` (the plugin item that will give it one) or `hand`."""
+        return "command" if self.command else "item" if self.writer.startswith("plugin item ") else "hand"
+
 
 FORMS = [
     Form("item", ".shop/backlog/b<n>.md", "work idea"),
     Form("item's requirement line", ".shop/backlog/b<n>.md ## Requirements", "work line"),
+    Form("item's chore", ".shop/backlog/b<n>.md ## Chore", "work chore"),
     Form("item's term bullet", ".shop/backlog/b<n>.md ## Requirements", "work line --term"),
     Form("requirement line in spec", "spec/capabilities/<name>.md ## Behaviour", "work batch start"),
     Form("batch plan", ".shop/batches/<n>/plan.md", "work batch start"),
@@ -31,6 +38,7 @@ FORMS = [
     Form("batch measurement", ".shop/records/measurements/<date>-<batch>.md", "measure batch"),
     Form("request", ".shop/requests/q<n>.md", "work request"),
     Form("quote", ".shop/quotes/<n>.md", "work quote"),
+    Form("directive", ".shop/directives/<n>.md", "work directive"),
     Form("design-decision", "spec/decisions/<nnnn>-<slug>.md", "work decision"),
     Form("decisions index", "spec/decisions/index.md", "model decisions"),
     Form("rule catalogue", "grammar/rules.md", "model rules --write"),
@@ -39,20 +47,29 @@ FORMS = [
     Form("feature", "features/<capability>.feature", "features generate"),
     Form("plugin version", ".shop/plugin-version", "migrate upgrade"),
     Form("restated ids", "spec/restated.json", "migrate upgrade"),
-    Form("capability", "spec/capabilities/<name>.md", "plugin item b13 (no command yet)"),
+    Form("capability", "spec/capabilities/<name>.md", "work line --capability"),
     Form("glossary term", "spec/index.md ## Glossary", "plugin item b13 (no command yet)"),
     Form("relation row", "spec/capabilities/<name>.md ## Relations", "work line --relation"),
     Form("glossary relation row", "spec/index.md ## Relations", "plugin item b13 (no command yet)"),
     Form("universal condition", "spec/universal.md", "work line --universal"),
     Form("upstream entry", "spec/index.md ## Upstreams", "work line --upstream"),
     Form("given block", "spec/capabilities/<name>.md, a group's fenced given", "work line --given"),
-    Form("observation", ".shop/records/observations.md ## <id>", "by hand (no command yet)"),
-    Form("delivery settings", ".shop/delivery.toml", "by hand (no command yet)"),
+    Form("observation", ".shop/records/observations.md ## <id>", "plugin item b44 (no command yet)"),
+    Form("delivery settings", ".shop/delivery.toml", "plugin item b44 (no command yet)"),
+    Form("design record folder", ".shop/records/<date>-<topic>/design.md", "plugin item b44 (no command yet)"),
+    Form("plan record folder", ".shop/records/<date>-<topic>/plan-<k>.md", "plugin item b44 (no command yet)"),
 ]
 
 
 def cmd_forms(args):
-    """Each form on its line, `<name>  <path>  <writer>` in columns; with --json one object {"forms": [...]}."""
+    """Each form on its line, `<name>  <path>  <writer>` in columns; with --json one object {"forms": [...]}; with
+    --check each form written by hand named on stderr and exit 1, else exit 0 and nothing printed."""
+    if getattr(args, "check", False):
+        hand = [form for form in FORMS if form.kind == "hand"]
+        for form in hand:
+            print("model forms: %s (%s) is written by hand: give it a command, or name the plugin item that will"
+                  % (form.name, form.path), file=sys.stderr)
+        return 1 if hand else 0
     if args.json:
         print(json.dumps({"forms": [form._asdict() for form in FORMS]}))
         return 0

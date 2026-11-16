@@ -305,3 +305,56 @@ Feature: Readiness
     And `work` names the requirement r6
     And `work` names the requirement r7
     And `work` does not name the requirement r8
+
+  @g51 @r51
+  Scenario: `work chore` writes a chore in an item
+    Given an item i1
+    When the person runs `work chore` with the `--file` and `--check` options on the item i1
+    Then `work` writes the chore c1
+    And the item i1 holds the chore c1
+    And `work` commits the item i1
+
+  @g52 @r52
+  Scenario: `work chore` refuses an item with a requirement
+    Given a requirement r1
+    And an item i1
+    And the item i1 holds the requirement r1
+    When the person runs `work chore` on the item i1
+    Then `work` refuses `work chore`
+    And `work` names the requirement r1
+
+  @g53 @r53
+  Scenario: `work line` refuses an item with a chore
+    Given a chore c1
+    And an item i1
+    And the item i1 holds the chore c1
+    When the person runs `work line` on the item i1
+    Then `work` refuses `work line`
+    And `work` names the chore c1
+
+  @g54 @r54
+  Scenario: `work ready` readies a shaped item that holds a chore and no requirement
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    And a chore c1
+    And the item i1 holds the chore c1
+    And the item i1 holds no requirement
+    When the person runs `work ready` on the item i1
+    Then `work` sets the status of the item i1 to `ready`
+
+  @g55 @r55
+  Scenario: `work line --capability` writes a new capability in an item
+    Given a capability c1
+    And an item i1
+    When the person runs `work line` with the `--capability` option set to the capability c1 on the item i1
+    Then the item i1 holds the capability c1
+    And `work` writes the capability c1
+    And `work` commits the item i1
+
+  @g56 @r56
+  Scenario: `work line --capability` refuses a capability that exists
+    Given a capability c1
+    And the capability c1 exists
+    When the person runs `work line` with the `--capability` option set to the capability c1
+    Then `work` refuses `work line`
+    And `work` names the capability c1

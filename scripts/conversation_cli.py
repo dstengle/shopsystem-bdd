@@ -1,6 +1,7 @@
 """The conversation's commands of `work` (capability conversation; workflow simplification plan 8): `work quote`,
 `work show quote-<n>` and `work names`, their parsers and dispatch, so that scripts/work stays small. A quote is
-named by its label, `quote-1 "<its words>"` (design goal 10)."""
+named by its label, `quote-1 "<its words>"` (design goal 10). The directives' commands (b20), `work directive`,
+`directives`, `promote`, `drop` and `work show directive-<n>`, are directive_cli's, added here."""
 import json
 import sys
 from pathlib import Path
@@ -8,10 +9,12 @@ from pathlib import Path
 import conversation_names
 import conversation_prompt
 import conversation_quote
+import directive_cli
 from shop_files import Refused
 from transcripts import Refused as ReadRefused
 
 is_quote = conversation_quote.is_quote
+is_directive = directive_cli.is_directive
 
 
 def add_parsers(sub):
@@ -26,6 +29,7 @@ def add_parsers(sub):
     p = sub.add_parser("names", help="every item and batch with its name beside its id, one table")
     p.add_argument("--hook", action="store_true", help="the SessionStart hook: the table under one line, nothing when "
                                                        "there is nothing to name, never failing")
+    directive_cli.add_parsers(sub)
 
 
 def refused(command, why):
@@ -48,6 +52,12 @@ def quote(args):
 
 
 def show(args):
+    if directive_cli.is_directive(args.target):
+        return directive_cli.show(args, show_quote)
+    return show_quote(args)
+
+
+def show_quote(args):
     """`work show quote-<n>`: the quote's label, its session and date, then each message it cites, the cited one
     marked (D7); with --json one object `{"quote": {...}}`."""
     try:
@@ -76,4 +86,4 @@ def names(args):
     return 0
 
 
-COMMANDS = {"quote": quote, "names": names}
+COMMANDS = {"quote": quote, "names": names, **directive_cli.COMMANDS}

@@ -25,6 +25,7 @@ Scripts: `<this skill's base directory>/../../scripts/`. Every `work batch` comm
    - the `tier: judgement` design-decisions (`grep -l '^tier: judgement' spec/decisions/*.md`), to follow in the code it writes;
    - the repository's `CLAUDE.md`, and these rules: one scenario at a time, red first (see it fail on its Then line before writing its handler or code), never edit a `.feature` file, and an existing test changed only in its setup;
    - "There is no brief or result file: reply with what you built, or with your one question. `work batch done` runs the whole suite in your worktree and refuses with its last lines, so a test you broke anywhere comes back to you."
+   - for a chore item (the brief and `work batch resume` give its chore's files and check in place of ids): it is built until its check passes in its worktree; its commits touch only the chore's files and directories, and `work batch done` runs the check after the tests and refuses while it fails, or a commit of the item touches another path, naming it;
    - for an item that returns to a batch after a park, the old branch its notes name (`## Notes`: `its work is on branch batch-<n>-b<j>`): cherry-pick from it what still applies, keeping each commit's `Item: b<j>` line.
 
    Each builds its scenarios one at a time, takes each id out of its capability's `unbuilt:` in the same commit that makes the scenario pass, and ends every commit message with the line `Item: b<j>`. It changes nothing under `.shop/backlog/` or `.shop/batches/`. A subagent that cannot go on without an answer returns its question instead of guessing.
@@ -60,6 +61,7 @@ Every commit `work`, `measure` and `migrate` make is pushed to the branch's upst
 | `park` or `abandon` refused for uncommitted changes | Commit them on the task's branch with its `Item:` line, or pass `--discard` to drop them |
 | A task's commit that edits `.shop/backlog/` or `.shop/batches/` | Only the base branch's batch commands write those |
 | A question put to the person mid-batch | `work batch park` the item with the question; the batch carries on |
+| A chore task's commit that touches a file its chore does not name | `done` refuses it, naming the file: keep the change to the chore's files, or shape the rest as its own item |
 | An id left in `unbuilt:` after its scenario passes | The strict xfail fails the suite; take it out in the same commit |
 | A `pr-reviewer` dispatched after a task's `done` | The one review is of the published pull request: `work batch review`, then `work batch brief` |
 | A reviewer given the session's context | Give it the brief's path and nothing else; a fresh agent each review |

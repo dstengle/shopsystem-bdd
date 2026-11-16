@@ -736,3 +736,15 @@ Feature: Feature file tools
     Then `features` writes the scenario s1
     And the requirement group r2 has the scenario s1
     And the scenario s1 has the counter-example c2
+
+  @g135 @r135
+  Scenario: `features generate` writes the member outside a restriction that reaches a second thing
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And the requirement r1 uses `holds-exactly`
+    And the requirement r1 uses `of-relation`
+    When the person runs `features generate` on the capability c1
+    Then the step s1 uses `not-condition`
+    And `features` writes the scenario s2
+    And the scenario s2 has the step s1

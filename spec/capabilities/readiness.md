@@ -34,6 +34,8 @@ the item is settled. `work ready` checks the bar and asks nobody.
 - **nonexistent** (adjective of requirement): a requirement named by an id that no capability holds as a live requirement.
 - **`universal`** (proper noun): `spec/universal.md`, the file of the universal conditions, read as the capability named `universal`. Kind of: capability.
 
+- **chore** (noun): what an item with no requirement line names in their place: the files its work changes and the command whose exit code 0 shows the work done. Kind of: text.
+
 ## Relations
 | from | word | to | cardinality |
 |---|---|---|---|
@@ -51,6 +53,8 @@ the item is settled. `work ready` checks the bar and asks nobody.
 | translation | of | universal condition | one |
 | requirement id | in | item |  |
 | requirement group | in | item |  |
+| chore | in | item | one |
+| file | in | chore |  |
 
 ## Behaviour
 
@@ -138,6 +142,24 @@ the item is settled. `work ready` checks the bar and asks nobody.
 ### [g50] `work ready` names every requirement of an item that has no parse and every one that has no translation in one run
 - [r50] While an item is `shaped` and a requirement in the item has no parse and a different requirement in the item has no translation, if the person runs `work ready` on the item, then `work` shall refuse the command and name every requirement in the item that has no parse and every requirement in the item that has no translation.
 
+### [g51] `work chore` writes a chore in an item
+- [r51] When the person runs `work chore` with the `--file` and `--check` options on an item, `work` shall write a chore in the item and commit the item.
+
+### [g52] `work chore` refuses an item with a requirement
+- [r52] If the person runs `work chore` on an item that holds a requirement, then `work` shall refuse the command and name the requirement.
+
+### [g53] `work line` refuses an item with a chore
+- [r53] If the person runs `work line` on an item that holds a chore, then `work` shall refuse the command and name the chore.
+
+### [g54] `work ready` readies a shaped item that holds a chore and no requirement
+- [r54] While an item is `shaped` and the item holds a chore and the item holds no requirement, when the person runs `work ready` on the item, `work` shall set the status of the item to `ready`.
+
+### [g55] `work line --capability` writes a new capability in an item
+- [r55] When the person runs `work line` with the `--capability` option set to a capability on an item, `work` shall write the capability in the item and commit the item.
+
+### [g56] `work line --capability` refuses a capability that exists
+- [r56] If the person runs `work line` with the `--capability` option set to a capability that exists, then `work` shall refuse the command and name the capability.
+
 ## Implementation, may change
 - An item's requirement lines stay on the item until its batch merges: in the item file's `## Requirements`, one
   `### <capability>` block for each codified capability they go into, term bullets first, then `#### [g<n>]` groups of
@@ -157,6 +179,12 @@ the item is settled. `work ready` checks the bar and asks nobody.
   segment) runs its tests on the root checkout, as `model decisions --check` runs them, once a process: a failing one is
   the reason `design-decision <slug> (check) fails: <tests>: exit <code>` (or `names no test`), after the well-formed
   reasons. A decision no capability of the item rests on is not run (decision-tiers; plan 6, D13).
+- A chore is kept in the item file's `## Chore` section: `Files:` with a `- <path>` bullet for each file or
+  directory its work changes, then the line ``Check: `<command>` ``. `work chore` refuses a `--file` under `spec/`,
+  `features/` or `.shop/` (requirement lines own the first two, `work` the third), or outside the repository, naming
+  it; run again on an item that holds a chore, it replaces the chore (b316).
+- An item that holds a chore and requirement lines too, written into its file by hand, is not passing: the reason is
+  `it holds a chore and requirement lines, which exclude each other: take one of them out` (b316).
 
 ## Not yet
 - A new capability, and a term for the glossary of `spec/index.md`, proposed by an item: its lines go only into a
