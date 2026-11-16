@@ -37,6 +37,7 @@ FORMS = [
     Form("batch measurement", ".shop/records/measurements/<date>-<batch>.md", "measure batch"),
     Form("request", ".shop/requests/q<n>.md", "work request"),
     Form("quote", ".shop/quotes/<n>.md", "work quote"),
+    Form("directive", ".shop/directives/<n>.md", "work directive"),
     Form("design-decision", "spec/decisions/<nnnn>-<slug>.md", "work decision"),
     Form("decisions index", "spec/decisions/index.md", "model decisions"),
     Form("rule catalogue", "grammar/rules.md", "model rules --write"),

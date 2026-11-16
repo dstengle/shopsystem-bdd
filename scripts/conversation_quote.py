@@ -193,6 +193,22 @@ def _cut(message, cited):
 
 def write(root, words, session=None, transcript=None):
     """The quote of `words` (D4), written as the next `.shop/quotes/<n>.md` and committed alone (D6)."""
+    quote = made(root, words, session, transcript)
+    shop_files.committed(root, [rel_of(quote.name)], "quote: %s from the session %s" % (quote.name, quote.session[:8]),
+                         lambda: put(root, quote))
+    return quote
+
+
+def put(root, quote):
+    """The quote's file written, its directory made."""
+    target = Path(root) / rel_of(quote.name)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(render(quote), encoding="utf-8")
+
+
+def made(root, words, session=None, transcript=None):
+    """The quote of `words` (D4) as the next `quote-<n>`, nothing written; refused when the words are empty or match
+    no message of the person."""
     if not C.normal(words or ""):
         raise Refused("the words are empty")
     session, path = transcript_of(root, session, transcript)
@@ -207,16 +223,8 @@ def write(root, words, session=None, transcript=None):
     near = [_cut(m, found[index]) for m in C.around(found, index)]
     name = next_name(root)
     date = found[index].at.astimezone(datetime.UTC).date().isoformat()
-    quote = Quote(name, "quote/%s/%s" % (shop_files.context_path(root), name), session, found[index].ident, date,
-                  words.strip(), near)
-    rel = rel_of(name)
-
-    def put():
-        target = Path(root) / rel
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(render(quote), encoding="utf-8")
-    shop_files.committed(root, [rel], "quote: %s from the session %s" % (name, session[:8]), put)
-    return quote
+    return Quote(name, "quote/%s/%s" % (shop_files.context_path(root), name), session, found[index].ident, date,
+                 words.strip(), near)
 
 
 def as_json(quote):
