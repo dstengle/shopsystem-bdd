@@ -1,6 +1,7 @@
 """The Thens of features/batches.feature in grammar 4 (b240, b158), each in world_four's chain beside the backlog's,
 over the checks of batches_handlers*.py: what `work batch` wrote, picked, printed, refused, named, published and
 removed. A step of a kind that is not the batches' returns False."""
+import re
 import sys
 
 W, B, T, F = (sys.modules[n] for n in ("shop_work_queue_world", "shop_backlog_world", "shop_batches_world",
@@ -32,7 +33,28 @@ def writes(step):
         return _first().writes_plan(step)
     if k == "question":
         return _more().writes_question(step)
+    if k == "`universal`":
+        assert universal(step), (step.text, step.context["result"].stdout)
+        return None
     return False
+
+
+def universal(step):
+    """spec/universal.md on the batch's branch `work batch start` made, after the run exited 0 (b203)."""
+    done = step.context["result"]
+    assert done.returncode == 0, (step.text, done.stdout, done.stderr)
+    branch = T.git(step, "branch", "--list", "batch-*", "--format=%(refname:short)").split()
+    assert len(branch) == 1, (step.text, branch)
+    return T.git(step, "show", "%s:spec/universal.md" % branch[0])
+
+
+@four("ThenDoes", "set", *BOTH)
+def sets_language(step):
+    """The language of `universal`: the marker of spec/universal.md on the batch's branch."""
+    if step.nps[0] != "the language of `universal`":
+        return False
+    wanted = step.text.rsplit(" to ", 1)[1].strip("`")
+    assert re.search(r"(?m)^language: %s$" % re.escape(wanted), universal(step)), (step.text, universal(step))
 
 
 @four("ThenDoes", "on", *BOTH)
