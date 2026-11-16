@@ -26,7 +26,7 @@
 #defined oonly/5.  #defined ocount/7. #defined yattr/4. #defined yrel/4.
 % comparisons of two things' values and orders (b275): `ccmp2(R,X,T,Op,Y,P)`, X's T is (P) after, before or the same
 % as Y's; `ordered(R,I,T,Dir)`, act I of R requires its object (a collection, or each K of a printed every) in Dir by T
-#defined ccmp2/6. #defined ordered/4.
+#defined ccmp2/6. #defined ordered/4. #defined tcan/2.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
@@ -245,16 +245,22 @@ out(A,B) :- fun(Q), redge(A,B,Q,Z,Z1), redge(A,B,Q,Z,Z2), Z1 < Z2.
 % order by number (`dense(T)`), the gap just above each (`g(K)`), the one below them all (`lo`) and a value of no
 % number (`u`); an order as listed has only its values' points. A value's point: an entry's `vkey(T,V,K)`, a line's
 % code `ckey(R,T,V,K)`. A pair is out when no cell meets every comparison and value its sides say of X's T.
-cmpw(A,B,N,Z,T,O,K,P) :- side(A,B,S), state(A,B,S,N), ccmp(S,Y,T,O,K,P), at(A,B,S,Y,Z).
+% two senses of one word with one value order (b287): `tcan(T,C)`, each entry T read as C, the first entry of its
+% word and order, so that both sides of a comparison are read over one order's cells; `hast`, `dns` the lifted has
+% and dense of the things compared
+dns(T) :- dense(T0), tcan(T0,T).
+zt(A,B,N,Z,T) :- oz(A,B,N,Z,T).  zt(A,B,N,Z,T) :- c2w(A,B,N,Z,T,_,_,_).  zt(A,B,N,Z,T) :- c2w(A,B,N,_,T,_,Z,_).
+hast(A,B,N,Z,T,V,P) :- zt(A,B,N,Z,T), has(A,B,N,Z,T0,V,P), tcan(T0,T).
+cmpw(A,B,N,Z,T,O,K,P) :- side(A,B,S), state(A,B,S,N), ccmp(S,Y,T0,O,K,P), tcan(T0,T), at(A,B,S,Y,Z).
 oz(A,B,N,Z,T) :- cmpw(A,B,N,Z,T,_,_,_).
-okey(A,B,T,V,K) :- side(A,B,S), ckey(S,T,V,K).
-okey(A,B,T,V,K) :- oz(A,B,_,_,T), vkey(T,V,K).
+okey(A,B,T,V,K) :- side(A,B,S), ckey(S,T0,V,K), tcan(T0,T).
+okey(A,B,T,V,K) :- oz(A,B,_,_,T), vkey(T0,V,K), tcan(T0,T).
 okd(A,B,T,V) :- okey(A,B,T,V,_).
 opt(A,B,T,K) :- cmpw(A,B,_,_,T,_,K,_).
-opt(A,B,T,K) :- oz(A,B,N,Z,T), has(A,B,N,Z,T,V,_), okey(A,B,T,V,K).
-ocell(A,B,T,c(K)) :- opt(A,B,T,K), dense(T).    ocell(A,B,T,g(K)) :- opt(A,B,T,K), dense(T).
-ocell(A,B,T,lo) :- oz(A,B,_,_,T), dense(T).     ocell(A,B,T,u) :- oz(A,B,_,_,T), dense(T).
-ocell(A,B,T,c(K)) :- oz(A,B,_,_,T), vkey(T,_,K), not dense(T).
+opt(A,B,T,K) :- oz(A,B,N,Z,T), hast(A,B,N,Z,T,V,_), okey(A,B,T,V,K).
+ocell(A,B,T,c(K)) :- opt(A,B,T,K), dns(T).    ocell(A,B,T,g(K)) :- opt(A,B,T,K), dns(T).
+ocell(A,B,T,lo) :- oz(A,B,_,_,T), dns(T).     ocell(A,B,T,u) :- oz(A,B,_,_,T), dns(T).
+ocell(A,B,T,c(K)) :- oz(A,B,_,_,T), vkey(T0,_,K), tcan(T0,T), not dns(T).
 osat(A,B,T,after,K,c(L)) :- opt(A,B,T,K), ocell(A,B,T,c(L)), L > K.
 osat(A,B,T,after,K,g(L)) :- opt(A,B,T,K), ocell(A,B,T,g(L)), L >= K.
 osat(A,B,T,before,K,c(L)) :- opt(A,B,T,K), ocell(A,B,T,c(L)), L < K.
@@ -262,9 +268,9 @@ osat(A,B,T,before,K,g(L)) :- opt(A,B,T,K), ocell(A,B,T,g(L)), L < K.
 osat(A,B,T,before,K,lo) :- opt(A,B,T,K), ocell(A,B,T,lo).
 obad(A,B,N,Z,T,C) :- oz(A,B,N,Z,T), ocell(A,B,T,C), cmpw(A,B,N,Z,T,O,K,pos), not osat(A,B,T,O,K,C).
 obad(A,B,N,Z,T,C) :- oz(A,B,N,Z,T), ocell(A,B,T,C), cmpw(A,B,N,Z,T,O,K,neg), osat(A,B,T,O,K,C).
-obad(A,B,N,Z,T,C) :- oz(A,B,N,Z,T), ocell(A,B,T,C), has(A,B,N,Z,T,V,pos), okey(A,B,T,V,K), C != c(K).
-obad(A,B,N,Z,T,C) :- oz(A,B,N,Z,T), ocell(A,B,T,C), has(A,B,N,Z,T,V,pos), not okd(A,B,T,V), C != u.
-obad(A,B,N,Z,T,c(K)) :- oz(A,B,N,Z,T), has(A,B,N,Z,T,V,neg), okey(A,B,T,V,K).
+obad(A,B,N,Z,T,C) :- oz(A,B,N,Z,T), ocell(A,B,T,C), hast(A,B,N,Z,T,V,pos), okey(A,B,T,V,K), C != c(K).
+obad(A,B,N,Z,T,C) :- oz(A,B,N,Z,T), ocell(A,B,T,C), hast(A,B,N,Z,T,V,pos), not okd(A,B,T,V), C != u.
+obad(A,B,N,Z,T,c(K)) :- oz(A,B,N,Z,T), hast(A,B,N,Z,T,V,neg), okey(A,B,T,V,K).
 ofit(A,B,N,Z,T) :- oz(A,B,N,Z,T), ocell(A,B,T,C), not obad(A,B,N,Z,T,C).
 out(A,B) :- oz(A,B,N,Z,T), not ofit(A,B,N,Z,T).
 % one thing's value compared with another's (b275, `ccmp2(R,X,T,Op,Y,P)`): the two instances' cells that fit each
@@ -273,8 +279,8 @@ out(A,B) :- oz(A,B,N,Z,T), not ofit(A,B,N,Z,T).
 % they allow meet every comparison its sides say of the two. A cycle through three or more things in one gap is taken
 % as able to hold: an L1 may be reported that could never fire, none is hidden. Of an attribute with no value order
 % ("is the same as", any attribute) two values known apart, or one known and the other known not to be it.
-ordt(T) :- dense(T).  ordt(T) :- vkey(T,_,_).
-c2w(A,B,N,Z1,T,O,Z2,P) :- side(A,B,S), state(A,B,S,N), ccmp2(S,Y1,T,O,Y2,P), at(A,B,S,Y1,Z1), at(A,B,S,Y2,Z2).
+ordt(T) :- dns(T).  ordt(T) :- vkey(T0,_,_), tcan(T0,T).
+c2w(A,B,N,Z1,T,O,Z2,P) :- side(A,B,S), state(A,B,S,N), ccmp2(S,Y1,T0,O,Y2,P), tcan(T0,T), at(A,B,S,Y1,Z1), at(A,B,S,Y2,Z2).
 oz(A,B,N,Z,T) :- c2w(A,B,N,Z,T,_,_,_), ordt(T).  oz(A,B,N,Z,T) :- c2w(A,B,N,_,T,_,Z,_), ordt(T).
 zp(A,B,N,Z1,Z2,T) :- c2w(A,B,N,Z1,T,_,Z2,_), ordt(T).
 fitc(A,B,N,Z,T,C) :- oz(A,B,N,Z,T), ocell(A,B,T,C), not obad(A,B,N,Z,T,C).
@@ -299,10 +305,10 @@ bad2(A,B,N,Z1,Z2,T,C1,C2,R) :- ok2(A,B,N,Z1,Z2,T,C1,C2,R), c2w(A,B,N,Z1,T,O,Z2,P
 bad2(A,B,N,Z1,Z2,T,C1,C2,R) :- ok2(A,B,N,Z1,Z2,T,C1,C2,R), c2w(A,B,N,Z2,T,O,Z1,P), rev(R,R2), not allow(O,P,R2).
 sat2(A,B,N,Z1,Z2,T) :- ok2(A,B,N,Z1,Z2,T,C1,C2,R), not bad2(A,B,N,Z1,Z2,T,C1,C2,R).
 out(A,B) :- zp(A,B,N,Z1,Z2,T), not sat2(A,B,N,Z1,Z2,T).
-out(A,B) :- c2w(A,B,N,Z1,T,same,Z2,pos), not ordt(T), has(A,B,N,Z1,T,V,pos), has(A,B,N,Z2,T,W,pos), V != W.
-out(A,B) :- c2w(A,B,N,Z1,T,same,Z2,pos), not ordt(T), has(A,B,N,Z1,T,V,pos), has(A,B,N,Z2,T,V,neg).
-out(A,B) :- c2w(A,B,N,Z1,T,same,Z2,pos), not ordt(T), has(A,B,N,Z1,T,V,neg), has(A,B,N,Z2,T,V,pos).
-out(A,B) :- c2w(A,B,N,Z1,T,same,Z2,neg), not ordt(T), has(A,B,N,Z1,T,V,pos), has(A,B,N,Z2,T,V,pos).
+out(A,B) :- c2w(A,B,N,Z1,T,same,Z2,pos), not ordt(T), hast(A,B,N,Z1,T,V,pos), hast(A,B,N,Z2,T,W,pos), V != W.
+out(A,B) :- c2w(A,B,N,Z1,T,same,Z2,pos), not ordt(T), hast(A,B,N,Z1,T,V,pos), hast(A,B,N,Z2,T,V,neg).
+out(A,B) :- c2w(A,B,N,Z1,T,same,Z2,pos), not ordt(T), hast(A,B,N,Z1,T,V,neg), hast(A,B,N,Z2,T,V,pos).
+out(A,B) :- c2w(A,B,N,Z1,T,same,Z2,neg), not ordt(T), hast(A,B,N,Z1,T,V,pos), hast(A,B,N,Z2,T,V,pos).
 
 % ---- a defined condition read through its definition (`dalt(C,N)`, `dlit(C,N,Attr,Val,Pol)`: the ways through a
 % Def whose literals are all on its own subject) under `no`, `every` and a negation --------

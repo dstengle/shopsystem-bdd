@@ -151,6 +151,8 @@ context: product-level artifacts are read only where the files contain them.
 | value order | of | term | one |
 | order | in | capability |  |
 | order | on | term | one |
+| order | in | act |  |
+| value order | of | sense | one |
 
 ## Behaviour
 
@@ -551,6 +553,30 @@ Restates: r37@0.29.
 
 ### [g297] `model logic` finds two contradicting orders
 - [r297] While a capability holds an order that contradicts an order, when the person runs `model logic`, `model` shall print `L1`.
+
+### [g306] `model parse` refuses an order in a precondition
+- [r306] If the person runs `model parse` on a requirement whose precondition uses an order, then `model` shall refuse the command and name the order.
+
+### [g307] `model parse` refuses an order in a trigger
+- [r307] If the person runs `model parse` on a requirement whose trigger uses an order, then `model` shall refuse the command and name the order.
+
+### [g308] `model parse` refuses an order in a forbidden act
+- [r308] If the person runs `model parse` on a requirement that forbids an act that holds an order, then `model` shall refuse the command and name the order.
+
+### [g311] `model parse` reads a comparison of two senses of one term with one value order
+- [r311] While a sense of a term has a value order and another sense of the term has the value order and a requirement uses the term and `value-compare`, when the person runs `model parse` on the requirement, `model` shall exit successfully.
+
+### [g312] `model parse` reads two senses of one term with one value order said to be the same
+- [r312] While a sense of a term has a value order and another sense of the term has the value order and a requirement uses the term and `value-same`, when the person runs `model parse` on the requirement, `model` shall exit successfully.
+
+### [g313] `model parse` refuses a comparison of two senses of one term with different value orders
+- [r313] While a sense of a term has a value order and another sense of the term has a different value order and a requirement uses the term and `value-compare`, if the person runs `model parse` on the requirement, then `model` shall refuse the command and name the term.
+
+### [g309] `model parse` refuses two senses of one term with different value orders said to be the same
+- [r309] While a sense of a term has a value order and another sense of the term has a different value order and a requirement uses the term and `value-same`, if the person runs `model parse` on the requirement, then `model` shall refuse the command and name the term.
+
+### [g310] `model logic` finds the clash of two lines under a comparison of two senses of one term
+- [r310] While a sense of a term has a value order and another sense of the term has the value order and a requirement of a capability uses the term and `value-compare` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a

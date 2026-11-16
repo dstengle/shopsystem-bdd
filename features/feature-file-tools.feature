@@ -548,3 +548,41 @@ Feature: Feature file tools
     When the person runs `features generate` on the capability c1
     Then `features` writes the scenario s1
     And the scenario s1 has the order counter-example o2
+
+  @g123 @r123
+  Scenario: `features generate` writes the scenario of `order-by` on a term of two senses
+    Given a sense s1
+    And a term t1
+    And the term t1 has the sense s1
+    And a sense s2
+    And the term t1 has the sense s2
+    And a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And the requirement r1 uses the term t1
+    And the requirement r1 uses `order-by`
+    When the person runs `features generate` on the capability c1
+    Then `features` writes the scenario s3
+    And the requirement group r2 has the scenario s3
+    And the scenario s3 has the order counter-example o1
+
+  @g124 @r124
+  Scenario: `features generate` writes the scenario of `order-by-every` on a term of two senses
+    Given a sense s1
+    And a term t1
+    And the term t1 has the sense s1
+    And a sense s2
+    And the term t1 has the sense s2
+    And a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And the requirement r1 uses the term t1
+    And the requirement r1 uses `order-by-every`
+    When the person runs `features generate` on the capability c1
+    Then `features` writes the scenario s3
+    And the requirement group r2 has the scenario s3
+    And the scenario s3 has the order counter-example o1

@@ -965,7 +965,10 @@ A cycle of comparisons through three or more things in one gap of a dense order 
 be reported that could never fire, but none is hidden. In a scenario each thing is given a value that meets every
 comparison and value the line names ("the version of the `a` file is `1.0.0`", "the version of the file f1 is
 `0.0.0`"). The comparison words are after and before for every order; "more than", "at least" and the others between
-two values are not yet said.
+two values are not yet said. The two sides may be two senses of one attribute word, each of its own entry's kind ("the
+version of a worktree is after the version of a file", b287): read so when the two entries have one value order (the
+same `Order:` or the same `Type:`), over that order's cells in `model logic`, and refused naming the word when their
+orders differ, for `value-compare` and `value-same` alike.
 
 ```reading
 While the version of the `a` file is after the version of a file, when a session writes the file, `work` shall print the file.
@@ -1017,6 +1020,25 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x3
 ```reading
 When the person runs `work start`, `work` shall print every line, ordered by outcome, in ascending order.
 refused: the outcome of a line has no value order: its entry says neither Order: nor Type:, so no outcome comes before another, and nothing is ordered by it
+```
+
+An order has a reading only as a property of what a response prints (b285): one in a While or Where clause, in the
+trigger, or in an act the line forbids ("shall not print ..., ordered by T": "not in this order" is no operation the
+check or a scenario has) is refused, naming the order.
+
+```reading
+While a session has a worktree that holds a file, ordered by version, in descending order, when the person runs `work start`, `work` shall print the worktree.
+refused: "ordered by version, in descending order" is in a precondition: an order is a property of what a response prints, and has no reading there
+```
+
+```reading
+When the person runs `work start` on a worktree that holds a file, ordered by version, in descending order, `work` shall print the worktree.
+refused: "ordered by version, in descending order" is in the trigger: an order is a property of what a response prints, and has no reading there
+```
+
+```reading
+When the person runs `work start`, `work` shall not print every file, ordered by version, in ascending order.
+refused: "ordered by version, in ascending order" is in an act the line forbids: an order is a property of what a response prints, and "not in this order" has no reading
 ```
 
 ### "is one of `a` or `b`", "is not `a` or `b`", "has no T": value sets and a value's absence

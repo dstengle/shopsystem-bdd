@@ -19,18 +19,29 @@ OPS = {"After": "after", "Before": "before"}
 
 
 def cond(st, t, rest, a):
-    """(referents, conditions) of `T_CmpT` or `T_SameAs`, or None when `rest` is neither."""
-    if rest == "CmpT":
+    """(referents, conditions) of `T_CmpT` or `T_SameAs`, or of `T1_CmpT_T2` or `T1_SameAs_T2` over two entries of
+    one word (b287), or None when `rest` is none of them."""
+    head, _, other = rest.partition("_")
+    if head == "CmpT":
         op, y = OPS[nps.fun(a[2])], a[3]
         if spec_lf_order.order(t) is None:
             st.notes.append("the %s of a %s has no value order: its entry says neither Order: nor Type:, so one %s "
                             "is never after or before another" % (t.term, t.kinds[0], t.term))
-    elif rest == "SameAs":
+    elif head == "SameAs":
         op, y = "same", a[2]
     else:
         return None
+    t2 = dict(st.names.attrs).get(other) if other else None
+    if t2 is not None and spec_lf_order.same(t) != spec_lf_order.same(t2):
+        st.notes.append("the senses of %s have different value orders: the %s of a %s is %s, the %s of a %s %s, so "
+                        "one is never compared with the other" % (t.term, t.term, t.kinds[0], said_order(t), t2.term,
+                                                                  t2.kinds[0], said_order(t2)))
     x, y = nps.owner(st, a[1]), nps.owner(st, y)
     return st.apply([x, y], lambda r: Atom(PRED, (r[0], t.term, op, r[1])), 2 if a[0] == "PNeg" else None)
+
+
+def said_order(t):
+    return spec_lf_order.described(t) if spec_lf_order.order(t) else "no value order"
 
 
 def show(a, term):

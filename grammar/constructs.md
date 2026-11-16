@@ -1228,16 +1228,16 @@ shall [x2: agent the person (constant), x3: command `work start` (parameter), x4
 
 ## value-compare
 
-one thing's value compared with another's, of one attribute with a value order (b275)
+one thing's value compared with another's, of one attribute word with one value order, the two of one entry or of two (b275, b287)
 
 - Form: the <attribute> of <np> is after|before the <attribute> of <np>
-- Functions: `t_[a-z0-9_]+_\d+_CmpT`
-- Cited by: design-model-check#r298, design-model-check#r300, design-model-check#r301
+- Functions: `t_[a-z0-9_]+_\d+_CmpT(?:_t_[a-z0-9_]+_\d+)?`
+- Cited by: design-model-check#r298, design-model-check#r300, design-model-check#r301, design-model-check#r311, design-model-check#r313, design-model-check#r310
 - Example and its reading:
 
 ```construct
-While the version of the `a` file is after the version of a file, when a session writes the file, `work` shall print the file.
-shall [x1: file `a` (parameter), x4: tool `work` (constant)]
+While the version of the `a` worktree is after the version of a file, when a session writes the file, `work` shall print the file.
+shall [x1: worktree `a` (parameter), x4: tool `work` (constant)]
   while [x2: file]
     cmp(version(x1), after, version(x2))
   when [x3: session]
@@ -1248,19 +1248,18 @@ shall [x1: file `a` (parameter), x4: tool `work` (constant)]
 
 ## value-same
 
-one thing's value the same as another's, of any attribute (b275)
+one thing's value the same as another's, of any attribute word, the two of one entry or of two with one value order (b275, b287)
 
 - Form: the <attribute> of <np> is the same as the <attribute> of <np>
-- Functions: `t_[a-z0-9_]+_\d+_SameAs`
-- Cited by: design-model-check#r299
+- Functions: `t_[a-z0-9_]+_\d+_SameAs(?:_t_[a-z0-9_]+_\d+)?`
+- Cited by: design-model-check#r299, design-model-check#r312, design-model-check#r309
 - Example and its reading:
 
 ```construct
-While the status of a stage is the same as the status of another stage, when the person runs `work start`, `work` shall print the stage.
+While the version of a worktree is the same as the version of a file, when the person runs `work start`, `work` shall print the file.
 shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
-  while [x1: stage, x2: stage]
-    distinct(x2, x1)
-    cmp(status(x1), same, status(x2))
+  while [x1: worktree, x2: file]
+    cmp(version(x1), same, version(x2))
   when
     run(e1, subject: x3, object: x4)
   response
@@ -1273,7 +1272,7 @@ a collection's members ordered by their attribute (b275)
 
 - Form: <np>, ordered by <attribute>, in ascending|descending order
 - Functions: `r\d+_\w+_By_t_[a-z0-9_]+_\d+|Ascending|Descending`
-- Cited by: design-model-check#r303
+- Cited by: design-model-check#r303, feature-file-tools#r123
 - Example and its reading:
 
 ```construct
@@ -1293,7 +1292,7 @@ a printed every ordered by its attribute (b275)
 
 - Form: every <noun>, ordered by <attribute>, in ascending|descending order
 - Functions: `t_[a-z0-9_]+_\d+_k_\w+_Every`
-- Cited by: design-model-check#r304
+- Cited by: design-model-check#r304, feature-file-tools#r124
 - Example and its reading:
 
 ```construct

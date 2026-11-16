@@ -7,6 +7,8 @@ a line is read:
 - the form (`np`): one atom `ordered(x, T, ascending|descending)` beside the clause's atom (spec_lf_core's NP
   `order`), x the collection or the every's K; an order on an attribute with no value order (spec_value_kinds) a note
   naming the attribute, which spec_lf_read gives as the line's refusal; `show` its line in `model parse --form`;
+  an order only where it has a reading (b285, decision 0093: a property of what a response prints): one in a While
+  or Where clause, a trigger, or an act the line forbids (inside a `not` box) refused naming it (`misplaced`);
 - the check (`facts`): `ordered(R, I, T, Dir)` of the response's act I, a fact: two lines that require one
   collection, or one printing, in opposite orders on one trigger are an L1 (grammar/check.lp), and nothing else is
   proved of it;
@@ -50,6 +52,36 @@ def show(a, term):
     return "ordered(%s, %s, %s)" % (term(x), t, d)
 
 
+PLACES = {"while": "a precondition", "where": "a precondition", "when": "the trigger", "if": "the trigger"}
+
+
+def _within(conds, negated):
+    """(the order atom, whether a `not` box holds it) of each order in `conds`."""
+    for c in conds:
+        if isinstance(c, Box):
+            inner = negated or c.op == "not"
+            yield from _within(c.body, inner)
+            if c.scope is not None:
+                yield from _within([c.scope], inner)
+        elif isinstance(c, Atom) and c.pred == PRED:
+            yield c, negated
+
+
+def misplaced(form):
+    """The refusal of an order with no reading (b285): in a precondition, in the trigger or in a forbidden act; or
+    None. An order is a property of what a response prints (decision 0093)."""
+    for part in form.parts:
+        for atom, negated in _within([part], False):
+            said = '"ordered by %s, in %s order"' % (atom.args[1], atom.args[2])
+            if part.op in PLACES:
+                return ("%s is in %s: an order is a property of what a response prints, and has no reading there"
+                        % (said, PLACES[part.op]))
+            if negated:
+                return ("%s is in an act the line forbids: an order is a property of what a response prints, and "
+                        "\"not in this order\" has no reading" % said)
+    return None
+
+
 # --- the check -----------------------------------------------------------------------------------------------------
 def facts(walk, atom, act):
     """`ordered(R, I, T, Dir)` of the act `act` (its number) whose object the order is on."""
@@ -58,16 +90,23 @@ def facts(walk, atom, act):
 
 
 # --- the steps -----------------------------------------------------------------------------------------------------
-def member(vocab, atom):
-    """(the member kind, the attribute entry and its kinds) of an order: the K1 of a row `K1 | in | K2` of the
-    collection's kind whose K1 has the attribute, or the every's own kind."""
+def member(vocab, atom, held=False):
+    """(the member kind's row, the attribute entry and its kinds) of an order: the entry of its word that is the
+    every's own kind's, up its kind tree, else (and always of a collection's members, `held`) the K1's of a row `K1 | in | K2` of the collection's kind, up K1's kind
+    tree (b288: of a word of two senses, the member kind's sense, not the first entry of the word); an order no entry
+    of its word is a member's of refused naming the term."""
     x, term, _ = atom.args
-    n, t, ks = next((n, t, ks) for n, (t, ks) in enumerate(vocab.attributes, 1) if t.term == term)
-    if any(k in ks for k in vocab.ancestors(x.kind)):
-        return None, (n, t, ks)
-    row = next(r for r in vocab.rows if r[1] == "in" and r[2] in vocab.ancestors(x.kind)
-               and any(k in ks for k in vocab.ancestors(r[0])))
-    return row, (n, t, ks)
+    entries = [(n, t, ks) for n, (t, ks) in enumerate(vocab.attributes, 1) if t.term == term]
+    up = vocab.ancestors(x.kind)
+    own = None if held else next((e for e in entries if any(k in e[2] for k in up)), None)
+    if own:
+        return None, own
+    for row in (r for r in vocab.rows if r[1] == "in" and r[2] in up):
+        found = next((e for e in entries if any(k in e[2] for k in vocab.ancestors(row[0]))), None)
+        if found:
+            return row, found
+    raise boxes().TraceError("no member of a %s has a %s: no entry of %s is an attribute of its kind or of a kind "
+                             "it holds" % (x.kind, term, term))
 
 
 def values(t):
@@ -140,7 +179,7 @@ def then(r, atom, body):
     """[(act, Then)] of an order on a collection (b275): three members it holds brought in, each with a value of T
     in neither the order nor its reverse, and the Then of the act on the collection that states the order."""
     x, term, d = atom.args
-    row, (n, t, _) = member(r.vocab, atom)
+    row, (n, t, _) = member(r.vocab, atom, held=True)     # the members' sense, though the collection has one too
     r.bring_in(x)
     for k, v in enumerate(values(t), 1):
         y = Ref("%s.m%d" % (x.name, k), row[0], "response")

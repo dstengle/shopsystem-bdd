@@ -9,7 +9,7 @@ imports: [cli, time]
 
 The words `model constructs` parses each example of the construct catalogue (`grammar/constructs.md`) in: the
 smallest codified-2 context (tests/scripts/fixtures/codified-2/) with the time pack imported too and a stage's
-deadline, a moment of the stage, and a stage's score, a number (b275), so that its grammar holds every family of functions grammar 4 generates. It is
+deadline, a moment of the stage, and a stage's score, a number (b275), and a stage's version beside a file's, one word of two senses (b288), so that its grammar holds every family of functions grammar 4 generates. It is
 part of the acceptance corpus, not a spec of this repository.
 
 ## Relations
@@ -40,7 +40,9 @@ part of the acceptance corpus, not a spec of this repository.
 - **end** (verb, action): an agent stops a stage. Frame: agent ends stage.
 - **follow** (verb, state): an agent keeps track of a stage. Frame: agent follows stage.
 - **give** (verb, action): an agent hands a file to an agent. Frame: agent gives file to agent.
+- **version** (attribute of stage): the release a stage is planned for. Values (noun): `1.0`, `2.0`, `3.0`. Order: by number.
 - **version** (attribute of file): the release a file was written for. Values (noun): `1.0.0`, `2.0.0`, `2.5.0`. Order: by number.
+- **version** (attribute of worktree): the release a worktree is checked out at. Values (noun): `1.0.0`, `3.0.0`. Order: by number.
 - **priority** (attribute of stage): how soon a stage is to be ended. Values (adjective): `low`, `high`, `urgent`. Order: as listed.
 - **push** (noun): the commits a command sends to a remote.
 - **commit** (noun): a change a command records in a repository. This: the commit the run makes.

@@ -617,3 +617,47 @@ shall [x5: agent the person (constant), x6: command `features generate` (paramet
     of(x9, x8)
     write(e2, subject: x7, object: x8)
 ```
+
+## r123
+From: b288 r123. Not in the audit (b288 is no reword item).
+
+```reading
+While a term has two senses and a requirement of a requirement group of a capability uses the term and `order-by`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has an order counter-example.
+shall [x7: thing `order-by` (parameter), x8: agent the person (constant), x9: command `features generate` (parameter), x10: tool `features` (constant)]
+  while [x1: term, x2: sense, x3: sense, x4: requirement, x5: requirement group, x6: capability]
+    of(x2, x1)
+    distinct(x3, x2)
+    of(x3, x1)
+    of(x5, x6)
+    of(x4, x5)
+    use#2(subject: x4, object: x1)
+    use#2(subject: x4, object: x7)
+  when
+    run(e1, subject: x8, object: x9, on: x6)
+  response [x11: scenario, x12: order counter-example]
+    of(x11, x5)
+    of(x12, x11)
+    write(e2, subject: x10, object: x11)
+```
+
+## r124
+From: b288 r124. Not in the audit (b288 is no reword item).
+
+```reading
+While a term has two senses and a requirement of a requirement group of a capability uses the term and `order-by-every`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has an order counter-example.
+shall [x7: thing `order-by-every` (parameter), x8: agent the person (constant), x9: command `features generate` (parameter), x10: tool `features` (constant)]
+  while [x1: term, x2: sense, x3: sense, x4: requirement, x5: requirement group, x6: capability]
+    of(x2, x1)
+    distinct(x3, x2)
+    of(x3, x1)
+    of(x5, x6)
+    of(x4, x5)
+    use#2(subject: x4, object: x1)
+    use#2(subject: x4, object: x7)
+  when
+    run(e1, subject: x8, object: x9, on: x6)
+  response [x11: scenario, x12: order counter-example]
+    of(x11, x5)
+    of(x12, x11)
+    write(e2, subject: x10, object: x11)
+```

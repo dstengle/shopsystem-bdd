@@ -330,6 +330,12 @@ the capability `shelf` holds:
 ### [g122] `features generate` writes an order's Then and Givens that can fail it
 - [r122] While a requirement of a requirement group of a capability uses an order, when the person runs `features generate` on the capability, `features` shall write a scenario that has an order counter-example.
 
+### [g123] `features generate` writes the scenario of `order-by` on a term of two senses
+- [r123] While a term has two senses and a requirement of a requirement group of a capability uses the term and `order-by`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has an order counter-example.
+
+### [g124] `features generate` writes the scenario of `order-by-every` on a term of two senses
+- [r124] While a term has two senses and a requirement of a requirement group of a capability uses the term and `order-by-every`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has an order counter-example.
+
 ## Implementation, may change
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three
   backticks. A scenario's block is its tag lines, its `Scenario:` line and everything up to the next scenario's tag

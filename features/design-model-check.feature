@@ -1115,3 +1115,130 @@ Feature: Design model check
     When the person runs `model parse` with the `--form` option on the requirement r1
     Then `model` prints the order o1
     And `model` exits successfully
+
+  @g306 @r306
+  Scenario: `model parse` refuses an order in a precondition
+    Given a precondition p1
+    And a requirement r1
+    And the requirement r1 has the precondition p1
+    And an order o1
+    And the precondition p1 uses the order o1
+    When the person runs `model parse` on the requirement r1
+    Then `model` refuses `model parse`
+    And `model` names the order o1
+
+  @g307 @r307
+  Scenario: `model parse` refuses an order in a trigger
+    Given a trigger t1
+    And a requirement r1
+    And the requirement r1 has the trigger t1
+    And an order o1
+    And the trigger t1 uses the order o1
+    When the person runs `model parse` on the requirement r1
+    Then `model` refuses `model parse`
+    And `model` names the order o1
+
+  @g308 @r308
+  Scenario: `model parse` refuses an order in a forbidden act
+    Given an order o1
+    And an act a1
+    And the act a1 holds the order o1
+    And a requirement r1
+    And the requirement r1 forbids the act a1
+    When the person runs `model parse` on the requirement r1
+    Then `model` refuses `model parse`
+    And `model` names the order o1
+
+  @g309 @r309
+  Scenario: `model parse` refuses two senses of one term with different value orders said to be the same
+    Given a sense s1
+    And a term t1
+    And the term t1 has the sense s1
+    And a value order v1
+    And the sense s1 has the value order v1
+    And a sense s2
+    And the term t1 has the sense s2
+    And a value order v2
+    And the sense s2 has the value order v2
+    And a requirement r1
+    And the requirement r1 uses the term t1
+    And the requirement r1 uses `value-same`
+    When the person runs `model parse` on the requirement r1
+    Then `model` refuses `model parse`
+    And `model` names the term t1
+
+  @g310 @r310
+  Scenario: `model logic` finds the clash of two lines under a comparison of two senses of one term
+    Given a sense s1
+    And a term t1
+    And the term t1 has the sense s1
+    And a value order v1
+    And the sense s1 has the value order v1
+    And a sense s2
+    And the term t1 has the sense s2
+    And the sense s2 has the value order v1
+    And a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And the requirement r1 uses the term t1
+    And the requirement r1 uses `value-compare`
+    And an act a1
+    And the requirement r1 obliges the act a1
+    And a requirement r2
+    And the capability c1 has the requirement r2
+    And a trigger t2
+    And the requirement r1 has the trigger t2
+    And the requirement r2 has the trigger t2
+    And the requirement r2 forbids the act a1
+    When the person runs `model logic`
+    Then `model` prints `L1`
+
+  @g311 @r311
+  Scenario: `model parse` reads a comparison of two senses of one term with one value order
+    Given a sense s1
+    And a term t1
+    And the term t1 has the sense s1
+    And a value order v1
+    And the sense s1 has the value order v1
+    And a sense s2
+    And the term t1 has the sense s2
+    And the sense s2 has the value order v1
+    And a requirement r1
+    And the requirement r1 uses the term t1
+    And the requirement r1 uses `value-compare`
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g312 @r312
+  Scenario: `model parse` reads two senses of one term with one value order said to be the same
+    Given a sense s1
+    And a term t1
+    And the term t1 has the sense s1
+    And a value order v1
+    And the sense s1 has the value order v1
+    And a sense s2
+    And the term t1 has the sense s2
+    And the sense s2 has the value order v1
+    And a requirement r1
+    And the requirement r1 uses the term t1
+    And the requirement r1 uses `value-same`
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g313 @r313
+  Scenario: `model parse` refuses a comparison of two senses of one term with different value orders
+    Given a sense s1
+    And a term t1
+    And the term t1 has the sense s1
+    And a value order v1
+    And the sense s1 has the value order v1
+    And a sense s2
+    And the term t1 has the sense s2
+    And a value order v2
+    And the sense s2 has the value order v2
+    And a requirement r1
+    And the requirement r1 uses the term t1
+    And the requirement r1 uses `value-compare`
+    When the person runs `model parse` on the requirement r1
+    Then `model` refuses `model parse`
+    And `model` names the term t1
