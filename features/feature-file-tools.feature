@@ -586,3 +586,60 @@ Feature: Feature file tools
     Then `features` writes the scenario s3
     And the requirement group r2 has the scenario s3
     And the scenario s3 has the order counter-example o1
+
+  @g125 @r125
+  Scenario: `features generate` writes the member outside a relative clause's restriction
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And the requirement r1 uses `holds-exactly`
+    And the requirement r1 uses `rc-object`
+    When the person runs `features generate` on the capability c1
+    Then the step s1 uses `not-condition`
+    And `features` writes the scenario s2
+    And the scenario s2 has the step s1
+
+  @g126 @r126
+  Scenario: `features generate` writes `nothing` on a response's object
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And the requirement r1 uses `nothing`
+    And the requirement r1 uses `rc-subject`
+    When the person runs `features generate` on the capability c1
+    Then the step s1 uses `nothing`
+    And `features` writes the scenario s2
+    And the scenario s2 has the step s1
+
+  @g127 @r127
+  Scenario: `features generate` writes the scenario of `order-by` on the object of a verb whose frames name its kind
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And the requirement r1 uses `order-by`
+    And no frame takes `thing`
+    And a verb v1
+    And the requirement r1 uses the verb v1
+    When the person runs `features generate` on the capability c1
+    Then `features` writes the scenario s1
+    And the requirement group r2 has the scenario s1
+    And the scenario s1 has the order counter-example o1
+
+  @g128 @r128
+  Scenario: `features generate` writes the Then of a response's object that holds no K
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And the requirement r1 uses `no-noun`
+    And the requirement r1 uses `holds-relation`
+    And a precondition p1
+    And the requirement r1 has the precondition p1
+    And the precondition p1 does not use `no-noun`
+    When the person runs `features generate` on the capability c1
+    Then `features` writes the scenario s1
+    And the requirement group r2 has the scenario s1
+    And the scenario s1 has the counter-example c2

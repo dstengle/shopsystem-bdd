@@ -1242,3 +1242,39 @@ Feature: Design model check
     When the person runs `model parse` on the requirement r1
     Then `model` refuses `model parse`
     And `model` names the term t1
+
+  @g314 @r314
+  Scenario: `model logic` reads `holds-exactly` whose restriction is a relative clause
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And the requirement r1 uses `holds-exactly`
+    And the requirement r1 uses `rc-object`
+    And an act a1
+    And the requirement r1 obliges the act a1
+    And a requirement r2
+    And the capability c1 has the requirement r2
+    And a trigger t1
+    And the requirement r1 has the trigger t1
+    And the requirement r2 has the trigger t1
+    And the requirement r2 forbids the act a1
+    When the person runs `model logic`
+    Then `model` prints `L1`
+
+  @g315 @r315
+  Scenario: `model logic` reads `nothing` on a response's object
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And the requirement r1 uses `nothing`
+    And the requirement r1 uses `rc-subject`
+    And an act a1
+    And the requirement r1 obliges the act a1
+    And a requirement r2
+    And the capability c1 has the requirement r2
+    And a trigger t1
+    And the requirement r1 has the trigger t1
+    And the requirement r2 has the trigger t1
+    And the requirement r2 forbids the act a1
+    When the person runs `model logic`
+    Then `model` prints `L1`

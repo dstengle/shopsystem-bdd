@@ -6,7 +6,7 @@ group: service
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: [g1, r1, g2, r2, g3, r3, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18, g19, r19, g33, r33]
-unbuilt: []
+unbuilt: [r41]
 ---
 
 # Readiness
@@ -105,6 +105,9 @@ the item is settled. `work ready` checks the bar and asks nobody.
 
 ### [g40] `work line --universal --retires` refuses a universal condition id that no universal condition has
 - [r40] If the person runs `work line` with the `--universal` option and the `--retires` option set to a universal condition id that no universal condition has, then `work` shall refuse the command and name the universal condition id.
+
+### [g41] `work ready` refuses an item a requirement of which has no translation
+- [r41] While an item is `shaped` and a requirement in the item has no translation, if the person runs `work ready` on the item, then `work` shall refuse the command and name the requirement.
 
 ## Implementation, may change
 - An item's requirement lines stay on the item until its batch merges: in the item file's `## Requirements`, one

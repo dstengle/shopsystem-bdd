@@ -165,3 +165,14 @@ Feature: Readiness
     When the person runs `work line` with the `--universal` option and the `--retires` option set to the universal condition id u1
     Then `work` refuses `work line`
     And `work` names the universal condition id u1
+
+  @g41 @r41
+  Scenario: `work ready` refuses an item a requirement of which has no translation
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    And a requirement r1
+    And the item i1 holds the requirement r1
+    And the requirement r1 has no translation
+    When the person runs `work ready` on the item i1
+    Then `work` refuses `work ready`
+    And `work` names the requirement r1
