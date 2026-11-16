@@ -59,8 +59,8 @@ def test_a_comparison_across_two_senses_is_given_a_value_of_each_sense(tmp_path)
 
 
 def test_two_senses_ordered_as_listed_with_different_lists_are_not_compared(tmp_path):
-    codified2_world.context(tmp_path, "ex.com/prod/ctx", [LINE % ("the priority of a stage is after the priority of "
-                                                                  "a file", "print")], "thing")
+    line = LINE % ("the priority of a stage is after the priority of a file", "print")
+    codified2_world.context(tmp_path, "ex.com/prod/ctx", [line], "thing")
     index = tmp_path / "spec" / "index.md"
     index.write_text(index.read_text() + "- **priority** (attribute of file): how soon a file is wanted. Values "
                      "(adjective): `a`, `b`. Order: as listed.\n")
