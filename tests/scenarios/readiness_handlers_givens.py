@@ -69,10 +69,15 @@ def _ill_term(step, item, of_the_bar):
 @local("GivenDoesNot")
 def given_does_not(step):
     """`the item i1 does not pass this readiness bar`: its one line does not parse; `the item i1 does not meet the
-    bar check b1`: the item fails that check (`_bar_check`)."""
+    bar check b1`: the item fails that check (`_bar_check`); `` `universal` does not exist``: the fixture's spec,
+    which has no spec/universal.md (b203)."""
     if R.mine(step) and step.term == "has" and step.nps[0].startswith("the bar check "):
         assert step.context.get("ill"), "no bar check the item does not meet before: %s" % step.text
         _ill_term(step, step.context["ill"], of_the_bar=False)
+        return None
+    if R.mine(step) and step.term == "exist" and step.subject == "`universal`":     # b203: none, as in the fixture
+        R.codify(step)
+        (step.repo / "spec" / "universal.md").unlink(missing_ok=True)
         return None
     if not R.mine(step) or step.term not in ("pass", "meet"):
         return False
@@ -89,11 +94,17 @@ def given_does(step):
     condition id) makes the id one that `work line --retires` is refused, any other has (a bar check of the bar, a
     scenario of the item, a step of the scenario) nothing; holds: a term the item holds one that violates `v_t12`; violate: the
     rule the term violates, named by its code; has no translation: the requirement the item's one line, which
-    `model logic` reads no translation of (r41)."""
+    `model logic` reads no translation of (r41), or the universal condition the item's one, beside a passing line
+    (b203); holds a universal condition: the item's `U1`, one `model logic` reads, beside a passing line."""
     if not R.mine(step) or step.term not in ("pass", "has", "holds", "violate"):
         return False
     if step.term == "pass":
         R.give_lines(step, step.names[0], R.PASSING)
+    elif step.term == "holds" and step.nps[0].startswith("the universal condition "):       # b203
+        R.give_universal(step, step.names[0], R.TRANSLATED_U)
+        says(step, step.names[1], "universal#%s" % R.ITEM_U)
+    elif step.term == "has" and step.subject.startswith("the universal condition ") and step.nps == ["no translation"]:
+        R.give_universal(step, step.context.get("item", "i1"), R.UNREAD)
     elif step.term == "has" and step.subject.startswith("the requirement ") and step.nps == ["no translation"]:
         R.give_lines(step, step.context.get("item", "i1"), R.UNREAD, capability=R.UNREAD_CAPABILITY)     # r41
         says(step, step.names[0], R.UNREAD_ID)

@@ -229,7 +229,7 @@ def _universal_file(into):
     path = Path(into) / UNIVERSAL_REL
     if not path.is_file():
         path.write_text("---\nid: capability/%s/universal\ntitle: Universal conditions\ngroup: guarantees\nlanguage: "
-                        "codified-1\nretired: []\n---\n\n# Universal conditions\n\n## Behaviour\n"
+                        "codified-2\nretired: []\n---\n\n# Universal conditions\n\n## Behaviour\n"
                         % shop_files.context_path(into))
     return path
 
