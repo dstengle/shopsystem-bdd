@@ -51,7 +51,35 @@ FORBIDDEN = ("When the person runs `work start`, `work` shall not print a worktr
 NAMED = {"o1": "ordered by version, in descending order"}
 OUTCOMES = "When the person runs `work start`, `work` shall print every line, ordered by outcome, in ascending order."
 
+# two senses of one attribute word (b287): the version of a worktree beside the fixture's version of a file, of the
+# file's value order or of another (the scenario's second value order)
+SENSE = ("- **version** (attribute of worktree): the release a worktree is checked out at. Values (noun): `1.0.0`, "
+         "`3.0.0`. Order: %s.\n")
+CROSS = ("While the version of a worktree is after the version of a file, when the person runs `work start`, `work` "
+         "shall print the file.")
+CROSS_SAME = ("While the version of a worktree is the same as the version of a file, when the person runs `work start`, "
+              "`work` shall print the file.")
+CROSS_AFTER = ("While the version of the `a` worktree is after the version of a file, when a session writes the file, "
+               "`work` shall print the file.")
+
+
+def senses(*texts):
+    """A builder: the world of `texts` with the worktree's sense of version, as listed when the scenario gave a
+    second value order, else by number as the file's."""
+    def build(step):
+        line(*texts)(step)
+        orders = step.context.get("kinds", {}).get("value order", [])
+        index = step.repo / "spec" / "index.md"
+        index.write_text(index.read_text() + SENSE % ("as listed" if len(orders) > 1 else "by number"))
+    return build
+
+
+SENSED = ("term has sense", "sense has value order")
 ROWS = [
+    (SENSED + ("requirement use `value-compare`", "requirement oblige act", "requirement forbid act"),
+     senses(CROSS_AFTER, UNPRINTED), {}),
+    (SENSED + ("requirement use `value-compare`",), senses(CROSS), {"t1": "the senses of version"}),
+    (SENSED + ("requirement use `value-same`",), senses(CROSS_SAME), {"t1": "the senses of version"}),
     (("requirement has precondition", "precondition use order"), line(PRECONDITION), NAMED),
     (("requirement has trigger", "trigger use order"), line(TRIGGER), NAMED),
     (("act holds order", "requirement forbid act"), line(FORBIDDEN), NAMED),
