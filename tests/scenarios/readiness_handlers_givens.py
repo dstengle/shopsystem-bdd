@@ -69,7 +69,8 @@ def _ill_term(step, item, of_the_bar):
 @local("GivenDoesNot")
 def given_does_not(step):
     """`the item i1 does not pass this readiness bar`: its one line does not parse; `the item i1 does not meet the
-    bar check b1`: the item fails that check (`_bar_check`); `` `universal` does not exist``: the fixture's spec,
+    bar check b1`: the item fails that check (`_bar_check`); `the item i1 does not hold the requirement r5`: the
+    requirement a line of the world's other item (r50); `` `universal` does not exist``: the fixture's spec,
     which has no spec/universal.md (b203)."""
     if R.mine(step) and step.term == "has" and step.nps[0].startswith("the bar check "):
         assert step.context.get("ill"), "no bar check the item does not meet before: %s" % step.text
@@ -78,6 +79,10 @@ def given_does_not(step):
     if R.mine(step) and step.term == "exist" and step.subject == "`universal`":     # b203: none, as in the fixture
         R.codify(step)
         (step.repo / "spec" / "universal.md").unlink(missing_ok=True)
+        return None
+    if R.mine(step) and step.term in ("hold", "holds") and step.nps[0].startswith("the requirement "):      # r50
+        step.context.setdefault("owner", {})[step.names[-1]] = ("not", step.names[0])
+        R.give_faults(step)
         return None
     if not R.mine(step) or step.term not in ("pass", "meet"):
         return False
@@ -111,8 +116,9 @@ def given_does(step):
     condition id) makes the id one that `work line --retires` is refused, any other has (a bar check of the bar, a
     scenario of the item, a step of the scenario) nothing; holds: a term the item holds one that violates `v_t12`; violate: the
     rule the term violates, named by its code, or of a requirement group `v15n`, the item's one line sharing its
-    condition and trigger with g1's (b77), the group named by its id; has no translation: the requirement the item's one line, which
-    `model logic` reads no translation of (r41), or the universal condition the item's one, beside a passing line
+    condition and trigger with g1's (b77), the group named by its id; has no translation or no parse: the requirement a
+    line of the item that holds it which `model logic` reads no translation of (r41) or grammar 4 no parse of (r50)
+    (`R.give_faults`), or the universal condition the item's one, beside a passing line
     (b203); holds a universal condition: the item's `U1`, one `model logic` reads, beside a passing line."""
     if not R.mine(step) or step.term not in ("pass", "has", "holds", "violate"):
         return False
@@ -125,9 +131,10 @@ def given_does(step):
         says(step, step.names[1], "universal#%s" % R.ITEM_U)
     elif step.term == "has" and step.subject.startswith("the universal condition ") and step.nps == ["no translation"]:
         R.give_universal(step, step.context.get("item", "i1"), R.UNREAD)
-    elif step.term == "has" and step.subject.startswith("the requirement ") and step.nps == ["no translation"]:
-        R.give_lines(step, step.context.get("item", "i1"), R.UNREAD, capability=R.UNREAD_CAPABILITY)     # r41
-        says(step, step.names[0], R.UNREAD_ID)
+    elif step.term == "has" and step.subject.startswith("the requirement ") and step.nps in (["no translation"],
+                                                                                          ["no parse"]):
+        step.context.setdefault("fault", {})[step.names[0]] = step.nps[0].split()[1]       # r41, r50
+        R.give_faults(step)
     elif step.term == "has" and step.context.get("says", {}).get(step.names[-1]) == R.ILL_TERM:
         _ill_term(step, step.context["ill"], of_the_bar=True)     # the ill term's check one of this bar
     elif step.term == "has" and step.subject.startswith("no "):
