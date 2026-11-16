@@ -138,4 +138,49 @@ def unlined(item):
     return []
 
 
+def said(item):
+    """The chore's lines in a brief, in place of requirement ids: its files and its check; none for an item with no
+    chore."""
+    chore = read(item)
+    if chore is None:
+        return []
+    return ["Chore: build it until its check passes; `work batch done` runs it",
+            "Chore files (a commit of the task touches no other path): %s" % ", ".join(chore.files),
+            "Chore check: `%s`" % chore.check]
+
+
+def touched(root, since, branch, item_name):
+    """The paths each commit on `branch` after `since` that cites the item `item_name` touches, merges left out."""
+    import shop_files
+    out = shop_files.git(root, "log", "--no-merges", "--format=%x1e%(trailers:key=Item,valueonly,separator=%x2c)%x00",
+                         "--name-only", "%s..%s" % (since, branch))
+    paths = []
+    for entry in filter(str.strip, out.split("\x1e")):
+        cited, _, names = entry.partition("\x00")
+        if item_name in {c.strip() for c in cited.split(",")}:
+            paths += [p for p in names.splitlines() if p.strip()]
+    return list(dict.fromkeys(paths))
+
+
+def in_scope(root, since, branch, item, said_as):
+    """`work batch done`'s refusal of a chore item's commit that touches a path its chore does not name, naming it."""
+    chore = read(item)
+    if chore is None:
+        return
+    found = outside(chore, touched(root, since, branch, item.name))
+    if found:
+        raise Refused("%s: a commit on %s touches %s, which %s does not name" % (
+            said_as, branch, ", ".join(found), name(item, chore)))
+
+
+def passes(item, tree, said_as):
+    """`work batch done`'s refusal of a chore item while its check exits non-zero in `tree`, naming the chore."""
+    chore = read(item)
+    if chore is None:
+        return
+    code, tail = run(chore, tree)
+    if code != 0:
+        raise Refused("%s: %s fails in %s (exit %d):\n%s" % (said_as, name(item, chore), tree, code, tail))
+
+
 COMMANDS = {"chore": cmd_chore}

@@ -96,8 +96,10 @@ def _build(root, base, picked, returned):
     try:
         add_tree(root, tree, name, forked)
         changed = lay_lines(tree, picked)
-        git(tree, "add", "--", *changed)
-        git(tree, "commit", "-q", "-m", "%s: the requirement lines of %s\n%s" % (name, labels(picked), cites(picked)))
+        if changed:                 # a pick of chore items only lays no line (b316): the commit is still made
+            git(tree, "add", "--", *changed)
+        git(tree, "commit", "-q", "--allow-empty", "-m", "%s: the requirement lines of %s\n%s" % (
+            name, labels(picked), cites(picked)))
         context = shop_files.context_path(root)
         batch = Batch(name=name, ident="batch/%s/%s" % (context, name), status="building", base=base,
                       forked_from=forked, branch=name, pull_request=None,

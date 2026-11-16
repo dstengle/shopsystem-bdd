@@ -97,7 +97,9 @@ def status_of(step, name):
 
 
 def has_lines(step, name):
-    return "Requirements" in (step.context.get("item_fields", {}).get(name) or {}).get("sections", {})
+    """Whether the item has requirement lines, or a chore in their place (b316), which the world gives none."""
+    return bool({"Requirements", "Chore"} & set((step.context.get("item_fields", {}).get(name) or {}).get(
+        "sections", {})))
 
 
 def before_start(step):
@@ -167,8 +169,9 @@ def lay(step, tree, items):
     features written again, citing each item (plan 4 review, B1)."""
     found = [backlog_items.find(step.repo, B().ident(i)) for i in items]
     changed = batch_start.lay_lines(tree, found)
-    git(step, "add", "--", *changed, cwd=tree)
-    git(step, "commit", "-q", "-m", "%s: the requirement lines\n%s" % (tree.name, batch_start.cites(found)), cwd=tree)
+    if changed:
+        git(step, "add", "--", *changed, cwd=tree)
+    git(step, "commit", "-q", "--allow-empty", "-m", "%s: the requirement lines\n%s" % (tree.name, batch_start.cites(found)), cwd=tree)
     step.context.setdefault("laid", {}).update(
         {i: [g.id for b in backlog_lines.read(f, i) for g in b.groups] for i, f in zip(items, found)})
 
