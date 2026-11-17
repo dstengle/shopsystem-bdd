@@ -4,8 +4,10 @@ capability (design-decision/requirements-retired-never-edited). The new line tak
 under its `retires:` (backlog_section, b323).
 
 Laid over a spec (`lay`), the old line is taken out of the capability's `## Behaviour`, with its group when it was the
-group's last line, and its id (and the group's) put into the capability's `retired:`; taken out again (`unlay`), both
-are put back, the text read off the file as git last held it with the line in it."""
+group's last line, and its id (and the group's) put into the capability's `retired:`; a removed group's `Restates:` id
+that no group left restates is written under the capability's `## Dropped` as `r<n>@0.29: retired with <cap>#r<m> by
+b<k>.` (b333). Taken out again (`unlay`), all are put back, the text read off the file as git last held it with the
+line in it."""
 import re
 import subprocess
 from pathlib import Path
@@ -71,9 +73,10 @@ def _group_of(text, rid):
     return next((g for g in re.finditer(GROUP, text) if re.search(_line(rid), g.group(0))), None)
 
 
-def lay(text, capability, rids):
+def lay(text, capability, rids, item=None):
     """The capability file's text with each of `rids` out of its Behaviour and in its `retired:`, the group too when
-    the line was its last; refused when a line is not there as a live requirement."""
+    the line was its last, each `Restates:` id of the group no other group restates then dropped by `item` (b333);
+    refused when a line is not there as a live requirement."""
     gone = []
     for rid in rids:
         chunk = _group_of(text, rid)
@@ -86,7 +89,36 @@ def lay(text, capability, rids):
         else:
             text = text[:chunk.start()] + text[chunk.end():]
             gone += [chunk.group(1), rid]
+            text = _dropped(text, capability, rid, item, _restates(chunk.group(0)))
     return _listed(text, gone)
+
+
+def _restates(chunk):
+    """The `Restates:` tokens of a group's text, as written (`r<n>@0.29` or `<cap>#r<n>@0.29`)."""
+    return [token.strip() for line in re.findall(r"(?m)^Restates:(.*)$", chunk)
+            for token in line.strip().rstrip(".").split(",") if token.strip()]
+
+
+def _dropped(text, capability, rid, item, tokens):
+    """`text` with a `## Dropped` entry for each of `tokens` that no group of it restates any more (b333)."""
+    held = set(_restates("\n".join(g.group(0) for g in re.finditer(GROUP, text))))
+    entries = ["- %s: retired with %s#%s by %s." % (token, capability, rid, item or "an item")
+               for token in tokens if token not in held]
+    if not entries:
+        return text
+    section = re.search(r"(?ms)^## Dropped[ \t]*\n(.*?)(?=^## |\Z)", text)
+    if section is None:
+        return text.rstrip("\n") + "\n\n## Dropped\n" + "\n".join(entries) + "\n"
+    inside = section.group(1).rstrip("\n")
+    joined = (inside + "\n" if inside.strip() else "") + "\n".join(entries) + "\n"
+    return text[:section.start(1)] + joined + ("\n" if section.end(1) < len(text) else "") + text[section.end(1):]
+
+
+def _undropped(text, capability, rid):
+    """`text` less the `## Dropped` entries `lay` wrote for `rid`, and the section when nothing is left in it."""
+    text = re.sub(r"(?m)^- \S+@0\.29: retired with %s#%s by \S+\.\n?" % (re.escape(capability), re.escape(rid)),
+                  "", text)
+    return re.sub(r"(?ms)\n*^## Dropped[ \t]*\n\s*(?=^## |\Z)", "\n", text)
 
 
 def _held(path, rid):
@@ -122,6 +154,7 @@ def unlay(path, text, rids):
             text = text[:at] + (line if line.endswith("\n") else line + "\n") + text[at:]
             continue
         back.append(gid)
+        text = _undropped(text, Path(path).stem, rid)
         later = [g for g in re.finditer(GROUP, text) if int(g.group(1)[1:]) > int(gid[1:])]
         if later:
             at = later[0].start()
