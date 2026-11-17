@@ -246,18 +246,6 @@ Feature: Readiness
     Then `work` refuses `work line`
     And `work` names the requirement id r1
 
-  @g49 @r49
-  Scenario: `work ready` refuses an item a requirement group of which shares its condition and trigger with another group (`v15n`)
-    Given an item i1
-    And the status of the item i1 is `shaped`
-    And a requirement group r1
-    And the item i1 holds the requirement group r1
-    And the requirement group r1 violates `v15n`
-    When the person runs `work ready` on the item i1
-    Then `work` refuses `work ready`
-    And `work` names the requirement group r1
-    And `work` names `v15n`
-
   @g50 @r50
   Scenario: `work ready` names every requirement of an item that has no parse and every one that has no translation in one run
     Given an item i1
@@ -362,3 +350,16 @@ Feature: Readiness
     Then `work` removes the requirement r1
     And `work` does not remove the requirement id r3
     And `work` commits the item i1
+
+  @g58 @r58
+  Scenario: `work ready` refuses an item a requirement group of which violates a rule of `model check`
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    And a requirement group r1
+    And the item i1 holds the requirement group r1
+    And a rule r2
+    And the requirement group r1 violates the rule r2
+    When the person runs `work ready` on the item i1
+    Then `work` refuses `work ready`
+    And `work` names the requirement group r1
+    And `work` names the rule r2

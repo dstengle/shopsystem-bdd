@@ -44,10 +44,10 @@ def test_the_live_decisions_keep_their_tiers():
 
 def test_the_sort_holds_its_totals():
     found = model_decisions.decisions(ROOT)
-    assert len(found) == 95, len(found)
-    assert collections.Counter(d.status for d in found) == {"accepted": 39, "superseded": 54, "rejected": 2}
+    assert len(found) == 96, len(found)
+    assert collections.Counter(d.status for d in found) == {"accepted": 40, "superseded": 54, "rejected": 2}
     tiers = collections.Counter(d.tier for d in found if d.status == "accepted")
-    assert tiers == {"check": 9, "requirement": 13, "judgement": 17}, tiers
+    assert tiers == {"check": 9, "requirement": 13, "judgement": 18}, tiers
     # `work decision --supersedes` (b179) sets only the status of the decision it replaces, so a decision out of force
     # keeps its tier only when it was superseded so; `model decisions --check` runs none of them.
     kept = [d.rel for d in found if d.status != "accepted" and d.tier]
@@ -67,7 +67,8 @@ def test_the_judgement_decisions_reach_the_brief():
     assert "spec/decisions/0089-u5-is-a-judgement.md" in found, found
     assert "spec/decisions/0090-u7-is-a-judgement.md" in found, found
     assert "spec/decisions/0092-versions-are-0-y-z-until-1-0.md" in found, found
-    assert len(found) == 17, found
+    assert "spec/decisions/0097-while-alpha-a-change-breaks-consumers-cleanly-with-no-compatibility-path.md" in found, found
+    assert len(found) == 18, found
 
 
 def test_0060_is_superseded_by_measure_a_batch():

@@ -346,3 +346,80 @@ Feature: Batches
     And the item i1 holds the capability c1
     When the person runs `work batch start`
     Then `work` writes the capability c1
+
+  @g45 @r45
+  Scenario: A parked item reshaped after the park does not hold up another item's task
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And an item i2
+    And the batch b1 holds the item i2
+    And the status of the item i2 is `needs-input`
+    And a git branch g1
+    And the batch b1 has the git branch g1
+    And a requirement r1
+    And the git branch g1 does not hold the requirement r1
+    And the item i2 has the requirement r1
+    And a scenario s1
+    And the item i2 has the scenario s1
+    And a worktree w1
+    And the task t1 has the worktree w1
+    And the scenario s1 fails in the worktree w1
+    And a session s2
+    When the session s2 runs `work batch done` on the task t1
+    Then `work` sets the status of the task t1 to `done`
+
+  @g46 @r46
+  Scenario: `work batch start` writes the logical form of each laid requirement in the corpus
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 passes this readiness bar
+    And a requirement r1
+    And the item i1 has the requirement r1
+    And a logical form l1
+    And the requirement r1 has the logical form l1
+    When the person runs `work batch start`
+    Then this corpus holds the logical form l1
+    And `work` writes the logical form l1
+
+  @g47 @r47
+  Scenario: `work batch start` removes a retired requirement from the corpus
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 passes this readiness bar
+    And a requirement id r1
+    And the item i1 holds the requirement id r1
+    And a requirement r2
+    And this corpus holds the requirement r2
+    And the requirement r2 has the requirement id r1
+    When the person runs `work batch start`
+    Then `work` removes the requirement r2
+
+  @g48 @r48
+  Scenario: `work batch start` writes the catalogue entry of a rule a laid requirement uses
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 passes this readiness bar
+    And a requirement r1
+    And the item i1 has the requirement r1
+    And a rule r2
+    And the requirement r1 uses the rule r2
+    When the person runs `work batch start`
+    Then `work` writes the catalogue entry c1
+    And the rule r2 has the catalogue entry c1
+
+  @g49 @r49
+  Scenario: `work batch start` writes the construct catalogue when a laid requirement uses a construct
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 passes this readiness bar
+    And a requirement r1
+    And the item i1 has the requirement r1
+    And a construct c1
+    And the requirement r1 uses the construct c1
+    When the person runs `work batch start`
+    Then `work` writes this construct catalogue

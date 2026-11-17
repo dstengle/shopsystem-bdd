@@ -563,7 +563,7 @@ two groups of a capability share features, condition and trigger
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/readiness_bar.py`
-- Cited by: design-model-check#r179, readiness#r49
+- Cited by: design-model-check#r179
 - Fails on:
 
   ```prolog

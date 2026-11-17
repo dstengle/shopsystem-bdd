@@ -469,3 +469,100 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
   response
     write(e2, subject: x6, object: x3)
 ```
+
+## r45
+From: b324 r45. Not in the audit (b324 is no reword item).
+
+```reading
+While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the batch is `needs-input` and the item has a requirement that is not in the git branch of the batch and a scenario of the item fails in the worktree of the task, when a session runs `work batch done` on the task, `work` shall set the status of the task to `done`.
+shall [x10: command `work batch done` (parameter), x11: tool `work` (constant)]
+  while [x1: item, x2: batch, x3: task, x4: item, x5: requirement, x6: git branch, x7: scenario, x8: worktree]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    of(x3, x1)
+    status(x3) = `running`
+    in(x4, x2)
+    status(x4) = `needs-input`
+    of(x6, x2)
+    not
+      in(x5, x6)
+    of(x5, x4)
+    of(x7, x4)
+    of(x8, x3)
+    fail#2(subject: x7, in: x8)
+  when [x9: session]
+    run(e1, subject: x9, object: x10, on: x3)
+  response
+    initiates(e2, subject: x11, status(x3) = `done`)
+```
+
+## r46
+From: b333 r46. Not in the audit (b333 is no reword item).
+
+```reading
+While an item is `ready` and the item passes the readiness bar and a requirement of the item has a logical form, when the person runs `work batch start`, `work` shall write the logical form in the corpus.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x6: command `work batch start` (parameter), x7: tool `work` (constant), x8: corpus "the corpus of the bounded context the command runs in" (indexical)]
+  while [x1: item, x3: requirement, x4: logical form]
+    status(x1) = `ready`
+    pass#2(subject: x1, object: x2)
+    of(x3, x1)
+    of(x4, x3)
+  when
+    run(e1, subject: x5, object: x6)
+  response
+    in(x4, x8)
+    write(e2, subject: x7, object: x4)
+```
+
+## r47
+From: b333 r47. Not in the audit (b333 is no reword item).
+
+```reading
+While an item is `ready` and the item passes the readiness bar and a requirement id is in the item and a requirement in the corpus has the requirement id, when the person runs `work batch start`, `work` shall remove the requirement.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: corpus "the corpus of the bounded context the command runs in" (indexical), x6: agent the person (constant), x7: command `work batch start` (parameter), x8: tool `work` (constant)]
+  while [x1: item, x3: requirement id, x4: requirement]
+    status(x1) = `ready`
+    pass#2(subject: x1, object: x2)
+    in(x3, x1)
+    in(x4, x5)
+    of(x3, x4)
+  when
+    run(e1, subject: x6, object: x7)
+  response
+    remove(e2, subject: x8, object: x4)
+```
+
+## r48
+From: b333 r48. Not in the audit (b333 is no reword item).
+
+```reading
+While an item is `ready` and the item passes the readiness bar and a requirement of the item uses a rule, when the person runs `work batch start`, `work` shall write the catalogue entry of the rule.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x6: command `work batch start` (parameter), x7: tool `work` (constant)]
+  while [x1: item, x3: requirement, x4: rule]
+    status(x1) = `ready`
+    pass#2(subject: x1, object: x2)
+    of(x3, x1)
+    use#2(subject: x3, object: x4)
+  when
+    run(e1, subject: x5, object: x6)
+  response [x8: catalogue entry]
+    of(x8, x4)
+    write(e2, subject: x7, object: x8)
+```
+
+## r49
+From: b333 r49. Not in the audit (b333 is no reword item).
+
+```reading
+While an item is `ready` and the item passes the readiness bar and a requirement of the item uses a construct, when the person runs `work batch start`, `work` shall write the construct catalogue.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x6: command `work batch start` (parameter), x7: tool `work` (constant), x8: construct catalogue "the construct catalogue of the bounded context the command runs in" (indexical)]
+  while [x1: item, x3: requirement, x4: construct]
+    status(x1) = `ready`
+    pass#2(subject: x1, object: x2)
+    of(x3, x1)
+    use#2(subject: x3, object: x4)
+  when
+    run(e1, subject: x5, object: x6)
+  response
+    write(e2, subject: x7, object: x8)
+```
