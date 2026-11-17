@@ -11,8 +11,8 @@ import io
 from pathlib import Path
 
 import backlog_items
-import batch_catalogues
 import backlog_lines
+import batch_catalogues
 import batch_driver
 import batch_pick
 import features_generate
