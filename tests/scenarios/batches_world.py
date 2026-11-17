@@ -29,6 +29,7 @@ SECOND = "While an initiative is `started`, when the person runs `work abandon` 
 OWN_START, OWN_IN = "i92", "i93"
 URL = "https://github.com/ex/ctx/pull/%d"
 CAP = "spec/capabilities/work-queue.md"
+AFTER_BATCH = []        # what handler modules do once a batch is made, each called with (step, its name) (b324)
 
 
 def W():
@@ -231,6 +232,8 @@ def make_batch(step, name):
                         n, status, forked, n, " " + url if url else "", n, rows))
     make_review_folders(step, name)
     W().init(step.repo)
+    for after in AFTER_BATCH:
+        after(step, name)
 
 
 def make_review_folders(step, name):

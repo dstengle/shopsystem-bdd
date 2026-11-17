@@ -17,6 +17,7 @@ import backlog_items
 import batch_fix
 import batch_gh
 import batch_merge
+import batch_parked
 import batch_plan
 import batch_start
 from batch_git import (
@@ -94,9 +95,9 @@ def _merge(root, tree, batch, task, item):
 
 def _take_out_parked(root, tree, batch):
     """One commit on the batch branch taking every parked item's lines out of `spec/`, citing them; none when they are
-    out already."""
-    parked = [i for i in (backlog_items.find(root, t.item) for t in batch.tasks) if i.status != "in-batch"]
-    changed = batch_start.unlay_lines(tree, parked, COMMAND)
+    out already. Each is taken out as it was laid, not as it now reads (b324)."""
+    parked = batch_parked.parked(root, batch)
+    changed = batch_start.unlay_lines(tree, batch_parked.as_laid(root, batch, parked), COMMAND)
     if changed and git(tree, "status", "--porcelain", "--", *changed).stdout.strip():
         git(tree, "add", "--", *changed)
         git(tree, "commit", "-q", "-m", "%s: the requirement lines of %s taken out\n%s" % (

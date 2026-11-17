@@ -1,17 +1,35 @@
 """A parked item's lines out of a batch (capability batches r17, r18; b47): `work batch park` takes the item's lines
 out of `batch-<n>` at once, in one commit citing it (`take_out`), and `work batch done` runs a task's tests in a
 worktree of the task's head with every parked item's lines taken out (`tested_tree`), so that a parked item's scenario
-holds up no other task. Both take the lines out as `work batch review` does (`batch_start.unlay_lines`)."""
+holds up no other task. Both take the lines out as `work batch review` does (`batch_start.unlay_lines`), each item as it
+was laid (`as_laid`, b324): an item reshaped after its park is taken out by the lines the batch branch holds."""
 import contextlib
 
 import backlog_items
+import batch_plan
 import batch_start
-from batch_git import git, is_tree, remove_tree, tree_for, trees_dir
+from batch_git import GitFailed, git, is_tree, remove_tree, tree_for, trees_dir
 
 
 def parked(root, batch):
     """The items of the batch's tasks that are no longer `in-batch`."""
     return [i for i in (backlog_items.find(root, t.item) for t in batch.tasks) if i.status != "in-batch"]
+
+
+def as_laid(root, batch, items):
+    """Each of `items` as `work batch start` laid it (batches r45, b324): its file in the base's commit that added the
+    batch's plan, its ids renumbered; the item as it now reads when that commit or its file there is not found."""
+    added = git(root, "log", "--diff-filter=A", "--format=%H", "--", batch_plan.rel_of(batch.name)).stdout.split()
+    if not added:
+        return list(items)
+    laid = []
+    for item in items:
+        rel = backlog_items.rel_of(item.name)
+        try:
+            laid.append(backlog_items.parse(git(root, "show", "%s:%s" % (added[-1], rel)).stdout, rel))
+        except GitFailed:
+            laid.append(item)
+    return laid
 
 
 def take_out(root, batch, items, command):
@@ -21,7 +39,7 @@ def take_out(root, batch, items, command):
     made = tree_for(root, tree, batch.branch, command)
     try:
         before = git(tree, "rev-parse", "HEAD").stdout.strip()
-        changed = batch_start.unlay_lines(tree, items, command)
+        changed = batch_start.unlay_lines(tree, as_laid(root, batch, items), command)
         if changed and git(tree, "status", "--porcelain", "--", *changed).stdout.strip():
             git(tree, "add", "--", *changed)
             git(tree, "commit", "-q", "-m", "%s: the requirement lines of %s taken out\n%s" % (
@@ -53,7 +71,7 @@ def tested_tree(root, batch, task, tree, head, command):
     remove_tree(root, other)
     git(root, "worktree", "add", "-q", "--detach", str(other), head)
     try:
-        batch_start.unlay_lines(other, items, command)
+        batch_start.unlay_lines(other, as_laid(root, batch, items), command)
         yield other
     finally:
         remove_tree(root, other)
