@@ -3,7 +3,8 @@
 The section holds one `### <capability>` block for each capability the item's pieces go into, in the capability
 file's own syntax one heading level down: an optional `language: codified-2` line first, the marker the item switches
 the capability's file to (`work line --recodify`, backlog_recodify), an optional `retired: [r<n>, ...]` line next, the live requirements of the
-capability the item's lines replace (`work line --retires`, backlog_retires), then optional term bullets, then relation rows (`| from | word | to |
+capability the item's lines replace (`work line --retires`, backlog_retires), then an optional `retires: [r<n> r<m>, ...]`
+line, which of the item's lines retires which of those ids (b323; an id `--no-line` retired is in no pair), then optional term bullets, then relation rows (`| from | word | to |
 cardinality |`), then `#### [g<n>] <title>` groups of `- [r<n>] <statement>` bullets, one line each, a group's fenced
 `given` block after its lines. After the capability blocks, a `### universal` block of `- [U<n>] <statement>`
 conditions (after an optional `language: codified-2` line and an optional `retired: [U<n>, ...]` line, spec/universal.md
@@ -20,7 +21,8 @@ SECTION = "Requirements"
 UNIVERSAL, INDEX = "universal", "index"
 TAKES = ("idea", "shaped")
 Group = namedtuple("Group", "id title requirements given", defaults=((),))
-Block = namedtuple("Block", "capability terms groups relations retired language new", defaults=((), (), None, None))
+Block = namedtuple("Block", "capability terms groups relations retired language new retires",
+                   defaults=((), (), None, None, ()))
 NEW_FIELDS = ("narrator", "group", "purpose")      # a new capability's block (`work line --capability`, b317)
 
 CAP = re.compile(r"^### ([a-z0-9]+(?:-[a-z0-9]+)*)$")
@@ -28,6 +30,7 @@ GROUP = re.compile(r"^#### \[(g[1-9]\d*)\] (\S.*)$")
 REQ = re.compile(r"^- \[(r[1-9]\d*)\] (\S.*)$")
 U = re.compile(r"^- \[(U[1-9]\d*)\] (\S.*)$")
 RETIRED = re.compile(r"^retired: \[(r[1-9]\d*(?:, r[1-9]\d*)*)\]$")
+RETIRES = re.compile(r"^retires: \[(r[1-9]\d* r[1-9]\d*(?:, r[1-9]\d* r[1-9]\d*)*)\]$")
 U_RETIRED = re.compile(r"^retired: \[(U[1-9]\d*(?:, U[1-9]\d*)*)\]$")
 LANGUAGE = re.compile(r"^language: (codified-2)$")
 NEW = re.compile(r"^(%s): (\S.*)$" % "|".join(NEW_FIELDS))
@@ -124,6 +127,11 @@ class _Reader:
                 self.refuse("a `retired:` line that is not the first line of a `### <capability>` block, or after its "
                             "`language:` line: %s" % line)
             blocks[-1] = blocks[-1]._replace(retired=tuple(m.group(1).split(", ")))
+        elif (m := RETIRES.match(line)):
+            if not blocks or not blocks[-1].retired or blocks[-1].retires or blocks[-1].terms or blocks[-1].relations \
+                    or blocks[-1].groups:
+                self.refuse("a `retires:` line that is not right after a `retired:` line: %s" % line)
+            blocks[-1] = blocks[-1]._replace(retires=tuple(tuple(p.split(" ")) for p in m.group(1).split(", ")))
         elif (m := GROUP.match(line)):
             if not blocks:
                 self.refuse("the group %s comes before any `### <capability>` heading" % m.group(1))
@@ -152,8 +160,8 @@ class _Reader:
             else:
                 blocks[-1].terms.append(line.strip())
         else:
-            self.refuse("a line that is no heading, requirement, `language:` or `retired:` line, term bullet or relation "
-                        "row: %s" % line)
+            self.refuse("a line that is no heading, requirement, `language:`, `retired:` or `retires:` line, term "
+                        "bullet or relation row: %s" % line)
 
 
 def read(item, rel):
@@ -180,7 +188,8 @@ def render(blocks):
     for block in blocks:
         parts = ["### %s" % block.capability] + (["language: %s" % block.language] if block.language else [])
         parts += ["\n".join("%s: %s" % f for f in zip(NEW_FIELDS, block.new))] if block.new else []
-        parts += (["retired: [%s]" % ", ".join(block.retired)] if block.retired else [])
+        retires = "\nretires: [%s]" % ", ".join("%s %s" % p for p in block.retires) if block.retires else ""
+        parts += (["retired: [%s]%s" % (", ".join(block.retired), retires)] if block.retired else [])
         parts += ["\n".join(block.terms)] if block.terms else []
         parts += ["\n".join(block.relations)] if block.relations else []
         out.append("\n\n".join(parts + [laid_group(g, "####") for g in block.groups]))

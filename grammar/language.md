@@ -1005,6 +1005,24 @@ its reverse, and a Then that states the order ("`work` prints every file, ordere
 which a handler checks by a sorted comparison of the output, not strictly, so that members of one value pass in
 either order. A then-by key, a position ("the first K"), the top n and words such as "newest first" are not yet said.
 
+An order that stands before what follows it in its clause, a recipient or an oblique, closes with a comma, as an
+apposition does: "give every file, ordered by version, in ascending order, to the person" (b301). At the end of its
+clause it takes none. The form without the closing comma ("in ascending order to the person") is read too, to the
+same tree, and the comma form is the one written back; an order after the recipient ("to the person, ordered by
+...") is refused, since the order belongs to its noun phrase.
+
+```reading
+When the person runs `work start`, `work` shall give every file, ordered by version, in ascending order, to the person.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response
+    every [x4: file]
+      scope
+        give(e2, subject: x3, object: x4, to: x1)
+        ordered(x4, version, ascending)
+```
+
 ```reading
 When the person runs `work start`, `work` shall print every file, ordered by version, in ascending order.
 shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]

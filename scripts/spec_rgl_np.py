@@ -142,8 +142,9 @@ def ordered(w, T, t, ks):
 
 
 def by(t):
-    """", ordered by T, in <direction> order" after a noun phrase (b275)."""
-    return 'ParadigmsEng.mkAdv ("," ++ "ordered" ++ "by" ++ %s ++ "," ++ "in" ++ d.s ++ "order")' % (
+    """", ordered by T, in <direction> order" after a noun phrase (b275), its closing comma before what follows it in
+    its clause (BaseEng's `closing`, b301)."""
+    return 'ParadigmsEng.mkAdv ("," ++ "ordered" ++ "by" ++ %s ++ "," ++ "in" ++ d.s ++ "order" ++ closing)' % (
         spec_rgl.s(t.term))
 
 

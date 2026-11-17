@@ -96,6 +96,9 @@ def text(gram, tree):
     against the word before it."""
     out = " ".join(gram.languages[GRAMMAR + "Eng"].linearize(spec_gf.expr(tree)).split())
     out = re.sub(r" , (ordered by|in (?:a|de)scending order)", r", \1", out)     # an order's commas (b275)
+    # its closing comma before what follows it, none where the step ends (b301)
+    out = re.sub(r"(in (?:a|de)scending order) ,( |$)", lambda m: m.group(1) + ("," if m.group(2) else "") + m.group(2),
+                 out)
     return (out[:-2] + ":" if out.endswith(" :") else out).replace(spec_rgl.TOKEN, " ")
 
 

@@ -22,6 +22,12 @@ concrete BaseEng of Base = open SyntaxEng, ParadigmsEng, (E = ExtraEng), (R = Re
       "a" | "e" | "i" | "o" | "A" | "E" | "I" | "O" => "an" ;
       _ => "a"
       }} ;
+    -- an order's closing comma (b301): "," before what follows it in its clause ("every file, ordered by version, in
+    -- ascending order, to the person"), none before the clause's end ("." or ","); the comma-less form still read
+    closing : Str = pre {
+      "." | "," => [] ;
+      _ => "," | []
+      } ;
     -- a noun phrase spelled as written: an actor's name, a code; singular
     actor : Str -> NP = \s -> lin NP {s = \\_ => s ; a = R.agrP3 R.Sg} ;
     -- a thing named by a code before its noun: "the `--json` option"

@@ -1,6 +1,7 @@
 """`work line --retires` (capability readiness, b128): a new line that replaces a live requirement of a codified
 capability (design-decision/requirements-retired-never-edited). The new line takes the next id of its capability as
-`work line` gives it, and the old id is written under the item's capability block's `retired:` (backlog_section).
+`work line` gives it, and the old id is written under the item's capability block's `retired:`, the pair of the two
+under its `retires:` (backlog_section, b323).
 
 Laid over a spec (`lay`), the old line is taken out of the capability's `## Behaviour`, with its group when it was the
 group's last line, and its id (and the group's) put into the capability's `retired:`; taken out again (`unlay`), both
@@ -43,11 +44,13 @@ def check(root, item, ident, into=None):
     return capability, rid
 
 
-def with_retired(item, capability, rid):
-    """The item's block for `capability` given `rid` under its `retired:`; nothing is committed."""
+def with_retired(item, capability, rid, line=None):
+    """The item's block for `capability` given `rid` under its `retired:`, and the pair (`line`, `rid`) under its
+    `retires:` when the item's line `line` retires it (b323); nothing is committed."""
     blocks = read(item, "the item %s" % item.name)
     at = next(k for k, b in enumerate(blocks) if b.capability == capability)
-    blocks[at] = blocks[at]._replace(retired=tuple(blocks[at].retired) + (rid,))
+    pairs = tuple(blocks[at].retires) + (((line, rid),) if line else ())
+    blocks[at] = blocks[at]._replace(retired=tuple(blocks[at].retired) + (rid,), retires=pairs)
     item.sections[SECTION] = render(blocks)
 
 

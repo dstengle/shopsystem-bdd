@@ -114,7 +114,7 @@ def retire(root, name, ident, text, into=None, group=None, in_group=None):
         new = None
     else:
         new = add_line_to(root, item, capability, text, group, in_group)
-    backlog_retires.with_retired(item, capability, rid)
+    backlog_retires.with_retired(item, capability, rid, new and new.split("#")[1])
     commit(root, item, "work line: %s %s %s" % (label(item), "%s retires" % new if new else "retires", ident))
     return item, new
 
@@ -269,7 +269,8 @@ def renumber(root, item, taken):
             gid = _fresh(g.id, block.capability, used, seen, pairs)
             groups.append(Group(gid, g.title, [(_fresh(r, block.capability, used, seen, pairs), text)
                                                for r, text in g.requirements], g.given))
-        out.append(block._replace(groups=groups))
+        moved = {o.split("#")[1]: n.split("#")[1] for o, n in pairs if o.startswith(block.capability + "#r")}
+        out.append(block._replace(groups=groups, retires=tuple((moved.get(r, r), old) for r, old in block.retires)))
         taken.setdefault(block.capability, set()).update(
             {g.id for g in groups} | {r for g in groups for r, _ in g.requirements})
     if blocks.universal:

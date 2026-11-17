@@ -113,6 +113,8 @@ context: product-level artifacts are read only where the files contain them.
 
 - **writer** (attribute of file form): what writes a file form: a command of the plugin, the item of the plugin's backlog that will give the form a command, or a person by hand. Values (noun): `command`, `item`, `hand`.
 
+- **closing comma** (noun): the comma a requirement says after an order and before the recipient or other words of its clause that follow the order, as in "every file, ordered by version, in ascending order, to the person". Kind of: thing.
+
 ## Relations
 | from | word | to | cardinality |
 |---|---|---|---|
@@ -615,6 +617,21 @@ Restates: r37@0.29.
 
 ### [g324] `model forms --check` refuses a file form written by hand
 - [r324] While the writer of a file form is `hand`, when the person runs `model forms` with the `--check` option, `model` shall exit with an error naming the file form.
+
+### [g326] `model parse` reads an order that a closing comma ends before the recipient
+- [r326] While a requirement uses `order-by` and a closing comma, when the person runs `model parse` on the requirement, `model` shall exit successfully.
+
+### [g327] `model parse` reads an order on every K that a closing comma ends before the recipient
+- [r327] While a requirement uses `order-by-every` and a closing comma, when the person runs `model parse` on the requirement, `model` shall exit successfully.
+
+### [g325] `model parse` still reads an order before the recipient with no closing comma
+- [r325] While a requirement uses `order-by` and a recipient and the requirement uses no closing comma, when the person runs `model parse` on the requirement, `model` shall exit successfully.
+
+### [g328] `model logic` finds the clash of a forbidden object whose value is not one code with an obliged object of another value
+- [r328] While a requirement uses `not-relative` and a code and the requirement forbids an act and another requirement obliges the act and the requirement uses `rc-whose` and the requirement does not use the code, when the person runs `model logic`, `model` shall print `L1`.
+
+### [g329] `model logic` finds no clash of a forbidden object whose value is not one code with an obliged object of that value
+- [r329] While a requirement uses `not-relative` and a code and the requirement forbids an act and another requirement obliges the act and the requirement uses `rc-whose` and the code, when the person runs `model logic`, `model` shall exit successfully.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a
