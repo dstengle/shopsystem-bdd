@@ -114,10 +114,13 @@ def _dropped(text, capability, rid, item, tokens):
     return text[:section.start(1)] + joined + ("\n" if section.end(1) < len(text) else "") + text[section.end(1):]
 
 
-def _undropped(text, capability, rid):
-    """`text` less the `## Dropped` entries `lay` wrote for `rid`, and the section when nothing is left in it."""
+def _undropped(text, capability, rid, held):
+    """`text` less the `## Dropped` entries `lay` wrote for `rid`, and the section when nothing is left in it and the
+    file as git `held` it had none."""
     text = re.sub(r"(?m)^- \S+@0\.29: retired with %s#%s by \S+\.\n?" % (re.escape(capability), re.escape(rid)),
                   "", text)
+    if re.search(r"(?m)^## Dropped[ \t]*$", held):
+        return text
     return re.sub(r"(?ms)\n*^## Dropped[ \t]*\n\s*(?=^## |\Z)", "\n", text)
 
 
@@ -143,7 +146,8 @@ def unlay(path, text, rids):
     for rid in rids:
         if _group_of(text, rid) is not None:
             continue
-        chunk = _group_of(_held(path, rid), rid)
+        held = _held(path, rid)
+        chunk = _group_of(held, rid)
         gid, line = chunk.group(1), re.search(_line(rid), chunk.group(0)).group(0)
         here = next((g for g in re.finditer(GROUP, text) if g.group(1) == gid), None)
         back.append(rid)
@@ -154,7 +158,7 @@ def unlay(path, text, rids):
             text = text[:at] + (line if line.endswith("\n") else line + "\n") + text[at:]
             continue
         back.append(gid)
-        text = _undropped(text, Path(path).stem, rid)
+        text = _undropped(text, Path(path).stem, rid, held)
         later = [g for g in re.finditer(GROUP, text) if int(g.group(1)[1:]) > int(gid[1:])]
         if later:
             at = later[0].start()

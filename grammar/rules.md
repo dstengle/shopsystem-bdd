@@ -562,7 +562,7 @@ a given line is not example data
 two groups of a capability share features, condition and trigger
 
 - Severity: violation
-- Implemented in: `scripts/model.lp`, `scripts/readiness_bar.py`
+- Implemented in: `scripts/model.lp`
 - Cited by: design-model-check#r179
 - Fails on:
 
@@ -591,7 +591,7 @@ two groups of a capability share features, condition and trigger
 a scenario names no group
 
 - Severity: violation
-- Implemented in: `scripts/model.lp`
+- Implemented in: `scripts/model.lp`, `scripts/readiness_bar.py`
 - Cited by: no line
 - Fails on:
 
@@ -611,7 +611,7 @@ a scenario names no group
 a scenario is generated from more than one group
 
 - Severity: violation
-- Implemented in: `scripts/model.lp`
+- Implemented in: `scripts/model.lp`, `scripts/readiness_bar.py`
 - Cited by: design-model-check#r182
 - Fails on:
 
@@ -631,7 +631,7 @@ a scenario is generated from more than one group
 a group has no scenario
 
 - Severity: violation
-- Implemented in: `scripts/model.lp`
+- Implemented in: `scripts/model.lp`, `scripts/readiness_bar.py`
 - Cited by: design-model-check#r181
 - Fails on:
 
@@ -1162,7 +1162,7 @@ a spec file is not codified (no `language: codified-2`, or a capability in `codi
 a requirement does not parse
 
 - Severity: violation
-- Implemented in: `scripts/model.lp`
+- Implemented in: `scripts/model.lp`, `scripts/readiness_bar.py`
 - Cited by: design-model-check#r188
 - Fails on:
 
@@ -1181,7 +1181,7 @@ a requirement does not parse
 a requirement parses to more than one tree
 
 - Severity: violation
-- Implemented in: `scripts/model.lp`
+- Implemented in: `scripts/model.lp`, `scripts/readiness_bar.py`
 - Cited by: no line
 - Fails on:
 
