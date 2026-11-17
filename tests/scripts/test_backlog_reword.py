@@ -34,7 +34,7 @@ def test_remove_takes_the_line_its_group_and_the_id_it_retires(ready_repo):
     assert work(ready_repo, "line", "b1", "--remove", "work-queue#r5").returncode == 0
     assert blocks(ready_repo) == [Block("work-queue", [], [Group("g4", "Fix the parser", [("r6", OTHER)]),
                                                            Group("g5", "Fix the parser", [("r7", LINE)])], (),
-                                        ("r1",))]
+                                        ("r1",), retires=(("r7", "r1"),))]
     done = work(ready_repo, "line", "b1", "--remove", "work-queue#r7")
     assert done.returncode == 0 and done.stdout == 'b1 "Fix the parser": work-queue#r7 removed\n', done.stderr
     assert blocks(ready_repo) == [Block("work-queue", [], [Group("g4", "Fix the parser", [("r6", OTHER)])])]

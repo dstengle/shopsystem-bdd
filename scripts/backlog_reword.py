@@ -1,12 +1,12 @@
 """`work line --reword` and `work line --remove` (capability readiness, b14): one of an item's own requirement lines
 given a new text, keeping its id and group, or taken out of the item's `## Requirements`, its group with it when it
 was the group's last line (its given block too), and, for a line `work line --retires` wrote, the id it retires out
-of its block's `retired:`. Each commits only the item. A live requirement of a capability is no line of an item:
+of its block's `retired:`, read off the block's `retires:` pairs (b323), never git history; an id no pair names (as
+`--no-line` retires one) is kept. Each commits only the item. A live requirement of a capability is no line of an item:
 it is refused, naming its id, as is any id the item holds no line of (requirements-retired-never-edited)."""
 import re
 
-import shop_files
-from backlog_items import Refused, commit, find, label, one_line, rel_of
+from backlog_items import Refused, commit, find, label, one_line
 from backlog_section import SECTION, read, render, takes
 
 IDENT = re.compile(r"^([a-z0-9]+(?:-[a-z0-9]+)*)#(r[1-9]\d*)$")
@@ -43,17 +43,9 @@ def reword(root, name, ident, text):
     return item
 
 
-def _retiring(root, item, ident):
-    """The id the line `ident` retires, read off the item's history (`work line --retires` names it in its commit
-    message), or None."""
-    log = shop_files.git(root, "log", "--format=%s", "--", rel_of(item.name))
-    found = re.search(r"(?m)^work line: .* %s retires [a-z0-9-]+#(r[1-9]\d*)$" % re.escape(ident), log)
-    return found.group(1) if found else None
-
-
 def remove(root, name, ident):
     """`work line --remove <cap>#r<n>`: the item's line of that id taken out, its group too when it was the last line,
-    and the id the line retires out of the block's `retired:`; committed."""
+    and the id the line retires (its pair under `retires:`) out of the block's `retired:`; committed."""
     item = find(root, name)
     blocks, b, g, rid = _found(item, ident, "--remove")
     block = blocks[b]
@@ -61,9 +53,10 @@ def remove(root, name, ident):
     group.requirements[:] = [(r, t) for r, t in group.requirements if r != rid]
     if not group.requirements:
         del block.groups[g]
-    retiring = _retiring(root, item, ident)
-    if retiring in block.retired:
-        blocks[b] = block = block._replace(retired=tuple(r for r in block.retired if r != retiring))
+    retiring = {old for line, old in block.retires if line == rid}
+    if retiring:
+        blocks[b] = block = block._replace(retired=tuple(r for r in block.retired if r not in retiring),
+                                           retires=tuple(p for p in block.retires if p[0] != rid))
     if not (block.groups or block.terms or block.relations or block.retired or block.language):
         del blocks[b]
     item.sections[SECTION] = render(blocks)
