@@ -203,11 +203,11 @@ CONSTRUCTS = [
       "While the version of a worktree is the same as the version of a file, when the person runs `work start`, "
       "`work` shall print the file.", r"%s_SameAs_%s" % (T, T)),
     c("order-by", "a collection's members ordered by their attribute (b275)",
-      "<np>, ordered by <attribute>, in ascending|descending order", r"r\d+_\w+_By_%s|Ascending|Descending" % T,
+      "<np>, ordered by <attribute>, in ascending|descending order[,]", r"r\d+_\w+_By_%s|Ascending|Descending" % T,
       "When the person runs `work start`, `work` shall print a worktree that holds a file, ordered by version, in "
       "descending order.", r"r\d+_\w+_By_%s" % T),
     c("order-by-every", "a printed every ordered by its attribute (b275)",
-      "every <noun>, ordered by <attribute>, in ascending|descending order", r"%s_k_\w+_Every" % T,
+      "every <noun>, ordered by <attribute>, in ascending|descending order[,]", r"%s_k_\w+_Every" % T,
       "When the person runs `work start`, `work` shall print every file, ordered by version, in ascending order."),
     c("number-of", "a count as a value", "the number of <nouns> is at least <number>",
       r"Count_(?:Cmp|Code|Up|Op\w+)|%s_NumberOf" % K,
