@@ -117,8 +117,8 @@ def given_does(step):
     """pass: the item's one line passes the bar; has: "no requirement has the requirement id r1" (and of a universal
     condition id) makes the id one that `work line --retires` is refused, any other has (a bar check of the bar, a
     scenario of the item, a step of the scenario) nothing; holds: a term the item holds one that violates `v_t12`; violate: the
-    rule the term violates, named by its code, or of a requirement group `v15n`, the item's one line sharing its
-    condition and trigger with g1's (b77), the group named by its id; has no translation or no parse: the requirement a
+    rule the term violates, named by its code, or of a requirement group the rule r2, two lines of the item's group
+    whose conditions differ (v15k: b333), the group and the rule named by their ids; has no translation or no parse: the requirement a
     line of the item that holds it which `model logic` reads no translation of (r41) or grammar 4 no parse of (r50)
     (`R.give_faults`), or the universal condition the item's one, beside a passing line
     (b203); holds a universal condition: the item's `U1`, one `model logic` reads, beside a passing line; the capability
@@ -150,10 +150,10 @@ def given_does(step):
     elif step.term == "holds" and step.nps[0].startswith("the term "):
         R.give_lines(step, step.names[0], R.PASSING, [R.ILL_TERMED])
         says(step, step.names[1], R.ILL_TERM)
-    elif step.term == "violate" and step.subject.startswith("the requirement group "):       # b77
-        R.give_lines(step, step.context.get("item", "i1"), R.SHARING)
-        says(step, step.names[0], R.SHARING_GROUP)
-        says(step, step.nps[0], step.nps[0].strip("`"))
+    elif step.term == "violate" and step.subject.startswith("the requirement group "):       # b333
+        R.give_lines(step, step.context.get("item", "i1"), R.DIFFERING)
+        says(step, step.names[0], R.DIFFERING_GROUP)
+        says(step, step.names[-1], R.DIFFERING_RULE)
     elif step.term == "violate":
         says(step, step.names[1], "v_t12")
 

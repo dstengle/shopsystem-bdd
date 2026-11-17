@@ -179,7 +179,7 @@ def lay_onto(into, item, files=None):
         if block.language:
             text = backlog_recodify.lay(text)
         if block.retired:
-            text = backlog_retires.lay(text, block.capability, block.retired)
+            text = backlog_retires.lay(text, block.capability, block.retired, item.name)
         if block.terms:
             text = _append(text, "Terms", "\n".join(block.terms))
         if block.relations:

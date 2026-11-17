@@ -23,7 +23,7 @@ def item_proposes(step):
 def removes_requirement(step):
     """The run exited 0, and the ids of the item that proposes the requirement are out of the batch branch's spec and
     its `unbuilt:`, where the lines commit laid them."""
-    if step.term != "remove":
+    if step.term != "remove" or step.names[0] not in step.context.get("proposed", {}):
         return False
     done = step.context["result"]
     assert done.returncode == 0, done.stderr
