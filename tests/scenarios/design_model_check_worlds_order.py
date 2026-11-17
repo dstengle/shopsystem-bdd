@@ -3,7 +3,9 @@ one thing's value compared with another's (`value-compare`, `value-same`), of an
 (refused, naming it), under a line that forbids what it obliges (an L1) and beside one whose comparison of the same
 two values contradicts it (none); an order on a collection (`order-by`) and on a printed every (`order-by-every`), of
 an attribute with no value order (refused, naming it), printed by `model parse --form`, and two in opposite directions
-on one trigger (an L1), and on every K that a verb whose one frame names K takes (b300), and after every K in a collection (b328); an order in a precondition, in a trigger and in a forbidden act (b285, refused, naming it).
+on one trigger (an L1), and on every K that a verb whose one frame names K takes (b300), and after every K in a
+collection (b328); an order before the recipient, ended by a closing comma or not (b301); an order in a precondition,
+in a trigger and in a forbidden act (b285, refused, naming it).
 Each world is codified2_world's, its r1 (r2) the lines here."""
 import importlib.util
 import sys
@@ -44,6 +46,12 @@ EVERY = "When the person runs `work start`, `work` shall print every file, order
 # b300: an order on every K that a verb whose one frame names K (give: agent gives file to agent) takes
 GIVEN = ("When the person runs `work start`, `work` shall give every file, ordered by version, in ascending order to "
          "the person.")
+# b301: an order before the recipient, ended by a closing comma or not; order-by's on a worktree, which hand takes
+CLOSED_EVERY = ("When the person runs `work start`, `work` shall give every file, ordered by version, in ascending "
+                "order, to the person.")
+HANDED = ("When the person runs `work start`, `work` shall hand a worktree that holds a file, ordered by version, in "
+          "descending order%s to the person.")
+HAND = "- **hand** (verb, action): an agent passes a worktree on to an agent. Frame: agent hands worktree to agent.\n"
 # b328: an order after every K in a collection (a modifier by the row file | in | worktree), the every's alone
 IN_EVERY = ("When the person runs `work start` on a worktree, `work` shall print every file in the worktree, ordered "
             "by version, in ascending order.")
@@ -80,6 +88,15 @@ def senses(*texts):
     return build
 
 
+def handing(comma):
+    """A builder: the world of HANDED, its order ended by a closing comma or not, with the verb hand."""
+    def build(step):
+        line(HANDED % ("," if comma else ""))(step)
+        index = step.repo / "spec" / "index.md"
+        index.write_text(index.read_text() + HAND)
+    return build
+
+
 SENSED = ("term has sense", "sense has value order")
 ROWS = [
     (SENSED + ("requirement use `value-compare`", "requirement oblige act", "requirement forbid act"),
@@ -98,6 +115,10 @@ ROWS = [
     (("requirement use `value-same`",), line(SAME), {}),
     (("requirement use order", "order on term", "term has no value order"), line(OUTCOMES), {"t1": "outcome"}),
     (("capability holds order", "order contradict order"), line(EVERY, DESCENDING), {}),
+    (("requirement use `order-by`", "requirement use recipient", "requirement use no closing comma"), handing(False),
+     {}),
+    (("requirement use `order-by`", "requirement use closing comma"), handing(True), {}),
+    (("requirement use `order-by-every`", "requirement use closing comma"), line(CLOSED_EVERY), {}),
     (("requirement use `order-by`",), line(HELD), {}),
     (("requirement use `order-by-every`", "no frame take `thing`", "requirement use verb"), line(GIVEN), {}),
     (("requirement use `order-by-every`", "requirement use `of-relation`"), line(IN_EVERY), {}),
