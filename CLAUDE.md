@@ -26,6 +26,10 @@
   printed as its whole prompt, and that agent runs the batch to `awaiting-merge`.
 - Requirement lines are what the rest of the system stands on: when work touches spec lines or requests, weigh
   their clarity and checkability first.
+- Never read another repository on this machine (another bounded context's, the product's) unless the person asks
+  for it; this repository's `main` is the only reference, never a leftover worktree of earlier work.
+- A short-term direction of the person is a directive (`work directive`), never Claude Code's memory; the live ones
+  are shown at SessionStart and passed on in every brief to an agent.
 
 ## Size limit
 
