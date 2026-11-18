@@ -81,7 +81,9 @@ $ python3 ~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.37.0/scripts/t
 You need:
 
 - Linux x86_64 for `tools install` (elsewhere, point `$SHOPSYSTEM_GF` at your own GF 3.12);
-- Python 3, with pytest and pytest-bdd (pytest-xdist is optional, to run the suite in parallel);
+- Python 3, with pytest 9.1.1 and pytest-bdd 8.1.0 (`pip install 'pytest==9.1.1' 'pytest-bdd==8.1.0'`; with
+  pytest-bdd 9 an `unbuilt:` id's scenario is no longer marked an expected failure; pytest-xdist is optional, to run
+  the suite in parallel);
 - git, and `gh` logged in, for a batch's pull request and a request's issue;
 - Claude Code.
 
