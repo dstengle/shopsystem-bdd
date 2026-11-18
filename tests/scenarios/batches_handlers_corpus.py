@@ -44,7 +44,7 @@ def given_named(step):
 def has_given(step):
     """The requirement has the logical form (the repository keeps a corpus), or has the requirement id (the corpus
     holds the block of the id the item retires)."""
-    (k1, n1), (k2, n2) = parts(step)
+    (k1, n1), (k2, _) = parts(step)
     if (k1, k2) == ("requirement", "logical form"):
         corpus(step)
     elif (k1, k2) == ("requirement", "requirement id"):
@@ -58,7 +58,7 @@ def has_given(step):
 def holds_given(step):
     """The item holds the requirement id: it retires `work-queue#r4` beside a passing line; this corpus holds the
     requirement (its block written by `has_given`)."""
-    (k1, n1), (k2, n2) = parts(step)
+    (k1, n1), (k2, _) = parts(step)
     if (k1, k2) == ("item", "requirement id"):
         R = sys.modules["shop_readiness_world"]
         R.codify(step)
