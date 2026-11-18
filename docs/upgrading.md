@@ -402,6 +402,31 @@ Two commands ask for more. `work shape` on an idea with no shaping note under `#
 `work backlog` names `--note` beside such an idea. `work offer` with no `--capability` posts no glossary; with one,
 it quotes the capability's requirements and only the terms they mention, so name each capability the asker needs.
 
+## From 0.36.0 to 0.37.0
+
+A y release: no upgrade step. Run `migrate upgrade` once to record the release.
+
+`work ready` and `work batch start` now run every rule of `model check` on the item's lines laid over a copy of
+`spec/`, and refuse each violation the lay brings that names one of the item's groups or requirements, naming the
+group and the rule (v15k, v15l, v15n and the rest; 0.36.0 ran v15n alone). An item already `ready` may be refused at
+its next `work ready` or `work batch start`: fix the group it names. Where a repository keeps a spec corpus
+(`grammar/corpus/spec/`) or the catalogues `grammar/rules.md` and `grammar/constructs.md`, `work batch start` now
+writes the laid lines' corpus blocks and regenerates the catalogues itself.
+
+`work line --remove` now reads which id a line retires from the `retires:` pairs `work line --retires` writes into
+the item. An item shaped before 0.37.0 has no such pairs: removing its `--retires` line keeps the retired id under
+`retired:`, which would retire the live line with nothing in its place. After the removal, take that id out of the
+block's `retired:` by hand.
+
+Run `features generate`. A count on a thing a response writes ("write a file that holds at most three notes") gets
+a Given of one thing past the bound, and holds-exactly whose restriction reaches a second thing gets a scenario
+where it had none: write the handlers of their new steps.
+
+New to use: `work chore` for an item with no requirement line, `work line --capability` for a new capability in
+place of writing its file, `model forms --check`, and the directives (`work directive`, `work directives`,
+`work promote`, `work drop`), which a new SessionStart hook shows. A repository's tests pin `pytest==9.1.1` and
+`pytest-bdd==8.1.0` ([Getting started](getting-started.md)).
+
 ## Older than 0.32?
 
 `migrate upgrade` applies every pending step in order, oldest first, in one commit. `migrate status` lists them:

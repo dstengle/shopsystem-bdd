@@ -1,6 +1,7 @@
 <!-- Outputs on this page are from real runs on 2026-11-10, plugin 0.33.0 (commit 7f60e57de), in a scratch clone of
 this repository with no remote and the suite's stand-in gh (tests/scripts/stub_gh.py). Item, batch, decision and
-quote numbers (b250-b252, batch-34, batch-35, 0092, quote-24) are the clone's. Long paths are cut with `...`. -->
+quote numbers (b250-b252, batch-34, batch-35, 0092, quote-24) are the clone's. Long paths are cut with `...`.
+"Shape a chore" is from a run on 2026-11-18, plugin 0.37.0, in a scratch clone with no remote (its b350). -->
 
 # Recipes
 
@@ -15,6 +16,7 @@ shows how to run them from the plugin's directory. Every command's full contract
 **The recipes:** [a glossary word](#add-a-word-to-the-glossary) ·
 [a relation, given block, universal or upstream](#add-a-relation-row-a-given-block-a-universal-condition-or-an-upstream) ·
 [change a delivered line](#change-a-delivered-line) · [a new capability](#start-a-new-capability) ·
+[a chore](#shape-a-chore) ·
 [what a line means](#see-what-a-line-means) · [ready and blocked](#find-what-is-ready-and-what-blocks-it) ·
 [park and answer](#park-a-question-mid-batch-and-answer-it) · [abandon a batch](#abandon-a-batch) ·
 [defects and comparisons](#record-a-defect-and-compare-two-batches) ·
@@ -237,6 +239,38 @@ Feature: Labels
 ```
 
 The [capability file reference](reference/capability-file.md) walks through every section.
+
+## Shape a chore
+
+**When:** the work changes no behaviour a scenario could check: a page of the docs, a skill's text, a refactor.
+
+**You say:** "That's a chore: the shaping skill should name `work chore`."
+
+An item with no requirement line holds a chore in their place: the files its work changes and a command whose exit
+code 0 shows it done. `work chore` writes it as the item's `## Chore` and commits the item; run again, it replaces it.
+
+```console
+$ work chore b350 --file skills/shaping-items/SKILL.md --check "grep -q 'work chore' skills/shaping-items/SKILL.md"
+b350 "The shaping skill names work chore": the chore of b350 "The shaping skill names work chore" (check: `grep -q 'work chore' skills/shaping-items/SKILL.md`)
+$ work ready b350
+b350 "The shaping skill names work chore" ready
+```
+
+The item now holds:
+
+```markdown
+## Chore
+
+Files:
+- skills/shaping-items/SKILL.md
+
+Check: `grep -q 'work chore' skills/shaping-items/SKILL.md`
+```
+
+A chore and requirement lines exclude each other, so `work line` on the item is refused, naming the chore. A path
+under `spec/`, `features/` or `.shop/` is refused too: lines own the first two and `work` the third. In a batch,
+`work batch done` runs the check in the task's worktree after the tests, and refuses the task while it exits
+non-zero or while a commit of the task touches a file the chore does not name.
 
 ## See what a line means
 

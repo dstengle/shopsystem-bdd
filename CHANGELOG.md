@@ -10,6 +10,7 @@ been renamed or retired since.
 
 | Line | Releases |
 |---|---|
+| 0.37 | [0.37.0](#0370-whole-spec-faults-caught-before-a-batch-chores-new-capabilities-by-command-and-model-logics-precision) |
 | 0.36 | [0.36.0](#0360-migrate-records-the-version-orders-after-any-act-line-commands-groomed-ideas-and-requests-resolved-offered-and-confirmed) |
 | 0.35 | [0.35.1](#0351-collections-on-any-responses-object) · [0.35.0](#0350-collections-comparisons-and-orders) |
 | 0.34 | [0.34.1](#0341-the-version-reset-and-the-givens-of-a-triggers-referents) · [0.34.0](#0340-released-as-410-value-kinds-adjective-or-noun-and-gherkin-in-the-full-form) |
@@ -18,6 +19,70 @@ been renamed or retired since.
 | 0.31 | [0.31.5](#0315-released-as-240-the-request-watch-wakes-on-githubs-events-and-starts-with-the-session) · [0.31.4](#0314-released-as-231-a-batch-runs-in-one-fresh-agent-and-a-parked-item-leaves-the-batch-at-once) · [0.31.3](#0313-released-as-230-work-pushes-its-commits-requests-post-after-they-commit-and-work-watch) · [0.31.2](#0312-released-as-220-decisions-and-records-written-by-command) · [0.31.1](#0311-released-as-210-requests-exchanged-through-github-issues) · [0.31.0](#0310-released-as-200-the-workflow-simplified) |
 | 0.30 | [0.30.0](#0300-released-as-100-codified-requirements) |
 | 0.29 and before | [0.29.0](#0290-glossary-proposals-delegations-given-late-and-fewer-stops-from-outside-a-work-item) · [0.28.3](#0283-a-branch-review-that-runs-nothing) · [0.28.2](#0282-answers-a-round-cannot-hold-go-back-to-integration) · [0.28.1](#0281-work-run-stops-visibly-on-questions-and-spends-less-agent-time) · [0.28.0](#0280-one-set-of-request-commands-work-list-and-work-show-and-answers-that-redraft) · [0.27.0](#0270-transitions-from-how-a-session-ended-and-the-turn-of-an-accepted-request) · [0.26.0](#0260-requests-and-the-context-loop) · [0.25.0](#0250-work-items-side-by-side-answers-and-guarantees) · [0.24.0](#0240-work-items-named-by-ids-and-upgrades-between-plugin-releases) · [0.23.1](#0231---work-item-keeps-tests-that-are-not-scenarios) · [0.23.0](#0230-faults-settled-query-output-as-json-the-session-keeps-the-gate-measurement-on-v3) · [0.22.0](#0220-one-requirement-per-scenario-faults-and-the-lessons-of-a-blind-formulation) · [0.21.0](#0210-the-final-layout-and-delivery-by-work-run) |
+
+## 0.37.0: whole-spec faults caught before a batch, chores, new capabilities by command, and model logic's precision
+
+- **`work ready` refuses every model check violation its lines bring** (b333, PR #69): a laid item could break the
+  whole spec (a group holding statements of different conditions, v15k and v15l; a 0.29 id no group restates once a retire removed
+  its group) and nothing said so until every task of the batch failed its first `work batch done`. Now the readiness
+  bar runs every rule of `model check` on the copy of `spec/` before and after the lay, and refuses each violation
+  the lay brings that names one of the item's groups or requirements, naming the group and the rule; v15n, which
+  0.36.0's bar ran alone (readiness#r49), is one of them (readiness#r58). `work batch start` does the bookkeeping in
+  its lay's one commit, so no task writes it and no two tasks conflict over it, where the repository keeps these files: a block in `grammar/corpus/spec/` of
+  each laid line with its logical form, the block of each retired id removed, `grammar/rules.md` and
+  `grammar/constructs.md` regenerated, and a retire that removes a group writes each 0.29 id the group restated
+  under `## Dropped`.
+- **`work ready` names every failing line in one run** (b305, PR #66): it stopped at the first stage with a reason,
+  so a line that did not parse hid another that `model logic` could not read, and two rewordings took three runs.
+  Now every stage runs over every line (the parse, `model logic`, `features generate`), each line named by the first
+  stage that refuses it.
+- **A chore item** (b316, PR #67): an item with no behaviour a scenario checks (docs, a skill's text, a refactor)
+  could not be readied, since the bar refused an item with no requirement line. `work chore b<n> --file <path>
+  --check "<command>"` writes its `## Chore`, the files its work changes and the command whose exit 0 shows it done;
+  `work ready` readies it with no line. `work batch done` runs the check in the task's worktree and refuses a commit
+  of the task that touches a file the chore does not name; the batch briefs name the chore in place of ids. A chore
+  and requirement lines exclude each other, and a path under `spec/`, `features/` or `.shop/` is refused.
+- **A new capability by command** (b317, PR #67): a reader was told to write `spec/capabilities/<name>.md` by hand.
+  Now `work line b<n> --capability <name> --narrator "<who>" [--group service|guarantees] "<purpose>"` writes it as a
+  block of the item, refused when the capability exists; the bar lays it with the item's lines, and `work batch
+  start` writes the file, its row under `## Composition` and its feature. `model forms --check` exits 1 naming each
+  file form still written by hand.
+- **Directives** (b20, PR #67): a short-term direction the person gives a session was kept nowhere but a session's
+  memory. Now `work directive "<words>"` keeps the words as a quote and a `live` directive, `.shop/directives/<n>.md`,
+  in one commit; `work directives` lists the live ones; a new SessionStart hook shows them to every session; `work
+  promote directive-<n> --to <b<n>, a decision or CLAUDE.md>` and `work drop directive-<n> --why "<reason>"` review
+  one, a directive not live refused.
+- **Shaping several items at once** (b346, PR #69): `skills/shaping-items/parallel-brief.md` is the brief of one
+  agent per item, run in parallel when each writes only its own item, and the shaping skill says when to use it.
+- **No `git stash` in a batch** (b289, PR #69): every worktree of a repository shares one stash list, and two task
+  agents' stashes were swapped. The batch brief's subagent rules and the batch skill now forbid it.
+- **A parked item's lines taken out as they were laid** (b324, PR #69): an item parked and then reshaped on the
+  base left its laid lines in a running task's tested tree, since they were cut by the item's new text, and the
+  task's `work batch done` failed. Now they are taken out as `work batch start` laid them.
+- **`work line --remove` keeps a retired id** (b323, PR #68): which line retires which id was read from commit
+  subjects, so removing a line whose id was reused dropped another line's `retired:` id. The item's block now keeps
+  `retires:` pairs, and `--remove` takes out only the id its own line retires.
+- **A state verb in a response refused as the response's** (b175, PR #66): "... `model` shall unify the
+  requirement." was refused as if the verb were in the trigger. Now the refusal names the response and the verb.
+- **A closing comma after an order** (b301, PR #68): "give every file, ordered by version, in ascending order, to
+  the person" did not parse at "to"; only the form with no comma before the recipient did. Now both read.
+- **`model logic`'s precision** (b314, PR #66; b315, PR #67; b232, PR #68): no L1 between "return a
+  worktree that holds nothing" (or "holds no file") and "shall not return a worktree that holds a file", whose
+  objects no worktree meets both of (b314); a clash of "print a stage whose status is `open`" with "shall not print a
+  stage whose status is not `done`" found (b232); holds-exactly on a response's object whose relative clause reaches
+  a second thing ("... holds exactly the files that cover the line of a stage") read, where it was `unread` (b315),
+  and its scenario gets the file outside the restriction.
+- **A counter-example of a count on a written thing** (b296, PR #66): "write a file that holds at most three notes"
+  got no Givens a program writing too many could fail. Now its scenario brings in one note past the bound.
+- **Upgrading:** a y release (decision 0092): no upgrade step. `work ready` and `work batch start` now refuse an item
+  whose lines bring any violation of a `model check` rule naming its group or requirement, not only v15n's shared
+  condition and trigger: fix the group the refusal names. Run `features generate`: a count on a written thing and
+  holds-exactly whose restriction reaches a second thing get new Givens and scenarios to write handlers for. New
+  commands: `work chore`, `work line --capability`, `work directive`, `work directives`, `work promote`, `work drop`
+  and `model forms --check`, and the SessionStart hook of the directives. A repository's tests pin
+  `pytest==9.1.1` and `pytest-bdd==8.1.0`, as [Getting started](docs/getting-started.md) says: with pytest-bdd 9,
+  `unbuilt:` ids are no longer marked as expected failures. See
+  [From 0.36.0 to 0.37.0](docs/upgrading.md#from-0360-to-0370).
 
 ## 0.36.0: migrate records the version, orders after any act, line commands, groomed ideas, and requests resolved, offered and confirmed
 
