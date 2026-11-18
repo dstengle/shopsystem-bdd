@@ -1,0 +1,22 @@
+# Sketch of decision-tiers' CLI adapter contract under variant B. No tool reads it yet.
+# The business lines name operations and parameters by their business codes and state every outcome
+# (done, refused naming X, what is returned). This file says only how the CLI spells them.
+adapter: cli
+outcomes:                       # how this adapter spells the business outcomes, for every operation
+  success: {exit: 0}
+  refused: {exit: 1, message: stderr}   # "refuse ... and name X": X spelled by this file in the message
+  returned: stdout              # "print" / return: the response's content
+operations:
+  enter decision:
+    command: work decision
+    parameters:
+      title: {positional: 1}
+      tier: --tier
+      summary: --summary
+      wording: --decision       # business name and CLI spelling may differ; the line says `wording`
+      route: --verified-by
+      supersedes: --supersedes
+  check spec:
+    command: model check
+  audit decisions:
+    command: model decisions --check
