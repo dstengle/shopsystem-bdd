@@ -23,12 +23,12 @@ been renamed or retired since.
 ## 0.37.0: whole-spec faults caught before a batch, chores, new capabilities by command, and model logic's precision
 
 - **`work ready` refuses every model check violation its lines bring** (b333, PR #69): a laid item could break the
-  whole spec (two groups of different conditions, v15k and v15l; a 0.29 id no group restates once a retire removed
+  whole spec (a group holding statements of different conditions, v15k and v15l; a 0.29 id no group restates once a retire removed
   its group) and nothing said so until every task of the batch failed its first `work batch done`. Now the readiness
   bar runs every rule of `model check` on the copy of `spec/` before and after the lay, and refuses each violation
   the lay brings that names one of the item's groups or requirements, naming the group and the rule; v15n, which
   0.36.0's bar ran alone (readiness#r49), is one of them (readiness#r58). `work batch start` does the bookkeeping in
-  its lay's one commit, so no task writes it and no two tasks conflict over it: a block in `grammar/corpus/spec/` of
+  its lay's one commit, so no task writes it and no two tasks conflict over it, where the repository keeps these files: a block in `grammar/corpus/spec/` of
   each laid line with its logical form, the block of each retired id removed, `grammar/rules.md` and
   `grammar/constructs.md` regenerated, and a retire that removes a group writes each 0.29 id the group restated
   under `## Dropped`.
