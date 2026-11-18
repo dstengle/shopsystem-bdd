@@ -115,6 +115,8 @@ context: product-level artifacts are read only where the files contain them.
 
 - **closing comma** (noun): the comma a requirement says after an order and before the recipient or other words of its clause that follow the order, as in "every file, ordered by version, in ascending order, to the person". Kind of: thing.
 
+- **construct catalogue** (noun): the generated file `grammar/constructs.md`, one entry a construct of grammar 4, as `model constructs --write` writes it. Kind of: file. This: the construct catalogue of the bounded context the command runs in.
+
 ## Relations
 | from | word | to | cardinality |
 |---|---|---|---|

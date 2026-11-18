@@ -12,10 +12,12 @@ from pathlib import Path
 
 import backlog_items
 import backlog_lines
+import batch_catalogues
 import batch_driver
 import batch_pick
 import features_generate
 import shop_files
+import spec_corpus_write
 import spec_read
 import spec_unbuilt
 from batch_git import add_tree, current_branch, git, locked, remove_tree, trees_dir
@@ -31,9 +33,11 @@ def cites(items):
     return "".join("\nItem: %s" % i.name for i in items)
 
 
-def lay_lines(tree, picked):
-    """Every picked item's lines laid into the worktree's `spec/`, their ids appended to `unbuilt:`, and the feature
-    of each service capability laid written again; the paths changed."""
+def lay_lines(tree, picked, unwritten=None):
+    """Every picked item's lines laid into the worktree's `spec/`, their ids appended to `unbuilt:`, the feature of
+    each service capability laid written again, and the bookkeeping of the lay (b333): the corpus's blocks
+    (spec_corpus_write) and the catalogues (batch_catalogues), a catalogue that cannot be written added to
+    `unwritten`; the paths changed."""
     ids, files = {}, []
     for item in picked:
         backlog_lines.lay_onto(tree, item, files)
@@ -44,7 +48,11 @@ def lay_lines(tree, picked):
         path = backlog_lines.capability_file(tree, capability)
         path.write_text(spec_unbuilt.with_unbuilt(path.read_text(), listed))
         changed += _generated(tree, capability, "work batch start")
-    return list(dict.fromkeys(changed + files))
+    changed += spec_corpus_write.write(tree, picked)
+    catalogues, problems = batch_catalogues.write(tree, ["%s#%s" % (c, r) for c, rs in ids.items() for r in rs])
+    if unwritten is not None:
+        unwritten.extend(problems)
+    return list(dict.fromkeys(changed + files + catalogues))
 
 
 def _generated(tree, capability, command):
@@ -95,7 +103,8 @@ def _build(root, base, picked, returned):
     tree = trees_dir(root) / name
     try:
         add_tree(root, tree, name, forked)
-        changed = lay_lines(tree, picked)
+        unwritten = []
+        changed = lay_lines(tree, picked, unwritten)
         if changed:                 # a pick of chore items only lays no line (b316): the commit is still made
             git(tree, "add", "--", *changed)
         git(tree, "commit", "-q", "--allow-empty", "-m", "%s: the requirement lines of %s\n%s" % (
@@ -112,7 +121,7 @@ def _build(root, base, picked, returned):
         if git(root, "branch", "--list", name).stdout.strip():
             git(root, "branch", "-D", name)
         raise
-    batch_driver.write(root, batch, picked)
+    batch_driver.write(root, batch, picked, unwritten)
     return batch
 
 

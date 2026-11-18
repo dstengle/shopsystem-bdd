@@ -119,6 +119,21 @@ question while building parks its item and the rest of the batch carries on. The
 ### [g44] `work batch start` writes the capability an item holds
 - [r44] While an item is `ready` and the item passes the readiness bar and the item holds a capability, when the person runs `work batch start`, `work` shall write the capability.
 
+### [g45] A parked item reshaped after the park does not hold up another item's task
+- [r45] While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the batch is `needs-input` and the item has a requirement that is not in the git branch of the batch and a scenario of the item fails in the worktree of the task, when a session runs `work batch done` on the task, `work` shall set the status of the task to `done`.
+
+### [g46] `work batch start` writes the logical form of each laid requirement in the corpus
+- [r46] While an item is `ready` and the item passes the readiness bar and a requirement of the item has a logical form, when the person runs `work batch start`, `work` shall write the logical form in the corpus.
+
+### [g47] `work batch start` removes a retired requirement from the corpus
+- [r47] While an item is `ready` and the item passes the readiness bar and a requirement id is in the item and a requirement in the corpus has the requirement id, when the person runs `work batch start`, `work` shall remove the requirement.
+
+### [g48] `work batch start` writes the catalogue entry of a rule a laid requirement uses
+- [r48] While an item is `ready` and the item passes the readiness bar and a requirement of the item uses a rule, when the person runs `work batch start`, `work` shall write the catalogue entry of the rule.
+
+### [g49] `work batch start` writes the construct catalogue when a laid requirement uses a construct
+- [r49] While an item is `ready` and the item passes the readiness bar and a requirement of the item uses a construct, when the person runs `work batch start`, `work` shall write the construct catalogue.
+
 ## Implementation, may change
 
 - `work batch start` takes the ready items in rank order (the backlog's WSJF, ties to the item added first), up to

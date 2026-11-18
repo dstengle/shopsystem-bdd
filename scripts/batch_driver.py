@@ -29,6 +29,8 @@ RULES = (
     ("Worktrees of older work (`.shop/worktrees/*` of other or earlier batches, `.claude/worktrees/`) are never "
      "reference material: the reference is the base branch and its own worktree."),
     "Don't chain `cp` and `rm` in one shell command; keep shell variables few.",
+    ("Never use `git stash`: every worktree shares one stash list, so two tasks' stashes swap; to see a test "
+     "red, put files back with `git checkout <commit> -- <path>` or a scratch copy."),
     "Don't push and don't run `work` commands that commit.",
     "A scenario that passes before it is built (an XPASS) means a test step is too loose: say so in the reply.",
     ("There is no brief or result file: reply with what was built and its commits, or with one question, never a "
@@ -68,8 +70,9 @@ def _tasks(root, batch, picked):
     return out
 
 
-def text(root, batch, picked):
-    """The batch brief of `batch`, whose tasks are the items `picked`, in order."""
+def text(root, batch, picked, unwritten=()):
+    """The batch brief of `batch`, whose tasks are the items `picked`, in order; `unwritten`, each catalogue problem
+    that kept the lay from writing it (batch_catalogues, b333)."""
     root, push = Path(root).resolve(), push_prefix(root)
     out = ["# %s: the batch brief" % batch.name, "",
            "You run %s, from `work batch resume` until its pull request is `awaiting-merge`, as the one fresh agent "
@@ -86,6 +89,12 @@ def text(root, batch, picked):
            "fix loop until the review is clean." % (SKILL, batch.name), "",
            "## Tasks", ""]
     out += _tasks(root, batch, picked)
+    out += ["## The lay's bookkeeping", "",
+            ("The lay's commit wrote each laid line's corpus block, took out each retired id's and wrote the "
+             "catalogues again (b333): a block's form is the parser's, so the task whose item changes the grammar "
+             "reads it against the line and corrects it."), ""]
+    out += ["- Not written, for the task of the item that brings it to mend: %s" % p for p in unwritten]
+    out += [""] if unwritten else []
     out += ["## Push", "",
             ("Run every git push and gh call as `%s <command>`; `work` pushes its own commits." % push) if push else
             "`.shop/delivery.toml` gives no `[batch] push`: git push and gh run as they are; `work` pushes its own "
@@ -103,9 +112,9 @@ def text(root, batch, picked):
     return "\n".join(out) + "\n"
 
 
-def write(root, batch, picked):
+def write(root, batch, picked, unwritten=()):
     """The batch brief of `batch` written; its path."""
     where = path(root, batch.name)
     where.parent.mkdir(parents=True, exist_ok=True)
-    where.write_text(text(root, batch, picked), encoding="utf-8")
+    where.write_text(text(root, batch, picked, unwritten), encoding="utf-8")
     return where

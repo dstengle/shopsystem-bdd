@@ -4,7 +4,6 @@ summary: "While the plugin is alpha, a fix that changes generated features, refu
 date: 2026-11-17
 status: accepted
 tier: judgement
-source: [quote-48]
 by: "the session, 2026-11-17"
 ---
 

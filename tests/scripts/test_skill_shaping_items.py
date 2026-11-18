@@ -99,3 +99,14 @@ def test_each_skill_has_a_use_when_description(name):
 def test_a_bug_in_delivered_work_is_a_defect_first():
     """Plan 7, D14: a fault in what a delivered item built is recorded against it before its fix is shaped."""
     assert "measure defect <item>" in SHAPING.read_text()
+
+
+def test_several_items_are_shaped_in_parallel_from_the_shipped_brief():
+    """b346: one agent per item, in parallel, from parallel-brief.md, whose rules the wave shares and which carries the
+    live directives verbatim."""
+    text = SHAPING.read_text()
+    assert "## Shaping several items at once" in text and "in parallel" in text and "parallel-brief.md" in text
+    brief = (SKILLS / "shaping-items" / "parallel-brief.md").read_text()
+    for rule in ("own item only", "term bullets", "few minutes", "No push", "work batch", "git stash",
+                 "Claude Code's memory", "work directives", "verbatim"):
+        assert rule in brief, rule

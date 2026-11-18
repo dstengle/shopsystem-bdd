@@ -38,6 +38,14 @@ shall [x1: agent the person (constant), ...]
    other, each block's line the file's line word for word (a file still codified-1 needs no corpus file);
 4. the line's tree linearises back to the line.
 
+## A block a batch lays
+
+`work batch start` writes the block of each line it lays, in the lay's one commit (b333): under the line's id, in id
+order, its trace `From: b<k> r<n>.` (`Retires: r<m>.` before it when the item's `retires:` pairs say so), the line and
+its form as `model parse --form` prints it on the laid tree; and it takes out the block of each id the items retire.
+That form is the parser's, not yet read: the task that builds the line reads it against the line, atom by atom, and
+corrects it where its item changes the grammar or the form is not the intended reading.
+
 ## Adding a block
 
 1. Write the line and its intended form under the line's new id, with its trace.
