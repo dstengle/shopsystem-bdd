@@ -26,7 +26,6 @@ from vocab import handler, runner
 from scenarios.migration_old import CONTEXT, Old, plugin
 
 PLUGIN = HERE.parents[1]
-FEATURE = PLUGIN / "features" / "migration-tools.feature"
 WHO = {"GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t", "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"}
 HOOKS = {"`migrate status --hook`": "SessionStart"}
 
@@ -54,8 +53,7 @@ def held(step):
 
 def migration(step):
     """True in a scenario of features/migration-tools.feature."""
-    scenario = getattr(getattr(step.request.node, "obj", None), "__scenario__", None)
-    return scenario is not None and pathlib.Path(scenario.feature.filename).name == "migration-tools.feature"
+    return sys.modules["vocab"].origin(step.request.node) == "migration-tools"
 
 
 # --- Givens ---
@@ -126,7 +124,7 @@ def runs_migrate(step):
     step.context["done"] = run("migrate", *args, env=dict(os.environ, **WHO))
 
 
-for _command in sorted(set(re.findall(r"When .* runs (`migrate[^`]*`)", FEATURE.read_text() if FEATURE.is_file() else ""))):
+for _command in sys.modules["vocab"].vocab4.requested.commands("migrate"):
     handler("WhenRuns", _command)(runs_migrate)
 
 

@@ -33,8 +33,7 @@ NAME = re.compile(r"^[a-z][a-z-]*[1-9]\d*$")
 
 def ours(step):
     """True for a step of features/design-model-check.feature."""
-    scenario = getattr(getattr(step.request.node, "function", None), "__scenario__", None)
-    return scenario is not None and Path(scenario.feature.filename).name == FEATURE
+    return sys.modules["vocab"].origin(step.request.node) == FEATURE.removesuffix(".feature")
 
 
 def phrase(text):

@@ -92,9 +92,7 @@ CAPABILITY = "work-queue"       # the fixture's capability: the capability a sce
 
 def mine(step):
     """True when the step is of a scenario of features/readiness.feature."""
-    node = step.request.node
-    scenario = getattr(getattr(node, "obj", None) or getattr(node, "function", None), "__scenario__", None)
-    return scenario is not None and Path(scenario.feature.filename).name == "readiness.feature"
+    return sys.modules["vocab"].origin(step.request.node) == "readiness"
 
 
 def universal(step):

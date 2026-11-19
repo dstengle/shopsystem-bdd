@@ -8,7 +8,6 @@ measurement the first written), and the rows a Then names are read off that meas
 on one measurement compares it with itself; on two, each When adds its measurement and runs the comparison again."""
 import json
 import pathlib
-import re
 import shlex
 import sys
 
@@ -33,7 +32,6 @@ def _queue_world():
 
 local = _queue_world().local
 
-FEATURE = HERE.parents[1] / "features" / "batch-measurement.feature"
 KINDS = ("measurement", "stage row", "round trip", "session row", "tool use", "dispatch", "compaction", "total row")
 
 
@@ -98,7 +96,7 @@ def runs_measure(step):
     w.run(step.fixtures("monkeypatch"), step.fixtures("capsys"), *command, *files)
 
 
-for _command in sorted(set(re.findall(r"When the person runs (`measure[^`]*`)", FEATURE.read_text() if FEATURE.is_file() else ""))):
+for _command in sys.modules["vocab"].vocab4.requested.commands("measure"):
     handler("WhenRuns", _command)(runs_measure)
 
 
@@ -169,9 +167,7 @@ def has(step):
 def given_has(step):
     """`the measurement m1 has the session row s1`, `... holds the tool use t1`, `the stage row s1 has no round trip`: the given block holds them, so
     nothing is recorded (world_fallbacks' "has" of other features fails a step no feature's handler took)."""
-    node = step.request.node
-    scenario = getattr(getattr(node, "obj", None) or getattr(node, "function", None), "__scenario__", None)
-    if scenario is None or pathlib.Path(scenario.feature.filename).name != "batch-measurement.feature":
+    if sys.modules["vocab"].origin(step.request.node) != "batch-measurement":
         return False
     if step.term not in ("has", "holds"):
         return False

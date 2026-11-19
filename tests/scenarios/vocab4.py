@@ -3,11 +3,19 @@ b154): a step of a feature whose capability file says `language: codified-2` rea
 (`features_vocab4`), as `features generate` wrote it. One step definition for each keyword matches a text grammar 4
 reads (`register`); the step function of every definition, and of work_queue_world's `bind_all`, reads the step again
 (`step`), so whichever matches runs it alike."""
+import sys
 from functools import cache
 from pathlib import Path
 
 import features_vocab4
 import spec_language
+
+if __package__:
+    from . import requested
+else:   # loaded by path, as `features vocab --check` loads vocab.py
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import requested
+    sys.path.pop(0)
 
 
 @cache
@@ -45,10 +53,14 @@ def four(root, request):
 
 def step(root, keyword, text, request):
     """The step's Call in grammar 4 when its scenario's feature is of a codified-2 capability and grammar 4 reads it,
-    else None; a fresh Call each time, since a handler may set its fields."""
+    else None; a fresh Call each time, since a handler may set its fields. A request's step is re-keyed for the CLI's
+    handlers (requested.legacy)."""
     if not four(root, request) or not reads(root, keyword, text):
         return None
-    return features_vocab4.step(str(root), keyword, text)
+    call = features_vocab4.step(str(root), keyword, text)
+    vocab = sys.modules["vocab"]
+    return requested.legacy(call, request.getfixturevalue("context"), request.node,
+                            lambda key: key in vocab.HANDLERS or key in vocab.FOUR_CHAINS)
 
 
 class Parser:
@@ -69,7 +81,7 @@ def register(namespace, root, step_function, marker):
     import pytest
     from pytest_bdd.steps import StepFunctionContext
     for keyword in ("given", "when", "then"):
-        context = StepFunctionContext(type=keyword, step_func=step_function(root, keyword),
+        context = StepFunctionContext(type=keyword, step_func=requested.trying(step_function(root, keyword)),
                                       parser=Parser(root, keyword))
         name = "pytestbdd_stepdef_%s_vocab4" % keyword
         namespace[name] = pytest.fixture(name=name)(marker(context))

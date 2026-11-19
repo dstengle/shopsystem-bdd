@@ -22,7 +22,6 @@ four = sys.modules["shop_world_four"].four   # loaded before the handlers, by th
 
 from scenarios import analysis_tools_world as w
 
-FEATURE = HERE.parents[1] / "features" / "analysis-tools.feature"
 TEST_CART = "from cart import total\n\n\ndef test_cart():\n    assert total([1]) == 1\n"
 USES = "from cart import refund\n\n\n" + "\n\n".join(
     "def back%d(order):\n    return refund(order)\n" % n for n in range(1, 5))   # four references to `refund`
@@ -281,5 +280,5 @@ def runs_tools(step):
     ctx["head"] = w.git(repo, "rev-parse", "--short", "HEAD")
 
 
-for _command in sorted(set(re.findall(r"When the person runs (`tools[^`]*`)", FEATURE.read_text() if FEATURE.is_file() else ""))):
+for _command in sys.modules["vocab"].vocab4.requested.commands("tools"):
     handler("WhenRuns", _command)(runs_tools)

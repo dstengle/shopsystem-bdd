@@ -66,9 +66,7 @@ def run_measure(step, *args):
 
 def telemetry(step):
     """True in a scenario of features/telemetry.feature."""
-    node = step.request.node
-    scenario = getattr(getattr(node, "obj", None), "__scenario__", None)
-    return scenario is not None and Path(scenario.feature.filename).name == "telemetry.feature"
+    return sys.modules["vocab"].origin(step.request.node) == "telemetry"
 
 
 @handler("GivenK", "review finding")

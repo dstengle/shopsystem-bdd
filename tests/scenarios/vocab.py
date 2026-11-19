@@ -36,6 +36,7 @@ else:   # loaded by path, as `features vocab --check` loads it
     sys.path.pop(0)
 
 HANDLERS, CLAIMS = {}, defaultdict(set)
+origin = vocab4.requested.origin     # the capability a scenario's group moved from, which handlers know it by
 FOUR_CHAINS, FOUR_RUN = {}, {}     # world_four's chains of grammar 4's handlers, and the runner of each
 
 
@@ -51,7 +52,10 @@ def handler(template, term=None):
 
 def lookup(template, term):
     """The handler of (template, term), else the template's fallback, else world_four's chain of the key, else
-    None."""
+    None; a request's step by the key it is taken to (requested.lookup_key)."""
+    if template in vocab4.requested.REQUEST or template in ("WhenHappens", "ThenDoesNot"):
+        template, term = vocab4.requested.lookup_key(lambda key: key in HANDLERS or key in FOUR_CHAINS,
+                                                     template, term)
     return HANDLERS.get((template, term)) or HANDLERS.get((template, None)) or FOUR_RUN.get((template, term))
 
 

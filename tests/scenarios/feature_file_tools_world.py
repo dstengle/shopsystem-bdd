@@ -55,7 +55,7 @@ def bind(namespace, root):
     from pytest_bdd.steps import StepFunctionContext
     vocab = sys.modules["vocab"]
     for keyword in ("given", "when", "then"):
-        context = StepFunctionContext(type=keyword, step_func=dispatch(str(root), keyword),
+        context = StepFunctionContext(type=keyword, step_func=sys.modules["vocab"].vocab4.requested.trying(dispatch(str(root), keyword)),
                                       parser=vocab.vocab4.Parser(root, keyword))
         name = "pytestbdd_stepdef_%s_feature_file_tools" % keyword
         namespace[name] = pytest.fixture(name=name)(vocab._marker(context))

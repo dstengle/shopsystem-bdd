@@ -105,8 +105,7 @@ def sided(path, word):
 
 def feature(step):
     """The stem of the running scenario's feature file (`requests`)."""
-    found = getattr(getattr(step.request.node, "function", None), "__scenario__", None)
-    return Path(found.feature.filename).stem if found is not None else None
+    return sys.modules["vocab"].origin(step.request.node)
 
 
 def comment(step, name):

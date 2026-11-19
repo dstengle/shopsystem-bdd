@@ -32,9 +32,7 @@ FIGURE = {"wall time": "wall_time", "session time": "session_time", "token": "to
 
 
 def telemetry(step):
-    node = step.request.node
-    scenario = getattr(getattr(node, "obj", None), "__scenario__", None)
-    return scenario is not None and Path(scenario.feature.filename).name == "telemetry.feature"
+    return sys.modules["vocab"].origin(step.request.node) == "telemetry"
 
 
 def ran(step):
