@@ -2,7 +2,7 @@
 in its place: a file said in a worktree from its own side (is-in), and r2 forbidding of the worktree's file what r1
 obliges (holds-relation); a worktree that holds exactly some files, and one that holds nothing, in a precondition and
 on a response's object; an object that holds nothing or no file beside a forbidden one that holds a file, which
-no worktree meets both of, and two that hold a file (b314); a worktree that holds exactly the files that cover the line of a stage (b315). On a response's object (b297) the act is one with a recipient, as a feed's "return ... to",
+no worktree meets both of, and two that hold a file (b314); a worktree that holds exactly the files that cover the line of a stage (b315); in a precondition, one that holds exactly the files that cover a line (b309). On a response's object (b297) the act is one with a recipient, as a feed's "return ... to",
 and the files a relative clause's, so the context has the verbs `keep` and `return` too (`RETURNING`). Each world is
 codified2_world's, its r1 (r2) the lines here."""
 import importlib.util
@@ -26,11 +26,15 @@ RETURNING = ("- **keep** (verb, state): an agent holds on to a file. Frame: agen
              "agent.\n")
 
 
-def line(*texts, terms=""):
+def line(*texts, terms="", capability=None):
+    """The world of codified2_world's capability `thing` whose lines are `texts`, its index given `terms`; the
+    capability the When names `capability` run as `thing`."""
     def build(step):
         C2.context(step.repo, H.PATH, list(texts))
         index = step.repo / "spec" / "index.md"
         index.write_text(index.read_text() + terms)
+        if capability:
+            step.context.setdefault("ids", {})[capability] = "thing"
     return build
 
 
@@ -47,6 +51,9 @@ KEPT = ("When the person runs `work start`, `work` shall return a worktree that 
 # b315: the restriction reaches a second thing, the line of a stage
 COVERING = ("When the person runs `work start`, `work` shall return a worktree that holds exactly the files that cover "
             "the line of a stage to the person.")
+# b309: holds-exactly in a precondition, its restriction a relative clause with a K2 of its own
+COVERED = ("While a worktree holds exactly the files that cover a line, when the person runs `work start` on the "
+           "worktree, `work` shall print the worktree.")
 EMPTY = "When the person runs `work start`, `work` shall return a worktree that holds nothing to the person."
 UNRETURNED = "When the person runs `work start`, `work` shall not return a worktree to the person."
 FULL = "When the person runs `work start`, `work` shall return a worktree that holds a file to the person."
@@ -55,6 +62,7 @@ FILELESS = "When the person runs `work start`, `work` shall print a worktree tha
 UNFILLED = "When the person runs `work start`, `work` shall not print a worktree that holds a file."
 
 ROWS = [
+    (("precondition use `holds-exactly`", "precondition use `rc-subject`"), line(COVERED, capability="c1"), {}),     # b309
     (("requirement use `is-in`", "requirement forbid act", "requirement use `holds-relation`"), line(IS_IN, HOLDS), {}),
     (("precondition use `is-in`",), line(IS_IN), {}),
     (("requirement use `holds-exactly`", "requirement use `of-relation`", "requirement forbid act"),

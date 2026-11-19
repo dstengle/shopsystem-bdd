@@ -21,6 +21,8 @@
 #defined ccount/4. #defined csig/5.  #defined csiga/5.  #defined distinct/3.
 #defined onrel/5.  #defined nobox/4. #defined nbrel/5.  #defined nbattr/6.
 #defined uscope/5. #defined uex/4.
+% a universal's restrictor not of a value, or with a K2 of its own; an inner `not` of a "no" box with one (b309)
+#defined unattr/4. #defined urex/5. #defined nbnone/6.
 % "only" and a count over a row or a state on a response's object (b272, spec_lf_quant's `holding`): kept, read by no rule
 % (decision 0093: a requirement requires a standard operation, the check does not define it)
 #defined oonly/5.  #defined ocount/7. #defined yattr/4. #defined yrel/4.
@@ -44,6 +46,7 @@ term(R,X) :- holds(R,X,_).     term(R,X) :- holds(R,_,X).     term(R,X) :- free(
 term(R,X) :- uscope(R,_,_,X,_). term(R,X) :- urel(R,_,_,X).    term(R,X) :- count(R,_,_,X,_,_,_).  term(R,none) :- rnone(R,_,_,none).
 % kinds: a sub-kind is its kind (sub(K,K2): K is a kind of K2, transitively); two kinds are compatible when one is
 subeq(K,K) :- role(_,_,K).  subeq(K,K) :- none(_,K,_,_).  subeq(K,K) :- cnone(_,K,_).  subeq(K,K) :- uex(_,_,_,K).
+subeq(K,K) :- urex(_,_,_,_,K).  subeq(K,K) :- nbnone(_,_,_,_,_,K).
 subeq(K,K3) :- sub(K,K2), subeq(K2,K3).
 compat(K,K2) :- subeq(K,K2).  compat(K,K2) :- subeq(K2,K).
 
@@ -248,6 +251,13 @@ nbmet(A,B,S,N,Z1,Z2,X,T,V) :- nbv(A,B,S,N,Z1,Z2,X,T,V,neg,0,Z), w0(A,B,Z,T,V,neg
 nbmet(A,B,S,N,Z1,Z2,X,T,V) :- nbv(A,B,S,N,Z1,Z2,X,T,V,neg,1,Z), w1(A,B,Z,T,V,neg).
 nbmet(A,B,S,N,Z1,Z2,X,T,V) :- nbv(A,B,S,N,Z1,Z2,X,T,V,neg,1,Z), n1(A,B,Z,T,V,neg).
 nbno(A,B,S,N,Z1,Z2) :- nbv(A,B,S,N,Z1,Z2,X,T,V,neg,_,_), not nbmet(A,B,S,N,Z1,Z2,X,T,V).
+% an inner `not` with a K2 of its own (nbnone, b309: "a file that covers no line"): met where the merged state knows
+% the instance so related to no K2 (rnone, of its kind or one above it)
+nbnm(A,B,S,N,Z1,Z2,Q,O,s,K) :- nbnone(S,N,Q,O,s,K), nbat(A,B,S,N,Z1,Z2,O,Z), side(A,B,S2), rnone(S2,Q,X,kind(K2)),
+                               at(A,B,S2,X,Z), subeq(K,K2).
+nbnm(A,B,S,N,Z1,Z2,Q,O,o,K) :- nbnone(S,N,Q,O,o,K), nbat(A,B,S,N,Z1,Z2,O,Z), side(A,B,S2), rnone(S2,Q,kind(K2),X),
+                               at(A,B,S2,X,Z), subeq(K,K2).
+nbno(A,B,S,N,Z1,Z2) :- nbm(A,B,S,N,Z1,Z2), nbnone(S,N,Q,O,D,K), not nbnm(A,B,S,N,Z1,Z2,Q,O,D,K).
 out(A,B) :- nbm(A,B,S,N,Z1,Z2), not nbno(A,B,S,N,Z1,Z2).
 % a functional relation (`fun(Q)`: a relation row of cardinality one, or a preposition, spec_logic_vocab) relates a
 % thing to one thing: two images under one unification are out
@@ -353,6 +363,14 @@ out(A,B) :- side(A,B,S), state(A,B,S,N), ccond(S,Y,C,neg), at(A,B,S,Y,Z), ent(A,
 ucand(A,B,S,U,Z) :- side(A,B,S), uall(S,U,K), kup(A,B,Z,K).
 umiss(A,B,S,U,Z) :- ucand(A,B,S,U,Z), urel(S,Q,U,W), at(A,B,S,W,Zw), not rw(A,B,Q,Z,Zw,pos).
 umiss(A,B,S,U,Z) :- ucand(A,B,S,U,Z), state(A,B,S,N), uattr(S,U,T,V), not has(A,B,N,Z,T,V,pos).
+% a value it has not (unattr, b309): met by another value known, or the value known not to hold
+unmet(A,B,S,U,Z,T,V) :- ucand(A,B,S,U,Z), state(A,B,S,N), unattr(S,U,T,V), has(A,B,N,Z,T,W,pos), W != V.
+unmet(A,B,S,U,Z,T,V) :- ucand(A,B,S,U,Z), state(A,B,S,N), unattr(S,U,T,V), has(A,B,N,Z,T,V,neg).
+umiss(A,B,S,U,Z) :- ucand(A,B,S,U,Z), unattr(S,U,T,V), not unmet(A,B,S,U,Z,T,V).
+% a row or state to a K2 of the box's own (urex, b309: "every file that covers a line"): met by a K2 known so related
+urexm(A,B,S,U,Q,s,K,Z) :- ucand(A,B,S,U,Z), urex(S,U,Q,s,K), rw(A,B,Q,Z,Zk,pos), kup(A,B,Zk,K).
+urexm(A,B,S,U,Q,o,K,Z) :- ucand(A,B,S,U,Z), urex(S,U,Q,o,K), rw(A,B,Q,Zk,Z,pos), kup(A,B,Zk,K).
+umiss(A,B,S,U,Z) :- ucand(A,B,S,U,Z), urex(S,U,Q,D,K), not urexm(A,B,S,U,Q,D,K,Z).
 umatch(A,B,S,U,Z) :- ucand(A,B,S,U,Z), not umiss(A,B,S,U,Z).
 out(A,B) :- umatch(A,B,S,U,Z), state(A,B,S,N), ucond(S,U,T,V,pos), has(A,B,N,Z,T,W,pos), V != W.
 out(A,B) :- umatch(A,B,S,U,Z), state(A,B,S,N), ucond(S,U,T,V,pos), has(A,B,N,Z,T,V,neg).

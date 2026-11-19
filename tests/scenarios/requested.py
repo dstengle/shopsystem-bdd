@@ -5,8 +5,8 @@ in one place: a request becomes the command the contract names with each paramet
 `work decision`, `without` the `--tier` option), a session that starts the hook its capability answers with, and
 each act of the request pack the CLI's spelling of it (refuse, print, exit, commit), its subject the program the
 scenario requested last, a parameter it names as its option (the tier as the `--tier` option). `origin` gives the
-capability a scenario's group moved from (spec/moves.json), which the handlers of that capability's world know it
-by. Not a handler module: vocab4 and vocab import it."""
+capability a scenario's group moved from (spec/moves.json), or, of a group added since, the one capability every
+moved group of its capability came from (b309), which the handlers of that capability's world know it by. Not a handler module: vocab4 and vocab import it."""
 import json
 import re
 from functools import cache
@@ -62,15 +62,27 @@ def capability(node):
     return Path(found.feature.filename).stem if found is not None else None
 
 
+@cache
+def _sources():
+    """Each capability's groups' origins: {capability: {the capabilities its moved groups came from}}."""
+    found = {}
+    for new, old in _moved().items():
+        if "#g" in new:
+            found.setdefault(new.split("#")[0], set()).add(old.split("#")[0])
+    return found
+
+
 def origin(node):
-    """The capability the scenario's group moved from (`decision-tiers`), else its own capability."""
+    """The capability the scenario's group moved from (`decision-tiers`), else, of a group added since the move, the
+    one capability its capability's moved groups came from (b309), else its own capability."""
     cap, found = capability(node), scenario(node)
     if found is None:
         return None
     for tag in sorted(found.tags):
         if re.fullmatch(r"g\d+", tag) and "%s#%s" % (cap, tag) in _moved():
             return _moved()["%s#%s" % (cap, tag)].split("#")[0]
-    return cap
+    sources = _sources().get(cap, set())
+    return next(iter(sources)) if len(sources) == 1 else cap
 
 
 def command(operation, params=()):
