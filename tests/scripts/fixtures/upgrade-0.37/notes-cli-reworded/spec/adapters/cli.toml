@@ -17,14 +17,24 @@ options = ["--root", "--json"]
 
 [operations."notes.add"]
 command = "notes add"
+requirements = [
+  "notes#r1: When the person adds a note with a title and a tag, the notes service shall keep the note under the tag.",
+  "notes#r2: If the person adds a note without a title, then the notes service shall refuse the request and name the title.",
+]
 [operations."notes.add".parameters]
 title = { option = "--title", example = "Buy milk" }
 tag = { option = "--tag", repeat = true }
 
 [operations."notes.list"]
 command = "notes list"
+requirements = [
+  "notes#r3: When the person lists the notes, the notes service shall return every note.",
+]
 
 [operations."notes.remove"]
 command = "notes remove"
+requirements = [
+  "notes#r4: When the person removes a note, the notes service shall set the status of the note to `removed`.",
+]
 [operations."notes.remove".parameters]
 note = { positional = 1, example = "1" }

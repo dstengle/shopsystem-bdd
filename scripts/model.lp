@@ -49,6 +49,7 @@
 #defined elementless/2.  #defined unresolved/2.  #defined named_twice/2.  #defined retired_import/2.
 #defined foreign_term/3.          % foreign_term(Q, W, Why): Q uses W, a word of no vocabulary layer its area reads
 #defined adapter_problem/3.       % adapter_problem(Code, S, Why): the CLI contract breaks Code at S (adapter_cli_check)
+#defined contract_op/2.  #defined op_holds/3.   % an adapter contract C holds the operation O, which holds the requirement Q (adapter_annotate)
 % the lines against the model (model_domain_lines; v_m2-v_m7)
 #defined operation/1.  #defined op_param/2.  #defined valued/2.  #defined param_value/3.  #defined op_by/2.
 #defined actor_kind/2.  #defined op_reason/2.  #defined lifecycle/2.  #defined transition/4.
@@ -441,6 +442,16 @@ label("v_a4", "a command or an option of the program's argparse is named by no t
 % fail v_a4: adapter_problem("v_a4","notes export","no operation of spec/adapters/cli.toml names the command 'notes export'").
 % pass v_a4: typed("ctx").
 v_a4(S, Why)  :- adapter_problem("v_a4", S, Why).
+% each operation of an adapter contract holds the requirements that govern it, those whose trigger requests it
+% (scripts/adapter_annotate.py; `spec annotate` writes them, checking r48-r51)
+label("v_a5", "an operation of an adapter contract does not hold a requirement that governs it: run spec annotate").
+% fail v_a5: contract_op("spec/adapters/cli.toml","notes.add"). requester("c#r1","notes.add","the person").
+% pass v_a5: contract_op("spec/adapters/cli.toml","notes.add"). requester("c#r1","notes.add","the person"). op_holds("spec/adapters/cli.toml","notes.add","c#r1").
+v_a5(O, Q)    :- contract_op(C, O), requester(Q, O, _), not op_holds(C, O, Q).
+label("v_a6", "an operation of an adapter contract holds a requirement that does not govern it: run spec annotate").
+% fail v_a6: op_holds("spec/adapters/cli.toml","notes.add","c#r1"). requester("c#r1","notes.list","the person").
+% pass v_a6: op_holds("spec/adapters/cli.toml","notes.add","c#r1"). requester("c#r1","notes.add","the person").
+v_a6(O, Q)    :- op_holds(_, O, Q), not requester(Q, O, _).
 % the lines against the model (scripts/model_domain_lines.py): a request's operation O, parameters and requester, a
 % refusal's stated reasons, a set of a lifecycle's attribute
 label("v_m2", "a request names a parameter its operation does not declare, or a value outside the parameter's values").
@@ -556,7 +567,7 @@ w_example(Q, L)    :- exemplified(Q, L).
 #show v17/1. #show v18d/1.
 #show v_t1/3. #show v_t2/1. #show v_t3/1. #show v_t4/1. #show v_t5/1. #show v_t6/2. #show v_t11/1. #show v_t12/1. #show v_t13/2. #show v_t14/1. #show v_t15/1.
 #show v_t16/2. #show v_t17/2. #show v_t18/2. #show v_t19/2. #show v_t20/2. #show v_t21/2.
-#show v_m1/3. #show v_m2/2. #show v_m3/2. #show v_m4/2. #show w_m5/4. #show v_m6/4. #show v_m7/1. #show v_m8/2. #show v_a1/2. #show v_a2/2. #show v_a3/2. #show v_a4/2. #show v_r1/2. #show w_r1/2.
+#show v_m1/3. #show v_m2/2. #show v_m3/2. #show v_m4/2. #show w_m5/4. #show v_m6/4. #show v_m7/1. #show v_m8/2. #show v_a1/2. #show v_a2/2. #show v_a3/2. #show v_a4/2. #show v_a5/2. #show v_a6/2. #show v_r1/2. #show w_r1/2.
 #show v_p0/1. #show v_p1/2. #show v_p2/1. #show v_p3/2.
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
 #show w_many_requests/1. #show w_untiered/1. #show w_unrouted/1. #show w_example/2. #show w_value_kind/1.

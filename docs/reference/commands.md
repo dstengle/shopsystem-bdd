@@ -816,6 +816,24 @@ capability                spec/capabilities/<name>.md                          w
 ...
 ```
 
+### `spec annotate`
+
+Writes, under each operation of each adapter contract (`spec/adapters/cli.toml`), the requirements that govern it:
+each requirement whose trigger requests the operation, its refusals among them, as
+`requirements = ["<capability>#r<n>: <line>", ...]`
+([adapter contracts](adapters.md)). It prints each contract it wrote (`annotated`) or found
+current (`current`) and exits 0.\
+Synopsis: `spec annotate [<adapter contract> ...] [--check]`
+
+- `--check`: write nothing; each stale contract is named on stderr and it exits 1. `spec check` fails the same
+  contract too, naming each operation and requirement (`v_a5`, `v_a6`).
+
+```console
+$ spec annotate
+annotated spec/adapters/cli.toml
+$ spec annotate --check
+```
+
 ### `spec decisions`
 
 Writes `spec/decisions/index.md` from the decision files. Not committed.\
