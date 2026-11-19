@@ -4,6 +4,7 @@
   migrate run --context <owner/product/context>
   migrate status [--hook]
   migrate upgrade
+  migrate init --id <bounded context id>
 
 It works on the top level of the git repository it is run in. Every change is computed first (moves, new texts,
 removals), checked, and only then written; a write that fails part way puts the repository back at its commit. A
@@ -13,6 +14,7 @@ import argparse
 import sys
 from pathlib import Path
 
+import migrate_init
 from adapter_cli_respond import prepare, respond
 from migrate_layout import Plan, plan_ids, plan_moves
 from migrate_ledger import plan_ledger
@@ -62,9 +64,14 @@ def main(argv=None):
     s = sub.add_parser("status", help="print the plugin versions and each pending upgrade step")
     s.add_argument("--hook", action="store_true", help="print what a session is told at its start, and exit 0")
     sub.add_parser("upgrade", help="apply each pending upgrade step and commit it all")
+    i = sub.add_parser("init", help="found a new bounded context here: write its spec/, .shop/, features/ and "
+                       "tests/scenarios/ scaffold and commit it")
+    i.add_argument("--id", help="the context id: bounded-context/<domain>/<path>")
     args = prepare(ap).parse_args(argv)
     if args.cmd in ("status", "upgrade"):
         return respond("migrate", lambda args: run_upgrade(args.cmd, getattr(args, "hook", False)), args)
+    if args.cmd == "init":
+        return respond("migrate", migrate_init.run, args, names={"context id": "id"})
     return respond("migrate", cmd_run, args)
 
 

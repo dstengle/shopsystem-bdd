@@ -26,8 +26,8 @@ options = ["--json", "--root", "--hook", "--python"]
 commands = ["work batch brief", "work directives", "work names", "spec constructs", "spec restates"]
 
 [unexposed]
-# operations an agent performs when dispatched, which no command requests; upgrades.found until b318 adds its command
-operations = ["reviews.review", "measurement.conduct", "measurement.hand", "upgrades.found"]
+# operations an agent performs when dispatched, which no command requests
+operations = ["reviews.review", "measurement.conduct", "measurement.hand"]
 
 [environment]
 VIRTUAL_ENV = "toolchain.probe: the Python interpreter, when none is given"
@@ -990,6 +990,11 @@ requirements = [
 ]
 [operations."upgrades.relocate".parameters]
 "bounded context" = { option = "--context" }
+
+[operations."upgrades.found"]
+command = "migrate init"
+[operations."upgrades.found".parameters]
+"context id" = { option = "--id" }
 
 [operations."conversation.prompt"]
 hook = "UserPromptSubmit"
