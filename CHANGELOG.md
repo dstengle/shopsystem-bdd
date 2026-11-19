@@ -45,15 +45,18 @@ and decisions), and each interface is an adapter with its own contract.
   form says `request(e1, decisions.enter, ...)` with `param` and `noparam`; `spec logic` unifies two requests by
   operation and parameters, and names every kind by its model element, qualified by its area.
 - **The request pack** (`grammar/packs/request.md`) replaces the CLI pack in every context's `imports:`: request,
-  parameter, service, reason, response, check; refuse, name, return, notify, complete, fail, keep. The CLI pack is
-  kept only for the upgrade's report, and `imports: [cli]` with a domain model is refused (`v_t21`).
+  parameter, service, reason, response, check; refuse, name, return, notify, complete, fail, keep. The CLI pack's
+  reading (a run with its options, the run frames, the bridge) stays live beside the request reading until b356, and
+  `imports: [cli]` is refused only in a context with a domain model (`v_t21`); the upgrade scaffolds one.
 - **The response envelope.** Every operation answers with `{outcome, content, errors, notices}`: `done`, `returned`,
   `refused`, `passed` or `failed` (a failure of the infrastructure, `broken`, is outside the domain), its errors
   naming business references (`parameter:tier`, `item:b12`). Every command takes `--json` and prints it.
 - **The CLI adapter's contract** (`spec/adapters/cli.toml`): each operation's command, each parameter's option or
   place, how each outcome shows (exit 0 or 1, stdout or stderr), the hooks and the environment. `spec check` reads
-  each program's argparse and holds the two to each other both ways (`v_a1`-`v_a4`). The generated scenarios drive
-  the commands through it (`tests/scenarios/driver_cli.py`). [Adapter contracts](docs/reference/adapters.md).
+  each program's argparse (in a process of its own) and holds the two to each other both ways (`v_a1`-`v_a4`). The
+  protocol driver `tests/scenarios/driver_cli.py` makes a request through it and reads the envelope back; the
+  generated scenarios do not use it yet: their request steps are re-keyed to the CLI handlers, which read text and
+  exit codes, until b358. [Adapter contracts](docs/reference/adapters.md).
 - **This repository's spec moved whole**: six areas (specification, tracking, execution, measurement, analysis,
   upgrades), 22 capabilities by service and lifecycle, every live line reworded under a new id, the old ids retired
   with a `## Moved` table and `spec/moves.json` (old id to new id, read wherever an old id is named). U12, U14 and U15
