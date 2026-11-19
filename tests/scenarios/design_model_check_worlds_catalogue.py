@@ -2,7 +2,7 @@
 takes first: a capability that violates a rule whose severity is `error` (v15a) or only one whose severity is
 `warning` (a line of example data, w_example), and the rule catalogue a context keeps (`CATALOGUE`, one entry of
 v15a with its purpose and the item it came by): a requirement that names a rule it has no entry of; that entry with
-no purpose, with no item, or with the item b1 of the context's backlog, whose status is `ready`."""
+no purpose, with no item and no release (a Since: of a version CHANGELOG.md has no section of), or with the item b1 of the context's backlog, whose status is `ready`."""
 import importlib.util
 import sys
 from pathlib import Path
@@ -81,6 +81,14 @@ def entry(**kwargs):
     return build
 
 
+def unreleased(step):
+    """The entry v15a names no item, and its Since: a version CHANGELOG.md has no section of (it has 0.31.0's)."""
+    entry(since=False)(step)
+    path = step.repo / "grammar" / "rules.md"
+    path.write_text(path.read_text() + "- Since: 9.9.9\n")
+    H.write(step.repo, "CHANGELOG.md", "# Changelog\n\n## 0.31.0: the workflow simplified\n\nThings.\n")
+
+
 def undelivered(step):
     """The entry v15a came by the item b1, whose status in the context's backlog is `ready`."""
     entry()(step)
@@ -92,7 +100,7 @@ ROWS = [
     (("rule is `error`", "capability violate rule"), erring, {"r1": "v15a"}),
     (("rule has no catalogue entry", "requirement use rule"), uncatalogued, {"r2": UNCATALOGUED}),
     (("catalogue entry has no purpose",), entry(purpose=False), {"c1": ENTRY}),
-    (("catalogue entry mention no item",), entry(since=False), {"c1": ENTRY}),
+    (("catalogue entry mention no item", "catalogue entry mention no release"), unreleased, {"c1": ENTRY}),
     (("item is not `delivered`", "catalogue entry mention item"), undelivered, {"c1": ENTRY, "i1": ITEM}),
     (("rule is `warning`", "capability violate rule", "no rule is `error`"), warned, {"r1": "w_example"}),
 ]

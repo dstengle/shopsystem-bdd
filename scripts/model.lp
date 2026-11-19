@@ -463,10 +463,10 @@ label("v_c2", "a catalogue entry has no purpose").
 % fail v_c2: node("grammar/rules.md#v2","catalogue-entry").
 % pass v_c2: node("grammar/rules.md#v2","catalogue-entry"). purpose("grammar/rules.md#v2").
 v_c2(E)       :- node(E, "catalogue-entry"), not purpose(E).
-label("v_c3", "a catalogue entry mentions no item: no Since: or Changed: names one").
+label("v_c3", "a catalogue entry mentions no item and no release: no Since: or Changed: names an item or a section of CHANGELOG.md").
 % fail v_c3: node("grammar/rules.md#v2","catalogue-entry").
-% pass v_c3: node("grammar/rules.md#v2","catalogue-entry"). entry_item("grammar/rules.md#v2","item/x/b1").
-v_c3(E)       :- node(E, "catalogue-entry"), not entry_item(E, _).
+% pass v_c3: node("grammar/rules.md#v2","catalogue-entry"). entry_release("grammar/rules.md#v2","0.31.0").
+v_c3(E)       :- node(E, "catalogue-entry"), not entry_item(E, _), not entry_release(E, _).
 label("v_c4", "a catalogue entry mentions an item that is not delivered").
 % fail v_c4: entry_item("grammar/rules.md#v2","item/x/b1"). item_status("item/x/b1","ready").
 % pass v_c4: entry_item("grammar/rules.md#v2","item/x/b1"). item_status("item/x/b1","delivered").

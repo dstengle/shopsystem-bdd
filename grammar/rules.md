@@ -1549,7 +1549,7 @@ a catalogue entry has no purpose
 
 ## v_c3
 
-a catalogue entry mentions no item: no Since: or Changed: names one
+a catalogue entry mentions no item and no release: no Since: or Changed: names an item or a section of CHANGELOG.md
 
 - Purpose: Every catalogue entry is traceable to the delivered work that introduced or changed it.
 - Since: b370
@@ -1566,7 +1566,7 @@ a catalogue entry mentions no item: no Since: or Changed: names one
 
   ```prolog
   node("grammar/rules.md#v2","catalogue-entry").
-  entry_item("grammar/rules.md#v2","item/x/b1").
+  entry_release("grammar/rules.md#v2","0.31.0").
   ```
 
 ## v_c4

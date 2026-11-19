@@ -4,10 +4,11 @@ entry, each entry named `<catalogue>#<code>`.
 
 Facts: `node(E, "catalogue-entry")`, `purpose(E)` of an entry with a `- Purpose:` line, `entry_item(E, I)` of each
 item its `- Since:` and `- Changed:` lines name (`b<n>`, an item of the context the catalogue's header names, else of
-this one), `item_status(I, S)` of each item of `.shop/backlog/`, `rule_catalogue(P)` and `catalogued_rule(C)` of the
+this one), `entry_release(E, V)` of each release they name that is a `## <version>` section of CHANGELOG.md (an
+entry from before items were tracked), `item_status(I, S)` of each item of `.shop/backlog/`, `rule_catalogue(P)` and `catalogued_rule(C)` of the
 rule catalogue's codes, and `cites_rule(Q, C)` of each rule code a live requirement names in backticks or quotes:
 model.lp's v_c1 (a requirement names a rule the rule catalogue has no entry of), v_c2 (an entry with no purpose), v_c3
-(an entry that mentions no item) and v_c4 (an entry that mentions an item that is not delivered). A context that keeps
+(an entry that mentions no item and no release) and v_c4 (an entry that mentions an item that is not delivered). A context that keeps
 no catalogue has no fact of it."""
 import re
 
@@ -19,6 +20,8 @@ CODE = re.compile(r"v\d+[a-z]?|v_[a-z]\w*|w_[a-z]\w*")      # a rule's code, as 
 CITED = re.compile(r"`([^`]+)`|\"([^\"]+)\"")
 HEADING = re.compile(r"^## (\S+)[ \t]*$", re.MULTILINE)
 OWNER = re.compile(r"name items of `([^`]+)`")
+VERSION = re.compile(r"\b(\d+\.\d+\.\d+)\b")
+RELEASE = re.compile(r"^## (\d+\.\d+\.\d+)\b", re.MULTILINE)
 ITEMS = re.compile(r"^- (?:Since|Changed): (.*)$", re.MULTILINE)
 
 
@@ -32,6 +35,17 @@ def entries(text):
 def items(body):
     """The item numbers an entry's Since: and Changed: lines name, in order."""
     return [int(n) for line in ITEMS.findall(body) for n in re.findall(r"\bb([1-9]\d*)\b", line)]
+
+
+def versions(body):
+    """The versions an entry's Since: and Changed: lines name, in order."""
+    return [v for line in ITEMS.findall(body) for v in VERSION.findall(line)]
+
+
+def releases(root):
+    """The versions CHANGELOG.md has a `## <version>` section of."""
+    path = root / "CHANGELOG.md"
+    return set(RELEASE.findall(path.read_text())) if path.is_file() else set()
 
 
 def cited(text):
@@ -50,6 +64,7 @@ class CatalogueReading:
             data, _ = frontmatter(path.read_text())
             if data.get("id") and data.get("status"):
                 self.fact("item_status", str(data["id"]), str(data["status"]))
+        shipped = releases(self.root)
         for rel in kept:
             text = (self.root / rel).read_text()
             owner = OWNER.search(text.split("\n## ", 1)[0])
@@ -65,6 +80,9 @@ class CatalogueReading:
                     self.fact("purpose", ident)
                 for n in dict.fromkeys(items(body)):
                     self.fact("entry_item", ident, "item/%s/b%d" % (owner, n))
+                for version in dict.fromkeys(versions(body)):
+                    if version in shipped:
+                        self.fact("entry_release", ident, version)
         if RULES in kept:
             for qid, text in sorted(self.req_text.items()):
                 for code in cited(text):
