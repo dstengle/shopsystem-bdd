@@ -14,6 +14,11 @@ from pathlib import Path
 
 import adapter_cli
 
+if __package__:
+    from . import requested_words as W
+else:   # loaded by path, as vocab4 is
+    import requested_words as W
+
 ROOT = Path(__file__).resolve().parents[2]
 REQUEST = ("WhenRequests", "ThenRefuses", "ThenReturns", "ThenReturnsNot", "ThenCompletes", "ThenFails",
            "ThenNotifies", "ThenKeeps")
@@ -30,7 +35,10 @@ THENS = {"ThenRefuses": [("ThenDoes", "refuse")], "ThenReturns": [("ThenPrints",
 NEGATED = {"keep": [("ThenDoesNot", v) for v in KEEPS], "notify": [("ThenPrintsNot", None)],
            "change": [("ThenDoesNot", v) for v in ("change", "rewrite", "relocate", "rename")]}
 VERBS = {"change": ("rewrite", "relocate", "rename", "commit", "change")}
-ALWAYS = ("--by-tag",)     # a cli-only option argparse requires of its command (`features count --by-tag`)
+# a command whose flagged key is another capability's handler: this capability's runs it plain with the flag
+PLAIN = {("design-model-check", "`model decisions --check`"): "`model decisions`"}
+ALWAYS = ("--by-tag",)
+DEFAULT = {"specification.renew": "--write", "scenarios.audit": "--check"}     # a cli-only option argparse requires of its command (`features count --by-tag`)
 MOST = max(len(c) for c in [*THENS.values(), *NEGATED.values(), *VERBS.values()])
 
 
@@ -86,6 +94,9 @@ def command(operation, params=()):
         else:
             options.append(("`%s`" % param.option, value))
     options += [("`%s`" % o, None) for o in op.cli_only if o in ALWAYS]
+    if operation in DEFAULT and not words:      # the option the command takes for the operation's plain request
+        words.append(DEFAULT[operation])
+        options.append(("`%s`" % DEFAULT[operation], None))
     options += [("`--hook`", None)] if op.hook else []     # a hook's operation: its command run as the hook
     longest = " ".join([base] + words)
     valued = " ".join([longest] + ["%s %s" % (o.strip("`"), v.strip("`")) for o, v in options if v is not None])
@@ -158,70 +169,13 @@ def _spell(np, operation):
 
 # the operations whose request the handlers took as an event (the person merges the pull request on the host)
 EVENTS = {"batches.merge": "merge"}
-# the words a capability's handlers know a kind by, before the domain contract renamed it
-RENAMES = {"requests": {"context request": "request", "entry": "comment"},
-           "intake": {"context request": "request", "entry": "comment"},
-           "batches": {"proposed change": "pull request", "kept change": "commit", "workspace": "worktree",
-                       "context request": "request", "entry": "comment"},
-           "telemetry": {"proposed change": "pull request"},
-           "migration-tools": {"this plugin": "`migrate`"},
-           "backlog": {"shared workspace": "upstream branch", "workspace name": "branch name",
-                       "workspace": "git branch"}}
-# the verbs a capability's handlers know a state by, before the reword: (new term, old term, old third person)
-VERB_RENAMES = {"batches": [("break", "fail", "fails"), ("succeed", "pass", "passes"), ("meet", "pass", "passes")],
-                "backlog": [("meet", "pass", "passes")], "readiness": [("meet", "pass", "passes")]}
-
-
-def _renamed(call, node):
-    """The kinds the handlers of the capability the scenario moved from know by an older word, said so."""
-    table = RENAMES.get(origin(node), {})
-    def say(text):
-        for new, old in table.items():
-            if new.startswith("this "):     # a phrase said whole
-                text = text.replace(new, old) if text else text
-                continue
-            text = re.sub(r"\b(the|a|an|no|every|this|each|that) %s(s?)\b" % new, r"\1 %s\2" % old,
-                          text) if text else text
-        return text
-    call.text, call.subject = say(call.text), say(call.subject)
-    call.nps = [say(np) for np in call.nps]
-    call.kind = table.get(call.kind, call.kind)
-    if call.template.startswith("Given") or call.template.endswith("K_A"):
-        call.term = table.get(call.term, call.term)
-    if call.template in ("GivenDoes", "GivenDoesNot") and call.term == "holds" and call.nps == ["this repository"]:
-        call.term = call.event = "check out"        # a workspace that holds this repository is checked out there
-        call.subject, call.nps = "this repository", [call.subject]
-        call.text = "this repository checks out %s" % call.nps[0]
-
-
-def _reverbed(call, node):
-    for new, old, said in VERB_RENAMES.get(origin(node), []):
-        if new == "meet" and call.nps != ["this readiness bar"]:   # a bar check is still met
-            continue
-        if call.template in ("GivenDoes", "GivenDoesNot", "ThenDoes", "ThenDoesNot") and call.term == new:
-            call.term = call.event = old
-            call.text = re.sub(r"\b%ss\b" % new, said, call.text, count=1)
-            call.text = re.sub(r"\b%s\b" % new, old, call.text, count=1)
-
-
-def _owner(call, node, kind):
-    """A request's thing named as what a `kind` has ("the context request c1 has the turn t1"): the `kind` it is
-    of, as the CLI's handlers name a request's thing by its request."""
-    texts = [s.name for s in scenario(node).steps] if scenario(node) else []
-    out = []
-    for name in call.names:
-        found = [m for t in texts for m in re.findall(r"^the %s (\w+) (?:has|holds) the [a-z ]+ %s$" % (kind, name), t)]
-        out.append(found[0] if found else name)
-    call.names = out
-
-
 def legacy(call, context, node, known):
     """`call` re-keyed for the CLI's handlers (in place): `known(key)` says whether a handler or a chain has a key."""
-    _renamed(call, node)
-    _reverbed(call, node)
+    W.renamed(call, origin(node))
+    W.reverbed(call, origin(node))
     t = call.template
-    if t == "WhenRequests" and origin(node) in RENAMES:
-        _owner(call, node, "context request")
+    if t == "WhenRequests" and origin(node) in W.RENAMES:
+        W.owner(call, [s.name for s in scenario(node).steps] if scenario(node) else [], "context request")
     if t == "WhenRequests" and call.term in EVENTS:     # what the handlers took as an event, not a command
         context["requested"] = (call.term, "`%s`" % contract().operations[call.term].command)
         call.template = "WhenHappens"
@@ -230,9 +184,11 @@ def legacy(call, context, node, known):
     if t == "WhenRequests":
         commands, options, without = command(call.term, call.params + _things(call))
         chosen = next((c for c in commands if known(("WhenRuns", c))), commands[-1])
+        chosen = PLAIN.get((origin(node), chosen), chosen)
         context["requested"] = (call.term, chosen)
         call.template, call.term, call.command = "WhenRuns", chosen, chosen
         call.options, call.without = options, without
+        call.text = W.runs_text(call, chosen)
         return call
     if t == "WhenHappens" and call.term == "start" and capability(node) in STARTS:
         chosen, flag = STARTS[capability(node)]
@@ -257,7 +213,7 @@ def legacy(call, context, node, known):
         if t in ("ThenCompletes", "ThenFails"):     # "fails this check": no thing is named
             call.nps = []
         template, term = _pick(node, THENS[t] if t in THENS else NEGATED[call.term])
-        call.text = _retext(call.text, program, t, term or {"ThenPrints": "print"}.get(template), chosen)
+        call.text = W.retext(call.text, program, t, term or {"ThenPrints": "print"}.get(template), chosen)
         call.template, call.subject = template, program or call.subject
         call.term = term if term is not None else call.subject
         call.event = term or call.event
@@ -265,38 +221,13 @@ def legacy(call, context, node, known):
     if t == "ThenDoes" and call.term in VERBS:
         said = call.term
         call.term = call.event = _pick(node, [(t, v) for v in VERBS[call.term]])[1]
-        call.text = call.text.replace(" %s " % S3.get(said, said), " %s " % S3.get(call.term, call.term + "s"), 1)
+        call.text = call.text.replace(" %s " % W.S3.get(said, said), " %s " % W.S3.get(call.term, call.term + "s"), 1)
     if t.startswith("Then") and call.term == "name":
         call.nps = [_spell(np, operation) for np in call.nps]
     if t.startswith("Then") and call.subject and call.subject.endswith(" service") and program:
         call.subject = program
-        call.text = _retext(call.text, program, t, None, chosen)
+        call.text = W.retext(call.text, program, t, None, chosen)
     return call
-
-
-S3 = {"refuse": "refuses", "return": "returns", "complete": "completes", "fail": "fails", "notify": "notifies",
-      "keep": "keeps", "change": "changes", "print": "prints"}
-WORDS = {"ThenRefuses": "refuses this request", "ThenCompletes": "completes the request",
-         "ThenFails": "fails this check"}
-SAID = {"ThenCompletes": "exits successfully", "ThenFails": "exits with an error"}
-
-
-def _retext(text, program, template, verb, chosen):
-    """The step's text as the CLI's handlers read it: "`work` writes the item i1" for "the backlog service keeps the
-    item i1"; "`work` refuses `work decision`" for "... refuses this request"."""
-    if program:
-        text = re.sub(r"^the [a-z ]+ service ", program + " ", text)
-    if template == "ThenNotifies":     # the party told is the hook's session, not what the output shows
-        text = re.sub(r" notifies (the|this) [a-z ]+? [a-z]*\d* ?of ", " notifies ", text, count=1)
-    if template in WORDS:
-        return text.replace(WORDS[template], SAID.get(template) or "refuses %s" % chosen)
-    if verb is None:
-        return text
-    for new in ("keeps", "returns", "notifies", "changes"):
-        text = re.sub(r"^(\S+) %s " % new, r"\1 %s " % S3.get(verb, verb + "s"), text)
-    for new in ("keep", "return", "notify", "change"):
-        text = re.sub(r"^(\S+) does not %s " % new, r"\1 does not %s " % verb, text)
-    return text
 
 
 def _pick(node, candidates):

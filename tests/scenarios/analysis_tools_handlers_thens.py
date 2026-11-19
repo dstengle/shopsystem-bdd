@@ -144,6 +144,10 @@ def bind(step, name, value):
 @handler("ThenPrints", "`tools`")
 def prints(step):
     for np in step.nps:
+        if np.startswith("the revision of the coverage map "):     # the commit the map was made at (the reword)
+            made = [next(g for g in m.groups() if g) for m in re.finditer(SHOWN["the commit "], output(step, True))]
+            assert step.context.get("map_commit") in made, (np, made, step.context.get("map_commit"))
+            continue
         prefix = next((p for p in SHOWN if np.startswith(p)), None)
         if prefix:
             observe(step, np, [next(g for g in m.groups() if g) for m in re.finditer(SHOWN[prefix], output(step, True))])

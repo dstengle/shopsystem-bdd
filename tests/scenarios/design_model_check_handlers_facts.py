@@ -181,6 +181,15 @@ def then_own(step):
         assert CACHE.then(step, done) is not False, step.text
 
 
+@local("ThenDoes")
+def has_translation(step):
+    """`the requirement r1 has the translation t1`: the translation the Then before it found (the reword)."""
+    if not ours(step) or step.term != "has" or not step.nps or not step.nps[0].startswith("the translation"):
+        return False
+    step.event = "translate"
+    return then_own(step)
+
+
 @local("ThenPrints")
 @local("ThenPrintsNot")
 def prints(step):
@@ -188,6 +197,12 @@ def prints(step):
     c1."""
     if not ours(step):
         return False
+    if step.nps and step.nps[0].startswith("the translation") and step.template == "ThenPrints":   # the reword
+        step.event = "translate"
+        return then_own(step)
+    if step.nps and step.nps[0].startswith("the parse ") and step.template == "ThenPrints":     # read from the cache
+        step.event, step.nps = "read", ["the parse cache"]
+        return then_own(step)
     if step.nps and step.nps[0].startswith("the file form"):
         return _sibling("design_model_check_handlers_forms.py", "shop_design_model_check_handlers_forms") \
             .prints_every_form(step)
