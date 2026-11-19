@@ -64,7 +64,8 @@ def capability(node):
 
 # groups added since the move whose scenarios an old capability's handlers take, as its moved groups' (b309); a
 # group whose own capability has handlers of its own is not listed
-ADDED = {"consistency#g33": "design-model-check"}
+ADDED = {"consistency#g33": "design-model-check",
+         **{"checking#g%d" % n: "design-model-check" for n in range(52, 58)}}     # b370: the rule catalogue's checks
 
 
 def origin(node):

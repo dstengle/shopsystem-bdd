@@ -114,13 +114,25 @@ def shared_state(step):
     state(step)
 
 
+@local("GivenK_A", "item")
+def item_value(step):
+    """The status of an item a catalogue entry mentions (b370), in this feature's scenarios only."""
+    if not ours(step):
+        return False
+    value(step)
+
+
 @handler("GivenK_A", "capability")
+@handler("GivenK_A", "rule")
 @handler("GivenK_A", "term")
 def value(step):
     """`the term t1 is `state``: "term is `state`"; `the term t1 has no part of speech`: "term has no part of
-    speech"."""
+    speech"; `no rule whose severity is `error` exists`: "no rule is `error`"; `the status of the item i1 is not
+    `delivered``: "item is not `delivered`"."""
     if step.values:
-        remember(step, "%s is %s" % (step.kind, step.values[0]))
+        negated = "not " if re.search(r" is not `", step.text) else ""
+        remember(step, "%s%s is %s%s" % ("no " if step.text.startswith("no ") else "", step.kind, negated,
+                                        step.values[0]))
     else:
         remember(step, "%s has no %s" % (step.kind, step.attribute))
 

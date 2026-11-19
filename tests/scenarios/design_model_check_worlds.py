@@ -28,6 +28,7 @@ ORDER = _sibling("design_model_check_worlds_order.py", "shop_design_model_check_
 MEMBER = _sibling("design_model_check_worlds_member.py", "shop_design_model_check_worlds_member")     # b274, b297
 NEGATED = _sibling("design_model_check_worlds_negated.py", "shop_design_model_check_worlds_negated")     # b232
 PARSING = _sibling("design_model_check_worlds_parsing.py", "shop_design_model_check_worlds_parsing")     # b369
+CATALOGUE = _sibling("design_model_check_worlds_catalogue.py", "shop_design_model_check_worlds_catalogue")     # b370
 
 
 class As:
@@ -153,7 +154,7 @@ def nothing(step):
 
 NONCONFORMING = "When a session ends a stage, `work` shall banana the stage."
 UNDONE = "While every stage is not `done`, when the person runs `work start`, `work` shall exit successfully."
-TABLE = ORDER.ROWS + [
+TABLE = CATALOGUE.ROWS + ORDER.ROWS + [
     # the base world: nothing violates a rule, and it has facts
     (("no thing violate rule",), nothing, {}),
     (("this bounded context has fact",), nothing, {}),
