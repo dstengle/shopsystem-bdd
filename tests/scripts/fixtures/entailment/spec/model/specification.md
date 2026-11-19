@@ -1,0 +1,259 @@
+---
+id: model/missingmass.io/shopsystem/shopsystem-bdd/specification
+area: specification
+kind: core
+imports: []
+---
+
+# The specification
+
+## Purpose
+
+The bounded context's specification: its domain model, vocabulary, requirements and decisions, how a line is read and checked, the scenarios generated from its requirements, and the records kept beside it.
+
+```model
+object bounded context
+  relations: has → job | fact | index file | requirement grammar | channel (many); holds → upstream entry | term (many)
+
+object capability kind of file
+  attributes: group: service | guarantees | model | operations; language: codified-1 | codified-2
+  relations: has → section | requirement | feature | requirement group | Behaviour line (many); holds → requirement id | count | order | given block (many)
+
+object requirement kind of text
+  relations: has → precondition | trigger | logical form | consequence | parse | compiled grammar | translation | response | act | restriction | upper bound | requirement id (many); omits → requirement (many); allows → act (many); oblige → requirement (many); overrides → requirement (many); adds → consequence (many); permits → act (many); retires → requirement id (many); uses → construct | rule (many)
+
+object requirement group
+  relations: has → requirement | scenario (many)
+
+object universal condition kind of text
+  relations: has → universal condition id | translation (many); entails → step (many)
+
+object term
+  attributes: part of speech: noun | verb | adjective | attribute | proper noun | artifact; aspect: state | action
+  relations: has → subject | object | recipient | frame | sense | noun phrase | value order (many); redefines → pack (many); agrees with → subject (many)
+
+object design-decision kind of file
+  attributes: status: proposed | accepted | rejected | superseded; tier: check | requirement | judgement
+  relations: supersedes → design-decision (many); has → route | index entry | section | id (many); holds → qualifier (many); supersedes (supersede) → design-decision (many); verifies → universal condition (many)
+
+object feature kind of file
+  relations: has → scenario | step (many); holds → scenario (many)
+
+object scenario kind of text
+  relations: has → capability | tag | requirement tag | scenario title | replacement | counter-example | boundary | order counter-example | step (many); refers to → requirement id (many); satisfies → precondition (many); succeeds in → workspace (many); breaks in → workspace (many)
+
+object step kind of text
+  relations: has → handler (many); asserts → act (many)
+
+object fact
+
+object file kind of text
+  relations: holds → finding (many)
+
+object version kind of text
+
+object text
+  relations: forbids → act (many); contains → text (many); precedes → act (many); follows → act (many); introduces → instance (many); mentions → text (many); identifies → bounded context (many)
+
+object test
+  attributes: verdict: passed | failed
+  relations: executes → function (many); enforces → design-decision (many)
+
+object violation
+
+object record kind of file
+
+object route kind of text
+  attributes: kind: scenario | check | judgement | monitor
+
+object rule
+  relations: has → catalogue entry (many)
+
+object decisions index kind of file
+  relations: holds → index entry (many); lacks → index entry (many)
+
+object rule catalogue kind of file
+  relations: holds → catalogue entry (many)
+
+object interpreter
+  relations: imports → interpreter (many)
+
+object file form
+  attributes: writer: command | item | hand
+
+object pack kind of file
+  relations: has → term (many)
+
+object logical form kind of text
+
+object verb kind of term
+
+object frame kind of text
+  relations: has → preposition (many); takes → noun phrase (many)
+
+object subject
+
+object object
+
+object recipient
+
+object preposition
+
+object job
+
+object index entry kind of text
+
+object catalogue entry kind of text
+
+object section kind of text
+  attributes: heading: Purpose | Terms | Relations | Behaviour | Context | Decision | Consequences
+
+object id kind of text
+
+object precondition kind of text
+  relations: has → comparison (many); holds → count (many)
+
+object trigger kind of text
+
+object noun phrase
+
+object passive form
+  relations: has → by-phrase (many)
+
+object by-phrase
+
+object sense kind of text
+  relations: has → value order (many)
+
+object definite noun phrase kind of noun phrase
+  relations: has → antecedent (many)
+
+object antecedent
+
+object negated indefinite
+
+object fragment kind of text
+
+object code
+  relations: unifies → code (many)
+
+object act
+  relations: holds → order (many); brings in → referent (many)
+
+object consequence
+
+object perfect
+
+object count
+  relations: has → boundary (many); contradicts → count (many)
+
+object clock trigger
+
+object number
+  relations: has → unit (many)
+
+object unit
+
+object refusal
+
+object corpus kind of file
+  relations: holds → requirement | logical form (many)
+
+object parse cache kind of file
+  relations: holds → parse (many)
+
+object compiled grammar kind of file
+
+object parse kind of text
+
+object translation
+
+object comparison
+
+object value order
+
+object order
+  relations: on → term (many)
+
+object response kind of text
+
+object closing comma
+
+object construct catalogue kind of file
+
+object referent
+  relations: has → description (many)
+
+object description kind of text
+
+object restriction kind of text
+
+object upper bound
+
+object counter-example kind of text
+
+object given step kind of step
+
+object instance
+
+object boundary
+
+object order counter-example kind of text
+
+object repository
+  attributes: release: 0.23.1 < 0.24.0 < 0.25.0 < 0.29.0 < 0.30.0 < 0.31.0 < 0.32.0 < 0.32.1 < 0.33.0 < 0.34.0 < 0.34.1 < 0.99.0; store: taking | rejecting
+  relations: holds → old-layout directory | uncommitted change (many); has → decision ledger | plugin version file | shop directory | capability | decisions index | frozen notice | initiative (many); rejects → kept change (many)
+
+object construct
+
+object language reference kind of artifact
+
+object clingo
+
+object final layout kind of artifact
+
+object request form kind of artifact
+
+object entry form kind of artifact
+
+object capability id form kind of artifact
+
+object feature form kind of artifact
+
+object node id form kind of artifact
+
+object L1
+
+object L7
+
+object L8
+
+object no findings kind of text
+
+object specification
+service language
+  operation parse(text, logical form (flag))
+    outcomes: returned → the reading | refused: term out of its frame, passive form with no by-phrase, requirement not in the language, definite noun phrase with no antecedent, negated indefinite in a precondition, fragment, order out of place
+  operation explain(text)  outcomes: returned | refused: requirement id of no requirement
+  operation look up(pack)  outcomes: returned → every term of the pack
+
+service specification
+  operation check(specification, capability)  outcomes: passed → findings | failed → findings, an interpreter without clingo | refused: capability not in the language
+  operation examine(specification, capability)  outcomes: passed → logic findings | failed → logic findings
+  operation consult(rule catalogue)  outcomes: returned → every rule
+  operation renew(rule catalogue, audit (flag))  outcomes: done | failed → the stale rule catalogue
+  operation inventory(specification, audit (flag))  outcomes: returned → every file form | failed → each form written by hand
+  operation translate(specification)  outcomes: returned → every fact
+
+service decisions
+  operation enter(design-decision, title, summary, tier, wording, route, supersedes)
+    outcomes: done → the design-decision | refused: no tier, no summary, no wording, design-decision not in force
+  operation rebuild(decisions index, audit (flag))  outcomes: done | failed → each failing design-decision
+
+service records
+  operation file(record, title, summary, text)  outcomes: done → the record | refused: text not a node id
+
+service scenarios
+  operation generate(feature, capability, audit (flag))  outcomes: done → the feature | failed → each stale feature
+  operation audit(feature)  outcomes: passed | failed → each step with no handler
+```

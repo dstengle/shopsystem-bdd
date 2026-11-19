@@ -1,0 +1,86 @@
+---
+id: vocabulary/missingmass.io/shopsystem/shopsystem-bdd/shared
+---
+
+# The words of shared
+
+## Terms
+
+- **bounded context** (noun) → object bounded context. One repository's spec, with its index, capabilities, decisions and glossary. This: the bounded context whose repository the command runs in.
+- **capability** (noun) → object capability. One file under `spec/capabilities/`, with a group and a narrator. Plural: capabilities.
+- **requirement** (noun) → object requirement. One codified statement of a capability, named `<capability>#r<n>`, that parses to one tree in the requirement grammar. Not: behaviour requirement, capability requirement, carry, carries, carried, carrying. Redefines: spec.
+- **requirement group** (noun) → object requirement group. The requirements of a capability that together make one scenario, named `<capability>#g<n>`, with a title.
+- **universal condition** (noun) → object universal condition. A statement of `spec/universal.md`, named `U<n>`, true in every state of every trace and never restated in a requirement.
+- **term** (noun) → object term. One entry of this glossary or of a capability's `## Terms`, with a category.
+- **design-decision** (noun) → object design-decision. One file under `spec/decisions/`.
+- **feature** (noun) → object feature. The generated file `features/<capability>.feature`, one scenario for each requirement group.
+- **scenario** (noun) → object scenario. A Gherkin scenario in `features/<capability>.feature`, generated from one requirement group, passing when the one test that binds it passes. Not: test case.
+- **file** (noun) → object file. A file or a directory of the repository or of a worktree.
+- **version** (noun) → object version. One release of an analysis tool, as `ruff==0.17.0`, or of the plugin, written `<major>.<minor>.<patch>`.
+- **text** (noun) → object text. What a session or a tool writes: a file, or a part of one it writes whole, such as an entry, a line, a row, a block or a comment.
+- **test** (noun) → object test. One test of the repository's suite, a scenario's or a script's, by its pytest id.
+- **record** (noun) → object record. A file under `.shop/records/` whose frontmatter id has a record kind. Not: log entry.
+- **rule** (noun) → object rule. A relation of `scripts/model.lp`, with its code and its plain label: a violation's or a warning's. Redefines: spec.
+- **logical form** (noun) → object logical form. What a requirement means, as referents, atoms and boxes, printed by `model parse --form`.
+- **id** (noun) → object id. The `id` field of a file's frontmatter.
+- **code** (noun) → object code. A word between backticks that names a thing.
+- **corpus** (noun) → object corpus. The files under `grammar/corpus/spec/` of a bounded context: each requirement of a capability with the logical form it is meant to have. Plural: corpora. This: the corpus of the bounded context the command runs in.
+- **repository** (noun) → object repository. The repository `migrate` runs in, with its working tree. Plural: repositories. This: the repository the request is made in.
+- **status** (attribute) → attribute design-decision.status. 
+- **requirement** (noun) → value design-decision.tier requirement.
+- **scenario** (noun) → value route.kind scenario.
+- **item** (noun) → value file form.writer item.
+- **release** (attribute) → attribute repository.release. 
+- **context request** (noun) → object context request. The one way work enters a bounded context: lines that its asker (another context, the product level, or the context itself) proposes to its upstream (the context asked).
+- **request line** (noun) → object request line. One proposed statement of a request, with its line outcome.
+- **question** (noun) → object question. An open point on a node or a request line, with its readings and a recommended reading.
+- **session** (noun) → object session. One Claude Code conversation with its own id and transcript: the person's, a stage or a dispatch. This: the session that runs the command. Not: conversation, chat.
+- **item** (noun) → object item. One file of the backlog, `.shop/backlog/b<n>.md`: work this bounded context may do, with its requirement lines, its provenance and its ratings, named by its id `b<n>` and its title.
+- **workspace name** (noun) → object workspace name. The name a git branch or an upstream branch is known by.
+- **readiness bar** (noun) → object readiness bar. The checks `work ready` makes of an item on a copy of `spec/` with its lines laid in: its request lines settled, its lines parsed, no L0 and no L1 of `model logic` naming them, their scenarios written by `features generate`, and the `check` design-decisions its capabilities rest on passing. This: the readiness bar of the plugin that runs the command.
+- **requirement id** (noun) → object requirement id. The id `<capability>#r<n>` of a requirement.
+- **chore** (noun) → object chore. What an item with no requirement line names in their place: the files its work changes and the command whose exit code 0 shows the work done.
+- **observation** (noun) → object observation. An entry of `.shop/records/observations.md`, with its id and its date.
+- **thread** (noun) → object thread. The GitHub issue, on the GitHub repository of a request's upstream, that carries the request's conversation.
+- **entry** (noun) → object entry. One step of a request's conversation, posted on its issue.
+- **channel** (noun) → object channel. The repository on GitHub that the issues of the requests to a bounded context are posted on.
+- **status** (attribute) → attribute context request.status. 
+- **question** (noun) → value request line.line outcome question.
+- **status** (attribute) → attribute item.status. 
+- **status** (attribute) → attribute directive.status. 
+- **status** (attribute) → attribute thread.status. 
+- **status** (attribute) → attribute initiative.status. A node's, request's or design-decision's place in its kind's lifecycle, written in its frontmatter by `work`.
+- **release** (attribute) → attribute upgrade step.release. 
+- **status** (attribute) → attribute frozen request.status. 
+- **pin** (verb, state) → relation plugin.pins. The plugin names the one version of an analysis tool that `tools install` installs. Forms: pins, pinned. Frame: <plugin> pins <version>.
+- **dispatch** (noun) → object dispatch. A session another session starts with its Agent tool, and the transcript it leaves. Plural: dispatches. Not: subagent.
+- **measurement** (noun) → object measurement. A record under `.shop/records/measurements/` of the figures of one batch, of one earlier delivery or of a trial, written by `measure` or by the trial. Not: facts file.
+- **trial** (noun) → object trial. One run by the `trial-runner` of a plugin tool or `work run` on a real target or a fixture repository, measuring what its input names.
+- **target** (noun) → object target. The real target or the fixture repository a trial runs on, with the plugin's scripts.
+- **review finding** (noun) → object review finding. One graded finding of a review.
+- **workspace** (noun) → object workspace. A working tree `work batch start` makes for one task of a batch, in which the dispatch that builds the task works.
+- **kept change** (noun) → object kept change. One git commit on a branch, with its message and its change. This: the commit the command makes.
+- **batch** (noun) → object batch. Ready items built together on one branch and closed by its pull request, named `batch-<n>`, kept as the directory `.shop/batches/<n>/`. Plural: batches.
+- **task** (noun) → object task. One unit of a batch plan, built in its own worktree.
+- **proposed change** (noun) → object proposed change. The GitHub pull request of a batch's branch.
+- **`pr-reviewer`** (proper noun) → object pr-reviewer. The agent that reviews a batch's pull request.
+- **status** (attribute) → attribute batch.status. 
+- **status** (attribute) → attribute task.status. 
+- **observation** (noun) → value review finding.triage observation.
+- **Python file** (noun) → object Python file. A tracked file with a `.py` extension or a `python` shebang, tests included.
+- **function** (noun) → object function. A function or method of a Python file.
+- **identifier** (noun) → object identifier. A name a Python file may define: a function, a class or a variable.
+- **feature file** (noun) → object feature file. A `*.feature` file under the directory `--dir` names (default `features`), read line by line.
+- **tag** (noun) → object tag. A Gherkin tag of a scenario or of a feature file, as `@deprecated`.
+- **handler** (noun) → object handler. A function of `tests/scenarios/` that a step runs.
+- **the person** (proper noun) → actor the person. The human the bounded context works for.
+- **file** (verb, action) → operation records.file. Forms: files, filed. Frame: <actor> files <record>.
+- **construct** (noun) → object construct. A sentence structure of the controlled language, named by its code in the construct catalogue. Redefines: spec.
+- **meet** (verb, state) → relation item.meets. An item satisfies the readiness bar or one of its bar checks. Forms: meets, met. Frame: <item> meets <readiness bar>. Frame: <item> meets <bar check>.
+- **shared workspace** (noun) → object shared workspace. The workspace a workspace is shared to, in the shared store.
+- **succeed** (verb, state) → relation scenario.succeeds in. A scenario's test passes in a workspace. Forms: succeeds, succeeded. Frame: <scenario> succeeds in <workspace>.
+- **break** (verb, state) → relation scenario.breaks in. A scenario's test, a chore's check or a test fails. Forms: breaks, broken. Frame: <scenario> breaks in <workspace>. Frame: <chore> breaks in <workspace>. Frame: <test> breaks.
+- **cite** (verb, state) → relation kept change.cites. A thing names another as what it stands on. Forms: cites, cited. Frame: <kept change> cites <item>. Frame: <proposed change> cites <item>. Frame: <quote> cites <message>. Frame: <thing> cites <observation>.
+- **`trial-runner`** (proper noun) → object trial-runner. The agent that conducts a trial.
+- **plugin** (noun) → object plugin. The shopsystem-bdd plugin, whose tools answer the requests. This: the plugin the request is made with.
+- **release** (attribute) → attribute plugin.release. The release of the plugin the request is made with.
