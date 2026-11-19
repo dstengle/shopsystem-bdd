@@ -230,7 +230,7 @@ def cmd_rules(args):
     from model_check import needing_clingo, rules
     from model_rules import catalogue
     if args.write or args.check:
-        return needing_clingo("rules", lambda: catalogue(args.root, write=args.write, check=args.check))
+        return needing_clingo("rules", lambda: catalogue(args.root, write=args.write))
     return needing_clingo("rules", lambda: rules(args.json))
 
 

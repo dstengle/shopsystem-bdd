@@ -127,7 +127,7 @@ def render(root, entries):
     return "\n".join(out)
 
 
-def catalogue(root, write=False, check=False):
+def catalogue(root, write=False):
     """--write writes the rule catalogue, --check says whether the one on disk is what --write would write; both
     refuse when an example does not do what it says."""
     entries = rules()

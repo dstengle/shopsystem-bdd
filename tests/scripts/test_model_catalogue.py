@@ -7,7 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "tests"))
-import toolchain  # noqa: E402
+import toolchain
 
 CHANGELOG = "# Changelog\n\n## 0.31.0: the workflow simplified\n\nThings.\n\n## 0.30.0\n\nOlder things.\n"
 
