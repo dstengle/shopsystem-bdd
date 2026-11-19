@@ -10,6 +10,7 @@ import contextlib
 import io
 from pathlib import Path
 
+import adapter_annotate
 import backlog_items
 import backlog_lines
 import batch_catalogues
@@ -36,8 +37,8 @@ def cites(items):
 def lay_lines(tree, picked, unwritten=None):
     """Every picked item's lines laid into the worktree's `spec/`, their ids appended to `unbuilt:`, the feature of
     each service capability laid written again, and the bookkeeping of the lay (b333): the corpus's blocks
-    (spec_corpus_write) and the catalogues (batch_catalogues), a catalogue that cannot be written added to
-    `unwritten`; the paths changed."""
+    (spec_corpus_write), the adapter contracts annotated (b379) and the catalogues (batch_catalogues), a catalogue
+    that cannot be written added to `unwritten`; the paths changed."""
     ids, files = {}, []
     for item in picked:
         backlog_lines.lay_onto(tree, item, files)
@@ -49,10 +50,20 @@ def lay_lines(tree, picked, unwritten=None):
         path.write_text(spec_unbuilt.with_unbuilt(path.read_text(), listed))
         changed += _generated(tree, capability, "work batch start")
     changed += spec_corpus_write.write(tree, picked)
+    changed += _annotated(tree)
     catalogues, problems = batch_catalogues.write(tree, ["%s#%s" % (c, r) for c, rs in ids.items() for r in rs])
     if unwritten is not None:
         unwritten.extend(problems)
     return list(dict.fromkeys(changed + files + catalogues))
+
+
+def _annotated(tree):
+    """Each adapter contract of the worktree that does not hold the requirements governing its operations written as
+    `spec annotate` writes it (b379); their paths."""
+    found = adapter_annotate.stale(tree)
+    for rel, text in found:
+        (Path(tree) / rel).write_text(text, encoding="utf-8")
+    return [Path(rel).as_posix() for rel, _ in found]
 
 
 def _generated(tree, capability, command):

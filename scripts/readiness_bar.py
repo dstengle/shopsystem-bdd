@@ -13,6 +13,7 @@ import shutil
 import tempfile
 from pathlib import Path
 
+import adapter_annotate
 import backlog_chore
 import backlog_lines
 import features_generate
@@ -154,6 +155,8 @@ def well_formed(root, item, others=()):
         before = set(spec_lexicon.problems(spec_lexicon.read(copy), outer))
         before_lay, _ = _violations(copy)
         backlog_lines.lay_onto(copy, item)
+        with contextlib.redirect_stdout(io.StringIO()):     # the contract annotated as the lay writes it (b379)
+            adapter_annotate.annotate(copy)
         reasons = ["%s.md: %s" % (b.capability, p) for b in blocks
                    for p in spec_read.capability(backlog_lines.capability_file(copy, b.capability)).problems]
         reasons += ["universal.md: %s" % p for p in spec_read.read_universal(copy).problems] if blocks.universal else []
