@@ -6,7 +6,7 @@ TSV of the new capability files (`name, area, specifies, narrator, group, title,
 gets its frontmatter (`area:`, `specifies:`, `narrator`, `group`, `language: codified-2`, `retired: []`, `unbuilt:
 []`), `## Purpose` and `## Behaviour`, one group a row (rows of one new capability and one title in a row are one
 group), its ids from r1/g1, or past the highest id an old file of the same name held (`batches`, `trials`: renamed
-`<name>-0.37.md` with `git mv` before, so that an old id stays one id); a moved group keeps its `Restates:` line,
+`<name>-0-37.md` with `git mv` before, so that an old id stays one id); a moved group keeps its `Restates:` line,
 qualified by its old capability, and its given block. Each old capability's groups leave `## Behaviour`, every id
 goes into `retired:`, a `## Moved` table names each old id's new one, and a dropped line's `Restates:` ids go under
 `## Dropped`. `spec/moves.json` holds the whole map, `<cap>#r<n>` and `<cap>#g<n>` to the new id or null.
@@ -112,7 +112,7 @@ def apply(root, table, capabilities):
         if cap not in old:
             path = root / "spec" / "capabilities" / ("%s.md" % cap)
             if not path.is_file():
-                path = root / "spec" / "capabilities" / ("%s-0.37.md" % cap)
+                path = root / "spec" / "capabilities" / ("%s-0-37.md" % cap)
             head, secs = _sections(path.read_text(encoding="utf-8"))
             behaviour = next((ls for h, ls in secs if h.strip() == "## Behaviour"), [])
             old[cap] = {"path": path, "head": head, "secs": secs, "groups": _groups(behaviour)}
@@ -136,7 +136,7 @@ def apply(root, table, capabilities):
             raise Refused("the move names the capability %s, which the capabilities table does not" % new_cap)
         f = new_files.setdefault(new_cap, {"groups": [], "n": None})
         if f["n"] is None:
-            reused = root / "spec" / "capabilities" / ("%s-0.37.md" % new_cap)
+            reused = root / "spec" / "capabilities" / ("%s-0-37.md" % new_cap)
             f["n"] = _highest(reused.read_text(encoding="utf-8")) if reused.is_file() else 0
             f["g"] = f["n"]
         last = f["groups"][-1] if f["groups"] else None

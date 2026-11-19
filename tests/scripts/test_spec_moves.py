@@ -119,7 +119,7 @@ def test_a_table_missing_a_live_id_or_naming_one_twice_is_refused(tmp_path):
 
 
 def test_a_reused_name_renamed_to_0_37_keeps_its_old_ids_apart(tmp_path):
-    root = context(tmp_path, names=("alpha", "notes-0.37"))
+    root = context(tmp_path, names=("alpha", "notes-0-37"))
     rows = [r for r in ROWS if not r[0].startswith("beta")] + [
         ("notes#r2", "notes", "Again", "When the person adds a note, the notes service shall keep the note."),
         ("notes#r3", "-", "Gone", "the CLI adapter's"), ("notes#r4", "-", "Gone", "the CLI adapter's")]
@@ -127,4 +127,4 @@ def test_a_reused_name_renamed_to_0_37_keeps_its_old_ids_apart(tmp_path):
     assert spec_moves.resolve(root, "notes#r2") == "notes#r8"
     cap = spec_read.capability(root / "spec" / "capabilities" / "notes.md")
     assert [r.id for g in cap.groups for r in g.requirements][0] == "r5"
-    assert (root / "spec" / "capabilities" / "notes-0.37.md").read_text().count("| r2 | notes#r8 |") == 1
+    assert (root / "spec" / "capabilities" / "notes-0-37.md").read_text().count("| r2 | notes#r8 |") == 1

@@ -1,0 +1,183 @@
+---
+id: vocabulary/missingmass.io/shopsystem/shopsystem-bdd/specification
+area: specification
+---
+
+# The words of specification
+
+## Terms
+
+- **step** (noun) → object step. One Given, When or Then line of a scenario, the linearisation of one step function, bound to exactly one step definition.
+- **fact** (noun) → object fact. One statement `model facts` gives clingo about the repository's files.
+- **violation** (noun) → object violation. A row of a rule `model check` finds, printed under the rule's code and plain label.
+- **route** (noun) → object route. A way a design-decision is verified, named under its `verified_by`.
+- **decisions index** (noun) → object decisions index. The generated file `spec/decisions/index.md`. Plural: decisions indexes. This: the decisions index of this bounded context.
+- **rule catalogue** (noun) → object rule catalogue. The generated file `grammar/rules.md`, one entry a rule. This: the rule catalogue of the plugin.
+- **interpreter** (noun) → object interpreter. A `python3` that `model` runs under or tries. This: the interpreter the request is answered with.
+- **file form** (noun) → object file form. One kind of file a bounded context keeps, with its path and the command that writes it. Plural: file forms.
+- **pack** (noun) → object pack. A file of terms a bounded context imports: `grammar/packs/<name>.md` of the plugin, or `spec/packs/<name>.md` of the bounded context.
+- **verb** (noun) → object verb. A term whose entry names it a verb.
+- **frame** (noun) → object frame. One `Frame:` of a verb's entry: the kinds its subject, object and recipient take.
+- **subject** (noun) → object subject. The noun phrase before a verb in a clause, or the kind a frame names before its verb.
+- **object** (noun) → object object. The noun phrase a verb takes after it, or the kind a frame names after its verb.
+- **recipient** (noun) → object recipient. The noun phrase a verb takes after its object and a preposition, or the kind a frame names there.
+- **preposition** (noun) → object preposition. A word such as `to` or `on` that a frame puts before an object or a recipient.
+- **job** (noun) → object job. A job of the product that a capability of a bounded context serves.
+- **index entry** (noun) → object index entry. The row of the decisions index for one design-decision, as `model decisions` writes it from the design-decision's file. Plural: index entries.
+- **catalogue entry** (noun) → object catalogue entry. The entry of the rule catalogue for one rule, as `model rules --write` writes it from the rule. Plural: catalogue entries.
+- **section** (noun) → object section. A part of a file under a `##` heading.
+- **precondition** (noun) → object precondition. The While clause of a requirement: the condition its trigger happens in.
+- **trigger** (noun) → object trigger. The When or If clause of a requirement: the event it answers.
+- **noun phrase** (noun) → object noun phrase. A noun with its determiner and modifiers, given to a verb as its subject, object or recipient.
+- **passive form** (noun) → object passive form. A verb in the passive, as in "a file is written".
+- **by-phrase** (noun) → object by-phrase. "by" and a noun phrase after a passive form, naming who does the action.
+- **sense** (noun) → object sense. One entry of a term that has several entries, with its frames.
+- **definite noun phrase** (noun) → object definite noun phrase. "the" before a noun.
+- **antecedent** (noun) → object antecedent. What a definite noun phrase refers back to: an earlier noun phrase, a functional relation or a declared indexical.
+- **negated indefinite** (noun) → object negated indefinite. "does not" before a verb whose object has "a" or "an", as in "an item does not hold a commit".
+- **fragment** (noun) → object fragment. A requirement that stops where a frame of its verb needs another word, as in "When a session writes".
+- **act** (noun) → object act. What a requirement's response says an agent does: a verb with its noun phrases.
+- **consequence** (noun) → object consequence. A response that a requirement obliges: a Then of its scenario.
+- **perfect** (noun) → object perfect. "has" before the participle of an action verb, saying that an agent has done the action, as in "the batch has published a pull request".
+- **count** (noun) → object count. "at least", "at most", "exactly", "more than" or "fewer than" before a number and a noun.
+- **clock trigger** (noun) → object clock trigger. A trigger in which the clock reaches a moment.
+- **number** (noun) → object number. A number in a requirement where a duration is due, as the `7` of "within the last 7 days".
+- **unit** (noun) → object unit. A unit of the time pack after a number, such as `days`.
+- **refusal** (noun) → object refusal. A response in which a tool refuses a command.
+- **parse cache** (noun) → object parse cache. The files in which `model parse` keeps a line's parse, keyed by its grammar's sources, its grammar, its lexicon's words and its text. Plural: parse caches.
+- **compiled grammar** (noun) → object compiled grammar. The PGF file a context's grammar compiles to from its sources. Plural: compiled grammars.
+- **parse** (noun) → object parse. The trees `model parse` gives a requirement, kept in a parse cache under the requirement's text, its grammar's sources and its lexicon's words.
+- **translation** (noun) → object translation. The facts of the check of `model logic` that it reads a requirement into, which a requirement of a construct it has no reading of lacks.
+- **comparison** (noun) → object comparison. One thing's value of an attribute said against another thing's value of the attribute, as "the release of x is after the release of y" or "is the same as", in the precondition of a requirement.
+- **value order** (noun) → object value order. The order of an attribute's values: the order its entry's `Order:` gives, or the order of the type its entry's `Type:` declares (a number, a time or a text).
+- **order** (noun) → object order. "ordered by" an attribute and "in ascending order" or "in descending order" after a noun phrase, which a requirement that uses `order-by` or `order-by-every` requires of a collection or of what an agent prints, and which its logical form keeps as one atom `ordered(x, T, ascending)` or `ordered(x, T, descending)`.
+- **response** (noun) → object response. The part of a requirement after shall: what its agent does. Redefines: request.
+- **closing comma** (noun) → object closing comma. The comma a requirement says after an order and before the recipient or other words of its clause that follow the order, as in "every file, ordered by version, in ascending order, to the person".
+- **construct catalogue** (noun) → object construct catalogue. The generated file `grammar/constructs.md`, one entry a construct of grammar 4, as `model constructs --write` writes it. This: the construct catalogue of the bounded context the command runs in.
+- **referent** (noun) → object referent. A thing that a noun phrase of a requirement names, which a step of its scenario names by an instance name such as `i1`.
+- **description** (noun) → object description. A step that says a value of an attribute of a referent, a relation of the referent or a relative clause on the referent, which the requirement of its scenario says beside the act that brings in the referent, written as a Then line of the scenario.
+- **restriction** (noun) → object restriction. The words after the noun of `every`, `only` or a count in the response of a requirement that narrow the things it ranges over, as "in the batch" of "every item in the batch" or "whose status is `ready`" of "only items whose status is `ready`".
+- **upper bound** (noun) → object upper bound. The most things that `one` or a count of "at most", "exactly" or "fewer than" in the response of a requirement admits, as three of "exactly three items" and two of "fewer than three items".
+- **counter-example** (noun) → object counter-example. The Givens and a Then of a scenario that a program doing the act of its requirement to too many things fails: a thing that does not meet a restriction of the requirement, with a Then that the act is not done to it or that the relation does not hold of it, or, of an upper bound, one thing more than the upper bound, with a Then that the act is done to no more things than the upper bound.
+- **given step** (noun) → object given step. A step of a scenario that opens with `Given`, or with `And` or `But` under one.
+- **instance** (noun) → object instance. A thing that a step names by its kind and a name, as "the item i1", one thing within its scenario.
+- **boundary** (noun) → object boundary. As many things as a count in a precondition admits nearest to a number it does not admit: n of "at least n", "at most n" and "exactly n", n+1 of "more than n", n-1 of "fewer than n", which a scenario has when its given steps introduce that many things that the count counts and satisfy the precondition.
+- **order counter-example** (noun) → object order counter-example. The steps of a scenario that state an order: its Then that the members are ordered by the order's attribute in its direction, and the Givens of at least three members with distinct values of that attribute, given in neither that direction nor the opposite one, so that the Then fails when the members are not so ordered.
+- **the language reference** (proper noun) → object language reference. The file `grammar/language.md` of the plugin: the reading rules of the controlled language, its constructs, each with its tested lines, and what it cannot say yet.
+- **`clingo`** (proper noun) → object clingo. The answer set solver that `model` imports.
+- **the final layout** (proper noun) → object final layout. The files and directories a bounded context keeps, as design-decision/final-layout gives them.
+- **the request form** (proper noun) → object request form. The form `work request` writes a request in.
+- **the entry form** (proper noun) → object entry form. The forms of a term entry that `spec_lexicon` reads.
+- **the capability id form** (proper noun) → object capability id form. `capability/<context path>/<file name>` as the `id` of a capability's frontmatter, its file's name the last part.
+- **the feature form** (proper noun) → object feature form. The path `features/<name>.feature` of a capability `<name>`.
+- **the node id form** (proper noun) → object node id form. One line that is the id of a node of the design model.
+- **`L1`** (proper noun) → object L1. The code under which `model logic` prints two requirements that oblige and forbid one act under one trigger and condition.
+- **`L7`** (proper noun) → object L7. The code under which `model logic` prints a requirement that forbids what another permits.
+- **`L8`** (proper noun) → object L8. The code under which `model logic` prints a requirement whose every consequence a premise entails.
+- **`no findings`** (proper noun) → object no findings. What `model logic` prints when it finds nothing and reads every requirement it checks.
+- **proposed** (adjective) → value design-decision.status proposed.
+- **accepted** (adjective) → value design-decision.status accepted.
+- **rejected** (adjective) → value design-decision.status rejected.
+- **superseded** (adjective) → value design-decision.status superseded.
+- **group** (attribute) → attribute capability.group. 
+- **service** (noun) → value capability.group service.
+- **guarantees** (noun) → value capability.group guarantees.
+- **model** (noun) → value capability.group model.
+- **operations** (noun) → value capability.group operations.
+- **language** (attribute) → attribute capability.language. The language a capability file's lines are read in, its frontmatter's `language:`.
+- **codified-1** (noun) → value capability.language codified-1.
+- **codified-2** (noun) → value capability.language codified-2.
+- **tier** (attribute) → attribute design-decision.tier. 
+- **check** (noun) → value design-decision.tier check.
+- **judgement** (noun) → value design-decision.tier judgement.
+- **kind** (attribute) → attribute route.kind. The word that names the route.
+- **check** (noun) → value route.kind check.
+- **judgement** (noun) → value route.kind judgement.
+- **monitor** (noun) → value route.kind monitor.
+- **part of speech** (attribute) → attribute term.part of speech. What an entry names a term in its parentheses.
+- **noun** (noun) → value term.part of speech noun.
+- **verb** (noun) → value term.part of speech verb.
+- **adjective** (noun) → value term.part of speech adjective.
+- **attribute** (noun) → value term.part of speech attribute.
+- **proper noun** (noun) → value term.part of speech proper noun.
+- **artifact** (noun) → value term.part of speech artifact.
+- **heading** (attribute) → attribute section.heading. The words of a section's `##` line.
+- **Purpose** (noun) → value section.heading Purpose.
+- **Terms** (noun) → value section.heading Terms.
+- **Relations** (noun) → value section.heading Relations.
+- **Behaviour** (noun) → value section.heading Behaviour.
+- **Context** (noun) → value section.heading Context.
+- **Decision** (noun) → value section.heading Decision.
+- **Consequences** (noun) → value section.heading Consequences.
+- **aspect** (attribute) → attribute term.aspect. Whether a verb says a lasting condition or an event.
+- **state** (noun) → value term.aspect state.
+- **action** (noun) → value term.aspect action.
+- **writer** (attribute) → attribute file form.writer. What writes a file form: a command of the plugin, the item of the plugin's backlog that will give the form a command, or a person by hand.
+- **command** (noun) → value file form.writer command.
+- **hand** (noun) → value file form.writer hand.
+- **0.23.1** (noun) → value repository.release 0.23.1.
+- **0.24.0** (noun) → value repository.release 0.24.0.
+- **0.25.0** (noun) → value repository.release 0.25.0.
+- **0.29.0** (noun) → value repository.release 0.29.0.
+- **0.30.0** (noun) → value repository.release 0.30.0.
+- **0.31.0** (noun) → value repository.release 0.31.0.
+- **0.32.0** (noun) → value repository.release 0.32.0.
+- **0.32.1** (noun) → value repository.release 0.32.1.
+- **0.33.0** (noun) → value repository.release 0.33.0.
+- **0.34.0** (noun) → value repository.release 0.34.0.
+- **0.34.1** (noun) → value repository.release 0.34.1.
+- **0.99.0** (noun) → value repository.release 0.99.0.
+- **execute** (verb, state) → relation test.executes. A test ran the code of a function when the coverage map was made, or a Python interpreter runs a file. Forms: executes, executed. Frame: <test> executes <function>. Frame: <Python interpreter> executes <file>.
+- **reject** (verb, state) → relation repository.rejects. A remote declines a push made to it. Forms: rejects, rejected. Frame: <repository> rejects <kept change>.
+- **enforce** (verb, state) → relation test.enforces. A design-decision names a test or a requirement under its `enforced_by` as what holds it. Forms: enforces, enforced. Frame: <test> enforces <design-decision>. Frame: <requirement> enforces <design-decision>.
+- **supersede** (verb, state) → relation design-decision.supersedes (supersede). A design-decision names another under its `supersedes` as the one it takes the place of. Forms: supersedes, superseded. Frame: <design-decision> supersedes <design-decision>. Frame: <ledger entry> supersedes <ledger entry>.
+- **verify** (verb, state) → relation design-decision.verifies. A design-decision names a universal condition under its `rests_on` and a route under its `verified_by`. Forms: verifies, verified. Frame: <design-decision> verifies <universal condition>.
+- **omit** (verb, state) → relation requirement.omits. A requirement uses a term and leaves out a word that a frame of the term needs. Forms: omits, omitted. Frame: <requirement> omits <thing>.
+- **import** (verb, state) → relation interpreter.imports. An interpreter can import a Python module. Forms: imports, imported. Frame: <interpreter> imports <thing>. Frame: <bounded context> imports <pack>.
+- **take** (verb, state) → relation frame.takes. A frame names, in a slot, the kind of a noun phrase or a kind above it. Forms: takes, taken. Frame: <frame> takes <noun phrase>.
+- **redefine** (verb, state) → relation term.redefines. A term's entry has `Redefines:` naming a pack that defines the term too. Forms: redefines, redefined. Frame: <term> redefines <pack>.
+- **agree** (verb, state) → relation term.agrees with. A verb is in the number of its subject, as in "a session writes" and "sessions write". Forms: agrees, agreed. Frame: <term> agrees with <subject>.
+- **allow** (verb, state) → relation requirement.allows. A requirement that uses `only` leaves an act inside what it restricts the act to. Forms: allows, allowed. Frame: <requirement> allows <act>.
+- **oblige** (verb, state) → relation requirement.oblige. A text or a part of one says with "shall" that an agent does an act. Forms: obliges, obliged. Frame: <thing> obliges <act>.
+- **forbid** (verb, state) → relation text.forbids. A text says with "shall not" that an agent does not do an act. Forms: forbids, forbade, forbidden. Frame: <text> forbids <act>.
+- **override** (verb, state) → relation requirement.overrides. An If requirement takes precedence over a When requirement of the same trigger whose response differs, where the If requirement's condition holds. Forms: overrides, overrode, overridden. Frame: <requirement> overrides <requirement>.
+- **lack** (verb, state) → relation decisions index.lacks. A decisions index does not hold an index entry that `model decisions` would write now. Forms: lacks, lacked. Frame: <decisions index> lacks <index entry>.
+- **add** (verb, state) → relation requirement.adds. A requirement has a consequence that no premise entails. Forms: adds, added. Frame: <requirement> adds <consequence>.
+- **contradict** (verb, state) → relation count.contradicts. No number of things meets both of two counts of one act under one trigger and condition. Forms: contradicts, contradicted. Frame: <count> contradicts <count>. Frame: <comparison> contradicts <comparison>. Frame: <order> contradicts <order>.
+- **permit** (verb, state) → relation requirement.permits. A requirement says with "may" that an agent may do an act. Forms: permits, permitted. Frame: <requirement> permits <act>.
+- **refer** (verb, state) → relation scenario.refers to. A scenario names a requirement by its id in an `@r<n>` tag. Forms: refers, referred. Frame: <scenario> refers to <requirement id>.
+- **contain** (verb, state) → relation text.contains. A text holds another text within it. Forms: contains, contained. Frame: <text> contains <text>.
+- **entail** (verb, state) → relation universal condition.entails. A universal condition gives a step from the other steps of its scenario. Forms: entails, entailed. Frame: <universal condition> entails <step>.
+- **bring in** (verb, state) → relation act.brings in. An act of a requirement's response names a referent that no part of the requirement before the act names. Forms: brings in, brought in. Frame: <act> brings in <referent>.
+- **precede** (verb, state) → relation text.precedes. A line of a scenario comes before the step that says an act in the scenario. Forms: precedes, preceded. Frame: <text> precedes <act>.
+- **follow** (verb, state) → relation text.follows. A line of a scenario comes after the step that says an act in the scenario. Forms: follows, followed. Frame: <text> follows <act>.
+- **assert** (verb, state) → relation step.asserts. A step of a scenario says that an act is done, so that the scenario fails when the act is not done. Forms: asserts, asserted. Frame: <step> asserts <act>.
+- **introduce** (verb, state) → relation text.introduces. A scenario, or a given step of it, brings a thing into the scenario, as "Given an item i1" brings in the item i1. Forms: introduces, introduced. Frame: <text> introduces <instance>.
+- **satisfy** (verb, state) → relation scenario.satisfies. The given steps of a scenario make a precondition true of the instances they introduce, every part of it, before its When. Forms: satisfies, satisfied. Frame: <scenario> satisfies <precondition>.
+- **mention** (verb, state) → relation text.mentions. A text holds the path, a relative link to or the id of a thing. Forms: mentions, mentioned. Frame: <text> mentions <thing>.
+- **retire** (verb, state) → relation requirement.retires. A requirement an item holds takes the place of the live requirement whose requirement id the item holds, as `work line --retires` writes them. Forms: retires, retired. Frame: <requirement> retires <requirement id>.
+- **identify** (verb, state) → relation text.identifies. A text is the id of a bounded context, its path or the path's last part, or `internal` for this bounded context. Forms: identifies, identified. Frame: <text> identifies <bounded context>.
+- **use** (verb, state) → relation requirement.uses. A line is said with a construct, or a thing draws on another. Forms: uses, used. Redefines: spec. Frame: <text> uses <thing>.
+- **specification** (noun) → object specification. The bounded context's model, vocabulary, requirements and decisions. This: the specification of this bounded context.
+- **verdict** (attribute) → attribute test.verdict. How a test's last run ended.
+- **passed** (adjective) → value test.verdict passed.
+- **failed** (adjective) → value test.verdict failed.
+- **unify** (verb, state) → relation code.unifies. A service reads two codes as one thing. Forms: unifies, unified. Frame: <service> unifies <code>.
+- **parse** (verb, action) → operation language.parse. Forms: parses, parsed. Frame: <actor> parses <text>.
+- **explain** (verb, action) → operation language.explain. Forms: explains, explained. Frame: <actor> explains <text>.
+- **look up** (verb, action) → operation language.look up. Forms: looks up, looked up. Frame: <actor> looks up <pack>.
+- **validate** (verb, action) → operation specification.check. Forms: validates, validated. Frame: <actor> validates <specification>.
+- **examine** (verb, action) → operation specification.examine. Forms: examines, examined. Frame: <actor> examines <specification>.
+- **consult** (verb, action) → operation specification.consult. Forms: consults, consulted. Frame: <actor> consults <rule catalogue>.
+- **renew** (verb, action) → operation specification.renew. Forms: renews, renewed. Frame: <actor> renews <rule catalogue>.
+- **inventory** (verb, action) → operation specification.inventory. Forms: inventories, inventoried. Frame: <actor> inventories <specification>.
+- **translate** (verb, action) → operation specification.translate. Forms: translates, translated. Frame: <actor> translates <specification>.
+- **enter** (verb, action) → operation decisions.enter. Forms: enters, entered. Frame: <actor> enters <design-decision>. Frame: <actor> enters <design-decision> over <supersedes>.
+- **rebuild** (verb, action) → operation decisions.rebuild. Forms: rebuilds, rebuilt. Frame: <actor> rebuilds <decisions index>.
+- **generate** (verb, action) → operation scenarios.generate. Forms: generates, generated. Frame: <actor> generates <feature>.
+- **audit** (verb, action) → operation scenarios.audit. Forms: audits, audited. Frame: <actor> audits <feature>.
+- **the language service** (proper noun) → service language.
+- **the specification service** (proper noun) → service specification.
+- **the decisions service** (proper noun) → service decisions.
+- **the records service** (proper noun) → service records.
+- **the scenarios service** (proper noun) → service scenarios.

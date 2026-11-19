@@ -1,203 +1,128 @@
 ---
 id: capability/missingmass.io/shopsystem/shopsystem-bdd/batches
 title: Batches
-narrator: a person or session building a batch
+narrator: the person
 group: service
+area: execution
+specifies: object batch, object task, service batches
 language: codified-2
-rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
-retired: [g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g10, r10, g12, r12, g13, r13, g16, r16, g17, r17, g18, r18, g19, r19, g27, r27, g33, r33]
+retired: []
 unbuilt: []
 ---
 
 # Batches
 
 ## Purpose
-Ready items are built together in batches, like a sprint (design goal 5): a batch takes several ready, unblocked items
-in rank order, which may be unrelated, writes its own plan of tasks and builds them on one branch closed by one pull
-request. The plan and each task's status are on disk, so a session can stop and any later session carry on. A
-question while building parks its item and the rest of the batch carries on. The person merges; the merge delivers.
-
-## Terms
-- **batch brief** (noun): the brief `work batch start` writes for the one fresh agent that runs the batch: the batch, its tasks and worktrees, the skill it follows, the rules and the lessons, and where it stops. Kind of: file.
-- **review folder** (noun): the scratch directory `batch-<n>-review-<k>` under the batch's worktrees directory, which `work batch brief` writes a review's brief and change into and where the review's findings are saved, and which is never committed. Kind of: file.
-- **pass** (verb, state): the test that binds a scenario passes when it runs in a worktree. Forms: passes, passed. Frame: scenario passes in worktree.
-- **fail** (verb, state): the test that binds a scenario fails when it runs in a worktree. Forms: fails, failed. Frame: scenario fails in worktree.
-- **cite** (verb, state): a commit's message or a pull request's body names an item by its `Item: b<n>` line. Forms: cites, cited. Frame: commit cites item. Frame: pull request cites item.
-
-- **fail** (verb, state): the command of a chore exits with an error when it runs in a worktree. Forms: fails, failed. Frame: chore fails in worktree.
-- **touch** (verb, state): a commit's change adds, removes or alters a file. Forms: touches, touched. Frame: commit touches file.
-
-## Relations
-| from | word | to | cardinality |
-|---|---|---|---|
-| review folder | of | batch | one |
-| scenario | of | item | one |
-| batch plan | of | batch | one |
-| commit | in | pull request |  |
-| commit | of | git branch | one |
-| requirement | of | item |  |
-| requirement | in | git branch |  |
-| task | of | item | one |
-| worktree | of | task | one |
-| git branch | of | batch | one |
-| chore | in | batch brief |  |
+Batches of ready items: opened, their tasks finished in workspaces of their own, items parked, abandoned or delivered
+when the change is merged.
 
 ## Behaviour
 
-### [g9] The merge delivers
-- [r9] While an item in a batch is `in-batch`, when the person merges the pull request of the batch, `work` shall set the status of the item to `delivered` and set the status of the batch to `merged`.
+### [g50] Merging a batch's change delivers its items
+- [r50] While an item in a batch is `in-batch`, when the person merges the proposed change of the batch, the batches
+  service shall set the status of the item to `delivered` and set the status of the batch to `merged`.
 
-### [g11] The pull request cites its items
-- [r11] While an item in a batch is `in-batch`, when the person runs `work batch review` on the batch, `work` shall publish a pull request that cites the item.
+### [g51] A batch opened keeps and gives its brief
+- [r51] When the person opens a batch, the batches service shall keep a batch brief and return the batch brief.
 
-### [g14] `work batch start` writes the batch brief for a fresh agent
-- [r14] When the person runs `work batch start`, `work` shall write a batch brief and print the batch brief.
+### [g52] A batch abandoned keeps no review folder
+- [r52] When the person abandons a batch, the batches service shall keep no review folder of the batch.
 
-### [g15] `work batch abandon` removes the batch's review folders
-- [r15] When the person runs `work batch abandon` on a batch, `work` shall remove every review folder of the batch.
+### [g53] A ready item that meets the bar and depends on nothing open goes into the batch opened
+- [r53] While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose
+  status is not `delivered`, when the person opens a batch, the batches service shall set the status of the item to
+  `in-batch`, keep a batch that holds the item and keep a batch plan of the batch.
 
-### [g22] `work batch start` picks a ready item that passes the readiness bar and has no dependency on an item that is not delivered
-- [r22] While an item is `ready` and the item passes the readiness bar and the item has no dependency on an item whose status is not `delivered`, when the person runs `work batch start`, `work` shall pick the item, set the status of the item to `in-batch`, write a batch whose status is `building` and write a batch plan of the batch.
+### [g54] A ready item that no longer meets the bar goes back to shaped
+- [r54] While an item is `ready` and the item does not meet the readiness bar, when the person opens a batch, the
+  batches service shall set the status of the item to `shaped`.
 
-### [g23] A ready item that no longer passes the readiness bar is returned
-- [r23] While an item is `ready` and the item does not pass the readiness bar, when the person runs `work batch start`, `work` shall set the status of the item to `shaped`.
+### [g55] An item a ready item depends on and that is not ready stays out of the batch
+- [r55] While an item is not `ready` or `delivered` and a dependency on the item exists and another item whose status is
+  `ready` has the dependency, when the person opens a batch, the batches service shall not set the status of the item to
+  `in-batch`.
 
-### [g24] A ready item with a dependency on an item that is neither ready nor delivered is not picked
-- [r24] While an item is not `ready` or `delivered` and a dependency on the item exists and another item whose status is `ready` has the dependency, when the person runs `work batch start`, `work` shall not pick the item.
+### [g56] A batch resumed gives its plan and asks nothing
+- [r56] While a batch is `building`, when a session resumes the batch, the batches service shall return the batch plan
+  of the batch and not ask a question.
 
-### [g25] `work batch resume` carries on without a person
-- [r25] While a batch is `building`, when a session runs `work batch resume` on the batch, `work` shall use the batch plan of the batch and ask no question.
+### [g57] An item parked needs input and the batch goes on
+- [r57] While an item in a batch is `in-batch`, when a session parks the item, the batches service shall set the status
+  of the item to `needs-input`, keep a question on the item and not set the status of the batch to `abandoned`.
 
-### [g26] `work batch park` parks an item and leaves the rest building
-- [r26] While an item in a batch is `in-batch`, when a session runs `work batch park` on the item, `work` shall set the status of the item to `needs-input`, write a question on the item and not set the status of the batch to `abandoned`.
+### [g58] A batch abandoned gives its items back as ready
+- [r58] While a batch is `building`, when the person abandons the batch, the batches service shall set the status of the
+  batch to `abandoned` and set the status of every item in the batch whose status is `in-batch` to `ready`.
 
-### [g37] A parked item's commits stay out of the pull request
-- [r37] While the status of an item in a batch is `needs-input` and a commit cites the item, when the person runs `work batch review` on the batch, `work` shall publish a pull request of the batch that does not hold the commit.
+### [g59] A batch whose change is merged keeps no review folder
+- [r59] When the person merges the proposed change of a batch, the batches service shall keep no review folder of the
+  batch.
 
-### [g28] `work batch abandon` returns the batch's items
-- [r28] While a batch is `building`, when the person runs `work batch abandon` on the batch, `work` shall set the status of the batch to `abandoned` and set the status of every item in the batch whose status is `in-batch` to `ready`.
+### [g60] An item parked has its lines taken out of the batch's workspace
+- [r60] While an item in a batch is `in-batch` and the workspace of the batch holds a requirement of the item, when a
+  session parks the item, the batches service shall keep a workspace of the batch that does not hold the requirement.
 
-### [g29] `work batch review` refuses a batch with a task that is not done
-- [r29] While a task of a batch is not `done`, if the person runs `work batch review` on the batch, then `work` shall refuse the command and name the task.
+### [g61] A task finishes while a parked item's scenario breaks
+- [r61] While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the
+  batch is `needs-input` and a scenario of the item breaks in the workspace of the task, when a session finishes the
+  task, the batches service shall set the status of the task to `done`.
 
-### [g30] `work batch review` refuses a commit that cites no item
-- [r30] While a git branch of a task of a batch has a commit that cites no item, if the person runs `work batch review` on the batch, then `work` shall refuse the command and name the commit.
+### [g62] A task finishes while another item's scenario succeeds
+- [r62] While an item in a batch is `in-batch` and a task of the item is `running` and another item in the batch is
+  `in-batch` and a scenario of the item succeeds in the workspace of the task, when a session finishes the task, the
+  batches service shall set the status of the task to `done`.
 
-### [g31] The merge removes the batch's review folders
-- [r31] When the person merges a pull request of a batch, `work` shall remove every review folder of the batch.
+### [g63] A batch monitored gives its items, tasks and their status
+- [r63] While a batch holds an item and the batch has a task, when the person monitors the batch, the batches service
+  shall return the item, the task and the status of the task.
 
-### [g32] `work batch park` takes the parked item's lines out of the batch
-- [r32] While an item in a batch is `in-batch` and the git branch of the batch holds a requirement of the item, when a session runs `work batch park` on the item, `work` shall remove the requirement from the git branch.
+### [g64] A batch opened with a universal condition keeps the universal conditions in the language
+- [r64] While `universal` does not exist and an item is `ready` and the item meets the readiness bar and a universal
+  condition is in the item, when the person opens a batch, the batches service shall keep `universal` and set the
+  language of `universal` to `codified-2`.
 
-### [g38] A parked item's failing scenario does not hold up another item's task
-- [r38] While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the batch is `needs-input` and a scenario of the item fails in the worktree of the task, when a session runs `work batch done` on the task, `work` shall set the status of the task to `done`.
+### [g65] Merging a batch's change resolves the accepted context request of its item
+- [r65] While an item in a batch is `in-batch` and the item has a request line of a context request and the context
+  request is `accepted`, when the person merges the proposed change of the batch, the batches service shall set the
+  status of the context request to `delivered`, keep a resolution, set the side of the context request to `asker` and
+  keep an entry on the context request.
 
-### [g34] Another item's passing scenario does not hold up a task
-- [r34] While an item in a batch is `in-batch` and a task of the item is `running` and another item in the batch is `in-batch` and a scenario of the item passes in the worktree of the task, when a session runs `work batch done` on the task, `work` shall set the status of the task to `done`.
+### [g66] A task whose chore breaks is not finished
+- [r66] While a task of an item is `running` and the item holds a chore and the chore breaks in the workspace of the
+  task, if a session finishes the task, then the batches service shall refuse the request and name the chore.
 
-### [g35] `work batch review` publishes the pull request
-- [r35] While a batch is `building` and every task of the batch is `done`, when the person runs `work batch review` on the batch, `work` shall publish a pull request of the batch and set the status of the batch to `in-review`.
+### [g67] A task that touches a file outside its chore is not finished
+- [r67] While a task of an item is `running` and the item holds a chore and a kept change in the workspace of the task
+  touches a file that is not in the chore, if a session finishes the task, then the batches service shall refuse the
+  request and name the file.
 
-### [g36] `work batch status` prints where the batch stands
-- [r36] While a batch holds an item and the batch has a task, when the person runs `work batch status` on the batch, `work` shall print the item, the task and the status of the task.
+### [g68] A batch opened keeps a brief that holds each chore
+- [r68] While an item is `ready` and the item holds a chore and the item meets the readiness bar, when the person opens
+  a batch, the batches service shall keep a batch brief that holds the chore.
 
-### [g39] `work batch start` writes `spec/universal.md` in `codified-2` when it does not exist
-- [r39] While `universal` does not exist and an item is `ready` and the item passes the readiness bar and a universal condition is in the item, when the person runs `work batch start`, `work` shall write `universal` and set the language of `universal` to `codified-2`.
+### [g69] A batch opened keeps each new capability
+- [r69] While an item is `ready` and the item meets the readiness bar and the item holds a capability, when the person
+  opens a batch, the batches service shall keep the capability.
 
-### [g40] The merge resolves the request a delivered item was taken in from
-- [r40] While an item in a batch is `in-batch` and the item has a request line of a request and the request is `accepted`, when the person merges the pull request of the batch, `work` shall set the status of the request to `delivered`, write a resolution, set the side of the request to `asker`, post a comment, close the issue of the request and commit the request.
+### [g70] A task finishes while a parked item's line is out of the batch
+- [r70] While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the
+  batch is `needs-input` and the item has a requirement that is not in the workspace of the batch and a scenario of the
+  item breaks in the workspace of the task, when a session finishes the task, the batches service shall set the status
+  of the task to `done`.
 
-### [g42] `work batch done` refuses a task whose chore fails
-- [r42] While a task of an item is `running` and the item holds a chore and the chore fails in the worktree of the task, if a session runs `work batch done` on the task, then `work` shall refuse the command and name the chore.
+### [g71] A batch opened keeps each line's logical form in the corpus
+- [r71] While an item is `ready` and the item meets the readiness bar and a requirement of the item has a logical form,
+  when the person opens a batch, the batches service shall keep the logical form in the corpus.
 
-### [g43] `work batch done` refuses a commit that touches a file the chore does not name
-- [r43] While a task of an item is `running` and the item holds a chore and a commit of the git branch of the task touches a file that is not in the chore, if a session runs `work batch done` on the task, then `work` shall refuse the command and name the file.
+### [g72] A batch opened takes a retired requirement out of the corpus
+- [r72] While an item is `ready` and the item meets the readiness bar and a requirement id is in the item and a
+  requirement in the corpus has the requirement id, when the person opens a batch, the batches service shall keep a
+  corpus that does not hold the requirement.
 
-### [g41] The batch brief holds the chore of a chore item
-- [r41] While an item is `ready` and the item holds a chore and the item passes the readiness bar, when the person runs `work batch start`, `work` shall write a batch brief that holds the chore.
+### [g73] A batch opened keeps the catalogue entry of each rule its lines use
+- [r73] While an item is `ready` and the item meets the readiness bar and a requirement of the item uses a rule, when
+  the person opens a batch, the batches service shall keep the catalogue entry of the rule.
 
-### [g44] `work batch start` writes the capability an item holds
-- [r44] While an item is `ready` and the item passes the readiness bar and the item holds a capability, when the person runs `work batch start`, `work` shall write the capability.
-
-### [g45] A parked item reshaped after the park does not hold up another item's task
-- [r45] While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the batch is `needs-input` and the item has a requirement that is not in the git branch of the batch and a scenario of the item fails in the worktree of the task, when a session runs `work batch done` on the task, `work` shall set the status of the task to `done`.
-
-### [g46] `work batch start` writes the logical form of each laid requirement in the corpus
-- [r46] While an item is `ready` and the item passes the readiness bar and a requirement of the item has a logical form, when the person runs `work batch start`, `work` shall write the logical form in the corpus.
-
-### [g47] `work batch start` removes a retired requirement from the corpus
-- [r47] While an item is `ready` and the item passes the readiness bar and a requirement id is in the item and a requirement in the corpus has the requirement id, when the person runs `work batch start`, `work` shall remove the requirement.
-
-### [g48] `work batch start` writes the catalogue entry of a rule a laid requirement uses
-- [r48] While an item is `ready` and the item passes the readiness bar and a requirement of the item uses a rule, when the person runs `work batch start`, `work` shall write the catalogue entry of the rule.
-
-### [g49] `work batch start` writes the construct catalogue when a laid requirement uses a construct
-- [r49] While an item is `ready` and the item passes the readiness bar and a requirement of the item uses a construct, when the person runs `work batch start`, `work` shall write the construct catalogue.
-
-## Implementation, may change
-
-- `work batch start` takes the ready items in rank order (the backlog's WSJF, ties to the item added first), up to
-  `batch_size` of `.shop/delivery.toml` (a new key, default 4).
-- A batch keeps each item's commits apart (one worktree or one commit series an item); a parked item's commits stay on
-  its own branch for when it returns.
-- The batch and its plan are one file, `.shop/batches/<n>/plan.md`: frontmatter `id`, `kind: batch`, `status`,
-  `base` (the branch `work batch start` ran on), `forked_from` (the base's commit the batch branch starts at),
-  `branch` and `pull_request`; a `# batch-<n>` heading; a `## Tasks` table `| task | item | status | branch |`, one
-  task `t<k>` for each item in pick order; and a `## Plan` kept as written. It is committed on the base branch only,
-  with the items it moves; the batch and item branches never change `.shop/backlog/` or `.shop/batches/`.
-- `work batch start` makes the branch `batch-<n>` at the base's HEAD and, in a worktree of its own under
-  `.shop/worktrees/` (`[batch] worktrees` of `.shop/delivery.toml`), commits on it every picked item's lines laid
-  into `spec/`, their ids appended to the capability's `unbuilt:`, and each service capability's feature generated
-  again, with one `Item: b<j>` line for each item. Each item's task builds on the branch `batch-<n>-b<j>`, which
-  starts at that commit; the item branches are merged into `batch-<n>` only by `work batch review`.
-- Once the batch is laid, `work batch start` writes the batch brief `batch-<n>-driver/brief.md` under the worktrees
-  directory, never committed, and prints its path: the batch, its base checkout, each task with its worktree, branch,
-  item and requirement ids, the skill `building-a-batch`, the prefix of every push and gh call (`[batch] push` of
-  `.shop/delivery.toml`, a string, when given), the rules every subagent is given, where the agent stops
-  (`awaiting-merge`: no merge, no `work batch merged`) and what it replies. `work batch merged` and
-  `work batch abandon` remove the folder `batch-<n>-driver/` with the batch's worktrees.
-- Each picked item is checked by the readiness bar again, alone and then laid over the items picked before it; one
-  that no longer passes alone goes back to `shaped` with its reasons under `## Notes`, one that clashes with those
-  picked stays `ready`. An item's ids that collide with its capability's or with an item picked before it are
-  renumbered, with a `## Notes` line naming each change. One batch is open (`building`, `in-review` or
-  `awaiting-merge`) at a time.
-- A commit cites an item when its message has the line `Item: b<j>` (a git trailer). `work batch done` and `work
-  batch review` refuse a commit on an item's branch since the lines commit that cites no item, and one that changes
-  `.shop/backlog/` or `.shop/batches/`, naming the commit as `<short sha> "<subject>"` or the path.
-- A task is done when its item's ids have left `unbuilt:` in its worktree and the tests pass there: `[batch] tests` of
-  `.shop/delivery.toml`, default `python3 -m pytest -q -p work_items`, run with the plugin's scripts on PYTHONPATH.
-  `work batch resume` gives each pending task of an `in-batch` item its worktree `batch-<n>-t<k>` and sets it
-  `running`; a parked item's task goes back to `pending`, its branch kept for when the item returns.
-- `work batch review` merges each `in-batch` item's branch into `batch-<n>` with `--no-ff`, in plan order, in the
-  batch's worktree; two items of one capability each take their own ids out of its one `unbuilt:` line, and that
-  conflict alone is settled by the merge, any other refuses. It runs the tests there, pushes `batch-<n>` with `git
-  push -u` to the base branch's upstream remote (else `origin`), and creates a draft pull request with `gh pr create
-  --draft`, its body naming each `in-batch` item with its requirement ids and each parked one; a batch that has a
-  pull request already is pushed only; once a review of it is recorded, each commit on an `in-batch` item's branch
-  after that review's head must cite an open finding of its item (`Finding: f<m>`) and each open finding must have
-  such a commit, else the review is refused, naming the commit or the finding (pr-review's fix loop). gh is `$SHOPSYSTEM_WORK_GH`, else `gh`. A review refused while merging,
-  testing, pushing or creating puts the batch branch, and the remote's, back where they were.
-- The merge is recorded by `work batch merged <batch>`, on a batch that is `in-review` or `awaiting-merge`: gh must
-  say the pull request is `MERGED`, and its merge commit must be in the base branch's history (else `git pull`
-  first). It sets every `in-batch` item `delivered` and the batch `merged`, removes the batch's worktrees and
-  deletes the merged item branches. `work batch abandon` takes a batch that is `building` or `in-review`: it closes
-  the pull request when there is one (refused, with nothing changed, if gh fails), sets every `in-batch` item `ready`
-  and the batch `abandoned`, removes the worktrees and keeps the branches.
-- `work accept` records on the item it makes which line of the request each of its requirements came from, as
-  `request_lines: [<cap>#r<n>=<k>, ...]` in the item's frontmatter, kept under the new ids when a batch renumbers
-  them. After the merge is recorded, `work batch merged` resolves the request of each delivered item taken in from
-  one by `work resolve`'s path, each recorded line delivered as `<cap>#r<n> <merge commit>`, and prints
-  `<q> resolved: delivered by <item>`. A request that is not `accepted`, an item that records no line of it, or a
-  resolve that is refused is left alone and named as `<q> not resolved (<why>); run work resolve`, for a later
-  `work resolve`.
-- A chore item's task names its chore in place of requirement ids: `work batch resume` prints the chore's files and
-  check where it prints an item's ids, and the batch brief `work batch start` writes, and the brief `work batch brief`
-  writes for `pr-reviewer`, hold the chore's files and check under the item. `work batch done` runs the check in the
-  task's worktree after the tests (b316).
-
-## Not yet
-- Tasks finer than an item: a batch has one task for each item, and the batch session splits a task further among
-  its own subagents.
-- A task set `failed` by a command.
-- A session `work` starts itself: the batch session is a Claude Code session following the `building-a-batch`
-  skill, and `work batch` keeps the state.
+### [g74] A batch opened keeps the construct catalogue its lines use
+- [r74] While an item is `ready` and the item meets the readiness bar and a requirement of the item uses a construct,
+  when the person opens a batch, the batches service shall keep the construct catalogue.

@@ -1,0 +1,454 @@
+# The CLI adapter's contract of this bounded context (the domain contract design, §6.1): each operation of the
+# domain model (spec/model/) with the command that requests it and its parameters' options, checked both ways
+# against the programs' argparse by `model check` (v_a1-v_a4).
+adapter = "cli"
+json = "--json"
+
+[programs]
+work = "scripts/work"
+model = "scripts/model"
+features = "scripts/features"
+tools = "scripts/tools"
+measure = "scripts/measure"
+migrate = "scripts/migrate"
+
+[outcomes]
+done = { exit = 0 }
+returned = { exit = 0, content = "stdout" }
+passed = { exit = 0, content = "stdout" }
+refused = { exit = 1, errors = "stderr" }
+failed = { exit = 1, content = "stdout", errors = "stderr" }
+broken = { exit = 1, errors = "stderr" }
+
+[cli-only]
+options = ["--json", "--root", "--hook", "--python"]
+# commands no operation of the model names: the adapter's own (hooks' output, catalogues, reports)
+commands = ["work batch brief", "work directives", "work names", "model constructs", "model restates"]
+
+[unexposed]
+# operations an agent performs when dispatched, which no command requests; upgrades.found until b318 adds its command
+operations = ["reviews.review", "measurement.conduct", "measurement.hand", "upgrades.found"]
+
+[environment]
+VIRTUAL_ENV = "toolchain.probe: the Python interpreter, when none is given"
+SHOPSYSTEM_WORK_GH = "the issue host port: the gh program context requests and batches call"
+SHOPSYSTEM_PUSH_TIMEOUT = "the shared store port: how long a push may take"
+
+[operations."language.parse"]
+command = "model parse"
+cli-only = { options = ["--file"] }
+[operations."language.parse".parameters]
+text = { positional = 1 }
+"logical form" = { option = "--form", flag = true }
+
+[operations."language.explain"]
+command = "model explain"
+[operations."language.explain".parameters]
+text = { positional = 1 }
+
+[operations."language.look up"]
+command = "model lexicon"
+cli-only = { options = ["--check"] }
+
+[operations."specification.check"]
+command = "model check"
+cli-only = { options = ["--limit"] }
+
+[operations."specification.examine"]
+command = "model logic"
+[operations."specification.examine".parameters]
+capability = { positional = 1 }
+
+[operations."specification.consult"]
+command = "model rules"
+
+[operations."specification.renew"]
+command = "model rules"
+cli-only = { options = ["--write"] }
+[operations."specification.renew".parameters]
+audit = { option = "--check", flag = true }
+
+[operations."specification.inventory"]
+command = "model forms"
+[operations."specification.inventory".parameters]
+audit = { option = "--check", flag = true }
+
+[operations."specification.translate"]
+command = "model facts"
+
+[operations."decisions.enter"]
+command = "work decision"
+cli-only = { options = ["--alternatives", "--by", "--context", "--date", "--enforced-by", "--rests-on", "--slug", "--source"] }
+[operations."decisions.enter".parameters]
+title = { positional = 1 }
+summary = { option = "--summary" }
+tier = { option = "--tier" }
+wording = { option = "--decision" }
+route = { option = "--verified-by", repeat = true }
+supersedes = { option = "--supersedes", repeat = true }
+
+[operations."decisions.rebuild"]
+command = "model decisions"
+[operations."decisions.rebuild".parameters]
+audit = { option = "--check", flag = true }
+
+[operations."records.file"]
+command = "work record"
+cli-only = { options = ["--body", "--date", "--kind", "--slug"] }
+[operations."records.file".parameters]
+title = { positional = 1 }
+summary = { option = "--summary" }
+text = { option = "--about" }
+
+[operations."scenarios.generate"]
+command = "features generate"
+cli-only = { options = ["--preview", "--root"] }
+[operations."scenarios.generate".parameters]
+capability = { positional = 1 }
+audit = { option = "--check", flag = true }
+
+[operations."scenarios.audit"]
+command = "features vocab"
+cli-only = { options = ["--check", "--root", "--tests"] }
+[operations."scenarios.audit".parameters]
+feature = { positional = 1 }
+
+[operations."feature reading.search"]
+command = "features list"
+[operations."feature reading.search".parameters]
+tag = { option = "--tag" }
+"search text" = { option = "--title" }
+
+[operations."feature reading.count"]
+command = "features count"
+cli-only = { options = ["--by-tag"] }
+
+[operations."feature reading.scan"]
+command = "features deprecated"
+
+[operations."feature reading.vet"]
+command = "features bindings"
+cli-only = { options = ["--tests"] }
+[operations."feature reading.vet".parameters]
+"unbound listing" = { option = "--unbound", flag = true }
+
+[operations."backlog.note idea"]
+command = "work idea"
+cli-only = { options = ["--provenance"] }
+[operations."backlog.note idea".parameters]
+title = { positional = 1 }
+note = { option = "--note" }
+
+[operations."backlog.shape"]
+command = "work shape"
+[operations."backlog.shape".parameters]
+item = { positional = 1 }
+note = { option = "--note" }
+
+[operations."backlog.rate"]
+command = "work rate"
+[operations."backlog.rate".parameters]
+item = { positional = 1 }
+value = { option = "--value" }
+urgency = { option = "--urgency" }
+size = { option = "--size" }
+
+[operations."backlog.link"]
+command = "work depend"
+cli-only = { options = ["--drop"] }
+[operations."backlog.link".parameters]
+item = { positional = 1 }
+prerequisite = { option = "--on" }
+
+[operations."backlog.ready"]
+command = "work ready"
+[operations."backlog.ready".parameters]
+item = { positional = 1 }
+
+[operations."backlog.decline"]
+command = "work refuse"
+[operations."backlog.decline".parameters]
+item = { positional = 1 }
+
+[operations."backlog.withdraw"]
+command = "work withdraw"
+[operations."backlog.withdraw".parameters]
+item = { positional = 1 }
+
+[operations."backlog.answer"]
+command = "work answer"
+[operations."backlog.answer".parameters]
+item = { positional = 1 }
+answer = { positional = 2 }
+
+[operations."backlog.show"]
+command = "work show"
+[operations."backlog.show".parameters]
+item = { positional = 1 }
+
+[operations."backlog.list"]
+command = "work backlog"
+
+[operations."drafting.draft"]
+command = "work line"
+cli-only = { options = ["--group", "--in", "--into", "--model", "--narrator", "--no-line", "--term"] }
+[operations."drafting.draft".parameters]
+item = { positional = 1 }
+requirement = { positional = 2 }
+"relation row" = { option = "--relation" }
+"universal condition" = { option = "--universal" }
+"upstream entry" = { option = "--upstream" }
+"given block" = { option = "--given" }
+"requirement id" = { option = "--retires" }
+capability = { option = "--capability" }
+
+[operations."drafting.recodify"]
+command = "work line"
+[operations."drafting.recodify".parameters]
+item = { positional = 1 }
+capability = { option = "--recodify" }
+
+[operations."drafting.reword"]
+command = "work line"
+[operations."drafting.reword".parameters]
+requirement = { option = "--reword" }
+
+[operations."drafting.remove"]
+command = "work line"
+[operations."drafting.remove".parameters]
+requirement = { option = "--remove" }
+
+[operations."drafting.assign"]
+command = "work chore"
+cli-only = { options = ["--check", "--file"] }
+[operations."drafting.assign".parameters]
+item = { positional = 1 }
+
+[operations."context requests.raise"]
+command = "work request"
+cli-only = { options = ["--ask", "--raised-for"] }
+[operations."context requests.raise".parameters]
+origin = { option = "--source" }
+thread = { option = "--thread" }
+text = { option = "--from" }
+"bounded context" = { option = "--to" }
+
+[operations."context requests.ask"]
+command = "work ask"
+[operations."context requests.ask".parameters]
+question = { positional = 3 }
+
+[operations."context requests.reply"]
+command = "work reply"
+[operations."context requests.reply".parameters]
+"context request" = { positional = 1 }
+answer = { positional = 3 }
+
+[operations."context requests.offer"]
+command = "work offer"
+cli-only = { options = ["--note"] }
+[operations."context requests.offer".parameters]
+"context request" = { positional = 1 }
+capability = { option = "--capability" }
+
+[operations."context requests.serve"]
+command = "work fits"
+cli-only = { options = ["--serves"] }
+[operations."context requests.serve".parameters]
+"context request" = { positional = 1 }
+
+[operations."context requests.propose"]
+command = "work propose"
+cli-only = { options = ["--line"] }
+[operations."context requests.propose".parameters]
+"context request" = { positional = 1 }
+
+[operations."context requests.settle"]
+command = "work outcome"
+cli-only = { options = ["--group", "--into", "--line"] }
+[operations."context requests.settle".parameters]
+"request line" = { positional = 2 }
+"line outcome" = { positional = 3 }
+"line reason" = { option = "--reason" }
+
+[operations."context requests.pass turn"]
+command = "work turn"
+[operations."context requests.pass turn".parameters]
+turn = { positional = 1 }
+
+[operations."context requests.accept"]
+command = "work accept"
+[operations."context requests.accept".parameters]
+"context request" = { positional = 1 }
+
+[operations."context requests.resolve"]
+command = "work resolve"
+cli-only = { options = ["--line"] }
+[operations."context requests.resolve".parameters]
+"context request" = { positional = 1 }
+
+[operations."context requests.catch up"]
+command = "work sync"
+
+[operations."context requests.watch"]
+command = "work watch"
+cli-only = { options = ["--every", "--forward", "--hook", "--polls"] }
+
+[operations."context requests.survey"]
+command = "work list"
+
+[operations."context requests.inspect"]
+command = "work show"
+[operations."context requests.inspect".parameters]
+"context request" = { positional = 1 }
+
+[operations."conversation.quote"]
+command = "work quote"
+cli-only = { options = ["--session", "--transcript", "--hook"] }
+[operations."conversation.quote".parameters]
+message = { positional = 1 }
+
+[operations."conversation.give"]
+command = "work directive"
+cli-only = { options = ["--quote", "--session", "--transcript"] }
+
+[operations."conversation.promote"]
+command = "work promote"
+[operations."conversation.promote".parameters]
+directive = { positional = 1 }
+item = { option = "--to" }
+
+[operations."conversation.drop"]
+command = "work drop"
+[operations."conversation.drop".parameters]
+directive = { positional = 1 }
+reason = { option = "--why" }
+
+[operations."conversation.read"]
+command = "work show"
+[operations."conversation.read".parameters]
+quote = { positional = 1 }
+
+[operations."batches.open"]
+command = "work batch start"
+
+[operations."batches.resume"]
+command = "work batch resume"
+[operations."batches.resume".parameters]
+batch = { positional = 1 }
+
+[operations."batches.finish"]
+command = "work batch done"
+[operations."batches.finish".parameters]
+task = { positional = 2 }
+
+[operations."batches.park"]
+command = "work batch park"
+cli-only = { options = ["--discard", "--question"] }
+[operations."batches.park".parameters]
+item = { positional = 2 }
+
+[operations."batches.submit"]
+command = "work batch review"
+[operations."batches.submit".parameters]
+batch = { positional = 1 }
+
+[operations."batches.merge"]
+command = "work batch merged"
+
+[operations."batches.abandon"]
+command = "work batch abandon"
+cli-only = { options = ["--discard"] }
+[operations."batches.abandon".parameters]
+batch = { positional = 1 }
+
+[operations."batches.monitor"]
+command = "work batch status"
+[operations."batches.monitor".parameters]
+batch = { positional = 1 }
+
+[operations."reviews.conclude"]
+command = "work batch reviewed"
+
+[operations."measurement.measure"]
+command = "measure batch"
+cli-only = { options = ["--replace", "--sessions"] }
+[operations."measurement.measure".parameters]
+batch = { positional = 1 }
+
+[operations."measurement.report"]
+command = "measure defect"
+cli-only = { options = ["--says"] }
+[operations."measurement.report".parameters]
+item = { positional = 1 }
+
+[operations."measurement.view"]
+command = "measure show"
+[operations."measurement.view".parameters]
+measurement = { positional = 1 }
+
+[operations."measurement.compare"]
+command = "measure compare"
+[operations."measurement.compare".parameters]
+measurement = { positional = 1 }
+
+[operations."toolchain.probe"]
+command = "tools probe"
+[operations."toolchain.probe".parameters]
+"Python interpreter" = { option = "--python" }
+log = { option = "--log", flag = true }
+
+[operations."toolchain.install"]
+command = "tools install"
+cli-only = { options = ["--python"] }
+
+[operations."code analysis.map"]
+command = "tools map"
+cli-only = { options = ["--python"] }
+
+[operations."code analysis.trace"]
+command = "tools tests-of"
+cli-only = { options = ["--python"] }
+[operations."code analysis.trace".parameters]
+identifier = { positional = 1 }
+"file view" = { option = "--by-file", flag = true }
+
+[operations."code analysis.screen"]
+command = "tools untested"
+cli-only = { options = ["--python"] }
+[operations."code analysis.screen".parameters]
+"Python file" = { positional = 1 }
+
+[operations."code analysis.locate"]
+command = "tools refs"
+cli-only = { options = ["--python"] }
+[operations."code analysis.locate".parameters]
+identifier = { positional = 1 }
+
+[operations."code analysis.lint"]
+command = "tools check"
+cli-only = { options = ["--base", "--python"] }
+[operations."code analysis.lint".parameters]
+file = { positional = 1 }
+
+[operations."code analysis.size"]
+command = "tools size"
+cli-only = { options = ["--python"] }
+[operations."code analysis.size".parameters]
+"size limit" = { option = "--limit" }
+
+[operations."upgrades.query"]
+command = "migrate status"
+cli-only = { options = ["--hook"] }
+
+[operations."upgrades.upgrade"]
+command = "migrate upgrade"
+
+[operations."upgrades.relocate"]
+command = "migrate run"
+[operations."upgrades.relocate".parameters]
+"bounded context" = { option = "--context" }
+
+[operations."conversation.prompt"]
+hook = "UserPromptSubmit"
+command = "work quote"

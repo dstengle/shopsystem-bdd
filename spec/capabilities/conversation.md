@@ -5,7 +5,7 @@ narrator: the person reading why a piece of work was asked for
 group: service
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
-retired: [g2, r2, g3, r3, g4, r4]
+retired: [g2, r2, g3, r3, g4, r4, g1, r1, g6, r6, g7, r7, g8, r8, g9, r9, g16, r16, g10, r10, g11, r11, g12, r14, g13, r12, g14, r13, g15, r15]
 ---
 
 # Conversation
@@ -17,61 +17,14 @@ committed, so that any clone or session can show them. The person reads names, n
 of every item and batch a session names (design goal 10).
 
 ## Terms
-- **the prompt hook** (proper noun): the plugin's UserPromptSubmit hook. Kind of: agent.
-- **cite** (verb, state): a quote holds a message as the one the person's words are from. Forms: cites, cited. Frame: quote cites message.
-- **git directory** (noun): the directory in which git keeps the data of a repository, which is never committed. Kind of: thing. This: the git directory of the repository the command runs in.
-- **transcript** (noun): the file in which Claude Code keeps the messages of a session. Kind of: file.
 
-- **queued message** (noun): a message of the person that Claude Code gives a session while the session works on a turn, kept in its transcript apart from the person's prompts. Kind of: message.
-
-- **directive** (noun): a file under `.shop/directives/` that cites a quote of the person's words which every session follows until the directive is promoted or dropped. Kind of: file.
-- **status** (attribute of directive): Values (adjective): `live`, `promoted`, `dropped`. Transitions: `live` → `promoted`: `work promote`; `live` → `dropped`: `work drop`.
+Moved to `spec/vocabulary/` and `spec/model/` (the domain contract, 0.38.0).
 
 ## Relations
-| from | word | to | cardinality |
-|---|---|---|---|
-| file | in | git directory | one |
-| transcript | of | session | one |
-| quote | of | directive | one |
+
+Moved to `spec/vocabulary/` and `spec/model/` (the domain contract, 0.38.0).
 
 ## Behaviour
-
-### [g1] `work quote` keeps the turns
-- [r1] When a session runs `work quote`, `work` shall write a quote from the session that cites a message and commit
-  the quote.
-
-### [g6] The prompt hook writes down the session and its transcript
-- [r6] When the prompt hook runs `work quote` with the `--hook` option, `work` shall write a file in the git directory that lists the transcript of the session.
-
-### [g7] `work show` on a quote prints its messages
-- [r7] When the person runs `work show` on a quote, `work` shall print every message that the quote cites.
-
-### [g8] The names table at SessionStart
-- [r8] When the SessionStart hook runs `work names`, `work` shall print every item, every title of an item and every batch.
-
-### [g9] `work quote` finds a message sent mid-turn
-- [r9] When a session runs `work quote` on a queued message, `work` shall write a quote that cites the queued message and commit the quote.
-
-### [g16] `work directive` keeps the person's words as a live directive
-- [r16] When a session runs `work directive`, `work` shall write a directive whose quote cites a message and commit the directive.
-
-### [g10] The SessionStart hook shows the live directives
-- [r10] When the SessionStart hook runs `work directives` with the `--hook` option, `work` shall print the quote of every directive whose status is `live`.
-
-### [g11] `work promote` promotes a live directive to what it became
-- [r11] When a session runs `work promote` with the `--to` option set to an item on a directive whose status is `live`, `work` shall set the status of the directive to `promoted` and commit the directive.
-
-### [g12] `work drop` drops a live directive with its reason
-- [r14] When a session runs `work drop` with the `--why` option on a directive whose status is `live`, `work` shall set the status of the directive to `dropped` and commit the directive.
-
-### [g13] `work promote` refuses a directive that is not live
-- [r12] When a session runs `work promote` with the `--to` option on a directive whose status is not `live`, `work` shall refuse the command and name the directive.
-
-### [g14] `work promote` refuses an item that does not exist
-- [r13] When a session runs `work promote` with the `--to` option set to an item that does not exist on a directive, `work` shall refuse the command and name the item.
-
-### [g15] `work drop` refuses a directive that is not live
-- [r15] When a session runs `work drop` with the `--why` option on a directive whose status is not `live`, `work` shall refuse the command and name the directive.
 
 ## Implementation, may change
 
@@ -107,3 +60,33 @@ of every item and batch a session names (design goal 10).
   `work drop directive-<n> --why "<reason>"` when it is not live.
 - `scripts/conversation_hook` imports only the standard library and the conversation's modules, so the hooks run under
   any `python3`, and exits 0 whatever goes wrong.
+## Moved
+
+Every line moved to a new capability with a new id (the domain contract, 0.38.0).
+
+| old | new |
+|---|---|
+| g1 | quotes#g1 |
+| r1 | quotes#r1 |
+| g6 | quotes#g2 |
+| r6 | quotes#r2 |
+| g7 | quotes#g3 |
+| r7 | quotes#r3 |
+| g8 | items#g29 |
+| r8 | items#r29 |
+| g9 | quotes#g4 |
+| r9 | quotes#r4 |
+| g16 | directives#g1 |
+| r16 | directives#r1 |
+| g10 | directives#g2 |
+| r10 | directives#r2 |
+| g11 | directives#g3 |
+| r11 | directives#r3 |
+| g12 | directives#g4 |
+| r14 | directives#r4 |
+| g13 | directives#g5 |
+| r12 | directives#r5 |
+| g14 | directives#g6 |
+| r13 | directives#r6 |
+| g15 | directives#g7 |
+| r15 | directives#r7 |

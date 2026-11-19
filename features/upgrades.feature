@@ -1,9 +1,9 @@
-# generated from spec/capabilities/migration-tools.md by features generate; do not edit
-Feature: Migration tools
-  Narrator: a person or session migrating a repository to the final layout or upgrading it between plugin releases
+# generated from spec/capabilities/upgrades.md by features generate; do not edit
+Feature: Upgrades
+  Narrator: the person
 
-  @g27 @r27
-  Scenario: `migrate run` relocates every old-layout directory and rewrites every file that mentions one
+  @g1 @r1
+  Scenario: Relocating a bounded context moves every old-layout directory
     Given the tracked file `decisions/0001-a.md` holds:
       """
       ---
@@ -91,15 +91,15 @@ Feature: Migration tools
     And a file f3
     And an old-layout directory o6
     And the file f3 does not mention the old-layout directory o6
-    When the person runs `migrate run` on the bounded context b1
-    Then `migrate` relocates the old-layout directory o2
-    And `migrate` relocates the old-layout directory o3
-    And `migrate` rewrites the file f1
-    And `migrate` rewrites the file f2
-    And `migrate` does not rewrite the file f3
+    When the person relocates the bounded context b1
+    Then the upgrades service changes the old-layout directory o2
+    And the upgrades service changes the old-layout directory o3
+    And the upgrades service changes the file f1
+    And the upgrades service changes the file f2
+    And the upgrades service does not change the file f3
 
-  @g28 @r28
-  Scenario: `migrate run` writes a design-decision of each ledger entry, removes the decision ledger and rewrites the decisions index
+  @g2 @r2
+  Scenario: Relocating a bounded context turns its decision ledger into design-decisions
     Given the tracked file `spec/index.md` holds:
       """
       ---
@@ -127,16 +127,44 @@ Feature: Migration tools
     And a ledger entry l1
     And the decision ledger d1 has the ledger entry l1
     And a bounded context b1
-    When the person runs `migrate run` on the bounded context b1
-    Then `migrate` writes the design-decision d2
+    When the person relocates the bounded context b1
+    Then the upgrades service keeps the design-decision d2
     And the ledger entry l1 has the design-decision d2
-    And `migrate` removes the decision ledger d1
-    And `migrate` rewrites the decisions index d3
+    And the upgrades service does not keep a decision ledger
+    And the upgrades service changes the decisions index d3
     And this repository has the decisions index d3
-    And `migrate` exits successfully
+    And the upgrades service completes this request
 
-  @g31 @r31
-  Scenario: `migrate run` writes the qualifier of a supersedes in part into the design-decision that supersedes
+  @g3 @r3
+  Scenario: A superseded ledger entry becomes a superseded design-decision
+    Given the tracked file `spec/decisions.md` holds:
+      """
+      ## decision/0007-a
+      We do a.
+      date: 2025-03-01
+      source: alice
+      ## decision/0008-b
+      We do b instead.
+      date: 2025-03-02
+      source: bob
+      supersedes: decision/0007-a
+      revisit_when: the cart grows
+      """
+    And a ledger entry l1
+    And a ledger entry l2
+    And the ledger entry l1 supersedes the ledger entry l2
+    And a bounded context b1
+    And a design-decision d1
+    And a design-decision d2
+    When the person relocates the bounded context b1
+    Then the upgrades service keeps the design-decision d1
+    And the ledger entry l2 has the design-decision d1
+    And the status of the design-decision d1 is `superseded`
+    And the upgrades service keeps the design-decision d2
+    And the design-decision d2 supersedes the design-decision d1
+
+  @g4 @r4
+  Scenario: A superseding ledger entry's qualifier is kept
     Given the tracked file `spec/decisions.md` holds:
       """
       ## decision/0007-a
@@ -155,12 +183,12 @@ Feature: Migration tools
     And a ledger entry l2
     And the ledger entry l1 supersedes the ledger entry l2
     And a bounded context b1
-    When the person runs `migrate run` on the bounded context b1
-    Then `migrate` writes the design-decision d1
+    When the person relocates the bounded context b1
+    Then the upgrades service keeps the design-decision d1
     And the design-decision d1 holds the qualifier q1
 
-  @g32 @r32
-  Scenario: `migrate run` gives each ledger entry with no ledger number a ledger number
+  @g5 @r5
+  Scenario: A ledger entry with no number is given one
     Given the tracked file `spec/decisions.md` holds:
       """
       ## decision/0007-a
@@ -177,11 +205,12 @@ Feature: Migration tools
     And the decision ledger d1 has the ledger entry l1
     And the ledger entry l1 has no ledger number
     And a bounded context b1
-    When the person runs `migrate run` on the bounded context b1
-    Then `migrate` gives the ledger number l2 to the ledger entry l1
+    When the person relocates the bounded context b1
+    Then the upgrades service keeps the ledger number l2
+    And the ledger entry l1 has the ledger number l2
 
-  @g33 @r33
-  Scenario: `migrate run` gives each Behaviour line with no line id a line id
+  @g6 @r6
+  Scenario: A Behaviour line with no id is given one
     Given the tracked file `spec/capabilities/thing.md` holds:
       """
       ---
@@ -203,11 +232,12 @@ Feature: Migration tools
     And the capability c1 has the Behaviour line b1
     And the Behaviour line b1 has no line id
     And a bounded context b2
-    When the person runs `migrate run` on the bounded context b2
-    Then `migrate` gives the line id l1 to the Behaviour line b1
+    When the person relocates the bounded context b2
+    Then the upgrades service keeps the line id l1
+    And the Behaviour line b1 has the line id l1
 
-  @g34 @r34
-  Scenario: `migrate run` refuses a ledger entry whose design-decision would take the place of a tracked file
+  @g7 @r7
+  Scenario: A bounded context whose ledger stem clashes with a tracked file is not relocated
     Given the tracked file `spec/decisions.md` holds:
       """
       ## decision/0007-a
@@ -231,145 +261,66 @@ Feature: Migration tools
     And the old-layout directory o1 holds the tracked file t1
     And the tracked file t1 has the stem s1
     And a bounded context b1
-    When the person runs `migrate run` on the bounded context b1
-    Then `migrate` refuses `migrate run`
-    And `migrate` names the tracked file t1
+    When the person relocates the bounded context b1
+    Then the upgrades service refuses this request
+    And the upgrades service names the tracked file t1
 
-  @g35 @r35
-  Scenario: `migrate run` refuses a repository with an uncommitted change, naming it
+  @g8 @r8
+  Scenario: No bounded context is relocated with an uncommitted change
     Given the tracked file `decisions/0001-a.md` holds "# a"
     And an uncommitted change u1
     And this repository holds the uncommitted change u1
     And a bounded context b1
-    When the person runs `migrate run` on the bounded context b1
-    Then `migrate` refuses `migrate run`
-    And `migrate` names the uncommitted change u1
+    When the person relocates the bounded context b1
+    Then the upgrades service refuses this request
+    And the upgrades service names the uncommitted change u1
 
-  @g36 @r36
-  Scenario: `migrate upgrade` refuses a repository with an uncommitted change, naming it
+  @g9 @r9
+  Scenario: No repository is upgraded with an uncommitted change
     Given the tracked file `.shop/plugin-version` holds "0.23.1"
     And an uncommitted change u1
     And this repository holds the uncommitted change u1
-    When the person runs `migrate upgrade`
-    Then `migrate` refuses `migrate upgrade`
-    And `migrate` names the uncommitted change u1
+    When the person upgrades this repository
+    Then the upgrades service refuses this request
+    And the upgrades service names the uncommitted change u1
 
-  @g37 @r37
-  Scenario: `migrate status` prints the release of a repository before 0.24.0 and every upgrade step
+  @g10 @r10
+  Scenario: A query before 0.24.0 gives the release and every upgrade step
     Given the tracked file `.shop/plugin-version` holds "0.23.1"
     And the release of this repository is `0.23.1`
     And an upgrade step u1
     And an upgrade step u2
-    When the person runs `migrate status`
-    Then `migrate` prints the release of this repository
-    And `migrate` prints the upgrade step u1
-    And `migrate` prints the upgrade step u2
-    And `migrate` exits successfully
+    When the person queries this repository
+    Then the upgrades service returns the release of this repository
+    And the upgrades service returns the upgrade step u1
+    And the upgrades service returns the upgrade step u2
+    And the upgrades service completes this request
 
-  @g38 @r38
-  Scenario: `migrate status` on a repository with a shop directory and no plugin version file prints every upgrade step, as on 0.23.1
+  @g11 @r11
+  Scenario: A query with no plugin version file gives every upgrade step
     Given the tracked file `.shop/records/.keep` holds "kept"
     And a shop directory s1
     And this repository has the shop directory s1
     And this repository has no plugin version file
     And an upgrade step u1
     And an upgrade step u2
-    When the person runs `migrate status`
-    Then `migrate` prints the upgrade step u1
-    And `migrate` prints the upgrade step u2
+    When the person queries this repository
+    Then the upgrades service returns the upgrade step u1
+    And the upgrades service returns the upgrade step u2
 
-  @g39 @r39
-  Scenario: `migrate status` refuses a plugin version file that holds no version, naming what it holds
+  @g12 @r12
+  Scenario: A query of a plugin version file with no version is refused
     Given the tracked file `.shop/plugin-version` holds "banana"
     And a plugin version file p1
     And this repository has the plugin version file p1
     And the plugin version file p1 holds no version
-    When the person runs `migrate status`
-    Then `migrate` refuses `migrate status`
-    And `migrate` names the content c1
+    When the person queries this repository
+    Then the upgrades service refuses this request
+    And the upgrades service names the content c1
     And the plugin version file p1 has the content c1
 
-  @g43 @r43
-  Scenario: `migrate upgrade` on a repository from 0.24.0 and before 0.25.0 rewrites every work-item file
-    Given the tracked file `.shop/plugin-version` holds "0.24.0"
-    And the tracked file `.shop/work/i1/w1.md` holds:
-      """
-      ---
-      id: work-item/example.org/acme/shop/w1
-      kind: work-item
-      status: awaiting-ruling
-      ---
-      # w1
-      ## Rulings
-      - yes
-      """
-    And the release of this repository is `0.24.0`
-    And a work-item file w1
-    And a work-item file w2
-    When the person runs `migrate upgrade`
-    Then `migrate` rewrites the work-item file w1
-    And `migrate` rewrites the work-item file w2
-
-  @g47 @r47
-  Scenario: the SessionStart hook tells a session to offer the upgrade steps of a repository before 0.24.0, and to run them only on the person's yes
-    Given the tracked file `.shop/plugin-version` holds "0.23.1"
-    And the release of this repository is `0.23.1`
-    And an upgrade step u1
-    And an upgrade step u2
-    When the SessionStart hook runs `migrate status --hook`
-    Then `migrate` prints the release of this repository
-    And `migrate` prints the upgrade step u1
-    And `migrate` prints the upgrade step u2
-    And `migrate` prints `only on the person's yes`
-
-  @g50 @r50
-  Scenario: the SessionStart hook tells a session nothing in a repository with no shop directory
-    Given the tracked file `README.md` holds "No shop here."
-    And this repository has no shop directory
-    When the SessionStart hook runs `migrate status --hook`
-    Then `migrate` exits successfully
-
-  @g51 @r51
-  Scenario: the SessionStart hook tells a session that the plugin version file holds no version
-    Given the tracked file `.shop/plugin-version` holds "banana"
-    And a plugin version file p1
-    And this repository has the plugin version file p1
-    And the plugin version file p1 holds no version
-    When the SessionStart hook runs `migrate status --hook`
-    Then `migrate` prints `holds no version`
-    And `migrate` prints the content c1
-    And the plugin version file p1 has the content c1
-
-  @g58 @r58
-  Scenario: `migrate run` writes the design-decision of a ledger entry that another supersedes with the status `superseded` and a design-decision that supersedes it
-    Given the tracked file `spec/decisions.md` holds:
-      """
-      ## decision/0007-a
-      We do a.
-      date: 2025-03-01
-      source: alice
-      ## decision/0008-b
-      We do b instead.
-      date: 2025-03-02
-      source: bob
-      supersedes: decision/0007-a
-      revisit_when: the cart grows
-      """
-    And a ledger entry l1
-    And a ledger entry l2
-    And the ledger entry l1 supersedes the ledger entry l2
-    And a bounded context b1
-    And a design-decision d1
-    And a design-decision d2
-    When the person runs `migrate run` on the bounded context b1
-    Then `migrate` writes the design-decision d1
-    And the ledger entry l2 has the design-decision d1
-    And the status of the design-decision d1 is `superseded`
-    And `migrate` writes the design-decision d2
-    And the design-decision d2 supersedes the design-decision d1
-
-  @g59 @r59
-  Scenario: `migrate upgrade` on a repository before 0.24.0 prints every upgrade step, rewrites the plugin version file, renames every work-item file and stage directory to `w<n>` and rewrites every initiative log
+  @g13 @r13
+  Scenario: An upgrade before 0.24.0 renames the work-item files and stage directories
     Given the tracked file `spec/index.md` holds:
       """
       ---
@@ -402,20 +353,41 @@ Feature: Migration tools
     And a stage directory s2
     And an initiative log i1
     And an initiative log i2
-    When the person runs `migrate upgrade`
-    Then `migrate` prints the upgrade step u1
-    And `migrate` prints the upgrade step u2
-    And `migrate` rewrites the plugin version file p1
+    When the person upgrades this repository
+    Then the upgrades service returns the upgrade step u1
+    And the upgrades service returns the upgrade step u2
+    And the upgrades service changes the plugin version file p1
     And this repository has the plugin version file p1
-    And `migrate` renames the work-item file w1
-    And `migrate` renames the work-item file w2
-    And `migrate` renames the stage directory s1
-    And `migrate` renames the stage directory s2
-    And `migrate` rewrites the initiative log i1
-    And `migrate` rewrites the initiative log i2
+    And the upgrades service changes the work-item file w1
+    And the upgrades service changes the work-item file w2
+    And the upgrades service changes the stage directory s1
+    And the upgrades service changes the stage directory s2
+    And the upgrades service changes the initiative log i1
+    And the upgrades service changes the initiative log i2
 
-  @g69 @r69
-  Scenario: `migrate upgrade` on a repository before 0.30.0 writes the restated file and rewrites each capability with no language
+  @g14 @r14
+  Scenario: An upgrade from 0.24 rewrites every work-item file
+    Given the tracked file `.shop/plugin-version` holds "0.24.0"
+    And the tracked file `.shop/work/i1/w1.md` holds:
+      """
+      ---
+      id: work-item/example.org/acme/shop/w1
+      kind: work-item
+      status: awaiting-ruling
+      ---
+      # w1
+      ## Rulings
+      - yes
+      """
+    And the release of this repository is `0.24.0`
+    And a work-item file w1
+    And a work-item file w2
+    When the person upgrades this repository
+    Then the upgrades service changes the work-item file w1
+    And the upgrades service changes the work-item file w2
+
+  @g15 @r15
+  Scenario: An upgrade to 0.30.0 restates a capability with no language
     Given the tracked file `.shop/plugin-version` holds "0.29.0"
     And the tracked file `spec/index.md` holds:
       """
@@ -456,14 +428,14 @@ Feature: Migration tools
     And a capability c1
     And this repository has the capability c1
     And the capability c1 has no language
-    When the person runs `migrate upgrade`
-    Then `migrate` writes the restated file r1
-    And `migrate` rewrites the capability c1
-    And `migrate` prints the restated file r1
-    And `migrate` prints the capability c1
+    When the person upgrades this repository
+    Then the upgrades service keeps the restated file r1
+    And the upgrades service changes the capability c1
+    And the upgrades service returns the restated file r1
+    And the upgrades service returns the capability c1
 
-  @g70 @r70
-  Scenario: `migrate upgrade` on a repository before 0.30.0 writes each reference of a work-item file to a requirement with its release and removes each scenario that has the `@deprecated` tag from its feature
+  @g16 @r16
+  Scenario: An upgrade to 0.30.0 rewrites old references and deprecated scenarios
     Given the tracked file `.shop/plugin-version` holds "0.29.0"
     And the tracked file `spec/index.md` holds:
       """
@@ -522,16 +494,49 @@ Feature: Migration tools
     And a scenario s3
     And the scenario s3 has `@deprecated`
     And the feature f3 does not hold the scenario s3
-    When the person runs `migrate upgrade`
-    Then `migrate` rewrites the work-item file w1
-    And `migrate` rewrites the work-item file w2
-    And `migrate` does not rewrite the work-item file w3
-    And `migrate` rewrites the feature f1
-    And `migrate` rewrites the feature f2
-    And `migrate` does not rewrite the feature f3
+    When the person upgrades this repository
+    Then the upgrades service changes the work-item file w1
+    And the upgrades service changes the work-item file w2
+    And the upgrades service does not change the work-item file w3
+    And the upgrades service changes the feature f1
+    And the upgrades service changes the feature f2
+    And the upgrades service does not change the feature f3
 
-  @g71 @r71
-  Scenario: `migrate upgrade` on a repository from 0.30.0 and before 0.31.0 writes the frozen notice and rewrites the decisions index
+  @g17 @r17
+  Scenario: A session that starts before 0.24.0 is told the release and the upgrade steps
+    Given the tracked file `.shop/plugin-version` holds "0.23.1"
+    And the release of this repository is `0.23.1`
+    And a session s1
+    And an upgrade step u1
+    And an upgrade step u2
+    When the session s1 starts
+    Then the upgrades service notifies the session s1 of the release of this repository
+    And the upgrades service notifies the session s1 of the upgrade step u1
+    And the upgrades service notifies the session s1 of the upgrade step u2
+    And the upgrades service notifies the session s1 of `only on the person's yes`
+
+  @g18 @r18
+  Scenario: A session that starts with no shop directory is told nothing
+    Given the tracked file `README.md` holds "No shop here."
+    And this repository has no shop directory
+    And a session s1
+    When the session s1 starts
+    Then the upgrades service changes nothing
+
+  @g19 @r19
+  Scenario: A session that starts with a plugin version file of no version is told so
+    Given the tracked file `.shop/plugin-version` holds "banana"
+    And a plugin version file p1
+    And this repository has the plugin version file p1
+    And the plugin version file p1 holds no version
+    And a session s1
+    When the session s1 starts
+    Then the upgrades service notifies the session s1 of `holds no version`
+    And the upgrades service notifies the session s1 of the content c1
+    And the plugin version file p1 has the content c1
+
+  @g20 @r20
+  Scenario: An upgrade to 0.31.0 freezes the work queue
     Given the tracked file `.shop/plugin-version` holds "0.30.0"
     And the tracked file `spec/index.md` holds:
       """
@@ -591,13 +596,13 @@ Feature: Migration tools
       # A peer's request
       """
     And the release of this repository is `0.30.0`
-    When the person runs `migrate upgrade`
-    Then `migrate` writes the frozen notice f1
-    And `migrate` rewrites the decisions index d1
+    When the person upgrades this repository
+    Then the upgrades service keeps the frozen notice f1
+    And the upgrades service changes the decisions index d1
     And this repository has the decisions index d1
 
-  @g72 @r72
-  Scenario: `migrate upgrade` on a repository from 0.30.0 and before 0.31.0 relocates each frozen request another bounded context asked that is not closed
+  @g21 @r21
+  Scenario: An upgrade to 0.31.0 relocates each live frozen request of another asker
     Given the tracked file `.shop/plugin-version` holds "0.30.0"
     And the tracked file `spec/index.md` holds:
       """
@@ -662,11 +667,11 @@ Feature: Migration tools
     And the status of the frozen request f1 is not `delivered`
     And the status of the frozen request f1 is not `refused`
     And the status of the frozen request f1 is not `withdrawn`
-    When the person runs `migrate upgrade`
-    Then `migrate` relocates the frozen request f1
+    When the person upgrades this repository
+    Then the upgrades service changes the frozen request f1
 
-  @g73 @r73
-  Scenario: `migrate upgrade` on a repository from 0.30.0 and before 0.31.0 names the upgrade step and each initiative that is not closed
+  @g22 @r22
+  Scenario: An upgrade to 0.31.0 names each open initiative
     Given the tracked file `.shop/plugin-version` holds "0.30.0"
     And the tracked file `spec/index.md` holds:
       """
@@ -736,14 +741,14 @@ Feature: Migration tools
     And the release of the upgrade step u2 is `0.31.0`
     And an upgrade step u3
     And the release of the upgrade step u3 is `0.24.0`
-    When the person runs `migrate upgrade`
-    Then `migrate` prints the upgrade step u1
-    And `migrate` prints the upgrade step u2
-    And `migrate` does not print the upgrade step u3
-    And `migrate` prints the initiative i1
+    When the person upgrades this repository
+    Then the upgrades service returns the upgrade step u1
+    And the upgrades service returns the upgrade step u2
+    And the upgrades service does not return the upgrade step u3
+    And the upgrades service returns the initiative i1
 
-  @g74 @r74
-  Scenario: `migrate upgrade` on a repository from 0.30.0 and before 0.31.0 names each frozen request it asked of itself that is not closed
+  @g23 @r23
+  Scenario: An upgrade to 0.31.0 names each live internal frozen request
     Given the tracked file `.shop/plugin-version` holds "0.30.0"
     And the tracked file `spec/index.md` holds:
       """
@@ -808,11 +813,11 @@ Feature: Migration tools
     And the status of the frozen request f1 is not `delivered`
     And the status of the frozen request f1 is not `refused`
     And the status of the frozen request f1 is not `withdrawn`
-    When the person runs `migrate upgrade`
-    Then `migrate` prints the frozen request f1
+    When the person upgrades this repository
+    Then the upgrades service returns the frozen request f1
 
-  @g75 @r75
-  Scenario: `migrate upgrade` on a repository from 0.31.0 and before 0.32.0 rewrites the index file with each term's part of speech and names each term that violates `v_t11`
+  @g24 @r24
+  Scenario: An upgrade to 0.32.0 names each term that violates v_t11
     Given the tracked file `.shop/plugin-version` holds "0.31.0"
     And the tracked file `spec/index.md` holds:
       """
@@ -840,18 +845,18 @@ Feature: Migration tools
     And the term t2 violates `v_t11`
     And a term t3
     And the term t3 does not violate `v_t11`
-    When the person runs `migrate upgrade`
-    Then `migrate` rewrites the index file i1
+    When the person upgrades this repository
+    Then the upgrades service changes the index file i1
     And this bounded context has the index file i1
-    And `migrate` prints the upgrade step u1
-    And `migrate` prints the upgrade step u2
-    And `migrate` does not print the upgrade step u3
-    And `migrate` prints the term t1
-    And `migrate` prints the term t2
-    And `migrate` does not print the term t3
+    And the upgrades service returns the upgrade step u1
+    And the upgrades service returns the upgrade step u2
+    And the upgrades service does not return the upgrade step u3
+    And the upgrades service returns the term t1
+    And the upgrades service returns the term t2
+    And the upgrades service does not return the term t3
 
-  @g76 @r76
-  Scenario: `migrate upgrade` on a repository from 0.32.0 and before 0.33.0 rewrites the index file and every capability in the controlled language 4 and names what it cannot reword
+  @g25 @r25
+  Scenario: An upgrade to 0.33.0 rewrites the index file and every capability
     Given the tracked file `.shop/plugin-version` holds "0.32.1"
     And the tracked file `spec/index.md` holds:
       """
@@ -889,17 +894,17 @@ Feature: Migration tools
     And the release of the upgrade step u2 is `0.33.0`
     And an upgrade step u3
     And the release of the upgrade step u3 is `0.24.0`
-    When the person runs `migrate upgrade`
-    Then `migrate` rewrites the index file i1
+    When the person upgrades this repository
+    Then the upgrades service changes the index file i1
     And this bounded context has the index file i1
-    And `migrate` rewrites the capability c1
-    And `migrate` rewrites the capability c2
-    And `migrate` prints the upgrade step u1
-    And `migrate` prints the upgrade step u2
-    And `migrate` does not print the upgrade step u3
+    And the upgrades service changes the capability c1
+    And the upgrades service changes the capability c2
+    And the upgrades service returns the upgrade step u1
+    And the upgrades service returns the upgrade step u2
+    And the upgrades service does not return the upgrade step u3
 
-  @g80 @r80
-  Scenario: `migrate upgrade` on a repository from 0.33.0 names each attribute whose values are declared neither adjectives nor nouns
+  @g26 @r26
+  Scenario: An upgrade to 0.34.0 names each term that violates w_value_kind
     Given the tracked file `.shop/plugin-version` holds "0.33.0"
     And the tracked file `spec/index.md` holds:
       """
@@ -926,31 +931,32 @@ Feature: Migration tools
     And the term t2 violates `w_value_kind`
     And a term t3
     And the term t3 does not violate `w_value_kind`
-    When the person runs `migrate upgrade`
-    Then `migrate` prints the upgrade step u1
-    And `migrate` prints the upgrade step u2
-    And `migrate` does not print the upgrade step u3
-    And `migrate` prints the term t1
-    And `migrate` prints the term t2
-    And `migrate` does not print the term t3
+    When the person upgrades this repository
+    Then the upgrades service returns the upgrade step u1
+    And the upgrades service returns the upgrade step u2
+    And the upgrades service does not return the upgrade step u3
+    And the upgrades service returns the term t1
+    And the upgrades service returns the term t2
+    And the upgrades service does not return the term t3
 
-  @g81 @r81
-  Scenario: `migrate upgrade` on a repository on the plugin's release says that no upgrade step is pending and changes nothing
+  @g27 @r27
+  Scenario: An upgrade at the plugin's release changes nothing
     Given the release of this repository is `0.34.1`
-    And the release of `migrate` is `0.34.1`
-    When the person runs `migrate upgrade`
-    Then `migrate` prints `no upgrade step is pending`
-    And `migrate` does not change a file
+    And the release of this plugin is `0.34.1`
+    When the person upgrades this repository
+    Then the upgrades service returns `no upgrade step is pending`
+    And the upgrades service does not change a file
 
-  @g82 @r82
-  Scenario: the SessionStart hook tells a session to tell the person to update the plugin
+  @g28 @r28
+  Scenario: A session that starts after the plugin's release is told to update the plugin
     Given the release of this repository is `0.23.1`
-    And the release of `migrate` is `0.23.0`
-    When the SessionStart hook runs `migrate status --hook`
-    Then `migrate` prints `update the plugin`
+    And the release of this plugin is `0.23.0`
+    And a session s1
+    When the session s1 starts
+    Then the upgrades service notifies the session s1 of `update the plugin`
 
-  @g83 @r83
-  Scenario: the SessionStart hook tells a session nothing on the plugin's release when no initiative is open (case 1)
+  @g29 @r29
+  Scenario: A session that starts at the plugin's release with no open initiative is told nothing (case 1)
     Given the tracked file `.shop/work/i1/initiative.md` holds:
       """
       ---
@@ -961,17 +967,17 @@ Feature: Migration tools
       # i1
       """
     And the release of this repository is `0.34.1`
-    And the release of `migrate` is `0.34.1`
+    And the release of this plugin is `0.34.1`
     And an initiative i1
     And this repository has the initiative i1
     And the status of the initiative i1 is `done`
-    When the SessionStart hook runs `migrate status --hook`
-    Then `migrate` exits successfully
-    And `migrate` does not print an upgrade step
-    And `migrate` does not print an initiative
+    And a session s1
+    When the session s1 starts
+    Then the upgrades service does not notify the session s1 of an upgrade step
+    And the upgrades service does not notify the session s1 of an initiative
 
-  @g83 @r83
-  Scenario: the SessionStart hook tells a session nothing on the plugin's release when no initiative is open (case 2)
+  @g29 @r29
+  Scenario: A session that starts at the plugin's release with no open initiative is told nothing (case 2)
     Given the tracked file `.shop/work/i1/initiative.md` holds:
       """
       ---
@@ -982,21 +988,21 @@ Feature: Migration tools
       # i1
       """
     And the release of this repository is `0.34.1`
-    And the release of `migrate` is `0.34.1`
+    And the release of this plugin is `0.34.1`
     And an initiative i1
     And this repository has the initiative i1
     And the status of the initiative i1 is `abandoned`
-    When the SessionStart hook runs `migrate status --hook`
-    Then `migrate` exits successfully
-    And `migrate` does not print an upgrade step
-    And `migrate` does not print an initiative
+    And a session s1
+    When the session s1 starts
+    Then the upgrades service does not notify the session s1 of an upgrade step
+    And the upgrades service does not notify the session s1 of an initiative
 
-  @g84 @r84
-  Scenario: `migrate upgrade` on a repository behind the plugin's release with no upgrade step pending records the plugin's release
+  @g30 @r30
+  Scenario: An upgrade at a patch release keeps the new plugin version
     Given the release of this repository is `0.34.0`
-    And the release of `migrate` is `0.34.1`
-    When the person runs `migrate upgrade`
-    Then `migrate` prints `no upgrade step is pending`
-    And `migrate` rewrites the plugin version file p1
+    And the release of this plugin is `0.34.1`
+    When the person upgrades this repository
+    Then the upgrades service returns `no upgrade step is pending`
+    And the upgrades service changes the plugin version file p1
     And this repository has the plugin version file p1
-    And `migrate` commits the plugin version file p1
+    And the upgrades service keeps the plugin version file p1

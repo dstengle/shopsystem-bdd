@@ -5,7 +5,7 @@ narrator: a session reading or generating feature files
 group: service
 language: codified-2
 rests_on: [design-decision/plugin-takes-the-dependencies-it-needs, design-decision/plugin-scenarios-run-as-pytest-bdd, design-decision/query-commands-answer-in-their-output]
-retired: [g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18, g19, r19, g20, r20, g21, r21, g22, r22, g23, r23, g24, r24, g25, r25, g26, r26, g27, r27, g28, r28, g29, r29, g30, r30, g31, r31, g32, r32, g33, r33, g34, r34, g35, r35, g36, r36, g37, r37, g38, r38, g39, r39, g40, r40, g41, r41, g42, r42, g43, r43, g44, r44, g105, r105]
+retired: [g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18, g19, r19, g20, r20, g21, r21, g22, r22, g23, r23, g24, r24, g25, r25, g26, r26, g27, r27, g28, r28, g29, r29, g30, r30, g31, r31, g32, r32, g33, r33, g34, r34, g35, r35, g36, r36, g37, r37, g38, r38, g39, r39, g40, r40, g41, r41, g42, r42, g43, r43, g44, r44, g105, r105, g88, r88, g89, r89, g90, r90, g91, r91, g92, r92, g93, r93, g94, r94, g95, r95, g96, r96, g97, r97, g98, r98, g99, r99, g100, r100, g101, r101, g102, r102, g103, r103, g104, r104, g106, r106, g107, r107, g108, r108, g109, r109, g110, r110, g111, r111, g113, r113, g112, r112, g117, r117, g118, r118, g119, r119, g114, r114, g115, r115, g116, r116, g120, r120, g121, r121, g122, r122, g123, r123, g124, r124, g125, r125, g126, r126, g127, r127, g128, r128, g129, r129, g130, r130, g132, r132, g131, r131, g133, r133, g134, r134, g135, r135]
 unbuilt: []
 ---
 
@@ -22,352 +22,13 @@ not a line here for each construct.
 
 ## Terms
 
-- **feature file** (noun): a `*.feature` file under the directory `--dir` names (default `features`), read line by line. Kind of: file.
-- **test module** (noun): a Python file under the directory `--tests` names (default `tests`), with its bindings. Kind of: file.
-- **subdirectory** (noun): a directory under the directory `--dir` names. Kind of: file.
-- **docstring** (noun): the text of a step between two lines of `"""` or of three backticks, in a feature file. Kind of: text.
-- **tag** (noun): a Gherkin tag of a scenario or of a feature file, as `@deprecated`. Kind of: text.
-- **requirement tag** (noun): a tag `@r<n>` of a scenario, which names a requirement of its group. Kind of: text.
-- **scenario line** (noun): a line that starts `Scenario:`. Kind of: text.
-- **scenario outline** (noun): a Scenario Outline of a feature file, with its Examples tables. Kind of: text.
-- **examples row** (noun): one row of values of an Examples table of a scenario outline. Kind of: text.
-- **rule block** (noun): a `Rule:` block of a feature file. Kind of: text.
-- **scenario title** (noun): the text after `Scenario:` that names a scenario. Kind of: text.
-- **replacement** (noun): the scenario that a scenario tagged `@deprecated` names after `Deprecated for:`. Kind of: scenario.
-- **binding** (noun): a `scenario(<feature>, "<title>")` or `scenarios(<path>, ...)` call of a test module. Kind of: text.
-- **scenarios call** (noun): a `scenarios(<path>, ...)` call of a test module. Kind of: binding.
-- **search text** (noun): the text `features list` is given with its `--title` option, which the scenario titles it prints contain. Kind of: text.
-- **handler** (noun): a function of `tests/scenarios/` that a step runs. Kind of: thing.
-- **contain** (verb, state): a text holds another text within it. Forms: contains, contained. Frame: text contains text.
-- **bind** (verb, state): a binding names a scenario, by its title or by its feature file, so that a test runs the scenario. Forms: binds, bound. Frame: binding binds scenario.
-- **entail** (verb, state): a universal condition gives a step from the other steps of its scenario. Forms: entails, entailed. Frame: universal condition entails step.
-
-- **referent** (noun): a thing that a noun phrase of a requirement names, which a step of its scenario names by an instance name such as `i1`. Kind of: thing.
-- **bring in** (verb, state): an act of a requirement's response names a referent that no part of the requirement before the act names. Forms: brings in, brought in. Frame: act brings in referent.
-- **description** (noun): a step that says a value of an attribute of a referent, a relation of the referent or a relative clause on the referent, which the requirement of its scenario says beside the act that brings in the referent, written as a Then line of the scenario. Kind of: text.
-- **precede** (verb, state): a line of a scenario comes before the step that says an act in the scenario. Forms: precedes, preceded. Frame: text precedes act.
-- **follow** (verb, state): a line of a scenario comes after the step that says an act in the scenario. Forms: follows, followed. Frame: text follows act.
-
-- **restriction** (noun): the words after the noun of `every`, `only` or a count in the response of a requirement that narrow the things it ranges over, as "in the batch" of "every item in the batch" or "whose status is `ready`" of "only items whose status is `ready`". Kind of: text.
-- **upper bound** (noun): the most things that `one` or a count of "at most", "exactly" or "fewer than" in the response of a requirement admits, as three of "exactly three items" and two of "fewer than three items". Kind of: thing.
-- **counter-example** (noun): the Givens and a Then of a scenario that a program doing the act of its requirement to too many things fails: a thing that does not meet a restriction of the requirement, with a Then that the act is not done to it or that the relation does not hold of it, or, of an upper bound, one thing more than the upper bound, with a Then that the act is done to no more things than the upper bound. Kind of: text.
-- **assert** (verb, state): a step of a scenario says that an act is done, so that the scenario fails when the act is not done. Forms: asserts, asserted. Frame: step asserts act.
-- **given step** (noun): a step of a scenario that opens with `Given`, or with `And` or `But` under one. Kind of: step.
-- **instance** (noun): a thing that a step names by its kind and a name, as "the item i1", one thing within its scenario. Kind of: thing.
-- **introduce** (verb, state): a scenario, or a given step of it, brings a thing into the scenario, as "Given an item i1" brings in the item i1. Forms: introduces, introduced. Frame: text introduces instance.
-- **satisfy** (verb, state): the given steps of a scenario make a precondition true of the instances they introduce, every part of it, before its When. Forms: satisfies, satisfied. Frame: scenario satisfies precondition.
-- **boundary** (noun): as many things as a count in a precondition admits nearest to a number it does not admit: n of "at least n", "at most n" and "exactly n", n+1 of "more than n", n-1 of "fewer than n", which a scenario has when its given steps introduce that many things that the count counts and satisfy the precondition. Kind of: thing.
-
-- **order counter-example** (noun): the steps of a scenario that state an order: its Then that the members are ordered by the order's attribute in its direction, and the Givens of at least three members with distinct values of that attribute, given in neither that direction nor the opposite one, so that the Then fails when the members are not so ordered. Kind of: text.
+Moved to `spec/vocabulary/` and `spec/model/` (the domain contract, 0.38.0).
 
 ## Relations
-| from | word | to | cardinality |
-|---|---|---|---|
-| docstring | of | feature file |  |
-| tag | in | docstring |  |
-| scenario line | in | docstring |  |
-| tag | of | feature file |  |
-| tag | of | scenario |  |
-| requirement tag | of | scenario |  |
-| scenario outline | of | feature file |  |
-| examples row | of | scenario outline |  |
-| rule block | of | feature file | one |
-| feature file | in | subdirectory | one |
-| scenario | of | feature file |  |
-| scenario title | of | scenario | one |
-| replacement | of | scenario | one |
-| binding | of | test module |  |
-| scenario | of | feature |  |
-| feature | of | capability | one |
-| step | of | feature |  |
-| handler | of | step |  |
-| requirement group | of | capability |  |
-| requirement | of | requirement group |  |
-| scenario | of | requirement group | one |
-| act | of | requirement |  |
-| description | of | referent |  |
-| restriction | of | requirement |  |
-| upper bound | of | requirement | one |
-| counter-example | of | scenario |  |
-| boundary | of | count | one |
-| boundary | of | scenario |  |
-| count | in | precondition |  |
-| order counter-example | of | scenario |  |
+
+Moved to `spec/vocabulary/` and `spec/model/` (the domain contract, 0.38.0).
 
 ## Behaviour
-
-### [g88] `features count --by-tag` counts no scenario line of a docstring
-Restates: r1@0.29, r4@0.29.
-- [r88] While a docstring of a feature file contains a tag and a scenario line, when the person runs `features count` with the `--by-tag` option, `features` shall print the number of scenarios of the feature file.
-
-
-### [g89] `features count --by-tag` counts each examples row of a scenario outline as a scenario
-Restates: r4@0.29.
-- [r89] While a feature file has a scenario outline and the feature file has no scenario, when the person runs `features count` with the `--by-tag` option, `features` shall print the number of examples rows of the scenario outline.
-
-### [g90] a tag in a docstring is no tag of its feature file
-Restates: r1@0.29, r7@0.29.
-- [r90] While a docstring of a feature file contains a tag and the feature file does not have the tag, when the person runs `features list` with the `--tag` option set to the tag, `features` shall exit successfully and not print the feature file.
-
-
-### [g91] a feature file in a subdirectory is read
-Restates: r1@0.29.
-- [r91] While a feature file in a subdirectory has a scenario, when the person runs `features list` with the `--title` option set to the scenario title of the scenario, `features` shall print the feature file.
-
-
-### [g92] `features list --tag` prints every scenario of a feature file that has the tag
-Restates: r5@0.29.
-- [r92] While a feature file has a tag, when the person runs `features list` with the `--tag` option set to the tag, `features` shall print every scenario of the feature file.
-
-
-### [g93] `features list --tag` prints a scenario that has the tag
-Restates: r5@0.29.
-- [r93] While a scenario has a tag, when the person runs `features list` with the `--tag` option set to the tag, `features` shall print the scenario.
-
-
-### [g94] `features list --title` prints each scenario whose title contains the text
-Restates: r5@0.29.
-- [r94] When the person runs `features list` with the `--title` option set to a search text, `features` shall print every scenario whose scenario title contains the search text.
-
-
-### [g95] `features list --json` prints the scenarios it found as one JSON object
-Restates: r60@0.29.
-- [r95] When the person runs `features list` with the `--json` option and the `--title` option set to a search text, `features` shall print every scenario whose scenario title contains the search text.
-
-
-### [g96] a feature file with a rule block is refused
-Restates: r2@0.29, r46@0.29.
-- [r96] While a feature file has a rule block, if the person runs `features count` with the `--by-tag` option, then `features` shall refuse the command and name the feature file.
-
-
-### [g97] `features deprecated` prints each deprecated scenario with the tags of its replacement
-Restates: r21@0.29.
-- [r97] While a replacement of a scenario has a requirement tag and the scenario has the `@deprecated` tag, when the person runs `features deprecated`, `features` shall print the scenario and every requirement tag of the replacement.
-
-
-### [g98] `features deprecated` says when nothing is deprecated
-Restates: r21@0.29.
-- [r98] While no scenario has the `@deprecated` tag, when the person runs `features deprecated`, `features` shall print `none deprecated`.
-
-
-### [g99] `features deprecated --json` prints the deprecated scenarios as one JSON object
-Restates: r61@0.29.
-- [r99] While a scenario has the `@deprecated` tag, when the person runs `features deprecated` with the `--json` option, `features` shall print the scenario title of the scenario.
-
-
-### [g100] `features bindings` says so when every binding names a scenario
-Restates: r26@0.29.
-- [r100] While every binding binds a scenario, when the person runs `features bindings`, `features` shall print `every binding names a scenario` and exit successfully.
-
-
-### [g101] `features bindings` names the test module of a binding that binds no scenario
-Restates: r25@0.29.
-- [r101] While a binding of a test module binds no scenario, if the person runs `features bindings`, then `features` shall exit with an error naming the test module and change no file.
-
-
-### [g102] a scenarios call binds every scenario of the feature file it names
-Restates: r57@0.29.
-- [r102] While a scenarios call binds a scenario of a feature file, when the person runs `features bindings` with the `--unbound` option, `features` shall exit successfully and not print a scenario of the feature file.
-
-
-### [g103] `features bindings --unbound` names a scenario that no binding binds
-Restates: r58@0.29.
-- [r103] While a feature file has a scenario that no binding binds, if the person runs `features bindings` with the `--unbound` option, then `features` shall exit with an error naming the scenario and change no file.
-
-
-### [g104] `features bindings --unbound --json` names a scenario that no binding binds
-Restates: r62@0.29.
-- [r104] While a feature file has a scenario that no binding binds, if the person runs `features bindings` with the `--unbound` and `--json` options, then `features` shall exit with an error naming the scenario and change no file.
-
-
-### [g106] `features generate --check` names a feature with a scenario that no requirement group of its capability has
-- [r106] While the feature of a capability has a scenario that no requirement group has, if the person runs `features generate` with the `--check` option, then `features` shall exit with an error naming the feature and change no file.
-
-```given
-the capability `shelf` holds:
-  ---
-  id: capability/ex.com/prod/ctx/shelf
-  title: shelf
-  narrator: a client
-  group: service
-  language: codified-2
-  rests_on: []
-  retired: []
-  ---
-  # shelf
-  ## Purpose
-  Something.
-  ## Terms
-  - **book** (noun): a thing.
-  ## Behaviour
-  ## Not yet
-  ## Dropped
-the feature file `features/shelf.feature` holds:
-  Feature: Shelf
-    Scenario: Edited by hand
-      Given a step
-```
-
-### [g107] `features vocab --check` names a step with no handler and its feature
-- [r107] While a step of a feature has no handler, if the person runs `features vocab` with the `--check` option, then `features` shall exit with an error naming the step and the feature and change no file.
-
-```given
-the capability `shelf` holds:
-  ---
-  id: capability/ex.com/prod/ctx/shelf
-  title: shelf
-  narrator: a client
-  group: service
-  language: codified-2
-  rests_on: []
-  retired: []
-  ---
-  # shelf
-  ## Purpose
-  Something.
-  ## Terms
-  - **book** (noun): a thing.
-  ## Behaviour
-  ## Not yet
-  ## Dropped
-the feature file `features/shelf.feature` holds:
-  # generated from spec/capabilities/shelf.md by features generate; do not edit
-  Feature: shelf
-    Narrator: a client
-    @g1 @r1
-    Scenario: Lending
-      When the person lends a book
-```
-
-### [g108] `features generate` writes a scenario of every requirement group of a capability in the language reference
-- [r108] While the language of a capability is `codified-2` and every requirement of the capability conforms to the language reference and every requirement of the capability uses the `shall` construct, when the person runs `features generate` on the capability, `features` shall write the scenario of every requirement group of the capability.
-
-### [g109] `features generate` leaves out a step that a universal condition entails
-- [r109] While the language of a capability is `codified-2`, when the person runs `features generate` on the capability, `features` shall not write a step that a universal condition entails.
-
-### [g110] `features generate` writes the feature of a codified service capability
-- [r110] While the group of a capability is `service` and the language of the capability is `codified-2`, when the person runs `features generate`, `features` shall write the feature of the capability and print the feature.
-
-```given
-the capability `shelf` holds:
-  ---
-  id: capability/ex.com/prod/ctx/shelf
-  title: shelf
-  narrator: a client
-  group: service
-  language: codified-2
-  rests_on: []
-  retired: []
-  ---
-  # shelf
-  ## Purpose
-  Something.
-  ## Terms
-  - **book** (noun): a thing.
-  ## Behaviour
-  ## Not yet
-  ## Dropped
-```
-
-### [g111] `features generate` writes what a requirement says of a referent after the act that brings it in
-- [r111] While an act of a requirement of a capability brings in a referent, when the person runs `features generate` on the capability, `features` shall write a description of the referent that follows the act and not write a description of the referent that precedes the act.
-
-```given
-the capability `shelf` holds:
-  ---
-  id: capability/ex.com/prod/ctx/shelf
-  title: shelf
-  narrator: a client
-  group: service
-  language: codified-2
-  rests_on: []
-  retired: []
-  ---
-  # shelf
-  ## Purpose
-  Something.
-  ## Terms
-  - **book** (noun): a thing. Kind of: thing.
-  - **status** (attribute of book): where a book is. Values (adjective): `shelved`, `lent`.
-  - **lend** (verb, action): a client gives a book to a reader. Forms: lends, lent. Frame: client lends book.
-  ## Behaviour
-  ### [g1] Lending
-  - [r1] When the person runs `shelf add`, `shelf` shall write a book whose status is `shelved` and print the book.
-  ## Not yet
-  ## Dropped
-```
-
-### [g113] `features generate` writes only over a relation in a response
-- [r113] While a requirement of a capability uses `only` and the requirement uses `holds-relation`, when the person runs `features generate` on the capability, `features` shall write a scenario that uses `only`.
-
-### [g112] `features generate` writes a count over a relation in a response
-- [r112] While a requirement of a capability uses `count` and the requirement uses `holds-relation`, when the person runs `features generate` on the capability, `features` shall write a scenario that uses `count`.
-
-### [g117] `features generate` writes a counter-example of every
-- [r117] While a requirement of a requirement group of a capability uses `every` and the requirement has a restriction, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has a counter-example.
-
-### [g118] `features generate` writes a counter-example of only and asserts no act that only allows
-- [r118] While a requirement of a requirement group of a capability uses `only` and the requirement has a restriction, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has a counter-example and not write a step that asserts an act that the requirement allows.
-
-### [g119] `features generate` writes a counter-example of an upper bound
-- [r119] While a requirement of a requirement group of a capability has an upper bound, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has a counter-example.
-
-### [g114] `features generate` writes Givens that satisfy a precondition that uses every
-- [r114] While the precondition of a requirement of a requirement group of a capability uses `every`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that satisfies the precondition.
-
-### [g115] `features generate` gives a count in a precondition at its boundary
-- [r115] While the precondition of a requirement of a requirement group of a capability holds a count, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has the boundary of the count.
-
-### [g116] `features generate` introduces each instance of two Ks
-- [r116] While a requirement of a requirement group of a capability uses `two`, when the person runs `features generate` on the capability, `features` shall not write a step that mentions an instance that no given step introduces.
-
-### [g120] `features generate` writes the member a collection must not hold
-- [r120] While a requirement of a capability uses `holds-exactly`, when the person runs `features generate` on the capability, `features` shall write a scenario whose step uses `not-condition`.
-
-### [g121] `features generate` writes `nothing` in a precondition
-- [r121] While the precondition of a requirement of a capability uses `nothing`, when the person runs `features generate` on the capability, `features` shall write a scenario whose step uses `nothing`.
-
-### [g122] `features generate` writes an order's Then and Givens that can fail it
-- [r122] While a requirement of a requirement group of a capability uses an order, when the person runs `features generate` on the capability, `features` shall write a scenario that has an order counter-example.
-
-### [g123] `features generate` writes the scenario of `order-by` on a term of two senses
-- [r123] While a term has two senses and a requirement of a requirement group of a capability uses the term and `order-by`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has an order counter-example.
-
-### [g124] `features generate` writes the scenario of `order-by-every` on a term of two senses
-- [r124] While a term has two senses and a requirement of a requirement group of a capability uses the term and `order-by-every`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has an order counter-example.
-
-### [g125] `features generate` writes the member outside a relative clause's restriction
-- [r125] While a requirement of a capability uses `holds-exactly` and `rc-object`, when the person runs `features generate` on the capability, `features` shall write a scenario whose step uses `not-condition`.
-
-### [g126] `features generate` writes `nothing` on a response's object
-- [r126] While a requirement of a capability uses `nothing` and `rc-subject`, when the person runs `features generate` on the capability, `features` shall write a scenario whose step uses `nothing`.
-
-### [g127] `features generate` writes the scenario of `order-by` on the object of a verb whose frames name its kind
-- [r127] While a requirement of a requirement group of a capability uses `order-by` and the requirement uses a verb that has no frame that takes `thing`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has an order counter-example.
-
-### [g128] `features generate` writes the Then of a response's object that holds no K
-- [r128] While a requirement of a requirement group of a capability uses `no-noun` and `holds-relation` and the precondition of the requirement does not use `no-noun`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has a counter-example.
-
-### [g129] `features generate` satisfies every over a negated value in a precondition
-- [r129] While the precondition of a requirement of a requirement group of a capability uses `every` and `not-condition`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that satisfies the precondition.
-
-### [g130] `features generate` writes the scenario of `order-by-every` on the object of a verb whose frames name its kind
-- [r130] While a requirement of a requirement group of a capability uses `order-by-every` and the requirement uses a verb that has no frame that takes `thing`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has an order counter-example.
-
-### [g132] `features generate` introduces the thing a printed thing holds
-- [r132] While a requirement of a requirement group of a capability uses `holds-relation` and `rc-subject`, when the person runs `features generate` on the capability, `features` shall not write a step that mentions an instance that no given step introduces.
-
-### [g131] `features generate` introduces each instance of an order
-- [r131] While a requirement of a requirement group of a capability uses `order-by`, when the person runs `features generate` on the capability, `features` shall not write a step that mentions an instance that no given step introduces.
-
-### [g133] `features generate` writes the scenario of `order-by-every` on every K in a collection
-- [r133] While a requirement of a requirement group of a capability uses `order-by-every` and `of-relation`, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has an order counter-example.
-
-### [g134] `features generate` writes a counter-example of a count over a relation in a response
-- [r134] While a requirement of a requirement group of a capability uses `count` and `holds-relation` and the requirement has an upper bound, when the person runs `features generate` on the capability, `features` shall write a scenario of the requirement group that has a counter-example.
-
-### [g135] `features generate` writes the member outside a restriction that reaches a second thing
-- [r135] While a requirement of a capability uses `holds-exactly` and `of-relation`, when the person runs `features generate` on the capability, `features` shall write a scenario whose step uses `not-condition`.
 
 ## Implementation, may change
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three
@@ -394,6 +55,7 @@ the capability `shelf` holds:
 - `Rule:` blocks are refused rather than parsed — trigger: a feature file needs a `Rule:`.
 
 ## Dropped
+
 - r12@0.29: removed with `features move`: the generator owns the feature files (the GF conversion's design §15)
 - r13@0.29: removed with `features move`: the generator owns the feature files (the GF conversion's design §15)
 - r14@0.29: removed with `features move`: the generator owns the feature files (the GF conversion's design §15)
@@ -408,3 +70,107 @@ the capability `shelf` holds:
 - r51@0.29: removed with `features tag`: the generator owns the feature files (the GF conversion's design §15)
 - r52@0.29: `--file` chose the file of a title for `tag`, `move`, `deprecate` and `retire`, which are removed: the generator owns the feature files (the GF conversion's design §15)
 - r56@0.29: removed with `features rebind`: the generator owns the feature files (the GF conversion's design §15)
+- feature-file-tools#r60@0.29: the CLI adapter's: the response envelope under --json (the decision "The response envelope", U16)
+- feature-file-tools#r61@0.29: the CLI adapter's: the response envelope under --json (the decision "The response envelope", U16)
+- feature-file-tools#r62@0.29: the CLI adapter's: the response envelope under --json (the decision "The response envelope", U16)
+
+## Moved
+
+Every line moved to a new capability with a new id (the domain contract, 0.38.0).
+
+| old | new |
+|---|---|
+| g88 | feature-reading#g1 |
+| r88 | feature-reading#r1 |
+| g89 | feature-reading#g2 |
+| r89 | feature-reading#r2 |
+| g90 | feature-reading#g3 |
+| r90 | feature-reading#r3 |
+| g91 | feature-reading#g4 |
+| r91 | feature-reading#r4 |
+| g92 | feature-reading#g5 |
+| r92 | feature-reading#r5 |
+| g93 | feature-reading#g6 |
+| r93 | feature-reading#r6 |
+| g94 | feature-reading#g7 |
+| r94 | feature-reading#r7 |
+| g95 | dropped |
+| r95 | dropped |
+| g96 | feature-reading#g8 |
+| r96 | feature-reading#r8 |
+| g97 | feature-reading#g9 |
+| r97 | feature-reading#r9 |
+| g98 | feature-reading#g10 |
+| r98 | feature-reading#r10 |
+| g99 | dropped |
+| r99 | dropped |
+| g100 | feature-reading#g11 |
+| r100 | feature-reading#r11 |
+| g101 | feature-reading#g12 |
+| r101 | feature-reading#r12 |
+| g102 | feature-reading#g13 |
+| r102 | feature-reading#r13 |
+| g103 | feature-reading#g14 |
+| r103 | feature-reading#r14 |
+| g104 | dropped |
+| r104 | dropped |
+| g106 | scenarios#g1 |
+| r106 | scenarios#r1 |
+| g107 | scenarios#g2 |
+| r107 | scenarios#r2 |
+| g108 | scenarios#g3 |
+| r108 | scenarios#r3 |
+| g109 | scenarios#g4 |
+| r109 | scenarios#r4 |
+| g110 | scenarios#g5 |
+| r110 | scenarios#r5 |
+| g111 | scenarios#g6 |
+| r111 | scenarios#r6 |
+| g113 | scenarios#g7 |
+| r113 | scenarios#r7 |
+| g112 | scenarios#g8 |
+| r112 | scenarios#r8 |
+| g117 | scenarios#g9 |
+| r117 | scenarios#r9 |
+| g118 | scenarios#g10 |
+| r118 | scenarios#r10 |
+| g119 | scenarios#g11 |
+| r119 | scenarios#r11 |
+| g114 | scenarios#g12 |
+| r114 | scenarios#r12 |
+| g115 | scenarios#g13 |
+| r115 | scenarios#r13 |
+| g116 | scenarios#g14 |
+| r116 | scenarios#r14 |
+| g120 | scenarios#g15 |
+| r120 | scenarios#r15 |
+| g121 | scenarios#g16 |
+| r121 | scenarios#r16 |
+| g122 | scenarios#g17 |
+| r122 | scenarios#r17 |
+| g123 | scenarios#g18 |
+| r123 | scenarios#r18 |
+| g124 | scenarios#g19 |
+| r124 | scenarios#r19 |
+| g125 | scenarios#g20 |
+| r125 | scenarios#r20 |
+| g126 | scenarios#g21 |
+| r126 | scenarios#r21 |
+| g127 | scenarios#g22 |
+| r127 | scenarios#r22 |
+| g128 | scenarios#g23 |
+| r128 | scenarios#r23 |
+| g129 | scenarios#g24 |
+| r129 | scenarios#r24 |
+| g130 | scenarios#g25 |
+| r130 | scenarios#r25 |
+| g132 | scenarios#g26 |
+| r132 | scenarios#r26 |
+| g131 | scenarios#g27 |
+| r131 | scenarios#r27 |
+| g133 | scenarios#g28 |
+| r133 | scenarios#r28 |
+| g134 | scenarios#g29 |
+| r134 | scenarios#r29 |
+| g135 | scenarios#g30 |
+| r135 | scenarios#r30 |
