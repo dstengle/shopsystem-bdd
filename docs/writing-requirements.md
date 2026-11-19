@@ -328,6 +328,8 @@ shall [x1: agent the person (constant), x2: repository "the repository the reque
         ordered(x4, release, ascending)
 ```
 
+After a collection that holds its members ("a worktree that holds a file, ordered by version, ..."), the order is
+the members': the form puts `ordered` on an every box over the files in the worktree, not on the worktree.
 An order on a collection is a property of a response's object, whatever the act; "every K, ordered by ..." reads
 after any verb whose frame takes K, `return` or another. In a While clause, in the trigger, or after
 "shall not" it is refused, and so is an order by an attribute with no value order. An item's status has none:

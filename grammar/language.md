@@ -1006,8 +1006,10 @@ shall [x3: agent the person (constant), x4: service the work service (constant)]
 ", ordered by T, in ascending order" or "in descending order" after a collection that holds members by a row `K1 |
 in | K2` (`order-by`, T an attribute of K1: "a worktree that holds a file, ordered by version, in descending order")
 or after a printed "every K" (`order-by-every`, T an attribute of K) requires the members, or what the agent prints,
-in that order. The form keeps one atom, `ordered(x, T, ascending)`, beside the act; `spec logic` keeps it as a fact
-of the act, and two lines that require one collection, or one printing, in opposite orders on one trigger are an L1;
+in that order. The form keeps one atom, `ordered(x, T, ascending)`, beside the act, x a K that has T: after "every
+K" the every's K; after a collection its members (b334), an every box over the K1s of the row, restricted by
+`in(m, y)` of the collection y and with `ordered(m, T, ascending)` in its scope (`every [x6: file] in(x6, x4) scope
+ordered(x6, version, descending)`), never the collection, which has no T; `spec logic` keeps it as a fact of the act, and two lines that require one collection, or one printing, in opposite orders on one trigger are an L1;
 nothing else is proved of an order. A scenario gives three members distinct values of T, in neither the order nor
 its reverse, and a Then that states the order ("`work` prints every file, ordered by version, in ascending order"),
 which a handler checks by a sorted comparison of the output, not strictly, so that members of one value pass in
