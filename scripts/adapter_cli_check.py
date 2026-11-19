@@ -19,7 +19,6 @@ from pathlib import Path
 import adapter_cli
 import domain_model
 
-
 PROBE = Path(__file__).with_name("adapter_cli_probe.py")
 TIMEOUT = 60
 

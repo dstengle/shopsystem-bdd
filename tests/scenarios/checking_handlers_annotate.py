@@ -15,7 +15,7 @@ from pathlib import Path
 
 from vocab import handler
 
-W = sys.modules["shop_work_queue_world"] if "shop_work_queue_world" in sys.modules else None
+W = sys.modules.get("shop_work_queue_world")
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURE = ROOT / "tests" / "scripts" / "fixtures" / "domain-model"
 CONTRACT = "spec/adapters/cli.toml"
