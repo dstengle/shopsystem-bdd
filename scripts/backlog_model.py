@@ -18,6 +18,7 @@ from backlog_items import Refused, commit, find, label, one_line
 HEAD = re.compile(r"^### ([a-z0-9]+(?:-[a-z0-9]+)*) model$")
 FENCE, CLOSE = "```model", "```"
 ModelBlock = namedtuple("ModelBlock", "area lines terms", defaults=((), ()))
+ELEMENT = re.compile(r"^(object|service) (.+?)(?: kind of .*)?$")
 RELATION = re.compile(r"^([\w -]+?):\s*(\S.*→.*\(.*\))$")
 
 
@@ -46,13 +47,24 @@ def _end(body, at):
     return end
 
 
+def _at(body, header):
+    """The index of the element `header` declares in `body`: its line, or an object's declared with its kind
+    (`object item` is `object item kind of file`); None when the body declares none."""
+    if header in body:
+        return body.index(header)
+    named = ELEMENT.match(header)
+    return next((n for n, line in enumerate(body) if named and ELEMENT.match(line)
+                 and ELEMENT.match(line).groups() == named.groups()), None)
+
+
 def merged(body, lines):
     """`body` (model lines) with `lines` merged in: each element's members after the element's own, else the element
     appended after a blank line (before any blank lines the body ends with)."""
     body = list(body)
     for header, members in chunks(lines):
-        if header in body:
-            end = _end(body, body.index(header))
+        at = _at(body, header)
+        if at is not None:
+            end = _end(body, at)
             body[end:end] = members
         else:
             at = len(body)
@@ -67,9 +79,9 @@ def unmerged(body, lines):
     taken out whole with the blank line before it (the chunk made it)."""
     body = list(body)
     for header, members in reversed(chunks(lines)):
-        if header not in body:
+        at = _at(body, header)
+        if at is None:
             continue
-        at = body.index(header)
         end = _end(body, at)
         first = end - len(members)
         if first < at + 1 or body[first:end] != members:

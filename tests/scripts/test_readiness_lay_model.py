@@ -97,3 +97,14 @@ def test_the_ready_items_reworded_for_the_migrated_spec_meet_the_readiness_bar(n
     import toolchain
     toolchain.require()
     assert readiness_bar.check(REPO, backlog_items.find(REPO, name)) == ([], [])
+
+
+def test_a_member_line_joins_an_element_declared_with_its_kind():
+    import backlog_model
+    body = ["object item kind of file", "  attributes: size (text)", "", "service backlog",
+            "  operation show(item)"]
+    lines = ["object item", "  relations: has → label (many)", "service backlog", "  operation tag(item)"]
+    laid = backlog_model.merged(body, lines)
+    assert laid == ["object item kind of file", "  attributes: size (text)", "  relations: has → label (many)", "",
+                    "service backlog", "  operation show(item)", "  operation tag(item)"]
+    assert backlog_model.unmerged(laid, lines) == body
