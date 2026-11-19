@@ -192,3 +192,4 @@ area: specification
 - **severity** (attribute) → attribute rule.severity. Whether a violation of a rule fails the check or is only named.
 - **error** (noun) → value rule.severity error.
 - **warning** (noun) → value rule.severity warning.
+- **release** (noun) → object release. A section of CHANGELOG.md, named by the version it shipped, as `0.31.0`; a catalogue entry from before items were tracked mentions the release that shipped it, and a new or changed catalogue entry mentions an item. Plural: releases.

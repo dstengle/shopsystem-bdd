@@ -319,14 +319,6 @@ Feature: Checking
     Then the specification service fails this check
     And the specification service names the catalogue entry c1
 
-  @g56 @r56
-  Scenario: A catalogue entry that names no item fails the check
-    Given a catalogue entry c1
-    And the catalogue entry c1 mentions no item
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names the catalogue entry c1
-
   @g57 @r57
   Scenario: A catalogue entry that names an undelivered item fails the check
     Given an item i1
@@ -337,3 +329,12 @@ Feature: Checking
     Then the specification service fails this check
     And the specification service names the catalogue entry c1
     And the specification service names the item i1
+
+  @g58 @r58
+  Scenario: A catalogue entry that names neither an item nor a release fails the check
+    Given a catalogue entry c1
+    And the catalogue entry c1 mentions no item
+    And the catalogue entry c1 mentions no release
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the catalogue entry c1

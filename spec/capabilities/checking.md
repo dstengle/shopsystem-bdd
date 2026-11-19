@@ -6,8 +6,8 @@ group: service
 area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
-retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45]
-unbuilt: [r52, r53, r54, r55, r56, r57]
+retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56]
+unbuilt: [r52, r53, r54, r55, r57, r58]
 ---
 
 # Checking
@@ -155,11 +155,11 @@ Restates: design-model-check#r13@0.29.
 ### [g55] A catalogue entry with no purpose fails the check
 - [r55] While a catalogue entry has no purpose, if the person validates this specification, then the specification service shall fail the check and name the catalogue entry.
 
-### [g56] A catalogue entry that names no item fails the check
-- [r56] While a catalogue entry mentions no item, if the person validates this specification, then the specification service shall fail the check and name the catalogue entry.
-
 ### [g57] A catalogue entry that names an undelivered item fails the check
 - [r57] While a catalogue entry mentions an item whose status is not `delivered`, if the person validates this specification, then the specification service shall fail the check and name the catalogue entry and the item.
+
+### [g58] A catalogue entry that names neither an item nor a release fails the check
+- [r58] While a catalogue entry mentions no item and the catalogue entry mentions no release, if the person validates this specification, then the specification service shall fail the check and name the catalogue entry.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

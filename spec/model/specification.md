@@ -279,4 +279,6 @@ object member
   relations: has → order (many)
 
 object purpose kind of text
+
+object release kind of text
 ```
