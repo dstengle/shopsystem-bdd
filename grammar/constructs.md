@@ -1325,7 +1325,10 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x3
   response [x4: worktree, x5: file]
     in(x5, x4)
     print(e2, subject: x3, object: x4)
-    ordered(x4, version, descending)
+    every [x6: file]
+      in(x6, x4)
+      scope
+        ordered(x6, version, descending)
 ```
 
 ## order-by-every
