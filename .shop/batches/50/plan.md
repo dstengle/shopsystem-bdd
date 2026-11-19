@@ -1,0 +1,22 @@
+---
+id: batch/missingmass.io/shopsystem/shopsystem-bdd/batch-50
+kind: batch
+status: building
+base: main
+forked_from: 9b94281ab9900aef95f2428b91f70a69612b0425
+branch: batch-50
+pull_request:
+---
+
+# batch-50
+
+## Tasks
+
+| task | item | status | branch |
+|---|---|---|---|
+| t1 | b370 | pending | batch-50-b370 |
+| t2 | b371 | pending | batch-50-b371 |
+
+## Plan
+
+One task for each item: each builds its item's requirement lines, whose generated scenarios are its acceptance tests.
