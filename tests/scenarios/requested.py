@@ -151,14 +151,18 @@ def lookup_key(handlers, template, term):
         return next((("WhenRuns", c) for c in commands if handlers(("WhenRuns", c))), ("WhenRuns", None))
     if template == "WhenHappens" and term == "start":
         return "WhenRuns", None
+    for table in W.RENAMES.values():     # a kind the handlers know by its older word
+        if term in table and (template.startswith("Given") or template.endswith("K_A")):
+            return template, table[term]
     found = THENS.get(template) or (NEGATED.get(term) if template == "ThenDoesNot" else None)
     return found[0] if found else (template, term)
 
 
-def _spell(np, operation):
-    """A parameter named by a Then ("the tier") as its option ("the `--tier` option")."""
-    found = re.fullmatch(r"(?:the|a|an) (.+)", np or "")
-    if not operation or found is None:
+def _spell(np, operation, absent=()):
+    """A parameter named by a Then ("the tier") as its option ("the `--tier` option"); a thing of a parameter's kind
+    ("the line reason l1") so only when the request was made without that parameter."""
+    found = re.fullmatch(r"(?:the|a|an) (.+?)( [a-z]+\d+)?", np or "")
+    if not operation or found is None or found.group(2) and found.group(1) not in absent:
         return np
     service = operation.split(".")[0]
     ops = [contract().operations[operation]] + [o for i, o in contract().operations.items()
@@ -171,11 +175,10 @@ def _spell(np, operation):
 EVENTS = {"batches.merge": "merge"}
 def legacy(call, context, node, known):
     """`call` re-keyed for the CLI's handlers (in place): `known(key)` says whether a handler or a chain has a key."""
+    said = list(call.nps)       # as the step says them, before the handlers' words (a parameter is spelled from these)
     W.renamed(call, origin(node))
     W.reverbed(call, origin(node))
     t = call.template
-    if t == "WhenRequests" and origin(node) in W.RENAMES:
-        W.owner(call, [s.name for s in scenario(node).steps] if scenario(node) else [], "context request")
     if t == "WhenRequests" and call.term in EVENTS:     # what the handlers took as an event, not a command
         context["requested"] = (call.term, "`%s`" % contract().operations[call.term].command)
         call.template = "WhenHappens"
@@ -185,7 +188,9 @@ def legacy(call, context, node, known):
         commands, options, without = command(call.term, call.params + _things(call))
         chosen = next((c for c in commands if known(("WhenRuns", c))), commands[-1])
         chosen = PLAIN.get((origin(node), chosen), chosen)
-        context["requested"] = (call.term, chosen)
+        if origin(node) in W.RENAMES and not chosen.startswith("`work outcome "):    # a request's command: on it
+            W.owner(call, [s.name for s in scenario(node).steps] if scenario(node) else [], "context request")
+        context["requested"], context["absent"] = (call.term, chosen), list(call.without)
         call.template, call.term, call.command = "WhenRuns", chosen, chosen
         call.options, call.without = options, without
         call.text = W.runs_text(call, chosen)
@@ -223,7 +228,8 @@ def legacy(call, context, node, known):
         call.term = call.event = _pick(node, [(t, v) for v in VERBS[call.term]])[1]
         call.text = call.text.replace(" %s " % W.S3.get(said, said), " %s " % W.S3.get(call.term, call.term + "s"), 1)
     if t.startswith("Then") and call.term == "name":
-        call.nps = [_spell(np, operation) for np in call.nps]
+        spelled = [_spell(np, operation, context.get("absent", ())) for np in said]
+        call.nps = [s if s != o else n for s, o, n in zip(spelled, said, call.nps)]
     if t.startswith("Then") and call.subject and call.subject.endswith(" service") and program:
         call.subject = program
         call.text = W.retext(call.text, program, t, None, chosen)

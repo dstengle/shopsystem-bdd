@@ -239,5 +239,9 @@ def given_does_not(step):
         path = request(step, "%s-elsewhere" % step.names[0])
         path.write_text(path.read_text().replace("\n1. line 1\n", "\n1. %s\n" % ELSEWHERE, 1))
         says(step, step.names[0], ELSEWHERE)
+    elif term == "holds" and step.nps[-1].startswith("the request line"):    # a line of another request (reword)
+        path = request(step, "%s-elsewhere" % step.names[1])
+        path.write_text(path.read_text().replace("\n1. line 1\n", "\n1. %s\n" % ELSEWHERE, 1))
+        says(step, step.names[1], ELSEWHERE)
     elif term != "holds":                               # a request that does not hold a comment: as written
         return False

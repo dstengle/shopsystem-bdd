@@ -6,8 +6,8 @@ fragment f1", `runs_text`)."""
 import re
 
 # the words a capability's handlers know a kind by, before the domain contract renamed it
-RENAMES = {"requests": {"context request": "request", "entry": "comment"},
-           "intake": {"context request": "request", "entry": "comment"},
+RENAMES = {"requests": {"context request": "request", "entry": "comment", "field": "entry"},
+           "intake": {"context request": "request", "entry": "comment", "line reason": "reason"},
            "batches": {"proposed change": "pull request", "kept change": "commit", "workspace": "worktree",
                        "context request": "request", "entry": "comment"},
            "telemetry": {"proposed change": "pull request"},

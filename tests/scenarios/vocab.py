@@ -53,7 +53,7 @@ def handler(template, term=None):
 def lookup(template, term):
     """The handler of (template, term), else the template's fallback, else world_four's chain of the key, else
     None; a request's step by the key it is taken to (requested.lookup_key)."""
-    if template in vocab4.requested.REQUEST or template in ("WhenHappens", "ThenDoesNot"):
+    if not (HANDLERS.get((template, term)) or FOUR_RUN.get((template, term))):
         template, term = vocab4.requested.lookup_key(lambda key: key in HANDLERS or key in FOUR_CHAINS,
                                                      template, term)
     return HANDLERS.get((template, term)) or HANDLERS.get((template, None)) or FOUR_RUN.get((template, term))
