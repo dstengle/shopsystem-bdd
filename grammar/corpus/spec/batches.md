@@ -1,113 +1,95 @@
-# batches: every live line with its intended reading (b240)
+# batches: every live line with its intended reading (the domain contract, 0.38.0)
 
-## r9
-Kept. Audit: fine (merge's gloss trimmed to its frame).
+## r50
+From: batches#r9, reworded in request words (0.38.0).
 
 ```reading
-While an item in a batch is `in-batch`, when the person merges the pull request of the batch, `work` shall set the status of the item to `delivered` and set the status of the batch to `merged`.
-shall [x3: agent the person (constant), x5: tool `work` (constant)]
+While an item in a batch is `in-batch`, when the person merges the proposed change of the batch, the batches service shall set the status of the item to `delivered` and set the status of the batch to `merged`.
+shall [x3: agent the person (constant), x5: service the batches service (constant)]
   while [x1: item, x2: batch]
     in(x1, x2)
     status(x1) = `in-batch`
-  when [x4: pull request]
+  when [x4: proposed change]
     of(x4, x2)
-    merge(e1, subject: x3, object: x4)
+    request(e1, batches.merge, subject: x3, object: x4)
   response
     initiates(e2, subject: x5, status(x1) = `delivered`)
     initiates(e3, subject: x5, status(x2) = `merged`)
 ```
 
-## r11
-Kept. Audit: fine.
+## r51
+From: batches#r14, reworded in request words (0.38.0).
 
 ```reading
-While an item in a batch is `in-batch`, when the person runs `work batch review` on the batch, `work` shall publish a pull request that cites the item.
-shall [x3: agent the person (constant), x4: command `work batch review` (parameter), x5: tool `work` (constant)]
-  while [x1: item, x2: batch]
-    in(x1, x2)
-    status(x1) = `in-batch`
-  when
-    run(e1, subject: x3, object: x4, on: x2)
-  response [x6: pull request]
-    cite(subject: x6, object: x1)
-    publish(e2, subject: x5, object: x6)
-```
-
-## r14
-Kept. Audit: fine.
-
-```reading
-When the person runs `work batch start`, `work` shall write a batch brief and print the batch brief.
-shall [x1: agent the person (constant), x2: command `work batch start` (parameter), x3: tool `work` (constant)]
-  when
-    run(e1, subject: x1, object: x2)
+When the person opens a batch, the batches service shall keep a batch brief and return the batch brief.
+shall [x1: agent the person (constant), x3: service the batches service (constant)]
+  when [x2: batch]
+    request(e1, batches.open, subject: x1, object: x2)
   response [x4: batch brief]
-    write(e2, subject: x3, object: x4)
-    print(e3, subject: x3, object: x4)
+    keep(e2, subject: x3, object: x4)
+    return(e3, subject: x3, object: x4)
 ```
 
-## r15
-Kept. Audit: fine.
+## r52
+From: batches#r15, reworded in request words (0.38.0).
 
 ```reading
-When the person runs `work batch abandon` on a batch, `work` shall remove every review folder of the batch.
-shall [x1: agent the person (constant), x2: command `work batch abandon` (parameter), x4: tool `work` (constant)]
-  when [x3: batch]
-    run(e1, subject: x1, object: x2, on: x3)
+When the person abandons a batch, the batches service shall keep no review folder of the batch.
+shall [x1: agent the person (constant), x3: service the batches service (constant)]
+  when [x2: batch]
+    request(e1, batches.abandon, subject: x1, object: x2)
   response
-    every [x5: review folder]
-      of(x5, x3)
-      scope
-        remove(e2, subject: x4, object: x5)
+    not [x4: review folder]
+      of(x4, x2)
+      keep(e2, subject: x3, object: x4)
 ```
 
-## r22
-Retires: r1. From: b158 r20. Audit: distortion, fixed by section 5 (the `in-batch` Then said, pick's gloss trimmed). Known limit: #14 (up to `batch_size` in rank order, a dependency picked earlier in the same pick).
+## r53
+From: batches#r22, reworded in request words (0.38.0).
 
 ```reading
-While an item is `ready` and the item passes the readiness bar and the item has no dependency on an item whose status is not `delivered`, when the person runs `work batch start`, `work` shall pick the item, set the status of the item to `in-batch`, write a batch whose status is `building` and write a batch plan of the batch.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x6: command `work batch start` (parameter), x7: tool `work` (constant)]
+While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered`, when the person opens a batch, the batches service shall set the status of the item to `in-batch`, keep a batch that holds the item and keep a batch plan of the batch.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant)]
   while [x1: item]
     status(x1) = `ready`
-    pass#2(subject: x1, object: x2)
+    meet(subject: x1, object: x2)
     not [x3: dependency, x4: item]
       not
         status(x4) = `delivered`
       on(x3, x4)
       of(x3, x1)
-  when
-    run(e1, subject: x5, object: x6)
+  when [x6: batch]
+    request(e1, batches.open, subject: x5, object: x6)
   response [x8: batch, x9: batch plan]
-    pick(e2, subject: x7, object: x1)
-    initiates(e3, subject: x7, status(x1) = `in-batch`)
-    status(x8) = `building`
-    write(e4, subject: x7, object: x8)
+    initiates(e2, subject: x7, status(x1) = `in-batch`)
+    in(x1, x8)
+    keep(e3, subject: x7, object: x8)
     of(x9, x8)
-    write(e5, subject: x7, object: x9)
+    keep(e4, subject: x7, object: x9)
 ```
 
-## r23
-Retires: r2. From: b158 r21. Audit: fine.
+## r54
+From: batches#r23, reworded in request words (0.38.0).
 
 ```reading
-While an item is `ready` and the item does not pass the readiness bar, when the person runs `work batch start`, `work` shall set the status of the item to `shaped`.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x3: agent the person (constant), x4: command `work batch start` (parameter), x5: tool `work` (constant)]
+While an item is `ready` and the item does not meet the readiness bar, when the person opens a batch, the batches service shall set the status of the item to `shaped`.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x3: agent the person (constant), x5: service the batches service (constant)]
   while [x1: item]
     status(x1) = `ready`
     not
-      pass#2(subject: x1, object: x2)
-  when
-    run(e1, subject: x3, object: x4)
+      meet(subject: x1, object: x2)
+  when [x4: batch]
+    request(e1, batches.open, subject: x3, object: x4)
   response
     initiates(e2, subject: x5, status(x1) = `shaped`)
 ```
 
-## r24
-Retires: r3. From: b158 r22. Audit: distortion, fixed by identity ("another item", named last) and a value set.
+## r55
+From: batches#r24, reworded in request words (0.38.0).
 
 ```reading
-While an item is not `ready` or `delivered` and a dependency on the item exists and another item whose status is `ready` has the dependency, when the person runs `work batch start`, `work` shall not pick the item.
-shall [x4: agent the person (constant), x5: command `work batch start` (parameter), x6: tool `work` (constant)]
+While an item is not `ready` or `delivered` and a dependency on the item exists and another item whose status is `ready` has the dependency, when the person opens a batch, the batches service shall not set the status of the item to `in-batch`.
+shall [x4: agent the person (constant), x6: service the batches service (constant)]
   while [x1: item, x2: dependency, x3: item]
     not
       status(x1) = `ready`
@@ -118,164 +100,111 @@ shall [x4: agent the person (constant), x5: command `work batch start` (paramete
     distinct(x3, x1)
     status(x3) = `ready`
     of(x2, x3)
-  when
-    run(e1, subject: x4, object: x5)
+  when [x5: batch]
+    request(e1, batches.open, subject: x4, object: x5)
   response
     not
-      pick(e2, subject: x6, object: x3)
+      initiates(e2, subject: x6, status(x3) = `in-batch`)
 ```
 
-## r25
-Retires: r5. From: b158 r23. Audit: fine.
+## r56
+From: batches#r25, reworded in request words (0.38.0).
 
 ```reading
-While a batch is `building`, when a session runs `work batch resume` on the batch, `work` shall use the batch plan of the batch and ask no question.
-shall [x3: command `work batch resume` (parameter), x4: tool `work` (constant)]
+While a batch is `building`, when a session resumes the batch, the batches service shall return the batch plan of the batch and not ask a question.
+shall [x3: service the batches service (constant)]
   while [x1: batch]
     status(x1) = `building`
   when [x2: session]
-    run(e1, subject: x2, object: x3, on: x1)
-  response [x5: batch plan]
-    of(x5, x1)
-    use(e2, subject: x4, object: x5)
-    not [x6: question]
-      ask(e3, subject: x4, object: x6)
+    request(e1, batches.resume, subject: x2, object: x1)
+  response [x4: batch plan]
+    of(x4, x1)
+    return(e2, subject: x3, object: x4)
+    not [x5: question]
+      ask(e3, subject: x3, object: x5)
 ```
 
-## r26
-Retires: r6. From: b158 r24. Audit: fine.
+## r57
+From: batches#r26, reworded in request words (0.38.0).
 
 ```reading
-While an item in a batch is `in-batch`, when a session runs `work batch park` on the item, `work` shall set the status of the item to `needs-input`, write a question on the item and not set the status of the batch to `abandoned`.
-shall [x4: command `work batch park` (parameter), x5: tool `work` (constant)]
+While an item in a batch is `in-batch`, when a session parks the item, the batches service shall set the status of the item to `needs-input`, keep a question on the item and not set the status of the batch to `abandoned`.
+shall [x4: service the batches service (constant)]
   while [x1: item, x2: batch]
     in(x1, x2)
     status(x1) = `in-batch`
   when [x3: session]
-    run(e1, subject: x3, object: x4, on: x1)
-  response [x6: question]
-    initiates(e2, subject: x5, status(x1) = `needs-input`)
-    on(x6, x1)
-    write(e3, subject: x5, object: x6)
+    request(e1, batches.park, subject: x3, object: x1)
+  response [x5: question]
+    initiates(e2, subject: x4, status(x1) = `needs-input`)
+    on(x5, x1)
+    keep(e3, subject: x4, object: x5)
     not
-      initiates(e4, subject: x5, status(x2) = `abandoned`)
+      initiates(e4, subject: x4, status(x2) = `abandoned`)
 ```
 
-## r37
-Retires: r27. From: b257. Audit: the short form of a noun value, said in the full form.
+## r58
+From: batches#r28, reworded in request words (0.38.0).
 
 ```reading
-While the status of an item in a batch is `needs-input` and a commit cites the item, when the person runs `work batch review` on the batch, `work` shall publish a pull request of the batch that does not hold the commit.
-shall [x4: agent the person (constant), x5: command `work batch review` (parameter), x6: tool `work` (constant)]
-  while [x1: item, x2: batch, x3: commit]
-    in(x1, x2)
-    status(x1) = `needs-input`
-    cite(subject: x3, object: x1)
-  when
-    run(e1, subject: x4, object: x5, on: x2)
-  response [x7: pull request]
-    of(x7, x2)
-    not
-      in(x3, x7)
-    publish(e2, subject: x6, object: x7)
-```
-
-## r28
-Retires: r10. From: b158 r26. Audit: fine.
-
-```reading
-While a batch is `building`, when the person runs `work batch abandon` on the batch, `work` shall set the status of the batch to `abandoned` and set the status of every item in the batch whose status is `in-batch` to `ready`.
-shall [x2: agent the person (constant), x3: command `work batch abandon` (parameter), x4: tool `work` (constant)]
+While a batch is `building`, when the person abandons the batch, the batches service shall set the status of the batch to `abandoned` and set the status of every item in the batch whose status is `in-batch` to `ready`.
+shall [x2: agent the person (constant), x3: service the batches service (constant)]
   while [x1: batch]
     status(x1) = `building`
   when
-    run(e1, subject: x2, object: x3, on: x1)
+    request(e1, batches.abandon, subject: x2, object: x1)
   response
-    initiates(e2, subject: x4, status(x1) = `abandoned`)
-    every [x5: item]
-      in(x5, x1)
-      status(x5) = `in-batch`
+    initiates(e2, subject: x3, status(x1) = `abandoned`)
+    every [x4: item]
+      in(x4, x1)
+      status(x4) = `in-batch`
       scope
-        initiates(e3, subject: x4, status(x5) = `ready`)
+        initiates(e3, subject: x3, status(x4) = `ready`)
 ```
 
-## r29
-Retires: r12. From: b158 r27. Audit: fine.
+## r59
+From: batches#r31, reworded in request words (0.38.0).
 
 ```reading
-While a task of a batch is not `done`, if the person runs `work batch review` on the batch, then `work` shall refuse the command and name the task.
-shall [x3: agent the person (constant), x4: command `work batch review` (parameter), x5: tool `work` (constant)]
-  while [x1: task, x2: batch]
-    of(x1, x2)
-    not
-      status(x1) = `done`
-  if
-    run(e1, subject: x3, object: x4, on: x2)
+When the person merges the proposed change of a batch, the batches service shall keep no review folder of the batch.
+shall [x1: agent the person (constant), x4: service the batches service (constant)]
+  when [x2: batch, x3: proposed change]
+    of(x3, x2)
+    request(e1, batches.merge, subject: x1, object: x3)
   response
-    refuse(e2, subject: x5, object: x4)
-    name(e3, subject: x5, object: x1)
+    not [x5: review folder]
+      of(x5, x2)
+      keep(e2, subject: x4, object: x5)
 ```
 
-## r30
-Retires: r13. From: b158 r28. Audit: fine.
+## r60
+From: batches#r32, reworded in request words (0.38.0).
 
 ```reading
-While a git branch of a task of a batch has a commit that cites no item, if the person runs `work batch review` on the batch, then `work` shall refuse the command and name the commit.
-shall [x6: agent the person (constant), x7: command `work batch review` (parameter), x8: tool `work` (constant)]
-  while [x1: git branch, x2: task, x3: batch, x4: commit]
-    of(x2, x3)
-    of(x1, x2)
-    not [x5: item]
-      cite(subject: x4, object: x5)
-    of(x4, x1)
-  if
-    run(e1, subject: x6, object: x7, on: x3)
-  response
-    refuse(e2, subject: x8, object: x7)
-    name(e3, subject: x8, object: x4)
-```
-
-## r31
-Retires: r16. From: b158 r29. Audit: fine.
-
-```reading
-When the person merges a pull request of a batch, `work` shall remove every review folder of the batch.
-shall [x1: agent the person (constant), x4: tool `work` (constant)]
-  when [x2: pull request, x3: batch]
-    of(x2, x3)
-    merge(e1, subject: x1, object: x2)
-  response
-    every [x5: review folder]
-      of(x5, x3)
-      scope
-        remove(e2, subject: x4, object: x5)
-```
-
-## r32
-Retires: r17. From: b158 r30. Audit: distortion, fixed by section 5 (a "from" frame for remove; a requirement of the item).
-
-```reading
-While an item in a batch is `in-batch` and the git branch of the batch holds a requirement of the item, when a session runs `work batch park` on the item, `work` shall remove the requirement from the git branch.
-shall [x6: command `work batch park` (parameter), x7: tool `work` (constant)]
-  while [x1: item, x2: batch, x3: git branch, x4: requirement]
+While an item in a batch is `in-batch` and the workspace of the batch holds a requirement of the item, when a session parks the item, the batches service shall keep a workspace of the batch that does not hold the requirement.
+shall [x6: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: workspace, x4: requirement]
     in(x1, x2)
     status(x1) = `in-batch`
     of(x3, x2)
     of(x4, x1)
     in(x4, x3)
   when [x5: session]
-    run(e1, subject: x5, object: x6, on: x1)
-  response
-    remove(e2, subject: x7, object: x4, from: x3)
+    request(e1, batches.park, subject: x5, object: x1)
+  response [x7: workspace]
+    of(x7, x2)
+    not
+      in(x4, x7)
+    keep(e2, subject: x6, object: x7)
 ```
 
-## r38
-Retires: r33. From: b257. Audit: the short form of a noun value, said in the full form.
+## r61
+From: batches#r38, reworded in request words (0.38.0).
 
 ```reading
-While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the batch is `needs-input` and a scenario of the item fails in the worktree of the task, when a session runs `work batch done` on the task, `work` shall set the status of the task to `done`.
-shall [x8: command `work batch done` (parameter), x9: tool `work` (constant)]
-  while [x1: item, x2: batch, x3: task, x4: item, x5: scenario, x6: worktree]
+While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the batch is `needs-input` and a scenario of the item breaks in the workspace of the task, when a session finishes the task, the batches service shall set the status of the task to `done`.
+shall [x8: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: task, x4: item, x5: scenario, x6: workspace]
     in(x1, x2)
     status(x1) = `in-batch`
     of(x3, x1)
@@ -284,20 +213,20 @@ shall [x8: command `work batch done` (parameter), x9: tool `work` (constant)]
     status(x4) = `needs-input`
     of(x5, x4)
     of(x6, x3)
-    fail#2(subject: x5, in: x6)
+    break(subject: x5, in: x6)
   when [x7: session]
-    run(e1, subject: x7, object: x8, on: x3)
+    request(e1, batches.finish, subject: x7, object: x3)
   response
-    initiates(e2, subject: x9, status(x3) = `done`)
+    initiates(e2, subject: x8, status(x3) = `done`)
 ```
 
-## r34
-Retires: r19. From: b158 r32. Audit: distortion, fixed by identity ("another item").
+## r62
+From: batches#r34, reworded in request words (0.38.0).
 
 ```reading
-While an item in a batch is `in-batch` and a task of the item is `running` and another item in the batch is `in-batch` and a scenario of the item passes in the worktree of the task, when a session runs `work batch done` on the task, `work` shall set the status of the task to `done`.
-shall [x8: command `work batch done` (parameter), x9: tool `work` (constant)]
-  while [x1: item, x2: batch, x3: task, x4: item, x5: scenario, x6: worktree]
+While an item in a batch is `in-batch` and a task of the item is `running` and another item in the batch is `in-batch` and a scenario of the item succeeds in the workspace of the task, when a session finishes the task, the batches service shall set the status of the task to `done`.
+shall [x8: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: task, x4: item, x5: scenario, x6: workspace]
     in(x1, x2)
     status(x1) = `in-batch`
     of(x3, x1)
@@ -307,176 +236,154 @@ shall [x8: command `work batch done` (parameter), x9: tool `work` (constant)]
     status(x4) = `in-batch`
     of(x5, x4)
     of(x6, x3)
-    pass(subject: x5, in: x6)
+    succeed(subject: x5, in: x6)
   when [x7: session]
-    run(e1, subject: x7, object: x8, on: x3)
+    request(e1, batches.finish, subject: x7, object: x3)
   response
-    initiates(e2, subject: x9, status(x3) = `done`)
+    initiates(e2, subject: x8, status(x3) = `done`)
 ```
 
-## r35
-Retires: r8. From: b158 r33. Audit: fine.
+## r63
+From: batches#r36, reworded in request words (0.38.0).
 
 ```reading
-While a batch is `building` and every task of the batch is `done`, when the person runs `work batch review` on the batch, `work` shall publish a pull request of the batch and set the status of the batch to `in-review`.
-shall [x3: agent the person (constant), x4: command `work batch review` (parameter), x5: tool `work` (constant)]
-  while [x1: batch]
-    status(x1) = `building`
-    every [x2: task]
-      of(x2, x1)
-      scope
-        status(x2) = `done`
-  when
-    run(e1, subject: x3, object: x4, on: x1)
-  response [x6: pull request]
-    of(x6, x1)
-    publish(e2, subject: x5, object: x6)
-    initiates(e3, subject: x5, status(x1) = `in-review`)
-```
-
-## r36
-Retires: r4. From: b158 r4. Audit: unsayable, fixed by R2's boxes (the item and the task given in the While).
-
-```reading
-While a batch holds an item and the batch has a task, when the person runs `work batch status` on the batch, `work` shall print the item, the task and the status of the task.
-shall [x4: agent the person (constant), x5: command `work batch status` (parameter), x6: tool `work` (constant)]
+While a batch holds an item and the batch has a task, when the person monitors the batch, the batches service shall return the item, the task and the status of the task.
+shall [x4: agent the person (constant), x5: service the batches service (constant)]
   while [x1: batch, x2: item, x3: task]
     in(x2, x1)
     of(x3, x1)
   when
-    run(e1, subject: x4, object: x5, on: x1)
-  response [x7: status]
-    print(e2, subject: x6, object: x2)
-    print(e3, subject: x6, object: x3)
-    status(x3) = x7
-    print(e4, subject: x6, object: x7)
+    request(e1, batches.monitor, subject: x4, object: x1)
+  response [x6: status]
+    return(e2, subject: x5, object: x2)
+    return(e3, subject: x5, object: x3)
+    status(x3) = x6
+    return(e4, subject: x5, object: x6)
 ```
 
-## r39
-From: b203 r39. A spec/universal.md that `work batch start` makes to lay an item's universal conditions says `codified-2`, the one language.
+## r64
+From: batches#r39, reworded in request words (0.38.0).
 
 ```reading
-While `universal` does not exist and an item is `ready` and the item passes the readiness bar and a universal condition is in the item, when the person runs `work batch start`, `work` shall write `universal` and set the language of `universal` to `codified-2`.
-shall [x1: capability `universal` (constant), x3: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x6: command `work batch start` (parameter), x7: tool `work` (constant)]
+While `universal` does not exist and an item is `ready` and the item meets the readiness bar and a universal condition is in the item, when the person opens a batch, the batches service shall keep `universal` and set the language of `universal` to `codified-2`.
+shall [x1: capability `universal` (constant), x3: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant)]
   while [x2: item, x4: universal condition]
     not
       exists(x1)
     status(x2) = `ready`
-    pass#2(subject: x2, object: x3)
+    meet(subject: x2, object: x3)
     in(x4, x2)
-  when
-    run(e1, subject: x5, object: x6)
+  when [x6: batch]
+    request(e1, batches.open, subject: x5, object: x6)
   response
-    write(e2, subject: x7, object: x1)
+    keep(e2, subject: x7, object: x1)
     initiates(e3, subject: x7, language(x1) = `codified-2`)
 ```
 
-## r40
-From: b6 r40. The merge resolves the request a delivered item was taken in from, in place of a `work resolve` by hand.
+## r65
+From: batches#r40, reworded in request words (0.38.0).
 
 ```reading
-While an item in a batch is `in-batch` and the item has a request line of a request and the request is `accepted`, when the person merges the pull request of the batch, `work` shall set the status of the request to `delivered`, write a resolution, set the side of the request to `asker`, post a comment, close the issue of the request and commit the request.
-shall [x5: agent the person (constant), x7: tool `work` (constant)]
-  while [x1: item, x2: batch, x3: request line, x4: request]
+While an item in a batch is `in-batch` and the item has a request line of a context request and the context request is `accepted`, when the person merges the proposed change of the batch, the batches service shall set the status of the context request to `delivered`, keep a resolution, set the side of the context request to `asker` and keep an entry on the context request.
+shall [x5: agent the person (constant), x7: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: request line, x4: context request]
     in(x1, x2)
     status(x1) = `in-batch`
     of(x3, x4)
     of(x3, x1)
     status(x4) = `accepted`
-  when [x6: pull request]
+  when [x6: proposed change]
     of(x6, x2)
-    merge(e1, subject: x5, object: x6)
-  response [x8: resolution, x9: comment, x10: issue]
+    request(e1, batches.merge, subject: x5, object: x6)
+  response [x8: resolution, x9: entry]
     initiates(e2, subject: x7, status(x4) = `delivered`)
-    write(e3, subject: x7, object: x8)
+    keep(e3, subject: x7, object: x8)
     initiates(e4, subject: x7, side(x4) = `asker`)
-    post(e5, subject: x7, object: x9)
-    of(x10, x4)
-    close(e6, subject: x7, object: x10)
-    commit(e7, subject: x7, object: x4)
+    on(x9, x4)
+    keep(e5, subject: x7, object: x9)
 ```
 
-## r41
-From: b316 r41. Not in the audit (b316 is no reword item).
+## r66
+From: batches#r42, reworded in request words (0.38.0).
 
 ```reading
-While an item is `ready` and the item holds a chore and the item passes the readiness bar, when the person runs `work batch start`, `work` shall write a batch brief that holds the chore.
-shall [x3: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x4: agent the person (constant), x5: command `work batch start` (parameter), x6: tool `work` (constant)]
-  while [x1: item, x2: chore]
-    status(x1) = `ready`
-    in(x2, x1)
-    pass#2(subject: x1, object: x3)
-  when
-    run(e1, subject: x4, object: x5)
-  response [x7: batch brief]
-    in(x2, x7)
-    write(e2, subject: x6, object: x7)
-```
-
-## r42
-From: b316 r39. Not in the audit (b316 is no reword item).
-
-```reading
-While a task of an item is `running` and the item holds a chore and the chore fails in the worktree of the task, if a session runs `work batch done` on the task, then `work` shall refuse the command and name the chore.
-shall [x6: command `work batch done` (parameter), x7: tool `work` (constant)]
-  while [x1: task, x2: item, x3: chore, x4: worktree]
+While a task of an item is `running` and the item holds a chore and the chore breaks in the workspace of the task, if a session finishes the task, then the batches service shall refuse the request and name the chore.
+shall [x6: service the batches service (constant), x7: request "the request the trigger makes" (indexical)]
+  while [x1: task, x2: item, x3: chore, x4: workspace]
     of(x1, x2)
     status(x1) = `running`
     in(x3, x2)
     of(x4, x1)
-    fail#3(subject: x3, in: x4)
+    break(subject: x3, in: x4)
   if [x5: session]
-    run(e1, subject: x5, object: x6, on: x1)
+    request(e1, batches.finish, subject: x5, object: x1)
   response
-    refuse(e2, subject: x7, object: x6)
-    name(e3, subject: x7, object: x3)
+    refuse(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x3)
 ```
 
-## r43
-From: b316 r40. Not in the audit (b316 is no reword item).
+## r67
+From: batches#r43, reworded in request words (0.38.0).
 
 ```reading
-While a task of an item is `running` and the item holds a chore and a commit of the git branch of the task touches a file that is not in the chore, if a session runs `work batch done` on the task, then `work` shall refuse the command and name the file.
-shall [x8: command `work batch done` (parameter), x9: tool `work` (constant)]
-  while [x1: task, x2: item, x3: chore, x4: commit, x5: git branch, x6: file]
+While a task of an item is `running` and the item holds a chore and a kept change in the workspace of the task touches a file that is not in the chore, if a session finishes the task, then the batches service shall refuse the request and name the file.
+shall [x8: service the batches service (constant), x9: request "the request the trigger makes" (indexical)]
+  while [x1: task, x2: item, x3: chore, x4: kept change, x5: workspace, x6: file]
     of(x1, x2)
     status(x1) = `running`
     in(x3, x2)
     of(x5, x1)
-    of(x4, x5)
+    in(x4, x5)
     not
       in(x6, x3)
     touch(subject: x4, object: x6)
   if [x7: session]
-    run(e1, subject: x7, object: x8, on: x1)
+    request(e1, batches.finish, subject: x7, object: x1)
   response
-    refuse(e2, subject: x9, object: x8)
-    name(e3, subject: x9, object: x6)
+    refuse(e2, subject: x8, object: x9)
+    name(e3, subject: x8, object: x6)
 ```
 
-## r44
-From: b317 r39. Not in the audit (b317 is no reword item).
+## r68
+From: batches#r41, reworded in request words (0.38.0).
 
 ```reading
-While an item is `ready` and the item passes the readiness bar and the item holds a capability, when the person runs `work batch start`, `work` shall write the capability.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x4: agent the person (constant), x5: command `work batch start` (parameter), x6: tool `work` (constant)]
+While an item is `ready` and the item holds a chore and the item meets the readiness bar, when the person opens a batch, the batches service shall keep a batch brief that holds the chore.
+shall [x3: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x4: agent the person (constant), x6: service the batches service (constant)]
+  while [x1: item, x2: chore]
+    status(x1) = `ready`
+    in(x2, x1)
+    meet(subject: x1, object: x3)
+  when [x5: batch]
+    request(e1, batches.open, subject: x4, object: x5)
+  response [x7: batch brief]
+    in(x2, x7)
+    keep(e2, subject: x6, object: x7)
+```
+
+## r69
+From: batches#r44, reworded in request words (0.38.0).
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds a capability, when the person opens a batch, the batches service shall keep the capability.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x4: agent the person (constant), x6: service the batches service (constant)]
   while [x1: item, x3: capability]
     status(x1) = `ready`
-    pass#2(subject: x1, object: x2)
+    meet(subject: x1, object: x2)
     in(x3, x1)
-  when
-    run(e1, subject: x4, object: x5)
+  when [x5: batch]
+    request(e1, batches.open, subject: x4, object: x5)
   response
-    write(e2, subject: x6, object: x3)
+    keep(e2, subject: x6, object: x3)
 ```
 
-## r45
-From: b324 r45. Not in the audit (b324 is no reword item).
+## r70
+From: batches#r45, reworded in request words (0.38.0).
 
 ```reading
-While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the batch is `needs-input` and the item has a requirement that is not in the git branch of the batch and a scenario of the item fails in the worktree of the task, when a session runs `work batch done` on the task, `work` shall set the status of the task to `done`.
-shall [x10: command `work batch done` (parameter), x11: tool `work` (constant)]
-  while [x1: item, x2: batch, x3: task, x4: item, x5: requirement, x6: git branch, x7: scenario, x8: worktree]
+While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the batch is `needs-input` and the item has a requirement that is not in the workspace of the batch and a scenario of the item breaks in the workspace of the task, when a session finishes the task, the batches service shall set the status of the task to `done`.
+shall [x10: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: task, x4: item, x5: requirement, x6: workspace, x7: scenario, x8: workspace]
     in(x1, x2)
     status(x1) = `in-batch`
     of(x3, x1)
@@ -489,80 +396,82 @@ shall [x10: command `work batch done` (parameter), x11: tool `work` (constant)]
     of(x5, x4)
     of(x7, x4)
     of(x8, x3)
-    fail#2(subject: x7, in: x8)
+    break(subject: x7, in: x8)
   when [x9: session]
-    run(e1, subject: x9, object: x10, on: x3)
+    request(e1, batches.finish, subject: x9, object: x3)
   response
-    initiates(e2, subject: x11, status(x3) = `done`)
+    initiates(e2, subject: x10, status(x3) = `done`)
 ```
 
-## r46
-From: b333 r46. Not in the audit (b333 is no reword item).
+## r71
+From: batches#r46, reworded in request words (0.38.0).
 
 ```reading
-While an item is `ready` and the item passes the readiness bar and a requirement of the item has a logical form, when the person runs `work batch start`, `work` shall write the logical form in the corpus.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x6: command `work batch start` (parameter), x7: tool `work` (constant), x8: corpus "the corpus of the bounded context the command runs in" (indexical)]
+While an item is `ready` and the item meets the readiness bar and a requirement of the item has a logical form, when the person opens a batch, the batches service shall keep the logical form in the corpus.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant), x8: corpus "the corpus of the bounded context the command runs in" (indexical)]
   while [x1: item, x3: requirement, x4: logical form]
     status(x1) = `ready`
-    pass#2(subject: x1, object: x2)
+    meet(subject: x1, object: x2)
     of(x3, x1)
     of(x4, x3)
-  when
-    run(e1, subject: x5, object: x6)
+  when [x6: batch]
+    request(e1, batches.open, subject: x5, object: x6)
   response
     in(x4, x8)
-    write(e2, subject: x7, object: x4)
+    keep(e2, subject: x7, object: x4)
 ```
 
-## r47
-From: b333 r47. Not in the audit (b333 is no reword item).
+## r72
+From: batches#r47, reworded in request words (0.38.0).
 
 ```reading
-While an item is `ready` and the item passes the readiness bar and a requirement id is in the item and a requirement in the corpus has the requirement id, when the person runs `work batch start`, `work` shall remove the requirement.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: corpus "the corpus of the bounded context the command runs in" (indexical), x6: agent the person (constant), x7: command `work batch start` (parameter), x8: tool `work` (constant)]
+While an item is `ready` and the item meets the readiness bar and a requirement id is in the item and a requirement in the corpus has the requirement id, when the person opens a batch, the batches service shall keep a corpus that does not hold the requirement.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: corpus "the corpus of the bounded context the command runs in" (indexical), x6: agent the person (constant), x8: service the batches service (constant)]
   while [x1: item, x3: requirement id, x4: requirement]
     status(x1) = `ready`
-    pass#2(subject: x1, object: x2)
+    meet(subject: x1, object: x2)
     in(x3, x1)
     in(x4, x5)
     of(x3, x4)
-  when
-    run(e1, subject: x6, object: x7)
-  response
-    remove(e2, subject: x8, object: x4)
+  when [x7: batch]
+    request(e1, batches.open, subject: x6, object: x7)
+  response [x9: corpus]
+    not
+      in(x4, x9)
+    keep(e2, subject: x8, object: x9)
 ```
 
-## r48
-From: b333 r48. Not in the audit (b333 is no reword item).
+## r73
+From: batches#r48, reworded in request words (0.38.0).
 
 ```reading
-While an item is `ready` and the item passes the readiness bar and a requirement of the item uses a rule, when the person runs `work batch start`, `work` shall write the catalogue entry of the rule.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x6: command `work batch start` (parameter), x7: tool `work` (constant)]
+While an item is `ready` and the item meets the readiness bar and a requirement of the item uses a rule, when the person opens a batch, the batches service shall keep the catalogue entry of the rule.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant)]
   while [x1: item, x3: requirement, x4: rule]
     status(x1) = `ready`
-    pass#2(subject: x1, object: x2)
+    meet(subject: x1, object: x2)
     of(x3, x1)
-    use#2(subject: x3, object: x4)
-  when
-    run(e1, subject: x5, object: x6)
+    use(subject: x3, object: x4)
+  when [x6: batch]
+    request(e1, batches.open, subject: x5, object: x6)
   response [x8: catalogue entry]
     of(x8, x4)
-    write(e2, subject: x7, object: x8)
+    keep(e2, subject: x7, object: x8)
 ```
 
-## r49
-From: b333 r49. Not in the audit (b333 is no reword item).
+## r74
+From: batches#r49, reworded in request words (0.38.0).
 
 ```reading
-While an item is `ready` and the item passes the readiness bar and a requirement of the item uses a construct, when the person runs `work batch start`, `work` shall write the construct catalogue.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x6: command `work batch start` (parameter), x7: tool `work` (constant), x8: construct catalogue "the construct catalogue of the bounded context the command runs in" (indexical)]
+While an item is `ready` and the item meets the readiness bar and a requirement of the item uses a construct, when the person opens a batch, the batches service shall keep the construct catalogue.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant), x8: construct catalogue "the construct catalogue of the bounded context the command runs in" (indexical)]
   while [x1: item, x3: requirement, x4: construct]
     status(x1) = `ready`
-    pass#2(subject: x1, object: x2)
+    meet(subject: x1, object: x2)
     of(x3, x1)
-    use#2(subject: x3, object: x4)
-  when
-    run(e1, subject: x5, object: x6)
+    use(subject: x3, object: x4)
+  when [x6: batch]
+    request(e1, batches.open, subject: x5, object: x6)
   response
-    write(e2, subject: x7, object: x8)
+    keep(e2, subject: x7, object: x8)
 ```
