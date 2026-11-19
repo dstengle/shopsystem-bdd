@@ -51,9 +51,9 @@ def test_v_m1_a_line_using_a_word_of_an_area_its_capability_does_not_read(tmp_pa
         "---\narea: archive\n---\n\n- **shelve** (verb, action) → operation archive.shelve. Forms: shelves, shelved. "
         "Frame: <actor> shelves <note>.\n")
     cap = root / "spec" / "capabilities" / "notebook.md"
-    cap.write_text(cap.read_text() + "\n### [g3] A note shelved is filed\n"
-                   "- [r3] When the person shelves a note, the notes service shall file the note.\n")
-    assert ("v_m1", "capability/example.org/fixture/domain-model/notebook#r3") in _codes(root)
+    cap.write_text(cap.read_text() + "\n### [g7] A note shelved is filed\n"
+                   "- [r7] When the person shelves a note, the notes service shall file the note.\n")
+    assert ("v_m1", "capability/example.org/fixture/domain-model/notebook#r7") in _codes(root)
     model = root / "spec" / "model" / "notes.md"
     model.write_text(model.read_text().replace("imports: []", "imports: [archive]"))
     assert [c for c in _codes(root) if c[0] == "v_m1"] == []

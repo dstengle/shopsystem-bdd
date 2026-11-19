@@ -10,11 +10,13 @@ kind or an actor with no `Kind of:` is a kind of thing.
 A verb's `Frame:` is read as its subject (a kind or an actor's kind), the verb's third person form, then pieces: each
 a run of fixed words and the kind after them, or fixed words alone at the end: `agent runs command with option` is
 [((), command), (("with",), option)]; `tool exits with an error naming thing` is [(("with", "an", "error",
-"naming"), thing)]. A frame that does not read so is left out (v_t13 names it).
+"naming"), thing)]. A frame that does not read so is left out (v_t13 names it). In a context with a domain model, its
+operations by their qualified id (`operations`), which a verb names (spec_rgl_ops).
 """
 import re
 from dataclasses import dataclass, field
 
+import domain_model
 import spec_frames
 import spec_lexicon
 import spec_packs
@@ -40,6 +42,7 @@ class Vocab:
     rows: list = field(default_factory=list)        # (k1, word, k2) of each relation row whose kinds are kinds here
     words: set = field(default_factory=set)         # every spelling a code literal may not be
     this: dict = field(default_factory=dict)        # kind -> its entry's `This:`, the run's own thing of the kind
+    operations: dict = field(default_factory=dict)  # `<service>.<name>` -> its domain_model Operation (spec_rgl_ops)
 
     def ancestors(self, kind):
         """The kind itself and every kind above it, nearest first."""
@@ -136,6 +139,8 @@ def read(root):
         read_frames = tuple(f for f in (frame(t, text, vocab.kinds, actors) for text in t.frames) if f)
         if t.aspect in spec_lexicon.ASPECTS and read_frames:
             vocab.verbs.append(Verb(t, t.aspect, read_frames))
+    if domain_model.exists(root):     # the operations a verb may name (the domain contract design, §5.1)
+        vocab.operations = {"%s.%s" % (op.service, op.name): op for op in domain_model.load(root).operations()}
     vocab.words = lex.words() | {sg for sg, _ in vocab.nouns.values()} | {pl for _, pl in vocab.nouns.values()}
     vocab.words |= {spec_frames.s3(v.term) for v in vocab.verbs} | {"its", "no", "only", "has", "have", "holds", "this"}
     return vocab

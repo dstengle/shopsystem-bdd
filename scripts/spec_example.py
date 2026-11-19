@@ -4,7 +4,9 @@ names no declared constant is a parameter, bound by its group's given block, and
 
 A literal is a declared constant when it is an actor (or another proper noun's name), an attribute's value, a command
 (a code that opens with a tool's name, or the code a "runs" takes), an option (a code that opens with `-`, or one
-before "option"), or a rule code of `model` (a code of model.lp's labels, or `model logic`'s L<n>). The reading is of
+before "option"), or a rule code of `model` (a code of model.lp's labels, or `model logic`'s L<n>). In a context
+importing the request pack (the domain contract design, §5.2), a value after "with the <parameter>" is example data
+unless it is one of the parameter's declared values, and no code names a command or an option. The reading is of
 the line's text and the lexicon, so it reads a line of either grammar."""
 import re
 from pathlib import Path
@@ -18,18 +20,34 @@ def _rule_codes():
     return set(re.findall(r'^label\("([^"]+)"', LP.read_text(), re.MULTILINE)) if LP.is_file() else set()
 
 
-def constants(lexicon):
-    """(the declared constants of a lexicon, spelled bare, and the names a command may open with)."""
+def constants(lexicon, root=None):
+    """(the declared constants of a lexicon, spelled bare, the names a command may open with, and, in a context
+    importing the request pack, {parameter: its declared values} of the operations of its domain model at `root`)."""
     def bare(word):
         return word.replace("`", "").strip()
     names = {bare(t.term) for t in lexicon.terms if t.category == "actor"}
     values = {bare(v) for v, _, _, _ in lexicon.values()}
-    return names | values | _rule_codes(), names
+    params = None
+    if "request" in getattr(lexicon, "imports", ()):
+        import domain_model
+        params = {}
+        for op in (domain_model.load(root).operations() if root is not None else ()):
+            for p in op.parameters:
+                params.setdefault(p.name, set()).update(p.values)
+    return names | values | _rule_codes(), names, params
 
 
 def declared(word, text, start, end, known):
-    """Whether the literal `word` (at text[start:end]) names a declared constant of `known` (constants' pair)."""
-    words, names = known
+    """Whether the literal `word` (at text[start:end]) names a declared constant of `known` (constants' triple): in
+    a request context a value after "the <parameter>" is declared only when it is one of the parameter's values, and
+    no code names a command or an option."""
+    words, names, params = known if len(known) == 3 else known + (None,)
+    if params is not None:
+        before = " ".join(text[:start].split())
+        after = next((p for p in sorted(params, key=len, reverse=True) if before.endswith("the " + p)), None)
+        if after is not None:
+            return word in params[after]
+        return word in words or bool(FINDING.fullmatch(word))
     if word in words or FINDING.fullmatch(word) or word.startswith("-"):
         return True
     if text[:start].rstrip().endswith(("runs", "run")) or text[end:].lstrip().startswith("option"):

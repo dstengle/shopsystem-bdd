@@ -22,10 +22,11 @@ object tag
   relations: of → note (one)
 
 service notes
-  operation add(text)  outcomes: done → the note
+  operation add(text, priority, reminder (flag))  outcomes: done → the note | refused: no text
   operation file(note)
     outcomes: done | refused: not a draft
   operation archive(note)  outcomes: done
+  operation label(note, tag)  outcomes: done
   operation list()  outcomes: returned → every note
 
 event a note is added: raised by notes.add

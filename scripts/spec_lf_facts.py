@@ -26,6 +26,7 @@ import spec_lf_number
 import spec_lf_option
 import spec_lf_ordered
 import spec_lf_quant
+import spec_lf_request
 import spec_lf_set
 from spec_lf_core import Atom, Box, const, least, next_choice
 from spec_lf_facts_atoms import TIME, Terms
@@ -105,6 +106,7 @@ class Walk(Terms):
         return self.out
 
     def trigger(self, part):
+        part = spec_lf_request.as_events(part)     # bootstrap: a request read as its verb's event until plan 3
         events = [a for a in part.body if isinstance(a, Atom) and a.pred == "event"]
         if len(events) != 1 and not spec_lf_distinct.one_act(events):
             raise ValueError("no translation of a trigger with %d events" % len(events))

@@ -108,6 +108,13 @@ def test_a_parameter_naming_an_object_is_that_object(tmp_path):
     assert [(p.type, p.targets) for p in op.parameters] == [("object", ("design-decision",)), ("text", ())]
 
 
+def test_a_flag_parameter_is_written_with_flag(tmp_path):
+    text = DECISIONS.replace("  operation index()", "  operation withdraw(design-decision, discard (flag))\n"
+                                                    "  operation index()")
+    op = _area(tmp_path, text).services["decisions"].operation("withdraw")
+    assert [(p.name, p.type) for p in op.parameters] == [("design-decision", "object"), ("discard", "flag")]
+
+
 def test_elements_resolve_by_their_qualified_id(tmp_path):
     model = _area(tmp_path)
     assert model.resolve("object design-decision").kind == "object"

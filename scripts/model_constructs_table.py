@@ -3,7 +3,10 @@ of and an example line, from which `model constructs --write` (model_constructs)
 `grammar/constructs.md`. `funs` is a regular expression a function's whole name matches; `frame:<role>` names the
 verb functions whose frame has that role (model_constructs.roles). `uses`, where given, is what the example's tree
 must hold (a regular expression over the tree's text); else it must hold one of `funs`. WORDS and GLUE are the
-families of functions that are words of a context or the joints of every line, not constructs."""
+families of functions that are words of a context or the joints of every line, not constructs. `context`, where
+given, names the catalogue's other context an example is read in (model_constructs.CONTEXTS): `request`, a context
+with a domain model and the request pack, for a request's construct; `codes-list` and `option-set-to` are the CLI
+pack's, kept beside `request-params` until the old reading is deleted (the domain contract's bootstrap)."""
 
 K, T = r"k_\w+", r"t_[a-z0-9_]+_\d+"
 WORDS = r"%s_n|a_\w+|%s_v_\w+|Many\d+|Count_\d+|CodeLit" % (K, T)
@@ -11,8 +14,9 @@ GLUE = r"%s_(?:UseN|Det|One|Simple|Up_k_\w+|OneAct)|OneCond|OneResp|NoPre|PPos" 
 NEG = "PNeg"
 
 
-def c(code, label, form, funs, example, uses=None):
-    return {"code": code, "label": label, "form": form, "funs": funs, "example": example, "uses": uses}
+def c(code, label, form, funs, example, uses=None, context=None):
+    return {"code": code, "label": label, "form": form, "funs": funs, "example": example, "uses": uses,
+            "context": context}
 
 
 CONSTRUCTS = [
@@ -146,6 +150,15 @@ CONSTRUCTS = [
     c("option-set-to", "an option with its argument", "the `<option>` option set to <thing>", r"%s_SetTo" % K,
       "When the person runs `work start` with the `--every` option set to `5`, `work` shall exit "
       "successfully."),
+    c("intransitive", "a verb that takes nothing after it (the request pack's start)", "<np> <verb>",
+      "frame:intransitive", "When the person starts, the decisions service shall notify the person of every "
+      "design-decision.", None, "request"),
+    c("request-params", "a request with its parameters, given after \"with\" and absent after \"without\", in a "
+      "context with a domain model (the domain contract design, §5.1)",
+      "<actor> <operation verb> <np> with the <parameter> <value> and without a <parameter>",
+      r"q_\w+|o_\w+|%s_Request|p_\w+_NP" % K,
+      "When the person enters a design-decision with the tier `check` and without a summary, the decisions service "
+      "shall keep the design-decision.", r"o_\w+_WithWithout", "request"),
     # relations
     c("of-relation", "a noun of another by a relation row", "<noun> of|in <np>", r"r\d+_\w+_Mod",
       "When a session ends a stage, `work` shall print the worktree of the session."),

@@ -3,7 +3,8 @@ before the command (`prepare`) and read by its Thens:
 
 - a capability every requirement of which conforms to the language reference and uses the `shall` construct (r108):
   one group for each "shall" example of the construct catalogue `grammar/constructs.md`, but those of the constructs
-  `grammar/language.md` says `model logic` and `features generate` do not read yet (`EXCLUDED`), in the catalogue's
+  `grammar/language.md` says `model logic` and `features generate` do not read yet (`EXCLUDED`) and those read in
+  another context (a request's, `- Context:`), in the catalogue's
   context `grammar/corpus/constructs/`, three of its groups with a given block of example data (a docstring, a table
   and one value);
 - a capability one of whose steps a universal condition entails (r109): codified2_world's declining lines and U1;
@@ -55,9 +56,10 @@ def excluded():
 def examples():
     """(code, line) of each "shall" example of the catalogue whose construct `model logic` reads."""
     text = (PLUGIN / "grammar" / "constructs.md").read_text()
-    found = re.findall(r"^## (\S+)\n.*?```construct\n(.*?)\n(.*?)\n", text, re.DOTALL | re.MULTILINE)
-    out = excluded()
-    return [(code, line) for code, line, form in found if form.startswith("shall") and code not in out]
+    found = re.findall(r"^## (\S+)\n(.*?)```construct\n(.*?)\n(.*?)\n", text, re.DOTALL | re.MULTILINE)
+    out = excluded()     # and an example read in another context than the catalogue's (a request's)
+    return [(code, line) for code, head, line, form in found if form.startswith("shall") and code not in out
+            and "- Context:" not in head]
 
 
 def capability(repo, groups):

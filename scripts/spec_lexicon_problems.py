@@ -9,7 +9,7 @@ from collections import defaultdict
 import spec_frames
 import spec_relations
 import spec_value_kinds
-from spec_lexicon import CORE_VERBS, LETTER, gloss, relabel
+from spec_lexicon import LETTER, gloss, relabel
 
 
 def one_sentence(text):
@@ -62,7 +62,7 @@ def problems(lexicon, outer=frozenset()):
             out.append(("v_t4", t.term, "%s: %s is not a kind" % (t.where, missing)))
         elif t.category == "attribute" and (not t.values and not t.type or spec_value_kinds.mixed(t)):
             out.append(("v_t4", t.term, "%s: the attribute gives %s" % (t.where, spec_value_kinds.mixed(t) or "no Values")))
-        if t.category == "event" and t.term in CORE_VERBS:
+        if t.category == "event" and t.term in lexicon.core_verbs():
             out.append(("v_t6", t.term, "%s: the grammar spells `%s` itself" % (t.where, t.term)))
     seen = defaultdict(list)
     for v, k, a, _ in lexicon.values():

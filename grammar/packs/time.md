@@ -1,7 +1,7 @@
 # time
 
 The time pack (the CNL 4 design, section 4.4, I16): the words of time as domain data and as a trigger. A bounded
-context imports it with `imports: [cli, time]` in the frontmatter of `spec/index.md`; a word of its own spelled the
+context imports it with `imports: [request, time]` in the frontmatter of `spec/index.md`; a word of its own spelled the
 same is marked `Redefines: time.` A context's own moments are kinds of moment ("a deadline", Kind of: moment).
 
 The base grammar says the rest (grammar/language.md, "Time"): "after" and "before" between two moments, "within the

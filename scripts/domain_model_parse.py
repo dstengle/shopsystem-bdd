@@ -58,7 +58,7 @@ class Object:
 @dataclass(frozen=True)
 class Parameter:
     name: str
-    type: str = "text"      # values, object, text, number, time or version (domain_model's resolution)
+    type: str = "text"      # values, object, flag, text, number, time or version (domain_model's resolution)
     values: tuple = ()
     targets: tuple = ()
 
@@ -77,6 +77,7 @@ class Operation:
     raw: tuple = ()         # the parameters as written: (name, values)
     where: str = ""
     outcomes: list = field(default_factory=list)
+    flags: tuple = ()       # the boolean parameters, written `<name> (flag)`
     parameters: tuple = ()  # resolved by domain_model
     object: str = ""        # the object it acts on (domain_model)
 
@@ -241,10 +242,16 @@ class Reader:
         if not found:
             self.refuse(n, "an operation is `operation <name>(<parameter>, ...)`: %s" % text)
         raw = []
+        flags = []
         for p in (p.strip() for p in found.group(2).split(",") if p.strip()):
+            flag = re.match(r"^(.+?)\s*\(flag\)$", p)     # a boolean parameter: "with the X", "without the X"
+            if flag:
+                flags.append(flag.group(1).strip())
+                raw.append((flag.group(1).strip(), ()))
+                continue
             name, _, values = p.partition(":")
             raw.append((name.strip(), tuple(v.strip() for v in values.split("|") if v.strip())))
-        op = Operation(self.current.name, found.group(1).strip(), tuple(raw), self.where)
+        op = Operation(self.current.name, found.group(1).strip(), tuple(raw), self.where, flags=tuple(flags))
         self.current.operations.append(op)
         if found.group(3):
             self.outcomes(n, op, found.group(3))

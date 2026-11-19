@@ -22,3 +22,16 @@ A person adds notes, files them and archives them.
 
 ### [g2] A note that carries a tag is archived when it is filed
 - [r2] While a note carries a tag, when the person files the note, the notes service shall archive the note.
+
+### [g3] A note added with a text and a priority is kept
+- [r3] When the person adds a note with a text and the priority `high`, the notes service shall keep the note.
+
+### [g4] A note added without a text is refused
+- [r4] If the person adds a note without a text and the reminder, then the notes service shall refuse the request and
+  name the text.
+
+### [g5] A tag a note is labelled with is kept
+- [r5] When the person labels a note with a tag, the notes service shall keep the tag.
+
+### [g6] Listing the notes completes the request
+- [r6] When the person lists the notes, the notes service shall complete the request.

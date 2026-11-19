@@ -18,8 +18,11 @@ import spec_value_kinds
 CATEGORIES = ("actor", "kind", "attribute", "value", "relation", "event", "resource", "condition")
 LETTER = {"actor": "a", "kind": "k", "attribute": "t", "value": "v", "relation": "r", "event": "e",
           "resource": "s", "condition": "c"}
-# verbs the core grammar spells itself; an event with one of these names would make two trees of one line
+# verbs the core grammar spells itself; an event with one of these names would make two trees of one line: the CLI
+# pack's of a context importing `cli` (bootstrap, until the old reading is deleted), else the request pack's
 CORE_VERBS = {"run", "print", "hold", "exit", "become", "set", "be"}
+REQUEST_VERBS = {"refuse", "name", "return", "notify", "complete", "fail", "keep", "change", "conform", "start",
+                 "hold", "become", "set", "be"}
 
 ENTRY = re.compile(r"^- \*\*(?P<term>.+?)\*\*\s*(?:\((?P<cat>[^)]*)\))?\s*:\s*(?P<text>.*)$", re.DOTALL)
 FIELDS = ("Values", "Values (adjective)", "Values (noun)", "Transitions", "Means", "Forms", "Frame", "Plural", "Not", "Kind of", "This", "Redefines", "Schema",
@@ -55,6 +58,7 @@ class Term:
     type: str = ""        # an attribute's `Type:`, number, time or text: its values any literal of it (b275)
     value_kinds: tuple = ()     # (value, adjective or noun) of each declared value (spec_value_kinds, b257)
     word: str = ""        # its spelling when its term is a key that differs (a word of two areas: spec_vocabulary_terms)
+    operation: str = ""   # a verb's operation `<service>.<name>` when it names one (spec_vocabulary_terms; spec_rgl_ops)
 
     @property
     def key(self):
@@ -165,6 +169,11 @@ def _bullets(text, heading):
 class Lexicon:
     terms: list = field(default_factory=list)
     rows: list = field(default_factory=list)       # spec_relations.Row of the `## Relations` tables
+    imports: tuple = ()                            # the packs `spec/index.md` imports (`core_verbs`)
+
+    def core_verbs(self):
+        """The verbs the grammar spells itself (v_t6): the request pack's in a context importing `request`."""
+        return REQUEST_VERBS if "request" in self.imports else CORE_VERBS
 
     def of(self, category):
         return [t for t in self.terms if t.category == category]
@@ -218,9 +227,12 @@ def read(root):
     """The lexicon of the context at `root`: the glossary of `spec/index.md` and every capability's `## Terms`; of a
     context with a domain model (`spec/model/`), its vocabulary named onto the model (spec_vocabulary_terms)."""
     root = Path(root)
+    import spec_packs  # here: spec_packs imports this module
     if (root / "spec" / "model").is_dir():     # the domain contract: the terms name the model's elements
         import spec_vocabulary_terms
-        return spec_vocabulary_terms.lexicon(root)
+        found = spec_vocabulary_terms.lexicon(root)
+        found.imports = tuple(spec_packs.imports(root))
+        return found
     sources = [(root / "spec" / "index.md", "Glossary")]
     sources += [(p, "Terms") for p in sorted((root / "spec" / "capabilities").glob("*.md"))]
     terms = []
@@ -228,7 +240,7 @@ def read(root):
         if path.is_file():
             where = path.relative_to(root).as_posix()
             terms += [t for t in (entry(b, where) for b in _bullets(path.read_text(), heading)) if t]
-    return Lexicon(terms, spec_relations.read(root))
+    return Lexicon(terms, spec_relations.read(root), tuple(spec_packs.imports(root)))
 
 
 def unlabelled(lexicon):

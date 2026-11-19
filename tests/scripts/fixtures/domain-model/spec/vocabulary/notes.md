@@ -20,4 +20,6 @@ area: notes
 - **add** (verb, action) → operation notes.add. Forms: adds, added. Frame: <actor> adds <note>.
 - **file** (verb, action) → operation notes.file. Forms: files, filed. Frame: <actor> files <note>.
 - **archive** (verb, action) → operation notes.archive. Forms: archives, archived. Frame: <actor> archives <note>.
+- **label** (verb, action) → operation notes.label. Forms: labels, labelled. Frame: <actor> labels <note>.
+- **list** (verb, action) → operation notes.list. Forms: lists, listed. Frame: <actor> lists the notes.
 - **the notes service** (proper noun) → service notes.

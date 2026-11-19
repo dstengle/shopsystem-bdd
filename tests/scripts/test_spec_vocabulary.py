@@ -65,9 +65,11 @@ def test_v_t20_in_two_layers_is_no_problem(ctx):
     assert _codes(ctx, "v_t20") == []
 
 
-def test_v_t21_the_retired_cli_import_waits_for_the_request_pack(ctx, monkeypatch):
+def test_v_t21_the_retired_cli_import_in_a_context_with_a_model(ctx, monkeypatch):
     index = ctx / "spec" / "index.md"
-    index.write_text(index.read_text().replace("imports: []", "imports: [cli]"))
+    index.write_text(index.read_text().replace("imports: [request]", "imports: [cli]"))
+    assert spec_vocabulary.REQUEST_PACK.is_file()       # the plugin has the request pack: v_t21 is on
+    assert _codes(ctx, "v_t21") == ["cli"]
     monkeypatch.setattr(spec_vocabulary, "REQUEST_PACK", ctx / "no-such-pack.md")
     assert _codes(ctx, "v_t21") == []
     monkeypatch.setattr(spec_vocabulary, "REQUEST_PACK", index)
@@ -92,10 +94,13 @@ def test_the_lexicon_comes_from_the_model():
     assert status.transitions == (("`draft`", "`active`", ""), ("`active`", "`retired`", ""),
                                   ("`draft`", "`retired`", ""))
     actors = {t.term: t.supertype for t in lex.of("actor")}
-    assert actors == {"the person": "agent", "the notes service": "agent"}
+    assert actors == {"the person": "agent", "the notes service": "service"}     # the request pack's kind
     frames = {t.term: t.frames for t in lex.of("event")}
     assert frames["carry"] == ("note carries tag",)
-    assert frames["add"] == ("agent adds note",)
+    assert frames["add"] == ("agent adds note",) and frames["list"] == ("agent lists the notes",)
+    assert {t.term: t.operation for t in lex.of("event") if t.operation} == {
+        "add": "notes.add", "file": "notes.file", "archive": "notes.archive", "label": "notes.label",
+        "list": "notes.list"}
     assert {(r.k1, r.word, r.k2, r.cardinality) for r in lex.rows} == {("tag", "of", "note", "one")}
     assert spec_lexicon.problems(lex, spec_rgl_vocab.outer(FIXTURE)) == []
 
@@ -106,7 +111,7 @@ def test_relations_are_read_from_the_model():
 
 def test_the_area_layers_follow_the_packs():
     layers = {layer for layer, _ in spec_packs.layers(FIXTURE)}
-    assert layers == {"area notes", "area shared"}
+    assert layers == {"pack request", "area notes", "area shared"}
 
 
 def test_a_word_of_two_areas_gives_one_term_each(ctx):
@@ -136,7 +141,7 @@ def test_the_fixtures_lines_read_in_its_vocabulary():
     import spec_read
     cap = spec_read.capability(FIXTURE / "spec" / "capabilities" / "notebook.md")
     lines = [r.text for g in cap.groups for r in g.requirements]
-    assert len(lines) == 2
+    assert len(lines) == 6
     for line in lines:
         parsed = spec_language.parse(FIXTURE, line)
         assert parsed.tree and not parsed.refusal, (line, parsed.refusal)

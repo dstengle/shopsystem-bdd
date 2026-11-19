@@ -20,6 +20,7 @@ import spec_lf_distinct
 import spec_lf_option
 import spec_lf_ordered
 import spec_lf_read
+import spec_lf_request
 import spec_rgl
 from spec_lf_core import NP, Atom, Box, NPList
 
@@ -85,6 +86,9 @@ def np(st, tree):
     if name in st.names.actors:
         term, kind = st.names.actors[name]
         return core.fixed(st.constant(kind, term, "constant"))
+    said = spec_lf_request.np(st, name)     # "the text", a parameter a response names (§5.1)
+    if said is not None:
+        return core.fixed(said)
     if name == "k_thing_Nothing":
         return NP(st.ref("thing"), "no")
     kind, rest = st.names.kind(name)

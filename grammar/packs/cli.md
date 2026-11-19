@@ -1,5 +1,8 @@
 # cli
 
+Deprecated: 0.38.0. The domain-request pack (`grammar/packs/request.md`) replaces it; `migrate upgrade` reports
+what a context importing it rewords.
+
 The command-line pack: the words of a tool that a person or a session runs. A bounded context imports it with
 `imports: [cli]` in the frontmatter of `spec/index.md`; a word of its own spelled the same is marked `Redefines: cli.`
 

@@ -2,7 +2,7 @@
 state of its files (`load`) into a `Model`: its areas (frontmatter `id`, `area`, `kind`, `imports`), objects,
 services with their operations, events and actors, each block read by domain_model_parse. An operation acts on an
 object (the one its first done or returned outcome names, else its first parameter naming an object), and each
-parameter is typed: by the values a parameter lists, else as an object when it names one or a relation of the
+parameter is typed: a flag when written `<name> (flag)`, by the values a parameter lists, else as an object when it names one or a relation of the
 operation's object, else by the attribute of that object it names, else text. `resolve` finds an element by its
 qualified id (`object design-decision`, `attribute design-decision.tier`, `value design-decision.status accepted`,
 `relation design-decision.supersedes`, `service decisions`, `operation decisions.enter`, `actor the person`,
@@ -114,7 +114,9 @@ def _object_of(model, op):
     return next((name for name, _ in op.raw if name in model.objects), "")
 
 
-def _parameter(model, obj, name, values):
+def _parameter(model, obj, name, values, flags=()):
+    if name in flags:
+        return Parameter(name, "flag")
     if values:
         return Parameter(name, "values", values)
     alternatives = tuple(a.strip() for a in name.split("|"))
@@ -135,7 +137,7 @@ def _resolve(model):
     for op in model.operations():
         op.object = _object_of(model, op)
         obj = model.objects.get(op.object)
-        op.parameters = tuple(_parameter(model, obj, name, values) for name, values in op.raw)
+        op.parameters = tuple(_parameter(model, obj, name, values, op.flags) for name, values in op.raw)
 
 
 def read(root):

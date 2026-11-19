@@ -5,13 +5,15 @@ spec_relations' rows.
 
 - A noun naming an object is a kind, its key the noun; a noun that names two elements in two areas is two kinds, each
   keyed `<noun>_<area>` and spelled the noun (`word`), so that grammar 4 generates one function each.
-- A proper noun naming an actor, a service or an object is an actor, of the actor's `kind of` (else `agent`).
+- A proper noun naming an actor, a service or an object is an actor, of the actor's `kind of` (else `agent`); a
+  service's of the request pack's kind `service` in a context importing it.
 - An attribute naming `<object>.<attribute>` is an attribute of the object's kind, its values the model's (backticked
   codes, as lines write them), each value an adjective or a noun as the entry that names it says (a value no entry
   names a noun beside named ones; with none named, of no declared kind), its lifecycle's transitions, its type.
 - A verb naming a relation or an operation is a verb of its aspect, its thin `Frame:` written with kinds: `<from>`
   the relation's object, `<to>` each of its targets, `<actor>` or `<agent>` the kind `agent`, `<x>` the kind of the
-  object or of the parameter `x`; with no frame, `<from> <verb> <to>` or `<actor> <verb> <object>`.
+  object or of the parameter `x`; with no frame, `<from> <verb> <to>` or `<actor> <verb> <object>`; a verb naming an
+  operation keeps it (`operation`), which grammar 4 generates the request with its parameters from (spec_rgl_ops).
 - A relation `has → K` is the row `K | of | O`, `holds → K` the row `K | in | O`, and one whose phrase is a single
   preposition the row `O | <phrase> | K` (session's call); any other phrase is a state verb's, named in the vocabulary.
 """
@@ -21,6 +23,7 @@ from collections import defaultdict
 import domain_model
 import spec_frames
 import spec_lexicon
+import spec_packs
 import spec_relations
 import spec_vocabulary
 
@@ -47,12 +50,14 @@ def _kinds(found):
     return keys, terms
 
 
-def _actors(model, found, kinds):
+def _actors(model, found, kinds, services=()):
     out = []
     for e in found:
         if e.label != "proper noun" or not e.element or e.element.kind not in ("actor", "service", "object"):
             continue
         kind_of = model.actors[e.element.id].kind_of if e.element.kind == "actor" else ""
+        if e.element.kind == "service" and "service" in services:     # the request pack's kind of agent
+            kind_of = "service"
         if e.element.kind == "object":
             kind_of = kinds.get(e.element.id, "")
         out.append(spec_lexicon.Term(term=e.term, category="actor", text=e.text, where=e.where, label=e.label,
@@ -129,7 +134,8 @@ def _verbs(model, found, kinds):
         t = e.fields
         frames = _frames(model, e, kinds, spec_frames.s3(t))
         out.append(spec_lexicon.Term(term=e.term, category="event", text=e.text, where=e.where, label=e.label,
-                                     aspect=t.aspect, forms=t.forms, frames=frames, frame=frames[0], nots=t.nots))
+                                     aspect=t.aspect, forms=t.forms, frames=frames, frame=frames[0], nots=t.nots,
+                                     operation=e.element.id if e.element.kind == "operation" else ""))
     return out
 
 
@@ -159,5 +165,6 @@ def lexicon(root):
     kinds, terms = _kinds(found)
     keys = dict(kinds)
     keys.update({name: name for name in model.actors})
-    terms += _actors(model, found, kinds) + _attributes(model, found, kinds) + _verbs(model, found, keys)
+    services = ("service",) if "request" in spec_packs.imports(root) else ()
+    terms += _actors(model, found, kinds, services) + _attributes(model, found, kinds) + _verbs(model, found, keys)
     return spec_lexicon.Lexicon(terms, rows(model, kinds))

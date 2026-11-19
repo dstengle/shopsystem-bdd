@@ -192,7 +192,7 @@ class SpecReading:
     def example_constants(self):
         """The declared constants a literal of a line may name (spec_example), read once."""
         if getattr(self, "_constants", None) is None:
-            self._constants = spec_example.constants(spec_lexicon.read(self.root))
+            self._constants = spec_example.constants(spec_lexicon.read(self.root), self.root)
         return self._constants
 
     def read_universal(self):

@@ -941,6 +941,48 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x3
     exit(e2, subject: x5, successfully)
 ```
 
+## intransitive
+
+a verb that takes nothing after it (the request pack's start)
+
+- Form: <np> <verb>
+- Functions: `frame:intransitive`
+- Cited by: no line
+- Context: `grammar/corpus/constructs/request/`
+- Example and its reading:
+
+```construct
+When the person starts, the decisions service shall notify the person of every design-decision.
+shall [x1: agent the person (constant), x2: service the decisions service (constant)]
+  when
+    start(e1, subject: x1)
+  response
+    every [x3: design-decision]
+      scope
+        notify(e2, subject: x2, object: x1, of: x3)
+```
+
+## request-params
+
+a request with its parameters, given after "with" and absent after "without", in a context with a domain model (the domain contract design, §5.1)
+
+- Form: <actor> <operation verb> <np> with the <parameter> <value> and without a <parameter>
+- Functions: `q_\w+|o_\w+|k_\w+_Request|p_\w+_NP`
+- Cited by: no line
+- Context: `grammar/corpus/constructs/request/`
+- Example and its reading:
+
+```construct
+When the person enters a design-decision with the tier `check` and without a summary, the decisions service shall keep the design-decision.
+shall [x1: agent the person (constant), x3: service the decisions service (constant)]
+  when [x2: design-decision]
+    request(e1, decisions.enter, subject: x1, object: x2)
+    param(e1, tier, `check`)
+    noparam(e1, summary)
+  response
+    keep(e2, subject: x3, object: x2)
+```
+
 ## of-relation
 
 a noun of another by a relation row

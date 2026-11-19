@@ -32,6 +32,8 @@ def uses(form):
         elif isinstance(x, Atom):
             if x.pred == "event":
                 out.add(("event", x.args[1]))
+            elif x.pred == "request":     # a request names its operation's verb (spec_lf_request)
+                out.add(("event", x.args[2]))
             elif x.pred == "state":
                 out.add(("event", x.args[0]))
             elif x.pred == "attr":
