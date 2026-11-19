@@ -183,6 +183,8 @@ def holds(step):
         upstream(step)
     elif step.subject.startswith("the comment"):       # an entry of a side's part
         Q.comment(step, step.names[0])["entry"] = step.names[1]
+    elif step.subject.startswith("the request") and step.nps[-1].startswith("the request line"):
+        propose(step, step.names[1], step.names[0])     # a context request holds its request lines (the domain contract)
     elif step.subject.startswith("the request"):       # a comment it holds, under `## Comments` once posted
         Q.comment(step, step.names[1])["held"] = True
 

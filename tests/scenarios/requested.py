@@ -22,7 +22,7 @@ STARTS = {"directives": "`work directives --hook`", "request-watch": "`work watc
           "items": "`work names --hook`", "upgrades": "`migrate status --hook`"}
 # what the CLI's handlers call an act of the request pack, or a verb the reworded lines say for theirs: each tried in
 # turn (`trying`) until one handler takes the step
-KEEPS = ("write", "commit", "post", "keep", "make", "rewrite")
+KEEPS = ("write", "commit", "post", "keep", "make", "rewrite", "publish")
 THENS = {"ThenRefuses": [("ThenDoes", "refuse")], "ThenReturns": [("ThenPrints", None), ("ThenDoes", "write")],
          "ThenReturnsNot": [("ThenPrintsNot", None)], "ThenCompletes": [("ThenExitsOk", None)],
          "ThenFails": [("ThenExitsErr", None)], "ThenNotifies": [("ThenPrints", None)],
@@ -120,9 +120,62 @@ def _spell(np, operation):
     return "the `%s` option" % param.option if param.option else np
 
 
+# the words a capability's handlers know a kind by, before the domain contract renamed it
+RENAMES = {"requests": {"context request": "request", "entry": "comment"},
+           "intake": {"context request": "request", "entry": "comment"},
+           "batches": {"proposed change": "pull request", "kept change": "commit", "workspace": "worktree",
+                       "context request": "request"},
+           "backlog": {"shared workspace": "upstream branch", "workspace name": "branch name",
+                       "workspace": "git branch"}}
+# the verbs a capability's handlers know a state by, before the reword: (new term, old term, old third person)
+VERB_RENAMES = {"batches": [("break", "fail", "fails"), ("succeed", "pass", "passes"), ("meet", "pass", "passes")],
+                "backlog": [("meet", "pass", "passes")], "readiness": [("meet", "pass", "passes")]}
+
+
+def _renamed(call, node):
+    """The kinds the handlers of the capability the scenario moved from know by an older word, said so."""
+    table = RENAMES.get(origin(node), {})
+    def say(text):
+        for new, old in table.items():
+            text = re.sub(r"\b%s(s?)\b" % new, old + r"\1", text) if text else text
+        return text
+    call.text, call.subject = say(call.text), say(call.subject)
+    call.nps = [say(np) for np in call.nps]
+    call.kind = table.get(call.kind, call.kind)
+    if call.template.startswith("Given") or call.template.endswith("K_A"):
+        call.term = table.get(call.term, call.term)
+    if call.template in ("GivenDoes", "GivenDoesNot") and call.term == "holds" and call.nps == ["this repository"]:
+        call.term = call.event = "check out"        # a workspace that holds this repository is checked out there
+        call.subject, call.nps = "this repository", [call.subject]
+        call.text = "this repository checks out %s" % call.nps[0]
+
+
+def _reverbed(call, node):
+    for new, old, said in VERB_RENAMES.get(origin(node), []):
+        if call.template in ("GivenDoes", "GivenDoesNot", "ThenDoes", "ThenDoesNot") and call.term == new:
+            call.term = call.event = old
+            call.text = re.sub(r"\b%ss\b" % new, said, call.text, count=1)
+            call.text = re.sub(r"\b%s\b" % new, old, call.text, count=1)
+
+
+def _owner(call, node, kind):
+    """A request's thing named as what a `kind` has ("the context request c1 has the turn t1"): the `kind` it is
+    of, as the CLI's handlers name a request's thing by its request."""
+    texts = [s.name for s in scenario(node).steps] if scenario(node) else []
+    out = []
+    for name in call.names:
+        found = [m for t in texts for m in re.findall(r"^the %s (\w+) (?:has|holds) the [a-z ]+ %s$" % (kind, name), t)]
+        out.append(found[0] if found else name)
+    call.names = out
+
+
 def legacy(call, context, node, known):
     """`call` re-keyed for the CLI's handlers (in place): `known(key)` says whether a handler or a chain has a key."""
+    _renamed(call, node)
+    _reverbed(call, node)
     t = call.template
+    if t == "WhenRequests" and origin(node) in RENAMES:
+        _owner(call, node, "context request")
     if t == "WhenRequests":
         commands, options, without = command(call.term, call.params)
         chosen = next((c for c in commands if known(("WhenRuns", c))), commands[-1])
@@ -134,6 +187,7 @@ def legacy(call, context, node, known):
         chosen = STARTS[capability(node)]
         context["requested"] = (None, chosen)
         call.template, call.term, call.command, call.options, call.without = "WhenRuns", chosen, chosen, [], []
+        call.names = []     # a hook is given no instance
         return call
     operation, chosen = context.get("requested", (None, None))
     program = "`%s`" % chosen.strip("`").split()[0] if chosen else None
@@ -145,6 +199,8 @@ def legacy(call, context, node, known):
             call.nps = call.nps[1:]
         if t == "ThenRefuses":
             call.nps = [chosen] if chosen else []
+        if t in ("ThenCompletes", "ThenFails"):     # "fails this check": no thing is named
+            call.nps = []
         template, term = _pick(node, THENS[t] if t in THENS else NEGATED[call.term])
         call.text = _retext(call.text, program, t, term or {"ThenPrints": "print"}.get(template), chosen)
         call.template, call.subject = template, program or call.subject
@@ -204,7 +260,7 @@ def trying(step_function):
             node._shop_alt, node._shop_more = alt, False
             try:
                 return step_function(text, request, docstring, datatable)
-            except (AssertionError, pytest.fail.Exception) as err:
+            except (Exception, pytest.fail.Exception) as err:  # noqa: BLE001  (any failure tries the next key)
                 first = first or err
                 if not node._shop_more:
                     raise first from None
