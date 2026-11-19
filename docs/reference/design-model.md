@@ -290,40 +290,56 @@ shall [x3: agent the person (constant), x4: specification "the specification of 
     name(e3, subject: x5, object: x2)
 ```
 
-One line holds for every `v_` rule; a warning's line says the rule is named and the request completes. What a single
-rule catches is its catalogue entry, and the entry's examples are its test:
+One line holds for every error rule; a warning's line says the rule is named and the request completes. What a single
+rule catches is its catalogue entry, and the entry's examples are its test. Here is `v_t2`'s entry in
+`grammar/rules.md`, as `spec rules --write` writes it:
 
 ```markdown
-## v_r1
+## v_t2
 
-an item cites a record in its `source:`: an item's provenance cites quotes, requests and decisions, never a record
+a term has two entries, other than the senses of one verb
 
-- Purpose: keep the live system off the records, which are kept but never cited.
-- Since: b<n>
-- Changed: b<n>, ...
-- Severity: violation
+- Purpose: Each term has one definition, so every line using it means the same thing.
+- Since: b123
+- Changed: b131
+- Severity: error
 - Implemented in: `scripts/model.lp`
-- Fails on: a fact set the rule fires on
-- Passes on: a fact set it passes
+- Cited by: no line
+- Fails on:
+  ...
+- Passes on:
+  ...
 ```
 
 Each entry, of either catalogue, carries:
 
-- **its code and label**, the code a line names it by (`` `v_r1` ``, `` `order-by` ``);
+- **its code and label**, the code a line names it by (`` `v_t2` ``, `` `order-by` ``);
 - **Purpose:** a sentence or two on what the rule or construct is for;
-- **Since: b<n>**, the delivered item that brought it, and **Changed: b<n>, ...**, each delivered item that changed it
-  since. A batch that changes a construct or a rule adds its item to the entry's `Changed:`. Items are named, never
-  records: a record is kept, not cited;
+- **Since:** the delivered item that brought it (`b123`), and **Changed:** each delivered item that changed it since.
+  An entry from before items were tracked names the release whose tag first holds it, a `## <version>` section of
+  [`CHANGELOG.md`](../../CHANGELOG.md): `Since: 0.38.0`. A new or changed entry names an item. Items and releases are
+  named, never records: a record is kept, not cited;
 - **its example**: a rule's fact set it fails on and one it passes on, each run before the file is written; a
   construct's example line, parsed to one tree that uses the construct, read by no reading rule's refusal and read
   back word for word, with its logical form.
 
-The checks on the catalogues themselves: `spec check` fails a line that uses a rule the rule catalogue has no entry
-of, and an entry with no purpose, naming no item or naming an item not delivered; `spec parse` refuses a line that
-uses a construct the construct catalogue has no entry of, naming the construct. A change to the language is a change
-to the grammar and its catalogue entry, not a new requirement line; a choice that holds for the whole language (one
-meaning or refused, no passive) is a decision of tier `check`, held by the corpus's refusal examples.
-`spec rules --write` and `spec constructs --write` generate the catalogues; `--check` says whether each is current.
+The purpose, `Since:` and `Changed:` of every entry are kept in
+[`grammar/catalogue-entries.toml`](../../grammar/catalogue-entries.toml), one table an entry (`[rules.v_t2]`,
+`purpose`, `since`, `changed`); `spec rules --write` and `spec constructs --write` write them into the catalogues,
+and `--check` says whether each catalogue is current. A batch that adds or changes a rule or a construct adds its item
+there.
+
+`spec check` holds the catalogues to these rules:
+
+| code | `spec rules` says | when it fires |
+|---|---|---|
+| `v_c1` | a requirement names a rule the rule catalogue has no entry of | Fix the code the line names, or add the rule. |
+| `v_c2` | a catalogue entry has no purpose | Give the entry its `purpose` in `grammar/catalogue-entries.toml` and write the catalogue again. |
+| `v_c3` | a catalogue entry mentions no item and no release: no Since: or Changed: names an item or a section of CHANGELOG.md | Name the item that brought it in `since`. |
+| `v_c4` | a catalogue entry mentions an item that is not delivered | Name the delivered item that brought or changed it. |
+
+And `spec parse` refuses a line that uses a construct the construct catalogue has no entry of, naming the construct.
+A change to the language is a change to the grammar and its catalogue entry, not a new requirement line.
 
 ## Where this came from
 

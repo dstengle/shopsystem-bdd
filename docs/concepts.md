@@ -246,11 +246,14 @@ rule.
 - **Written by:** `spec constructs --write` and `spec rules --write`, from the grammar's definition; `work batch start`
   writes them again when a batch's lines cite one of their codes.
 
-Each entry gives its code, a label, a short purpose (what the construct or rule is for), `Since: b<n>`, the item that
-brought it, and `Changed: b<n>, ...`, the items that changed it since, then its example: a construct's example is
+Each entry gives its code, a label, a short purpose (what the construct or rule is for), `Since:`, the item that
+brought it (or, for an entry older than the backlog, the release that first held it, `0.38.0`), and `Changed:`, the
+items that changed it since, then its example: a construct's example is
 parsed to one tree that uses it and read back word for word, a rule's fact sets are one it fails on and one it passes
 on. The example is the entry's test. A line that uses a construct the construct catalogue has no entry of is refused
-naming the construct, so the language a context writes in is exactly the catalogue's. A line names a construct or a
+naming the construct, so the language a context writes in is exactly the catalogue's; `spec check` fails a line
+that names a rule the rule catalogue has no entry of (`v_c1`), and an entry with no purpose (`v_c2`), naming neither
+an item nor a release (`v_c3`), or naming an item not delivered (`v_c4`). A line names a construct or a
 rule by its code, as in "a requirement that uses `order-by`".
 Read more: [The catalogues](reference/design-model.md#the-catalogues-are-specification).
 

@@ -140,7 +140,7 @@ the operations, and drive the program through its adapter.
   that govern it, refusals included. Once your lines are reworded, run `spec annotate`; `spec check` fails an
   operation that misses a governing line or keeps one that no longer governs it (`v_a5`, `v_a6`).
 - **The catalogues are the language's specification.** The plugin's construct catalogue and rule catalogue are part
-  of its specification, each entry with its purpose, `Since:` and `Changed:` items and its example as its test; a
+  of its specification, each entry with its purpose, `Since:` and `Changed:` (an item, or for the oldest entries the release `0.38.0`) and its example as its test; a
   line that uses a construct the construct catalogue has no entry of is refused naming it. Nothing to do in your
   context; a refusal names the construct when a line strays outside the language.
 

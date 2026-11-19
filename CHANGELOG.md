@@ -32,10 +32,13 @@ been renamed or retired since.
   service's general behaviour: a line parsed to one meaning or refused naming why, its logical form returned, a line
   that uses a construct the construct catalogue has no entry of refused naming the construct.
 - **The catalogues are specification** (b370): the construct catalogue (`grammar/constructs.md`) and the rule
-  catalogue (`grammar/rules.md`) specify the language and the checks, each entry with a purpose, `Since: b<n>` and
-  `Changed: b<n>, ...` naming delivered items, and its example as its test; checking's rule-by-rule lines are
-  retired for general ones (a violation of an error rule fails the check naming the rule, a warning is named and the
-  request completes). [The catalogues](docs/reference/design-model.md#the-catalogues-are-specification).
+  catalogue (`grammar/rules.md`) specify the language and the checks, each entry with a purpose, `Since:` and
+  `Changed:` naming delivered items (or, for the 18 entries from before items were tracked, the release `0.38.0`, a
+  section of this file), and its example as its test; the purposes and items are kept in
+  `grammar/catalogue-entries.toml`. `spec check` holds them: `v_c1` a line naming a rule with no entry, `v_c2` an
+  entry with no purpose, `v_c3` one naming neither an item nor a release, `v_c4` one naming an item not delivered.
+  Checking's rule-by-rule lines are retired for general ones (a violation of an error rule fails the check naming
+  the rule, a warning is named and the request completes). [The catalogues](docs/reference/design-model.md#the-catalogues-are-specification).
 - **The documentation revised** (b371) around the specification's four parts (domain model, vocabulary,
   requirements, decisions), services and operations, adapters and their contracts, the catalogues and the records
   policy: the [README](README.md), [concepts](docs/concepts.md), [getting started](docs/getting-started.md), the

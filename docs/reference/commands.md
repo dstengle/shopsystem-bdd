@@ -790,7 +790,7 @@ Prints every rule's code and plain label, violations first.\
 Synopsis: `spec rules [--json] [--write] [--check]`
 
 - `--write`: write the rule catalogue `grammar/rules.md`; `--check` says whether it is current. The catalogue is
-  part of the plugin's specification: each entry's purpose, `Since: b<n>` and `Changed:` items, and its fact sets,
+  part of the plugin's specification: each entry's purpose, `Since:` and `Changed:` (items, or a release for the oldest), and its fact sets,
   the entry's test ([the catalogues](design-model.md#the-catalogues-are-specification)).
 
 ```console
@@ -866,7 +866,7 @@ node("bounded-context/missingmass.io/shopsystem/shopsystem-bdd", "bounded-contex
 ### `spec constructs`
 
 Writes or checks the construct catalogue `grammar/constructs.md`, each example parsed first. Each entry is a
-construct a line may use, with its purpose, the items it came with (`Since: b<n>`, `Changed:`) and its example, the
+construct a line may use, with its purpose, the item it came by (`Since: b<n>`), those that changed it (`Changed:`) and its example, the
 entry's test; a line using a construct with no entry is refused
 ([the catalogues](design-model.md#the-catalogues-are-specification)).\
 Synopsis: `spec constructs [--write] [--check]`
