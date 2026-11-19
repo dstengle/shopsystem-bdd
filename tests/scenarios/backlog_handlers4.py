@@ -239,3 +239,13 @@ def prints(step):
     else:
         return False
 
+
+
+@four("ThenDoes", "on", *BOTH)
+def dependency_on(step):
+    """`the dependency d1 is on the item i1`: the reword of "the item i1 has the dependency d1" (has_then's)."""
+    (k1, _), (k2, _) = parts(step)
+    if (k1, k2) != ("dependency", "item"):
+        return False
+    step.subject, step.nps = step.nps[0], [step.subject]
+    return has_then(step)

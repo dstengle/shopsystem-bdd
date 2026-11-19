@@ -28,7 +28,7 @@ THENS = {"ThenRefuses": [("ThenDoes", "refuse")], "ThenReturns": [("ThenPrints",
          "ThenFails": [("ThenExitsErr", None)], "ThenNotifies": [("ThenPrints", None)],
          "ThenKeeps": [("ThenDoes", v) for v in KEEPS]}
 NEGATED = {"keep": [("ThenDoesNot", v) for v in KEEPS], "notify": [("ThenPrintsNot", None)],
-           "change": [("ThenDoesNot", v) for v in ("rewrite", "change", "relocate", "rename")]}
+           "change": [("ThenDoesNot", v) for v in ("change", "rewrite", "relocate", "rename")]}
 VERBS = {"change": ("rewrite", "relocate", "rename", "commit", "change")}
 MOST = max(len(c) for c in [*THENS.values(), *NEGATED.values(), *VERBS.values()])
 
@@ -85,7 +85,9 @@ def command(operation, params=()):
         else:
             options.append(("`%s`" % param.option, value))
     longest = " ".join([base] + words)
-    return ["`%s`" % longest] + (["`%s`" % base] if words else []), options, without
+    valued = " ".join([longest] + ["%s %s" % (o.strip("`"), v.strip("`")) for o, v in options if v is not None])
+    found = ["`%s`" % valued] if valued != longest else []
+    return found + ["`%s`" % longest] + (["`%s`" % base] if words else []), options, without
 
 
 def commands(program):
@@ -99,8 +101,19 @@ def commands(program):
     return sorted(found)
 
 
+def _things(call):
+    """(parameter, "the K x") of each thing the request's frame names whose kind is a parameter of its operation
+    (`recodifies the capability c1 in the item i1`: the capability), the parameters said apart not repeated."""
+    op = contract().operations[call.term]
+    said = {p for p, _ in call.params}
+    found = re.findall(r"(?=\bthe ((?:[a-z-]+ ){0,2}?[a-z-]+) ([a-z]+\d+)\b)", call.text)
+    return [(k, "the %s %s" % (k, n)) for k, n in found if k in op.parameters and k not in said]
+
+
 def lookup_key(handlers, template, term):
     """For `features vocab --check`: the old key a request's step is taken to, else the key itself."""
+    if template == "WhenRequests" and term in EVENTS:
+        return "WhenHappens", EVENTS[term]
     if template == "WhenRequests" and term in contract().operations:
         commands, _, _ = command(term)
         return next((("WhenRuns", c) for c in commands if handlers(("WhenRuns", c))), ("WhenRuns", None))
@@ -112,19 +125,23 @@ def lookup_key(handlers, template, term):
 
 def _spell(np, operation):
     """A parameter named by a Then ("the tier") as its option ("the `--tier` option")."""
-    op = contract().operations.get(operation) if operation else None
     found = re.fullmatch(r"(?:the|a|an) (.+)", np or "")
-    if op is None or found is None or found.group(1) not in op.parameters:
+    if not operation or found is None:
         return np
-    param = op.parameters[found.group(1)]
-    return "the `%s` option" % param.option if param.option else np
+    service = operation.split(".")[0]
+    ops = [contract().operations[operation]] + [o for i, o in contract().operations.items()
+                                                if i.split(".")[0] == service and i != operation]
+    param = next((o.parameters[found.group(1)] for o in ops if found.group(1) in o.parameters), None)
+    return "the `%s` option" % param.option if param is not None and param.option else np
 
 
+# the operations whose request the handlers took as an event (the person merges the pull request on the host)
+EVENTS = {"batches.merge": "merge"}
 # the words a capability's handlers know a kind by, before the domain contract renamed it
 RENAMES = {"requests": {"context request": "request", "entry": "comment"},
            "intake": {"context request": "request", "entry": "comment"},
            "batches": {"proposed change": "pull request", "kept change": "commit", "workspace": "worktree",
-                       "context request": "request"},
+                       "context request": "request", "entry": "comment"},
            "backlog": {"shared workspace": "upstream branch", "workspace name": "branch name",
                        "workspace": "git branch"}}
 # the verbs a capability's handlers know a state by, before the reword: (new term, old term, old third person)
@@ -137,7 +154,8 @@ def _renamed(call, node):
     table = RENAMES.get(origin(node), {})
     def say(text):
         for new, old in table.items():
-            text = re.sub(r"\b%s(s?)\b" % new, old + r"\1", text) if text else text
+            text = re.sub(r"\b(the|a|an|no|every|this|each|that) %s(s?)\b" % new, r"\1 %s\2" % old,
+                          text) if text else text
         return text
     call.text, call.subject = say(call.text), say(call.subject)
     call.nps = [say(np) for np in call.nps]
@@ -176,8 +194,13 @@ def legacy(call, context, node, known):
     t = call.template
     if t == "WhenRequests" and origin(node) in RENAMES:
         _owner(call, node, "context request")
+    if t == "WhenRequests" and call.term in EVENTS:     # what the handlers took as an event, not a command
+        context["requested"] = (call.term, "`%s`" % contract().operations[call.term].command)
+        call.template = "WhenHappens"
+        call.term = call.event = EVENTS[call.term]
+        return call
     if t == "WhenRequests":
-        commands, options, without = command(call.term, call.params)
+        commands, options, without = command(call.term, call.params + _things(call))
         chosen = next((c for c in commands if known(("WhenRuns", c))), commands[-1])
         context["requested"] = (call.term, chosen)
         call.template, call.term, call.command = "WhenRuns", chosen, chosen
@@ -191,6 +214,9 @@ def legacy(call, context, node, known):
         return call
     operation, chosen = context.get("requested", (None, None))
     program = "`%s`" % chosen.strip("`").split()[0] if chosen else None
+    if t == "ThenDoesNot" and call.term == "change" and call.nps == ["a file"]:    # the request changed nothing
+        call.template, call.term = "ThenChangesNothing", None
+        return call
     negated = t == "ThenDoesNot" and call.term in NEGATED
     if t in THENS or negated:
         if t == "ThenNotifies" or negated and call.term == "notify":

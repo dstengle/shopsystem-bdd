@@ -176,3 +176,49 @@ def picks(step):
     assert status == "in-batch", (step.text, status, done.stdout)
     plans = [rel for rel in B.changed(step) if rel.startswith(".shop/batches/") and rel.endswith("/plan.md")]
     assert plans and any(" %s " % B.ident(name) in (step.repo / rel).read_text() for rel in plans), (step.text, plans)
+
+
+@four("ThenDoes", "holds", *BOTH)
+def holds_item(step):
+    """`the batch b2 holds the item i1` after a batch is opened (the reword of "`work` picks the item i1")."""
+    (k1, _), (k2, _) = parts(step)
+    if (k1, k2) != ("batch", "item"):
+        return False
+    picks(step)
+
+
+@four("ThenDoes", "keep", *BOTH)
+def keeps_lay(step):
+    """`the batches service keeps the worktree w2` (the batch's workspace after a park) or `keeps the corpus c1` (after
+    a batch is opened): the request was done; what it no longer holds is the next Then's."""
+    if parts(step)[1][0] not in ("worktree", "corpus"):
+        return False
+    done = step.context["result"]
+    assert done.returncode == 0, (step.text, done.stderr)
+
+
+@four("ThenDoesNot", "holds", *BOTH)
+def holds_not_after(step):
+    """`the worktree w2 does not hold the requirement r1`, `the corpus c1 does not hold the requirement r2`: the
+    requirement removed, as the reword of "`work` removes the requirement r1" (the remove handlers')."""
+    (k1, _), (k2, name) = parts(step)
+    if k1 not in ("worktree", "corpus") or k2 != "requirement":
+        return False
+    step.template, step.term, step.event = "ThenDoes", "remove", "remove"
+    step.subject, step.nps, step.names = "`work`", ["the requirement %s" % name], [name]
+    return F._chain(("ThenDoes", "remove"), frozenset(BOTH))(step)
+
+
+@four("ThenDoes", "has", *BOTH)
+@four("ThenDoes", "on", *BOTH)
+def has_after(step):
+    """`the batch b1 has the worktree w2` after a park (its workspace kept); `the comment e1 is on the request c1`, the
+    entry a delivered item's context request was given (posted on its issue)."""
+    (k1, _), (k2, _) = parts(step)
+    if (k1, k2) == ("batch", "worktree"):
+        assert step.context["result"].returncode == 0, step.text
+    elif (k1, k2) == ("comment", "request"):
+        step.nps = [step.subject]
+        return sys.modules["vocab"].lookup("ThenDoes", "post")(step)
+    else:
+        return False
