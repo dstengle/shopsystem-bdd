@@ -2,7 +2,11 @@
 `--y` options", "... on a K", "... set to v" and "without the `--x` option", read by `model logic` as the command
 with each option given (and its code argument) and written by `features generate` as a When that names each option as
 the line does, whose Call gives its handler the options (`options`) and the options not given (`without`); each twin
-of the construct in grammar/language.md, and of the run's own things, translates to the check's facts and to steps."""
+of the construct in grammar/language.md, and of the run's own things, translates to the check's facts and to steps.
+
+The old run/option reading only (the domain contract's bootstrap): plan 5 deletes this module with spec_lf_option.
+"""
+BOOTSTRAP = True
 import pathlib
 import re
 import sys

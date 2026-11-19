@@ -10,7 +10,8 @@ its docstring or table under the step) and `K_HoldsText : K_N -> Name -> Quoted 
 "3.0.0""). Per relation row whose word is neither `of` nor `in`, its condition `r<n>_<word>_Is : Pol -> K1_Arg ->
 K2_Arg -> Cond` ("the stage s1 is on the worktree w1", b197). Per subject kind S of an action frame: `S_Does : Pol -> S_Arg -> S_V -> Step`, an
 act in the present with its polarity ("`work` does not write a file"). A state, an attribute's value and a trigger are
-Base's `Cond` and `Trig`, a step through `SCond` and `STrig`. A step's literal is an instance name (`s1`), a code or a quoted string.
+Base's `Cond` and `Trig`, a step through `SCond` and `STrig`; a request with its parameters (spec_rgl_ops'
+`<S>_Request`, the domain contract design §5.1) is a `Trig` too, so its When needs no fun of its own here. A step's literal is an instance name (`s1`), a code or a quoted string.
 """
 import hashlib
 import re
