@@ -545,22 +545,6 @@ shall [x3: agent the person (constant), x4: specification "the specification of 
     name(e3, subject: x5, object: x1)
 ```
 
-## r56
-From: b370 r56.
-
-```reading
-While a catalogue entry mentions no item, if the person validates this specification, then the specification service shall fail the check and name the catalogue entry.
-shall [x3: agent the person (constant), x4: specification "the specification of this bounded context" (indexical), x5: service the specification service (constant), x6: check "the check the trigger makes" (indexical)]
-  while [x1: catalogue entry]
-    not [x2: item]
-      mention(subject: x1, object: x2)
-  if
-    request(e1, specification.check, subject: x3, object: x4)
-  response
-    fail(e2, subject: x5, object: x6)
-    name(e3, subject: x5, object: x1)
-```
-
 ## r57
 From: b370 r57.
 
@@ -577,4 +561,22 @@ shall [x3: agent the person (constant), x4: specification "the specification of 
     fail(e2, subject: x5, object: x6)
     name(e3, subject: x5, object: x1)
     name(e4, subject: x5, object: x2)
+```
+
+## r58
+Retires: r56. From: b370 r58.
+
+```reading
+While a catalogue entry mentions no item and the catalogue entry mentions no release, if the person validates this specification, then the specification service shall fail the check and name the catalogue entry.
+shall [x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x7: check "the check the trigger makes" (indexical)]
+  while [x1: catalogue entry]
+    not [x2: item]
+      mention(subject: x1, object: x2)
+    not [x3: release]
+      mention(subject: x1, object: x3)
+  if
+    request(e1, specification.check, subject: x4, object: x5)
+  response
+    fail(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x1)
 ```

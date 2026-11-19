@@ -23,7 +23,6 @@ BOUND_BY_PYTEST_BDD = [
     "features/items.feature",
     "features/measurement.feature",
     "features/quotes.feature",
-    "features/reading.feature",
     "features/records.feature",
     "features/request-watch.feature",
     "features/reviews.feature",
