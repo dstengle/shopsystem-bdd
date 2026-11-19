@@ -1,12 +1,13 @@
 """The quantified conditions and the negated restriction of an object in `check.lp`'s facts (b197; the CNL 4 design,
 section 7.4), beside spec_lf_facts, whose walk (`w`) emits them:
 
-- "every K that P is v" in a While or Where clause or a trigger: the universal (design-r3 §3), `uall(R,U,
-  K)` with its restrictor `uattr(R,U,T,V)`, `urel(R,Q,U,W)` and what its scope says of it `ucond(R,U,T,V,Pol)`, which
-  check.lp reads (`umatch`): a pair is out where an instance of K that meets the restrictor has another value; "every
-  K that P is one of `a` or `b`" `uin(R,U,T,V)` of each value (spec_lf_values, b240); "every K Vs the X" `uscope(R,U,
-  Q,W,Pol)`, out where such a K is known not so (or so, for `neg`), and "every K Vs a K2" (a box of one state with a
-  K2 of its own) `uex(R,U,Q,K2)`, out where such a K is known to be so with no K2 (b240 phase 21);
+- "every K that P is v" in a While or Where clause or a trigger: the universal (design-r3 §3), `uall(R,U,K)` with
+  its restrictor `uattr(R,U,T,V)`, `unattr(R,U,T,V)`, `urel(R,Q,U,W)`, `urex(R,U,Q,D,K2)` (`restrictor`, b309) and
+  what its scope says of it `ucond(R,U,T,V,Pol)`, which check.lp reads (`umatch`): a pair is out where an instance
+  of K that meets the restrictor has another value; "every K that P is one of `a` or `b`" `uin(R,U,T,V)` of each
+  value (spec_lf_values, b240); "every K Vs the X" `uscope(R,U,Q,W,Pol)`, out where such a K is known not so (or
+  so, for `neg`), and "every K Vs a K2" (a box of one state with a K2 of its own) `uex(R,U,Q,K2)`, out where
+  such a K is known to be so with no K2 (b240 phase 21);
 - a count of Ks in a condition ("at least two stages are `done`"): when it admits no K (at most, fewer than, exactly
   0) it says nothing the check reads; otherwise there is a K that meets its restrictor and scope, a role with its
   literals, as "a K that P"; `ccount(R,X,B,N)` keeps the count, so the entailment check never forces it as a premise
@@ -43,22 +44,13 @@ def condition(w, box):
 
 
 def every(w, box):
-    if len(box.refs) != 1:
-        raise ValueError("no translation of every there")
     u = box.refs[0]
     if box.scope.refs:      # "every K Vs a K2" (b240 phase 21): `uex`, each K in the state with some K2
+        if len(box.refs) != 1:
+            raise ValueError("no translation of every there")
         return some(w, box, u)
     w.emit("uall", u.name, w.ids.kind(u.kind))
-    for item in box.body:
-        if isinstance(item, Atom) and item.pred == "attr" and item.args[0] == u and not isinstance(item.args[2], Ref):
-            w.emit("uattr", u.name, *w.ids.attr(u.kind, item.args[1], item.args[2]))
-        elif isinstance(item, Atom) and item.pred in ("rel", "state"):
-            q, x, y = w.edge(item)
-            if x != u or y is None or y in box.refs:
-                raise ValueError("no translation of every there")
-            w.emit("urel", q, u.name, w.term(y))
-        else:
-            raise ValueError("no translation of every there")
+    restrictor(w, box, u)
     sets = [b for b in box.scope.body if isinstance(b, Box) and spec_lf_values.members(u, b)]
     for b in sets:          # "every K ... is one of `a` or `b`" (b240): `uin` of each value
         for term, value in spec_lf_values.members(u, b):
@@ -73,6 +65,34 @@ def every(w, box):
             w.emit("ucond", u.name, *w.ids.attr(u.kind, item.args[1], item.args[2]), pol)
         else:
             raise ValueError("no translation of every there")
+
+
+def restrictor(w, box, u):
+    """The restrictor of "every K that P": a value of K (`uattr`), a value it has not ("whose version is not `v`":
+    `unattr(R,U,T,V)`, b309), a row or state to a thing outside the box (`urel`) or to a K2 of the box's own ("the
+    files that cover a line": `urex(R,U,Q,D,K2)`, D `s` when K is its first side, `o` its second, b309)."""
+    theirs, linked = set(box.refs[1:]), set()
+    for item in box.body:
+        if isinstance(item, Atom) and item.pred == "attr" and item.args[0] == u and not isinstance(item.args[2], Ref):
+            w.emit("uattr", u.name, *w.ids.attr(u.kind, item.args[1], item.args[2]))
+        elif (isinstance(item, Box) and item.op == "not" and not item.refs and len(item.body) == 1
+              and isinstance(item.body[0], Atom) and item.body[0].pred == "attr" and item.body[0].args[0] == u
+              and not isinstance(item.body[0].args[2], Ref)):
+            w.emit("unattr", u.name, *w.ids.attr(u.kind, item.body[0].args[1], item.body[0].args[2]))
+        elif isinstance(item, Atom) and item.pred in ("rel", "state"):
+            q, x, y = w.edge(item)
+            if x == u and y is not None and y not in box.refs:
+                w.emit("urel", q, u.name, w.term(y))
+            elif {x, y} - {u} <= theirs - linked and u in (x, y) and x != y:
+                k = y if x == u else x
+                linked.add(k)
+                w.emit("urex", u.name, q, "s" if x == u else "o", w.ids.kind(k.kind))
+            else:
+                raise ValueError("no translation of every there")
+        else:
+            raise ValueError("no translation of every there")
+    if linked != theirs:
+        raise ValueError("no translation of every there")
 
 
 def some(w, box, u):

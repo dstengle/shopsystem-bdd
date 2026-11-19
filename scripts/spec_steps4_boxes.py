@@ -45,8 +45,9 @@ def given(r, box, pos):
     """The Given steps of a box of a condition."""
     if box.op == "not" and not box.refs:
         return [s for sub in box.body for s in r.given(sub, not pos)]
-    if box.op == "not" and pos:     # "no K that P": said of "no K", no K brought in
-        return no(r, box)
+    if box.op == "not" and pos:     # "no K that P": said of "no K"; holds-exactly's only half a K not held (b309)
+        import spec_steps4_counter  # here: it imports this module
+        return spec_steps4_counter.excluded(r, box) or no(r, box)
     if box.op == "not" and not any(isinstance(i, Box) for i in box.body):     # not "no K that P": a K that P (b297)
         new = [x for x in box.refs if x not in r.known]
         r.known.update(new)

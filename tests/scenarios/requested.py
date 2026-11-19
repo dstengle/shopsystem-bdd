@@ -5,8 +5,8 @@ in one place: a request becomes the command the contract names with each paramet
 `work decision`, `without` the `--tier` option), a session that starts the hook its capability answers with, and
 each act of the request pack the CLI's spelling of it (refuse, print, exit, commit), its subject the program the
 scenario requested last, a parameter it names as its option (the tier as the `--tier` option). `origin` gives the
-capability a scenario's group moved from (spec/moves.json), which the handlers of that capability's world know it
-by. Not a handler module: vocab4 and vocab import it."""
+capability a scenario's group moved from (spec/moves.json), or the one `ADDED` names for a group added since (b309),
+which the handlers of that capability's world know it by. Not a handler module: vocab4 and vocab import it."""
 import json
 import re
 from functools import cache
@@ -62,14 +62,22 @@ def capability(node):
     return Path(found.feature.filename).stem if found is not None else None
 
 
+# groups added since the move whose scenarios an old capability's handlers take, as its moved groups' (b309); a
+# group whose own capability has handlers of its own is not listed
+ADDED = {"consistency#g33": "design-model-check"}
+
+
 def origin(node):
-    """The capability the scenario's group moved from (`decision-tiers`), else its own capability."""
+    """The capability the scenario's group moved from (`decision-tiers`), else the one `ADDED` names for a group added
+    since the move (b309), else its own capability."""
     cap, found = capability(node), scenario(node)
     if found is None:
         return None
     for tag in sorted(found.tags):
         if re.fullmatch(r"g\d+", tag) and "%s#%s" % (cap, tag) in _moved():
             return _moved()["%s#%s" % (cap, tag)].split("#")[0]
+        if re.fullmatch(r"g\d+", tag) and "%s#%s" % (cap, tag) in ADDED:
+            return ADDED["%s#%s" % (cap, tag)]
     return cap
 
 
