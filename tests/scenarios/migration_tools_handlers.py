@@ -52,8 +52,8 @@ def held(step):
 
 
 def migration(step):
-    """True in a scenario of features/migration-tools.feature."""
-    return sys.modules["vocab"].origin(step.request.node) == "migration-tools"
+    """True in a scenario of features/migration-tools.feature, or of a group of upgrades' own (founding, b318)."""
+    return sys.modules["vocab"].origin(step.request.node) in ("migration-tools", "upgrades")
 
 
 # --- Givens ---
@@ -75,6 +75,8 @@ def recorded(step):
         step.context.setdefault("untracked", {})[rel] = "not committed\n"
     for code in re.findall(r" violates `([vw]_\w+)`", step.text):   # the rule a term violates, which migrate names
         step.context.setdefault("violates", []).append(code)
+    if re.match(r"the context id \w+ does not conform to ", step.text):     # founded with no bounded context id
+        step.context["context id"] = "not-a-context-id"
     if step.attribute == "release" and step.kind == "repository":     # the release `migrate` reads of it
         held(step)[".shop/plugin-version"] = bare(step.values[0]) + "\n"
     if step.attribute == "release" and step.kind in ("tool", "plugin") and bare(step.subject or "") in ("migrate", "this plugin"):
@@ -120,6 +122,8 @@ def runs_migrate(step):
     args = shlex.split(bare(step.command))[1:]
     if args == ["run"]:
         args += ["--context", CONTEXT]
+    if args == ["init"] and any(code == "`--id`" for code, _ in step.options):
+        args += ["--id", step.context.get("context id", "bounded-context/%s" % CONTEXT)]
     run = runner(step.repo, step.request, scripts=ours(step)[0] / "scripts")
     step.context["done"] = run("migrate", *args, env=dict(os.environ, **WHO))
 

@@ -45,6 +45,9 @@ FORMS = [
     Form("record", ".shop/records/<date>-<slug>.md", "work record"),
     Form("records index row", ".shop/records/README.md", "work record"),
     Form("feature", "features/<capability>.feature", "features generate"),
+    Form("index file", "spec/index.md", "migrate init"),
+    Form("universal conditions file", "spec/universal.md", "migrate init"),
+    Form("records index", ".shop/records/README.md", "migrate init"),
     Form("plugin version", ".shop/plugin-version", "migrate upgrade"),
     Form("restated ids", "spec/restated.json", "migrate upgrade"),
     Form("capability", "spec/capabilities/<name>.md", "work line --capability"),
@@ -59,7 +62,7 @@ FORMS = [
     Form("upstream entry", "spec/index.md ## Upstreams", "work line --upstream"),
     Form("given block", "spec/capabilities/<name>.md, a group's fenced given", "work line --given"),
     Form("observation", ".shop/records/observations.md ## <id>", "plugin item b44 (no command yet)"),
-    Form("delivery settings", ".shop/delivery.toml", "plugin item b44 (no command yet)"),
+    Form("delivery settings", ".shop/delivery.toml", "migrate init"),
     Form("design record folder", ".shop/records/<date>-<topic>/design.md", "plugin item b44 (no command yet)"),
     Form("plan record folder", ".shop/records/<date>-<topic>/plan-<k>.md", "plugin item b44 (no command yet)"),
 ]
