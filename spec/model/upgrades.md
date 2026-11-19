@@ -12,7 +12,7 @@ imports: [specification, tracking]
 A repository moved between plugin releases: its upgrade steps, pending and applied.
 
 ```model
-object initiative kind of node
+object initiative
   attributes: status: proposed | started | done | abandoned
   relations: fulfils → context request (many)
 

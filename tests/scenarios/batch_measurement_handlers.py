@@ -98,7 +98,7 @@ def runs_measure(step):
     w.run(step.fixtures("monkeypatch"), step.fixtures("capsys"), *command, *files)
 
 
-for _command in sorted(set(re.findall(r"When the person runs (`measure[^`]*`)", FEATURE.read_text()))):
+for _command in sorted(set(re.findall(r"When the person runs (`measure[^`]*`)", FEATURE.read_text() if FEATURE.is_file() else ""))):
     handler("WhenRuns", _command)(runs_measure)
 
 

@@ -126,7 +126,7 @@ def runs_migrate(step):
     step.context["done"] = run("migrate", *args, env=dict(os.environ, **WHO))
 
 
-for _command in sorted(set(re.findall(r"When .* runs (`migrate[^`]*`)", FEATURE.read_text()))):
+for _command in sorted(set(re.findall(r"When .* runs (`migrate[^`]*`)", FEATURE.read_text() if FEATURE.is_file() else ""))):
     handler("WhenRuns", _command)(runs_migrate)
 
 

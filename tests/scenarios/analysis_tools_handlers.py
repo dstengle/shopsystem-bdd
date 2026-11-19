@@ -281,5 +281,5 @@ def runs_tools(step):
     ctx["head"] = w.git(repo, "rev-parse", "--short", "HEAD")
 
 
-for _command in sorted(set(re.findall(r"When the person runs (`tools[^`]*`)", FEATURE.read_text()))):
+for _command in sorted(set(re.findall(r"When the person runs (`tools[^`]*`)", FEATURE.read_text() if FEATURE.is_file() else ""))):
     handler("WhenRuns", _command)(runs_tools)

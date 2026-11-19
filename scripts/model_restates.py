@@ -52,6 +52,8 @@ def coverage(root, capability=None):
                 row["state"] = "pending"
             elif any(g.split("/")[-1].startswith(f"{target}#") for g in row["by"]):
                 row["state"] = "restated"
+            elif row["by"] and not docs[target].groups:     # its target moved on in 0.38.0 (spec/moves.json)
+                row["state"] = "restated"
             if row["state"] != "restated" and (cap, n) in elsewhere:
                 row["state"], row["reason"] = "dropped", elsewhere[(cap, n)]
         elif row["by"]:
