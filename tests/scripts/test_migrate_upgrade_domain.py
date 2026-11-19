@@ -23,9 +23,11 @@ def git(root, *args):
     return subprocess.run(["git", *args], cwd=root, capture_output=True, text=True, check=True).stdout
 
 
-def repository(tmp_path, name):
+def repository(tmp_path, name, edit=None):
     root = tmp_path / name
     shutil.copytree(FROZEN / name, root)
+    if edit:
+        edit(root)
     (root / ".shop").mkdir()
     (root / ".shop/plugin-version").write_text("0.37.0\n")
     git(root, "init", "-q", "-b", "main")
@@ -73,6 +75,28 @@ def test_notes_cli_is_scaffolded_and_its_lines_named(tmp_path):
     assert "spec/capabilities/notes.md r3 says print" in out
     assert "`notes`, spec/index.md: Kind of: tool" in out
     assert "delete, spec/index.md: a tool's act" in out
+
+
+def test_a_wrapped_line_is_read_whole(tmp_path):
+    """A requirement wrapped onto an indented continuation line, which spec_read joins, is read whole: its
+    parameters scaffolded and its report as the unwrapped line's."""
+    (tmp_path / "plain").mkdir()
+    plain = migrate(repository(tmp_path / "plain", "notes-cli")).stdout
+
+    def wrap(root):
+        capability = root / "spec/capabilities/notes.md"
+        text = capability.read_text()
+        assert "`--title` option and the `--tag` option" in text
+        capability.write_text(text.replace("`--title` option and the `--tag` option",
+                                           "`--title` option and\n  the `--tag` option", 1))
+    (tmp_path / "wrapped").mkdir()
+    root = repository(tmp_path / "wrapped", "notes-cli", wrap)
+    done = migrate(root)
+    assert done.returncode == 0, done.stderr
+    notes = domain_model.load(root).services["notes"]
+    assert [p.name for p in notes.operation("add").parameters] == ["title", "tag"]
+    assert 'tag = { option = "--tag"' in (root / "spec/adapters/cli.toml").read_text()
+    assert done.stdout == plain
 
 
 def test_a_second_run_changes_nothing(tmp_path):

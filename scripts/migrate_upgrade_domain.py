@@ -19,11 +19,12 @@ import migrate_upgrade_domain_report as report
 import migrate_upgrade_domain_scaffold as scaffold
 import spec_lexicon
 import spec_packs
+import spec_read
 from migrate_upgrade_ids import Changes
 from model_parse import frontmatter
 
 NAME = report.NAME
-REQ = re.compile(r"^- \[([rU][1-9]\d*)\] (\S.*)$", re.MULTILINE)
+REQ = re.compile(r"^- \[([rU][1-9]\d*)\] (\S.*)$")
 SECTIONS = ("Glossary", "Terms", "Relations")
 
 
@@ -33,8 +34,15 @@ def files(root):
 
 
 def lines(root):
-    """(file, id, text) of every requirement and universal condition."""
-    return [(rel, m.group(1), m.group(2)) for rel in files(root) for m in REQ.finditer((root / rel).read_text())]
+    """(file, id, text) of every requirement and universal condition, a wrapped one's continuation lines joined as
+    spec_read joins them."""
+    out = []
+    for rel in files(root):
+        for _, bullet in spec_read.items(enumerate((root / rel).read_text().splitlines())):
+            found = REQ.match(bullet)
+            if found:
+                out.append((rel, found.group(1), found.group(2)))
+    return out
 
 
 def context(root):
