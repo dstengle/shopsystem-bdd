@@ -96,8 +96,8 @@ def fact(step, name, had):
     H.says(step, name, 'node("%s"' % H.full("capability", "fact-%s" % name))
 
 
-OWN = {"GivenDoes": ("add", "allow", "contradict", "exist", "forbid", "import", "lack", "oblige", "override", "permit",
-                     "redefine", "refer", "take", "use"),
+OWN = {"GivenDoes": ("add", "allow", "contradict", "exist", "forbid", "import", "lack", "mention", "oblige", "override",
+                     "permit", "redefine", "refer", "take", "use"),
        "GivenDoesNot": ("import", "unify", "use")}
 for _template, _verbs in OWN.items():
     for _verb in _verbs:
