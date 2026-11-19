@@ -8,3 +8,7 @@ checks = [
   "python3 scripts/features bindings --unbound",
   "python3 scripts/spec decisions --check",
 ]
+
+[batch]
+# The person chose one batch of all seven ready items (2026-11-19).
+batch_size = 7
