@@ -11,7 +11,8 @@ CATALOGUE = "grammar/constructs.md"
 
 
 @cache
-def _codes(path, stamp):
+def _codes(path, _stamp):
+    """The construct codes of the catalogue at path; `_stamp`, its mtime, only keys the cache."""
     return frozenset(re.findall(r"^## ([a-z]+(?:-[a-z]+)*)\s*$", Path(path).read_text(), re.MULTILINE))
 
 
