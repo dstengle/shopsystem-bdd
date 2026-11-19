@@ -84,3 +84,16 @@ def test_a_model_line_that_does_not_read_is_refused(modelled):
     assert done.returncode == 1 and "work:" in done.stderr
     done = work(modelled, "line", "b1", "--into", "notebook", "--term", "- **pin** (verb, action): no element.")
     assert done.returncode == 1 and "→ <element>" in done.stderr
+
+
+REPO = pathlib.Path(__file__).resolve().parents[2]
+
+
+@pytest.mark.parametrize("name", ["b309", "b318", "b334"])
+def test_the_ready_items_reworded_for_the_migrated_spec_meet_the_readiness_bar(name):
+    """The items `ready` when the domain contract moved this spec (plan 5, task 8): their lines reworded into the new
+    capabilities and words, their model lines and vocabulary entries laid into spec/model/ and spec/vocabulary/."""
+    import readiness_bar
+    import toolchain
+    toolchain.require()
+    assert readiness_bar.check(REPO, backlog_items.find(REPO, name)) == ([], [])
