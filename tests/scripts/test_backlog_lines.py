@@ -180,3 +180,19 @@ def test_lay_with_others_lays_both(ready_repo, tmp_path):
     cap = spec_read.capability(tmp_path / "copy" / "spec" / "capabilities" / "work-queue.md")
     assert cap.problems == [] and {"g4", "g5"} <= {g.id for g in cap.groups}
     assert (ready_repo / "spec" / "capabilities" / "work-queue.md").read_bytes() == live
+
+
+def test_renumber_keeps_the_model_blocks(ready_repo, tmp_path):
+    """b378: an item whose ids collide keeps its `### <area> model` block through renumber, and the lay still lays
+    it."""
+    term = "- **shelf** (noun) → object shelf. A place notes are kept."
+    write_item(ready_repo, "b1", status="ready",
+               body="\n## Requirements\n\n### work-queue\n\n#### [g4] Fix the parser\n- [r5] %s\n\n"
+                    "### notes model\n\n%s\n" % (ABANDON, term))
+    item = backlog_items.find(ready_repo, "b1")
+    before = backlog_lines.read(item, "b1").models
+    assert before and before[0].terms == (term,)
+    assert backlog_lines.renumber(ready_repo, item, {"work-queue": {"g4", "r5"}}) != []
+    assert backlog_lines.read(item, "b1").models == before
+    backlog_lines.lay(ready_repo, item, tmp_path / "copy")
+    assert term in (tmp_path / "copy" / "spec" / "vocabulary" / "notes.md").read_text()
