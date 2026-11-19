@@ -1,0 +1,142 @@
+"""`migrate init --id <bounded context id>` (b318): a new bounded context founded in the repository it is run in, its
+context scaffold written and committed in one commit: `spec/index.md` (the id, its last part the title,
+`language: codified-2`, `imports: [request]`), `spec/universal.md` (no condition), `spec/model/`, `spec/vocabulary/`,
+`spec/capabilities/`, `.shop/backlog/`, `.shop/records/README.md` (an empty records index), `.shop/plugin-version`
+(the plugin's release), `.shop/delivery.toml` (every key commented out at its default), `features/` and
+`tests/scenarios/conftest.py`, each empty directory with a `.gitkeep`. A repository with an index file or a shop
+directory is refused, never merged into; an existing `features/` or conftest is left as it is."""
+import re
+from pathlib import Path
+
+import shop_files
+from migrate_upgrade import plugin_version
+from migrate_write import top_level
+from record_write import README_HEAD
+from shop_refused import Refused
+
+FORM = re.compile(r"bounded-context/[a-z0-9-]+(\.[a-z0-9-]+)+(/[A-Za-z0-9][A-Za-z0-9._-]*)+")
+KEEP = ("spec/model/.gitkeep", "spec/vocabulary/.gitkeep", "spec/capabilities/.gitkeep", ".shop/backlog/.gitkeep")
+CONFTEST = "tests/scenarios/conftest.py"
+
+INDEX = """---
+id: {id}
+title: {title}
+language: codified-2
+imports: [request]
+---
+
+# {title}
+
+## Purpose
+
+## Composition
+"""
+
+UNIVERSAL = """---
+id: capability/{path}/universal
+title: Universal conditions
+narrator: every trace of every delivery and every tool
+group: guarantees
+language: codified-2
+retired: []
+---
+
+# Universal conditions
+
+## Purpose
+
+The statements that are true in every state of every trace, each written once here and never restated in a
+requirement.
+
+## Behaviour
+"""
+
+DELIVERY = """# How this repository's batches are delivered (`work batch`), every key at its default: uncomment one to change it.
+
+# How many ready items a batch picks.
+# batch_size = 4
+
+# [batch]
+# The prefix every push and gh call takes, such as a command that gives them credentials.
+# push = ""
+# The command a task's tests run with.
+# tests = "python3 -m pytest -q -p work_items"
+# Where a batch's worktrees go.
+# worktrees = ".shop/worktrees"
+
+# [review]
+# The changed lines a pull request review reads before it says the batch is too big.
+# size = 1000
+# The checks a pull request review runs.
+# checks = [
+#   "python3 {scripts}/tools size --limit 300",
+#   "python3 {scripts}/tools check --base {forked_from}",
+#   "python3 {scripts}/features generate --check",
+#   "python3 {scripts}/features bindings --unbound",
+#   "python3 {scripts}/spec decisions --check",
+# ]
+
+# [prices]
+# A model's price per million tokens, over the plugin's dated table: "<model>" = { input = 0.0, output = 0.0 }
+"""
+
+CONFTEST_TEXT = '''"""The generated features' scenarios: one `test_<capability>.py` a capability binds its feature's steps."""
+'''
+
+
+def scaffold(ident):
+    """{path: text} of the context scaffold of the bounded context `ident`."""
+    path = ident.split("/", 1)[1]
+    return {"spec/index.md": INDEX.format(id=ident, title=ident.rsplit("/", 1)[1]),
+            "spec/universal.md": UNIVERSAL.format(path=path),
+            **{rel: "" for rel in KEEP},
+            ".shop/records/README.md": README_HEAD,
+            ".shop/plugin-version": plugin_version() + "\n",
+            ".shop/delivery.toml": DELIVERY}
+
+
+def check(root, ident):
+    """Refused unless `ident` is a bounded context id and the repository at `root` holds no context yet."""
+    if ident is None:
+        raise Refused("the bounded context at %s is founded with no context id: give {names} "
+                      "bounded-context/<domain>/<path>" % root, reason="bounded context with no context id",
+                      names=["parameter:context id"])
+    if not FORM.fullmatch(ident):
+        raise Refused("the context id %s is not a bounded context id: bounded-context/<domain>/<path>" % ident,
+                      reason="context id not a bounded context id", names=["parameter:context id"])
+    if (root / "spec/index.md").exists():
+        raise Refused("this bounded context has an index file already: spec/index.md; nothing written",
+                      reason="index file present", names=["file:spec/index.md"])
+    if (root / ".shop").exists():
+        raise Refused("this repository has a shop directory already: .shop; nothing written",
+                      reason="shop directory present", names=["file:.shop"])
+
+
+def run(args):
+    root = top_level(Path.cwd())
+    if root is None:
+        raise Refused("could not find a git repository at %s" % Path.cwd())
+    check(root, args.id)
+    files = scaffold(args.id)
+    if not (root / "features").exists():
+        files["features/.gitkeep"] = ""
+    if not (root / CONFTEST).exists():
+        files[CONFTEST] = CONFTEST_TEXT
+
+    made = sorted({p for rel in files for p in (root / rel).parents if root in p.parents and not p.exists()},
+                  key=lambda p: -len(p.parts))
+
+    def write():
+        for rel, text in files.items():
+            (root / rel).parent.mkdir(parents=True, exist_ok=True)
+            (root / rel).write_text(text)
+    try:
+        shop_files.committed(root, sorted(files), "migrate init: %s" % args.id, write)
+    except Refused:
+        for folder in made:      # the files are put back by `committed`; the folders it made go too
+            if folder.is_dir() and not any(folder.iterdir()):
+                folder.rmdir()
+        raise
+    for rel in sorted(files):
+        print("wrote %s" % rel)
+    return 0
