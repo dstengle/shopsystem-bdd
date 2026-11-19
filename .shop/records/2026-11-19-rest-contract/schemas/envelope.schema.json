@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shopsystem.missingmass.io/shopsystem-bdd/contract/envelope.schema.json",
+  "title": "the response envelope",
+  "description": "The response envelope (the domain contract design, §5.4): one shape every operation answers with, on every port.",
+  "type": "object",
+  "required": [
+    "outcome",
+    "content",
+    "errors",
+    "notices"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "outcome": {
+      "enum": [
+        "done",
+        "returned",
+        "refused",
+        "passed",
+        "failed",
+        "broken"
+      ]
+    },
+    "content": {},
+    "errors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/error"
+      }
+    },
+    "notices": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/notice"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "refused",
+              "failed",
+              "broken"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "errors": {
+            "minItems": 1
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "errors": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "reference": {
+      "type": "string",
+      "pattern": "^[a-z][a-z -]*:\\S.*$",
+      "description": "A business reference `<kind>:<id>`, as `parameter:version` or `bounded context:<id>`."
+    },
+    "error": {
+      "type": "object",
+      "required": [
+        "reason",
+        "names"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "names": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/reference"
+          }
+        }
+      }
+    },
+    "notice": {
+      "type": "object",
+      "required": [
+        "reason",
+        "names"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "names": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/reference"
+          }
+        }
+      }
+    }
+  }
+}

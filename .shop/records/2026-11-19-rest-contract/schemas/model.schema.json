@@ -1,0 +1,227 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shopsystem.missingmass.io/shopsystem-bdd/contract/model.schema.json",
+  "title": "the objects of the contract's operations",
+  "$defs": {
+    "contract": {
+      "title": "contract",
+      "type": "object",
+      "properties": {
+        "reference": {
+          "$ref": "#/$defs/reference"
+        },
+        "status": {
+          "enum": [
+            "published",
+            "superseded"
+          ]
+        },
+        "describes": {
+          "type": "string",
+          "pattern": "^[a-z][a-z -]*:\\S.*$",
+          "description": "A business reference `<kind>:<id>`, as `parameter:version` or `bounded context:<id>`.",
+          "title": "bounded context"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "A version, <major>.<minor>.<patch>."
+        },
+        "domain_model": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "title": "domain model",
+            "required": [
+              "reference",
+              "text"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "reference": {
+                "$ref": "#/$defs/reference"
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "term": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "title": "term",
+            "required": [
+              "reference",
+              "text"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "reference": {
+                "$ref": "#/$defs/reference"
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "requirement": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "title": "requirement",
+            "required": [
+              "reference",
+              "text"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "reference": {
+                "$ref": "#/$defs/reference"
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "design_decision": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "title": "design-decision",
+            "required": [
+              "reference",
+              "text"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "reference": {
+                "$ref": "#/$defs/reference"
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "data_schema": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "title": "data schema",
+            "required": [
+              "reference",
+              "text"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "reference": {
+                "$ref": "#/$defs/reference"
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "interface_contract": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "title": "interface contract",
+            "required": [
+              "reference",
+              "text"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "reference": {
+                "$ref": "#/$defs/reference"
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "term_proposal": {
+      "title": "term proposal",
+      "type": "object",
+      "properties": {
+        "concerns": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z -]*:\\S.*$",
+            "description": "A business reference `<kind>:<id>`, as `parameter:version` or `bounded context:<id>`.",
+            "title": "term"
+          }
+        }
+      },
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/request_line"
+        }
+      ]
+    },
+    "request_line": {
+      "title": "request line",
+      "type": "object",
+      "properties": {
+        "reference": {
+          "$ref": "#/$defs/reference"
+        },
+        "text": {
+          "type": "string"
+        },
+        "line_outcome": {
+          "enum": [
+            "accepted",
+            "rewritten",
+            "refused",
+            "withdrawn",
+            "question"
+          ]
+        },
+        "line_reason": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "title": "line reason",
+            "required": [
+              "reference",
+              "text"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "reference": {
+                "$ref": "#/$defs/reference"
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "counters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/reference"
+          }
+        }
+      }
+    },
+    "reference": {
+      "type": "string",
+      "pattern": "^[a-z][a-z -]*:\\S.*$",
+      "description": "A business reference `<kind>:<id>`, as `parameter:version` or `bounded context:<id>`."
+    }
+  }
+}

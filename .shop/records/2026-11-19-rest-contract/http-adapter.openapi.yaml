@@ -1,0 +1,202 @@
+# The HTTP adapter's contract of the operations of b348 and b42 (2026-11-19-rest-contract, README.md).
+#
+# An interface contract, beside the CLI adapter's (cli-adapter.toml): it maps each operation of the domain model to a
+# method, a path and its statuses, and each parameter to a path, query or body field. It says nothing of what an
+# operation does: the requirement lines say that, in business words, and they do not change when this file does.
+# The shapes are the core's: every schema is a $ref into schemas/, made from the domain model by generate_schemas.py.
+#
+# The mapping is carried by three extensions, the HTTP counterpart of cli.toml's tables:
+#   operationId         the model's operation id, `<service>.<operation>` (one path and method each);
+#   x-actors            the actors the model's `by` allows, each mapped to a security scheme under x-actor;
+#   x-outcome/x-reasons on a response: the outcome it gives and, for a refusal, the declared reasons it carries.
+# check_adapters.py checks them both ways against the model, as `spec check` checks cli.toml (v_a1-v_a4).
+openapi: 3.1.0
+info:
+  title: shopsystem-bdd contracts and term proposals
+  version: 0.1.0-draft
+  description: >-
+    The HTTP adapter of shopsystem-bdd's contracts service (b348) and of the term proposals of its context requests
+    service (b42). Every response is the standard envelope (outcome, content, errors, notices), its content the
+    domain object the operation gives.
+jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
+x-outcomes:                     # an outcome's status when a response does not say otherwise
+  done: 200
+  returned: 200
+  refused: 422
+  broken: 503
+servers:
+  - url: https://{bounded-context-host}/
+    variables:
+      bounded-context-host:
+        default: localhost:8080
+security: []
+paths:
+  /contracts:
+    post:
+      operationId: contracts.publish
+      summary: The person publishes a contract of this bounded context at a version.
+      x-actors: [the person]
+      security:
+        - person: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: schemas/operations.schema.json#/$defs/contracts_publish_request/properties/parameters
+      responses:
+        "201":
+          description: The contract is kept and published.
+          x-outcome: done
+          content:
+            application/json:
+              schema: {$ref: schemas/operations.schema.json#/$defs/contracts_publish_response}
+        "409":
+          description: A contract is published at the version already.
+          x-outcome: refused
+          x-reasons: [version already published]
+          content:
+            application/json:
+              schema: {$ref: schemas/operations.schema.json#/$defs/contracts_publish_response}
+        "422":
+          description: A requirement of this bounded context is not in the requirement grammar.
+          x-outcome: refused
+          x-reasons: [requirement not in the requirement grammar]
+          content:
+            application/json:
+              schema: {$ref: schemas/operations.schema.json#/$defs/contracts_publish_response}
+        "503":
+          $ref: "#/components/responses/broken"
+  /contract:
+    get:
+      operationId: contracts.fetch
+      summary: A downstream context fetches the contract of this bounded context, the published one or at a version.
+      x-actors: [downstream context]
+      security:
+        - downstream: []
+      parameters:
+        - name: version
+          in: query
+          required: false
+          schema:
+            $ref: schemas/operations.schema.json#/$defs/contracts_fetch_request/properties/parameters/properties/version
+      responses:
+        "200":
+          description: The contract.
+          x-outcome: returned
+          content:
+            application/json:
+              schema: {$ref: schemas/operations.schema.json#/$defs/contracts_fetch_response}
+        "404":
+          description: No contract is published at the version.
+          x-outcome: refused
+          x-reasons: [version not published]
+          content:
+            application/json:
+              schema: {$ref: schemas/operations.schema.json#/$defs/contracts_fetch_response}
+        "503":
+          $ref: "#/components/responses/broken"
+  /obtained-contracts:
+    post:
+      operationId: contracts.obtain
+      summary: The person obtains the contract of an upstream bounded context and keeps it.
+      x-actors: [the person]
+      security:
+        - person: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: schemas/operations.schema.json#/$defs/contracts_obtain_request/properties/parameters
+      responses:
+        "201":
+          description: The upstream's contract is kept.
+          x-outcome: done
+          content:
+            application/json:
+              schema: {$ref: schemas/operations.schema.json#/$defs/contracts_obtain_response}
+        "422":
+          description: The bounded context has no channel to ask it by.
+          x-outcome: refused
+          x-reasons: [bounded context with no channel]
+          content:
+            application/json:
+              schema: {$ref: schemas/operations.schema.json#/$defs/contracts_obtain_response}
+        "503":
+          $ref: "#/components/responses/broken"
+  /context-requests/{context_request}/term-proposals:
+    post:
+      operationId: context requests.suggest
+      summary: The person suggests a term proposal for a context request.
+      x-actors: [the person]
+      security:
+        - person: []
+      parameters:
+        - name: context_request
+          in: path
+          required: true
+          schema:
+            $ref: schemas/operations.schema.json#/$defs/context_requests_suggest_request/properties/parameters/properties/context_request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: schemas/operations.schema.json#/$defs/context_requests_suggest_request/properties/parameters/properties/term_proposal
+      responses:
+        "201":
+          description: The term proposal is kept in the context request.
+          x-outcome: done
+          content:
+            application/json:
+              schema: {$ref: schemas/operations.schema.json#/$defs/context_requests_suggest_response}
+        "409":
+          description: It is not this side's turn on the context request.
+          x-outcome: refused
+          x-reasons: [context request not this side's turn]
+          content:
+            application/json:
+              schema: {$ref: schemas/operations.schema.json#/$defs/context_requests_suggest_response}
+        "422":
+          description: The term proposal does not conform to the vocabulary-entry form.
+          x-outcome: refused
+          x-reasons: [term proposal not in the vocabulary-entry form]
+          content:
+            application/json:
+              schema: {$ref: schemas/operations.schema.json#/$defs/context_requests_suggest_response}
+        "503":
+          $ref: "#/components/responses/broken"
+webhooks:
+  contract published:
+    post:
+      operationId: event.contract published
+      summary: A downstream context is notified that a contract was published.
+      x-event: contract published
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: schemas/events.schema.json#/$defs/contract_published}
+      responses:
+        "204":
+          description: The downstream context took the notification.
+components:
+  responses:
+    broken:
+      description: The infrastructure failed (the store or a port); outside the domain, never stated by a line.
+      x-outcome: broken
+      content:
+        application/json:
+          schema: {$ref: schemas/envelope.schema.json}
+  securitySchemes:
+    person:
+      type: http
+      scheme: bearer
+      description: The person this bounded context works for.
+      x-actor: the person
+    downstream:
+      type: http
+      scheme: bearer
+      description: A bounded context that builds on this one's contract, by the credential it was registered with.
+      x-actor: downstream context

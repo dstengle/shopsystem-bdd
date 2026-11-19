@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shopsystem.missingmass.io/shopsystem-bdd/contract/events.schema.json",
+  "title": "the notifications of the contract's events",
+  "$defs": {
+    "contract_published": {
+      "title": "the notification of contract published",
+      "type": "object",
+      "required": [
+        "event",
+        "content"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "event": {
+          "const": "contract published"
+        },
+        "content": {
+          "$ref": "model.schema.json#/$defs/contract"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,333 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shopsystem.missingmass.io/shopsystem-bdd/contract/operations.schema.json",
+  "title": "the requests and responses of the contract's operations",
+  "$defs": {
+    "contracts_publish_request": {
+      "title": "the request of contracts.publish",
+      "type": "object",
+      "required": [
+        "operation",
+        "parameters"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "contracts.publish"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "version": {
+              "type": "string",
+              "pattern": "^\\d+\\.\\d+\\.\\d+$",
+              "description": "A version, <major>.<minor>.<patch>."
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "contracts_publish_response": {
+      "title": "the response of contracts.publish",
+      "allOf": [
+        {
+          "$ref": "envelope.schema.json"
+        }
+      ],
+      "oneOf": [
+        {
+          "properties": {
+            "outcome": {
+              "const": "done"
+            },
+            "content": {
+              "$ref": "model.schema.json#/$defs/contract"
+            }
+          }
+        },
+        {
+          "properties": {
+            "outcome": {
+              "const": "refused"
+            },
+            "content": {
+              "type": "null"
+            },
+            "errors": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "allOf": [
+                  {
+                    "$ref": "envelope.schema.json#/$defs/error"
+                  }
+                ],
+                "properties": {
+                  "reason": {
+                    "enum": [
+                      "version already published",
+                      "requirement not in the requirement grammar"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "outcome": {
+              "const": "broken"
+            }
+          }
+        }
+      ]
+    },
+    "contracts_fetch_request": {
+      "title": "the request of contracts.fetch",
+      "type": "object",
+      "required": [
+        "operation",
+        "parameters"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "contracts.fetch"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "version": {
+              "type": "string",
+              "pattern": "^\\d+\\.\\d+\\.\\d+$",
+              "description": "A version, <major>.<minor>.<patch>."
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "contracts_fetch_response": {
+      "title": "the response of contracts.fetch",
+      "allOf": [
+        {
+          "$ref": "envelope.schema.json"
+        }
+      ],
+      "oneOf": [
+        {
+          "properties": {
+            "outcome": {
+              "const": "returned"
+            },
+            "content": {
+              "$ref": "model.schema.json#/$defs/contract"
+            }
+          }
+        },
+        {
+          "properties": {
+            "outcome": {
+              "const": "refused"
+            },
+            "content": {
+              "type": "null"
+            },
+            "errors": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "allOf": [
+                  {
+                    "$ref": "envelope.schema.json#/$defs/error"
+                  }
+                ],
+                "properties": {
+                  "reason": {
+                    "enum": [
+                      "version not published"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "outcome": {
+              "const": "broken"
+            }
+          }
+        }
+      ]
+    },
+    "contracts_obtain_request": {
+      "title": "the request of contracts.obtain",
+      "type": "object",
+      "required": [
+        "operation",
+        "parameters"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "contracts.obtain"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "bounded_context": {
+              "$ref": "envelope.schema.json#/$defs/reference"
+            },
+            "version": {
+              "type": "string",
+              "pattern": "^\\d+\\.\\d+\\.\\d+$",
+              "description": "A version, <major>.<minor>.<patch>."
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "contracts_obtain_response": {
+      "title": "the response of contracts.obtain",
+      "allOf": [
+        {
+          "$ref": "envelope.schema.json"
+        }
+      ],
+      "oneOf": [
+        {
+          "properties": {
+            "outcome": {
+              "const": "done"
+            },
+            "content": {
+              "$ref": "model.schema.json#/$defs/contract"
+            }
+          }
+        },
+        {
+          "properties": {
+            "outcome": {
+              "const": "refused"
+            },
+            "content": {
+              "type": "null"
+            },
+            "errors": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "allOf": [
+                  {
+                    "$ref": "envelope.schema.json#/$defs/error"
+                  }
+                ],
+                "properties": {
+                  "reason": {
+                    "enum": [
+                      "bounded context with no channel"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "outcome": {
+              "const": "broken"
+            }
+          }
+        }
+      ]
+    },
+    "context_requests_suggest_request": {
+      "title": "the request of context requests.suggest",
+      "type": "object",
+      "required": [
+        "operation",
+        "parameters"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "context requests.suggest"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "context_request": {
+              "$ref": "envelope.schema.json#/$defs/reference"
+            },
+            "term_proposal": {
+              "$ref": "model.schema.json#/$defs/term_proposal"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "context_requests_suggest_response": {
+      "title": "the response of context requests.suggest",
+      "allOf": [
+        {
+          "$ref": "envelope.schema.json"
+        }
+      ],
+      "oneOf": [
+        {
+          "properties": {
+            "outcome": {
+              "const": "done"
+            },
+            "content": {
+              "$ref": "model.schema.json#/$defs/term_proposal"
+            }
+          }
+        },
+        {
+          "properties": {
+            "outcome": {
+              "const": "refused"
+            },
+            "content": {
+              "type": "null"
+            },
+            "errors": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "allOf": [
+                  {
+                    "$ref": "envelope.schema.json#/$defs/error"
+                  }
+                ],
+                "properties": {
+                  "reason": {
+                    "enum": [
+                      "term proposal not in the vocabulary-entry form",
+                      "context request not this side's turn"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "outcome": {
+              "const": "broken"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,40 @@
+# The CLI adapter's tables of the operations of b348 and b42, in the form of spec/adapters/cli.toml (the domain
+# contract design, §6.1), to set beside http-adapter.openapi.yaml (2026-11-19-rest-contract, README.md). They are a
+# proposal: the commands do not exist yet, and these tables go into spec/adapters/cli.toml when the items are built
+# (without them `spec check` gives v_a1 for each operation once the items' model lines are laid).
+#
+# The same operations, the same parameters by their business names; only the surface differs:
+#   CLI:  a program and subcommand, a positional or an option per parameter, exit 0 / 1, the envelope under --json;
+#   HTTP: a method and path, a path, query or body field per parameter, a status per outcome and reason.
+adapter = "cli"
+json = "--json"
+
+[outcomes]                      # as in spec/adapters/cli.toml: every refusal one exit, its reason in the envelope
+done = { exit = 0 }
+returned = { exit = 0, content = "stdout" }
+refused = { exit = 1, errors = "stderr" }
+broken = { exit = 1, errors = "stderr" }
+
+[operations."contracts.publish"]
+command = "spec contract publish"
+[operations."contracts.publish".parameters]
+version = { positional = 1, example = "1.2.0" }
+
+[operations."contracts.fetch"]
+# a downstream context's fetch reaches this bounded context through a channel (the issue host today, HTTP once a
+# server is built); on the command line it is the upstream's own look at what it would give
+command = "spec contract show"
+[operations."contracts.fetch".parameters]
+version = { option = "--version", example = "1.2.0" }
+
+[operations."contracts.obtain"]
+command = "work obtain"
+[operations."contracts.obtain".parameters]
+"bounded context" = { positional = 1, example = "bounded-context/missingmass.io/shopsystem/feed" }
+version = { option = "--version", example = "1.2.0" }
+
+[operations."context requests.suggest"]
+command = "work suggest"
+[operations."context requests.suggest".parameters]
+"context request" = { positional = 1, example = "q7" }
+"term proposal" = { positional = 2, example = "- **short** (noun) → value video.format short. A video of a minute or less." }
