@@ -101,13 +101,31 @@ def commands(program):
     return sorted(found)
 
 
+@cache
+def _slots(operation):
+    """{preposition: parameter} of the frames the vocabulary gives the verb of `operation` (`over <supersedes>`)."""
+    found = {}
+    for path in sorted((ROOT / "spec" / "vocabulary").glob("*.md")):
+        for line in path.read_text().splitlines():
+            if "→ operation %s." % operation in line or line.rstrip().endswith("→ operation %s" % operation):
+                found.update({prep: param for prep, param in re.findall(r" (\w+) <([a-z -]+)>", line)})
+    return found
+
+
 def _things(call):
     """(parameter, "the K x") of each thing the request's frame names whose kind is a parameter of its operation
     (`recodifies the capability c1 in the item i1`: the capability), the parameters said apart not repeated."""
     op = contract().operations[call.term]
     said = {p for p, _ in call.params}
     found = re.findall(r"(?=\bthe ((?:[a-z-]+ ){0,2}?[a-z-]+) ([a-z]+\d+)\b)", call.text)
-    return [(k, "the %s %s" % (k, n)) for k, n in found if k in op.parameters and k not in said]
+    out = [(k, "the %s %s" % (k, n)) for k, n in found if k in op.parameters and k not in said]
+    for prep, param in _slots(call.term).items():       # a thing in a frame's slot: `over the design-decision d2`
+        thing = re.search(r"\b%s (the [a-z -]+? [a-z]+\d+|`[^`]+`)" % prep, call.text)
+        if thing and param in op.parameters and param not in said | {k for k, _ in out}:
+            out.append((param, thing.group(1)))
+    codes = [c for c in re.findall(r"`[^`]+`", call.text) if c not in {v for _, v in call.params}]
+    open_ = [p for p, param in op.parameters.items() if param.option and p not in said | {k for k, _ in out}]
+    return out + list(zip(open_, codes))      # a code the frame names: the first option left (`universal`)
 
 
 def lookup_key(handlers, template, term):

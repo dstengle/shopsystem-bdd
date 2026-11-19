@@ -200,6 +200,7 @@ requirement = { positional = 2 }
 "upstream entry" = { option = "--upstream" }
 "given block" = { option = "--given" }
 "requirement id" = { option = "--retires" }
+"universal condition id" = { option = "--retires" }
 capability = { option = "--capability" }
 
 [operations."drafting.recodify"]

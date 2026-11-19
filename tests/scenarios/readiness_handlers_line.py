@@ -59,7 +59,8 @@ def _changed(step, item, line, options):
     world's `work-queue#r5` of the passing line), or a live requirement of the capability (`work-queue#r1`)."""
     flag = "--reword" if "--reword" in options else "--remove"
     name = _name(options[flag])
-    owner = step.context.get("owner", {}).get(step.context.get("id_of", {}).get(name), ("capability", None))
+    requirement = step.context.get("id_of", {}).get(name, name)     # by its id, or itself (the reword)
+    owner = step.context.get("owner", {}).get(requirement, ("capability", None))
     if owner[0] == "item" and flag == "--remove" and step.context.get("held_ids"):
         ident = _history(step, item, line, step.context["held_ids"])
     elif owner[0] == "item":
@@ -137,7 +138,7 @@ def work_line(step):
         args = _capability(step, item, line, options["--capability"])
     elif "--reword" in options or "--remove" in options:
         args = _changed(step, item, line, options)
-    elif "--retires" in options and "--universal" in options:
+    elif "--retires" in options and ("--universal" in options or "universal condition id" in options["--retires"]):
         R.universal(step)
         _shaped(step, item)
         line["retiring"] = _retired(step, options["--retires"], R.LIVE_U)
