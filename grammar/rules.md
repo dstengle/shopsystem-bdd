@@ -1328,6 +1328,49 @@ a command or an option of the program's argparse is named by no table of the CLI
   typed("ctx").
   ```
 
+## v_a5
+
+an operation of an adapter contract does not hold a requirement that governs it: run spec annotate
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  contract_op("spec/adapters/cli.toml","notes.add").
+  requester("c#r1","notes.add","the person").
+  ```
+
+- Passes on:
+
+  ```prolog
+  contract_op("spec/adapters/cli.toml","notes.add").
+  requester("c#r1","notes.add","the person").
+  op_holds("spec/adapters/cli.toml","notes.add","c#r1").
+  ```
+
+## v_a6
+
+an operation of an adapter contract holds a requirement that does not govern it: run spec annotate
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  op_holds("spec/adapters/cli.toml","notes.add","c#r1").
+  requester("c#r1","notes.list","the person").
+  ```
+
+- Passes on:
+
+  ```prolog
+  op_holds("spec/adapters/cli.toml","notes.add","c#r1").
+  requester("c#r1","notes.add","the person").
+  ```
+
 ## v_m2
 
 a request names a parameter its operation does not declare, or a value outside the parameter's values

@@ -401,3 +401,57 @@ Feature: Checking
     When the person inventories this specification with the audit
     Then the specification service fails this check
     And the specification service names the file form f1
+
+  @g48 @r48
+  Scenario: Each operation of an adapter contract is given the requirements that govern it
+    Given an operation o1
+    And an adapter contract a1
+    And the adapter contract a1 holds the operation o1
+    And a requirement r1
+    And the requirement r1 governs the operation o1
+    And an operation o2
+    And an adapter contract a2
+    When the person annotates the adapter contract a1
+    Then the operation o2 holds the requirement r1
+    And the specification service keeps the adapter contract a2
+    And the adapter contract a2 holds the operation o2
+    And the specification service completes this request
+
+  @g49 @r49
+  Scenario: An operation missing a requirement that governs it fails the check
+    Given an operation o1
+    And an adapter contract a1
+    And the adapter contract a1 holds the operation o1
+    And a requirement r1
+    And the requirement r1 governs the operation o1
+    And the operation o1 does not hold the requirement r1
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the operation o1
+    And the specification service names the requirement r1
+
+  @g50 @r50
+  Scenario: An operation holding a requirement that no longer governs it fails the check
+    Given an operation o1
+    And an adapter contract a1
+    And the adapter contract a1 holds the operation o1
+    And a requirement r1
+    And the operation o1 holds the requirement r1
+    And the requirement r1 does not govern the operation o1
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the operation o1
+    And the specification service names the requirement r1
+
+  @g51 @r51
+  Scenario: A stale adapter contract fails the audit
+    Given an operation o1
+    And an adapter contract a1
+    And the adapter contract a1 holds the operation o1
+    And a requirement r1
+    And the requirement r1 governs the operation o1
+    And the operation o1 does not hold the requirement r1
+    When the person annotates the adapter contract a1 with the audit
+    Then the specification service fails this check
+    And the specification service names the adapter contract a1
+    And the specification service does not change a file

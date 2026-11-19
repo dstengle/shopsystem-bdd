@@ -218,12 +218,12 @@ class Reader:
                 out.append((True, self.does(item, pos)))
             elif isinstance(item, Atom) and item.pred == spec_lf_distinct.PRED:     # two names (b240)
                 continue
-            elif isinstance(item, Atom) and item.pred == spec_lf_ordered.PRED:     # an order (b275)
-                out += spec_lf_ordered.then(self, item, body)
             elif isinstance(item, Atom) and not boxes.image(self, item):
                 out.append((None, ("SCond", self.cond(item, pos))))
             elif isinstance(item, Atom):
                 continue
+            elif spec_lf_ordered.held(item):     # three members of a collection in order (b275, b334)
+                out += spec_lf_ordered.then(self, item, body)
             elif item.op == "not" and len(item.body) == 1 and isinstance(item.body[0], Atom) and \
                     item.body[0].pred in ("event", spec_lf_set.PRED):
                 out.append((True, self.does(item.body[0], not pos, set(item.refs))))

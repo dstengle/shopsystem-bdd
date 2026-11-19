@@ -118,6 +118,7 @@ Every line moved with a new id: `analysis-tools`, `backlog`, `batch-measurement`
 | `role-boundaries` | the person using the workflow | guarantees |
 | `supervision` | the person who started `work run` | service |
 | `work-queue` | a person, session or script reading work-items or writing their transitions | service |
+| `parsing` | the person | service |
 
 ## Testing
 

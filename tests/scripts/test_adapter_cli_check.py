@@ -3,6 +3,7 @@ program's argparse, v_a1-v_a4 (the domain contract design, §6.1)."""
 import pathlib
 import shutil
 
+import adapter_annotate
 import adapter_cli
 import adapter_cli_check
 import pytest
@@ -18,6 +19,7 @@ def context(tmp_path):
     shutil.copytree(FIXTURE, root)
     program = root / "notes_cli.py"
     program.write_text(program.read_text().replace('Path(__file__).resolve().parents[4] / "scripts"', repr(SCRIPTS)))
+    _contract(root).write_text(adapter_annotate.annotated(_contract(root).read_text(), {}))    # no requirements held
     return root
 
 

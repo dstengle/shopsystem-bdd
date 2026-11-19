@@ -729,3 +729,80 @@ shall [x2: agent the person (constant), x3: specification "the specification of 
     fail(e2, subject: x4, object: x5)
     name(e3, subject: x4, object: x1)
 ```
+
+## r48
+From: b368 r48.
+
+```reading
+While a requirement governs an operation that an adapter contract holds, when the person annotates the adapter contract, the specification service shall keep an adapter contract that holds an operation that holds the requirement and complete the request.
+shall [x4: agent the person (constant), x5: service the specification service (constant), x8: request "the request the trigger makes" (indexical)]
+  while [x1: requirement, x2: operation, x3: adapter contract]
+    in(x2, x3)
+    govern(subject: x1, object: x2)
+  when
+    request(e1, specification.annotate, subject: x4, object: x3)
+  response [x6: adapter contract, x7: operation]
+    in(x1, x7)
+    in(x7, x6)
+    keep(e2, subject: x5, object: x6)
+    complete(e3, subject: x5, object: x8)
+```
+
+## r49
+From: b368 r49.
+
+```reading
+While a requirement governs an operation that an adapter contract holds and the operation does not hold the requirement, if the person validates this specification, then the specification service shall fail the check and name the operation and the requirement.
+shall [x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x7: check "the check the trigger makes" (indexical)]
+  while [x1: requirement, x2: operation, x3: adapter contract]
+    in(x2, x3)
+    govern(subject: x1, object: x2)
+    not
+      in(x1, x2)
+  if
+    request(e1, specification.check, subject: x4, object: x5)
+  response
+    fail(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x2)
+    name(e4, subject: x6, object: x1)
+```
+
+## r50
+From: b368 r50.
+
+```reading
+While an adapter contract holds an operation and the operation holds a requirement and the requirement does not govern the operation, if the person validates this specification, then the specification service shall fail the check and name the operation and the requirement.
+shall [x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x7: check "the check the trigger makes" (indexical)]
+  while [x1: adapter contract, x2: operation, x3: requirement]
+    in(x2, x1)
+    in(x3, x2)
+    not
+      govern(subject: x3, object: x2)
+  if
+    request(e1, specification.check, subject: x4, object: x5)
+  response
+    fail(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x2)
+    name(e4, subject: x6, object: x3)
+```
+
+## r51
+From: b368 r51.
+
+```reading
+While a requirement governs an operation that an adapter contract holds and the operation does not hold the requirement, if the person annotates the adapter contract with the audit, then the specification service shall fail the check, name the adapter contract and change no file.
+shall [x4: agent the person (constant), x5: service the specification service (constant), x6: check "the check the trigger makes" (indexical)]
+  while [x1: requirement, x2: operation, x3: adapter contract]
+    in(x2, x3)
+    govern(subject: x1, object: x2)
+    not
+      in(x1, x2)
+  if
+    request(e1, specification.annotate, subject: x4, object: x3)
+    param(e1, audit, on)
+  response
+    fail(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x3)
+    not [x7: file]
+      change(e4, subject: x5, object: x7)
+```

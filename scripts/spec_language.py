@@ -2,7 +2,8 @@
 `language: codified-2`: a capability's line by its capability file's marker, a universal condition by
 `spec/universal.md`'s own (b151), whatever the index says, and a line of no capability and not universal (a line
 `model parse` is given alone) by `spec/index.md`'s; a file in `codified-1` is not read (v_p0 names it, with `migrate
-upgrade`). `parse` gives a refusal of a line that a reading rule refuses (spec_lf_read), as `model logic` refuses it."""
+upgrade`). `parse` gives a refusal of a line that a reading rule refuses (spec_lf_read), as `model logic` refuses it,
+and of a line that uses a construct the context's construct catalogue has no entry of (spec_catalogued, b369)."""
 from pathlib import Path
 
 import spec_grammar4
@@ -22,9 +23,12 @@ def four(root, capability=None, universal=False):
 
 def parse(root, text):
     """The line parsed in grammar 4: an object with `tree`, `trees` and `refusal`, as spec_grammar4's parse has."""
+    import spec_catalogued
     import spec_lf_read
     parsed = spec_grammar4.parse(root, text)
-    why = parsed.tree and spec_lf_read.refusal(spec_grammar4.load(root)[0], parsed.tree)
+    vocab = parsed.tree and spec_grammar4.load(root)[0]
+    why = parsed.tree and (spec_lf_read.refusal(vocab, parsed.tree)
+                           or spec_catalogued.refusal(root, vocab, parsed.tree))
     return spec_grammar4.Parse(refusal=why, trees=[parsed.tree]) if why else parsed
 
 

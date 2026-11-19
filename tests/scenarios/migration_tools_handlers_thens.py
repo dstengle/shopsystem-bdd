@@ -10,6 +10,7 @@ import sys
 
 from scenarios import migration_tools_handlers as M
 from scenarios import migration_tools_handlers_counter as C
+from scenarios import upgrades_handlers_found as F
 from scenarios.migration_old import CONTEXT
 
 local = M.local
@@ -111,6 +112,8 @@ def has(step):
         step.context.setdefault("decisions", {})[step.names[1]] = M.entries(step)[step.names[0]]
     elif other == "content":
         return
+    elif other == "context scaffold":
+        F.scaffolded(step)
     else:
         rel = {"decisions index": "spec/decisions/index.md", "plugin version file": ".shop/plugin-version",
                "index file": "spec/index.md"}[other]
@@ -165,6 +168,8 @@ def then_does(step):
         assert "- [r5] **When** b" in M.read(step, "spec/capabilities/thing.md")
     elif step.term in ("refuse", "name"):
         refused(step, what)
+    elif what == "context scaffold" and step.term in ("write", "commit", "keep"):
+        F.scaffolded(step)
     elif step.term == "commit" and what == "plugin version file":
         committed(step)
     else:
@@ -190,6 +195,8 @@ def refused(step, what):
         assert "decisions/0007-a.md" in M.said(step), M.said(step)
     elif what == "content":
         assert "banana" in M.said(step), M.said(step)
+    elif what in F.NAMED:
+        assert F.NAMED[what] in M.said(step), (what, M.said(step))
 
 
 @local("ThenK_A", "design-decision")

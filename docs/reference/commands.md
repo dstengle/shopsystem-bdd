@@ -816,6 +816,24 @@ capability                spec/capabilities/<name>.md                          w
 ...
 ```
 
+### `spec annotate`
+
+Writes, under each operation of each adapter contract (`spec/adapters/cli.toml`), the requirements that govern it:
+each requirement whose trigger requests the operation, its refusals among them, as
+`requirements = ["<capability>#r<n>: <line>", ...]`
+([adapter contracts](adapters.md)). It prints each contract it wrote (`annotated`) or found
+current (`current`) and exits 0.\
+Synopsis: `spec annotate [<adapter contract> ...] [--check]`
+
+- `--check`: write nothing; each stale contract is named on stderr and it exits 1. `spec check` fails the same
+  contract too, naming each operation and requirement (`v_a5`, `v_a6`).
+
+```console
+$ spec annotate
+annotated spec/adapters/cli.toml
+$ spec annotate --check
+```
+
 ### `spec decisions`
 
 Writes `spec/decisions/index.md` from the decision files. Not committed.\
@@ -1101,7 +1119,27 @@ $ measure defect b250 --says "work show prints the status under the notes when t
 
 ## migrate: moving between releases
 
-`migrate` takes a repository from an older plugin release to this one. [Upgrading](../upgrading.md) walks through it.
+`migrate` founds a new bounded context, and takes a repository from an older plugin release to this one.
+[Upgrading](../upgrading.md) walks through it.
+
+### `migrate init`
+
+Founds a new bounded context in the repository it is run in: writes its scaffold and commits it in one commit.
+`spec/index.md` (the id given, its last part the title, `language: codified-2`, `imports: [request]`),
+`spec/universal.md` (no condition), `spec/model/`, `spec/vocabulary/`, `spec/capabilities/`, `.shop/backlog/`,
+`.shop/records/README.md` (an empty records index), `.shop/plugin-version` (the plugin's release),
+`.shop/delivery.toml` (every key commented out at its default), `features/` and `tests/scenarios/conftest.py`, each
+empty folder with a `.gitkeep`. An existing `features/` or conftest is left as it is. It refuses, changing nothing,
+without `--id`, with an id that is not `bounded-context/<domain>/<path>`, and in a repository that has a
+`spec/index.md` or a `.shop/` already.\
+Synopsis: `migrate init --id ID`
+
+```console
+$ migrate init --id bounded-context/example.org/notes/notes-cli
+wrote .shop/backlog/.gitkeep
+...
+wrote tests/scenarios/conftest.py
+```
 
 ### `migrate status`
 

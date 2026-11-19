@@ -111,10 +111,26 @@ commands this way: `work backlog` for `python3 "$SHOP/scripts/work" backlog`.
 
 A bounded context is one repository's part of a product, with its own words. Its spec lives in `spec/`. You'll use
 the example context in [`docs/examples/notes-cli/`](examples/notes-cli/README.md): a notes service the person asks to
-add a note, list the notes and remove one, with `notes.py` as its command-line program. Today you write these files by
-hand; Claude writes later lines for you.
+add a note, list the notes and remove one, with `notes.py` as its command-line program.
 
-Copy them in, or type them from below:
+First found the context. `migrate init` writes its scaffold and commits it: `spec/index.md` with the id you give (its
+last part the title), `spec/universal.md`, the empty `spec/model/`, `spec/vocabulary/` and `spec/capabilities/`,
+`.shop/` (the backlog, the records index, the plugin version and `delivery.toml`, every setting at its default),
+`features/` and `tests/scenarios/conftest.py`. `spec check` finds nothing wrong in it, and there is nothing to generate
+yet:
+
+```console
+$ migrate init --id bounded-context/example.org/notes/notes-cli
+wrote .shop/backlog/.gitkeep
+...
+wrote spec/index.md
+...
+wrote tests/scenarios/conftest.py
+```
+
+It refuses a repository that has a `spec/index.md` or a `.shop/` already, and changes nothing there. The example's
+model, words and lines are written for you here; in your own context Claude writes them with you. Copy them in over the
+scaffold, or type them from below:
 
 ```console
 $ cp -r "$SHOP/docs/examples/notes-cli/spec" "$SHOP/docs/examples/notes-cli/notes.py" .

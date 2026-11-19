@@ -595,3 +595,22 @@ shall [x2: thing `not-relative` (parameter), x6: thing `rc-whose` (parameter), x
   response
     complete(e2, subject: x9, object: x10)
 ```
+
+## r33
+From: b309 r33.
+
+```reading
+While the precondition of a requirement of a capability uses `holds-exactly` and `rc-subject`, when the person examines this specification with the capability, the specification service shall return a translation of the requirement.
+shall [x4: thing `holds-exactly` (parameter), x5: thing `rc-subject` (parameter), x6: agent the person (constant), x7: specification "the specification of this bounded context" (indexical), x8: service the specification service (constant)]
+  while [x1: requirement, x2: capability, x3: precondition]
+    of(x1, x2)
+    of(x3, x1)
+    use(subject: x3, object: x4)
+    use(subject: x3, object: x5)
+  when
+    request(e1, specification.examine, subject: x6, object: x7)
+    param(e1, capability, x2)
+  response [x9: translation]
+    of(x9, x1)
+    return(e2, subject: x8, object: x9)
+```

@@ -65,7 +65,7 @@ a line that holds at every moment
 
 - Form: <subject> always|never <verb> <object>.
 - Functions: `Necessary|MAlways|MNever|k_\w+_Nec`
-- Cited by: reading#r24, reading#r32
+- Cited by: no line
 - Example and its reading:
 
 ```construct
@@ -206,7 +206,7 @@ a response the doer is permitted
 
 - Form: <doer> may <act>
 - Functions: `k_\w+_May`
-- Cited by: reading#r31
+- Cited by: no line
 - Example and its reading:
 
 ```construct
@@ -277,7 +277,7 @@ a condition that does not hold
 
 - Form: <subject> does not <verb> ...; ... is not <value>
 - Functions: `PNeg`
-- Cited by: consistency#r26, reading#r3, scenarios#r24
+- Cited by: consistency#r26, scenarios#r24, scenarios#r31, scenarios#r32
 - Example and its reading:
 
 ```construct
@@ -411,7 +411,7 @@ a relative clause whose subject is the noun
 
 - Form: <noun> that <verb> ...
 - Functions: `k_\w+_Rel_k_\w+`
-- Cited by: consistency#r25, consistency#r27, consistency#r29, scenarios#r21, scenarios#r26
+- Cited by: consistency#r25, consistency#r27, consistency#r29, consistency#r33, scenarios#r21, scenarios#r26, scenarios#r32
 - Example and its reading:
 
 ```construct
@@ -432,7 +432,7 @@ a relative clause whose object is the noun
 
 - Form: <noun> that <subject> <verb>
 - Functions: `k_\w+_Obj_k_\w+|g_\w+|r\d+_\w+_Gap`
-- Cited by: consistency#r24, reading#r17, scenarios#r20
+- Cited by: consistency#r24, scenarios#r20
 - Example and its reading:
 
 ```construct
@@ -453,7 +453,7 @@ a relative clause on the noun's attribute
 
 - Form: <noun> whose <attribute> is <value>
 - Functions: `k_\w+_Whose_t_\w+`
-- Cited by: reading#r18
+- Cited by: no line
 - Example and its reading:
 
 ```construct
@@ -574,7 +574,7 @@ a noun in the plural with no determiner
 
 - Form: <nouns>
 - Functions: `DetPl`
-- Cited by: reading#r9
+- Cited by: no line
 - Example and its reading:
 
 ```construct
@@ -610,7 +610,7 @@ there is none
 
 - Form: no <noun>
 - Functions: `DetNo`
-- Cited by: consistency#r28, reading#r14, scenarios#r23
+- Cited by: consistency#r28, scenarios#r23
 - Example and its reading:
 
 ```construct
@@ -631,7 +631,7 @@ a number of them, bounded
 
 - Form: at least|at most|exactly|more than|fewer than <number> <nouns>
 - Functions: `DetCount|AtLeast|AtMost|Exactly|MoreThan|FewerThan`
-- Cited by: consistency#r16, reading#r26, scenarios#r8, scenarios#r29
+- Cited by: consistency#r16, scenarios#r8, scenarios#r29
 - Example and its reading:
 
 ```construct
@@ -794,7 +794,7 @@ nothing but these
 
 - Form: only <np>
 - Functions: `k_\w+_Only`
-- Cited by: consistency#r3, consistency#r15, reading#r16, scenarios#r7, scenarios#r10
+- Cited by: consistency#r3, consistency#r15, scenarios#r7, scenarios#r10
 - Example and its reading:
 
 ```construct
@@ -834,7 +834,7 @@ the run's own thing
 
 - Form: this <noun>
 - Functions: `k_\w+_This`
-- Cited by: reading#r21
+- Cited by: no line
 - Example and its reading:
 
 ```construct
@@ -852,7 +852,7 @@ no thing at all: after change, and after holds of each kind a relation row "in" 
 
 - Form: nothing
 - Functions: `k_\w+_Nothing`
-- Cited by: consistency#r25, consistency#r27, reading#r40, scenarios#r16, scenarios#r21
+- Cited by: consistency#r25, consistency#r27, scenarios#r16, scenarios#r21
 - Example and its reading:
 
 ```construct
@@ -968,7 +968,7 @@ a request with its parameters, given after "with" and absent after "without", in
 
 - Form: <actor> <operation verb> <np> with the <parameter> <value> and without a <parameter>
 - Functions: `q_\w+|o_\w+|k_\w+_Request|p_\w+_NP`
-- Cited by: reading#r12
+- Cited by: no line
 - Context: `grammar/corpus/constructs/request/`
 - Example and its reading:
 
@@ -989,7 +989,7 @@ a noun of another by a relation row
 
 - Form: <noun> of|in <np>
 - Functions: `r\d+_\w+_Mod`
-- Cited by: consistency#r30, reading#r13, reading#r57, scenarios#r28, scenarios#r30
+- Cited by: consistency#r30, scenarios#r28, scenarios#r30
 - Example and its reading:
 
 ```construct
@@ -1008,7 +1008,7 @@ a noun before another, by a relation row "of"
 
 - Form: <noun2> <noun>
 - Functions: `r\d+_\w+_Cpd`
-- Cited by: reading#r15
+- Cited by: no line
 - Example and its reading:
 
 ```construct
@@ -1067,7 +1067,7 @@ a state: a relation row "in" said from the member's side, as holds-relation
 
 - Form: <np> is in <np>
 - Functions: `r\d+_\w+_In`
-- Cited by: consistency#r19, reading#r41
+- Cited by: consistency#r19
 - Example and its reading:
 
 ```construct
@@ -1087,7 +1087,7 @@ a state: every one that P is held and no one that is not P is, by a relation row
 
 - Form: <np> holds exactly the <nouns> that|whose ...
 - Functions: `r\d+_\w+_Exactly`
-- Cited by: consistency#r18, consistency#r24, consistency#r30, reading#r39, scenarios#r15, scenarios#r20, scenarios#r30
+- Cited by: consistency#r18, consistency#r24, consistency#r30, consistency#r33, scenarios#r15, scenarios#r20, scenarios#r30, scenarios#r31, scenarios#r32
 - Example and its reading:
 
 ```construct
@@ -1274,7 +1274,7 @@ one thing's value compared with another's, of one attribute word with one value 
 
 - Form: the <attribute> of <np> is after|before the <attribute> of <np>
 - Functions: `t_[a-z0-9_]+_\d+_CmpT(?:_t_[a-z0-9_]+_\d+)?`
-- Cited by: consistency#r20, reading#r42, reading#r44
+- Cited by: consistency#r20
 - Example and its reading:
 
 ```construct
@@ -1294,7 +1294,7 @@ one thing's value the same as another's, of any attribute word, the two of one e
 
 - Form: the <attribute> of <np> is the same as the <attribute> of <np>
 - Functions: `t_[a-z0-9_]+_\d+_SameAs(?:_t_[a-z0-9_]+_\d+)?`
-- Cited by: reading#r43
+- Cited by: no line
 - Example and its reading:
 
 ```construct
@@ -1314,7 +1314,7 @@ a collection's members ordered by their attribute (b275)
 
 - Form: <np>, ordered by <attribute>, in ascending|descending order[,]
 - Functions: `r\d+_\w+_By_t_[a-z0-9_]+_\d+|Ascending|Descending`
-- Cited by: reading#r45, reading#r59, reading#r61, scenarios#r22, scenarios#r27
+- Cited by: reading#r62, scenarios#r22, scenarios#r27
 - Example and its reading:
 
 ```construct
@@ -1325,7 +1325,10 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x3
   response [x4: worktree, x5: file]
     in(x5, x4)
     print(e2, subject: x3, object: x4)
-    ordered(x4, version, descending)
+    every [x6: file]
+      in(x6, x4)
+      scope
+        ordered(x6, version, descending)
 ```
 
 ## order-by-every
@@ -1334,7 +1337,7 @@ a printed every ordered by its attribute (b275)
 
 - Form: every <noun>, ordered by <attribute>, in ascending|descending order[,]
 - Functions: `t_[a-z0-9_]+_\d+_k_\w+_Every`
-- Cited by: reading#r46, reading#r56, reading#r57, reading#r60, scenarios#r25, scenarios#r28
+- Cited by: scenarios#r25, scenarios#r28
 - Example and its reading:
 
 ```construct
@@ -1395,7 +1398,7 @@ a moment before or after another
 
 - Form: <moment> is after|before <moment>
 - Functions: `k_moment_Cmp`
-- Cited by: reading#r27
+- Cited by: no line
 - Example and its reading:
 
 ```construct

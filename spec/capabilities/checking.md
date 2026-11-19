@@ -230,3 +230,16 @@ Restates: design-model-check#r13@0.29.
 ### [g47] `model forms --check` refuses a file form written by hand
 - [r47] While the writer of a file form is `hand`, when the person inventories this specification with the audit, the
   specification service shall fail the check and name the file form.
+
+### [g48] Each operation of an adapter contract is given the requirements that govern it
+- [r48] While a requirement governs an operation that an adapter contract holds, when the person annotates the adapter contract, the specification service shall keep an adapter contract that holds an operation that holds the requirement and complete the request.
+
+### [g49] An operation missing a requirement that governs it fails the check
+- [r49] While a requirement governs an operation that an adapter contract holds and the operation does not hold the requirement, if the person validates this specification, then the specification service shall fail the check and name the operation and the requirement.
+
+### [g50] An operation holding a requirement that no longer governs it fails the check
+- [r50] While an adapter contract holds an operation and the operation holds a requirement and the requirement does not govern the operation, if the person validates this specification, then the specification service shall fail the check and name the operation and the requirement.
+
+### [g51] A stale adapter contract fails the audit
+- [r51] While a requirement governs an operation that an adapter contract holds and the operation does not hold the requirement, if the person annotates the adapter contract with the audit, then the specification service shall fail the check, name the adapter contract and change no file.
+

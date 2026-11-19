@@ -5,14 +5,17 @@ attribute of K ("every file, ordered by version, in ascending order": `<T>_<K>_E
 a line is read:
 
 - the form (`np`): one atom `ordered(x, T, ascending|descending)` beside the clause's atom (spec_lf_core's NP
-  `order`), x the collection or the every's K; an order on an attribute with no value order (spec_value_kinds) a note
+  `order`), x the every's K, or of a collection its members' (b334, decision 0093): an every box over the Ks of the
+  row, restricted by `in(m, the collection)`, with `ordered(m, T, direction)` in its scope (`held` reads it), so an
+  `ordered` atom always names a K that has T; an order on an attribute with no value order (spec_value_kinds) a note
   naming the attribute, which spec_lf_read gives as the line's refusal; `show` its line in `model parse --form`;
   an order only where it has a reading (b285, decision 0093: a property of what a response prints): one in a While
   or Where clause, a trigger, or an act the line forbids (inside a `not` box) refused naming it (`misplaced`);
-- the check (`facts`): `ordered(R, I, T, Dir)` of the response's act I, a fact: two lines that require one
+- the check (`facts`): `ordered(R, I, T, Dir)` of the response's act I (of a collection's members, the act on the
+  collection the box restricts them by), a fact: two lines that require one
   collection, or one printing, in opposite orders on one trigger are an L1 (grammar/check.lp), and nothing else is
   proved of it;
-- the steps (`member`, `values`, `every`, `then`): three members with distinct values of T, given in neither the order nor its
+- the steps (`member`, `values`, `every`, `then`, the members of `held`'s box, not an every's R6 Ks): three members with distinct values of T, given in neither the order nor its
   reverse (the second, the third, the first), and the Then that states the order, the response's act on the
   collection or the "every K" with its order, which features_vocab4 reads (`read`).
 """
@@ -44,7 +47,26 @@ def np(st, tree, nps):
     if spec_lf_order.order(t) is None:
         st.notes.append("the %s of a %s has no value order: its entry says neither Order: nor Type:, so no %s comes "
                         "before another, and nothing is ordered by it" % (t.term, t.kinds[0], t.term))
-    return replace(found, order=Atom(PRED, (found.ref, t.term, DIRS[nps.fun(a[1])])))
+    d = DIRS[nps.fun(a[1])]
+    if not by:
+        return replace(found, order=Atom(PRED, (found.ref, t.term, d)))
+    row = st.names.rows[int(by.group(1))]       # the members, the Ks of the row K | in | Y (b334, decision 0093)
+    m = st.ref(row[0])
+    return replace(found, order=Box("every", (m,), (Atom("rel", (row[1], m, found.ref)),),
+                                    Box("scope", (), (Atom(PRED, (m, t.term, d)),))))
+
+
+def held(box):
+    """(the member referent, the collection, the order atom) of an order on a collection's members (b334): an every
+    box of one K restricted only by `in(m, y)`, y outside it, with one `ordered(m, ...)` in its scope; else None."""
+    if not isinstance(box, Box) or box.op != "every" or len(box.refs) != 1 or len(box.body) != 1 \
+            or box.scope is None or len(box.scope.body) != 1:
+        return None
+    (m,), (rel,), (atom,) = box.refs, box.body, box.scope.body
+    if not (isinstance(rel, Atom) and rel.pred == "rel" and rel.args[1] == m and isinstance(atom, Atom)
+            and atom.pred == PRED and atom.args[0] == m):
+        return None
+    return m, rel.args[2], atom
 
 
 def unmodified(found):
@@ -100,23 +122,18 @@ def facts(walk, atom, act):
 
 
 # --- the steps -----------------------------------------------------------------------------------------------------
-def member(vocab, atom, held=False):
-    """(the member kind's row, the attribute entry and its kinds) of an order: the entry of its word that is the
-    every's own kind's, up its kind tree, else (and always of a collection's members, `held`) the K1's of a row `K1 | in | K2` of the collection's kind, up K1's kind
-    tree (b288: of a word of two senses, the member kind's sense, not the first entry of the word); an order no entry
-    of its word is a member's of refused naming the term."""
+def member(vocab, atom):
+    """(None, the attribute entry and its kinds) of an order: the entry of its word that is the ordered K's own, up
+    its kind tree (b288: of a word of two senses, the K's sense, not the first entry of the word; b334: the K a
+    collection's members are, never the collection); an order no entry of its word is the K's refused naming the
+    term."""
     x, term, _ = atom.args
     entries = [(n, t, ks) for n, (t, ks) in enumerate(vocab.attributes, 1) if t.term == term]
     up = vocab.ancestors(x.kind)
-    own = None if held else next((e for e in entries if any(k in e[2] for k in up)), None)
+    own = next((e for e in entries if any(k in e[2] for k in up)), None)
     if own:
         return None, own
-    for row in (r for r in vocab.rows if r[1] == "in" and r[2] in up):
-        found = next((e for e in entries if any(k in e[2] for k in vocab.ancestors(row[0]))), None)
-        if found:
-            return row, found
-    raise boxes().TraceError("no member of a %s has a %s: no entry of %s is an attribute of its kind or of a kind "
-                             "it holds" % (x.kind, term, term))
+    raise boxes().TraceError("no %s has a %s: no entry of %s is an attribute of its kind" % (x.kind, term, term))
 
 
 def values(t):
@@ -198,19 +215,23 @@ def _slotted(kind, np0):
     return arg
 
 
-def then(r, atom, body):
-    """[(act, Then)] of an order on a collection (b275): three members it holds brought in (the first the K the line
-    says it holds, b286), each with a value of T in neither the order nor its reverse, and the Then of the act on the
-    collection that states the order."""
-    x, term, d = atom.args
-    row, (n, t, _) = member(r.vocab, atom, held=True)     # the members' sense, though the collection has one too
+def then(r, box, body):
+    """[(act, Then)] of an order on a collection's members (b275, b334: the every box `held` reads): three members
+    it holds brought in (the first the K the line says it holds, b286), each with a value of T in neither the order
+    nor its reverse, and the Then of the act on the collection that states the order."""
+    m, x, atom = held(box)
+    _, term, d = atom.args
+    _, (n, t, _) = member(r.vocab, atom)
+    up = r.vocab.ancestors(x.kind)
+    row = next(w for w in r.vocab.rows if w[0] == m.kind and w[1] == box.body[0].args[0] and w[2] in up)
     r.bring_in(x)
-    held = [i.args[1] for i in body if isinstance(i, Atom) and i.pred == "rel" and i.args[0] == "in"
-            and i.args[2] == x and row[0] in r.vocab.ancestors(i.args[1].kind)]
+    said_held = [i.args[1] for i in body if isinstance(i, Atom) and i.pred == "rel" and i.args[0] == row[1]
+                 and i.args[2] == x and row[0] in r.vocab.ancestors(i.args[1].kind)]
     for k, v in enumerate(values(t), 1):     # the K the line says it holds the first member (b286)
-        y = held[0] if k == 1 and held else Ref("%s.m%d" % (x.name, k), row[0], "response")
+        y = said_held[0] if k == 1 and said_held else Ref("%s.m%d" % (x.name, k), row[0], "response")
         r.bring_in(y)
-        r.brought += [("SCond", r.cond(Atom("rel", ("in", y, x)))), ("SCond", spec_lf_order.value_cond(r, y, term, v))]
+        r.brought += [("SCond", r.cond(Atom("rel", (row[1], y, x)))),
+                      ("SCond", spec_lf_order.value_cond(r, y, term, v))]
     event = next(i for i in body if isinstance(i, Atom) and i.pred == "event" and x in [z for _, z in i.args[3]])
     R = next(j for j, w in enumerate(r.vocab.rows, 1) if w == row)
     by = ("r%d_in_By_t_%s_%d" % (R, spec_rgl.slug(term), n), r.np0(x)[1], (FUNS[d],))

@@ -19,17 +19,16 @@ from pathlib import Path
 import adapter_cli
 import domain_model
 
-
 PROBE = Path(__file__).with_name("adapter_cli_probe.py")
 TIMEOUT = 60
 
 
 def read_program(path):
     """{command words: set of option strings} of the program at `path`, read by adapter_cli_probe in a process of its
-    own, in a scratch folder, with no input and a time limit; None when it never parses (or does not end)."""
+    own, in a scratch folder, with no input, no bytecode written into the context and a time limit; None when it never parses (or does not end)."""
     with tempfile.TemporaryDirectory() as scratch:
         try:
-            done = subprocess.run([sys.executable, str(PROBE), str(Path(path).resolve())], cwd=scratch,
+            done = subprocess.run([sys.executable, "-B", str(PROBE), str(Path(path).resolve())], cwd=scratch,
                                   stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=TIMEOUT)
         except subprocess.TimeoutExpired:
             return None

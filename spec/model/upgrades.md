@@ -82,4 +82,11 @@ service upgrades
   operation query(repository)  outcomes: returned → the release and every pending upgrade step | refused: content not a version
   operation upgrade(repository)  outcomes: done | refused: uncommitted change
   operation relocate(bounded context)  outcomes: done | refused: uncommitted change, tracked file of a ledger stem
+  operation found(bounded context, context id)  outcomes: done | refused: bounded context with no context id, context id not a bounded context id, index file present, shop directory present
+
+object context scaffold kind of file
+
+object context id kind of text
+
+object bounded context id form kind of artifact
 ```

@@ -26,8 +26,8 @@ options = ["--json", "--root", "--hook", "--python"]
 commands = ["work batch brief", "work directives", "work names", "spec constructs", "spec restates"]
 
 [unexposed]
-# operations an agent performs when dispatched, which no command requests; upgrades.found until b318 adds its command
-operations = ["reviews.review", "measurement.conduct", "measurement.hand", "upgrades.found"]
+# operations an agent performs when dispatched, which no command requests
+operations = ["reviews.review", "measurement.conduct", "measurement.hand"]
 
 [environment]
 VIRTUAL_ENV = "toolchain.probe: the Python interpreter, when none is given"
@@ -37,48 +37,187 @@ SHOPSYSTEM_PUSH_TIMEOUT = "the shared store port: how long a push may take"
 [operations."language.parse"]
 command = "spec parse"
 cli-only = { options = ["--file"] }
+requirements = [
+  "parsing#r1: When the person parses a requirement that conforms to the language reference, the language service shall complete the request.",
+  "parsing#r2: When the person parses a requirement that conforms to the language reference with the logical form, the language service shall return one logical form of the requirement and complete the request.",
+  "parsing#r3: If the person parses a requirement that does not conform to the language reference, then the language service shall refuse the request and name the requirement.",
+  "parsing#r4: If the person parses a requirement that has more than one logical form, then the language service shall refuse the request and name the requirement.",
+  "parsing#r5: If the person parses a requirement that violates a reading rule, then the language service shall refuse the request and name the reading rule.",
+  "parsing#r6: If the person parses a requirement that uses a construct that has no catalogue entry, then the language service shall refuse the request and name the construct.",
+  "parsing#r7: If the person parses a fragment, then the language service shall refuse the request, name the fragment and return a term.",
+  "parsing#r8: While the corpus holds a logical form of a requirement, when the person parses the requirement with the logical form, the language service shall return the logical form.",
+  "parsing#r9: While a parse cache holds the parse of a requirement, when the person parses the requirement, the language service shall return the parse of the requirement, keep no compiled grammar and complete the request.",
+  "parsing#r10: While a requirement has a parse that no parse cache holds, when the person parses the requirement, the language service shall keep a parse cache and complete the request.",
+  "parsing#r11: While a requirement has a parse that no parse cache holds and the compiled grammar of the requirement exists, when the person parses the requirement, the language service shall keep no compiled grammar and complete the request.",
+  "reading#r62: When the person parses a requirement that uses `order-by` with the logical form, the language service shall return a logical form that uses an order of a member of a collection.",
+]
 [operations."language.parse".parameters]
 text = { positional = 1 }
 "logical form" = { option = "--form", flag = true }
 
 [operations."language.explain"]
 command = "spec explain"
+requirements = [
+  "consistency#r1: When the person explains a requirement, the language service shall return the requirement and complete the request.",
+  "consistency#r11: When the person explains a requirement that uses a refusal, the language service shall return a universal condition and a term.",
+  "consistency#r12: When the person explains a requirement that a requirement overrides, the language service shall return a requirement that uses a refusal.",
+  "consistency#r13: If the person explains a requirement id that no capability holds, then the language service shall refuse the request and name the requirement id.",
+]
 [operations."language.explain".parameters]
 text = { positional = 1 }
 
 [operations."language.look up"]
 command = "spec lexicon"
 cli-only = { options = ["--check"] }
+requirements = [
+  "checking#r41: While this bounded context imports a pack, when the person looks up the pack, the language service shall return every term of the pack and complete the request.",
+]
 
 [operations."specification.check"]
 command = "spec check"
 cli-only = { options = ["--limit"] }
+requirements = [
+  "checking#r3: While nothing violates a rule, when the person validates this specification, the specification service shall return `0 violations` and complete the request.",
+  "checking#r4: While a capability violates `v15a`, if the person validates this specification, then the specification service shall fail the check and name `v15a`.",
+  "checking#r5: While a capability violates `v15b`, if the person validates this specification, then the specification service shall fail the check and name `v15b`.",
+  "checking#r6: While a capability violates `v15c`, if the person validates this specification, then the specification service shall fail the check and name `v15c`.",
+  "checking#r7: While a requirement group violates `v15l`, if the person validates this specification, then the specification service shall fail the check and name `v15l`.",
+  "checking#r8: While a requirement group violates `v15n`, if the person validates this specification, then the specification service shall fail the check and name `v15n`.",
+  "checking#r9: While a requirement group violates `v15m`, if the person validates this specification, then the specification service shall fail the check and name `v15m`.",
+  "checking#r10: While a requirement group violates `v_s3`, if the person validates this specification, then the specification service shall fail the check and name `v_s3`.",
+  "checking#r11: While a scenario violates `v_s2`, if the person validates this specification, then the specification service shall fail the check and name `v_s2`.",
+  "checking#r12: While a request violates `v17`, if the person validates this specification, then the specification service shall fail the check and name `v17`.",
+  "checking#r13: While a request violates `v3`, if the person validates this specification, then the specification service shall fail the check and name `v3`.",
+  "checking#r14: While a requirement violates `v_t1`, if the person validates this specification, then the specification service shall fail the check and name `v_t1`.",
+  "checking#r15: While a term violates `v_t2`, if the person validates this specification, then the specification service shall fail the check and name `v_t2`.",
+  "checking#r16: While a term violates `v_t3`, if the person validates this specification, then the specification service shall fail the check and name `v_t3`.",
+  "checking#r17: While a requirement violates `v_p1`, if the person validates this specification, then the specification service shall fail the check and name `v_p1`.",
+  "checking#r18: While a request does not conform to the request form, if the person validates this specification, then the specification service shall fail the check and name the request.",
+  "checking#r19: While a scenario refers to a requirement id that the capability of the scenario does not hold, if the person validates this specification, then the specification service shall fail the check and name the scenario.",
+  "checking#r20: While a capability does not conform to the capability id form, if the person validates this specification, then the specification service shall fail the check and name the capability.",
+  "checking#r21: While a capability has no section whose heading is `Behaviour`, if the person validates this specification, then the specification service shall fail the check and name the capability.",
+  "checking#r22: While a feature does not conform to the feature form, if the person validates this specification, then the specification service shall fail the check and name the feature.",
+  "checking#r23: While a term does not conform to the entry form, if the person validates this specification, then the specification service shall fail the check and name the term.",
+  "checking#r24: While this bounded context does not conform to the final layout, if the person validates this specification, then the specification service shall fail the check and name `scripts/migrate`.",
+  "checking#r25: While an observation violates `w_uncited_obs`, when the person validates this specification, the specification service shall return `w_uncited_obs` and complete the request.",
+  "checking#r26: While this bounded context has no job, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.",
+  "checking#r27: While this interpreter does not import `clingo` and another interpreter imports `clingo`, when the person validates this specification, the specification service shall return `0 violations`.",
+  "checking#r28: While no interpreter imports `clingo`, if the person validates this specification, then the specification service shall fail the check and name this interpreter.",
+  "checking#r30: While a verb has no frame, if the person validates this specification, then the specification service shall fail the check and name the verb.",
+  "checking#r31: While a term violates `v_t12`, if the person validates this specification, then the specification service shall fail the check and name the term.",
+  "checking#r32: While a term has no part of speech, if the person validates this specification, then the specification service shall fail the check and name the term.",
+  "checking#r33: While a frame of a term has a preposition, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r34: While a term violates `v_t13`, if the person validates this specification, then the specification service shall fail the check and name the term.",
+  "checking#r37: While a term violates `v_t14`, if the person validates this specification, then the specification service shall fail the check and name the term.",
+  "checking#r38: While a term has more than one frame, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r39: While a term has more than one sense, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r40: While a term violates `v_t15`, if the person validates this specification, then the specification service shall fail the check and name the term.",
+  "checking#r42: While this bounded context imports a pack that violates `v_t17`, if the person validates this specification, then the specification service shall fail the check and name the pack.",
+  "checking#r43: While a term violates `v_t16`, if the person validates this specification, then the specification service shall fail the check and name the term.",
+  "checking#r44: While a term redefines a pack, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r45: While a requirement violates `w_example`, when the person validates this specification, the specification service shall return the requirement.",
+  "checking#r46: If the person validates this specification with a capability whose language is `codified-1`, then the specification service shall refuse the request and name the capability.",
+  "checking#r49: While a requirement governs an operation that an adapter contract holds and the operation does not hold the requirement, if the person validates this specification, then the specification service shall fail the check and name the operation and the requirement.",
+  "checking#r50: While an adapter contract holds an operation and the operation holds a requirement and the requirement does not govern the operation, if the person validates this specification, then the specification service shall fail the check and name the operation and the requirement.",
+  "decisions#r1: While a design-decision is not `superseded` or `rejected` and the design-decision has no tier, when the person validates this specification, the specification service shall return `w_untiered`.",
+  "decisions#r2: While the tier of a design-decision is `check` and no test enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d6`.",
+  "decisions#r3: While the tier of a design-decision is `requirement` and no requirement enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d7`.",
+  "decisions#r6: While a design-decision whose status is `accepted` supersedes a design-decision whose status is `accepted`, if the person validates this specification, then the specification service shall fail the check and name `v_d8`.",
+  "decisions#r12: When the person validates this specification, the specification service shall return every universal condition that no design-decision verifies.",
+  "decisions#r13: While the kind of a route of a design-decision is not `scenario`, `check`, `judgement` or `monitor`, if the person validates this specification, then the specification service shall fail the check and name the design-decision.",
+  "decisions#r17: While a design-decision has no id, if the person validates this specification, then the specification service shall fail the check and name the design-decision.",
+  "decisions#r20: While a design-decision has no section whose heading is `Decision`, if the person validates this specification, then the specification service shall fail the check and name the design-decision.",
+]
 
 [operations."specification.examine"]
 command = "spec logic"
+requirements = [
+  "consistency#r2: While two requirements of a capability use a code that the specification service does not unify and a requirement of the capability obliges an act that another requirement of the capability forbids, when the person examines this specification, the specification service shall return a requirement and return `L1`.",
+  "consistency#r3: While a requirement of a capability uses `only` and the requirement allows an act that another requirement of the capability obliges, when the person examines this specification, the specification service shall complete the request.",
+  "consistency#r4: While a requirement of a capability uses `every` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person examines this specification, the specification service shall return `L1`.",
+  "consistency#r5: While a requirement of a capability overrides another requirement of the capability, when the person examines this specification, the specification service shall complete the request.",
+  "consistency#r6: While a universal condition forbids an act that a requirement of a capability obliges, when the person examines this specification, the specification service shall return the universal condition.",
+  "consistency#r7: While a requirement has a consequence and the requirement adds no consequence, when the person examines this specification, the specification service shall return `L8`.",
+  "consistency#r8: While a capability holds a count that contradicts a count, when the person examines this specification, the specification service shall return `L1`.",
+  "consistency#r9: While a requirement of a capability forbids an act that another requirement of the capability permits, when the person examines this specification, the specification service shall return `L7`.",
+  "consistency#r10: While the language of a capability is `codified-2`, when the person examines this specification, the specification service shall complete the request.",
+  "consistency#r14: While a requirement of a capability conforms to the language reference, when the person examines this specification with the capability, the specification service shall return a translation of the requirement.",
+  "consistency#r15: While a requirement of a capability uses `only` and the requirement uses `holds-relation`, when the person examines this specification with the capability, the specification service shall return a translation of the requirement.",
+  "consistency#r16: While a requirement of a capability uses `count` and the requirement uses `holds-relation`, when the person examines this specification with the capability, the specification service shall return a translation of the requirement.",
+  "consistency#r17: While a requirement of a capability has no translation, when the person examines this specification with the capability, the specification service shall return the requirement and not return `no findings`.",
+  "consistency#r18: While a requirement of a capability uses `holds-exactly` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person examines this specification, the specification service shall return `L1`.",
+  "consistency#r19: While a requirement uses `is-in` and the requirement obliges an act and another requirement that forbids the act uses `holds-relation`, when the person examines this specification, the specification service shall return `L1`.",
+  "consistency#r20: While a requirement of a capability uses `value-compare` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person examines this specification, the specification service shall return `L1`.",
+  "consistency#r21: While a requirement of a capability obliges an act that another requirement of the capability forbids and a comparison of the precondition of the requirement contradicts a comparison, when the person examines this specification, the specification service shall complete the request.",
+  "consistency#r22: While a capability holds an order that contradicts an order, when the person examines this specification, the specification service shall return `L1`.",
+  "consistency#r23: While a sense of a term has a value order and another sense of the term has the value order and a requirement of a capability uses the term and `value-compare` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person examines this specification, the specification service shall return `L1`.",
+  "consistency#r24: While a requirement of a capability uses `holds-exactly` and `rc-object` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person examines this specification, the specification service shall return `L1`.",
+  "consistency#r25: While a requirement of a capability uses `nothing` and `rc-subject` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person examines this specification, the specification service shall return `L1`.",
+  "consistency#r26: While the precondition of a requirement of a capability uses `every` and `not-condition`, when the person examines this specification with the capability, the specification service shall return a translation of the requirement.",
+  "consistency#r27: While a requirement uses `nothing` and `rc-subject` and the requirement obliges an act and another requirement that forbids the act uses `holds-relation`, when the person examines this specification, the specification service shall complete the request.",
+  "consistency#r28: While a requirement uses `no-noun` and `holds-relation` and the requirement obliges an act and another requirement that forbids the act uses `holds-relation`, when the person examines this specification, the specification service shall complete the request.",
+  "consistency#r29: While a requirement uses `holds-relation` and `rc-subject` and the requirement obliges an act and another requirement that forbids the act uses `holds-relation`, when the person examines this specification, the specification service shall return `L1`.",
+  "consistency#r30: While a requirement of a capability uses `holds-exactly` and `of-relation` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person examines this specification, the specification service shall return `L1`.",
+  "consistency#r31: While a requirement uses `not-relative` and a code and the requirement forbids an act and another requirement obliges the act and the requirement uses `rc-whose` and the requirement does not use the code, when the person examines this specification, the specification service shall return `L1`.",
+  "consistency#r32: While a requirement uses `not-relative` and a code and the requirement forbids an act and another requirement obliges the act and the requirement uses `rc-whose` and the code, when the person examines this specification, the specification service shall complete the request.",
+  "consistency#r33: While the precondition of a requirement of a capability uses `holds-exactly` and `rc-subject`, when the person examines this specification with the capability, the specification service shall return a translation of the requirement.",
+]
 [operations."specification.examine".parameters]
 capability = { positional = 1 }
 
 [operations."specification.consult"]
 command = "spec rules"
+requirements = [
+  "checking#r1: When the person consults the rule catalogue, the specification service shall return every rule and complete the request.",
+]
 
 [operations."specification.renew"]
 command = "spec rules"
 cli-only = { options = ["--write"] }
+requirements = [
+  "checking#r35: When the person renews the rule catalogue, the specification service shall keep a rule catalogue and complete the request.",
+  "checking#r36: While a rule has a catalogue entry that a rule catalogue does not hold, if the person renews the rule catalogue with the audit, then the specification service shall fail the check, name the rule catalogue and change no file.",
+]
 [operations."specification.renew".parameters]
 audit = { option = "--check", flag = true }
 
 [operations."specification.inventory"]
 command = "spec forms"
+requirements = [
+  "checking#r2: When the person inventories this specification, the specification service shall return every file form and complete the request.",
+  "checking#r47: While the writer of a file form is `hand`, when the person inventories this specification with the audit, the specification service shall fail the check and name the file form.",
+]
 [operations."specification.inventory".parameters]
 audit = { option = "--check", flag = true }
 
 [operations."specification.translate"]
 command = "spec facts"
+requirements = [
+  "checking#r29: When the person translates this specification, the specification service shall return every fact of this bounded context.",
+]
+
+[operations."specification.annotate"]
+command = "spec annotate"
+requirements = [
+  "checking#r48: While a requirement governs an operation that an adapter contract holds, when the person annotates the adapter contract, the specification service shall keep an adapter contract that holds an operation that holds the requirement and complete the request.",
+  "checking#r51: While a requirement governs an operation that an adapter contract holds and the operation does not hold the requirement, if the person annotates the adapter contract with the audit, then the specification service shall fail the check, name the adapter contract and change no file.",
+]
+[operations."specification.annotate".parameters]
+"adapter contract" = { positional = 1 }
+audit = { option = "--check", flag = true }
 
 [operations."decisions.enter"]
 command = "work decision"
 cli-only = { options = ["--alternatives", "--by", "--context", "--date", "--enforced-by", "--rests-on", "--slug", "--source"] }
+requirements = [
+  "decisions#r7: When the person enters a design-decision, the decisions service shall keep the design-decision and the decisions index.",
+  "decisions#r8: If the person enters a design-decision without a tier, then the decisions service shall refuse the request and name the tier.",
+  "decisions#r9: If the person enters a design-decision without a summary, then the decisions service shall refuse the request and name the summary.",
+  "decisions#r10: If the person enters a design-decision without a wording, then the decisions service shall refuse the request and name the wording.",
+  "decisions#r11: When the person enters a design-decision with a route, the decisions service shall keep a design-decision that has a route.",
+  "decisions#r14: When the person enters a design-decision over a design-decision whose status is `accepted`, the decisions service shall set the status of the design-decision to `superseded` and keep the design-decision.",
+  "decisions#r15: If the person enters a design-decision over a design-decision whose status is not `accepted`, then the decisions service shall refuse the request and name the design-decision.",
+]
 [operations."decisions.enter".parameters]
 title = { positional = 1 }
 summary = { option = "--summary" }
@@ -89,12 +228,23 @@ supersedes = { option = "--supersedes", repeat = true }
 
 [operations."decisions.rebuild"]
 command = "spec decisions"
+requirements = [
+  "decisions#r4: While the tier of a design-decision is `check` and a test enforces the design-decision, when the person rebuilds the decisions index with the audit, the decisions service shall return the verdict of the test.",
+  "decisions#r5: While the tier of a design-decision is `check` and a test whose verdict is `failed` enforces the design-decision, if the person rebuilds the decisions index with the audit, then the decisions service shall fail the check and name the design-decision.",
+  "decisions#r16: When the person rebuilds the decisions index, the decisions service shall keep the decisions index.",
+  "decisions#r18: While a design-decision has an index entry that a decisions index does not hold, if the person rebuilds the decisions index with the audit, then the decisions service shall fail the check, name the decisions index and change no file.",
+  "decisions#r19: While no decisions index lacks an index entry, when the person rebuilds the decisions index with the audit, the decisions service shall complete the request.",
+]
 [operations."decisions.rebuild".parameters]
 audit = { option = "--check", flag = true }
 
 [operations."records.file"]
 command = "work record"
 cli-only = { options = ["--body", "--date", "--kind", "--slug"] }
+requirements = [
+  "records#r1: When the person files a record, the records service shall keep the record.",
+  "records#r2: If the person files a record with a text that does not conform to the node id form, then the records service shall refuse the request and name the text.",
+]
 [operations."records.file".parameters]
 title = { positional = 1 }
 summary = { option = "--summary" }
@@ -103,6 +253,39 @@ text = { option = "--about" }
 [operations."scenarios.generate"]
 command = "features generate"
 cli-only = { options = ["--preview", "--root"] }
+requirements = [
+  "scenarios#r1: While the feature of a capability has a scenario that no requirement group has, if the person generates the feature of the capability with the audit, then the scenarios service shall fail the check, name the feature and change no file.",
+  "scenarios#r3: While the language of a capability is `codified-2` and every requirement of the capability conforms to the language reference and every requirement of the capability uses the `shall` construct, when the person generates the feature of the capability, the scenarios service shall keep the scenario of every requirement group of the capability.",
+  "scenarios#r4: While the language of a capability is `codified-2`, when the person generates the feature of the capability, the scenarios service shall not keep a step that a universal condition entails.",
+  "scenarios#r5: While the group of a capability is `service` and the language of the capability is `codified-2`, when the person generates the feature of the capability, the scenarios service shall keep the feature of the capability and return the feature.",
+  "scenarios#r6: While an act of a requirement of a capability brings in a referent, when the person generates the feature of the capability, the scenarios service shall keep a description of the referent that follows the act and not keep a description of the referent that precedes the act.",
+  "scenarios#r7: While a requirement of a capability uses `only` and the requirement uses `holds-relation`, when the person generates the feature of the capability, the scenarios service shall keep a scenario that uses `only`.",
+  "scenarios#r8: While a requirement of a capability uses `count` and the requirement uses `holds-relation`, when the person generates the feature of the capability, the scenarios service shall keep a scenario that uses `count`.",
+  "scenarios#r9: While a requirement of a requirement group of a capability uses `every` and the requirement has a restriction, when the person generates the feature of the capability, the scenarios service shall keep a scenario of the requirement group that has a counter-example.",
+  "scenarios#r10: While a requirement of a requirement group of a capability uses `only` and the requirement has a restriction, when the person generates the feature of the capability, the scenarios service shall keep a scenario of the requirement group that has a counter-example and not keep a step that asserts an act that the requirement allows.",
+  "scenarios#r11: While a requirement of a requirement group of a capability has an upper bound, when the person generates the feature of the capability, the scenarios service shall keep a scenario of the requirement group that has a counter-example.",
+  "scenarios#r12: While the precondition of a requirement of a requirement group of a capability uses `every`, when the person generates the feature of the capability, the scenarios service shall keep a scenario of the requirement group that satisfies the precondition.",
+  "scenarios#r13: While the precondition of a requirement of a requirement group of a capability holds a count, when the person generates the feature of the capability, the scenarios service shall keep a scenario of the requirement group that has the boundary of the count.",
+  "scenarios#r14: While a requirement of a requirement group of a capability uses `two`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step introduces.",
+  "scenarios#r15: While a requirement of a capability uses `holds-exactly`, when the person generates the feature of the capability, the scenarios service shall keep a scenario whose step uses `not-condition`.",
+  "scenarios#r16: While the precondition of a requirement of a capability uses `nothing`, when the person generates the feature of the capability, the scenarios service shall keep a scenario whose step uses `nothing`.",
+  "scenarios#r17: While a requirement of a requirement group of a capability uses an order, when the person generates the feature of the capability, the scenarios service shall keep a scenario that has an order counter-example.",
+  "scenarios#r18: While a term has two senses and a requirement of a requirement group of a capability uses the term and `order-by`, when the person generates the feature of the capability, the scenarios service shall keep a scenario of the requirement group that has an order counter-example.",
+  "scenarios#r19: While a term has two senses and a requirement of a requirement group of a capability uses the term and `order-by-every`, when the person generates the feature of the capability, the scenarios service shall keep a scenario of the requirement group that has an order counter-example.",
+  "scenarios#r20: While a requirement of a capability uses `holds-exactly` and `rc-object`, when the person generates the feature of the capability, the scenarios service shall keep a scenario whose step uses `not-condition`.",
+  "scenarios#r21: While a requirement of a capability uses `nothing` and `rc-subject`, when the person generates the feature of the capability, the scenarios service shall keep a scenario whose step uses `nothing`.",
+  "scenarios#r22: While a requirement of a requirement group of a capability uses `order-by` and the requirement uses a verb that has no frame that takes `thing`, when the person generates the feature of the capability, the scenarios service shall keep a scenario of the requirement group that has an order counter-example.",
+  "scenarios#r23: While a requirement of a requirement group of a capability uses `no-noun` and `holds-relation` and the precondition of the requirement does not use `no-noun`, when the person generates the feature of the capability, the scenarios service shall keep a scenario of the requirement group that has a counter-example.",
+  "scenarios#r24: While the precondition of a requirement of a requirement group of a capability uses `every` and `not-condition`, when the person generates the feature of the capability, the scenarios service shall keep a scenario of the requirement group that satisfies the precondition.",
+  "scenarios#r25: While a requirement of a requirement group of a capability uses `order-by-every` and the requirement uses a verb that has no frame that takes `thing`, when the person generates the feature of the capability, the scenarios service shall keep a scenario of the requirement group that has an order counter-example.",
+  "scenarios#r26: While a requirement of a requirement group of a capability uses `holds-relation` and `rc-subject`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step introduces.",
+  "scenarios#r27: While a requirement of a requirement group of a capability uses `order-by`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step introduces.",
+  "scenarios#r28: While a requirement of a requirement group of a capability uses `order-by-every` and `of-relation`, when the person generates the feature of the capability, the scenarios service shall keep a scenario of the requirement group that has an order counter-example.",
+  "scenarios#r29: While a requirement of a requirement group of a capability uses `count` and `holds-relation` and the requirement has an upper bound, when the person generates the feature of the capability, the scenarios service shall keep a scenario of the requirement group that has a counter-example.",
+  "scenarios#r30: While a requirement of a capability uses `holds-exactly` and `of-relation`, when the person generates the feature of the capability, the scenarios service shall keep a scenario whose step uses `not-condition`.",
+  "scenarios#r31: While the precondition of a requirement of a capability uses `holds-exactly`, when the person generates the feature of the capability, the scenarios service shall keep a scenario whose step uses `not-condition`.",
+  "scenarios#r32: While the precondition of a requirement of a capability uses `holds-exactly` and `rc-subject`, when the person generates the feature of the capability, the scenarios service shall keep a scenario whose step uses `not-condition`.",
+]
 [operations."scenarios.generate".parameters]
 capability = { positional = 1 }
 audit = { option = "--check", flag = true }
@@ -110,11 +293,21 @@ audit = { option = "--check", flag = true }
 [operations."scenarios.audit"]
 command = "features vocab"
 cli-only = { options = ["--check", "--root", "--tests"] }
+requirements = [
+  "scenarios#r2: While a step of a feature has no handler, if the person audits the feature, then the scenarios service shall fail the check, name the step, name the feature and change no file.",
+]
 [operations."scenarios.audit".parameters]
 feature = { positional = 1 }
 
 [operations."feature reading.search"]
 command = "features list"
+requirements = [
+  "feature-reading#r3: While a docstring of a feature file contains a tag and the feature file does not have the tag, when the person searches this repository with the tag, the feature reading service shall complete the request and not return the feature file.",
+  "feature-reading#r4: While a feature file in a subdirectory has a scenario, when the person searches this repository with the scenario title of the scenario, the feature reading service shall return the feature file.",
+  "feature-reading#r5: While a feature file has a tag, when the person searches this repository with the tag, the feature reading service shall return every scenario of the feature file.",
+  "feature-reading#r6: While a scenario has a tag, when the person searches this repository with the tag, the feature reading service shall return the scenario.",
+  "feature-reading#r7: When the person searches this repository with a search text, the feature reading service shall return every scenario whose scenario title contains the search text.",
+]
 [operations."feature reading.search".parameters]
 tag = { option = "--tag" }
 "search text" = { option = "--title" }
@@ -123,31 +316,62 @@ tag = { option = "--tag" }
 [operations."feature reading.count"]
 command = "features count"
 cli-only = { options = ["--by-tag"] }
+requirements = [
+  "feature-reading#r1: While a docstring of a feature file contains a tag and a scenario line, when the person counts the feature file, the feature reading service shall return the number of scenarios of the feature file.",
+  "feature-reading#r2: While a feature file has a scenario outline and the feature file has no scenario, when the person counts the feature file, the feature reading service shall return the number of examples rows of the scenario outline.",
+  "feature-reading#r8: While a feature file has a rule block, if the person counts the feature file, then the feature reading service shall refuse the request and name the feature file.",
+]
 
 [operations."feature reading.scan"]
 command = "features deprecated"
+requirements = [
+  "feature-reading#r9: While a replacement of a scenario has a requirement tag and the scenario has the `@deprecated` tag, when the person scans this repository, the feature reading service shall return the scenario and every requirement tag of the replacement.",
+  "feature-reading#r10: While no scenario has the `@deprecated` tag, when the person scans this repository, the feature reading service shall return `none deprecated`.",
+]
 
 [operations."feature reading.vet"]
 command = "features bindings"
 cli-only = { options = ["--tests"] }
+requirements = [
+  "feature-reading#r11: While every binding binds a scenario, when the person vets this repository, the feature reading service shall return `every binding names a scenario` and complete the request.",
+  "feature-reading#r12: While a binding of a test module binds no scenario, if the person vets this repository, then the feature reading service shall fail the check, name the test module and change no file.",
+  "feature-reading#r13: While a scenarios call binds a scenario of a feature file, when the person vets this repository with the unbound listing, the feature reading service shall complete the request and not return a scenario of the feature file.",
+  "feature-reading#r14: While a feature file has a scenario that no binding binds, if the person vets this repository with the unbound listing, then the feature reading service shall fail the check, name the scenario and change no file.",
+]
 [operations."feature reading.vet".parameters]
 "unbound listing" = { option = "--unbound", flag = true }
 
 [operations."backlog.note idea"]
 command = "work idea"
 cli-only = { options = ["--provenance"] }
+requirements = [
+  "items#r13: When the person notes an idea, the backlog service shall keep an item whose status is `idea`.",
+  "items#r22: While the shared store is `rejecting`, when the person notes an idea, the backlog service shall keep an item whose status is `idea`, name the shared store and complete the request.",
+  "items#r23: While the shared store is `unreachable`, when the person notes an idea, the backlog service shall keep an item whose status is `idea`, name the shared store and complete the request.",
+  "items#r24: While this repository is in the workspace of a task, if the person notes an idea, then the backlog service shall refuse the request and name the task.",
+  "items#r25: While this repository is in a workspace that has a workspace name and the shared workspace of the workspace has a different workspace name, when the person notes an idea, the backlog service shall keep an item whose status is `idea` and keep the shared workspace.",
+]
 [operations."backlog.note idea".parameters]
 title = { positional = 1 }
 note = { option = "--note" }
 
 [operations."backlog.shape"]
 command = "work shape"
+requirements = [
+  "items#r14: While the status of an item is `idea`, when the person shapes the item, the backlog service shall set the status of the item to `shaped`.",
+  "items#r15: While the status of an item is not `idea`, if the person shapes the item, then the backlog service shall refuse the request and name the item.",
+  "items#r27: While the status of an item is `idea` and the item has no shaping note, if the person shapes the item without a note, then the backlog service shall refuse the request and name the note.",
+  "shaping-guarantees#r2: When the brainstorming session shapes an item, the brainstorming session shall draft the item and ready the item.",
+]
 [operations."backlog.shape".parameters]
 item = { positional = 1 }
 note = { option = "--note" }
 
 [operations."backlog.rate"]
 command = "work rate"
+requirements = [
+  "items#r16: When the person rates an item with the value `high-value` and the urgency `low-urgency` and the size `small`, the backlog service shall set the value of the item to `high-value`, set the urgency of the item to `low-urgency`, set the size of the item to `small` and keep the item.",
+]
 [operations."backlog.rate".parameters]
 item = { positional = 1 }
 value = { option = "--value" }
@@ -157,42 +381,95 @@ size = { option = "--size" }
 [operations."backlog.link"]
 command = "work depend"
 cli-only = { options = ["--drop"] }
+requirements = [
+  "items#r11: When the person links an item, the backlog service shall keep a dependency on the item.",
+]
 [operations."backlog.link".parameters]
 item = { positional = 1 }
 prerequisite = { option = "--on" }
 
 [operations."backlog.ready"]
 command = "work ready"
+requirements = [
+  "items#r1: While an item is `shaped` and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.",
+  "items#r2: While an item is `shaped` and the item does not meet the readiness bar, if the person readies the item, then the backlog service shall refuse the request and name every bar check that the item does not meet.",
+  "items#r3: While an item is not `shaped`, if the person readies the item, then the backlog service shall refuse the request and name the item.",
+  "items#r4: When the person readies an item, the backlog service shall not ask a question.",
+  "items#r5: While an item is `shaped` and a term in the item violates a rule, if the person readies the item, then the backlog service shall refuse the request and name the term and the rule.",
+  "items#r6: While an item is `shaped` and a requirement in the item has no translation, if the person readies the item, then the backlog service shall refuse the request and name the requirement.",
+  "items#r7: While `universal` does not exist and an item is `shaped` and a universal condition in the item has no translation, if the person readies the item, then the backlog service shall refuse the request and name the universal condition.",
+  "items#r8: While an item is `shaped` and a requirement in the item has no parse and a different requirement in the item has no translation, if the person readies the item, then the backlog service shall refuse the request and name every requirement in the item that has no parse and every requirement in the item that has no translation.",
+  "items#r9: While an item is `shaped` and the item holds a chore and the item holds no requirement, when the person readies the item, the backlog service shall set the status of the item to `ready`.",
+  "items#r10: While an item is `shaped` and a requirement group in the item violates a rule, if the person readies the item, then the backlog service shall refuse the request and name the requirement group and the rule.",
+  "items#r30: While an item is `shaped` and a request line of the item is not `accepted`, `refused` or `withdrawn`, if a session readies the item, then the backlog service shall refuse the request and name the request line.",
+  "shaping-guarantees#r1: When the brainstorming session readies an item, the brainstorming session shall not ask a question.",
+]
 [operations."backlog.ready".parameters]
 item = { positional = 1 }
 
 [operations."backlog.decline"]
 command = "work refuse"
+requirements = [
+  "items#r19: While the status of an item is one of `idea` or `shaped`, when the person declines the item, the backlog service shall set the status of the item to `refused`.",
+]
 [operations."backlog.decline".parameters]
 item = { positional = 1 }
 
 [operations."backlog.withdraw"]
 command = "work withdraw"
+requirements = [
+  "items#r18: While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person withdraws the item, the backlog service shall set the status of the item to `withdrawn`.",
+]
 [operations."backlog.withdraw".parameters]
 item = { positional = 1 }
 
 [operations."backlog.answer"]
 command = "work answer"
+requirements = [
+  "items#r20: While the status of an item is `needs-input`, when the person answers the item, the backlog service shall set the status of the item to `shaped` and keep the item.",
+]
 [operations."backlog.answer".parameters]
 item = { positional = 1 }
 answer = { positional = 2 }
 
 [operations."backlog.show"]
 command = "work show"
+requirements = [
+  "items#r12: When the person shows an item, the backlog service shall return the title of the item.",
+]
 [operations."backlog.show".parameters]
 item = { positional = 1 }
 
 [operations."backlog.list"]
 command = "work backlog"
+requirements = [
+  "items#r17: While an item is not `delivered` and a dependency on the item exists and another item has the dependency, when the person lists the backlog, the backlog service shall return the item and the dependency.",
+  "items#r21: While the status of an item is `needs-input`, when the person lists the backlog, the backlog service shall return the item and every question on the item.",
+  "items#r26: While an item exists, when the person lists the backlog, the backlog service shall return the item, the title of the item, the status of the item, the provenance of the item, the value of the item, the urgency of the item and the size of the item.",
+  "items#r28: While the status of an item is `idea` and the item has no shaping note, when the person lists the backlog, the backlog service shall return the item and name the note.",
+]
 
 [operations."drafting.draft"]
 command = "work line"
 cli-only = { options = ["--group", "--in", "--into", "--model", "--narrator", "--no-line", "--term"] }
+requirements = [
+  "drafting#r1: When the person drafts an item with a relation row, the drafting service shall keep the relation row in the item.",
+  "drafting#r2: If the person drafts an item with a relation row that does not conform to the relation-row form, then the drafting service shall refuse the request and name the relation row.",
+  "drafting#r3: When the person drafts an item with a universal condition, the drafting service shall keep the universal condition in the item.",
+  "drafting#r4: When the person drafts an item with an upstream entry, the drafting service shall keep the upstream entry in the item.",
+  "drafting#r5: If the person drafts an item with an upstream entry that does not conform to the upstream-entry form, then the drafting service shall refuse the request and name the upstream entry.",
+  "drafting#r6: When the person drafts an item with a given block, the drafting service shall keep the given block in the item.",
+  "drafting#r7: If the person drafts an item with a given block that does not conform to the example-data form, then the drafting service shall refuse the request and name the given block.",
+  "drafting#r8: When the person drafts an item with a requirement id, the drafting service shall keep a requirement in the item.",
+  "drafting#r9: If the person drafts an item with a requirement id that no requirement has, then the drafting service shall refuse the request and name the requirement id.",
+  "drafting#r12: When the person drafts an item with a universal condition id, the drafting service shall keep a universal condition in the item.",
+  "drafting#r13: If the person drafts an item with a universal condition id that no universal condition has, then the drafting service shall refuse the request and name the universal condition id.",
+  "drafting#r17: When the person drafts an item with a requirement id and without a requirement, the drafting service shall keep the requirement id in the item and not keep a requirement in the item.",
+  "drafting#r18: If the person drafts an item with a requirement id that no requirement has and without a requirement, then the drafting service shall refuse the request and name the requirement id.",
+  "drafting#r21: If the person drafts an item that holds a chore, then the drafting service shall refuse the request and name the chore.",
+  "drafting#r22: When the person drafts an item with a capability, the drafting service shall keep the capability in the item.",
+  "drafting#r23: If the person drafts an item with a capability that exists, then the drafting service shall refuse the request and name the capability.",
+]
 [operations."drafting.draft".parameters]
 item = { positional = 1 }
 requirement = { positional = 2 }
@@ -206,29 +483,56 @@ capability = { option = "--capability" }
 
 [operations."drafting.recodify"]
 command = "work line"
+requirements = [
+  "drafting#r10: When the person recodifies a capability in an item, the drafting service shall set the language of the capability in the item to `codified-2` and keep the item.",
+  "drafting#r11: When the person recodifies `universal` in an item, the drafting service shall set the language of the capability in the item to `codified-2` and keep the item.",
+]
 [operations."drafting.recodify".parameters]
 item = { positional = 1 }
 capability = { option = "--recodify" }
 
 [operations."drafting.reword"]
 command = "work line"
+requirements = [
+  "drafting#r14: When the person rewords a requirement in an item, the drafting service shall keep a different requirement in the item.",
+  "drafting#r15: If the person rewords a requirement of a capability, then the drafting service shall refuse the request and name the requirement.",
+]
 [operations."drafting.reword".parameters]
 requirement = { option = "--reword" }
 
 [operations."drafting.remove"]
 command = "work line"
+requirements = [
+  "drafting#r16: If the person removes a requirement of a capability, then the drafting service shall refuse the request and name the requirement.",
+  "drafting#r24: When the person removes a requirement in an item, the drafting service shall keep every requirement id in the item that the requirement does not retire.",
+]
 [operations."drafting.remove".parameters]
 requirement = { option = "--remove" }
 
 [operations."drafting.assign"]
 command = "work chore"
 cli-only = { options = ["--check", "--file"] }
+requirements = [
+  "drafting#r19: When the person assigns a chore to an item, the drafting service shall keep the chore in the item.",
+  "drafting#r20: If the person assigns a chore to an item that holds a requirement, then the drafting service shall refuse the request and name the requirement.",
+]
 [operations."drafting.assign".parameters]
 item = { positional = 1 }
 
 [operations."context requests.raise"]
 command = "work request"
 cli-only = { options = ["--ask", "--raised-for"] }
+requirements = [
+  "context-requests#r4: When the person raises a context request for a context request, the context requests service shall keep the context request.",
+  "context-requests#r5: If the person raises a context request without an origin and a thread, then the context requests service shall refuse the request and name the thread.",
+  "context-requests#r6: While this bounded context holds an upstream entry, if the person raises a context request with an origin and a thread, then the context requests service shall refuse the request and name the origin.",
+  "context-requests#r7: If the person raises a context request with a text that does not identify this bounded context, then the context requests service shall refuse the request and name the text.",
+  "context-requests#r16: When the person raises a context request, the context requests service shall keep a context request whose status is `open` and a thread of the context request.",
+  "context-requests#r17: If the person raises a context request with a bounded context that has no channel, then the context requests service shall refuse the request and name the bounded context.",
+  "context-requests#r30: While this repository is `rejecting`, if the person raises a context request, then the context requests service shall refuse the request, name this repository and not keep a thread.",
+  "context-requests#r39: While this bounded context holds an upstream entry, if the person raises a context request for a context request with an origin, then the context requests service shall refuse the request and name the origin.",
+  "context-requests#r46: When the person raises a context request without a text, the context requests service shall keep a context request that originates from this bounded context.",
+]
 [operations."context requests.raise".parameters]
 origin = { option = "--source" }
 thread = { option = "--thread" }
@@ -237,11 +541,19 @@ text = { option = "--from" }
 
 [operations."context requests.ask"]
 command = "work ask"
+requirements = [
+  "context-requests#r11: While a context request is `open`, when the person asks a question on the context request, the context requests service shall keep the question.",
+]
 [operations."context requests.ask".parameters]
 question = { positional = 3 }
 
 [operations."context requests.reply"]
 command = "work reply"
+requirements = [
+  "context-requests#r12: While a context request is `awaiting-asker` and the context request originates from this bounded context, when the person replies to the context request, the context requests service shall keep an answer.",
+  "context-requests#r33: While a context request addresses this bounded context and the context request does not originate from this bounded context, if the person replies to the context request, then the context requests service shall refuse the request and name the context request.",
+  "context-requests#r44: When the person replies to a context request, the context requests service shall return the context request and the status of the context request.",
+]
 [operations."context requests.reply".parameters]
 "context request" = { positional = 1 }
 answer = { positional = 3 }
@@ -249,6 +561,14 @@ answer = { positional = 3 }
 [operations."context requests.offer"]
 command = "work offer"
 cli-only = { options = ["--note"] }
+requirements = [
+  "context-requests#r18: While a context request is `open`, when a session offers on the context request, the context requests service shall keep an entry on the context request and set the status of the context request to `awaiting-asker`.",
+  "context-requests#r42: When the person offers on a context request, the context requests service shall return the context request and the status of the context request.",
+  "context-requests#r47: When a session offers on a context request with a capability, the context requests service shall keep an entry that holds every requirement of the capability.",
+  "context-requests#r48: While a requirement of a capability mentions a term, when a session offers on a context request with the capability, the context requests service shall keep an entry that holds the term.",
+  "context-requests#r49: While a capability holds a given block, when a session offers on a context request with the capability, the context requests service shall keep an entry that does not hold the given block.",
+  "context-requests#r50: While a term is in the bounded context and a capability has no requirement that mentions the term, when a session offers on a context request with the capability, the context requests service shall keep an entry that does not hold the term.",
+]
 [operations."context requests.offer".parameters]
 "context request" = { positional = 1 }
 capability = { option = "--capability" }
@@ -256,18 +576,35 @@ capability = { option = "--capability" }
 [operations."context requests.serve"]
 command = "work fits"
 cli-only = { options = ["--serves"] }
+requirements = [
+  "context-requests#r19: While a context request is `awaiting-asker`, when the person serves the context request, the context requests service shall set the status of the context request to `delivered`, keep a resolution and keep an entry on the context request.",
+  "context-requests#r32: While this repository is `rejecting` and a context request is `awaiting-asker`, if the person serves the context request, then the context requests service shall refuse the request, name this repository and not keep an entry on the context request.",
+]
 [operations."context requests.serve".parameters]
 "context request" = { positional = 1 }
 
 [operations."context requests.propose"]
 command = "work propose"
 cli-only = { options = ["--line"] }
+requirements = [
+  "context-requests#r20: While a context request is `awaiting-asker`, when the person proposes to the context request, the context requests service shall keep a request line.",
+  "context-requests#r43: When the person proposes to a context request, the context requests service shall return the context request and the status of the context request.",
+]
 [operations."context requests.propose".parameters]
 "context request" = { positional = 1 }
 
 [operations."context requests.settle"]
 command = "work outcome"
 cli-only = { options = ["--group", "--into", "--line"] }
+requirements = [
+  "context-requests#r1: When a session settles a request line of a context request with the line outcome `rewritten`, the context requests service shall set the line outcome of the request line to `rewritten`, keep a request line of the context request that counters the request line, set the side of the context request to `asker` and keep an entry on the context request.",
+  "context-requests#r2: When a session settles a request line of a context request with the line outcome `refused`, the context requests service shall set the line outcome of the request line to `refused`, keep a line reason of the request line and keep the context request.",
+  "context-requests#r3: If a session settles a request line with the line outcome `refused` and without a line reason, then the context requests service shall refuse the request and name the line reason.",
+  "context-requests#r8: While a context request is `open`, when the person settles a request line in the context request with the line outcome `accepted`, the context requests service shall set the line outcome of the request line to `accepted` and keep the context request.",
+  "context-requests#r9: While a context request is `awaiting-asker`, if the person settles a request line in the context request, then the context requests service shall refuse the request and name the context request.",
+  "context-requests#r10: While a context request is `open` and the context request does not address this bounded context, if the person settles a request line in the context request, then the context requests service shall refuse the request and name the context request.",
+  "context-requests#r26: While a request line does not conform to the requirement grammar of this bounded context, if a session settles the request line with the line outcome `accepted`, then the context requests service shall refuse the request and name the request line.",
+]
 [operations."context requests.settle".parameters]
 "request line" = { positional = 2 }
 "line outcome" = { positional = 3 }
@@ -275,127 +612,264 @@ cli-only = { options = ["--group", "--into", "--line"] }
 
 [operations."context requests.pass turn"]
 command = "work turn"
+requirements = [
+  "context-requests#r22: While a context request is `awaiting-asker`, when the person passes the turn of the context request, the context requests service shall set the status of the context request to `awaiting-upstream`, set the side of the context request to `upstream` and keep an entry on the context request.",
+  "context-requests#r23: While a context request is `open` and a request line in the context request is not `accepted`, `refused` or `withdrawn`, when the person passes the turn of the context request, the context requests service shall set the status of the context request to `awaiting-asker` and keep an entry on the context request.",
+  "context-requests#r24: While a context request is `open` and a request line in the context request is `accepted` and every request line in the context request is one of `accepted`, `refused` or `withdrawn`, when the person passes the turn of the context request, the context requests service shall keep an entry on the context request and keep the side of the context request.",
+  "context-requests#r25: While a context request is `open` and a request line in the context request is `refused` and every request line in the context request is `refused`, when the person passes the turn of the context request, the context requests service shall set the status of the context request to `refused` and keep an entry on the context request.",
+  "context-requests#r31: While this repository is `rejecting` and a context request is `open`, if the person passes the turn of the context request, then the context requests service shall refuse the request, name this repository and not keep an entry on the context request.",
+  "context-requests#r34: While a context request addresses this bounded context and the context request does not originate from this bounded context and the context request is `awaiting-asker`, if the person passes the turn of the context request, then the context requests service shall refuse the request and name the context request.",
+  "context-requests#r35: While a context request originates from this bounded context and the context request does not address this bounded context and the context request is `open`, if the person passes the turn of the context request, then the context requests service shall refuse the request and name the context request.",
+  "context-requests#r36: While a context request originates from this bounded context and the context request does not address this bounded context and the context request is `awaiting-upstream`, if the person passes the turn of the context request, then the context requests service shall refuse the request and name the context request.",
+  "context-requests#r45: When the person passes the turn of a context request, the context requests service shall return the context request and the status of the context request.",
+]
 [operations."context requests.pass turn".parameters]
 turn = { positional = 1 }
 
 [operations."context requests.accept"]
 command = "work accept"
+requirements = [
+  "context-requests#r27: While a context request is `open` and a request line in the context request is `accepted` and every request line in the context request is one of `accepted`, `refused` or `withdrawn`, when the person accepts the context request, the context requests service shall set the status of the context request to `accepted`, keep an item whose status is `shaped` and keep an entry on the context request.",
+  "context-requests#r28: While a request line in a context request is not `accepted`, `refused` or `withdrawn`, if the person accepts the context request, then the context requests service shall refuse the request and name the request line.",
+]
 [operations."context requests.accept".parameters]
 "context request" = { positional = 1 }
 
 [operations."context requests.resolve"]
 command = "work resolve"
 cli-only = { options = ["--line"] }
+requirements = [
+  "context-requests#r13: While a context request is not `accepted`, if the person resolves the context request, then the context requests service shall refuse the request and name the context request.",
+  "context-requests#r29: While a context request is `accepted`, when the person resolves the context request, the context requests service shall set the status of the context request to `delivered`, keep a resolution, set the side of the context request to `asker` and keep an entry on the context request.",
+]
 [operations."context requests.resolve".parameters]
 "context request" = { positional = 1 }
 
 [operations."context requests.catch up"]
 command = "work sync"
+requirements = [
+  "context-requests#r21: While an entry on a context request conforms to the entry form and the context request does not hold the entry, when a session catches up, the context requests service shall keep the entry and return every context request.",
+  "context-requests#r37: While an entry on a context request conforms to the entry form and the side of the entry is `asker` and the entry holds a field whose side is `upstream` and the context request does not hold the entry, when a session catches up, the context requests service shall keep the entry and not keep the field.",
+  "context-requests#r38: While a context request is one of `delivered`, `refused` or `withdrawn` and an entry on the context request conforms to the entry form and the context request does not hold the entry, when a session catches up, the context requests service shall keep the entry and keep the status of the context request and the side of the context request.",
+  "context-requests#r40: While an entry on a context request conforms to the entry form and the side of the entry is `upstream` and the entry holds a field whose side is `asker` and the context request does not hold the entry, when a session catches up, the context requests service shall keep the entry and not keep the field.",
+  "request-watch#r6: While an entry on a context request does not conform to the entry form and the context request does not hold the entry, when a session catches up, the context requests service shall notify the session of the entry, keep the entry and keep the status of the context request.",
+  "request-watch#r7: While an entry on a context request does not conform to the entry form and the context request holds the entry, when a session catches up, the context requests service shall not notify the session of the entry.",
+]
 
 [operations."context requests.watch"]
 command = "work watch"
 cli-only = { options = ["--every", "--forward", "--hook", "--polls"] }
+requirements = [
+  "request-watch#r1: While an entry on a context request conforms to the entry form and the context request does not hold the entry, when a session watches this bounded context, the context requests service shall notify the session of the entry, complete the request and not keep the entry.",
+  "request-watch#r2: While a thread on the channel of this bounded context is `open` and the thread conforms to the entry form and no context request has the thread, when a session watches this bounded context, the context requests service shall notify the session of the thread and complete the request.",
+]
 
 [operations."context requests.survey"]
 command = "work list"
+requirements = [
+  "context-requests#r14: When the person surveys this bounded context, the context requests service shall return every context request, the status of every context request and every observation that no context request cites.",
+]
 
 [operations."context requests.inspect"]
 command = "work show"
+requirements = [
+  "context-requests#r15: When the person inspects a context request, the context requests service shall return the status of the context request and every request line in the context request.",
+  "context-requests#r41: While a request line in a context request has a line reason, when the person inspects the context request, the context requests service shall return the line reason.",
+]
 [operations."context requests.inspect".parameters]
 "context request" = { positional = 1 }
 
 [operations."conversation.quote"]
 command = "work quote"
 cli-only = { options = ["--session", "--transcript", "--hook"] }
+requirements = [
+  "quotes#r1: When a session quotes a message, the conversation service shall keep a quote from the session that cites the message.",
+  "quotes#r4: When a session quotes a queued message, the conversation service shall keep a quote that cites the queued message and return the quote.",
+]
 [operations."conversation.quote".parameters]
 message = { positional = 1 }
 
 [operations."conversation.give"]
 command = "work directive"
 cli-only = { options = ["--quote", "--session", "--transcript"] }
+requirements = [
+  "directives#r1: When a session gives a directive, the conversation service shall keep a directive whose quote cites a message.",
+]
 
 [operations."conversation.promote"]
 command = "work promote"
+requirements = [
+  "directives#r3: When a session promotes a directive whose status is `live` to an item, the conversation service shall set the status of the directive to `promoted` and keep the directive.",
+  "directives#r5: When a session promotes a directive whose status is not `live` to an item, the conversation service shall refuse the request and name the directive.",
+  "directives#r6: When a session promotes a directive to an item that does not exist, the conversation service shall refuse the request and name the item.",
+]
 [operations."conversation.promote".parameters]
 directive = { positional = 1 }
 item = { option = "--to" }
 
 [operations."conversation.drop"]
 command = "work drop"
+requirements = [
+  "directives#r4: When a session drops a directive whose status is `live` with a reason, the conversation service shall set the status of the directive to `dropped` and keep the directive.",
+  "directives#r7: When a session drops a directive whose status is not `live` with a reason, the conversation service shall refuse the request and name the directive.",
+]
 [operations."conversation.drop".parameters]
 directive = { positional = 1 }
 reason = { option = "--why" }
 
 [operations."conversation.read"]
 command = "work show"
+requirements = [
+  "quotes#r3: When the person reads a quote, the conversation service shall return every message that the quote cites.",
+]
 [operations."conversation.read".parameters]
 quote = { positional = 1 }
 
 [operations."batches.open"]
 command = "work batch start"
+requirements = [
+  "batches#r51: When the person opens a batch, the batches service shall keep a batch brief and return the batch brief.",
+  "batches#r53: While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered`, when the person opens a batch, the batches service shall set the status of the item to `in-batch`, keep a batch that holds the item and keep a batch plan of the batch.",
+  "batches#r54: While an item is `ready` and the item does not meet the readiness bar, when the person opens a batch, the batches service shall set the status of the item to `shaped`.",
+  "batches#r55: While an item is not `ready` or `delivered` and a dependency on the item exists and another item whose status is `ready` has the dependency, when the person opens a batch, the batches service shall not set the status of the item to `in-batch`.",
+  "batches#r64: While `universal` does not exist and an item is `ready` and the item meets the readiness bar and a universal condition is in the item, when the person opens a batch, the batches service shall keep `universal` and set the language of `universal` to `codified-2`.",
+  "batches#r68: While an item is `ready` and the item holds a chore and the item meets the readiness bar, when the person opens a batch, the batches service shall keep a batch brief that holds the chore.",
+  "batches#r69: While an item is `ready` and the item meets the readiness bar and the item holds a capability, when the person opens a batch, the batches service shall keep the capability.",
+  "batches#r71: While an item is `ready` and the item meets the readiness bar and a requirement of the item has a logical form, when the person opens a batch, the batches service shall keep the logical form in the corpus.",
+  "batches#r72: While an item is `ready` and the item meets the readiness bar and a requirement id is in the item and a requirement in the corpus has the requirement id, when the person opens a batch, the batches service shall keep a corpus that does not hold the requirement.",
+  "batches#r73: While an item is `ready` and the item meets the readiness bar and a requirement of the item uses a rule, when the person opens a batch, the batches service shall keep the catalogue entry of the rule.",
+  "batches#r74: While an item is `ready` and the item meets the readiness bar and a requirement of the item uses a construct, when the person opens a batch, the batches service shall keep the construct catalogue.",
+]
 
 [operations."batches.resume"]
 command = "work batch resume"
+requirements = [
+  "batches#r56: While a batch is `building`, when a session resumes the batch, the batches service shall return the batch plan of the batch and not ask a question.",
+]
 [operations."batches.resume".parameters]
 batch = { positional = 1 }
 
 [operations."batches.finish"]
 command = "work batch done"
+requirements = [
+  "batches#r61: While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the batch is `needs-input` and a scenario of the item breaks in the workspace of the task, when a session finishes the task, the batches service shall set the status of the task to `done`.",
+  "batches#r62: While an item in a batch is `in-batch` and a task of the item is `running` and another item in the batch is `in-batch` and a scenario of the item succeeds in the workspace of the task, when a session finishes the task, the batches service shall set the status of the task to `done`.",
+  "batches#r66: While a task of an item is `running` and the item holds a chore and the chore breaks in the workspace of the task, if a session finishes the task, then the batches service shall refuse the request and name the chore.",
+  "batches#r67: While a task of an item is `running` and the item holds a chore and a kept change in the workspace of the task touches a file that is not in the chore, if a session finishes the task, then the batches service shall refuse the request and name the file.",
+  "batches#r70: While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the batch is `needs-input` and the item has a requirement that is not in the workspace of the batch and a scenario of the item breaks in the workspace of the task, when a session finishes the task, the batches service shall set the status of the task to `done`.",
+]
 [operations."batches.finish".parameters]
 task = { positional = 2 }
 
 [operations."batches.park"]
 command = "work batch park"
 cli-only = { options = ["--discard", "--question"] }
+requirements = [
+  "batches#r57: While an item in a batch is `in-batch`, when a session parks the item, the batches service shall set the status of the item to `needs-input`, keep a question on the item and not set the status of the batch to `abandoned`.",
+  "batches#r60: While an item in a batch is `in-batch` and the workspace of the batch holds a requirement of the item, when a session parks the item, the batches service shall keep a workspace of the batch that does not hold the requirement.",
+]
 [operations."batches.park".parameters]
 item = { positional = 2 }
 
 [operations."batches.submit"]
 command = "work batch review"
+requirements = [
+  "review-guarantees#r1: When the batches service submits a batch, `pr-reviewer` shall review the proposed change of the batch.",
+  "reviews#r1: While an item in a batch is `in-batch`, when the person submits the batch, the batches service shall keep a proposed change of the batch that cites the item.",
+  "reviews#r2: While the status of an item in a batch is `needs-input` and a kept change cites the item, when the person submits the batch, the batches service shall keep a proposed change of the batch that does not hold the kept change.",
+  "reviews#r3: While a task of a batch is not `done`, if the person submits the batch, then the batches service shall refuse the request and name the task.",
+  "reviews#r4: While a workspace of a task of a batch holds a kept change that cites no item, if the person submits the batch, then the batches service shall refuse the request and name the kept change.",
+  "reviews#r5: While a batch is `building` and every task of the batch is `done`, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.",
+]
 [operations."batches.submit".parameters]
 batch = { positional = 1 }
 
 [operations."batches.merge"]
 command = "work batch merged"
+requirements = [
+  "batches#r50: While an item in a batch is `in-batch`, when the person merges the proposed change of the batch, the batches service shall set the status of the item to `delivered` and set the status of the batch to `merged`.",
+  "batches#r59: When the person merges the proposed change of a batch, the batches service shall keep no review folder of the batch.",
+  "batches#r65: While an item in a batch is `in-batch` and the item has a request line of a context request and the context request is `accepted`, when the person merges the proposed change of the batch, the batches service shall set the status of the context request to `delivered`, keep a resolution, set the side of the context request to `asker` and keep an entry on the context request.",
+]
 
 [operations."batches.abandon"]
 command = "work batch abandon"
 cli-only = { options = ["--discard"] }
+requirements = [
+  "batches#r52: When the person abandons a batch, the batches service shall keep no review folder of the batch.",
+  "batches#r58: While a batch is `building`, when the person abandons the batch, the batches service shall set the status of the batch to `abandoned` and set the status of every item in the batch whose status is `in-batch` to `ready`.",
+]
 [operations."batches.abandon".parameters]
 batch = { positional = 1 }
 
 [operations."batches.monitor"]
 command = "work batch status"
+requirements = [
+  "batches#r63: While a batch holds an item and the batch has a task, when the person monitors the batch, the batches service shall return the item, the task and the status of the task.",
+]
 [operations."batches.monitor".parameters]
 batch = { positional = 1 }
 
 [operations."reviews.conclude"]
 command = "work batch reviewed"
+requirements = [
+  "review-guarantees#r6: While the triage of a review finding on the proposed change of a batch is `fix now`, when a session concludes a review of the batch, the reviews service shall set the status of the batch to `building`.",
+  "review-guarantees#r8: While a batch has a proposed change and no review finding on the proposed change whose triage is `fix now` exists, when a session concludes a review of the batch, the reviews service shall set the status of the batch to `awaiting-merge`.",
+]
 
 [operations."measurement.measure"]
 command = "measure batch"
 cli-only = { options = ["--replace", "--sessions"] }
+requirements = [
+  "measurement#r1: While a batch is `merged`, when the person measures the batch, the measurement service shall keep a measurement of the batch and return the wall time of the batch, the session time of the batch, the tokens of the batch and the cost of every role of the batch.",
+  "measurement#r2: When the person measures a batch that has a proposed change, the measurement service shall keep a measurement of the batch and return the number of review findings on the proposed change whose grade is `Critical`, the number of review findings on the proposed change whose grade is `Important` and the number of review findings on the proposed change whose grade is `Minor`.",
+]
 [operations."measurement.measure".parameters]
 batch = { positional = 1 }
 
 [operations."measurement.report"]
 command = "measure defect"
 cli-only = { options = ["--says"] }
+requirements = [
+  "measurement#r3: While an item in a batch is `delivered`, when the person reports a defect in the item, the measurement service shall keep a defect for the batch that the item has.",
+]
 [operations."measurement.report".parameters]
 item = { positional = 1 }
 
 [operations."measurement.view"]
 command = "measure show"
+requirements = [
+  "measurement#r5: When the person views a measurement that has a stage row that has a round trip, the measurement service shall return the number of round trips of the stage row, every stage row of the measurement and the total row of the measurement.",
+  "measurement#r6: When the person views a measurement that has a stage row that has no round trip, the measurement service shall return every stage row of the measurement and not return a round trip.",
+  "measurement#r7: When the person views a measurement that has a session row, the measurement service shall return the number of tool uses of the session row, every dispatch of the session row and the number of compactions of the session row.",
+]
 [operations."measurement.view".parameters]
 measurement = { positional = 1 }
 
 [operations."measurement.compare"]
 command = "measure compare"
+requirements = [
+  "measurement#r4: When the person compares two batches, the measurement service shall return two measurements and a ratio.",
+  "measurement#r8: When the person compares two measurements, the measurement service shall return two total rows and a ratio.",
+  "measurement#r9: When the person compares a measurement that has a session row, the measurement service shall return the number of tool uses in the measurement and the number of compactions in the measurement.",
+]
 [operations."measurement.compare".parameters]
 measurement = { positional = 1 }
 
 [operations."toolchain.probe"]
 command = "tools probe"
+requirements = [
+  "toolchain#r1: When the person probes the toolchain with a Python interpreter, the toolchain service shall return the Python interpreter.",
+  "toolchain#r2: While the `.venv/bin/python` Python interpreter exists, when the person probes the toolchain without a Python interpreter, the toolchain service shall return the `.venv/bin/python` Python interpreter.",
+  "toolchain#r3: While the `venv/bin/python` Python interpreter exists and the `.venv/bin/python` Python interpreter does not exist, when the person probes the toolchain without a Python interpreter, the toolchain service shall return the `venv/bin/python` Python interpreter.",
+  "toolchain#r4: While the `$VIRTUAL_ENV/bin/python` Python interpreter exists and the `.venv/bin/python` Python interpreter does not exist and the `venv/bin/python` Python interpreter does not exist, when the person probes the toolchain without a Python interpreter, the toolchain service shall return the `$VIRTUAL_ENV/bin/python` Python interpreter.",
+  "toolchain#r5: While the `.venv/bin/python` Python interpreter does not exist and the `venv/bin/python` Python interpreter does not exist and the `$VIRTUAL_ENV/bin/python` Python interpreter does not exist, when the person probes the toolchain without a Python interpreter, the toolchain service shall return a Python interpreter that executes the `scripts/tools` file.",
+  "toolchain#r6: While the `.venv/bin/python` Python interpreter exists and the `venv/bin/python` Python interpreter exists, when the person probes the toolchain without a Python interpreter, the toolchain service shall not return the `venv/bin/python` Python interpreter.",
+  "toolchain#r7: While no analysis tool is `missing`, when the person probes the toolchain, the toolchain service shall return every analysis tool and complete the request.",
+  "toolchain#r8: While an analysis tool is `missing`, when the person probes the toolchain, the toolchain service shall fail the check and name the analysis tool.",
+  "toolchain#r9: When the person probes the toolchain with the log, the toolchain service shall return one log line and every analysis tool.",
+  "toolchain#r17: When the person probes the toolchain, the toolchain service shall return `gf-rgl`.",
+]
 [operations."toolchain.probe".parameters]
 "Python interpreter" = { option = "--python" }
 log = { option = "--log", flag = true }
@@ -403,14 +877,33 @@ log = { option = "--log", flag = true }
 [operations."toolchain.install"]
 command = "tools install"
 cli-only = { options = ["--python"] }
+requirements = [
+  "toolchain#r10: While the environment of the Python interpreter is `virtualenv`, when the person installs the toolchain, the toolchain service shall install every analysis tool whose presence is `missing` and change no dependency file.",
+  "toolchain#r11: While `ruff` is `missing` and the environment of the Python interpreter is `virtualenv`, when the person installs the toolchain, the toolchain service shall install the version of `ruff` that the plugin pins.",
+  "toolchain#r12: While an analysis tool is `missing` and the environment of the Python interpreter is `system`, if the person installs the toolchain, then the toolchain service shall refuse the request and name the analysis tool.",
+  "toolchain#r13: While an analysis tool is `uninstallable` and the environment of the Python interpreter is `virtualenv`, if the person installs the toolchain, then the toolchain service shall return the pip command of the analysis tool, refuse the request and name the analysis tool.",
+  "toolchain#r16: While `gf-rgl` is `missing` and the environment of the Python interpreter is `virtualenv`, when the person installs the toolchain, the toolchain service shall install `gf-rgl`.",
+]
 
 [operations."code analysis.map"]
 command = "tools map"
 cli-only = { options = ["--python"] }
+requirements = [
+  "code-analysis#r1: While a test breaks, when the person maps this repository, the code analysis service shall keep a coverage map and complete the request.",
+  "code-analysis#r2: While a coverage map exists, when the person maps this repository, the code analysis service shall keep a different coverage map.",
+]
 
 [operations."code analysis.trace"]
 command = "tools tests-of"
 cli-only = { options = ["--python"] }
+requirements = [
+  "code-analysis#r3: While a coverage map exists, when the person traces a function, the code analysis service shall return every test that executes the function, the number of tests that execute the function and the revision of the coverage map.",
+  "code-analysis#r4: While a coverage map exists, when the person traces a function with the file view, the code analysis service shall return every Python file that holds a test that executes the function.",
+  "code-analysis#r5: While a coverage map exists, when the person traces a function that no test executes, the code analysis service shall return the revision of the coverage map and complete the request.",
+  "code-analysis#r6: While a coverage map exists, if the person traces an identifier that no Python file defines, then the code analysis service shall refuse the request and name the identifier.",
+  "code-analysis#r7: While no coverage map exists, if the person traces a function, then the code analysis service shall refuse the request and name the coverage map.",
+  "toolchain#r14: While `coverage` is `missing`, if the person traces a function, then the code analysis service shall refuse the request and name `coverage`.",
+]
 [operations."code analysis.trace".parameters]
 identifier = { positional = 1 }
 "file view" = { option = "--by-file", flag = true }
@@ -418,39 +911,102 @@ identifier = { positional = 1 }
 [operations."code analysis.screen"]
 command = "tools untested"
 cli-only = { options = ["--python"] }
+requirements = [
+  "code-analysis#r8: While a coverage map exists, when the person screens a Python file, the code analysis service shall return every function of the Python file that no test executes and the revision of the coverage map and complete the request.",
+]
 [operations."code analysis.screen".parameters]
 "Python file" = { positional = 1 }
 
 [operations."code analysis.locate"]
 command = "tools refs"
 cli-only = { options = ["--python"] }
+requirements = [
+  "code-analysis#r9: When the person locates an identifier that a Python file defines, the code analysis service shall return every reference to the identifier and the number of references to the identifier and complete the request.",
+  "code-analysis#r10: If the person locates an identifier that no Python file defines, then the code analysis service shall refuse the request and name the identifier.",
+  "toolchain#r15: While `jedi` is `missing`, if the person locates an identifier, then the code analysis service shall refuse the request and name `jedi`.",
+]
 [operations."code analysis.locate".parameters]
 identifier = { positional = 1 }
 
 [operations."code analysis.lint"]
 command = "tools check"
 cli-only = { options = ["--base", "--python"] }
+requirements = [
+  "code-analysis#r11: While a file holds a finding of an analysis tool, when the person lints the file, the code analysis service shall return the heading of the analysis tool and the finding, fail the check and name the finding.",
+  "code-analysis#r12: While `vulture` is `missing`, when the person lints a file, the code analysis service shall fail the check and name `vulture`.",
+]
 [operations."code analysis.lint".parameters]
 file = { positional = 1 }
 
 [operations."code analysis.size"]
 command = "tools size"
 cli-only = { options = ["--python"] }
+requirements = [
+  "code-analysis#r13: While a Python file exceeds a size limit, when the person sizes this repository with the size limit, the code analysis service shall return the Python file, fail the check and name the Python file.",
+  "code-analysis#r14: While no Python file exceeds the `300` size limit, when the person sizes this repository without a size limit, the code analysis service shall complete the request.",
+]
 [operations."code analysis.size".parameters]
 "size limit" = { option = "--limit" }
 
 [operations."upgrades.query"]
 command = "migrate status"
 cli-only = { options = ["--hook"] }
+requirements = [
+  "upgrades#r10: While the release of this repository is before `0.24.0`, when the person queries this repository, the upgrades service shall return the release of this repository and every upgrade step and complete the request.",
+  "upgrades#r11: While this repository has a shop directory and this repository has no plugin version file, when the person queries this repository, the upgrades service shall return every upgrade step.",
+  "upgrades#r12: While a plugin version file of this repository holds no version, if the person queries this repository, then the upgrades service shall refuse the request and name the content of the plugin version file.",
+]
 
 [operations."upgrades.upgrade"]
 command = "migrate upgrade"
+requirements = [
+  "upgrades#r9: While this repository holds an uncommitted change, if the person upgrades this repository, then the upgrades service shall refuse the request and name the uncommitted change.",
+  "upgrades#r13: While the release of this repository is before `0.24.0`, when the person upgrades this repository, the upgrades service shall return every upgrade step and change the plugin version file of this repository, every work-item file, every stage directory and every initiative log.",
+  "upgrades#r14: While the release of this repository is after `0.23.1` and before `0.25.0`, when the person upgrades this repository, the upgrades service shall change every work-item file.",
+  "upgrades#r15: While the release of this repository is after `0.25.0` and before `0.30.0` and a capability of this repository has no language, when the person upgrades this repository, the upgrades service shall keep a restated file, change the capability and return the restated file and the capability.",
+  "upgrades#r16: While the release of this repository is after `0.25.0` and before `0.30.0`, when the person upgrades this repository, the upgrades service shall change every work-item file that mentions a requirement and change every feature that holds a scenario that has the `@deprecated` tag.",
+  "upgrades#r20: While the release of this repository is after `0.29.0` and before `0.31.0`, when the person upgrades this repository, the upgrades service shall keep a frozen notice and change the decisions index of this repository.",
+  "upgrades#r21: While the release of this repository is after `0.29.0` and before `0.31.0` and the asker of a frozen request is not `internal` and the frozen request is not `delivered`, `refused` or `withdrawn`, when the person upgrades this repository, the upgrades service shall change the frozen request.",
+  "upgrades#r22: While the release of this repository is after `0.29.0` and before `0.31.0` and an initiative of this repository is not `done` or `abandoned`, when the person upgrades this repository, the upgrades service shall return every upgrade step whose release is `0.31.0` and the initiative.",
+  "upgrades#r23: While the release of this repository is after `0.29.0` and before `0.31.0` and the asker of a frozen request is `internal` and the frozen request is not `delivered`, `refused` or `withdrawn`, when the person upgrades this repository, the upgrades service shall return the frozen request.",
+  "upgrades#r24: While the release of this repository is after `0.30.0` and before `0.32.0`, when the person upgrades this repository, the upgrades service shall change the index file of this bounded context and return every upgrade step whose release is `0.32.0` and every term that violates `v_t11`.",
+  "upgrades#r25: While the release of this repository is after `0.32.0` and before `0.33.0`, when the person upgrades this repository, the upgrades service shall change the index file of this bounded context and every capability and return every upgrade step whose release is `0.33.0`.",
+  "upgrades#r26: While the release of this repository is `0.33.0`, when the person upgrades this repository, the upgrades service shall return every upgrade step whose release is `0.34.0` and every term that violates `w_value_kind`.",
+  "upgrades#r27: While the release of this repository is the same as the release of the plugin and the release of this repository is after `0.34.0`, when the person upgrades this repository, the upgrades service shall return `no upgrade step is pending` and change no file.",
+  "upgrades#r30: While the release of this repository is `0.34.0` and the release of the plugin is `0.34.1`, when the person upgrades this repository, the upgrades service shall return `no upgrade step is pending`, change the plugin version file of this repository and keep the plugin version file.",
+]
 
 [operations."upgrades.relocate"]
 command = "migrate run"
+requirements = [
+  "upgrades#r1: While this repository holds an old-layout directory, when the person relocates a bounded context, the upgrades service shall change every old-layout directory and every file that mentions an old-layout directory.",
+  "upgrades#r2: While a decision ledger of this repository has a ledger entry, when the person relocates a bounded context, the upgrades service shall keep a design-decision of the ledger entry, keep no decision ledger, change the decisions index of this repository and complete the request.",
+  "upgrades#r3: While a ledger entry supersedes another ledger entry, when the person relocates a bounded context, the upgrades service shall keep a design-decision of the ledger entry whose status is `superseded` and keep another design-decision that supersedes the design-decision.",
+  "upgrades#r4: While a ledger entry that has a qualifier supersedes another ledger entry, when the person relocates a bounded context, the upgrades service shall keep a design-decision that holds the qualifier.",
+  "upgrades#r5: While a ledger entry of a decision ledger has no ledger number, when the person relocates a bounded context, the upgrades service shall keep a ledger number of the ledger entry.",
+  "upgrades#r6: While a Behaviour line of a capability has no line id, when the person relocates a bounded context, the upgrades service shall keep a line id of the Behaviour line.",
+  "upgrades#r7: While a ledger entry has a stem and a tracked file in an old-layout directory has the same stem, if the person relocates a bounded context, then the upgrades service shall refuse the request and name the tracked file.",
+  "upgrades#r8: While this repository holds an uncommitted change, if the person relocates a bounded context, then the upgrades service shall refuse the request and name the uncommitted change.",
+]
 [operations."upgrades.relocate".parameters]
 "bounded context" = { option = "--context" }
+
+[operations."upgrades.found"]
+command = "migrate init"
+requirements = [
+  "upgrades#r31: While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold of this repository and complete the request.",
+  "upgrades#r32: If the person founds this bounded context without a context id, then the upgrades service shall refuse the request and name this bounded context.",
+  "upgrades#r33: If the person founds this bounded context with a context id that does not conform to the bounded context id form, then the upgrades service shall refuse the request and name the context id.",
+  "upgrades#r34: While this bounded context has an index file, if the person founds this bounded context with a context id, then the upgrades service shall refuse the request, name the index file and change no file.",
+  "upgrades#r35: While this repository has a shop directory, if the person founds this bounded context with a context id, then the upgrades service shall refuse the request, name the shop directory and change no file.",
+]
+[operations."upgrades.found".parameters]
+"context id" = { option = "--id" }
 
 [operations."conversation.prompt"]
 hook = "UserPromptSubmit"
 command = "work quote"
+requirements = [
+  "quotes#r2: When the person prompts a session, the conversation service shall keep the transcript of the session.",
+  "shaping-guarantees#r3: When the person prompts the brainstorming session, the brainstorming session shall quote a message.",
+]

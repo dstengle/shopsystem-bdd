@@ -181,3 +181,10 @@ area: specification
 - **the decisions service** (proper noun) → service decisions.
 - **the records service** (proper noun) → service records.
 - **the scenarios service** (proper noun) → service scenarios.
+- **adapter contract** (noun) → object adapter contract. The contract of one adapter of this bounded context, such as the CLI adapter's spec/adapters/cli.toml or the HTTP adapter's OpenAPI document: each operation of the domain model with how the adapter requests it. Plural: adapter contracts.
+- **operation** (noun) → object operation. One operation of a service of the domain model, with its parameters and its outcomes. Plural: operations.
+- **govern** (verb, state) → relation requirement.governs. A requirement says what an operation does: its trigger is an act of the operation. Forms: governs, governed. Frame: <requirement> governs <operation>.
+- **annotate** (verb, action) → operation specification.annotate. Forms: annotates, annotated. Frame: <actor> annotates <adapter contract>.
+- **reading rule** (noun) → object reading rule. One rule of the language reference by which a line is read, R1 to R12, as a definite noun phrase that needs an antecedent. Plural: reading rules.
+- **collection** (noun) → object collection. A thing that a noun phrase of a requirement names and that holds members by a relation whose phrase is `holds`, as a workspace holds files.
+- **member** (noun) → object member. A thing that a collection holds, as a file is a member of a workspace, and that an order said after the collection is of.

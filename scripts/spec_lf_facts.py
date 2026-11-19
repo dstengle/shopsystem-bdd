@@ -136,6 +136,8 @@ class Walk(Terms):
                 spec_lf_ordered.facts(self, item, self.acts)
             elif isinstance(item, Atom):
                 self.restrict(item, own)
+            elif spec_lf_ordered.held(item):     # an order on a collection's members (b334), of the act on it
+                spec_lf_ordered.facts(self, spec_lf_ordered.held(item)[2], self.acts)
             elif item.op == "not" and not self.acting(item):
                 spec_lf_quant.negated(self, item, own)
             elif item.op == "not" and self.nothing(item):

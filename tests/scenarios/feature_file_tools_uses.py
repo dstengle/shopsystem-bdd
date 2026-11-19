@@ -1,7 +1,8 @@
 """feature-file-tools' capability of one construct (b274): a requirement r1 that uses a construct a Given names
 (`the requirement r1 uses `holds-exactly``, `the precondition p1 uses `nothing``) is the construct catalogue's example
 of it, the one requirement of the capability c1 in the catalogue's context `grammar/corpus/constructs/` (`prepare`), or
-of holds-exactly with `rc-object` or `of-relation` (b315) and of nothing with `rc-subject` b297's line on a response's object (`returned`);
+of holds-exactly with `rc-object` or `of-relation` (b315) and of nothing with `rc-subject` b297's line on a response's object (`returned`),
+of holds-exactly in a precondition, with a value or with `rc-subject`, b309's line (`preconditioned`);
 "the step s2 uses `not-condition`" holds when a step of the feature `features generate` wrote reads, in the step
 grammar 4, as a tree that uses the construct as `spec constructs` tells it (`uses`). A requirement that uses an
 order (b275) is the example of `order-by-every`, and "the scenario s1 has the order counter-example o2" holds when
@@ -27,6 +28,11 @@ RETURNED = {("holds-exactly", "rc-object"): "When the person runs `work start`, 
             "holds exactly the files that cover the line of a stage to the person.",
             ("nothing", "rc-subject"): "When the person runs `work start`, `work` shall return a worktree that holds "
             "nothing to the person."}
+# b309: holds-exactly in a precondition, its restriction a value or a subject relative clause
+PRECONDITION = {(): "While a worktree holds exactly the files whose version is `2.0.0`, when the person runs `work start` "
+                "on the worktree, `work` shall print the worktree.",
+                ("rc-subject",): "While a worktree holds exactly the files that cover a line, when the person runs "
+                "`work start` on the worktree, `work` shall print the worktree."}
 # b298: a verb with no frame on `thing`, and the order-by example said with it
 RETURN_WORKTREE = ("- **return** (verb, action): an agent hands a worktree back to an agent. "
                    "Frame: agent returns worktree to agent.\n")
@@ -61,6 +67,15 @@ def returned(w):
     return next((line for codes, line in RETURNED.items() if used.issuperset(codes)), None)
 
 
+def preconditioned(w, code):
+    """The line of b309 when a Given says the precondition uses holds-exactly, else None."""
+    used = {o.strip("`") for v, a, o, pos in w["facts"] if v == "use" and pos and isinstance(o, str)
+            and w["kinds"].get(a) == "precondition"}
+    if code != "holds-exactly" or code not in used:
+        return None
+    return PRECONDITION[("rc-subject",)] if "rc-subject" in used else PRECONDITION[()]
+
+
 def example(code):
     text = (PLUGIN / "grammar" / "constructs.md").read_text()
     return re.search(r"^## %s\n.*?```construct\n(.*?)\n" % re.escape(code), text, re.DOTALL | re.MULTILINE).group(1)
@@ -72,7 +87,7 @@ def prepare(step, w, write, name, path):
     if code is None:
         return False
     index = (PLUGIN / "grammar" / "corpus" / "constructs" / "spec" / "index.md").read_text()
-    line, index = line or example(code), index + (RETURNING if line else "")
+    line, index = line or preconditioned(w, code) or example(code), index + (RETURNING if line else "")
     if code == "order-by" and unthinged(w):
         line, index = ORDERED_RETURN, index.replace("\n- **give** (verb", "\n%s- **give** (verb" % RETURN_WORKTREE, 1)
     if code == "order-by-every" and unthinged(w):
