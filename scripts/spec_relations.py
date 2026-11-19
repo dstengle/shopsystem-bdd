@@ -49,7 +49,7 @@ def read(root):
     rows its relations give (spec_vocabulary_terms)."""
     root = Path(root)
     if (root / "spec" / "model").is_dir():
-        import spec_lexicon     # here: spec_lexicon imports this module
+        import spec_lexicon  # here: spec_lexicon imports this module
         return spec_lexicon.read(root).rows
     paths = [root / "spec" / "index.md"] + sorted((root / "spec" / "capabilities").glob("*.md"))
     return [r for p in paths if p.is_file() for r in rows(p.read_text(), p.relative_to(root).as_posix())]

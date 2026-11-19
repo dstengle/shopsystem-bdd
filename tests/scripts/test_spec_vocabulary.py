@@ -4,7 +4,6 @@ import pathlib
 import shutil
 
 import pytest
-
 import spec_lexicon
 import spec_packs
 import spec_relations

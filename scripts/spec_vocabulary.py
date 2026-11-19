@@ -107,6 +107,6 @@ def problems(root):
             for e in found if e.ref and not e.element]
     out += list(_twice(found))
     if REQUEST_PACK.is_file() and "cli" in spec_packs.imports(root):
-        out.append(("v_t21", "cli", "spec/index.md imports the retired pack cli; import request, and run "
-                    "`migrate upgrade` for the domain contract"))
+        why = "spec/index.md imports the retired pack cli; import request, and run `migrate upgrade`"
+        out.append(("v_t21", "cli", why))
     return sorted(set(out))
