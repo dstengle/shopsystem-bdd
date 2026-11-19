@@ -19,7 +19,7 @@ Follow the shaping-items skill, steps 2-4, on your item: its terms and relation 
 ## Rules
 
 - Touch your own item only: every `work` command you run names `b<n>`. Never edit another item, `spec/`, `features/` or any file by hand.
-- Add all your term bullets (and relation rows) before you check a line with `work ready`: each change to the glossary recompiles grammar 4, which takes minutes, so the terms go in at once.
+- Add all your term bullets (vocabulary entries) and model lines before you check a line with `work ready`: each change to the vocabulary or the model recompiles grammar 4, which takes minutes, so the terms go in at once.
 - Run a long command (`work ready`, `spec logic`, `features generate`) with a timeout of a few minutes; past it, say which command and stop.
 - No push, and no batch command: `work batch` is the session's, after the wave.
 - Never use `git stash`: every worktree shares one stash list, and the other agents of the wave work at the same time.

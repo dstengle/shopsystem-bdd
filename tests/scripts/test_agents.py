@@ -85,10 +85,10 @@ class CodifiedFlow(unittest.TestCase):
     def test_no_feature_formulator_agent(self):
         self.assertFalse((AGENTS / (FORMULATOR + ".md")).exists())
 
-    def test_raising_a_request_checks_every_line_with_model_parse_before_work_request(self):
+    def test_raising_a_request_checks_every_line_with_spec_parse_before_work_request(self):
         text = (SKILLS / "raising-a-request" / "SKILL.md").read_text()
         self.assertTrue(text.startswith("---\nname: raising-a-request\n"))
-        for words in ("model lexicon", "model parse --file", "work request"):
+        for words in ("spec lexicon", "spec parse --file", "work request"):
             self.assertIn(words, text)
 
     def test_no_agent_or_skill_names_the_formulator(self):
