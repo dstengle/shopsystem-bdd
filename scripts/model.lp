@@ -48,6 +48,7 @@
 #defined model_problem/2.         % model_problem(S, Why): the domain model breaks its own rules at S (domain_model_check)
 #defined elementless/2.  #defined unresolved/2.  #defined named_twice/2.  #defined retired_import/2.
 #defined foreign_term/3.          % foreign_term(Q, W, Why): Q uses W, a word of no vocabulary layer its area reads
+#defined adapter_problem/3.       % adapter_problem(Code, S, Why): the CLI contract breaks Code at S (adapter_cli_check)
 % the lines against the model (model_domain_lines; v_m2-v_m7)
 #defined operation/1.  #defined op_param/2.  #defined valued/2.  #defined param_value/3.  #defined op_by/2.
 #defined actor_kind/2.  #defined op_reason/2.  #defined lifecycle/2.  #defined transition/4.
@@ -423,6 +424,23 @@ label("v_m8", "the domain model breaks its own rules: a relation to an undeclare
 % fail v_m8: model_problem("note.carries","the relation carries of note names tag, which the model does not declare").
 % pass v_m8: typed("ctx").
 v_m8(S, Why)  :- model_problem(S, Why).
+% the CLI contract spec/adapters/cli.toml checked both ways (scripts/adapter_cli_check.py; the domain contract, §6.1)
+label("v_a1", "an operation of the domain model has no table in the CLI contract and is not unexposed").
+% fail v_a1: adapter_problem("v_a1","notes.list","the operation notes.list has no table in spec/adapters/cli.toml").
+% pass v_a1: typed("ctx").
+v_a1(S, Why)  :- adapter_problem("v_a1", S, Why).
+label("v_a2", "the CLI contract names an operation the model does not declare, or a parameter its operation does not declare").
+% fail v_a2: adapter_problem("v_a2","notes.lists","spec/adapters/cli.toml names the operation notes.lists").
+% pass v_a2: typed("ctx").
+v_a2(S, Why)  :- adapter_problem("v_a2", S, Why).
+label("v_a3", "the CLI contract names a command or an option the program's argparse lacks").
+% fail v_a3: adapter_problem("v_a3","notes add --urgency","notes add has no option --urgency").
+% pass v_a3: typed("ctx").
+v_a3(S, Why)  :- adapter_problem("v_a3", S, Why).
+label("v_a4", "a command or an option of the program's argparse is named by no table of the CLI contract and is not cli-only").
+% fail v_a4: adapter_problem("v_a4","notes export","no operation of spec/adapters/cli.toml names the command 'notes export'").
+% pass v_a4: typed("ctx").
+v_a4(S, Why)  :- adapter_problem("v_a4", S, Why).
 % the lines against the model (scripts/model_domain_lines.py): a request's operation O, parameters and requester, a
 % refusal's stated reasons, a set of a lifecycle's attribute
 label("v_m2", "a request names a parameter its operation does not declare, or a value outside the parameter's values").
@@ -538,7 +556,7 @@ w_example(Q, L)    :- exemplified(Q, L).
 #show v17/1. #show v18d/1.
 #show v_t1/3. #show v_t2/1. #show v_t3/1. #show v_t4/1. #show v_t5/1. #show v_t6/2. #show v_t11/1. #show v_t12/1. #show v_t13/2. #show v_t14/1. #show v_t15/1.
 #show v_t16/2. #show v_t17/2. #show v_t18/2. #show v_t19/2. #show v_t20/2. #show v_t21/2.
-#show v_m1/3. #show v_m2/2. #show v_m3/2. #show v_m4/2. #show w_m5/4. #show v_m6/4. #show v_m7/1. #show v_m8/2. #show v_r1/2. #show w_r1/2.
+#show v_m1/3. #show v_m2/2. #show v_m3/2. #show v_m4/2. #show w_m5/4. #show v_m6/4. #show v_m7/1. #show v_m8/2. #show v_a1/2. #show v_a2/2. #show v_a3/2. #show v_a4/2. #show v_r1/2. #show w_r1/2.
 #show v_p0/1. #show v_p1/2. #show v_p2/1. #show v_p3/2.
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
 #show w_many_requests/1. #show w_untiered/1. #show w_unrouted/1. #show w_example/2. #show w_value_kind/1.

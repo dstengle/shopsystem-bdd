@@ -1252,6 +1252,82 @@ the domain model breaks its own rules: a relation to an undeclared object, a tra
   typed("ctx").
   ```
 
+## v_a1
+
+an operation of the domain model has no table in the CLI contract and is not unexposed
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/adapter_cli_check.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  adapter_problem("v_a1","notes.list","the operation notes.list has no table in spec/adapters/cli.toml").
+  ```
+
+- Passes on:
+
+  ```prolog
+  typed("ctx").
+  ```
+
+## v_a2
+
+the CLI contract names an operation the model does not declare, or a parameter its operation does not declare
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/adapter_cli_check.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  adapter_problem("v_a2","notes.lists","spec/adapters/cli.toml names the operation notes.lists").
+  ```
+
+- Passes on:
+
+  ```prolog
+  typed("ctx").
+  ```
+
+## v_a3
+
+the CLI contract names a command or an option the program's argparse lacks
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/adapter_cli_check.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  adapter_problem("v_a3","notes add --urgency","notes add has no option --urgency").
+  ```
+
+- Passes on:
+
+  ```prolog
+  typed("ctx").
+  ```
+
+## v_a4
+
+a command or an option of the program's argparse is named by no table of the CLI contract and is not cli-only
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/adapter_cli_check.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  adapter_problem("v_a4","notes export","no operation of spec/adapters/cli.toml names the command 'notes export'").
+  ```
+
+- Passes on:
+
+  ```prolog
+  typed("ctx").
+  ```
+
 ## v_m2
 
 a request names a parameter its operation does not declare, or a value outside the parameter's values

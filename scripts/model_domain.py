@@ -5,12 +5,13 @@ vocabulary's problems (spec_vocabulary) as `elementless(T, Why)` (v_t18), `unres
 `named_twice(T, Why)` (v_t20) and `retired_import(C, P)` (v_t21), and `foreign_term(Q, W, Why)` (v_m1) of each word a
 parsed requirement of a capability with an `area:` uses (a kind, a verb, an attribute or an actor of its logical form)
 whose entries are all in vocabulary layers its area does not read; the facts of model_domain_lines of the model and of
-each parsed requirement (v_m2-v_m7). In any context: `cites_record(I, R)` of each
+each parsed requirement (v_m2-v_m7); `adapter_problem(Code, S, Why)` of adapter_cli_check's v_a1-v_a4. In any context: `cites_record(I, R)` of each
 `record/...` or `.shop/records/` path an item's `source:` names, with `new_item(I)` for an item numbered from
 RECORDS_POLICY (the records policy, v_r1; an older item's citation is history, w_r1).
 """
 import re
 
+import adapter_cli_check
 import domain_model
 import domain_model_check
 import model_domain_lines
@@ -63,6 +64,9 @@ class DomainReading:
                 self.fact("retired_import", self.context, term)
             else:
                 self.fact(FACTS[code], term, why)
+        # the CLI contract both ways, when spec/adapters/cli.toml exists (v_a1-v_a4)
+        for code, subject, why in adapter_cli_check.problems(self.root, domain_model.load(self.root)):
+            self.fact("adapter_problem", code, subject, why)
 
     def _layer_of(self):
         if getattr(self, "_layers", None) is None:

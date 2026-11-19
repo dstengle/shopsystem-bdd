@@ -1,0 +1,43 @@
+# The CLI adapter's contract of the notes service (the domain contract design, §6.1): notes_cli.py at the root.
+adapter = "cli"
+
+[programs]
+notes = "notes_cli.py"
+
+[outcomes]
+done = { exit = 0 }
+returned = { exit = 0, content = "stdout" }
+refused = { exit = 1, errors = "stderr" }
+broken = { exit = 1, errors = "stderr" }
+json = "--json"
+
+[cli-only]
+options = ["--root", "--json"]
+
+[operations."notes.add"]
+command = "notes add"
+[operations."notes.add".parameters]
+text = { option = "--text", example = "A note" }
+priority = { option = "--priority", example = "low" }
+reminder = { option = "--reminder", flag = true }
+
+[operations."notes.file"]
+command = "notes file"
+[operations."notes.file".parameters]
+note = { positional = 1, example = "n1" }
+
+[operations."notes.archive"]
+command = "notes archive"
+[operations."notes.archive".parameters]
+note = { positional = 1, example = "n1" }
+
+[operations."notes.label"]
+command = "notes label"
+[operations."notes.label".parameters]
+note = { positional = 1, example = "n1" }
+tag = { option = "--tag", repeat = true }
+
+[operations."notes.list"]
+command = "notes list"
+
+[environment]
