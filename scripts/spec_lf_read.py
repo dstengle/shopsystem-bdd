@@ -204,6 +204,18 @@ def obliges(box):
     return False
 
 
+# The reading rule each refusal of this module is said by, as the language reference names it (b369): R2's "the" with
+# no antecedent, R4's negated indefinite in a While or Where clause (in the perfect too), R8's "its", R12's line that
+# obliges with no trigger. Another refusal of a translation (an order, a modality) is no reading rule's.
+RULES = (("R2", " has no antecedent"), ("R4", " clause says \""), ("R8", ", the subject of its clause"),
+         ("R12", "the line has no trigger and neither"))
+
+
+def rule(why):
+    """The reading rule a refusal's text is said by (`R2`), or None."""
+    return next((code for code, said in RULES if said in (why or "")), None)
+
+
 def refusal(vocab, tree):
     """The refusal of a grammar 4 tree by the reading rules (its words after "refused: "), or None."""
     import spec_lf  # spec_lf's translation imports this module
