@@ -923,7 +923,7 @@ an avoided word is a term
 a term of a typed glossary does not name its part of speech
 
 - Severity: violation
-- Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`, `scripts/spec_lexicon.py`, `scripts/spec_relations.py`
+- Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`, `scripts/spec_lexicon_problems.py`, `scripts/spec_relations.py`
 - Cited by: no line
 - Fails on:
 
@@ -947,7 +947,7 @@ a term of a typed glossary does not name its part of speech
 a value names no attribute, or more than one
 
 - Severity: violation
-- Implemented in: `scripts/model.lp`, `scripts/spec_lexicon.py`
+- Implemented in: `scripts/model.lp`, `scripts/spec_lexicon_problems.py`
 - Cited by: no line
 - Fails on:
 
@@ -969,7 +969,7 @@ a value names no attribute, or more than one
 two terms are written the same
 
 - Severity: violation
-- Implemented in: `scripts/model.lp`, `scripts/spec_lexicon.py`
+- Implemented in: `scripts/model.lp`, `scripts/spec_lexicon_problems.py`
 - Cited by: no line
 - Fails on:
 
@@ -1404,7 +1404,7 @@ a requirement holds example data: a code or quoted string that names no declared
 a term's gloss is more than one sentence
 
 - Severity: violation
-- Implemented in: `scripts/spec_lexicon.py`
+- Implemented in: `scripts/spec_lexicon_problems.py`
 - Cited by: no line
 - Fails on:
 
@@ -1457,7 +1457,7 @@ a relation is written as an entry, not as a row of `## Relations`
 a term's meaning is given as a `Means:` field rather than a sentence
 
 - Severity: violation
-- Implemented in: `scripts/spec_lexicon.py`
+- Implemented in: `scripts/spec_lexicon_problems.py`
 - Cited by: no line
 - Fails on:
 
