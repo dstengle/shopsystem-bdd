@@ -452,6 +452,25 @@ label("v_a6", "an operation of an adapter contract holds a requirement that does
 % fail v_a6: op_holds("spec/adapters/cli.toml","notes.add","c#r1"). requester("c#r1","notes.list","the person").
 % pass v_a6: op_holds("spec/adapters/cli.toml","notes.add","c#r1"). requester("c#r1","notes.add","the person").
 v_a6(O, Q)    :- op_holds(_, O, Q), not requester(Q, O, _).
+% the catalogues as specification artifacts (scripts/model_catalogue.py, b370): a requirement names a rule by an
+% entry of the rule catalogue, and each entry of the rule and the construct catalogues says what it is for and the
+% delivered items it came by and was changed by
+label("v_c1", "a requirement names a rule the rule catalogue has no entry of").
+% fail v_c1: rule_catalogue("grammar/rules.md"). catalogued_rule("v2"). cites_rule("c#r1","v_zz").
+% pass v_c1: rule_catalogue("grammar/rules.md"). catalogued_rule("v2"). cites_rule("c#r1","v2").
+v_c1(Q, C)    :- cites_rule(Q, C), rule_catalogue(_), not catalogued_rule(C).
+label("v_c2", "a catalogue entry has no purpose").
+% fail v_c2: node("grammar/rules.md#v2","catalogue-entry").
+% pass v_c2: node("grammar/rules.md#v2","catalogue-entry"). purpose("grammar/rules.md#v2").
+v_c2(E)       :- node(E, "catalogue-entry"), not purpose(E).
+label("v_c3", "a catalogue entry mentions no item: no Since: or Changed: names one").
+% fail v_c3: node("grammar/rules.md#v2","catalogue-entry").
+% pass v_c3: node("grammar/rules.md#v2","catalogue-entry"). entry_item("grammar/rules.md#v2","item/x/b1").
+v_c3(E)       :- node(E, "catalogue-entry"), not entry_item(E, _).
+label("v_c4", "a catalogue entry mentions an item that is not delivered").
+% fail v_c4: entry_item("grammar/rules.md#v2","item/x/b1"). item_status("item/x/b1","ready").
+% pass v_c4: entry_item("grammar/rules.md#v2","item/x/b1"). item_status("item/x/b1","delivered").
+v_c4(E, I)    :- entry_item(E, I), item_status(I, S), S != "delivered".
 % the lines against the model (scripts/model_domain_lines.py): a request's operation O, parameters and requester, a
 % refusal's stated reasons, a set of a lifecycle's attribute
 label("v_m2", "a request names a parameter its operation does not declare, or a value outside the parameter's values").
@@ -567,7 +586,7 @@ w_example(Q, L)    :- exemplified(Q, L).
 #show v17/1. #show v18d/1.
 #show v_t1/3. #show v_t2/1. #show v_t3/1. #show v_t4/1. #show v_t5/1. #show v_t6/2. #show v_t11/1. #show v_t12/1. #show v_t13/2. #show v_t14/1. #show v_t15/1.
 #show v_t16/2. #show v_t17/2. #show v_t18/2. #show v_t19/2. #show v_t20/2. #show v_t21/2.
-#show v_m1/3. #show v_m2/2. #show v_m3/2. #show v_m4/2. #show w_m5/4. #show v_m6/4. #show v_m7/1. #show v_m8/2. #show v_a1/2. #show v_a2/2. #show v_a3/2. #show v_a4/2. #show v_a5/2. #show v_a6/2. #show v_r1/2. #show w_r1/2.
+#show v_m1/3. #show v_m2/2. #show v_m3/2. #show v_m4/2. #show w_m5/4. #show v_m6/4. #show v_m7/1. #show v_m8/2. #show v_a1/2. #show v_a2/2. #show v_a3/2. #show v_a4/2. #show v_a5/2. #show v_a6/2. #show v_c1/2. #show v_c2/1. #show v_c3/1. #show v_c4/2. #show v_r1/2. #show w_r1/2.
 #show v_p0/1. #show v_p1/2. #show v_p2/1. #show v_p3/2.
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
 #show w_many_requests/1. #show w_untiered/1. #show w_unrouted/1. #show w_example/2. #show w_value_kind/1.

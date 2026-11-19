@@ -1371,6 +1371,90 @@ an operation of an adapter contract holds a requirement that does not govern it:
   requester("c#r1","notes.add","the person").
   ```
 
+## v_c1
+
+a requirement names a rule the rule catalogue has no entry of
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  rule_catalogue("grammar/rules.md").
+  catalogued_rule("v2").
+  cites_rule("c#r1","v_zz").
+  ```
+
+- Passes on:
+
+  ```prolog
+  rule_catalogue("grammar/rules.md").
+  catalogued_rule("v2").
+  cites_rule("c#r1","v2").
+  ```
+
+## v_c2
+
+a catalogue entry has no purpose
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  node("grammar/rules.md#v2","catalogue-entry").
+  ```
+
+- Passes on:
+
+  ```prolog
+  node("grammar/rules.md#v2","catalogue-entry").
+  purpose("grammar/rules.md#v2").
+  ```
+
+## v_c3
+
+a catalogue entry mentions no item: no Since: or Changed: names one
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  node("grammar/rules.md#v2","catalogue-entry").
+  ```
+
+- Passes on:
+
+  ```prolog
+  node("grammar/rules.md#v2","catalogue-entry").
+  entry_item("grammar/rules.md#v2","item/x/b1").
+  ```
+
+## v_c4
+
+a catalogue entry mentions an item that is not delivered
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  entry_item("grammar/rules.md#v2","item/x/b1").
+  item_status("item/x/b1","ready").
+  ```
+
+- Passes on:
+
+  ```prolog
+  entry_item("grammar/rules.md#v2","item/x/b1").
+  item_status("item/x/b1","delivered").
+  ```
+
 ## v_m2
 
 a request names a parameter its operation does not declare, or a value outside the parameter's values
