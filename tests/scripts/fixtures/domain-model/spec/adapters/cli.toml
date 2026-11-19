@@ -16,6 +16,11 @@ options = ["--root", "--json"]
 
 [operations."notes.add"]
 command = "notes add"
+requirements = [
+  "notebook#r1: When the person adds a note, the notes service shall file the note.",
+  "notebook#r3: When the person adds a note with a text and the priority `high`, the notes service shall keep the note.",
+  "notebook#r4: If the person adds a note without a text and the reminder, then the notes service shall refuse the request and name the text.",
+]
 [operations."notes.add".parameters]
 text = { option = "--text", example = "A note" }
 priority = { option = "--priority", example = "low" }
@@ -23,21 +28,35 @@ reminder = { option = "--reminder", flag = true }
 
 [operations."notes.file"]
 command = "notes file"
+requirements = [
+  "notebook#r2: While a note carries a tag, when the person files the note, the notes service shall archive the note.",
+  "notebook#r7: If the person files a note whose status is not `draft`, then the notes service shall refuse the request and name the note.",
+  "notebook#r8: While a note is `draft`, when the person files the note, the notes service shall set the status of the note to `active`.",
+]
 [operations."notes.file".parameters]
 note = { positional = 1, example = "n1" }
 
 [operations."notes.archive"]
 command = "notes archive"
+requirements = [
+  "notebook#r9: When the person archives a note, the notes service shall set the status of the note to `retired`.",
+]
 [operations."notes.archive".parameters]
 note = { positional = 1, example = "n1" }
 
 [operations."notes.label"]
 command = "notes label"
+requirements = [
+  "notebook#r5: When the person labels a note with a tag, the notes service shall keep the tag.",
+]
 [operations."notes.label".parameters]
 note = { positional = 1, example = "n1" }
 tag = { option = "--tag", repeat = true }
 
 [operations."notes.list"]
 command = "notes list"
+requirements = [
+  "notebook#r6: When the person lists the notes, the notes service shall complete the request.",
+]
 
 [environment]

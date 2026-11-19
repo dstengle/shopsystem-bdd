@@ -199,6 +199,9 @@ contract:
     --json prints {"forms": [{"name", "path", "writer"}]}; --check prints
     nothing and exits 0 unless a form is written by hand, which it names,
     exiting 1.
+  - annotate [<adapter contract> ...] [--check] writes under each operation
+    of each adapter contract the requirements that govern it; --check writes
+    nothing and exits 1 naming each stale contract (adapter_annotate).
   - restates [--json] [<capability>] exits 0 when every 0.29 id (of the
     capability, or of every one) is restated by a group, dropped, or moved
     (a move into a codified capability must be restated there; one into an
@@ -270,6 +273,9 @@ def main(argv=None):
     f = sub.add_parser("forms", help="print every file form: its name, its path pattern and the command that writes it")
     f.add_argument("--json", action="store_true")
     f.add_argument("--check", action="store_true", help="exit 1 naming each form written by hand")
+    a = sub.add_parser("annotate", help="write each operation's governing requirements into the adapter contracts")
+    a.add_argument("contract", nargs="*", help="an adapter contract's path (every one of the context by default)")
+    a.add_argument("--check", action="store_true", help="exit 1 naming each stale adapter contract, writing nothing")
     args = prepare(ap).parse_args(argv)
     if args.cmd == "parse" and (args.line is None) == (args.file is None):
         ap.error("parse takes a line or --file, not both")
@@ -280,6 +286,7 @@ def main(argv=None):
     handler = {"facts": cmd_facts, "check": cmd_check, "rules": cmd_rules, "decisions": cmd_decisions,
                "parse": cmd_parse, "lexicon": cmd_lexicon, "logic": cmd_logic, "restates": cmd_restates,
                "forms": cmd_forms, "explain": cmd_explain,
+               "annotate": lambda x: __import__("adapter_annotate").annotate(x.root, x.check, x.contract),
                "constructs": cmd_constructs}[args.cmd]
     return respond("spec", handler, args, checks=args.cmd in ("check", "logic"))
 
