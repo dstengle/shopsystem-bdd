@@ -58,15 +58,25 @@ options = ["--root", "--json"]
 
 [operations."notes.add"]
 command = "notes add"
+requirements = [
+  "notes#r1: When the person adds a note with a title and a tag, the notes service shall keep the note under the tag.",
+  "notes#r2: If the person adds a note without a title, then the notes service shall refuse the request and name the title.",
+]
 [operations."notes.add".parameters]
 title = { option = "--title", example = "Buy milk" }
 tag = { option = "--tag", repeat = true }
 
 [operations."notes.list"]
 command = "notes list"
+requirements = [
+  "notes#r3: When the person lists the notes, the notes service shall return every note.",
+]
 
 [operations."notes.remove"]
 command = "notes remove"
+requirements = [
+  "notes#r4: When the person removes a note, the notes service shall set the status of the note to `removed`.",
+]
 [operations."notes.remove".parameters]
 note = { positional = 1, example = "1" }
 ```
@@ -76,6 +86,9 @@ note = { positional = 1, example = "1" }
   and its errors go to. `json` names the option that prints the envelope.
 - **`[operations."<service>.<operation>"]`** gives the `command` that requests the operation, or a `hook` (a Claude
   Code hook that drives it, such as `SessionStart`) with its `command`.
+- **`requirements`** under an operation's table lists, generated, the requirements that govern it: each line whose
+  trigger requests the operation, its refusals among them, as `"<capability>#r<n>: <line>"`. `spec annotate` writes
+  them; never edit them by hand.
 - **`[operations."...".parameters]`** maps each parameter, by its business name, to an `option` or a `positional`
   place; `repeat = true` for an option given more than once, `flag = true` for a boolean one, and `example`, the value
   a scenario's driver gives a required parameter the step leaves out.
@@ -98,6 +111,8 @@ two to each other:
 | `v_a2` | a table naming no operation of the model, or a parameter its operation does not declare |
 | `v_a3` | a command or an option the contract names that the program's argparse lacks |
 | `v_a4` | a subcommand or an option of the argparse that no table names and that is not CLI-only |
+| `v_a5` | an operation that does not hold a requirement that governs it (`spec annotate` writes it) |
+| `v_a6` | an operation that holds a requirement that no longer governs it (`spec annotate` takes it out) |
 
 ## The scenarios' driver
 

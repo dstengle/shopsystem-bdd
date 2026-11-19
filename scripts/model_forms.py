@@ -53,6 +53,7 @@ FORMS = [
     Form("domain model area", "spec/model/<area>.md", "plugin item b354 (no command yet)"),
     Form("vocabulary term", "spec/vocabulary/<area>.md", "plugin item b13 (no command yet)"),
     Form("adapter contract", "spec/adapters/<port>.toml", "plugin item b355 (no command yet)"),
+    Form("adapter contract's requirements", "spec/adapters/<port>.toml, each operation's requirements", "spec annotate"),
     Form("capability moves", "spec/moves.json", "migrate upgrade"),
     Form("universal condition", "spec/universal.md", "work line --universal"),
     Form("upstream entry", "spec/index.md ## Upstreams", "work line --upstream"),

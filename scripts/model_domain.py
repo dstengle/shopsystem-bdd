@@ -5,12 +5,16 @@ vocabulary's problems (spec_vocabulary) as `elementless(T, Why)` (v_t18), `unres
 `named_twice(T, Why)` (v_t20) and `retired_import(C, P)` (v_t21), and `foreign_term(Q, W, Why)` (v_m1) of each word a
 parsed requirement of a capability with an `area:` uses (a kind, a verb, an attribute or an actor of its logical form)
 whose entries are all in vocabulary layers its area does not read; the facts of model_domain_lines of the model and of
-each parsed requirement (v_m2-v_m7); `adapter_problem(Code, S, Why)` of adapter_cli_check's v_a1-v_a4. In any context: `cites_record(I, R)` of each
+each parsed requirement (v_m2-v_m7); `adapter_problem(Code, S, Why)` of adapter_cli_check's v_a1-v_a4,
+`contract_op(C, O)` and `op_holds(C, O, Q)` of what each operation of an adapter contract holds (adapter_annotate;
+v_a5, v_a6 against `requester`). In any context: `cites_record(I, R)` of each
 `record/...` or `.shop/records/` path an item's `source:` names, with `new_item(I)` for an item numbered from
 RECORDS_POLICY (the records policy, v_r1; an older item's citation is history, w_r1).
 """
 import re
 
+import adapter_annotate
+import adapter_cli
 import adapter_cli_check
 import domain_model
 import domain_model_check
@@ -67,6 +71,18 @@ class DomainReading:
         # the CLI contract both ways, when spec/adapters/cli.toml exists (v_a1-v_a4)
         for code, subject, why in adapter_cli_check.problems(self.root, domain_model.load(self.root)):
             self.fact("adapter_problem", code, subject, why)
+        for rel in adapter_annotate.contracts(self.root):     # what each operation holds (v_a5, v_a6)
+            for ident, held in adapter_annotate.held(adapter_cli.read(self.root)).items():
+                self.fact("contract_op", str(rel), ident)
+                for q in held:
+                    self.fact("op_holds", str(rel), ident, self.requirement_id(q))
+
+    def requirement_id(self, short):
+        """`<capability>#r<n>` as the facts name a requirement: its capability's `id:` before `#r<n>`."""
+        name, _, n = short.partition("#")
+        path = self.root / "spec" / "capabilities" / ("%s.md" % name)
+        found = frontmatter(path.read_text())[0].get("id") if path.is_file() else None
+        return "%s#%s" % (found or name, n)
 
     def _layer_of(self):
         if getattr(self, "_layers", None) is None:
