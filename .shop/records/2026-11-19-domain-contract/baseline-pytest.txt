@@ -1,0 +1,3 @@
+tests over the 10 s ceiling:
+10.87 tests/scripts/test_bound.py::BoundTest::test_every_step_of_a_generated_feature_has_one_handler
+2307 passed, 1 skipped, 96 subtests passed in 25.23s

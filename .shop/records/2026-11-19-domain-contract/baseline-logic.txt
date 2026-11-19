@@ -1,0 +1,16 @@
+L8 batches#r45 says nothing other requirements do not: Then 1 by batches#r38
+L8 design-model-check#r310 says nothing other requirements do not: Then 1 by design-model-check#r301
+L8 design-model-check#r311 says nothing other requirements do not: Then 1 by design-model-check#r298
+L8 design-model-check#r312 says nothing other requirements do not: Then 1 by design-model-check#r299
+L8 design-model-check#r314 says nothing other requirements do not: Then 1 by design-model-check#r294
+L8 design-model-check#r317 says nothing other requirements do not: Then 1 by design-model-check#r304
+L8 design-model-check#r318 says nothing other requirements do not: Then 1 by design-model-check#r233 and design-model-check#r304
+L8 design-model-check#r323 says nothing other requirements do not: Then 1 by design-model-check#r294
+L8 design-model-check#r325 says nothing other requirements do not: Then 1 by design-model-check#r303
+L8 design-model-check#r326 says nothing other requirements do not: Then 1 by design-model-check#r303
+L8 design-model-check#r327 says nothing other requirements do not: Then 1 by design-model-check#r304
+L8 feature-file-tools#r125 says nothing other requirements do not: Then 1 by feature-file-tools#r120
+L8 feature-file-tools#r129 says nothing other requirements do not: Then 1 by feature-file-tools#r114
+L8 feature-file-tools#r134 says nothing other requirements do not: Then 1 by feature-file-tools#r119
+L8 feature-file-tools#r135 says nothing other requirements do not: Then 1 by feature-file-tools#r120
+15 findings: 15 L8
