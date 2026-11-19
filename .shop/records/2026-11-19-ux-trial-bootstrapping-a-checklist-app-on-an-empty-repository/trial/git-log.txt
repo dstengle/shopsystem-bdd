@@ -1,0 +1,16 @@
+60bf89d batch-1: the requirement lines of b1 "Create checklists, add items, check items off and list them"
+7eb40c1 work batch start: batch-1 b1 "Create checklists, add items, check items off and list them"
+7c430c8 work ready: b1 "Create checklists, add items, check items off and list them" shaped -> ready
+409f6a4 spec: the checklists model and vocabulary, written by hand (no command writes them yet)
+c51fdbc work rate: b1 "Create checklists, add items, check items off and list them" value=high-value urgency=high-urgency size=small
+4aac3c0 work line: b1 "Create checklists, add items, check items off and list them" checklists#r6
+946c9ae work line: b1 "Create checklists, add items, check items off and list them" checklists#r5
+aacf8a2 work line: b1 "Create checklists, add items, check items off and list them" checklists#r4
+f2d54dc work line: b1 "Create checklists, add items, check items off and list them" checklists#r3
+569a11a work line: b1 "Create checklists, add items, check items off and list them" checklists#r2
+dabc701 work line: b1 "Create checklists, add items, check items off and list them" rewords checklists#r1
+de62565 work line: b1 "Create checklists, add items, check items off and list them" checklists#r1
+8ddd9fa work line: b1 "Create checklists, add items, check items off and list them" a new capability checklists
+e912372 work shape: b1 "Create checklists, add items, check items off and list them" idea -> shaped
+f8023ba work idea: b1 "Create checklists, add items, check items off and list them" idea
+81178f9 migrate init: bounded-context/example.org/checklists/checklists-cli

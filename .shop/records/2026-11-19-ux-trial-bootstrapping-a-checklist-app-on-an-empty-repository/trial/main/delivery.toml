@@ -1,0 +1,27 @@
+# How this repository's batches are delivered (`work batch`), every key at its default: uncomment one to change it.
+
+# How many ready items a batch picks.
+# batch_size = 4
+
+# [batch]
+# The prefix every push and gh call takes, such as a command that gives them credentials.
+# push = ""
+# The command a task's tests run with.
+# tests = "python3 -m pytest -q -p work_items"
+# Where a batch's worktrees go.
+# worktrees = ".shop/worktrees"
+
+# [review]
+# The changed lines a pull request review reads before it says the batch is too big.
+# size = 1000
+# The checks a pull request review runs.
+# checks = [
+#   "python3 {scripts}/tools size --limit 300",
+#   "python3 {scripts}/tools check --base {forked_from}",
+#   "python3 {scripts}/features generate --check",
+#   "python3 {scripts}/features bindings --unbound",
+#   "python3 {scripts}/spec decisions --check",
+# ]
+
+# [prices]
+# A model's price per million tokens, over the plugin's dated table: "<model>" = { input = 0.0, output = 0.0 }
