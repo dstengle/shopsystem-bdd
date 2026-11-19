@@ -125,7 +125,8 @@ def read(root):
             vocab.kinds[kind] = "thing"
     vocab.this = {t.term: t.this for t in lex.of("kind") + lex.of("resource") if t.this}
     plural = {t.term: t.plural for t in lex.terms if t.plural}
-    vocab.nouns = {k: (k, plural.get(k) or regular_plural(k)) for k in vocab.kinds}
+    word = {t.term: t.word for t in lex.terms if t.word}     # a word of two areas: one kind each, spelled the word
+    vocab.nouns = {k: (word.get(k, k), plural.get(k) or regular_plural(word.get(k, k))) for k in vocab.kinds}
     vocab.actors = [(t.term, t.supertype if t.supertype in vocab.kinds else "thing") for t in lex.of("actor")]
     vocab.attributes = [(t, tuple(k for k in t.kinds if k in vocab.kinds)) for t in lex.of("attribute")]
     vocab.rows = list(dict.fromkeys((r.k1, r.word, r.k2) for r in lex.rows

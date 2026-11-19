@@ -54,6 +54,7 @@ class Term:
     order: str = ""       # an attribute's `Order:`, how its values are ordered (spec_lf_order, b240)
     type: str = ""        # an attribute's `Type:`, number, time or text: its values any literal of it (b275)
     value_kinds: tuple = ()     # (value, adjective or noun) of each declared value (spec_value_kinds, b257)
+    word: str = ""        # its spelling when its term is a key that differs (a word of two areas: spec_vocabulary_terms)
 
     @property
     def key(self):
@@ -214,8 +215,12 @@ def ident(term, category):
 
 
 def read(root):
-    """The lexicon of the context at `root`: the glossary of `spec/index.md` and every capability's `## Terms`."""
+    """The lexicon of the context at `root`: the glossary of `spec/index.md` and every capability's `## Terms`; of a
+    context with a domain model (`spec/model/`), its vocabulary named onto the model (spec_vocabulary_terms)."""
     root = Path(root)
+    if (root / "spec" / "model").is_dir():     # the domain contract: the terms name the model's elements
+        import spec_vocabulary_terms
+        return spec_vocabulary_terms.lexicon(root)
     sources = [(root / "spec" / "index.md", "Glossary")]
     sources += [(p, "Terms") for p in sorted((root / "spec" / "capabilities").glob("*.md"))]
     terms = []

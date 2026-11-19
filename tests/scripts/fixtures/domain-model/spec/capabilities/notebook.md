@@ -1,5 +1,5 @@
 ---
-id: capability/example.org/fixture/notebook
+id: capability/example.org/fixture/domain-model/notebook
 title: Notebook
 narrator: a person keeping notes
 group: service
