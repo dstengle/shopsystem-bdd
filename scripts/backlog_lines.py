@@ -12,6 +12,7 @@ from pathlib import Path
 
 import backlog_capability
 import backlog_forms
+import backlog_model
 import backlog_recodify
 import backlog_retires
 import backlog_universal
@@ -189,6 +190,7 @@ def lay_onto(into, item, files=None):
         path.write_text(text)
     backlog_forms.lay_spec(into, blocks, files)
     backlog_universal.lay(into, blocks, files)
+    backlog_model.lay(into, blocks, files)
     return [b.capability for b in blocks]
 
 
@@ -225,6 +227,7 @@ def unlay(into, item, files=None):
             changed.append(block.capability)
     backlog_forms.unlay_spec(into, blocks, files)
     backlog_universal.unlay(into, blocks, files)
+    backlog_model.unlay(into, blocks, files)
     return changed
 
 

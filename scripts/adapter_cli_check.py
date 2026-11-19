@@ -45,7 +45,10 @@ def parser_of(path):
     folder = str(path.parent)
     sys.path.insert(0, folder)
     try:
-        loader.exec_module(module)
+        try:
+            loader.exec_module(module)
+        except Exception:  # noqa: BLE001 -- a program that does not load is one whose argparse cannot be read (v_a3)
+            return None
 
         def caught(self, *_args, **_kwargs):
             raise _Caught(self)
