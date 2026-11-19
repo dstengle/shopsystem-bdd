@@ -146,3 +146,25 @@ def test_start_prints_only_the_renumbering_it_made(two):
     again = work(two, "batch", "start")
     assert again.returncode == 0 and again.stdout.startswith("batch-2 building"), again.stderr
     assert "renumbered" not in again.stdout, again.stdout
+
+
+DOMAIN = pathlib.Path(__file__).resolve().parent / "fixtures" / "domain-model"
+ARCHIVE = "While a note carries a tag, when the person archives the note, the notes service shall keep the tag."
+
+
+def test_the_lay_commit_holds_the_annotated_contract(batch_repo):
+    """b379: the lay annotates the adapter contract as it writes the lines, so the new line is under its operation."""
+    import shutil
+    toolchain.require()
+    shutil.rmtree(batch_repo / "spec")
+    shutil.copytree(DOMAIN / "spec", batch_repo / "spec")
+    git(batch_repo, "add", "-A")
+    git(batch_repo, "commit", "-q", "-m", "the notes service")
+    write_item(batch_repo, "b1", title="Archive", status="ready", value="high-value", urgency="high-urgency",
+               size="small", body="\n## Requirements\n\n### notebook\n\n#### [g10] Archive\n- [r10] %s\n" % ARCHIVE)
+    done = work(batch_repo, "batch", "start")
+    assert done.returncode == 0, done.stderr
+    assert "spec/adapters/cli.toml" in git(batch_repo, "show", "--name-only", "--format=", "batch-1").split()
+    contract = git(batch_repo, "show", "batch-1:spec/adapters/cli.toml")
+    table = contract[contract.index('[operations."notes.archive"]'):contract.index('[operations."notes.label"]')]
+    assert "notebook#r10: %s" % ARCHIVE in table, table
