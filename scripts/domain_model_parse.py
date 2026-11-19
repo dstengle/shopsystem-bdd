@@ -24,6 +24,7 @@ class Attribute:
     values: tuple = ()      # in order: an ordered attribute's order
     type: str = ""          # text, number, time, version; "values" with values; "object" with a target
     targets: tuple = ()     # the objects an `area → area` attribute names
+    ordered: bool = False   # its values written `a < b < c`: ordered as listed (by number when each is a version)
 
 
 @dataclass(frozen=True)
@@ -44,6 +45,7 @@ class Object:
     name: str
     area: str = ""
     where: str = ""
+    kind_of: str = ""       # the kind it is a kind of (`object session kind of agent`): an object or a pack's kind
     attributes: list = field(default_factory=list)
     lifecycles: list = field(default_factory=list)
     relations: list = field(default_factory=list)
@@ -161,7 +163,8 @@ class Reader:
         word, _, rest = body.partition(" ")
         rest = rest.strip()
         if word == "object" and rest:
-            self.current = [Object(name.strip(), self.area, self.where) for name in rest.split(",")]
+            names, _, kind = rest.partition(" kind of ")
+            self.current = [Object(name.strip(), self.area, self.where, kind.strip()) for name in names.split(",")]
             self.objects += self.current
         elif word == "service" and rest:
             self.current = Service(rest, self.area, self.where)
@@ -206,10 +209,12 @@ class Reader:
                     pending = []
                 elif ":" in item:
                     name, _, values = item.partition(":")
-                    values = tuple(v.strip() for v in values.split("|") if v.strip())
+                    ordered = "<" in values
+                    values = tuple(v.strip() for v in re.split(r"[|<]", values) if v.strip())
                     if not values:
                         self.refuse(n, "the attribute %s gives no values" % name.strip())
-                    out += [Attribute(p, type="text") for p in pending] + [Attribute(name.strip(), values, "values")]
+                    out += [Attribute(p, type="text") for p in pending] + [
+                        Attribute(name.strip(), values, "values", ordered=ordered)]
                     pending = []
                 elif ARROW.search(item):
                     name, target = ARROW.split(item, 1)

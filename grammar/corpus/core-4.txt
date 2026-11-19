@@ -1,190 +1,192 @@
 # core-4: the grammar 4 twin of core.txt (the CNL 4 design, I7a): one line for each construct of the base grammar,
-# parsed in the smallest codified-2 context (tests/scripts/fixtures/codified-2/: the CLI pack and a few words), each
-# with one tree that linearises back word for word; or a line followed by "= refused: <reason>", which grammar 4
+# parsed in the smallest context in request words (tests/scripts/fixtures/request-4/: the request pack, a domain model
+# and its vocabulary; the domain contract design, §9.4), each with one tree that linearises back word for word; or a line followed by "= refused: <reason>", which grammar 4
 # refuses with that reason. Later grammar items add their constructs and refusals here.
 #
-# When, a trigger whose verb agrees with a singular subject, and a response of the CLI pack
-When the person runs `work start`, `work` shall exit successfully.
-When a session writes a file, `work` shall print the file.
+# When, a trigger whose verb agrees with a singular subject (a request of an operation), and a response of the request
+# pack
+When the person opens the board, the work service shall complete the request.
+When a session writes a file, the work service shall return the file.
 # agreement from the RGL: a plural subject (b113)
-When sessions write a file, `work` shall print the file.
-While sessions follow a stage, when the person runs `work start`, `work` shall end the stage.
-When sessions writes a file, `work` shall print the file.
+When sessions write a file, the work service shall return the file.
+While sessions follow a stage, when the person opens the board, the work service shall end the stage.
+When sessions writes a file, the work service shall return the file.
 = refused: the verb write does not agree in number with its subject
-When a session write a file, `work` shall print the file.
+When a session write a file, the work service shall return the file.
 = refused: the verb write does not agree in number with its subject
-While a session follow a stage, when the person runs `work start`, `work` shall end the stage.
+While a session follow a stage, when the person opens the board, the work service shall end the stage.
 = refused: the verb follow does not agree in number with its subject
 # If, then: two acts under one shall, an act with fixed words and a kind in its frame, and "nothing"
-If `work` refuses a command, then `work` shall exit with an error naming the reason and change nothing.
+If the work service refuses a request, then the work service shall name the reason and change nothing.
 # three acts, the last negated: A, B and not C; a frame with a preposition before its second kind
-When the person runs `work start` on a stage, `work` shall end the stage, print the stage and not write a file.
+When the person ends a stage, the work service shall end the stage, return the stage and not write a file.
 # shall not
-When a session ends a stage, `work` shall not change the stage.
+When a session ends a stage, the work service shall not change the stage.
 # While with polarity: a state verb negated ("does not"), an attribute's value, and, or
-While a session does not follow a stage, when the person runs `work start`, `work` shall exit successfully.
-While a stage is not `done` and sessions follow the stage, when a session ends the stage, `work` shall print the stage.
-While a stage is `open` or a stage is `done`, when the person runs `work start`, `work` shall exit successfully.
+While a session does not follow a stage, when the person opens the board, the work service shall complete the request.
+While a stage is not `done` and sessions follow the stage, when a session ends the stage, the work service shall return the stage.
+While a stage is `open` or a stage is `done`, when the person opens the board, the work service shall complete the request.
 # two responses whose subjects differ
-When a session ends a stage, `work` shall exit successfully, and the person shall write a file.
+When a session ends a stage, the work service shall complete the request, and the person shall write a file.
 # Where, and Where with While; a line with no trigger
-Where a stage is `open`, when a session writes a file, `work` shall print every file.
-Where a stage is `open`, while sessions follow the stage, if a session ends the stage, then `work` shall exit with an error naming the stage.
-`work` shall not change `spec/index.md`.
+Where a stage is `open`, when a session writes a file, the work service shall return every file.
+Where a stage is `open`, while sessions follow the stage, if a session ends the stage, then the work service shall refuse the request and name the stage.
+The work service shall not change `spec/index.md`.
 # determiners: a, the, every, a bare plural, the plural
-When the person runs `work start`, `work` shall print the files.
-# an option in the trigger (b134): a code before its noun, "the `--json` option", or the code alone
-When the person runs `work backlog` with the `--json` option, `work` shall print the output.
-When a session runs `work backlog` with `--json`, `work` shall exit successfully.
+When the person opens the board, the work service shall return the files.
+# a parameter in the trigger (the domain contract design, §5.1): a flag, "with the summary"
+When the person opens the board with the summary, the work service shall complete the request.
+When a session opens the board with the summary, the work service shall complete the request.
 # a noun of the wrong kind for its slot is not a grammar 4 line
-When a session writes a stage, `work` shall print the stage.
+When a session writes a stage, the work service shall return the stage.
 = refused: the verb write takes as its object file or a kind of it
-When a stage writes a file, `work` shall print the file.
+When a stage writes a file, the work service shall return the file.
 = refused: the verb write takes as its subject agent or a kind of it
 # a verb short of the object its frame takes, refused naming the verb (I10)
-When the person runs `work start`, `work` shall write.
+When the person opens the board, the work service shall write.
 = refused: the verb write takes an object
-When the person runs `work start`, `work` shall write and print the file.
+When the person opens the board, the work service shall write and return the file.
 = refused: the verb write takes an object
 # the aspect refusal (b134, call 3): a state verb in a trigger, an action verb in a While clause, named
-When a session follows a stage, `work` shall print the stage.
+When a session follows a stage, the work service shall return the stage.
 = refused: the verb follow is a state, and a trigger takes an action
-If sessions follow a stage, then `work` shall exit successfully.
+If sessions follow a stage, then the work service shall complete the request.
 = refused: the verb follow is a state, and a trigger takes an action
-While a session writes a file, when the person runs `work start`, `work` shall exit successfully.
+While a session writes a file, when the person opens the board, the work service shall complete the request.
 = refused: the verb write is an action, and a While clause takes a state
-While a stage is `open` and a session does not end the stage, when the person runs `work start`, `work` shall exit successfully.
+While a stage is `open` and a session does not end the stage, when the person opens the board, the work service shall complete the request.
 = refused: the verb end is an action, and a While clause takes a state
 # noun phrases (b135, I8): "of" over an attribute and over a relation row, a list of two things
-When a session ends a stage, `work` shall print the status of the stage and the worktree of the session.
-While the status of the stage is not `done`, when a session ends the stage, `work` shall print the stage.
+When a session ends a stage, the work service shall return the status of the stage and the worktree of the session.
+While the status of the stage is not `done`, when a session ends the stage, the work service shall return the stage.
 # "its" over an attribute and over a row; a modifier of a row on a bare noun head
-When a session ends a stage, `work` shall print its status.
-When a session writes a file in its worktree, `work` shall print the file.
+When a session ends a stage, the work service shall return its status.
+When a session writes a file in its worktree, the work service shall return the file.
 A session shall change only files in its worktree.
 # has and holds: a row's frames, a state; "no" as an object and as a subject
-While a session has no worktree, when the person runs `work start`, `work` shall exit with an error naming the session.
-While sessions have no worktree, when the person runs `work start`, `work` shall exit successfully.
-While a session does not have a worktree, when the person runs `work start`, `work` shall exit successfully.
-While a worktree holds a file, when a session writes the file, `work` shall print the worktree.
-While no session follows a stage, when the person runs `work start`, `work` shall exit successfully.
+While a session has no worktree, when the person opens the board, the work service shall refuse the request and name the session.
+While sessions have no worktree, when the person opens the board, the work service shall complete the request.
+While a session does not have a worktree, when the person opens the board, the work service shall complete the request.
+While a worktree holds a file, when a session writes the file, the work service shall return the worktree.
+While no session follows a stage, when the person opens the board, the work service shall complete the request.
 # compounds derived from an attribute and from a row
-When a session ends a stage, `work` shall print the stage status.
-When a session ends a stage, `work` shall print every stage status.
-When a session writes a file, `work` shall print the session worktree.
+When a session ends a stage, the work service shall return the stage status.
+When a session ends a stage, the work service shall return every stage status.
+When a session writes a file, the work service shall return the session worktree.
 # lists with and, or, of three, and as a subject that agrees in the plural
-When the person runs `work start`, `work` shall print the file and the stage.
-When the person runs `work start`, `work` shall print a file or a stage.
-When the person runs `work start`, `work` shall print the file, the stage and the worktree.
-When a session and the person write a file, `work` shall print the file.
+When the person opens the board, the work service shall return the file and the stage.
+When the person opens the board, the work service shall return a file or a stage.
+When the person opens the board, the work service shall return the file, the stage and the worktree.
+When a session and the person write a file, the work service shall return the file.
 # an attribute of another kind is no noun phrase of the kind
-When a session ends a stage, `work` shall print the status of the worktree.
+When a session ends a stage, the work service shall return the status of the worktree.
 = refused: does not parse at worktree
 # relative clauses (b136, I9; b107 folded in): on a state frame, the subject's ("that follows") or an object's ("that
 # sessions follow"), each with its polarity, agreeing with its noun; on a row's has and holds; nested
-When a session ends a stage that sessions follow, `work` shall print every session that does not follow the stage.
-While a session that follows a stage has no worktree, when the person runs `work start`, `work` shall print the session.
-When the person runs `work start`, `work` shall print every worktree that a session has and every file that a worktree holds.
-While no session that does not follow a stage has a worktree, when the person runs `work start`, `work` shall exit successfully.
-When a session ends a stage that a session follows, `work` shall print every file in a worktree that a session has.
-When a session ends a stage that a session that has a worktree follows, `work` shall print the stage.
+When a session ends a stage that sessions follow, the work service shall return every session that does not follow the stage.
+While a session that follows a stage has no worktree, when the person opens the board, the work service shall return the session.
+When the person opens the board, the work service shall return every worktree that a session has and every file that a worktree holds.
+While no session that does not follow a stage has a worktree, when the person opens the board, the work service shall complete the request.
+When a session ends a stage that a session follows, the work service shall return every file in a worktree that a session has.
+When a session ends a stage that a session that has a worktree follows, the work service shall return the stage.
 # a relative clause is a state: an action verb's frame gives none
-When a session ends a stage that a session ends, `work` shall print the stage.
+When a session ends a stage that a session ends, the work service shall return the stage.
 = refused: does not parse at ends
 # whose (b136, I9): over an attribute and over a row whose word is `of`, with its polarity, on a plural noun too
-When a session ends a stage whose status is not `done`, `work` shall print every session whose worktree holds a file.
-While sessions whose worktree holds a file follow a stage whose status is `open`, when the person runs `work start`, `work` shall exit successfully.
-When the person runs `work start`, `work` shall print every session whose worktree does not hold a file.
+When a session ends a stage whose status is not `done`, the work service shall return every session whose worktree holds a file.
+While sessions whose worktree holds a file follow a stage whose status is `open`, when the person opens the board, the work service shall complete the request.
+When the person opens the board, the work service shall return every session whose worktree does not hold a file.
 # an attribute of another kind gives no whose (a worktree has a layout, so "whose" parses and "status" does not)
-When the person runs `work start`, `work` shall print every worktree whose status is `open`.
+When the person opens the board, the work service shall return every worktree whose status is `open`.
 = refused: does not parse at status
 # one meaning or refused (b136, call 2): a list that belongs to either of two verbs reads two ways
-When the person runs `work start`, `work` shall print every session that follows a stage and the stage.
+When the person opens the board, the work service shall return every session that follows a stage and the stage.
 = refused: more than one meaning: "every session that follows a stage and the stage" reads 2 ways
 # a relative clause after two nouns belongs to the one its frame takes
-When a session writes a file in a worktree that a session has, `work` shall print the file.
-# the indexical (b138, call 6): "this" before a kind whose entry has This: (the CLI pack's command), and before no other
-When the person runs this command, `work` shall print the output.
-If `work` refuses this command, then `work` shall exit with an error naming the reason.
-When the person runs `work start`, `work` shall print this stage.
+When a session writes a file in a worktree that a session has, the work service shall return the file.
+# the indexical (b138, call 6): "this" before a kind whose entry has This: (the commit, the request pack's request), and
+# before no other
+When the person opens the board, the work service shall keep this commit.
+If the work service refuses this request, then the work service shall name the reason.
+When the person opens the board, the work service shall return this stage.
 = refused: does not parse at stage
 # a passive, which grammar 4 has not, refused naming the verb whose subject it leaves out (I10)
-While a file is not written, when the person runs `work start`, `work` shall write a file.
+While a file is not written, when the person opens the board, the work service shall write a file.
 = refused: the verb write takes a subject, which a passive leaves out
 # a verb short of the recipient its frame takes, or with one of the wrong kind, refused naming the verb (I10)
-When the person runs `work start`, `work` shall give a file.
+When the person opens the board, the work service shall give a file.
 = refused: the verb give takes a recipient
-When the person runs `work start`, `work` shall give a file to a stage.
+When the person opens the board, the work service shall give a file to a stage.
 = refused: the verb give takes as its recipient agent or a kind of it
-When the person runs `work start`, `work` shall give a file to a session.
+When the person opens the board, the work service shall give a file to a session.
 # counts (I15, call 4): a bound and a number before a noun, the noun agreeing with the number; "one" alone
-When the person runs `work start`, `work` shall print at least two stages.
-When the person runs `work start`, `work` shall print at most one stage, exactly three files or more than one session.
-When a session ends fewer than ten stages, `work` shall print one file.
-When the person runs `work start`, `work` shall print at least one stages.
+When the person opens the board, the work service shall return at least two stages.
+When the person opens the board, the work service shall return at most one stage, exactly three files or more than one session.
+When a session ends fewer than ten stages, the work service shall return one file.
+When the person opens the board, the work service shall return at least one stages.
 = refused: does not parse at stages
 # setting an attribute of a thing named earlier to a value (b216): "the T of x", "the K T", polarity, among other acts
-When a session ends a stage, `work` shall set the status of the stage to `done`.
-When a session ends a stage, `work` shall not set the stage status to `open`.
-When a session ends a stage, `work` shall set the status of the stage to `done` and print the stage.
+When a session ends a stage, the work service shall set the status of the stage to `done`.
+When a session ends a stage, the work service shall not set the stage status to `open`.
+When a session ends a stage, the work service shall set the status of the stage to `done` and return the stage.
 When a session ends a stage, the session shall set the status of the stage to `done`.
-When a session ends a stage, `work` shall set the stage to `done`.
+When a session ends a stage, the work service shall set the stage to `done`.
 = refused: does not parse at to
 # value sets and a value's absence (b240, construct #4): one of a list of two or more, none of it, "has no T"
-While a line is one of `proposed`, `accepted` or `refused`, when the person runs `work start`, `work` shall print the line.
-While the priority of a stage is one of `low` or `high`, when the person runs `work start`, `work` shall end the stage.
-While a line is not `accepted`, `refused` or `withdrawn`, when the person runs `work start`, `work` shall print the line.
-While the priority of a stage is not `low` or `high`, when the person runs `work start`, `work` shall end the stage.
-While a stage has no priority, when the person runs `work start`, `work` shall print the stage.
-While a line is one of `accepted` or `done`, when the person runs `work start`, `work` shall print the line.
+While a line is one of `proposed`, `accepted` or `refused`, when the person opens the board, the work service shall return the line.
+While the priority of a stage is one of `low` or `high`, when the person opens the board, the work service shall end the stage.
+While a line is not `accepted`, `refused` or `withdrawn`, when the person opens the board, the work service shall return the line.
+While the priority of a stage is not `low` or `high`, when the person opens the board, the work service shall end the stage.
+While a stage has no priority, when the person opens the board, the work service shall return the stage.
+While a line is one of `accepted` or `done`, when the person opens the board, the work service shall return the line.
 = refused: does not parse at `done`
-While a line is one of `accepted`, when the person runs `work start`, `work` shall print the line.
+While a line is one of `accepted`, when the person opens the board, the work service shall return the line.
 = refused: does not parse at when
 # the number of Ks (b240, construct #3): printed, a thing; compared with a number word or a code
-When a session ends a stage, `work` shall print the number of lines of the stage.
-When a session ends a stage, `work` shall print the number of sessions that follow the stage.
-When a session ends a stage, `work` shall print the number of lines of the stage whose outcome is `accepted`.
-While the number of lines of a stage is at least two, when the person runs `work start`, `work` shall end the stage.
-While a stage is `open` and the number of lines of the stage is more than `batch_size`, when the person runs `work start`, `work` shall end the stage.
-While a stage is `open` and the number of lines of the stage is `0`, when the person runs `work start`, `work` shall end the stage.
-While the number of lines of a stage is more than eleven, when the person runs `work start`, `work` shall end the stage.
+When a session ends a stage, the work service shall return the number of lines of the stage.
+When a session ends a stage, the work service shall return the number of sessions that follow the stage.
+When a session ends a stage, the work service shall return the number of lines of the stage whose verdict is `accepted`.
+While the number of lines of a stage is at least two, when the person opens the board, the work service shall end the stage.
+While a stage is `open` and the number of lines of the stage is more than `batch_size`, when the person opens the board, the work service shall end the stage.
+While a stage is `open` and the number of lines of the stage is `0`, when the person opens the board, the work service shall end the stage.
+While the number of lines of a stage is more than eleven, when the person opens the board, the work service shall end the stage.
 = refused: does not parse at eleven
-When a session ends a stage, `work` shall print the number of line of the stage.
+When a session ends a stage, the work service shall return the number of line of the stage.
 = refused: does not parse at line
 # identity and distinctness (b240, construct #2): "another K", "a different K", "two Ks", "the same K"
-When a session gives a file to another session, `work` shall print the file.
-When a session gives a file to a different session, `work` shall print the file.
-While two sessions follow the same stage, when the person runs `work start`, `work` shall end the stage.
-While a session follows a stage and another session follows the same stage, when the person runs `work start`, `work` shall print the stage.
-When a session ends a stage, `work` shall write two files.
-While two sessions follows a stage, when the person runs `work start`, `work` shall exit successfully.
+When a session gives a file to another session, the work service shall return the file.
+When a session gives a file to a different session, the work service shall return the file.
+While two sessions follow the same stage, when the person opens the board, the work service shall end the stage.
+While a session follows a stage and another session follows the same stage, when the person opens the board, the work service shall return the stage.
+When a session ends a stage, the work service shall write two files.
+While two sessions follows a stage, when the person opens the board, the work service shall complete the request.
 = refused: the verb follow does not agree in number with its subject
-While two session follow a stage, when the person runs `work start`, `work` shall exit successfully.
+While two session follow a stage, when the person opens the board, the work service shall complete the request.
 = refused: does not parse at session
 # existence (b240, construct #7): "x exists", "does not exist", "no K exists", "a K that exists"
-While the `a` file exists and the `b` file does not exist, when the person runs `work start`, `work` shall print the `a` file.
-While no file exists, when the person runs `work start`, `work` shall exit successfully.
-When the person runs `work start`, `work` shall print every file that exists.
-While files exist, when the person runs `work start`, `work` shall exit successfully.
-While a file exist, when the person runs `work start`, `work` shall exit successfully.
+While the `a` file exists and the `b` file does not exist, when the person opens the board, the work service shall return the `a` file.
+While no file exists, when the person opens the board, the work service shall complete the request.
+When the person opens the board, the work service shall return every file that exists.
+While files exist, when the person opens the board, the work service shall complete the request.
+While a file exist, when the person opens the board, the work service shall complete the request.
 = refused: does not parse at exist
-When a session exists, `work` shall print the session.
+When a session exists, the work service shall return the session.
 = refused: the verb exist is a state, and a trigger takes an action
-# options (b240, construct #12): one, two, with on, set to an argument, not given
-When the person runs `work start` with the `--json` option, `work` shall exit successfully.
-If the person runs `work start` with the `--source` and `--thread` options, then `work` shall exit with an error naming `--source`.
-When the person runs `work start` with the `--json` option on a stage, `work` shall print the stage.
-When the person runs `work start` with the `--every` option set to `5`, `work` shall exit successfully.
-If the person runs `work start` without the `--summary` option, then `work` shall exit with an error naming `--summary`.
-If a session runs `work start` without the `--reason` option on a line, then `work` shall exit with an error naming `--reason`.
-When the person runs `work start` with the `--source` and `--thread` option, `work` shall exit successfully.
+# parameters (request-params): a flag, two together, with an object, a value, not given; refused, naming one
+When the person opens the board with the summary, the work service shall complete the request.
+If the person opens the board with a source and a thread, then the work service shall refuse the request and name the source.
+When the person settles a line with a note, the work service shall return the line.
+When the person opens the board with the interval `5`, the work service shall complete the request.
+If the person opens the board without the summary, then the work service shall refuse the request and name the summary.
+If a session settles a line without a note, then the work service shall refuse the request and name the note.
+When the person opens the board with a source and a thread option, the work service shall complete the request.
 = refused: does not parse at option
 # value kinds (b257): the short form "x is v" of an adjective value; a value declared a noun only in the full form
-While the tier of a stage is `review`, when the person runs `work start`, `work` shall end the stage.
-When a session ends a stage whose tier is not `check`, `work` shall print the stage.
-While a stage is `review`, when the person runs `work start`, `work` shall end the stage.
+While the tier of a stage is `review`, when the person opens the board, the work service shall end the stage.
+When a session ends a stage whose tier is not `test`, the work service shall return the stage.
+While a stage is `review`, when the person opens the board, the work service shall end the stage.
 = refused: `review` is a noun, a value of the tier of a stage
-While a stage is one of `check` or `review`, when the person runs `work start`, `work` shall end the stage.
-= refused: `check` is a noun, a value of the tier of a stage
-While a file is `1.0.1`, when the person runs `work start`, `work` shall print the file.
+While a stage is one of `test` or `review`, when the person opens the board, the work service shall end the stage.
+= refused: `test` is a noun, a value of the tier of a stage
+While a file is `1.0.1`, when the person opens the board, the work service shall return the file.
 = refused: `1.0.1` is a noun, a value of the version of a file

@@ -17,12 +17,19 @@ import toolchain
 REPO = pathlib.Path(__file__).resolve().parents[2]
 FIXTURE = REPO / "tests" / "scripts" / "fixtures" / "codified-2"
 CORPUS = REPO / "grammar" / "corpus" / "core-4.txt"
+REQUEST = REPO / "tests" / "scripts" / "fixtures" / "request-4"     # the corpus's context, in request words
 
 
 @pytest.fixture(scope="module")
 def root():
     toolchain.require()
     return FIXTURE
+
+
+@pytest.fixture(scope="module")
+def request_root():
+    toolchain.require()
+    return REQUEST
 
 
 def twin():
@@ -36,7 +43,8 @@ def twin():
     return out
 
 
-def test_every_line_of_the_twin_has_one_tree_that_round_trips_or_is_refused_with_its_reason(root):
+def test_every_line_of_the_twin_has_one_tree_that_round_trips_or_is_refused_with_its_reason(request_root):
+    root = request_root
     failures = []
     for line, reason in twin():
         p = spec_grammar4.parse(root, line)
@@ -52,7 +60,7 @@ def test_every_line_of_the_twin_has_one_tree_that_round_trips_or_is_refused_with
 
 def test_the_twin_has_each_form_of_a_line_and_both_numbers():
     lines = [line for line, reason in twin() if reason is None]
-    for start in ("When ", "If ", "While ", "Where ", "`work` shall"):
+    for start in ("When ", "If ", "While ", "Where ", "The work service shall"):
         assert any(line.startswith(start) for line in lines), start
     assert any("When sessions write" in line for line in lines) and any(" does not " in line for line in lines)
 

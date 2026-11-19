@@ -123,6 +123,16 @@ def test_an_operation_names_the_actors_that_may_request_it_with_by(tmp_path):
     assert _area(tmp_path / "2").services["decisions"].operation("index").by == ()
 
 
+def test_an_object_kind_of_another_and_values_written_in_order(tmp_path):
+    (tmp_path / "spec" / "model").mkdir(parents=True)
+    (tmp_path / "spec" / "model" / "a.md").write_text("---\narea: a\n---\n\n```model\nobject session kind of agent\n"
+                                                     "  attributes: rank: low < high; colour: red | blue\n```\n")
+    obj = domain_model.load(tmp_path).objects["session"]
+    assert obj.kind_of == "agent"
+    assert [(a.name, a.values, a.ordered) for a in obj.attributes] == [("rank", ("low", "high"), True),
+                                                                        ("colour", ("red", "blue"), False)]
+
+
 def test_elements_resolve_by_their_qualified_id(tmp_path):
     model = _area(tmp_path)
     assert model.resolve("object design-decision").kind == "object"

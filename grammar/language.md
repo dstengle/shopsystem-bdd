@@ -3,14 +3,16 @@
 What each construct of a grammar 4 requirement means, as the reading rules R1-R12 of the CNL 4 design (call 5,
 section 7.3; I11b). A line's meaning is its logical form (`scripts/spec_lf.py`), which `model parse --form` prints:
 its modality and the referents no part introduces (actors and codes as constants, a code that is no word of the
-context as a parameter, the run's own things as indexicals), then its Where, While, trigger and response, each a box
+context as a parameter, the request's own things as indexicals), then its Where, While, trigger and response, each a box
 of referents, atoms and boxes. `scripts/spec_lf_read.py` holds the rules that resolve a word or refuse a line;
 `model parse` refuses a line one of them refuses, naming the words, with its tree.
 
-Each rule names the real lines it was tested on. Those lines are still codified-1, in grammar 3, until this
-repository's glossary and rewords (I20-I27); each rule's construct is shown here on a twin in the words of the
-smallest codified-2 context (`tests/scripts/fixtures/codified-2/`: the CLI pack, sessions, stages, files and
-worktrees). Each block below is a line and what grammar 4 reads it as: its logical form, or its refusal.
+Each rule names the real lines it was tested on, quoted as they were written then (in the CLI pack's words: a tool
+that runs a command and prints or exits). Each rule's construct is shown here on a twin in request words (the domain
+contract design, §9.4), in the smallest context with a domain model (`tests/scripts/fixtures/request-4/`: the request
+pack, and a model of sessions, stages, lines, files and worktrees, whose work service answers the requests "opens the
+board", "writes a file", "ends a stage", "gives a file to an agent", "settles a line"). Each block below is a line and
+what grammar 4 reads it as: its logical form, or its refusal.
 `tests/scripts/test_spec_lf_read.py` reads every block and fails when grammar 4 reads its line otherwise.
 
 ## R1. "a K": any K in a condition or a trigger, a new K in a response
@@ -24,21 +26,21 @@ comment ...": each unreadable comment is printed) and batches r13 ("While a comm
 ...": any such commit refuses the review).
 
 ```reading
-While a stage is `open`, when a session ends the stage, `work` shall print the stage.
-shall [x3: tool `work` (constant)]
+While a stage is `open`, when a session ends the stage, the work service shall return the stage.
+shall [x3: service the work service (constant)]
   while [x1: stage]
     status(x1) = `open`
   when [x2: session]
-    end(e1, subject: x2, object: x1)
+    request(e1, work.end, subject: x2, object: x1)
   response
-    print(e2, subject: x3, object: x1)
+    return(e2, subject: x3, object: x1)
 ```
 
 ```reading
-When a session ends a stage, `work` shall write a file.
-shall [x3: tool `work` (constant)]
+When a session ends a stage, the work service shall write a file.
+shall [x3: service the work service (constant)]
   when [x1: session, x2: stage]
-    end(e1, subject: x1, object: x2)
+    request(e1, work.end, subject: x1, object: x2)
   response [x4: file]
     write(e2, subject: x3, object: x4)
 ```
@@ -53,52 +55,52 @@ design-model-check r199 ("`model` shall use an interpreter that imports `clingo`
 one). Their twins, each read as it is said and as it is meant:
 
 ```reading
-When a session ends a stage, `work` shall print the status of a stage.
-shall [x3: tool `work` (constant)]
+When a session ends a stage, the work service shall return the status of a stage.
+shall [x3: service the work service (constant)]
   when [x1: session, x2: stage]
-    end(e1, subject: x1, object: x2)
+    request(e1, work.end, subject: x1, object: x2)
   response [x4: stage, x5: status]
     status(x4) = x5
-    print(e2, subject: x3, object: x5)
+    return(e2, subject: x3, object: x5)
 ```
 
 ```reading
-When a session ends a stage, `work` shall print the status of the stage.
-shall [x3: tool `work` (constant)]
+When a session ends a stage, the work service shall return the status of the stage.
+shall [x3: service the work service (constant)]
   when [x1: session, x2: stage]
-    end(e1, subject: x1, object: x2)
+    request(e1, work.end, subject: x1, object: x2)
   response [x4: status]
     status(x2) = x4
-    print(e2, subject: x3, object: x4)
+    return(e2, subject: x3, object: x4)
 ```
 
 ```reading
-While a session follows a stage, when the person runs `work start`, `work` shall end a stage.
-shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While a session follows a stage, when the person opens the board, the work service shall end a stage.
+shall [x3: agent the person (constant), x4: service the work service (constant)]
   while [x1: session, x2: stage]
     follow(subject: x1, object: x2)
   when
-    run(e1, subject: x3, object: x4)
-  response [x6: stage]
-    end(e2, subject: x5, object: x6)
+    request(e1, work.open, subject: x3, the board)
+  response [x5: stage]
+    end(e2, subject: x4, object: x5)
 ```
 
 ```reading
-While a session follows a stage, when the person runs `work start`, `work` shall end the stage.
-shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While a session follows a stage, when the person opens the board, the work service shall end the stage.
+shall [x3: agent the person (constant), x4: service the work service (constant)]
   while [x1: session, x2: stage]
     follow(subject: x1, object: x2)
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    end(e2, subject: x5, object: x2)
+    end(e2, subject: x4, object: x2)
 ```
 
 ## R2. "the K" binds to something the line gave, else it is refused
 
 "the K" binds to the latest earlier referent of kind K (or of a kind under K) in the line: one a part introduced, an
 actor, a code or an indexical. Else to the image of a relation row `K | of | S` of the one earlier referent of kind S
-("the worktree" after "a session" is the worktree of the session). Else, when K's entry has `This:`, to the run's own
+("the worktree" after "a session" is the worktree of the session). Else, when K's entry has `This:`, to the request's own
 K (R11). Else the line is refused, naming the noun: "the" never means the only K in the world. "Earlier" is said
 before it in the line: a "the K" that only a later noun phrase gives is refused too. A referent whose noun phrase
 holds the "the K" gives it nothing: in "a stage that precedes the stage" the stage is an earlier one, never the stage
@@ -123,67 +125,67 @@ before, so each is refused and is to be reworded) and migration-tools r13-r16 ("
 ...": the repository is the run's own, an indexical once this repository's glossary gives `repository` a `This:`).
 
 ```reading
-When a session ends a stage, `work` shall print the worktree.
-shall [x3: tool `work` (constant)]
+When a session ends a stage, the work service shall return the worktree.
+shall [x3: service the work service (constant)]
   when [x1: session, x2: stage]
-    end(e1, subject: x1, object: x2)
+    request(e1, work.end, subject: x1, object: x2)
   response [x4: worktree]
     of(x4, x1)
-    print(e2, subject: x3, object: x4)
+    return(e2, subject: x3, object: x4)
 ```
 
 ```reading
-When a session writes a file, `work` shall print the worktree of every session.
-shall [x3: tool `work` (constant)]
+When a session writes a file, the work service shall return the worktree of every session.
+shall [x3: service the work service (constant)]
   when [x1: session, x2: file]
-    write(e1, subject: x1, object: x2)
+    request(e1, work.write, subject: x1, object: x2)
   response
     every [x4: session]
       scope [x5: worktree]
         of(x5, x4)
-        print(e2, subject: x3, object: x5)
+        return(e2, subject: x3, object: x5)
 ```
 
 ```reading
-When the person runs `work start`, `work` shall print the command.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+When the person opens the board, the work service shall return the request.
+shall [x1: agent the person (constant), x2: service the work service (constant), x3: request "the request the trigger makes" (indexical)]
   when
-    run(e1, subject: x1, object: x2)
+    request(e1, work.open, subject: x1, the board)
   response
-    print(e2, subject: x3, object: x2)
+    return(e2, subject: x2, object: x3)
 ```
 
 ```reading
-If `work` refuses a command, then `work` shall exit with an error naming the reason.
+If the work service refuses a request, then the work service shall name the reason.
 refused: "the reason" has no antecedent: no earlier noun phrase, functional relation or declared indexical gives a reason
 ```
 
 ```reading
-When a session ends a stage that sessions follow, `work` shall print the worktree.
+When a session ends a stage that sessions follow, the work service shall return the worktree.
 refused: "the worktree" has no antecedent: 2 earlier noun phrases may give it: say "the worktree of" one of them
 ```
 
 ```reading
-While a session does not follow the stage, when a session ends a stage, `work` shall exit successfully.
+While a session does not follow the stage, when a session ends a stage, the work service shall complete the request.
 refused: "the stage" has no antecedent: no earlier noun phrase, functional relation or declared indexical gives a stage
 ```
 
 ```reading
-While a session follows a stage and no session follows a stage whose status is `done`, when the person runs `work start`, `work` shall print the stage.
-shall [x5: agent the person (constant), x6: command `work start` (parameter), x7: tool `work` (constant)]
+While a session follows a stage and no session follows a stage whose status is `done`, when the person opens the board, the work service shall return the stage.
+shall [x5: agent the person (constant), x6: service the work service (constant)]
   while [x1: session, x2: stage]
     follow(subject: x1, object: x2)
     not [x3: session, x4: stage]
       status(x4) = `done`
       follow(subject: x3, object: x4)
   when
-    run(e1, subject: x5, object: x6)
+    request(e1, work.open, subject: x5, the board)
   response
-    print(e2, subject: x7, object: x2)
+    return(e2, subject: x6, object: x2)
 ```
 
 ```reading
-While no session follows a stage, when the person runs `work start`, `work` shall print the stage.
+While no session follows a stage, when the person opens the board, the work service shall return the stage.
 refused: "the stage" has no antecedent: a stage is made inside "no session ...", which gives nothing outside it
 ```
 
@@ -195,26 +197,27 @@ Tested on migration-tools r8 ("... `migrate` shall exit with an error naming the
 nothing": the error is said, and no thing is changed).
 
 ```reading
-If `work` refuses a command, then `work` shall exit with an error naming the command and change nothing.
-shall [x1: tool `work` (constant)]
-  if [x2: command]
+If the work service refuses a request, then the work service shall name the request and change nothing.
+shall [x1: service the work service (constant)]
+  if [x2: request]
     refuse(e1, subject: x1, object: x2)
   response
-    exit(e2, subject: x1, with an error naming: x2)
+    name(e2, subject: x1, object: x2)
     not [x3: thing]
       change(e3, subject: x1, object: x3)
 ```
 
 ```reading
-While a session has no worktree, when the person runs `work start`, `work` shall exit with an error naming the session.
-shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While a session has no worktree, when the person opens the board, the work service shall refuse the request and name the session.
+shall [x3: agent the person (constant), x4: service the work service (constant), x5: request "the request the trigger makes" (indexical)]
   while [x1: session]
     not [x2: worktree]
       of(x2, x1)
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    exit(e2, subject: x5, with an error naming: x1)
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x1)
 ```
 
 "holds nothing" (b274) is the same box over a thing of any kind: no thing at all is in the collection, which `model
@@ -222,15 +225,15 @@ logic` reads as no K of each kind a relation row `K | in | S` lets it hold. "hol
 things of other kinds may be held), and "holds no thing" is refused: "nothing" is the one way to say it.
 
 ```reading
-While a worktree holds nothing, when the person runs `work start` on the worktree, `work` shall print the worktree.
-shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While a worktree holds nothing, when the person inspects the worktree, the work service shall return the worktree.
+shall [x3: agent the person (constant), x4: service the work service (constant)]
   while [x1: worktree]
     not [x2: thing]
       in(x2, x1)
   when
-    run(e1, subject: x3, object: x4, on: x1)
+    request(e1, work.inspect, subject: x3, object: x1)
   response
-    print(e2, subject: x5, object: x1)
+    return(e2, subject: x4, object: x1)
 ```
 
 ## R4. "does not V a K" in a condition is refused; under "shall not", "a K" is any K
@@ -243,40 +246,40 @@ Tested on requests r53, which needs "some comment the request does not hold" (a 
 ACE's reading ("holds no comment") would break, and on U5 ("A session shall not write a status": no status at all).
 
 ```reading
-While a session does not follow a stage, when the person runs `work start`, `work` shall exit successfully.
+While a session does not follow a stage, when the person opens the board, the work service shall complete the request.
 refused: the While clause says "does not follow a stage", which reads two ways: say "follows no stage" or "a stage that the session does not follow"
 ```
 
 ```reading
-While a session follows no stage, when the person runs `work start`, `work` shall exit successfully.
-shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While a session follows no stage, when the person opens the board, the work service shall complete the request.
+shall [x3: agent the person (constant), x4: service the work service (constant), x5: request "the request the trigger makes" (indexical)]
   while [x1: session]
     not [x2: stage]
       follow(subject: x1, object: x2)
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    exit(e2, subject: x5, successfully)
+    complete(e2, subject: x4, object: x5)
 ```
 
 ```reading
-While a stage that a session does not follow is `open`, when the person runs `work start`, `work` shall exit successfully.
-shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While a stage that a session does not follow is `open`, when the person opens the board, the work service shall complete the request.
+shall [x3: agent the person (constant), x4: service the work service (constant), x5: request "the request the trigger makes" (indexical)]
   while [x1: stage, x2: session]
     not
       follow(subject: x2, object: x1)
     status(x1) = `open`
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    exit(e2, subject: x5, successfully)
+    complete(e2, subject: x4, object: x5)
 ```
 
 ```reading
-When a session ends a stage, `work` shall not write a file.
-shall [x3: tool `work` (constant)]
+When a session ends a stage, the work service shall not write a file.
+shall [x3: service the work service (constant)]
   when [x1: session, x2: stage]
-    end(e1, subject: x1, object: x2)
+    request(e1, work.end, subject: x1, object: x2)
   response
     not [x4: file]
       write(e2, subject: x3, object: x4)
@@ -314,16 +317,16 @@ Tested on batches r8 ("... and every task of the batch is `done` ...") and reque
 proposed in the request is `refused` ...").
 
 ```reading
-Where a stage is `open`, when a session writes a file, `work` shall print every file.
-shall [x4: tool `work` (constant)]
+Where a stage is `open`, when a session writes a file, the work service shall return every file.
+shall [x4: service the work service (constant)]
   where [x1: stage]
     status(x1) = `open`
   when [x2: session, x3: file]
-    write(e1, subject: x2, object: x3)
+    request(e1, work.write, subject: x2, object: x3)
   response
     every [x5: file]
       scope
-        print(e2, subject: x4, object: x5)
+        return(e2, subject: x4, object: x5)
 ```
 
 ## R7. "one K" is exactly one; "a K" at least one
@@ -337,26 +340,26 @@ number of Ks meets both, the pair is an L1 (I15).
 Tested on U8 ("... a tool shall print one JSON object": exactly one).
 
 ```reading
-When the person runs `work start`, `work` shall print one stage.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+When the person opens the board, the work service shall return one stage.
+shall [x1: agent the person (constant), x2: service the work service (constant)]
   when
-    run(e1, subject: x1, object: x2)
+    request(e1, work.open, subject: x1, the board)
   response
-    count exactly 1 [x4: stage]
+    count exactly 1 [x3: stage]
       scope
-        print(e2, subject: x3, object: x4)
+        return(e2, subject: x2, object: x3)
 ```
 
 ```reading
-When the person runs `work start`, `work` shall print more than one stage whose status is `done`.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+When the person opens the board, the work service shall return more than one stage whose status is `done`.
+shall [x1: agent the person (constant), x2: service the work service (constant)]
   when
-    run(e1, subject: x1, object: x2)
+    request(e1, work.open, subject: x1, the board)
   response
-    count more than 1 [x4: stage]
-      status(x4) = `done`
+    count more than 1 [x3: stage]
+      status(x3) = `done`
       scope
-        print(e2, subject: x3, object: x4)
+        return(e2, subject: x2, object: x3)
 ```
 
 ## R8. "its" binds to the subject of its clause, or the line is refused
@@ -368,8 +371,8 @@ given before it: the writer says "the K of" the one meant.
 Tested on trials r2 and U7 ("A worker shall change only files in its worktree": the worker's own worktree).
 
 ```reading
-When a session ends a stage, `work` shall print its status.
-refused: "its status" binds to `work`, the subject of its clause, which has no status
+When a session ends a stage, the work service shall return its status.
+refused: "its status" binds to the work service, the subject of its clause, which has no status
 ```
 
 ```reading
@@ -395,16 +398,17 @@ files are reworded.
 Tested on backlog r20 and r21 (in a tasked repository `work idea` refuses, If; in a tracking one it writes, When).
 
 ```reading
-Where a stage is `open`, while sessions follow the stage, if a session ends the stage, then `work` shall exit with an error naming the stage.
-shall [x4: tool `work` (constant)]
+Where a stage is `open`, while sessions follow the stage, if a session ends the stage, then the work service shall refuse the request and name the stage.
+shall [x4: service the work service (constant), x5: request "the request the trigger makes" (indexical)]
   where [x1: stage]
     status(x1) = `open`
   while [x2: session]
     follow(subject: x2, object: x1)
   if [x3: session]
-    end(e1, subject: x3, object: x1)
+    request(e1, work.end, subject: x3, object: x1)
   response
-    exit(e2, subject: x4, with an error naming: x1)
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x1)
 ```
 
 ## R10. A literal that names no declared constant is a parameter
@@ -416,29 +420,31 @@ Tested on migration-tools r21 ("... `migrate` shall print "holds no version" and
 words of the context).
 
 ```reading
-When the person runs `work start`, `work` shall exit successfully.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+When the person opens the board with the interval `5`, the work service shall complete the request.
+shall [x1: agent the person (constant), x2: thing `5` (parameter), x3: service the work service (constant), x4: request "the request the trigger makes" (indexical)]
   when
-    run(e1, subject: x1, object: x2)
+    request(e1, work.open, subject: x1, the board)
+    param(e1, interval, x2)
   response
-    exit(e2, subject: x3, successfully)
+    complete(e2, subject: x3, object: x4)
 ```
 
-## R11. "this K", and an unbound "the K" whose entry has `This:`, are the run's own K
+## R11. "this K", and an unbound "the K" whose entry has `This:`, are the request's own K
 
-"this K" of a kind whose entry has `This:` is an indexical: the run's own K, as the entry glosses it (call 6). An
-unbound "the K" of such a kind is the same (R2).
+"this K" of a kind whose entry has `This:` is an indexical: the request's own K, as the entry glosses it (call 6): the
+request pack's "this request", the request the trigger makes, and a context's own kind ("the commit", the commit the
+request makes). An unbound "the K" of such a kind is the same (R2).
 
 Tested on requests r6 ("While a command is originless, if the person runs `work request` ...": the command is the
-one the run runs) and r33 (the comment is one `work sync` reads).
+one the run runs, now the request the trigger makes) and r33 (the comment is one `work sync` reads).
 
 ```reading
-When the person runs this command, `work` shall print this command.
-shall [x1: agent the person (constant), x2: command "the command the run runs" (indexical), x3: tool `work` (constant)]
+When the person opens the board, the work service shall return this request.
+shall [x1: agent the person (constant), x2: service the work service (constant), x3: request "the request the trigger makes" (indexical)]
   when
-    run(e1, subject: x1, object: x2)
+    request(e1, work.open, subject: x1, the board)
   response
-    print(e2, subject: x3, object: x2)
+    return(e2, subject: x2, object: x3)
 ```
 
 ## R12. A line that obliges with no trigger, and neither "always" nor "never", is refused
@@ -450,18 +456,18 @@ what it means, and stands.
 Tested on phase 2 fault 2 of the design's research (lines that read as "in every state").
 
 ```reading
-`work` shall write a file.
+The work service shall write a file.
 refused: the line has no trigger and neither "always" nor "never": it would oblige its response in every state
 ```
 
 ```reading
-While a stage is `open`, `work` shall exit successfully.
+While a stage is `open`, the work service shall complete the request.
 refused: the line has no trigger and neither "always" nor "never": it would oblige its response in every state
 ```
 
 ```reading
-`work` shall not change `spec/index.md`.
-shall [x1: tool `work` (constant), x2: thing `spec/index.md` (parameter)]
+The work service shall not change `spec/index.md`.
+shall [x1: service the work service (constant), x2: thing `spec/index.md` (parameter)]
   response
     not
       change(e1, subject: x1, object: x2)
@@ -490,7 +496,7 @@ refused: the line says "may not", which reads as "is not allowed to" and as "is 
 ```
 
 ```reading
-When a session ends a stage, the session may write a file, and `work` shall print the stage.
+When a session ends a stage, the session may write a file, and the work service shall return the stage.
 refused: the line says both "may" and "shall": say each in a line of its own
 ```
 
@@ -514,7 +520,7 @@ kinds by `scripts/spec_rgl_time.py`) and their reading `scripts/spec_lf_time.py`
 - "S has V-ed O", the perfect of an action verb, is a state: the history of that action (call 3), set by the action
   and unset by nothing (`has V(...)`); "since m" is a role of it. "has not V-ed a K" in a condition is refused as R4
   refuses "does not V a K".
-- "the clock reaches m" is a trigger like any other action; "the clock" with no antecedent is the run's own (R11).
+- "the clock reaches m" is a trigger like any other action; "the clock" with no antecedent is the time pack's one clock (R11).
 
 `model logic` has no reading of a comparison or a history yet: it refuses a line holding one, naming it ("no
 translation of a comparison of moments", "no translation of the history of end"), as it refuses any construct it
@@ -522,60 +528,60 @@ has no translation for. The blocks below are read in the time fixture
 (`tests/scripts/fixtures/codified-2-time/`, a stage's deadline a moment) by `tests/scripts/test_spec_lf_time.py`.
 
 ```reading-time
-While a deadline of a stage is within the last 7 days, when the person runs `work start`, `work` shall print the stage.
-shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While a deadline of a stage is within the last 7 days, when the person opens the board, the work service shall return the stage.
+shall [x3: agent the person (constant), x4: service the work service (constant)]
   while [x1: deadline, x2: stage]
     of(x1, x2)
     cmp(x1) after now - 7 days
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    print(e2, subject: x5, object: x2)
+    return(e2, subject: x4, object: x2)
 ```
 
 ```reading-time
-While a deadline of a stage is after `2026-01-01` and the deadline is not before `2027-01-01`, when a session ends the stage, `work` shall print the stage.
-shall [x3: moment `2026-01-01` (parameter), x4: moment `2027-01-01` (parameter), x6: tool `work` (constant)]
+While a deadline of a stage is after `2026-01-01` and the deadline is not before `2027-01-01`, when a session ends the stage, the work service shall return the stage.
+shall [x3: moment `2026-01-01` (parameter), x4: moment `2027-01-01` (parameter), x6: service the work service (constant)]
   while [x1: deadline, x2: stage]
     of(x1, x2)
     cmp(x1) after x3
     not
       cmp(x1) before x4
   when [x5: session]
-    end(e1, subject: x5, object: x2)
+    request(e1, work.end, subject: x5, object: x2)
   response
-    print(e2, subject: x6, object: x2)
+    return(e2, subject: x6, object: x2)
 ```
 
 ```reading-time
-While a deadline of a stage is within the last 7, when the person runs `work start`, `work` shall print the stage.
+While a deadline of a stage is within the last 7, when the person opens the board, the work service shall return the stage.
 refused: the number 7 is a duration and takes a unit of the time pack after it: second, minute, hour, day, week
 ```
 
 ```reading-time
-When the clock reaches a deadline of a stage, `work` shall print the stage.
-shall [x1: clock "the clock of the run" (indexical), x4: tool `work` (constant)]
+When the clock reaches a deadline of a stage, the work service shall return the stage.
+shall [x1: clock "the clock of the run" (indexical), x4: service the work service (constant)]
   when [x2: deadline, x3: stage]
     of(x2, x3)
     reach(e1, subject: x1, object: x2)
   response
-    print(e2, subject: x4, object: x3)
+    return(e2, subject: x4, object: x3)
 ```
 
 ```reading-time
-While a session has written no file since `2026-01-01`, when the session ends a stage, `work` shall print the stage.
-shall [x3: moment `2026-01-01` (parameter), x5: tool `work` (constant)]
+While a session has written no file since `2026-01-01`, when the session ends a stage, the work service shall return the stage.
+shall [x3: moment `2026-01-01` (parameter), x5: service the work service (constant)]
   while [x1: session]
     not [x2: file]
       has write(subject: x1, object: x2, since: x3)
   when [x4: stage]
-    end(e1, subject: x1, object: x4)
+    request(e1, work.end, subject: x1, object: x4)
   response
-    print(e2, subject: x5, object: x4)
+    return(e2, subject: x5, object: x4)
 ```
 
 ```reading-time
-While a session has not written a file, when the person runs `work start`, `work` shall exit successfully.
+While a session has not written a file, when the person opens the board, the work service shall complete the request.
 refused: the While clause says "has not written a file", which reads two ways: say "has written no file" or "a file that the session has not written"
 ```
 
@@ -608,50 +614,50 @@ the batch and the status of the task"): each said "the K" outside the box its K 
 were not. Such a line says what it means another way, each K given outside the box, or the "the K" said inside it.
 
 ```reading
-When the person runs `work start`, `work` shall print every stage and the status of the stage.
+When the person opens the board, the work service shall return every stage and the status of the stage.
 refused: "the stage" has no antecedent: a stage is made inside "every stage ...", which gives nothing outside it
 ```
 
 ```reading
-When the person runs `work start`, `work` shall print every session and the worktree of the session.
+When the person opens the board, the work service shall return every session and the worktree of the session.
 refused: "the session" has no antecedent: a session is made inside "every session ...", which gives nothing outside it
 ```
 
 ```reading
-While a session follows a stage or the session has a worktree, when the person runs `work start`, `work` shall exit successfully.
+While a session follows a stage or the session has a worktree, when the person opens the board, the work service shall complete the request.
 refused: "the session" has no antecedent: a session is made inside one case of an "or", which gives nothing outside it
 ```
 
 ```reading
-While a stage is `open` or a stage is `done`, when the person runs `work start`, `work` shall print the stage.
+While a stage is `open` or a stage is `done`, when the person opens the board, the work service shall return the stage.
 refused: "the stage" has no antecedent: a stage is made inside one case of an "or", which gives nothing outside it
 ```
 
 ```reading
-When the person runs `work start`, `work` shall print a stage or a file, and `work` shall end the stage.
+When the person opens the board, the work service shall return a stage or a file, and the work service shall end the stage.
 refused: "the stage" has no antecedent: a stage is made inside one case of an "or", which gives nothing outside it
 ```
 
 ```reading
-While at least two sessions follow a stage, when the person runs `work start`, `work` shall print the session.
+While at least two sessions follow a stage, when the person opens the board, the work service shall return the session.
 refused: "the session" has no antecedent: a session is made inside "at least two sessions ...", which gives nothing outside it
 ```
 
 ```reading
-When the person runs `work start`, `work` shall print at least two stages and the status of the stage.
+When the person opens the board, the work service shall return at least two stages and the status of the stage.
 refused: "the stage" has no antecedent: a stage is made inside "at least two stages ...", which gives nothing outside it
 ```
 
 ```reading
-When the person runs `work start`, `work` shall not write a file, and `work` shall print the file.
+When the person opens the board, the work service shall not write a file, and the work service shall return the file.
 refused: "the file" has no antecedent: a file is made inside "no file ...", which gives nothing outside it
 ```
 
 A K made before the box is seen in each case: "the stage" in the first case below is the stage the session follows.
 
 ```reading
-While a session follows a stage and the stage is `open` or the session has a worktree, when the person runs `work start`, `work` shall print the stage.
-shall [x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+While a session follows a stage and the stage is `open` or the session has a worktree, when the person opens the board, the work service shall return the stage.
+shall [x4: agent the person (constant), x5: service the work service (constant)]
   while [x1: session, x2: stage]
     follow(subject: x1, object: x2)
     or
@@ -660,22 +666,24 @@ shall [x4: agent the person (constant), x5: command `work start` (parameter), x6
       case [x3: worktree]
         of(x3, x1)
   when
-    run(e1, subject: x4, object: x5)
+    request(e1, work.open, subject: x4, the board)
   response
-    print(e2, subject: x6, object: x2)
+    return(e2, subject: x5, object: x2)
 ```
 
 ### "X conforms to A": conformance to a named artifact
 
 "X conforms to A" says that X meets what the artifact A sets out: a form, a schema, a layout, the language reference.
-A is a noun of a kind under `artifact` (the CLI pack's noun), said as a proper noun ("the comment form"), as "the K of
+A is a noun of a kind under `artifact` (the request pack's noun), said as a proper noun ("the comment form"), as "the K of
 X" ("the requirement grammar of the upstream"), or as a code naming a file (`grammar/language.md`, a parameter). Every
-artifact a line conforms to is declared with the part of speech (artifact): `- **the comment form** (artifact): ...`
-is a proper noun of kind artifact, `- **layout** (artifact): ...` a noun under artifact. Its entry may give `Schema:`
+artifact a line conforms to is an object of the domain model that is a kind of artifact (`object layout kind of
+artifact`), named by a noun (`- **layout** (noun) → object layout.`) or, when the context keeps one, by a proper noun
+(`- **the stage form** (proper noun) → object stage form.`); a context with a glossary declares it with the part of
+speech (artifact), `- **the comment form** (artifact): ...` a proper noun of kind artifact. Its entry may give `Schema:`
 (the schema type and its file, as in "Schema: json schema, `schemas/comment.json`."), and an attribute entry or a relation
 row that is one of its fields may give `Field of: <artifact>` (an attribute in its entry, a row in a cell of its own);
 the lexicon reads and keeps both, and nothing checks them yet (b241). The
-verb is the CLI pack's state verb `conform` (Frame: thing conforms to artifact), and its atom is `conforms(x, a)`: in
+verb is the request pack's state verb `conform` (Frame: thing conforms to artifact), and its atom is `conforms(x, a)`: in
 a While or Where clause and a relative clause it is a state like any other, negated with "does not conform to A",
 counted out with "no K conforms to A", and said "a K that conforms to A" or "a K that does not conform to A". A K of
 another kind after "to" is refused, naming the verb's frame. "the K of X" after "does not conform to" is the K that X
@@ -692,100 +700,100 @@ relation-row form", "the upstream-entry form", "the example-data form"). The des
 the comment and not write the comment."
 
 ```reading
-While a file does not conform to the stage form, when the person runs `work start`, `work` shall print the file and not write the file.
-shall [x2: artifact the stage form (constant), x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While a file does not conform to the stage form, when the person opens the board, the work service shall return the file and not write the file.
+shall [x2: artifact the stage form (constant), x3: agent the person (constant), x4: service the work service (constant)]
   while [x1: file]
     not
       conforms(x1, x2)
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    print(e2, subject: x5, object: x1)
+    return(e2, subject: x4, object: x1)
     not
-      write(e3, subject: x5, object: x1)
+      write(e3, subject: x4, object: x1)
 ```
 
 ```reading
-While a file conforms to the stage form and no worktree holds the file, when the person runs `work start`, `work` shall print the file.
-shall [x2: artifact the stage form (constant), x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+While a file conforms to the stage form and no worktree holds the file, when the person opens the board, the work service shall return the file.
+shall [x2: artifact the stage form (constant), x4: agent the person (constant), x5: service the work service (constant)]
   while [x1: file]
     conforms(x1, x2)
     not [x3: worktree]
       in(x1, x3)
   when
-    run(e1, subject: x4, object: x5)
+    request(e1, work.open, subject: x4, the board)
   response
-    print(e2, subject: x6, object: x1)
+    return(e2, subject: x5, object: x1)
 ```
 
 ```reading
-If the person runs `work start` on a file that does not conform to the stage form, then `work` shall refuse the command and name the file.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x4: artifact the stage form (constant), x5: tool `work` (constant)]
-  if [x3: file]
+If the person writes a file that does not conform to the stage form, then the work service shall refuse the request and name the file.
+shall [x1: agent the person (constant), x3: artifact the stage form (constant), x4: service the work service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: file]
     not
-      conforms(x3, x4)
-    run(e1, subject: x1, object: x2, on: x3)
+      conforms(x2, x3)
+    request(e1, work.write, subject: x1, object: x2)
   response
-    refuse(e2, subject: x5, object: x2)
-    name(e3, subject: x5, object: x3)
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
 ```
 
 ```reading
-When the person runs `work start`, `work` shall print every file that conforms to the stage form.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant), x5: artifact the stage form (constant)]
+When the person opens the board, the work service shall return every file that conforms to the stage form.
+shall [x1: agent the person (constant), x2: service the work service (constant), x4: artifact the stage form (constant)]
   when
-    run(e1, subject: x1, object: x2)
+    request(e1, work.open, subject: x1, the board)
   response
-    every [x4: file]
-      conforms(x4, x5)
+    every [x3: file]
+      conforms(x3, x4)
       scope
-        print(e2, subject: x3, object: x4)
+        return(e2, subject: x2, object: x3)
 ```
 
 ```reading
-While no file conforms to the stage form, when the person runs `work start`, `work` shall exit successfully.
-shall [x2: artifact the stage form (constant), x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While no file conforms to the stage form, when the person opens the board, the work service shall complete the request.
+shall [x2: artifact the stage form (constant), x3: agent the person (constant), x4: service the work service (constant), x5: request "the request the trigger makes" (indexical)]
   while
     not [x1: file]
       conforms(x1, x2)
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    exit(e2, subject: x5, successfully)
+    complete(e2, subject: x4, object: x5)
 ```
 
 The artifact as "the K of X", the worktree's own layout: it is there whether or not the file conforms to it.
 
 ```reading
-While a worktree holds a file that does not conform to the layout of the worktree, when the person runs `work start`, `work` shall print the file.
-shall [x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+While a worktree holds a file that does not conform to the layout of the worktree, when the person opens the board, the work service shall return the file.
+shall [x4: agent the person (constant), x5: service the work service (constant)]
   while [x1: worktree, x2: file, x3: layout]
     of(x3, x1)
     not
       conforms(x2, x3)
     in(x2, x1)
   when
-    run(e1, subject: x4, object: x5)
+    request(e1, work.open, subject: x4, the board)
   response
-    print(e2, subject: x6, object: x2)
+    return(e2, subject: x5, object: x2)
 ```
 
 The artifact as a code naming a file: a parameter of kind artifact (R10).
 
 ```reading
-While a file does not conform to `docs/stage.md`, when the person runs `work start`, `work` shall print the file.
-shall [x2: artifact `docs/stage.md` (parameter), x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While a file does not conform to `docs/stage.md`, when the person opens the board, the work service shall return the file.
+shall [x2: artifact `docs/stage.md` (parameter), x3: agent the person (constant), x4: service the work service (constant)]
   while [x1: file]
     not
       conforms(x1, x2)
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    print(e2, subject: x5, object: x1)
+    return(e2, subject: x4, object: x1)
 ```
 
 ```reading
-While a file conforms to a stage, when the person runs `work start`, `work` shall print the file.
+While a file conforms to a stage, when the person opens the board, the work service shall return the file.
 refused: the verb conform takes as its recipient artifact or a kind of it: thing conforms to artifact
 ```
 
@@ -807,29 +815,29 @@ Found in backlog r23, r24, r28-r31 (`idea`, `needs-input`), batches r27, r33, de
 r23 (a route's kind) and pr-review r4, r13-r15 (`judgement`, `fix now`), each reworded to the full form (b257).
 
 ```reading
-While the tier of a stage is `review`, when the person runs `work start`, `work` shall end the stage.
-shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+While the tier of a stage is `review`, when the person opens the board, the work service shall end the stage.
+shall [x2: agent the person (constant), x3: service the work service (constant)]
   while [x1: stage]
     tier(x1) = `review`
   when
-    run(e1, subject: x2, object: x3)
+    request(e1, work.open, subject: x2, the board)
   response
-    end(e2, subject: x4, object: x1)
+    end(e2, subject: x3, object: x1)
 ```
 
 ```reading
-While a stage is `open`, when the person runs `work start`, `work` shall end the stage.
-shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+While a stage is `open`, when the person opens the board, the work service shall end the stage.
+shall [x2: agent the person (constant), x3: service the work service (constant)]
   while [x1: stage]
     status(x1) = `open`
   when
-    run(e1, subject: x2, object: x3)
+    request(e1, work.open, subject: x2, the board)
   response
-    end(e2, subject: x4, object: x1)
+    end(e2, subject: x3, object: x1)
 ```
 
 ```reading
-While a stage is `review`, when the person runs `work start`, `work` shall end the stage.
+While a stage is `review`, when the person opens the board, the work service shall end the stage.
 refused: `review` is a noun, a value of the tier of a stage: "a stage is `review`" does not read; write "the tier of the stage is `review`" or "a stage whose tier is `review`"
 ```
 
@@ -856,87 +864,87 @@ lack the simplified-workflow step", which inverts what it means; and b161's line
 is after `0.32.0` and before `0.33.0`, ..." (now r76). Each says the range with "after" and "before".
 
 ```reading
-While the version of a file is before `2.0.0`, when the person runs `work start`, `work` shall print the file.
-shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+While the version of a file is before `2.0.0`, when the person opens the board, the work service shall return the file.
+shall [x2: agent the person (constant), x3: service the work service (constant)]
   while [x1: file]
     cmp(version(x1)) before `2.0.0`
   when
-    run(e1, subject: x2, object: x3)
+    request(e1, work.open, subject: x2, the board)
   response
-    print(e2, subject: x4, object: x1)
+    return(e2, subject: x3, object: x1)
 ```
 
 ```reading
-While the version of a file is after `1.0.0` and before `3.0.0`, when the person runs `work start`, `work` shall print the file.
-shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+While the version of a file is after `1.0.0` and before `3.0.0`, when the person opens the board, the work service shall return the file.
+shall [x2: agent the person (constant), x3: service the work service (constant)]
   while [x1: file]
     cmp(version(x1)) after `1.0.0`
     cmp(version(x1)) before `3.0.0`
   when
-    run(e1, subject: x2, object: x3)
+    request(e1, work.open, subject: x2, the board)
   response
-    print(e2, subject: x4, object: x1)
+    return(e2, subject: x3, object: x1)
 ```
 
 ```reading
-While the version of a file is not before `2.0.0`, when the person runs `work start`, `work` shall not write the file.
-shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+While the version of a file is not before `2.0.0`, when the person opens the board, the work service shall not write the file.
+shall [x2: agent the person (constant), x3: service the work service (constant)]
   while [x1: file]
     not
       cmp(version(x1)) before `2.0.0`
   when
-    run(e1, subject: x2, object: x3)
+    request(e1, work.open, subject: x2, the board)
   response
     not
-      write(e2, subject: x4, object: x1)
+      write(e2, subject: x3, object: x1)
 ```
 
 A value between two named values: `1.10.0` is after `1.9.0`, as a release is, and needs no entry of its own.
 
 ```reading
-While the version of a file is after `1.9.0`, when the person runs `work start`, `work` shall print the file.
-shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+While the version of a file is after `1.9.0`, when the person opens the board, the work service shall return the file.
+shall [x2: agent the person (constant), x3: service the work service (constant)]
   while [x1: file]
     cmp(version(x1)) after `1.9.0`
   when
-    run(e1, subject: x2, object: x3)
+    request(e1, work.open, subject: x2, the board)
   response
-    print(e2, subject: x4, object: x1)
+    return(e2, subject: x3, object: x1)
 ```
 
 A value that no entry lists is a value of an attribute ordered by number all the same:
 
 ```reading
-While the version of a file is `1.0.1`, when the person runs `work start`, `work` shall print the file.
-shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+While the version of a file is `1.0.1`, when the person opens the board, the work service shall return the file.
+shall [x2: agent the person (constant), x3: service the work service (constant)]
   while [x1: file]
     version(x1) = `1.0.1`
   when
-    run(e1, subject: x2, object: x3)
+    request(e1, work.open, subject: x2, the board)
   response
-    print(e2, subject: x4, object: x1)
+    return(e2, subject: x3, object: x1)
 ```
 
 An attribute ordered as listed: `high` is after `low`.
 
 ```reading
-While the priority of a stage is after `low`, when the person runs `work start`, `work` shall end the stage.
-shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+While the priority of a stage is after `low`, when the person opens the board, the work service shall end the stage.
+shall [x2: agent the person (constant), x3: service the work service (constant)]
   while [x1: stage]
     cmp(priority(x1)) after `low`
   when
-    run(e1, subject: x2, object: x3)
+    request(e1, work.open, subject: x2, the board)
   response
-    end(e2, subject: x4, object: x1)
+    end(e2, subject: x3, object: x1)
 ```
 
 ```reading
-While the version of a file is after `banana`, when the person runs `work start`, `work` shall print the file.
+While the version of a file is after `banana`, when the person opens the board, the work service shall return the file.
 refused: `banana` is no value of the version of a file, which is ordered by number
 ```
 
 ```reading
-While the priority of a stage is before `soon`, when the person runs `work start`, `work` shall end the stage.
+While the priority of a stage is before `soon`, when the person opens the board, the work service shall end the stage.
 refused: `soon` is no value of the priority of a stage, which is ordered as listed: `low`, `high`, `urgent`
 ```
 
@@ -950,7 +958,7 @@ Every comparison and every order below is of an attribute with a value order; on
 naming the attribute.
 
 ```reading
-While the status of a stage is after the status of another stage, when the person runs `work start`, `work` shall print the stage.
+While the status of a stage is after the status of another stage, when the person opens the board, the work service shall return the stage.
 refused: the status of a stage has no value order: its entry says neither Order: nor Type:, so one status is never after or before another
 ```
 
@@ -971,26 +979,26 @@ same `Order:` or the same `Type:`), over that order's cells in `model logic`, an
 orders differ, for `value-compare` and `value-same` alike.
 
 ```reading
-While the version of the `a` file is after the version of a file, when a session writes the file, `work` shall print the file.
-shall [x1: file `a` (parameter), x4: tool `work` (constant)]
+While the version of the `a` file is after the version of a file, when a session writes the file, the work service shall return the file.
+shall [x1: file `a` (parameter), x4: service the work service (constant)]
   while [x2: file]
     cmp(version(x1), after, version(x2))
   when [x3: session]
-    write(e1, subject: x3, object: x2)
+    request(e1, work.write, subject: x3, object: x2)
   response
-    print(e2, subject: x4, object: x2)
+    return(e2, subject: x4, object: x2)
 ```
 
 ```reading
-While the status of a stage is the same as the status of another stage, when the person runs `work start`, `work` shall print the stage.
-shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While the status of a stage is the same as the status of another stage, when the person opens the board, the work service shall return the stage.
+shall [x3: agent the person (constant), x4: service the work service (constant)]
   while [x1: stage, x2: stage]
     distinct(x2, x1)
     cmp(status(x1), same, status(x2))
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    print(e2, subject: x5, object: x2)
+    return(e2, subject: x4, object: x2)
 ```
 
 ### ", ordered by T, in ascending order": a collection or a printed every in order
@@ -1012,32 +1020,32 @@ same tree, and the comma form is the one written back; an order after the recipi
 ...") is refused, since the order belongs to its noun phrase.
 
 ```reading
-When the person runs `work start`, `work` shall give every file, ordered by version, in ascending order, to the person.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+When the person opens the board, the work service shall give every file, ordered by version, in ascending order, to the person.
+shall [x1: agent the person (constant), x2: service the work service (constant)]
   when
-    run(e1, subject: x1, object: x2)
+    request(e1, work.open, subject: x1, the board)
   response
-    every [x4: file]
+    every [x3: file]
       scope
-        give(e2, subject: x3, object: x4, to: x1)
-        ordered(x4, version, ascending)
+        give(e2, subject: x2, object: x3, to: x1)
+        ordered(x3, version, ascending)
 ```
 
 ```reading
-When the person runs `work start`, `work` shall print every file, ordered by version, in ascending order.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+When the person opens the board, the work service shall return every file, ordered by version, in ascending order.
+shall [x1: agent the person (constant), x2: service the work service (constant)]
   when
-    run(e1, subject: x1, object: x2)
+    request(e1, work.open, subject: x1, the board)
   response
-    every [x4: file]
+    every [x3: file]
       scope
-        print(e2, subject: x3, object: x4)
-        ordered(x4, version, ascending)
+        return(e2, subject: x2, object: x3)
+        ordered(x3, version, ascending)
 ```
 
 ```reading
-When the person runs `work start`, `work` shall print every line, ordered by outcome, in ascending order.
-refused: the outcome of a line has no value order: its entry says neither Order: nor Type:, so no outcome comes before another, and nothing is ordered by it
+When the person opens the board, the work service shall return every line, ordered by verdict, in ascending order.
+refused: the verdict of a line has no value order: its entry says neither Order: nor Type:, so no verdict comes before another, and nothing is ordered by it
 ```
 
 An order has a reading only as a property of what a response prints (b285): one in a While or Where clause, in the
@@ -1045,17 +1053,17 @@ trigger, or in an act the line forbids ("shall not print ..., ordered by T": "no
 check or a scenario has) is refused, naming the order.
 
 ```reading
-While a session has a worktree that holds a file, ordered by version, in descending order, when the person runs `work start`, `work` shall print the worktree.
+While a session has a worktree that holds a file, ordered by version, in descending order, when the person opens the board, the work service shall return the worktree.
 refused: "ordered by version, in descending order" is in a precondition: an order is a property of what a response prints, and has no reading there
 ```
 
 ```reading
-When the person runs `work start` on a worktree that holds a file, ordered by version, in descending order, `work` shall print the worktree.
+When the person inspects a worktree that holds a file, ordered by version, in descending order, the work service shall return the worktree.
 refused: "ordered by version, in descending order" is in the trigger: an order is a property of what a response prints, and has no reading there
 ```
 
 ```reading
-When the person runs `work start`, `work` shall not print every file, ordered by version, in ascending order.
+When the person opens the board, the work service shall not return every file, ordered by version, in ascending order.
 refused: "ordered by version, in ascending order" is in an act the line forbids: an order is a property of what a response prints, and "not in this order" has no reading
 ```
 
@@ -1081,25 +1089,25 @@ tools r48 and r52-r54 and intake r10 ("is not `delivered` and the request is not
 `delivered`, `refused` or `withdrawn`"), and requests r60 ("has no origin": the command's origin absent).
 
 ```reading
-While a line is one of `proposed`, `accepted` or `refused`, when the person runs `work start`, `work` shall print the line.
-shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+While a line is one of `proposed`, `accepted` or `refused`, when the person opens the board, the work service shall return the line.
+shall [x2: agent the person (constant), x3: service the work service (constant)]
   while [x1: line]
     or
       case
-        outcome(x1) = `proposed`
+        verdict(x1) = `proposed`
       case
-        outcome(x1) = `accepted`
+        verdict(x1) = `accepted`
       case
-        outcome(x1) = `refused`
+        verdict(x1) = `refused`
   when
-    run(e1, subject: x2, object: x3)
+    request(e1, work.open, subject: x2, the board)
   response
-    print(e2, subject: x4, object: x1)
+    return(e2, subject: x3, object: x1)
 ```
 
 ```reading
-While the priority of a stage is one of `low` or `high`, when the person runs `work start`, `work` shall end the stage.
-shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+While the priority of a stage is one of `low` or `high`, when the person opens the board, the work service shall end the stage.
+shall [x2: agent the person (constant), x3: service the work service (constant)]
   while [x1: stage]
     or
       case
@@ -1107,80 +1115,80 @@ shall [x2: agent the person (constant), x3: command `work start` (parameter), x4
       case
         priority(x1) = `high`
   when
-    run(e1, subject: x2, object: x3)
+    request(e1, work.open, subject: x2, the board)
   response
-    end(e2, subject: x4, object: x1)
+    end(e2, subject: x3, object: x1)
 ```
 
 "is not `a`, `b` or `c`": none of them.
 
 ```reading
-While a stage is `open` and a line of the stage is not `accepted`, `refused` or `withdrawn`, when the person runs `work start`, `work` shall print the line.
-shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While a stage is `open` and a line of the stage is not `accepted`, `refused` or `withdrawn`, when the person opens the board, the work service shall return the line.
+shall [x3: agent the person (constant), x4: service the work service (constant)]
   while [x1: stage, x2: line]
     status(x1) = `open`
     of(x2, x1)
     not
-      outcome(x2) = `accepted`
+      verdict(x2) = `accepted`
     not
-      outcome(x2) = `refused`
+      verdict(x2) = `refused`
     not
-      outcome(x2) = `withdrawn`
+      verdict(x2) = `withdrawn`
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    print(e2, subject: x5, object: x2)
+    return(e2, subject: x4, object: x2)
 ```
 
 ```reading
-While the priority of a stage is not `low` or `high`, when the person runs `work start`, `work` shall end the stage.
-shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+While the priority of a stage is not `low` or `high`, when the person opens the board, the work service shall end the stage.
+shall [x2: agent the person (constant), x3: service the work service (constant)]
   while [x1: stage]
     not
       priority(x1) = `low`
     not
       priority(x1) = `high`
   when
-    run(e1, subject: x2, object: x3)
+    request(e1, work.open, subject: x2, the board)
   response
-    end(e2, subject: x4, object: x1)
+    end(e2, subject: x3, object: x1)
 ```
 
 "has no T": the value absent, which is no listed value.
 
 ```reading
-While a stage is not `done` and the stage has no priority, when the person runs `work start`, `work` shall print the stage.
-shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+While a stage is not `done` and the stage has no priority, when the person opens the board, the work service shall return the stage.
+shall [x2: agent the person (constant), x3: service the work service (constant)]
   while [x1: stage]
     not
       status(x1) = `done`
     priority(x1) = none
   when
-    run(e1, subject: x2, object: x3)
+    request(e1, work.open, subject: x2, the board)
   response
-    print(e2, subject: x4, object: x1)
+    return(e2, subject: x3, object: x1)
 ```
 
 "every K of X is `v`", and "is one of" said of each K of X:
 
 ```reading
-While a stage is `open` and every line of the stage is `accepted`, when the person runs `work start`, `work` shall end the stage.
-shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While a stage is `open` and every line of the stage is `accepted`, when the person opens the board, the work service shall end the stage.
+shall [x3: agent the person (constant), x4: service the work service (constant)]
   while [x1: stage]
     status(x1) = `open`
     every [x2: line]
       of(x2, x1)
       scope
-        outcome(x2) = `accepted`
+        verdict(x2) = `accepted`
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    end(e2, subject: x5, object: x1)
+    end(e2, subject: x4, object: x1)
 ```
 
 ```reading
-While a stage is `open` and every line of the stage is one of `accepted`, `refused` or `withdrawn`, when the person runs `work start`, `work` shall end the stage.
-shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While a stage is `open` and every line of the stage is one of `accepted`, `refused` or `withdrawn`, when the person opens the board, the work service shall end the stage.
+shall [x3: agent the person (constant), x4: service the work service (constant)]
   while [x1: stage]
     status(x1) = `open`
     every [x2: line]
@@ -1188,20 +1196,20 @@ shall [x3: agent the person (constant), x4: command `work start` (parameter), x5
       scope
         or
           case
-            outcome(x2) = `accepted`
+            verdict(x2) = `accepted`
           case
-            outcome(x2) = `refused`
+            verdict(x2) = `refused`
           case
-            outcome(x2) = `withdrawn`
+            verdict(x2) = `withdrawn`
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    end(e2, subject: x5, object: x1)
+    end(e2, subject: x4, object: x1)
 ```
 
 ```reading
-While a line is one of `accepted` or `accepted`, when the person runs `work start`, `work` shall print the line.
-refused: the list of the outcome of a line names `accepted` twice
+While a line is one of `accepted` or `accepted`, when the person opens the board, the work service shall return the line.
+refused: the list of the verdict of a line names `accepted` twice
 ```
 
 ### "the number of Ks that P": a count as a value
@@ -1231,113 +1239,113 @@ batches, "While the number of tasks of the batch is more than `batch_size`, ..."
 P".
 
 ```reading
-When a session ends a stage, `work` shall print the number of lines of the stage.
-shall [x3: tool `work` (constant)]
+When a session ends a stage, the work service shall return the number of lines of the stage.
+shall [x3: service the work service (constant)]
   when [x1: session, x2: stage]
-    end(e1, subject: x1, object: x2)
+    request(e1, work.end, subject: x1, object: x2)
   response [x4: number]
     number x4 of [x5: line]
       of(x5, x2)
-    print(e2, subject: x3, object: x4)
+    return(e2, subject: x3, object: x4)
 ```
 
 ```reading
-When a session ends a stage, `work` shall print the number of sessions that follow the stage.
-shall [x3: tool `work` (constant)]
+When a session ends a stage, the work service shall return the number of sessions that follow the stage.
+shall [x3: service the work service (constant)]
   when [x1: session, x2: stage]
-    end(e1, subject: x1, object: x2)
+    request(e1, work.end, subject: x1, object: x2)
   response [x4: number]
     number x4 of [x5: session]
       follow(subject: x5, object: x2)
-    print(e2, subject: x3, object: x4)
+    return(e2, subject: x3, object: x4)
 ```
 
 ```reading
-When a session ends a stage, `work` shall print the number of lines of the stage whose outcome is `accepted`.
-shall [x3: tool `work` (constant)]
+When a session ends a stage, the work service shall return the number of lines of the stage whose verdict is `accepted`.
+shall [x3: service the work service (constant)]
   when [x1: session, x2: stage]
-    end(e1, subject: x1, object: x2)
+    request(e1, work.end, subject: x1, object: x2)
   response [x4: number]
     number x4 of [x5: line]
       of(x5, x2)
-      outcome(x5) = `accepted`
-    print(e2, subject: x3, object: x4)
+      verdict(x5) = `accepted`
+    return(e2, subject: x3, object: x4)
 ```
 
 "shall not print the number of Ks": under `not`, as any object of "shall not" (batch-measurement r24).
 
 ```reading
-When a session ends a stage, `work` shall not print the number of lines of the stage.
-shall [x3: tool `work` (constant)]
+When a session ends a stage, the work service shall not return the number of lines of the stage.
+shall [x3: service the work service (constant)]
   when [x1: session, x2: stage]
-    end(e1, subject: x1, object: x2)
+    request(e1, work.end, subject: x1, object: x2)
   response
     not [x4: number]
       number x4 of [x5: line]
         of(x5, x2)
-      print(e2, subject: x3, object: x4)
+      return(e2, subject: x3, object: x4)
 ```
 
 Compared: R7's count box, with nothing in its scope.
 
 ```reading
-While a stage is `open` and the number of lines of the stage is more than three, when the person runs `work start`, `work` shall end the stage.
-shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While a stage is `open` and the number of lines of the stage is more than three, when the person opens the board, the work service shall end the stage.
+shall [x3: agent the person (constant), x4: service the work service (constant)]
   while [x1: stage]
     status(x1) = `open`
     count more than 3 [x2: line]
       of(x2, x1)
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    end(e2, subject: x5, object: x1)
+    end(e2, subject: x4, object: x1)
 ```
 
 ```reading
-While a stage is `open` and the number of lines of the stage is less than `3`, when the person runs `work start`, `work` shall end the stage.
-shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While a stage is `open` and the number of lines of the stage is less than `3`, when the person opens the board, the work service shall end the stage.
+shall [x3: agent the person (constant), x4: service the work service (constant)]
   while [x1: stage]
     status(x1) = `open`
     count fewer than 3 [x2: line]
       of(x2, x1)
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    end(e2, subject: x5, object: x1)
+    end(e2, subject: x4, object: x1)
 ```
 
 ```reading
-While a stage is `open` and the number of lines of the stage is `0`, when the person runs `work start`, `work` shall end the stage.
-shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While a stage is `open` and the number of lines of the stage is `0`, when the person opens the board, the work service shall end the stage.
+shall [x3: agent the person (constant), x4: service the work service (constant)]
   while [x1: stage]
     status(x1) = `open`
     count exactly 0 [x2: line]
       of(x2, x1)
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    end(e2, subject: x5, object: x1)
+    end(e2, subject: x4, object: x1)
 ```
 
 A code that is no number is a parameter:
 
 ```reading
-While a stage is `open` and the number of lines of the stage is more than `limit`, when the person runs `work start`, `work` shall end the stage.
-shall [x3: number `limit` (parameter), x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+While a stage is `open` and the number of lines of the stage is more than `limit`, when the person opens the board, the work service shall end the stage.
+shall [x3: number `limit` (parameter), x4: agent the person (constant), x5: service the work service (constant)]
   while [x1: stage]
     status(x1) = `open`
     count more than x3 [x2: line]
       of(x2, x1)
   when
-    run(e1, subject: x4, object: x5)
+    request(e1, work.open, subject: x4, the board)
   response
-    end(e2, subject: x6, object: x1)
+    end(e2, subject: x5, object: x1)
 ```
 
 The Ks a number counts are made inside its box:
 
 ```reading
-When a session ends a stage, `work` shall print the number of files in the worktree of the session, and `work` shall print the file.
+When a session ends a stage, the work service shall return the number of files in the worktree of the session, and the work service shall return the file.
 refused: "the file" has no antecedent: a file is made inside "the number of files ...", which gives nothing outside it
 ```
 
@@ -1350,12 +1358,12 @@ These four say it:
   is (R1), and the atom `distinct(y, x)`, x the referent "the K" would bind to by R2 in its place: the latest earlier
   referent of kind K (or of a kind under it) not made inside a box that does not hold it. When that referent came
   from "two Ks", y is distinct from both. With no such referent the line is refused, naming the noun, as R2 refuses
-  "the K"; "another K" never names the image of a row nor the run's own K.
+  "the K"; "another K" never names the image of a row nor the request's own K.
 - "two Ks" are two Ks, each distinct from the other: two referents, the second with `distinct(y, x)`, and the clause
   said of each, as of "a K and a K" (so "two sessions follow a stage" is one stage both follow). What restricts the
   noun restricts each; a K its restriction makes is one K they share ("two files in a worktree": one worktree). A
   later "the K" names neither and is refused.
-- "the same K" binds as "the K" does (R2): to the latest earlier K, else the image of a row, else the run's own K. When
+- "the same K" binds as "the K" does (R2): to the latest earlier K, else the image of a row, else the request's own K. When
   R2 gives it nothing and the line said "two Ks" before it, it is one new K (R1), which each of the two shares: "two
   sessions follow the same stage". Else it is refused as "the K" is.
 
@@ -1378,78 +1386,78 @@ different name") and batches r32 (a scenario of another item than the task's). E
 noun, a rule code or not at all.
 
 ```reading
-When a session gives a file to another session, `work` shall print the file.
-shall [x4: tool `work` (constant)]
+When a session gives a file to another session, the work service shall return the file.
+shall [x4: service the work service (constant)]
   when [x1: session, x2: file, x3: session]
     distinct(x3, x1)
-    give(e1, subject: x1, object: x2, to: x3)
+    request(e1, work.give, subject: x1, object: x2, to: x3)
   response
-    print(e2, subject: x4, object: x2)
+    return(e2, subject: x4, object: x2)
 ```
 
 ```reading
-When a session gives a file to a different session, `work` shall print the file.
-shall [x4: tool `work` (constant)]
+When a session gives a file to a different session, the work service shall return the file.
+shall [x4: service the work service (constant)]
   when [x1: session, x2: file, x3: session]
     distinct(x3, x1)
-    give(e1, subject: x1, object: x2, to: x3)
+    request(e1, work.give, subject: x1, object: x2, to: x3)
   response
-    print(e2, subject: x4, object: x2)
+    return(e2, subject: x4, object: x2)
 ```
 
 "the same K" bound to the earlier K, the twin of "another requirement of the same trigger" (design-model-check
 r276-r278):
 
 ```reading
-While a session follows a stage and another session follows the same stage, when the person runs `work start`, `work` shall print the stage.
-shall [x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+While a session follows a stage and another session follows the same stage, when the person opens the board, the work service shall return the stage.
+shall [x4: agent the person (constant), x5: service the work service (constant)]
   while [x1: session, x2: stage, x3: session]
     follow(subject: x1, object: x2)
     distinct(x3, x1)
     follow(subject: x3, object: x2)
   when
-    run(e1, subject: x4, object: x5)
+    request(e1, work.open, subject: x4, the board)
   response
-    print(e2, subject: x6, object: x2)
+    return(e2, subject: x5, object: x2)
 ```
 
 "two Ks" of "the same K", the twin of "two requirements share an id" (design-model-check r176):
 
 ```reading
-While two sessions follow the same stage, when the person runs `work start`, `work` shall end the stage.
-shall [x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+While two sessions follow the same stage, when the person opens the board, the work service shall end the stage.
+shall [x4: agent the person (constant), x5: service the work service (constant)]
   while [x1: session, x3: stage, x2: session]
     follow(subject: x1, object: x3)
     distinct(x2, x1)
     follow(subject: x2, object: x3)
   when
-    run(e1, subject: x4, object: x5)
+    request(e1, work.open, subject: x4, the board)
   response
-    end(e2, subject: x6, object: x3)
+    end(e2, subject: x5, object: x3)
 ```
 
 What restricts "two Ks" restricts each, and a K it makes is one both share:
 
 ```reading
-When a session writes two files in a worktree, `work` shall print the worktree.
-shall [x5: tool `work` (constant)]
+When a session writes two files in a worktree, the work service shall return the worktree.
+shall [x5: service the work service (constant)]
   when [x1: session, x2: file, x3: worktree, x4: file]
     in(x2, x3)
-    write(e1, subject: x1, object: x2)
+    request(e1, work.write, subject: x1, object: x2)
     distinct(x4, x2)
     in(x4, x3)
-    write(e2, subject: x1, object: x4)
+    request(e2, work.write, subject: x1, object: x4)
   response
-    print(e3, subject: x5, object: x3)
+    return(e3, subject: x5, object: x3)
 ```
 
 In a response, two new Ks:
 
 ```reading
-When a session ends a stage, `work` shall write two files.
-shall [x3: tool `work` (constant)]
+When a session ends a stage, the work service shall write two files.
+shall [x3: service the work service (constant)]
   when [x1: session, x2: stage]
-    end(e1, subject: x1, object: x2)
+    request(e1, work.end, subject: x1, object: x2)
   response [x4: file, x5: file]
     write(e2, subject: x3, object: x4)
     distinct(x5, x4)
@@ -1459,12 +1467,12 @@ shall [x3: tool `work` (constant)]
 "another K" after "two Ks" is distinct from both:
 
 ```reading
-When a session gives two files to a session, `work` shall write another file.
-shall [x5: tool `work` (constant)]
+When a session gives two files to a session, the work service shall write another file.
+shall [x5: service the work service (constant)]
   when [x1: session, x2: file, x4: session, x3: file]
-    give(e1, subject: x1, object: x2, to: x4)
+    request(e1, work.give, subject: x1, object: x2, to: x4)
     distinct(x3, x2)
-    give(e2, subject: x1, object: x3, to: x4)
+    request(e2, work.give, subject: x1, object: x3, to: x4)
   response [x6: file]
     distinct(x6, x2)
     distinct(x6, x3)
@@ -1475,53 +1483,53 @@ Two lines on one act in two states: the first's two files are in one worktree, t
 finds no witness where both fire, and no L1:
 
 ```reading
-When a session writes a file in a worktree and another file in the same worktree, `work` shall print the worktree.
-shall [x5: tool `work` (constant)]
+When a session writes a file in a worktree and another file in the same worktree, the work service shall return the worktree.
+shall [x5: service the work service (constant)]
   when [x1: session, x2: file, x3: worktree, x4: file]
     in(x2, x3)
-    write(e1, subject: x1, object: x2)
+    request(e1, work.write, subject: x1, object: x2)
     distinct(x4, x2)
     in(x4, x3)
-    write(e2, subject: x1, object: x4)
+    request(e2, work.write, subject: x1, object: x4)
   response
-    print(e3, subject: x5, object: x3)
+    return(e3, subject: x5, object: x3)
 ```
 
 ```reading
-When a session writes a file in a worktree and another file in a different worktree, `work` shall not print the worktree.
-shall [x6: tool `work` (constant)]
+When a session writes a file in a worktree and another file in a different worktree, the work service shall not return the worktree.
+shall [x6: service the work service (constant)]
   when [x1: session, x2: file, x3: worktree, x4: file, x5: worktree]
     in(x2, x3)
-    write(e1, subject: x1, object: x2)
+    request(e1, work.write, subject: x1, object: x2)
     distinct(x4, x2)
     distinct(x5, x3)
     in(x4, x5)
-    write(e2, subject: x1, object: x4)
+    request(e2, work.write, subject: x1, object: x4)
   response
     not
-      print(e3, subject: x6, object: x5)
+      return(e3, subject: x6, object: x5)
 ```
 
 The refusals: "another K" with no K before it, or with every K before it inside a box; "the same K" with neither an
 antecedent nor "two Ks" before it; "the K" after "two Ks".
 
 ```reading
-When a session ends another stage, `work` shall print the stage.
+When a session ends another stage, the work service shall return the stage.
 refused: "another stage" has no antecedent: no earlier noun phrase gives a stage
 ```
 
 ```reading
-While no session follows a stage, when the person runs `work start`, `work` shall end another stage.
+While no session follows a stage, when the person opens the board, the work service shall end another stage.
 refused: "another stage" has no antecedent: a stage is made inside "no session ...", which gives nothing outside it
 ```
 
 ```reading
-When the person runs `work start`, `work` shall end the same stage.
+When the person opens the board, the work service shall end the same stage.
 refused: "the same stage" has no antecedent: no earlier noun phrase, functional relation or declared indexical gives a stage
 ```
 
 ```reading
-While two sessions follow a stage, when the person runs `work start`, `work` shall print the session.
+While two sessions follow a stage, when the person opens the board, the work service shall return the session.
 refused: "the session" has no antecedent: "two sessions" gives two sessions, and "the session" names neither
 ```
 
@@ -1549,76 +1557,78 @@ and r81 (every with no existential import: "every request line ... is `refused`"
 so the line says that one exists too).
 
 ```reading
-While the `a` file exists, when the person runs `work start`, `work` shall print the file.
-shall [x1: file `a` (parameter), x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+While the `a` file exists, when the person opens the board, the work service shall return the file.
+shall [x1: file `a` (parameter), x2: agent the person (constant), x3: service the work service (constant)]
   while
     exists(x1)
   when
-    run(e1, subject: x2, object: x3)
+    request(e1, work.open, subject: x2, the board)
   response
-    print(e2, subject: x4, object: x1)
+    return(e2, subject: x3, object: x1)
 ```
 
 "X does not exist": each case of a first match said with existence (analysis-tools r38-r40).
 
 ```reading
-While the `b` file exists and the `a` file does not exist, when the person runs `work start`, `work` shall print the `b` file.
-shall [x1: file `b` (parameter), x2: file `a` (parameter), x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While the `b` file exists and the `a` file does not exist, when the person opens the board, the work service shall return the `b` file.
+shall [x1: file `b` (parameter), x2: file `a` (parameter), x3: agent the person (constant), x4: service the work service (constant)]
   while
     exists(x1)
     not
       exists(x2)
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    print(e2, subject: x5, object: x1)
+    return(e2, subject: x4, object: x1)
 ```
 
 ```reading
-While a file in a worktree exists, when the person runs `work start`, `work` shall print the file.
-shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While a file in a worktree exists, when the person opens the board, the work service shall return the file.
+shall [x3: agent the person (constant), x4: service the work service (constant)]
   while [x1: file, x2: worktree]
     in(x1, x2)
     exists(x1)
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    print(e2, subject: x5, object: x1)
+    return(e2, subject: x4, object: x1)
 ```
 
 "no K exists" (analysis-tools r55):
 
 ```reading
-While no file exists, if the person runs `work start`, then `work` shall exit with an error naming `work start`.
-shall [x2: agent the person (constant), x3: command `work start` (parameter), x4: tool `work` (constant)]
+While no file exists, if the person opens the board, then the work service shall refuse the request and name `work start`.
+shall [x2: agent the person (constant), x3: service the work service (constant), x4: request "the request the trigger makes" (indexical), x5: thing `work start` (parameter)]
   while
     not [x1: file]
       exists(x1)
   if
-    run(e1, subject: x2, object: x3)
+    request(e1, work.open, subject: x2, the board)
   response
-    exit(e2, subject: x4, with an error naming: x3)
+    refuse(e2, subject: x3, object: x4)
+    name(e3, subject: x3, object: x5)
 ```
 
 "whose T does not exist" (requests r72):
 
 ```reading
-If the person runs `work start` on a session whose worktree does not exist, then `work` shall exit with an error naming the session.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x5: tool `work` (constant)]
-  if [x3: session, x4: worktree]
-    of(x4, x3)
+If the person assigns a session whose worktree does not exist, then the work service shall refuse the request and name the session.
+shall [x1: agent the person (constant), x4: service the work service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: session, x3: worktree]
+    of(x3, x2)
     not
-      exists(x4)
-    run(e1, subject: x1, object: x2, on: x3)
+      exists(x3)
+    request(e1, work.assign, subject: x1, object: x2)
   response
-    exit(e2, subject: x5, with an error naming: x3)
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
 ```
 
 "every K of X is v" holds of an X with no K; "a K of X exists and every K of X is v" says there is one (requests r81):
 
 ```reading
-While a stage is `open` and a line of the stage exists and every line of the stage is `refused`, when the person runs `work start`, `work` shall end the stage.
-shall [x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+While a stage is `open` and a line of the stage exists and every line of the stage is `refused`, when the person opens the board, the work service shall end the stage.
+shall [x4: agent the person (constant), x5: service the work service (constant)]
   while [x1: stage, x2: line]
     status(x1) = `open`
     of(x2, x1)
@@ -1626,182 +1636,183 @@ shall [x4: agent the person (constant), x5: command `work start` (parameter), x6
     every [x3: line]
       of(x3, x1)
       scope
-        outcome(x3) = `refused`
+        verdict(x3) = `refused`
   when
-    run(e1, subject: x4, object: x5)
+    request(e1, work.open, subject: x4, the board)
   response
-    end(e2, subject: x6, object: x1)
+    end(e2, subject: x5, object: x1)
 ```
 
 ```reading
-When the person runs `work start`, `work` shall print every file that exists.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+When the person opens the board, the work service shall return every file that exists.
+shall [x1: agent the person (constant), x2: service the work service (constant)]
   when
-    run(e1, subject: x1, object: x2)
+    request(e1, work.open, subject: x1, the board)
   response
-    every [x4: file]
-      exists(x4)
+    every [x3: file]
+      exists(x3)
       scope
-        print(e2, subject: x3, object: x4)
+        return(e2, subject: x2, object: x3)
 ```
 
 ```reading
-When a session exists, `work` shall print the session.
+When a session exists, the work service shall return the session.
 refused: the verb exist is a state, and a trigger takes an action
 ```
 
-### "runs C with the `--x` option": an option with its argument
+### "with the p v", "without a p": a request's parameters
 
-A command's option is in the trigger, with the CLI pack's run: "runs C with the `--x` option", "with the `--x` and
-`--y` options" (or "with the `--x` option and the `--y` option"), "with the `--x` option on a K", "with the `--x`
-option set to v" (its argument: a code, or a thing the line says more of) and "without the `--x` option" (the option
-not given). The run is one atom, `run(e, subject: agent, object: command, with: option ..., without: option ...,
-on: thing)`, with every option it is given and every option it is not; an "and" list of options is one run with each
-of them (not a run for each, as "and" gives of any other argument), an "or" list a case for each. An option's
-argument is the atom `argument(option, v)` beside the run. In `model logic` the command a run runs is the command's
-code with each option given and its argument when that is a code (`work start --every 5`); an option not given is not
-in it, so the line pairs with every line on the command alone; a thing that an option is set to is what the run is on.
-In a scenario the When names each option and its argument as the line does, and the step's Call gives them to its
-handler (`options`: each option given with its argument, `without`: each option not given).
+A request's parameters are in the trigger, after the operation's object (the domain contract design, §5.1): "with the
+p v" (a value of the parameter, a code, or a thing the line says more of), "with a p" (the parameter given, any value),
+"with the p" of a flag (a boolean parameter, written `<p> (flag)` in the domain model), "without a p" and "without the
+p" (not given); an "and" list says several of one request ("with a source and a thread", "without the summary and a
+note": none of them). The parameters a line may say are its operation's, and the values a parameter takes its own:
+grammar 4 generates no other. The request is one atom, `request(e, O, subject: requester, object: x)`, O the
+operation's id, and each parameter `param(e, p, v)` (`some` of "with a p", `on` of a flag) or `noparam(e, p)` beside
+it. In `model logic` a request's trigger is its operation and the parameters the line says, as one key: a parameter
+given in one line and absent in another makes two requests, so the line pairs with every line on the same parameter
+set, and a thing a parameter names is part of what the request is on. In a scenario the When names each parameter as
+the line does, and the step's Call gives them to its handler (`params`: each parameter with its value or None,
+`without`: each parameter not given).
 
-Found by the audit in requests r59 ("`work request --raised-for` on a request": the option glued into the command
-code, which makes it a command apart from `work request`; with and on in one trigger were refused), r60 (none of
-three options given), r61, r102 ("with `--source` and `--thread`"), r62 ("`--from` on a text": the option's argument
-read as the run's object), r82 and r97-r101 (`work outcome accepted`, `work watch --hook`, `work watch --forward`),
-analysis-tools r36 (`tools probe --python` on a Python interpreter), U16 and backlog r27 ("with the `--json` option",
-one JSON object), and decision-tiers r20 and intake r13 ("an argument that `work decision` does not have": the option
-not given on this run said as a property of the command).
+Found by the audit, in CLI words, in requests r59-r62, r102 (options of `work request`), U16 and backlog r27 ("with the
+`--json` option"), and decision-tiers r20 and intake r13 (an argument not given); this repository rewords them as
+requests with their parameters.
 
-One option (U16, backlog r27):
+A flag:
 
 ```reading
-When the person runs `work start` with the `--json` option, `work` shall exit successfully.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--json` (parameter), x4: tool `work` (constant)]
+When the person opens the board with the summary, the work service shall complete the request.
+shall [x1: agent the person (constant), x2: service the work service (constant), x3: request "the request the trigger makes" (indexical)]
   when
-    run(e1, subject: x1, object: x2, with: x3)
+    request(e1, work.open, subject: x1, the board)
+    param(e1, summary, on)
   response
-    exit(e2, subject: x4, successfully)
+    complete(e2, subject: x2, object: x3)
 ```
 
-Two options of one run (requests r61, r102), said either way:
+Two parameters of one request, each given:
 
 ```reading
-If the person runs `work start` with the `--source` and `--thread` options, then `work` shall exit with an error naming `--source`.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--source` (parameter), x4: option `--thread` (parameter), x5: tool `work` (constant)]
+If the person opens the board with a source and a thread, then the work service shall refuse the request and name the source.
+shall [x1: agent the person (constant), x2: service the work service (constant), x3: request "the request the trigger makes" (indexical), x4: parameter source (constant)]
   if
-    run(e1, subject: x1, object: x2, with: x3, with: x4)
+    request(e1, work.open, subject: x1, the board)
+    param(e1, source, some)
+    param(e1, thread, some)
   response
-    exit(e2, subject: x5, with an error naming: x3)
+    refuse(e2, subject: x2, object: x3)
+    name(e3, subject: x2, object: x4)
 ```
 
+A parameter of a request on a thing:
+
 ```reading
-If the person runs `work start` with the `--source` option and the `--thread` option, then `work` shall exit with an error naming `--source`.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--source` (parameter), x4: option `--thread` (parameter), x5: tool `work` (constant)]
-  if
-    run(e1, subject: x1, object: x2, with: x3, with: x4)
+When the person settles a line with a note, the work service shall return the line.
+shall [x1: agent the person (constant), x3: service the work service (constant)]
+  when [x2: line]
+    request(e1, work.settle, subject: x1, object: x2)
+    param(e1, note, some)
   response
-    exit(e2, subject: x5, with an error naming: x3)
+    return(e2, subject: x3, object: x2)
 ```
 
-An option and the thing the run is on (requests r59, analysis-tools r36):
+A parameter's value, a code:
 
 ```reading
-When the person runs `work start` with the `--json` option on a stage, `work` shall print the stage.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--json` (parameter), x5: tool `work` (constant)]
-  when [x4: stage]
-    run(e1, subject: x1, object: x2, with: x3, on: x4)
-  response
-    print(e2, subject: x5, object: x4)
-```
-
-An option set to a code, its argument:
-
-```reading
-When the person runs `work start` with the `--every` option set to `5`, `work` shall exit successfully.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--every` (parameter), x4: thing `5` (parameter), x5: tool `work` (constant)]
+When the person opens the board with the interval `5`, the work service shall complete the request.
+shall [x1: agent the person (constant), x2: thing `5` (parameter), x3: service the work service (constant), x4: request "the request the trigger makes" (indexical)]
   when
-    argument(x3, x4)
-    run(e1, subject: x1, object: x2, with: x3)
+    request(e1, work.open, subject: x1, the board)
+    param(e1, interval, x2)
   response
-    exit(e2, subject: x5, successfully)
+    complete(e2, subject: x3, object: x4)
 ```
 
-An option set to a thing the line says more of (requests r62):
+A parameter that names a thing the line says more of:
 
 ```reading
-If the person runs `work start` with the `--from` option set to a stage whose status is not `done`, then `work` shall exit with an error naming the stage.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--from` (parameter), x5: tool `work` (constant)]
-  if [x4: stage]
+If the person opens the board with a stage whose status is not `done`, then the work service shall refuse the request and name the stage.
+shall [x1: agent the person (constant), x3: service the work service (constant), x4: request "the request the trigger makes" (indexical)]
+  if [x2: stage]
     not
-      status(x4) = `done`
-    argument(x3, x4)
-    run(e1, subject: x1, object: x2, with: x3)
+      status(x2) = `done`
+    request(e1, work.open, subject: x1, the board)
+    param(e1, stage, x2)
   response
-    exit(e2, subject: x5, with an error naming: x4)
+    refuse(e2, subject: x3, object: x4)
+    name(e3, subject: x3, object: x2)
 ```
 
-An option not given (decision-tiers r20), none of three (requests r60), and with the thing the run is on (intake
-r13):
+A parameter not given, two not given, and not given on a request on a thing:
 
 ```reading
-If the person runs `work start` without the `--summary` option, then `work` shall exit with an error naming `--summary`.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--summary` (parameter), x4: tool `work` (constant)]
+If the person opens the board without the summary, then the work service shall refuse the request and name the summary.
+shall [x1: agent the person (constant), x2: service the work service (constant), x3: request "the request the trigger makes" (indexical), x4: parameter summary (constant)]
   if
-    run(e1, subject: x1, object: x2, without: x3)
+    request(e1, work.open, subject: x1, the board)
+    noparam(e1, summary)
   response
-    exit(e2, subject: x4, with an error naming: x3)
+    refuse(e2, subject: x2, object: x3)
+    name(e3, subject: x2, object: x4)
 ```
 
 ```reading
-If the person runs `work start` without the `--source`, `--thread` and `--raised-for` options, then `work` shall exit with an error naming `--source`.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--source` (parameter), x4: option `--thread` (parameter), x5: option `--raised-for` (parameter), x6: tool `work` (constant)]
+If the person opens the board without a source and a thread, then the work service shall refuse the request and name the source.
+shall [x1: agent the person (constant), x2: service the work service (constant), x3: request "the request the trigger makes" (indexical), x4: parameter source (constant)]
   if
-    run(e1, subject: x1, object: x2, without: x3, without: x4, without: x5)
+    request(e1, work.open, subject: x1, the board)
+    noparam(e1, source)
+    noparam(e1, thread)
   response
-    exit(e2, subject: x6, with an error naming: x3)
+    refuse(e2, subject: x2, object: x3)
+    name(e3, subject: x2, object: x4)
 ```
 
 ```reading
-If a session runs `work start` without the `--reason` option on a line, then `work` shall exit with an error naming `--reason`.
-shall [x2: command `work start` (parameter), x3: option `--reason` (parameter), x5: tool `work` (constant)]
-  if [x1: session, x4: line]
-    run(e1, subject: x1, object: x2, without: x3, on: x4)
+If a session settles a line without a note, then the work service shall refuse the request and name the note.
+shall [x3: service the work service (constant), x4: request "the request the trigger makes" (indexical), x5: parameter note (constant)]
+  if [x1: session, x2: line]
+    request(e1, work.settle, subject: x1, object: x2)
+    noparam(e1, note)
   response
-    exit(e2, subject: x5, with an error naming: x3)
+    refuse(e2, subject: x3, object: x4)
+    name(e3, subject: x3, object: x5)
 ```
 
-The noun after two codes is plural: "with the `--source` and `--thread` option" does not parse (grammar/corpus/core-4.txt).
+A parameter the operation does not declare is no word of the line: "with a colour" does not parse.
 
-### "the push of the command", "the commit that the command makes": the run's own things
+### "this request", "the commit", "the push of the commit": the request's own things
 
-A thing a run makes is said as the image of the command by a row (`push | of | command | one`: "the push of the
-command", the push of the command the trigger runs) or, for a kind whose entry has `This:`, as the run's own K (R11:
-"the commit", "the commit that the command makes"). Nothing is built for them: each kind the audit names (the Python
-interpreter, the decisions index, the git directory, the transcript, the push the command makes) gets its row or its
-`This:` in the reword phase whose lines use it. These are the twins of each shape.
+A thing a request makes is said, for a kind whose entry has `This:`, as the request's own K (R11: "the commit", "this
+commit"), and as the image of it by a row (`commit has → push (one)`: "the push of the commit", the push of the commit
+the request makes); the request itself is the request pack's `This:` ("this request", "the request"). Nothing is
+built for them: each kind the audit names (the Python interpreter, the decisions index, the git directory, the
+transcript, the push a command makes) gets its row or its `This:` in the reword whose lines use it. These are the
+twins of each shape.
 
 Found by the audit in analysis-tools r43-r46 and r66 ("the dot-venv interpreter", the interpreter `tools` runs
 with), decision-tiers r19 ("a decisions index": the one index of the repository), conversation r6 (the git directory,
 the transcript) and the push and the commit a `work` command makes.
 
 ```reading
-When the person runs `work start`, `work` shall print the push of the command.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+When the person opens the board, the work service shall return the push of the commit.
+shall [x1: agent the person (constant), x2: service the work service (constant), x3: commit "the commit the request makes" (indexical)]
   when
-    run(e1, subject: x1, object: x2)
+    request(e1, work.open, subject: x1, the board)
   response [x4: push]
-    of(x4, x2)
-    print(e2, subject: x3, object: x4)
+    of(x4, x3)
+    return(e2, subject: x2, object: x4)
 ```
 
 ```reading
-When the person runs this command, `work` shall print the commit that the command makes.
-shall [x1: agent the person (constant), x2: command "the command the run runs" (indexical), x3: tool `work` (constant), x4: commit "the commit the run makes" (indexical)]
+When the person opens the board, the work service shall keep this commit and return this request.
+shall [x1: agent the person (constant), x2: service the work service (constant), x3: commit "the commit the request makes" (indexical), x4: request "the request the trigger makes" (indexical)]
   when
-    run(e1, subject: x1, object: x2)
+    request(e1, work.open, subject: x1, the board)
   response
-    make(subject: x2, object: x4)
-    print(e2, subject: x3, object: x4)
+    keep(e2, subject: x2, object: x3)
+    return(e3, subject: x2, object: x4)
 ```
 
 ### What parses is read: a verb of two frames, "shall not V a K that P", "no K that P", "every K that no K Vs"
@@ -1837,80 +1848,81 @@ Nothing new is said here; these are the shapes the check or the steps had no rea
   <id>: <what it cannot read>`, and never `no findings` beside one.
 
 ```reading
-While a stage covers a line, when the person runs `work start`, `work` shall end the stage.
-shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While a stage covers a line, when the person opens the board, the work service shall end the stage.
+shall [x3: agent the person (constant), x4: service the work service (constant)]
   while [x1: stage, x2: line]
     cover(subject: x1, object: x2)
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    end(e2, subject: x5, object: x1)
+    end(e2, subject: x4, object: x1)
 ```
 
 ```reading
-While a line is `proposed` and no stage covers the line, if the person runs `work start`, then `work` shall exit with an error naming the line.
-shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While a line is `proposed` and no stage covers the line, if the person opens the board, then the work service shall refuse the request and name the line.
+shall [x3: agent the person (constant), x4: service the work service (constant), x5: request "the request the trigger makes" (indexical)]
   while [x1: line]
-    outcome(x1) = `proposed`
+    verdict(x1) = `proposed`
     not [x2: stage]
       cover(subject: x2, object: x1)
   if
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    exit(e2, subject: x5, with an error naming: x1)
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x1)
 ```
 
 ```reading
-When the person runs `work start`, `work` shall end no stage that a session follows.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+When the person opens the board, the work service shall end no stage that a session follows.
+shall [x1: agent the person (constant), x2: service the work service (constant)]
   when
-    run(e1, subject: x1, object: x2)
+    request(e1, work.open, subject: x1, the board)
   response
-    not [x4: stage, x5: session]
-      follow(subject: x5, object: x4)
-      end(e2, subject: x3, object: x4)
+    not [x3: stage, x4: session]
+      follow(subject: x4, object: x3)
+      end(e2, subject: x2, object: x3)
 ```
 
 ```reading
-When the person runs `work start` on a stage, `work` shall not print a line of the stage.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x4: tool `work` (constant)]
-  when [x3: stage]
-    run(e1, subject: x1, object: x2, on: x3)
+When the person ends a stage, the work service shall not return a line of the stage.
+shall [x1: agent the person (constant), x3: service the work service (constant)]
+  when [x2: stage]
+    request(e1, work.end, subject: x1, object: x2)
   response
-    not [x5: line]
-      of(x5, x3)
-      print(e2, subject: x4, object: x5)
+    not [x4: line]
+      of(x4, x2)
+      return(e2, subject: x3, object: x4)
 ```
 
 ```reading
-While a stage has a line whose outcome is not `accepted`, when the person runs `work start`, `work` shall not end a stage that has the line.
-shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While a stage has a line whose verdict is not `accepted`, when the person opens the board, the work service shall not end a stage that has the line.
+shall [x3: agent the person (constant), x4: service the work service (constant)]
   while [x1: stage, x2: line]
     not
-      outcome(x2) = `accepted`
+      verdict(x2) = `accepted`
     of(x2, x1)
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    not [x6: stage]
-      of(x2, x6)
-      end(e2, subject: x5, object: x6)
+    not [x5: stage]
+      of(x2, x5)
+      end(e2, subject: x4, object: x5)
 ```
 
 ```reading
-When the person runs `work start` on a command, `work` shall not print the push of the command.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x4: tool `work` (constant)]
-  when [x3: command]
-    run(e1, subject: x1, object: x2, on: x3)
-  response [x5: push]
-    of(x5, x3)
+When the person opens the board, the work service shall not return the push of the commit.
+shall [x1: agent the person (constant), x2: service the work service (constant), x3: commit "the commit the request makes" (indexical)]
+  when
+    request(e1, work.open, subject: x1, the board)
+  response [x4: push]
+    of(x4, x3)
     not
-      print(e2, subject: x4, object: x5)
+      return(e2, subject: x2, object: x4)
 ```
 
 ```reading
-While a session has no worktree that holds a file whose version is not `2.0.0`, when the person runs `work start`, `work` shall exit successfully.
-shall [x4: agent the person (constant), x5: command `work start` (parameter), x6: tool `work` (constant)]
+While a session has no worktree that holds a file whose version is not `2.0.0`, when the person opens the board, the work service shall complete the request.
+shall [x4: agent the person (constant), x5: service the work service (constant), x6: request "the request the trigger makes" (indexical)]
   while [x1: session]
     not [x2: worktree, x3: file]
       not
@@ -1918,88 +1930,88 @@ shall [x4: agent the person (constant), x5: command `work start` (parameter), x6
       in(x3, x2)
       of(x2, x1)
   when
-    run(e1, subject: x4, object: x5)
+    request(e1, work.open, subject: x4, the board)
   response
-    exit(e2, subject: x6, successfully)
+    complete(e2, subject: x5, object: x6)
 ```
 
 ```reading
-While a stage has no line whose outcome is not `accepted`, when the person runs `work start`, `work` shall end the stage.
-shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While a stage has no line whose verdict is not `accepted`, when the person opens the board, the work service shall end the stage.
+shall [x3: agent the person (constant), x4: service the work service (constant)]
   while [x1: stage]
     not [x2: line]
       not
-        outcome(x2) = `accepted`
+        verdict(x2) = `accepted`
       of(x2, x1)
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    end(e2, subject: x5, object: x1)
+    end(e2, subject: x4, object: x1)
 ```
 
 ```reading
-While no line of a stage is `accepted`, when the person runs `work start`, `work` shall exit successfully.
-shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+While no line of a stage is `accepted`, when the person opens the board, the work service shall complete the request.
+shall [x3: agent the person (constant), x4: service the work service (constant), x5: request "the request the trigger makes" (indexical)]
   while
     not [x1: line, x2: stage]
       of(x1, x2)
-      outcome(x1) = `accepted`
+      verdict(x1) = `accepted`
   when
-    run(e1, subject: x3, object: x4)
+    request(e1, work.open, subject: x3, the board)
   response
-    exit(e2, subject: x5, successfully)
+    complete(e2, subject: x4, object: x5)
 ```
 
 ```reading
-When the person runs `work start` on a stage, `work` shall print every line of the stage that no file covers.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x4: tool `work` (constant)]
-  when [x3: stage]
-    run(e1, subject: x1, object: x2, on: x3)
+When the person ends a stage, the work service shall return every line of the stage that no file covers.
+shall [x1: agent the person (constant), x3: service the work service (constant)]
+  when [x2: stage]
+    request(e1, work.end, subject: x1, object: x2)
   response
-    every [x5: line]
-      of(x5, x3)
-      not [x6: file]
-        cover(subject: x6, object: x5)
+    every [x4: line]
+      of(x4, x2)
+      not [x5: file]
+        cover(subject: x5, object: x4)
       scope
-        print(e2, subject: x4, object: x5)
+        return(e2, subject: x3, object: x4)
 ```
 
 ```reading
-When the person runs `work start` on a session, `work` shall print every stage that the session does not follow.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x4: tool `work` (constant)]
-  when [x3: session]
-    run(e1, subject: x1, object: x2, on: x3)
+When the person assigns a session, the work service shall return every stage that the session does not follow.
+shall [x1: agent the person (constant), x3: service the work service (constant)]
+  when [x2: session]
+    request(e1, work.assign, subject: x1, object: x2)
   response
-    every [x5: stage]
+    every [x4: stage]
       not
-        follow(subject: x3, object: x5)
+        follow(subject: x2, object: x4)
       scope
-        print(e2, subject: x4, object: x5)
+        return(e2, subject: x3, object: x4)
 ```
 
 ```reading
-When the person runs `work start`, `work` shall print a worktree that holds only files whose version is `2.0.0`.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+When the person opens the board, the work service shall return a worktree that holds only files whose version is `2.0.0`.
+shall [x1: agent the person (constant), x2: service the work service (constant)]
   when
-    run(e1, subject: x1, object: x2)
-  response [x4: worktree]
-    only [x5: file]
-      version(x5) = `2.0.0`
+    request(e1, work.open, subject: x1, the board)
+  response [x3: worktree]
+    only [x4: file]
+      version(x4) = `2.0.0`
       scope
-        in(x5, x4)
-    print(e2, subject: x3, object: x4)
+        in(x4, x3)
+    return(e2, subject: x2, object: x3)
 ```
 
 ```reading
-When the person runs `work start`, `work` shall print a worktree that holds at most three files.
-shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+When the person opens the board, the work service shall return a worktree that holds at most three files.
+shall [x1: agent the person (constant), x2: service the work service (constant)]
   when
-    run(e1, subject: x1, object: x2)
-  response [x4: worktree]
-    count at most 3 [x5: file]
+    request(e1, work.open, subject: x1, the board)
+  response [x3: worktree]
+    count at most 3 [x4: file]
       scope
-        in(x5, x4)
-    print(e2, subject: x3, object: x4)
+        in(x4, x3)
+    return(e2, subject: x2, object: x3)
 ```
 
 ## What the language cannot say yet
@@ -2091,7 +2103,7 @@ table, each item beside its title). It says instead each "every" apart, and the 
 ### #11: the outcome of the response's own act
 
 A line whose condition is what the response's own act gives ("a test that fails when `model` runs it") has no form:
-a condition holds before the trigger, and the run's own things (R11) are what a command makes, not what a test it
+a condition holds before the trigger, and the request's own things (R11) are what a request makes, not what a test it
 runs gives. Line: decision-tiers r17 (b159). It says instead the test's last outcome, an attribute of test ("a test
 whose outcome is `failed`"), which the scenario gives before the run.
 

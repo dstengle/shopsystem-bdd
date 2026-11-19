@@ -2,12 +2,16 @@
 `request`, `param` and `noparam` and their lines in `model parse --form`, "the request" the trigger's, "the p" a
 parameter, and example data after "with the <parameter>"."""
 import pathlib
+import re
 
 import pytest
+import spec_context
 import spec_example
 import spec_grammar4
 import spec_lexicon
 import spec_lf
+import spec_rgl_steps
+import spec_steps4
 import toolchain
 
 FIXTURE = pathlib.Path(__file__).parent / "fixtures" / "domain-model"
@@ -71,3 +75,27 @@ def test_example_data_after_with_the_parameter():
     assert spec_example.parameters(line, known) == ["milk"]
     assert spec_example.parameters("When the person runs `notes add` with the `--x` option.", known) == [
         "notes add", "--x"]     # no code names a command or an option in a request context
+
+
+# --- the twins of grammar/language.md's sections on parameters and on the request's own things --------------------
+REQUEST = pathlib.Path(__file__).parent / "fixtures" / "request-4"
+SECTIONS = re.compile(r'^### ("with the p v"|"this request").*?(?=^### |^## )', re.MULTILINE | re.DOTALL)
+BLOCK = re.compile(r"^```reading\n(.*?)\n```$", re.MULTILINE | re.DOTALL)
+
+
+def twins():
+    text = (pathlib.Path(__file__).resolve().parents[2] / "grammar" / "language.md").read_text()
+    return [b.split("\n", 1)[0] for m in SECTIONS.finditer(text) for b in BLOCK.findall(m.group(0))
+            if "\nrefused: " not in b]
+
+
+def test_the_sections_have_their_twins():
+    assert len(twins()) >= 10
+
+
+@pytest.mark.parametrize("line", twins())
+def test_each_twin_translates_to_facts_and_to_steps(line):
+    found, why = spec_context.Four(REQUEST).facts("thing#r1", line)
+    assert why is None and found[1], why
+    vocab = spec_rgl_steps.load(REQUEST)[0]
+    assert spec_steps4.cases(vocab, [("thing#r1", spec_lf.form(vocab, spec_grammar4.parse(REQUEST, line).tree))])

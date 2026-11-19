@@ -158,3 +158,14 @@ def test_the_fixture_passes_model_check_and_its_features_are_current():
     features = subprocess.run([sys.executable, str(scripts / "features"), "generate", "--check"], cwd=FIXTURE,
                               capture_output=True, text=True)
     assert features.returncode == 0, features.stdout + features.stderr
+
+
+def test_a_kind_of_another_and_an_ordered_attribute_from_the_model():
+    import spec_lexicon
+    lex = spec_lexicon.read(pathlib.Path(__file__).parent / "fixtures" / "request-4")
+    kinds = {t.term: t.supertype for t in lex.of("kind")}
+    assert kinds["session"] == "agent" and kinds["layout"] == "artifact" and kinds["file"] == ""
+    orders = {t.term: t.order for t in lex.of("attribute")}
+    assert orders["version"] == "by number" and orders["priority"] == "as listed" and orders["status"] == ""
+    actors = {t.term: t.supertype for t in lex.of("actor")}
+    assert actors["the stage form"] == "artifact"

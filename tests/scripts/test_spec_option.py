@@ -1,14 +1,13 @@
 """A command's options in the trigger (b240, construct #12): "runs C with the `--x` option", "with the `--x` and
 `--y` options", "... on a K", "... set to v" and "without the `--x` option", read by `model logic` as the command
 with each option given (and its code argument) and written by `features generate` as a When that names each option as
-the line does, whose Call gives its handler the options (`options`) and the options not given (`without`); each twin
-of the construct in grammar/language.md, and of the run's own things, translates to the check's facts and to steps.
+the line does, whose Call gives its handler the options (`options`) and the options not given (`without`). (The twins
+of grammar/language.md are in request words now: test_spec_lf_request reads them.)
 
 The old run/option reading only (the domain contract's bootstrap): plan 5 deletes this module with spec_lf_option.
 """
 BOOTSTRAP = True
 import pathlib
-import re
 import sys
 
 import features_vocab4
@@ -29,8 +28,6 @@ REPO = pathlib.Path(__file__).resolve().parents[2]
 FIXTURE = REPO / "tests" / "scripts" / "fixtures" / "codified-2"
 LINE = "When the person runs `work start`%s, `work` shall %s."
 OK, ERROR = "exit successfully", "exit with an error naming `work start`"
-SECTIONS = re.compile(r'^### ("runs C with|"the push of the command").*?(?=^### |^## )', re.MULTILINE | re.DOTALL)
-BLOCK = re.compile(r"^```reading\n(.*?)\n```$", re.MULTILINE | re.DOTALL)
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -48,23 +45,6 @@ def steps(line):
     vocab, gram = spec_rgl_steps.load(FIXTURE)
     form = spec_lf.form(vocab, spec_grammar4.parse(FIXTURE, line).tree)
     return [(k, spec_rgl_steps.text(gram, t)) for k, t in spec_steps4.read(vocab, [("thing#r1", form)])]
-
-
-def twins():
-    text = (REPO / "grammar" / "language.md").read_text()
-    return [b.split("\n", 1)[0] for m in SECTIONS.finditer(text) for b in BLOCK.findall(m.group(0))
-            if "\nrefused: " not in b]
-
-
-def test_the_sections_have_their_twins():
-    assert len(twins()) >= 10
-
-
-@pytest.mark.parametrize("line", twins())
-def test_each_twin_translates_to_facts_and_to_steps(line):
-    assert facts(line)
-    vocab = spec_rgl_steps.load(FIXTURE)[0]
-    assert spec_steps4.cases(vocab, [("thing#r1", spec_lf.form(vocab, spec_grammar4.parse(FIXTURE, line).tree))])
 
 
 @pytest.mark.parametrize("options, command, on", [

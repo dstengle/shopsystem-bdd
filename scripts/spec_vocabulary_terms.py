@@ -37,23 +37,28 @@ def qualified(element):
     return element.id if element.kind == "operation" else "%s.%s" % (element.area, element.id)
 
 
-def _kinds(found):
-    """{object name: kind key} of every noun naming an object, and the kind terms."""
+def _kinds(found, model):
+    """{object name: kind key} of every noun naming an object, and the kind terms, each of the kind its object is a
+    kind of (`object session kind of agent`)."""
     elements = defaultdict(set)
     for e in found:
         if e.label == "noun" and e.element and e.element.kind == "object":
             elements[e.term].add((e.layer, e.element.id))
     keys, terms = {}, []
-    for e in (e for e in found if e.label == "noun" and e.element and e.element.kind == "object"):
+    nouns = [e for e in found if e.label == "noun" and e.element and e.element.kind == "object"]
+    for e in nouns:
         two = len({layer for layer, _ in elements[e.term]}) > 1 and len({i for _, i in elements[e.term]}) > 1
-        key = "%s_%s" % (e.term, re.sub(r"[^a-z0-9]+", "_", e.layer.lower())) if two else e.term
-        if e.element.id in keys:
+        keys.setdefault(e.element.id, "%s_%s" % (e.term, re.sub(r"[^a-z0-9]+", "_", e.layer.lower())) if two else e.term)
+    done = set()
+    for e in nouns:
+        if e.element.id in done:
             continue
-        keys[e.element.id] = key
-        t = e.fields
+        done.add(e.element.id)
+        key, t = keys[e.element.id], e.fields
+        up = model.objects[e.element.id].kind_of
         terms.append(spec_lexicon.Term(term=key, category="kind", text=e.text, where=e.where, label="noun",
-                                       plural=t.plural, nots=t.nots, this=t.this, word=e.term if two else "",
-                                       element=qualified(e.element)))
+                                       plural=t.plural, nots=t.nots, this=t.this, word=e.term if key != e.term else "",
+                                       element=qualified(e.element), supertype=keys.get(up, up)))
     return keys, terms
 
 
@@ -65,12 +70,20 @@ def _actors(model, found, kinds, services=()):
         kind_of = model.actors[e.element.id].kind_of if e.element.kind == "actor" else ""
         if e.element.kind == "service" and "service" in services:     # the request pack's kind of agent
             kind_of = "service"
-        if e.element.kind == "object":
-            kind_of = kinds.get(e.element.id, "")
+        if e.element.kind == "object":     # of its object's kind, or, with no noun naming it, the kind it is of
+            kind_of = kinds.get(e.element.id) or model.objects[e.element.id].kind_of
         out.append(spec_lexicon.Term(term=e.term, category="actor", text=e.text, where=e.where, label=e.label,
                                      supertype=kinds.get(kind_of, kind_of) or "agent", nots=e.fields.nots,
                                      element=qualified(e.element)))
     return out
+
+
+def _order(attr):
+    """An attribute's value order (spec_lf_order): of one whose values the model writes `a < b < c`, those values in
+    that order, or by number when each is a code of numbers joined by dots (session's call, §4.1); else none."""
+    if not attr.values or not attr.ordered:
+        return ""
+    return "by number" if all(re.fullmatch(r"\d+(\.\d+)*", v) for v in attr.values) else "as listed"
 
 
 def _attributes(model, found, kinds):
@@ -89,7 +102,7 @@ def _attributes(model, found, kinds):
         kind = kinds.get(owner)
         out.append(spec_lexicon.Term(
             term=e.term, category="attribute", kinds=(kind,) if kind else (), text=e.text, where=e.where,
-            label="attribute of %s" % (kind or owner), values=values, value_kinds=value_kinds,
+            label="attribute of %s" % (kind or owner), values=values, value_kinds=value_kinds, order=_order(attr),
             transitions=transitions, type=attr.type if attr.type in ("number", "time", "text") else
             ("" if values else "text"), element=qualified(e.element)))
     return out
@@ -171,7 +184,7 @@ def rows(model, kinds):
 def lexicon(root):
     """The spec_lexicon.Lexicon of a context with a domain model."""
     model, found = domain_model.load(root), spec_vocabulary.entries(root)
-    kinds, terms = _kinds(found)
+    kinds, terms = _kinds(found, model)
     keys = dict(kinds)
     keys.update({name: name for name in model.actors})
     services = ("service",) if "request" in spec_packs.imports(root) else ()

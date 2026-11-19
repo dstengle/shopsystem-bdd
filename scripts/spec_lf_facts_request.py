@@ -38,11 +38,20 @@ def _value(walk, v):
 
 
 def trigger(walk, part):
-    """The facts of a trigger part with one request in it (each other atom the pre-state's, as spec_lf_facts reads)."""
+    """The facts of a trigger part with one request in it, or one request on each of "two Ks" (one operation, one
+    requester: a `trig` of each, as spec_lf_distinct's `one_act` reads events); each other atom the pre-state's, as
+    spec_lf_facts reads it."""
     found = requests(part)
-    if len(found) != 1:
+    if len(found) != 1 and len({(a.args[1], a.args[4][0]) for a in found}) != 1:
         raise ValueError("no translation of a trigger with %d requests" % len(found))
-    atom = found[0]
+    for n, atom in enumerate(found, 1):
+        _request(walk, part, atom, n)
+    for item in part.body:
+        if item not in found and getattr(item, "pred", None) not in ("param", "noparam"):
+            walk.literal(item)
+
+
+def _request(walk, part, atom, n):
     e, _, verb, sense, roles = atom.args
     params = sorted((a.args[1], a.args[2] if a.pred == "param" else None) for a in part.body
                     if getattr(a, "pred", None) in ("param", "noparam") and a.args[0] == e)
@@ -56,12 +65,9 @@ def trigger(walk, part):
     walk.emit("trig", "req", key, walk.term(subject), obj)
     for p, v in params:
         if v is None:
-            walk.emit("noparam", 1, _slug(p))
+            walk.emit("noparam", n, _slug(p))
         else:
-            walk.emit("param", 1, _slug(p), walk.term(v) if isinstance(v, Ref) else _value(walk, v))
-    for item in part.body:
-        if item is not atom and getattr(item, "pred", None) not in ("param", "noparam"):
-            walk.literal(item)
+            walk.emit("param", n, _slug(p), walk.term(v) if isinstance(v, Ref) else _value(walk, v))
 
 
 def _slug(name):

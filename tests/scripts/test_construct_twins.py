@@ -14,6 +14,7 @@ import toolchain
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
 FIXTURE = REPO / "tests" / "scripts" / "fixtures" / "codified-2"
+REQUEST = REPO / "tests" / "scripts" / "fixtures" / "request-4"     # language.md's context (the domain contract)
 LATER = ()
 BLOCK = re.compile(r"^```reading\n(.*?)\n```$", re.MULTILINE | re.DOTALL)
 
@@ -34,5 +35,5 @@ def test_the_constructs_have_twins():
 @pytest.mark.parametrize("line", twins())
 def test_each_twin_is_read_by_the_check_and_the_steps(line):
     toolchain.require()
-    wrong, _ = test_corpus_spec.reading(FIXTURE, "twin", "r1", line)
+    wrong, _ = test_corpus_spec.reading(REQUEST, "twin", "r1", line)
     assert wrong == []
