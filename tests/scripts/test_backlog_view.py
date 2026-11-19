@@ -105,7 +105,7 @@ def test_json_is_one_object_in_table_order(backlog_repo):
     write_item(backlog_repo, "b1", status="idea")
     write_item(backlog_repo, "b2", status="shaped", **RATED)
     done = work(backlog_repo, "backlog", "--json")
-    got = json.loads(done.stdout)
+    got = json.loads(done.stdout)["content"]
     assert [i["id"] for i in got["items"]] == ["b2", "b1"]
     assert got["items"][1]["score"] is None and got["items"][0]["score"] == 2.0
     assert set(got["items"][0]) == {"id", "title", "status", "provenance", "value", "urgency", "size", "score", "rank",
@@ -114,14 +114,14 @@ def test_json_is_one_object_in_table_order(backlog_repo):
 
 def test_show_json_has_the_row_keys(backlog_repo):
     write_item(backlog_repo, "b1", depends_on="b9")
-    got = json.loads(work(backlog_repo, "show", "b1", "--json").stdout)["item"]
+    got = json.loads(work(backlog_repo, "show", "b1", "--json").stdout)["content"]["item"]
     assert got["rank"] == 1 and got["blocked_by"] == [{"id": "b9", "status": "missing"}]
 
 
 def test_an_empty_backlog(backlog_repo):
     assert work(backlog_repo, "backlog").stdout == "the backlog is empty\n"
     done = work(backlog_repo, "backlog", "--json")
-    assert done.returncode == 0 and json.loads(done.stdout) == {"items": []}
+    assert done.returncode == 0 and json.loads(done.stdout)["content"] == {"items": []}
 
 
 def test_backlog_commits_nothing_and_refuses_a_malformed_item(backlog_repo):
@@ -166,12 +166,12 @@ def test_an_in_batch_item_shows_its_batch(backlog_repo):
     plan.write_text(PLAN)
     done = work(backlog_repo, "backlog")
     assert "in batch-1 (building): 1 of 2 tasks done" in row(done.stdout, "b1"), done.stdout
-    got = json.loads(work(backlog_repo, "backlog", "--json").stdout)["items"]
+    got = json.loads(work(backlog_repo, "backlog", "--json").stdout)["content"]["items"]
     assert got[0]["batch"] == {"name": "batch-1", "status": "building", "tasks_done": 1, "tasks": 2}
 
 
 def test_rows_of_items_in_no_batch_are_unchanged(backlog_repo):
     write_item(backlog_repo, "b1", status="idea")
-    got = json.loads(work(backlog_repo, "backlog", "--json").stdout)["items"][0]
+    got = json.loads(work(backlog_repo, "backlog", "--json").stdout)["content"]["items"][0]
     assert set(got) == {"id", "title", "status", "provenance", "value", "urgency", "size", "score", "rank",
                         "depends_on", "blocked_by", "question"}

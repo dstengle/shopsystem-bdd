@@ -124,7 +124,7 @@ class AQueuedRepository(unittest.TestCase):
         self.assertEqual(git(self.root, "diff", "-M100%", "--diff-filter=D", "--name-only", "HEAD~1"), "")
 
     def test_the_upgraded_repository_is_on_the_new_workflow(self):
-        report = json.loads(script(self.root, "model", "check", "--json").stdout)
+        report = json.loads(script(self.root, "model", "check", "--json").stdout)["content"]
         under = [str(x) for x in report["violations"] + report["warnings"] + report["unresolved"] if ".shop/work" in str(x)]
         self.assertEqual(under, [])
         self.assertNotIn("observation/%s/o1" % CTX, json.dumps(report["warnings"]))

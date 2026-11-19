@@ -139,7 +139,7 @@ def test_show_prints_every_message_of_the_quote(quoting):
 def test_show_json_gives_the_quote(quoting):
     assert quote(quoting, T.TEXTS[2], "--session", "s-1").returncode == 0
     done = work(quoting, "show", "quote-1", "--json")
-    got = json.loads(done.stdout)["quote"]
+    got = json.loads(done.stdout)["content"]["quote"]
     assert got["name"] == "quote-1" and got["session"] == "s-1" and got["message"] == "u2"
     assert len(got["messages"]) == 5 and [m["cited"] for m in got["messages"]].count(True) == 1
     assert got["messages"][2] == {"who": "person", "at": "2026-11-05T10:03:00+00:00", "ident": "u2", "cited": True,

@@ -2,6 +2,7 @@
 directives`, `work show directive-<n>`, `work promote` to each kind of target and the refusals no scenario drives, and
 the SessionStart hook's `conversation_hook directives`, silent with none live and never failing."""
 import datetime
+import json
 import subprocess
 import sys
 
@@ -78,7 +79,8 @@ def test_work_show_prints_the_directive_with_its_quote(kept):
     done = work(kept, "show", "directive-1")
     assert done.stdout.startswith('directive-1 "Merge and release') and "status: live" in done.stdout
     assert 'quote-1 "Merge and release' in done.stdout and ", cited:" in done.stdout
-    assert '"directive": {"name": "directive-1"' in work(kept, "show", "directive-1", "--json").stdout
+    shown = json.loads(work(kept, "show", "directive-1", "--json").stdout)["content"]
+    assert shown["directive"]["name"] == "directive-1"
 
 
 def test_a_directive_is_promoted_to_a_design_decision_by_its_id(kept):

@@ -147,7 +147,7 @@ def test_review_leaves_the_checkout_alone(both_done):
     assert git(both_done, "status", "--porcelain") == " M notes.txt\n"
     assert git(both_done, "symbolic-ref", "--short", "HEAD").strip() == "main"
     assert git(both_done, "rev-parse", "HEAD:spec") == spec
-    assert json.loads(work(both_done, "batch", "status", "--json").stdout)["batch"]["status"] == "in-review"
+    assert json.loads(work(both_done, "batch", "status", "--json").stdout)["content"]["batch"]["status"] == "in-review"
 
 
 def test_a_failed_review_removes_the_worktree_it_made(both_done):

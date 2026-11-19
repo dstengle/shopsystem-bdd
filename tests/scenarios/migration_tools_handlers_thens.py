@@ -260,6 +260,6 @@ def exits_ok(step):
     if isinstance(done.args, list) and done.args[2:3] == ["run"]:
         checked = subprocess.run([sys.executable, str(M.PLUGIN / "scripts" / "model"), "--root", str(step.repo),
                                   "check", "--json"], capture_output=True, text=True)
-        report = json.loads(checked.stdout)
+        report = json.loads(checked.stdout)["content"]
         assert (report["unresolved"], report["problems"]) == ([], []), checked.stdout
     return None

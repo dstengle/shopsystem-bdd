@@ -7,7 +7,6 @@ another (`--supersedes`, r31, r32) names it under `supersedes:`, and the one sup
 `superseded` in the same commit; one that is not accepted, or an id that names no decision, refused, naming it."""
 import datetime
 import re
-import sys
 from pathlib import Path
 
 import shop_files
@@ -109,7 +108,7 @@ def next_number(root):
 
 
 def superseded(root, refs):
-    """[(path, id)] of each decision `--supersedes` names, by its id, its path or its number; an id that names none,
+    """[(path, id)] of each decision `supersedes` names, by its id, its path or its number; an id that names none,
     or a decision whose status is not accepted, refused naming it."""
     found = []
     for ref in refs:
@@ -120,11 +119,14 @@ def superseded(root, refs):
             if ref in (data.get("id"), rel, path.name, path.stem) or path.name.startswith(ref + "-"):
                 hits.append((path, rel, data))
         if len(hits) != 1:
-            raise shop_files.Refused("--supersedes %s names %s design-decision" % (ref, "no" if not hits else "more than one"))
+            raise shop_files.Refused("{names} %s names %s design-decision" % (ref, "no" if not hits else "more than one"),
+                                     reason="names no design-decision" if not hits else "names more than one "
+                                     "design-decision", names=["parameter:supersedes"])
         path, rel, data = hits[0]
         if data.get("status") != "accepted":
             raise shop_files.Refused("%s (%s) is %s, not accepted: only a design-decision in force is superseded"
-                                     % (rel, data.get("id"), data.get("status") or "of no status"))
+                                     % (rel, data.get("id"), data.get("status") or "of no status"),
+                                     reason="not accepted", names=["design-decision:%s" % data.get("id")])
         found.append((path, data.get("id")))
     return found
 
@@ -136,50 +138,61 @@ def marked(text):
     return "---\n%s\n---\n%s" % (head, rest)
 
 
-def render(number, title, ident, args, sections, date):
-    head = ["id: %s" % ident, "summary: %s" % quoted(args.summary, "summary"), "date: %s" % date,
-            "status: accepted", "tier: %s" % args.tier]
-    for key, values in (("enforced_by", args.enforced_by), ("verified_by", args.verified_by),
-                        ("rests_on", args.rests_on), ("supersedes", args.superseding), ("source", args.source)):
-        if values:
-            head.append("%s: [%s]" % (key, ", ".join(values)))
-    if args.by:
-        head.append("by: %s" % quoted(args.by, "--by"))
+def render(number, title, ident, fields, sections, date):
+    """The decision's text; `fields` its frontmatter's values by business name."""
+    head = ["id: %s" % ident, "summary: %s" % quoted(fields["summary"], "summary"), "date: %s" % date,
+            "status: accepted", "tier: %s" % fields["tier"]]
+    for key, name in (("enforced_by", "enforced by"), ("verified_by", "routes"), ("rests_on", "rests on"),
+                      ("supersedes", "supersedes"), ("source", "source")):
+        if fields.get(name):
+            head.append("%s: [%s]" % (key, ", ".join(fields[name])))
+    if fields.get("author"):
+        head.append("by: %s" % quoted(fields["author"], "author"))
     body = ["# %04d. %s" % (number, title)]
     body += ["## %s\n\n%s" % (name, text.strip()) for name, text in sections if text]
     return "---\n%s\n---\n\n%s\n" % ("\n".join(head), "\n\n".join(body))
 
 
-def write(args):
-    """Write the decision and the index, commit both; the decision's path, relative to the root."""
-    root = Path(args.root)
-    absent = [option for option, value in (("--summary", args.summary), ("--decision", args.decision),
-                                           ("--tier", args.tier)) if value is None]
+def write(root, title, summary=None, tier=None, wording=None, *, context=None, alternatives=None, enforced_by=(),
+          routes=(), rests_on=(), supersedes=(), source=(), author=None, slug=None, date=None):
+    """The operation decisions.enter: write the decision and the index, commit both; the decision's path, relative to
+    the root. Each parameter by its business name; a refusal names its parameters as `parameter:<name>`."""
+    root = Path(root)
+    absent = ["parameter:" + name for name, value in (("summary", summary), ("wording", wording), ("tier", tier))
+              if value is None]
     if absent:
-        tiers = " (--tier check, requirement or judgement)" if args.tier is None else ""
-        raise shop_files.Refused("a design-decision gives %s%s" % (", ".join(absent), tiers))
-    title = args.title.strip()
+        raise shop_files.Refused("a design-decision gives {names}%s" % (" (a tier: check, requirement or judgement)"
+                                                                        if tier is None else ""),
+                                 reason="missing parameters", names=absent)
+    if tier not in TIERS:
+        raise shop_files.Refused("the tier %s is not check, requirement or judgement" % tier, reason="no such tier",
+                                 names=["parameter:tier"])
+    title = title.strip()
     if not title or any(ch in title for ch in shop_files.LINE_BREAKS):
-        raise shop_files.Refused("the title is one line of text")
-    slug = args.slug or slug_of(title)
+        raise shop_files.Refused("the title is one line of text", reason="not one line", names=["parameter:title"])
+    slug = slug or slug_of(title)
     if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", slug):
-        raise shop_files.Refused("the slug %r is not lowercase words joined by hyphens" % slug)
+        raise shop_files.Refused("the slug %r is not lowercase words joined by hyphens" % slug, reason="not a slug",
+                                 names=["parameter:slug"])
     ident = "design-decision/%s/%s" % (shop_files.context_path(root), slug)
     for path in decision_files(root):
         data, _ = shop_files.frontmatter(shop_files.read(path, root))
         if data.get("id") == ident or path.name.split("-", 1)[-1] == slug + ".md":
-            raise shop_files.Refused("%s already has the id %s: give another --slug" % (path.relative_to(root), ident))
-    olds = superseded(root, getattr(args, "supersedes", None) or [])
-    args.superseding = [old for _, old in olds]
-    sections = [("Context", text_of(args.context, root, "--context")),
-                ("Decision", text_of(args.decision, root, "--decision")),
-                ("Alternatives", text_of(args.alternatives, root, "--alternatives"))]
-    number, date = next_number(root), args.date or datetime.date.today().isoformat()
+            raise shop_files.Refused("%s already has the id %s: give another {names}" % (path.relative_to(root), ident),
+                                     reason="id taken", names=["parameter:slug"])
+    olds = superseded(root, supersedes or [])
+    sections = [("Context", text_of(context, root, "the context")),
+                ("Decision", text_of(wording, root, "the wording")),
+                ("Alternatives", text_of(alternatives, root, "the alternatives"))]
+    number, date = next_number(root), date or datetime.date.today().isoformat()
     if not re.fullmatch(r"\d{4}-\d\d-\d\d", date):
-        raise shop_files.Refused("the date %s is not YYYY-MM-DD" % date)
+        raise shop_files.Refused("the date %s is not YYYY-MM-DD" % date, reason="not a date", names=["parameter:date"])
     rel = (DECISIONS / ("%04d-%s.md" % (number, slug))).as_posix()
     index = (DECISIONS / "index.md").as_posix()
-    text = render(number, title, ident, args, sections, date)
+    fields = {"summary": summary, "tier": tier, "enforced by": list(enforced_by), "routes": list(routes),
+              "rests on": list(rests_on), "supersedes": [old for _, old in olds], "source": list(source),
+              "author": author}
+    text = render(number, title, ident, fields, sections, date)
 
     from model_report import render_decisions
 
@@ -194,14 +207,20 @@ def write(args):
     return rel
 
 
+# the CLI adapter's request of decisions.enter: each business parameter's argparse dest where the two differ
+PARAMETERS = {"wording": "decision", "routes": "verified_by", "author": "by"}
+
+
 def decision(args):
-    try:
-        rel = write(args)
-    except shop_files.Refused as why:
-        print("work decision: %s" % why, file=sys.stderr)
-        return 1
+    """`work decision`: the request decisions.enter, its parameters read off the command line by business name."""
+    from domain_envelope import Response
+    rel = write(args.root, args.title, args.summary, args.tier, args.decision, context=args.context,
+                alternatives=args.alternatives, enforced_by=args.enforced_by, routes=args.verified_by,
+                rests_on=args.rests_on, supersedes=args.supersedes, source=args.source, author=args.by,
+                slug=args.slug, date=args.date)
     print(rel)
-    return 0
+    return Response("done", {"path": rel})
 
 
+decision.parameters = PARAMETERS
 COMMANDS = {"decision": decision}

@@ -122,7 +122,7 @@ def test_status_prints_items_tasks_and_their_statuses(two):
 def test_status_json_is_one_object(two):
     assert work(two, "batch", "start").returncode == 0
     done = work(two, "batch", "status", "batch-1", "--json")
-    found = json.loads(done.stdout)["batch"]
+    found = json.loads(done.stdout)["content"]["batch"]
     assert found["name"] == "batch-1" and found["status"] == "building" and found["pull_request"] is None
     assert found["items"][0] == {"id": "b1", "title": "Abandon", "status": "in-batch"}
     assert found["tasks"][1] == {"task": "t2", "item": "b2", "status": "pending", "branch": "batch-1-b2"}

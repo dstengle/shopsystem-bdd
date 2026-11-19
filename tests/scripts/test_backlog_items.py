@@ -79,7 +79,7 @@ def test_show_names_the_item_by_its_title(backlog_repo):
     done = work(backlog_repo, "show", "b1")
     assert done.returncode == 0, done.stderr
     assert done.stdout.splitlines()[0].startswith('b1 "Fix the parser"'), done.stdout
-    shown = json.loads(work(backlog_repo, "show", "b1", "--json").stdout)
+    shown = json.loads(work(backlog_repo, "show", "b1", "--json").stdout)["content"]
     assert shown["item"]["title"] == "Fix the parser" and shown["item"]["id"] == "b1"
     assert shown["item"]["value"] == "high-value" and shown["item"]["urgency"] is None
 

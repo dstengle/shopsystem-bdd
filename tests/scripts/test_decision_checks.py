@@ -35,7 +35,7 @@ def test_the_features_are_what_features_generate_writes():
 
 def test_the_live_decisions_keep_their_tiers():
     toolchain.require()
-    found = json.loads(script("model", "--root", str(ROOT), "check", "--json").stdout)
+    found = json.loads(script("model", "--root", str(ROOT), "check", "--json").stdout)["content"]
     rows = [row for row in found["violations"] + found["warnings"] if row[0] in ("w_untiered", "v_d6", "v_d7", "v_d8")]
     assert rows == [], rows
     named = [p for p in found["problems"] + found["unresolved"] if "spec/decisions/" in p]

@@ -13,6 +13,7 @@ import argparse
 import sys
 from pathlib import Path
 
+from adapter_cli_respond import prepare, respond
 from migrate_layout import Plan, plan_ids, plan_moves
 from migrate_ledger import plan_ledger
 from migrate_spec import plan_capabilities, plan_holding, plan_index, plan_references
@@ -61,10 +62,10 @@ def main(argv=None):
     s = sub.add_parser("status", help="print the plugin versions and each pending upgrade step")
     s.add_argument("--hook", action="store_true", help="print what a session is told at its start, and exit 0")
     sub.add_parser("upgrade", help="apply each pending upgrade step and commit it all")
-    args = ap.parse_args(argv)
+    args = prepare(ap).parse_args(argv)
     if args.cmd in ("status", "upgrade"):
-        return run_upgrade(args.cmd, getattr(args, "hook", False))
-    return cmd_run(args)
+        return respond("migrate", lambda args: run_upgrade(args.cmd, getattr(args, "hook", False)), args)
+    return respond("migrate", cmd_run, args)
 
 
 if __name__ == "__main__":

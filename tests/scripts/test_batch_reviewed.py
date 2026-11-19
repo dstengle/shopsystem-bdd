@@ -154,6 +154,6 @@ def test_status_shows_the_reviews(briefed):
     ok(reviewed(briefed, FIX_NOW_B1))
     said = ok(work(briefed, "batch", "status", "batch-1")).stdout
     assert 'reviews: 1, last fix-now; open f1 b1 "Abandon"' in said
-    data = json.loads(ok(work(briefed, "batch", "status", "batch-1", "--json")).stdout)["batch"]
+    data = json.loads(ok(work(briefed, "batch", "status", "batch-1", "--json")).stdout)["content"]["batch"]
     assert data["reviews"] == [{"review": 1, "result": "fix-now", "findings": ["f1", "f2"]}]
     assert data["open"] == ["f1"]

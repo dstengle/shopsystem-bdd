@@ -102,7 +102,7 @@ class CodifiedTest(unittest.TestCase):
 
     def check(self):
         r = self.run_model("check", "--json")
-        return json.loads(r.stdout), r
+        return json.loads(r.stdout)["content"], r
 
     def rows(self, found, code):
         return [a for name, a in found["violations"] if name == code]

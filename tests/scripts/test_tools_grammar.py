@@ -179,7 +179,7 @@ class GrammarTest(unittest.TestCase):
     def test_probe_json_gives_the_grammar_block(self):
         stub_gf(self.tmp / "data" / "shopsystem-bdd" / "gf-3.12" / "bin" / "gf")
         done = self.tools("probe", "--json", env={"XDG_DATA_HOME": str(self.tmp / "data")})
-        found = json.loads(done.stdout)
+        found = json.loads(done.stdout)["content"]
         self.assertEqual(found["python"], sys.executable)
         self.assertIn("ruff", found["tools"])
         self.assertEqual(found["grammar"]["gf"], "3.12.0")
@@ -195,7 +195,7 @@ class GrammarTest(unittest.TestCase):
 
     def test_probe_json_says_null_for_a_missing_gf(self):
         done = self.tools("probe", "--json", env={"XDG_DATA_HOME": str(self.tmp / "nothing"), "PATH": "/usr/bin:/bin"})
-        self.assertIsNone(json.loads(done.stdout)["grammar"]["gf"])
+        self.assertIsNone(json.loads(done.stdout)["content"]["grammar"]["gf"])
 
     def rgl_tarball(self):
         """A gf-rgl release tarball laid out as the real one: gf-rgl-<release>/src/, one small module of each built."""

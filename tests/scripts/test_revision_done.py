@@ -24,7 +24,7 @@ def run(*args, **kw):
 def check():
     """`model check` of the live repository, once: its tests are one xdist group, on one worker."""
     done = run(SCRIPTS / "model", "check", "--json")
-    return json.loads(done.stdout)
+    return json.loads(done.stdout)["content"]
 
 
 def rules(found, *codes):

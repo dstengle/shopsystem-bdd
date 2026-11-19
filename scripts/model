@@ -9,6 +9,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from adapter_cli_respond import prepare, respond
 from model_forms import cmd_forms
 
 # what scripts/migrate and the migration steps read by loading this file
@@ -269,17 +270,18 @@ def main(argv=None):
     f = sub.add_parser("forms", help="print every file form: its name, its path pattern and the command that writes it")
     f.add_argument("--json", action="store_true")
     f.add_argument("--check", action="store_true", help="exit 1 naming each form written by hand")
-    args = ap.parse_args(argv)
+    args = prepare(ap).parse_args(argv)
     if args.cmd == "parse" and (args.line is None) == (args.file is None):
         ap.error("parse takes a line or --file, not both")
     if args.cmd == "rules" and args.write + args.check + args.json > 1:
         ap.error("rules takes one of --json, --write and --check")
     if args.cmd == "constructs" and args.write == args.check:
         ap.error("constructs takes one of --write and --check")
-    return {"facts": cmd_facts, "check": cmd_check, "rules": cmd_rules, "decisions": cmd_decisions,
-            "parse": cmd_parse, "lexicon": cmd_lexicon, "logic": cmd_logic, "restates": cmd_restates,
-            "forms": cmd_forms, "explain": cmd_explain,
-            "constructs": cmd_constructs}[args.cmd](args)
+    handler = {"facts": cmd_facts, "check": cmd_check, "rules": cmd_rules, "decisions": cmd_decisions,
+               "parse": cmd_parse, "lexicon": cmd_lexicon, "logic": cmd_logic, "restates": cmd_restates,
+               "forms": cmd_forms, "explain": cmd_explain,
+               "constructs": cmd_constructs}[args.cmd]
+    return respond("model", handler, args, checks=args.cmd in ("check", "logic"))
 
 
 if __name__ == "__main__":

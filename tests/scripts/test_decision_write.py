@@ -93,3 +93,35 @@ def test_help_says_what_it_writes():
     assert done.returncode == 0
     for word in ("spec/decisions/<nnnn>-<slug>.md", "spec/decisions/index.md", "--tier", "@<file>", "commit"):
         assert word in done.stdout, word
+
+
+def test_the_operation_is_requested_by_its_business_names(backlog_repo):
+    import decision_write
+    rel = decision_write.write(backlog_repo, "Decide by name", summary="Decided.", tier="judgement",
+                               wording="So it is.", author="the person", date="2026-11-19")
+    data, body = frontmatter((backlog_repo / rel).read_text())
+    assert (data["tier"], data["by"], data["date"]) == ("judgement", "the person", "2026-11-19")
+    assert "## Decision\n\nSo it is." in body
+
+
+def test_a_refusal_names_the_parameter_by_its_business_name(backlog_repo):
+    import pytest
+
+    import decision_write
+    from shop_refused import Refused
+    with pytest.raises(Refused) as caught:
+        decision_write.write(backlog_repo, "Decide it", tier="check", wording="So.")
+    assert caught.value.names == ["parameter:summary"] and caught.value.reason == "missing parameters"
+    assert "summary" in str(caught.value) and "--summary" not in str(caught.value)
+
+
+def test_the_json_envelope_of_a_refusal_and_of_a_decision(backlog_repo):
+    import json
+    done = decide(backlog_repo, "--json")
+    assert done.returncode == 1 and "--tier" in done.stderr
+    assert json.loads(done.stdout) == {"outcome": "refused", "content": None, "notices": [],
+                                       "errors": [{"reason": "missing parameters", "names": ["parameter:tier"]}]}
+    done = decide(backlog_repo, "--tier", "check", "--json")
+    assert done.returncode == 0, done.stderr
+    assert json.loads(done.stdout)["content"] == {"path": "spec/decisions/0001-decide-the-thing.md"}
+    assert json.loads(done.stdout)["outcome"] == "done"

@@ -10,7 +10,7 @@ from features_bindings import cmd_bindings
 from features_gherkin import load
 from features_report import cmd_count, cmd_deprecated, cmd_list
 from model_parse import frontmatter
-from shop_refused import Refused
+from adapter_cli_respond import prepare, respond
 
 CONTRACT = """\
 contract:
@@ -234,14 +234,10 @@ def main():
     voc.add_argument("--tests", default="tests/scenarios")
     voc.add_argument("--root", default=".")
     voc.set_defaults(run=cmd_vocab, raw=True)
-    args = parser.parse_args()
+    args = prepare(parser).parse_args()
     if getattr(args, "raw", False):
-        return args.run(args)
-    try:
-        return args.run(args, load(args.dir))
-    except Refused as why:
-        sys.stderr.write("features: %s\n" % why)
-        return 1
+        return respond("features", args.run, args)
+    return respond("features", lambda args: args.run(args, load(args.dir)), args)
 
 
 if __name__ == "__main__":

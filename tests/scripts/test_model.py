@@ -67,7 +67,7 @@ class ModelTest(unittest.TestCase):
 
     def check_json(self, *args):
         r = self.run_model("check", "--json", *args)
-        return json.loads(r.stdout), r
+        return json.loads(r.stdout)["content"], r
 
     def violated(self, found, relation):
         return [a for name, a in found["violations"] if name == relation]

@@ -46,7 +46,7 @@ def test_it_prints_every_form_on_its_line(tmp_path):
 
 def test_json_is_one_object(tmp_path):
     done = run(SCRIPTS / "model", "--root", tmp_path, "forms", "--json")
-    assert json.loads(done.stdout) == {"forms": [f._asdict() for f in model_forms.FORMS]}
+    assert json.loads(done.stdout)["content"] == {"forms": [f._asdict() for f in model_forms.FORMS]}
 
 
 def test_check_passes_this_repository_and_refuses_a_form_by_hand(tmp_path, monkeypatch, capsys):

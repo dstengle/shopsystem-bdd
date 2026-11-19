@@ -68,7 +68,7 @@ class RestatesTest(CodifiedTest):
         self.write("spec/capabilities/other.md", codified("other", ["### [g1] Abandon", "Restates: other#r1@0.29.",
                                                                      f"- [r1] {OTHER}"], dropped=[f"- wq#r4@0.29: {why}"]))
         r = self.run_model("restates", "--json")
-        rows = {row["id"]: row for row in json.loads(r.stdout)["ids"]}
+        rows = {row["id"]: row for row in json.loads(r.stdout)["content"]["ids"]}
         self.assertEqual((rows["wq#r4"]["state"], rows["wq#r4"]["reason"]), ("dropped", why))
         self.assertEqual(r.returncode, 0, r.stdout)
 
@@ -78,14 +78,14 @@ class RestatesTest(CodifiedTest):
         self.write("spec/capabilities/other.md", codified("other", ["### [g1] Abandon",
                                                                      "Restates: other#r1@0.29, wq#r4@0.29.",
                                                                      f"- [r1] {OTHER}"]))
-        rows = {row["id"]: row for row in json.loads(self.run_model("restates", "--json").stdout)["ids"]}
+        rows = {row["id"]: row for row in json.loads(self.run_model("restates", "--json").stdout)["content"]["ids"]}
         self.assertEqual(rows["wq#r4"]["state"], "restated")
 
     def test_json_and_every_capability(self):
         self.write("spec/capabilities/wq.md", codified("wq", self.group("r1@0.29"), dropped=["- r3@0.29: gone."]))
         r = self.run_model("restates", "--json")
         self.assertEqual(r.returncode, 1)
-        found = json.loads(r.stdout)
+        found = json.loads(r.stdout)["content"]
         missing = sorted(row["id"] for row in found["ids"] if row["state"] == "missing")
         self.assertEqual(missing, ["other#r1", "wq#r2", "wq#r4"])
         self.assertEqual([row["by"] for row in found["ids"] if row["id"] == "wq#r1"], [[f"{WQ}#g1"]])
