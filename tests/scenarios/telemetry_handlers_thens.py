@@ -120,3 +120,15 @@ def prints(step):
         else:
             assert "ratio" in out, (np, out)
     return None
+
+
+@W.local("ThenPrints")
+def returns_figure(step):
+    """`the measurement service returns the cost c1` (the reword of "the measurement m1 includes the cost c1"): the
+    figure is in the measurement the run kept."""
+    if not telemetry(step) or not step.nps:
+        return False
+    np = step.nps[0]
+    if not (np.startswith("the number of review findings") or kind_of(np) in FIGURE):
+        return False
+    includes(step)

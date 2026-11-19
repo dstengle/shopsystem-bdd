@@ -96,7 +96,7 @@ def runs_measure(step):
     w.run(step.fixtures("monkeypatch"), step.fixtures("capsys"), *command, *files)
 
 
-for _command in sys.modules["vocab"].vocab4.requested.commands("measure"):
+for _command in ("`measure compare`", "`measure show`"):    # batch-measurement's; `measure batch` is telemetry's
     handler("WhenRuns", _command)(runs_measure)
 
 

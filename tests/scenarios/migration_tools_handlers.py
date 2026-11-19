@@ -77,7 +77,7 @@ def recorded(step):
         step.context.setdefault("violates", []).append(code)
     if step.attribute == "release" and step.kind == "repository":     # the release `migrate` reads of it
         held(step)[".shop/plugin-version"] = bare(step.values[0]) + "\n"
-    if step.attribute == "release" and step.kind == "tool" and bare(step.subject or "") == "migrate":
+    if step.attribute == "release" and step.kind in ("tool", "plugin") and bare(step.subject or "") in ("migrate", "this plugin"):
         step.context["migrate"] = bare(step.values[0])                 # the plugin `migrate` runs from says it
     return None
 

@@ -18,8 +18,8 @@ ROOT = Path(__file__).resolve().parents[2]
 REQUEST = ("WhenRequests", "ThenRefuses", "ThenReturns", "ThenReturnsNot", "ThenCompletes", "ThenFails",
            "ThenNotifies", "ThenKeeps")
 # a session that starts: the SessionStart hook's command each capability's scenarios are told by (hooks/hooks.json)
-STARTS = {"directives": "`work directives --hook`", "request-watch": "`work watch --hook`",
-          "items": "`work names --hook`", "upgrades": "`migrate status --hook`"}
+STARTS = {"directives": ("`work directives`", "`--hook`"), "request-watch": ("`work watch --hook`", None),
+          "items": ("`work names`", "`--hook`"), "upgrades": ("`migrate status --hook`", None)}
 # what the CLI's handlers call an act of the request pack, or a verb the reworded lines say for theirs: each tried in
 # turn (`trying`) until one handler takes the step
 KEEPS = ("write", "commit", "post", "keep", "make", "rewrite", "publish")
@@ -30,6 +30,7 @@ THENS = {"ThenRefuses": [("ThenDoes", "refuse")], "ThenReturns": [("ThenPrints",
 NEGATED = {"keep": [("ThenDoesNot", v) for v in KEEPS], "notify": [("ThenPrintsNot", None)],
            "change": [("ThenDoesNot", v) for v in ("change", "rewrite", "relocate", "rename")]}
 VERBS = {"change": ("rewrite", "relocate", "rename", "commit", "change")}
+ALWAYS = ("--by-tag",)     # a cli-only option argparse requires of its command (`features count --by-tag`)
 MOST = max(len(c) for c in [*THENS.values(), *NEGATED.values(), *VERBS.values()])
 
 
@@ -84,6 +85,8 @@ def command(operation, params=()):
             options.append(("`%s`" % param.option, None))
         else:
             options.append(("`%s`" % param.option, value))
+    options += [("`%s`" % o, None) for o in op.cli_only if o in ALWAYS]
+    options += [("`--hook`", None)] if op.hook else []     # a hook's operation: its command run as the hook
     longest = " ".join([base] + words)
     valued = " ".join([longest] + ["%s %s" % (o.strip("`"), v.strip("`")) for o, v in options if v is not None])
     found = ["`%s`" % valued] if valued != longest else []
@@ -93,7 +96,7 @@ def command(operation, params=()):
 def commands(program):
     """Every command key (with backticks) a request of `program`'s operations is taken to: each command, and each
     with one of its flags; and the hooks' commands of `program`."""
-    found = {c for c in STARTS.values() if c.strip("`").split()[0] == program}
+    found = {c for c, flag in STARTS.values() if flag is None and c.strip("`").split()[0] == program}
     for op in contract().operations.values():
         if op.hook is None and op.command.split()[0] == program:
             found.add("`%s`" % op.command)
@@ -160,6 +163,8 @@ RENAMES = {"requests": {"context request": "request", "entry": "comment"},
            "intake": {"context request": "request", "entry": "comment"},
            "batches": {"proposed change": "pull request", "kept change": "commit", "workspace": "worktree",
                        "context request": "request", "entry": "comment"},
+           "telemetry": {"proposed change": "pull request"},
+           "migration-tools": {"this plugin": "`migrate`"},
            "backlog": {"shared workspace": "upstream branch", "workspace name": "branch name",
                        "workspace": "git branch"}}
 # the verbs a capability's handlers know a state by, before the reword: (new term, old term, old third person)
@@ -172,6 +177,9 @@ def _renamed(call, node):
     table = RENAMES.get(origin(node), {})
     def say(text):
         for new, old in table.items():
+            if new.startswith("this "):     # a phrase said whole
+                text = text.replace(new, old) if text else text
+                continue
             text = re.sub(r"\b(the|a|an|no|every|this|each|that) %s(s?)\b" % new, r"\1 %s\2" % old,
                           text) if text else text
         return text
@@ -188,6 +196,8 @@ def _renamed(call, node):
 
 def _reverbed(call, node):
     for new, old, said in VERB_RENAMES.get(origin(node), []):
+        if new == "meet" and call.nps != ["this readiness bar"]:   # a bar check is still met
+            continue
         if call.template in ("GivenDoes", "GivenDoesNot", "ThenDoes", "ThenDoesNot") and call.term == new:
             call.term = call.event = old
             call.text = re.sub(r"\b%ss\b" % new, said, call.text, count=1)
@@ -225,9 +235,10 @@ def legacy(call, context, node, known):
         call.options, call.without = options, without
         return call
     if t == "WhenHappens" and call.term == "start" and capability(node) in STARTS:
-        chosen = STARTS[capability(node)]
+        chosen, flag = STARTS[capability(node)]
         context["requested"] = (None, chosen)
-        call.template, call.term, call.command, call.options, call.without = "WhenRuns", chosen, chosen, [], []
+        call.template, call.term, call.command, call.without = "WhenRuns", chosen, chosen, []
+        call.options = [(flag, None)] if flag else []
         call.names = []     # a hook is given no instance
         return call
     operation, chosen = context.get("requested", (None, None))
@@ -275,6 +286,8 @@ def _retext(text, program, template, verb, chosen):
     item i1"; "`work` refuses `work decision`" for "... refuses this request"."""
     if program:
         text = re.sub(r"^the [a-z ]+ service ", program + " ", text)
+    if template == "ThenNotifies":     # the party told is the hook's session, not what the output shows
+        text = re.sub(r" notifies (the|this) [a-z ]+? [a-z]*\d* ?of ", " notifies ", text, count=1)
     if template in WORDS:
         return text.replace(WORDS[template], SAID.get(template) or "refuses %s" % chosen)
     if verb is None:

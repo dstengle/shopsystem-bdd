@@ -128,6 +128,14 @@ def then_does(step):
         rewritten(step, what)
     elif step.term == "write":
         wrote(step, what, step.names[0])
+    elif step.term == "keep" and what in ("ledger number", "line id"):     # the reword of "gives ... to ..."
+        ok(step)
+    elif step.term == "has" and what == "ledger number":
+        ok(step)
+        assert (step.repo / "spec/decisions/0008-b.md").is_file()
+    elif step.term == "has" and what == "line id":
+        ok(step)
+        assert "- [r5] **When** b" in M.read(step, "spec/capabilities/thing.md")
     elif step.term == "has":
         has(step)
     elif step.term == "remove":
@@ -262,4 +270,15 @@ def exits_ok(step):
                                   "check", "--json"], capture_output=True, text=True)
         report = json.loads(checked.stdout)["content"]
         assert (report["unresolved"], report["problems"]) == ([], []), checked.stdout
+    return None
+
+
+@local("ThenChangesNothing")
+def changes_nothing_at_all(step):
+    """`the upgrades service changes nothing` (a session told nothing; an upgrade with none pending)."""
+    if not M.migration(step):
+        return False
+    ok(step)
+    old = step.context["old"]
+    assert old.git("status", "--porcelain").stdout == "", old.git("status", "--porcelain").stdout
     return None
