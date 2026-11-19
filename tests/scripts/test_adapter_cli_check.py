@@ -103,7 +103,7 @@ def test_model_check_reports_them(context):
     import subprocess
     import sys
     _edit(context, '[operations."notes.list"]\ncommand = "notes list"\n', "")
-    done = subprocess.run([sys.executable, str(FIXTURE.parents[3] / "scripts" / "model"), "--root", str(context),
+    done = subprocess.run([sys.executable, str(FIXTURE.parents[3] / "scripts" / "spec"), "--root", str(context),
                            "check", "--json"], capture_output=True, text=True)
     found = json.loads(done.stdout)
     assert found["outcome"] == "failed" and done.returncode == 1

@@ -100,7 +100,7 @@ for the plugin's `installPath` and kept it in `$SHOP`. It's a path that ends in 
 Then give each tool a short name:
 
 ```console
-$ alias work='python3 "$SHOP/scripts/work"' model='python3 "$SHOP/scripts/model"' features='python3 "$SHOP/scripts/features"'
+$ alias work='python3 "$SHOP/scripts/work"' model='python3 "$SHOP/scripts/spec"' features='python3 "$SHOP/scripts/features"'
 $ alias tools='python3 "$SHOP/scripts/tools"' measure='python3 "$SHOP/scripts/measure"' migrate='python3 "$SHOP/scripts/migrate"'
 ```
 
@@ -207,10 +207,10 @@ the line itself stays free of it. The [capability file reference](reference/capa
 
 ## 5. Ask what the words are, and what a line means
 
-`model lexicon` lists every word a line may use. The pack's are marked:
+`spec lexicon` lists every word a line may use. The pack's are marked:
 
 ```console
-$ model lexicon
+$ spec lexicon
 actor (2)
   the person
   `notes`
@@ -228,17 +228,17 @@ event (9)
   delete
 ```
 
-`model parse` parses one line. It prints the tree it found:
+`spec parse` parses one line. It prints the tree it found:
 
 ```console
-$ model parse "When the person runs \`notes remove\` on a note, \`notes\` shall delete the note."
+$ spec parse "When the person runs \`notes remove\` on a note, \`notes\` shall delete the note."
 When NoPre (k_agent_Event (k_agent_One (k_agent_Simple a_the_person_1)) (e_run_action_1_3 (k_command_One (k_command_Code (CodeLit "`notesremove`"))) (k_thing_One (k_note_Up_k_thing (k_note_Det DetA (k_note_UseN k_note_n)))))) (OneResp (k_tool_Shall a_notes_2 (k_tool_OneAct (k_tool_Act_k_tool PPos (e_delete_action_9_1 (k_note_One (k_note_Simple (k_note_Det DetThe (k_note_UseN k_note_n)))))))))
 ```
 
 A tree says the line parsed. `--form` says what it means, which is easier to read:
 
 ```console
-$ model parse --form "When the person runs \`notes remove\` on a note, \`notes\` shall delete the note."
+$ spec parse --form "When the person runs \`notes remove\` on a note, \`notes\` shall delete the note."
 shall [x1: agent the person (constant), x2: command `notes remove` (parameter), x4: tool `notes` (constant)]
   when [x3: note]
     run(e1, subject: x1, object: x2, on: x3)
@@ -250,7 +250,7 @@ shall [x1: agent the person (constant), x2: command `notes remove` (parameter), 
 the note comes from, and the line is refused (a counter-example):
 
 ```console
-$ model parse "When the person runs \`notes remove\`, \`notes\` shall delete the note."
+$ spec parse "When the person runs \`notes remove\`, \`notes\` shall delete the note."
 refused: "the note" has no antecedent: no earlier noun phrase, functional relation or declared indexical gives a note
   tree: ...
 ```
@@ -259,10 +259,10 @@ Which note? The plugin won't guess. [Writing requirements](writing-requirements.
 
 ## 6. Check the spec, and generate the feature
 
-`model check` holds the whole repository to the design model's rules. Run it now:
+`spec check` holds the whole repository to the design model's rules. Run it now:
 
 ```console
-$ model check
+$ spec check
 v_s3  a group has no scenario  (4)
     capability/example.org/notes/notes-cli/notes#g1
     capability/example.org/notes/notes-cli/notes#g2
@@ -271,15 +271,15 @@ v_s3  a group has no scenario  (4)
 4 violations, 0 warnings, 0 unresolved references, 0 file problems
 ```
 
-Every group needs a scenario, and there's no feature file yet. Before writing it, `model logic` checks that no two
+Every group needs a scenario, and there's no feature file yet. Before writing it, `spec logic` checks that no two
 lines clash (say, one that adds where another refuses):
 
 ```console
-$ model logic
+$ spec logic
 no findings
 $ features generate
 wrote features/notes.feature
-$ model check
+$ spec check
 0 violations, 0 warnings, 0 unresolved references, 0 file problems
 ```
 

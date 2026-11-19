@@ -30,7 +30,7 @@ def _model_check(root):
     import pathlib
     import subprocess
     import sys
-    model = pathlib.Path(__file__).resolve().parents[2] / "scripts" / "model"
+    model = pathlib.Path(__file__).resolve().parents[2] / "scripts" / "spec"
     return subprocess.run([sys.executable, str(model), "check"], cwd=root, capture_output=True, text=True).stdout
 
 

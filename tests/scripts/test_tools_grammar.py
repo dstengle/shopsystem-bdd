@@ -251,7 +251,7 @@ class GrammarTest(unittest.TestCase):
 
     def test_nothing_imports_telingo_or_the_old_solver(self):
         root = pathlib.Path(__file__).resolve().parents[2]
-        files = list((root / "scripts").glob("*.py")) + [root / "scripts" / n for n in ("tools", "model", "features")]
+        files = list((root / "scripts").glob("*.py")) + [root / "scripts" / n for n in ("tools", "spec", "features")]
         pattern = r"^\s*(import|from)\s+(telingo|spec_engine|spec_logic\b|spec_logic_np|spec_trace\b)"
         bad = sorted(p.name for p in files if re.search(pattern, p.read_text(), re.MULTILINE))
         self.assertEqual(bad, [])

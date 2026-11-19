@@ -1,4 +1,4 @@
-"""Handlers of features/design-model-check.feature (design §14.3): `model` run on the repository the Givens build,
+"""Handlers of features/design-model-check.feature (design §14.3): `spec` run on the repository the Givens build,
 and what it printed read back.
 
 A repository starts from what a model check needs to be clean: a codified-2 `spec/index.md` (the CLI pack imported)
@@ -115,7 +115,7 @@ def initiative_text(name, status="started", kind="capability-change", date="2026
 
 
 def env_of(step):
-    """The environment `model` runs in: clingo hidden from every interpreter where an interpreter condition says so,
+    """The environment `spec` runs in: clingo hidden from every interpreter where an interpreter condition says so,
     and a python3 on PATH that has it where one is clingoless."""
     found = step.context.get("interpreter")
     if not found:
@@ -140,28 +140,28 @@ def built(step):
 def run_model(step, *args):
     built(step)
     base(step.repo, step.context)
-    step.context["result"] = step.run("model", *args, env=env_of(step), timeout=120)
+    step.context["result"] = step.run("spec", *args, env=env_of(step), timeout=120)
 
 
-@handler("WhenRuns", "`model check`")
+@handler("WhenRuns", "`spec check`")
 def model_check(step):
     run_model(step, "check", *flag(step, "--json"))
 
 
-@handler("WhenRuns", "`model logic`")
+@handler("WhenRuns", "`spec logic`")
 def model_logic(step):
-    """`model logic` on the capability the When names, or on the requirement, by the id a Given gave it."""
+    """`spec logic` on the capability the When names, or on the requirement, by the id a Given gave it."""
     built(step)
     ids = step.context.get("ids", {})
     run_model(step, "logic", *[ids.get(step.names[0], step.names[0])] if step.names else [])
 
 
-@handler("WhenRuns", "`model facts`")
+@handler("WhenRuns", "`spec facts`")
 def model_facts(step):
     run_model(step, "facts")
 
 
-@handler("WhenRuns", "`model decisions`")
+@handler("WhenRuns", "`spec decisions`")
 def model_decisions(step):
     built(step)
     for name in step.names:     # a decisions index the When names exists, current unless a Given made it stale
@@ -170,15 +170,15 @@ def model_decisions(step):
     run_model(step, "decisions", *flag(step, "--check"))
 
 
-@handler("WhenRuns", "`model rules`")
+@handler("WhenRuns", "`spec rules`")
 def model_rules(step):
     run_model(step, "rules", *flag(step, "--json"), *flag(step, "--write"), *flag(step, "--check"))
 
 
-@handler("WhenRuns", "`model rules --write`")
-@handler("WhenRuns", "`model rules --check`")
+@handler("WhenRuns", "`spec rules --write`")
+@handler("WhenRuns", "`spec rules --check`")
 def model_rules_option(step):
-    """`model rules` with the option its code names, on the rule catalogue a Given wrote (`grammar/rules.md`)."""
+    """`spec rules` with the option its code names, on the rule catalogue a Given wrote (`grammar/rules.md`)."""
     run_model(step, "rules", step.term.strip("`").split()[-1])
 
 
@@ -188,9 +188,9 @@ def holding(step):
     return str(step.repo / "spec" / "capabilities" / ("%s.md" % ident.split("#")[0] if "#" in ident else "thing.md"))
 
 
-@handler("WhenRuns", "`model parse`")
+@handler("WhenRuns", "`spec parse`")
 def model_parse(step):
-    """`model parse` on the capability file that holds the requirement: each of its statements; with the `--form`
+    """`spec parse` on the capability file that holds the requirement: each of its statements; with the `--form`
     option, design_model_check_handlers_form's; on a fragment, the world of an unfinished line."""
     if flag(step, "--form"):
         return sibling("design_model_check_handlers_form.py").model_parse_form(step)
@@ -201,7 +201,7 @@ def model_parse(step):
     run_model(step, "parse", "--file", holding(step))
 
 
-# What an instance no Given named is printed as, by its kind and number: `model facts` and `model rules` print every
+# What an instance no Given named is printed as, by its kind and number: `spec facts` and `spec rules` print every
 # one, so a trace's f1 and f2 (r1 and r2) are two of them.
 PRINTED = {"fact": ['node("capability/', 'node("bounded-context/'], "rule": ["v15a", "w_uncited_obs"]}
 
@@ -224,7 +224,7 @@ def named(step):
     return out
 
 
-@handler("ThenPrints", "`model`")
+@handler("ThenPrints", "`spec`")
 def model_prints(step):
     done = step.context["result"]
     if step.nps and step.nps[0].startswith("one logical form"):     # counted (b273): one form, of the line's
@@ -234,7 +234,7 @@ def model_prints(step):
         assert word in done.stdout, (word, done.stdout, done.stderr)
 
 
-@handler("ThenExitsErr", "`model`")
+@handler("ThenExitsErr", "`spec`")
 def model_refused(step):
     done = step.context["result"]
     assert done.returncode != 0, done.stdout
@@ -252,7 +252,7 @@ def given_index(step):
     write(step.repo, "spec/decisions/d.md", "---\nid: design-decision/%s/d\nstatus: accepted\nsummary: s\n---\n"
           "# d\n\n## Decision\nSo.\n" % PATH)
     base(step.repo, step.context)
-    step.run("model", "decisions")
+    step.run("spec", "decisions")
     says(step, step.names[0], "spec/decisions/index.md")
 
 

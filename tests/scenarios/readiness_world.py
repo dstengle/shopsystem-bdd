@@ -21,7 +21,7 @@ DIFFERING = PASSING + ("\n- [r6] While an initiative is `proposed`, when the per
                        "initiative, `work` shall set the status of the initiative to `abandoned`.")
 DIFFERING_GROUP = "work-queue#g4"
 DIFFERING_RULE = "v15k"
-# A line that parses there but that `model logic` has no translation of (a count of other than an object), which
+# A line that parses there but that `spec logic` has no translation of (a count of other than an object), which
 # the bar's `features generate` does not see: a line of the guarantees capability `review`, which has no scenarios
 # (r41).
 UNREAD = ("When the person runs `work start` on an initiative, `work` shall give a brief to at most two stages.")
@@ -125,7 +125,7 @@ def block(title, text, terms=(), capability=CAPABILITY):
     return "### %s\n\n%s#### [g4] %s\n- [r5] %s" % (capability, "".join("%s\n\n" % t for t in terms), title, text)
 
 
-# A universal condition of an item that `model logic` reads a translation of, in the fixture's spec, and the id the
+# A universal condition of an item that `spec logic` reads a translation of, in the fixture's spec, and the id the
 # item's universal block gives it, or UNREAD's (b203).
 TRANSLATED_U = "When the person runs `work start` on an initiative, `work` shall commit the initiative."
 ITEM_U = "U1"

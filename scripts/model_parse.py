@@ -1,4 +1,4 @@
-"""The reading of scripts/model: the forms of the model's files (frontmatter, sections, scenarios). A spec file's
+"""The reading of scripts/spec: the forms of the model's files (frontmatter, sections, scenarios). A spec file's
 groups and term entries are spec_read's and spec_lexicon's. Standard library only."""
 
 import re

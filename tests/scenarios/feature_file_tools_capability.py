@@ -3,7 +3,7 @@ before the command (`prepare`) and read by its Thens:
 
 - a capability every requirement of which conforms to the language reference and uses the `shall` construct (r108):
   one group for each "shall" example of the construct catalogue `grammar/constructs.md`, but those of the constructs
-  `grammar/language.md` says `model logic` and `features generate` do not read yet (`EXCLUDED`) and those read in
+  `grammar/language.md` says `spec logic` and `features generate` do not read yet (`EXCLUDED`) and those read in
   another context (a request's, `- Context:`), in the catalogue's
   context `grammar/corpus/constructs/`, three of its groups with a given block of example data (a docstring, a table
   and one value);
@@ -47,14 +47,14 @@ def _codified2():
 
 
 def excluded():
-    """The construct codes language.md's section #16 names: the lines `model logic` does not read yet."""
+    """The construct codes language.md's section #16 names: the lines `spec logic` does not read yet."""
     text = (PLUGIN / "grammar" / "language.md").read_text()
     part = text.split("\n### #16: history, moments", 1)[1].split("\n#", 1)[0]
-    return set(re.findall(r"`([a-z][a-z-]+)`", part)) - {"model", "features"}
+    return set(re.findall(r"`([a-z][a-z-]+)`", part)) - {"model", "spec", "features"}
 
 
 def examples():
-    """(code, line) of each "shall" example of the catalogue whose construct `model logic` reads."""
+    """(code, line) of each "shall" example of the catalogue whose construct `spec logic` reads."""
     text = (PLUGIN / "grammar" / "constructs.md").read_text()
     found = re.findall(r"^## (\S+)\n(.*?)```construct\n(.*?)\n(.*?)\n", text, re.DOTALL | re.MULTILINE)
     out = excluded()     # and an example read in another context than the catalogue's (a request's)

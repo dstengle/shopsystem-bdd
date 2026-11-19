@@ -60,7 +60,7 @@ until the item is `ready`.
 the words it may use.
 
 ```console
-$ model lexicon
+$ spec lexicon
 actor (39)
   the person
   ...
@@ -90,7 +90,7 @@ Everything it needs is there: *the person*, the tool `work`, an *item*, its *tit
 Thinking of the item in front of you, the first draft says "a shaped item":
 
 ```console
-$ model parse 'When the person runs `work show` on a shaped item, `work` shall print the status of the item.'
+$ spec parse 'When the person runs `work show` on a shaped item, `work` shall print the status of the item.'
 refused: the verb run takes as its object command or command or command or command or command or command or a kind of it: agent runs command; agent runs command with option; agent runs command on thing; agent runs command with option on thing; agent runs command without option; agent runs command without option on thing
   parsed up to: When the person runs `work show` on a
   nearest words: shaped, shape, `shaped`, shapes, shadowed
@@ -115,7 +115,7 @@ shall [x2: agent the person (constant), x3: command `work show` (parameter), x4:
     print(e2, subject: x4, object: x5)
 ```
 
-That parses. The lines under it are its *form*, what `model parse --form` says the line means. Read in plain
+That parses. The lines under it are its *form*, what `spec parse --form` says the line means. Read in plain
 words: *while* there's an item x1 whose status is `shaped`, *when* the person runs `work show` on x1, `work` prints
 x1's status.
 
@@ -178,7 +178,7 @@ b250 "work show prints the status of an item" ready
 ```
 
 **What happened.** The rating gives the item its place in the backlog. `work ready` is the readiness bar: on a
-copy of `spec/` with b250's lines laid in, it checked that each line parses, that `model logic` finds no clash with
+copy of `spec/` with b250's lines laid in, it checked that each line parses, that `spec logic` finds no clash with
 the rest of the spec, and that `features generate` can write the group's scenario with no bracketed placeholder.
 All three held, so the item moved to `ready`. Had one failed, `work ready` would have refused and named the reason.
 

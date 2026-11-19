@@ -43,7 +43,7 @@ def test_the_index_is_rewritten_and_both_committed(backlog_repo):
 
 def test_model_decisions_check_holds_after_it(backlog_repo):
     assert decide(backlog_repo, "--tier", "judgement").returncode == 0
-    done = subprocess.run([sys.executable, str(SCRIPTS / "model"), "--root", str(backlog_repo), "decisions",
+    done = subprocess.run([sys.executable, str(SCRIPTS / "spec"), "--root", str(backlog_repo), "decisions",
                            "--check"], capture_output=True, text=True, timeout=120)
     assert done.returncode == 0, done.stdout + done.stderr
     assert "spec/decisions/index.md is current" in done.stdout

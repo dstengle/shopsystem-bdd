@@ -33,7 +33,7 @@ from model_fixture import (  # noqa: F401 -- the builders, imported from here by
     full,
 )
 
-SCRIPT = ROOT / "scripts" / "model"
+SCRIPT = ROOT / "scripts" / "spec"
 LP = ROOT / "scripts" / "model.lp"
 
 try:

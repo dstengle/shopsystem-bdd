@@ -76,7 +76,7 @@ glossary). This spec has no such line yet; this one parses against it:
 A commit always cites an item.
 ```
 
-`model logic` does not reason with necessities yet ([Modality](../grammar/language.md#modality-shall-may-always-and-never)).
+`spec logic` does not reason with necessities yet ([Modality](../grammar/language.md#modality-shall-may-always-and-never)).
 
 ### Permission: may
 
@@ -141,7 +141,7 @@ A few fields do a lot of work:
   (`shaped`, `in-batch`) may be said the short way, "an item is `shaped`"; any other value, a noun, a verb phrase
   or a release (`idea`, `needs-input`, `0.30.0`), only the full way, "the status of an item is `idea`" or "an item
   whose status is `idea`". The item's status gives both: `idea` and `needs-input` under `Values (noun):`, the rest
-  under `Values (adjective):`. A plain `Values:` declares neither and keeps the short way, with a `model check`
+  under `Values (adjective):`. A plain `Values:` declares neither and keeps the short way, with a `spec check`
   warning (`w_value_kind`). The short way of a noun is refused, naming the full way:
 
   ```refused
@@ -189,12 +189,12 @@ flowchart BT
   T --> L["the grammar your lines are parsed in"]
 ```
 
-### Finding the words: `model lexicon`
+### Finding the words: `spec lexicon`
 
-`model lexicon` prints every word you can use, by category. A shortened run in this repository:
+`spec lexicon` prints every word you can use, by category. A shortened run in this repository:
 
 ```console
-$ model lexicon
+$ spec lexicon
 actor (39)
   the person
   `work run`
@@ -334,7 +334,7 @@ A position ("the first item", the top three) and a second key are not said yet.
 ## 4. Do and don't
 
 This is the heart of the page. Each pair is a line writers try first, and the line that says it. Some don'ts are
-refused by `model parse`. Others parse but break a writing rule; those sit in a plain block, and the sentence above
+refused by `spec parse`. Others parse but break a writing rule; those sit in a plain block, and the sentence above
 says why.
 
 ### A state in the trigger: move it to While
@@ -361,7 +361,7 @@ When an item is readied, `work` shall set the status of the item to `ready`.
 ```
 
 ```console
-$ model parse "When an item is readied, `work` shall set the status of the item to `ready`."
+$ spec parse "When an item is readied, `work` shall set the status of the item to `ready`."
 does not parse at item (token 3 of 17)
   parsed up to: When an
   nearest words: item, items, term, stem, cite
@@ -379,7 +379,7 @@ Where `--json` is given, when the person runs `work backlog`, `work` shall print
 ```
 
 ```console
-$ model parse "Where `--json` is given, when the person runs `work backlog`, `work` shall print one JSON object."
+$ spec parse "Where `--json` is given, when the person runs `work backlog`, `work` shall print one JSON object."
 refused: the verb give takes a subject, which a passive leaves out: agent gives thing to text
   parsed up to: Where `--json` is
   nearest words: given, give, gives, given block, agent
@@ -401,10 +401,10 @@ While the status of an item is not `idea`, if the person runs `work shape` on th
 ```
 
 Write "refuse the command and name X". The rest follows from the `cli` pack's definition of refuse and from
-universal U12, and `model explain` shows it:
+universal U12, and `spec explain` shows it:
 
 ```console
-$ model explain backlog#r38
+$ spec explain backlog#r38
 backlog#r38  While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
 which also means:
   `work` shall exit with an error (by the definition of refuse in the pack cli)
@@ -463,7 +463,7 @@ passing when the item is well-formed and every request line of the item is settl
 
 ### A sample value: move it to the given block
 
-This parses, but `` `m2` `` is example data, a name only one scenario uses. `model check` warns of it
+This parses, but `` `m2` `` is example data, a name only one scenario uses. `spec check` warns of it
 (`w_example`):
 
 ```text
@@ -526,13 +526,13 @@ A compound that is a thing of its own ("pull request", "git branch") is a declar
 
 ## 5. Reading a refusal
 
-`model parse` refuses in two ways. Either the words stop fitting the grammar at some token, or the line parses and
+`spec parse` refuses in two ways. Either the words stop fitting the grammar at some token, or the line parses and
 a reading rule turns it down. Both say where.
 
 **A token that does not fit.** Here *never* wants a state verb, and *write* is an action:
 
 ```console
-$ model parse "A session never writes a transition."
+$ spec parse "A session never writes a transition."
 does not parse at writes (token 4 of 7)
   parsed up to: A session never
   nearest words: writes, write, rewrites, written, rewrite
@@ -549,7 +549,7 @@ does not parse at writes (token 4 of 7)
 **A frame.** The words fit, but a noun is of the wrong kind for its verb:
 
 ```console
-$ model parse "When the person runs `work ready` on a shaped item, `work` shall set the status of the item to `ready`."
+$ spec parse "When the person runs `work ready` on a shaped item, `work` shall set the status of the item to `ready`."
 refused: the verb run takes as its object command or command or command or command or command or command or a kind of it: agent runs command; agent runs command with option; agent runs command on thing; agent runs command with option on thing; agent runs command without option; agent runs command without option on thing
   parsed up to: When the person runs `work ready` on a
   nearest words: shaped, shape, `shaped`, shapes, shadowed
@@ -581,10 +581,10 @@ The rest of the refusals, one by one, are in [troubleshooting](troubleshooting.m
 ## 6. Reading a line's meaning
 
 A line that parses is not done. A parse says the words fit; the meaning says what they claim. Read it with
-`model parse --form`:
+`spec parse --form`:
 
 ```console
-$ model parse --form "When the person runs `work backlog`, `work` shall print an item."
+$ spec parse --form "When the person runs `work backlog`, `work` shall print an item."
 shall [x1: agent the person (constant), x2: command `work backlog` (parameter), x3: tool `work` (constant)]
   when
     run(e1, subject: x1, object: x2)
@@ -638,11 +638,11 @@ shall [x4: agent the person (constant), x5: command `work backlog` (parameter), 
 That is what its group's title says: it prints an item with its dependency on an item that is not delivered. If
 the form had bound to `x1`, the line would mean something else, and only the form would tell you.
 
-For a line already in a capability, `model explain` adds what the line also means (through a pack or a universal
+For a line already in a capability, `spec explain` adds what the line also means (through a pack or a universal
 condition, as under §4) and which lines take precedence over it in some state:
 
 ```console
-$ model explain readiness#r23
+$ spec explain readiness#r23
 readiness#r23  While an item is `shaped` and the item passes the readiness bar, when the person runs `work ready` on the item, `work` shall set the status of the item to `ready`.
 taking precedence over it, where its state holds:
   intake#r10  While an item is `shaped` and a request line of the item is not `accepted`, `refused` or `withdrawn`, if a session runs `work ready` on the item, then `work` shall refuse the command and name the request line.

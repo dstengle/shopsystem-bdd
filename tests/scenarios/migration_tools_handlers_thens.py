@@ -2,7 +2,7 @@
 False outside migration-tools. A noun phrase names a thing by its kind ("the work-item file w1"); the files of that
 kind are read off the given block (`FILES`), and a design-decision off the ledger entry the scenario gave it
 (`the ledger entry l2 has the design-decision d1`, kept under `decisions`). A `migrate run` that exits successfully
-also leaves a repository in which `model check` finds no unresolved reference and no file problem."""
+also leaves a repository in which `spec check` finds no unresolved reference and no file problem."""
 import json
 import re
 import subprocess
@@ -266,7 +266,7 @@ def exits_ok(step):
     ok(step)
     done = step.context["done"]
     if isinstance(done.args, list) and done.args[2:3] == ["run"]:
-        checked = subprocess.run([sys.executable, str(M.PLUGIN / "scripts" / "model"), "--root", str(step.repo),
+        checked = subprocess.run([sys.executable, str(M.PLUGIN / "scripts" / "spec"), "--root", str(step.repo),
                                   "check", "--json"], capture_output=True, text=True)
         report = json.loads(checked.stdout)["content"]
         assert (report["unresolved"], report["problems"]) == ([], []), checked.stdout

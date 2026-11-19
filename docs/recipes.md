@@ -9,7 +9,7 @@ Short answers to "how do I ...?", for the developer at the keyboard and the pers
 gives the situation in one line, the steps, and what you see. Most of the time you'll say the words in **You say**
 and Claude runs the commands; they're here so you know what happens, and so you can run them yourself.
 
-Commands are written as `work line`, `model check` and so on. [Getting started](getting-started.md#3-how-commands-are-run)
+Commands are written as `work line`, `spec check` and so on. [Getting started](getting-started.md#3-how-commands-are-run)
 shows how to run them from the plugin's directory. Every command's full contract is its `--help`; the
 [command reference](reference/commands.md) has the short version.
 
@@ -54,7 +54,7 @@ $ work line b250 --into backlog --term "**label** (noun): a short word the perso
 work: work line: the term bullet **label** (noun): a short word ... Kind of: text. is not a term entry `- **<term>** (<part of speech>): <text>`
 ```
 
-`model parse` in your checkout doesn't know `label` yet: the word lives on the item until a batch lays it into
+`spec parse` in your checkout doesn't know `label` yet: the word lives on the item until a batch lays it into
 `spec/`. The [readiness bar](concepts.md#readiness-bar) is where the line is checked, with the item's term laid in on
 a copy of `spec/`. Rate the item and ready it:
 
@@ -94,16 +94,16 @@ Give the verb a subject its frame doesn't take ("the person shall tag ...") and 
 [troubleshooting](troubleshooting.md#the-verb-run-takes-as-its-object-) for reading these.
 
 **A word a pack already has.** The CLI pack defines `tool`, `command`, `option`, `reason`, `output` and a few
-verbs. To give one of them your own meaning, mark your entry `Redefines: cli`. Without it, `model lexicon --check`
+verbs. To give one of them your own meaning, mark your entry `Redefines: cli`. Without it, `spec lexicon --check`
 says:
 
 ```console
-$ model lexicon --check
+$ spec lexicon --check
 v_t16  option  spec/capabilities/labels.md: the pack cli defines option too; mark the entry Redefines: cli
 393 terms, 1 problems
 ```
 
-With `... Kind of: text. Redefines: cli.` on the entry, it prints `393 terms, 0 problems`, and `model lexicon` lists
+With `... Kind of: text. Redefines: cli.` on the entry, it prints `393 terms, 0 problems`, and `spec lexicon` lists
 the word as `option  [redefines cli]`.
 
 ## Add a relation row, a given block, a universal condition or an upstream
@@ -276,11 +276,11 @@ non-zero or while a commit of the task touches a file the chore does not name.
 
 **When:** you're reading a line and want everything it commits `work` to, including what comes from elsewhere.
 
-`model explain` takes a requirement's id and prints the line, then what it also means by the packs' definitions
+`spec explain` takes a requirement's id and prints the line, then what it also means by the packs' definitions
 and the universal conditions:
 
 ```console
-$ model explain backlog#r38
+$ spec explain backlog#r38
 backlog#r38  While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
 which also means:
   `work` shall exit with an error (by the definition of refuse in the pack cli)
@@ -289,7 +289,7 @@ which also means:
 ```
 
 A line with nothing more to it prints only itself. For the logical form of a line that isn't in `spec/` yet, use
-`model parse --form "<line>"` (see [writing requirements](writing-requirements.md)).
+`spec parse --form "<line>"` (see [writing requirements](writing-requirements.md)).
 
 ## Find what is ready and what blocks it
 
@@ -521,7 +521,7 @@ cache_read = 0.20
 | `[batch] push` | a prefix the batch's agent puts before every `git push` and `gh` call | none |
 | `[batch] worktrees` | where a batch's worktrees go | `.shop/worktrees/` |
 | `[review] size` | the changed lines over which the reviewer's brief says "over the limit" | 1000 |
-| `[review] checks` | the commands the reviewer's brief runs, with `{scripts}` and `{forked_from}` filled in | `tools size --limit 300`, `tools check`, `features generate --check`, `features bindings --unbound`, `model decisions --check` |
+| `[review] checks` | the commands the reviewer's brief runs, with `{scripts}` and `{forked_from}` filled in | `tools size --limit 300`, `tools check`, `features generate --check`, `features bindings --unbound`, `spec decisions --check` |
 | `[prices."<model>"]` | dollars per million tokens: `input`, `output`, `cache_read`, all three | a dated table in `scripts/measure_cost.py` |
 
 `[review] checks` replaces the default list, so copy in the defaults you want to keep. A price is used by

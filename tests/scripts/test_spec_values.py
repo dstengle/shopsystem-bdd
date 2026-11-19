@@ -82,7 +82,7 @@ def test_an_absence_is_its_own_fact_and_neither_l3_nor_l4(tmp_path):
 def test_a_finding_says_the_absence(tmp_path):
     codified2_world.context(tmp_path, "ex.com/prod/ctx", [LINE % ("has no outcome", "print"),
                                                           LINE % ("is not `accepted`", "not print")])
-    done = subprocess.run([sys.executable, str(REPO / "scripts" / "model"), "--root", str(tmp_path), "logic"],
+    done = subprocess.run([sys.executable, str(REPO / "scripts" / "spec"), "--root", str(tmp_path), "logic"],
                           capture_output=True, text=True)
     assert "with a line that has no outcome and is not `accepted`," in done.stdout, done.stdout + done.stderr
 

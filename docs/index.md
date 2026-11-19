@@ -80,7 +80,7 @@ reach for when you need them.
 
 - [Commands](reference/commands.md): every subcommand of `work`, `model`, `features`, `tools`, `measure` and `migrate`.
 - [The capability file](reference/capability-file.md): the files of a spec, section by section.
-- [The design model](reference/design-model.md): the kinds a context keeps and the rules `model check` holds.
+- [The design model](reference/design-model.md): the kinds a context keeps and the rules `spec check` holds.
 - [`grammar/language.md`](../grammar/language.md): the language's reference, every rule with its readings.
 - [`grammar/constructs.md`](../grammar/constructs.md): each construct of the grammar, generated.
 - [`grammar/packs/`](../grammar/packs/): the word packs a context imports (`cli`, `spec`, `time`).

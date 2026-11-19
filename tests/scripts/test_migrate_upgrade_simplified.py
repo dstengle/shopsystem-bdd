@@ -109,7 +109,7 @@ class AQueuedRepository(unittest.TestCase):
     def test_the_decisions_index_is_rewritten(self):
         self.assertEqual((self.root / "spec/decisions/index.md").read_text(), model_report.render_decisions(self.root))
         self.assertIn("| tier |", (self.root / "spec/decisions/index.md").read_text())
-        checked = script(self.root, "model", "decisions", "--check")
+        checked = script(self.root, "spec", "decisions", "--check")
         self.assertIn("is current", checked.stdout + checked.stderr)
 
     def test_every_open_thing_is_named_in_the_notes(self):
@@ -124,7 +124,7 @@ class AQueuedRepository(unittest.TestCase):
         self.assertEqual(git(self.root, "diff", "-M100%", "--diff-filter=D", "--name-only", "HEAD~1"), "")
 
     def test_the_upgraded_repository_is_on_the_new_workflow(self):
-        report = json.loads(script(self.root, "model", "check", "--json").stdout)["content"]
+        report = json.loads(script(self.root, "spec", "check", "--json").stdout)["content"]
         under = [str(x) for x in report["violations"] + report["warnings"] + report["unresolved"] if ".shop/work" in str(x)]
         self.assertEqual(under, [])
         self.assertNotIn("observation/%s/o1" % CTX, json.dumps(report["warnings"]))

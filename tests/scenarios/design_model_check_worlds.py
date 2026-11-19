@@ -261,7 +261,7 @@ TABLE = ORDER.ROWS + [
     (("compiled grammar exist",), CACHE.compiled, {}),
     (("no parse cache holds parse",), CACHE.unheld, {}),
     # model logic and model explain
-    (("`model` not unify code",), capability("unpairable"), {"r5": "r1"}),
+    (("`spec` not unify code",), capability("unpairable"), {"r5": "r1"}),
     (("specification service not unify code",), capability("unpairable"), {"r5": "r1"}),
     (("precondition use `every`", "precondition use `not-condition`"), line(UNDONE), {}),     # b310
     (("requirement use `every`",), capability("exhaustive"), {}),

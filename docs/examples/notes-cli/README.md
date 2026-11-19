@@ -7,7 +7,7 @@ command-line tool that keeps short notes in one file. It is not the plugin, so y
 working on somebody else's words.
 
 It's written for the developer setting up a first repository. [Getting started](../../getting-started.md) copies
-its files one by one. The docs test runs `model check` and `features generate --check` on it, so what you read here
+its files one by one. The docs test runs `spec check` and `features generate --check` on it, so what you read here
 stays true.
 
 ## The whole idea in one line
@@ -215,11 +215,11 @@ From the plugin's repository, point the tools at this folder with `--root`. (The
 name; getting started shows how to run them from the installed plugin.)
 
 ```console
-$ model --root docs/examples/notes-cli check
+$ spec --root docs/examples/notes-cli check
 0 violations, 0 warnings, 0 unresolved references, 0 file problems
-$ model --root docs/examples/notes-cli logic
+$ spec --root docs/examples/notes-cli logic
 no findings
-$ model --root docs/examples/notes-cli lexicon --check
+$ spec --root docs/examples/notes-cli lexicon --check
 8 terms, 0 problems
 $ features generate --root docs/examples/notes-cli --check
 ```
@@ -232,10 +232,10 @@ $ features generate --root docs/examples/notes-cli
 wrote features/notes.feature
 ```
 
-`model lexicon` lists every word a line may use, the pack's marked as such:
+`spec lexicon` lists every word a line may use, the pack's marked as such:
 
 ```console
-$ model --root docs/examples/notes-cli lexicon
+$ spec --root docs/examples/notes-cli lexicon
 actor (2)
   the person
   `notes`
@@ -264,10 +264,10 @@ event (9)
 
 ## What a line means
 
-`model parse --form` prints what the plugin reads a line as. Here is the refusal line, g2:
+`spec parse --form` prints what the plugin reads a line as. Here is the refusal line, g2:
 
 ```console
-$ model --root docs/examples/notes-cli parse --form "If the person runs \`notes add\` without the \`--title\` option, then \`notes\` shall refuse the command and name \`--title\`."
+$ spec --root docs/examples/notes-cli parse --form "If the person runs \`notes add\` without the \`--title\` option, then \`notes\` shall refuse the command and name \`--title\`."
 shall [x1: agent the person (constant), x2: command `notes add` (parameter), x3: option `--title` (parameter), x4: tool `notes` (constant)]
   if
     run(e1, subject: x1, object: x2, without: x3)
@@ -287,7 +287,7 @@ These lines parse in this context's grammar, not in the plugin's own: always pas
 A counter-example. This line is **refused**:
 
 ```console
-$ model --root docs/examples/notes-cli parse "When the person runs \`notes remove\`, \`notes\` shall delete the note."
+$ spec --root docs/examples/notes-cli parse "When the person runs \`notes remove\`, \`notes\` shall delete the note."
 refused: "the note" has no antecedent: no earlier noun phrase, functional relation or declared indexical gives a note
   tree: ...
 ```
@@ -305,17 +305,17 @@ There are more pairs like this in [Writing requirements](../../writing-requireme
 
 The aim was the smallest context that passes every check. Three things were added for that, and nothing else:
 
-- **The feature file.** Without it, `model check` reports `v_s3  a group has no scenario` for each group.
+- **The feature file.** Without it, `spec check` reports `v_s3  a group has no scenario` for each group.
   `features generate` writes it.
 - **`file` in the glossary.** The words of a given line must be words of the context. Without the entry,
   `features generate` stops with ``the given line 'the file `notes.json` holds:' does not parse in the step
   grammar 4 at file (token 2)``.
 - **`title` as a noun with a relation row**, not an `attribute of note`. An attribute is meant to have `Values:`,
-  and a title can be anything, so `model lexicon --check` reports `v_t4  title  spec/index.md: the attribute gives
+  and a title can be anything, so `spec lexicon --check` reports `v_t4  title  spec/index.md: the attribute gives
   no Values`. As a noun with the row `title | of | note | one`, "the title of every note" parses and the lexicon is
   clean.
 
-`model check` asked for no decisions, records or backlog. A context can start with only a spec; the `.shop/` folder
+`spec check` asked for no decisions, records or backlog. A context can start with only a spec; the `.shop/` folder
 comes when you start working with Claude.
 
 ## Next

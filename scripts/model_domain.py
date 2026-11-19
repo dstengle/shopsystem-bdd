@@ -1,4 +1,4 @@
-"""The domain contract's part of scripts/model (its design, §5.5 and §8): a part of Model (model_facts).
+"""The domain contract's part of scripts/spec (its design, §5.5 and §8): a part of Model (model_facts).
 
 In a context with a domain model (`spec/model/`): `model_problem(S, Why)` of each of domain_model_check's v_m8, the
 vocabulary's problems (spec_vocabulary) as `elementless(T, Why)` (v_t18), `unresolved(T, Why)` (v_t19),

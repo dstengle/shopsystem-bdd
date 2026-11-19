@@ -82,7 +82,7 @@ This is the CLI pack's `run`, from [`grammar/packs/cli.md`](../grammar/packs/cli
 From entries like that, `scripts/spec_rgl.py` writes a GF module typed by kind. A verb gets one function per frame,
 so "the person runs `work shape` on the item" fits, and a noun of the wrong kind in a slot does not parse at all.
 An action verb can only be a trigger or a response; a state verb can only be a condition. A word a higher layer
-takes over from a pack needs `Redefines: <pack>` on its entry, or `model check` refuses it.
+takes over from a pack needs `Redefines: <pack>` on its entry, or `spec check` refuses it.
 
 The compiled grammar is cached under `~/.cache/shopsystem-bdd/pgf/`, keyed by the hash of every source. So the
 first parse after a glossary change is slow while GF compiles, and every one after that is fast. Parses are cached
@@ -90,7 +90,7 @@ too, beside it.
 
 ### 2. The parse and its guards
 
-`model parse` asks GF for every tree of the line. Then two rules decide:
+`spec parse` asks GF for every tree of the line. Then two rules decide:
 
 - **One meaning, or refused.** Several trees are fine if they all mean the same thing; the first is kept. Trees
   that mean different things are refused, naming the words that read two ways.
@@ -104,7 +104,7 @@ When the person runs `work show`, `work` shall print the status of the item.
 ```
 
 ```console
-$ model parse "When the person runs \`work show\`, \`work\` shall print the status of the item."
+$ spec parse "When the person runs \`work show\`, \`work\` shall print the status of the item."
 refused: "the item" has no antecedent: no earlier noun phrase, functional relation or declared indexical gives an item
   tree: When NoPre (k_agent_Event (k_agent_One (k_agent_Simple a_the_person_1)) ...
 ```
@@ -115,7 +115,7 @@ refused: "the item" has no antecedent: no earlier noun phrase, functional relati
 
 A tree is grammar; it is not yet meaning. `scripts/spec_lf.py` turns each tree into a **logical form**: referents
 (`x1: item`), atoms (`status(x1) = 'idea'`, `run(e1, ...)`) and boxes (`while`, `when`, `response`). That is what
-`model parse --form` prints, and it is the only thing the later steps read.
+`spec parse --form` prints, and it is the only thing the later steps read.
 
 Twelve **reading rules**, R1 to R12, fix what the small words mean. A few you will notice:
 
@@ -145,7 +145,7 @@ set("backlog#r37",1,x1,t_status_8,v_shaped).
 resp("backlog#r37",1,pos,set(t_status_8,v_shaped),a_work,x1).
 ```
 
-`model logic` puts the facts of every line in the context, and of `spec/universal.md`, together with one fixed
+`spec logic` puts the facts of every line in the context, and of `spec/universal.md`, together with one fixed
 program, [`grammar/check.lp`](../grammar/check.lp), and runs **one** solve, with a 20-second limit. Pairs of lines
 that could fire on the same trigger in the same state are unified there, so a clash between capabilities is found
 as readily as one inside a file. The findings:
@@ -162,11 +162,11 @@ as readily as one inside a file. The findings:
 | L7 | a "shall not" forbids what a "may" permits | warning |
 | L8 | every Then of a line is already entailed by other lines | warning |
 
-L8 comes from a second program, `grammar/entail.lp`. It is also what `model explain` uses to show what a line means
+L8 comes from a second program, `grammar/entail.lp`. It is also what `spec explain` uses to show what a line means
 once the universal conditions and the packs' definitions are taken into account:
 
 ```console
-$ model explain backlog#r38
+$ spec explain backlog#r38
 backlog#r38  While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
 which also means:
   `work` shall exit with an error (by the definition of refuse in the pack cli)
@@ -212,7 +212,7 @@ XFAIL tests/scenarios/test_backlog.py::test_work_show_prints_the_status_of_an_it
 
 An item becomes `ready` only by passing a mechanical check, so the questions come before the build, not during it.
 `work ready` copies `spec/` to a temporary directory, lays the item's lines into the copy, and runs the pipeline
-above over it: every line parses, the lexicon gains no problem, `model logic` finds no L0 and no L1 naming the
+above over it: every line parses, the lexicon gains no problem, `spec logic` finds no L0 and no L1 naming the
 item's lines, and `features generate` writes a scenario for each group. Your real `spec/` is never written.
 
 Here is an item whose line contradicts a delivered one:

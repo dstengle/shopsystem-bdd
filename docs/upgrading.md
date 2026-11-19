@@ -89,8 +89,8 @@ The full note is [0.33.0 in the changelog](../CHANGELOG.md#0330-released-as-400-
 - **Reading rules.** "the", "no", "every" and "only" mean one thing each. "The till" needs a till said before it.
 - **Example data moves out.** A sample value in a line goes into its group's given block.
 - **New constructs.** Counts, "two", "another", "is one of", "has no", a command's options in the trigger, time.
-- **New checks.** `model parse --form` shows a line's meaning, `model explain` what other lines force with it, and
-  `model logic` gains L8: a Then that other lines already say.
+- **New checks.** `spec parse --form` shows a line's meaning, `spec explain` what other lines force with it, and
+  `spec logic` gains L8: a Then that other lines already say.
 - **Known limits.** Some things the language cannot say yet. They're listed in
   [the language reference](../grammar/language.md).
 
@@ -177,7 +177,7 @@ Each kind of note, and what to do about it:
 | `v_t14 <verb> ...: a state in ... and an action in ...` | write `(verb, state)` or `(verb, action)` in the glossary |
 | `<line> says "the" with no antecedent` | say the thing with "a" first, or reach it through a relation |
 | `<line> says a negated indefinite in a While clause` | "owns no cart", or "a cart that the shopper does not own" |
-| `<line> no longer parses: does not parse at <word>` | reword the line; `model parse` shows where it stops |
+| `<line> no longer parses: does not parse at <word>` | reword the line; `spec parse` shows where it stops |
 | `<term> is a condition (adjective) ...: <lines>` | replace the adjective with a structure, then reword each line named |
 | `<line> holds example data: <value>` | move the value into the group's given block |
 | `<line> says "exit with an error naming"` | "shall refuse the command and name X" |
@@ -251,12 +251,12 @@ skill writes the item with you.
 In the batch's worktree, where the lines are laid, run the checks:
 
 ```console
-$ model check
+$ spec check
 ...
 warning w_example  a requirement holds example data: a code or quoted string that names no declared constant  (1)
     capability/example.org/acme/shop/buy#r14, apples
 ...
-$ model logic
+$ spec logic
 L8 buy#r1 says nothing other requirements do not: Then 1 by buy#r10 and buy#r11
 ...
 $ features generate
@@ -307,7 +307,7 @@ names each attribute whose `Values:` declares neither kind and each line that sa
 ("an item is `idea`"), by file and id. Declare each attribute's values in the glossary, `Values (adjective):` for
 those that read after "is" as an adjective (`shaped`, `in-batch`) and `Values (noun):` for the rest (`idea`,
 `needs-input`, a release), then reword each named line whose value is a noun to the full form, "the status of an
-item is `idea`", as an item with `work line --retires`. Until you declare them, `model check` warns `w_value_kind`
+item is `idea`", as an item with `work line --retires`. Until you declare them, `spec check` warns `w_value_kind`
 and every line parses as before.
 
 `features generate` now writes every value step the full way, "the status of the item i1 is `idea`" (and "no item
@@ -357,9 +357,9 @@ handlers must meet. Run `features generate`, then run the suite and update the h
 - **An order's Then.** A `ThenPrints` whose `step.order` is set, a (term, direction) pair, states an order. Its
   handler checks the output's order against the values the Givens set, not strictly, so that members with one value
   pass in either order.
-- **`unread <id>`.** `model logic` now names each requirement it has no translation of, `unread <id>: ...`, with
+- **`unread <id>`.** `spec logic` now names each requirement it has no translation of, `unread <id>: ...`, with
   a count after the findings, where it printed `no findings` before over lines it skipped. Each one it names is a
-  line `model logic` does not check; reword it if a construct it has a translation of says the same.
+  line `spec logic` does not check; reword it if a construct it has a translation of says the same.
 
 Two things are new to write. An attribute entry may say `Type: number.`, `Type: time.` or `Type: text.`: any
 literal of the type is a value of it, and the type orders them, with no `Values:` or `Order:`. And a line may
@@ -373,11 +373,11 @@ an attribute whose entry gives no value order, neither `Order:` nor `Type:`, is 
 
 No upgrade step, and no scenario `features generate` wrote in 0.35.0 changes. On a response's object, of `print` or any other
 act, holds-exactly with a relative clause or a negated value as its restriction and "holds nothing" are now read by
-`model logic`, and they, "holds no K" and an order on the object of a verb whose frame names the collection's kind
+`spec logic`, and they, "holds no K" and an order on the object of a verb whose frame names the collection's kind
 now get scenarios. `features generate` only warned of the last two in 0.35.0 (`no scenario: ...`) and exited 0, so a
 repository may hold such lines: after the upgrade `features generate --check` finds its features stale until it is
 run. Run `features generate` and write the
-handlers of the new scenarios. `work ready` now refuses an item a requirement of which `model logic` names
+handlers of the new scenarios. `work ready` now refuses an item a requirement of which `spec logic` names
 `unread`, naming the requirement.
 
 ## From 0.35.1 to 0.36.0
@@ -406,7 +406,7 @@ it quotes the capability's requirements and only the terms they mention, so name
 
 A y release: no upgrade step. Run `migrate upgrade` once to record the release.
 
-`work ready` and `work batch start` now run every rule of `model check` on the item's lines laid over a copy of
+`work ready` and `work batch start` now run every rule of `spec check` on the item's lines laid over a copy of
 `spec/`, and refuse each violation the lay brings that names one of the item's groups or requirements, naming the
 group and the rule (v15k, v15l, v15n and the rest; 0.36.0 ran v15n alone). An item already `ready` may be refused at
 its next `work ready` or `work batch start`: fix the group it names. Where a repository keeps a spec corpus
@@ -423,7 +423,7 @@ a Given of one thing past the bound, and holds-exactly whose restriction reaches
 where it had none: write the handlers of their new steps.
 
 New to use: `work chore` for an item with no requirement line, `work line --capability` for a new capability in
-place of writing its file, `model forms --check`, and the directives (`work directive`, `work directives`,
+place of writing its file, `spec forms --check`, and the directives (`work directive`, `work directives`,
 `work promote`, `work drop`), which a new SessionStart hook shows. A repository's tests pin `pytest==9.1.1` and
 `pytest-bdd==8.1.0` ([Getting started](getting-started.md)).
 

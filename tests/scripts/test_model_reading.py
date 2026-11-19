@@ -1,4 +1,4 @@
-"""Unit tests of scripts/model's reading: the files it reads and how, the forms of an id, and the grammar's fixes.
+"""Unit tests of scripts/spec's reading: the files it reads and how, the forms of an id, and the grammar's fixes.
 ModelTest and the file builders are in test_model.py."""
 
 import unittest

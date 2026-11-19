@@ -15,7 +15,7 @@ You will rarely type these yourself: Claude runs them as you talk (see [Talking 
 They are here for when you want to look, check or do a step by hand.
 
 > **`--help` is the contract.** Every command prints its own usage and rules with `--help`
-> (`work batch done --help`, `model --help`). This page is a friendlier summary. Where the two differ, `--help` is
+> (`work batch done --help`, `spec --help`). This page is a friendlier summary. Where the two differ, `--help` is
 > right and this page is wrong; please file it.
 
 Commands are written short, `work backlog` for `python3 "$SHOP/scripts/work" backlog`.
@@ -166,7 +166,7 @@ b251 "work show prints an item's dependencies" no longer depends on b250 "work s
 Moves a `shaped` item to `ready` when it passes the readiness bar, and otherwise names every reason it does not.\
 Synopsis: `work ready name`
 
-The bar lays the item's lines over a temporary copy of `spec/` and checks that they parse, that `model logic` finds
+The bar lays the item's lines over a temporary copy of `spec/` and checks that they parse, that `spec logic` finds
 no clash naming them, and that `features generate` writes their scenarios. A line from a request must be settled.
 Readying is the decision to build: a ready item goes into the next batch.
 
@@ -681,23 +681,23 @@ $ work record "Command reference layout" --kind analysis --summary "Why the comm
 `model` reads `spec/` and `.shop/`, checks them, and parses lines. Only `decisions`, `rules --write` and
 `constructs --write` write files, and none of them commits.
 
-### `model parse`
+### `spec parse`
 
 Parses a line in the context's grammar and prints its tree, or its refusal with a hint.\
-Synopsis: `model parse [--file FILE] [--form] [line]`
+Synopsis: `spec parse [--file FILE] [--form] [line]`
 
 - `--form`: print the line's meaning (its logical form) instead of its tree. Read this one.
 - `--file`: parse every line of a file, numbered.
 
 ```console
-$ model parse --form 'When the person runs `work show` on an item, `work` shall print the status of the item.'
+$ spec parse --form 'When the person runs `work show` on an item, `work` shall print the status of the item.'
 shall [x1: agent the person (constant), x2: command `work show` (parameter), x4: tool `work` (constant)]
   when [x3: item]
     run(e1, subject: x1, object: x2, on: x3)
   response [x5: status]
     status(x3) = x5
     print(e2, subject: x4, object: x5)
-$ model parse 'When an item is readied, `work` shall print the status of the item.'
+$ spec parse 'When an item is readied, `work` shall print the status of the item.'
 does not parse at item (token 3 of 15)
   parsed up to: When an
   nearest words: item, items, term, stem, cite
@@ -707,15 +707,15 @@ does not parse at item (token 3 of 15)
 The second line is a counter-example: the grammar has no "an item is readied", so it is refused. How to read a
 refusal is in [Writing requirements](../writing-requirements.md).
 
-### `model lexicon`
+### `spec lexicon`
 
 Lists the context's words by category: actors, kinds, attributes, events, conditions.\
-Synopsis: `model lexicon [--check]`
+Synopsis: `spec lexicon [--check]`
 
 - `--check`: report problems with the terms (`v_t4` to `v_t15`), and exit 1 when there is any.
 
 ```console
-$ model lexicon
+$ spec lexicon
 actor (39)
   the person
   `work run`
@@ -727,13 +727,13 @@ event (95)
 ...
 ```
 
-### `model explain`
+### `spec explain`
 
 Prints a requirement, what it also means because of other requirements, and what takes precedence over it.\
-Synopsis: `model explain requirement`
+Synopsis: `spec explain requirement`
 
 ```console
-$ model explain backlog#r38
+$ spec explain backlog#r38
 backlog#r38  While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
 which also means:
   `work` shall exit with an error (by the definition of refuse in the pack cli)
@@ -741,16 +741,16 @@ which also means:
   `work` shall exit with an error (by U12)
 ```
 
-### `model check`
+### `spec check`
 
 Solves the facts of the repository against the design model's rules and prints every violation (`v_...`), then
 warnings (`w_...`), unresolved references and file problems. Exits 1 on any violation.\
-Synopsis: `model check [--json] [--limit LIMIT]`
+Synopsis: `spec check [--json] [--limit LIMIT]`
 
 - `--limit`: rows shown for each rule (the rest are counted).
 
 ```console
-$ model check
+$ spec check
 warning w_example  a requirement holds example data: a code or quoted string that names no declared constant  (41)
     capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r37, .venv/bin/python
 ...
@@ -759,44 +759,44 @@ warning w_example  a requirement holds example data: a code or quoted string tha
 
 What each rule guards is in [the design model reference](design-model.md).
 
-### `model logic`
+### `spec logic`
 
 The temporal and entailment check of the codified lines: clashes between requirements (L1 to L8). Give a capability,
 or a requirement id for the findings that name it. A requirement it has no translation of is printed
 `unread <id>: <what it cannot read>`, and the count says how many are unread in place of `no findings`; the exit is
 the findings' alone.\
-Synopsis: `model logic [--json] [capability]`
+Synopsis: `spec logic [--json] [capability]`
 
 ```console
-$ model logic backlog
+$ spec logic backlog
 no findings
 ```
 
-### `model rules`
+### `spec rules`
 
 Prints every rule's code and plain label, violations first.\
-Synopsis: `model rules [--json] [--write] [--check]`
+Synopsis: `spec rules [--json] [--write] [--check]`
 
 - `--write`: write the rule catalogue `grammar/rules.md`; `--check` says whether it is current.
 
 ```console
-$ model rules
+$ spec rules
 v2  a standing edge touches something that is not standing
 v3  a request's resolution names something that is not a requirement of the spec
 ...
 ```
 
-### `model forms`
+### `spec forms`
 
 Prints every file form a context keeps: its name, its path and the command that writes it (or the plugin's item
 that will give it one).\
-Synopsis: `model forms [--json] [--check]`
+Synopsis: `spec forms [--json] [--check]`
 
 - `--check`: print nothing and exit 0 unless a form is written by hand; each such form is named on stderr and it
   exits 1.
 
 ```console
-$ model forms
+$ spec forms
 item                      .shop/backlog/b<n>.md                                work idea
 item's requirement line   .shop/backlog/b<n>.md ## Requirements                work line
 ...
@@ -804,50 +804,50 @@ capability                spec/capabilities/<name>.md                          w
 ...
 ```
 
-### `model decisions`
+### `spec decisions`
 
 Writes `spec/decisions/index.md` from the decision files. Not committed.\
-Synopsis: `model decisions [--check]`
+Synopsis: `spec decisions [--check]`
 
 - `--check`: write nothing; say whether the index is current, then run the tests of each `check`-tier decision and
   print `holds` or `failing` for each.
 
 ```console
-$ model decisions --check
+$ spec decisions --check
 spec/decisions/index.md is current
 holds    spec/decisions/0018-measure-refuses-unknown-shapes.md (design-decision/missingmass.io/shopsystem/shopsystem-bdd/measure-refuses-unknown-shapes): ...
 ...
 9 check decisions: 6 hold, 3 failing
 ```
 
-### `model facts`
+### `spec facts`
 
-Prints the facts `model check` reads, one a line, in clingo's syntax. For debugging a rule.\
-Synopsis: `model facts`
+Prints the facts `spec check` reads, one a line, in clingo's syntax. For debugging a rule.\
+Synopsis: `spec facts`
 
 ```console
-$ model facts
+$ spec facts
 node("bounded-context/missingmass.io/shopsystem/shopsystem-bdd", "bounded-context").
 ...
 ```
 
-### `model constructs`
+### `spec constructs`
 
 Writes or checks the construct catalogue `grammar/constructs.md`, each example parsed first.\
-Synopsis: `model constructs [--write] [--check]`
+Synopsis: `spec constructs [--write] [--check]`
 
 ```console
-$ model constructs --check
+$ spec constructs --check
 grammar/constructs.md is current
 ```
 
-### `model restates`
+### `spec restates`
 
 For a repository that came from plugin 0.29: whether every old id is restated by a group, dropped or moved.\
-Synopsis: `model restates [--json] [capability]`
+Synopsis: `spec restates [--json] [capability]`
 
 ```console
-$ model restates backlog
+$ spec restates backlog
 spec/restated.json has no id of backlog
 ```
 

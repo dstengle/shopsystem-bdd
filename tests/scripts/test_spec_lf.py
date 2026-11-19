@@ -86,7 +86,7 @@ def test_a_fun_with_no_translation_is_named(vocab):
 
 
 def test_model_parse_form_prints_the_form_and_needs_grammar_4(vocab, tmp_path):
-    model = [sys.executable, str(REPO / "scripts" / "model")]
+    model = [sys.executable, str(REPO / "scripts" / "spec")]
     line = "When a session ends a stage, `work` shall print the stage."
     done = subprocess.run(model + ["--root", str(FIXTURE), "parse", "--form", line], capture_output=True, text=True)
     assert done.returncode == 0 and "end(e1, subject: x1, object: x2)" in done.stdout, done.stdout + done.stderr

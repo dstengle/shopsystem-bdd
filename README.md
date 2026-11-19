@@ -36,8 +36,8 @@ never has to look it up.
 
 What happened in between:
 
-- `model parse` read the line to exactly one meaning, built from the words in the context's glossary.
-- `model logic` checked it against every other line, looking for two lines that clash.
+- `spec parse` read the line to exactly one meaning, built from the words in the context's glossary.
+- `spec logic` checked it against every other line, looking for two lines that clash.
 - `features generate` wrote the scenario from that meaning: the While clause became Givens, the when clause a
   When, the shall clause a Then. Nobody wrote the feature file by hand.
 - A developer bound the steps once in pytest-bdd, and the scenario now runs in the suite.

@@ -1,6 +1,6 @@
 <!--
 Examples on this page are files of this repository at plugin 0.33.0 (commit 7f60e57de, 2026-11-10), quoted as they
-are, with cuts marked `...`. The outputs of `work ready`, `work request` and `model lexicon` on the example context
+are, with cuts marked `...`. The outputs of `work ready`, `work request` and `spec lexicon` on the example context
 were pasted from one run that day, in a throwaway copy of docs/examples/notes-cli/ with the stand-in gh
 (tests/scripts/stub_gh.py) as $SHOPSYSTEM_WORK_GH.
 -->
@@ -12,7 +12,7 @@ each, in an order where each builds on the last. Every section says the same fiv
 
 - **what it is**, in one sentence;
 - **where it lives**, as a path;
-- **what writes it**, as `model forms` names it;
+- **what writes it**, as `spec forms` names it;
 - **an example**, always a real file or a real run;
 - **where to read more**.
 
@@ -67,11 +67,11 @@ Each entry says its part of speech, so the plugin knows how the word may be used
 - **merge** (verb, action): the person merges a pull request into its base branch on GitHub. Forms: merges, merged. Frame: the person merges pull request.
 ```
 
-`model lexicon` prints every word a context has, and where each came from. Here's the small example context of
+`spec lexicon` prints every word a context has, and where each came from. Here's the small example context of
 [getting started](getting-started.md), which imports the `cli` pack:
 
 ```console
-$ model --root docs/examples/notes-cli lexicon
+$ spec --root docs/examples/notes-cli lexicon
 actor (2)
   the person
   `notes`
@@ -138,14 +138,14 @@ shall [x2: agent the person (constant), x3: command `work shape` (parameter), x4
 ```
 
 Read it in three parts. **While** is the state the item is in. **When** is what someone does. **Shall** is what
-`work` must do in answer. The indented block under it is what `model parse --form` prints: the line's meaning, the
+`work` must do in answer. The indented block under it is what `spec parse --form` prints: the line's meaning, the
 part the checks and the generator read.
 
 - **Lives in:** a capability's `## Behaviour`, as `- [r<n>] <line>`; before that, in an item's `## Requirements`.
 - **Written by:** `work line` into an item; `work batch start` moves it into `spec/`. You never edit a line in
   place: a changed line gets a new id, and `work line --retires <capability>#r<n>` retires the old one.
 
-This line is `backlog#r37`. Try one yourself with `model parse "<line>"`.
+This line is `backlog#r37`. Try one yourself with `spec parse "<line>"`.
 Read more: [Writing requirements](writing-requirements.md) and the language reference,
 [`grammar/language.md`](../grammar/language.md).
 
@@ -199,7 +199,7 @@ If a tool refuses a command, then the tool shall exit with an error naming a rea
 ```
 
 That's U12. Because it holds for every tool, a line elsewhere says "`work` shall refuse the command and name the
-status of the item" and stops there: U12 supplies the rest. `model logic` adds every universal condition to each
+status of the item" and stops there: U12 supplies the rest. `spec logic` adds every universal condition to each
 check it runs. Read more: [`spec/universal.md`: true everywhere](reference/capability-file.md#specuniversalmd-true-everywhere).
 
 ### Scenario and feature file
@@ -323,7 +323,7 @@ The readiness bar is the check an item must pass before it can be built.
 
 - **Lives in:** nowhere; it runs when you call `work ready`, on a temporary copy of `spec/` with the item's lines
   laid in.
-- **Checks:** every line parses; `model logic` finds no clash with the rest of the spec; `features generate` writes
+- **Checks:** every line parses; `spec logic` finds no clash with the rest of the spec; `features generate` writes
   each group's scenario with no unworded step; every request line behind the item is settled.
 
 Here it catches a new line that contradicts one already in the example context (`notes#r4` says `notes remove`
@@ -508,13 +508,13 @@ Read more: [`work record`](reference/commands.md#work-record).
 A decision is one design choice, with why it was made and how it is held to.
 
 - **Lives in:** `spec/decisions/<nnnn>-<slug>.md`, with an index in `spec/decisions/index.md`.
-- **Written by:** `work decision`; the index by `model decisions`.
+- **Written by:** `work decision`; the index by `spec decisions`.
 
 Its **tier** says how the decision is kept:
 
 | tier | held by |
 |---|---|
-| `check` | the tests in `enforced_by`, which `model decisions --check` runs |
+| `check` | the tests in `enforced_by`, which `spec decisions --check` runs |
 | `requirement` | the requirement lines in `enforced_by` |
 | `judgement` | a reviewer's reading: the batch brief hands every `judgement` decision to the `pr-reviewer` |
 

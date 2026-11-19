@@ -70,7 +70,7 @@ def test_the_restricted_the_binds_to_an_earlier_referent_and_keeps_its_restricti
 
 
 def test_model_parse_prints_a_reading_refusal_with_the_tree_and_exits_1():
-    model = [sys.executable, str(REPO / "scripts" / "model"), "--root", str(FIXTURE), "parse"]
+    model = [sys.executable, str(REPO / "scripts" / "spec"), "--root", str(FIXTURE), "parse"]
     done = subprocess.run(model + ["The work service shall write a file."], capture_output=True, text=True)
     assert done.returncode == 1, done.stdout + done.stderr
     assert done.stdout.startswith('refused: the line has no trigger and neither "always" nor "never"')

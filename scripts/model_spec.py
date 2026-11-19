@@ -1,4 +1,4 @@
-"""The codified reading of scripts/model (design model v5; the GF conversion's design §7, §8, §10, §13.4; CNL 4's
+"""The codified reading of scripts/spec (design model v5; the GF conversion's design §7, §8, §10, §13.4; CNL 4's
 I19): a part of Model (model_facts).
 
 A capability file with `language: codified-2` is read by spec_read into groups `<cap>#g<n>`, each requirement

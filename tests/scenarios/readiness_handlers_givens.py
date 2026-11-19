@@ -119,9 +119,9 @@ def given_does(step):
     scenario of the item, a step of the scenario) nothing; holds: a term the item holds one that violates `v_t12`; violate: the
     rule the term violates, named by its code, or of a requirement group the rule r2, two lines of the item's group
     whose conditions differ (v15k: b333), the group and the rule named by their ids; has no translation or no parse: the requirement a
-    line of the item that holds it which `model logic` reads no translation of (r41) or grammar 4 no parse of (r50)
+    line of the item that holds it which `spec logic` reads no translation of (r41) or grammar 4 no parse of (r50)
     (`R.give_faults`), or the universal condition the item's one, beside a passing line
-    (b203); holds a universal condition: the item's `U1`, one `model logic` reads, beside a passing line; the capability
+    (b203); holds a universal condition: the item's `U1`, one `spec logic` reads, beside a passing line; the capability
     c1 exists: the When names a capability of the spec (b317)."""
     if R.mine(step) and step.term == "exist" and step.subject.startswith("the capability "):     # b317's r56
         step.context.setdefault("exists", set()).add(step.names[0])

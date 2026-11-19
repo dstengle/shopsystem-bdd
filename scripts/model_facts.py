@@ -1,4 +1,4 @@
-"""The facts of scripts/model: Model reads a repository into the facts model.lp solves, with the references that name
+"""The facts of scripts/spec: Model reads a repository into the facts model.lp solves, with the references that name
 nothing and the file problems."""
 
 import datetime

@@ -1,4 +1,4 @@
-"""Handlers of the packs of design-model-check (b132): `model lexicon` run on the repository, and the conditions of a
+"""Handlers of the packs of design-model-check (b132): `spec lexicon` run on the repository, and the conditions of a
 bounded context and of a term that the packs give. A bounded context that is importing imports the plugin's CLI pack
 and its own pack p1, which alone defines t1; one that is misimporting imports p1, which no pack is. A term that is
 unmarked is defined by p1 too, which the context imports; one that is redefining says so with `Redefines: p1.`.
@@ -41,7 +41,7 @@ def pack(repo, name, *terms):
         name, "".join("- **%s** (noun): a thing the pack gives.\n" % t for t in terms)))
 
 
-@handler("WhenRuns", "`model lexicon`")
+@handler("WhenRuns", "`spec lexicon`")
 def model_lexicon(step):
     H.run_model(step, "lexicon")
 

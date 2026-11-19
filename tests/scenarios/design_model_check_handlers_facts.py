@@ -1,7 +1,7 @@
 """Handlers of design-model-check's Givens in grammar 4 (b152, b240 phase 23): each state a Given says is kept as a
 fact (`the term t1 violates `v_t4`` as "term violate `v_t4`"), and at the When the facts pick the world that
 design_model_check_worlds.py builds of them (`H.built`), with what the output names each instance by. The Thens of a
-refusal (`refuse`, `name`) and of what `model` used, read, wrote or translated read the run back.
+refusal (`refuse`, `name`) and of what `spec` used, read, wrote or translated read the run back.
 
 The keys are the registry's (`features vocab --check` reads it). A key other codified-2 features say too (`has`,
 `holds`, `violate`, `refuse`, `name`, `use`, a rule, a requirement id, a text) is world_fallbacks' or another
@@ -88,7 +88,7 @@ def state(step):
 
 def fact(step, name, had):
     """A fact past those every world prints (`H.PRINTED`): the node of a capability of its own, in the context's
-    `spec/capabilities/` (had) or in a folder below it, which `model facts` does not read (a counter-example's, b273)."""
+    `spec/capabilities/` (had) or in a folder below it, which `spec facts` does not read (a counter-example's, b273)."""
     if int(re.sub(r"\D", "", name)) <= len(H.PRINTED["fact"]):
         return
     folder = "spec/capabilities/" if had else "spec/capabilities/drafts/"
@@ -128,8 +128,8 @@ def value(step):
 @local("ThenDoes")
 def then_does(step):
     """What a tool did: refused the command (an error exit), named an instance (by what a Given said it is named by)
-    or a code; `model` used the compiled grammar, read the parse cache, wrote the rule catalogue or the parse cache;
-    the requirement r3 uses the refusal r4 (its line in `model explain`'s output says the tool shall refuse); the
+    or a code; `spec` used the compiled grammar, read the parse cache, wrote the rule catalogue or the parse cache;
+    the requirement r3 uses the refusal r4 (its line in `spec explain`'s output says the tool shall refuse); the
     requirement r1 has the trigger t2 (its line opens with When or If)."""
     if not ours(step):
         return False
@@ -157,7 +157,7 @@ def then_does(step):
 
 @local("ThenDoesNot")
 def then_does_not(step):
-    """`model` does not write a compiled grammar (design_model_check_handlers_cache); `model` does not name the trigger
+    """`spec` does not write a compiled grammar (design_model_check_handlers_cache); `spec` does not name the trigger
     t2: what a Given said it is named by is not in the output (b175)."""
     if not ours(step) or step.event not in ("write", "name"):
         return False
@@ -172,7 +172,7 @@ def then_does_not(step):
 @handler("ThenDoes", "read")
 @handler("ThenDoes", "translate")
 def then_own(step):
-    """`model` reads the parse cache p1; `model` translates the requirement r1: `model logic` reached the check with
+    """`spec` reads the parse cache p1; `spec` translates the requirement r1: `spec logic` reached the check with
     the requirement (an exit with no line it could not translate)."""
     done = step.context["result"]
     if step.event == "translate":
@@ -193,7 +193,7 @@ def has_translation(step):
 @local("ThenPrints")
 @local("ThenPrintsNot")
 def prints(step):
-    """`model` prints the file form f1 (design_model_check_handlers_forms'); `model` does not print the capability
+    """`spec` prints the file form f1 (design_model_check_handlers_forms'); `spec` does not print the capability
     c1."""
     if not ours(step):
         return False

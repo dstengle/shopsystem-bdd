@@ -1,7 +1,7 @@
 """The words of a request's step as the CLI's handlers read them (requested.legacy, the domain contract design §9.4):
 the kinds and states a capability's handlers know by their words before the reword (`renamed`, `reverbed`), a
 request's thing named by what it belongs to (`owner`), a Then's text in the CLI's spelling ("`work` writes the item
-i1" for "the backlog service keeps the item i1", `retext`) and a When's ("the person runs `model parse` on the
+i1" for "the backlog service keeps the item i1", `retext`) and a When's ("the person runs `spec parse` on the
 fragment f1", `runs_text`)."""
 import re
 
@@ -87,7 +87,7 @@ def retext(text, program, template, verb, chosen):
 
 
 def runs_text(call, chosen):
-    """The When as the CLI's handlers read it: "the person runs `model parse` on the fragment f1"."""
+    """The When as the CLI's handlers read it: "the person runs `spec parse` on the fragment f1"."""
     subject = call.subject or "the person"
     things = [m.group(0) for m in re.finditer(r"\bthe (?:[a-z-]+ ){0,2}?[a-z-]+ [a-z]+\d+\b", call.text)
               if not subject.endswith(m.group(0))]

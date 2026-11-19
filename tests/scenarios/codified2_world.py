@@ -1,6 +1,6 @@
 """The smallest codified-2 world (the CNL 4 design, I7a; section 13 point 4): a `spec/index.md` with `language:
 codified-2` and `imports: [cli]` (the glossary of tests/scripts/fixtures/codified-2/), and one capability `thing`,
-also codified-2, whose requirement r1 is the line a requirement condition gives. `model parse` reads it in grammar 4.
+also codified-2, whose requirement r1 is the line a requirement condition gives. `spec parse` reads it in grammar 4.
 
 A later grammar item adds its condition to LINES: the line r1 says, and what a refusal of it names the scenario's term
 t1 by (None when it names no term). I19 extends the world to a mixed spec."""
@@ -88,7 +88,7 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
 TERMS = {"embedding": ["- **precede** (verb, state): a stage comes before a stage. Frame: stage precedes stage."]}
 TERMS["self-embedding"] = TERMS["self-relating"] = TERMS["embedding"]
 ROWS = {"self-relating": ["| stage | of | worktree | one |"]}
-# what `model parse --form` prints of a condition's line, said by the scenario's reading: the stage x6 of the worktree
+# what `spec parse --form` prints of a condition's line, said by the scenario's reading: the stage x6 of the worktree
 # x5 of the session x1, a referent of its own, which the head x4 precedes; one worktree x5 of each session x4, in the
 # every box's scope; the trigger's stage x2 printed, not the stage x4 inside the "not" box (b222)
 READINGS = {"shadowed": ("a1", "print(e3, subject: x3, object: x2)"),
@@ -115,7 +115,7 @@ def capability(name, lines, path):
             "## Not yet\n- None.\n" % (path, name, name, name, body))
 
 
-# The capabilities of `model logic` (I12a): each condition's lines, which the check reads through their logical form.
+# The capabilities of `spec logic` (I12a): each condition's lines, which the check reads through their logical form.
 # Restricting: a session may change only files in its worktree, and a session changes a file, which may be one.
 # Exhaustive: `work` prints every stage, and must not print a done stage, which is one of every stage.
 CAPABILITIES = {"restricting": ["A session shall change only files in its worktree.",
@@ -163,21 +163,21 @@ GENERATED = {"declining": (r"^    Then `work` exits with an error naming `work s
                            r"^\s*(Then|And) `work` changes nothing$")}
 
 
-# The requirement conditions of `model logic` (I13a): the lines of the capability `thing`, r1 the one the scenario
+# The requirement conditions of `spec logic` (I13a): the lines of the capability `thing`, r1 the one the scenario
 # names, and the universal conditions beside them. Restating: r1's exit with an error is r2's, and its change nothing
 # is U1's, on the command `work` refuses by exiting with an error on it (the CLI pack's definition of refuse).
 REQUIREMENTS = {"restating": ([("If the person runs `work start`, then `work` shall exit with an error naming "
                                 "`work start` and change nothing."),
                                "If the person runs `work start`, then `work` shall exit with an error naming `work start`."],
                               UNIVERSAL["contravening"]),
-                # `model explain` (I13b). Refusing: r1 refuses its command, which U1 and the CLI pack's definition of
+                # `spec explain` (I13b). Refusing: r1 refuses its command, which U1 and the CLI pack's definition of
                 # refuse say more of. Overridden: r1, a When line, and r2, an If line of its trigger that refuses it.
                 "refusing": (["If the person runs `work start`, then `work` shall refuse the command."],
                              UNIVERSAL["contravening"]),
                 "overridden": (["When the person runs `work start`, `work` shall exit successfully.",
                                 ("While a session follows a stage, if the person runs `work start`, then `work` shall "
                                  "refuse the command.")], UNIVERSAL["contravening"])}
-# What `model explain` names a requirement condition's other instances by: U1 as the premise of a consequence, the
+# What `spec explain` names a requirement condition's other instances by: U1 as the premise of a consequence, the
 # term refuse by its definition in the CLI pack, r2 by its id.
 SAYS = {"refusing": {"u1": "(by U1)", "t1": "(by the definition of refuse in the pack cli)"},
         "overridden": {"r2": "thing#r2"}}
@@ -221,7 +221,7 @@ def requirement(step, word, path):
 
 
 # A state verb whose frame takes no object (b219): the glossary entry the fixture has not, and r1 of the capability
-# `shelf`, whose feature feature-file-tools' scenario names; `model logic` names r1 by `shelf#r1`.
+# `shelf`, whose feature feature-file-tools' scenario names; `spec logic` names r1 by `shelf#r1`.
 INTRANSITIVE = ("- **stall** (verb, state): a stage makes no progress. Frame: stage stalls.\n",
                 "While a stage stalls, when the person runs `work start`, `work` shall print the stage.")
 
@@ -251,7 +251,7 @@ def shelved(step, word, path):
 
 
 # A response that sets an attribute of a thing the line names earlier to a value (b216): r1 of the capability `shelf`,
-# whose feature feature-file-tools' scenario names, and the Then it must hold; `model` names r1 by `shelf#r1`.
+# whose feature feature-file-tools' scenario names, and the Then it must hold; `spec` names r1 by `shelf#r1`.
 SETTING = ("When a session ends a stage, `work` shall set the status of the stage to `done`.",
            r"(?m)^    Then `work` sets the status of the stage s2 to `done`$")
 

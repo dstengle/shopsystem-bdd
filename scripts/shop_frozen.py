@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 
 from model_parse import (
-    frontmatter,  # the reader scripts/model uses; model_work imports this module
+    frontmatter,  # the reader scripts/spec uses; model_work imports this module
 )
 
 WORK = Path(".shop") / "work"

@@ -93,7 +93,7 @@ def test_the_rewritten_path_and_turn_share_one_rule():
 def test_model_check_takes_the_section(taken):
     assert work(taken, "outcome", "q1", "1", "rewritten", "--line", ABANDON).returncode == 0
     import subprocess
-    done = subprocess.run([sys.executable, str(REPO / "scripts" / "model"), "--root", str(taken), "check"],
+    done = subprocess.run([sys.executable, str(REPO / "scripts" / "spec"), "--root", str(taken), "check"],
                           capture_output=True, text=True)
     assert done.returncode != 2, done.stderr
     assert not [line for line in done.stdout.splitlines() if "q1.md" in line], done.stdout

@@ -108,7 +108,7 @@ def test_a_frame_that_does_not_read_is_left_out():
 
 
 def model(root, *args):
-    return subprocess.run([sys.executable, str(REPO / "scripts" / "model"), "--root", str(root), *args],
+    return subprocess.run([sys.executable, str(REPO / "scripts" / "spec"), "--root", str(root), *args],
                           capture_output=True, text=True, timeout=300)
 
 

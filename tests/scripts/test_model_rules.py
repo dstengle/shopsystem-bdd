@@ -8,7 +8,7 @@ from backlog_testing import REPO, SCRIPTS
 
 
 def run(*args):
-    return subprocess.run([sys.executable, str(SCRIPTS / "model"), *map(str, args)], capture_output=True, text=True,
+    return subprocess.run([sys.executable, str(SCRIPTS / "spec"), *map(str, args)], capture_output=True, text=True,
                           timeout=120)
 
 

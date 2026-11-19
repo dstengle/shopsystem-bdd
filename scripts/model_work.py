@@ -1,4 +1,4 @@
-"""The reading of scripts/model for decisions and records, and of the frozen `.shop/work/` only the `source` ids its
+"""The reading of scripts/spec for decisions and records, and of the frozen `.shop/work/` only the `source` ids its
 initiatives and requests cite (plan 9, D5, D6): a part of Model (model_facts)."""
 
 import re

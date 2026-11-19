@@ -1,11 +1,11 @@
 # The language of grammar 4: its reading rules
 
 What each construct of a grammar 4 requirement means, as the reading rules R1-R12 of the CNL 4 design (call 5,
-section 7.3; I11b). A line's meaning is its logical form (`scripts/spec_lf.py`), which `model parse --form` prints:
+section 7.3; I11b). A line's meaning is its logical form (`scripts/spec_lf.py`), which `spec parse --form` prints:
 its modality and the referents no part introduces (actors and codes as constants, a code that is no word of the
 context as a parameter, the request's own things as indexicals), then its Where, While, trigger and response, each a box
 of referents, atoms and boxes. `scripts/spec_lf_read.py` holds the rules that resolve a word or refuse a line;
-`model parse` refuses a line one of them refuses, naming the words, with its tree.
+`spec parse` refuses a line one of them refuses, naming the words, with its tree.
 
 Each rule names the real lines it was tested on, quoted as they were written then (in the CLI pack's words: a tool
 that runs a command and prints or exits). Each rule's construct is shown here on a twin in request words (the domain
@@ -288,7 +288,7 @@ shall [x3: service the work service (constant)]
 ## R5. "X shall V only Ks that P": every K that X Vs meets P
 
 "only" is an `only` box: its restrictor (the Ks and what restricts them) and its scope (the act). Every K the agent
-Vs meets the restrictor; the line obliges no V. `model logic` reads it so (I12a): it clashes only with a line in
+Vs meets the restrictor; the line obliges no V. `spec logic` reads it so (I12a): it clashes only with a line in
 which the agent Vs a K known not to meet the restrictor (an attribute of another value), never with a V of a K that
 may meet it.
 
@@ -309,7 +309,7 @@ shall []
 ## R6. "every K that P" in a response: for each such K
 
 "every K" is an `every` box: its restrictor and its scope, the act done for each K. The scenario the generator writes
-of such a line gives two Ks, so it is not met vacuously (the generator's part is I14a's). `model logic` reads it so
+of such a line gives two Ks, so it is not met vacuously (the generator's part is I14a's). `spec logic` reads it so
 (I12a): the act is obliged of each K the restrictor allows, so it clashes with a line that forbids the act of a K of
 that kind under the same trigger and state, though that line says more of its K ("a stage whose status is `done`").
 
@@ -334,7 +334,7 @@ shall [x4: service the work service (constant)]
 "a K" is at least one K (R1). A count before a number (one to ten) and a noun, "at least", "at most", "exactly",
 "more than" or "fewer than", is a `count` box over its noun (call 4, I15): its bound and number, its restrictor and its
 scope, the clause said of each K counted. "one K" alone is exactly one. A count that admits no K ("at most", "fewer
-than") obliges no act, as "only" does not. `model logic` reads two counts of one act on one trigger and state: when no
+than") obliges no act, as "only" does not. `spec logic` reads two counts of one act on one trigger and state: when no
 number of Ks meets both, the pair is an L1 (I15).
 
 Tested on U8 ("... a tool shall print one JSON object": exactly one).
@@ -387,7 +387,7 @@ If names an unwanted event whose response takes precedence over a When line's at
 state the response does not change keeps its value (inertia). The form keeps each part as its own box (`when`,
 `while`, `where`, `if`); the check reads them so (I12a, I12b).
 
-`model logic` reads the precedence as stated, never as a clash: an If line and a line of another form on one trigger
+`spec logic` reads the precedence as stated, never as a clash: an If line and a line of another form on one trigger
 are no pair, since where the If line's state holds its response replaces the other's, and where it does not hold the
 If line does not fire. Two If lines on one trigger are still checked against each other. A universal condition holds
 in every trace, so it takes no precedence and none is taken over it: it is paired with each line it bears on, If or
@@ -480,7 +480,7 @@ permits: it obliges nothing, so a "may" line with no trigger stands (R12 refuses
 logic` reports a "shall not" line that forbids what it permits, on one trigger or none, in a state both allow (L7).
 "may not" reads two ways and is refused; so is a line that says both "shall" and "may". "always" and "never" say a
 necessity: a line of no trigger over one state clause, its referents any K, as a While clause's are; a While clause
-may come before it. `model logic` does not read a necessity yet: it is no premise of a pair and hides no finding,
+may come before it. `spec logic` does not read a necessity yet: it is no premise of a pair and hides no finding,
 and the check neither refuses it nor reports it.
 
 ```reading
@@ -522,7 +522,7 @@ kinds by `scripts/spec_rgl_time.py`) and their reading `scripts/spec_lf_time.py`
   refuses "does not V a K".
 - "the clock reaches m" is a trigger like any other action; "the clock" with no antecedent is the time pack's one clock (R11).
 
-`model logic` has no reading of a comparison or a history yet: it refuses a line holding one, naming it ("no
+`spec logic` has no reading of a comparison or a history yet: it refuses a line holding one, naming it ("no
 translation of a comparison of moments", "no translation of the history of end"), as it refuses any construct it
 has no translation for. The blocks below are read in the time fixture
 (`tests/scripts/fixtures/codified-2-time/`, a stage's deadline a moment) by `tests/scripts/test_spec_lf_time.py`.
@@ -594,10 +594,10 @@ blocks are written before it is built, and fail until it is.
 
 The acceptance test of the language is the spec corpus, `grammar/corpus/spec/` (its README): every live line of this
 repository's spec in the new language with the reading it is meant to have, checked by
-`tests/scripts/test_corpus_spec.py` (it parses to that reading, the reading translates to `model logic`'s facts and
+`tests/scripts/test_corpus_spec.py` (it parses to that reading, the reading translates to `spec logic`'s facts and
 to `features generate`'s steps, every live line of a codified-2 file has its block, and the line linearises back
 word for word). This section's twins are the constructs' tests; the corpus is the language's. Every construct of the grammar, these among them, has a code in the construct catalogue,
-`grammar/constructs.md` (`model constructs --write`), by which a line about the language names it.
+`grammar/constructs.md` (`spec constructs --write`), by which a line about the language names it.
 
 ### "the K" outside the box its K is made in, and the cases of "or"
 
@@ -687,7 +687,7 @@ verb is the request pack's state verb `conform` (Frame: thing conforms to artifa
 a While or Where clause and a relative clause it is a state like any other, negated with "does not conform to A",
 counted out with "no K conforms to A", and said "a K that conforms to A" or "a K that does not conform to A". A K of
 another kind after "to" is refused, naming the verb's frame. "the K of X" after "does not conform to" is the K that X
-has, there whether or not X conforms: it stays outside the `not`. In `model logic` the atom is a state like a
+has, there whether or not X conforms: it stays outside the `not`. In `spec logic` the atom is a state like a
 relation's (`crel(R, e_conform, x, a, pos)`, `neg` under a `not`), which clashes as any state does; in a scenario it is
 a Given, "the file f1 does not conform to the stage form", which the codified-2 world records.
 
@@ -807,7 +807,7 @@ out, so it reads as English only when v reads after "is" as an adjective or a pa
 the short form takes, `Values (noun):` every other, and an entry may give both. A line that says a noun value in the
 short form, "is", "is not", "is one of" or "is not `a` or `b`" after the thing alone, is refused, naming the value,
 the attribute and the full form. An entry that gives a plain `Values:` declares neither, and its values keep the short
-form as they did in 0.33, which `model check` warns of (`w_value_kind`). Generated Gherkin says every value in the full
+form as they did in 0.33, which `spec check` warns of (`w_value_kind`). Generated Gherkin says every value in the full
 form, "the status of the item i1 is `idea`", so that whoever binds a step reads the attribute in it; a value of "no K"
 is "no item whose status is `idea` exists". The constructs are `attribute-is` and `adjective-value`.
 
@@ -850,7 +850,7 @@ joined by dots is a value of it; `Order: as listed.` orders them as `Values:` li
 values. "the T of X is v" and "X is v" take any such code too. The atom is `cmp(T(x)) after v` (the design's `cmp(x,
 A, op, v)`), the time pack's comparison of moments said of an attribute (section "Time"); "is not before v" puts it
 under `not`. A code that is no value of the attribute is refused, naming the code and the order; an attribute with
-no `Order:` has no "after" or "before". In `model logic` a comparison is a condition as a value is (`ccmp(R, x, T,
+no `Order:` has no "after" or "before". In `spec logic` a comparison is a condition as a value is (`ccmp(R, x, T,
 after, point)`), checked exactly over the values the two lines of a pair name and the gaps between them (design call
 9): two lines whose ranges share no value never fire together, and a value between two named values (`1.0.1`,
 between `1.0.0` and `2.0.0`) is one that an attribute ordered by number may have and one ordered as listed has not.
@@ -966,7 +966,7 @@ refused: the status of a stage has no value order: its entry says neither Order:
 
 "the T of X is after the T of Y" and "is before" (`value-compare`) compare two things' values of one attribute with a
 value order; "the T of X is the same as the T of Y" (`value-same`) says them equal, of any attribute. Each is one atom,
-`cmp(T(x), after, T(y))`, `cmp(T(x), same, T(y))`, under `not` when the line says "is not". In `model logic` it is
+`cmp(T(x), after, T(y))`, `cmp(T(x), same, T(y))`, under `not` when the line says "is not". In `spec logic` it is
 `ccmp2(R, x, T, Op, y, Pol)`, read over the cells of the points the pair names: two lines whose comparisons of the
 same two values contradict (one says after, the other before) never fire together, so their opposite acts are no L1.
 A cycle of comparisons through three or more things in one gap of a dense order is taken as able to hold: an L1 may
@@ -975,7 +975,7 @@ comparison and value the line names ("the version of the `a` file is `1.0.0`", "
 `0.0.0`"). The comparison words are after and before for every order; "more than", "at least" and the others between
 two values are not yet said. The two sides may be two senses of one attribute word, each of its own entry's kind ("the
 version of a worktree is after the version of a file", b287): read so when the two entries have one value order (the
-same `Order:` or the same `Type:`), over that order's cells in `model logic`, and refused naming the word when their
+same `Order:` or the same `Type:`), over that order's cells in `spec logic`, and refused naming the word when their
 orders differ, for `value-compare` and `value-same` alike.
 
 ```reading
@@ -1006,7 +1006,7 @@ shall [x3: agent the person (constant), x4: service the work service (constant)]
 ", ordered by T, in ascending order" or "in descending order" after a collection that holds members by a row `K1 |
 in | K2` (`order-by`, T an attribute of K1: "a worktree that holds a file, ordered by version, in descending order")
 or after a printed "every K" (`order-by-every`, T an attribute of K) requires the members, or what the agent prints,
-in that order. The form keeps one atom, `ordered(x, T, ascending)`, beside the act; `model logic` keeps it as a fact
+in that order. The form keeps one atom, `ordered(x, T, ascending)`, beside the act; `spec logic` keeps it as a fact
 of the act, and two lines that require one collection, or one printing, in opposite orders on one trigger are an L1;
 nothing else is proved of an order. A scenario gives three members distinct values of T, in neither the order nor
 its reverse, and a Then that states the order ("`work` prints every file, ordered by version, in ascending order"),
@@ -1076,7 +1076,7 @@ them, a `not` for each value. "None of them" is not "some other value the entry 
 is none of them too. "X has no T" says that X's T has no value at all, the atom `T(x) = none`: a fact of its own,
 which no listed value meets, so "has no T" and "is `a`" never hold of one thing together, while "has no T" and "is
 not `a`" do. "every K of X is `v`" (and "is one of ...", "is not ...") says it of each K of X. The list names each
-value once and takes at least two; a value of another attribute is no member of it. In `model logic` a set is the
+value once and takes at least two; a value of another attribute is no member of it. In `spec logic` a set is the
 "or" the check has, one split a value (`R#1`, `R#2` ...), in an `every` box `uin(R, x, T, v)` of each value; the
 absence a condition on the value `absent` (`cond(R, x, T, absent, pos)`), which L3 and L4 read as no value. In a
 scenario a set is a scenario a value, "is not" a Given of each value negated, and the absence the Given "the stage s1
@@ -1221,7 +1221,7 @@ counts: `number x of [y: K]` over the restrictions of y; the Ks it counts are ma
 outside it binds to them (R2). Compared, "the number of Ks that P is more than n" is the count box of R7 over the Ks
 with nothing in its scope: "is more than", "is less than" (R7's "fewer than"), "is at least", "is at most" and "is"
 (exactly), n a number word from one to ten or a code; a code of digits is that number, any other code (`batch_size`)
-a parameter (R10), which the box names. In `model logic` a printed number is an object of its own whose restrictions
+a parameter (R10), which the box names. In `spec logic` a printed number is an object of its own whose restrictions
 are the counted Ks', so two lines that print the numbers of two different sets of things never clash; a compared
 number is a count in a condition (`ccount`), and two lines whose conditions count one set of things with bounds that
 no number meets both of (a clingo `#count`, as two counts of one act are read) never fire together. In a scenario a
@@ -1367,7 +1367,7 @@ These four say it:
   R2 gives it nothing and the line said "two Ks" before it, it is one new K (R1), which each of the two shares: "two
   sessions follow the same stage". Else it is refused as "the K" is.
 
-`model logic` reads `distinct(y, x)` as two things its unification never makes one: when one line's two referents
+`spec logic` reads `distinct(y, x)` as two things its unification never makes one: when one line's two referents
 it holds would be one thing of a pair (one code named of both, a definite both bind to), the pair is not read under
 that unification. A trigger of one act on each of "two Ks" ("writes two files") is one act of the line, a trigger of
 each part: two lines fire on one act when each part of either is a part of the other, so "writes a file" is not the
@@ -1479,7 +1479,7 @@ shall [x5: service the work service (constant)]
     write(e3, subject: x5, object: x6)
 ```
 
-Two lines on one act in two states: the first's two files are in one worktree, the second's in two, so `model logic`
+Two lines on one act in two states: the first's two files are in one worktree, the second's in two, so `spec logic`
 finds no witness where both fire, and no L1:
 
 ```reading
@@ -1539,14 +1539,14 @@ refused: "the session" has no antecedent: "two sessions" gives two sessions, and
 has it, with no entry in the glossary: "exist" is the base grammar's verb, a state, so a trigger may not say it ("When
 a file exists" is refused as a state verb in a trigger is). "X does not exist" puts the atom under `not`; "no K
 exists" is R3's "no K", a `not` box with its K; "a K that exists" and "a K whose T does not exist" are relative
-clauses as any state gives them. In `model logic` existence is the one-place fluent `crel(R, exists, x, none, Pol)`
+clauses as any state gives them. In `spec logic` existence is the one-place fluent `crel(R, exists, x, none, Pol)`
 (the state whose frame takes no object, b219), and "no K exists" `rnone(R, exists, kind(K), none)`: "the `a` file
 exists" clashes with "the `a` file does not exist" and with "no file exists", but not with "the `b` file does not
 exist". In a scenario it is a Given, "the file f1 exists", "the `a` file does not exist" or "no file exists", which
 the world meets by making the thing or leaving it out.
 
 "has been written" is not existence: it is the perfect of an action, the history of section "Time" (built, and
-refused by `model logic` as any history is). A line that means that a thing is there says "exists"; one that means
+refused by `spec logic` as any history is). A line that means that a thing is there says "exists"; one that means
 that an act happened before says the perfect.
 
 Found by the audit in analysis-tools r37-r41 ("this file system holds the dot-venv interpreter": a container noun
@@ -1669,7 +1669,7 @@ p" (not given); an "and" list says several of one request ("with a source and a 
 note": none of them). The parameters a line may say are its operation's, and the values a parameter takes its own:
 grammar 4 generates no other. The request is one atom, `request(e, O, subject: requester, object: x)`, O the
 operation's id, and each parameter `param(e, p, v)` (`some` of "with a p", `on` of a flag) or `noparam(e, p)` beside
-it. In `model logic` a request's trigger is its operation and the parameters the line says, as one key: a parameter
+it. In `spec logic` a request's trigger is its operation and the parameters the line says, as one key: a parameter
 given in one line and absent in another makes two requests, so the line pairs with every line on the same parameter
 set, and a thing a parameter names is part of what the request is on. In a scenario the When names each parameter as
 the line does, and the step's Call gives them to its handler (`params`: each parameter with its value or None,
@@ -1817,7 +1817,7 @@ shall [x1: agent the person (constant), x2: service the work service (constant),
 
 ### What parses is read: a verb of two frames, "shall not V a K that P", "no K that P", "every K that no K Vs"
 
-A line that parses to one meaning is read by `model logic`'s check and by `features generate`'s steps, never refused
+A line that parses to one meaning is read by `spec logic`'s check and by `features generate`'s steps, never refused
 for want of a translation (b236, b237, b238, and the audit's section 3: "the generator and the bar lag the grammar").
 Nothing new is said here; these are the shapes the check or the steps had no reading of:
 
@@ -1844,7 +1844,7 @@ Nothing new is said here; these are the shapes the check or the steps had no rea
   proves nothing of (`oonly`, `ocount`, decision 0093): they oblige no act of their own, agree with any line on the
   act and clash with nothing, and a Then on such an object is never asked of the entailment check; in the steps, the
   Then is the property said of the object, "the worktree w1 holds only files whose version is `2.0.0`", "the
-  worktree w1 holds at most three files" (b272). `model logic` prints each line it has no translation of, `unread
+  worktree w1 holds at most three files" (b272). `spec logic` prints each line it has no translation of, `unread
   <id>: <what it cannot read>`, and never `no findings` beside one.
 
 ```reading
@@ -2032,13 +2032,13 @@ has no unit). Each says the thing in the glossary's words, the word a term of th
 
 ### #13: what a command would write
 
-A line that says X differs from what a command writes now ("is not what `model decisions` would write") compares X
+A line that says X differs from what a command writes now ("is not what `spec decisions` would write") compares X
 with a counterfactual: the output of a run that has not happened. The language has no noun phrase for it: "what
-`model decisions` writes" is no noun phrase (no free relative), and "does not conform to" takes an artifact, which a
+`spec decisions` writes" is no noun phrase (no free relative), and "does not conform to" takes an artifact, which a
 command's output is not. Lines: design-model-check r202, r203 (the decisions index), r220 (the rule catalogue),
 feature-file-tools r106 (a feature that is not what `features generate` writes).
 Each says instead what the stale file lacks, in the item's words: "While a design-decision has an index entry that a
-decisions index does not hold, if the person runs `model decisions --check`, then `model` shall exit with an error
+decisions index does not hold, if the person runs `spec decisions --check`, then `model` shall exit with an error
 naming the decisions index and change no file."; the rows that are extra or changed are lost.
 readiness r33 (b157 r27: the scenarios `features generate` would write of an item's lines) says what the item's
 scenario holds as if the item had it: "While an item is `shaped` and a scenario of the item has a step that holds a
@@ -2148,7 +2148,7 @@ r63 (b153: `work outcome` writes the line outcome it is given), which says inste
 the command's code: "When the person runs `work outcome accepted` on a request line proposed in the request, `work`
 shall set the line outcome of the request line to `accepted` ..." (r82 names the command so too); requests r80 and
 r96, which say "keep the side of the request" (role-boundaries' keep, an act of the agent, not the absence of a
-change), so `model logic` does not read them as leaving the value as it was.
+change), so `spec logic` does not read them as leaving the value as it was.
 
 ### #3: one above the highest
 
@@ -2190,10 +2190,10 @@ scenario, ... `features` shall print the number of examples rows of the scenario
 closure, and a row `feature file | in | subdirectory` is one level. Line: feature-file-tools r91 (b157 r48, where the
 depth was in the gloss of "subdirectory"). It says one subdirectory, and the gloss no longer says "at any depth".
 
-### #16: history, moments, and an "or" of a response, in `model logic` and `features generate`
+### #16: history, moments, and an "or" of a response, in `spec logic` and `features generate`
 
-The constructs `done`, `done-since`, `moment-compare` and `within` of grammar/constructs.md parse and `model parse
---form` prints their reading, but `model logic` has no translation of a history or of a comparison of moments, and
+The constructs `done`, `done-since`, `moment-compare` and `within` of grammar/constructs.md parse and `spec parse
+--form` prints their reading, but `spec logic` has no translation of a history or of a comparison of moments, and
 `features generate` writes no scenario of a line that uses one; nor of a line that uses `or-list` between the objects
 of its response ("shall print a file or a stage"). Until they do, a requirement that uses one of them does not conform
 to the language reference: the scenario of feature-file-tools' catalogue line is written of every other "shall" example of the
@@ -2201,18 +2201,18 @@ catalogue (tests/scenarios/feature_file_tools_world.py reads the codes from this
 
 ### #16: "unchanged since" a moment the line does not name
 
-"S has V-ed O since m" takes a moment m of the line; "the lexicon has not changed since `model parse` last parsed the
+"S has V-ed O since m" takes a moment m of the line; "the lexicon has not changed since `spec parse` last parsed the
 requirement" needs the moment of an earlier run, which no line names. Lines: design-model-check r282, r283, r284
 (b239's parse cache and compiled grammar). Each says instead what the cache holds: the parse of a requirement, whose
 entry gives the cache's key (the requirement's text, its grammar's sources and its lexicon's words), so "a parse
 cache holds the parse of a requirement" is true only while none of them has changed: "While a parse cache holds the
-parse of a requirement, when the person runs `model parse` on the requirement, `model` shall read the parse cache,
+parse of a requirement, when the person runs `spec parse` on the requirement, `model` shall read the parse cache,
 write no compiled grammar and exit successfully."
 
 ### A `not` over a verb inside a "no" box
 
-"no K that no K2 Vs" and "no K that a K2 does not V" parse, but `model logic` reads a `not` inside a "no" box only
+"no K that no K2 Vs" and "no K that a K2 does not V" parse, but `spec logic` reads a `not` inside a "no" box only
 over an attribute of the box's own referent ("no dependency on an item whose status is not `delivered`"), not over a
 verb. Line: design-model-check r251 ("a requirement has no consequence that no premise entails"). It says instead,
 with the verb add (a requirement adds a consequence that no premise entails): "While a requirement has a consequence
-and the requirement adds no consequence, when the person runs `model logic`, `model` shall print `L8`."
+and the requirement adds no consequence, when the person runs `spec logic`, `model` shall print `L8`."

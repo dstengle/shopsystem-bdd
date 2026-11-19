@@ -1,4 +1,4 @@
-"""The plumbing of .shop/ that every command shares: the one refusal, frontmatter read with scripts/model's own reader
+"""The plumbing of .shop/ that every command shares: the one refusal, frontmatter read with scripts/spec's own reader
 (so the two never disagree on a file), the context's path, a file's text, git, a commit of named files only and its
 push (U4, backlog r18; to the branch's upstream, r21; refused on a task's branch, r20), bounded in time (r19), and an
 append to a log whole or not at all. Standard library, shop_refused and model_parse."""
@@ -9,7 +9,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-# scripts/model's own reader (model_parse, standard library only), not the whole of scripts/model, which imports every
+# scripts/spec's own reader (model_parse, standard library only), not the whole of scripts/spec, which imports every
 # check: so the two never disagree on a file, and a command starts without the checks
 from model_parse import frontmatter
 

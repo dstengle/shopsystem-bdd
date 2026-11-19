@@ -92,7 +92,7 @@ instead. Each bullet has the same shape:
   how they read after "is"; see below), `Not:` (words to avoid),
   `Redefines:` (a pack's word this entry takes over).
 
-The grammar is built from these entries, so a term is a word you can use in a line. `model lexicon` lists every word
+The grammar is built from these entries, so a term is a word you can use in a line. `spec lexicon` lists every word
 the context has, by category.
 
 An attribute's values are declared by how they read after "is". `Values (adjective):` lists the ones that read as an
@@ -100,7 +100,7 @@ adjective or a participle (`shaped`, `in-batch`): a line may say them the short 
 full way, "the status of the item is `shaped`". `Values (noun):` lists every other value, a noun (`idea`, a tier
 `check`), a verb phrase (`needs-input`) or a release (`0.30.0`): a line says them only the full way, "the status of
 the item is `idea`" or "an item whose status is `idea`", and the short way is refused with that hint. One entry may
-give both. A plain `Values:` declares neither: its values keep the short way, and `model check` warns
+give both. A plain `Values:` declares neither: its values keep the short way, and `spec check` warns
 `w_value_kind`. The generated scenarios always say the full way, "the status of the item i1 is `idea`".
 
 ### Relations
@@ -117,7 +117,7 @@ give both. A plain `Values:` declares neither: its values keep the short way, an
 
 A row says which kinds a preposition joins. `title | of | item | one` is what lets a line say "the title of the
 item", and `one` says an item has one title. Without the row, "the title of the item" is refused. Here's a line
-that leans on the row `git branch | of | task`, with its meaning as `model parse --form` prints it:
+that leans on the row `git branch | of | task`, with its meaning as `spec parse --form` prints it:
 
 ```reading
 While this repository checks out a git branch of a task, if the person runs `work idea`, then `work` shall refuse the command and name the task.
@@ -181,11 +181,11 @@ shall [x2: agent the person (constant), x3: command `work shape` (parameter), x4
     name(e3, subject: x4, object: x5)
 ```
 
-A line can mean more than it says. `model explain` shows what else follows, here from the CLI pack's meaning of
+A line can mean more than it says. `spec explain` shows what else follows, here from the CLI pack's meaning of
 "refuse" and from the universal condition U12:
 
 ```console
-$ model explain 'backlog#r38'
+$ spec explain 'backlog#r38'
 backlog#r38  While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
 which also means:
   `work` shall exit with an error (by the definition of refuse in the pack cli)
@@ -225,7 +225,7 @@ the measurement `m2` holds:
 
 A given line has one shape: `the <words> <name> holds:` with indented data under it (a docstring or a `|` table),
 or `the <words> <name> holds` followed by one code span or quoted string. Any other given line restates something
-the line already says, and `model check` flags it. The block becomes the scenario's first Given, data and all (see
+the line already says, and `spec check` flags it. The block becomes the scenario's first Given, data and all (see
 [the feature](#the-generated-feature-beside-its-lines)).
 
 ## `spec/index.md`: the bounded context
@@ -315,7 +315,7 @@ retired: [U1, U2, U3, U6, U9, U10, U11, U4, U5, U7, U8]
 ...
 ```
 
-`model logic` adds each one to the background of every check, and `model explain` names it where it applies (the
+`spec logic` adds each one to the background of every check, and `spec explain` names it where it applies (the
 "by U12" above). Add one with `work line --universal`.
 
 ## A decision file
@@ -344,7 +344,7 @@ by: "the plan for b145, 2026-11-10"
 Every refusal of every command is a `shop_refused.Refused` ...
 ```
 
-`tier:` is one of `check` (tests named in `enforced_by:` hold it, and `model decisions --check` runs them),
+`tier:` is one of `check` (tests named in `enforced_by:` hold it, and `spec decisions --check` runs them),
 `requirement` (requirement lines hold it) or `judgement` (a reviewer holds it). The `## Decision` section is
 standing; the rest of the file is record. A capability's `rests_on:` points at these ids.
 
@@ -512,12 +512,12 @@ Four things happened in one commit:
 
 ## Who writes which file
 
-`model forms` prints every file form a context keeps, its path, and the command that writes it. Where it says "no
-command yet", it names the plugin's item that will give the form one; `model forms --check` fails on any form left
+`spec forms` prints every file form a context keeps, its path, and the command that writes it. Where it says "no
+command yet", it names the plugin's item that will give the form one; `spec forms --check` fails on any form left
 to be written by hand. This is its output at b317, verbatim:
 
 ```console
-$ model forms
+$ spec forms
 item                      .shop/backlog/b<n>.md                                work idea
 item's requirement line   .shop/backlog/b<n>.md ## Requirements                work line
 item's term bullet        .shop/backlog/b<n>.md ## Requirements                work line --term
@@ -552,9 +552,9 @@ plan record folder        .shop/records/<date>-<topic>/plan-<k>.md             p
 In short: a new capability is written on an item by `work line --capability` and reaches `spec/` through
 `work batch start`, as do lines, terms of a capability, relation rows of a capability, given blocks, universal
 conditions and upstreams, each by its `work line` option. A glossary term and a glossary relation row wait on plugin
-item b13, and the prose sections (Implementation, Not yet) are edited by hand. After a hand edit, run `model check`
-and `model lexicon --check` to catch a malformed entry.
+item b13, and the prose sections (Implementation, Not yet) are edited by hand. After a hand edit, run `spec check`
+and `spec lexicon --check` to catch a malformed entry.
 
 Next: [writing requirements](../writing-requirements.md) for the language of a line,
 [the commands](commands.md) for every option of `work line` and `features generate`, or
-[the design model](design-model.md) for the rules `model check` holds these files to.
+[the design model](design-model.md) for the rules `spec check` holds these files to.

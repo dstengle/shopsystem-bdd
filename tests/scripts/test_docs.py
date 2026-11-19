@@ -83,10 +83,10 @@ def test_each_console_command_of_a_plugin_tool_exists():
 def test_the_console_check_knows_a_wrong_command_from_a_right_one():
     assert command_problem("work", ["batch", "start"]) is None
     assert command_problem("work", ["backlog", "--json"]) is None
-    assert command_problem("model", ["--root", "x", "parse", "--form", "a line"]) is None
+    assert command_problem("spec", ["--root", "x", "parse", "--form", "a line"]) is None
     assert "no subcommand frobnicate" in command_problem("work", ["frobnicate"])
     assert "no option --nope" in command_problem("work", ["backlog", "--nope"])
-    assert tool_words("python3 ~/.claude/plugins/x/scripts/model check") == ("model", ["check"])
+    assert tool_words("python3 ~/.claude/plugins/x/scripts/spec check") == ("spec", ["check"])
     assert tool_words("git status") is None
 
 
@@ -116,7 +116,7 @@ def run_in_example(*command):
 def test_the_example_context_passes_model_check():
     """(5) docs/examples/notes-cli/ is a context `model check` finds nothing wrong with."""
     toolchain.require()
-    done = run_in_example(str(REPO / "scripts" / "model"), "--root", ".", "check")
+    done = run_in_example(str(REPO / "scripts" / "spec"), "--root", ".", "check")
     assert done.returncode == 0, done.stdout + done.stderr
 
 

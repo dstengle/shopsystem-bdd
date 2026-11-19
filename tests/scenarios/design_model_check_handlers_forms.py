@@ -1,4 +1,4 @@
-"""Handlers of features/design-model-check.feature for the commands that write a file form (b41): `model forms`, which
+"""Handlers of features/design-model-check.feature for the commands that write a file form (b41): `spec forms`, which
 prints every file form, and `work record`, which writes a record and its index row and commits them. What `work`
 wrote and committed is read back by work_queue_handlers' Thens (a record is `.shop/records/<date>-<slug>.md`)."""
 import argparse
@@ -35,9 +35,9 @@ def given_writer(step):
     step.context.setdefault("writers", {})[step.names[0]] = step.values[0].strip("`")
 
 
-@handler("WhenRuns", "`model forms`")
+@handler("WhenRuns", "`spec forms`")
 def model_forms(step):
-    """`model forms`; with the `--check` option run in-process, with a form of the writer each Given gave it added
+    """`spec forms`; with the `--check` option run in-process, with a form of the writer each Given gave it added
     to the table (`F.FORMS`), named in the output by its name (r324)."""
     if "--check" not in H.flag(step, "--check"):
         H.run_model(step, "forms")
@@ -52,7 +52,7 @@ def model_forms(step):
     out, err = io.StringIO(), io.StringIO()
     with mock.patch.object(F, "FORMS", F.FORMS + added), redirect_stdout(out), redirect_stderr(err):
         code = F.cmd_forms(argparse.Namespace(json=False, check=True))
-    step.context["result"] = subprocess.CompletedProcess(["model", "forms", "--check"], code, out.getvalue(),
+    step.context["result"] = subprocess.CompletedProcess(["spec", "forms", "--check"], code, out.getvalue(),
                                                          err.getvalue())
 
 
@@ -103,14 +103,14 @@ def work_record(step):
 
 @handler("GivenK", "rule catalogue")
 def given_catalogue(step):
-    """The rule catalogue `model rules --write` writes in the repository, current until a condition makes it stale."""
+    """The rule catalogue `spec rules --write` writes in the repository, current until a condition makes it stale."""
     H.base(step.repo, step.context)
-    step.run("model", "rules", "--write")
+    step.run("spec", "rules", "--write")
     H.says(step, step.names[0], "grammar/rules.md")
 
 
 @handler("GivenK_C", "rule catalogue")
 def stale_catalogue(step):
-    """stale: an entry of the catalogue edited by hand, so that it is not what `model rules --write` writes."""
+    """stale: an entry of the catalogue edited by hand, so that it is not what `spec rules --write` writes."""
     path = step.repo / "grammar" / "rules.md"
     path.write_text(path.read_text().replace("a requirement has no id", "a requirement has an id", 1))

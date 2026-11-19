@@ -6,7 +6,7 @@ import json
 import sys
 from typing import NamedTuple
 
-SCRIPTS = ("work", "model", "measure", "features", "migrate", "tools")
+SCRIPTS = ("work", "spec", "measure", "features", "migrate", "tools")
 
 
 class Form(NamedTuple):
@@ -40,8 +40,8 @@ FORMS = [
     Form("quote", ".shop/quotes/<n>.md", "work quote"),
     Form("directive", ".shop/directives/<n>.md", "work directive"),
     Form("design-decision", "spec/decisions/<nnnn>-<slug>.md", "work decision"),
-    Form("decisions index", "spec/decisions/index.md", "model decisions"),
-    Form("rule catalogue", "grammar/rules.md", "model rules --write"),
+    Form("decisions index", "spec/decisions/index.md", "spec decisions"),
+    Form("rule catalogue", "grammar/rules.md", "spec rules --write"),
     Form("record", ".shop/records/<date>-<slug>.md", "work record"),
     Form("records index row", ".shop/records/README.md", "work record"),
     Form("feature", "features/<capability>.feature", "features generate"),
@@ -70,7 +70,7 @@ def cmd_forms(args):
     if getattr(args, "check", False):
         hand = [form for form in FORMS if form.kind == "hand"]
         for form in hand:
-            print("model forms: %s (%s) is written by hand: give it a command, or name the plugin item that will"
+            print("spec forms: %s (%s) is written by hand: give it a command, or name the plugin item that will"
                   % (form.name, form.path), file=sys.stderr)
         return 1 if hand else 0
     if args.json:

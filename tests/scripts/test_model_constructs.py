@@ -34,7 +34,7 @@ def blocks():
 
 def test_the_catalogue_is_current():
     toolchain.require()
-    done = subprocess.run([sys.executable, str(REPO / "scripts" / "model"), "--root", str(REPO), "constructs",
+    done = subprocess.run([sys.executable, str(REPO / "scripts" / "spec"), "--root", str(REPO), "constructs",
                            "--check"], capture_output=True, text=True)
     assert done.returncode == 0, done.stdout + done.stderr
     assert done.stdout.strip() == "grammar/constructs.md is current"

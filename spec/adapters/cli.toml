@@ -6,7 +6,7 @@ json = "--json"
 
 [programs]
 work = "scripts/work"
-model = "scripts/model"
+spec = "scripts/spec"
 features = "scripts/features"
 tools = "scripts/tools"
 measure = "scripts/measure"
@@ -23,7 +23,7 @@ broken = { exit = 1, errors = "stderr" }
 [cli-only]
 options = ["--json", "--root", "--hook", "--python"]
 # commands no operation of the model names: the adapter's own (hooks' output, catalogues, reports)
-commands = ["work batch brief", "work directives", "work names", "model constructs", "model restates"]
+commands = ["work batch brief", "work directives", "work names", "spec constructs", "spec restates"]
 
 [unexposed]
 # operations an agent performs when dispatched, which no command requests; upgrades.found until b318 adds its command
@@ -35,46 +35,46 @@ SHOPSYSTEM_WORK_GH = "the issue host port: the gh program context requests and b
 SHOPSYSTEM_PUSH_TIMEOUT = "the shared store port: how long a push may take"
 
 [operations."language.parse"]
-command = "model parse"
+command = "spec parse"
 cli-only = { options = ["--file"] }
 [operations."language.parse".parameters]
 text = { positional = 1 }
 "logical form" = { option = "--form", flag = true }
 
 [operations."language.explain"]
-command = "model explain"
+command = "spec explain"
 [operations."language.explain".parameters]
 text = { positional = 1 }
 
 [operations."language.look up"]
-command = "model lexicon"
+command = "spec lexicon"
 cli-only = { options = ["--check"] }
 
 [operations."specification.check"]
-command = "model check"
+command = "spec check"
 cli-only = { options = ["--limit"] }
 
 [operations."specification.examine"]
-command = "model logic"
+command = "spec logic"
 [operations."specification.examine".parameters]
 capability = { positional = 1 }
 
 [operations."specification.consult"]
-command = "model rules"
+command = "spec rules"
 
 [operations."specification.renew"]
-command = "model rules"
+command = "spec rules"
 cli-only = { options = ["--write"] }
 [operations."specification.renew".parameters]
 audit = { option = "--check", flag = true }
 
 [operations."specification.inventory"]
-command = "model forms"
+command = "spec forms"
 [operations."specification.inventory".parameters]
 audit = { option = "--check", flag = true }
 
 [operations."specification.translate"]
-command = "model facts"
+command = "spec facts"
 
 [operations."decisions.enter"]
 command = "work decision"
@@ -88,7 +88,7 @@ route = { option = "--verified-by", repeat = true }
 supersedes = { option = "--supersedes", repeat = true }
 
 [operations."decisions.rebuild"]
-command = "model decisions"
+command = "spec decisions"
 [operations."decisions.rebuild".parameters]
 audit = { option = "--check", flag = true }
 
@@ -118,6 +118,7 @@ command = "features list"
 [operations."feature reading.search".parameters]
 tag = { option = "--tag" }
 "search text" = { option = "--title" }
+"scenario title" = { option = "--title" }
 
 [operations."feature reading.count"]
 command = "features count"

@@ -36,7 +36,7 @@ NEGATED = {"keep": [("ThenDoesNot", v) for v in KEEPS], "notify": [("ThenPrintsN
            "change": [("ThenDoesNot", v) for v in ("change", "rewrite", "relocate", "rename")]}
 VERBS = {"change": ("rewrite", "relocate", "rename", "commit", "change")}
 # a command whose flagged key is another capability's handler: this capability's runs it plain with the flag
-PLAIN = {("design-model-check", "`model decisions --check`"): "`model decisions`"}
+PLAIN = {("design-model-check", "`spec decisions --check`"): "`spec decisions`"}
 ALWAYS = ("--by-tag",)
 DEFAULT = {"specification.renew": "--write", "scenarios.audit": "--check"}     # a cli-only option argparse requires of its command (`features count --by-tag`)
 MOST = max(len(c) for c in [*THENS.values(), *NEGATED.values(), *VERBS.values()])

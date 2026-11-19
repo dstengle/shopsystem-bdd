@@ -33,7 +33,7 @@ def test_each_form_without_a_command_names_an_item_or_the_hand():
 
 
 def test_it_prints_every_form_on_its_line(tmp_path):
-    done = run(SCRIPTS / "model", "--root", tmp_path, "forms")
+    done = run(SCRIPTS / "spec", "--root", tmp_path, "forms")
     assert done.returncode == 0, done.stderr
     lines = done.stdout.splitlines()
     assert len(lines) == len(model_forms.FORMS)
@@ -45,13 +45,13 @@ def test_it_prints_every_form_on_its_line(tmp_path):
 
 
 def test_json_is_one_object(tmp_path):
-    done = run(SCRIPTS / "model", "--root", tmp_path, "forms", "--json")
+    done = run(SCRIPTS / "spec", "--root", tmp_path, "forms", "--json")
     assert json.loads(done.stdout)["content"] == {"forms": [f._asdict() for f in model_forms.FORMS]}
 
 
 def test_check_passes_this_repository_and_refuses_a_form_by_hand(tmp_path, monkeypatch, capsys):
     """No form of this plugin is written by hand: a new form by hand fails here (b317)."""
-    done = run(SCRIPTS / "model", "--root", REPO, "forms", "--check")
+    done = run(SCRIPTS / "spec", "--root", REPO, "forms", "--check")
     assert (done.returncode, done.stdout, done.stderr) == (0, "", "")
     monkeypatch.setattr(model_forms, "FORMS", model_forms.FORMS + [model_forms.Form("x", "x.md", "by hand")])
     assert model_forms.cmd_forms(type("A", (), {"check": True, "json": False})()) == 1

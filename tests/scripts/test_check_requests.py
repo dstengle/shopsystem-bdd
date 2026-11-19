@@ -30,7 +30,7 @@ def logic(tmp_path, *lines, universal=False):
         "- [r%d] %s\n" % (n, line) for n, line in enumerate(lines, 10)))
     if universal:
         (root / "spec" / "universal.md").write_text(UNIVERSAL)
-    done = subprocess.run([sys.executable, str(REPO / "scripts" / "model"), "--root", str(root), "logic"],
+    done = subprocess.run([sys.executable, str(REPO / "scripts" / "spec"), "--root", str(root), "logic"],
                           capture_output=True, text=True)
     return done.returncode, done.stdout + done.stderr
 

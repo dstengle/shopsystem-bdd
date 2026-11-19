@@ -33,13 +33,13 @@ knows that look like yours, and `may follow:` for what it would have taken there
 
 ## A line is refused
 
-You'll meet these from `model parse`, `work line` and `work ready`. They're all the same check. For the rules
+You'll meet these from `spec parse`, `work line` and `work ready`. They're all the same check. For the rules
 behind them, see [writing requirements](writing-requirements.md).
 
 ### "does not parse at …"
 
 The line uses a word, or an order of words, the grammar doesn't have. Check `nearest words:`: a typo or a plural
-shows up there. If your word is missing from the glossary, `model lexicon` lists every word you have. Add the term
+shows up there. If your word is missing from the glossary, `spec lexicon` lists every word you have. Add the term
 first (see [recipes](recipes.md)), then write the line.
 
 ### "the verb run takes as its object …"
@@ -286,7 +286,7 @@ own. Fix the remote (network, credentials, a renamed repository) and `git push`.
 ```console
 $ features generate
 features: spec/capabilities/notes.md says `language: codified-1`: run `migrate upgrade`
-$ model check
+$ spec check
 v_p0  a spec file is not codified (no `language: codified-2`, or a capability in `codified-1`): run `migrate upgrade`  (1)
     spec/capabilities/notes.md
 ```
@@ -302,7 +302,7 @@ them. [Upgrading](upgrading.md) walks through the lines it asks you to reword.
 $ tools probe
 ...
 grammar:
-  gf missing: requirements cannot be parsed: `work request` and `model check` refuse
+  gf missing: requirements cannot be parsed: `work request` and `spec check` refuse
   pgf 1.1
   clingo 5.8.2
   gf-rgl missing: the grammar over GF's RGL cannot be compiled

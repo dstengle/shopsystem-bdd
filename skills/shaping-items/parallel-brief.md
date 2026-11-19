@@ -4,7 +4,7 @@ The session that shapes several items at once fills this brief once per wave and
 
 ## The wave
 
-Repository: `<the repository's path>`, on `<the base branch>`. Scripts: `<the repository's path>/scripts/` (`python3 scripts/work ...`, `python3 scripts/model ...`).
+Repository: `<the repository's path>`, on `<the base branch>`. Scripts: `<the repository's path>/scripts/` (`python3 scripts/work ...`, `python3 scripts/spec ...`).
 
 | Item | Title | What its lines are to say |
 |---|---|---|
@@ -20,7 +20,7 @@ Follow the shaping-items skill, steps 2-4, on your item: its terms and relation 
 
 - Touch your own item only: every `work` command you run names `b<n>`. Never edit another item, `spec/`, `features/` or any file by hand.
 - Add all your term bullets (and relation rows) before you check a line with `work ready`: each change to the glossary recompiles grammar 4, which takes minutes, so the terms go in at once.
-- Run a long command (`work ready`, `model logic`, `features generate`) with a timeout of a few minutes; past it, say which command and stop.
+- Run a long command (`work ready`, `spec logic`, `features generate`) with a timeout of a few minutes; past it, say which command and stop.
 - No push, and no batch command: `work batch` is the session's, after the wave.
 - Never use `git stash`: every worktree shares one stash list, and the other agents of the wave work at the same time.
 - Never use Claude Code's memory. A direction that should outlast this brief is the session's to write as a directive; say it in your reply.

@@ -117,7 +117,7 @@ def u_problems(records, unpushable=False):
 
 
 def runner(repo, request, scripts=SCRIPTS):
-    """`run("model", "check", ...)`: a script of the plugin run with this Python in the repository; in a generated
+    """`run("spec", "check", ...)`: a script of the plugin run with this Python in the repository; in a generated
     scenario each run is recorded for the U checks."""
     def _run(script, *args, cwd=None, **kwargs):
         record = generated(request.node)

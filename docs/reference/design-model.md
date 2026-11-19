@@ -1,19 +1,19 @@
-# What `model check` holds
+# What `spec check` holds
 
-This page is for the developer who has just met a code like `v_s1` or `w_example` from `model check` and wants to
+This page is for the developer who has just met a code like `v_s1` or `w_example` from `spec check` and wants to
 know what it guards and what to do about it. It shows the things a bounded context keeps, how they point at each
-other, and every rule `model check` holds them to.
+other, and every rule `spec check` holds them to.
 
-`model rules` is the authority. The tables below are its output, word for word, grouped by what each rule guards;
+`spec rules` is the authority. The tables below are its output, word for word, grouped by what each rule guards;
 where this page and the command differ, the command wins. The full catalogue, with a fact set each rule fires on and
-one it passes, is [`grammar/rules.md`](../../grammar/rules.md), which `model rules --write` generates.
+one it passes, is [`grammar/rules.md`](../../grammar/rules.md), which `spec rules --write` generates.
 
 ## A first look
 
 Say you add a scenario to `features/backlog.feature` by hand, with no `@g<n>` tag, and run the check:
 
 ```console
-$ model check --limit 1
+$ spec check --limit 1
 v_s1  a scenario names no group  (1)
     features/backlog.feature:`work backlog` prints nothing for an empty backlog
 warning w_example  a requirement holds example data: a code or quoted string that names no declared constant  (41)
@@ -31,7 +31,7 @@ scenario must come from a group of requirement lines. The fix is to write the li
 
 A few things to know about the output:
 
-- **`v_` codes are violations.** Any one of them makes `model check` exit 1.
+- **`v_` codes are violations.** Any one of them makes `spec check` exit 1.
 - **`w_` codes are warnings.** They are printed, but the exit code stays 0. This repository lives with 57 of them.
 - **Unresolved references** are ids that name nothing, such as a `rests_on:` naming a decision that does not exist.
   Each one also exits 1.
@@ -41,11 +41,11 @@ A few things to know about the output:
 
 ## What a context keeps
 
-`model` reads your files into a graph, and the rules are statements about that graph. `model facts` prints it, one
+`model` reads your files into a graph, and the rules are statements about that graph. `spec facts` prints it, one
 fact a line. Here is one group of `spec/capabilities/backlog.md`, as it prints it (cut to the lines that matter):
 
 ```console
-$ model facts
+$ spec facts
 ...
 node("capability/missingmass.io/shopsystem/shopsystem-bdd/backlog#g36", "requirement-group").
 in("capability/missingmass.io/shopsystem/shopsystem-bdd/backlog#g36", "capability/missingmass.io/shopsystem/shopsystem-bdd/backlog").
@@ -57,7 +57,7 @@ generates("capability/missingmass.io/shopsystem/shopsystem-bdd/backlog#g36", "fe
 ```
 
 Read it as: group g36 is in the backlog capability, requirement r36 is a member of it, r36 parses, and g36 generates
-one scenario. The kinds of node `model facts` gives, and where each lives:
+one scenario. The kinds of node `spec facts` gives, and where each lives:
 
 | kind | where it lives |
 |---|---|
@@ -78,7 +78,7 @@ something standing, and its `about:` must name one.
 Items, batches and quotes (`.shop/backlog/`, `.shop/batches/`, `.shop/quotes/`) are not in the graph. `work` checks
 those files itself each time it reads one, and refuses a malformed one, naming the file and the field.
 
-The edges, as `model facts` gives them:
+The edges, as `spec facts` gives them:
 
 ```mermaid
 flowchart BT
@@ -99,20 +99,20 @@ flowchart BT
 In words: a capability is in the bounded context, and so is each term. A group is in a capability; each requirement
 is a member of one group, and each group generates one scenario. A capability rests on decisions. A decision may
 supersede another, be enforced by requirements, and rest on universal conditions. A record is about the context, a
-capability or a decision. A request names the context it is asked of as its upstream. (`model facts` names the
+capability or a decision. A request names the context it is asked of as its upstream. (`spec facts` names the
 decision edges `enforced_req` and `decision_rests_on`.)
 
 ## The rules
 
-Each table gives the code and label as `model rules` prints them, then what to do when the rule fires. Run
-`model rules` to see the list for your release.
+Each table gives the code and label as `spec rules` prints them, then what to do when the rule fires. Run
+`spec rules` to see the list for your release.
 
 ### Ids
 
 Ids are never reused, so a scenario's `@r<n>` tag always means one line. Let `work line` hand out ids; never number
 a line by hand.
 
-| code | `model rules` says | when it fires |
+| code | `spec rules` says | when it fires |
 |---|---|---|
 | `v15a` | a requirement has no id | Give the line its `[r<n>]`. A line added through `work line` gets one. |
 | `v15b` | two requirements share an id | Give one of them the next free id with `work line`. |
@@ -130,7 +130,7 @@ new id and puts the old one under `retired:`.
 
 A group is one requirement line and the one scenario generated from it.
 
-| code | `model rules` says | when it fires |
+| code | `spec rules` says | when it fires |
 |---|---|---|
 | `v15k` | the statements of a group differ in trigger or condition | Split the group: one trigger and condition a group. |
 | `v15l` | a group has more than one statement | Join them into one line, `shall A and B`, or split the group. |
@@ -145,11 +145,11 @@ A group is one requirement line and the one scenario generated from it.
 
 Every line of the spec is parsed in the context's grammar. A line that does not parse cannot become a scenario.
 
-| code | `model rules` says | when it fires |
+| code | `spec rules` says | when it fires |
 |---|---|---|
 | `v_p0` | a spec file is not codified (no `language: codified-2`, or a capability in `codified-1`): run `migrate upgrade` | Run `migrate upgrade`, then reword what it reports. See [upgrading](../upgrading.md). |
-| `v_p1` | a requirement does not parse | Run `model parse "<line>"`: it shows where the parse stopped and the words that may follow. Reword the line under a new id. |
-| `v_p2` | a requirement parses to more than one tree | The line can be read two ways. Reword it until `model parse` prints one tree. |
+| `v_p1` | a requirement does not parse | Run `spec parse "<line>"`: it shows where the parse stopped and the words that may follow. Reword the line under a new id. |
+| `v_p2` | a requirement parses to more than one tree | The line can be read two ways. Reword it until `spec parse` prints one tree. |
 | `v_p3` | a line of a group's given block does not parse in the step grammar | Reword the given line in the glossary's words. |
 
 [Writing requirements](../writing-requirements.md) has the common refusals and their fixes.
@@ -157,10 +157,10 @@ Every line of the spec is parsed in the context's grammar. A line that does not 
 ### The glossary
 
 The glossary is the lexicon every line is parsed with, so its entries are checked before any line is.
-`model lexicon --check` checks the glossary alone, before any line: it prints v_t4-v_t15, among them v_t7-v_t10, which
-`model rules` does not list (they are in [`grammar/rules.md`](../../grammar/rules.md)).
+`spec lexicon --check` checks the glossary alone, before any line: it prints v_t4-v_t15, among them v_t7-v_t10, which
+`spec rules` does not list (they are in [`grammar/rules.md`](../../grammar/rules.md)).
 
-| code | `model rules` says | when it fires |
+| code | `spec rules` says | when it fires |
 |---|---|---|
 | `v_t1` | a word the glossary avoids | A line or scenario uses a word listed after a term's `Not:`. Use the term. |
 | `v_t2` | a term has two entries, other than the senses of one verb | Merge the two entries into one. |
@@ -178,7 +178,7 @@ The glossary is the lexicon every line is parsed with, so its entries are checke
 
 ### Decisions
 
-| code | `model rules` says | when it fires |
+| code | `spec rules` says | when it fires |
 |---|---|---|
 | `v12a` | a decision has no summary | Add `summary:`. `work decision` refuses to write one without it. |
 | `v12b` | a supersedes cycle | Two decisions supersede each other, directly or around a loop. Break the loop. |
@@ -190,11 +190,11 @@ The glossary is the lexicon every line is parsed with, so its entries are checke
 | `w_untiered` | a decision in force gives no tier | Add `tier:` (`check`, `requirement` or `judgement`). |
 | `w_unrouted` | a universal condition no decision routes | Write a decision that rests on the `U<n>` with a `verified_by:` route. |
 
-`model decisions --check` runs the tests each check decision names.
+`spec decisions --check` runs the tests each check decision names.
 
 ### Records and requests
 
-| code | `model rules` says | when it fires |
+| code | `spec rules` says | when it fires |
 |---|---|---|
 | `v10a` | a source that is not an origin | A `source:` must name an observation, a measurement or a review finding. |
 | `v10b` | a record is about nothing | Add `about:`. `work record` writes it (default: the bounded context). |
@@ -208,7 +208,7 @@ The glossary is the lexicon every line is parsed with, so its entries are checke
 
 ### Example data in a line
 
-| code | `model rules` says | when it fires |
+| code | `spec rules` says | when it fires |
 |---|---|---|
 | `w_example` | a requirement holds example data: a code or quoted string that names no declared constant | Move the sample value into the group's given block (`work line --given`), or make it a term if it is a real constant. |
 
@@ -219,7 +219,7 @@ A line says what is true for every value; the given block holds the value a scen
 Plugin 0.30 kept jobs, seams, job-threads and pinned dependencies between contexts. These rules still guard those
 edges. A 0.33 repository writes none of them, so in practice only the parts on today's kinds can fire.
 
-| code | `model rules` says | when it fires |
+| code | `spec rules` says | when it fires |
 |---|---|---|
 | `v2` | a standing edge touches something that is not standing | An `in`, `member_of`, `generates`, `rests_on` or `supersedes` names a record or another non-standing node. Point it at a standing one. |
 | `v4` | a depends_on that no using gives | 0.30 only. |
@@ -240,8 +240,8 @@ Most rules are themselves requirements of this repository's `design-model-check`
 checked by its own scenarios. Here is `v15c`'s, `design-model-check#r177`, with its meaning:
 
 ```reading
-While a capability violates `v15c`, if the person runs `model check`, then `model` shall exit with an error naming `v15c`.
-shall [x2: rule `v15c` (parameter), x3: agent the person (constant), x4: command `model check` (parameter), x5: tool `model` (constant)]
+While a capability violates `v15c`, if the person runs `spec check`, then `model` shall exit with an error naming `v15c`.
+shall [x2: rule `v15c` (parameter), x3: agent the person (constant), x4: command `spec check` (parameter), x5: tool `model` (constant)]
   while [x1: capability]
     violate(subject: x1, object: x2)
   if

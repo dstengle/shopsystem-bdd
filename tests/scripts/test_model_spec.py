@@ -18,7 +18,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tests"))
 import toolchain
 
-SCRIPT = ROOT / "scripts" / "model"
+SCRIPT = ROOT / "scripts" / "spec"
 GLOSSARY = ROOT / "tests" / "scripts" / "fixtures" / "glossary" / "spec" / "index.md"
 PATH = "example.org/fixture/glossary"
 CTX = f"bounded-context/{PATH}"

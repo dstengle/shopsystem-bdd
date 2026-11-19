@@ -151,7 +151,7 @@ def test_the_fixture_passes_model_check_and_its_features_are_current():
     import subprocess
     import sys
     scripts = pathlib.Path(__file__).resolve().parents[2] / "scripts"
-    check = subprocess.run([sys.executable, str(scripts / "model"), "check"], cwd=FIXTURE, capture_output=True,
+    check = subprocess.run([sys.executable, str(scripts / "spec"), "check"], cwd=FIXTURE, capture_output=True,
                            text=True)
     assert check.stdout.strip().endswith("0 violations, 0 warnings, 0 unresolved references, 0 file problems"), \
         check.stdout

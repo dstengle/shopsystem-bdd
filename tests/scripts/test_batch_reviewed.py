@@ -143,7 +143,7 @@ def test_a_failing_gh_records_nothing(briefed, monkeypatch, fail, text):
 
 def test_model_check_takes_the_review_record(briefed):
     ok(reviewed(briefed, FIX_NOW_B1))
-    done = subprocess.run([sys.executable, str(SCRIPTS / "model"), "--root", str(briefed), "check"],
+    done = subprocess.run([sys.executable, str(SCRIPTS / "spec"), "--root", str(briefed), "check"],
                           capture_output=True, text=True, timeout=120)
     assert done.returncode != 2, done.stdout + done.stderr
     assert "review-1.md" not in done.stdout + done.stderr

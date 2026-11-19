@@ -3,7 +3,7 @@
 of it, the one requirement of the capability c1 in the catalogue's context `grammar/corpus/constructs/` (`prepare`), or
 of holds-exactly with `rc-object` or `of-relation` (b315) and of nothing with `rc-subject` b297's line on a response's object (`returned`);
 "the step s2 uses `not-condition`" holds when a step of the feature `features generate` wrote reads, in the step
-grammar 4, as a tree that uses the construct as `model constructs` tells it (`uses`). A requirement that uses an
+grammar 4, as a tree that uses the construct as `spec constructs` tells it (`uses`). A requirement that uses an
 order (b275) is the example of `order-by-every`, and "the scenario s1 has the order counter-example o2" holds when
 the feature's Then states the order and its Givens give at least three members distinct values in neither that order
 nor its reverse, so that world_order's check of the Then fails on the members printed as given (`counter`). A
