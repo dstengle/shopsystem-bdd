@@ -102,6 +102,9 @@ too, beside it.
   that mean different things are refused, naming the words that read two ways.
 - **A refusal says where and why.** When GF stops, the plugin reports how far it got, the nearest words in the
   lexicon, and, when it can tell, the verb whose frame the line breaks.
+- **Only catalogued constructs.** A tree that uses a construct the construct catalogue
+  (`grammar/constructs.md`) has no entry of is refused, naming the construct. The catalogue is the language's
+  specification: each entry's purpose, the items that brought and changed it, and its example, its test.
 
 Here is a line the grammar parses but a reading rule refuses, because "the item" points at nothing:
 

@@ -203,6 +203,8 @@ The model is checked on its own, and every line against it ([the domain model](d
 | `v_a2` | the CLI contract names an operation the model does not declare, or a parameter its operation does not declare | Fix the table's name, or declare the operation or parameter. |
 | `v_a3` | the CLI contract names a command or an option the program's argparse lacks | Fix the contract, or add the command or option to the program. |
 | `v_a4` | a command or an option of the program's argparse is named by no table of the CLI contract and is not cli-only | Name it in an operation's table, or list it under `[cli-only]`. |
+| `v_a5` | an operation of an adapter contract does not hold a requirement that governs it: run spec annotate | A line whose trigger requests the operation is missing from its `requirements`. Run `spec annotate`. |
+| `v_a6` | an operation of an adapter contract holds a requirement that does not govern it: run spec annotate | A listed line was retired, or its trigger no longer requests the operation. Run `spec annotate`. |
 
 See [adapter contracts](adapters.md).
 
@@ -266,15 +268,20 @@ edges. A 0.33 repository writes none of them, so in practice only the parts on t
 | `w_unserved_job` | a job nothing serves | 0.30 only. |
 | `w_seam_unused` | a seam nothing crosses | 0.30 only. |
 
-## A rule is a line too
+## The catalogues are specification
 
-Most rules are themselves requirements of this repository's `design-model-check` capability, so the check is
-checked by its own scenarios. Here is `v15c`'s, `checking#r6`, with its meaning:
+The rules on this page, and the constructs a line may use, are not each a requirement line. The grammar's definition
+(its GF sources, the generated context grammar and the reading rules of [`grammar/language.md`](../../grammar/language.md))
+is the source of truth, and two generated catalogues are the specification of it: the rule catalogue
+[`grammar/rules.md`](../../grammar/rules.md) and the construct catalogue
+[`grammar/constructs.md`](../../grammar/constructs.md). The requirements of the `checking` and `parsing` capabilities
+say only what the services do with them. Here is the general line of an error rule, `checking#r52`, with its meaning:
 
 ```reading
-While a capability violates `v15c`, if the person validates this specification, then the specification service shall fail the check and name `v15c`.
-shall [x2: rule `v15c` (parameter), x3: agent the person (constant), x4: specification "the specification of this bounded context" (indexical), x5: service the specification service (constant), x6: check "the check the trigger makes" (indexical)]
-  while [x1: capability]
+While a capability violates a rule whose severity is `error`, if the person validates this specification, then the specification service shall fail the check and name the rule.
+shall [x3: agent the person (constant), x4: specification "the specification of this bounded context" (indexical), x5: service the specification service (constant), x6: check "the check the trigger makes" (indexical)]
+  while [x1: capability, x2: rule]
+    severity(x2) = `error`
     violate(subject: x1, object: x2)
   if
     request(e1, specification.check, subject: x3, object: x4)
@@ -283,7 +290,40 @@ shall [x2: rule `v15c` (parameter), x3: agent the person (constant), x4: specifi
     name(e3, subject: x5, object: x2)
 ```
 
-`grammar/rules.md` lists, under each rule, the lines that cite it.
+One line holds for every `v_` rule; a warning's line says the rule is named and the request completes. What a single
+rule catches is its catalogue entry, and the entry's examples are its test:
+
+```markdown
+## v_r1
+
+an item cites a record in its `source:`: an item's provenance cites quotes, requests and decisions, never a record
+
+- Purpose: keep the live system off the records, which are kept but never cited.
+- Since: b<n>
+- Changed: b<n>, ...
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Fails on: a fact set the rule fires on
+- Passes on: a fact set it passes
+```
+
+Each entry, of either catalogue, carries:
+
+- **its code and label**, the code a line names it by (`` `v_r1` ``, `` `order-by` ``);
+- **Purpose:** a sentence or two on what the rule or construct is for;
+- **Since: b<n>**, the delivered item that brought it, and **Changed: b<n>, ...**, each delivered item that changed it
+  since. A batch that changes a construct or a rule adds its item to the entry's `Changed:`. Items are named, never
+  records: a record is kept, not cited;
+- **its example**: a rule's fact set it fails on and one it passes on, each run before the file is written; a
+  construct's example line, parsed to one tree that uses the construct, read by no reading rule's refusal and read
+  back word for word, with its logical form.
+
+The checks on the catalogues themselves: `spec check` fails a line that uses a rule the rule catalogue has no entry
+of, and an entry with no purpose, naming no item or naming an item not delivered; `spec parse` refuses a line that
+uses a construct the construct catalogue has no entry of, naming the construct. A change to the language is a change
+to the grammar and its catalogue entry, not a new requirement line; a choice that holds for the whole language (one
+meaning or refused, no passive) is a decision of tier `check`, held by the corpus's refusal examples.
+`spec rules --write` and `spec constructs --write` generate the catalogues; `--check` says whether each is current.
 
 ## Where this came from
 

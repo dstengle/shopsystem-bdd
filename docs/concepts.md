@@ -20,14 +20,29 @@ If you want the machinery behind a word, [How it works](how-it-works.md) has it.
 motion first, take [the tour](tour.md).
 
 **On this page:** [bounded context](#bounded-context) · [domain model](#domain-model) ·
-[vocabulary and packs](#vocabulary-and-packs) · [adapter contract](#adapter-contract) ·
-[capability](#capability) · [requirement line](#requirement-line) · [group](#group) · [given block](#given-block) ·
-[universal condition](#universal-condition) · [scenario and feature file](#scenario-and-feature-file) ·
+[service and operation](#service-and-operation) · [vocabulary and packs](#vocabulary-and-packs) ·
+[adapter contract](#adapter-contract) · [capability](#capability) · [requirement line](#requirement-line) ·
+[construct catalogue and rule catalogue](#construct-catalogue-and-rule-catalogue) · [group](#group) ·
+[given block](#given-block) · [universal condition](#universal-condition) ·
+[scenario and feature file](#scenario-and-feature-file) ·
 [item](#item) · [backlog](#backlog) · [readiness bar](#readiness-bar) · [batch](#batch) ·
 [pull request review and finding](#pull-request-review-and-finding) · [request](#request) · [record](#record) ·
 [decision](#decision) · [quote](#quote) · [measurement and defect](#measurement-and-defect)
 
 ## The spec
+
+A context's specification has four parts, and each part has one job:
+
+| part | lives in | its job |
+|---|---|---|
+| domain model | `spec/model/` | the structure: what there is, and what can be asked of it |
+| vocabulary | `spec/vocabulary/` | the words: each names one element of the model |
+| requirements | `spec/capabilities/`, `spec/universal.md` | the rules: what a service does when asked, one checked line each |
+| decisions | `spec/decisions/` | the choices: why it is built so, and how each choice is held to |
+
+The adapter contracts (`spec/adapters/`) sit beside the four: they say how one interface asks for the operations,
+never what an operation does. The grammar the lines are parsed in is the plugin's, the same in every context, and no
+part of one (the decision "The specification has four parts", `spec/decisions/0107-the-specification-has-four-parts.md`).
 
 ### Bounded context
 
@@ -72,6 +87,22 @@ service backlog
 Every rule about these (what `shape` does, when it refuses) is a requirement line; `spec check` holds each line to
 what the model declares, and the model to its lines (an operation with no line, a refusal reason no line states).
 Read more: [The domain model](reference/domain-model.md).
+
+### Service and operation
+
+A service is what answers requests in one area; an operation is one thing an actor may ask of it, with its
+parameters and the kinds of outcome it has.
+
+- **Lives in:** the domain model, as `service <name>` and its `operation <name>(<parameters>)` lines.
+- **Written by:** `work line --model`, on an item.
+
+`operation shape(item, note)  outcomes: done | refused: item not an idea, no note` says that `shape` takes an item
+and a note, and either completes or refuses the request for one of two reasons. Every operation answers with the
+same response, whatever the interface: its outcome (`done`, `returned`, `refused`, `passed` or `failed`), its
+content, the errors that name the business references a refusal is about (`parameter:note`, `item:b12`), and
+notices. A requirement line says which outcome comes when; `spec check` fails a refusal reason no line states, and
+an operation no line requests.
+Read more: [The response](reference/adapters.md#the-response).
 
 ### Vocabulary and packs
 
@@ -124,10 +155,26 @@ parameter's option, and how each outcome shows (exit 0, exit 1 with the reasons 
 under `--json`).
 
 - **Lives in:** `spec/adapters/<port>.toml`; this repository's is [`spec/adapters/cli.toml`](../spec/adapters/cli.toml).
-- **Written by:** hand, for now (a plugin item gives it its commands).
+- **Written by:** hand, for the mapping (a plugin item gives it its commands); `spec annotate` for each operation's
+  `requirements`.
 
 No requirement line names a command, an option or an exit code; `spec check` holds the contract and the programs'
-argparse to each other. Read more: [Adapter contracts](reference/adapters.md).
+argparse to each other. Each operation's table also lists, generated, the requirement lines that **govern** it (a
+line governs an operation when its trigger requests it), its refusals among them, so whoever works on the command
+reads its business rules where they use it:
+
+```toml
+[operations."notes.add"]
+command = "notes add"
+requirements = [
+  "notes#r1: When the person adds a note with a title and a tag, the notes service shall keep the note under the tag.",
+  "notes#r2: If the person adds a note without a title, then the notes service shall refuse the request and name the title.",
+]
+```
+
+`spec annotate` writes those lists; `spec check` fails an operation that misses a line that governs it (`v_a5`) or
+holds one that no longer does (`v_a6`), so they never fall behind the spec. Read more:
+[Adapter contracts](reference/adapters.md).
 
 ### Capability
 
@@ -185,6 +232,27 @@ part the checks and the generator read.
 This line is `items#r14`. Try one yourself with `spec parse "<line>"`.
 Read more: [Writing requirements](writing-requirements.md) and the language reference,
 [`grammar/language.md`](../grammar/language.md).
+
+### Construct catalogue and rule catalogue
+
+The construct catalogue lists every construct of the language a line may use; the rule catalogue lists every rule
+`spec check` holds a context to. Both are part of the plugin's own specification: its requirements say only the
+language and checking services' general behaviour (a line parsed to one meaning or refused naming why; a violation of
+an error rule fails the check naming the rule), and each catalogue entry, with its example, says one construct or
+rule.
+
+- **Live in:** the plugin's [`grammar/constructs.md`](../grammar/constructs.md) and
+  [`grammar/rules.md`](../grammar/rules.md).
+- **Written by:** `spec constructs --write` and `spec rules --write`, from the grammar's definition; `work batch start`
+  writes them again when a batch's lines cite one of their codes.
+
+Each entry gives its code, a label, a short purpose (what the construct or rule is for), `Since: b<n>`, the item that
+brought it, and `Changed: b<n>, ...`, the items that changed it since, then its example: a construct's example is
+parsed to one tree that uses it and read back word for word, a rule's fact sets are one it fails on and one it passes
+on. The example is the entry's test. A line that uses a construct the construct catalogue has no entry of is refused
+naming the construct, so the language a context writes in is exactly the catalogue's. A line names a construct or a
+rule by its code, as in "a requirement that uses `order-by`".
+Read more: [The catalogues](reference/design-model.md#the-catalogues-are-specification).
 
 ### Group
 
@@ -527,7 +595,8 @@ and [the request commands](reference/commands.md#requests).
 
 ### Record
 
-A record is a dated report kept for good: an analysis, a design, a plan, a measurement. It is never edited.
+A record is a dated report kept for good: an analysis, a design, a plan, a measurement. It is never edited, and
+nothing of the live system stands on it.
 
 - **Lives in:** `.shop/records/<date>-<slug>.md`, with a row in `.shop/records/README.md`.
 - **Written by:** `work record`. A design's or a plan's folder, `.shop/records/<date>-<topic>/`, is written by hand.
@@ -538,7 +607,12 @@ The row of the design this page was written from:
 | `2026-11-10-user-docs/design.md` | b170 and b247: the user documentation for plugin 4.0: its four readers, the voice, the pages under `docs/` ... | design |
 ```
 
-Read more: [`work record`](reference/commands.md#work-record).
+The records policy: a record is kept and indexed, never cited. An item's provenance (its `source:`) cites the
+person's quoted words, a request or a decision, never a record; `spec check` fails a new item that cites one
+(`v_r1`) and notes an older one (`w_r1`). When a choice must rest on what a record concluded, the conclusion is
+restated as a decision, and the item cites the decision.
+Read more: [`work record`](reference/commands.md#work-record), and the decision "Records are kept, never cited"
+(`spec/decisions/0106-records-are-kept-never-cited.md`).
 
 ### Decision
 

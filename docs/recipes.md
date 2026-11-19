@@ -19,7 +19,8 @@ shows how to run them from the plugin's directory. Every command's full contract
 [a relation, given block, universal or upstream](#add-a-relation-row-a-given-block-a-universal-condition-or-an-upstream) ·
 [change a delivered line](#change-a-delivered-line) · [a new capability](#start-a-new-capability) ·
 [a chore](#shape-a-chore) ·
-[what a line means](#see-what-a-line-means) · [ready and blocked](#find-what-is-ready-and-what-blocks-it) ·
+[what a line means](#see-what-a-line-means) ·
+[an adapter contract behind its lines](#bring-an-adapter-contract-up-to-its-lines) · [ready and blocked](#find-what-is-ready-and-what-blocks-it) ·
 [park and answer](#park-a-question-mid-batch-and-answer-it) · [abandon a batch](#abandon-a-batch) ·
 [defects and comparisons](#record-a-defect-and-compare-two-batches) ·
 [decisions and records](#write-a-design-decision-or-a-record) · [watch requests](#watch-requests-while-you-work) ·
@@ -300,6 +301,24 @@ which also means:
 
 A line with nothing more to it prints only itself. For the logical form of a line that isn't in `spec/` yet, use
 `spec parse --form "<line>"` (see [writing requirements](writing-requirements.md)).
+
+## Bring an adapter contract up to its lines
+
+**When:** `spec check` names `v_a5` or `v_a6`: an operation of `spec/adapters/cli.toml` misses a line that governs
+it, or still lists one that was retired or no longer requests it.
+
+Each operation's `requirements` are generated from the spec. Write them again and look at what changed:
+
+```console
+$ spec annotate --check
+spec annotate: spec/adapters/cli.toml is stale: its operations do not hold the requirements that govern them; run `spec annotate`
+$ spec annotate
+annotated spec/adapters/cli.toml
+```
+
+`spec annotate` changes only the `requirements` lists; the commands, options and outcomes are yours, written by
+hand. Run it whenever a line that requests an operation is added, reworded or retired, so the contract always
+shows the operation's business rules beside its command. [Adapter contracts](reference/adapters.md) has the format.
 
 ## Find what is ready and what blocks it
 

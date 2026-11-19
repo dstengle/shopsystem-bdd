@@ -136,6 +136,13 @@ the operations, and drive the program through its adapter.
   A command that printed its own JSON object before prints it under `content` now: read `content` where you read
   the object.
 - **Records are never cited.** A new item's `source:` naming a record is refused (`v_r1`); an older one is a warning.
+- **Each operation carries its lines.** `spec/adapters/cli.toml` lists under each operation the requirement lines
+  that govern it, refusals included. Once your lines are reworded, run `spec annotate`; `spec check` fails an
+  operation that misses a governing line or keeps one that no longer governs it (`v_a5`, `v_a6`).
+- **The catalogues are the language's specification.** The plugin's construct catalogue and rule catalogue are part
+  of its specification, each entry with its purpose, `Since:` and `Changed:` items and its example as its test; a
+  line that uses a construct the construct catalogue has no entry of is refused naming it. Nothing to do in your
+  context; a refusal names the construct when a line strays outside the language.
 
 ## From 0.32 to 0.33
 

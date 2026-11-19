@@ -72,7 +72,9 @@ reach for when you need them.
 
 **Knowing**, the ideas behind the workflow:
 
-- [Concepts](concepts.md): the words of the workflow, from capability and item to batch and request.
+- [Concepts](concepts.md): the specification's four parts (domain model, vocabulary, requirements, decisions),
+  services and operations, adapter contracts, the catalogues, and the words of the workflow from item to request,
+  with the records policy.
 - [Writing requirements](writing-requirements.md): the controlled language for writers, with "this, not that" pairs.
 - [How it works](how-it-works.md): from a line to a test, and the machinery of a batch.
 
@@ -80,11 +82,14 @@ reach for when you need them.
 
 - [Commands](reference/commands.md): every subcommand of `work`, `spec`, `features`, `tools`, `measure` and `migrate`.
 - [The domain model](reference/domain-model.md): the model and vocabulary files, their syntax and their checks.
-- [Adapter contracts](reference/adapters.md): the response envelope and the CLI's contract, `spec/adapters/cli.toml`.
+- [Adapter contracts](reference/adapters.md): the response envelope and the CLI's contract, `spec/adapters/cli.toml`,
+  with the requirement lines that govern each operation.
 - [The capability file](reference/capability-file.md): the files of a spec, section by section.
-- [The design model](reference/design-model.md): the kinds a context keeps and the rules `spec check` holds.
+- [The design model](reference/design-model.md): the kinds a context keeps, the rules `spec check` holds, and the
+  catalogues as specification.
 - [`grammar/language.md`](../grammar/language.md): the language's reference, every rule with its readings.
-- [`grammar/constructs.md`](../grammar/constructs.md): each construct of the grammar, generated.
+- [`grammar/constructs.md`](../grammar/constructs.md): the construct catalogue, each construct a line may use, generated.
+- [`grammar/rules.md`](../grammar/rules.md): the rule catalogue, each rule `spec check` holds, generated.
 - [`grammar/packs/`](../grammar/packs/): the word packs a context imports (`request`, `spec`, `time`; `cli` retired in 0.38.0).
 
 **History**, kept as it was:
