@@ -94,10 +94,10 @@ class WorkReading:
             if path == obs:
                 continue
             data, _ = frontmatter(path.read_text())
-            if not data.get("id"):
-                continue
-            self.unread(data, path)
             kind = data.get("kind")
+            if not data.get("id") or kind is None:
+                continue        # a record's supporting file (a trial's copy of a capability, say), no record of its own
+            self.unread(data, path)
             if kind not in RECORD_KINDS:
                 self.problems.append(f"{self.rel(path)}: kind {kind!r} is not a record kind")
                 continue
