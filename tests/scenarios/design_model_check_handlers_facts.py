@@ -28,12 +28,13 @@ WORLDS = _sibling("design_model_check_worlds.py", "shop_design_model_check_world
 CACHE = _sibling("design_model_check_handlers_cache.py", "shop_design_model_check_handlers_cache")
 local = W.local
 FEATURE = "design-model-check.feature"
+LANGUAGE = ("parsing",)     # the language service's features whose worlds are this feature's (b369)
 NAME = re.compile(r"^[a-z][a-z-]*[1-9]\d*$")
 
 
 def ours(step):
-    """True for a step of features/design-model-check.feature."""
-    return sys.modules["vocab"].origin(step.request.node) == FEATURE.removesuffix(".feature")
+    """True for a step of features/design-model-check.feature, or of the language service's (parsing)."""
+    return sys.modules["vocab"].origin(step.request.node) in (FEATURE.removesuffix(".feature"),) + LANGUAGE
 
 
 def phrase(text):
@@ -49,10 +50,9 @@ def remember(step, fact):
 
 
 # The kinds only this feature's Givens bring in: nothing is written of one, the world its facts pick writes it.
-KINDS = ("act", "catalogue entry", "clock trigger", "code", "comparison", "compiled grammar", "consequence", "count",
-         "definite noun phrase", "fact", "file form", "frame", "index entry", "logical form", "negated indefinite",
-         "noun phrase", "number", "object", "order", "pack", "parse", "parse cache", "passive form", "perfect", "precondition",
-         "preposition", "recipient", "refusal", "sense", "subject", "trigger", "value order", "verb")
+KINDS = ("act", "catalogue entry", "code", "comparison", "compiled grammar", "consequence", "count", "fact", "file form",
+         "frame", "index entry", "logical form", "order", "pack", "parse", "parse cache", "precondition", "preposition",
+         "refusal", "sense", "trigger", "value order", "verb")
 SHARED = ("rule", "requirement id", "text", "universal condition")
 
 
@@ -96,9 +96,9 @@ def fact(step, name, had):
     H.says(step, name, 'node("%s"' % H.full("capability", "fact-%s" % name))
 
 
-OWN = {"GivenDoes": ("add", "allow", "contradict", "exist", "forbid", "import", "lack", "oblige", "omit",
-                     "override", "permit", "redefine", "refer", "take", "use"),
-       "GivenDoesNot": ("agree", "import", "unify", "use")}
+OWN = {"GivenDoes": ("add", "allow", "contradict", "exist", "forbid", "import", "lack", "oblige", "override", "permit",
+                     "redefine", "refer", "take", "use"),
+       "GivenDoesNot": ("import", "unify", "use")}
 for _template, _verbs in OWN.items():
     for _verb in _verbs:
         handler(_template, _verb)(state)

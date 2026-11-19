@@ -27,6 +27,7 @@ CACHE = _sibling("design_model_check_handlers_cache.py", "shop_design_model_chec
 ORDER = _sibling("design_model_check_worlds_order.py", "shop_design_model_check_worlds_order")     # b275
 MEMBER = _sibling("design_model_check_worlds_member.py", "shop_design_model_check_worlds_member")     # b274, b297
 NEGATED = _sibling("design_model_check_worlds_negated.py", "shop_design_model_check_worlds_negated")     # b232
+PARSING = _sibling("design_model_check_worlds_parsing.py", "shop_design_model_check_worlds_parsing")     # b369
 
 
 class As:
@@ -150,7 +151,6 @@ def nothing(step):
     pass
 
 
-WHILE_ACTION = "While a session ends a stage, when the person runs `work start`, `work` shall print the stage."
 NONCONFORMING = "When a session ends a stage, `work` shall banana the stage."
 UNDONE = "While every stage is not `done`, when the person runs `work start`, `work` shall exit successfully."
 TABLE = ORDER.ROWS + [
@@ -197,7 +197,6 @@ TABLE = ORDER.ROWS + [
     # model check: the entries of a verb
     (("verb has no frame",), frameless_verb, {}),
     (("term has no part of speech",), term("unlabelled"), {}),
-    (("term has frame", "frame has preposition", "requirement use term"), requirement("prepositioned"), {}),
     (("term has frame", "frame has preposition"), term("prepositional"), {}),
     (("term has frame",), term("multiframed"), {}),
     (("term has sense",), term("polysemous"), {}),
@@ -208,18 +207,6 @@ TABLE = ORDER.ROWS + [
     (("no decisions index lack index entry",), current_index, {}),
     (("rule catalogue not holds catalogue entry",), stale_catalogue, {}),
     (("text not conform node id form",), unattributed, {}),
-    # model parse: a frame's refusals and passes
-    (("requirement omit object",), requirement("objectless"), {}),
-    (("requirement omit recipient",), requirement("recipientless"), {}),
-    (("no frame take noun phrase",), requirement("mistyped"), {}),
-    (("term not agree subject",), requirement("disagreeing"), {}),
-    (("passive form has no by-phrase",), requirement("agentless"), {"p1": "t1"}),
-    (("precondition use term", "term is `action`"), line(WHILE_ACTION), {}),
-    (("requirement has response", "response use term", "term is `state`"), requirement("unresponsive"),
-     {"r2": "a response takes an action", "t2": "trigger"}),
-    (("trigger use term", "term is `state`"), requirement("misaspected"), {}),
-    (("precondition use term", "term is `state`"), requirement("verbal"), {}),
-    (("trigger use recipient",), requirement("addressed"), {}),
     (("requirement not conform language reference",), line(NONCONFORMING), {}),
 ] + MEMBER.ROWS + NEGATED.ROWS + [
     # model parse: the constructs
@@ -229,33 +216,11 @@ TABLE = ORDER.ROWS + [
      capability("holding"), {}),
     (("capability has requirement", "requirement use `count`", "requirement use `holds-relation`"),
      capability("capping"), {}),
-    (("requirement use `not-condition`",), requirement("negating"), {}),
-    (("requirement use `bare-plural`",), requirement("plural"), {}),
-    (("requirement use `option-set-to`",), requirement("optioned"), {}),
-    (("requirement use `request-params`",), requirement("optioned"), {}),     # the construct that took its place
-    (("requirement use `of-relation`",), requirement("genitive"), {}),
-    (("requirement use `no-noun`",), requirement("denying"), {}),
-    (("requirement use `compound`",), requirement("compound"), {}),
-    (("requirement use `only`",), requirement("restrictive"), {}),
-    (("requirement use `rc-object`",), requirement("relative"), {}),
-    (("requirement use `rc-whose`",), requirement("possessive"), {}),
-    (("requirement use `this`",), requirement("indexical"), {}),
     (("requirement has logical form", "requirement conform language reference"), nothing, {}),
     (("this corpus holds logical form",), nothing, {}),
     (("requirement has logical form",), requirement("ambiguous"), {}),
-    (("definite noun phrase has no antecedent",), requirement("antecedentless"), {"d1": "t1"}),
-    (("precondition use negated indefinite",), requirement("unquantified"), {"n1": "t1"}),
-    (("requirement has no trigger",), requirement("triggerless"), {}),
     (("run on fragment",), requirement("unfinished"), {"f1": "thing#r1"}),
-    # model parse: counts, time and modality
-    (("requirement use `count`",), requirement("counted"), {}),
     (("count contradict count",), capability("overcounted"), {}),
-    (("requirement use `moment-compare`",), requirement("timed"), {}),
-    (("requirement use clock trigger",), requirement("clocked"), {}),
-    (("precondition use perfect",), requirement("historical"), {}),
-    (("number has no unit",), requirement("unitless"), {}),
-    (("requirement use `may`",), requirement("permissive"), {}),
-    (("requirement use `always-never`",), requirement("invariant"), {}),
     # model parse: the caches
     (("parse cache holds parse",), CACHE.held, {}),
     (("compiled grammar exist",), CACHE.compiled, {}),
@@ -276,7 +241,7 @@ TABLE = ORDER.ROWS + [
     (("capability has requirement", "requirement conform language reference"), capability("recodified"), {}),
     (("capability has requirement", "requirement has no translation"), capability("unread"), {"r1": "shelf#r1"}),
     (("no capability holds requirement id",), old(C.requirement, "requirement id", "r1", "nonexistent"), {}),
-]
+] + PARSING.ROWS
 
 
 def build(step):

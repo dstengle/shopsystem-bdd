@@ -80,6 +80,7 @@ def cmd_parse(args):
     import spec_gf
     import spec_grammar4
     import spec_language
+    import spec_lf_read
     if not spec_grammar4.marked(args.root):
         print("model parse reads grammar 4: spec/index.md does not say `language: codified-2`; run `migrate upgrade`")
         return 2
@@ -99,6 +100,8 @@ def cmd_parse(args):
         print(head + (f"{named[n]}: " if n in named else "") + p.refusal)
         for tree in p.trees:
             print("  tree: " + tree)
+        if p.trees and spec_lf_read.rule(p.refusal):     # the reading rule, as the language reference names it
+            print(f"  reading rule: {spec_lf_read.rule(p.refusal)} of the language reference, grammar/language.md")
         if not p.trees:
             h = spec_language.hint(args.root, line)
             print(f"  parsed up to: {h['prefix']}")
