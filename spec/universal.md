@@ -23,7 +23,7 @@ reworded in grammar 4 (b155, b240) as U12, U16 and U13 to U15. Retired ids are i
 ## Behaviour
 
 - [U17] If a service refuses a request, then the service shall name a reason and change nothing.
-- [U18] A session shall not change the status of an item.
+- [U18] A session shall not change an item.
 - [U19] While a session has a workspace, the session shall change only files in the workspace.
 
 ## Reading
@@ -34,7 +34,7 @@ response envelope": a commit, a push and `--json` are the adapters', not the dom
 
 - U17: a refused request changes nothing, whatever service refused it, and names a reason. The reason is any reason:
   the language cannot yet tie it to the refusal (`grammar/language.md`, "What the language cannot say yet", #15).
-- U18: an item's status is changed only by the backlog's, the batches' and the context requests' services, never by a
+- U18: an item, its status among its fields, is changed only by the backlog's, the drafting's, the batches' and the context requests' services, never by a
   session's own edit.
 - U19: a workspace is a task's, made when a batch is opened, and the session that builds the task works in it. A
   session with no workspace, such as a reviewer, is not bound by it.

@@ -18,12 +18,11 @@ shall []
 Retires: U14. Reworded in request words (0.38.0).
 
 ```reading
-A session shall not change the status of an item.
+A session shall not change an item.
 shall []
   response [x1: session]
-    not [x2: item, x3: status]
-      status(x2) = x3
-      change(e1, subject: x1, object: x3)
+    not [x2: item]
+      change(e1, subject: x1, object: x2)
 ```
 
 ## U19
@@ -40,3 +39,4 @@ shall []
       scope
         change(e1, subject: x1, object: x3)
 ```
+
