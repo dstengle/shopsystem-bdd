@@ -8,87 +8,46 @@
 - v_a4: a subcommand or an option of a program's argparse that no table names and that is not listed as `cli-only`
   (the contract's `[cli-only]`, or the operation's own), `-h`/`--help` aside.
 
-The argparse of a program is caught as its `main()` is about to parse (as tests/scripts/docs_testing.py catches the
-plugin's tools); a hook's command is checked for its program alone. `problems(root)` gives (code, subject, why)."""
-import argparse
-import contextlib
-import importlib.machinery
-import importlib.util
+The argparse of a program is caught as its `main()` is about to parse, in a process of its own (adapter_cli_probe),
+so that nothing of the program runs in the check's; a hook's command is checked for its program alone. `problems(root)` gives (code, subject, why)."""
+import json
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import adapter_cli
 import domain_model
 
 
-class _Caught(Exception):
-    def __init__(self, parser):
-        self.parser = parser
+PROBE = Path(__file__).with_name("adapter_cli_probe.py")
+TIMEOUT = 60
 
 
-@contextlib.contextmanager
-def _patched(owner, name, value):
-    kept = getattr(owner, name)
-    setattr(owner, name, value)
-    try:
-        yield
-    finally:
-        setattr(owner, name, kept)
-
-
-def parser_of(path):
-    """The top argparse parser of the program at `path`, caught as its main() is about to parse; None if it never
-    parses."""
-    path = Path(path)
-    loader = importlib.machinery.SourceFileLoader("adapter_cli_program_%s" % abs(hash(str(path))), str(path))
-    module = importlib.util.module_from_spec(importlib.util.spec_from_loader(loader.name, loader))
-    folder = str(path.parent)
-    sys.path.insert(0, folder)
-    try:
+def read_program(path):
+    """{command words: set of option strings} of the program at `path`, read by adapter_cli_probe in a process of its
+    own, in a scratch folder, with no input and a time limit; None when it never parses (or does not end)."""
+    with tempfile.TemporaryDirectory() as scratch:
         try:
-            loader.exec_module(module)
-        except Exception:  # noqa: BLE001 -- a program that does not load is one whose argparse cannot be read (v_a3)
+            done = subprocess.run([sys.executable, str(PROBE), str(Path(path).resolve())], cwd=scratch,
+                                  stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=TIMEOUT)
+        except subprocess.TimeoutExpired:
             return None
-
-        def caught(self, *_args, **_kwargs):
-            raise _Caught(self)
-        with _patched(argparse.ArgumentParser, "parse_args", caught), \
-                _patched(argparse.ArgumentParser, "parse_known_args", caught), _patched(sys, "argv", [path.name]):
-            for call in (lambda: module.main([]), lambda: module.main()):
-                try:
-                    call()
-                except _Caught as got:
-                    return got.parser
-                except TypeError:
-                    continue
-    finally:
-        sys.path.remove(folder)
-    return None
-
-
-def commands(parser, words=()):
-    """{command words: leaf parser} of every runnable command under `parser`."""
-    subs = [a for a in parser._actions if isinstance(a, argparse._SubParsersAction)]
-    if not subs:
-        return {" ".join(words): parser}
-    out = {}
-    for name, child in subs[0].choices.items():
-        out.update(commands(child, tuple(words) + (name,)))
-    return out
-
-
-def options(parser):
-    """The option strings of a parser, -h and --help aside."""
-    return {o for a in parser._actions for o in a.option_strings if o not in ("-h", "--help")}
+    last = done.stdout.rstrip("\n").rpartition("\n")[2]
+    try:
+        found = json.loads(last)
+    except ValueError:
+        return None
+    return None if found is None else {c: set(o) for c, o in found.items()}
 
 
 def _programs(root, contract):
-    """{program word: {command words: leaf parser}, or None when it cannot be read}."""
+    """{program word: {command words: its option strings}, or None when it cannot be read}."""
     out = {}
     for word, rel in contract.programs.items():
         path = Path(root) / rel
-        top = parser_of(path) if path.is_file() else None
-        out[word] = None if top is None else {("%s %s" % (word, c)).strip(): p for c, p in commands(top).items()}
+        top = read_program(path) if path.is_file() else None
+        out[word] = None if top is None else {("%s %s" % (word, c)).strip(): o for c, o in top.items()}
     return out
 
 
@@ -128,7 +87,7 @@ def problems(root, model=None):
             found.append(("v_a3", ident, "%s has no command %r" % (contract.programs[word], op.command)))
             continue
         given = {p.option for p in op.parameters.values() if p.option} | set(op.cli_only)
-        for option in sorted(given - options(leaf)):
+        for option in sorted(given - leaf):
             found.append(("v_a3", "%s %s" % (op.command, option), "%s has no option %s" % (op.command, option)))
         named.setdefault(op.command, set()).update(given)
     for word, leaves in sorted(programs.items()):
@@ -137,7 +96,7 @@ def problems(root, model=None):
                 if command not in contract.cli_only_commands:
                     found.append(("v_a4", command, "no operation of %s names the command %r" % (contract.path, command)))
                 continue
-            for option in sorted(options(leaf) - named[command] - set(contract.cli_only_options)):
+            for option in sorted(leaf - named[command] - set(contract.cli_only_options)):
                 found.append(("v_a4", "%s %s" % (command, option), "no parameter of %s names the option %s of %r"
                               % (contract.path, option, command)))
     return found

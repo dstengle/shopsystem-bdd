@@ -9,12 +9,15 @@ import pytest
 from shop_refused import Refused
 
 FIXTURE = pathlib.Path(__file__).parent / "fixtures" / "domain-model"
+SCRIPTS = str(FIXTURE.parents[3] / "scripts")
 
 
 @pytest.fixture
 def context(tmp_path):
     root = tmp_path / "ctx"
     shutil.copytree(FIXTURE, root)
+    program = root / "notes_cli.py"
+    program.write_text(program.read_text().replace('Path(__file__).resolve().parents[4] / "scripts"', repr(SCRIPTS)))
     return root
 
 
@@ -78,10 +81,30 @@ def test_v_a4_an_option_or_a_command_no_table_names(context):
     text = program.read_text()
     text = text.replace('    sub.add_parser("list")\n', '    sub.add_parser("list").add_argument("--since")\n'
                                                            '    sub.add_parser("export")\n')
-    program.write_text(text.replace('parents[4] / "scripts"', 'parents[0] / "scripts"'))
-    (context / "scripts").symlink_to(FIXTURE.parents[3] / "scripts")
+    program.write_text(text)
     found = _codes(context)
     assert ("v_a4", "notes list --since") in found and ("v_a4", "notes export") in found
+
+
+def test_reading_the_argparse_runs_nothing_of_the_program_here(context, tmp_path, monkeypatch):
+    """The program is read in a process of its own, in a scratch folder, with no input: a main that reads stdin and
+    writes a file before it parses neither hangs the check nor writes beside it, and a module of the program's folder
+    named as one of the plugin's (loaded here) is the program's own."""
+    (context / "domain_model.py").write_text("OWN = True\n")
+    (context / "notes_cli.py").write_text(
+        "import argparse, sys\nfrom pathlib import Path\nimport domain_model\n\n\n"
+        "def main(argv=None):\n    sys.stdin.read()\n    Path('written.txt').write_text('x')\n"
+        "    assert domain_model.OWN\n    ap = argparse.ArgumentParser(prog='notes')\n"
+        "    ap.add_subparsers().add_parser('add')\n    return ap.parse_args(argv)\n")
+    monkeypatch.chdir(tmp_path)
+    found = adapter_cli_check.problems(context)
+    assert not [f for f in found if "does not parse" in f[2]] and ("v_a3", "notes add --text") in _codes(context)
+    assert not (tmp_path / "written.txt").exists() and not (context / "written.txt").exists()
+
+
+def test_a_program_that_never_parses_is_v_a3(context):
+    (context / "notes_cli.py").write_text("def main(argv=None):\n    return 0\n")
+    assert ("v_a3", "notes.add") in _codes(context)
 
 
 def test_a_business_reference_rendered_as_its_option():
