@@ -109,7 +109,10 @@ commands this way: `work backlog` for `python3 "$SHOP/scripts/work" backlog`.
 
 ## 4. The smallest context
 
-A bounded context is one repository's part of a product, with its own words. Its spec lives in `spec/`. You'll use
+A bounded context is one repository's part of a product, with its own words. Its spec lives in `spec/`, in four
+parts: the **domain model** (what there is and what can be asked of it), the **vocabulary** (the words, each naming
+an element of the model), the **requirements** (the rules, one line each) and the **decisions** (the choices behind
+them, which this small example does not need yet). Beside them sits each interface's **adapter contract**. You'll use
 the example context in [`docs/examples/notes-cli/`](examples/notes-cli/README.md): a notes service the person asks to
 add a note, list the notes and remove one, with `notes.py` as its command-line program.
 
@@ -237,6 +240,9 @@ options of `notes.py` (`notes add --title ... --tag ...`). The [capability file 
 has every field; [the domain model](reference/domain-model.md) and [adapter contracts](reference/adapters.md) have the
 other two forms.
 
+The contract also lists, under each operation, the requirement lines that govern it: `notes#r1` and `notes#r2` under
+`notes.add`, the refusal among them. You don't type those; `spec annotate` writes them in step 6.
+
 ## 5. Ask what the words are, and what a line means
 
 `spec lexicon` lists every word a line may use. The pack's are marked:
@@ -317,6 +323,18 @@ wrote features/notes.feature
 $ spec check
 0 violations, 0 warnings, 0 unresolved references, 0 file problems
 ```
+
+The contract you copied already lists each operation's lines. Had it not, `spec check` would have named each missing
+one (`v_a5`), and `spec annotate` writes them:
+
+```console
+$ spec annotate --check
+spec annotate: spec/adapters/cli.toml is stale: its operations do not hold the requirements that govern them; run `spec annotate`
+$ spec annotate
+annotated spec/adapters/cli.toml
+```
+
+Run it again whenever a line changes: a contract that has fallen behind its lines fails the check.
 
 Here's what it wrote, one scenario a group, tagged with the group and its lines:
 

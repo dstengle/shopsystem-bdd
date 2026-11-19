@@ -51,3 +51,6 @@ A line parsed in the controlled language to one meaning or refused with why, its
 ### [g11] An unchanged grammar is not compiled again
 - [r11] While a requirement has a parse that no parse cache holds and the compiled grammar of the requirement exists, when the person parses the requirement, the language service shall keep no compiled grammar and complete the request.
 
+### [g12] The logical form puts an order after a collection on its members
+- [r12] When the person parses a requirement that uses `order-by` with the logical form, the language service shall return a logical form that uses an order of a member of a collection.
+

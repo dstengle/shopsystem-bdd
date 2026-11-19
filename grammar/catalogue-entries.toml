@@ -1,0 +1,834 @@
+# What each entry of the rule catalogue (grammar/rules.md) and the construct catalogue (grammar/constructs.md)
+# says beside what model.lp and the grammar give it (b370): its purpose, the item it came by (since) and the items
+# that changed it (changed). `spec rules --write` and `spec constructs --write` write them into the catalogues;
+# `spec check` fails an entry with no purpose or no item, or one naming an item that is not delivered. A batch that
+# adds or changes a rule or a construct adds its item here. The first filling (b370) read each entry's history off
+# git: the commits that added or changed its label, examples or rule (scripts/model.lp, scripts/model_rules.py) or
+# its table entry (scripts/model_constructs_table.py), and the items they cite; an entry whose commits cite no item
+# (work from before items were tracked) names the release whose tag first contains the commit that added it, a
+# section of CHANGELOG.md. A new or changed entry names an item.
+
+[rules.v2]
+purpose = "The lasting structure of the spec links only lasting artifacts, so nothing it stands on can be closed, delivered or thrown away."
+since = "b123"
+changed = []
+
+[rules.v3]
+purpose = "A request's resolution points at requirements the spec really holds, so a delivered request can be traced to the behaviour it produced."
+since = "b123"
+changed = []
+
+[rules.v4]
+purpose = "A dependency between capabilities is stated where it is used, so no capability claims a dependency nothing explains."
+since = "b123"
+changed = []
+
+[rules.v5]
+purpose = "One context uses another only under a pinned version, so a change upstream cannot silently break a downstream user."
+since = "b123"
+changed = []
+
+[rules.v6]
+purpose = "Every crossing between contexts goes through a declared seam, so the boundaries between contexts stay explicit."
+since = "b123"
+changed = []
+
+[rules.v6b]
+purpose = "A job-thread counts as mapped only when each of its crossings goes through a declared seam."
+since = "b123"
+changed = []
+
+[rules.v7]
+purpose = "Work asked of another context travels along a declared seam, so the context map shows every real dependency."
+since = "b123"
+changed = []
+
+[rules.v7c]
+purpose = "Dependencies run one way: an upstream never depends on its own downstream client, which would make a cycle."
+since = "b123"
+changed = []
+
+[rules.v10a]
+purpose = "An initiative's provenance traces back to evidence, such as an observation, measurement or review finding, not to another plan."
+since = "b123"
+changed = []
+
+[rules.v10b]
+purpose = "Every record is filed against something, so it can be found from the part of the system it concerns."
+since = "b123"
+changed = []
+
+[rules.v10c]
+purpose = "Records are filed against lasting artifacts, so they stay findable after transient work is closed."
+since = "b123"
+changed = []
+
+[rules.v11]
+purpose = "Each capability has one voice its requirements speak for, so readers know whose need each line serves."
+since = "b123"
+changed = []
+
+[rules.v12a]
+purpose = "Every decision can be scanned in the index by its one-sentence summary without opening it."
+since = "b123"
+changed = []
+
+[rules.v12b]
+purpose = "A chain of superseded decisions has an end, so exactly one decision is in force for each question."
+since = "b123"
+changed = []
+
+[rules.v13]
+purpose = "A decision's revisit signal is something that is actually measured, so the decision can be reopened when it should be."
+since = "b123"
+changed = []
+
+[rules.v15a]
+purpose = "Every requirement can be cited, retired and tagged on its scenarios by a stable id."
+since = "b123"
+changed = []
+
+[rules.v15b]
+purpose = "An id names one requirement, so a citation, a trace or a test points at one line and no other."
+since = "b123"
+changed = []
+
+[rules.v15c]
+purpose = "A retired id keeps meaning the line it once named, so old citations never land on new behaviour."
+since = "b123"
+changed = []
+
+[rules.v15d]
+purpose = "A requirement's id belongs to the capability holding it, so the id alone says where the line lives."
+since = "b123"
+changed = []
+
+[rules.v15g]
+purpose = "Each group has its own stable id, so its generated scenario and its citations point at one group."
+since = "b123"
+changed = []
+
+[rules.v15h]
+purpose = "Each universal condition has its own stable id, so decisions and checks can rest on it unambiguously."
+since = "b123"
+changed = []
+
+[rules.v15i]
+purpose = "Ids are never recycled, so history and citations never confuse a retired or live line with a new one."
+since = "b123"
+changed = []
+
+[rules.v15j]
+purpose = "A group claims to restate only ids the old spec really had, so migration coverage is not overstated."
+since = "b123"
+changed = []
+
+[rules.v15k]
+purpose = "A group's statements share one situation and trigger, so one scenario can test them all together."
+since = "b123"
+changed = []
+
+[rules.v15l]
+purpose = "A group holds one statement, so each scenario tests exactly one requirement and a failure names it."
+since = "b123"
+changed = []
+
+[rules.v15m]
+purpose = "A group's given block holds only concrete example data; conditions belong in the requirement, where they are checked."
+since = "b123"
+changed = []
+
+[rules.v15n]
+purpose = "No two groups describe the same situation and trigger, so behaviour is stated once and cannot drift apart."
+since = "b123"
+changed = []
+
+[rules.v_s1]
+purpose = "Every scenario is generated from a group, so no test exists that the specification does not ask for."
+since = "b123"
+changed = []
+
+[rules.v_s2]
+purpose = "A scenario tests one group, so a failing scenario points at one requirement."
+since = "b123"
+changed = []
+
+[rules.v_s3]
+purpose = "Every group that a scenario can test has one, so no behaviour in the spec goes untested."
+since = "b123"
+changed = []
+
+[rules.v_s4]
+purpose = "Every requirement of a codified capability belongs to exactly one group, so each is tested exactly once."
+since = "b123"
+changed = []
+
+[rules.v_d2]
+purpose = "A job-thread is called built only when every request it relies on is delivered."
+since = "b123"
+changed = []
+
+[rules.v_d4]
+purpose = "A delivered request accounts for every line it accepted, so no promised behaviour silently goes missing."
+since = "b123"
+changed = []
+
+[rules.v_d6]
+purpose = "A decision enforced by a check names the test that enforces it, so the enforcement can be run and trusted."
+since = "b123"
+changed = []
+
+[rules.v_d7]
+purpose = "A decision enforced by requirements names them, so its enforcement is traceable in the spec."
+since = "b123"
+changed = []
+
+[rules.v_d8]
+purpose = "Superseding a decision retires it, so two conflicting decisions are never in force together."
+since = "b123"
+changed = []
+
+[rules.v_d9]
+purpose = "Every decision is verified by a known route, so it is clear how and by whom its keeping is checked."
+since = "b129"
+changed = []
+
+[rules.v17]
+purpose = "Every request has a reason: a job-thread, an origin it cites or a request it serves."
+since = "b123"
+changed = []
+
+[rules.v18d]
+purpose = "This repository's records refer only to its own work, so another context's ids do not leak in as if local."
+since = "b123"
+changed = []
+
+[rules.v_t1]
+purpose = "Lines use the context's chosen words, not the ones the glossary avoids, so one idea has one name."
+since = "b123"
+changed = []
+
+[rules.v_t2]
+purpose = "Each term has one definition, so every line using it means the same thing."
+since = "b123"
+changed = ["b131"]
+
+[rules.v_t3]
+purpose = "A word cannot be both avoided and defined, so the glossary gives one clear instruction about it."
+since = "b123"
+changed = []
+
+[rules.v_t4]
+purpose = "Each term declares its part of speech, so the grammar knows how a line may use it."
+since = "b83"
+changed = ["b123"]
+
+[rules.v_t5]
+purpose = "Each value belongs to exactly one attribute, so a line naming a value says unambiguously what it describes."
+since = "b123"
+changed = []
+
+[rules.v_t6]
+purpose = "Distinct terms read differently, so a line's words always identify which term is meant."
+since = "b123"
+changed = []
+
+[rules.v_t11]
+purpose = "Each verb says which kinds of thing it relates, so lines using it can be parsed and checked for sense."
+since = "b82"
+changed = ["b123"]
+
+[rules.v_t12]
+purpose = "Relations between two kinds are stated as verbs with frames, which the grammar and the logic can check."
+since = "b82"
+changed = ["b123"]
+
+[rules.v_t13]
+purpose = "A verb's frame is written so the grammar can read it, otherwise the verb cannot be used reliably."
+since = "b106"
+changed = ["b123"]
+
+[rules.v_t14]
+purpose = "Each verb says whether it names a state or an action, so triggers, conditions and responses use it correctly."
+since = "b131"
+changed = []
+
+[rules.v_t15]
+purpose = "A verb's senses are told apart by the kinds they take, so a line using the verb has one reading."
+since = "b131"
+changed = []
+
+[rules.v_t16]
+purpose = "Overriding a pack's word is deliberate and visible, never an accidental clash with an imported meaning."
+since = "b132"
+changed = []
+
+[rules.w_value_kind]
+purpose = "Each attribute says how its values read in a sentence, so lines can say them in the proper form."
+since = "b257"
+changed = []
+
+[rules.v_t17]
+purpose = "Every imported pack exists, so the vocabulary a context relies on is actually there."
+since = "b132"
+changed = []
+
+[rules.v_t18]
+purpose = "Every vocabulary word stands for something in the domain model, so lines never use words without a meaning."
+since = "b135"
+changed = []
+
+[rules.v_t19]
+purpose = "Vocabulary refers only to declared model elements, so a word never names something that does not exist."
+since = "0.38.0"
+changed = []
+
+[rules.v_t20]
+purpose = "One element has one name per vocabulary layer, so synonyms do not split how lines talk about it."
+since = "b141"
+changed = []
+
+[rules.v_t21]
+purpose = "A context with a domain model no longer depends on the retired cli pack, whose words the model now supplies."
+since = "0.38.0"
+changed = []
+
+[rules.v_m1]
+purpose = "A requirement uses only words its area can see, so each capability stays within its part of the domain."
+since = "0.38.0"
+changed = []
+
+[rules.v_m8]
+purpose = "The domain model is internally consistent, so the vocabulary, contracts and lines built on it rest on solid ground."
+since = "0.38.0"
+changed = []
+
+[rules.v_a1]
+purpose = "Every operation is reachable through the CLI contract or marked unexposed, so no behaviour is accidentally left out of the interface."
+since = "0.38.0"
+changed = []
+
+[rules.v_a2]
+purpose = "The CLI contract maps only to declared operations and parameters, so the interface never promises what the model lacks."
+since = "0.38.0"
+changed = []
+
+[rules.v_a3]
+purpose = "The CLI contract matches the program, so documented commands and options exist."
+since = "0.38.0"
+changed = []
+
+[rules.v_a4]
+purpose = "Every command and option of the program is accounted for, so the interface has no undocumented behaviour."
+since = "0.38.0"
+changed = []
+
+[rules.v_a5]
+purpose = "Each operation lists every requirement that governs it, so the contract shows which lines constrain it."
+since = "b368"
+changed = []
+
+[rules.v_a6]
+purpose = "An operation lists only the requirements that govern it, so its annotations do not mislead."
+since = "b368"
+changed = []
+
+[rules.v_c1]
+purpose = "A requirement cites only rules the catalogue defines, so each cited rule has a stated meaning and purpose."
+since = "b370"
+changed = []
+
+[rules.v_c2]
+purpose = "Every catalogue entry says why it exists, so readers can judge each rule or construct and its violations."
+since = "b370"
+changed = []
+
+[rules.v_c3]
+purpose = "Every catalogue entry is traceable to the delivered work that introduced or changed it."
+since = "b370"
+changed = []
+
+[rules.v_c4]
+purpose = "A catalogue entry credits only delivered work, so the catalogue never describes behaviour that has not shipped."
+since = "b370"
+changed = []
+
+[rules.v_m2]
+purpose = "Requests use only the parameters and values their operation accepts, so lines describe calls that can really be made."
+since = "0.38.0"
+changed = []
+
+[rules.v_m3]
+purpose = "Only the actors an operation allows are said to request it, so lines respect who may do what."
+since = "0.38.0"
+changed = []
+
+[rules.v_m4]
+purpose = "Every refusal an operation declares is specified by a line, so no refusal goes untested or undocumented."
+since = "0.38.0"
+changed = []
+
+[rules.w_m5]
+purpose = "Each lifecycle transition is caused by some line, so the model holds no step nothing can ever take."
+since = "0.38.0"
+changed = []
+
+[rules.v_m6]
+purpose = "Lines move a status only along transitions its lifecycle allows, so the spec cannot contradict its own model."
+since = "0.38.0"
+changed = []
+
+[rules.v_m7]
+purpose = "Every declared operation is requested by some line, so the model holds no behaviour the spec never states."
+since = "0.38.0"
+changed = []
+
+[rules.v_r1]
+purpose = "An item's provenance rests on primary sources (quotes, requests, decisions), not on derived write-ups."
+since = "0.38.0"
+changed = []
+
+[rules.w_r1]
+purpose = "Older items citing records are flagged but kept, so history is preserved while the policy holds for new items."
+since = "0.38.0"
+changed = []
+
+[rules.v_p0]
+purpose = "Every spec file is in the current controlled language, so every line can be parsed, checked and tested."
+since = "b123"
+changed = ["b150", "b160", "b240"]
+
+[rules.v_p1]
+purpose = "Every requirement is a sentence the grammar reads, so it can be checked and turned into tests."
+since = "b123"
+changed = []
+
+[rules.v_p2]
+purpose = "Every requirement has exactly one reading, so authors, checks and tests all understand it the same way."
+since = "b123"
+changed = []
+
+[rules.v_p3]
+purpose = "Example data in a given block reads as steps, so generated scenarios can set it up."
+since = "b123"
+changed = []
+
+[rules.w_unserved_cap]
+purpose = "Every capability serves some job, so the system holds no behaviour without a reason."
+since = "b123"
+changed = []
+
+[rules.w_unserved_job]
+purpose = "Every job someone needs done is served by some capability, so no need is left unmet."
+since = "b123"
+changed = []
+
+[rules.w_seam_unused]
+purpose = "Declared seams are actually used, so the context map reflects real dependencies, not stale ones."
+since = "b123"
+changed = []
+
+[rules.w_uncited_obs]
+purpose = "Observations lead to action, so evidence collected is not forgotten."
+since = "b123"
+changed = []
+
+[rules.w_many_requests]
+purpose = "Work piling up on one upstream is noticed early, before it stalls the contexts waiting on it."
+since = "b123"
+changed = []
+
+[rules.w_untiered]
+purpose = "Every decision in force says how strongly it is enforced, so its weight is clear."
+since = "b123"
+changed = []
+
+[rules.w_unrouted]
+purpose = "Every universal condition is backed by a decision that says how it is verified."
+since = "b129"
+changed = []
+
+[rules.w_example]
+purpose = "Requirements state general rules; concrete example values belong in a group's given block."
+since = "b149"
+changed = []
+
+[rules.v_t7]
+purpose = "A term's gloss is short and precise, so its meaning can be taken in at once and quoted."
+since = "b123"
+changed = []
+
+[rules.v_t8]
+purpose = "Relations live in one table, so the grammar and checks read every relation the same way."
+since = "b123"
+changed = []
+
+[rules.v_t9]
+purpose = "A term's meaning is written as a plain sentence, the one form readers and tools expect."
+since = "b123"
+changed = []
+
+[rules.v_t10]
+purpose = "Each relation is declared once, so its cardinality and reading are never stated two ways."
+since = "b123"
+changed = []
+
+[constructs.when]
+purpose = "Ties a response to the moment an event happens, so the line says what the system does next whenever that event occurs."
+since = "b240"
+changed = []
+
+[constructs.if-then]
+purpose = "Says how the system answers an unwanted event, so that this line wins over an ordinary line on the same trigger."
+since = "b240"
+changed = []
+
+[constructs.no-trigger]
+purpose = "States an obligation or prohibition that holds whatever happens, so a rule like \"never writes a file\" needs no triggering event."
+since = "b240"
+changed = []
+
+[constructs.always-never]
+purpose = "States an invariant that holds at every moment, which the check reads as a necessity rather than a response to an event."
+since = "b240"
+changed = []
+
+[constructs.while]
+purpose = "Limits a line to the states in which it applies, so the response follows the event only while that condition holds."
+since = "b240"
+changed = []
+
+[constructs.where]
+purpose = "Makes a line apply only in a configuration of the context, a standing condition set apart from the transient states While describes."
+since = "b240"
+changed = []
+
+[constructs.and-condition]
+purpose = "Lets a line require several conditions at once, so it applies only when all of them hold together."
+since = "b240"
+changed = []
+
+[constructs.or-condition]
+purpose = "Lets one line cover alternative situations, each read as its own case and given its own scenario."
+since = "b240"
+changed = []
+
+[constructs.and-response]
+purpose = "Lets one trigger oblige several acts, so a writer need not split a single reaction across separate lines."
+since = "b240"
+changed = []
+
+[constructs.shall]
+purpose = "Marks an act the doer is obliged to perform, the ordinary binding form of a requirement."
+since = "b240"
+changed = []
+
+[constructs.may]
+purpose = "Grants a permission rather than an obligation, so the check can flag a line that forbids what another permits."
+since = "b240"
+changed = []
+
+[constructs.not-response]
+purpose = "Forbids an act outright, so a line can rule out behaviour rather than only require it."
+since = "b240"
+changed = []
+
+[constructs.event]
+purpose = "Names an agent's act as what triggers a line, keeping triggers to actions rather than states."
+since = "b240"
+changed = []
+
+[constructs.state-condition]
+purpose = "Describes a situation with a state verb, so conditions talk about what holds rather than what happens."
+since = "b240"
+changed = []
+
+[constructs.not-condition]
+purpose = "Lets a line apply when something does not hold or a thing lacks a value, without reading two ways."
+since = "b240"
+changed = []
+
+[constructs.done]
+purpose = "Lets a condition depend on what has already happened, not only on the current state."
+since = "b240"
+changed = []
+
+[constructs.done-since]
+purpose = "Restricts a history condition to acts after a given moment, so a line can depend on recent activity."
+since = "b240"
+changed = []
+
+[constructs.object-role]
+purpose = "Fills the verb's direct object from its frame, so each act names exactly what it acts on."
+since = "b240"
+changed = []
+
+[constructs.to-role]
+purpose = "Names who or what receives an act, as the frame's recipient after \"to\"."
+since = "b240"
+changed = []
+
+[constructs.oblique-role]
+purpose = "Adds a further participant after a preposition the frame declares, such as what a command is run on."
+since = "b240"
+changed = []
+
+[constructs.fixed-words]
+purpose = "Lets a verb carry set wording, like \"exit successfully\", that names a manner of the act rather than a participant."
+since = "b240"
+changed = []
+
+[constructs.rc-subject]
+purpose = "Narrows a noun to the things that do something, so a line can pick out, for example, sessions that follow a stage."
+since = "b240"
+changed = []
+
+[constructs.rc-object]
+purpose = "Narrows a noun to the things something else acts on or relates to, with the noun as the clause's object."
+since = "b240"
+changed = []
+
+[constructs.rc-whose]
+purpose = "Picks out things by an attribute's value, so a line selects, for example, only stages whose status is done."
+since = "b240"
+changed = []
+
+[constructs.rc-whose-relation]
+purpose = "Picks out things by what a related thing does or holds, reaching one relation further than a plain relative clause."
+since = "b240"
+changed = []
+
+[constructs.not-relative]
+purpose = "Picks out things that lack a relation or a value, giving a negated restriction one clear reading."
+since = "b240"
+changed = []
+
+[constructs.a-noun]
+purpose = "Introduces a thing: any such thing in a condition or trigger, a newly brought-about one in a response."
+since = "b240"
+changed = []
+
+[constructs.the-noun]
+purpose = "Refers back to a thing the line already introduced, and refuses the line when there is none to refer to."
+since = "b240"
+changed = []
+
+[constructs.every]
+purpose = "Applies a response to each thing that meets the description, rather than to a single one."
+since = "b240"
+changed = []
+
+[constructs.bare-plural]
+purpose = "Speaks of things in general without a determiner, read as any such things in conditions and as every one in a response."
+since = "b240"
+changed = []
+
+[constructs.the-plural]
+purpose = "Refers back to several things the line already introduced, as one group."
+since = "b240"
+changed = []
+
+[constructs.no-noun]
+purpose = "States that no such thing exists within its clause, giving negation a single scope."
+since = "b240"
+changed = []
+
+[constructs.count]
+purpose = "Bounds how many things are involved, so a line can require or limit a quantity rather than just existence."
+since = "b240"
+changed = []
+
+[constructs.one]
+purpose = "Requires exactly one thing, where \"a\" would allow one or more."
+since = "b240"
+changed = []
+
+[constructs.same]
+purpose = "Says two references name one shared thing, such as two sessions following the same stage."
+since = "b240"
+changed = []
+
+[constructs.another]
+purpose = "Introduces a thing that must differ from one named earlier, so the two never collapse into one."
+since = "b240"
+changed = []
+
+[constructs.different]
+purpose = "Introduces a thing that must differ from one named earlier, as an alternative wording of \"another\"."
+since = "b240"
+changed = []
+
+[constructs.two]
+purpose = "Introduces two distinct things at once, each meeting the same description."
+since = "b240"
+changed = []
+
+[constructs.and-list]
+purpose = "Lets one act cover several things together, such as printing two values in one response."
+since = "b240"
+changed = []
+
+[constructs.or-list]
+purpose = "Lets an act take one of several alternatives, each a case of the line."
+since = "b240"
+changed = []
+
+[constructs.only]
+purpose = "Restricts an act to the things described, so acting on anything else breaks the line."
+since = "b240"
+changed = []
+
+[constructs.its]
+purpose = "Names something belonging to the subject of its clause, without repeating the subject's noun."
+since = "b240"
+changed = []
+
+[constructs.this]
+purpose = "Names the thing the current request or run is about, such as the command being run."
+since = "b240"
+changed = []
+
+[constructs.nothing]
+purpose = "Says an act touches nothing or a container holds nothing, covering every kind it could hold."
+since = "b240"
+changed = ["b274"]
+
+[constructs.code]
+purpose = "Names a specific literal thing, such as a file path, directly by its code."
+since = "b240"
+changed = []
+
+[constructs.named]
+purpose = "Names a specific thing of a kind by its code, keeping both its kind and its identity."
+since = "b240"
+changed = []
+
+[constructs.codes-list]
+purpose = "Names several specific options or things of one kind together in one phrase."
+since = "b240"
+changed = []
+
+[constructs.option-set-to]
+purpose = "States the argument a command option is given, so a line can depend on an option's value."
+since = "b240"
+changed = []
+
+[constructs.intransitive]
+purpose = "Lets a verb stand alone with no object, for acts like a person starting that involve nothing else."
+since = "0.38.0"
+changed = []
+
+[constructs.request-params]
+purpose = "States which parameters a request carries and which it omits, so a line can depend on what was given."
+since = "0.38.0"
+changed = []
+
+[constructs.of-relation]
+purpose = "Reaches a thing through a relation, such as the worktree of a session, without a separate condition."
+since = "b240"
+changed = []
+
+[constructs.compound]
+purpose = "Reaches a related thing by a short noun-before-noun phrase, such as \"the session worktree\"."
+since = "b240"
+changed = []
+
+[constructs.has-relation]
+purpose = "States as a condition that a thing has a related thing, reading an \"of\" relation from the owner's side."
+since = "b240"
+changed = []
+
+[constructs.holds-relation]
+purpose = "States as a condition that a container holds a member, reading an \"in\" relation from the container's side."
+since = "b240"
+changed = ["b274"]
+
+[constructs.is-in]
+purpose = "States membership from the member's side, with the same meaning as the container holding it."
+since = "b274"
+changed = []
+
+[constructs.holds-exactly]
+purpose = "States that a container holds all the things meeting a description and nothing else, in one clause."
+since = "b274"
+changed = []
+
+[constructs.attribute-of]
+purpose = "Names a thing's attribute as something a line can print, compare or set."
+since = "b240"
+changed = []
+
+[constructs.attribute-is]
+purpose = "States an attribute's value in a form every value accepts, keeping noun values unambiguous."
+since = "b240"
+changed = ["b257"]
+
+[constructs.adjective-value]
+purpose = "Gives the short form \"x is v\" for values declared adjectives, refusing it where it would misread a noun."
+since = "b257"
+changed = []
+
+[constructs.attribute-code]
+purpose = "Lets an attribute take a literal value the lexicon does not list, such as a version number."
+since = "b240"
+changed = ["b257"]
+
+[constructs.set-attribute]
+purpose = "Lets a response change an attribute's value, stating the value the thing has afterwards."
+since = "b240"
+changed = []
+
+[constructs.value-set]
+purpose = "Lets a condition accept any of several values, or exclude several, in one line."
+since = "b240"
+changed = ["b257"]
+
+[constructs.has-no-value]
+purpose = "Lets a line depend on an attribute being unset, distinct from having any particular value."
+since = "b240"
+changed = []
+
+[constructs.ordered]
+purpose = "Compares an attribute's value against a fixed value by its declared order, such as priority above low."
+since = "b240"
+changed = []
+
+[constructs.value-compare]
+purpose = "Compares one thing's attribute with another's by their declared order, such as one version being later."
+since = "b275"
+changed = ["b287"]
+
+[constructs.value-same]
+purpose = "Requires two things to share an attribute's value without naming the value."
+since = "b275"
+changed = ["b287"]
+
+[constructs.order-by]
+purpose = "Says in which order a response presents a collection, so the order itself becomes checkable behaviour."
+since = "b275"
+changed = ["b301"]
+
+[constructs.order-by-every]
+purpose = "Says in which order a response presents every such thing, so the printed order becomes checkable."
+since = "b275"
+changed = ["b301"]
+
+[constructs.number-of]
+purpose = "Treats how many things there are as a value a line can print or compare with a bound."
+since = "b240"
+changed = []
+
+[constructs.exists]
+purpose = "States that a thing exists or that none does, for things whose presence alone matters."
+since = "b240"
+changed = []
+
+[constructs.moment-compare]
+purpose = "Lets a condition depend on one moment falling before or after another, such as a deadline."
+since = "b240"
+changed = []
+
+[constructs.within]
+purpose = "Lets a condition depend on a moment falling within a recent span of time before the trigger."
+since = "b240"
+changed = []

@@ -12,6 +12,7 @@ import re
 import sys
 from pathlib import Path
 
+import model_catalogue_entries
 from model_constructs_table import CONSTRUCTS, GLUE, WORDS
 
 PLUGIN = Path(__file__).resolve().parents[1]
@@ -139,9 +140,9 @@ def render(root, done):
             "reading is its logical form (`model parse --form`); `tests/scripts/test_model_constructs.py` reads each "
             "example again as part of the acceptance corpus."), "",
            "Words of a context, not constructs: `%s`." % WORDS, "",
-           "The joints of every line, not constructs: `%s`." % GLUE, ""]
+           "The joints of every line, not constructs: `%s`." % GLUE, "", model_catalogue_entries.header(), ""]
     for e, reading in done:
-        out += ["## %s" % e["code"], "", e["label"], "",
+        out += ["## %s" % e["code"], "", e["label"], "", *model_catalogue_entries.lines("constructs", e["code"]),
                 "- Form: %s" % e["form"],
                 "- Functions: `%s`" % e["funs"],
                 "- Cited by: %s" % (", ".join(cited.get(e["code"], [])) or "no line")]
