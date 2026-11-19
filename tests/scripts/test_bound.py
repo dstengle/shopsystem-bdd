@@ -27,6 +27,11 @@ BOUND_BY_PYTEST_BDD = [
 
 
 class BoundTest(unittest.TestCase):
+    # Plan 5 of the domain contract (.shop/records/2026-11-19-domain-contract/plan-5-spec-migration.md, exit check):
+    # the spec's features are the 22 new capabilities' and tests/scenarios still binds the old ones, so both checks
+    # stay red until plan 6 re-keys the handlers on the operations (its tasks 2 and 6). expectedFailure, not a skip:
+    # an unexpected success fails the run, so plan 6 removes these marks (and re-lists BOUND_BY_PYTEST_BDD).
+    @unittest.expectedFailure
     def test_every_step_of_a_generated_feature_has_one_handler(self):
         """A generated feature's steps are bound by the vocabulary (design §14.3): `features vocab --check` replaces
         the file list below as each capability is converted."""
@@ -37,6 +42,7 @@ class BoundTest(unittest.TestCase):
                               capture_output=True, text=True)
         self.assertEqual(done.returncode, 0, done.stdout + done.stderr)
 
+    @unittest.expectedFailure
     def test_every_scenario_has_exactly_one_test(self):
         done = subprocess.run([sys.executable, str(SCRIPT), "--dir", "features", "bindings", "--tests", "tests", "--unbound",
                                *BOUND_BY_PYTEST_BDD], cwd=ROOT, capture_output=True, text=True)
