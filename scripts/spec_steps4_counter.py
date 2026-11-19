@@ -11,7 +11,10 @@
 - every and a count in a precondition: each K the first line's parts put in the box's restriction is one of the box's
   (`members`), so "every line of the stage" holds of the line the While brings in, and a count is given at its
   boundary (`boundary`: n of at least, at most and exactly n, n + 1 of more than n, n - 1 of fewer than n) counting
-  them (`given`).
+  them (`given`);
+- holds-exactly's only half in a precondition ("no file in the worktree w1 that is not P", b309): a K brought in that
+  fails P (another value of its attribute, "covers no line") and the Given that the collection does not hold it
+  (`excluded`), in place of "the worktree w1 holds no file", which the every half's member contradicts.
 """
 from dataclasses import replace
 
@@ -168,3 +171,20 @@ def given(r, box):
     found = members(r, box, list(box.body) + list(box.scope.body))
     return [s for c in boxes.copies(box, max(boundary(box.count) - len(found), 0))
             for sub in list(c.body) + list(c.scope.body) for s in r.given(sub)]
+
+
+def excluded(r, box):
+    """The Givens of a "no" box of one K with a `not` inside it and its row `K | in | y`: the K brought in, each
+    inner `not` said of it (one value by another value) and "y does not hold" it; [] for a box of another shape."""
+    k, inner = box.refs[0] if len(box.refs) == 1 else None, [i for i in box.body if isinstance(i, Box)]
+    links = [i for i in box.body if isinstance(i, Atom) and i.pred == "rel" and i.args[:2] == ("in", k)]
+    if k is None or len(links) != 1 or not inner or len(inner) + 1 != len(box.body):
+        return []
+    if any(b.op != "not" for b in inner):
+        return []
+    r.known.add(k)
+    out = [(kid(k.kind) + "_Given", (kid(k.kind) + "_n",), ("NameLit", r.name(k)))]
+    for b in inner:
+        single = not b.refs and len(b.body) == 1 and isinstance(b.body[0], Atom) and b.body[0].pred == "attr"
+        out += [("SCond", unmet(r, b.body[0]))] if single else r.given(b)
+    return out + [("SCond", r.cond(links[0], False))]
