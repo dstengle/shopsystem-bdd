@@ -237,7 +237,7 @@ object no findings kind of text
 object specification
 service language
   operation parse(text, logical form (flag))
-    outcomes: returned → the reading | refused: term out of its frame, passive form with no by-phrase, requirement not in the language, definite noun phrase with no antecedent, negated indefinite in a precondition, fragment, order out of place
+    outcomes: returned → the reading | refused: requirement not in the language, requirement of more than one logical form, reading rule broken, construct with no catalogue entry, fragment
   operation explain(text)  outcomes: returned | refused: requirement id of no requirement
   operation look up(pack)  outcomes: returned → every term of the pack
 
