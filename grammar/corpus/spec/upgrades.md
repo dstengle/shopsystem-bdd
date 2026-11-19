@@ -582,3 +582,89 @@ shall [x1: repository "the repository the request is made in" (indexical), x2: p
     change(e3, subject: x4, object: x6)
     keep(e4, subject: x4, object: x6)
 ```
+
+## r31
+From: b318 r31.
+
+```reading
+While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold of this repository and complete the request.
+shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x3: repository "the repository the request is made in" (indexical), x5: agent the person (constant), x7: service the upgrades service (constant), x9: request "the request the trigger makes" (indexical)]
+  while
+    not [x2: index file]
+      of(x2, x1)
+    not [x4: shop directory]
+      of(x4, x3)
+  when [x6: context id]
+    request(e1, upgrades.found, subject: x5, object: x1)
+    param(e1, context id, x6)
+  response [x8: context scaffold]
+    of(x8, x3)
+    keep(e2, subject: x7, object: x8)
+    complete(e3, subject: x7, object: x9)
+```
+
+## r32
+From: b318 r32.
+
+```reading
+If the person founds this bounded context without a context id, then the upgrades service shall refuse the request and name this bounded context.
+shall [x1: agent the person (constant), x2: bounded context "the bounded context whose repository the command runs in" (indexical), x3: service the upgrades service (constant), x4: request "the request the trigger makes" (indexical)]
+  if
+    request(e1, upgrades.found, subject: x1, object: x2)
+    noparam(e1, context id)
+  response
+    refuse(e2, subject: x3, object: x4)
+    name(e3, subject: x3, object: x2)
+```
+
+## r33
+From: b318 r33.
+
+```reading
+If the person founds this bounded context with a context id that does not conform to the bounded context id form, then the upgrades service shall refuse the request and name the context id.
+shall [x1: agent the person (constant), x2: bounded context "the bounded context whose repository the command runs in" (indexical), x4: artifact the bounded context id form (constant), x5: service the upgrades service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x3: context id]
+    not
+      conforms(x3, x4)
+    request(e1, upgrades.found, subject: x1, object: x2)
+    param(e1, context id, x3)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x3)
+```
+
+## r34
+From: b318 r34.
+
+```reading
+While this bounded context has an index file, if the person founds this bounded context with a context id, then the upgrades service shall refuse the request, name the index file and change no file.
+shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x3: agent the person (constant), x5: service the upgrades service (constant), x6: request "the request the trigger makes" (indexical)]
+  while [x2: index file]
+    of(x2, x1)
+  if [x4: context id]
+    request(e1, upgrades.found, subject: x3, object: x1)
+    param(e1, context id, x4)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x2)
+    not [x7: file]
+      change(e4, subject: x5, object: x7)
+```
+
+## r35
+From: b318 r35.
+
+```reading
+While this repository has a shop directory, if the person founds this bounded context with a context id, then the upgrades service shall refuse the request, name the shop directory and change no file.
+shall [x1: repository "the repository the request is made in" (indexical), x3: agent the person (constant), x4: bounded context "the bounded context whose repository the command runs in" (indexical), x6: service the upgrades service (constant), x7: request "the request the trigger makes" (indexical)]
+  while [x2: shop directory]
+    of(x2, x1)
+  if [x5: context id]
+    request(e1, upgrades.found, subject: x3, object: x4)
+    param(e1, context id, x5)
+  response
+    refuse(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x2)
+    not [x8: file]
+      change(e4, subject: x6, object: x8)
+```

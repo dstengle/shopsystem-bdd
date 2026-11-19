@@ -428,3 +428,16 @@ Feature: Consistency
     And the requirement r2 uses the code c1
     When the person examines this specification
     Then the specification service completes this request
+
+  @g33 @r33
+  Scenario: holds-exactly in a precondition
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And a precondition p1
+    And the requirement r1 has the precondition p1
+    And the precondition p1 uses `holds-exactly`
+    And the precondition p1 uses `rc-subject`
+    When the person examines this specification with the capability c1
+    Then the specification service returns the translation t1
+    And the requirement r1 has the translation t1

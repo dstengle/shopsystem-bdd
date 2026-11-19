@@ -21,6 +21,7 @@ object capability kind of file
 
 object requirement kind of text
   relations: has → precondition | trigger | logical form | consequence | parse | compiled grammar | translation | response | act | restriction | upper bound | requirement id (many); omits → requirement (many); allows → act (many); oblige → requirement (many); overrides → requirement (many); adds → consequence (many); permits → act (many); retires → requirement id (many); uses → construct | rule (many)
+  relations: governs → operation (many)
 
 object requirement group
   relations: has → requirement | scenario (many)
@@ -180,6 +181,7 @@ object response kind of text
 object closing comma
 
 object construct catalogue kind of file
+  relations: holds → catalogue entry (many)
 
 object referent
   relations: has → description (many)
@@ -203,8 +205,10 @@ object order counter-example kind of text
 object repository
   attributes: release: 0.23.1 < 0.24.0 < 0.25.0 < 0.29.0 < 0.30.0 < 0.31.0 < 0.32.0 < 0.32.1 < 0.33.0 < 0.34.0 < 0.34.1 < 0.99.0; store: taking | rejecting
   relations: holds → old-layout directory | uncommitted change (many); has → decision ledger | plugin version file | shop directory | capability | decisions index | frozen notice | initiative (many); rejects → kept change (many)
+  relations: has → context scaffold (one)
 
 object construct
+  relations: has → catalogue entry (many)
 
 object language reference kind of artifact
 
@@ -244,6 +248,7 @@ service specification
   operation renew(rule catalogue, audit (flag))  outcomes: done | failed → the stale rule catalogue
   operation inventory(specification, audit (flag))  outcomes: returned → every file form | failed → each form written by hand
   operation translate(specification)  outcomes: returned → every fact
+  operation annotate(adapter contract, audit (flag))  outcomes: done → the adapter contract | failed → each stale adapter contract
 
 service decisions
   operation enter(design-decision, title, summary, tier, wording, route, supersedes)
@@ -256,4 +261,18 @@ service records
 service scenarios
   operation generate(feature, capability, audit (flag))  outcomes: done → the feature | failed → each stale feature
   operation audit(feature)  outcomes: passed | failed → each step with no handler
+
+object adapter contract kind of file
+  relations: holds → operation (many)
+
+object operation
+  relations: holds → requirement (many)
+
+object reading rule kind of rule
+
+object collection
+  relations: has → member (many)
+
+object member
+  relations: has → order (many)
 ```

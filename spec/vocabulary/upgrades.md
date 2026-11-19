@@ -57,3 +57,7 @@ area: upgrades
 - **upgrade** (verb, action) → operation upgrades.upgrade. Forms: upgrades, upgraded. Frame: <actor> upgrades <repository>.
 - **relocate** (verb, action) → operation upgrades.relocate. Forms: relocates, relocated. Frame: <actor> relocates <bounded context>.
 - **the upgrades service** (proper noun) → service upgrades.
+- **context scaffold** (noun) → object context scaffold. The files founding a bounded context writes in a repository: `spec/index.md` (the id given, its last part the title, `language: codified-2`, `imports: [request]`), `spec/universal.md` (`language: codified-2`, no condition), `spec/model/`, `spec/vocabulary/`, `spec/capabilities/`, `.shop/backlog/`, `.shop/records/README.md` (an empty records index), `.shop/plugin-version` (the release of the plugin), `.shop/delivery.toml` (every key commented out at its default), `features/` and `tests/scenarios/conftest.py`, in which the check finds no violation and generation writes nothing.
+- **the bounded context id form** (proper noun) → object bounded context id form. `bounded-context/<domain>/<path>`, the id of a bounded context, its last part a name.
+- **context id** (noun) → object context id. The id a bounded context is founded with, as `bounded-context/<domain>/<path>`.
+- **found** (verb, action) → operation upgrades.found. Forms: founds, founded. Frame: <actor> founds <bounded context>.

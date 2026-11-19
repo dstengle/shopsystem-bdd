@@ -593,3 +593,34 @@ Feature: Scenarios
     Then the step s1 uses `not-condition`
     And the scenarios service keeps the scenario s2
     And the scenario s2 has the step s1
+
+  @g31 @r31
+  Scenario: holds-exactly in a precondition
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And a precondition p1
+    And the requirement r1 has the precondition p1
+    And the precondition p1 uses `holds-exactly`
+    And a feature f1
+    And the capability c1 has the feature f1
+    When the person generates the feature f1
+    Then the step s1 uses `not-condition`
+    And the scenarios service keeps the scenario s2
+    And the scenario s2 has the step s1
+
+  @g32 @r32
+  Scenario: holds-exactly with a subject relative clause in a precondition
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And a precondition p1
+    And the requirement r1 has the precondition p1
+    And the precondition p1 uses `holds-exactly`
+    And the precondition p1 uses `rc-subject`
+    And a feature f1
+    And the capability c1 has the feature f1
+    When the person generates the feature f1
+    Then the step s1 uses `not-condition`
+    And the scenarios service keeps the scenario s2
+    And the scenario s2 has the step s1

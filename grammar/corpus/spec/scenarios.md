@@ -617,3 +617,42 @@ shall [x3: thing `holds-exactly` (parameter), x4: thing `of-relation` (parameter
     use(subject: x9, object: x10)
     keep(e2, subject: x7, object: x8)
 ```
+
+## r31
+From: b309 r31.
+
+```reading
+While the precondition of a requirement of a capability uses `holds-exactly`, when the person generates the feature of the capability, the scenarios service shall keep a scenario whose step uses `not-condition`.
+shall [x4: thing `holds-exactly` (parameter), x5: agent the person (constant), x7: service the scenarios service (constant), x10: thing `not-condition` (parameter)]
+  while [x1: requirement, x2: capability, x3: precondition]
+    of(x1, x2)
+    of(x3, x1)
+    use(subject: x3, object: x4)
+  when [x6: feature]
+    of(x6, x2)
+    request(e1, scenarios.generate, subject: x5, object: x6)
+  response [x8: scenario, x9: step]
+    of(x9, x8)
+    use(subject: x9, object: x10)
+    keep(e2, subject: x7, object: x8)
+```
+
+## r32
+From: b309 r32.
+
+```reading
+While the precondition of a requirement of a capability uses `holds-exactly` and `rc-subject`, when the person generates the feature of the capability, the scenarios service shall keep a scenario whose step uses `not-condition`.
+shall [x4: thing `holds-exactly` (parameter), x5: thing `rc-subject` (parameter), x6: agent the person (constant), x8: service the scenarios service (constant), x11: thing `not-condition` (parameter)]
+  while [x1: requirement, x2: capability, x3: precondition]
+    of(x1, x2)
+    of(x3, x1)
+    use(subject: x3, object: x4)
+    use(subject: x3, object: x5)
+  when [x7: feature]
+    of(x7, x2)
+    request(e1, scenarios.generate, subject: x6, object: x7)
+  response [x9: scenario, x10: step]
+    of(x10, x9)
+    use(subject: x10, object: x11)
+    keep(e2, subject: x8, object: x9)
+```

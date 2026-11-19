@@ -1,0 +1,178 @@
+# parsing: every live line with its intended reading
+
+## r1
+From: b369 r1.
+
+```reading
+When the person parses a requirement that conforms to the language reference, the language service shall complete the request.
+shall [x1: agent the person (constant), x3: artifact the language reference (constant), x4: service the language service (constant), x5: request "the request the trigger makes" (indexical)]
+  when [x2: requirement]
+    conforms(x2, x3)
+    request(e1, language.parse, subject: x1, object: x2)
+  response
+    complete(e2, subject: x4, object: x5)
+```
+
+## r2
+From: b369 r2.
+
+```reading
+When the person parses a requirement that conforms to the language reference with the logical form, the language service shall return one logical form of the requirement and complete the request.
+shall [x1: agent the person (constant), x3: artifact the language reference (constant), x4: service the language service (constant), x6: request "the request the trigger makes" (indexical)]
+  when [x2: requirement]
+    conforms(x2, x3)
+    request(e1, language.parse, subject: x1, object: x2)
+    param(e1, logical form, on)
+  response
+    count exactly 1 [x5: logical form]
+      of(x5, x2)
+      scope
+        return(e2, subject: x4, object: x5)
+    complete(e3, subject: x4, object: x6)
+```
+
+## r3
+From: b369 r3.
+
+```reading
+If the person parses a requirement that does not conform to the language reference, then the language service shall refuse the request and name the requirement.
+shall [x1: agent the person (constant), x3: artifact the language reference (constant), x4: service the language service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: requirement]
+    not
+      conforms(x2, x3)
+    request(e1, language.parse, subject: x1, object: x2)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r4
+From: b369 r4.
+
+```reading
+If the person parses a requirement that has more than one logical form, then the language service shall refuse the request and name the requirement.
+shall [x1: agent the person (constant), x4: service the language service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: requirement]
+    count more than 1 [x3: logical form]
+      scope
+        of(x3, x2)
+    request(e1, language.parse, subject: x1, object: x2)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r5
+From: b369 r5.
+
+```reading
+If the person parses a requirement that violates a reading rule, then the language service shall refuse the request and name the reading rule.
+shall [x1: agent the person (constant), x4: service the language service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: requirement, x3: reading rule]
+    violate(subject: x2, object: x3)
+    request(e1, language.parse, subject: x1, object: x2)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x3)
+```
+
+## r6
+From: b369 r6.
+
+```reading
+If the person parses a requirement that uses a construct that has no catalogue entry, then the language service shall refuse the request and name the construct.
+shall [x1: agent the person (constant), x5: service the language service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x2: requirement, x3: construct]
+    not [x4: catalogue entry]
+      of(x4, x3)
+    use(subject: x2, object: x3)
+    request(e1, language.parse, subject: x1, object: x2)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x3)
+```
+
+## r7
+From: b369 r7.
+
+```reading
+If the person parses a fragment, then the language service shall refuse the request, name the fragment and return a term.
+shall [x1: agent the person (constant), x3: service the language service (constant), x4: request "the request the trigger makes" (indexical)]
+  if [x2: fragment]
+    request(e1, language.parse, subject: x1, object: x2)
+  response [x5: term]
+    refuse(e2, subject: x3, object: x4)
+    name(e3, subject: x3, object: x2)
+    return(e4, subject: x3, object: x5)
+```
+
+## r8
+From: b369 r8.
+
+```reading
+While the corpus holds a logical form of a requirement, when the person parses the requirement with the logical form, the language service shall return the logical form.
+shall [x1: corpus "the corpus of the bounded context the command runs in" (indexical), x4: agent the person (constant), x5: service the language service (constant)]
+  while [x2: logical form, x3: requirement]
+    of(x2, x3)
+    in(x2, x1)
+  when
+    request(e1, language.parse, subject: x4, object: x3)
+    param(e1, logical form, on)
+  response
+    return(e2, subject: x5, object: x2)
+```
+
+## r9
+From: b369 r9.
+
+```reading
+While a parse cache holds the parse of a requirement, when the person parses the requirement, the language service shall return the parse of the requirement, keep no compiled grammar and complete the request.
+shall [x4: agent the person (constant), x5: service the language service (constant), x7: request "the request the trigger makes" (indexical)]
+  while [x1: parse cache, x2: requirement, x3: parse]
+    of(x3, x2)
+    in(x3, x1)
+  when
+    request(e1, language.parse, subject: x4, object: x2)
+  response
+    return(e2, subject: x5, object: x3)
+    not [x6: compiled grammar]
+      keep(e3, subject: x5, object: x6)
+    complete(e4, subject: x5, object: x7)
+```
+
+## r10
+From: b369 r10.
+
+```reading
+While a requirement has a parse that no parse cache holds, when the person parses the requirement, the language service shall keep a parse cache and complete the request.
+shall [x4: agent the person (constant), x5: service the language service (constant), x7: request "the request the trigger makes" (indexical)]
+  while [x1: requirement, x2: parse]
+    not [x3: parse cache]
+      in(x2, x3)
+    of(x2, x1)
+  when
+    request(e1, language.parse, subject: x4, object: x1)
+  response [x6: parse cache]
+    keep(e2, subject: x5, object: x6)
+    complete(e3, subject: x5, object: x7)
+```
+
+## r11
+From: b369 r11.
+
+```reading
+While a requirement has a parse that no parse cache holds and the compiled grammar of the requirement exists, when the person parses the requirement, the language service shall keep no compiled grammar and complete the request.
+shall [x5: agent the person (constant), x6: service the language service (constant), x8: request "the request the trigger makes" (indexical)]
+  while [x1: requirement, x2: parse, x4: compiled grammar]
+    not [x3: parse cache]
+      in(x2, x3)
+    of(x2, x1)
+    of(x4, x1)
+    exists(x4)
+  when
+    request(e1, language.parse, subject: x5, object: x1)
+  response
+    not [x7: compiled grammar]
+      keep(e2, subject: x6, object: x7)
+    complete(e3, subject: x6, object: x8)
+```

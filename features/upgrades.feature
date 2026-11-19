@@ -1006,3 +1006,50 @@ Feature: Upgrades
     And the upgrades service changes the plugin version file p1
     And this repository has the plugin version file p1
     And the upgrades service keeps the plugin version file p1
+
+  @g31 @r31
+  Scenario: Founding a bounded context keeps its context scaffold
+    Given the tracked file `README.md` holds "A new context."
+    And this bounded context has no index file
+    And this repository has no shop directory
+    And a context id c1
+    When the person founds this bounded context with the context id c1
+    Then the upgrades service keeps the context scaffold c2
+    And this repository has the context scaffold c2
+    And the upgrades service completes this request
+
+  @g32 @r32
+  Scenario: A bounded context is not founded without a context id
+    When the person founds this bounded context without a context id
+    Then the upgrades service refuses this request
+    And the upgrades service names this bounded context
+
+  @g33 @r33
+  Scenario: A bounded context is not founded with a context id that is no bounded context id
+    Given a context id c1
+    And the context id c1 does not conform to the bounded context id form
+    When the person founds this bounded context with the context id c1
+    Then the upgrades service refuses this request
+    And the upgrades service names the context id c1
+
+  @g34 @r34
+  Scenario: A bounded context that has an index file is not founded and nothing changes
+    Given the tracked file `spec/index.md` holds "# notes"
+    And an index file i1
+    And this bounded context has the index file i1
+    And a context id c1
+    When the person founds this bounded context with the context id c1
+    Then the upgrades service refuses this request
+    And the upgrades service names the index file i1
+    # entailed: U17
+
+  @g35 @r35
+  Scenario: A repository that has a shop directory is not founded on and nothing changes
+    Given the tracked file `.shop/backlog/b1.md` holds "# b1"
+    And a shop directory s1
+    And this repository has the shop directory s1
+    And a context id c1
+    When the person founds this bounded context with the context id c1
+    Then the upgrades service refuses this request
+    And the upgrades service names the shop directory s1
+    # entailed: U17

@@ -7,7 +7,7 @@ area: upgrades
 specifies: service upgrades
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r31, r32, r33, r34, r35]
 ---
 
 # Upgrades
@@ -676,3 +676,31 @@ the tracked file `.shop/work/i1/initiative.md` holds:
 - [r30] While the release of this repository is `0.34.0` and the release of the plugin is `0.34.1`, when the person
   upgrades this repository, the upgrades service shall return `no upgrade step is pending`, change the plugin version
   file of this repository and keep the plugin version file.
+
+### [g31] Founding a bounded context keeps its context scaffold
+- [r31] While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold of this repository and complete the request.
+
+```given
+the tracked file `README.md` holds "A new context."
+```
+
+### [g32] A bounded context is not founded without a context id
+- [r32] If the person founds this bounded context without a context id, then the upgrades service shall refuse the request and name this bounded context.
+
+### [g33] A bounded context is not founded with a context id that is no bounded context id
+- [r33] If the person founds this bounded context with a context id that does not conform to the bounded context id form, then the upgrades service shall refuse the request and name the context id.
+
+### [g34] A bounded context that has an index file is not founded and nothing changes
+- [r34] While this bounded context has an index file, if the person founds this bounded context with a context id, then the upgrades service shall refuse the request, name the index file and change no file.
+
+```given
+the tracked file `spec/index.md` holds "# notes"
+```
+
+### [g35] A repository that has a shop directory is not founded on and nothing changes
+- [r35] While this repository has a shop directory, if the person founds this bounded context with a context id, then the upgrades service shall refuse the request, name the shop directory and change no file.
+
+```given
+the tracked file `.shop/backlog/b1.md` holds "# b1"
+```
+

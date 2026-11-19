@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: examine; service language: explain
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r33]
 ---
 
 # Consistency
@@ -162,3 +162,7 @@ The requirements examined together: contradictions, what a line adds over the ot
 - [r32] While a requirement uses `not-relative` and a code and the requirement forbids an act and another requirement
   obliges the act and the requirement uses `rc-whose` and the code, when the person examines this specification, the
   specification service shall complete the request.
+
+### [g33] holds-exactly in a precondition
+- [r33] While the precondition of a requirement of a capability uses `holds-exactly` and `rc-subject`, when the person examines this specification with the capability, the specification service shall return a translation of the requirement.
+

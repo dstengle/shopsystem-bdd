@@ -7,7 +7,7 @@ area: specification
 specifies: service scenarios
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r31, r32]
 ---
 
 # Scenarios
@@ -251,3 +251,10 @@ the capability `shelf` holds:
 ### [g30] generation writes the member outside a restriction that reaches a second thing
 - [r30] While a requirement of a capability uses `holds-exactly` and `of-relation`, when the person generates the
   feature of the capability, the scenarios service shall keep a scenario whose step uses `not-condition`.
+
+### [g31] holds-exactly in a precondition
+- [r31] While the precondition of a requirement of a capability uses `holds-exactly`, when the person generates the feature of the capability, the scenarios service shall keep a scenario whose step uses `not-condition`.
+
+### [g32] holds-exactly with a subject relative clause in a precondition
+- [r32] While the precondition of a requirement of a capability uses `holds-exactly` and `rc-subject`, when the person generates the feature of the capability, the scenarios service shall keep a scenario whose step uses `not-condition`.
+
