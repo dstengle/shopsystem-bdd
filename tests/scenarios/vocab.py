@@ -1,8 +1,8 @@
 """The step vocabulary in pytest-bdd (design §14.3): one step definition for each keyword, matching a step the step
 grammar 4 reads (vocab4), dispatching to the handler `lookup` finds, and the checks of the observable
-universal conditions after every generated scenario (design §8.4: U12, a refused command changes nothing; U13, a
-commit a command makes in a repository with a remote is pushed, but under a remote the scenario made unpushable; U16,
-`--json` prints one JSON object; U11, U4 and U8 before b240's rewording, decisions 0086-0088).
+universal conditions after every generated scenario: U17, a refused request names a reason and changes nothing;
+and the store's check of the decision "Git is the store and the isolation" (U13 retired into it), a request's kept
+commit shared to its upstream remote, but under a remote the scenario made unpushable (store_git).
 
 Each text is parsed once a process. `install(namespace, root, tests_dir)`
 puts the definitions, the default fixtures (`repo`, `context`, `run`) and the hooks into a conftest's namespace, and
@@ -13,7 +13,6 @@ writes `from vocab import handler`, and `features vocab --check` reads the same 
 """
 import hashlib
 import importlib.util
-import json
 import re
 import subprocess
 import sys
@@ -25,6 +24,8 @@ import pytest
 SCRIPTS = Path(__file__).resolve().parents[2] / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.append(str(SCRIPTS))
+import store_git
+
 if __name__ in sys.modules:   # a loader by path puts the module in sys.modules first, as importlib's recipe does
     sys.modules.setdefault("vocab", sys.modules[__name__])
 
@@ -97,50 +98,21 @@ def snapshot(repo):
             for p in sorted(repo.rglob("*")) if p.is_file() and ".git" not in p.relative_to(repo).parts}
 
 
-def _git(repo, *args):
-    done = subprocess.run(["git", *args], cwd=repo, capture_output=True, text=True)
-    return done.stdout.strip() if done.returncode == 0 else None
-
-
-def branch_head(repo):
-    """(branch, its commit) checked out in `repo`, or None outside git or on a detached HEAD."""
-    branch = (Path(repo) / ".git").exists() and _git(repo, "symbolic-ref", "-q", "--short", "HEAD")
-    return (branch, _git(repo, "rev-parse", "HEAD")) if branch else None
-
-
-def unpushed(repo, before):
-    """The remote a run's commit on the branch checked out is not pushed to (U13), or None: none when the run made no
-    commit there or the repository has no remote for the branch (its upstream's, else `origin`). The commit is looked
-    for on the branch's upstream branch there (`branch.<b>.merge`), else on the branch of its own name."""
-    after = branch_head(repo)
-    if after is None or after == before:
-        return None
-    branch, head = after
-    remote = _git(repo, "config", "branch.%s.remote" % branch) or "origin"
-    if remote not in (_git(repo, "remote") or "").split():
-        return None
-    upstream = (_git(repo, "config", "branch.%s.merge" % branch) or branch).removeprefix("refs/heads/")
-    return None if _git(repo, "rev-parse", "-q", "--verify", "refs/remotes/%s/%s" % (remote, upstream)) == head else remote
-
-
 def u_problems(records, unpushable=False):
-    """The U12, U13 and U16 failures of a scenario's runs, each record {args, returncode, stdout, changed, unpushed};
-    U13 is not asked under an unpushable remote."""
+    """The U17 failures of a scenario's runs (a refused request names a reason and changes nothing), and the store's:
+    a request's kept commit shared to its upstream remote (store_git, the decision "Git is the store and the
+    isolation", into which U13 retired), not asked under an unpushable remote. Each record {args, returncode, stdout,
+    stderr, changed, unshared}."""
     out = []
     for r in records:
         command = " ".join(map(str, r["args"]))
-        if r["returncode"] == 0 and r.get("unpushed") and not unpushable:
-            out.append("U13: `%s` committed and did not push the commit to %s" % (command, r["unpushed"]))
+        if r["returncode"] == 0 and r.get("unshared") and not unpushable:
+            out.append("store: `%s` kept a commit not shared to %s" % (command, r["unshared"]))
         if r["returncode"] != 0 and r["changed"]:
-            out.append("U12: `%s` was refused (exit %d) and changed %s" % (command, r["returncode"],
+            out.append("U17: `%s` was refused (exit %d) and changed %s" % (command, r["returncode"],
                                                                          ", ".join(r["changed"])))
-        if r["returncode"] == 0 and "--json" in map(str, r["args"]):
-            try:
-                one = isinstance(json.loads(r["stdout"]), dict)
-            except ValueError:
-                one = False
-            if not one:
-                out.append("U16: `%s` printed something other than one JSON object" % command)
+        elif r["returncode"] != 0 and not ((r.get("stderr") or "") + r["stdout"]).strip():   # the CLI says why on either
+            out.append("U17: `%s` was refused (exit %d) and named no reason" % (command, r["returncode"]))
     return out
 
 
@@ -149,15 +121,15 @@ def runner(repo, request, scripts=SCRIPTS):
     scenario each run is recorded for the U checks."""
     def _run(script, *args, cwd=None, **kwargs):
         record = generated(request.node)
-        before, at = (snapshot(repo), branch_head(repo)) if record else (None, None)
+        before, at = (snapshot(repo), store_git.head(repo)) if record else (None, None)
         done = subprocess.run([sys.executable, str(Path(scripts) / script), *map(str, args)], capture_output=True,
                               text=True, cwd=cwd or repo, **kwargs)
         if record:
             after = snapshot(repo)
             changed = sorted(k for k in set(before) | set(after) if before.get(k) != after.get(k))
             request.node.__dict__.setdefault("_shop_runs", []).append(
-                {"args": [script, *args], "returncode": done.returncode, "stdout": done.stdout, "changed": changed,
-                 "unpushed": unpushed(repo, at)})
+                {"args": [script, *args], "returncode": done.returncode, "stdout": done.stdout,
+                 "stderr": done.stderr, "changed": changed, "unshared": store_git.unshared(repo, at)})
         return done
     return _run
 
