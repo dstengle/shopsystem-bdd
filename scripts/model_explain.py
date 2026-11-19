@@ -6,7 +6,8 @@ hold (spec_entail_rules' world of the line with every premise as a rule over it,
 a response the line states itself left out, each with its premise: a universal condition (U11, a refusal changes
 nothing) or a requirement, and the definition of refuse of an imported pack (spec_entail's bridge: an error exit on a
 run is a refusal of its command, and a refusal an error exit). A refusal the line states fires the premises on a
-refusal as the bridge's does. "taking precedence over it" lists each If requirement of the line's trigger, when the
+refusal as the bridge's does; in a context importing the request pack every refusal is one, with no bridge (the
+domain contract design, §5.2), and the request and a parameter a response names are worded "the request", "the p". "taking precedence over it" lists each If requirement of the line's trigger, when the
 line is of another form (call 12: where the If line's state holds its response replaces the line's); a universal
 condition takes no precedence. An id no capability holds is refused, naming it, and nothing is written."""
 import sys
@@ -58,6 +59,7 @@ class Explain:
         self.domain = [f for f in facts if f.split("(")[0] in ("kind", "sub", "val", "dalt", "dlit")]
         self.P = Premises(self.reqs, self.dom)
         self.pack = refuse_pack(root)
+        self.fixed = {c: dict(f["role"])[y] for r, f in self.reqs.items() for y, c in self.P.fixed(r).items()}
 
     def parts(self, ident):
         return sorted(r for r in self.reqs if spec_lf_core.split(r) == ident)
@@ -67,6 +69,8 @@ class Explain:
         its kind, else as spec_findings writes it."""
         if x.type == clingo.SymbolType.Function and x.name == "f" and len(x.arguments) >= 2:
             return self.words.term(x.arguments[0].string, x.arguments[1])
+        if x.type == clingo.SymbolType.String and str(x) in self.fixed:     # the request, a parameter
+            return "the %s" % (x.string if self.fixed[str(x)] == "k_parameter" else "request")
         if x.type == clingo.SymbolType.Function and x.name == "t" and len(x.arguments) == 1:
             x = x.arguments[0]
             for y, c in self.words.of(L, "named"):

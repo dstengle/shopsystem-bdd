@@ -31,6 +31,12 @@ PREPOSITIONS = ("of", "in", "on", "for", "with", "from", "to", "by", "under", "a
 SLOT = re.compile(r"<([^>]+)>")
 
 
+def qualified(element):
+    """The id the check names a model element by (the domain contract design, §5.3): qualified by its area
+    (`notes.note`, `notes.note.status`), an operation by its service (`notes.add`)."""
+    return element.id if element.kind == "operation" else "%s.%s" % (element.area, element.id)
+
+
 def _kinds(found):
     """{object name: kind key} of every noun naming an object, and the kind terms."""
     elements = defaultdict(set)
@@ -46,7 +52,8 @@ def _kinds(found):
         keys[e.element.id] = key
         t = e.fields
         terms.append(spec_lexicon.Term(term=key, category="kind", text=e.text, where=e.where, label="noun",
-                                       plural=t.plural, nots=t.nots, this=t.this, word=e.term if two else ""))
+                                       plural=t.plural, nots=t.nots, this=t.this, word=e.term if two else "",
+                                       element=qualified(e.element)))
     return keys, terms
 
 
@@ -61,7 +68,8 @@ def _actors(model, found, kinds, services=()):
         if e.element.kind == "object":
             kind_of = kinds.get(e.element.id, "")
         out.append(spec_lexicon.Term(term=e.term, category="actor", text=e.text, where=e.where, label=e.label,
-                                     supertype=kinds.get(kind_of, kind_of) or "agent", nots=e.fields.nots))
+                                     supertype=kinds.get(kind_of, kind_of) or "agent", nots=e.fields.nots,
+                                     element=qualified(e.element)))
     return out
 
 
@@ -83,7 +91,7 @@ def _attributes(model, found, kinds):
             term=e.term, category="attribute", kinds=(kind,) if kind else (), text=e.text, where=e.where,
             label="attribute of %s" % (kind or owner), values=values, value_kinds=value_kinds,
             transitions=transitions, type=attr.type if attr.type in ("number", "time", "text") else
-            ("" if values else "text")))
+            ("" if values else "text"), element=qualified(e.element)))
     return out
 
 
@@ -135,7 +143,8 @@ def _verbs(model, found, kinds):
         frames = _frames(model, e, kinds, spec_frames.s3(t))
         out.append(spec_lexicon.Term(term=e.term, category="event", text=e.text, where=e.where, label=e.label,
                                      aspect=t.aspect, forms=t.forms, frames=frames, frame=frames[0], nots=t.nots,
-                                     operation=e.element.id if e.element.kind == "operation" else ""))
+                                     operation=e.element.id if e.element.kind == "operation" else "",
+                                     element=qualified(e.element)))
     return out
 
 

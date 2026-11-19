@@ -27,6 +27,10 @@
 % comparisons of two things' values and orders (b275): `ccmp2(R,X,T,Op,Y,P)`, X's T is (P) after, before or the same
 % as Y's; `ordered(R,I,T,Dir)`, act I of R requires its object (a collection, or each K of a printed every) in Dir by T
 #defined ccmp2/6. #defined ordered/4. #defined tcan/2.
+% a request (the domain contract design, §5.3; scripts/spec_lf_facts_request.py): its trigger `trig(R,req,req(O,Ps),D,X)`,
+% one request of another when its operation O and parameter set Ps are one whole key; `param(R,I,P,V)`,
+% `noparam(R,I,P)` and `names(R,I,X)` (what a refusal names) kept for the findings, joined by no rule
+#defined param/4. #defined noparam/3. #defined names/3.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
@@ -50,6 +54,11 @@ compat(K,K2) :- subeq(K,K2).  compat(K,K2) :- subeq(K2,K).
 % a whole shared key (trigger and key, or an untriggered or universal requirement's own keys), so no rule ranges over
 % all pairs of requirements, and no join is bound on a word only (an event, a kind) that thousands of lines share.
 quiet(print). quiet(exit_ok). quiet(exit_error). quiet(change_nothing).
+% the request pack's responses that change nothing (a kept thing is a change), and the outcomes one response of one
+% request cannot have together: a refusal with any other end (`oclash`)
+quiet(refused). quiet(returned). quiet(done). quiet(failed). quiet(notified). quiet(named).
+oclash(refused,done). oclash(refused,returned). oclash(refused,failed).
+oclash(O2,O1) :- oclash(O1,O2).
 % "D shall do E and change nothing" changes nothing but E: a requirement's own events are excepted from its own
 % change nothing, and from another's change nothing when that one names the same event
 own(R,E) :- resp(R,_,pos,E,_,_).
@@ -59,6 +68,7 @@ vals(T,V) :- set(_,_,_,T,V).  posev(E) :- resp(_,_,pos,E,_,_).
 dem(R,ev(neg,E)) :- key(R,ev(pos,E)).  dem(R,ev(pos,E)) :- key(R,ev(neg,E)).
 dem(R,at(T,W)) :- key(R,at(T,V)), vals(T,W), V != W.
 dem(R,ev(pos,exit_error)) :- key(R,ev(pos,exit_ok)).  dem(R,nouse) :- key(R,use).
+dem(R,ev(pos,O2)) :- key(R,ev(pos,O1)), oclash(O1,O2).
 % a permission is forbidden by a "shall not" of its act, and nothing else (L7)
 dem(R,ev(neg,E)) :- key(R,ev(may,E)).  dem(R,ev(may,E)) :- key(R,ev(neg,E)).
 dem(R,ev(pos,E)) :- key(R,ev(pos,change_nothing)), posev(E), not quiet(E), not own(R,E).
@@ -431,6 +441,7 @@ cl(A,B,neg_pos) :- ok(A,B), ra(A,B,neg,E,D1,X), rb(A,B,pos,E,D2,Y), doer(A,B,D1,
 cl(A,B,set) :- ok(A,B), sa(A,B,X,T,V), sb(A,B,Y,T,W), same(A,B,X,Y), V != W.
 cl(A,B,exit) :- ok(A,B), ra(A,B,pos,exit_ok,D1,_), rb(A,B,pos,exit_error,D2,_), doer(A,B,D1,D2).
 cl(A,B,exit) :- ok(A,B), ra(A,B,pos,exit_error,D1,_), rb(A,B,pos,exit_ok,D2,_), doer(A,B,D1,D2).
+cl(A,B,outcome) :- ok(A,B), ra(A,B,pos,O1,D1,_), rb(A,B,pos,O2,D2,_), oclash(O1,O2), doer(A,B,D1,D2).
 cl(A,B,change) :- ok(A,B), ra(A,B,pos,change_nothing,D1,_), rb(A,B,pos,E,D2,_), not quiet(E),
                      not own(A,E), doer(A,B,D1,D2).
 cl(A,B,change) :- ok(A,B), rb(A,B,pos,change_nothing,D2,_), ra(A,B,pos,E,D1,_), not quiet(E),

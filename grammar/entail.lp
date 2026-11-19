@@ -4,9 +4,9 @@
 % over Q (scripts/spec_entail_rules.py) that forces M's responses, tagged M, where its antecedent and trigger hold.
 % No choice and no search: one stratified model. A premise's negative literal needs a stated or entailed negation,
 % never a missing fact. Shown: ent(L,I,M), response I of L forced by M; self_ent(L,I), forced by L's own others.
-% The strata: A, the premises on L's own trigger, over the world; B, the untriggered premises and those on the
-% bridge's refusal (an error exit on a run is a refusal of its command, the CLI pack's definition of refuse), over
-% the world and A.
+% The strata: A, the premises on L's own trigger, over the world; B, the untriggered premises and those on a refusal
+% (in a context importing the request pack, any refusal stated or forced; in one importing the CLI pack, the bridge's:
+% an error exit on a run is a refusal of its command, the CLI pack's definition of refuse), over the world and A.
 #defined a0/4. #defined na0/4. #defined k/3. #defined nk/3. #defined rel/4. #defined nrel/4. #defined feat/2.
 #defined code/3. #defined ev/5. #defined r/6. #defined setv/4. #defined prop/4. #defined lnone/4. #defined hit/2.
 #defined isk/3. #defined rA/6. #defined rB/6. #defined iskA/3. #defined iskB/3. #defined propA/4. #defined propB/4.
@@ -22,6 +22,10 @@ propall(Q,Z,T,V) :- prop2(Q,Z,T,V).  propall(Q,Z,T,V) :- propB(Q,Z,T,V).
 relall(Q,R,X,Y) :- rel2(Q,R,X,Y).  relall(Q,R,X,Y) :- relB(Q,R,X,Y).
 evB(Q,does,e_refuse,D,C) :- bridgecmd(Q,C), r(Q,pos,exit_error,D,_,_).
 evB(Q,does,e_refuse,D,C) :- bridgecmd(Q,C), rA(Q,pos,exit_error,D,_,_).
+% the request pack's refuse is primitive (the domain contract design, §5.2): every refusal stated or forced fires the
+% premises on a refusal, with no bridge (`refused` is the outcome of a refusal only in a context importing the pack)
+evB(Q,does,refused,D,X) :- r(Q,pos,refused,D,X,_).
+evB(Q,does,refused,D,X) :- rA(Q,pos,refused,D,X,_).
 % entailed negations: another value of a functional attribute
 na0(Q,Z,T,V) :- a0(Q,Z,T,W), val(_,T,V), V != W.
 % state 1: after L's own (other) sets and the sets forced

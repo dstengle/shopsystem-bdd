@@ -61,7 +61,7 @@ def lexicon(root):
     last = {t.term: layer for layer, t in layered if layer.startswith("pack ")}
     terms = [t for layer, t in layered
              if not layer.startswith("pack ") or (t.term not in own and last[t.term] == layer)]
-    return spec_lexicon.Lexicon(terms, spec_relations.read(root))
+    return spec_lexicon.Lexicon(terms, spec_relations.read(root), tuple(spec_packs.imports(root)))
 
 
 def outer(root):

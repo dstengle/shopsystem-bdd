@@ -59,6 +59,7 @@ class Term:
     value_kinds: tuple = ()     # (value, adjective or noun) of each declared value (spec_value_kinds, b257)
     word: str = ""        # its spelling when its term is a key that differs (a word of two areas: spec_vocabulary_terms)
     operation: str = ""   # a verb's operation `<service>.<name>` when it names one (spec_vocabulary_terms; spec_rgl_ops)
+    element: str = ""     # the model element it names, qualified by its area (spec_vocabulary_terms; spec_logic_vocab)
 
     @property
     def key(self):

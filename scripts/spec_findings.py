@@ -10,6 +10,11 @@ from spec_lf_core import split
 
 QUIET = {"print": "print", "exit_ok": "exit successfully", "exit_error": "exit with an error",
          "change_nothing": "change nothing"}
+# the request pack's verbs each outcome of the check is said by (spec_lf_facts_request.OUTCOMES), and the ends
+OUTCOME = {"refused": "refuse", "returned": "return", "done": "complete", "failed": "fail", "notified": "notify",
+           "kept": "keep", "named": "name"}
+ENDS = {"refused": "refuses the request", "returned": "returns its content", "done": "completes the request",
+        "failed": "fails the check"}
 BOUNDS = {"least": "at least", "most": "at most", "exactly": "exactly", "more": "more than", "fewer": "fewer than"}
 
 
@@ -77,10 +82,10 @@ class Words:
         if e.name == "for":
             return '%s to %s "%s" for %s' % (who, self.v.events.get(e.arguments[0].name, e.arguments[0].name),
                                             e.arguments[1].string, self.term(rid, x))
-        if e.name in QUIET:
+        if e.name in QUIET and e.name not in OUTCOME:
             return "%s to %s" % (who, QUIET[e.name])
         obj = "" if x.type == clingo.SymbolType.Function and x.name == "none" else " " + self.term(rid, x)
-        return "%s to %s%s" % (who, self.v.events.get(e.name, e.name), obj)
+        return "%s to %s%s" % (who, OUTCOME.get(e.name) or self.v.events.get(e.name, e.name), obj)
 
     def trigger(self, base):
         """The trigger of a requirement's grammar 4 tree (`When`, `If`: its second argument), as grammar 4 writes it."""
@@ -153,6 +158,11 @@ class Words:
             ok = any(r[2].name == "exit_ok" for r in rx if r[1].name == "pos")
             return ("%s exits successfully and %s with an error" if ok else
                     "%s exits with an error and %s successfully") % (lx, ly)
+        if kind == "outcome":     # two ends of one request (the request pack's outcomes)
+            ends = [r[2].name for r in rx if r[1].name == "pos" and r[2].name in ENDS]
+            other = [r[2].name for r in ry if r[1].name == "pos" and r[2].name in ENDS]
+            pair = next((a, b) for a in ends for b in other if a != b and "refused" in (a, b))
+            return "%s %s and %s %s" % (lx, ENDS[pair[0]], ly, ENDS[pair[1]])
         if kind == "change":
             quiet = any(r[2].name == "change_nothing" for r in rx if r[1].name == "pos")
             rid, other = (y, ry) if quiet else (x, rx)

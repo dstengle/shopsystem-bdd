@@ -7,9 +7,12 @@ run) refusing could give it (`index`). Its world holds what L states, each such 
 queries, each its own solve). A counted response (`count`, I15), and one on a thing restricted by only or a count over its row (b272), is never a query. Response I is entailed when it is forced. A codified-2 line reads as its check facts
 (spec_lf_facts), so the form's meaning is what the check reads; codified-1 lines are read alike.
 
-The bridge, the CLI pack's definition "A tool refuses a command when it exits with an error on it.", is used when the
-context imports a pack that defines refuse so (`refuse_defined`): an error exit on a run is a refusal of its command,
-which fires the premises on a refusal (a universal condition: change nothing).
+In a context importing the request pack, refuse is primitive (the domain contract design, §5.2): every refusal a
+line states or a premise forces fires the premises on a refusal (a universal condition: change nothing), with no
+bridge. The bridge, the CLI pack's definition "A tool refuses a command when it exits with an error on it.", is used
+when the context imports a pack that defines refuse so (`refuse_defined`): an error exit on a run is a refusal of its
+command, which fires the premises on a refusal; it is kept for a context importing the CLI pack until the old
+reading is deleted.
 
 `entailed(facts, bridge)` gives {(L, I): {M}}; `findings(root, ctx, scope)` the L8 findings of the requirements of
 the capabilities in `scope`."""
@@ -25,6 +28,7 @@ from spec_solve_pairs import Finding, order
 
 ENTAIL = Path(__file__).resolve().parent.parent / "grammar" / "entail.lp"
 CHUNK = 1000
+REFUSALS = (["does", "e_refuse"], ["does", "refused"])     # a trigger on a refusal: the CLI pack's, the request pack's
 REFUSE = re.compile(r"^- A tool refuses a command when it exits with an error on it\.$", re.MULTILINE)
 
 
@@ -44,14 +48,14 @@ def index(P):
             untrig.append(r)
         else:
             by_trig[tuple(t[:2])].append(r)
-            if t[:2] == ["does", "e_refuse"]:
+            if t[:2] in REFUSALS:
                 refusers.append(r)
     gives = {r: _gives(f) for r, f in P.reqs.items()}
     out = {}
     for L, f in P.reqs.items():
         lt, base = P.trig.get(L), P.base[L]
         same = [M for M in by_trig[tuple(lt[:2])] if P.base[M] != base] if lt else []
-        ran = lt is not None and lt[0] == "ran"
+        ran = lt is not None and lt[0] in ("ran", "req")     # a run (the bridge's), a request (refuse primitive)
         counted = {a[0] for a in f["count"]}
         held = {a[0] for a in f["oonly"] + f["ocount"]}
         for j, p, e, d, x in f["resp"]:
@@ -63,8 +67,10 @@ def index(P):
             if not cand and not own:
                 continue
             use = set(cand)
-            if ran:     # the premises an error exit on L's run brings in: its refusers, and the lines that exit so
-                use |= {M for M in same if any(a[1:3] == ["pos", "exit_error"] for a in P.reqs[M]["resp"])}
+            if ran:     # the premises a refusal of L's request or an error exit on its run brings in: its refusers,
+                #         and the lines that refuse or exit so
+                use |= {M for M in same if any(a[1:3] in (["pos", "exit_error"], ["pos", "refused"])
+                                               for a in P.reqs[M]["resp"])}
                 use |= {M for M in refusers if P.base[M] != base}
             out[(L, j)] = sorted(use)
     return out
@@ -146,7 +152,7 @@ def findings(root, ctx, scope):
     facts = list(ctx.domain) + [f for s in ctx.statements for f in ctx.facts[s.id]]
     bridge = refuse_defined(root)
     refusers = {s.id for s in ctx.statements if any(',does,e_refuse,' in f for f in ctx.facts[s.id] if
-                                                     f.startswith("trig("))}
+                                                     f.startswith("trig("))}     # the bridge's (a refusal of a run)
     out = []
     for r, thens in restating(facts, bridge).items():
         if r.rpartition("#")[0] not in scope or r not in {spec_lf_core.split(i) for i in four}:
