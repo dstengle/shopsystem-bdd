@@ -158,3 +158,29 @@ def test_a_group_generate_skips_is_the_reason(shaped, monkeypatch):
     line(shaped, ABANDON)
     reasons, _ = readiness_bar.well_formed(shaped, backlog_items.find(shaped, "b1"))
     assert reasons == ["work-queue#g4 has no scenario: no step"]
+
+
+DOMAIN = pathlib.Path(__file__).resolve().parent / "fixtures" / "domain-model"
+ARCHIVE = "While a note carries a tag, when the person archives the note, the notes service shall keep the tag."
+
+
+@pytest.fixture
+def contracted(backlog_repo):
+    """`backlog_repo` with the domain-model fixture's spec (the notes service, its annotated CLI contract), committed,
+    and a `shaped` item b1."""
+    import shutil
+    toolchain.require()
+    shutil.copytree(DOMAIN / "spec", backlog_repo / "spec", dirs_exist_ok=True)
+    git(backlog_repo, "add", "-A")
+    git(backlog_repo, "commit", "-q", "-m", "the notes service")
+    write_item(backlog_repo, "b1", status="shaped")
+    return backlog_repo
+
+
+def test_a_line_governing_a_contract_operation_readies(contracted):
+    """b379: the bar annotates the laid copy's contract, so a new line a contract operation's request triggers is no
+    v_a5."""
+    line(contracted, ARCHIVE, into="notebook")
+    reasons, _ = readiness_bar.well_formed(contracted, backlog_items.find(contracted, "b1"))
+    assert reasons == []
+    assert git(contracted, "status", "--porcelain") == ""
