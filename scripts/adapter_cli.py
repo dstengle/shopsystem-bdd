@@ -5,7 +5,7 @@ the envelope, there or at the top), `[programs]` (a command's first word and the
 root, which the check reads the argparse of), `[operations."<service>.<operation>"]` with `command` (the words that
 request it) or `hook` (the event a hook answers, with the command it runs), its `parameters` (each `positional = <n>`
 or `option = "--x"`, `repeat`, `flag`, `example`: the value given when a request says nothing of the parameter) and
-its `cli-only` options, `[unexposed]` (the operations no command requests), `[cli-only]` (the options and commands
+its `cli-only` options, its `requirements` (`"<capability>#r<n>: <line>"`, written by adapter_annotate), `[unexposed]` (the operations no command requests), `[cli-only]` (the options and commands
 that are the adapter's own, `--root`, `--json`) and `[environment]` (each variable and the parameter or port it
 feeds). A contract that does not read refused naming the file.
 
@@ -37,6 +37,7 @@ class Operation:
     hook: str | None = None
     parameters: dict = field(default_factory=dict)
     cli_only: list = field(default_factory=list)
+    requirements: list = field(default_factory=list)     # the ids of the requirements it holds (adapter_annotate)
 
 
 @dataclass
@@ -93,8 +94,10 @@ def _operation(ident, table):
         raise Refused("%s: operation %s has no command" % (PATH, ident))
     params = {name: _parameter(ident, name, spec) for name, spec in (table.get("parameters") or {}).items()}
     cli_only = table.get("cli-only") or {}
+    held = _strings(table.get("requirements", []), "operations.%s.requirements" % ident)
     return Operation(ident, " ".join(str(table.get("command", "")).split()), table.get("hook"), params,
-                     _strings(cli_only.get("options", []), "operations.%s.cli-only.options" % ident))
+                     _strings(cli_only.get("options", []), "operations.%s.cli-only.options" % ident),
+                     [h.partition(":")[0].strip() for h in held])
 
 
 def parse(text, path=str(PATH)):
