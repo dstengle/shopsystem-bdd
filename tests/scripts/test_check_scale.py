@@ -55,5 +55,5 @@ def test_a_four_times_scaled_spec_grounds_near_linear_and_in_time(context):
     domain, facts = context
     one, _ = ground(domain, facts)
     four, took = ground(domain, copies(facts, COPIES))
-    assert took < 5.0, took
+    assert took < 8.0, took     # 1.9 s alone on the migrated spec (0.38.0), past 5 s under the parallel suite
     assert four < 2 * COPIES * one, (one, four)     # a square would be 16 times
