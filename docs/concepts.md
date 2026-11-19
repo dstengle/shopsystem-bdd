@@ -114,7 +114,7 @@ event (13)
   remove
 ```
 
-Read more: [Writing requirements](writing-requirements.md), [the vocabulary](reference/domain-model.md#specvocabularyareamd-and-sharedmd),
+Read more: [Writing requirements](writing-requirements.md), [the vocabulary](reference/domain-model.md#specvocabularymd-and-sharedmd),
 and the packs themselves in [`grammar/packs/`](../grammar/packs/request.md).
 
 ### Adapter contract

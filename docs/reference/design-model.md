@@ -10,12 +10,12 @@ one it passes, is [`grammar/rules.md`](../../grammar/rules.md), which `spec rule
 
 ## A first look
 
-Say you add a scenario to `features/backlog.feature` by hand, with no `@g<n>` tag, and run the check:
+Say you add a scenario to `features/items.feature` by hand, with no `@g<n>` tag, and run the check:
 
 ```console
 $ spec check --limit 1
 v_s1  a scenario names no group  (1)
-    features/backlog.feature:`work backlog` prints nothing for an empty backlog
+    features/items.feature:An empty backlog listed returns nothing
 warning w_example  a requirement holds example data: a code or quoted string that names no declared constant  (41)
     capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r37, .venv/bin/python
     ... and 40 more
@@ -35,28 +35,28 @@ A few things to know about the output:
 - **`w_` codes are warnings.** They are printed, but the exit code stays 0. This repository lives with 57 of them.
 - **Unresolved references** are ids that name nothing, such as a `rests_on:` naming a decision that does not exist.
   Each one also exits 1.
-- **File problems** are files `model` cannot read: a missing id, a status outside its lifecycle, a block it cannot
+- **File problems** are files `spec` cannot read: a missing id, a status outside its lifecycle, a block it cannot
   parse. Each one exits 1 too.
 - `--limit` sets how many rows each rule shows; `--json` gives the same report as one object.
 
 ## What a context keeps
 
-`model` reads your files into a graph, and the rules are statements about that graph. `spec facts` prints it, one
-fact a line. Here is one group of `spec/capabilities/backlog.md`, as it prints it (cut to the lines that matter):
+`spec` reads your files into a graph, and the rules are statements about that graph. `spec facts` prints it, one
+fact a line. Here is one group of `spec/capabilities/items.md`, as it prints it (cut to the lines that matter):
 
 ```console
 $ spec facts
 ...
-node("capability/missingmass.io/shopsystem/shopsystem-bdd/backlog#g36", "requirement-group").
-in("capability/missingmass.io/shopsystem/shopsystem-bdd/backlog#g36", "capability/missingmass.io/shopsystem/shopsystem-bdd/backlog").
-node("capability/missingmass.io/shopsystem/shopsystem-bdd/backlog#r36", "requirement").
-member_of("capability/missingmass.io/shopsystem/shopsystem-bdd/backlog#r36", "capability/missingmass.io/shopsystem/shopsystem-bdd/backlog#g36").
-parsed("capability/missingmass.io/shopsystem/shopsystem-bdd/backlog#r36").
-generates("capability/missingmass.io/shopsystem/shopsystem-bdd/backlog#g36", "features/backlog.feature:`work backlog` prints every item with its title, status, provenance and ratings").
+node("capability/missingmass.io/shopsystem/shopsystem-bdd/items#g12", "requirement-group").
+in("capability/missingmass.io/shopsystem/shopsystem-bdd/items#g12", "capability/missingmass.io/shopsystem/shopsystem-bdd/items").
+node("capability/missingmass.io/shopsystem/shopsystem-bdd/items#r12", "requirement").
+member_of("capability/missingmass.io/shopsystem/shopsystem-bdd/items#r12", "capability/missingmass.io/shopsystem/shopsystem-bdd/items#g12").
+parsed("capability/missingmass.io/shopsystem/shopsystem-bdd/items#r12").
+generates("capability/missingmass.io/shopsystem/shopsystem-bdd/items#g12", "features/items.feature:An item shown gives its title").
 ...
 ```
 
-Read it as: group g36 is in the backlog capability, requirement r36 is a member of it, r36 parses, and g36 generates
+Read it as: group g12 is in the items capability, requirement r12 is a member of it, r12 parses, and g12 generates
 one scenario. The kinds of node `spec facts` gives, and where each lives:
 
 | kind | where it lives |
@@ -66,7 +66,7 @@ one scenario. The kinds of node `spec facts` gives, and where each lives:
 | `requirement-group` | a `### [g<n>]` heading in a capability's `## Behaviour` |
 | `requirement` | a `- [r<n>]` line under a group |
 | `scenario` | a `Scenario:` in `features/<capability>.feature` |
-| `term` | a bullet of `spec/index.md`'s `## Glossary` or a capability's `## Terms` |
+| `term` | an entry of `spec/vocabulary/<area>.md` (in a context with no domain model, a bullet of `spec/index.md`'s `## Glossary` or a capability's `## Terms`) |
 | `universal-condition` | a `- [U<n>]` line of `spec/universal.md` |
 | `design-decision` | `spec/decisions/<nnnn>-<slug>.md` |
 | `request` | `.shop/requests/q<n>.md` |
@@ -150,14 +150,14 @@ Every line of the spec is parsed in the context's grammar. A line that does not 
 | `v_p0` | a spec file is not codified (no `language: codified-2`, or a capability in `codified-1`): run `migrate upgrade` | Run `migrate upgrade`, then reword what it reports. See [upgrading](../upgrading.md). |
 | `v_p1` | a requirement does not parse | Run `spec parse "<line>"`: it shows where the parse stopped and the words that may follow. Reword the line under a new id. |
 | `v_p2` | a requirement parses to more than one tree | The line can be read two ways. Reword it until `spec parse` prints one tree. |
-| `v_p3` | a line of a group's given block does not parse in the step grammar | Reword the given line in the glossary's words. |
+| `v_p3` | a line of a group's given block does not parse in the step grammar | Reword the given line in the vocabulary's words. |
 
 [Writing requirements](../writing-requirements.md) has the common refusals and their fixes.
 
-### The glossary
+### The vocabulary
 
-The glossary is the lexicon every line is parsed with, so its entries are checked before any line is.
-`spec lexicon --check` checks the glossary alone, before any line: it prints v_t4-v_t15, among them v_t7-v_t10, which
+The vocabulary is the lexicon every line is parsed with, so its entries are checked before any line is.
+`spec lexicon --check` checks the vocabulary alone, before any line: it prints v_t4-v_t15, among them v_t7-v_t10, which
 `spec rules` does not list (they are in [`grammar/rules.md`](../../grammar/rules.md)).
 
 | code | `spec rules` says | when it fires |
@@ -175,6 +175,36 @@ The glossary is the lexicon every line is parsed with, so its entries are checke
 | `v_t15` | two entries of one verb take, in every slot, the same kind or one kind under the other | Make the senses' frames differ, or keep one entry. |
 | `v_t16` | a term an imported pack defines too has no `Redefines:` naming the pack | Add `Redefines: <pack>` to the entry, or drop the entry and use the pack's. |
 | `v_t17` | `spec/index.md` imports a pack that neither the plugin nor the bounded context has | Fix the name under `imports:`; the plugin's packs are in [`grammar/packs/`](../../grammar/packs/). |
+| `v_t18` | a vocabulary entry names no element of the domain model | Write `→ <element>` after the part of speech. |
+| `v_t19` | a vocabulary entry names an element the domain model does not declare | Declare the element in `spec/model/<area>.md`, or name one that is declared. |
+| `v_t20` | two entries of one vocabulary layer name one element, and neither is a form of the other | Keep one entry and list the other spelling under `Forms:`. |
+| `v_t21` | a context with a domain model imports the retired pack cli: run `migrate upgrade` | Import `request` in place of `cli`; see [upgrading](../upgrading.md#0380-the-domain-contract). |
+
+### The domain model
+
+The model is checked on its own, and every line against it ([the domain model](domain-model.md)).
+
+| code | `spec rules` says | when it fires |
+|---|---|---|
+| `v_m1` | a requirement uses a word that names no element through the vocabulary its capability's area reads | Use a word of the area's layers, or add the element and its entry. A line still in 0.37's words (a command, an option) is refused here or at its parse. |
+| `v_m2` | a request names a parameter its operation does not declare, or a value outside the parameter's values | Declare the parameter in the operation, or use one of its values. |
+| `v_m3` | a requester the operation's actors do not include | Name an actor the operation's `by` lists, or add it there. |
+| `v_m4` | an operation declares a refusal reason that no line states | Write the line that refuses the request and names what the reason names, or drop the reason. |
+| `w_m5` | a lifecycle transition no line causes | A hint: write the line that sets the status, or drop the transition. |
+| `v_m6` | a line sets a status by a transition its lifecycle does not allow | Add the transition to the lifecycle, or fix the line's precondition. |
+| `v_m7` | an operation no line requests | Write a line whose trigger requests it, or drop the operation. |
+| `v_m8` | the domain model breaks its own rules: a relation to an undeclared object, a transition over an undeclared value, two operations of one name in a service, an event raised by no operation | Fix the model block the message names. |
+
+### Adapter contracts
+
+| code | `spec rules` says | when it fires |
+|---|---|---|
+| `v_a1` | an operation of the domain model has no table in the CLI contract and is not unexposed | Add its table to `spec/adapters/cli.toml`, or list it under `[unexposed]`. |
+| `v_a2` | the CLI contract names an operation the model does not declare, or a parameter its operation does not declare | Fix the table's name, or declare the operation or parameter. |
+| `v_a3` | the CLI contract names a command or an option the program's argparse lacks | Fix the contract, or add the command or option to the program. |
+| `v_a4` | a command or an option of the program's argparse is named by no table of the CLI contract and is not cli-only | Name it in an operation's table, or list it under `[cli-only]`. |
+
+See [adapter contracts](adapters.md).
 
 ### Decisions
 
@@ -205,6 +235,8 @@ The glossary is the lexicon every line is parsed with, so its entries are checke
 | `v_d4` | a delivered request has an accepted line its resolution does not name | Name, in the resolution, the requirement each accepted line became. |
 | `w_many_requests` | more than five open requests to one upstream | A hint to settle some before raising more. |
 | `w_uncited_obs` | an observation no initiative cites | A note, nothing to fix. It is how 0.30 observations without a plan show up. |
+| `v_r1` | an item cites a record in its `source:`: an item's provenance cites quotes, requests and decisions, never a record | Cite the quote, request or decision the record led to; restate a record's conclusion as a decision if the item stands on it. |
+| `w_r1` | an item older than the records policy cites a record in its `source:` (history, kept as it is) | A note, nothing to fix. |
 
 ### Example data in a line
 
@@ -237,17 +269,18 @@ edges. A 0.33 repository writes none of them, so in practice only the parts on t
 ## A rule is a line too
 
 Most rules are themselves requirements of this repository's `design-model-check` capability, so the check is
-checked by its own scenarios. Here is `v15c`'s, `design-model-check#r177`, with its meaning:
+checked by its own scenarios. Here is `v15c`'s, `checking#r6`, with its meaning:
 
 ```reading
-While a capability violates `v15c`, if the person runs `spec check`, then `model` shall exit with an error naming `v15c`.
-shall [x2: rule `v15c` (parameter), x3: agent the person (constant), x4: command `spec check` (parameter), x5: tool `model` (constant)]
+While a capability violates `v15c`, if the person validates this specification, then the specification service shall fail the check and name `v15c`.
+shall [x2: rule `v15c` (parameter), x3: agent the person (constant), x4: specification "the specification of this bounded context" (indexical), x5: service the specification service (constant), x6: check "the check the trigger makes" (indexical)]
   while [x1: capability]
     violate(subject: x1, object: x2)
   if
-    run(e1, subject: x3, object: x4)
+    request(e1, specification.check, subject: x3, object: x4)
   response
-    exit(e2, subject: x5, with an error naming: x2)
+    fail(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x2)
 ```
 
 `grammar/rules.md` lists, under each rule, the lines that cite it.
@@ -256,7 +289,8 @@ shall [x2: rule `v15c` (parameter), x3: agent the person (constant), x4: command
 
 The graph began as design model v5 (2026-11-03), written for plugin 0.30. That document is kept as it was in
 [`docs/history/design-model-v5/`](../history/design-model-v5/); it explains the 0.30 kinds above, but its workflow and
-language are retired. The rules themselves live in `scripts/model.lp`, solved with clingo.
+language are retired. The rules themselves live in `scripts/model.lp`, solved with clingo, and the domain model's in
+`scripts/model_domain.py` and `scripts/model_domain_lines.py`.
 
-Next: [how it works](../how-it-works.md), [the capability file](capability-file.md),
+Next: [how it works](../how-it-works.md), [the capability file](capability-file.md), [the domain model](domain-model.md),
 [commands](commands.md).

@@ -43,7 +43,7 @@ capability, refuse it with a reason, or propose a better wording. Claude never a
 the lines are settled it tells you, and the request waits for your word.
 
 **Raising a request.** It's the other way round: you want something of another context. Claude opens a request on
-that context's repository in your words, waits for its offer, then writes lines in *its* glossary, not ours. It
+that context's repository in your words, waits for its offer, then writes lines in *its* vocabulary, not ours. It
 shows you each line beside your English, with what it means. The lines are yours to change.
 
 **Analyzing a batch.** After a batch closes, Claude reads its measurement (wall time, tokens and cost by role,
@@ -70,8 +70,8 @@ Three hooks run as a session starts. Each prints nothing when there's nothing to
 **A pending upgrade.** `migrate status --hook` speaks only when the repository is behind the plugin:
 
 ```text
-This repository is on plugin version 0.32.0 and the plugin is on 0.33.0. Offer the person the upgrade from 0.32.0 to 0.33.0, which applies:
-  0.33.0 "the controlled language 4": write each file's marker codified-2, import the CLI pack and give each verb its aspect where its lines decide it, and name by file and id each line that no longer parses and what else a session rewords
+This repository is on plugin version 0.37.0 and the plugin is on 0.38.0. Offer the person the upgrade from 0.37.0 to 0.38.0, which applies:
+  0.38.0 "the domain contract": scaffold the domain model, the vocabulary and the CLI contract from the glossary, the relations and the commands the lines run, import the request pack, and name by file and id each line a session rewords in the request's words
 Run `migrate upgrade` (python3 .../scripts/migrate upgrade) only on the person's yes.
 ```
 
