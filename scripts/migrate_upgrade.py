@@ -11,6 +11,7 @@ from pathlib import Path
 import migrate_upgrade_answers
 import migrate_upgrade_cnl4
 import migrate_upgrade_codified
+import migrate_upgrade_domain
 import migrate_upgrade_frames
 import migrate_upgrade_ids
 import migrate_upgrade_simplified
@@ -40,7 +41,11 @@ STEPS = [("0.24.0", "work-items named by ids", "give every work-item the id w<n>
           migrate_upgrade_cnl4),
          ("0.34.0", "value kinds",
           ("name each attribute whose values are declared neither adjectives nor nouns and each line that says one of "
-           "its values in the short form, by file and id"), migrate_upgrade_values)]
+           "its values in the short form, by file and id"), migrate_upgrade_values),
+         ("0.38.0", "the domain contract",
+          ("scaffold the domain model, the vocabulary and the CLI contract from the glossary, the relations and the "
+           "commands the lines run, import the request pack, and name by file and id each line a session rewords in "
+           "the request's words"), migrate_upgrade_domain)]
 
 
 def number(version):
@@ -121,6 +126,7 @@ def apply(root, changes):
         (root / new).parent.mkdir(parents=True, exist_ok=True)     # a request moved to .shop/requests/ (0.31.0)
         git(root, "mv", temporary, new)
     for rel, text in changes.texts.items():
+        (root / rel).parent.mkdir(parents=True, exist_ok=True)     # spec/model/, spec/vocabulary/ (0.38.0)
         with open(root / rel, "w", newline="") as handle:
             handle.write(text)
     paths = list(changes.texts)
