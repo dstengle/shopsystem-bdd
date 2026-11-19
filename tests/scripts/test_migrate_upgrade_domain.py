@@ -2,6 +2,7 @@
 notes-cli example and the docs-shop fixture, `migrate upgrade` scaffolds the domain model, the vocabulary and the CLI
 contract, imports the request pack and names by file and id each line a session rewords; a second run changes
 nothing; and the copy reworded by hand passes `spec check`, `features generate --check` and `spec logic`."""
+import json
 import shutil
 import subprocess
 import sys
@@ -68,7 +69,8 @@ def test_notes_cli_is_scaffolded_and_its_lines_named(tmp_path):
     assert "- [r1] When the person runs `notes add`" in capability       # no line reworded
     assert (root / "spec/moves.json").read_text() == "{}\n"
     assert git(root, "status", "--porcelain") == ""                       # one commit
-    assert (root / ".shop/plugin-version").read_text() == "0.38.0\n"
+    plugin = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())["version"]
+    assert (root / ".shop/plugin-version").read_text() == plugin + "\n"       # the release upgraded to
     out = done.stdout
     assert "spec/capabilities/notes.md r1 requests notes.add(title, tag)" in out
     assert "spec/capabilities/notes.md r2 requests notes.add(title)" in out

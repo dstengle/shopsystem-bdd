@@ -10,6 +10,7 @@ been renamed or retired since.
 
 | Line | Releases |
 |---|---|
+| 0.39 | [0.39.0](#0390-each-operation-carries-its-lines-the-catalogues-as-specification-migrate-init-and-the-docs-revised) |
 | 0.38 | [0.38.0](#0380-the-domain-contract) |
 | 0.37 | [0.37.0](#0370-whole-spec-faults-caught-before-a-batch-chores-new-capabilities-by-command-and-model-logics-precision) |
 | 0.36 | [0.36.0](#0360-migrate-records-the-version-orders-after-any-act-line-commands-groomed-ideas-and-requests-resolved-offered-and-confirmed) |
@@ -21,7 +22,7 @@ been renamed or retired since.
 | 0.30 | [0.30.0](#0300-released-as-100-codified-requirements) |
 | 0.29 and before | [0.29.0](#0290-glossary-proposals-delegations-given-late-and-fewer-stops-from-outside-a-work-item) · [0.28.3](#0283-a-branch-review-that-runs-nothing) · [0.28.2](#0282-answers-a-round-cannot-hold-go-back-to-integration) · [0.28.1](#0281-work-run-stops-visibly-on-questions-and-spends-less-agent-time) · [0.28.0](#0280-one-set-of-request-commands-work-list-and-work-show-and-answers-that-redraft) · [0.27.0](#0270-transitions-from-how-a-session-ended-and-the-turn-of-an-accepted-request) · [0.26.0](#0260-requests-and-the-context-loop) · [0.25.0](#0250-work-items-side-by-side-answers-and-guarantees) · [0.24.0](#0240-work-items-named-by-ids-and-upgrades-between-plugin-releases) · [0.23.1](#0231---work-item-keeps-tests-that-are-not-scenarios) · [0.23.0](#0230-faults-settled-query-output-as-json-the-session-keeps-the-gate-measurement-on-v3) · [0.22.0](#0220-one-requirement-per-scenario-faults-and-the-lessons-of-a-blind-formulation) · [0.21.0](#0210-the-final-layout-and-delivery-by-work-run) |
 
-## Unreleased
+## 0.39.0: each operation carries its lines, the catalogues as specification, migrate init, and the docs revised
 
 - **Each adapter contract's operation carries its business rules** (b368): `spec annotate` writes under each
   operation of `spec/adapters/cli.toml` the requirement lines that govern it (a line governs an operation when its
@@ -43,6 +44,17 @@ been renamed or retired since.
   requirements, decisions), services and operations, adapters and their contracts, the catalogues and the records
   policy: the [README](README.md), [concepts](docs/concepts.md), [getting started](docs/getting-started.md), the
   references, recipes, upgrading and [the notes-cli example](docs/examples/notes-cli/README.md).
+- **A new bounded context in one command** (b318): `migrate init --id <bounded context id>` writes and commits the
+  context scaffold (`spec/index.md` in `language: codified-2` importing `request`, `spec/universal.md`, `spec/model/`,
+  `spec/vocabulary/`, `spec/capabilities/`, `.shop/`, `features/` and `tests/scenarios/conftest.py`), refused where
+  an index file or a shop directory exists. [migrate init](docs/reference/commands.md#migrate-init).
+- **holds-exactly in a precondition** (b309) is read by `spec logic` and `features generate`, whose scenario brings
+  in a thing outside the restriction that the collection does not hold.
+- **An order on a collection orders its members** (b334): "print a worktree that holds a file, ordered by version,
+  in descending order" puts the `ordered` atom on the files the worktree holds, in an every box, not on the worktree.
+- **Fixes**: `backlog_lines.renumber` keeps an item's model blocks (b378); the readiness bar and the batch's lay
+  annotate the adapter contract on the laid copy, so an item adding service lines is no longer refused with `v_a5`
+  (b379).
 
 ## 0.38.0: the domain contract
 
