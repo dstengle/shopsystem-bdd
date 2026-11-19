@@ -79,7 +79,7 @@ def test_each_built_brainstorming_line_has_its_test():
     assert ids and ids - unbuilt == tested & ids, (ids, unbuilt, tested)
 
 
-@pytest.mark.parametrize("script", ["work", "model"])
+@pytest.mark.parametrize("script", ["work", "spec"])
 def test_the_skills_name_only_commands_work_has(script):
     have = choices(script)
     for name in NAMES:

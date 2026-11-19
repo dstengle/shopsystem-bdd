@@ -49,6 +49,6 @@ def test_a_kept_commit_not_shared_fails_the_store_check_unless_the_remote_is_unp
 
 
 def test_json_output_is_no_longer_checked_after_a_scenario():
-    done = {"args": ["model", "check", "--json"], "returncode": 0, "stdout": "{}\n{}\n", "stderr": "", "changed": [],
+    done = {"args": ["spec", "check", "--json"], "returncode": 0, "stdout": "{}\n{}\n", "stderr": "", "changed": [],
             "unshared": None}
     assert vocab().u_problems([done]) == []
