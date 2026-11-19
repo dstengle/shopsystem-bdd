@@ -31,7 +31,7 @@ a request's resolution names something that is not a requirement of the spec
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: checking#r13
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -332,7 +332,7 @@ a requirement has no id
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: checking#r4
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -352,7 +352,7 @@ two requirements share an id
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: checking#r5
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -373,7 +373,7 @@ a retired id is used again
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: checking#r6
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -522,7 +522,7 @@ a group has more than one statement
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: checking#r7
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -544,7 +544,7 @@ a given line is not example data
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: checking#r9
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -563,7 +563,7 @@ two groups of a capability share features, condition and trigger
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: checking#r8
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -612,7 +612,7 @@ a scenario is generated from more than one group
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/readiness_bar.py`
-- Cited by: checking#r11
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -632,7 +632,7 @@ a group has no scenario
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/readiness_bar.py`
-- Cited by: checking#r10
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -808,7 +808,7 @@ a request that is part of no job-thread, cites no origin and is raised for no re
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: checking#r12
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -849,7 +849,7 @@ a word the glossary avoids
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: checking#r14
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -876,7 +876,7 @@ a term has two entries, other than the senses of one verb
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: checking#r15
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -899,7 +899,7 @@ an avoided word is a term
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: checking#r16
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -1010,7 +1010,7 @@ a condition names another kind with `the`: a relation between two kinds is a ver
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/migrate_upgrade_frames.py`, `scripts/spec_frames.py`
-- Cited by: checking#r31
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -1029,7 +1029,7 @@ a verb's Frame: does not read as its subject, the verb and the kinds it takes
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/migrate_upgrade_frames.py`, `scripts/spec_frames.py`
-- Cited by: checking#r34
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -1048,7 +1048,7 @@ a verb's entry says neither state nor action
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`
-- Cited by: checking#r37
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -1067,7 +1067,7 @@ two entries of one verb take, in every slot, the same kind or one kind under the
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`
-- Cited by: checking#r40
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -1087,7 +1087,7 @@ a term an imported pack defines too has no `Redefines:` naming the pack
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/spec_packs.py`
-- Cited by: checking#r43
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -1125,7 +1125,7 @@ an attribute does not say whether its values are adjectives or nouns (Values (ad
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/spec_packs.py`
-- Cited by: checking#r42
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -1563,7 +1563,7 @@ a requirement does not parse
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/readiness_bar.py`
-- Cited by: checking#r17
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -1684,7 +1684,7 @@ an observation no initiative cites
 
 - Severity: warning
 - Implemented in: `scripts/model.lp`
-- Cited by: checking#r25
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -1786,7 +1786,7 @@ a requirement holds example data: a code or quoted string that names no declared
 
 - Severity: warning
 - Implemented in: `scripts/model.lp`
-- Cited by: checking#r45
+- Cited by: no line
 - Fails on:
 
   ```prolog

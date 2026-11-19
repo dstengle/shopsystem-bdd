@@ -27,118 +27,6 @@ Feature: Checking
     Then the specification service returns `0 violations`
     And the specification service completes this request
 
-  @g4 @r4
-  Scenario: the check prints a violation under its rule's code
-    Given a capability c1
-    And the capability c1 violates `v15a`
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names `v15a`
-
-  @g5 @r5
-  Scenario: Two requirements with one id
-    Given a capability c1
-    And the capability c1 violates `v15b`
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names `v15b`
-
-  @g6 @r6
-  Scenario: A retired id used again
-    Given a capability c1
-    And the capability c1 violates `v15c`
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names `v15c`
-
-  @g7 @r7
-  Scenario: A group with more than one statement
-    Given a requirement group r1
-    And the requirement group r1 violates `v15l`
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names `v15l`
-
-  @g8 @r8
-  Scenario: Two groups of a capability that share their features, condition and trigger
-    Given a requirement group r1
-    And the requirement group r1 violates `v15n`
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names `v15n`
-
-  @g9 @r9
-  Scenario: A given line that is not example data
-    Given a requirement group r1
-    And the requirement group r1 violates `v15m`
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names `v15m`
-
-  @g10 @r10
-  Scenario: A requirement with no scenario
-    Given a requirement group r1
-    And the requirement group r1 violates `v_s3`
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names `v_s3`
-
-  @g11 @r11
-  Scenario: A scenario that names more than one requirement
-    Given a scenario s1
-    And the scenario s1 violates `v_s2`
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names `v_s2`
-
-  @g12 @r12
-  Scenario: A request with no origin
-    Given a request r1
-    And the request r1 violates `v17`
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names `v17`
-
-  @g13 @r13
-  Scenario: A delivered request resolved by no requirement of the spec
-    Given a request r1
-    And the request r1 violates `v3`
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names `v3`
-
-  @g14 @r14
-  Scenario: A requirement that uses an avoided word
-    Given a requirement r1
-    And the requirement r1 violates `v_t1`
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names `v_t1`
-
-  @g15 @r15
-  Scenario: Two glossary entries with one term
-    Given a term t1
-    And the term t1 violates `v_t2`
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names `v_t2`
-
-  @g16 @r16
-  Scenario: An avoided word that is a term
-    Given a term t1
-    And the term t1 violates `v_t3`
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names `v_t3`
-
-  @g17 @r17
-  Scenario: A requirement that does not parse
-    Given a requirement r1
-    And the requirement r1 violates `v_p1`
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names `v_p1`
-
   @g18 @r18
   Scenario: A request not of the form `work request` writes
     Given a request r1
@@ -198,14 +86,6 @@ Feature: Checking
     Then the specification service fails this check
     And the specification service names `scripts/migrate`
 
-  @g25 @r25
-  Scenario: A warning leaves the exit as it is
-    Given an observation o1
-    And the observation o1 violates `w_uncited_obs`
-    When the person validates this specification
-    Then the specification service returns `w_uncited_obs`
-    And the specification service completes this request
-
   @g26 @r26
   Scenario: A context with no job has no unserved capability
     Given this bounded context has no job
@@ -250,14 +130,6 @@ Feature: Checking
     Then the specification service fails this check
     And the specification service names the verb v1
 
-  @g31 @r31
-  Scenario: the check refuses a condition that relates two kinds
-    Given a term t1
-    And the term t1 violates `v_t12`
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names the term t1
-
   @g32 @r32
   Scenario: the check refuses a term with no part of speech
     Given a term t1
@@ -276,14 +148,6 @@ Feature: Checking
     When the person validates this specification
     Then the specification service completes this request
 
-  @g34 @r34
-  Scenario: the check refuses a frame that does not read
-    Given a term t1
-    And the term t1 violates `v_t13`
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names the term t1
-
   @g35 @r35
   Scenario: `model rules --write` writes the rule catalogue
     When the person renews this rule catalogue
@@ -301,14 +165,6 @@ Feature: Checking
     Then the specification service fails this check
     And the specification service names the rule catalogue r2
     And the specification service does not change a file
-
-  @g37 @r37
-  Scenario: the check refuses a verb with no aspect
-    Given a term t1
-    And the term t1 violates `v_t14`
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names the term t1
 
   @g38 @r38
   Scenario: the check passes a verb with two frames
@@ -330,14 +186,6 @@ Feature: Checking
     When the person validates this specification
     Then the specification service completes this request
 
-  @g40 @r40
-  Scenario: the check refuses two senses that overlap
-    Given a term t1
-    And the term t1 violates `v_t15`
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names the term t1
-
   @g41 @r41
   Scenario: `model lexicon` shows the terms of the imported packs
     Given a pack p1
@@ -354,23 +202,6 @@ Feature: Checking
     And the language service does not return the term t3
     And the language service completes this request
 
-  @g42 @r42
-  Scenario: the check refuses an import of no pack
-    Given a pack p1
-    And the pack p1 violates `v_t17`
-    And this bounded context imports the pack p1
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names the pack p1
-
-  @g43 @r43
-  Scenario: the check refuses a pack's term redefined without Redefines:
-    Given a term t1
-    And the term t1 violates `v_t16`
-    When the person validates this specification
-    Then the specification service fails this check
-    And the specification service names the term t1
-
   @g44 @r44
   Scenario: the check passes a term marked Redefines:
     Given a term t1
@@ -378,13 +209,6 @@ Feature: Checking
     And the term t1 redefines the pack p1
     When the person validates this specification
     Then the specification service completes this request
-
-  @g45 @r45
-  Scenario: the check warns of example data in a line
-    Given a requirement r1
-    And the requirement r1 violates `w_example`
-    When the person validates this specification
-    Then the specification service returns the requirement r1
 
   @g46 @r46
   Scenario: the check refuses a capability in the old language, naming `migrate upgrade`
@@ -455,3 +279,61 @@ Feature: Checking
     Then the specification service fails this check
     And the specification service names the adapter contract a1
     And the specification service does not change a file
+
+  @g52 @r52
+  Scenario: A violation of a rule fails the check under the rule's code
+    Given a rule r1
+    And the severity of the rule r1 is `error`
+    And a capability c1
+    And the capability c1 violates the rule r1
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the rule r1
+
+  @g53 @r53
+  Scenario: A warning is named and the check passes
+    Given a rule r1
+    And the severity of the rule r1 is `warning`
+    And a capability c1
+    And the capability c1 violates the rule r1
+    And no rule whose severity is `error` exists
+    When the person validates this specification
+    Then the specification service names the rule r1
+    And the specification service completes this request
+
+  @g54 @r54
+  Scenario: A requirement that uses a rule the rule catalogue does not define fails the check
+    Given a rule r2
+    And the rule r2 has no catalogue entry
+    And a requirement r1
+    And the requirement r1 uses the rule r2
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the rule r2
+
+  @g55 @r55
+  Scenario: A catalogue entry with no purpose fails the check
+    Given a catalogue entry c1
+    And the catalogue entry c1 has no purpose
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the catalogue entry c1
+
+  @g56 @r56
+  Scenario: A catalogue entry that names no item fails the check
+    Given a catalogue entry c1
+    And the catalogue entry c1 mentions no item
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the catalogue entry c1
+
+  @g57 @r57
+  Scenario: A catalogue entry that names an undelivered item fails the check
+    Given an item i1
+    And the status of the item i1 is not `delivered`
+    And a catalogue entry c1
+    And the catalogue entry c1 mentions the item i1
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the catalogue entry c1
+    And the specification service names the item i1

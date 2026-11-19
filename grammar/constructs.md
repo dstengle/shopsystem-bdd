@@ -1314,7 +1314,7 @@ a collection's members ordered by their attribute (b275)
 
 - Form: <np>, ordered by <attribute>, in ascending|descending order[,]
 - Functions: `r\d+_\w+_By_t_[a-z0-9_]+_\d+|Ascending|Descending`
-- Cited by: reading#r62, scenarios#r22, scenarios#r27
+- Cited by: parsing#r12, scenarios#r22, scenarios#r27
 - Example and its reading:
 
 ```construct

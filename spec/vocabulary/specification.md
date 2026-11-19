@@ -188,3 +188,7 @@ area: specification
 - **reading rule** (noun) → object reading rule. One rule of the language reference by which a line is read, R1 to R12, as a definite noun phrase that needs an antecedent. Plural: reading rules.
 - **collection** (noun) → object collection. A thing that a noun phrase of a requirement names and that holds members by a relation whose phrase is `holds`, as a workspace holds files.
 - **member** (noun) → object member. A thing that a collection holds, as a file is a member of a workspace, and that an order said after the collection is of.
+- **purpose** (noun) → object purpose. What a catalogue entry says its construct or rule is for, in a sentence or two. Plural: purposes.
+- **severity** (attribute) → attribute rule.severity. Whether a violation of a rule fails the check or is only named.
+- **error** (noun) → value rule.severity error.
+- **warning** (noun) → value rule.severity warning.

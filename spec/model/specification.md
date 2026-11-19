@@ -69,6 +69,7 @@ object route kind of text
 
 object rule
   relations: has → catalogue entry (many)
+  attributes: severity: error | warning
 
 object decisions index kind of file
   relations: holds → index entry (many); lacks → index entry (many)
@@ -105,6 +106,7 @@ object job
 object index entry kind of text
 
 object catalogue entry kind of text
+  relations: has → purpose (many)
 
 object section kind of text
   attributes: heading: Purpose | Terms | Relations | Behaviour | Context | Decision | Consequences
@@ -275,4 +277,6 @@ object collection
 
 object member
   relations: has → order (many)
+
+object purpose kind of text
 ```
