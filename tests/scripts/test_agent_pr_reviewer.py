@@ -18,8 +18,8 @@ def has(sentence):
     assert " ".join(sentence.split()) in text(), sentence
 
 
-@pytest.mark.requirement("pr-review#r11")
-@pytest.mark.requirement("pr-review#r12")
+@pytest.mark.requirement("review-guarantees#r4")
+@pytest.mark.requirement("review-guarantees#r5")
 def test_r11_r12_the_reviewer_reads_the_items_lines_and_only_the_batchs_commits():
     has("Read every requirement the brief's `## Items` gives and every commit its `## Commits` lists, with their "
         "change in `change.diff`; read no other commit.")
@@ -27,12 +27,12 @@ def test_r11_r12_the_reviewer_reads_the_items_lines_and_only_the_batchs_commits(
     assert definition(PATH)["tools"] == ["Read", "Glob", "Grep"]
 
 
-@pytest.mark.requirement("pr-review#r17")
+@pytest.mark.requirement("review-guarantees#r2")
 def test_r4_the_reviewer_reads_every_judgement_decision():
     has("Read every design-decision the brief's `## Judgement decisions` lists, and check the change against each.")
 
 
-@pytest.mark.requirement("pr-review#r19")
+@pytest.mark.requirement("review-guarantees#r7")
 def test_r14_the_re_review_reads_every_commit_for_each_finding():
     has("On a re-review, read every commit the brief lists under each finding of `## Earlier findings`, and write "
         "`fixed` or `not fixed: <why>` for each.")
@@ -45,7 +45,7 @@ def example():
     return re.search(r"```[a-z]*\n(.*?)```", body, re.DOTALL).group(1)
 
 
-@pytest.mark.requirement("pr-review#r16")
+@pytest.mark.requirement("review-guarantees#r9")
 def test_r16_each_finding_is_graded_and_written_to_the_findings_file():
     has("Give every finding a grade (`Critical`, `Important` or `Minor`) and a triage (`fix now`, `observation` or "
         "`drop`), and give them in the findings file's content, your reply.")
