@@ -1,4 +1,4 @@
-"""The reading of scripts/model for decisions and records, and of the frozen `.shop/work/` only the `source` ids its
+"""The reading of scripts/spec for decisions and records, and of the frozen `.shop/work/` only the `source` ids its
 initiatives and requests cite (plan 9, D5, D6): a part of Model (model_facts)."""
 
 import re
@@ -94,10 +94,10 @@ class WorkReading:
             if path == obs:
                 continue
             data, _ = frontmatter(path.read_text())
-            if not data.get("id"):
-                continue
-            self.unread(data, path)
             kind = data.get("kind")
+            if not data.get("id") or kind is None:
+                continue        # a record's supporting file (a trial's copy of a capability, say), no record of its own
+            self.unread(data, path)
             if kind not in RECORD_KINDS:
                 self.problems.append(f"{self.rel(path)}: kind {kind!r} is not a record kind")
                 continue

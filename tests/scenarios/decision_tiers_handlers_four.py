@@ -1,5 +1,5 @@
 """Handlers of features/decision-tiers.feature in grammar 4 (b240 phase 15): the verbs enforce, supersede and verify,
-a test's outcome, a route of a decision and its kind, and the Thens "`model` runs `pytest` on the test" and "the
+a test's outcome, a route of a decision and its kind, and the Thens "`spec` runs `pytest` on the test" and "the
 design-decision d1 has the route r1", over decision_tiers_handlers.py's decision files. "no K enforces (verifies)
 ..." is what a decision written with no `enforced_by` (no `rests_on`) already says."""
 import re
@@ -106,7 +106,7 @@ def has_route(step):
 
 @local("ThenDoes")
 def runs_pytest(step):
-    """`model` runs `pytest` on the test: its id is on a `holds` or `failing` line, and the test ran."""
+    """`spec` runs `pytest` on the test: its id is on a `holds` or `failing` line, and the test ran."""
     if step.term != "run" or not step.context.get("decisions_run"):
         return False
     done, name = step.context["result"], tiers().bare(step.names[0])

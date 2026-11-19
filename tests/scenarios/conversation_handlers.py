@@ -79,6 +79,8 @@ def work_quote(step):
     if any(o.strip("`") == "--hook" for o, _ in getattr(step, "options", None) or ()):
         return prompt_hook(step)
     transcript(step, step.names[0])
+    if "m1" in step.names and "queued" not in talk(step):     # the message quoted: the transcript's (the reword)
+        talk(step)["messages"]["m1"] = T.IDENTS[CITED]
     B.run_work(step, "quote", queued().words(step), "--session", talk(step)["sessions"][step.names[0]], env=env(step))
 
 

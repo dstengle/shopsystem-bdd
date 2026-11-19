@@ -33,7 +33,7 @@ def context():
 def run(repo, request):
     """Run one of the scripts (model, features, tools) with this Python; return the completed process.
 
-    `run("model", "check", "--root", ...)`: the arguments go to the script as given; `cwd` defaults to the repository root.
+    `run("spec", "check", "--root", ...)`: the arguments go to the script as given; `cwd` defaults to the repository root.
     In a generated scenario each run is recorded for the U11/U8 checks.
     """
     return vocab.runner(repo, request, SCRIPTS)
@@ -47,7 +47,7 @@ def pytest_configure(config):
 
 # --- the repositories design-model-check's scenarios build ---------------------------------------------------
 # Paths are the final layout's (spec/, spec/decisions/, features/, .shop/work/, .shop/records/), the only one
-# `model` reads.
+# `spec` reads.
 
 PATH = "ex.com/prod/ctx"
 CONTEXT = "bounded-context/" + PATH
@@ -97,7 +97,7 @@ def feature(name, *scenarios):
 
 
 class World:
-    """The repository a scenario builds in `repo`, and the way to run `model` on it."""
+    """The repository a scenario builds in `repo`, and the way to run `spec` on it."""
 
     def __init__(self, root):
         self.root = root
@@ -110,12 +110,12 @@ class World:
         return p
 
     def model(self, *args, python=None, **kwargs):
-        """Run `model --root <repo> <args>`; `python` is the interpreter's command line."""
-        cmd = (python or [sys.executable]) + [str(SCRIPTS / "model"), "--root", str(self.root), *args]
+        """Run `spec --root <repo> <args>`; `python` is the interpreter's command line."""
+        cmd = (python or [sys.executable]) + [str(SCRIPTS / "spec"), "--root", str(self.root), *args]
         return subprocess.run(cmd, capture_output=True, text=True, **kwargs)
 
     def check_json(self, *args):
-        """`model check --json`: the parsed object, and the process."""
+        """`spec check --json`: the parsed object, and the process."""
         r = self.model("check", "--json", *args)
         return json.loads(r.stdout), r
 

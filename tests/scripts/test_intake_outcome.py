@@ -147,7 +147,7 @@ def test_the_asker_turn_still_refuses(ready_repo):
 
 def test_model_check_accepts_reasons_and_into(taken):
     assert work(taken, "outcome", "q1", "1", "accepted", "--into", "work-queue", "--reason", "fits").returncode == 0
-    done = subprocess.run([sys.executable, str(REPO / "scripts" / "model"), "--root", str(taken), "check"],
+    done = subprocess.run([sys.executable, str(REPO / "scripts" / "spec"), "--root", str(taken), "check"],
                           capture_output=True, text=True)
     assert done.returncode != 2, done.stderr
     assert [n for n in (done.stdout + done.stderr).splitlines() if "q1.md" in n] == [], done.stdout

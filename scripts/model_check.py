@@ -1,4 +1,4 @@
-"""check and rules of scripts/model: solving the facts with model.lp, and running again under an interpreter that has
+"""check and rules of scripts/spec: solving the facts with model.lp, and running again under an interpreter that has
 clingo when this one lacks it."""
 
 import json
@@ -10,7 +10,7 @@ from pathlib import Path
 from model_facts import Model
 
 LP = Path(__file__).resolve().with_name("model.lp")
-SCRIPT = Path(__file__).resolve().with_name("model")     # the command check runs again (r55)
+SCRIPT = Path(__file__).resolve().with_name("spec")     # the command check runs again (r55)
 REEXEC = "SHOPSYSTEM_MODEL_REEXEC"      # set when check runs again under another interpreter (r56)
 
 

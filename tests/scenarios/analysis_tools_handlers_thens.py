@@ -88,14 +88,23 @@ def values(data):
         yield data
 
 
+def dicts(data):
+    if isinstance(data, dict):
+        yield data
+    for v in (data.values() if isinstance(data, dict) else data if isinstance(data, list) else ()):
+        yield from dicts(v)
+
+
 def printed(step, want):
     out = output(step, err=True)
     if isinstance(want, int):
         if step.context.get("json"):
             return want in values(json.loads(step.context["result"].stdout))
         return re.search(r"\b%d\b" % want, out) is not None
-    if step.context.get("json") and re.fullmatch(r"\S+\.py:\d+", want):
-        want = '"path": "%s", "line": %s' % tuple(want.split(":"))
+    if step.context.get("json") and re.fullmatch(r"\S+\.py:\d+", want):   # the envelope's content (design §5.4)
+        path, line = want.split(":")
+        return any(isinstance(d, dict) and d.get("path") == path and d.get("line") == int(line)
+                   for d in dicts(json.loads(step.context["result"].stdout)["content"]))
     if step.context.get("json") and want.startswith("test_"):
         want = "::" + want
     return want in out
@@ -135,6 +144,10 @@ def bind(step, name, value):
 @handler("ThenPrints", "`tools`")
 def prints(step):
     for np in step.nps:
+        if np.startswith("the revision of the coverage map "):     # the commit the map was made at (the reword)
+            made = [next(g for g in m.groups() if g) for m in re.finditer(SHOWN["the commit "], output(step, True))]
+            assert step.context.get("map_commit") in made, (np, made, step.context.get("map_commit"))
+            continue
         prefix = next((p for p in SHOWN if np.startswith(p)), None)
         if prefix:
             observe(step, np, [next(g for g in m.groups() if g) for m in re.finditer(SHOWN[prefix], output(step, True))])

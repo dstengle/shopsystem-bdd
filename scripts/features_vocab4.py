@@ -6,11 +6,13 @@ and `GivenCode` (one value, in `quoted`); a value `GivenK_A`, `ThenK_A`; the num
 (its noun phrase the subject, the comparison its one noun phrase, b240); a state `GivenDoes`, `GivenDoesNot`,
 `ThenDoes`, `ThenDoesNot` ("x exists" of the verb exist, b240); a run `WhenRuns` (its options, spec_lf_option), any other trigger `WhenHappens`;
 an act `ThenPrints`, `ThenPrintsNot`, `ThenExitsOk`, `ThenExitsErr`, `ThenChangesNothing`, else `ThenDoes`,
-`ThenDoesNot`; a Then that states an order its `order` (spec_lf_ordered's `read`). A step of more than one reading under its keyword (the same text read with a code of two kinds is
+`ThenDoesNot`; a Then that states an order its `order` (spec_lf_ordered's `read`); a request `WhenRequests` and the
+request pack's acts (`ThenRefuses`, `ThenReturns`, ...: features_vocab4_request). A step of more than one reading under its keyword (the same text read with a code of two kinds is
 one) is refused; a Given read as example data is that, not a holds condition on the same words (b154).
 """
 import re
 
+import features_vocab4_request
 import spec_lf_np
 import spec_lf_option
 import spec_lf_ordered
@@ -82,6 +84,9 @@ def whose(cond):
 def template(names, keyword, tree):
     """(template, kind, attribute, term) of a step tree."""
     fun, args = tree[0], tree[1:]
+    request = features_vocab4_request.template(names, tree)     # a request, the request pack's acts (§5.2)
+    if request is not None:
+        return request
     if fun.endswith("_Given"):
         kind = names.kind(fun)[0]
         return "GivenK", kind, None, kind
@@ -158,6 +163,9 @@ def step(root, keyword, text):
     call.order = spec_lf_ordered.read(names, lambda t: spec_rgl_steps.text(gram, t), tree)     # b275
     if name == "WhenRuns":      # each option given with its argument, each not given (b240)
         call.options, call.without = spec_lf_option.read(names, lambda t: spec_rgl_steps.text(gram, t), tree[1][2])
+    if name == "WhenRequests":      # its operation, each parameter with its value or None, each absent (§5.2)
+        features_vocab4_request.read(vocab, lambda t: spec_rgl_steps.text(gram, t), call, term)
+        call.subject = spec_rgl_steps.text(gram, tree[1][1])
     if name == "WhenHappens":
         call.subject, call.event = spec_rgl_steps.text(gram, tree[1][1]), term
     call.term = (call.command if name == "WhenRuns" else call.subject if name.startswith("Then") and term is None

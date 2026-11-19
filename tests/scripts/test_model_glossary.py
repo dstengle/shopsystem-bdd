@@ -1,4 +1,4 @@
-"""Unit tests of scripts/model's glossary, read into facts (r48, r50, r51) and checked. ModelTest and the file
+"""Unit tests of scripts/spec's glossary, read into facts (r48, r50, r51) and checked. ModelTest and the file
 builders are in test_model.py. The glossary is typed (design model v5): spec_lexicon reads its entries, and a codified
 requirement and every scenario of a capability's feature use lexicon words by their parse, so only a scenario of a
 feature file that is no capability's is read for the words the glossary avoids."""

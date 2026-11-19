@@ -54,7 +54,9 @@ def read(term, names, said=None):
     """(Frame, None) of an event entry whose (first) `Frame:` reads, else (None, (the word it could not read, the role
     it reads it as)); (None, None) when the entry gives no `Frame:`. A preposition after the verb is the verb's
     (`Frame: viewer subscribes to channel.`): the object comes after it; a recipient follows the object behind any
-    preposition (`Frame: agent records thing in file.`). `said` reads another of its frames."""
+    preposition (`Frame: agent records thing in file.`); a verb naming an operation may take a fixed phrase of no kind
+    in place of its object (`Frame: <actor> lists the notes.`, the domain contract design §4.2). `said` reads another
+    of its frames."""
     text = " ".join((term.frame if said is None else said).split())
     if not text:
         return None, None
@@ -76,6 +78,8 @@ def read(term, names, said=None):
     obj, to, rec = rest.rpartition(" to ")
     if _noun(rest, names):
         return Frame(subject, _noun(rest, names), None, prep), None
+    if term.operation and not any(_noun(w, names) for w in rest.split()):     # a fixed object: "lists the notes"
+        return Frame(subject, None, None), None
     if to and _noun(obj, names):
         return None, (rec, "recipient")
     return None, (obj if to and _noun(rec, names) else rest, "object")

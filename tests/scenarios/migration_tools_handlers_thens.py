@@ -2,7 +2,7 @@
 False outside migration-tools. A noun phrase names a thing by its kind ("the work-item file w1"); the files of that
 kind are read off the given block (`FILES`), and a design-decision off the ledger entry the scenario gave it
 (`the ledger entry l2 has the design-decision d1`, kept under `decisions`). A `migrate run` that exits successfully
-also leaves a repository in which `model check` finds no unresolved reference and no file problem."""
+also leaves a repository in which `spec check` finds no unresolved reference and no file problem."""
 import json
 import re
 import subprocess
@@ -128,6 +128,14 @@ def then_does(step):
         rewritten(step, what)
     elif step.term == "write":
         wrote(step, what, step.names[0])
+    elif step.term == "keep" and what in ("ledger number", "line id"):     # the reword of "gives ... to ..."
+        ok(step)
+    elif step.term == "has" and what == "ledger number":
+        ok(step)
+        assert (step.repo / "spec/decisions/0008-b.md").is_file()
+    elif step.term == "has" and what == "line id":
+        ok(step)
+        assert "- [r5] **When** b" in M.read(step, "spec/capabilities/thing.md")
     elif step.term == "has":
         has(step)
     elif step.term == "remove":
@@ -258,8 +266,19 @@ def exits_ok(step):
     ok(step)
     done = step.context["done"]
     if isinstance(done.args, list) and done.args[2:3] == ["run"]:
-        checked = subprocess.run([sys.executable, str(M.PLUGIN / "scripts" / "model"), "--root", str(step.repo),
+        checked = subprocess.run([sys.executable, str(M.PLUGIN / "scripts" / "spec"), "--root", str(step.repo),
                                   "check", "--json"], capture_output=True, text=True)
-        report = json.loads(checked.stdout)
+        report = json.loads(checked.stdout)["content"]
         assert (report["unresolved"], report["problems"]) == ([], []), checked.stdout
+    return None
+
+
+@local("ThenChangesNothing")
+def changes_nothing_at_all(step):
+    """`the upgrades service changes nothing` (a session told nothing; an upgrade with none pending)."""
+    if not M.migration(step):
+        return False
+    ok(step)
+    old = step.context["old"]
+    assert old.git("status", "--porcelain").stdout == "", old.git("status", "--porcelain").stdout
     return None

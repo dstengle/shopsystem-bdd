@@ -56,7 +56,7 @@ def missing(root):
 
 def layers(root, lexicon=None):
     """Every term with its layer, lowest first: (layer, term), a pack's layer `pack <name>`, the context's the file
-    that holds the entry."""
+    that holds the entry, or in a context with a domain model `area <area>` of its vocabulary file's area."""
     root = Path(root)
     out = []
     for name in imports(root):
@@ -65,6 +65,10 @@ def layers(root, lexicon=None):
             where = path.relative_to(root).as_posix() if path.is_relative_to(root) else "grammar/packs/%s.md" % name
             out += [("pack %s" % name, t) for t in terms(path, where)]
     lexicon = lexicon or spec_lexicon.read(root)
+    if (root / "spec" / "model").is_dir():     # one namespace an area (the domain contract), after the packs
+        import spec_vocabulary
+        area = {e.where: e.layer for e in spec_vocabulary.entries(root)}
+        return out + [("area %s" % area.get(t.where, t.where), t) for t in lexicon.terms]
     return out + [(t.where, t) for t in lexicon.terms]
 
 

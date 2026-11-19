@@ -1,5 +1,5 @@
 """grammar/check.lp at scale (b119): this repository's facts copied four times over, each copy with its own ids, codes
-and command strings (every quoted constant renamed; events, kinds and the domain shared, as a growing spec shares
+and command strings (every quoted constant and requested operation renamed; events, kinds and the domain shared, as a growing spec shares
 them), ground and solved within a time limit, and grounding near-linear in the lines. A join on a vocabulary word that
 thousands of lines share (check.lp's header rule) passes at today's size and grows with the square of the lines: at
 four copies the old encoding grounded 12 times the rules of one copy, the rewrite 5 times."""
@@ -17,6 +17,7 @@ import toolchain
 
 COPIES = 4
 QUOTED = re.compile(r'"((?:[^"\\]|\\.)*)"')
+REQUESTED = re.compile(r"\breq\((e_\w+)")     # a request's operation: the command string of a run before 0.38.0
 
 
 @pytest.fixture(scope="module")
@@ -28,8 +29,12 @@ def context():
 
 
 def copies(facts, k):
-    """k copies of the facts, the i-th with every quoted constant (an id, a code, a command) given the suffix ~i."""
-    return [QUOTED.sub(lambda m, i=i: '"%s~%d"' % (m.group(1), i), f) if i else f for i in range(k) for f in facts]
+    """k copies of the facts, the i-th with every quoted constant (an id, a code) and every requested operation (the
+    domain contract's command, 0.38.0) given the suffix ~i (_c<i> on an operation, an atom)."""
+    def one(f, i):
+        f = QUOTED.sub(lambda m: '"%s~%d"' % (m.group(1), i), f)
+        return REQUESTED.sub(lambda m: "req(%s_c%d" % (m.group(1), i), f)
+    return [one(f, i) if i else f for i in range(k) for f in facts]
 
 
 def ground(domain, facts):
@@ -50,5 +55,5 @@ def test_a_four_times_scaled_spec_grounds_near_linear_and_in_time(context):
     domain, facts = context
     one, _ = ground(domain, facts)
     four, took = ground(domain, copies(facts, COPIES))
-    assert took < 5.0, took
+    assert took < 8.0, took     # 1.9 s alone on the migrated spec (0.38.0), past 5 s under the parallel suite
     assert four < 2 * COPIES * one, (one, four)     # a square would be 16 times

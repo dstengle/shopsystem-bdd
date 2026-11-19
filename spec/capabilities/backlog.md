@@ -5,7 +5,7 @@ narrator: a person or session keeping the backlog
 group: service
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
-retired: [g1, r1, g2, r2, g3, r3, g4, r4, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g16, r16, g17, r17, g18, r18, g19, r19, g20, r20, g21, r21, g23, r23, g24, r24, g28, r28, g29, r29, g30, r30, g31, r31]
+retired: [g1, r1, g2, r2, g3, r3, g4, r4, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g16, r16, g17, r17, g18, r18, g19, r19, g20, r20, g21, r21, g23, r23, g24, r24, g28, r28, g29, r29, g30, r30, g31, r31, g5, r5, g15, r15, g22, r22, g37, r37, g38, r38, g25, r25, g26, r26, g27, r27, g39, r39, g40, r40, g41, r41, g42, r42, g32, r32, g33, r33, g34, r34, g35, r35, g36, r36, g43, r43, g44, r44]
 unbuilt: []
 ---
 
@@ -18,87 +18,14 @@ item, shapes it, rates it and records what it depends on, and prints the backlog
 item. Adding an idea starts no work. The person reads an item by its title, not by its id (design goal 10).
 
 ## Terms
-- **title** (noun): the name of an item that the person reads beside its id. Kind of: text.
-- **git branch** (noun): a branch of a git repository. Plural: git branches. Kind of: thing.
-- **upstream branch** (noun): the branch of a remote that a git branch pushes to. Kind of: thing.
-- **branch name** (noun): the name a git branch or an upstream branch is known by. Kind of: text.
-- **push** (noun): one `git push` of a git branch's commits to a remote. Plural: pushes. Kind of: thing.
-- **check out** (verb, state): a repository has a git branch as the one its working tree is on. Forms: checks out, checked out. Frame: repository checks out git branch.
-- **reject** (verb, state): a remote declines a push made to it. Forms: rejects, rejected. Frame: remote rejects push.
-- **answer** (verb, state): a remote replies to a push made to it, taking it or declining it. Forms: answers, answered. Frame: remote answers push.
 
-- **shaping note** (noun): a paragraph under an item's `## Notes` that says what the item is to do, which `work shape` writes from its `--note` option. Kind of: text.
+Moved to `spec/vocabulary/` and `spec/model/` (the domain contract, 0.38.0).
 
 ## Relations
-| from | word | to | cardinality |
-|---|---|---|---|
-| title | of | item | one |
-| git branch | of | task | one |
-| upstream branch | of | git branch | one |
-| branch name | of | git branch | one |
-| branch name | of | upstream branch | one |
-| remote | of | repository | one |
-| push | of | command | one |
-| shaping note | of | item | many |
+
+Moved to `spec/vocabulary/` and `spec/model/` (the domain contract, 0.38.0).
 
 ## Behaviour
-
-### [g5] `work depend` records a dependency
-- [r5] When the person runs `work depend` on an item, `work` shall write a dependency of the item and commit the item.
-
-### [g15] `work show` names an item by its title
-- [r15] When the person runs `work show` on an item, `work` shall print the title of the item.
-
-### [g22] `work idea` writes an item
-- [r22] When the person runs `work idea`, `work` shall write an item whose status is `idea` and commit the item.
-
-### [g37] `work shape` shapes an idea
-- [r37] While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
-
-### [g38] `work shape` refuses an item that is not an idea
-- [r38] While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
-
-### [g25] `work rate` sets an item's ratings
-- [r25] When the person runs `work rate --value high-value --urgency low-urgency --size small` on an item, `work` shall set the value of the item to `high-value`, set the urgency of the item to `low-urgency`, set the size of the item to `small` and commit the item.
-
-### [g26] `work backlog` prints an item with its dependency on an item that is not delivered
-- [r26] While an item is not `delivered` and a dependency on the item exists and another item has the dependency, when the person runs `work backlog`, `work` shall print the item and the dependency.
-
-### [g27] `work backlog --json` prints one JSON object
-- [r27] When the person runs `work backlog` with the `--json` option, `work` shall print one JSON object and exit successfully.
-
-### [g39] `work withdraw` withdraws an item that is an idea, shaped, ready or needs input
-- [r39] While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person runs `work withdraw` on the item, `work` shall set the status of the item to `withdrawn`.
-
-### [g40] `work refuse` refuses an item that is an idea or shaped
-- [r40] While the status of an item is one of `idea` or `shaped`, when the person runs `work refuse` on the item, `work` shall set the status of the item to `refused`.
-
-### [g41] `work answer` returns an item that needs input to shaped
-- [r41] While the status of an item is `needs-input`, when the person runs `work answer` on the item, `work` shall set the status of the item to `shaped` and commit the item.
-
-### [g42] `work backlog` prints the question of an item that needs input
-- [r42] While the status of an item is `needs-input`, when the person runs `work backlog`, `work` shall print the item and every question on the item.
-
-### [g32] `work idea` keeps its commit and names the remote that rejects its push
-- [r32] While the remote of this repository rejects the push of the command, when the person runs `work idea`, `work` shall write an item whose status is `idea`, commit the item, print the remote and exit successfully.
-
-### [g33] `work idea` keeps its commit and names the remote that does not answer its push
-- [r33] While the remote of this repository does not answer the push of the command, when the person runs `work idea`, `work` shall write an item whose status is `idea`, commit the item, print the remote and exit successfully.
-
-### [g34] `work idea` refuses the branch of a task
-- [r34] While this repository checks out a git branch of a task, if the person runs `work idea`, then `work` shall refuse the command and name the task.
-
-### [g35] `work idea` keeps an upstream branch of another name
-- [r35] While this repository checks out a git branch that has a branch name and the upstream branch of the git branch has a different branch name, when the person runs `work idea`, `work` shall write an item whose status is `idea`, commit the item and keep the upstream branch.
-
-### [g36] `work backlog` prints every item with its title, status, provenance and ratings
-- [r36] While an item exists, when the person runs `work backlog`, `work` shall print the item, the title of the item, the status of the item, the provenance of the item, the value of the item, the urgency of the item and the size of the item.
-
-### [g43] `work shape` refuses an idea with no shaping note
-- [r43] While the status of an item is `idea` and the item has no shaping note, if the person runs `work shape` without the `--note` option on the item, then `work` shall refuse the command and name the `--note` option.
-
-### [g44] `work backlog` names how to groom an idea with no shaping note
-- [r44] While the status of an item is `idea` and the item has no shaping note, when the person runs `work backlog`, `work` shall print the item and name the `--note` option.
 
 ## Implementation, may change
 - Each item is the file `.shop/backlog/b<n>.md`, and each change to it is one commit of that file, whose history is
@@ -125,3 +52,47 @@ item. Adding an idea starts no work. The person reads an item by its title, not 
 
 ## Not yet
 - Bugs' risk and likelihood ratings (design goal 2): not built, because the design gives them no part in the rank.
+## Moved
+
+Every line moved to a new capability with a new id (the domain contract, 0.38.0).
+
+| old | new |
+|---|---|
+| g5 | items#g11 |
+| r5 | items#r11 |
+| g15 | items#g12 |
+| r15 | items#r12 |
+| g22 | items#g13 |
+| r22 | items#r13 |
+| g37 | items#g14 |
+| r37 | items#r14 |
+| g38 | items#g15 |
+| r38 | items#r15 |
+| g25 | items#g16 |
+| r25 | items#r16 |
+| g26 | items#g17 |
+| r26 | items#r17 |
+| g27 | dropped |
+| r27 | dropped |
+| g39 | items#g18 |
+| r39 | items#r18 |
+| g40 | items#g19 |
+| r40 | items#r19 |
+| g41 | items#g20 |
+| r41 | items#r20 |
+| g42 | items#g21 |
+| r42 | items#r21 |
+| g32 | items#g22 |
+| r32 | items#r22 |
+| g33 | items#g23 |
+| r33 | items#r23 |
+| g34 | items#g24 |
+| r34 | items#r24 |
+| g35 | items#g25 |
+| r35 | items#r25 |
+| g36 | items#g26 |
+| r36 | items#r26 |
+| g43 | items#g27 |
+| r43 | items#r27 |
+| g44 | items#g28 |
+| r44 | items#r28 |

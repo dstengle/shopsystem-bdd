@@ -1,7 +1,9 @@
 <!-- Outputs on this page are from real runs on 2026-11-10, plugin 0.33.0 (commit 7f60e57de), in a scratch clone of
 this repository with no remote and the suite's stand-in gh (tests/scripts/stub_gh.py). Item, batch, decision and
 quote numbers (b250-b252, batch-34, batch-35, 0092, quote-24) are the clone's. Long paths are cut with `...`.
-"Shape a chore" is from a run on 2026-11-18, plugin 0.37.0, in a scratch clone with no remote (its b350). -->
+"Shape a chore" is from a run on 2026-11-18, plugin 0.37.0, in a scratch clone with no remote (its b350). The first
+three recipes and "See what a line means" are from runs on 2026-11-19, plugin 0.38.0, in a scratch clone with no remote
+(its b359 and b361 written here as b250 and b252). -->
 
 # Recipes
 
@@ -9,11 +11,11 @@ Short answers to "how do I ...?", for the developer at the keyboard and the pers
 gives the situation in one line, the steps, and what you see. Most of the time you'll say the words in **You say**
 and Claude runs the commands; they're here so you know what happens, and so you can run them yourself.
 
-Commands are written as `work line`, `model check` and so on. [Getting started](getting-started.md#3-how-commands-are-run)
+Commands are written as `work line`, `spec check` and so on. [Getting started](getting-started.md#3-how-commands-are-run)
 shows how to run them from the plugin's directory. Every command's full contract is its `--help`; the
 [command reference](reference/commands.md) has the short version.
 
-**The recipes:** [a glossary word](#add-a-word-to-the-glossary) ·
+**The recipes:** [a vocabulary word](#add-a-word-to-the-vocabulary) ·
 [a relation, given block, universal or upstream](#add-a-relation-row-a-given-block-a-universal-condition-or-an-upstream) ·
 [change a delivered line](#change-a-delivered-line) · [a new capability](#start-a-new-capability) ·
 [a chore](#shape-a-chore) ·
@@ -23,14 +25,16 @@ shows how to run them from the plugin's directory. Every command's full contract
 [decisions and records](#write-a-design-decision-or-a-record) · [watch requests](#watch-requests-while-you-work) ·
 [keep the person's words](#keep-the-persons-words) · [`.shop/delivery.toml`](#set-batch-knobs-and-prices)
 
-## Add a word to the glossary
+## Add a word to the vocabulary
 
 **When:** a line you want needs a word the spec doesn't have yet.
 
 **You say:** "I'd like to give items labels, short words to group them by."
 
-A new word arrives on an item, beside the lines that use it. Here's the whole thing, start to finish: an item, a
-term, a relation row that says how labels hang off items, and a line that uses both.
+A new word arrives on an item, beside the lines that use it. A word names an element of the
+[domain model](reference/domain-model.md), so the item carries the model line too. Here's the whole thing, start
+to finish: an item, an object, a relation that says how labels hang off items, a vocabulary entry naming the object,
+and a line that uses them.
 
 <!-- docs: context tests/scripts/fixtures/docs-labels -->
 ```console
@@ -38,25 +42,30 @@ $ work idea "Items carry labels" --note "the person wants to group items by a sh
 b250 "Items carry labels" idea
 $ work shape b250
 b250 "Items carry labels" shaped
-$ work line b250 --into backlog --term="- **label** (noun): a short word the person gives an item, to group it with others. Kind of: text."
-b250 "Items carry labels": a term of backlog
-$ work line b250 --into backlog --relation "| label | of | item | many |"
-b250 "Items carry labels": a relation row of backlog
-$ work line b250 --into backlog --group "work show prints an item's labels" "When the person runs \`work show\` on an item, \`work\` shall print every label of the item."
-b250 "Items carry labels": backlog#r43
+$ work line b250 --into items --model "object label"
+b250 "Items carry labels": model lines of tracking
+$ work line b250 --into items --relation "item: has → label (many)"
+b250 "Items carry labels": model lines of tracking
+$ work line b250 --into items --term="- **label** (noun) → object label. A short word the person gives an item, to group it with others."
+b250 "Items carry labels": a vocabulary entry of tracking
+$ work line b250 --into items --group "An item shown returns its labels" "While an item has a label, when the person shows the item, the backlog service shall return every label of the item."
+b250 "Items carry labels": items#r31
 ```
 
-A term bullet has the form `- **<term>** (<part of speech>): <one sentence>. Kind of: <kind>.` Leave off the
-leading `- ` and `work line` tells you so:
+`--into` names the capability; the model lines and the entry go to its `area:` (here `tracking`), into
+`spec/model/tracking.md` and `spec/vocabulary/tracking.md` when a batch lays them. A model line in the
+[model's syntax](reference/domain-model.md) joins the element the area already declares: `item: has → label` adds a
+relation to `object item`. A vocabulary entry has the form `- **<word>** (<part of speech>) → <element>. <one
+sentence>.` Leave off the leading `- ` and `work line` tells you so:
 
 ```console
-$ work line b250 --into backlog --term "**label** (noun): a short word the person gives an item, to group it with others. Kind of: text."
-work: work line: the term bullet **label** (noun): a short word ... Kind of: text. is not a term entry `- **<term>** (<part of speech>): <text>`
+$ work line b250 --into items --term "**label** (noun) → object label. A short word."
+work: work line: the vocabulary entry **label** (noun) → object label. A short word. is not `- **<word>** (<part of speech>) → <element>. ...`
 ```
 
-`model parse` in your checkout doesn't know `label` yet: the word lives on the item until a batch lays it into
-`spec/`. The [readiness bar](concepts.md#readiness-bar) is where the line is checked, with the item's term laid in on
-a copy of `spec/`. Rate the item and ready it:
+`spec parse` in your checkout doesn't know `label` yet: the word lives on the item until a batch lays it into
+`spec/`. The [readiness bar](concepts.md#readiness-bar) is where the line is checked, with the item's model lines and
+entries laid in on a copy of `spec/`. Rate the item and ready it:
 
 ```console
 $ work rate b250 --value medium-value --urgency low-urgency --size small
@@ -66,45 +75,42 @@ b250 "Items carry labels" ready
 ```
 
 The first `work ready` after a new word takes a few minutes, because the grammar is rebuilt with the word in it.
+The line has a precondition ("While an item has a label") because the items capability holds a group on the same
+trigger already ("When the person shows an item"); two groups of one capability with the same condition and trigger
+are refused (`v15n`), and the bar says which.
 
-**A verb** needs its frames too: who does it, to what, and with which preposition. Copy the shape of the
-glossary's own verbs:
+**A verb that names an operation** is how a line says a request. The operation goes into the model, under its
+service, with its parameters; the verb names it, with a thin frame of word order only:
 
 ```text
-- **merge** (verb, action): the person merges a pull request into its base branch on GitHub. Forms: merges, merged. Frame: the person merges pull request.
-- **give** (verb, action): a session or a tool gives a text a thing it lacks, such as a grade to a review finding. Forms: gives, given. Frame: agent gives thing to text.
+service backlog
+  operation tag(item, label)  outcomes: done
+- **tag** (verb, action) → operation backlog.tag. Forms: tags, tagged. Frame: <actor> tags <item>.
 ```
 
 `verb, action` is something that happens; `verb, state` is something that holds (it can stand in a While clause).
-Each `Frame:` names the subject's kind, the verb, the object's kind and any preposition. With the entry
-`- **tag** (verb, action): a tool gives an item a label. Forms: tags, tagged. Frame: tool tags item with label.`
-laid in, a line that fills the frame reads as you'd hope:
+The frame names the slots by the model's elements (`<item>`), and the parameters need none: a line says them after
+the object, "with a label", "with the label `l1`", "without a label". With both laid in, a line reads as you'd hope:
 
 <!-- docs: context tests/scripts/fixtures/docs-labels -->
 ```text
-When the person runs `work label` on an item, `work` shall tag the item with a label and commit the item.
+When the person tags an item with a label, the backlog service shall keep the label.
   ...
-  response [x5: label]
-    tag(e2, subject: x4, object: x3, with: x5)
-    commit(e3, subject: x4, object: x3)
+  when [x2: item, x3: label]
+    request(e1, backlog.tag, subject: x1, object: x2)
+    param(e1, label, x3)
+  response
+    keep(e2, subject: x4, object: x3)
 ```
 
-Give the verb a subject its frame doesn't take ("the person shall tag ...") and the parse stops at the verb, with
-`may follow:` listing the verbs the person can do. See
+Give the verb a subject its frame doesn't take ("the person shall keep the label") and the parse stops at the verb,
+with `may follow:` listing the verbs the person can do. See
 [troubleshooting](troubleshooting.md#the-verb-run-takes-as-its-object-) for reading these.
 
-**A word a pack already has.** The CLI pack defines `tool`, `command`, `option`, `reason`, `output` and a few
-verbs. To give one of them your own meaning, mark your entry `Redefines: cli`. Without it, `model lexicon --check`
-says:
-
-```console
-$ model lexicon --check
-v_t16  option  spec/capabilities/labels.md: the pack cli defines option too; mark the entry Redefines: cli
-393 terms, 1 problems
-```
-
-With `... Kind of: text. Redefines: cli.` on the entry, it prints `393 terms, 0 problems`, and `model lexicon` lists
-the word as `option  [redefines cli]`.
+**A word a pack already has.** The request pack defines `request`, `service`, `reason`, `response`, `check` and a few
+verbs. To give one of them your own meaning, mark your entry `Redefines: request`. Without it, `spec lexicon --check`
+says `v_t16  <word>  <file>: the pack request defines <word> too; mark the entry Redefines: request`; with it,
+`spec lexicon` lists the word as `<word>  [redefines request]`.
 
 ## Add a relation row, a given block, a universal condition or an upstream
 
@@ -117,15 +123,20 @@ Claude picks the option.
 ```console
 $ work line b251 --into backlog --given g37 'the label `l1` holds "docs"'
 b251 "work backlog shows labels": a given block of backlog#g37
-$ work line b251 --universal "A session shall not merge a pull request."
+$ work line b251 --universal "A session shall not merge a proposed change."
 b251 "work backlog shows labels": universal#U17
 $ work line b251 --upstream "bounded-context/missingmass.io/shopsystem/labels: the labels every context shares, github: missingmass/labels"
 b251 "work backlog shows labels": an upstream entry
 ```
 
-- **`--relation "| from | word | to | cardinality |"`** goes into the capability's `## Relations` (see the recipe
-  above). Both kinds must be in the lexicon. `one` in the last cell means each thing has at most one; leave it empty
-  for the prepositions `of`, `for`, `with`, `on` and `in` to mean the same.
+- **`--relation "<object>: <phrase> → <object> (<cardinality>)"`** goes into the model of the capability's area (see
+  the recipe above). Both objects must be in the model. `has → K` reads "the K of x", `holds → K` reads "x holds a
+  K", and a single preposition (`under → tag`) reads "a note under a tag". A relation that does not read is refused:
+
+  ```console
+  $ work line b250 --into items --relation "item: has label"
+  work: work line: the relation item: has label is not `<object>: <phrase> → <object> (<cardinality>)`
+  ```
 - **`--given <group> '<data>'`** puts example data under one of the item's own groups. Sample values belong
   here, never in a line. The data must look like data: `the <words> <name> holds` and a code span or a quoted
   string, or `the <words> <name> holds:` with a block under it. Anything else is refused:
@@ -139,7 +150,7 @@ b251 "work backlog shows labels": an upstream entry
   The line must parse like any other:
 
   ```requirement
-  A session shall not merge a pull request.
+  A session shall not merge a proposed change.
   ```
 
 - **`--upstream "<id>: <what it gives>, github: <owner>/<name>"`** adds an entry to `spec/index.md`'s
@@ -152,41 +163,41 @@ b251 "work backlog shows labels": an upstream entry
 
 **When:** a line in `spec/` is wrong, or no longer says what you want.
 
-**You say:** "`work refuse` should commit the item too."
+**You say:** "Declining an item should keep the item too."
 
 A delivered line is never edited in place. The new wording gets a new id, and the old id is retired:
 
 ```console
-$ work idea "work refuse commits the item" --note "the refusal is committed with the item, as every other move is"
-b252 "work refuse commits the item" idea
+$ work idea "Declining an item keeps it" --note "the decline is kept with the item, as every other move is"
+b252 "Declining an item keeps it" idea
 $ work shape b252
-b252 "work refuse commits the item" shaped
-$ work line b252 --into backlog --retires backlog#r40 "While the status of an item is one of \`idea\` or \`shaped\`, when the person runs \`work refuse\` on the item, \`work\` shall set the status of the item to \`refused\` and commit the item."
-b252 "work refuse commits the item": backlog#r43 retires backlog#r40
+b252 "Declining an item keeps it" shaped
+$ work line b252 --into items --retires items#r19 "While the status of an item is one of \`idea\` or \`shaped\`, when the person declines the item, the backlog service shall set the status of the item to \`refused\` and keep the item."
+b252 "Declining an item keeps it": items#r31 retires items#r19
 ```
 
-The item now holds `retired: [r40]` and the new line as `r43`. When a batch lays it, r40 goes into the capability's
+The item now holds `retired: [r19]` and the new line as `r31`. When a batch lays it, r19 goes into the capability's
 `retired:` and stays there for good. Why so strict? An id is a name other things hold on to: scenarios are tagged
-`@r40`, commits and findings cite it, other contexts' requests quote it. If r40 could come back meaning something
+`@r19`, commits and findings cite it, other contexts' requests quote it. If r19 could come back meaning something
 else, every one of those would silently point at the wrong line
 ([decision 0085](../spec/decisions/0085-requirements-retired-never-edited.md)).
 
-Three items each said `r43` on this page. That's fine: `work batch start` renumbers each item's ids past the
+Two items each said `r31` on this page. That's fine: `work batch start` renumbers each item's ids past the
 capability's and the other picked items' when it lays them. `--retires` names a live line, and only that:
 
 ```console
-$ work line b252 --into backlog --retires backlog#r1 "When the person runs \`work show\` on an item, \`work\` shall print the title of the item."
-work: work line: backlog#r1 is nonexistent: backlog holds no live requirement r1
+$ work line b252 --into items --retires items#r1000 "When the person shows an item, the backlog service shall return the title of the item."
+work: work line: items#r1000 is nonexistent: items holds no live requirement r1000
 ```
 
 A line retired with nothing in its place takes `--no-line` in place of the new line:
 
 ```console
-$ work line b252 --into backlog --retires backlog#r40 --no-line
-b252 "work refuse commits the item": retires backlog#r40
+$ work line b252 --into items --retires items#r19 --no-line
+b252 "Declining an item keeps it": retires items#r19
 ```
 
-The item holds `retired: [r40]` and no new line; when a batch lays it, r40 and its scenario go.
+The item holds `retired: [r19]` and no new line; when a batch lays it, r19 and its scenario go.
 
 ## Start a new capability
 
@@ -211,10 +222,10 @@ group: service
 purpose: The person gives items short words, labels, to group them, and reads the backlog by them.
 ```
 
-Then add its terms and lines through the same item with `work line b260 --into labels`, as in the first recipe; they
+Then add its model lines, vocabulary entries and lines through the same item with `work line b260 --into labels`, as in the first recipe; they
 take the ids `g1` and `r1` on. `work ready` checks them with the capability laid over a copy of `spec/`. When the
 batch starts, `work batch start` writes `spec/capabilities/labels.md` (its id your context's with `capability/` in
-front and the name at the end, its title, narrator and group, `language: codified-2`, `## Purpose`, `## Terms`,
+front and the name at the end, its title, narrator and group, `language: codified-2`, `## Purpose`,
 `## Behaviour`, the item's lines with their ids in `unbuilt:`), its row in `spec/index.md`'s `## Composition`, and
 its feature:
 
@@ -224,7 +235,7 @@ Feature: Labels
   Narrator: a person grouping items
 
   @g1 @r1
-  Scenario: `work show` prints the labels of an item
+  Scenario: An item shown returns its labels
     Given an item i1
     And a label l1
     And the item i1 has the label l1
@@ -232,10 +243,10 @@ Feature: Labels
     And the item i1 has the label l2
     And a label l3
     And the item i1 does not have the label l3
-    When the person runs `work show` on the item i1
-    Then `work` prints the label l1
-    And `work` prints the label l2
-    And `work` does not print the label l3
+    When the person shows the item i1
+    Then the backlog service returns the label l1
+    And the backlog service returns the label l2
+    And the backlog service does not return the label l3
 ```
 
 The [capability file reference](reference/capability-file.md) walks through every section.
@@ -274,22 +285,21 @@ non-zero or while a commit of the task touches a file the chore does not name.
 
 ## See what a line means
 
-**When:** you're reading a line and want everything it commits `work` to, including what comes from elsewhere.
+**When:** you're reading a line and want everything it commits a service to, including what comes from elsewhere.
 
-`model explain` takes a requirement's id and prints the line, then what it also means by the packs' definitions
+`spec explain` takes a requirement's id and prints the line, then what it also means by the packs' definitions
 and the universal conditions:
 
 ```console
-$ model explain backlog#r38
-backlog#r38  While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
+$ spec explain items#r15
+items#r15  While the status of an item is not `idea`, if the person shapes the item, then the backlog service shall refuse the request and name the item.
 which also means:
-  `work` shall exit with an error (by the definition of refuse in the pack cli)
-  `work` shall change nothing (by U12)
-  `work` shall exit with an error (by U12)
+  the backlog service shall change nothing (by U17)
+  the backlog service shall name a reason (by U17)
 ```
 
 A line with nothing more to it prints only itself. For the logical form of a line that isn't in `spec/` yet, use
-`model parse --form "<line>"` (see [writing requirements](writing-requirements.md)).
+`spec parse --form "<line>"` (see [writing requirements](writing-requirements.md)).
 
 ## Find what is ready and what blocks it
 
@@ -505,7 +515,7 @@ push = "env -u GH_TOKEN"
 size = 1500
 checks = [
   "python3 {scripts}/features generate --check",
-  "python3 {scripts}/model decisions --check",
+  "python3 {scripts}/spec decisions --check",
 ]
 
 [prices."claude-opus-5-5"]
@@ -521,7 +531,7 @@ cache_read = 0.20
 | `[batch] push` | a prefix the batch's agent puts before every `git push` and `gh` call | none |
 | `[batch] worktrees` | where a batch's worktrees go | `.shop/worktrees/` |
 | `[review] size` | the changed lines over which the reviewer's brief says "over the limit" | 1000 |
-| `[review] checks` | the commands the reviewer's brief runs, with `{scripts}` and `{forked_from}` filled in | `tools size --limit 300`, `tools check`, `features generate --check`, `features bindings --unbound`, `model decisions --check` |
+| `[review] checks` | the commands the reviewer's brief runs, with `{scripts}` and `{forked_from}` filled in | `tools size --limit 300`, `tools check`, `features generate --check`, `features bindings --unbound`, `spec decisions --check` |
 | `[prices."<model>"]` | dollars per million tokens: `input`, `output`, `cache_read`, all three | a dated table in `scripts/measure_cost.py` |
 
 `[review] checks` replaces the default list, so copy in the defaults you want to keep. A price is used by

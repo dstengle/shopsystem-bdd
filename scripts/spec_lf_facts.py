@@ -19,6 +19,7 @@ spec_lf_facts_atoms'. An `or` box splits it (`R#n`,
 """
 import spec_lf_distinct
 import spec_lf_exist
+import spec_lf_facts_request
 import spec_lf_member
 import spec_lf_modal
 import spec_lf_none
@@ -105,6 +106,8 @@ class Walk(Terms):
         return self.out
 
     def trigger(self, part):
+        if spec_lf_facts_request.requests(part):     # a request with its parameters (the domain contract)
+            return spec_lf_facts_request.trigger(self, part)
         events = [a for a in part.body if isinstance(a, Atom) and a.pred == "event"]
         if len(events) != 1 and not spec_lf_distinct.one_act(events):
             raise ValueError("no translation of a trigger with %d events" % len(events))
@@ -180,6 +183,8 @@ class Walk(Terms):
         e, d, x = self.event(atom)
         self.acts += 1
         self.emit("resp", self.acts, spec_lf_modal.polarity(self, pos), e, d, x)
+        if e == "named" and pos:     # the request pack's name: what a response names (spec_lf_facts_request)
+            self.emit("names", self.acts, x)
 
     def only(self, box):
         """"D shall V only Ks that P": no act; `only` and the restrictor P of its K (`rattr`, `rrel`)."""

@@ -5,7 +5,7 @@ narrator: a person or session keeping the decisions
 group: service
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
-retired: [g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g14, r14, g15, r15, g16, r16, g17, r17, g23, r23]
+retired: [g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g14, r14, g15, r15, g16, r16, g17, r17, g23, r23, g13, r13, g26, r26, g27, r27, g28, r28, g29, r29, g18, r18, g19, r19, g20, r20, g24, r24, g25, r25, g21, r21, g22, r22, g30, r30, g31, r31, g32, r32]
 unbuilt: []
 ---
 
@@ -18,65 +18,14 @@ runs with the suite and at the pull request; a `requirement` decision names the 
 to its tier, and keeps a superseded decision marked so.
 
 ## Terms
-- **enforce** (verb, state): a design-decision names a test or a requirement under its `enforced_by` as what holds it. Forms: enforces, enforced. Frame: test enforces design-decision. Frame: requirement enforces design-decision.
-- **outcome** (attribute of test): Values (adjective): `passed`, `failed`.
-- **supersede** (verb, state): a design-decision names another under its `supersedes` as the one it takes the place of. Forms: supersedes, superseded. Frame: design-decision supersedes design-decision.
-- **route** (noun): a way a design-decision is verified, named under its `verified_by`. Kind of: text.
-- **kind** (attribute of route): the word that names the route. Values (noun): `scenario`, `check`, `judgement`, `monitor`.
-- **verify** (verb, state): a design-decision names a universal condition under its `rests_on` and a route under its `verified_by`. Forms: verifies, verified. Frame: design-decision verifies universal condition.
+
+Moved to `spec/vocabulary/` and `spec/model/` (the domain contract, 0.38.0).
 
 ## Relations
 
-| from | word | to | cardinality |
-|---|---|---|---|
-| route | of | design-decision |  |
+Moved to `spec/vocabulary/` and `spec/model/` (the domain contract, 0.38.0).
 
 ## Behaviour
-
-### [g13] A decision in force with no tier is a warning
-- [r13] While a design-decision is not `superseded` or `rejected` and the design-decision has no tier, when the person runs `model check`, `model` shall print `w_untiered`.
-
-### [g26] A `check` decision names its test
-- [r26] While the tier of a design-decision is `check` and no test enforces the design-decision, if the person runs `model check`, then `model` shall exit with an error naming `v_d6`.
-
-### [g27] A `requirement` decision names its requirement
-- [r27] While the tier of a design-decision is `requirement` and no requirement enforces the design-decision, if the person runs `model check`, then `model` shall exit with an error naming `v_d7`.
-
-### [g28] `model decisions --check` runs the tests of the `check` decisions
-- [r28] While the tier of a design-decision is `check` and a test enforces the design-decision, when the person runs `model decisions --check`, `model` shall run `pytest` on the test.
-
-### [g29] `model decisions --check` names each failing decision
-- [r29] While the tier of a design-decision is `check` and a test whose outcome is `failed` enforces the design-decision, if the person runs `model decisions --check`, then `model` shall exit with an error naming the design-decision.
-
-### [g18] An accepted decision supersedes no accepted decision
-- [r18] While a design-decision whose status is `accepted` supersedes a design-decision whose status is `accepted`, if the person runs `model check`, then `model` shall exit with an error naming `v_d8`.
-
-### [g19] `work decision` writes and commits a decision and the decisions index
-- [r19] When the person runs `work decision`, `work` shall write a design-decision and the decisions index and commit the design-decision and the decisions index.
-
-### [g20] `work decision` refuses a decision with no tier
-- [r20] If the person runs `work decision` without the `--tier` option, then `work` shall refuse the command and name `--tier`.
-
-### [g24] `work decision` refuses a decision with no summary
-- [r24] If the person runs `work decision` without the `--summary` option, then `work` shall refuse the command and name `--summary`.
-
-### [g25] `work decision` refuses a decision with no text
-- [r25] If the person runs `work decision` without the `--decision` option, then `work` shall refuse the command and name `--decision`.
-
-### [g21] `work decision` with `--verified-by` writes a route
-- [r21] When the person runs `work decision` with the `--verified-by` option, `work` shall write a design-decision that has a route and commit the design-decision.
-
-### [g22] `model check` names a universal condition no decision verifies
-- [r22] When the person runs `model check`, `model` shall print every universal condition that no design-decision verifies.
-
-### [g30] `model check` refuses a route outside the four
-- [r30] While the kind of a route of a design-decision is not `scenario`, `check`, `judgement` or `monitor`, if the person runs `model check`, then `model` shall exit with an error naming the design-decision.
-
-### [g31] `work decision --supersedes` marks the decision it replaces superseded
-- [r31] While the status of a design-decision is `accepted`, when the person runs `work decision` with the `--supersedes` option set to the design-decision, `work` shall set the status of the design-decision to `superseded`, commit the design-decision and write a design-decision that supersedes the design-decision.
-
-### [g32] `work decision --supersedes` refuses a decision not in force
-- [r32] While the status of a design-decision is not `accepted`, if the person runs `work decision` with the `--supersedes` option set to the design-decision, then `work` shall refuse the command and name the design-decision.
 
 ## Implementation, may change
 
@@ -112,3 +61,39 @@ to its tier, and keeps a superseded decision marked so.
 
 ## Not yet
 - None.
+## Moved
+
+Every line moved to a new capability with a new id (the domain contract, 0.38.0).
+
+| old | new |
+|---|---|
+| g13 | decisions#g1 |
+| r13 | decisions#r1 |
+| g26 | decisions#g2 |
+| r26 | decisions#r2 |
+| g27 | decisions#g3 |
+| r27 | decisions#r3 |
+| g28 | decisions#g4 |
+| r28 | decisions#r4 |
+| g29 | decisions#g5 |
+| r29 | decisions#r5 |
+| g18 | decisions#g6 |
+| r18 | decisions#r6 |
+| g19 | decisions#g7 |
+| r19 | decisions#r7 |
+| g20 | decisions#g8 |
+| r20 | decisions#r8 |
+| g24 | decisions#g9 |
+| r24 | decisions#r9 |
+| g25 | decisions#g10 |
+| r25 | decisions#r10 |
+| g21 | decisions#g11 |
+| r21 | decisions#r11 |
+| g22 | decisions#g12 |
+| r22 | decisions#r12 |
+| g30 | decisions#g13 |
+| r30 | decisions#r13 |
+| g31 | decisions#g14 |
+| r31 | decisions#r14 |
+| g32 | decisions#g15 |
+| r32 | decisions#r15 |

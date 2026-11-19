@@ -33,7 +33,9 @@ def holds_given(step):
         new_capability(step, n1, n2)
     elif (k1, k2) == ("item", "universal condition"):
         sys.modules["shop_readiness_world"].give_universal(step, n1, sys.modules["shop_readiness_world"].TRANSLATED_U)
-    elif (k1, k2) != ("git branch", "requirement"):
+    elif (k1, k2) == ("worktree", "commit"):           # a task's workspace holds its kept change (the reword)
+        has_given(step, ("git branch", n1), ("commit", n2))
+    elif (k1, k2) not in (("git branch", "requirement"), ("worktree", "requirement")):
         return False
 
 
@@ -53,8 +55,8 @@ def new_capability(step, item, name):
 
 
 @four("GivenDoes", "has", *BOTH)
-def has_given(step):
-    (k1, n1), (k2, n2) = parts(step)
+def has_given(step, *given):
+    (k1, n1), (k2, n2) = given or parts(step)
     if k1 == "batch" and k2 in ("pull request", "review folder", "task"):
         T.given(step, "batch", n1)
         T.given(step, k2, n2)["batch"] = n1
@@ -68,7 +70,9 @@ def has_given(step):
         task = step.context["git_branches"][n1]["task"]
         T.given(step, "task", task).setdefault("item", T.OWN_IN)
         T.given(step, "commit", n2)["item"] = step.context["given"]["task"][task]["item"]
-    elif (k1, k2) not in (("task", "worktree"), ("batch", "git branch")):
+    elif (k1, k2) == ("task", "worktree"):            # the task's workspace, the branch its kept changes are on
+        step.context.setdefault("git_branches", {}).setdefault(n2, {})["task"] = n1
+    elif (k1, k2) not in (("batch", "git branch"), ("batch", "worktree")):
         return False
 
 

@@ -87,3 +87,21 @@ def test_help_says_what_it_writes():
     assert done.returncode == 0
     for word in (".shop/records/<date>-<slug>.md", ".shop/records/README.md", "--body", "commit"):
         assert word in done.stdout, word
+
+
+def test_the_json_envelope_of_a_record_and_of_a_refusal(backlog_repo, tmp_path_factory):
+    import json
+    done = record(backlog_repo, tmp_path_factory, "--date", "2026-11-19", "--json")
+    assert done.returncode == 0, done.stderr
+    assert json.loads(done.stdout) == {"outcome": "done", "errors": [], "notices": [],
+                                       "content": {"path": ".shop/records/2026-11-19-what-was-found.md"}}
+    done = record(backlog_repo, tmp_path_factory, "--date", "2026-11-19", "--json")
+    assert done.returncode == 1 and "--slug" in done.stderr
+    assert json.loads(done.stdout)["errors"] == [{"reason": "record exists", "names": ["parameter:slug"]}]
+
+
+def test_the_operation_is_requested_by_its_business_names(backlog_repo, tmp_path_factory):
+    import record_write
+    rel = record_write.write(backlog_repo, "Found by name", "one row", "analysis", str(body(tmp_path_factory)),
+                             date="2026-11-19")
+    assert rel == ".shop/records/2026-11-19-found-by-name.md" and (backlog_repo / rel).is_file()

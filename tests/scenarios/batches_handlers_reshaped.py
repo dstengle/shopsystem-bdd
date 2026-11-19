@@ -17,7 +17,7 @@ four, parts = F.four, F.parts
 def branch_holds_not(step):
     """The requirement is not in the batch's branch: the item that has it is reshaped after the park."""
     (k1, _), (k2, requirement) = parts(step)
-    if (k1, k2) != ("git branch", "requirement"):
+    if k1 not in ("git branch", "worktree") or k2 != "requirement":    # the batch's workspace (the reword)
         return False
     step.context.setdefault("not_held", []).append(requirement)
 

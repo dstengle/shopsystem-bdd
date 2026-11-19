@@ -22,6 +22,7 @@ import request_cli
 import request_moves
 import request_view
 import shop_files
+from adapter_cli_respond import prepare, respond
 
 
 def cmd_withdraw(args):
@@ -131,16 +132,13 @@ def main(argv=None):
     decision_write.add_parser(sub)
     record_write.add_parser(sub)
     request_cli.add_parsers(sub)
-    args = ap.parse_args(argv)
-    try:
-        return {"show": cmd_show, "list": cmd_list, "answer": cmd_answer, "withdraw": cmd_withdraw,
-                "request": cmd_request, "outcome": cmd_outcome, "ask": cmd_ask, "reply": cmd_reply, "turn": cmd_turn,
-                "resolve": cmd_resolve, **backlog_cli.COMMANDS, **batch_cli.COMMANDS,
-                **conversation_cli.COMMANDS, **request_cli.COMMANDS, **decision_write.COMMANDS,
-                **record_write.COMMANDS, **backlog_chore.COMMANDS}[args.cmd](args)
-    except shop_files.Refused as refused:
-        print("work: %s" % refused, file=sys.stderr)
-        return 1
+    args = prepare(ap).parse_args(argv)
+    handler = {"show": cmd_show, "list": cmd_list, "answer": cmd_answer, "withdraw": cmd_withdraw,
+               "request": cmd_request, "outcome": cmd_outcome, "ask": cmd_ask, "reply": cmd_reply, "turn": cmd_turn,
+               "resolve": cmd_resolve, **backlog_cli.COMMANDS, **batch_cli.COMMANDS,
+               **conversation_cli.COMMANDS, **request_cli.COMMANDS, **decision_write.COMMANDS,
+               **record_write.COMMANDS, **backlog_chore.COMMANDS}[args.cmd]
+    return respond("work", handler, args, names=getattr(handler, "parameters", None))
 
 
 if __name__ == "__main__":

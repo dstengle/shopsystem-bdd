@@ -12,15 +12,17 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
-import spec_frames
 import spec_relations
 import spec_value_kinds
 
 CATEGORIES = ("actor", "kind", "attribute", "value", "relation", "event", "resource", "condition")
 LETTER = {"actor": "a", "kind": "k", "attribute": "t", "value": "v", "relation": "r", "event": "e",
           "resource": "s", "condition": "c"}
-# verbs the core grammar spells itself; an event with one of these names would make two trees of one line
+# verbs the core grammar spells itself; an event with one of these names would make two trees of one line: the CLI
+# pack's of a context importing `cli` (bootstrap, until the old reading is deleted), else the request pack's
 CORE_VERBS = {"run", "print", "hold", "exit", "become", "set", "be"}
+REQUEST_VERBS = {"refuse", "name", "return", "notify", "complete", "fail", "keep", "change", "conform", "start",
+                 "hold", "become", "set", "be"}
 
 ENTRY = re.compile(r"^- \*\*(?P<term>.+?)\*\*\s*(?:\((?P<cat>[^)]*)\))?\s*:\s*(?P<text>.*)$", re.DOTALL)
 FIELDS = ("Values", "Values (adjective)", "Values (noun)", "Transitions", "Means", "Forms", "Frame", "Plural", "Not", "Kind of", "This", "Redefines", "Schema",
@@ -55,6 +57,9 @@ class Term:
     order: str = ""       # an attribute's `Order:`, how its values are ordered (spec_lf_order, b240)
     type: str = ""        # an attribute's `Type:`, number, time or text: its values any literal of it (b275)
     value_kinds: tuple = ()     # (value, adjective or noun) of each declared value (spec_value_kinds, b257)
+    word: str = ""        # its spelling when its term is a key that differs (a word of two areas: spec_vocabulary_terms)
+    operation: str = ""   # a verb's operation `<service>.<name>` when it names one (spec_vocabulary_terms; spec_rgl_ops)
+    element: str = ""     # the model element it names, qualified by its area (spec_vocabulary_terms; spec_logic_vocab)
 
     @property
     def key(self):
@@ -145,15 +150,6 @@ def gloss(text):
     return (text[:found.start()] if found else text).strip()
 
 
-def one_sentence(text):
-    """design-r2 §8's rule: code spans, quoted strings and e.g., i.e., etc., vs. are blanked; `.!?` before a space or
-    the end, and `;`, end a sentence; `:` does not. An empty gloss passes."""
-    text = re.sub(r"`[^`]*`|\"[^\"]*\"|“[^”]*”", "x", text)
-    text = re.sub(r"\b(?:e\.g|i\.e|etc|vs)\.", "x", text).strip()
-    body = text[:-1] if text[-1:] in ".!?" else text
-    return ";" not in text and not re.search(r"[.!?](?:\s|$)", body)
-
-
 def _bullets(text, heading):
     """The bullets of one `## <heading>` section, each with its indented continuation lines joined."""
     out, inside = [], False
@@ -174,6 +170,11 @@ def _bullets(text, heading):
 class Lexicon:
     terms: list = field(default_factory=list)
     rows: list = field(default_factory=list)       # spec_relations.Row of the `## Relations` tables
+    imports: tuple = ()                            # the packs `spec/index.md` imports (`core_verbs`)
+
+    def core_verbs(self):
+        """The verbs the grammar spells itself (v_t6): the request pack's in a context importing `request`."""
+        return REQUEST_VERBS if "request" in self.imports else CORE_VERBS
 
     def of(self, category):
         return [t for t in self.terms if t.category == category]
@@ -224,8 +225,15 @@ def ident(term, category):
 
 
 def read(root):
-    """The lexicon of the context at `root`: the glossary of `spec/index.md` and every capability's `## Terms`."""
+    """The lexicon of the context at `root`: the glossary of `spec/index.md` and every capability's `## Terms`; of a
+    context with a domain model (`spec/model/`), its vocabulary named onto the model (spec_vocabulary_terms)."""
     root = Path(root)
+    import spec_packs  # here: spec_packs imports this module
+    if (root / "spec" / "model").is_dir():     # the domain contract: the terms name the model's elements
+        import spec_vocabulary_terms
+        found = spec_vocabulary_terms.lexicon(root)
+        found.imports = tuple(spec_packs.imports(root))
+        return found
     sources = [(root / "spec" / "index.md", "Glossary")]
     sources += [(p, "Terms") for p in sorted((root / "spec" / "capabilities").glob("*.md"))]
     terms = []
@@ -233,68 +241,16 @@ def read(root):
         if path.is_file():
             where = path.relative_to(root).as_posix()
             terms += [t for t in (entry(b, where) for b in _bullets(path.read_text(), heading)) if t]
-    return Lexicon(terms, spec_relations.read(root))
-
-
-def _unnamed(t):
-    return t.category not in LETTER or t.category == "value"
-
-
-def _relabelled(t):
-    hint = relabel(t.label)
-    return "(%s) is written (%s)" % (t.label, hint) if hint else ""
+    return Lexicon(terms, spec_relations.read(root), tuple(spec_packs.imports(root)))
 
 
 def unlabelled(lexicon):
-    """The refusal of a lexicon with a term that names no part of speech (v_t4), each such term named with the
-    label it is to carry, or None: the grammars are built from the parts of speech, and such a term fills no slot."""
-    found = []
-    for t in lexicon.terms:
-        if _unnamed(t):
-            fix = _relabelled(t) or ("(%s) is no part of speech" % t.label if t.label else "names no part of speech")
-            found.append("%s: %s %s" % (t.where, t.term, fix))
-    if not found:
-        return None
-    return ("terms that do not name their part of speech (write each as (noun), (proper noun), (artifact), (verb), "
-            "(adjective of <kind>), (attribute of <kind>) or (noun, <resource>)): " + "; ".join(found))
+    """spec_lexicon_problems' refusal of a lexicon with a term that names no part of speech, or None."""
+    import spec_lexicon_problems
+    return spec_lexicon_problems.unlabelled(lexicon)
 
 
 def problems(lexicon, outer=frozenset()):
-    """v_t4 (a term has a category, and its kinds are kinds), v_t5 (a value names one attribute of one kind),
-    v_t6 (no two terms linearise the same), v_t7 (a gloss of more than one sentence), v_t9 (a `Means:` field),
-    spec_relations' v_t4, v_t8 and v_t10, and spec_frames' v_t11, v_t12 and v_t13 (its frames may name `outer`, b199), as (code, term, message) sorted."""
-    out = []
-    kinds = lexicon.kind_names()
-    for t in lexicon.terms:
-        if _unnamed(t):
-            hint = _relabelled(t)
-            out.append(("v_t4", t.term, "%s: the term does not name its part of speech%s" % (
-                t.where, "; " + hint if hint else "")))
-        elif t.category in ("attribute", "condition", "relation") and not t.kinds:
-            out.append(("v_t4", t.term, "%s: the %s names no kind" % (t.where, t.category)))
-        elif any(k not in kinds for k in t.kinds):
-            missing = ", ".join(k for k in t.kinds if k not in kinds)
-            out.append(("v_t4", t.term, "%s: %s is not a kind" % (t.where, missing)))
-        elif t.category == "attribute" and (not t.values and not t.type or spec_value_kinds.mixed(t)):
-            out.append(("v_t4", t.term, "%s: the attribute gives %s" % (t.where, spec_value_kinds.mixed(t) or "no Values")))
-        if t.category == "event" and t.term in CORE_VERBS:
-            out.append(("v_t6", t.term, "%s: the grammar spells `%s` itself" % (t.where, t.term)))
-    seen = defaultdict(list)
-    for v, k, a, _ in lexicon.values():
-        seen[(k, v)].append(a)
-    out += [("v_t5", v, "the value %s of %s is in more than one attribute (%s)" % (v, k, ", ".join(a)))
-            for (k, v), a in seen.items() if len(a) > 1]
-    counts = defaultdict(int)
-    for t in lexicon.terms:     # a verb's two entries are two senses (spec_frames' v_t15)
-        counts[t.key] += t.category != "event"
-    out += [("v_t6", key[1], "the %s %s is given %d times" % (key[0], key[1], n)) for key, n in counts.items()
-            if n > 1]
-    for t in lexicon.of("actor"):
-        words = t.term.split(" ", 1)
-        if len(words) == 2 and words[0] in ("a", "an", "the") and words[1] in kinds:
-            out.append(("v_t6", t.term, "the actor %s reads as the kind %s" % (t.term, words[1])))
-    out += [("v_t7", t.term, "%s: the entry's gloss is more than one sentence" % t.where)
-            for t in lexicon.terms if not one_sentence(gloss(t.text))]
-    out += [("v_t9", t.term, "%s: the meaning is a Means: field; write one Def sentence, or a gloss" % t.where)
-            for t in lexicon.terms if re.search(r"(?:^|\s)Means:", t.text)]
-    return sorted(set(out + spec_relations.problems(lexicon, outer) + spec_frames.problems(lexicon, outer)))
+    """spec_lexicon_problems' v_t4-v_t7 and v_t9 with spec_relations' and spec_frames', as (code, term, message)."""
+    import spec_lexicon_problems
+    return spec_lexicon_problems.problems(lexicon, outer)

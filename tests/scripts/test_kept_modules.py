@@ -11,7 +11,7 @@ KEPT_GLOBS = ("backlog_*.py", "batch_*.py", "conversation_*.py", "intake_moves.p
               "measure_cost.py", "measure_defect.py", "measure_batch*.py", "measure_show.py", "measure_write.py",
               "transcripts.py", "shop_files.py", "spec_*.py", "features*.py", "tools*.py", "model*.py", "migrate*.py",
               "work_items.py")
-KEPT_SCRIPTS = ("work", "measure", "conversation_hook", "model", "features", "tools", "migrate")
+KEPT_SCRIPTS = ("work", "measure", "conversation_hook", "spec", "model", "features", "tools", "migrate")
 
 OLD = {"workqueue", "workqueue_answer", "workqueue_done", "workqueue_list", "workqueue_note", "workqueue_start",
        "workqueue_status", "measure_build", "measure_read", "stub_claude", "migrate_session", "migrate_prompt"}

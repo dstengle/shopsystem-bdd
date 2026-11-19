@@ -1,73 +1,59 @@
 # generated from spec/capabilities/batches.md by features generate; do not edit
 Feature: Batches
-  Narrator: a person or session building a batch
+  Narrator: the person
 
-  @g9 @r9
-  Scenario: The merge delivers
+  @g50 @r50
+  Scenario: Merging a batch's change delivers its items
     Given an item i1
     And a batch b1
     And the batch b1 holds the item i1
     And the status of the item i1 is `in-batch`
-    And a pull request p1
-    And the batch b1 has the pull request p1
-    When the person merges the pull request p1
-    Then `work` sets the status of the item i1 to `delivered`
-    And `work` sets the status of the batch b1 to `merged`
+    And a proposed change p1
+    And the batch b1 has the proposed change p1
+    When the person merges the proposed change p1
+    Then the batches service sets the status of the item i1 to `delivered`
+    And the batches service sets the status of the batch b1 to `merged`
 
-  @g11 @r11
-  Scenario: The pull request cites its items
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    When the person runs `work batch review` on the batch b1
-    Then `work` publishes the pull request p1
-    And the pull request p1 cites the item i1
+  @g51 @r51
+  Scenario: A batch opened keeps and gives its brief
+    Given a batch b1
+    When the person opens the batch b1
+    Then the batches service keeps the batch brief b2
+    And the batches service returns the batch brief b2
 
-  @g14 @r14
-  Scenario: `work batch start` writes the batch brief for a fresh agent
-    When the person runs `work batch start`
-    Then `work` writes the batch brief b1
-    And `work` prints the batch brief b1
-
-  @g15 @r15
-  Scenario: `work batch abandon` removes the batch's review folders
+  @g52 @r52
+  Scenario: A batch abandoned keeps no review folder
     Given a batch b1
     And a review folder r1
     And the batch b1 has the review folder r1
-    And a review folder r2
-    And the batch b1 has the review folder r2
-    And a review folder r3
-    And the batch b1 does not have the review folder r3
-    When the person runs `work batch abandon` on the batch b1
-    Then `work` removes the review folder r1
-    And `work` removes the review folder r2
-    And `work` does not remove the review folder r3
+    When the person abandons the batch b1
+    Then the batches service does not keep the review folder r1
 
-  @g22 @r22
-  Scenario: `work batch start` picks a ready item that passes the readiness bar and has no dependency on an item that is not delivered
+  @g53 @r53
+  Scenario: A ready item that meets the bar and depends on nothing open goes into the batch opened
     Given an item i1
     And the status of the item i1 is `ready`
-    And the item i1 passes this readiness bar
+    And the item i1 meets this readiness bar
     And the item i1 has no dependency
-    When the person runs `work batch start`
-    Then `work` picks the item i1
-    And `work` sets the status of the item i1 to `in-batch`
-    And `work` writes the batch b1
-    And the status of the batch b1 is `building`
-    And `work` writes the batch plan b2
-    And the batch b1 has the batch plan b2
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service sets the status of the item i1 to `in-batch`
+    And the batches service keeps the batch b2
+    And the batch b2 holds the item i1
+    And the batches service keeps the batch plan b3
+    And the batch b2 has the batch plan b3
 
-  @g23 @r23
-  Scenario: A ready item that no longer passes the readiness bar is returned
+  @g54 @r54
+  Scenario: A ready item that no longer meets the bar goes back to shaped
     Given an item i1
     And the status of the item i1 is `ready`
-    And the item i1 does not pass this readiness bar
-    When the person runs `work batch start`
-    Then `work` sets the status of the item i1 to `shaped`
+    And the item i1 does not meet this readiness bar
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service sets the status of the item i1 to `shaped`
 
-  @g24 @r24
-  Scenario: A ready item with a dependency on an item that is neither ready nor delivered is not picked
+  @g55 @r55
+  Scenario: An item a ready item depends on and that is not ready stays out of the batch
     Given an item i1
     And the status of the item i1 is not `ready`
     And the status of the item i1 is not `delivered`
@@ -77,34 +63,35 @@ Feature: Batches
     And an item i2
     And the status of the item i2 is `ready`
     And the item i2 has the dependency d1
-    When the person runs `work batch start`
-    Then `work` does not pick the item i2
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service does not set the status of the item i2 to `in-batch`
 
-  @g25 @r25
-  Scenario: `work batch resume` carries on without a person
+  @g56 @r56
+  Scenario: A batch resumed gives its plan and asks nothing
     Given a batch b1
     And the status of the batch b1 is `building`
     And a session s1
-    When the session s1 runs `work batch resume` on the batch b1
-    Then `work` uses the batch plan b2
+    When the session s1 resumes the batch b1
+    Then the batches service returns the batch plan b2
     And the batch b1 has the batch plan b2
-    And `work` does not ask a question
+    And the batches service does not ask a question
 
-  @g26 @r26
-  Scenario: `work batch park` parks an item and leaves the rest building
+  @g57 @r57
+  Scenario: An item parked needs input and the batch goes on
     Given an item i1
     And a batch b1
     And the batch b1 holds the item i1
     And the status of the item i1 is `in-batch`
     And a session s1
-    When the session s1 runs `work batch park` on the item i1
-    Then `work` sets the status of the item i1 to `needs-input`
-    And `work` writes the question q1
+    When the session s1 parks the item i1
+    Then the batches service sets the status of the item i1 to `needs-input`
+    And the batches service keeps the question q1
     And the question q1 is on the item i1
-    And `work` does not set the status of the batch b1 to `abandoned`
+    And the batches service does not set the status of the batch b1 to `abandoned`
 
-  @g28 @r28
-  Scenario: `work batch abandon` returns the batch's items
+  @g58 @r58
+  Scenario: A batch abandoned gives its items back as ready
     Given a batch b1
     And the status of the batch b1 is `building`
     And an item i1
@@ -116,69 +103,62 @@ Feature: Batches
     And an item i3
     And the batch b1 holds the item i3
     And the status of the item i3 is `shaped`
-    When the person runs `work batch abandon` on the batch b1
-    Then `work` sets the status of the batch b1 to `abandoned`
-    And `work` sets the status of the item i1 to `ready`
-    And `work` sets the status of the item i2 to `ready`
-    And `work` does not set the status of the item i3 to `ready`
+    When the person abandons the batch b1
+    Then the batches service sets the status of the batch b1 to `abandoned`
+    And the batches service sets the status of the item i1 to `ready`
+    And the batches service sets the status of the item i2 to `ready`
+    And the batches service does not set the status of the item i3 to `ready`
 
-  @g29 @r29
-  Scenario: `work batch review` refuses a batch with a task that is not done
-    Given a task t1
+  @g59 @r59
+  Scenario: A batch whose change is merged keeps no review folder
+    Given a proposed change p1
     And a batch b1
-    And the batch b1 has the task t1
-    And the status of the task t1 is not `done`
-    When the person runs `work batch review` on the batch b1
-    Then `work` refuses `work batch review`
-    And `work` names the task t1
-
-  @g30 @r30
-  Scenario: `work batch review` refuses a commit that cites no item
-    Given a task t1
-    And a batch b1
-    And the batch b1 has the task t1
-    And a git branch g1
-    And the task t1 has the git branch g1
-    And a commit c1
-    And the commit c1 cites no item
-    And the git branch g1 has the commit c1
-    When the person runs `work batch review` on the batch b1
-    Then `work` refuses `work batch review`
-    And `work` names the commit c1
-
-  @g31 @r31
-  Scenario: The merge removes the batch's review folders
-    Given a pull request p1
-    And a batch b1
-    And the batch b1 has the pull request p1
+    And the batch b1 has the proposed change p1
     And a review folder r1
     And the batch b1 has the review folder r1
-    And a review folder r2
-    And the batch b1 has the review folder r2
-    And a review folder r3
-    And the batch b1 does not have the review folder r3
-    When the person merges the pull request p1
-    Then `work` removes the review folder r1
-    And `work` removes the review folder r2
-    And `work` does not remove the review folder r3
+    When the person merges the proposed change p1
+    Then the batches service does not keep the review folder r1
 
-  @g32 @r32
-  Scenario: `work batch park` takes the parked item's lines out of the batch
+  @g60 @r60
+  Scenario: An item parked has its lines taken out of the batch's workspace
     Given an item i1
     And a batch b1
     And the batch b1 holds the item i1
     And the status of the item i1 is `in-batch`
-    And a git branch g1
-    And the batch b1 has the git branch g1
+    And a workspace w1
+    And the batch b1 has the workspace w1
     And a requirement r1
     And the item i1 has the requirement r1
-    And the git branch g1 holds the requirement r1
+    And the workspace w1 holds the requirement r1
     And a session s1
-    When the session s1 runs `work batch park` on the item i1
-    Then `work` removes the requirement r1 from the git branch g1
+    When the session s1 parks the item i1
+    Then the batches service keeps the workspace w2
+    And the batch b1 has the workspace w2
+    And the workspace w2 does not hold the requirement r1
 
-  @g34 @r34
-  Scenario: Another item's passing scenario does not hold up a task
+  @g61 @r61
+  Scenario: A task finishes while a parked item's scenario breaks
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And an item i2
+    And the batch b1 holds the item i2
+    And the status of the item i2 is `needs-input`
+    And a scenario s1
+    And the item i2 has the scenario s1
+    And a workspace w1
+    And the task t1 has the workspace w1
+    And the scenario s1 breaks in the workspace w1
+    And a session s2
+    When the session s2 finishes the task t1
+    Then the batches service sets the status of the task t1 to `done`
+
+  @g62 @r62
+  Scenario: A task finishes while another item's scenario succeeds
     Given an item i1
     And a batch b1
     And the batch b1 holds the item i1
@@ -191,164 +171,119 @@ Feature: Batches
     And the status of the item i2 is `in-batch`
     And a scenario s1
     And the item i2 has the scenario s1
-    And a worktree w1
-    And the task t1 has the worktree w1
-    And the scenario s1 passes in the worktree w1
+    And a workspace w1
+    And the task t1 has the workspace w1
+    And the scenario s1 succeeds in the workspace w1
     And a session s2
-    When the session s2 runs `work batch done` on the task t1
-    Then `work` sets the status of the task t1 to `done`
+    When the session s2 finishes the task t1
+    Then the batches service sets the status of the task t1 to `done`
 
-  @g35 @r35
-  Scenario: `work batch review` publishes the pull request
-    Given a batch b1
-    And the status of the batch b1 is `building`
-    And a task t1
-    And the batch b1 has the task t1
-    And the status of the task t1 is `done`
-    When the person runs `work batch review` on the batch b1
-    Then `work` publishes the pull request p1
-    And the batch b1 has the pull request p1
-    And `work` sets the status of the batch b1 to `in-review`
-
-  @g36 @r36
-  Scenario: `work batch status` prints where the batch stands
+  @g63 @r63
+  Scenario: A batch monitored gives its items, tasks and their status
     Given an item i1
     And a batch b1
     And the batch b1 holds the item i1
     And a task t1
     And the batch b1 has the task t1
-    When the person runs `work batch status` on the batch b1
-    Then `work` prints the item i1
-    And `work` prints the task t1
-    And `work` prints the status of the task t1
+    When the person monitors the batch b1
+    Then the batches service returns the item i1
+    And the batches service returns the task t1
+    And the batches service returns the status of the task t1
 
-  @g37 @r37
-  Scenario: A parked item's commits stay out of the pull request
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `needs-input`
-    And a commit c1
-    And the commit c1 cites the item i1
-    When the person runs `work batch review` on the batch b1
-    Then `work` publishes the pull request p1
-    And the batch b1 has the pull request p1
-    And the pull request p1 does not hold the commit c1
-
-  @g38 @r38
-  Scenario: A parked item's failing scenario does not hold up another item's task
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a task t1
-    And the item i1 has the task t1
-    And the status of the task t1 is `running`
-    And an item i2
-    And the batch b1 holds the item i2
-    And the status of the item i2 is `needs-input`
-    And a scenario s1
-    And the item i2 has the scenario s1
-    And a worktree w1
-    And the task t1 has the worktree w1
-    And the scenario s1 fails in the worktree w1
-    And a session s2
-    When the session s2 runs `work batch done` on the task t1
-    Then `work` sets the status of the task t1 to `done`
-
-  @g39 @r39
-  Scenario: `work batch start` writes `spec/universal.md` in `codified-2` when it does not exist
+  @g64 @r64
+  Scenario: A batch opened with a universal condition keeps the universal conditions in the language
     Given `universal` does not exist
     And an item i1
     And the status of the item i1 is `ready`
-    And the item i1 passes this readiness bar
+    And the item i1 meets this readiness bar
     And a universal condition u1
     And the item i1 holds the universal condition u1
-    When the person runs `work batch start`
-    Then `work` writes `universal`
-    And `work` sets the language of `universal` to `codified-2`
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service keeps `universal`
+    And the batches service sets the language of `universal` to `codified-2`
 
-  @g40 @r40
-  Scenario: The merge resolves the request a delivered item was taken in from
+  @g65 @r65
+  Scenario: Merging a batch's change resolves the accepted context request of its item
     Given an item i1
     And a batch b1
     And the batch b1 holds the item i1
     And the status of the item i1 is `in-batch`
     And a request line r1
-    And a request r2
-    And the request r2 has the request line r1
+    And a context request c1
+    And the context request c1 has the request line r1
     And the item i1 has the request line r1
-    And the status of the request r2 is `accepted`
-    And a pull request p1
-    And the batch b1 has the pull request p1
-    When the person merges the pull request p1
-    Then `work` sets the status of the request r2 to `delivered`
-    And `work` writes the resolution r3
-    And `work` sets the side of the request r2 to `asker`
-    And `work` posts the comment c1
-    And `work` closes the issue i2
-    And the request r2 has the issue i2
-    And `work` commits the request r2
+    And the status of the context request c1 is `accepted`
+    And a proposed change p1
+    And the batch b1 has the proposed change p1
+    When the person merges the proposed change p1
+    Then the batches service sets the status of the context request c1 to `delivered`
+    And the batches service keeps the resolution r2
+    And the batches service sets the side of the context request c1 to `asker`
+    And the batches service keeps the entry e1
+    And the entry e1 is on the context request c1
 
-  @g41 @r41
-  Scenario: The batch brief holds the chore of a chore item
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And a chore c1
-    And the item i1 holds the chore c1
-    And the item i1 passes this readiness bar
-    When the person runs `work batch start`
-    Then `work` writes the batch brief b1
-    And the batch brief b1 holds the chore c1
-
-  @g42 @r42
-  Scenario: `work batch done` refuses a task whose chore fails
+  @g66 @r66
+  Scenario: A task whose chore breaks is not finished
     Given a task t1
     And an item i1
     And the item i1 has the task t1
     And the status of the task t1 is `running`
     And a chore c1
     And the item i1 holds the chore c1
-    And a worktree w1
-    And the task t1 has the worktree w1
-    And the chore c1 fails in the worktree w1
+    And a workspace w1
+    And the task t1 has the workspace w1
+    And the chore c1 breaks in the workspace w1
     And a session s1
-    When the session s1 runs `work batch done` on the task t1
-    Then `work` refuses `work batch done`
-    And `work` names the chore c1
+    When the session s1 finishes the task t1
+    Then the batches service refuses this request
+    And the batches service names the chore c1
 
-  @g43 @r43
-  Scenario: `work batch done` refuses a commit that touches a file the chore does not name
+  @g67 @r67
+  Scenario: A task that touches a file outside its chore is not finished
     Given a task t1
     And an item i1
     And the item i1 has the task t1
     And the status of the task t1 is `running`
     And a chore c1
     And the item i1 holds the chore c1
-    And a git branch g1
-    And the task t1 has the git branch g1
-    And a commit c2
-    And the git branch g1 has the commit c2
+    And a workspace w1
+    And the task t1 has the workspace w1
+    And a kept change k1
+    And the workspace w1 holds the kept change k1
     And a file f1
     And the chore c1 does not hold the file f1
-    And the commit c2 touches the file f1
+    And the kept change k1 touches the file f1
     And a session s1
-    When the session s1 runs `work batch done` on the task t1
-    Then `work` refuses `work batch done`
-    And `work` names the file f1
+    When the session s1 finishes the task t1
+    Then the batches service refuses this request
+    And the batches service names the file f1
 
-  @g44 @r44
-  Scenario: `work batch start` writes the capability an item holds
+  @g68 @r68
+  Scenario: A batch opened keeps a brief that holds each chore
     Given an item i1
     And the status of the item i1 is `ready`
-    And the item i1 passes this readiness bar
+    And a chore c1
+    And the item i1 holds the chore c1
+    And the item i1 meets this readiness bar
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service keeps the batch brief b2
+    And the batch brief b2 holds the chore c1
+
+  @g69 @r69
+  Scenario: A batch opened keeps each new capability
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
     And a capability c1
     And the item i1 holds the capability c1
-    When the person runs `work batch start`
-    Then `work` writes the capability c1
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service keeps the capability c1
 
-  @g45 @r45
-  Scenario: A parked item reshaped after the park does not hold up another item's task
+  @g70 @r70
+  Scenario: A task finishes while a parked item's line is out of the batch
     Given an item i1
     And a batch b1
     And the batch b1 holds the item i1
@@ -359,67 +294,72 @@ Feature: Batches
     And an item i2
     And the batch b1 holds the item i2
     And the status of the item i2 is `needs-input`
-    And a git branch g1
-    And the batch b1 has the git branch g1
+    And a workspace w1
+    And the batch b1 has the workspace w1
     And a requirement r1
-    And the git branch g1 does not hold the requirement r1
+    And the workspace w1 does not hold the requirement r1
     And the item i2 has the requirement r1
     And a scenario s1
     And the item i2 has the scenario s1
-    And a worktree w1
-    And the task t1 has the worktree w1
-    And the scenario s1 fails in the worktree w1
+    And a workspace w2
+    And the task t1 has the workspace w2
+    And the scenario s1 breaks in the workspace w2
     And a session s2
-    When the session s2 runs `work batch done` on the task t1
-    Then `work` sets the status of the task t1 to `done`
+    When the session s2 finishes the task t1
+    Then the batches service sets the status of the task t1 to `done`
 
-  @g46 @r46
-  Scenario: `work batch start` writes the logical form of each laid requirement in the corpus
+  @g71 @r71
+  Scenario: A batch opened keeps each line's logical form in the corpus
     Given an item i1
     And the status of the item i1 is `ready`
-    And the item i1 passes this readiness bar
+    And the item i1 meets this readiness bar
     And a requirement r1
     And the item i1 has the requirement r1
     And a logical form l1
     And the requirement r1 has the logical form l1
-    When the person runs `work batch start`
+    And a batch b1
+    When the person opens the batch b1
     Then this corpus holds the logical form l1
-    And `work` writes the logical form l1
+    And the batches service keeps the logical form l1
 
-  @g47 @r47
-  Scenario: `work batch start` removes a retired requirement from the corpus
+  @g72 @r72
+  Scenario: A batch opened takes a retired requirement out of the corpus
     Given an item i1
     And the status of the item i1 is `ready`
-    And the item i1 passes this readiness bar
+    And the item i1 meets this readiness bar
     And a requirement id r1
     And the item i1 holds the requirement id r1
     And a requirement r2
     And this corpus holds the requirement r2
     And the requirement r2 has the requirement id r1
-    When the person runs `work batch start`
-    Then `work` removes the requirement r2
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service keeps the corpus c1
+    And the corpus c1 does not hold the requirement r2
 
-  @g48 @r48
-  Scenario: `work batch start` writes the catalogue entry of a rule a laid requirement uses
+  @g73 @r73
+  Scenario: A batch opened keeps the catalogue entry of each rule its lines use
     Given an item i1
     And the status of the item i1 is `ready`
-    And the item i1 passes this readiness bar
+    And the item i1 meets this readiness bar
     And a requirement r1
     And the item i1 has the requirement r1
     And a rule r2
     And the requirement r1 uses the rule r2
-    When the person runs `work batch start`
-    Then `work` writes the catalogue entry c1
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service keeps the catalogue entry c1
     And the rule r2 has the catalogue entry c1
 
-  @g49 @r49
-  Scenario: `work batch start` writes the construct catalogue when a laid requirement uses a construct
+  @g74 @r74
+  Scenario: A batch opened keeps the construct catalogue its lines use
     Given an item i1
     And the status of the item i1 is `ready`
-    And the item i1 passes this readiness bar
+    And the item i1 meets this readiness bar
     And a requirement r1
     And the item i1 has the requirement r1
     And a construct c1
     And the requirement r1 uses the construct c1
-    When the person runs `work batch start`
-    Then `work` writes this construct catalogue
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service keeps this construct catalogue

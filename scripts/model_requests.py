@@ -1,4 +1,4 @@
-"""The reading of requests by scripts/model: .shop/requests/q<n>.md, in the form `work request` and `work sync` write
+"""The reading of requests by scripts/spec: .shop/requests/q<n>.md, in the form `work request` and `work sync` write
 (r19, r112; requests r27, r32: a request another context asked on its issue names the issue, not an origin); the frozen .shop/work/requests/ is not read (workflow simplification plan 9, D7). Its lines, their outcomes and its upstream are facts (design model v5, C20): line/3, outcome/3, upstream/2."""
 
 import datetime

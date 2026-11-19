@@ -1,6 +1,6 @@
 <!--
 Examples on this page are files of this repository at plugin 0.33.0 (commit 7f60e57de, 2026-11-10), quoted as they
-are, with cuts marked `...`. The outputs of `work ready`, `work request` and `model lexicon` on the example context
+are, with cuts marked `...`. The outputs of `work ready`, `work request` and `spec lexicon` on the example context
 were pasted from one run that day, in a throwaway copy of docs/examples/notes-cli/ with the stand-in gh
 (tests/scripts/stub_gh.py) as $SHOPSYSTEM_WORK_GH.
 -->
@@ -12,14 +12,15 @@ each, in an order where each builds on the last. Every section says the same fiv
 
 - **what it is**, in one sentence;
 - **where it lives**, as a path;
-- **what writes it**, as `model forms` names it;
+- **what writes it**, as `spec forms` names it;
 - **an example**, always a real file or a real run;
 - **where to read more**.
 
 If you want the machinery behind a word, [How it works](how-it-works.md) has it. If you want to see the words in
 motion first, take [the tour](tour.md).
 
-**On this page:** [bounded context](#bounded-context) · [glossary and packs](#glossary-and-packs) ·
+**On this page:** [bounded context](#bounded-context) · [domain model](#domain-model) ·
+[vocabulary and packs](#vocabulary-and-packs) · [adapter contract](#adapter-contract) ·
 [capability](#capability) · [requirement line](#requirement-line) · [group](#group) · [given block](#given-block) ·
 [universal condition](#universal-condition) · [scenario and feature file](#scenario-and-feature-file) ·
 [item](#item) · [backlog](#backlog) · [readiness bar](#readiness-bar) · [batch](#batch) ·
@@ -30,7 +31,8 @@ motion first, take [the tour](tour.md).
 
 ### Bounded context
 
-A bounded context is one repository's spec: the words it uses and the behaviour it promises.
+A bounded context is one repository's spec: its domain model, the words it uses, the behaviour it promises and the
+decisions behind it.
 
 - **Lives in:** `spec/index.md`, with everything under `spec/`.
 - **Written by:** hand, for now (plugin item b318 gives `spec/index.md` its command).
@@ -43,56 +45,89 @@ repository's own:
 id: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
 title: shopsystem-bdd
 language: codified-2
-imports: [cli, spec]
+imports: [request, spec]
 ---
 ```
 
-Below that sit a Purpose, Constraints, the Glossary, Relations and Upstreams (the contexts it asks for things).
+Below that sit a Purpose, Constraints, the Composition (its areas and their capabilities) and Upstreams (the
+contexts it asks for things).
 Read more: [the capability file reference](reference/capability-file.md#specindexmd-the-bounded-context).
 
-### Glossary and packs
+### Domain model
 
-The glossary is the list of words a context's lines may use; a pack is a ready-made set of words you import.
+The domain model is the shape of a context, with no rules in it: the objects, their attributes and lifecycles, the
+relations between them, the services with the operations an actor may request, the events and the actors.
 
-- **Lives in:** `spec/index.md`, `## Glossary`; a capability's own words under its `## Terms`. Packs are in the
-  plugin's `grammar/packs/` (`cli`, `spec`, `time`).
-- **Written by:** hand for the glossary; `work line --term` for a capability's term; `work line --relation` for a
-  relation row.
+- **Lives in:** `spec/model/<area>.md`, one file per area of the context, in a ` ```model ` block.
+- **Written by:** `work line --model` and `work line --relation`, on an item, laid into `spec/model/` by a batch.
 
-Each entry says its part of speech, so the plugin knows how the word may be used:
+From this repository's [`spec/model/tracking.md`](../spec/model/tracking.md):
+
+```model
+service backlog
+  operation shape(item, note)  outcomes: done | refused: item not an idea, no note
+  operation show(item)  outcomes: returned → the item
+```
+
+Every rule about these (what `shape` does, when it refuses) is a requirement line; `spec check` holds each line to
+what the model declares, and the model to its lines (an operation with no line, a refusal reason no line states).
+Read more: [The domain model](reference/domain-model.md).
+
+### Vocabulary and packs
+
+The vocabulary is the list of words a context's lines may use, each naming one element of the model; a pack is a
+ready-made set of words you import.
+
+- **Lives in:** `spec/vocabulary/<area>.md` and `shared.md`. Packs are in the plugin's `grammar/packs/` (`request`,
+  `spec`, `time`).
+- **Written by:** `work line --term`, on an item, laid into `spec/vocabulary/` by a batch.
+
+Each entry says its part of speech and, after the arrow, the element it names:
 
 ```markdown
-- **item** (noun): one file of the backlog, `.shop/backlog/b<n>.md`: work this bounded context may do, ... Kind of: file.
-- **status** (attribute of item): Values: `idea`, `shaped`, `ready`, `in-batch`, `delivered`, `needs-input`, `refused`, `withdrawn`.
-- **merge** (verb, action): the person merges a pull request into its base branch on GitHub. Forms: merges, merged. Frame: the person merges pull request.
+- **item** (noun) → object item. One file of the backlog: work this bounded context may do.
+- **shaped** (adjective) → value item.status shaped.
+- **shape** (verb, action) → operation backlog.shape. Forms: shapes, shaped. Frame: <actor> shapes <item>.
 ```
 
-`model lexicon` prints every word a context has, and where each came from. Here's the small example context of
-[getting started](getting-started.md), which imports the `cli` pack:
+A verb that names an operation is how a line says a request: "the person shapes the item" asks the backlog service
+for `shape`. Every context imports the `request` pack, the words of a request and its response: *request*,
+*service*, *refuse*, *name*, *return*, *keep*, *complete*. `spec lexicon` prints every word a context has, and
+where each came from. Here's the small example context of [getting started](getting-started.md):
 
 ```console
-$ model --root docs/examples/notes-cli lexicon
+$ spec --root docs/examples/notes-cli lexicon
 actor (2)
+  the notes service
   the person
-  `notes`
-kind (10)
-  tool  [pack cli]
-  command  [pack cli]
+kind (9)
+  request  [pack request]
   ...
   note
-  title
   tag
-  file
-event (9)
-  run  [pack cli]
-  print  [pack cli]
+...
+event (13)
+  refuse  [pack request]
   ...
   add
-  delete
+  list
+  remove
 ```
 
-Read more: [Writing requirements](writing-requirements.md), and the packs themselves in
-[`grammar/packs/`](../grammar/packs/cli.md).
+Read more: [Writing requirements](writing-requirements.md), [the vocabulary](reference/domain-model.md#specvocabularymd-and-sharedmd),
+and the packs themselves in [`grammar/packs/`](../grammar/packs/request.md).
+
+### Adapter contract
+
+An adapter contract maps the domain's operations to one interface: for the CLI, each operation's command and each
+parameter's option, and how each outcome shows (exit 0, exit 1 with the reasons on stderr, the response envelope
+under `--json`).
+
+- **Lives in:** `spec/adapters/<port>.toml`; this repository's is [`spec/adapters/cli.toml`](../spec/adapters/cli.toml).
+- **Written by:** hand, for now (a plugin item gives it its commands).
+
+No requirement line names a command, an option or an exit code; `spec check` holds the contract and the programs'
+argparse to each other. Read more: [Adapter contracts](reference/adapters.md).
 
 ### Capability
 
@@ -102,22 +137,24 @@ A capability is one area of behaviour, kept as one file of requirement lines.
 - **Written by:** `work line --capability` on an item to start one, and `work batch start`, which writes the file
   and its lines.
 
-The frontmatter of [`spec/capabilities/backlog.md`](../spec/capabilities/backlog.md):
+The frontmatter of [`spec/capabilities/items.md`](../spec/capabilities/items.md):
 
 ```yaml
 ---
-id: capability/missingmass.io/shopsystem/shopsystem-bdd/backlog
-title: Backlog
-narrator: a person or session keeping the backlog
+id: capability/missingmass.io/shopsystem/shopsystem-bdd/items
+title: Items
+narrator: the person
 group: service
+area: tracking
+specifies: object item, service backlog, the readiness policy
 language: codified-2
-rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
-retired: [g1, r1, g2, r2, ...]
+retired: []
 unbuilt: []
 ---
 ```
 
-Two lists matter. `retired:` holds ids that are gone and never used again. `unbuilt:` holds ids whose lines are in
+`area:` is the area of the model its lines are read in, and `specifies:` what it is about. Two lists matter.
+`retired:` holds ids that are gone and never used again. `unbuilt:` holds ids whose lines are in
 the spec but whose code isn't written yet; their scenarios run as expected failures.
 Read more: [A capability file, section by section](reference/capability-file.md#a-capability-file-section-by-section).
 
@@ -127,25 +164,25 @@ A requirement line is one sentence that says what the software does. It is plain
 kind: the plugin parses every line, and a line that could mean two things is refused before anyone builds it.
 
 ```reading
-While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
-shall [x2: agent the person (constant), x3: command `work shape` (parameter), x4: tool `work` (constant)]
+While the status of an item is `idea`, when the person shapes the item, the backlog service shall set the status of the item to `shaped`.
+shall [x2: agent the person (constant), x3: service the backlog service (constant)]
   while [x1: item]
     status(x1) = `idea`
   when
-    run(e1, subject: x2, object: x3, on: x1)
+    request(e1, backlog.shape, subject: x2, object: x1)
   response
-    initiates(e2, subject: x4, status(x1) = `shaped`)
+    initiates(e2, subject: x3, status(x1) = `shaped`)
 ```
 
-Read it in three parts. **While** is the state the item is in. **When** is what someone does. **Shall** is what
-`work` must do in answer. The indented block under it is what `model parse --form` prints: the line's meaning, the
+Read it in three parts. **While** is the state the item is in. **When** is the request someone makes. **Shall** is
+what the service must do in answer. The indented block under it is what `spec parse --form` prints: the line's meaning, the
 part the checks and the generator read.
 
 - **Lives in:** a capability's `## Behaviour`, as `- [r<n>] <line>`; before that, in an item's `## Requirements`.
 - **Written by:** `work line` into an item; `work batch start` moves it into `spec/`. You never edit a line in
   place: a changed line gets a new id, and `work line --retires <capability>#r<n>` retires the old one.
 
-This line is `backlog#r37`. Try one yourself with `model parse "<line>"`.
+This line is `items#r14`. Try one yourself with `spec parse "<line>"`.
 Read more: [Writing requirements](writing-requirements.md) and the language reference,
 [`grammar/language.md`](../grammar/language.md).
 
@@ -157,8 +194,8 @@ A group is one or more lines that together make one scenario, under a title a pe
 - **Written by:** `work line --group "<title>"` opens one in an item; `--in g<n>` adds a line to it.
 
 ```markdown
-### [g37] `work shape` shapes an idea
-- [r37] While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
+### [g14] An idea shaped becomes shaped
+- [r14] While the status of an item is `idea`, when the person shapes the item, the backlog service shall set the status of the item to `shaped`.
 ```
 
 Most groups hold one line. The title is what you'll see as the scenario's name.
@@ -171,12 +208,12 @@ A given block is a group's example data: the sample values its scenario starts f
 - **Lives in:** under its group, in a fenced `given` block.
 - **Written by:** `work line --given g<n> "<block>"`.
 
-From [`spec/capabilities/batch-measurement.md`](../spec/capabilities/batch-measurement.md), group g24:
+From [`spec/capabilities/measurement.md`](../spec/capabilities/measurement.md), group g6:
 
 ````markdown
-### [g24] `measure show` prints the stage rows of a measurement whose stage row has no round trip without a round trip
-Restates: r56@0.29.
-- [r24] When the person runs `measure show` on a measurement that has a stage row that has no round trip, `measure` shall print every stage row of the measurement and not print a round trip.
+### [g6] A measurement viewed gives no round trip of a stage row that has none
+Restates: batch-measurement#r56@0.29.
+- [r6] When the person views a measurement that has a stage row that has no round trip, the measurement service shall return every stage row of the measurement and not return a round trip.
 
 ```given
 the measurement `m2` holds:
@@ -195,11 +232,11 @@ A universal condition is a line that is true everywhere, so no capability needs 
 - **Written by:** `work line --universal`.
 
 ```requirement
-If a tool refuses a command, then the tool shall exit with an error naming a reason and change nothing.
+If a service refuses a request, then the service shall name a reason and change nothing.
 ```
 
-That's U12. Because it holds for every tool, a line elsewhere says "`work` shall refuse the command and name the
-status of the item" and stops there: U12 supplies the rest. `model logic` adds every universal condition to each
+That's U17. Because it holds for every service, a line elsewhere says "the backlog service shall refuse the request
+and name the item" and stops there: U17 supplies the rest. `spec logic` adds every universal condition to each
 check it runs. Read more: [`spec/universal.md`: true everywhere](reference/capability-file.md#specuniversalmd-true-everywhere).
 
 ### Scenario and feature file
@@ -209,15 +246,15 @@ A scenario is a group turned into Gherkin; a feature file holds a capability's s
 - **Lives in:** `features/<capability>.feature`, one scenario a group, tagged with its group and line ids.
 - **Written by:** `features generate`. The first line of the file says "do not edit", and it means it.
 
-Here's g37 from above, as [`features/backlog.feature`](../features/backlog.feature) has it:
+Here's g14 from above, as [`features/items.feature`](../features/items.feature) has it:
 
 ```gherkin
-@g37 @r37
-Scenario: `work shape` shapes an idea
+@g14 @r14
+Scenario: An idea shaped becomes shaped
   Given an item i1
   And the status of the item i1 is `idea`
-  When the person runs `work shape` on the item i1
-  Then `work` sets the status of the item i1 to `shaped`
+  When the person shapes the item i1
+  Then the backlog service sets the status of the item i1 to `shaped`
 ```
 
 The scenario is the acceptance test. A developer binds its steps with pytest-bdd; when the test passes, the line
@@ -258,7 +295,7 @@ Batches 3 to 6 were each orchestrated by one long main session ...
 ### batches
 
 #### [g14] `work batch start` writes the batch brief for a fresh agent
-- [r14] When the person runs `work batch start`, `work` shall write a batch brief and print the batch brief.
+- [r14] When the person opens a batch, the batches service shall keep a batch brief and return the batch brief.
 ```
 
 An item moves through eight states. Each arrow is labelled with the command that makes the move:
@@ -323,7 +360,7 @@ The readiness bar is the check an item must pass before it can be built.
 
 - **Lives in:** nowhere; it runs when you call `work ready`, on a temporary copy of `spec/` with the item's lines
   laid in.
-- **Checks:** every line parses; `model logic` finds no clash with the rest of the spec; `features generate` writes
+- **Checks:** every line parses; `spec logic` finds no clash with the rest of the spec; `features generate` writes
   each group's scenario with no unworded step; every request line behind the item is settled.
 
 Here it catches a new line that contradicts one already in the example context (`notes#r4` says `notes remove`
@@ -470,7 +507,7 @@ sequenceDiagram
   participant I as GitHub issue
   participant U as Upstream
   A->>I: work request (the ask, in its own words)
-  U->>I: work offer (capabilities and glossary that may serve it)
+  U->>I: work offer (capabilities and words that may serve it)
   alt something here already serves it
     A->>I: work fits (delivered; issue closed)
   else new lines are needed
@@ -508,13 +545,13 @@ Read more: [`work record`](reference/commands.md#work-record).
 A decision is one design choice, with why it was made and how it is held to.
 
 - **Lives in:** `spec/decisions/<nnnn>-<slug>.md`, with an index in `spec/decisions/index.md`.
-- **Written by:** `work decision`; the index by `model decisions`.
+- **Written by:** `work decision`; the index by `spec decisions`.
 
 Its **tier** says how the decision is kept:
 
 | tier | held by |
 |---|---|
-| `check` | the tests in `enforced_by`, which `model decisions --check` runs |
+| `check` | the tests in `enforced_by`, which `spec decisions --check` runs |
 | `requirement` | the requirement lines in `enforced_by` |
 | `judgement` | a reviewer's reading: the batch brief hands every `judgement` decision to the `pr-reviewer` |
 

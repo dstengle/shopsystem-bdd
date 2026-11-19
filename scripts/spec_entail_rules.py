@@ -7,6 +7,9 @@ from collections import defaultdict
 
 import clingo
 
+# the request pack's kinds whose named things are one thing in every world (the request the trigger makes, a
+# parameter): spec_lf_facts names them by their code (the domain contract design, §5.2)
+FIXED = ("k_request", "k_parameter")
 DOMAIN = ("kind", "sub", "actor", "fun", "val", "trans", "initial", "prose", "dalt", "dlit", "akind", "vkey", "dense")
 
 
@@ -65,6 +68,12 @@ class Premises:
             out[y] = first[c] if c else y
         return out
 
+    def fixed(self, r):
+        """{role: its code} of each role of r naming the request the trigger makes or a parameter (the request pack's
+        kinds, FIXED): one thing in every world, so a premise needs no such role stated to fire."""
+        kinds = dict(self.reqs[r]["role"])
+        return {y: q(c) for y, c in self.reqs[r]["named"] if kinds.get(y) in FIXED}
+
     def every(self, r):
         f = self.reqs[r]
         return {y for (y,) in f["every"] + f["each"]}
@@ -92,8 +101,8 @@ class Premises:
     # ---- the world of a query ------------------------------------------------------------------------------------
     def world(self, L, I, Q, bridge):
         """The facts of query Q: L's terms (and the actors it names), its antecedent, trigger and other responses."""
-        f, can, ex = self.reqs[L], self.canon(L), self.existentials(L)
-        tm = lambda x: "t(%s)" % can[x] if x in can else q(x)
+        f, can, ex, fx = self.reqs[L], self.canon(L), self.existentials(L), self.fixed(L)
+        tm = lambda x: fx[x] if x in fx else "t(%s)" % can[x] if x in can else q(x)
         terms, out = {}, []
         for y, k in f["role"]:
             if can[y] == y and y not in ex:
@@ -160,7 +169,8 @@ class Premises:
         kinds, mq = dict(f["role"]), q(M)
         every = {can[y] for y in self.every(M)} | {can[y] for y in self.neguniv(M)}
         ante = {can[y] for y in self.ante_roles(M) if y in can} | every
-        V = lambda y: "V_%s" % can[y] if y in can else ("none" if y == "none" else q(y))
+        fx = self.fixed(M)
+        V = lambda y: fx[y] if y in fx else "V_%s" % can[y] if y in can else ("none" if y == "none" else q(y))
         a, na = ("a0", "na0") if M in self.trig else ("a1", "na1")
         body = ["use(Q,%s)" % mq]
         if M in self.trig:
@@ -176,8 +186,8 @@ class Premises:
         body += ["lcnone2(Q,%s,%s)" % (kk, c) for kk, c in f["cnone"]]     # forced only when L states it as wide
         side = lambda x: x if x.startswith("kind(") else V(x)
         body += ["lrnone2(Q,%s,%s,%s)" % (qq, side(x1), side(x2)) for qq, x1, x2 in f["rnone"]]
-        body += ["code(Q,%s,%s)" % (V(y), q(c)) for y, c in f["named"]]
-        body += ["isk(Q,%s,%s)" % (V(y), kinds[y]) for y in sorted(ante)]
+        body += ["code(Q,%s,%s)" % (V(y), q(c)) for y, c in f["named"] if y not in fx]
+        body += ["isk(Q,%s,%s)" % (V(y), kinds[y]) for y in sorted(ante) if y not in fx]
 
         def deps(z):
             return sorted({can[e] for qq, a1, a2 in f["orel"] for e in (a1, a2) if z in (a1, a2) and can.get(e) in every})
@@ -197,6 +207,8 @@ class Premises:
                 heads += ["isk(Q,%s,%s)" % (obj(z), s) for s in self.supers(kinds[z])]
                 heads += ["prop(Q,%s,%s,%s)" % (obj(z), t, v) for y, t, v in f["oattr"] if y == z]
                 heads += ["rel(Q,%s,%s,%s)" % (qq, obj(z), obj(y2)) for qq, y1, y2 in f["orel"] if y1 == z]
+        for z in sorted(fx):     # the request, a parameter: things of their kind wherever M fires
+            heads += ["isk(Q,%s,%s)" % (fx[z], k) for k in sorted(self.supers(kinds[z]))]
         men = lambda txt: {y for y in every if re.search(r"\bV_%s\b" % y, txt)}
         body0 = [b for b in body if not men(b)]
         # an `every` role is read per response, with its own restrictions
@@ -204,15 +216,16 @@ class Premises:
 
     def stage(self, M, rules):
         """M's rules in their stratum, so that no premise rule is recursive: A, the premises on L's own trigger, over
-        the world's facts; B, the untriggered premises (over state 1, after A's sets) and those on the bridge's event.
+        the world's facts; B, the untriggered premises (over state 1, after A's sets) and those on a refusal (the
+        bridge's event of a run, or a request's refusal, primitive in a context importing the request pack).
         A chain longer than that (a stage-B premise firing another) is not followed."""
         t = self.trig.get(M)
-        b = t is None or t[:2] == ["does", "e_refuse"]
+        b = t is None or t[:2] in (["does", "e_refuse"], ["does", "refused"])
         sfx, out = "B" if b else "A", []
         for h, body in rules:
             h = re.sub(r"^(r|isk|prop|rel|setv)\(", lambda m: m.group(1) + sfx + "(", h)
             if b:
                 body = [re.sub(r"^(isk|rel|prop)\(", lambda m: m.group(1) + "2(", x) for x in body]
-                body = [re.sub(r"^ev\(Q,does,e_refuse", "evB(Q,does,e_refuse", x) for x in body]
+                body = [re.sub(r"^ev\(Q,does,(e_refuse|refused)", r"evB(Q,does,\1", x) for x in body]
             out.append("%s :- %s." % (h, ", ".join(body)))
         return out

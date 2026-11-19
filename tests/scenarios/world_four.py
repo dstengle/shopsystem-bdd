@@ -60,7 +60,7 @@ def bind(namespace, root, *features, local=True):
     world.bind_all(namespace, root)
     mine = frozenset(features)
     for keyword in ("given", "when", "then"):
-        context = StepFunctionContext(type=keyword, step_func=_first(root, keyword, mine, local),
+        context = StepFunctionContext(type=keyword, step_func=vocab.vocab4.requested.trying(_first(root, keyword, mine, local)),
                                       parser=world.Reads(vocab, root, keyword))
         name = "pytestbdd_stepdef_%s_reads_any" % keyword
         namespace[name] = pytest.fixture(name=name)(vocab._marker(context))
@@ -75,7 +75,7 @@ def _first(root, keyword, mine, local=True):
         call = vocab.vocab4.step(root, keyword, text, request)
         if call is not None and (call.template, call.term) in CHAINS:
             call.docstring, call.datatable, call.fixtures = docstring, datatable, request.getfixturevalue
-            if _chain((call.template, call.term), mine)(call):
+            if _chain((call.template, call.term), mine | {vocab.origin(request.node)})(call):
                 return None
         return rest(text, request, docstring, datatable)
     return step_function

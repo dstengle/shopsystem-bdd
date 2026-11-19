@@ -1,4 +1,4 @@
-"""The codified-2 constructs `features generate` writes the scenario of, and `model logic` reads (b197): a capability
+"""The codified-2 constructs `features generate` writes the scenario of, and `spec logic` reads (b197): a capability
 `shelf` in codified2_world's context whose groups say the construct of a capability condition (feature-file-tools'
 distributing ... necessitating; design-model-check's quantifying, thresholded, excepting). A condition's lines, the
 glossary entries and `## Relations` rows it adds to the fixture's, and for `features generate` what the feature it
@@ -44,7 +44,7 @@ LINES.update({"distributing": [RUN + "`work` shall print every stage."],
               "valued": ["When a session ends a stage, `work` shall print the status of the stage."],
               "excluding": ["While no stage is `done`, w" + RUN[1:] + "`work` shall exit successfully."],
               "exempting": [RUN + "`work` shall print a stage whose status is not `done`."],
-              # b272: only and a count over a row of the response's object, and a line `model logic` cannot read
+              # b272: only and a count over a row of the response's object, and a line `spec logic` cannot read
               "holding": [RUN + "`work` shall print a worktree that holds only files whose version is `2.0.0`."],
               "capping": [RUN + "`work` shall print a worktree that holds at most three files."],
               "unread": [RUN + "at least two sessions shall write a file."]})

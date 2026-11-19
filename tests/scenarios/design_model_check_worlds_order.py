@@ -2,7 +2,7 @@
 one thing's value compared with another's (`value-compare`, `value-same`), of an attribute with no value order
 (refused, naming it), under a line that forbids what it obliges (an L1) and beside one whose comparison of the same
 two values contradicts it (none); an order on a collection (`order-by`) and on a printed every (`order-by-every`), of
-an attribute with no value order (refused, naming it), printed by `model parse --form`, and two in opposite directions
+an attribute with no value order (refused, naming it), printed by `spec parse --form`, and two in opposite directions
 on one trigger (an L1), and on every K that a verb whose one frame names K takes (b300), and after every K in a
 collection (b328); an order before the recipient, ended by a closing comma or not (b301); an order in a precondition,
 in a trigger and in a forbidden act (b285, refused, naming it).

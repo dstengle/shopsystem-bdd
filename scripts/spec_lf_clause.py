@@ -3,7 +3,8 @@ the responses), each condition, trigger and act a clause over a verb phrase, one
 
 A frame's verb phrase is an `event` atom for an action verb and a `state` atom for a state verb, its roles the
 subject and each kind of the frame by the words before it (`object` when there are none), the frame's fixed words at
-its end a role of their own ("successfully"), its sense the entry's place among the entries of its word; a row's
+its end a role of their own ("successfully"), its sense the entry's place among the entries of its word; in a trigger,
+a verb naming an operation is a request with the parameters the line says (spec_lf_request); a row's
 "has" and "holds" are `rel` atoms; a verb phrase with a gap is the same atom with the gap's referent in its role. A
 negated clause puts all but its subject under `not`.
 
@@ -19,6 +20,7 @@ import spec_lf_number
 import spec_lf_option
 import spec_lf_order
 import spec_lf_read
+import spec_lf_request
 import spec_lf_set
 import spec_lf_time
 import spec_lf_values
@@ -44,7 +46,9 @@ def frame_atom(st, n, m, slots):
         for y in (x if isinstance(x, tuple) else (x,)):     # every option of a run's slot (b240)
             roles.append((" ".join(words) or "object", y) if kind is not None else (" ".join(words),))
     if v.aspect == "action":
-        return Atom("event", (st.event(), v.term.term, sense(st, n), tuple(roles)))
+        e = st.event()
+        return spec_lf_request.frame(st, n, e, v.term.term, sense(st, n), tuple(roles)) or \
+            Atom("event", (e, v.term.term, sense(st, n), tuple(roles)))
     return Atom("state", (v.term.term, sense(st, n), tuple(roles)))
 
 
@@ -61,6 +65,9 @@ def vp(st, tree):
     member = spec_lf_member.vp(st, tree, nps)     # is-in, holds-exactly, "holds nothing" (b274)
     if member is not None:
         return member
+    request = spec_lf_request.vp(st, tree, nps, frame_atom)     # an operation with its parameters (§5.1)
+    if request is not None:
+        return request
     if name.startswith("e_"):
         n, m = numbers(name, 2)
         found = spec_lf_option.together(st, n, m, [nps.np(st, x) for x in a])     # a run's options (b240)
@@ -103,7 +110,8 @@ def clause(st, subject, vptree, neg):
     st.subject = saved
     if neg:
         spec_lf_read.negated(st, subject_of(subject), args, vptree)     # R4
-    return st.apply([subject] + args, lambda r: build(r[0], r[1:]), 1 if neg else None)
+    refs, conds = st.apply([subject] + args, lambda r: build(r[0], r[1:]), 1 if neg else None)
+    return refs, spec_lf_request.expand(conds)
 
 
 def gapped(st, ref, subject, gaptree, neg):
@@ -209,7 +217,7 @@ def rule(st, tree):
         read("while", cond, nps.args(pre)[1])
     if name in ("When", "If"):
         trig = a[1]
-        if not st.names.kind(nps.fun(trig))[1] == "Event":
+        if st.names.kind(nps.fun(trig))[1] not in ("Event", "Request"):
             raise nps.unknown(trig)
         read(name.lower(), lambda s, t: clause(s, nps.np(s, nps.args(t)[0]), nps.args(t)[1], False), trig)
     read("holds" if name == "Necessary" else "response", necessity if name == "Necessary" else response, a[-1])

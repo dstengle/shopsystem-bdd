@@ -40,7 +40,7 @@ def record(repo, k=1):
     return batch_findings.parse((repo / rel).read_text(), rel)
 
 
-@pytest.mark.requirement("pr-review#r18")
+@pytest.mark.requirement("review-guarantees#r6")
 def test_r13_a_fix_now_finding_sends_the_batch_back_to_building(briefed, batch_outside):
     done = ok(reviewed(briefed, FIX_NOW_B1))
     assert batch_plan.find(briefed, "batch-1").status == "building"
@@ -58,7 +58,7 @@ def test_r13_a_fix_now_finding_sends_the_batch_back_to_building(briefed, batch_o
         '  open f1 Important b1 "Abandon" src/b1.txt:1: abandon leaves the initiative started']
 
 
-@pytest.mark.requirement("pr-review#r20")
+@pytest.mark.requirement("review-guarantees#r8")
 def test_r15_a_clean_review_awaits_the_merge(briefed, batch_outside):
     done = ok(reviewed(briefed, CLEAN))
     assert batch_plan.find(briefed, "batch-1").status == "awaiting-merge"
@@ -143,7 +143,7 @@ def test_a_failing_gh_records_nothing(briefed, monkeypatch, fail, text):
 
 def test_model_check_takes_the_review_record(briefed):
     ok(reviewed(briefed, FIX_NOW_B1))
-    done = subprocess.run([sys.executable, str(SCRIPTS / "model"), "--root", str(briefed), "check"],
+    done = subprocess.run([sys.executable, str(SCRIPTS / "spec"), "--root", str(briefed), "check"],
                           capture_output=True, text=True, timeout=120)
     assert done.returncode != 2, done.stdout + done.stderr
     assert "review-1.md" not in done.stdout + done.stderr
@@ -154,6 +154,6 @@ def test_status_shows_the_reviews(briefed):
     ok(reviewed(briefed, FIX_NOW_B1))
     said = ok(work(briefed, "batch", "status", "batch-1")).stdout
     assert 'reviews: 1, last fix-now; open f1 b1 "Abandon"' in said
-    data = json.loads(ok(work(briefed, "batch", "status", "batch-1", "--json")).stdout)["batch"]
+    data = json.loads(ok(work(briefed, "batch", "status", "batch-1", "--json")).stdout)["content"]["batch"]
     assert data["reviews"] == [{"review": 1, "result": "fix-now", "findings": ["f1", "f2"]}]
     assert data["open"] == ["f1"]

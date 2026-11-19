@@ -238,7 +238,7 @@ def bind_all(namespace, root):
     from pytest_bdd.steps import StepFunctionContext
     vocab = sys.modules["vocab"]
     for keyword in ("given", "when", "then"):
-        context = StepFunctionContext(type=keyword, step_func=_local_first(vocab, root, keyword),
+        context = StepFunctionContext(type=keyword, step_func=vocab.vocab4.requested.trying(_local_first(vocab, root, keyword)),
                                       parser=Reads(vocab, root, keyword))
         name = "pytestbdd_stepdef_%s_reads_any" % keyword
         namespace[name] = pytest.fixture(name=name)(vocab._marker(context))

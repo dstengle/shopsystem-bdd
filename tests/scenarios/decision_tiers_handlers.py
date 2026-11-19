@@ -1,5 +1,5 @@
 """Handlers of features/decision-tiers.feature (workflow simplification plan 6, D16): decision files written under
-spec/decisions/ with their tier, status and `enforced_by`, and `model` run on them through design-model-check's
+spec/decisions/ with their tier, status and `enforced_by`, and `spec` run on them through design-model-check's
 handlers. The steps whose key another capability holds (a design-decision's condition, design-model-check's
 `headless`) reach these through work_queue_world's `local` table, so test_decision_tiers.py binds with `bind_all`;
 each returns False for a step that is not its own."""
@@ -126,7 +126,7 @@ def given_test(step):
     says(step, name, "tests/test_%s.py::test_%s" % (name, name))
 
 
-@handler("WhenRuns", "`model decisions --check`")
+@handler("WhenRuns", "`spec decisions --check`")
 def model_decisions_check(step):
     H.run_model(step, "decisions")
     H.run_model(step, "decisions", "--check")

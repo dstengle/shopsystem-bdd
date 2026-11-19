@@ -1,7 +1,7 @@
 # spec
 
 The spec pack (b240, quote-23): the few words for talking about a spec. A bounded context imports it with
-`imports: [cli, spec]` in the frontmatter of `spec/index.md`; a word of its own spelled the same is marked
+`imports: [request, spec]` in the frontmatter of `spec/index.md`; a word of its own spelled the same is marked
 `Redefines: spec.` A line about the language names a construct by its code in the construct catalogue ("a
 requirement that uses `rc-object`"), and a line about a check names a rule by its code in the rule catalogue ("a
 term that violates `v_t11`"), never by a coined word.

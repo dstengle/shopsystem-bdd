@@ -1,0 +1,73 @@
+# The commands a scenario requests (plan 4, task 3): read off the live features' "runs `...`" steps and the
+# handlers keyed on WhenRuns in tests/scenarios/, one command a line; the scope of the envelope and the core functions by
+# business name (design §6.3, session's call (person offline)).
+features bindings
+features count
+features deprecated
+features generate
+features list
+features vocab
+measure batch
+measure compare
+measure defect
+measure show
+migrate run
+migrate status
+migrate upgrade
+model check
+model decisions
+model explain
+model facts
+model forms
+model lexicon
+model logic
+model parse
+model rules
+tools check
+tools install
+tools map
+tools probe
+tools refs
+tools size
+tools tests-of
+tools untested
+work accept
+work answer
+work ask
+work backlog
+work batch abandon
+work batch done
+work batch park
+work batch resume
+work batch review
+work batch start
+work batch status
+work chore
+work decision
+work depend
+work directive
+work directives
+work drop
+work fits
+work idea
+work line
+work list
+work names
+work offer
+work outcome
+work promote
+work propose
+work quote
+work rate
+work ready
+work record
+work refuse
+work reply
+work request
+work resolve
+work shape
+work show
+work sync
+work turn
+work watch
+work withdraw

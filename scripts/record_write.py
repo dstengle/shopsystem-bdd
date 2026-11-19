@@ -5,7 +5,6 @@ record is never edited, and so is an `--about` that is not one line or not the i
 (r57)."""
 import datetime
 import re
-import sys
 from pathlib import Path
 
 import shop_files
@@ -65,8 +64,9 @@ def attributed(about):
     kind, _, rest = about.strip().partition("/")
     if (any(ch in about for ch in shop_files.LINE_BREAKS) or not rest or not re.fullmatch(r"\S+", rest)
             or kind not in NODE_KINDS | set(HISTORY.values())):
-        raise shop_files.Refused("--about %r is not one line naming a node: <kind>/<...>, the kind one of %s"
-                                 % (about, ", ".join(sorted(NODE_KINDS | set(HISTORY.values())))))
+        raise shop_files.Refused("{names} %r is not one line naming a node: <kind>/<...>, the kind one of %s"
+                                 % (about, ", ".join(sorted(NODE_KINDS | set(HISTORY.values())))),
+                                 reason="names no node", names=["parameter:about"])
     return about.strip()
 
 
@@ -79,29 +79,32 @@ def with_row(readme, row):
     return "".join(lines[:last + 1]) + ("" if lines[last].endswith("\n") else "\n") + row + "".join(lines[last + 1:])
 
 
-def write(args):
-    """Write the record and its row, commit both; the record's path, relative to the root."""
-    root = Path(args.root)
-    title, summary = one_line(args.title, "title"), one_line(args.summary, "summary").replace("|", "\\|")
-    date = args.date or datetime.date.today().isoformat()
+def write(root, title, summary, kind, body, *, about=None, slug=None, date=None):
+    """The operation records.keep: write the record and its row, commit both; the record's path, relative to the
+    root. Each parameter by its business name (`body` the path of the file of its text)."""
+    root = Path(root)
+    title, summary = one_line(title, "title"), one_line(summary, "summary").replace("|", "\\|")
+    date = date or datetime.date.today().isoformat()
     if not re.fullmatch(r"\d{4}-\d\d-\d\d", date):
-        raise shop_files.Refused("the date %s is not YYYY-MM-DD" % date)
-    slug = args.slug or re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
+        raise shop_files.Refused("the date %s is not YYYY-MM-DD" % date, reason="not a date", names=["parameter:date"])
+    slug = slug or re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
     if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", slug):
-        raise shop_files.Refused("the slug %r is not lowercase words joined by hyphens" % slug)
-    body_path = Path(args.body)
+        raise shop_files.Refused("the slug %r is not lowercase words joined by hyphens" % slug, reason="not a slug",
+                                 names=["parameter:slug"])
+    body_path = Path(body)
     if not body_path.is_file():
-        raise shop_files.Refused("--body: no file %s" % args.body)
-    body = shop_files.read(body_path, body_path.parent).strip()
+        raise shop_files.Refused("{names}: no file %s" % body, reason="no such file", names=["parameter:body"])
+    text_of_body = shop_files.read(body_path, body_path.parent).strip()
     path = shop_files.context_path(root)
     name = "%s-%s" % (date, slug)
     rel, readme = (RECORDS / ("%s.md" % name)).as_posix(), (RECORDS / "README.md").as_posix()
     if (root / rel).exists():
-        raise shop_files.Refused("%s exists, and a committed record is never edited: give another --slug" % rel)
-    about = attributed(args.about) if args.about is not None else "bounded-context/%s" % path
+        raise shop_files.Refused("%s exists, and a committed record is never edited: give another {names}" % rel,
+                                 reason="record exists", names=["parameter:slug"])
+    about = attributed(about) if about is not None else "bounded-context/%s" % path
     text = ("---\nid: %s/%s/%s\nkind: %s\nabout: %s\ndate: %s\n---\n\n# %s\n\n%s\n"
-            % (HISTORY.get(args.kind, args.kind), path, name, args.kind, about, date, title, body))
-    row = "| `%s.md` | %s | %s |\n" % (name, summary, args.kind)
+            % (HISTORY.get(kind, kind), path, name, kind, about, date, title, text_of_body))
+    row = "| `%s.md` | %s | %s |\n" % (name, summary, kind)
     current = shop_files.read(root / readme, root) if (root / readme).is_file() else README_HEAD
 
     def put():
@@ -113,13 +116,12 @@ def write(args):
 
 
 def record(args):
-    try:
-        rel = write(args)
-    except shop_files.Refused as why:
-        print("work record: %s" % why, file=sys.stderr)
-        return 1
+    """`work record`: the request records.keep, its parameters read off the command line by business name."""
+    from domain_envelope import Response
+    rel = write(args.root, args.title, args.summary, args.kind, args.body, about=args.about, slug=args.slug,
+                date=args.date)
     print(rel)
-    return 0
+    return Response("done", {"path": rel})
 
 
 COMMANDS = {"record": record}

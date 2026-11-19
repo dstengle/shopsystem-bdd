@@ -1,7 +1,7 @@
-"""design-model-check's worlds and Thens of grammar 4's caches (b239, b240 phase 23): `model parse` run with a cache
+"""design-model-check's worlds and Thens of grammar 4's caches (b239, b240 phase 23): `spec parse` run with a cache
 directory of the scenario's own (`$XDG_CACHE_HOME`), into which the compiled grammar of the smallest codified-2 world
 is copied from the person's cache, so that no scenario compiles one. A parse cache that holds the parse of r1 holds,
-under r1's key, the parse of another line, so that what `model parse` prints shows it read the cache."""
+under r1's key, the parse of another line, so that what `spec parse` prints shows it read the cache."""
 import importlib.util
 import os
 import shutil
@@ -24,7 +24,7 @@ OTHER = "When a session ends a stage, `work` shall print the session."
 
 
 def env(step):
-    """The environment of `model` with the scenario's cache directory, or None when the scenario has none."""
+    """The environment of `spec` with the scenario's cache directory, or None when the scenario has none."""
     xdg = step.context.get("xdg")
     return dict(os.environ, XDG_CACHE_HOME=str(xdg)) if xdg else None
 
@@ -35,13 +35,13 @@ def _files(base):
 
 def _parse(step, text):
     C2.context(step.repo, H.PATH, [text])
-    return step.run("model", "parse", "--file", "spec/capabilities/thing.md", env=env(step), timeout=300)
+    return step.run("spec", "parse", "--file", "spec/capabilities/thing.md", env=env(step), timeout=300)
 
 
 def compiled(step):
     """The world of LINE, the scenario's cache directory holding its compiled grammar and no parse."""
     C2.context(step.repo, H.PATH, [LINE])
-    done = step.run("model", "parse", "--file", "spec/capabilities/thing.md", timeout=600)     # the person's cache
+    done = step.run("spec", "parse", "--file", "spec/capabilities/thing.md", timeout=600)     # the person's cache
     assert done.returncode == 0, (done.stdout, done.stderr)
     import spec_gf
     import spec_grammar4
@@ -73,7 +73,7 @@ def held(step):
 
 
 def then(step, done):
-    """`model` reads the parse cache p1 (it printed what the cache held), writes the parse cache p2 (an entry under
+    """`spec` reads the parse cache p1 (it printed what the cache held), writes the parse cache p2 (an entry under
     the scenario's cache directory), uses the compiled grammar c1 and does not write a compiled grammar (the compiled
     grammars are those copied in); False for any other step."""
     xdg = step.context.get("xdg")

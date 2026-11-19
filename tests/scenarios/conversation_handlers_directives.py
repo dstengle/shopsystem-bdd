@@ -24,8 +24,11 @@ def held(step):
     return talk(step).setdefault("directives", {})
 
 
+KEPT = {}      # the name a scenario gives the directive a session gave and the service kept (the reword), as 1
+
+
 def number(name):
-    return int(re.sub(r"^\D+", "", name))
+    return 1 if name in KEPT.values() else int(re.sub(r"^\D+", "", name))
 
 
 def rel(name):
@@ -92,6 +95,11 @@ def when_directive(step):
         return False
     talk(step)
     if step.term == "`work directive`":
+        KEPT.clear()
+        for name in [n for n in step.names if n.startswith("d")]:     # the directive given: the one it keeps
+            held(step).pop(name, None)
+            kept = [k for t in W.scenario_texts(step) for k in re.findall(r"\bkeeps the directive (d\d+)\b", t)]
+            KEPT[name] = kept[0] if kept else name
         C.transcript(step, step.names[0])
         B.run_work(step, "directive", C.queued().words(step), "--session", talk(step)["sessions"][step.names[0]],
                    env=C.env(step))

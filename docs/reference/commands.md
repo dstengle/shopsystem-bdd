@@ -3,19 +3,22 @@ Outputs on this page are from real runs on 2026-11-10: plugin 0.33.0, its script
 (branch plan-docs). Read-only commands ran in this repository. Commands that write ran in two scratch clones of it,
 each with a local bare remote as `origin` and the suite's stand-in gh (tests/scripts/stub_gh.py as
 $SHOPSYSTEM_WORK_GH), so batches, pull requests and request issues were real runs that touched no GitHub. Long scratch
-paths are cut with "...", and long output is cut with "...".
+paths are cut with "...", and long output is cut with "...". The `spec` section's parse, lexicon and explain, and the
+item lines' ids, are from plugin 0.38.0 (2026-11-19, branch domain-contract).
 -->
 
 # Command reference
 
 This page is for looking things up. It lists every command of the plugin's six tools, one subsection a command, so
-you can find what a command does, what it takes, what it writes and what it prints.
+you can find what a command does, what it takes, what it writes and what it prints. The tools and their commands are
+the CLI adapter of the bounded context's services: each command requests one operation of the domain model, as
+[`spec/adapters/cli.toml`](../../spec/adapters/cli.toml) maps them ([adapter contracts](adapters.md)).
 
 You will rarely type these yourself: Claude runs them as you talk (see [Talking with Claude](../talking-with-claude.md)).
 They are here for when you want to look, check or do a step by hand.
 
 > **`--help` is the contract.** Every command prints its own usage and rules with `--help`
-> (`work batch done --help`, `model --help`). This page is a friendlier summary. Where the two differ, `--help` is
+> (`work batch done --help`, `spec --help`). This page is a friendlier summary. Where the two differ, `--help` is
 > right and this page is wrong; please file it.
 
 Commands are written short, `work backlog` for `python3 "$SHOP/scripts/work" backlog`.
@@ -30,8 +33,8 @@ $ work idea "work show prints the status of an item" --note "The person wants to
 b250 "work show prints the status of an item" idea
 $ work shape b250
 b250 "work show prints the status of an item" shaped
-$ work line b250 --into backlog --group "work show prints an item's status" 'When the person runs `work show` on an item, `work` shall print the status of the item.'
-b250 "work show prints the status of an item": backlog#r43
+$ work line b250 --into items --group "An item shown gives its status" 'While an item is `shaped`, when the person shows the item, the backlog service shall return the status of the item.'
+b250 "work show prints the status of an item": items#r31
 $ work ready b250
 b250 "work show prints the status of an item" ready
 ```
@@ -41,15 +44,20 @@ the item up. The rest of this page goes command by command.
 
 ## Things every command shares
 
-- **Exit codes.** `0` success, `1` refused (or a check found something), `2` bad usage. A refusal starts with the
-  tool's name, says why, and changes nothing.
-- **`--root`.** `work` and `model` take `--root <dir>` before the subcommand (default: the current directory).
+- **Exit codes.** `0` success (the outcome `done`, `returned` or `passed`), `1` refused, a check failed, or broken,
+  `2` bad usage. A refusal starts with the tool's name, says why, and changes nothing.
+- **`--root`.** `work` and `spec` take `--root <dir>` before the subcommand (default: the current directory).
   `features generate` and `features vocab` take it after. `features` takes `--dir` for its feature files, `tools`
   takes `--python` for the project's interpreter.
 - **Commits.** A `work` command that changes a file commits it, alone, with a message that starts with the command
   (`work shape: b250 ... idea -> shaped`), then pushes the branch to its remote. A refused push prints
   `not pushed: <remote>: <reason>` and keeps the commit.
-- **`--json`.** Where a command prints a table or a report, `--json` usually prints one JSON object instead.
+- **`--json`.** Every command takes it and prints the response envelope, one JSON object: `outcome` (`done`,
+  `returned`, `refused`, `passed`, `failed` or `broken`), `content` (what the operation returns), `errors` (each a
+  reason and the things it names, by business reference: `parameter:tier`, `item:b12`) and `notices`. A command that
+  printed a JSON object of its own before 0.38.0 prints it under `content` now (`work backlog --json`, `work batch
+  status --json`, `spec check --json`, `features list --json` and the rest): read `.content` where you read the
+  object. See [the response](adapters.md#the-response).
 
 ## work: items, batches, requests and records
 
@@ -94,21 +102,24 @@ Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CA
 - `--reword <cap>#r<n>`: the line takes the place of one of the item's own lines, keeping its id and group.
   `--remove <cap>#r<n>` takes one of them out, its group with it when it was the last line, and the id its
   `retires:` pair names; an id no pair names stays. Either refuses an id that is no line of the item, a live requirement's among them.
-- `--term "<bullet>"`: a glossary term for the capability's `## Terms`, in place of a line.
-- `--relation`, `--given`, `--universal`, `--upstream`: the other spec pieces an item can carry: a relation row, a
-  group's given block, a universal condition, an upstream entry.
+- `--term "<bullet>"`: a vocabulary entry (`- **<word>** (<part of speech>) → <element>. ...`) for the vocabulary of
+  the capability's area, in place of a line.
+- `--model "<lines>"`: model lines for the domain model of the capability's area (`object label`, `item: has → label (many)`); an element the area declares already gets the member lines.
+- `--relation "<object>: <phrase> → <object> (<cardinality>)"`, `--given`, `--universal`, `--upstream`: the other
+  spec pieces an item can carry: a relation of the model, a group's given block, a universal condition, an upstream
+  entry.
 - `--recodify <cap>`: switch a capability's block to the current language (`codified-2`).
 - `--capability <name> --narrator "<who>" [--group service|guarantees] "<purpose>"`: a capability new to the
   context, written as a block of the item (its narrator, group, default `service`, and purpose); refused when
   `spec/capabilities/<name>.md` exists. Lines and terms go into it with `--into <name>`; `work batch start` writes
   its file and its row under `## Composition` of `spec/index.md`.
 
-The line gets the next free id of its capability (`backlog#r43`). It goes into `spec/` only when a batch starts.
+The line gets the next free id of its capability (`items#r31`). It goes into `spec/` only when a batch starts.
 `work line` does not parse the line; [`work ready`](#work-ready) does.
 
 ```console
-$ work line b250 --into backlog --group "work show prints an item's status" 'When the person runs `work show` on an item, `work` shall print the status of the item.'
-b250 "work show prints the status of an item": backlog#r43
+$ work line b250 --into items --group "An item shown gives its status" 'While an item is `shaped`, when the person shows the item, the backlog service shall return the status of the item.'
+b250 "work show prints the status of an item": items#r31
 ```
 
 How to write a good line is in [Writing requirements](../writing-requirements.md); the file format is in
@@ -166,7 +177,7 @@ b251 "work show prints an item's dependencies" no longer depends on b250 "work s
 Moves a `shaped` item to `ready` when it passes the readiness bar, and otherwise names every reason it does not.\
 Synopsis: `work ready name`
 
-The bar lays the item's lines over a temporary copy of `spec/` and checks that they parse, that `model logic` finds
+The bar lays the item's lines over a temporary copy of `spec/` and checks that they parse, that `spec logic` finds
 no clash naming them, and that `features generate` writes their scenarios. A line from a request must be settled.
 Readying is the decision to build: a ready item goes into the next batch.
 
@@ -175,7 +186,7 @@ $ work ready b250
 b250 "work show prints the status of an item" ready
 $ work ready b253
 work: work ready: b253 "work names prints every item" is not passing:
-  backlog#r45: does not parse at item (token 3 of 15); parsed up to: When an; nearest words: item, items, term, stem, cite
+  items#r32: refused: the verb ready takes a subject, which a passive leaves out: agent readies item
 ```
 
 What each reason means is in [Troubleshooting](../troubleshooting.md).
@@ -249,10 +260,10 @@ The person wants to see where an item stands at a glance.
 
 ## Requirements
 
-### backlog
+### items
 
-#### [g43] work show prints an item's status
-- [r43] When the person runs `work show` on an item, `work` shall print the status of the item.
+#### [g31] An item shown gives its status
+- [r31] While an item is `shaped`, when the person shows the item, the backlog service shall return the status of the item.
 ```
 
 #### `work names`
@@ -317,7 +328,7 @@ Synopsis: `work batch resume batch`
 ```console
 $ work batch resume batch-34
 batch-34 building: plan .shop/batches/34/plan.md
-t1 b250 "work show prints the status of an item": running in .shop/worktrees/batch-34-t1 on batch-34-b250: build backlog#r43; then work batch done batch-34 t1, or work batch park batch-34 b250 --question <text>
+t1 b250 "work show prints the status of an item": running in .shop/worktrees/batch-34-t1 on batch-34-b250: build items#r31; then work batch done batch-34 t1, or work batch park batch-34 b250 --question <text>
 ```
 
 #### `work batch done`
@@ -442,7 +453,7 @@ q48 https://github.com/ex/ctx/issues/1
 
 The upstream's offer, under `## Offer`: each capability that may serve the request quoted by its groups and
 requirements, with only the terms they mention, so the asker can write lines in the upstream's words. With no
-`--capability` the offer is the note alone, no glossary. It passes the turn to the asker and prints the request, its
+`--capability` the offer is the note alone, no vocabulary. It passes the turn to the asker and prints the request, its
 status and its turn.\
 Synopsis: `work offer [--capability CAPABILITY] [--note NOTE] request`
 
@@ -458,11 +469,11 @@ closed.\
 Synopsis: `work fits [--serves SERVES] request`
 
 ```console
-$ work fits q49 --serves backlog#r15
+$ work fits q49 --serves items#r12
 $ work show q49
 q49 delivered asker
 it is the asker's turn, on https://github.com/ex/ctx/issues/2
-  resolution line 1: backlog#r15
+  resolution line 1: items#r12
 ```
 
 #### `work propose`
@@ -471,7 +482,7 @@ The asker's lines, one `--line` each, in the upstream's words; it prints the req
 Synopsis: `work propose [--line LINES] request`
 
 ```console
-$ work propose q48 --line 'When the person runs `work show` on an item, `work` shall print the status of the item.'
+$ work propose q48 --line 'When the person shows an item, the backlog service shall return the status of the item.'
 q48 awaiting-asker asker
 ```
 
@@ -504,7 +515,7 @@ $ work reply q48 1 "Yes: the state the backlog shows it under."
 $ work show q48
 q48 awaiting-upstream upstream
 it is the upstream's turn, on https://github.com/ex/ctx/issues/1
-  line 1: unsettled - When the person runs `work show` on an item, `work` shall print the status of the item.
+  line 1: unsettled - When the person shows an item, the backlog service shall return the status of the item.
   question 1: line 1: Should the status be the item's state, such as ready?
   answer 1: Yes: the state the backlog shows it under.
 ```
@@ -540,7 +551,7 @@ Writes which requirement holds each accepted line, and in which version; the req
 Synopsis: `work resolve [--line N REQUIREMENT VERSION] request`
 
 ```console
-$ work resolve q48 --line 1 backlog#r43 0.34.0
+$ work resolve q48 --line 1 items#r31 0.38.0
 ```
 
 #### `work list`
@@ -676,81 +687,82 @@ $ work record "Command reference layout" --kind analysis --summary "Why the comm
 .shop/records/2026-11-10-command-reference-layout.md
 ```
 
-## model: the spec, checked
+## spec: the spec, checked
 
-`model` reads `spec/` and `.shop/`, checks them, and parses lines. Only `decisions`, `rules --write` and
+`spec` reads `spec/` and `.shop/`, checks them, and parses lines. It was called `model` before 0.38.0; `model` still
+works in 0.38 and prints a notice that it goes in the next release. Only `decisions`, `rules --write` and
 `constructs --write` write files, and none of them commits.
 
-### `model parse`
+### `spec parse`
 
 Parses a line in the context's grammar and prints its tree, or its refusal with a hint.\
-Synopsis: `model parse [--file FILE] [--form] [line]`
+Synopsis: `spec parse [--file FILE] [--form] [line]`
 
 - `--form`: print the line's meaning (its logical form) instead of its tree. Read this one.
 - `--file`: parse every line of a file, numbered.
 
 ```console
-$ model parse --form 'When the person runs `work show` on an item, `work` shall print the status of the item.'
-shall [x1: agent the person (constant), x2: command `work show` (parameter), x4: tool `work` (constant)]
-  when [x3: item]
-    run(e1, subject: x1, object: x2, on: x3)
-  response [x5: status]
-    status(x3) = x5
-    print(e2, subject: x4, object: x5)
-$ model parse 'When an item is readied, `work` shall print the status of the item.'
-does not parse at item (token 3 of 15)
+$ spec parse --form 'When the person shows an item, the backlog service shall return the status of the item.'
+shall [x1: agent the person (constant), x3: service the backlog service (constant)]
+  when [x2: item]
+    request(e1, backlog.show, subject: x1, object: x2)
+  response [x4: status]
+    status(x2) = x4
+    return(e2, subject: x3, object: x4)
+$ spec parse 'When an item is readied, the backlog service shall return the status of the item.'
+refused: the verb ready takes a subject, which a passive leaves out: agent readies item
   parsed up to: When an
-  nearest words: item, items, term, stem, cite
+  nearest words: item, items, `item`, term, stem
   may follow: (none)
 ```
 
 The second line is a counter-example: the grammar has no "an item is readied", so it is refused. How to read a
 refusal is in [Writing requirements](../writing-requirements.md).
 
-### `model lexicon`
+### `spec lexicon`
 
 Lists the context's words by category: actors, kinds, attributes, events, conditions.\
-Synopsis: `model lexicon [--check]`
+Synopsis: `spec lexicon [--check]`
 
 - `--check`: report problems with the terms (`v_t4` to `v_t15`), and exit 1 when there is any.
 
 ```console
-$ model lexicon
-actor (39)
+$ spec lexicon
+actor (45)
   the person
-  `work run`
-  `work`
+  ...
+  the backlog service
 ...
-event (95)
-  run  [pack cli]
-  print  [pack cli]
+event (138)
+  refuse  [pack request]
+  ...
+  return  [pack request]
 ...
 ```
 
-### `model explain`
+### `spec explain`
 
 Prints a requirement, what it also means because of other requirements, and what takes precedence over it.\
-Synopsis: `model explain requirement`
+Synopsis: `spec explain requirement`
 
 ```console
-$ model explain backlog#r38
-backlog#r38  While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
+$ spec explain items#r15
+items#r15  While the status of an item is not `idea`, if the person shapes the item, then the backlog service shall refuse the request and name the item.
 which also means:
-  `work` shall exit with an error (by the definition of refuse in the pack cli)
-  `work` shall change nothing (by U12)
-  `work` shall exit with an error (by U12)
+  the backlog service shall change nothing (by U17)
+  the backlog service shall name a reason (by U17)
 ```
 
-### `model check`
+### `spec check`
 
 Solves the facts of the repository against the design model's rules and prints every violation (`v_...`), then
 warnings (`w_...`), unresolved references and file problems. Exits 1 on any violation.\
-Synopsis: `model check [--json] [--limit LIMIT]`
+Synopsis: `spec check [--json] [--limit LIMIT]`
 
 - `--limit`: rows shown for each rule (the rest are counted).
 
 ```console
-$ model check
+$ spec check
 warning w_example  a requirement holds example data: a code or quoted string that names no declared constant  (41)
     capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r37, .venv/bin/python
 ...
@@ -759,44 +771,44 @@ warning w_example  a requirement holds example data: a code or quoted string tha
 
 What each rule guards is in [the design model reference](design-model.md).
 
-### `model logic`
+### `spec logic`
 
 The temporal and entailment check of the codified lines: clashes between requirements (L1 to L8). Give a capability,
 or a requirement id for the findings that name it. A requirement it has no translation of is printed
 `unread <id>: <what it cannot read>`, and the count says how many are unread in place of `no findings`; the exit is
 the findings' alone.\
-Synopsis: `model logic [--json] [capability]`
+Synopsis: `spec logic [--json] [capability]`
 
 ```console
-$ model logic backlog
+$ spec logic backlog
 no findings
 ```
 
-### `model rules`
+### `spec rules`
 
 Prints every rule's code and plain label, violations first.\
-Synopsis: `model rules [--json] [--write] [--check]`
+Synopsis: `spec rules [--json] [--write] [--check]`
 
 - `--write`: write the rule catalogue `grammar/rules.md`; `--check` says whether it is current.
 
 ```console
-$ model rules
+$ spec rules
 v2  a standing edge touches something that is not standing
 v3  a request's resolution names something that is not a requirement of the spec
 ...
 ```
 
-### `model forms`
+### `spec forms`
 
 Prints every file form a context keeps: its name, its path and the command that writes it (or the plugin's item
 that will give it one).\
-Synopsis: `model forms [--json] [--check]`
+Synopsis: `spec forms [--json] [--check]`
 
 - `--check`: print nothing and exit 0 unless a form is written by hand; each such form is named on stderr and it
   exits 1.
 
 ```console
-$ model forms
+$ spec forms
 item                      .shop/backlog/b<n>.md                                work idea
 item's requirement line   .shop/backlog/b<n>.md ## Requirements                work line
 ...
@@ -804,50 +816,50 @@ capability                spec/capabilities/<name>.md                          w
 ...
 ```
 
-### `model decisions`
+### `spec decisions`
 
 Writes `spec/decisions/index.md` from the decision files. Not committed.\
-Synopsis: `model decisions [--check]`
+Synopsis: `spec decisions [--check]`
 
 - `--check`: write nothing; say whether the index is current, then run the tests of each `check`-tier decision and
   print `holds` or `failing` for each.
 
 ```console
-$ model decisions --check
+$ spec decisions --check
 spec/decisions/index.md is current
 holds    spec/decisions/0018-measure-refuses-unknown-shapes.md (design-decision/missingmass.io/shopsystem/shopsystem-bdd/measure-refuses-unknown-shapes): ...
 ...
 9 check decisions: 6 hold, 3 failing
 ```
 
-### `model facts`
+### `spec facts`
 
-Prints the facts `model check` reads, one a line, in clingo's syntax. For debugging a rule.\
-Synopsis: `model facts`
+Prints the facts `spec check` reads, one a line, in clingo's syntax. For debugging a rule.\
+Synopsis: `spec facts`
 
 ```console
-$ model facts
+$ spec facts
 node("bounded-context/missingmass.io/shopsystem/shopsystem-bdd", "bounded-context").
 ...
 ```
 
-### `model constructs`
+### `spec constructs`
 
 Writes or checks the construct catalogue `grammar/constructs.md`, each example parsed first.\
-Synopsis: `model constructs [--write] [--check]`
+Synopsis: `spec constructs [--write] [--check]`
 
 ```console
-$ model constructs --check
+$ spec constructs --check
 grammar/constructs.md is current
 ```
 
-### `model restates`
+### `spec restates`
 
 For a repository that came from plugin 0.29: whether every old id is restated by a group, dropped or moved.\
-Synopsis: `model restates [--json] [capability]`
+Synopsis: `spec restates [--json] [capability]`
 
 ```console
-$ model restates backlog
+$ spec restates backlog
 spec/restated.json has no id of backlog
 ```
 
@@ -866,8 +878,8 @@ Synopsis: `features generate [--check] [--preview FILE] [--root ROOT] [CAPABILIT
 - `--preview <file>`: print the feature of a draft capability file.
 
 ```console
-$ features generate backlog
-wrote features/backlog.feature
+$ features generate items
+wrote features/items.feature
 $ features generate --check
 ```
 
@@ -882,7 +894,7 @@ Synopsis: `features vocab [--check] [--tests TESTS] [--root ROOT] [FEATURE ...]`
 - `--tests <dir>`: where the step handlers are (default `tests/scenarios`).
 
 ```console
-$ features vocab --check features/backlog.feature
+$ features vocab --check features/items.feature
 every step has one handler
 ```
 
@@ -903,9 +915,10 @@ Lists the scenarios with a tag or a title.\
 Synopsis: `features list (--tag TAG | --title TITLE) [--json]`
 
 ```console
-$ features list --tag r24
-features/backlog.feature: `work shape` refuses an item that is not an idea
-features/batch-measurement.feature: `measure show` prints the stage rows of a measurement whose stage row has no round trip without a round trip
+$ features list --tag r15
+features/checking.feature: Two glossary entries with one term
+features/consistency.feature: `model logic` translates only over a relation in a response
+features/context-requests.feature: A context request inspected gives its status and request lines
 ...
 ```
 

@@ -75,8 +75,11 @@ def step_not_printed(step, name):
 
 
 def term_not_printed(step, name):
-    """The term the Given added, in the rewritten index, on no report line of its rule."""
+    """The term the Given added, in the rewritten index (or, past 0.38.0's step, which moves the glossary, in the
+    vocabulary), on no report line of its rule."""
     code, word = counter(step)[name]
-    assert re.search(r"\*\*%s\*\*" % word, M.read(step, "spec/index.md")), M.read(step, "spec/index.md")
+    kept = M.read(step, "spec/index.md") + "".join(
+        p.read_text() for p in sorted((step.repo / "spec" / "vocabulary").glob("*.md")))
+    assert re.search(r"\*\*%s\*\*" % word, kept), kept
     out = step.context["done"].stdout
     assert not re.search(r"\b%s %s\b" % (code, word), out), (code, word, out)

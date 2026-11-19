@@ -43,13 +43,13 @@ def help_of(path):
 
 
 def test_the_docs_show_commands_of_every_tool():
-    assert {p[0] for p in shown_paths()} == {"work", "model", "features", "tools", "measure", "migrate"}
+    assert {p[0] for p in shown_paths()} == {"work", "spec", "features", "tools", "measure", "migrate"}
 
 
 def test_command_path_reads_subcommands_and_passes_over_the_rest():
     assert command_path("work", ["batch", "start"]) == ("work", "batch", "start")
     assert command_path("work", ["batch", "done", "batch-34", "t1"]) == ("work", "batch", "done")
-    assert command_path("model", ["--root", "x", "parse", "a line"]) == ("model", "parse")
+    assert command_path("spec", ["--root", "x", "parse", "a line"]) == ("spec", "parse")
 
 
 def test_each_command_the_docs_show_runs_its_help():

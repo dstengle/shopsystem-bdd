@@ -1,7 +1,9 @@
 # How it works
 
 <!-- Outputs on this page are from plugin 0.33.0 at commit 7f60e57de, 2026-11-10: the read-only commands run in this
-repository, the ones that write (work idea, line, ready, batch start, pytest) in a throwaway clone with no remote. -->
+repository, the ones that write (work idea, line, ready, batch start, pytest) in a throwaway clone with no remote.
+The grammar's layers, the parse, the form, the facts, `spec explain` and the readiness bar's L1 are from plugin
+0.38.0, 2026-11-19, the last in a clone with no remote (its b363 written here as b250). -->
 
 This page is for the curious developer: what happens between a sentence in a capability file and a green test, and
 what the workflow does with git and GitHub along the way. You don't need any of it to use the plugin. It helps when
@@ -14,28 +16,28 @@ reviews.
 
 ## One line, all the way through
 
-Here is a line from this repository's own spec, `spec/capabilities/backlog.md`, group g37:
+Here is a line from this repository's own spec, `spec/capabilities/items.md`, group g14:
 
 ```reading
-While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
-shall [x2: agent the person (constant), x3: command `work shape` (parameter), x4: tool `work` (constant)]
+While the status of an item is `idea`, when the person shapes the item, the backlog service shall set the status of the item to `shaped`.
+shall [x2: agent the person (constant), x3: service the backlog service (constant)]
   while [x1: item]
     status(x1) = `idea`
   when
-    run(e1, subject: x2, object: x3, on: x1)
+    request(e1, backlog.shape, subject: x2, object: x1)
   response
-    initiates(e2, subject: x4, status(x1) = `shaped`)
+    initiates(e2, subject: x3, status(x1) = `shaped`)
 ```
 
-And here is the scenario `features generate` wrote from it, in `features/backlog.feature`:
+And here is the scenario `features generate` wrote from it, in `features/items.feature`:
 
 ```gherkin
-  @g37 @r37
-  Scenario: `work shape` shapes an idea
+  @g14 @r14
+  Scenario: An idea shaped becomes shaped
     Given an item i1
     And the status of the item i1 is `idea`
-    When the person runs `work shape` on the item i1
-    Then `work` sets the status of the item i1 to `shaped`
+    When the person shapes the item i1
+    Then the backlog service sets the status of the item i1 to `shaped`
 ```
 
 Nobody wrote that scenario by hand, and nobody can edit it: it is regenerated whenever the line changes. The rest
@@ -43,12 +45,12 @@ of this section is what happened in between.
 
 ```mermaid
 flowchart TB
-  G["glossary + packs"] --> GR["grammar of this context<br/>(over GF's RGL)"]
+  G["domain model + vocabulary + packs"] --> GR["grammar of this context<br/>(over GF's RGL)"]
   L["requirement line"] --> P["parse + guards"]
   GR --> P
   P --> F["logical form<br/>(reading rules R1-R12)"]
   F --> FA["facts"]
-  FA --> LO["model logic:<br/>one clingo solve, L0-L8"]
+  FA --> LO["spec logic:<br/>one clingo solve, L0-L8"]
   F --> ST["features generate:<br/>steps in step grammar 4"]
   ST --> FE["feature file"]
   FE --> T["pytest-bdd + work_items"]
@@ -61,9 +63,8 @@ It is built in layers, lowest first:
 
 ```mermaid
 flowchart BT
-  B["base grammar: grammar/Base.gf over GF's RGL"] --> P["packs, in the order imports: lists them (cli, spec, time)"]
-  P --> GL["the glossary of spec/index.md"]
-  GL --> T["each capability's ## Terms"]
+  B["base grammar: grammar/Base.gf over GF's RGL"] --> P["packs, in the order imports: lists them (request, spec, time)"]
+  P --> GL["the vocabulary: spec/vocabulary/*.md, each entry naming an element of spec/model/"]
 ```
 
 The **base grammar** (`grammar/Base.gf`, under 40 lines) knows only the shape of a line: While and Where
@@ -72,25 +73,30 @@ conditions, a When or If trigger, and `shall` responses. It knows no nouns and n
 [Grammatical Framework](https://www.grammaticalframework.org/)'s resource grammar library, the RGL, which
 `tools install` pins.
 
-The **packs** and the **glossary** supply the words, and each word's entry decides what the grammar will accept.
-This is the CLI pack's `run`, from [`grammar/packs/cli.md`](../grammar/packs/cli.md):
+The **packs** and the **vocabulary** supply the words, and the **domain model** decides what each may combine with.
+This is the vocabulary's `shape`, from `spec/vocabulary/tracking.md`, and the operation it names, from
+`spec/model/tracking.md`:
 
 ```text
-- **run** (verb, action): an agent starts a command. Frame: agent runs command. Frame: agent runs command with option. Frame: agent runs command on thing.
+- **shape** (verb, action) → operation backlog.shape. Forms: shapes, shaped. Frame: <actor> shapes <item>.
+service backlog
+  operation shape(item, note)  outcomes: done | refused: item not an idea, no note
 ```
 
 From entries like that, `scripts/spec_rgl.py` writes a GF module typed by kind. A verb gets one function per frame,
-so "the person runs `work shape` on the item" fits, and a noun of the wrong kind in a slot does not parse at all.
+and a verb that names an operation gets its parameters too (`scripts/spec_rgl_ops.py`), so "the person shapes the
+item with a note" fits, and a noun of the wrong kind in a slot does not parse at all. The
+[request pack](../grammar/packs/request.md) gives the words of the response (*refuse*, *name*, *return*, *keep*).
 An action verb can only be a trigger or a response; a state verb can only be a condition. A word a higher layer
-takes over from a pack needs `Redefines: <pack>` on its entry, or `model check` refuses it.
+takes over from a pack needs `Redefines: <pack>` on its entry, or `spec check` refuses it.
 
 The compiled grammar is cached under `~/.cache/shopsystem-bdd/pgf/`, keyed by the hash of every source. So the
-first parse after a glossary change is slow while GF compiles, and every one after that is fast. Parses are cached
+first parse after a vocabulary change is slow while GF compiles, and every one after that is fast. Parses are cached
 too, beside it.
 
 ### 2. The parse and its guards
 
-`model parse` asks GF for every tree of the line. Then two rules decide:
+`spec parse` asks GF for every tree of the line. Then two rules decide:
 
 - **One meaning, or refused.** Several trees are fine if they all mean the same thing; the first is kept. Trees
   that mean different things are refused, naming the words that read two ways.
@@ -100,13 +106,13 @@ too, beside it.
 Here is a line the grammar parses but a reading rule refuses, because "the item" points at nothing:
 
 ```refused
-When the person runs `work show`, `work` shall print the status of the item.
+When the person lists the backlog, the backlog service shall return the status of the item.
 ```
 
 ```console
-$ model parse "When the person runs \`work show\`, \`work\` shall print the status of the item."
+$ spec parse "When the person lists the backlog, the backlog service shall return the status of the item."
 refused: "the item" has no antecedent: no earlier noun phrase, functional relation or declared indexical gives an item
-  tree: When NoPre (k_agent_Event (k_agent_One (k_agent_Simple a_the_person_1)) ...
+  tree: When NoPre (k_agent_Event (k_agent_One (k_agent_Simple a_the_person_13)) ...
 ```
 
 [Writing requirements](writing-requirements.md) walks through the refusals you will meet and how to reword them.
@@ -114,8 +120,8 @@ refused: "the item" has no antecedent: no earlier noun phrase, functional relati
 ### 3. The logical form and the reading rules
 
 A tree is grammar; it is not yet meaning. `scripts/spec_lf.py` turns each tree into a **logical form**: referents
-(`x1: item`), atoms (`status(x1) = 'idea'`, `run(e1, ...)`) and boxes (`while`, `when`, `response`). That is what
-`model parse --form` prints, and it is the only thing the later steps read.
+(`x1: item`), atoms (`status(x1) = 'idea'`, `request(e1, backlog.shape, ...)`) and boxes (`while`, `when`, `response`). That is what
+`spec parse --form` prints, and it is the only thing the later steps read.
 
 Twelve **reading rules**, R1 to R12, fix what the small words mean. A few you will notice:
 
@@ -124,7 +130,7 @@ Twelve **reading rules**, R1 to R12, fix what the small words mean. A few you wi
 | R1 | "a K" is any K in a condition or trigger, and a new K in a response. |
 | R2 | "the K" binds to something the line gave; otherwise the line is refused (the example above). |
 | R4 | "does not V a K" in a condition is refused: say "Vs no K", or "a K that X does not V". |
-| R10 | A literal that names no declared constant is a parameter. That is why `` `work shape` `` shows `(parameter)`. |
+| R10 | A literal that names no declared constant is a parameter: in "the person views `m2`", `` `m2` `` shows `(parameter)`. |
 | R12 | A line that obliges with no trigger, and neither "always" nor "never", is refused. |
 
 Every rule is written out, with the real lines it was tested on, in
@@ -133,19 +139,23 @@ Every rule is written out, with the real lines it was tested on, in
 ### 4. Facts, and one solve
 
 `scripts/spec_lf_facts.py` translates each form into ground facts for [clingo](https://potassco.org/clingo/), an
-answer-set solver. These are the facts of r37, printed from that module:
+answer-set solver. These are the facts of r14, printed from that module:
 
 ```text
-form("backlog#r37",while_when).
-cnl4("backlog#r37").
-role("backlog#r37",x1,k_item).
-cond("backlog#r37",x1,t_status_8,v_idea,pos).
-trig("backlog#r37",ran,"`work shape`",a_the_person,x1).
-set("backlog#r37",1,x1,t_status_8,v_shaped).
-resp("backlog#r37",1,pos,set(t_status_8,v_shaped),a_work,x1).
+form("items#r14",while_when).
+cnl4("items#r14").
+role("items#r14",x1,k_tracking__item).
+cond("items#r14",x1,t_tracking__item__status,v_tracking__item__status__idea,pos).
+trig("items#r14",req,req(e_backlog__shape,()),a_tracking__the_person,x1).
+set("items#r14",1,x1,t_tracking__item__status,v_tracking__item__status__shaped).
+resp("items#r14",1,pos,set(t_tracking__item__status,v_tracking__item__status__shaped),a_tracking__backlog,x1).
 ```
 
-`model logic` puts the facts of every line in the context, and of `spec/universal.md`, together with one fixed
+Each name is the model element's, qualified by its area (`t_tracking__item__status`), never the word: two areas may
+use one word for two things, and their facts never join. The trigger is the request, its operation and its
+parameters (`req(e_backlog__shape,())`, here none).
+
+`spec logic` puts the facts of every line in the context, and of `spec/universal.md`, together with one fixed
 program, [`grammar/check.lp`](../grammar/check.lp), and runs **one** solve, with a 20-second limit. Pairs of lines
 that could fire on the same trigger in the same state are unified there, so a clash between capabilities is found
 as readily as one inside a file. The findings:
@@ -162,16 +172,15 @@ as readily as one inside a file. The findings:
 | L7 | a "shall not" forbids what a "may" permits | warning |
 | L8 | every Then of a line is already entailed by other lines | warning |
 
-L8 comes from a second program, `grammar/entail.lp`. It is also what `model explain` uses to show what a line means
+L8 comes from a second program, `grammar/entail.lp`. It is also what `spec explain` uses to show what a line means
 once the universal conditions and the packs' definitions are taken into account:
 
 ```console
-$ model explain backlog#r38
-backlog#r38  While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
+$ spec explain items#r15
+items#r15  While the status of an item is not `idea`, if the person shapes the item, then the backlog service shall refuse the request and name the item.
 which also means:
-  `work` shall exit with an error (by the definition of refuse in the pack cli)
-  `work` shall change nothing (by U12)
-  `work` shall exit with an error (by U12)
+  the backlog service shall change nothing (by U17)
+  the backlog service shall name a reason (by U17)
 ```
 
 ### 5. Steps, in a grammar of their own
@@ -183,8 +192,10 @@ before a Given or the When names it ("an item i1"), so the steps can be bound fr
 
 Every step is written in **step grammar 4** (`grammar/Steps4.gf`, extended per context like the base grammar). So a
 step is never free text: `features vocab` can read each one back into a template and a term, which is how a step is
-matched to its handler. A Then that a universal condition already entails is left out, with an `# entailed: U12`
-comment in its place, so the check after every scenario is not tested twice.
+matched to its handler. A Then that a universal condition already entails is left out, with an `# entailed: U17`
+comment in its place, so the check after every scenario is not tested twice. A When is a request; its step
+definition makes it through an adapter's driver ([adapter contracts](reference/adapters.md)), and the Thens read the
+response.
 
 The output is byte-stable. `features generate --check` fails when a feature file is not what the spec generates,
 so a hand edit or a stale file shows up in the suite.
@@ -200,9 +211,9 @@ not built yet runs red without failing the suite; once it passes, strict means y
 `unbuilt:`, or the XPASS fails the run. Here is the new scenario of a batch, before its task has built it:
 
 ```console
-$ python3 -m pytest -q tests/scenarios/test_backlog.py -m "r43" -rx
+$ python3 -m pytest -q tests/scenarios/test_items.py -m "r31" -rx
 ...
-XFAIL tests/scenarios/test_backlog.py::test_work_show_prints_the_status_of_an_item - unbuilt: backlog#r43
+XFAIL tests/scenarios/test_items.py::test_an_item_shown_gives_its_status - unbuilt: items#r31
 1 xfailed in 3.68s
 ```
 
@@ -212,17 +223,18 @@ XFAIL tests/scenarios/test_backlog.py::test_work_show_prints_the_status_of_an_it
 
 An item becomes `ready` only by passing a mechanical check, so the questions come before the build, not during it.
 `work ready` copies `spec/` to a temporary directory, lays the item's lines into the copy, and runs the pipeline
-above over it: every line parses, the lexicon gains no problem, `model logic` finds no L0 and no L1 naming the
+above over it: every line parses, the lexicon gains no problem, `spec logic` finds no L0 and no L1 naming the
 item's lines, and `features generate` writes a scenario for each group. Your real `spec/` is never written.
 
 Here is an item whose line contradicts a delivered one:
 
 ```console
-$ work line b250 --into backlog --group "\`work show\` keeps quiet about an item's title" "When the person runs \`work show\` on an item, \`work\` shall not print the title of the item."
-b250 "work show prints the status of an item": backlog#r43
+$ work line b250 --into items --group "An item shown keeps quiet about its title" "When the person shows an item, the backlog service shall not return the title of the item."
+b250 "The backlog keeps quiet about an item's title": items#r31
 $ work ready b250
-work: work ready: b250 "work show prints the status of an item" is not passing:
-  L1 backlog#r15 and #r43 clash: on "the person runs `work show` on an item", r15 obliges and r43 forbids `work` to print
+work: work ready: b250 "The backlog keeps quiet about an item's title" is not passing:
+  items#g31: v15n two groups of a capability share features, condition and trigger: with items#g12
+  L1 items#r12 and #r31 clash: on "the person shows an item", r12 obliges and r31 forbids the backlog service to return a title
 ```
 
 The bar is why Claude does not ask you to approve lines one by one. A line that clears it is well-formed and

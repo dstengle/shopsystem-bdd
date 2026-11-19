@@ -1,5 +1,7 @@
 <!-- Outputs on this page are from real runs on 2026-11-10, plugin 0.33.0 (commit 7f60e57de): a 0.32.1 repository
-built from the 0.33.0 upgrade's test fixture (tests/scripts/test_migrate_upgrade_cnl4.py), upgraded and reworded. -->
+built from the 0.33.0 upgrade's test fixture (tests/scripts/test_migrate_upgrade_cnl4.py), upgraded and reworded.
+The 0.38.0 section's are from 2026-11-19, plugin 0.38.0: the frozen 0.37 notes-cli copy
+(tests/scripts/fixtures/upgrade-0.37/), upgraded. -->
 
 # Upgrading
 
@@ -40,6 +42,100 @@ the plugin, and the session is told to update the plugin. Rewrite the file by ha
 3.0.1 writes `0.32.1`, one on 4.1.0 writes `0.34.0`. Commit it, then reinstall the plugin once: Claude Code keeps
 installs by version and may not move from 4.1.0 down to 0.34.1. `migrate status` then lists what is pending, if
 anything.
+
+## 0.38.0: the domain contract
+
+0.38.0 separates what a context does from how it is asked. The specification has four parts now: a **domain model**
+(`spec/model/<area>.md`: objects, lifecycles, relations, services and their operations), a **vocabulary**
+(`spec/vocabulary/<area>.md`, each word naming one element of the model), the **requirements** and the **decisions**.
+A requirement says a request in the domain's words, "When the person adds a note with a title, the notes service shall
+keep the note", never a command, an option, an exit code or a printed layout: those are the CLI adapter's, written in
+`spec/adapters/cli.toml` ([adapter contracts](reference/adapters.md)). The `cli` pack is retired; every context
+imports the `request` pack. `model` is now `spec` (the old name still works for one release, with a notice). The full
+note is [0.38.0 in the changelog](../CHANGELOG.md#0380-the-domain-contract).
+
+### What `migrate upgrade` does
+
+It scaffolds what is mechanical, in one commit, and names by file and id what a session rewords. Here it is on the
+0.37 copy of the notes example (`tests/scripts/fixtures/upgrade-0.37/notes-cli/`):
+
+```console
+$ migrate upgrade
+upgraded to 0.38.0: the domain contract
+the domain contract: spec/capabilities/notes.md r1 requests notes.add(title, tag) through `notes add`: reword it in the request's words, "When the person <verb>s ... with the <parameter> ...", and its response in the service's ("the notes service shall ...")
+the domain contract: spec/capabilities/notes.md r2 requests notes.add(title) through `notes add`: reword it in the request's words, "When the person <verb>s ... with the <parameter> ...", and its response in the service's ("the notes service shall ...")
+...
+the domain contract: spec/capabilities/notes.md r3 says print: a response is the outcome and the content of the service's response now (return, complete, refuse and name, keep)
+the domain contract: `notes`, spec/index.md: Kind of: tool: the tool is the service notes now, said "the notes service"; its program is the CLI adapter's
+the domain contract: delete, spec/index.md: a tool's act: name an operation of a service (→ operation <service>.<name>) or say it in the request pack's words (keep, return, complete)
+the domain contract: spec/adapters/cli.toml: name the program of each tool under [programs]: notes
+the domain contract: until each line above is reworded, `spec check` refuses it (v_p, v_m1): the CLI pack's words (run, option, print, exit) are no longer read
+```
+
+What it wrote:
+
+- **`spec/model/<context>.md`**, one area named after the context: each noun of the glossary an object, each
+  attribute with its values (and its `Transitions:` a lifecycle), each relation row and each state verb a relation,
+  each `Kind of: agent` actor an actor, and one **service** per tool the lines run with one **operation** per command
+  (`notes add` becomes `add`), its parameters the options the lines give it (`--title` becomes `title`) and the thing
+  it is run on.
+- **`spec/vocabulary/<context>.md`** and **`shared.md`**: every entry moved, with its `→ element` where the scaffold
+  made one; a tool `` `notes` `` became `the notes service`; an operation with no verb got one (`list`, `remove`).
+- **`spec/adapters/cli.toml`**: each operation with the command and the options it was scaffolded from. Name each
+  tool's program under `[programs]`; `spec check` reads its argparse.
+- **`imports: [cli]`** became `imports: [request]`; `## Glossary`, `## Terms` and `## Relations` left
+  `spec/index.md` and the capabilities, each capability got `area: <context>`, and `spec/moves.json` was written
+  empty.
+
+It rewords no line and gives no new id: rewording is a session's work, as an item.
+
+### What a session rewords
+
+Each line the step named. Until it is reworded, `spec check` refuses it: it no longer parses (`v_p1`), or a word of it
+names no element (`v_m1`). In the reworded context, the old line is refused:
+
+<!-- docs: context docs/examples/notes-cli -->
+```refused
+If the person runs `notes add` without the `--title` option, then `notes` shall refuse the command and name `--title`.
+```
+
+and its reword reads:
+
+<!-- docs: context docs/examples/notes-cli -->
+```requirement
+If the person adds a note without a title, then the notes service shall refuse the request and name the title.
+```
+
+The rewordings, one kind at a time:
+
+| 0.37 says | 0.38 says |
+|---|---|
+| the person runs `` `notes add` `` with the `` `--title` `` option | the person adds a note with a title |
+| the person runs `` `notes add` `` without the `` `--title` `` option | the person adds a note without a title |
+| the person runs `` `notes remove` `` on a note | the person removes a note |
+| `` `notes` `` shall print X | the notes service shall return X |
+| `` `notes` `` shall refuse the command and name `` `--title` `` | the notes service shall refuse the request and name the title |
+| `` `notes` `` shall exit successfully | (nothing: a done or returned request exits 0, the adapter's business) |
+| ... with the `` `--json` `` option ... shall print one JSON object | (nothing: `--json` renders every response) |
+| `` `work` `` shall commit X and push the commit | the backlog service shall keep X (to keep is to commit; to share, to push: design-decisions) |
+
+Then tidy the model the scaffold wrote: a noun that is no thing of the domain (a file on disk) goes, an attribute's
+type is set (`title (text)`), each operation's outcomes and refusal reasons are written (`refused: no title`). `spec
+check` holds the two to each other: an operation no line requests is `v_m7`, a refusal reason no line states `v_m4`.
+The whole worked result is [`docs/examples/notes-cli/`](examples/notes-cli/README.md); the test of the step checks
+that the reworded copy passes `spec check`, `features generate --check` and `spec logic`.
+
+Then run `features generate`: every scenario's When is now a request ("When the person adds the note n1 without a
+title") and its Thens the response ("Then the notes service refuses this request"). Re-key the step handlers on
+the operations, and drive the program through its adapter.
+
+### What else changed
+
+- **`model` is `spec`.** `scripts/model` still works in 0.38 and prints a notice; change your aliases and scripts.
+- **The response envelope.** Every command takes `--json`, printing `{"outcome", "content", "errors", "notices"}`.
+  A command that printed its own JSON object before prints it under `content` now: read `content` where you read
+  the object.
+- **Records are never cited.** A new item's `source:` naming a record is refused (`v_r1`); an older one is a warning.
 
 ## From 0.32 to 0.33
 
@@ -89,8 +185,8 @@ The full note is [0.33.0 in the changelog](../CHANGELOG.md#0330-released-as-400-
 - **Reading rules.** "the", "no", "every" and "only" mean one thing each. "The till" needs a till said before it.
 - **Example data moves out.** A sample value in a line goes into its group's given block.
 - **New constructs.** Counts, "two", "another", "is one of", "has no", a command's options in the trigger, time.
-- **New checks.** `model parse --form` shows a line's meaning, `model explain` what other lines force with it, and
-  `model logic` gains L8: a Then that other lines already say.
+- **New checks.** `spec parse --form` shows a line's meaning, `spec explain` what other lines force with it, and
+  `spec logic` gains L8: a Then that other lines already say.
 - **Known limits.** Some things the language cannot say yet. They're listed in
   [the language reference](../grammar/language.md).
 
@@ -177,7 +273,7 @@ Each kind of note, and what to do about it:
 | `v_t14 <verb> ...: a state in ... and an action in ...` | write `(verb, state)` or `(verb, action)` in the glossary |
 | `<line> says "the" with no antecedent` | say the thing with "a" first, or reach it through a relation |
 | `<line> says a negated indefinite in a While clause` | "owns no cart", or "a cart that the shopper does not own" |
-| `<line> no longer parses: does not parse at <word>` | reword the line; `model parse` shows where it stops |
+| `<line> no longer parses: does not parse at <word>` | reword the line; `spec parse` shows where it stops |
 | `<term> is a condition (adjective) ...: <lines>` | replace the adjective with a structure, then reword each line named |
 | `<line> holds example data: <value>` | move the value into the group's given block |
 | `<line> says "exit with an error naming"` | "shall refuse the command and name X" |
@@ -224,22 +320,22 @@ work: work ready: b1 "Reword buy for grammar 4" is not passing:
 With r2, r3, r5, r6 and r8 reworded too, `work ready b1` passes, and `work batch start` lays the lines into `spec/`.
 The old ids land in `retired:`, the new ones in `unbuilt:` until the batch builds them.
 
-Two pairs from this repository's own spec show the most common rewordings. "Exit with an error naming" still
-parses, but the refusal says it shorter and reads as one act:
+Two pairs from this repository's own spec show the most common rewordings, in today's words. A check that fails and
+a request that is refused are two outcomes, each said as one act:
 
 ```requirement
-While an analysis tool is `missing`, when the person runs `tools probe`, `tools` shall exit with an error naming the analysis tool.
-While an analysis tool is `missing`, if the person runs `tools probe`, then `tools` shall refuse the command and name the analysis tool.
+While an analysis tool is `missing`, when the person probes the toolchain, the toolchain service shall fail the check and name the analysis tool.
+While an analysis tool is `missing`, if the person probes the toolchain, then the toolchain service shall refuse the request and name the analysis tool.
 ```
 
 "The item" with nothing before it is refused:
 
 ```refused
-When the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
+When the person shapes the item, the backlog service shall set the status of the item to `shaped`.
 ```
 
 ```requirement
-When the person runs `work shape` on an item, `work` shall set the status of the item to `shaped`.
+When the person shapes an item, the backlog service shall set the status of the item to `shaped`.
 ```
 
 [Writing requirements](writing-requirements.md) has the full set of pairs, and how to read a refusal. Claude knows
@@ -251,12 +347,12 @@ skill writes the item with you.
 In the batch's worktree, where the lines are laid, run the checks:
 
 ```console
-$ model check
+$ spec check
 ...
 warning w_example  a requirement holds example data: a code or quoted string that names no declared constant  (1)
     capability/example.org/acme/shop/buy#r14, apples
 ...
-$ model logic
+$ spec logic
 L8 buy#r1 says nothing other requirements do not: Then 1 by buy#r10 and buy#r11
 ...
 $ features generate
@@ -307,7 +403,7 @@ names each attribute whose `Values:` declares neither kind and each line that sa
 ("an item is `idea`"), by file and id. Declare each attribute's values in the glossary, `Values (adjective):` for
 those that read after "is" as an adjective (`shaped`, `in-batch`) and `Values (noun):` for the rest (`idea`,
 `needs-input`, a release), then reword each named line whose value is a noun to the full form, "the status of an
-item is `idea`", as an item with `work line --retires`. Until you declare them, `model check` warns `w_value_kind`
+item is `idea`", as an item with `work line --retires`. Until you declare them, `spec check` warns `w_value_kind`
 and every line parses as before.
 
 `features generate` now writes every value step the full way, "the status of the item i1 is `idea`" (and "no item
@@ -331,8 +427,8 @@ handlers must meet. Run `features generate`, then run the suite and update the h
   negated Then of it:
 
   ```gherkin
-  @g7 @r7
-  Scenario: `work show` on a quote prints its messages
+  @g3 @r3
+  Scenario: A quote read gives the messages it cites
     Given a quote q1
     And a message m1
     And the quote q1 cites the message m1
@@ -340,10 +436,10 @@ handlers must meet. Run `features generate`, then run the suite and update the h
     And the quote q1 cites the message m2
     And a message m3
     And the quote q1 does not cite the message m3
-    When the person runs `work show` on the quote q1
-    Then `work` prints the message m1
-    And `work` prints the message m2
-    And `work` does not print the message m3
+    When the person reads the quote q1
+    Then the conversation service returns the message m1
+    And the conversation service returns the message m2
+    And the conversation service does not return the message m3
   ```
 
   Each negated Then needs a handler that brings its thing into the world (here a message the quote does not cite)
@@ -352,14 +448,14 @@ handlers must meet. Run `features generate`, then run the suite and update the h
   accept "X does not V Y" (here "the quote q1 does not cite the message m3") and "the T of X is not `v`" ("the
   colour of the note n4 is not `red`").
 - **A count's Then.** A count on what a response prints, with an upper bound, now gives one thing past the bound,
-  and its Then states the count ("`notes` prints at most three notes"). Its handler counts the Ks in the output.
+  and its Then states the count ("the notes service returns at most three notes"). Its handler counts the Ks in the output.
   A count that restricts a written thing ("write a batch that holds at most three items") gets no counter-example.
 - **An order's Then.** A `ThenPrints` whose `step.order` is set, a (term, direction) pair, states an order. Its
   handler checks the output's order against the values the Givens set, not strictly, so that members with one value
   pass in either order.
-- **`unread <id>`.** `model logic` now names each requirement it has no translation of, `unread <id>: ...`, with
+- **`unread <id>`.** `spec logic` now names each requirement it has no translation of, `unread <id>: ...`, with
   a count after the findings, where it printed `no findings` before over lines it skipped. Each one it names is a
-  line `model logic` does not check; reword it if a construct it has a translation of says the same.
+  line `spec logic` does not check; reword it if a construct it has a translation of says the same.
 
 Two things are new to write. An attribute entry may say `Type: number.`, `Type: time.` or `Type: text.`: any
 literal of the type is a value of it, and the type orders them, with no `Values:` or `Order:`. And a line may
@@ -373,11 +469,11 @@ an attribute whose entry gives no value order, neither `Order:` nor `Type:`, is 
 
 No upgrade step, and no scenario `features generate` wrote in 0.35.0 changes. On a response's object, of `print` or any other
 act, holds-exactly with a relative clause or a negated value as its restriction and "holds nothing" are now read by
-`model logic`, and they, "holds no K" and an order on the object of a verb whose frame names the collection's kind
+`spec logic`, and they, "holds no K" and an order on the object of a verb whose frame names the collection's kind
 now get scenarios. `features generate` only warned of the last two in 0.35.0 (`no scenario: ...`) and exited 0, so a
 repository may hold such lines: after the upgrade `features generate --check` finds its features stale until it is
 run. Run `features generate` and write the
-handlers of the new scenarios. `work ready` now refuses an item a requirement of which `model logic` names
+handlers of the new scenarios. `work ready` now refuses an item a requirement of which `spec logic` names
 `unread`, naming the requirement.
 
 ## From 0.35.1 to 0.36.0
@@ -406,7 +502,7 @@ it quotes the capability's requirements and only the terms they mention, so name
 
 A y release: no upgrade step. Run `migrate upgrade` once to record the release.
 
-`work ready` and `work batch start` now run every rule of `model check` on the item's lines laid over a copy of
+`work ready` and `work batch start` now run every rule of `spec check` on the item's lines laid over a copy of
 `spec/`, and refuse each violation the lay brings that names one of the item's groups or requirements, naming the
 group and the rule (v15k, v15l, v15n and the rest; 0.36.0 ran v15n alone). An item already `ready` may be refused at
 its next `work ready` or `work batch start`: fix the group it names. Where a repository keeps a spec corpus
@@ -423,7 +519,7 @@ a Given of one thing past the bound, and holds-exactly whose restriction reaches
 where it had none: write the handlers of their new steps.
 
 New to use: `work chore` for an item with no requirement line, `work line --capability` for a new capability in
-place of writing its file, `model forms --check`, and the directives (`work directive`, `work directives`,
+place of writing its file, `spec forms --check`, and the directives (`work directive`, `work directives`,
 `work promote`, `work drop`), which a new SessionStart hook shows. A repository's tests pin `pytest==9.1.1` and
 `pytest-bdd==8.1.0` ([Getting started](getting-started.md)).
 

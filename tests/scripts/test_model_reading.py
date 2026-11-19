@@ -1,4 +1,4 @@
-"""Unit tests of scripts/model's reading: the files it reads and how, the forms of an id, and the grammar's fixes.
+"""Unit tests of scripts/spec's reading: the files it reads and how, the forms of an id, and the grammar's fixes.
 ModelTest and the file builders are in test_model.py."""
 
 import unittest
@@ -139,6 +139,17 @@ class TypeFirstTest(ModelTest):
         self.assertIn(f'revisit_signal("{full("design-decision", "x")}", "{full("measurement", "m1")}").', facts)
         self.assertIn(f'revisit_signal("{full("design-decision", "y")}", "requests").', facts)
 
+
+    def test_a_record_s_supporting_file_with_no_kind_is_no_record(self):
+        """A file of a record's folder that is no record (a copy of a capability a trial wrote, with its id and no
+        kind) is a supporting file the check does not read: no file problem, no node."""
+        self.good()
+        self.write(".shop/records/2026-01-01-trial/variant.md", "---\nid: capability/elsewhere/variant\n---\n# V\n")
+        r = self.run_model("check")
+        self.assertNotIn("is not a record kind", r.stdout)
+        self.assertEqual(r.returncode, 0, r.stdout)
+        self.write(".shop/records/m2.md", f"---\nid: {full('measurement', 'm2')}\nkind: survey\n---\n")
+        self.assertIn("kind 'survey' is not a record kind", self.run_model("check").stdout)
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
 class FilesReadTest(ModelTest):

@@ -1,4 +1,4 @@
-"""Handlers of the logical form of design-model-check (b138; the CNL 4 design, I11a): `model parse --form` run on the
+"""Handlers of the logical form of design-model-check (b138; the CNL 4 design, I11a): `spec parse --form` run on the
 requirement r1 of the smallest codified-2 world (codified2_world.py), and what its logical form l1 is printed by."""
 import importlib.util
 import sys
@@ -24,9 +24,9 @@ LINE = "When a session ends a stage, `work` shall print the stage."
 TRIGGER = "end(e1, subject: x1, object: x2)"
 
 
-@handler("WhenRuns", "`model parse --form`")
+@handler("WhenRuns", "`spec parse --form`")
 def model_parse_form(step):
-    """`model parse --form` on the capability file that holds r1 (`shelf`'s when a Given wrote it, else `thing`'s), in
+    """`spec parse --form` on the capability file that holds r1 (`shelf`'s when a Given wrote it, else `thing`'s), in
     the codified-2 world."""
     H.built(step)
     caps = step.repo / "spec" / "capabilities"

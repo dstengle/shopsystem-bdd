@@ -5,7 +5,7 @@ narrator: a session measuring a batch
 group: service
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified, design-decision/missingmass.io/shopsystem/shopsystem-bdd/measure-a-batch]
-retired: [g1, g2, g3, g4, r1, r2, r3, r4]
+retired: [g1, g2, g3, g4, r1, r2, r3, r4, g5, r5, g6, r6, g7, r7, g8, r8]
 unbuilt: []
 ---
 
@@ -19,40 +19,13 @@ knobs (batch size, review depth, the readiness bar) are tuned against these figu
 
 ## Terms
 
-- **include** (verb, state): a measurement holds a figure or a name. Forms: includes, included. Frame: measurement includes thing.
-- **wall time** (noun): the time from the start of a batch to its close. Kind of: thing.
-- **session time** (noun): the time the sessions of a batch spent on it. Kind of: thing.
-- **token** (noun): a unit of the text a model of a session reads or writes. Kind of: thing.
-- **role** (noun): what a session did in a batch: planning, implementing, review or fixing. Kind of: text.
-- **cost** (noun): what the tokens of a role cost. Kind of: thing.
-- **ratio** (noun): a figure of the second of two measurements divided by the same figure of the first. Kind of: text.
+Moved to `spec/vocabulary/` and `spec/model/` (the domain contract, 0.38.0).
 
 ## Relations
 
-| from | word | to | cardinality |
-|---|---|---|---|
-| defect | of | item | one |
-| defect | for | batch | one |
-| measurement | of | batch | one |
-| wall time | of | batch | one |
-| session time | of | batch | one |
-| token | of | batch |  |
-| role | of | batch |  |
-| cost | of | role | one |
+Moved to `spec/vocabulary/` and `spec/model/` (the domain contract, 0.38.0).
 
 ## Behaviour
-
-### [g5] `measure batch` writes a merged batch's measurement with its wall time, session time, tokens and cost by role
-- [r5] While a batch is `merged`, when the person runs `measure batch` on the batch, `measure` shall write a measurement of the batch that includes the wall time of the batch, the session time of the batch, the tokens of the batch and the cost of every role of the batch.
-
-### [g6] The measurement of a batch counts the review findings on its pull request by grade
-- [r6] When the person runs `measure batch` on a batch that has a pull request, `measure` shall write a measurement of the batch that includes the number of review findings on the pull request whose grade is `Critical`, the number of review findings on the pull request whose grade is `Important` and the number of review findings on the pull request whose grade is `Minor`.
-
-### [g7] A defect after the merge is traced to its item and batch
-- [r7] While an item in a batch is `delivered`, when the person runs `measure defect` on the item, `measure` shall write a defect for the batch that the item has.
-
-### [g8] `measure compare` sets the measurements of two batches side by side with their ratio
-- [r8] When the person runs `measure compare` on two batches, `measure` shall print two measurements and a ratio.
 
 ## Implementation, may change
 
@@ -94,3 +67,17 @@ knobs (batch size, review depth, the readiness bar) are tuned against these figu
   batches waits for there being many.
 - The third-review park (plan-5 D23) is revisited with the figures of real batches.
 - A price table read from a source: the table is dated (`prices_as_of`) and `.shop/delivery.toml` overrides it.
+## Moved
+
+Every line moved to a new capability with a new id (the domain contract, 0.38.0).
+
+| old | new |
+|---|---|
+| g5 | measurement#g1 |
+| r5 | measurement#r1 |
+| g6 | measurement#g2 |
+| r6 | measurement#r2 |
+| g7 | measurement#g3 |
+| r7 | measurement#r3 |
+| g8 | measurement#g4 |
+| r8 | measurement#r4 |

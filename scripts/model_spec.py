@@ -1,4 +1,4 @@
-"""The codified reading of scripts/model (design model v5; the GF conversion's design §7, §8, §10, §13.4; CNL 4's
+"""The codified reading of scripts/spec (design model v5; the GF conversion's design §7, §8, §10, §13.4; CNL 4's
 I19): a part of Model (model_facts).
 
 A capability file with `language: codified-2` is read by spec_read into groups `<cap>#g<n>`, each requirement
@@ -175,6 +175,7 @@ class SpecReading:
                 self.req_text[qid] = q.text
                 self.group_of[qid] = gid
                 self.parsed(qid, q.text)
+                self.domain_line(path, qid, q.text)     # v_m1 (model_domain)
                 for word in spec_example.parameters(q.text, self.example_constants()):     # w_example (I18)
                     self.fact("exemplified", qid, word)
             for n, rid, text in g.odd:      # v15a with no id, v15b with an id used before
@@ -191,7 +192,7 @@ class SpecReading:
     def example_constants(self):
         """The declared constants a literal of a line may name (spec_example), read once."""
         if getattr(self, "_constants", None) is None:
-            self._constants = spec_example.constants(spec_lexicon.read(self.root))
+            self._constants = spec_example.constants(spec_lexicon.read(self.root), self.root)
         return self._constants
 
     def read_universal(self):

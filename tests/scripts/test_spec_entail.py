@@ -1,8 +1,9 @@
-"""spec_entail: the entailment check (L8, the CNL 4 design's I13a), on a frozen copy of this repository's spec as it
-was on 2026-11-10 after grammar 4's rewording (tests/scripts/fixtures/entailment/, every file codified-2), never the
-live spec: 13 Thens entailed without the CLI pack's definition of refuse and 20 with it, each with the premises
-recorded in fixtures/entailment/entailed.txt (`bridge` where only the definition entails it). The rewording left no
-line restating: a restating pair is the logic check's cluster's (fixtures/logic/cluster, r3 and r4)."""
+"""spec_entail: the entailment check (L8, the CNL 4 design's I13a), on a frozen copy of this repository's spec as the
+domain contract left it (2026-11-19: the request pack, a domain model and its vocabulary; tests/scripts/fixtures/
+entailment/), never the live spec: 26 Thens entailed, each with the premises recorded in fixtures/entailment/
+entailed.txt, the same with the CLI pack's definition of refuse or without it, since the request pack's refuse is
+primitive; the 15 requirements every Then of which is entailed are the L8 findings of baseline-logic.txt, their ids
+moved. A restating pair is also the logic check's cluster's (fixtures/logic/cluster, r3 and r4)."""
 import pathlib
 import sys
 
@@ -44,28 +45,21 @@ def thens(found):
     return {k: v for k, v in found.items() if v and not k[0].startswith("U")}
 
 
-def test_without_the_definition_of_refuse_thirteen_thens_are_entailed(facts):
-    want = {k: ms for k, (ms, bridge) in recorded().items() if not bridge}
-    assert len(want) == 13
-    assert thens(spec_entail.entailed(facts, bridge=False)) == want
-
-
-def test_with_the_definition_of_refuse_twenty_thens_are_entailed(facts):
+def test_twenty_six_thens_are_entailed_with_the_definition_of_refuse_or_without(facts):
     want = {k: ms for k, (ms, _) in recorded().items()}
-    assert len(want) == 20
+    assert len(want) == 26 and not any(bridge for _, bridge in recorded().values())
+    assert thens(spec_entail.entailed(facts, bridge=False)) == want
     assert thens(spec_entail.entailed(facts, bridge=True)) == want
-    # a refusal's Then, entailed only through the definition of refuse, by the universal condition of a refusal
-    assert want[("design-model-check#r202", "2")] == {"U12"}
 
 
 def test_a_requirement_is_restating_when_every_then_is_entailed(facts):
-    # every requirement of the reworded spec adds a Then of its own
-    assert spec_entail.restating(facts, bridge=True) == {}
+    found = spec_entail.restating(facts, bridge=True)
+    assert len(found) == 15 and found["reading#r57"] == [("1", ["reading#r13", "reading#r46"])]
     found = spec_entail.restating(_facts(CLUSTER), bridge=True)
     assert found == {"supervision#r3": [("1", ["supervision#r4"])], "supervision#r4": [("1", ["supervision#r3"])]}
 
 
 def test_the_bridge_is_the_definition_of_refuse_an_imported_pack_gives():
     assert spec_entail.refuse_defined(FIXTURES / "codified-2")
-    assert spec_entail.refuse_defined(FROZEN)
+    assert not spec_entail.refuse_defined(FROZEN)      # it imports the request pack
     assert not spec_entail.refuse_defined(FIXTURES / "glossary")      # it imports no pack

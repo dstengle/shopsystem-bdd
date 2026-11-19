@@ -1,6 +1,7 @@
 """The trace of `pr-review` (workflow simplification plan 5, D19): a guarantees capability has no feature file, so no
 strict xfail holds its ids. Instead each id out of `unbuilt:` must have a test marked
-`@pytest.mark.requirement("pr-review#r<n>")` in one of the files of `PR_REVIEW_TESTS`, a test in a class included,
+`@pytest.mark.requirement("review-guarantees#r<n>")` (pr-review's ids remapped through spec/moves.json by the
+domain contract) in one of the files of `PR_REVIEW_TESTS`, a test in a class included,
 and each id still in `unbuilt:` must have none. A marked test that is also marked `skip`, `skipif` or `xfail` does
 not count, and is refused (plan 5 review, M7). The marks are read from the files' syntax trees."""
 import ast
@@ -14,7 +15,7 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 PR_REVIEW_TESTS = ("test_batch_findings.py", "test_batch_brief.py", "test_batch_reviewed.py", "test_batch_fix_loop.py",
                    "test_agent_pr_reviewer.py", "test_skill_building_a_batch.py")
-CAP = REPO / "spec" / "capabilities" / "pr-review.md"
+CAP = REPO / "spec" / "capabilities" / "review-guarantees.md"     # pr-review's lines moved here (spec/moves.json)
 SKIPS = {"skip", "skipif", "xfail"}
 
 
@@ -49,7 +50,7 @@ def marked_tests():
     for name in PR_REVIEW_TESTS:
         path = HERE / name
         if path.is_file():
-            found |= marked(path.read_text(), "pr-review", name)
+            found |= marked(path.read_text(), "review-guarantees", name)
     return found
 
 
@@ -58,14 +59,14 @@ def ids():
 
 
 def test_every_built_pr_review_line_has_its_test():
-    built = ids() - spec_unbuilt.unbuilt(REPO).get("pr-review", set())
+    built = ids() - spec_unbuilt.unbuilt(REPO).get("review-guarantees", set())
     missing = sorted(built - marked_tests(), key=lambda r: int(r[1:]))
-    assert not missing, "pr-review ids out of unbuilt: with no test marked requirement: %s" % ", ".join(missing)
+    assert not missing, "review-guarantees ids out of unbuilt: with no test marked requirement: %s" % ", ".join(missing)
 
 
 def test_no_unbuilt_pr_review_line_has_a_test_yet():
-    early = sorted(spec_unbuilt.unbuilt(REPO).get("pr-review", set()) & marked_tests(), key=lambda r: int(r[1:]))
-    assert not early, "pr-review ids still in unbuilt: with a test marked requirement: %s" % ", ".join(early)
+    early = sorted(spec_unbuilt.unbuilt(REPO).get("review-guarantees", set()) & marked_tests(), key=lambda r: int(r[1:]))
+    assert not early, "review-guarantees ids still in unbuilt: with a test marked requirement: %s" % ", ".join(early)
 
 
 MARKED = '''

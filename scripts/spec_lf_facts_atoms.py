@@ -1,7 +1,7 @@
 """The atoms of a logical form as `grammar/check.lp`'s terms, for spec_lf_facts' walk (`Terms`, which its `Walk`
 extends): a referent as its term (an actor its id, a code or an indexical a role with `named(R,X,C)`), an event atom
 as its (event, doer, object), print, exit successfully and exit with an error naming as the check's own events
-(`WORDS`), a relation's or a state verb's atom as an edge, an atom of the pre-state as `cond` or `crel`, and a
+(`WORDS`), in a context importing the request pack its verbs as the outcomes of spec_lf_facts_request, a relation's or a state verb's atom as an edge, an atom of the pre-state as `cond` or `crel`, and a
 restriction of a response's object as `oattr`, `orel`; an attribute's value compared, spec_lf_order's `ccmp`; a time
 atom refused naming it (`TIME`). The boxes, the rule and
 the response are spec_lf_facts'.
@@ -9,6 +9,7 @@ the response are spec_lf_facts'.
 import spec_lf_compare
 import spec_lf_distinct
 import spec_lf_exist
+import spec_lf_facts_request
 import spec_lf_order
 import spec_lf_quant
 from spec_lf_core import Box, Ref, const
@@ -62,9 +63,10 @@ class Terms:
 
     def event(self, atom):
         """(event, doer, object) of an event atom."""
-        _, verb, _, roles = atom.args
+        _, verb, sense, roles = atom.args
         subject, kinds, fixed = self.slots(roles)
-        return WORDS.get((verb,) + fixed[:1]) or self.ids.event(verb), self.term(subject), self.obj(kinds)
+        e = spec_lf_facts_request.outcome(self, verb) or WORDS.get((verb,) + fixed[:1]) or self.ids.event(verb, sense)
+        return e, self.term(subject), self.obj(kinds)
 
     # --- an atom of the pre-state ---------------------------------------------------------------------------------
     def literal(self, item, pos=True):
@@ -99,11 +101,11 @@ class Terms:
         if atom.pred == "rel":
             word, x, y = atom.args
             return self.ids.relation(word, x.kind, y.kind), x, y
-        verb, _, roles = atom.args
+        verb, sense, roles = atom.args
         subject, kinds, fixed = self.slots(roles)
         if len(kinds) > 1 or fixed:
             raise ValueError("no translation of the state %s there" % verb)
-        return self.ids.event(verb), subject, (kinds or [None])[0]
+        return self.ids.event(verb, sense), subject, (kinds or [None])[0]
 
     # --- a restriction of an object -------------------------------------------------------------------------------
     def restrict(self, item, own, preds=("oattr", "orel")):

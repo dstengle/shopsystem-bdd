@@ -65,5 +65,5 @@ def test_json_names_the_request_of_an_item_taken_in(ready_repo):
     write_item(ready_repo, "b1", status="shaped")
     path = ready_repo / ".shop" / "backlog" / "b1.md"
     path.write_text(path.read_text().replace("depends_on: []\n", "depends_on: []\nrequest: q1\nasked_by: %s\n" % PEER))
-    shown = json.loads(work(ready_repo, "show", "b1", "--json").stdout)["item"]
+    shown = json.loads(work(ready_repo, "show", "b1", "--json").stdout)["content"]["item"]
     assert (shown["request"], shown["asked_by"]) == ("q1", PEER)

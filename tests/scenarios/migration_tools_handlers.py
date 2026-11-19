@@ -26,7 +26,6 @@ from vocab import handler, runner
 from scenarios.migration_old import CONTEXT, Old, plugin
 
 PLUGIN = HERE.parents[1]
-FEATURE = PLUGIN / "features" / "migration-tools.feature"
 WHO = {"GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t", "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"}
 HOOKS = {"`migrate status --hook`": "SessionStart"}
 
@@ -54,8 +53,7 @@ def held(step):
 
 def migration(step):
     """True in a scenario of features/migration-tools.feature."""
-    scenario = getattr(getattr(step.request.node, "obj", None), "__scenario__", None)
-    return scenario is not None and pathlib.Path(scenario.feature.filename).name == "migration-tools.feature"
+    return sys.modules["vocab"].origin(step.request.node) == "migration-tools"
 
 
 # --- Givens ---
@@ -79,7 +77,7 @@ def recorded(step):
         step.context.setdefault("violates", []).append(code)
     if step.attribute == "release" and step.kind == "repository":     # the release `migrate` reads of it
         held(step)[".shop/plugin-version"] = bare(step.values[0]) + "\n"
-    if step.attribute == "release" and step.kind == "tool" and bare(step.subject or "") == "migrate":
+    if step.attribute == "release" and step.kind in ("tool", "plugin") and bare(step.subject or "") in ("migrate", "this plugin"):
         step.context["migrate"] = bare(step.values[0])                 # the plugin `migrate` runs from says it
     return None
 
@@ -126,7 +124,7 @@ def runs_migrate(step):
     step.context["done"] = run("migrate", *args, env=dict(os.environ, **WHO))
 
 
-for _command in sorted(set(re.findall(r"When .* runs (`migrate[^`]*`)", FEATURE.read_text()))):
+for _command in sys.modules["vocab"].vocab4.requested.commands("migrate"):
     handler("WhenRuns", _command)(runs_migrate)
 
 

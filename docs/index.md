@@ -5,22 +5,22 @@ This is the home of the plugin's documentation. Start here when you want to know
 With the plugin, you tell Claude what you want, and it is kept as one plain-English line that a tool can parse:
 
 ```requirement
-While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
+While the status of an item is `idea`, when the person shapes the item, the backlog service shall set the status of the item to `shaped`.
 ```
 
 That line becomes a scenario in a feature file, and the scenario is the acceptance test the work must pass:
 
 ```gherkin
-@g37 @r37
-Scenario: `work shape` shapes an idea
+@g14 @r14
+Scenario: An idea shaped becomes shaped
   Given an item i1
   And the status of the item i1 is `idea`
-  When the person runs `work shape` on the item i1
-  Then `work` sets the status of the item i1 to `shaped`
+  When the person shapes the item i1
+  Then the backlog service sets the status of the item i1 to `shaped`
 ```
 
-Both are real: they are `r37` of this repository's own [`spec/capabilities/backlog.md`](../spec/capabilities/backlog.md)
-and its scenario in [`features/backlog.feature`](../features/backlog.feature).
+Both are real: they are `r14` of this repository's own [`spec/capabilities/items.md`](../spec/capabilities/items.md)
+and its scenario in [`features/items.feature`](../features/items.feature).
 
 ## Where to start
 
@@ -66,7 +66,7 @@ reach for when you need them.
 **Doing**, answers to "how do I ...":
 
 - [Talking with Claude](talking-with-claude.md): what to say, what Claude does, and what is asked of you.
-- [Recipes](recipes.md): short steps for the tasks that come up, from a new glossary word to a defect.
+- [Recipes](recipes.md): short steps for the tasks that come up, from a new vocabulary word to a defect.
 - [Upgrading](upgrading.md): moving a repository from an older release with `migrate upgrade`, and the version numbering.
 - [Troubleshooting and FAQ](troubleshooting.md): a refusal you met, what it means, and what to do.
 
@@ -78,12 +78,14 @@ reach for when you need them.
 
 **Looking up**, exact and complete:
 
-- [Commands](reference/commands.md): every subcommand of `work`, `model`, `features`, `tools`, `measure` and `migrate`.
+- [Commands](reference/commands.md): every subcommand of `work`, `spec`, `features`, `tools`, `measure` and `migrate`.
+- [The domain model](reference/domain-model.md): the model and vocabulary files, their syntax and their checks.
+- [Adapter contracts](reference/adapters.md): the response envelope and the CLI's contract, `spec/adapters/cli.toml`.
 - [The capability file](reference/capability-file.md): the files of a spec, section by section.
-- [The design model](reference/design-model.md): the kinds a context keeps and the rules `model check` holds.
+- [The design model](reference/design-model.md): the kinds a context keeps and the rules `spec check` holds.
 - [`grammar/language.md`](../grammar/language.md): the language's reference, every rule with its readings.
 - [`grammar/constructs.md`](../grammar/constructs.md): each construct of the grammar, generated.
-- [`grammar/packs/`](../grammar/packs/): the word packs a context imports (`cli`, `spec`, `time`).
+- [`grammar/packs/`](../grammar/packs/): the word packs a context imports (`request`, `spec`, `time`; `cli` retired in 0.38.0).
 
 **History**, kept as it was:
 

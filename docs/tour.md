@@ -4,7 +4,10 @@ in a throwaway clone with a local bare remote as origin and tests/scripts/stub_g
 Paths into the scratch directory are cut to `...`. In that run `work quote` was given `--transcript` with a
 two-message transcript of the conversation below, because no live session's hook had kept one; in a session the
 hook does that for you. The merge in stop 8 was made by hand on the bare remote, and $STUB_GH_STATE told the
-stand-in gh that pull request #1 was merged at that commit.
+stand-in gh that pull request #1 was merged at that commit. Stop 2's outputs and stop 5's scenario are re-run on
+plugin 0.38.0 (2026-11-19, branch domain-contract), where the line is a request to the backlog service; in the later
+stops' outputs the ids and names are written as 0.38.0 gives them (`items#r31` for 0.33's `items#r31`,
+`test_items.py` for `test_backlog.py`).
 -->
 
 # A tour: one feature from an idea to a merged batch
@@ -56,17 +59,17 @@ until the item is `ready`.
 
 ## Stop 2: the line
 
-**Claude does:** it writes the requirement line, the one sentence that says what `work` must do. First it looks up
+**Claude does:** it writes the requirement line, the one sentence that says what the backlog service must do. First it looks up
 the words it may use.
 
 ```console
-$ model lexicon
-actor (39)
+$ spec lexicon
+actor (45)
   the person
   ...
-  `work`
+  the backlog service
   ...
-kind (210)
+kind (205)
   ...
   item
   ...
@@ -76,48 +79,52 @@ attribute (38)
   ...
   status (of item): `shaped` (adjective), `ready` (adjective), `in-batch` (adjective), `delivered` (adjective), `refused` (adjective), `withdrawn` (adjective), `idea` (noun), `needs-input` (noun)
   ...
-event (95)
-  run  [pack cli]
-  print  [pack cli]
+event (138)
+  ...
+  return  [pack request]
+  ...
+  show
   ...
 ```
 
-Everything it needs is there: *the person*, the tool `work`, an *item*, its *title*, its *status*, and the verbs
-*run* and *print*. A line can only use words the lexicon has.
+Everything it needs is there: *the person*, *the backlog service*, an *item*, its *title*, its *status*, the verb
+*show*, which names the backlog service's operation `show`, and the request pack's *return*. A line can only use
+words the lexicon has. It says what the person asks of the service and what the service answers; the command
+`work show` is how the CLI asks, and no line names it.
 
 ### A first attempt, refused
 
 Thinking of the item in front of you, the first draft says "a shaped item":
 
 ```console
-$ model parse 'When the person runs `work show` on a shaped item, `work` shall print the status of the item.'
-refused: the verb run takes as its object command or command or command or command or command or command or a kind of it: agent runs command; agent runs command with option; agent runs command on thing; agent runs command with option on thing; agent runs command without option; agent runs command without option on thing
-  parsed up to: When the person runs `work show` on a
-  nearest words: shaped, shape, `shaped`, shapes, shadowed
-  may follow: agent, answer, batch, capability, capability-proposal, command, comment, dependency, design-decision, entry, feature, file, frame, glossary-proposal, initiative, issue, item, ledger, measurement, note, number, pack, parse, repository, request, requirement, result, review, role, round, route, rule, scenario, section, session, stage, step, task, term, test, tool, transition, trial, work-item
+$ spec parse 'When the person shows a shaped item, the backlog service shall return the status of the item.'
+does not parse at shaped (token 6 of 19)
+  parsed up to: When the person shows a
+  nearest words: shaped, shape, `shaped`, shapes, mapped
+  may follow: item
 ```
 
-Read the refusal from the middle. `parsed up to:` shows where the parser stopped: after "on a". `may follow:` lists
-what could come next, and `item` is there but `shaped` isn't. The first line names the verb's frames: what *run*
-can take around it. In this language a state isn't an adjective on a noun. It goes in its own clause, **While**.
+Read the refusal from the bottom. `parsed up to:` shows where the parser stopped: after "a". `may follow:` lists
+what could come next: `item`, and not `shaped`. In this language a state isn't an adjective on a noun. It goes in its
+own clause, **While**.
 
 ### The reword, read back
 
 ```reading
-While an item is `shaped`, when the person runs `work show` on the item, `work` shall print the status of the item.
-shall [x2: agent the person (constant), x3: command `work show` (parameter), x4: tool `work` (constant)]
+While an item is `shaped`, when the person shows the item, the backlog service shall return the status of the item.
+shall [x2: agent the person (constant), x3: service the backlog service (constant)]
   while [x1: item]
     status(x1) = `shaped`
   when
-    run(e1, subject: x2, object: x3, on: x1)
-  response [x5: status]
-    status(x1) = x5
-    print(e2, subject: x4, object: x5)
+    request(e1, backlog.show, subject: x2, object: x1)
+  response [x4: status]
+    status(x1) = x4
+    return(e2, subject: x3, object: x4)
 ```
 
-That parses. The lines under it are its *form*, what `model parse --form` says the line means. Read in plain
-words: *while* there's an item x1 whose status is `shaped`, *when* the person runs `work show` on x1, `work` prints
-x1's status.
+That parses. The lines under it are its *form*, what `spec parse --form` says the line means. Read in plain
+words: *while* there's an item x1 whose status is `shaped`, *when* the person asks the backlog service to show x1,
+the service returns x1's status.
 
 Reading the form shows the catch. This line promises the status only for shaped items, and you wanted it for every
 item. A line that parses can still say the wrong thing, which is why Claude reads the form, not only the verdict.
@@ -125,44 +132,45 @@ So the While clause goes.
 
 ### One trigger, one line
 
-There's one more thing to settle. The backlog capability already has a line with the same trigger:
+There's one more thing to settle. The items capability already has a line with the same trigger:
 
 ```reading
-When the person runs `work show` on an item, `work` shall print the title of the item.
-shall [x1: agent the person (constant), x2: command `work show` (parameter), x4: tool `work` (constant)]
-  when [x3: item]
-    run(e1, subject: x1, object: x2, on: x3)
-  response [x5: title]
-    of(x5, x3)
-    print(e2, subject: x4, object: x5)
+When the person shows an item, the backlog service shall return the title of the item.
+shall [x1: agent the person (constant), x3: service the backlog service (constant)]
+  when [x2: item]
+    request(e1, backlog.show, subject: x1, object: x2)
+  response [x4: title]
+    of(x4, x2)
+    return(e2, subject: x3, object: x4)
 ```
 
-That's `backlog#r15`. Two lines with one trigger and one condition become one line that says both things, so the
-new line replaces r15 rather than sitting beside it. A requirement is never edited in place: the new line gets a
-new id, and r15's id is retired.
+That's `items#r12`. Two lines with one trigger and one condition become one line that says both things, so the
+new line replaces r12 rather than sitting beside it. A requirement is never edited in place: the new line gets a
+new id, and r12's id is retired.
 
 ```reading
-When the person runs `work show` on an item, `work` shall print the title of the item and the status of the item.
-shall [x1: agent the person (constant), x2: command `work show` (parameter), x4: tool `work` (constant)]
-  when [x3: item]
-    run(e1, subject: x1, object: x2, on: x3)
-  response [x5: title, x6: status]
-    of(x5, x3)
-    print(e2, subject: x4, object: x5)
-    status(x3) = x6
-    print(e3, subject: x4, object: x6)
+When the person shows an item, the backlog service shall return the title of the item and the status of the item.
+shall [x1: agent the person (constant), x3: service the backlog service (constant)]
+  when [x2: item]
+    request(e1, backlog.show, subject: x1, object: x2)
+  response [x4: title, x5: status]
+    of(x4, x2)
+    return(e2, subject: x3, object: x4)
+    status(x2) = x5
+    return(e3, subject: x3, object: x5)
 ```
 
-In plain words: when the person runs `work show` on any item x3, `work` prints x3's title and prints x3's status.
+In plain words: when the person asks the backlog service to show any item x2, the service returns x2's title and
+x2's status.
 That's what you asked for.
 
 ```console
-$ work line b250 --into backlog --retires backlog#r15 --group '`work show` names an item by its title and its status' 'When the person runs `work show` on an item, `work` shall print the title of the item and the status of the item.'
-b250 "work show prints the status of an item": backlog#r43 retires backlog#r15
+$ work line b250 --into items --retires items#r12 --group 'An item shown gives its title and its status' 'When the person shows an item, the backlog service shall return the title of the item and the status of the item.'
+b250 "work show prints the status of an item": items#r31 retires items#r12
 ```
 
 **What happened.** The line went into the item's `## Requirements`, not into `spec/` yet. It was given the
-next free id of the capability, `r43`, in a new group `g43`, with `retired: [r15]` beside it. The spec itself only
+next free id of the capability, `r31`, in a new group `g31`, with `retired: [r12]` beside it. The spec itself only
 changes when a batch lays the line, in stop 5. [Writing requirements](writing-requirements.md) has the do's and
 don'ts this stop ran into.
 
@@ -178,7 +186,7 @@ b250 "work show prints the status of an item" ready
 ```
 
 **What happened.** The rating gives the item its place in the backlog. `work ready` is the readiness bar: on a
-copy of `spec/` with b250's lines laid in, it checked that each line parses, that `model logic` finds no clash with
+copy of `spec/` with b250's lines laid in, it checked that each line parses, that `spec logic` finds no clash with
 the rest of the spec, and that `features generate` can write the group's scenario with no bracketed placeholder.
 All three held, so the item moved to `ready`. Had one failed, `work ready` would have refused and named the reason.
 
@@ -221,21 +229,21 @@ batch brief: .../repo/.shop/worktrees/batch-34-driver/brief.md
 **What happened.** A *batch* is ready items built together on one branch and closed by one pull request.
 `work batch start` picked the ready items in rank order (here, one), moved b250 to `in-batch`, and made the branch
 `batch-34` in its own worktree. On that branch, one commit laid the item's lines into
-`spec/capabilities/backlog.md`: group g15 and line r15 out, g43 and r43 in, and `r43` added to the capability's
-`unbuilt:` list. The same commit regenerated `features/backlog.feature`, where r15's scenario gave way to this one:
+`spec/capabilities/items.md`: group g12 and line r12 out, g31 and r31 in, and `r31` added to the capability's
+`unbuilt:` list. The same commit regenerated `features/items.feature`, where r12's scenario gave way to this one:
 
 ```gherkin
-  @g43 @r43
-  Scenario: `work show` names an item by its title and its status
+  @g31 @r31
+  Scenario: An item shown gives its title and its status
     Given an item i1
-    When the person runs `work show` on the item i1
-    Then the item i1 has the title t1
-    And `work` prints the title t1
-    And `work` prints the status of the item i1
+    When the person shows the item i1
+    Then the backlog service returns the title t1
+    And the item i1 has the title t1
+    And the backlog service returns the status of the item i1
 ```
 
 Nobody wrote this scenario. `features generate` read it off the line's form: a Given for the item the trigger names,
-the When from the trigger, a Then for each thing `work` prints. The tags `@g43 @r43` tie it to its group and line.
+the When from the request, a Then for each thing the service returns. The tags `@g31 @r31` tie it to its group and line.
 It's the item's acceptance test.
 
 The last line of the output is the *batch brief*: one file holding the batch, its task, its worktree and branch, the
@@ -249,29 +257,29 @@ rules every subagent follows, and where to stop.
 ```console
 $ work batch resume batch-34
 batch-34 building: plan .shop/batches/34/plan.md
-t1 b250 "work show prints the status of an item": running in .shop/worktrees/batch-34-t1 on batch-34-b250: build backlog#r43; then work batch done batch-34 t1, or work batch park batch-34 b250 --question <text>
+t1 b250 "work show prints the status of an item": running in .shop/worktrees/batch-34-t1 on batch-34-b250: build items#r31; then work batch done batch-34 t1, or work batch park batch-34 b250 --question <text>
 ```
 
-The task's subagent works in `.shop/worktrees/batch-34-t1`. It starts with red. While `r43` is in `unbuilt:`, its
+The task's subagent works in `.shop/worktrees/batch-34-t1`. It starts with red. While `r31` is in `unbuilt:`, its
 scenario runs as an expected failure:
 
 ```console
-$ python3 -m pytest -q tests/scenarios/test_backlog.py -m r43
+$ python3 -m pytest -q tests/scenarios/test_items.py -m r31
 x                                                                        [100%]
 1 xfailed in 2.11s
 ```
 
-It takes `r43` out of `unbuilt:` and runs the scenario again. Now it fails for real, on its last Then:
+It takes `r31` out of `unbuilt:` and runs the scenario again. Now it fails for real, on its last Then:
 
 ```text
-E       AssertionError: ('`work` prints the status of the item i1', 'b1 "Title of i1"\n  status: idea\n  provenance: own\n  value: medium-value\n  urgency: medium-urgency\n  size: medium\n  depends on: -\n')
-FAILED tests/scenarios/test_backlog.py::test_work_show_names_an_item_by_its_title_and_its_status
+E       AssertionError: ('the backlog service returns the status of the item i1', 'b1 "Title of i1"\n  status: idea\n  provenance: own\n  value: medium-value\n  urgency: medium-urgency\n  size: medium\n  depends on: -\n')
+FAILED tests/scenarios/test_items.py::test_an_item_shown_gives_its_title_and_its_status
 1 failed in 2.13s
 ```
 
 Look at the output in that message: `work show` was already printing `status: idea`. The step's handler didn't know
 how to read `work show`'s fields, only `work backlog`'s table. So the build here is on the test side: the handler
-learns to check a `work show` field, and the grammar's corpus gets r43's reading in place of r15's.
+learns to check a `work show` field, and the grammar's corpus gets r31's reading in place of r12's.
 
 ```python
     elif " of the item " in np and W.runs(step)[-1]["args"][1:2] == ["show"]:
@@ -280,16 +288,16 @@ learns to check a `work show` field, and the grammar's corpus gets r43's reading
         assert "  %s: %s" % (attribute, wanted) in stdout.splitlines(), (step.text, stdout)
 ```
 
-The scenario passes, and the subagent commits. `r43` leaves `unbuilt:` in the same commit that makes it pass, and
+The scenario passes, and the subagent commits. `r31` leaves `unbuilt:` in the same commit that makes it pass, and
 the message ends with the item it builds:
 
 ```text
-a066f2764 work show prints the status of an item (backlog r43)
+a066f2764 work show prints the status of an item (items r31)
 
 Item: b250
 
- grammar/corpus/spec/backlog.md       | 10 ++++++----
- spec/capabilities/backlog.md         |  2 +-
+ grammar/corpus/spec/items.md         | 10 ++++++----
+ spec/capabilities/items.md           |  2 +-
  tests/scenarios/backlog_handlers4.py |  4 ++++
  3 files changed, 11 insertions(+), 5 deletions(-)
 ```
@@ -302,7 +310,7 @@ batch-34 t1 b250 "work show prints the status of an item": done
 ```
 
 **What happened.** `work batch done` refuses a task until it's finished. It checked that the worktree is
-clean, that every commit cites `Item: b250`, that nothing under `.shop/` changed, that `r43` is no longer
+clean, that every commit cites `Item: b250`, that nothing under `.shop/` changed, that `r31` is no longer
 `unbuilt:`, and that the whole suite passes in the worktree. A refusal names which one failed and why. A question
 the subagent can't settle doesn't come to you mid-build: the driver parks the item with `work batch park`, the rest
 of the batch carries on, and you answer it later with `work answer`.
@@ -331,7 +339,7 @@ batch got, saved at the brief's findings path:
 ```markdown
 ## Verdict
 
-The batch builds b250: r43 replaces r15 and its scenario passes. No finding holds the merge.
+The batch builds b250: r31 replaces r12 and its scenario passes. No finding holds the merge.
 
 ## Findings
 
@@ -370,7 +378,7 @@ b250 "work show prints the status of an item"
 
 `work batch merged` asked gh whether the pull request is merged, checked that its merge commit is in `main`, then
 moved b250 to `delivered` and the batch to `merged`, and removed the batch's worktrees and branches. And there's
-the feature, describing itself: `work show` on b250 now promises its status, and the status is `delivered`.
+the feature, describing itself: showing b250 now promises its status, and the status is `delivered`.
 
 Then Claude measures the batch:
 
@@ -425,8 +433,8 @@ Here's where everything from the tour now lives:
 | what | where |
 |---|---|
 | your words | `.shop/quotes/24.md` |
-| the line, `backlog#r43`, in group g43 | `spec/capabilities/backlog.md`, with `r15` in its `retired:` |
-| its scenario, `@g43 @r43` | `features/backlog.feature` |
+| the line, `items#r31`, in group g31 | `spec/capabilities/items.md`, with `r12` in its `retired:` |
+| its scenario, `@g31 @r31` | `features/items.feature` |
 | the item, now `delivered`, with its history in `git log` | `.shop/backlog/b250.md` |
 | the batch, its task table and its review | `.shop/batches/34/plan.md`, `.shop/batches/34/review-1.md` |
 | what it cost | `.shop/records/measurements/2026-11-10-batch-34.md` |

@@ -80,7 +80,7 @@ def test_the_lines_are_found_in_every_kind_of_block_and_in_their_context():
     notes = docs_lines.lines("docs/examples/notes-cli/README.md",
                              (EXAMPLE / "README.md").read_text(encoding="utf-8"))
     assert {root for *_, root in notes} == {EXAMPLE}
-    assert any("\\`" not in line and "`notes add`" in line for _, line, _, _ in notes)
+    assert any("\\`" not in line and "adds a note" in line for _, line, _, _ in notes)
 
 
 def broken(page, old, new):
@@ -90,8 +90,8 @@ def broken(page, old, new):
 
 
 def test_a_line_that_does_not_parse_is_caught(tools):
-    text = broken("docs/how-it-works.md", "shall not print the title of the item.",
-                  "shall not print the title of the thing it shows.")
+    text = broken("docs/how-it-works.md", "shall not return the title of the item.",
+                  "shall not return the title of the thing it shows.")
     assert any("refused in this repository" in p for p in line_problems("docs/how-it-works.md", text))
 
 
@@ -104,24 +104,24 @@ def test_a_line_shown_refused_that_parses_is_caught(tools):
 
 def test_a_sketch_line_read_in_this_repository_is_caught(tools):
     text = broken("docs/recipes.md", "<!-- docs: context tests/scripts/fixtures/docs-labels -->\n```text", "```text")
-    assert any("`work label`" in p for p in line_problems("docs/recipes.md", text))
+    assert any("tags an item with a label" in p for p in line_problems("docs/recipes.md", text))
 
 
 def test_a_scenario_that_is_not_gherkin_is_caught(tools):
-    text = broken("docs/index.md", "Scenario: `work shape` shapes an idea", "Scenari `work shape` shapes an idea")
+    text = broken("docs/index.md", "Scenario: An idea shaped becomes shaped", "Scenari An idea shaped becomes shaped")
     assert any("not valid Gherkin" in p for p in gherkin_problems("docs/index.md", text))
 
 
 def test_a_scenario_missing_a_given_is_caught(tools):
-    text = broken("docs/tour.md", "    Given an item i1\n    When the person runs `work show`",
-                  "    When the person runs `work show`")
+    text = broken("docs/tour.md", "    Given an item i1\n    When the person shows the item i1",
+                  "    When the person shows the item i1")
     assert any("names i1, which no Given brought in" in p for p in gherkin_problems("docs/tour.md", text))
 
 
 def test_a_step_that_does_not_read_is_caught(tools):
-    text = broken("docs/index.md", "Then `work` sets the status of the item i1 to `shaped`",
-                  "Then `work` shapes the item i1")
-    assert any("does not" in p and "shapes the item i1" in p for p in gherkin_problems("docs/index.md", text))
+    text = broken("docs/index.md", "Then the backlog service sets the status of the item i1 to `shaped`",
+                  "Then the backlog service shelves the item i1")
+    assert any("does not" in p and "shelves the item i1" in p for p in gherkin_problems("docs/index.md", text))
 
 
 def test_a_value_in_the_short_form_is_caught(tools):
@@ -131,8 +131,8 @@ def test_a_value_in_the_short_form_is_caught(tools):
 
 def test_a_quote_that_differs_from_its_feature_file_is_caught(tools):
     page = "docs/getting-started.md"
-    text = broken(page, "    Then `notes` deletes the note n1\n```", "    Then `notes` deletes the note n1\n"
-                  "    And `notes` exits successfully\n```")
+    last = "    Then the notes service sets the status of the note n1 to `removed`\n```"
+    text = broken(page, last, last[:-4] + "\n    And the notes service keeps the note n1\n```")
     assert any("is not as notes.feature has it" in p for p in gherkin_problems(page, text))
     text = broken(page, "Feature: Notes\n  Narrator: the person\n\n  @g1", "Feature: Notes\n  Narrator: a person\n\n  @g1")
     assert any("'Narrator: a person' is not notes.feature's" in p for p in gherkin_problems(page, text))

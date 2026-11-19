@@ -31,7 +31,7 @@ a request's resolution names something that is not a requirement of the spec
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r184
+- Cited by: checking#r13
 - Fails on:
 
   ```prolog
@@ -332,7 +332,7 @@ a requirement has no id
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r175
+- Cited by: checking#r4
 - Fails on:
 
   ```prolog
@@ -352,7 +352,7 @@ two requirements share an id
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r176
+- Cited by: checking#r5
 - Fails on:
 
   ```prolog
@@ -373,7 +373,7 @@ a retired id is used again
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r177
+- Cited by: checking#r6
 - Fails on:
 
   ```prolog
@@ -522,7 +522,7 @@ a group has more than one statement
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r178
+- Cited by: checking#r7
 - Fails on:
 
   ```prolog
@@ -544,7 +544,7 @@ a given line is not example data
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r180
+- Cited by: checking#r9
 - Fails on:
 
   ```prolog
@@ -563,7 +563,7 @@ two groups of a capability share features, condition and trigger
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r179
+- Cited by: checking#r8
 - Fails on:
 
   ```prolog
@@ -612,7 +612,7 @@ a scenario is generated from more than one group
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/readiness_bar.py`
-- Cited by: design-model-check#r182
+- Cited by: checking#r11
 - Fails on:
 
   ```prolog
@@ -632,7 +632,7 @@ a group has no scenario
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/readiness_bar.py`
-- Cited by: design-model-check#r181
+- Cited by: checking#r10
 - Fails on:
 
   ```prolog
@@ -726,7 +726,7 @@ a check decision names no test
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: decision-tiers#r26
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -746,7 +746,7 @@ a requirement decision names no requirement
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: decision-tiers#r27
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -766,7 +766,7 @@ an accepted decision supersedes one still accepted
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: decision-tiers#r18
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -808,7 +808,7 @@ a request that is part of no job-thread, cites no origin and is raised for no re
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r183
+- Cited by: checking#r12
 - Fails on:
 
   ```prolog
@@ -849,7 +849,7 @@ a word the glossary avoids
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r185
+- Cited by: checking#r14
 - Fails on:
 
   ```prolog
@@ -876,7 +876,7 @@ a term has two entries, other than the senses of one verb
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r186
+- Cited by: checking#r15
 - Fails on:
 
   ```prolog
@@ -899,7 +899,7 @@ an avoided word is a term
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r187
+- Cited by: checking#r16
 - Fails on:
 
   ```prolog
@@ -923,7 +923,7 @@ an avoided word is a term
 a term of a typed glossary does not name its part of speech
 
 - Severity: violation
-- Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`, `scripts/spec_lexicon.py`, `scripts/spec_relations.py`
+- Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`, `scripts/spec_lexicon_problems.py`, `scripts/spec_relations.py`
 - Cited by: no line
 - Fails on:
 
@@ -947,7 +947,7 @@ a term of a typed glossary does not name its part of speech
 a value names no attribute, or more than one
 
 - Severity: violation
-- Implemented in: `scripts/model.lp`, `scripts/spec_lexicon.py`
+- Implemented in: `scripts/model.lp`, `scripts/spec_lexicon_problems.py`
 - Cited by: no line
 - Fails on:
 
@@ -969,7 +969,7 @@ a value names no attribute, or more than one
 two terms are written the same
 
 - Severity: violation
-- Implemented in: `scripts/model.lp`, `scripts/spec_lexicon.py`
+- Implemented in: `scripts/model.lp`, `scripts/spec_lexicon_problems.py`
 - Cited by: no line
 - Fails on:
 
@@ -991,7 +991,7 @@ a verb's entry gives no frame: the kinds of its subject and object, or that it t
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/migrate_upgrade_frames.py`, `scripts/spec_frames.py`
-- Cited by: migration-tools#r75
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -1010,7 +1010,7 @@ a condition names another kind with `the`: a relation between two kinds is a ver
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/migrate_upgrade_frames.py`, `scripts/spec_frames.py`
-- Cited by: design-model-check#r208
+- Cited by: checking#r31
 - Fails on:
 
   ```prolog
@@ -1029,7 +1029,7 @@ a verb's Frame: does not read as its subject, the verb and the kinds it takes
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/migrate_upgrade_frames.py`, `scripts/spec_frames.py`
-- Cited by: design-model-check#r217
+- Cited by: checking#r34
 - Fails on:
 
   ```prolog
@@ -1048,7 +1048,7 @@ a verb's entry says neither state nor action
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`
-- Cited by: design-model-check#r221
+- Cited by: checking#r37
 - Fails on:
 
   ```prolog
@@ -1067,7 +1067,7 @@ two entries of one verb take, in every slot, the same kind or one kind under the
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`
-- Cited by: design-model-check#r224
+- Cited by: checking#r40
 - Fails on:
 
   ```prolog
@@ -1087,7 +1087,7 @@ a term an imported pack defines too has no `Redefines:` naming the pack
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/spec_packs.py`
-- Cited by: design-model-check#r227
+- Cited by: checking#r43
 - Fails on:
 
   ```prolog
@@ -1106,7 +1106,7 @@ an attribute does not say whether its values are adjectives or nouns (Values (ad
 
 - Severity: warning
 - Implemented in: `scripts/model.lp`
-- Cited by: migration-tools#r80
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -1125,7 +1125,7 @@ an attribute does not say whether its values are adjectives or nouns (Values (ad
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/spec_packs.py`
-- Cited by: design-model-check#r226
+- Cited by: checking#r42
 - Fails on:
 
   ```prolog
@@ -1136,6 +1136,363 @@ an attribute does not say whether its values are adjectives or nouns (Values (ad
 
   ```prolog
   typed("ctx").
+  ```
+
+## v_t18
+
+a vocabulary entry names no element of the domain model
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/model_domain.py`, `scripts/spec_vocabulary.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  elementless("note","spec/vocabulary/notes.md: no element").
+  ```
+
+- Passes on:
+
+  ```prolog
+  category("note","kind").
+  ```
+
+## v_t19
+
+a vocabulary entry names an element the domain model does not declare
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/model_domain.py`, `scripts/spec_vocabulary.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  unresolved("shelf","spec/vocabulary/notes.md: object shelf").
+  ```
+
+- Passes on:
+
+  ```prolog
+  category("shelf","kind").
+  ```
+
+## v_t20
+
+two entries of one vocabulary layer name one element, and neither is a form of the other
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/model_domain.py`, `scripts/spec_vocabulary.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  named_twice("memo","spec/vocabulary/notes.md: note and memo both name object note").
+  ```
+
+- Passes on:
+
+  ```prolog
+  category("memo","kind").
+  ```
+
+## v_t21
+
+a context with a domain model imports the retired pack cli: run `migrate upgrade`
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/model_domain.py`, `scripts/spec_vocabulary.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  retired_import("ctx","cli").
+  ```
+
+- Passes on:
+
+  ```prolog
+  typed("ctx").
+  ```
+
+## v_m1
+
+a requirement uses a word that names no element through the vocabulary its capability's area reads
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  foreign_term("c#r1","finding","finding is a word of analysis, which the area notes does not read").
+  ```
+
+- Passes on:
+
+  ```prolog
+  parsed("c#r1").
+  ```
+
+## v_m8
+
+the domain model breaks its own rules: a relation to an undeclared object, a transition over an undeclared value, two operations of one name in a service, an event raised by no operation
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/domain_model_check.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  model_problem("note.carries","the relation carries of note names tag, which the model does not declare").
+  ```
+
+- Passes on:
+
+  ```prolog
+  typed("ctx").
+  ```
+
+## v_a1
+
+an operation of the domain model has no table in the CLI contract and is not unexposed
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/adapter_cli_check.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  adapter_problem("v_a1","notes.list","the operation notes.list has no table in spec/adapters/cli.toml").
+  ```
+
+- Passes on:
+
+  ```prolog
+  typed("ctx").
+  ```
+
+## v_a2
+
+the CLI contract names an operation the model does not declare, or a parameter its operation does not declare
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/adapter_cli_check.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  adapter_problem("v_a2","notes.lists","spec/adapters/cli.toml names the operation notes.lists").
+  ```
+
+- Passes on:
+
+  ```prolog
+  typed("ctx").
+  ```
+
+## v_a3
+
+the CLI contract names a command or an option the program's argparse lacks
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/adapter_cli_check.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  adapter_problem("v_a3","notes add --urgency","notes add has no option --urgency").
+  ```
+
+- Passes on:
+
+  ```prolog
+  typed("ctx").
+  ```
+
+## v_a4
+
+a command or an option of the program's argparse is named by no table of the CLI contract and is not cli-only
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/adapter_cli_check.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  adapter_problem("v_a4","notes export","no operation of spec/adapters/cli.toml names the command 'notes export'").
+  ```
+
+- Passes on:
+
+  ```prolog
+  typed("ctx").
+  ```
+
+## v_m2
+
+a request names a parameter its operation does not declare, or a value outside the parameter's values
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  requester("c#r1","notes.add","the person").
+  req_param("c#r1","notes.add","colour").
+  op_param("notes.add","text").
+  ```
+
+- Passes on:
+
+  ```prolog
+  requester("c#r1","notes.add","the person").
+  req_param("c#r1","notes.add","text").
+  op_param("notes.add","text").
+  ```
+
+## v_m3
+
+a requester the operation's actors do not include
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  requester("c#r1","decisions.enter","the upstream").
+  op_by("decisions.enter","the person").
+  ```
+
+- Passes on:
+
+  ```prolog
+  requester("c#r1","decisions.enter","the person").
+  op_by("decisions.enter","the person").
+  ```
+
+## v_m4
+
+an operation declares a refusal reason that no line states
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  op_reason("notes.add","no text").
+  ```
+
+- Passes on:
+
+  ```prolog
+  op_reason("notes.add","no text").
+  states_reason("c#r4","notes.add","no text").
+  ```
+
+## w_m5
+
+a lifecycle transition no line causes
+
+- Severity: warning
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  transition("note","status","draft","active").
+  ```
+
+- Passes on:
+
+  ```prolog
+  transition("note","status","draft","active").
+  sets("c#r1","note","status","draft","active").
+  ```
+
+## v_m6
+
+a line sets a status by a transition its lifecycle does not allow
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  lifecycle("note","status").
+  transition("note","status","draft","active").
+  sets("c#r1","note","status","active","draft").
+  ```
+
+- Passes on:
+
+  ```prolog
+  lifecycle("note","status").
+  transition("note","status","draft","active").
+  sets("c#r1","note","status","draft","active").
+  ```
+
+## v_m7
+
+an operation no line requests
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  operation("notes.add").
+  ```
+
+- Passes on:
+
+  ```prolog
+  operation("notes.add").
+  requester("c#r1","notes.add","the person").
+  ```
+
+## v_r1
+
+an item cites a record in its `source:`: an item's provenance cites quotes, requests and decisions, never a record
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  cites_record("b400","record/x/y/z/2026-11-19-plan").
+  new_item("b400").
+  ```
+
+- Passes on:
+
+  ```prolog
+  cites_record("b300","record/x/y/z/2026-11-19-plan").
+  ```
+
+## w_r1
+
+an item older than the records policy cites a record in its `source:` (history, kept as it is)
+
+- Severity: warning
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  cites_record("b300","record/x/y/z/2026-11-19-plan").
+  ```
+
+- Passes on:
+
+  ```prolog
+  cites_record("b400","record/x/y/z/2026-11-19-plan").
+  new_item("b400").
   ```
 
 ## v_p0
@@ -1163,7 +1520,7 @@ a requirement does not parse
 
 - Severity: violation
 - Implemented in: `scripts/model.lp`, `scripts/readiness_bar.py`
-- Cited by: design-model-check#r188
+- Cited by: checking#r17
 - Fails on:
 
   ```prolog
@@ -1220,7 +1577,7 @@ a capability serves no job
 
 - Severity: warning
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r198
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -1284,7 +1641,7 @@ an observation no initiative cites
 
 - Severity: warning
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r197
+- Cited by: checking#r25
 - Fails on:
 
   ```prolog
@@ -1345,7 +1702,7 @@ a decision in force gives no tier
 
 - Severity: warning
 - Implemented in: `scripts/model.lp`
-- Cited by: decision-tiers#r13
+- Cited by: no line
 - Fails on:
 
   ```prolog
@@ -1386,7 +1743,7 @@ a requirement holds example data: a code or quoted string that names no declared
 
 - Severity: warning
 - Implemented in: `scripts/model.lp`
-- Cited by: design-model-check#r246
+- Cited by: checking#r45
 - Fails on:
 
   ```prolog
@@ -1404,7 +1761,7 @@ a requirement holds example data: a code or quoted string that names no declared
 a term's gloss is more than one sentence
 
 - Severity: violation
-- Implemented in: `scripts/spec_lexicon.py`
+- Implemented in: `scripts/spec_lexicon_problems.py`
 - Cited by: no line
 - Fails on:
 
@@ -1457,7 +1814,7 @@ a relation is written as an entry, not as a row of `## Relations`
 a term's meaning is given as a `Means:` field rather than a sentence
 
 - Severity: violation
-- Implemented in: `scripts/spec_lexicon.py`
+- Implemented in: `scripts/spec_lexicon_problems.py`
 - Cited by: no line
 - Fails on:
 

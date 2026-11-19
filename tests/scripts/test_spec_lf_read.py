@@ -15,7 +15,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import toolchain
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
-FIXTURE = REPO / "tests" / "scripts" / "fixtures" / "codified-2"
+FIXTURE = REPO / "tests" / "scripts" / "fixtures" / "request-4"     # the context in request words (domain contract)
 LANGUAGE = REPO / "grammar" / "language.md"
 BLOCK = re.compile(r"^```reading\n(.*?)\n```$", re.MULTILINE | re.DOTALL)
 
@@ -51,29 +51,30 @@ def test_each_line_of_the_language_reference_reads_as_it_says(vocab, line, said)
 
 
 def test_the_refusals_name_the_words(vocab):
-    said = reading(vocab, "When the person runs `work start`, `work` shall print the stage.")
+    said = reading(vocab, "When the person opens the board, the work service shall return the stage.")
     assert said.startswith('refused: "the stage" has no antecedent')
-    said = reading(vocab, "While sessions do not follow stages, when the person runs `work start`, `work` shall "
-                          "exit successfully.")
+    said = reading(vocab, "While sessions do not follow stages, when the person opens the board, the work service "
+                          "shall complete the request.")
     assert 'says "does not follow stages"' in said and '"follows no stage"' in said
-    said = reading(vocab, "While a session does not have a worktree, when the person runs `work start`, `work` "
-                          "shall exit successfully.")
+    said = reading(vocab, "While a session does not have a worktree, when the person opens the board, the work "
+                          "service shall complete the request.")
     assert '"has no worktree"' in said and '"a worktree that the session does not have"' in said
 
 
 def test_the_restricted_the_binds_to_an_earlier_referent_and_keeps_its_restriction(vocab):
-    f = spec_lf.form(vocab, spec_grammar4.parse(FIXTURE, "When a session ends a stage, `work` shall print the stage "
-                                                         "that a session follows.").tree)
+    f = spec_lf.form(vocab, spec_grammar4.parse(FIXTURE, "When a session ends a stage, the work service shall return "
+                                                         "the stage that a session follows.").tree)
     response = f.parts[-1]
     assert [r.kind for r in response.refs] == ["session"]
     assert any(getattr(a, "pred", None) == "state" for a in response.body)
 
 
 def test_model_parse_prints_a_reading_refusal_with_the_tree_and_exits_1():
-    model = [sys.executable, str(REPO / "scripts" / "model"), "--root", str(FIXTURE), "parse"]
-    done = subprocess.run(model + ["`work` shall write a file."], capture_output=True, text=True)
+    model = [sys.executable, str(REPO / "scripts" / "spec"), "--root", str(FIXTURE), "parse"]
+    done = subprocess.run(model + ["The work service shall write a file."], capture_output=True, text=True)
     assert done.returncode == 1, done.stdout + done.stderr
     assert done.stdout.startswith('refused: the line has no trigger and neither "always" nor "never"')
     assert "  tree: " in done.stdout
-    done = subprocess.run(model + ["--form", "`work` shall not write a file."], capture_output=True, text=True)
+    done = subprocess.run(model + ["--form", "The work service shall not write a file."], capture_output=True,
+                          text=True)
     assert done.returncode == 0 and "not [x2: file]" in done.stdout, done.stdout + done.stderr

@@ -18,7 +18,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tests"))
 import toolchain
 
-SCRIPT = ROOT / "scripts" / "model"
+SCRIPT = ROOT / "scripts" / "spec"
 GLOSSARY = ROOT / "tests" / "scripts" / "fixtures" / "glossary" / "spec" / "index.md"
 PATH = "example.org/fixture/glossary"
 CTX = f"bounded-context/{PATH}"
@@ -102,7 +102,7 @@ class CodifiedTest(unittest.TestCase):
 
     def check(self):
         r = self.run_model("check", "--json")
-        return json.loads(r.stdout), r
+        return json.loads(r.stdout)["content"], r
 
     def rows(self, found, code):
         return [a for name, a in found["violations"] if name == code]

@@ -23,8 +23,8 @@ def run(*args, **kw):
 @pytest.fixture(scope="module")
 def check():
     """`model check` of the live repository, once: its tests are one xdist group, on one worker."""
-    done = run(SCRIPTS / "model", "check", "--json")
-    return json.loads(done.stdout)
+    done = run(SCRIPTS / "spec", "check", "--json")
+    return json.loads(done.stdout)["content"]
 
 
 def rules(found, *codes):
@@ -127,7 +127,7 @@ def test_model_logic_on_the_live_spec_is_fast():
     best = None
     for _ in range(3):
         start, wall = _cpu(), time.monotonic()
-        done = run(SCRIPTS / "model", "logic", "--json", timeout=60)
+        done = run(SCRIPTS / "spec", "logic", "--json", timeout=60)
         took, wall = _cpu() - start, time.monotonic() - wall
         best = took if best is None else min(best, took)
         if best < 2:

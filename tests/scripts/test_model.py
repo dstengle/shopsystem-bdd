@@ -1,4 +1,4 @@
-"""Unit tests of scripts/model. The scenarios of features/design-model-check.feature are bound in
+"""Unit tests of scripts/spec (`model` until 0.38.0). The scenarios of features/design-model-check.feature are bound in
 tests/scenarios/test_design_model_check.py. A test here that shares a scenario's subject usually checks what its steps do
 not; test_r5 and test_r20 repeat their scenarios and stay until a later cleanup removes them. ModelTest and the file
 builders here serve test_model_reading.py and test_model_glossary.py too. Every fixture is codified (design model v5):
@@ -33,7 +33,7 @@ from model_fixture import (  # noqa: F401 -- the builders, imported from here by
     full,
 )
 
-SCRIPT = ROOT / "scripts" / "model"
+SCRIPT = ROOT / "scripts" / "spec"
 LP = ROOT / "scripts" / "model.lp"
 
 try:
@@ -67,7 +67,7 @@ class ModelTest(unittest.TestCase):
 
     def check_json(self, *args):
         r = self.run_model("check", "--json", *args)
-        return json.loads(r.stdout), r
+        return json.loads(r.stdout)["content"], r
 
     def violated(self, found, relation):
         return [a for name, a in found["violations"] if name == relation]

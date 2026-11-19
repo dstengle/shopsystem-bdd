@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/u11-is-checked-after-every-scenario-enforced-by-its-test
 summary: "U11 (a tool that refuses a command exits with an error naming the reason and changes nothing) is verified by the check that runs after every generated scenario, enforced by the test of that check."
 date: 2026-11-16
-status: accepted
+status: superseded
 tier: check
 enforced_by: [tests/scripts/test_features_vocab.py::test_the_u11_and_u8_checks_after_a_scenario]
 verified_by: [check]

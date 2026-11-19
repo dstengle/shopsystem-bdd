@@ -66,7 +66,9 @@ def add_parsers(sub):
     p.add_argument("--term", help="a term bullet for the capability's ## Terms, in place of a line")
     p.add_argument("--recodify", metavar="CAP", help="the codified capability the item switches to the new language: "
                    "`language: codified-2` written into its block (`universal`: spec/universal.md)")
-    p.add_argument("--relation", help="a row `| from | word | to | cardinality |` for the capability's ## Relations")
+    p.add_argument("--relation", help="a row `| from | word | to | cardinality |` for the capability's ## Relations; "
+                   "with a domain model, `<object>: <phrase> → <object> (<cardinality>)` for its area's model")
+    p.add_argument("--model", help="with a domain model: model lines for the area of the capability --into names")
     p.add_argument("--given", nargs=2, metavar=("GROUP", "BLOCK"),
                    help="the given block of the item's group g<n> in the capability: example data, one line a row")
     p.add_argument("--universal", help="a universal condition for spec/universal.md, with no --into")
@@ -118,7 +120,7 @@ def cmd_depend(args):
     return 0
 
 
-PIECES = ("text", "term", "relation", "given", "universal", "upstream", "recodify")
+PIECES = ("text", "term", "relation", "given", "universal", "upstream", "recodify", "model")
 
 
 def _changed(args):
@@ -153,6 +155,11 @@ def _unreplaced(args):
     return 0
 
 
+def _modelled(root):
+    import domain_model
+    return domain_model.exists(root)
+
+
 def cmd_line(args):
     """`work line`: it parses nothing; `work ready` is the check (D5). One piece a run: a line, or one flag's piece."""
     import backlog_chore
@@ -168,8 +175,8 @@ def cmd_line(args):
         return _changed(args)
     given = [k for k in PIECES if getattr(args, k) is not None]
     if len(given) != 1:
-        raise backlog_items.Refused("work line: give one of a requirement line, --term, --relation, --given, "
-                                    "--universal, --upstream or --recodify")
+        raise backlog_items.Refused("work line: give one of a requirement line, --term, --relation, --model, "
+                                    "--given, --universal, --upstream or --recodify")
     piece = given[0]
     if piece == "recodify":
         if args.into is not None or args.retires is not None:
@@ -199,7 +206,10 @@ def cmd_line(args):
         item, ident = backlog_forms.add_universal(args.root, args.name, args.universal)
         print("%s: universal#%s" % (backlog_items.label(item), ident))
         return 0
-    if piece == "term":
+    if piece in ("term", "relation", "model") and (piece == "model" or _modelled(args.root)):
+        import backlog_model
+        item, said = backlog_model.add(args.root, args.name, args.into, **{piece: getattr(args, piece)})
+    elif piece == "term":
         item, said = backlog_lines.add_term(args.root, args.name, args.into, args.term), "a term of %s" % args.into
     elif piece == "relation":
         item = backlog_forms.add_relation(args.root, args.name, args.into, args.relation)

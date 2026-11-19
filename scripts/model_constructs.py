@@ -6,7 +6,8 @@ form, the functions of the grammar it is made of, an example line, the example's
 entries, each example parsed in the catalogue's context `grammar/corpus/constructs/` before the file is written. The
 catalogue cannot be written while a function of that context's grammar is no construct's, word's or glue's, or while
 an example does not parse to one tree, is refused by a reading rule, does not linearise back word for word or does
-not use its construct."""
+not use its construct. An entry whose construct is a request's is read in the catalogue's other context
+`grammar/corpus/constructs/request/` (a domain model and the request pack; `CONTEXTS`)."""
 import re
 import sys
 from pathlib import Path
@@ -15,12 +16,14 @@ from model_constructs_table import CONSTRUCTS, GLUE, WORDS
 
 PLUGIN = Path(__file__).resolve().parents[1]
 CONTEXT = PLUGIN / "grammar" / "corpus" / "constructs"
+CONTEXTS = {"request": CONTEXT / "request"}     # an entry's other context (model_constructs_table's `context`)
 CATALOGUE = "grammar/constructs.md"
 
 
 def roles(vocab):
     """{verb function: its frame's roles}: `object` (a kind right after the verb), `to` (a kind after "to"),
-    `oblique` (a kind after any other fixed words) and `fixed` (fixed words with no kind after them)."""
+    `oblique` (a kind after any other fixed words), `fixed` (fixed words with no kind after them) and `intransitive`
+    (nothing after the verb: the request pack's "an agent starts")."""
     import spec_rgl
     out = {}
     for n, v in enumerate(vocab.verbs, 1):
@@ -29,7 +32,7 @@ def roles(vocab):
             for fixed, kind in pieces:
                 tags.add("fixed" if kind is None else "object" if not fixed else
                          "to" if fixed == ("to",) else "oblique")
-            out["e_%s_%s_%d_%d" % (spec_rgl.slug(v.term.term), v.aspect, n, m)] = tags
+            out["e_%s_%s_%d_%d" % (spec_rgl.slug(v.term.term), v.aspect, n, m)] = tags or {"intransitive"}
     return out
 
 
@@ -81,10 +84,19 @@ class Grammar:
         return p.tree, spec_lf.show(spec_lf.form(self.vocab, p.tree)), None
 
 
+def grammars(grammar):
+    """{context name or None: its Grammar}: the catalogue's context and each other context an entry names."""
+    out = {None: grammar}
+    for name in dict.fromkeys(e["context"] for e in CONSTRUCTS if e.get("context")):
+        out[name] = Grammar(CONTEXTS[name])
+    return out
+
+
 def entries(grammar):
     """(entry, reading) of every construct, and why the catalogue cannot be written (each problem named)."""
+    every = grammars(grammar)
     problems = ["%s is no construct's, word's or glue's function" % f
-                for f in uncovered(grammar.functions, grammar.frames)]
+                for f in sorted({f for g in every.values() for f in uncovered(g.functions, g.frames)})]
     codes = [e["code"] for e in CONSTRUCTS]
     problems += ["%s is the code of two constructs" % c for c in sorted({c for c in codes if codes.count(c) > 1})]
     out = []
@@ -94,10 +106,11 @@ def entries(grammar):
         if not e["example"]:
             problems.append("%s has no example" % e["code"])
             continue
-        tree, reading, refusal = grammar.read(e["example"])
+        own = every[e.get("context")]
+        tree, reading, refusal = own.read(e["example"])
         if refusal:
             problems.append("%s's example is refused: %s" % (e["code"], refusal))
-        elif not uses(e, tree, grammar.frames):
+        elif not uses(e, tree, own.frames):
             problems.append("%s's example does not use it" % e["code"])
         else:
             out.append((e, reading))
@@ -131,7 +144,10 @@ def render(root, done):
         out += ["## %s" % e["code"], "", e["label"], "",
                 "- Form: %s" % e["form"],
                 "- Functions: `%s`" % e["funs"],
-                "- Cited by: %s" % (", ".join(cited.get(e["code"], [])) or "no line"),
+                "- Cited by: %s" % (", ".join(cited.get(e["code"], [])) or "no line")]
+        if e.get("context"):
+            out += ["- Context: `%s/`" % CONTEXTS[e["context"]].relative_to(PLUGIN).as_posix()]
+        out += [
                 "- Example and its reading:", "",
                 "```construct", e["example"], reading, "```", ""]
     return "\n".join(out)

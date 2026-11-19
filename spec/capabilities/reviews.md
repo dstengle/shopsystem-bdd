@@ -1,0 +1,38 @@
+---
+id: capability/missingmass.io/shopsystem/shopsystem-bdd/reviews
+title: Reviews
+narrator: the person
+group: service
+area: execution
+specifies: object review, object proposed change, service batches: submit
+language: codified-2
+retired: []
+unbuilt: []
+---
+
+# Reviews
+
+## Purpose
+A batch's change submitted for review once its tasks are done, holding only the kept changes of the items still in it.
+
+## Behaviour
+
+### [g1] A batch submitted keeps a change that cites its items
+- [r1] While an item in a batch is `in-batch`, when the person submits the batch, the batches service shall keep a
+  proposed change of the batch that cites the item.
+
+### [g2] A batch's change holds no kept change of a parked item
+- [r2] While the status of an item in a batch is `needs-input` and a kept change cites the item, when the person submits
+  the batch, the batches service shall keep a proposed change of the batch that does not hold the kept change.
+
+### [g3] A batch with a task not done is not submitted
+- [r3] While a task of a batch is not `done`, if the person submits the batch, then the batches service shall refuse the
+  request and name the task.
+
+### [g4] A batch with a kept change that cites no item is not submitted
+- [r4] While a workspace of a task of a batch holds a kept change that cites no item, if the person submits the batch,
+  then the batches service shall refuse the request and name the kept change.
+
+### [g5] A batch whose tasks are done is submitted for review
+- [r5] While a batch is `building` and every task of the batch is `done`, when the person submits the batch, the batches
+  service shall keep a proposed change of the batch and set the status of the batch to `in-review`.

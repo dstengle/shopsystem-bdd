@@ -15,6 +15,7 @@ import spec_lf_number
 import spec_lf_option
 import spec_lf_order
 import spec_lf_ordered
+import spec_lf_request
 import spec_lf_set
 import spec_lf_time
 import spec_meaning
@@ -76,6 +77,8 @@ def atom(a):
         return spec_lf_distinct.show(a, term)
     if a.pred == spec_lf_exist.PRED:     # "x exists" (b240)
         return spec_lf_exist.show(a, term)
+    if a.pred in (spec_lf_request.PRED, spec_lf_request.PARAM, spec_lf_request.NOPARAM):     # a request (§5.1)
+        return spec_lf_request.show(a, term)
     if a.pred == spec_lf_option.PRED:     # an option's argument (b240)
         return spec_lf_option.show(a, term)
     x, attr, v = a.args

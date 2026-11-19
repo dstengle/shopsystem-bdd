@@ -179,7 +179,7 @@ class GrammarTest(unittest.TestCase):
     def test_probe_json_gives_the_grammar_block(self):
         stub_gf(self.tmp / "data" / "shopsystem-bdd" / "gf-3.12" / "bin" / "gf")
         done = self.tools("probe", "--json", env={"XDG_DATA_HOME": str(self.tmp / "data")})
-        found = json.loads(done.stdout)
+        found = json.loads(done.stdout)["content"]
         self.assertEqual(found["python"], sys.executable)
         self.assertIn("ruff", found["tools"])
         self.assertEqual(found["grammar"]["gf"], "3.12.0")
@@ -195,7 +195,7 @@ class GrammarTest(unittest.TestCase):
 
     def test_probe_json_says_null_for_a_missing_gf(self):
         done = self.tools("probe", "--json", env={"XDG_DATA_HOME": str(self.tmp / "nothing"), "PATH": "/usr/bin:/bin"})
-        self.assertIsNone(json.loads(done.stdout)["grammar"]["gf"])
+        self.assertIsNone(json.loads(done.stdout)["content"]["grammar"]["gf"])
 
     def rgl_tarball(self):
         """A gf-rgl release tarball laid out as the real one: gf-rgl-<release>/src/, one small module of each built."""
@@ -251,7 +251,7 @@ class GrammarTest(unittest.TestCase):
 
     def test_nothing_imports_telingo_or_the_old_solver(self):
         root = pathlib.Path(__file__).resolve().parents[2]
-        files = list((root / "scripts").glob("*.py")) + [root / "scripts" / n for n in ("tools", "model", "features")]
+        files = list((root / "scripts").glob("*.py")) + [root / "scripts" / n for n in ("tools", "spec", "features")]
         pattern = r"^\s*(import|from)\s+(telingo|spec_engine|spec_logic\b|spec_logic_np|spec_trace\b)"
         bad = sorted(p.name for p in files if re.search(pattern, p.read_text(), re.MULTILINE))
         self.assertEqual(bad, [])

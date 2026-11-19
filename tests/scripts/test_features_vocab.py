@@ -131,47 +131,6 @@ def load_vocab_module():
     return module
 
 
-def test_the_u11_and_u8_checks_after_a_scenario():
-    vocab = load_vocab_module()
-    refused = {"args": ["work", "start", "i1"], "returncode": 1, "stdout": "", "changed": [".shop/work/i1.md"]}
-    json_ok = {"args": ["model", "check", "--json"], "returncode": 0, "stdout": '{"a": 1}\n', "changed": []}
-    json_bad = {"args": ["model", "check", "--json"], "returncode": 0, "stdout": '{"a": 1}\n{"b": 2}\n',
-                "changed": []}
-    problems = vocab.u_problems([refused, json_ok, json_bad])
-    assert len(problems) == 2
-    assert problems[0].startswith("U12:") and ".shop/work/i1.md" in problems[0]
-    assert problems[1].startswith("U16:")
-    assert vocab.u_problems([json_ok, dict(refused, changed=[])]) == []
-
-
-def test_the_u4_check_after_a_scenario(tmp_path):
-    """U4 (U13 now): a run's commit on the branch checked out is on its remote, else the remote is named; nothing when
-    the run made no commit or the branch has no remote, and nothing asked under an unpushable remote."""
-    vocab = load_vocab_module()
-
-    def git(cwd, *args):
-        subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", *args], cwd=cwd, check=True,
-                       capture_output=True)
-
-    remote, repo = tmp_path / "remote.git", tmp_path / "repo"
-    git(tmp_path, "init", "-q", "--bare", "-b", "main", str(remote))
-    git(tmp_path, "init", "-q", "-b", "main", str(repo))
-    git(repo, "commit", "-q", "--allow-empty", "-m", "one")
-    before = vocab.branch_head(repo)
-    git(repo, "commit", "-q", "--allow-empty", "-m", "two")
-    assert vocab.unpushed(repo, before) is None                     # no remote for the branch
-    git(repo, "remote", "add", "origin", str(remote))
-    assert vocab.unpushed(repo, before) == "origin"                 # committed, not pushed
-    git(repo, "push", "-q", "-u", "origin", "main")
-    assert vocab.unpushed(repo, before) is None                     # committed and pushed
-    assert vocab.unpushed(repo, vocab.branch_head(repo)) is None    # no commit since
-    run = {"args": ["work", "idea", "x"], "returncode": 0, "stdout": "", "changed": [], "unpushed": "origin"}
-    problems = vocab.u_problems([run])
-    assert len(problems) == 1 and problems[0].startswith("U13:") and "origin" in problems[0]
-    assert vocab.u_problems([run], unpushable=True) == []
-    assert vocab.u_problems([dict(run, unpushed=None)]) == []
-
-
 def test_marks_come_from_the_spec():
     vocab = load_vocab_module()
     marks = vocab.marks(FIXTURES / "repo")

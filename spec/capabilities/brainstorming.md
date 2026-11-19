@@ -5,7 +5,7 @@ narrator: the person shaping work in a conversation
 group: guarantees
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
-retired: [g1, r1, g3, r3]
+retired: [g1, r1, g3, r3, g2, r2, g4, r4, g5, r5]
 unbuilt: []
 ---
 
@@ -18,24 +18,24 @@ and readies the items; the person may skim the lines in the backlog and in the p
 reading. The person's words an item cites keep the conversation turns around them.
 
 ## Terms
-- **the brainstorming session** (proper noun): the session in which the person and Claude shape work into items. Kind of: session.
-- **shape** (verb, action): a session writes an item's requirement lines with the person. Forms: shapes, shaped. Frame: session shapes item.
-- **quote** (verb, action): a session takes words of a message into a file it writes, as said in the message. Forms: quotes, quoted. Frame: session quotes message.
+
+Moved to `spec/vocabulary/` and `spec/model/` (the domain contract, 0.38.0).
 
 ## Relations
 
-| from | word | to | cardinality |
-|---|---|---|---|
-| message | of | agent | one |
+Moved to `spec/vocabulary/` and `spec/model/` (the domain contract, 0.38.0).
 
 ## Behaviour
 
-### [g2] Nothing waits on the person's reading
-- [r2] When the brainstorming session runs `work ready` on an item, the brainstorming session shall not ask a
-  question.
+## Moved
 
-### [g4] Lines are written and readied
-- [r4] When the brainstorming session shapes an item, the brainstorming session shall write a requirement that the item proposes and run `work ready` on the item.
+Every line moved to a new capability with a new id (the domain contract, 0.38.0).
 
-### [g5] A quote keeps its turns
-- [r5] When the brainstorming session quotes a message of the person, the brainstorming session shall run `work quote` on the message.
+| old | new |
+|---|---|
+| g2 | shaping-guarantees#g1 |
+| r2 | shaping-guarantees#r1 |
+| g4 | shaping-guarantees#g2 |
+| r4 | shaping-guarantees#r2 |
+| g5 | shaping-guarantees#g3 |
+| r5 | shaping-guarantees#r3 |

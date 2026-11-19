@@ -121,10 +121,10 @@ def plan_ids(plan):
 
 
 def load_model():
-    """scripts/model, read by path: migrate reads frontmatter the way model does."""
+    """scripts/spec, read by path: migrate reads frontmatter the way model does."""
     import importlib.machinery
     import importlib.util
-    path = str(Path(__file__).resolve().with_name("model"))
+    path = str(Path(__file__).resolve().with_name("spec"))
     loader = importlib.machinery.SourceFileLoader("model_by_path", path)
     module = importlib.util.module_from_spec(importlib.util.spec_from_loader("model_by_path", loader))
     loader.exec_module(module)

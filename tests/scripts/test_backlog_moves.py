@@ -43,12 +43,11 @@ def test_a_move_from_another_status_is_refused_naming_it(backlog_repo, command, 
     assert state(backlog_repo) == before
 
 
-def test_the_moves_are_the_glossary_transitions():
+def test_the_moves_are_transitions_of_the_items_lifecycle():
+    # the domain model's lifecycle of an item (spec/model/tracking.md) allows every move `work` makes
     status = next(t for t in spec_lexicon.read(REPO).of("attribute") if t.term == "status" and t.kinds == ("item",))
-    ours = {"`%s`" % c for c in backlog_moves.TRANSITIONS}
-    glossary = {(by.strip("`"), before.strip("`"), after.strip("`")) for before, after, by in status.transitions
-                if by in ours}
-    assert glossary == set(MOVES)
+    lifecycle = {(before.strip("`"), after.strip("`")) for before, after, _ in status.transitions}
+    assert {(before, after) for _, before, after in MOVES} <= lifecycle
 
 
 def test_answer_moves_the_question_under_answers(backlog_repo):

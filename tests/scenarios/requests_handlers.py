@@ -177,7 +177,7 @@ def work_request(step):
     elif "--source" in given:
         args += ["--source", "observation/ex.com/prod/ctx/obs-1"]
         args += ["--thread", "job-thread/ex.com/prod/t1"] if "--thread" in given else ["--raised-for", "q9"]
-    elif {"--source", "--thread", "--raised-for"} <= without:
+    elif {"--source", "--thread"} <= without:     # neither an origin nor a thread (`--raised-for` is the CLI's own)
         pass
     elif step.context.get("downstream"):
         args += ["--thread", "job-thread/ex.com/prod/t1"] + (["--to", Q.UP] if "--to" in given else [])

@@ -9,13 +9,19 @@ cardinality |`), then `#### [g<n>] <title>` groups of `- [r<n>] <statement>` bul
 `given` block after its lines. After the capability blocks, a `### universal` block of `- [U<n>] <statement>`
 conditions (after an optional `language: codified-2` line and an optional `retired: [U<n>, ...]` line, spec/universal.md
 switched and the conditions the item's replace: backlog_universal) and a `### index` block of upstream entries (`- bounded-context/<path>: ...`), the pieces of
-`spec/universal.md` and of `spec/index.md`'s `## Upstreams` (b43)."""
+`spec/universal.md` and of `spec/index.md`'s `## Upstreams` (b43). Between the capability blocks and the universal
+block, in a context with a domain model, a `### <area> model` block for each area the item adds to: a ` ```model `
+fence of model lines, then vocabulary entries (backlog_model, the domain contract)."""
 import re
 from collections import namedtuple
 from pathlib import Path
 
 import spec_read
 from backlog_items import Refused, label
+from backlog_model import CLOSE as MODEL_CLOSE
+from backlog_model import FENCE as MODEL_FENCE
+from backlog_model import HEAD as MODEL_HEAD
+from backlog_model import ModelBlock
 
 SECTION = "Requirements"
 UNIVERSAL, INDEX = "universal", "index"
@@ -42,15 +48,16 @@ class Blocks(list):
     ((U<n>, statement)) and upstream entries (the bullet's text after `- `) beside them, and the universal block's
     marker (`universal_language`) and the U ids its conditions replace (`universal_retired`)."""
 
-    def __init__(self, blocks=(), universal=(), upstreams=(), universal_language=None, universal_retired=()):
+    def __init__(self, blocks=(), universal=(), upstreams=(), universal_language=None, universal_retired=(),
+                 models=()):
         super().__init__(blocks)
-        self.universal, self.upstreams = list(universal), list(upstreams)
+        self.universal, self.upstreams, self.models = list(universal), list(upstreams), list(models)
         self.universal_language, self.universal_retired = universal_language, tuple(universal_retired)
 
 
 class _Reader:
     def __init__(self, rel):
-        self.rel, self.blocks, self.mode, self.fence = rel, Blocks(), None, None
+        self.rel, self.blocks, self.mode, self.fence, self.mfence = rel, Blocks(), None, None, None
 
     def refuse(self, what):
         raise Refused("%s: %s: %s" % (self.rel, SECTION, what))
@@ -58,8 +65,17 @@ class _Reader:
     def line(self, line):
         if self.fence is not None:
             return self.given(line)
+        if self.mfence is not None:
+            return self.model_fence(line)
         if not line.strip():
             return None
+        if (m := MODEL_HEAD.match(line)):
+            if self.mode in (UNIVERSAL, INDEX) or any(b.area == m.group(1) for b in self.blocks.models):
+                self.refuse("the model block of %s is there twice, or after the universal or index block" % m.group(1))
+            self.mode = "model"
+            return self.blocks.models.append(ModelBlock(m.group(1)))
+        if self.mode == "model" and not line.startswith("### "):
+            return self.model_line(line)
         if line in ("### %s" % UNIVERSAL, "### %s" % INDEX):
             if line[4:] == self.mode or (line[4:] == UNIVERSAL and self.mode == INDEX):
                 self.refuse("the %s block is there twice, or out of order" % line[4:])
@@ -92,6 +108,22 @@ class _Reader:
             self.refuse("the universal condition %s is there twice" % m.group(1))
         self.blocks.universal.append((m.group(1), m.group(2).strip()))
 
+    def model_line(self, line):
+        block = self.blocks.models[-1]
+        if line.strip() == MODEL_FENCE and not block.lines and not block.terms:
+            self.mfence = []
+        elif line.startswith("- **"):
+            self.blocks.models[-1] = block._replace(terms=block.terms + (line.strip(),))
+        else:
+            self.refuse("a line of a model block that is no ```model fence first or vocabulary entry: %s" % line)
+
+    def model_fence(self, line):
+        if line.strip() == MODEL_CLOSE:
+            self.blocks.models[-1] = self.blocks.models[-1]._replace(lines=tuple(self.mfence))
+            self.mfence = None
+        else:
+            self.mfence.append(line.rstrip())
+
     def given(self, line):
         if line.strip() == CLOSE:
             groups = self.blocks[-1].groups
@@ -113,8 +145,8 @@ class _Reader:
     def capability_line(self, line):
         blocks = self.blocks
         if (m := CAP.match(line)):
-            if any(b.capability == m.group(1) for b in blocks):
-                self.refuse("the capability %s has two blocks" % m.group(1))
+            if any(b.capability == m.group(1) for b in blocks) or self.mode == "model":
+                self.refuse("the capability %s has two blocks, or comes after a model block" % m.group(1))
             blocks.append(Block(m.group(1), [], []))
         elif (m := LANGUAGE.match(line)):
             if not blocks or blocks[-1] != Block(blocks[-1].capability, [], []):
@@ -169,8 +201,8 @@ def read(item, rel):
     reader = _Reader(rel)
     for line in item.sections.get(SECTION, "").split("\n"):
         reader.line(line)
-    if reader.fence is not None:
-        reader.refuse("a given block is not closed")
+    if reader.fence is not None or reader.mfence is not None:
+        reader.refuse("a given block or a model block is not closed")
     if any(b.new and len(b.new) != len(NEW_FIELDS) for b in reader.blocks):
         reader.refuse("a new capability's block without each of %s" % ", ".join(NEW_FIELDS))
     return reader.blocks
@@ -193,6 +225,10 @@ def render(blocks):
         parts += ["\n".join(block.terms)] if block.terms else []
         parts += ["\n".join(block.relations)] if block.relations else []
         out.append("\n\n".join(parts + [laid_group(g, "####") for g in block.groups]))
+    for model in getattr(blocks, "models", ()):
+        parts = ["### %s model" % model.area] + (["%s\n%s\n%s" % (MODEL_FENCE, "\n".join(model.lines), MODEL_CLOSE)]
+                                                 if model.lines else [])
+        out.append("\n\n".join(parts + (["\n".join(model.terms)] if model.terms else [])))
     language, retired = getattr(blocks, "universal_language", None), getattr(blocks, "universal_retired", ())
     if getattr(blocks, "universal", None) or language or retired:
         parts = ["### %s" % UNIVERSAL] + (["language: %s" % language] if language else [])

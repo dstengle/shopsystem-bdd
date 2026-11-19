@@ -1,0 +1,30 @@
+# The CLI adapter's contract of the notes service: each operation of the domain model with the command that requests
+# it and the option or argument of each parameter, checked both ways against notes.py's argparse by `spec check`.
+adapter = "cli"
+json = "--json"
+
+[programs]
+notes = "notes.py"
+
+[outcomes]
+done = { exit = 0 }
+returned = { exit = 0, content = "stdout" }
+refused = { exit = 1, errors = "stderr" }
+broken = { exit = 1, errors = "stderr" }
+
+[cli-only]
+options = ["--root", "--json"]
+
+[operations."notes.add"]
+command = "notes add"
+[operations."notes.add".parameters]
+title = { option = "--title", example = "Buy milk" }
+tag = { option = "--tag", repeat = true }
+
+[operations."notes.list"]
+command = "notes list"
+
+[operations."notes.remove"]
+command = "notes remove"
+[operations."notes.remove".parameters]
+note = { positional = 1, example = "1" }

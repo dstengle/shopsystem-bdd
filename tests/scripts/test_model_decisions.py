@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 import model_decisions
 
-SCRIPT = ROOT / "scripts" / "model"
+SCRIPT = ROOT / "scripts" / "spec"
 PATH = "ex.com/prod/ctx"
 
 

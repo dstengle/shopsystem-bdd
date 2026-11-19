@@ -11,35 +11,37 @@ This page is for everyone. It shows what the plugin does, how to install it, and
 
 ## Thirty seconds of it
 
-Here is a line from this repository's own spec (`spec/capabilities/backlog.md`, group g37):
+Here is a line from this repository's own spec (`spec/capabilities/items.md`, group g14):
 
 ```requirement
-While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
+While the status of an item is `idea`, when the person shapes the item, the backlog service shall set the status of the item to `shaped`.
 ```
 
-And here is the scenario the plugin wrote from it, in `features/backlog.feature`:
+And here is the scenario the plugin wrote from it, in `features/items.feature`:
 
 ```gherkin
-  @g37 @r37
-  Scenario: `work shape` shapes an idea
+  @g14 @r14
+  Scenario: An idea shaped becomes shaped
     Given an item i1
     And the status of the item i1 is `idea`
-    When the person runs `work shape` on the item i1
-    Then `work` sets the status of the item i1 to `shaped`
+    When the person shapes the item i1
+    Then the backlog service sets the status of the item i1 to `shaped`
 ```
 
-The line says "the status of an item" because `idea` is a noun. The glossary declares each attribute's values
-adjectives or nouns (the `status` entry of `spec/index.md` lists `shaped`, `ready` and the others under `Values
-(adjective):`, and `idea` and `needs-input` under `Values (noun):`): an adjective may also be said the short way, "an
-item is `shaped`", and a noun only the full way. The scenario always names the attribute, so whoever binds its steps
-never has to look it up.
+"The person shapes the item" is a request: the person asks the backlog service for its operation `shape`. The line
+says nothing of the command that asks it (`work shape`), which belongs to the CLI adapter, so the same line would hold
+behind any other interface. It says "the status of an item" because `idea` is a noun: the vocabulary names each
+value an adjective or a noun (`- **idea** (noun) → value item.status idea.` in `spec/vocabulary/tracking.md`), and an
+adjective may also be said the short way, "an item is `shaped`", a noun only the full way. The scenario always names
+the attribute, so whoever binds its steps never has to look it up.
 
 What happened in between:
 
-- `model parse` read the line to exactly one meaning, built from the words in the context's glossary.
-- `model logic` checked it against every other line, looking for two lines that clash.
+- `spec parse` read the line to exactly one meaning, built from the words of the context's vocabulary, each naming
+  an element of its [domain model](docs/reference/domain-model.md).
+- `spec logic` checked it against every other line, looking for two lines that clash.
 - `features generate` wrote the scenario from that meaning: the While clause became Givens, the when clause a
-  When, the shall clause a Then. Nobody wrote the feature file by hand.
+  When (the request), the shall clause a Then (the response). Nobody wrote the feature file by hand.
 - A developer bound the steps once in pytest-bdd, and the scenario now runs in the suite.
 
 ## How work moves
@@ -71,8 +73,8 @@ $ claude plugin install shopsystem-bdd@shopsystem-bdd
 Then install the grammar tools once, from the installed plugin's directory:
 
 ```console
-$ python3 ~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.37.0/scripts/tools install
-$ python3 ~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.37.0/scripts/tools probe
+$ python3 ~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.38.0/scripts/tools install
+$ python3 ~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.38.0/scripts/tools probe
 ```
 
 `tools probe` shows what is installed. The rest of the docs write commands short, as `tools install` or
@@ -126,4 +128,5 @@ Claude picks these up from what you say. You never have to name one.
 - [CHANGELOG.md](CHANGELOG.md): what changed in each release, newest first.
 - [LICENSE](LICENSE): Apache License 2.0.
 - [docs/index.md](docs/index.md): every page of the documentation, by reader.
-- [spec/index.md](spec/index.md): this plugin's own bounded context, its glossary and capabilities.
+- [spec/index.md](spec/index.md): this plugin's own bounded context, its areas and capabilities; its model is in
+  [spec/model/](spec/model/), its words in [spec/vocabulary/](spec/vocabulary/).

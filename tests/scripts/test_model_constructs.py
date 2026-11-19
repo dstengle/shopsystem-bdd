@@ -34,7 +34,7 @@ def blocks():
 
 def test_the_catalogue_is_current():
     toolchain.require()
-    done = subprocess.run([sys.executable, str(REPO / "scripts" / "model"), "--root", str(REPO), "constructs",
+    done = subprocess.run([sys.executable, str(REPO / "scripts" / "spec"), "--root", str(REPO), "constructs",
                            "--check"], capture_output=True, text=True)
     assert done.returncode == 0, done.stdout + done.stderr
     assert done.stdout.strip() == "grammar/constructs.md is current"
@@ -47,9 +47,13 @@ def test_every_construct_has_its_block_and_the_person_s_codes_are_there():
     assert len(blocks()) == len(codes)
 
 
+CONTEXT_OF = {e["example"]: e["context"] for e in model_constructs_table.CONSTRUCTS}
+
+
 @pytest.mark.parametrize("line, said", blocks())
 def test_each_example_of_the_catalogue_reads_as_it_says(grammar, line, said):
-    _, reading, refusal = grammar.read(line)
+    own = model_constructs.grammars(grammar)[CONTEXT_OF.get(line)]     # a request's in the request context
+    _, reading, refusal = own.read(line)
     assert refusal is None
     assert reading == said
 

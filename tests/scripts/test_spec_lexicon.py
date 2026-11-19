@@ -104,6 +104,17 @@ def test_problems_give_v_t4_v_t5_and_v_t6():
     assert ("v_t6", "initiative") in codes and ("v_t6", "a session") in codes and ("v_t6", "print") in codes
 
 
+def test_v_t6_the_request_packs_verbs_in_a_context_importing_request():
+    glossary = """
+        - **refuse** (verb, action): a verb the request pack spells. Frame: agent refuses thing.
+        - **print** (verb, action): the CLI pack's verb. Frame: agent prints thing.
+    """
+    lex = _lexicon(glossary)
+    assert [p[1] for p in spec_lexicon.problems(lex) if p[0] == "v_t6"] == ["print"]
+    lex.imports = ("request",)
+    assert [p[1] for p in spec_lexicon.problems(lex) if p[0] == "v_t6"] == ["refuse"]
+
+
 def _codes(glossary, code):
     return [p[1] for p in spec_lexicon.problems(_lexicon(glossary)) if p[0] == code]
 

@@ -5,7 +5,7 @@ narrator: the person who merges a batch's pull request
 group: guarantees
 language: codified-2
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
-retired: [g2, r2, g3, r3, g5, r5, g6, r6, g7, r7, r8, g8, r9, g4, r4, g12, r13, g13, r14, g14, r15]
+retired: [g2, r2, g3, r3, g5, r5, g6, r6, g7, r7, r8, g8, r9, g4, r4, g12, r13, g13, r14, g14, r15, g1, r1, g17, r17, g9, r10, g10, r11, g11, r12, g18, r18, g19, r19, g20, r20, g15, r16]
 unbuilt: []
 ---
 
@@ -18,45 +18,14 @@ decisions and the size of the change. It reads only the batch's own commits. A f
 branch and the review re-reads what the fix changed; a clean pull request waits for the person's merge.
 
 ## Terms
-- **`pr-reviewer`** (proper noun): the agent that reviews a batch's pull request. Kind of: dispatch.
-- **propose** (verb, state): an item holds a requirement among its lines. Forms: proposes, proposed. Frame: item proposes requirement.
+
+Moved to `spec/vocabulary/` and `spec/model/` (the domain contract, 0.38.0).
 
 ## Relations
 
-| from | word | to | cardinality |
-|---|---|---|---|
-| review | of | pull request | one |
-| commit | of | batch | one |
-| commit | for | review finding | one |
+Moved to `spec/vocabulary/` and `spec/model/` (the domain contract, 0.38.0).
 
 ## Behaviour
-
-### [g1] One review a batch, at its pull request
-- [r1] When `work` publishes a pull request of a batch, `pr-reviewer` shall write a review of the pull request.
-
-### [g17] Engineering quality against the judgement decisions
-- [r17] While the tier of a design-decision is `judgement`, when `pr-reviewer` writes a review of a pull request, `pr-reviewer` shall read the design-decision.
-
-### [g9] `pr-reviewer` reviews only pull requests
-- [r10] `pr-reviewer` shall write only reviews of a pull request.
-
-### [g10] A first review reads the items' requirements and the batch's commits
-- [r11] While a pull request of a batch has no review, when `pr-reviewer` writes a review of the pull request, `pr-reviewer` shall read every requirement that an item in the batch proposes and every commit of the batch.
-
-### [g11] A review reads only the batch's own commits
-- [r12] When `pr-reviewer` writes a review of a pull request of a batch, `pr-reviewer` shall read only commits of the batch.
-
-### [g18] A fix-now finding sends the batch back to building
-- [r18] While the triage of a review finding on a pull request of a batch is `fix now`, when a session runs `work batch reviewed` on the batch, `work` shall set the status of the batch to `building`.
-
-### [g19] The next review reads the commits for each fix-now finding
-- [r19] While the triage of a review finding on a pull request is `fix now`, when `pr-reviewer` writes a review of the pull request, `pr-reviewer` shall read every commit for the review finding.
-
-### [g20] A pull request with no fix-now finding awaits the person's merge
-- [r20] While a batch has a pull request and no review finding on the pull request whose triage is `fix now` exists, when a session runs `work batch reviewed` on the batch, `work` shall set the status of the batch to `awaiting-merge`.
-
-### [g15] Findings named with their grade and triage
-- [r16] When `pr-reviewer` writes a review finding, `pr-reviewer` shall name the grade of the review finding and the triage of the review finding.
 
 ## Implementation, may change
 
@@ -85,3 +54,27 @@ branch and the review re-reads what the fix changed; a clean pull request waits 
 - Findings posted as inline comments on the pull request's lines: each review is one comment.
 - Recurring findings counted, as a signal for a new decision, check or readiness bar (plan 7's telemetry).
 - A transition `awaiting-merge` -> `abandoned`: `work batch abandon` still refuses an `awaiting-merge` batch.
+## Moved
+
+Every line moved to a new capability with a new id (the domain contract, 0.38.0).
+
+| old | new |
+|---|---|
+| g1 | review-guarantees#g1 |
+| r1 | review-guarantees#r1 |
+| g17 | review-guarantees#g2 |
+| r17 | review-guarantees#r2 |
+| g9 | review-guarantees#g3 |
+| r10 | review-guarantees#r3 |
+| g10 | review-guarantees#g4 |
+| r11 | review-guarantees#r4 |
+| g11 | review-guarantees#g5 |
+| r12 | review-guarantees#r5 |
+| g18 | review-guarantees#g6 |
+| r18 | review-guarantees#r6 |
+| g19 | review-guarantees#g7 |
+| r19 | review-guarantees#r7 |
+| g20 | review-guarantees#g8 |
+| r20 | review-guarantees#r8 |
+| g15 | review-guarantees#g9 |
+| r16 | review-guarantees#r9 |

@@ -1,4 +1,4 @@
-"""Handlers of design-model-check's `model explain` (the CNL 4 design, I13b): the command run on the requirement the
+"""Handlers of design-model-check's `spec explain` (the CNL 4 design, I13b): the command run on the requirement the
 When names, by the id a Given gave it (thing#r1 of a codified-2 world when no Given wrote a spec), with the id kept in `says` so that
 a Then naming the requirement looks for the id in the output."""
 import importlib.util
@@ -18,11 +18,11 @@ def _sibling(name, module):
 
 H = _sibling("design_model_check_handlers.py", "shop_design_model_check_handlers")
 C2 = _sibling("codified2_world.py", "shop_codified2_world")
-# thing#r1 of the world when no Given wrote a spec: a codified-2 one, which `model explain` reads
+# thing#r1 of the world when no Given wrote a spec: a codified-2 one, which `spec explain` reads
 ASKED = "When the person runs `work start`, `work` shall exit successfully."
 
 
-@handler("WhenRuns", "`model explain`")
+@handler("WhenRuns", "`spec explain`")
 def model_explain(step):
     H.built(step)
     if not (step.repo / "spec" / "index.md").exists():
@@ -35,7 +35,7 @@ def model_explain(step):
 
 @handler("ThenK_C", "requirement")
 def printed_refusing(step):
-    """`the requirement r2 is refusing`: the line `model explain` printed under the requirement's id says that the tool
+    """`the requirement r2 is refusing`: the line `spec explain` printed under the requirement's id says that the tool
     shall refuse a command."""
     word, ident = step.text.rsplit(" is ", 1)[1], step.context["says"][step.names[0]]
     assert word == "refusing", "no requirement condition %r as a Then" % word

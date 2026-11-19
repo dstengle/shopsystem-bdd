@@ -1,7 +1,7 @@
 """The lay's bookkeeping in features/batches.feature (b333, batches r46-r49): the scenario repository given a corpus
 (`grammar/corpus/spec/`, the one corpus file `work-queue.md`), an item that retires `work-queue#r4` whose block the
 corpus holds, an item whose line cites a rule's or a construct's code; and the Thens read off the lay's commit on the
-batch's branch: the laid line's block with its form as `model parse --form` prints it on that branch, the retired id's
+batch's branch: the laid line's block with its form as `spec parse --form` prints it on that branch, the retired id's
 block gone, the catalogue entry citing the line, the construct catalogue written."""
 import subprocess
 import sys
@@ -96,14 +96,14 @@ def _line(step, name):
 
 @four("ThenDoes", "holds", *BOTH)
 def corpus_holds(step):
-    """This corpus holds the logical form: the laid line's block on the batch's branch, its form what `model parse
+    """This corpus holds the logical form: the laid line's block on the batch's branch, its form what `spec parse
     --form` prints of the line on that branch."""
     if step.subject != "this corpus":
         return False
     text, _, branch = _laid(step, CORPUS)
     rid, line = _line(step, next(iter(step.context["proposed"].values())))
     tree = step.repo / ".shop" / "worktrees" / branch
-    form = subprocess.run([sys.executable, str(SCRIPTS / "model"), "--root", str(tree), "parse", "--form", line],
+    form = subprocess.run([sys.executable, str(SCRIPTS / "spec"), "--root", str(tree), "parse", "--form", line],
                           capture_output=True, text=True, check=True).stdout.rstrip("\n")
     want = "## %s\nFrom: %s %s.\n\n```reading\n%s\n%s\n```\n" % (rid, B.ident(next(iter(
         step.context["proposed"].values()))), rid, line, form)

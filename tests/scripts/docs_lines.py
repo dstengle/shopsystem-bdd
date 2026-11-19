@@ -70,7 +70,7 @@ def command_lines(body, i):
         if later.strip().startswith("$ "):
             break
         output.append(later.strip())
-    refused = "model" in words[:2] and "parse" in words and \
+    refused = ("model" in words[:2] or "spec" in words[:2]) and "parse" in words and \
         any("may follow:" in o or o.startswith("refused") for o in output)
     root = REPO / words[words.index("--root") + 1] if "--root" in words[:-1] else None
     return [(w, refused, root) for w in words if SHALL.search(w) and w.endswith(".")]

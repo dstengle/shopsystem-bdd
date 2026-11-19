@@ -6,5 +6,5 @@ checks = [
   "python3 scripts/tools check --base {forked_from}",
   "python3 scripts/features generate --check",
   "python3 scripts/features bindings --unbound",
-  "python3 scripts/model decisions --check",
+  "python3 scripts/spec decisions --check",
 ]

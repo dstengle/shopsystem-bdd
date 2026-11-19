@@ -1,4 +1,4 @@
-"""brainstorming r1, r2 (workflow simplification plan 3, Task 5, D15) and r3 (plan 8, D14), checked by reading the skills as test_agents.py
+"""shaping-guarantees r1, r2 (brainstorming r2, r4, r5 before 0.38.0) (workflow simplification plan 3, Task 5, D15) and r3 (plan 8, D14), checked by reading the skills as test_agents.py
 reads the agents: the brainstorming session writes an item's lines and runs `work ready`, and nothing after it waits
 on the person; the intake session's skill names only commands `work` and `model` have."""
 import ast
@@ -36,13 +36,13 @@ def choices(script):
     return set(re.search(r"\{([a-z,-]+)\}", done.stdout).group(1).split(","))
 
 
-def test_r4_the_session_writes_lines_and_readies():
+def test_r2_the_session_writes_lines_and_readies():
     steps = process(SHAPING)
     first = {cmd: next(n for n, s in enumerate(steps) if commands(s, "work") & {cmd}) for cmd in ("idea", "line", "ready")}
     assert first["idea"] <= first["line"] < first["ready"], first
 
 
-def test_r2_nothing_waits_on_the_person():
+def test_r1_nothing_waits_on_the_person():
     assert PINNED in SHAPING.read_text()
     steps = process(SHAPING)
     ready = next(n for n, s in enumerate(steps) if "ready" in commands(s, "work"))
@@ -50,7 +50,7 @@ def test_r2_nothing_waits_on_the_person():
         assert "ask the person" not in step.lower() and not re.search(r"\bwait", step.lower()), step
 
 
-def test_r5_a_quote_is_written_with_work_quote():
+def test_r3_a_quote_is_written_with_work_quote():
     """The brainstorming session quotes the person's words with `work quote`, before `work shape`, and cites the quote
     in the item's note."""
     steps = process(SHAPING)
@@ -62,7 +62,7 @@ def test_r5_a_quote_is_written_with_work_quote():
     assert "quote-<n>" in text and "Until `work` keeps quotes" not in text
 
 
-def test_r5_the_skill_says_where_an_earlier_sessions_id_is():
+def test_r3_the_skill_says_where_an_earlier_sessions_id_is():
     """Plan 8's review, M6: `--session <id>` is advised only with where the id is found."""
     step = next(s for s in process(SHAPING) if "quote" in commands(s, "work"))
     assert "--session <id>" in step and "`<id>.jsonl`" in step and "~/.claude/projects/" in step, step
@@ -70,16 +70,16 @@ def test_r5_the_skill_says_where_an_earlier_sessions_id_is():
 
 
 def test_each_built_brainstorming_line_has_its_test():
-    """The strict xfail of a guarantees capability: each brainstorming id out of `unbuilt:` has a `test_r<n>_` here,
-    and each id in it has none."""
-    ids = set(re.findall(r"(?m)^- \[(r\d+)\] ", (REPO / "spec/capabilities/brainstorming.md").read_text()))
-    unbuilt = spec_unbuilt.unbuilt(REPO).get("brainstorming", set())
+    """The strict xfail of a guarantees capability: each shaping-guarantees id (brainstorming's, moved in 0.38.0) out of
+    `unbuilt:` has a `test_r<n>_` here, and each id in it has none."""
+    ids = set(re.findall(r"(?m)^- \[(r\d+)\] ", (REPO / "spec/capabilities/shaping-guarantees.md").read_text()))
+    unbuilt = spec_unbuilt.unbuilt(REPO).get("shaping-guarantees", set())
     tested = {m.group(1) for node in ast.parse(Path(__file__).read_text()).body if isinstance(node, ast.FunctionDef)
               for m in [re.match(r"test_(r\d+)_", node.name)] if m}
     assert ids and ids - unbuilt == tested & ids, (ids, unbuilt, tested)
 
 
-@pytest.mark.parametrize("script", ["work", "model"])
+@pytest.mark.parametrize("script", ["work", "spec"])
 def test_the_skills_name_only_commands_work_has(script):
     have = choices(script)
     for name in NAMES:

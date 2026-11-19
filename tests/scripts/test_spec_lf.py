@@ -15,6 +15,7 @@ import toolchain
 REPO = pathlib.Path(__file__).resolve().parents[2]
 FIXTURE = REPO / "tests" / "scripts" / "fixtures" / "codified-2"
 CORPUS = REPO / "grammar" / "corpus" / "core-4.txt"
+REQUEST = REPO / "tests" / "scripts" / "fixtures" / "request-4"     # the corpus's context, in request words
 
 
 @pytest.fixture(scope="module")
@@ -29,10 +30,12 @@ def form(vocab, line):
     return spec_lf.form(vocab, p.tree)
 
 
-def test_every_line_the_twin_parses_has_a_logical_form(vocab):
+def test_every_line_the_twin_parses_has_a_logical_form():
+    toolchain.require()
+    vocab = spec_grammar4.load(REQUEST)[0]
     lines = [raw for raw in CORPUS.read_text().splitlines() if raw.strip() and raw[0] not in "#="]
     for line in lines:
-        p = spec_grammar4.parse(FIXTURE, line)
+        p = spec_grammar4.parse(REQUEST, line)
         for tree in p.trees:
             assert spec_lf.show(spec_lf.form(vocab, tree)).startswith("shall ["), line
 
@@ -83,7 +86,7 @@ def test_a_fun_with_no_translation_is_named(vocab):
 
 
 def test_model_parse_form_prints_the_form_and_needs_grammar_4(vocab, tmp_path):
-    model = [sys.executable, str(REPO / "scripts" / "model")]
+    model = [sys.executable, str(REPO / "scripts" / "spec")]
     line = "When a session ends a stage, `work` shall print the stage."
     done = subprocess.run(model + ["--root", str(FIXTURE), "parse", "--form", line], capture_output=True, text=True)
     assert done.returncode == 0 and "end(e1, subject: x1, object: x2)" in done.stdout, done.stdout + done.stderr

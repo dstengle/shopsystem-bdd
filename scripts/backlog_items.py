@@ -34,6 +34,7 @@ class Item:
     request: str | None = None      # the request the item was taken in from (plan 3, D10)
     asked_by: str | None = None     # that request's asker
     request_lines: dict = field(default_factory=dict)   # {<cap>#r<n>: the request's line number} (b6)
+    source: tuple = ()      # what the item was raised from: quotes, requests, decisions; never a record (v_r1)
 
     @property
     def question(self):
@@ -96,6 +97,21 @@ def _request_lines(value, rel):
     return {m.group(1): int(m.group(2)) for m in found}
 
 
+RECORDS_POLICY = 354    # the first item number under the records policy (model_domain's, v_r1)
+
+
+def _source(value, rel, ident):
+    """The ids of the field `source:`; a record among them refused on an item numbered from RECORDS_POLICY (v_r1:
+    an item cites quotes, requests and decisions, never a record), kept as history on an older one."""
+    found = tuple(str(v) for v in (value if isinstance(value, list) else [value] if value else []))
+    number = re.search(r"/b([1-9]\d*)$", str(ident))
+    records = [s for s in found if re.match(r"(?:record/|\.shop/records/)", s)]
+    if records and number and int(number.group(1)) >= RECORDS_POLICY:
+        raise Refused("%s: source names the record %s; an item cites quotes, requests and decisions, never a "
+                      "record" % (rel, records[0]))
+    return found
+
+
 def parse(text, rel):
     """The item of a file's text; a malformed file is refused as `<rel>: <field> ...` (D16)."""
     data, body = shop_files.frontmatter(text)
@@ -114,12 +130,13 @@ def parse(text, rel):
     if asked_by is not None and not isinstance(asked_by, str):
         raise Refused("%s: asked_by %r is not an asker's id" % (rel, asked_by))
     request_lines = _request_lines(data.get("request_lines", []), rel)
+    source = _source(data.get("source"), rel, ident)
     title, sections = _body(body, rel)
     return Item(name=ident.rsplit("/", 1)[-1], ident=ident, title=title, status=_choice(data, rel, "status", STATUSES),
                 provenance=_choice(data, rel, "provenance", PROVENANCES),
                 **{k: _choice(data, rel, k, allowed, optional=True) for k, allowed in RATINGS.items()},
                 depends_on=tuple(depends), sections=sections, request=request, asked_by=asked_by,
-                request_lines=request_lines)
+                request_lines=request_lines, source=source)
 
 
 def render(item):
@@ -131,6 +148,8 @@ def render(item):
     head += [line(k, getattr(item, k)) for k in ("request", "asked_by") if getattr(item, k)]
     if item.request_lines:
         head.append("request_lines: [%s]" % ", ".join("%s=%d" % kv for kv in item.request_lines.items()))
+    if item.source:
+        head.append("source: [%s]" % ", ".join(item.source))
     body = "".join("\n## %s\n\n%s\n" % (h, t) if t else "\n## %s\n" % h for h, t in item.sections.items())
     return "---\n%s\n---\n\n# %s\n%s" % ("\n".join(head), item.title, body)
 

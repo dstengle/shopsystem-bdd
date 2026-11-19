@@ -29,6 +29,13 @@ def path(cap):
     return REPO / "spec" / "capabilities" / f"{cap}.md"
 
 
+def old_path(cap):
+    """The file a capability's ids of 0.37.0 are kept in: renamed `<cap>-0-37.md` when the domain contract (0.38.0)
+    reused its name."""
+    old = REPO / "spec" / "capabilities" / f"{cap}-0-37.md"
+    return old if old.is_file() else path(cap)
+
+
 def four(cap):
     return spec_read.codified(path(cap), (spec_read.MARKER4,))
 
@@ -98,14 +105,14 @@ def test_the_id_map_gives_every_id_the_capability_has(cap):
     rows = [line.split("\t") for line in (RECORDS / f"ids-{cap}.tsv").read_text().splitlines()]
     olds = [old for old, _ in rows]
     assert len(olds) == len(set(olds))
-    doc = spec_read.capability(path(cap))
+    doc = spec_read.capability(old_path(cap))
     have = {f"{cap}#{x}" for g in doc.groups for x in [g.id] + [r.id for r in g.requirements]}
     assert {new for _, new in rows} <= have | {f"{cap}#{x}" for x in doc.retired}
 
 
-@pytest.mark.parametrize("u, acts", [("U12", ["exit", "change"]), ("U13", ["commit", "push"])])
-def test_u12_and_u13_are_one_statement_of_joined_verb_phrases(u, acts):
-    """U12 (U11 reworded in grammar 4) and U13 (U4) by VP coordination: one `shall`, its acts joined by `and`, each
+@pytest.mark.parametrize("u, acts", [("U17", ["name", "change"])])
+def test_u17_is_one_statement_of_joined_verb_phrases(u, acts):
+    """U17 (U12 reworded in request words, 0.38.0) by VP coordination: one `shall`, its acts joined by `and`, each
     done by the one subject."""
     toolchain.require()
     text = {c.id: c.text for c in spec_read.universal(REPO)}[u]

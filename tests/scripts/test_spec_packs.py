@@ -71,7 +71,7 @@ def test_the_spec_pack_holds_the_words_for_talking_about_specs():
 
 
 def test_this_repository_imports_the_spec_pack_and_marks_its_own_words():
-    assert spec_packs.imports(REPO) == ["cli", "spec"]
+    assert spec_packs.imports(REPO) == ["request", "spec"]
     assert spec_packs.problems(REPO) == []
 
 

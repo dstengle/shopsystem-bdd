@@ -1,0 +1,136 @@
+---
+id: vocabulary/missingmass.io/shopsystem/shopsystem-bdd/tracking
+area: tracking
+---
+
+# The words of tracking
+
+## Terms
+
+- **answer** (noun) → object answer. The answer to a question on a work-item, a capability-proposal, a glossary-proposal or a request, written in it in its answerer's words. Not: ruling.
+- **backlog** (noun) → object backlog. Every item of a bounded context, kept in `.shop/backlog/`. This: the backlog of this bounded context.
+- **quote** (noun) → object quote. A file under `.shop/quotes/` of the person's words cited by another file, with its session, its message and the messages around it.
+- **message** (noun) → object message. One turn of the person or of a session in a transcript, without its tool uses.
+- **dependency** (noun) → object dependency. One item's need of another item, written in the item that needs it. Plural: dependencies.
+- **title** (noun) → object title. The name of an item that the person reads beside its id.
+- **shaping note** (noun) → object shaping note. A paragraph under an item's `## Notes` that says what the item is to do, which `work shape` writes from its `--note` option.
+- **transcript** (noun) → object transcript. The file in which Claude Code keeps the messages of a session.
+- **queued message** (noun) → object queued message. A message of the person that Claude Code gives a session while the session works on a turn, kept in its transcript apart from the person's prompts.
+- **directive** (noun) → object directive. A file under `.shop/directives/` that cites a quote of the person's words which every session follows until the directive is promoted or dropped.
+- **relation row** (noun) → object relation row. A row of the `## Relations` table of a capability: from, word, to and cardinality.
+- **upstream entry** (noun) → object upstream entry. A bullet of the `## Upstreams` of `spec/index.md`: the id of a bounded context and the GitHub repository it is hosted on, if any.
+- **given block** (noun) → object given block. The fenced `given` block of a requirement group, the example data its scenario starts from.
+- **bar check** (noun) → object bar check. One check of the readiness bar.
+- **universal condition id** (noun) → object universal condition id. The id `U<n>` of a universal condition.
+- **resolution** (noun) → object resolution. The requirement id and version of each accepted line, under a request's `## Resolution`.
+- **requirement grammar** (noun) → object requirement grammar. The grammar a bounded context's requirements are parsed in, over its glossary and its capabilities' terms.
+- **field** (noun) → object field. One field of a comment, `<field> <n>: <text>`, of the part of one side: `line` or `answer` of the asker's, `question`, `outcome`, `counter`, `reason`, `into` or `resolution` of the upstream's. Plural: entries.
+- **line reason** (noun) → object line reason. The upstream's reason for the line outcome of a request line, under a request's `## Reasons`.
+- **the relation-row form** (proper noun) → object relation-row form. Four cells `| from | word | to | cardinality |` of a `## Relations` table, whose from and to are kinds of the lexicon.
+- **the upstream-entry form** (proper noun) → object upstream-entry form. A bounded-context id `bounded-context/<path>` and, after `github:`, `<owner>/<name>`.
+- **the example-data form** (proper noun) → object example-data form. The rows of a given block, one a line: a thing with its code, a thing's attribute with its value, or two things related by a word of a relation row, as design-r2 section 9.1 sets them out.
+- **`universal`** (proper noun) → object universal. `spec/universal.md`, the file of the universal conditions, read as the capability named `universal`.
+- **open** (adjective) → value context request.status open.
+- **awaiting-asker** (adjective) → value context request.status awaiting-asker.
+- **awaiting-upstream** (adjective) → value context request.status awaiting-upstream.
+- **accepted** (adjective) → value context request.status accepted.
+- **delivered** (adjective) → value context request.status delivered.
+- **refused** (adjective) → value context request.status refused.
+- **withdrawn** (adjective) → value context request.status withdrawn.
+- **line outcome** (attribute) → attribute request line.line outcome. The upstream's answer to one line of a request.
+- **accepted** (adjective) → value request line.line outcome accepted.
+- **rewritten** (adjective) → value request line.line outcome rewritten.
+- **refused** (adjective) → value request line.line outcome refused.
+- **withdrawn** (adjective) → value request line.line outcome withdrawn.
+- **side** (attribute) → attribute context request.side. The side whose part of the request is written next.
+- **asker** (noun) → value context request.side asker.
+- **upstream** (noun) → value context request.side upstream.
+- **shaped** (adjective) → value item.status shaped.
+- **ready** (adjective) → value item.status ready.
+- **in-batch** (adjective) → value item.status in-batch.
+- **delivered** (adjective) → value item.status delivered.
+- **refused** (adjective) → value item.status refused.
+- **withdrawn** (adjective) → value item.status withdrawn.
+- **idea** (noun) → value item.status idea.
+- **needs-input** (noun) → value item.status needs-input.
+- **provenance** (attribute) → attribute item.provenance. Where an item came from: this bounded context, a peer bounded context or the product.
+- **own** (noun) → value item.provenance own.
+- **peer** (noun) → value item.provenance peer.
+- **product** (noun) → value item.provenance product.
+- **value** (attribute) → attribute item.value. 
+- **low-value** (adjective) → value item.value low-value.
+- **medium-value** (adjective) → value item.value medium-value.
+- **high-value** (adjective) → value item.value high-value.
+- **urgency** (attribute) → attribute item.urgency. 
+- **low-urgency** (adjective) → value item.urgency low-urgency.
+- **medium-urgency** (adjective) → value item.urgency medium-urgency.
+- **high-urgency** (adjective) → value item.urgency high-urgency.
+- **size** (attribute) → attribute item.size. 
+- **small** (adjective) → value item.size small.
+- **medium** (adjective) → value item.size medium.
+- **large** (adjective) → value item.size large.
+- **live** (adjective) → value directive.status live.
+- **promoted** (adjective) → value directive.status promoted.
+- **dropped** (adjective) → value directive.status dropped.
+- **side** (attribute) → attribute entry.side. 
+- **asker** (noun) → value entry.side asker.
+- **upstream** (noun) → value entry.side upstream.
+- **side** (attribute) → attribute field.side. 
+- **asker** (noun) → value field.side asker.
+- **upstream** (noun) → value field.side upstream.
+- **open** (adjective) → value thread.status open.
+- **closed** (adjective) → value thread.status closed.
+- **counter** (verb, state) → relation request line.counters. A request line that the upstream proposes takes the place of a request line of the same request, written under the request's `## Counter-proposals`. Forms: counters, countered. Frame: <request line> counters <request line>.
+- **propose** (verb, state) → relation item.proposes. An item holds a requirement among its lines. Forms: proposes, proposed. Frame: <item> proposes <requirement>.
+- **address** (verb, state) → relation context request.addresses. A request asks a bounded context, its upstream. Forms: addresses, addressed. Frame: <context request> addresses <bounded context>.
+- **originate** (verb, state) → relation context request.originates from. A request is raised by a bounded context, its asker. Forms: originates, originated. Frame: <context request> originates from <bounded context>.
+- **idea** (noun) → object idea. A thought the person notes, kept as an item whose status is `idea`.
+- **shared store** (noun) → object shared store. Where a kept change is shared from this repository, so that others have it. This: the shared store of this repository.
+- **availability** (attribute) → attribute shared store.availability. Whether the shared store takes a change.
+- **available** (adjective) → value shared store.availability available.
+- **rejecting** (adjective) → value shared store.availability rejecting.
+- **unreachable** (adjective) → value shared store.availability unreachable.
+- **the brainstorming session** (proper noun) → object brainstorming session. The session that shapes items with the person.
+- **note** (verb, action) → operation backlog.note idea. Forms: notes, noted. Frame: <actor> notes <idea>.
+- **shape** (verb, action) → operation backlog.shape. Forms: shapes, shaped. Frame: <actor> shapes <item>.
+- **rate** (verb, action) → operation backlog.rate. Forms: rates, rated. Frame: <actor> rates <item>.
+- **link** (verb, action) → operation backlog.link. Forms: links, linked. Frame: <actor> links <item>.
+- **ready** (verb, action) → operation backlog.ready. Forms: readies, readied. Frame: <actor> readies <item>.
+- **decline** (verb, action) → operation backlog.decline. Forms: declines, declined. Frame: <actor> declines <item>.
+- **withdraw** (verb, action) → operation backlog.withdraw. Forms: withdraws, withdrawn. Frame: <actor> withdraws <item>.
+- **answer** (verb, action) → operation backlog.answer. Forms: answers, answered. Frame: <actor> answers <item>.
+- **show** (verb, action) → operation backlog.show. Forms: shows, shown. Frame: <actor> shows <item>.
+- **list** (verb, action) → operation backlog.list. Forms: lists, listed. Frame: <actor> lists <backlog>.
+- **draft** (verb, action) → operation drafting.draft. Forms: drafts, drafted. Frame: <actor> drafts <item>.
+- **recodify** (verb, action) → operation drafting.recodify. Forms: recodifies, recodified. Frame: <actor> recodifies <capability> in <item>.
+- **reword** (verb, action) → operation drafting.reword. Forms: rewords, reworded. Frame: <actor> rewords <requirement>.
+- **remove** (verb, action) → operation drafting.remove. Forms: removes, removed. Frame: <actor> removes <requirement>.
+- **assign** (verb, action) → operation drafting.assign. Forms: assigns, assigned. Frame: <actor> assigns <chore> to <item>.
+- **raise** (verb, action) → operation context requests.raise. Forms: raises, raised. Frame: <actor> raises <context request>.
+- **ask** (verb, action) → operation context requests.ask. Forms: asks, asked. Frame: <actor> asks <question>.
+- **reply** (verb, action) → operation context requests.reply. Forms: replies, replied. Frame: <actor> replies to <context request>.
+- **offer** (verb, action) → operation context requests.offer. Forms: offers, offered. Frame: <actor> offers on <context request>.
+- **serve** (verb, action) → operation context requests.serve. Forms: serves, served. Frame: <actor> serves <context request>.
+- **propose** (verb, action) → operation context requests.propose. Forms: proposes, proposed. Frame: <actor> proposes to <context request>.
+- **settle** (verb, action) → operation context requests.settle. Forms: settles, settled. Frame: <actor> settles <request line>.
+- **pass** (verb, action) → operation context requests.pass turn. Forms: passes, passed. Frame: <actor> passes <turn>.
+- **accept** (verb, action) → operation context requests.accept. Forms: accepts, accepted. Frame: <actor> accepts <context request>.
+- **resolve** (verb, action) → operation context requests.resolve. Forms: resolves, resolved. Frame: <actor> resolves <context request>.
+- **catch up** (verb, action) → operation context requests.catch up. Forms: catches up, caught up. Frame: <actor> catches up.
+- **watch** (verb, action) → operation context requests.watch. Forms: watches, watched. Frame: <actor> watches <bounded context>.
+- **survey** (verb, action) → operation context requests.survey. Forms: surveys, surveyed. Frame: <actor> surveys <bounded context>.
+- **inspect** (verb, action) → operation context requests.inspect. Forms: inspects, inspected. Frame: <actor> inspects <context request>.
+- **quote** (verb, action) → operation conversation.quote. Forms: quotes, quoted. Frame: <actor> quotes <message>.
+- **prompt** (verb, action) → operation conversation.prompt. Forms: prompts, prompted. Frame: <actor> prompts <session>.
+- **give** (verb, action) → operation conversation.give. Forms: gives, given. Frame: <actor> gives <directive>.
+- **promote** (verb, action) → operation conversation.promote. Forms: promotes, promoted. Frame: <actor> promotes <directive> to <item>.
+- **drop** (verb, action) → operation conversation.drop. Forms: drops, dropped. Frame: <actor> drops <directive>.
+- **read** (verb, action) → operation conversation.read. Forms: reads, read. Frame: <actor> reads <quote>.
+- **the backlog service** (proper noun) → service backlog.
+- **the drafting service** (proper noun) → service drafting.
+- **the context requests service** (proper noun) → service context requests.
+- **the conversation service** (proper noun) → service conversation.
+- **store** (attribute) → attribute repository.store. Whether this repository takes a change to keep.
+- **taking** (adjective) → value repository.store taking.
+- **rejecting** (adjective) → value repository.store rejecting.
+- **turn** (noun) → object turn. Whose move a context request waits on, the asker's or the upstream's.

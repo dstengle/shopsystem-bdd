@@ -1,6 +1,7 @@
-"""The time constructs (the CNL 4 design, section 4.4, call 9; I16): grammar/corpus/time-4.txt parsed in the
-codified-2 context with the time pack (tests/scripts/fixtures/codified-2-time/), their logical form (spec_lf_time),
-and `model logic`'s refusal of a line holding one, which the check has no reading of yet."""
+"""The time constructs (the CNL 4 design, section 4.4, call 9; I16): grammar/corpus/time-4.txt and the time blocks of
+grammar/language.md parsed in the context in request words with the time pack (tests/scripts/fixtures/
+request-4-time/), their logical form (spec_lf_time), and `model logic`'s refusal of a line holding one, which the check
+has no reading of yet (on codified2_world's time context)."""
 import pathlib
 import re
 import sys
@@ -19,7 +20,7 @@ import codified2_world
 import toolchain
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
-FIXTURE = REPO / "tests" / "scripts" / "fixtures" / "codified-2-time"
+FIXTURE = REPO / "tests" / "scripts" / "fixtures" / "request-4-time"
 CORPUS = REPO / "grammar" / "corpus" / "time-4.txt"
 ON = "when the person runs `work start` on the deadline, `work` shall "
 

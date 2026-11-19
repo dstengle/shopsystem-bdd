@@ -25,6 +25,7 @@ import vocab
 REPO = pathlib.Path(__file__).resolve().parents[2]
 FEATURES = REPO / "scripts" / "features"
 FIXTURE = REPO / "tests" / "scripts" / "fixtures" / "codified-2"
+REQUEST = REPO / "tests" / "scripts" / "fixtures" / "request-4"     # language.md's context (the domain contract)
 LINE = "While a line %s, when the person runs `work start`, `work` shall %s the line."
 STAGE = "While a stage is `open` and %s, when the person runs `work start`, `work` shall %s the stage."
 SECTION = re.compile(r'^### "is one of.*?(?=^### |^## )', re.MULTILINE | re.DOTALL)
@@ -81,7 +82,7 @@ def test_an_absence_is_its_own_fact_and_neither_l3_nor_l4(tmp_path):
 def test_a_finding_says_the_absence(tmp_path):
     codified2_world.context(tmp_path, "ex.com/prod/ctx", [LINE % ("has no outcome", "print"),
                                                           LINE % ("is not `accepted`", "not print")])
-    done = subprocess.run([sys.executable, str(REPO / "scripts" / "model"), "--root", str(tmp_path), "logic"],
+    done = subprocess.run([sys.executable, str(REPO / "scripts" / "spec"), "--root", str(tmp_path), "logic"],
                           capture_output=True, text=True)
     assert "with a line that has no outcome and is not `accepted`," in done.stdout, done.stdout + done.stderr
 
@@ -94,10 +95,10 @@ def twins():
 
 @pytest.mark.parametrize("line", twins())
 def test_each_twin_translates_to_facts_and_to_steps(line):
-    found, why = spec_context.Four(FIXTURE).facts("thing#r1", line)
+    found, why = spec_context.Four(REQUEST).facts("thing#r1", line)
     assert why is None and found[1], why
-    steps = spec_rgl_steps.load(FIXTURE)[0]
-    assert spec_steps4.cases(steps, [("thing#r1", spec_lf.form(steps, spec_grammar4.parse(FIXTURE, line).tree))])
+    steps = spec_rgl_steps.load(REQUEST)[0]
+    assert spec_steps4.cases(steps, [("thing#r1", spec_lf.form(steps, spec_grammar4.parse(REQUEST, line).tree))])
 
 
 def generated(tmp_path, *lines):

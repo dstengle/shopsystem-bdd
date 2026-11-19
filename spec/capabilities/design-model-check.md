@@ -5,7 +5,7 @@ narrator: a person or session verifying a repository against the design model
 group: service
 language: codified-2
 rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/query-commands-answer-in-their-output, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items, design-decision/work-items-named-by-ids, design-decision/the-glossary-is-a-target-of-spec-work]
-retired: [r8, r9, r12, r13, r14, r15, r16, r17, r18, r21, r26, r27, r29, r31, r32, r33, r34, r35, r37, r39, r45, r46, r53, g73, r73, g72, r72, g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g10, r10, g11, r11, g19, r19, g20, r20, g22, r22, g23, r23, g24, r24, g25, r25, g28, r28, g30, r30, g36, r36, g38, r38, g40, r40, g41, r41, g42, r42, g43, r43, g44, r44, g47, r47, g48, r48, g49, r49, g51, r51, g52, r52, g57, r57, g58, r58, g59, r59, g60, r60, g61, r61, g62, r62, g63, r63, g66, r66, g64, r64, g65, r65, g67, r67, g68, r68, g69, r69, g70, r70, g71, r71, g74, r74, g75, r75, g76, r76, g77, r77, g78, r78, g79, r79, g80, r80, g81, r81, g82, r82, g83, r83, g84, r84, g85, r85, g86, r86, g87, r87, g88, r88, g89, r89, g90, r90, g91, r91, g92, r92, g93, r93, g94, r94, g95, r95, g96, r96, g97, r97, g98, r98, g99, r99, g100, r100, g101, r101, g131, r131, g132, r132, g133, r133, g134, r134, g135, r135, g136, r136, g137, r137, g138, r138, g139, r139, g140, r140, g141, r141, g142, r142, g143, r143, g144, r144, g145, r145, g157, r157, g158, r158, g159, r159, g160, r160, g161, r161, g162, r162, g163, r163, g164, r164, g165, r165, g166, r166, g167, r167, g168, r168, g169, r169, g170, r170, g171, r171, g172, r172, g173, r173]
+retired: [r8, r9, r12, r13, r14, r15, r16, r17, r18, r21, r26, r27, r29, r31, r32, r33, r34, r35, r37, r39, r45, r46, r53, g73, r73, g72, r72, g1, r1, g2, r2, g3, r3, g4, r4, g5, r5, g6, r6, g7, r7, g10, r10, g11, r11, g19, r19, g20, r20, g22, r22, g23, r23, g24, r24, g25, r25, g28, r28, g30, r30, g36, r36, g38, r38, g40, r40, g41, r41, g42, r42, g43, r43, g44, r44, g47, r47, g48, r48, g49, r49, g51, r51, g52, r52, g57, r57, g58, r58, g59, r59, g60, r60, g61, r61, g62, r62, g63, r63, g66, r66, g64, r64, g65, r65, g67, r67, g68, r68, g69, r69, g70, r70, g71, r71, g74, r74, g75, r75, g76, r76, g77, r77, g78, r78, g79, r79, g80, r80, g81, r81, g82, r82, g83, r83, g84, r84, g85, r85, g86, r86, g87, r87, g88, r88, g89, r89, g90, r90, g91, r91, g92, r92, g93, r93, g94, r94, g95, r95, g96, r96, g97, r97, g98, r98, g99, r99, g100, r100, g101, r101, g131, r131, g132, r132, g133, r133, g134, r134, g135, r135, g136, r136, g137, r137, g138, r138, g139, r139, g140, r140, g141, r141, g142, r142, g143, r143, g144, r144, g145, r145, g157, r157, g158, r158, g159, r159, g160, r160, g161, r161, g162, r162, g163, r163, g164, r164, g165, r165, g166, r166, g167, r167, g168, r168, g169, r169, g170, r170, g171, r171, g172, r172, g173, r173, g50, r50, g54, r54, g55, r55, g56, r56, g156, r156, g174, r174, g175, r175, g176, r176, g177, r177, g178, r178, g179, r179, g180, r180, g181, r181, g182, r182, g183, r183, g184, r184, g185, r185, g186, r186, g187, r187, g188, r188, g189, r189, g190, r190, g191, r191, g192, r192, g193, r193, g194, r194, g195, r195, g196, r196, g197, r197, g198, r198, g199, r199, g200, r200, g201, r201, g202, r202, g203, r203, g204, r204, g205, r205, g206, r206, g207, r207, g208, r208, g209, r209, g210, r210, g211, r211, g212, r212, g213, r213, g214, r214, g215, r215, g216, r216, g217, r217, g218, r218, g219, r219, g220, r220, g221, r221, g222, r222, g223, r223, g224, r224, g225, r225, g226, r226, g227, r227, g228, r228, g229, r229, g230, r230, g231, r231, g232, r232, g233, r233, g234, r234, g235, r235, g236, r236, g237, r237, g238, r238, g239, r239, g240, r240, g241, r241, g242, r242, g243, r243, g244, r244, g245, r245, g246, r246, g247, r247, g248, r248, g249, r249, g250, r250, g251, r251, g252, r252, g253, r253, g254, r254, g255, r255, g256, r256, g257, r257, g258, r258, g259, r259, g260, r260, g261, r261, g262, r262, g263, r263, g264, r264, g279, r279, g280, r280, g281, r281, g282, r282, g283, r283, g284, r284, g285, r285, g286, r286, g287, r287, g288, r288, g289, r289, g290, r290, g293, r293, g294, r294, g295, r295, g291, r291, g292, r292, g298, r298, g299, r299, g300, r300, g301, r301, g302, r302, g303, r303, g304, r304, g305, r305, g296, r296, g297, r297, g306, r306, g307, r307, g308, r308, g311, r311, g312, r312, g313, r313, g309, r309, g310, r310, g314, r314, g315, r315, g316, r316, g317, r317, g318, r318, g319, r319, g321, r321, g322, r322, g320, r320, g323, r323, g324, r324, g326, r326, g327, r327, g325, r325, g328, r328, g329, r329]
 unbuilt: []
 ---
 
@@ -20,620 +20,13 @@ context: product-level artifacts are read only where the files contain them.
 
 ## Terms
 
-- **rule** (noun): a relation of `scripts/model.lp`, with its code and its plain label: a violation's or a warning's. Redefines: spec.
-- **decisions index** (noun): the generated file `spec/decisions/index.md`. Plural: decisions indexes. Kind of: file. This: the decisions index of the bounded context the command runs in.
-- **rule catalogue** (noun): the generated file `grammar/rules.md`, one entry a rule. Kind of: file.
-- **interpreter** (noun): a `python3` that `model` runs under or tries. Kind of: thing.
-- **file form** (noun): one kind of file a bounded context keeps, with its path and the command that writes it. Plural: file forms. Kind of: thing.
-- **pack** (noun): a file of terms a bounded context imports: `grammar/packs/<name>.md` of the plugin, or `spec/packs/<name>.md` of the bounded context. Kind of: file.
-- **logical form** (noun): what a requirement means, as referents, atoms and boxes, printed by `model parse --form`. Kind of: text.
-- **verb** (noun): a term whose entry names it a verb. Kind of: term.
-- **frame** (noun): one `Frame:` of a verb's entry: the kinds its subject, object and recipient take. Kind of: text.
-- **subject** (noun): the noun phrase before a verb in a clause, or the kind a frame names before its verb. Kind of: thing.
-- **object** (noun): the noun phrase a verb takes after it, or the kind a frame names after its verb. Kind of: thing.
-- **recipient** (noun): the noun phrase a verb takes after its object and a preposition, or the kind a frame names there. Kind of: thing.
-- **preposition** (noun): a word such as `to` or `on` that a frame puts before an object or a recipient. Kind of: thing.
-- **part of speech** (attribute of term): what an entry names a term in its parentheses. Values (noun): `noun`, `verb`, `adjective`, `attribute`, `proper noun`, `artifact`.
-- **omit** (verb, state): a requirement uses a term and leaves out a word that a frame of the term needs. Forms: omits, omitted. Frame: requirement omits thing.
-- **job** (noun): a job of the product that a capability of a bounded context serves. Kind of: thing.
-- **`clingo`** (proper noun): the answer set solver that `model` imports. Kind of: thing.
-- **import** (verb, state): an interpreter can import a Python module. Forms: imports, imported. Frame: interpreter imports thing.
-- **import** (verb, state): the `spec/index.md` of a bounded context names a pack under `imports:`. Forms: imports, imported. Frame: bounded context imports pack.
-- **index entry** (noun): the row of the decisions index for one design-decision, as `model decisions` writes it from the design-decision's file. Plural: index entries. Kind of: text.
-- **catalogue entry** (noun): the entry of the rule catalogue for one rule, as `model rules --write` writes it from the rule. Plural: catalogue entries. Kind of: text.
-- **section** (noun): a part of a file under a `##` heading. Kind of: text.
-- **heading** (attribute of section): the words of a section's `##` line. Values (noun): `Purpose`, `Terms`, `Relations`, `Behaviour`, `Context`, `Decision`, `Consequences`.
-- **id** (noun): the `id` field of a file's frontmatter. Kind of: text.
-- **aspect** (attribute of term): whether a verb says a lasting condition or an event. Values (noun): `state`, `action`.
-- **precondition** (noun): the While clause of a requirement: the condition its trigger happens in. Kind of: text.
-- **trigger** (noun): the When or If clause of a requirement: the event it answers. Kind of: text.
-- **noun phrase** (noun): a noun with its determiner and modifiers, given to a verb as its subject, object or recipient. Kind of: thing.
-- **take** (verb, state): a frame names, in a slot, the kind of a noun phrase or a kind above it. Forms: takes, taken. Frame: frame takes noun phrase.
-- **passive form** (noun): a verb in the passive, as in "a file is written". Kind of: thing.
-- **by-phrase** (noun): "by" and a noun phrase after a passive form, naming who does the action. Kind of: thing.
-- **sense** (noun): one entry of a term that has several entries, with its frames. Kind of: text.
-- **redefine** (verb, state): a term's entry has `Redefines:` naming a pack that defines the term too. Forms: redefines, redefined. Frame: term redefines pack.
-- **agree** (verb, state): a verb is in the number of its subject, as in "a session writes" and "sessions write". Forms: agrees, agreed. Frame: term agrees with subject.
-- **definite noun phrase** (noun): "the" before a noun. Kind of: noun phrase.
-- **antecedent** (noun): what a definite noun phrase refers back to: an earlier noun phrase, a functional relation or a declared indexical. Kind of: thing.
-- **negated indefinite** (noun): "does not" before a verb whose object has "a" or "an", as in "an item does not hold a commit". Kind of: thing.
-- **fragment** (noun): a requirement that stops where a frame of its verb needs another word, as in "When a session writes". Kind of: text.
-- **code** (noun): a word between backticks that names a thing. Kind of: thing.
-- **unify** (verb, state): `model logic` reads two things as one thing. Forms: unifies, unified. Frame: tool unifies thing.
-- **act** (noun): what a requirement's response says an agent does: a verb with its noun phrases. Kind of: thing.
-- **allow** (verb, state): a requirement that uses `only` leaves an act inside what it restricts the act to. Forms: allows, allowed. Frame: requirement allows act.
-- **oblige** (verb, state): a text or a part of one says with "shall" that an agent does an act. Forms: obliges, obliged. Frame: thing obliges act.
-- **forbid** (verb, state): a text says with "shall not" that an agent does not do an act. Forms: forbids, forbade, forbidden. Frame: text forbids act.
-- **override** (verb, state): an If requirement takes precedence over a When requirement of the same trigger whose response differs, where the If requirement's condition holds. Forms: overrides, overrode, overridden. Frame: requirement overrides requirement.
-- **consequence** (noun): a response that a requirement obliges: a Then of its scenario. Kind of: thing.
-- **lack** (verb, state): a decisions index does not hold an index entry that `model decisions` would write now. Forms: lacks, lacked. Frame: decisions index lacks index entry.
-- **add** (verb, state): a requirement has a consequence that no premise entails. Forms: adds, added. Frame: requirement adds consequence.
-- **perfect** (noun): "has" before the participle of an action verb, saying that an agent has done the action, as in "the batch has published a pull request". Kind of: thing.
-- **count** (noun): "at least", "at most", "exactly", "more than" or "fewer than" before a number and a noun. Kind of: thing.
-- **contradict** (verb, state): no number of things meets both of two counts of one act under one trigger and condition. Forms: contradicts, contradicted. Frame: count contradicts count.
-- **clock trigger** (noun): a trigger in which the clock reaches a moment. Kind of: thing.
-- **number** (noun): a number in a requirement where a duration is due, as the `7` of "within the last 7 days". Kind of: thing.
-- **unit** (noun): a unit of the time pack after a number, such as `days`. Kind of: thing.
-- **permit** (verb, state): a requirement says with "may" that an agent may do an act. Forms: permits, permitted. Frame: requirement permits act.
-- **refusal** (noun): a response in which a tool refuses a command. Kind of: thing.
-- **refer** (verb, state): a scenario names a requirement by its id in an `@r<n>` tag. Forms: refers, referred. Frame: scenario refers to requirement id.
-- **the final layout** (artifact): the files and directories a bounded context keeps, as design-decision/final-layout gives them.
-- **the request form** (artifact): the form `work request` writes a request in.
-- **the entry form** (artifact): the forms of a term entry that `spec_lexicon` reads.
-- **the capability id form** (artifact): `capability/<context path>/<file name>` as the `id` of a capability's frontmatter, its file's name the last part.
-- **the feature form** (artifact): the path `features/<name>.feature` of a capability `<name>`.
-- **the node id form** (artifact): one line that is the id of a node of the design model.
-- **corpus** (noun): the files under `grammar/corpus/spec/` of a bounded context: each requirement of a capability with the logical form it is meant to have. Plural: corpora. Kind of: file. This: the corpus of the bounded context the command runs in.
-- **`L1`** (proper noun): the code under which `model logic` prints two requirements that oblige and forbid one act under one trigger and condition. Kind of: thing.
-- **`L7`** (proper noun): the code under which `model logic` prints a requirement that forbids what another permits. Kind of: thing.
-- **`L8`** (proper noun): the code under which `model logic` prints a requirement whose every consequence a premise entails. Kind of: thing.
-- **translate** (verb, action): `model logic` reads a requirement into the facts of its check. Forms: translates, translated. Frame: tool translates requirement.
-- **parse cache** (noun): the files in which `model parse` keeps a line's parse, keyed by its grammar's sources, its grammar, its lexicon's words and its text. Plural: parse caches. Kind of: file.
-- **compiled grammar** (noun): the PGF file a context's grammar compiles to from its sources. Plural: compiled grammars. Kind of: file.
-- **parse** (noun): the trees `model parse` gives a requirement, kept in a parse cache under the requirement's text, its grammar's sources and its lexicon's words. Kind of: text.
-- **recodified** (adjective of capability): a capability whose file has `language: codified-2` in its frontmatter.
-- **embedding** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, with "the" before a noun inside a modifier of a noun phrase of the same kind, where an earlier noun phrase of that kind gives it, as in "When the person runs `work request --raised-for` on a request, `work` shall write a request raised for the request.".
-- **intransitive** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, whose While clause has a state verb whose frame takes no object, as in "a test fails" under `Frame: test fails.`.
-- **self-relating** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, with "the K of X" inside a relative clause on a noun phrase of kind K, as in "When the person runs `work batch review` on a batch, `work` shall write a review that lists the review of the pull request.".
-- **distributive** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, with "the K of every Y" in its response, as in "When the person runs `work batch status`, `work` shall print the pull request of every batch.".
-- **shadowed** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, with "the K" after a noun phrase of kind K inside a "no", "not", "every" or "only" box that does not hold "the K", and after a noun phrase of kind K outside that box, as in "While an item has no dependency on an item whose status is not `delivered`, when the person runs `work batch start`, `work` shall pick the item.".
-- **setting** (adjective of requirement): a requirement of a capability whose file has `language: codified-2`, whose response says that an agent shall set an attribute of a thing the line names earlier to a value, as in "set the status of the request to `delivered`" or "set its status to `delivered`".
-- **duplicated** (adjective of term): a term that two glossary entries have as their term.
-
-- **`no findings`** (proper noun): what `model logic` prints when it finds nothing and reads every requirement it checks. Kind of: text.
-- **translation** (noun): the facts of the check of `model logic` that it reads a requirement into, which a requirement of a construct it has no reading of lacks. Kind of: thing.
-
-- **comparison** (noun): one thing's value of an attribute said against another thing's value of the attribute, as "the release of x is after the release of y" or "is the same as", in the precondition of a requirement. Kind of: thing.
-- **contradict** (verb, state): no values of two things meet both of two comparisons of the same two things' values of one attribute. Forms: contradicts, contradicted. Frame: comparison contradicts comparison.
-- **value order** (noun): the order of an attribute's values: the order its entry's `Order:` gives, or the order of the type its entry's `Type:` declares (a number, a time or a text). Kind of: thing.
-- **order** (noun): "ordered by" an attribute and "in ascending order" or "in descending order" after a noun phrase, which a requirement that uses `order-by` or `order-by-every` requires of a collection or of what an agent prints, and which its logical form keeps as one atom `ordered(x, T, ascending)` or `ordered(x, T, descending)`. Kind of: thing.
-- **contradict** (verb, state): two orders of one collection, or of one printing, under one trigger and condition have opposite directions. Forms: contradicts, contradicted. Frame: order contradicts order.
-
-- **response** (noun): the part of a requirement after shall: what its agent does. Kind of: text.
-
-- **writer** (attribute of file form): what writes a file form: a command of the plugin, the item of the plugin's backlog that will give the form a command, or a person by hand. Values (noun): `command`, `item`, `hand`.
-
-- **closing comma** (noun): the comma a requirement says after an order and before the recipient or other words of its clause that follow the order, as in "every file, ordered by version, in ascending order, to the person". Kind of: thing.
-
-- **construct catalogue** (noun): the generated file `grammar/constructs.md`, one entry a construct of grammar 4, as `model constructs --write` writes it. Kind of: file. This: the construct catalogue of the bounded context the command runs in.
+Moved to `spec/vocabulary/` and `spec/model/` (the domain contract, 0.38.0).
 
 ## Relations
-| from | word | to | cardinality |
-|---|---|---|---|
-| subject | of | term |  |
-| object | of | term |  |
-| recipient | of | term |  |
-| frame | of | term |  |
-| sense | of | term |  |
-| preposition | of | frame |  |
-| job | of | bounded context |  |
-| fact | of | bounded context |  |
-| interpreter | of | command | one |
-| index entry | of | design-decision | one |
-| index entry | in | decisions index |  |
-| catalogue entry | of | rule | one |
-| catalogue entry | in | rule catalogue |  |
-| section | of | capability |  |
-| section | of | design-decision |  |
-| precondition | of | requirement | one |
-| trigger | of | requirement | one |
-| noun phrase | of | term |  |
-| by-phrase | of | passive form | one |
-| logical form | of | requirement |  |
-| antecedent | of | definite noun phrase |  |
-| unit | of | number | one |
-| term | of | pack |  |
-| requirement | of | capability | one |
-| requirement id | in | capability |  |
-| requirement | in | corpus |  |
-| count | in | capability |  |
-| consequence | of | requirement |  |
-| capability | of | scenario | one |
-| logical form | in | corpus |  |
-| id | of | design-decision | one |
-| parse | of | requirement | one |
-| parse | in | parse cache |  |
-| compiled grammar | of | requirement | one |
-| translation | of | requirement | one |
-| comparison | of | precondition |  |
-| value order | of | term | one |
-| order | in | capability |  |
-| order | on | term | one |
-| order | in | act |  |
-| value order | of | sense | one |
-| response | of | requirement | one |
+
+Moved to `spec/vocabulary/` and `spec/model/` (the domain contract, 0.38.0).
 
 ## Behaviour
-
-### [g50] `model decisions` writes the decisions index
-Restates: r14@0.29, spec-integration#r22@0.29.
-- [r50] When the person runs `model decisions`, `model` shall write a decisions index.
-
-### [g54] `model rules` prints every rule
-Restates: r65@0.29.
-- [r54] When the person runs `model rules`, `model` shall print every rule and exit successfully.
-
-### [g55] `model forms` lists every file form
-- [r55] When the person runs `model forms`, `model` shall print every file form and exit successfully.
-
-### [g56] `work record` writes and commits a record
-- [r56] When the person runs `work record`, `work` shall write a record and commit the record.
-
-### [g156] `model explain` prints a requirement
-- [r156] When the person runs `model explain` on a requirement, `model` shall print the requirement and exit successfully.
-
-### [g174] `model check` exits successfully when nothing violates a rule
-Restates: r1@0.29.
-- [r174] While nothing violates a rule, when the person runs `model check`, `model` shall print `0 violations` and exit successfully.
-
-### [g175] `model check` prints a violation under its rule's code
-Restates: r2@0.29, r3@0.29, spec-integration#r16@0.29.
-- [r175] While a capability violates `v15a`, if the person runs `model check`, then `model` shall exit with an error naming `v15a`.
-
-### [g176] Two requirements with one id
-Restates: r4@0.29.
-- [r176] While a capability violates `v15b`, if the person runs `model check`, then `model` shall exit with an error naming `v15b`.
-
-### [g177] A retired id used again
-Restates: r5@0.29.
-- [r177] While a capability violates `v15c`, if the person runs `model check`, then `model` shall exit with an error naming `v15c`.
-
-### [g178] A group with more than one statement
-- [r178] While a requirement group violates `v15l`, if the person runs `model check`, then `model` shall exit with an error naming `v15l`.
-
-### [g179] Two groups of a capability that share their features, condition and trigger
-- [r179] While a requirement group violates `v15n`, if the person runs `model check`, then `model` shall exit with an error naming `v15n`.
-
-### [g180] A given line that is not example data
-- [r180] While a requirement group violates `v15m`, if the person runs `model check`, then `model` shall exit with an error naming `v15m`.
-
-### [g181] A requirement with no scenario
-Restates: r8@0.29.
-- [r181] While a requirement group violates `v_s3`, if the person runs `model check`, then `model` shall exit with an error naming `v_s3`.
-
-### [g182] A scenario that names more than one requirement
-Restates: r107@0.29.
-- [r182] While a scenario violates `v_s2`, if the person runs `model check`, then `model` shall exit with an error naming `v_s2`.
-
-### [g183] A request with no origin
-Restates: r120@0.29.
-- [r183] While a request violates `v17`, if the person runs `model check`, then `model` shall exit with an error naming `v17`.
-
-### [g184] A delivered request resolved by no requirement of the spec
-Restates: r116@0.29.
-- [r184] While a request violates `v3`, if the person runs `model check`, then `model` shall exit with an error naming `v3`.
-
-### [g185] A requirement that uses an avoided word
-Restates: r52@0.29.
-- [r185] While a requirement violates `v_t1`, if the person runs `model check`, then `model` shall exit with an error naming `v_t1`.
-
-### [g186] Two glossary entries with one term
-Restates: r53@0.29.
-- [r186] While a term violates `v_t2`, if the person runs `model check`, then `model` shall exit with an error naming `v_t2`.
-
-### [g187] An avoided word that is a term
-Restates: r54@0.29.
-- [r187] While a term violates `v_t3`, if the person runs `model check`, then `model` shall exit with an error naming `v_t3`.
-
-### [g188] A requirement that does not parse
-Restates: r103@0.29, r104@0.29.
-- [r188] While a requirement violates `v_p1`, if the person runs `model check`, then `model` shall exit with an error naming `v_p1`.
-
-### [g189] A request not of the form `work request` writes
-Restates: r112@0.29.
-- [r189] While a request does not conform to the request form, if the person runs `model check`, then `model` shall exit with an error naming the request.
-
-### [g190] A scenario that names a requirement its capability does not have
-Restates: r9@0.29.
-- [r190] While a scenario refers to a requirement id that the capability of the scenario does not hold, if the person runs `model check`, then `model` shall exit with an error naming the scenario.
-
-### [g191] A capability with no capability id
-Restates: r25@0.29.
-- [r191] While a capability does not conform to the capability id form, if the person runs `model check`, then `model` shall exit with an error naming the capability.
-
-### [g192] A capability with no Behaviour section
-Restates: r25@0.29.
-- [r192] While a capability has no section whose heading is `Behaviour`, if the person runs `model check`, then `model` shall exit with an error naming the capability.
-
-### [g193] A feature file of no capability
-Restates: r26@0.29.
-- [r193] While a feature does not conform to the feature form, if the person runs `model check`, then `model` shall exit with an error naming the feature.
-
-### [g194] A decision with no id
-Restates: r29@0.29.
-- [r194] While a design-decision has no id, if the person runs `model check`, then `model` shall exit with an error naming the design-decision.
-
-### [g195] A glossary bullet in no form of a term entry
-Restates: r48@0.29, r49@0.29.
-- [r195] While a term does not conform to the entry form, if the person runs `model check`, then `model` shall exit with an error naming the term.
-
-### [g196] A repository not on the final layout
-Restates: r61@0.29.
-- [r196] While this bounded context does not conform to the final layout, if the person runs `model check`, then `model` shall exit with an error naming `scripts/migrate`.
-
-### [g197] A warning leaves the exit as it is
-Restates: r11@0.29.
-- [r197] While an observation violates `w_uncited_obs`, when the person runs `model check`, `model` shall print `w_uncited_obs` and exit successfully.
-
-### [g198] A context with no job has no unserved capability
-Restates: r111@0.29.
-- [r198] While this bounded context has no job, when the person runs `model check`, `model` shall print no capability that violates `w_unserved_cap`.
-
-### [g199] `model check` tries again under an interpreter that has clingo
-Restates: r55@0.29.
-- [r199] While the interpreter of the command does not import `clingo` and another interpreter imports `clingo`, when the person runs `model check`, `model` shall print `0 violations`.
-
-### [g200] No interpreter has clingo
-Restates: r12@0.29.
-- [r200] While no interpreter imports `clingo`, if the person runs `model check`, then `model` shall refuse the command and name `pip install clingo`.
-
-### [g201] `model facts` prints the facts
-Restates: r13@0.29.
-- [r201] When the person runs `model facts`, `model` shall print every fact of this bounded context.
-
-### [g202] `model decisions --check` refuses an index that lacks an index entry
-Restates: r15@0.29.
-- [r202] While a design-decision has an index entry that a decisions index does not hold, if the person runs `model decisions` with the `--check` option, then `model` shall exit with an error naming the decisions index and change no file.
-
-### [g203] `model decisions --check` passes a current index
-Restates: r37@0.29.
-- [r203] While no decisions index lacks an index entry, when the person runs `model decisions` with the `--check` option, `model` shall exit successfully.
-
-### [g204] `work record` refuses an `--about` that identifies nothing
-- [r204] If the person runs `work record` with the `--about` option set to a text that does not conform to the node id form, then `work` shall refuse the command and name `--about`.
-
-### [g205] `model parse` refuses a verb with no object
-- [r205] If the person runs `model parse` on a requirement that omits an object of a term, then `model` shall refuse the command and name the term.
-
-### [g206] `model parse` refuses a verb with no recipient
-- [r206] If the person runs `model parse` on a requirement that omits a recipient of a term, then `model` shall refuse the command and name the term.
-
-### [g207] `model check` refuses a verb with no frame
-- [r207] While a verb has no frame, if the person runs `model check`, then `model` shall exit with an error naming the verb.
-
-### [g208] `model check` refuses a condition that relates two kinds
-- [r208] While a term violates `v_t12`, if the person runs `model check`, then `model` shall exit with an error naming the term.
-
-### [g209] `model parse` parses a negated verb or relation
-- [r209] When the person runs `model parse` on a requirement that uses `not-condition`, `model` shall exit successfully.
-
-### [g210] `model parse` refuses a verb with a noun of the wrong kind
-- [r210] If the person runs `model parse` on a requirement that uses a noun phrase of a term that no frame takes, then `model` shall refuse the command and name the term.
-
-### [g211] `model parse` parses a verb between two kinds in a condition
-- [r211] When the person runs `model parse` on a requirement whose precondition uses a term whose aspect is `state`, `model` shall exit successfully.
-
-### [g212] `model parse` refuses a passive with no agent
-- [r212] If the person runs `model parse` on a requirement that uses a passive form that has no by-phrase, then `model` shall refuse the command and name the passive form.
-
-### [g213] `model parse` parses a trigger with a recipient
-- [r213] When the person runs `model parse` on a requirement whose trigger uses a recipient, `model` shall exit successfully.
-
-### [g214] `model check` refuses a term with no part of speech
-- [r214] While a term has no part of speech, if the person runs `model check`, then `model` shall exit with an error naming the term.
-
-### [g215] `model check` reads a frame with a preposition
-- [r215] While a frame of a term has a preposition, when the person runs `model check`, `model` shall exit successfully.
-
-### [g216] `model parse` parses a verb whose frame has a preposition
-- [r216] When the person runs `model parse` on a requirement that uses a term whose frame has a preposition, `model` shall exit successfully.
-
-### [g217] `model check` refuses a frame that does not read
-- [r217] While a term violates `v_t13`, if the person runs `model check`, then `model` shall exit with an error naming the term.
-
-### [g218] A pair that cannot be unified leaves the clash of two other requirements
-- [r218] While two requirements of a capability use a code that `model` does not unify and a requirement of the capability obliges an act that another requirement of the capability forbids, when the person runs `model logic`, `model` shall print a requirement and print `L1`.
-
-### [g219] `model rules --write` writes the rule catalogue
-- [r219] When the person runs `model rules` with the `--write` option, `model` shall write a rule catalogue and exit successfully.
-
-### [g220] `model rules --check` refuses a catalogue that lacks a catalogue entry
-- [r220] While a rule has a catalogue entry that a rule catalogue does not hold, if the person runs `model rules` with the `--check` option, then `model` shall exit with an error naming the rule catalogue and change no file.
-
-### [g221] `model check` refuses a verb with no aspect
-- [r221] While a term violates `v_t14`, if the person runs `model check`, then `model` shall exit with an error naming the term.
-
-### [g222] `model check` passes a verb with two frames
-- [r222] While a term has more than one frame, when the person runs `model check`, `model` shall exit successfully.
-
-### [g223] `model check` passes a verb with two senses told apart by kinds
-- [r223] While a term has more than one sense, when the person runs `model check`, `model` shall exit successfully.
-
-### [g224] `model check` refuses two senses that overlap
-- [r224] While a term violates `v_t15`, if the person runs `model check`, then `model` shall exit with an error naming the term.
-
-### [g225] `model lexicon` shows the terms of the imported packs
-- [r225] While this bounded context imports a pack, when the person runs `model lexicon`, `model` shall print every term of the pack and exit successfully.
-
-### [g226] `model check` refuses an import of no pack
-- [r226] While this bounded context imports a pack that violates `v_t17`, if the person runs `model check`, then `model` shall exit with an error naming the pack.
-
-### [g227] `model check` refuses a pack's term redefined without Redefines:
-- [r227] While a term violates `v_t16`, if the person runs `model check`, then `model` shall exit with an error naming the term.
-
-### [g228] `model check` passes a term marked Redefines:
-- [r228] While a term redefines a pack, when the person runs `model check`, `model` shall exit successfully.
-
-### [g229] `model parse` passes a plural subject whose verb agrees
-- [r229] When the person runs `model parse` on a requirement that uses `bare-plural`, `model` shall exit successfully.
-
-### [g230] `model parse` refuses a verb that does not agree with its subject
-- [r230] If the person runs `model parse` on a requirement that uses a term that does not agree with its subject, then `model` shall refuse the command and name the term.
-
-### [g231] `model parse` refuses an action verb in a While clause
-- [r231] If the person runs `model parse` on a requirement whose precondition uses a term whose aspect is `action`, then `model` shall refuse the command and name the requirement.
-
-### [g232] `model parse` passes a trigger that runs a command with an option
-- [r232] When the person runs `model parse` on a requirement that uses `option-set-to`, `model` shall exit successfully.
-
-### [g233] `model parse` passes of and its over a relation row or an attribute
-- [r233] When the person runs `model parse` on a requirement that uses `of-relation`, `model` shall exit successfully.
-
-### [g234] `model parse` passes no before a subject or an object
-- [r234] When the person runs `model parse` on a requirement that uses `no-noun`, `model` shall exit successfully.
-
-### [g235] `model parse` passes a derived compound noun
-- [r235] When the person runs `model parse` on a requirement that uses `compound`, `model` shall exit successfully.
-
-### [g236] `model parse` passes only before an object
-- [r236] When the person runs `model parse` on a requirement that uses `only`, `model` shall exit successfully.
-
-### [g237] `model parse` passes a relative clause on a verb's frame
-- [r237] When the person runs `model parse` on a requirement that uses `rc-object`, `model` shall exit successfully.
-
-### [g238] `model parse` passes whose over a relation row or an attribute
-- [r238] When the person runs `model parse` on a requirement that uses `rc-whose`, `model` shall exit successfully.
-
-### [g239] `model parse` refuses a requirement with two meanings
-- [r239] If the person runs `model parse` on a requirement that has more than one logical form, then `model` shall refuse the command and name the requirement.
-
-### [g240] `model parse --form` prints the one logical form of a requirement that conforms to the language reference
-- [r240] When the person runs `model parse` with the `--form` option on a requirement that conforms to the language reference, `model` shall print one logical form of the requirement and exit successfully.
-
-### [g241] `model parse` passes this before a kind whose entry has This:
-- [r241] When the person runs `model parse` on a requirement that uses `this`, `model` shall exit successfully.
-
-### [g242] `model parse` refuses the with no antecedent
-- [r242] If the person runs `model parse` on a requirement that uses a definite noun phrase that has no antecedent, then `model` shall refuse the command and name the definite noun phrase.
-
-### [g243] `model parse` refuses a negated indefinite in a While clause
-- [r243] If the person runs `model parse` on a requirement whose precondition uses a negated indefinite, then `model` shall refuse the command and name the negated indefinite.
-
-### [g244] `model parse` refuses a requirement with no trigger and neither always nor never
-- [r244] While a requirement has no trigger and the requirement does not use `always-never`, if the person runs `model parse` on the requirement, then `model` shall refuse the command and name the requirement.
-
-### [g245] `model parse` refuses a fragment with the terms that may follow
-- [r245] If the person runs `model parse` on a fragment, then `model` shall refuse the command, name the fragment and print a term.
-
-### [g246] `model check` warns of example data in a line
-- [r246] While a requirement violates `w_example`, when the person runs `model check`, `model` shall print the requirement.
-
-### [g247] `model logic` finds no clash between only and a change of that kind
-- [r247] While a requirement of a capability uses `only` and the requirement allows an act that another requirement of the capability obliges, when the person runs `model logic`, `model` shall exit successfully.
-
-### [g248] `model logic` finds the clash of every and a forbidden print
-- [r248] While a requirement of a capability uses `every` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
-
-### [g249] `model logic` reads an If line as taking precedence over a When line
-- [r249] While a requirement of a capability overrides another requirement of the capability, when the person runs `model logic`, `model` shall exit successfully.
-
-### [g250] `model logic` pairs a universal condition with the lines it bears on
-- [r250] While a universal condition forbids an act that a requirement of a capability obliges, when the person runs `model logic`, `model` shall print the universal condition.
-
-### [g251] `model logic` reports a requirement that other requirements entail
-- [r251] While a requirement has a consequence and the requirement adds no consequence, when the person runs `model logic`, `model` shall print `L8`.
-
-### [g252] `model parse` reads a count
-- [r252] When the person runs `model parse` on a requirement that uses `count`, `model` shall exit successfully.
-
-### [g253] `model logic` finds two counts that cannot both hold
-- [r253] While a capability holds a count that contradicts a count, when the person runs `model logic`, `model` shall print `L1`.
-
-### [g254] `model parse` reads a comparison of moments
-- [r254] When the person runs `model parse` on a requirement that uses `moment-compare`, `model` shall exit successfully.
-
-### [g255] `model parse` reads the clock as a trigger
-- [r255] When the person runs `model parse` on a requirement that uses a clock trigger, `model` shall exit successfully.
-
-### [g256] `model parse` reads the perfect as history
-- [r256] When the person runs `model parse` on a requirement whose precondition uses a perfect, `model` shall exit successfully.
-
-### [g257] `model parse` refuses a duration with no unit
-- [r257] If the person runs `model parse` on a requirement that uses a number that has no unit, then `model` shall refuse the command and name the requirement.
-
-### [g258] `model parse` reads a permission
-- [r258] When the person runs `model parse` on a requirement that uses `may`, `model` shall exit successfully.
-
-### [g259] `model parse` reads always and never with no trigger
-- [r259] When the person runs `model parse` on a requirement that uses `always-never`, `model` shall exit successfully.
-
-### [g260] `model logic` finds a line that forbids what another permits
-- [r260] While a requirement of a capability forbids an act that another requirement of the capability permits, when the person runs `model logic`, `model` shall print `L7`.
-
-### [g261] `model logic` checks a capability in the new language
-- [r261] While the language of a capability is `codified-2`, when the person runs `model logic`, `model` shall exit successfully.
-
-### [g262] `model explain` prints what a refusal entails and where it comes from
-- [r262] When the person runs `model explain` on a requirement that uses a refusal, `model` shall print a universal condition and a term.
-
-### [g263] `model explain` prints the If requirement that takes precedence
-- [r263] When the person runs `model explain` on a requirement that a requirement overrides, `model` shall print a requirement that uses a refusal.
-
-### [g264] `model explain` refuses an id that no capability holds
-- [r264] If the person runs `model explain` on a requirement id that no capability holds, then `model` shall refuse the command and name the requirement id.
-
-### [g279] `model parse` refuses a requirement that does not conform to the language reference
-- [r279] If the person runs `model parse` on a requirement that does not conform to the language reference, then `model` shall refuse the command and name the requirement.
-
-### [g280] `model logic` translates every requirement that conforms to the language reference
-- [r280] While a requirement of a capability conforms to the language reference, when the person runs `model logic` on the capability, `model` shall translate the requirement.
-
-### [g281] `model parse --form` prints the logical form the corpus holds
-- [r281] While the corpus holds a logical form of a requirement, when the person runs `model parse` with the `--form` option on the requirement, `model` shall print the logical form.
-
-### [g282] `model parse` reads a requirement from the parse cache that holds its parse
-- [r282] While a parse cache holds the parse of a requirement, when the person runs `model parse` on the requirement, `model` shall read the parse cache, write no compiled grammar and exit successfully.
-
-### [g283] `model parse` parses a requirement whose parse no parse cache holds and keeps it
-- [r283] While a requirement has a parse that no parse cache holds, when the person runs `model parse` on the requirement, `model` shall write a parse cache and exit successfully.
-
-### [g284] `model parse` reuses the compiled grammar of unchanged sources
-- [r284] While a requirement has a parse that no parse cache holds and the compiled grammar of the requirement exists, when the person runs `model parse` on the requirement, `model` shall use the compiled grammar, write no compiled grammar and exit successfully.
-
-### [g285] `model parse` refuses a state verb in a trigger
-- [r285] If the person runs `model parse` on a requirement whose trigger uses a term whose aspect is `state`, then `model` shall refuse the command and name the requirement.
-
-### [g286] A decision with no Decision section
-- [r286] While a design-decision has no section whose heading is `Decision`, if the person runs `model check`, then `model` shall exit with an error naming the design-decision.
-
-### [g287] `model check` refuses a capability in the old language, naming `migrate upgrade`
-- [r287] If the person runs `model check` on a capability whose language is `codified-1`, then `model` shall refuse the command and name `migrate upgrade`.
-
-### [g288] `model logic` translates only over a relation in a response
-- [r288] While a requirement of a capability uses `only` and the requirement uses `holds-relation`, when the person runs `model logic` on the capability, `model` shall translate the requirement.
-
-### [g289] `model logic` translates a count over a relation in a response
-- [r289] While a requirement of a capability uses `count` and the requirement uses `holds-relation`, when the person runs `model logic` on the capability, `model` shall translate the requirement.
-
-### [g290] `model logic` names a requirement it has no translation of
-- [r290] While a requirement of a capability has no translation, when the person runs `model logic` on the capability, `model` shall print the requirement and not print `no findings`.
-
-### [g293] `model parse` reads `holds-exactly`
-- [r293] When the person runs `model parse` on a requirement that uses `holds-exactly`, `model` shall exit successfully.
-
-### [g294] `model logic` reads `holds-exactly` as every and only
-- [r294] While a requirement of a capability uses `holds-exactly` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
-
-### [g295] `model parse` reads `nothing` in a precondition
-- [r295] When the person runs `model parse` on a requirement whose precondition uses `nothing`, `model` shall exit successfully.
-
-### [g291] `model parse` reads `is-in`
-- [r291] When the person runs `model parse` on a requirement whose precondition uses `is-in`, `model` shall exit successfully.
-
-### [g292] `model logic` reads `is-in` as `holds-relation`
-- [r292] While a requirement uses `is-in` and the requirement obliges an act and another requirement that forbids the act uses `holds-relation`, when the person runs `model logic`, `model` shall print `L1`.
-
-### [g298] `model parse` reads one thing's value compared with another's
-- [r298] When the person runs `model parse` on a requirement that uses `value-compare`, `model` shall exit successfully.
-
-### [g299] `model parse` reads one thing's value said to be the same as another's
-- [r299] When the person runs `model parse` on a requirement that uses `value-same`, `model` shall exit successfully.
-
-### [g300] `model parse` refuses a comparison of an attribute that has no order
-- [r300] While a term has no value order and a requirement uses the term and `value-compare`, if the person runs `model parse` on the requirement, then `model` shall refuse the command and name the term.
-
-### [g301] `model logic` finds the clash of two lines under one comparison
-- [r301] While a requirement of a capability uses `value-compare` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
-
-### [g302] `model logic` finds no clash between two lines whose comparisons contradict
-- [r302] While a requirement of a capability obliges an act that another requirement of the capability forbids and a comparison of the precondition of the requirement contradicts a comparison, when the person runs `model logic`, `model` shall exit successfully.
-
-### [g303] `model parse` reads an order on a collection
-- [r303] When the person runs `model parse` on a requirement that uses `order-by`, `model` shall exit successfully.
-
-### [g304] `model parse` reads an order on a printed every
-- [r304] When the person runs `model parse` on a requirement that uses `order-by-every`, `model` shall exit successfully.
-
-### [g305] `model parse --form` prints an order as one atom
-- [r305] When the person runs `model parse` with the `--form` option on a requirement that uses an order, `model` shall print the order and exit successfully.
-
-### [g296] `model parse` refuses an order on an attribute whose values have no order
-- [r296] If the person runs `model parse` on a requirement that uses an order on a term that has no value order, then `model` shall refuse the command and name the term.
-
-### [g297] `model logic` finds two contradicting orders
-- [r297] While a capability holds an order that contradicts an order, when the person runs `model logic`, `model` shall print `L1`.
-
-### [g306] `model parse` refuses an order in a precondition
-- [r306] If the person runs `model parse` on a requirement whose precondition uses an order, then `model` shall refuse the command and name the order.
-
-### [g307] `model parse` refuses an order in a trigger
-- [r307] If the person runs `model parse` on a requirement whose trigger uses an order, then `model` shall refuse the command and name the order.
-
-### [g308] `model parse` refuses an order in a forbidden act
-- [r308] If the person runs `model parse` on a requirement that forbids an act that holds an order, then `model` shall refuse the command and name the order.
-
-### [g311] `model parse` reads a comparison of two senses of one term with one value order
-- [r311] While a sense of a term has a value order and another sense of the term has the value order and a requirement uses the term and `value-compare`, when the person runs `model parse` on the requirement, `model` shall exit successfully.
-
-### [g312] `model parse` reads two senses of one term with one value order said to be the same
-- [r312] While a sense of a term has a value order and another sense of the term has the value order and a requirement uses the term and `value-same`, when the person runs `model parse` on the requirement, `model` shall exit successfully.
-
-### [g313] `model parse` refuses a comparison of two senses of one term with different value orders
-- [r313] While a sense of a term has a value order and another sense of the term has a different value order and a requirement uses the term and `value-compare`, if the person runs `model parse` on the requirement, then `model` shall refuse the command and name the term.
-
-### [g309] `model parse` refuses two senses of one term with different value orders said to be the same
-- [r309] While a sense of a term has a value order and another sense of the term has a different value order and a requirement uses the term and `value-same`, if the person runs `model parse` on the requirement, then `model` shall refuse the command and name the term.
-
-### [g310] `model logic` finds the clash of two lines under a comparison of two senses of one term
-- [r310] While a sense of a term has a value order and another sense of the term has the value order and a requirement of a capability uses the term and `value-compare` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
-
-### [g314] `model logic` reads `holds-exactly` whose restriction is a relative clause
-- [r314] While a requirement of a capability uses `holds-exactly` and `rc-object` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
-
-### [g315] `model logic` reads `nothing` on a response's object
-- [r315] While a requirement of a capability uses `nothing` and `rc-subject` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
-
-### [g316] `model logic` translates every over a negated value in a precondition
-- [r316] While the precondition of a requirement of a capability uses `every` and `not-condition`, when the person runs `model logic` on the capability, `model` shall translate the requirement.
-
-### [g317] `model parse` reads an order on every K that a verb whose frames name its kind takes
-- [r317] While a requirement uses `order-by-every` and the requirement uses a verb that has no frame that takes `thing`, when the person runs `model parse` on the requirement, `model` shall exit successfully.
-
-### [g318] `model parse` reads an order after every K in a collection one way
-- [r318] While a requirement uses `order-by-every` and `of-relation`, when the person runs `model parse` on the requirement, `model` shall exit successfully.
-
-### [g319] `model parse` refuses a state verb in a response as the response's
-- [r319] If the person runs `model parse` on a requirement whose response uses a term whose aspect is `state`, then `model` shall refuse the command, name the term and the response and not name the trigger.
-
-### [g321] `model logic` finds no clash between an object that holds nothing and a forbidden object that holds a thing
-- [r321] While a requirement uses `nothing` and `rc-subject` and the requirement obliges an act and another requirement that forbids the act uses `holds-relation`, when the person runs `model logic`, `model` shall exit successfully.
-
-### [g322] `model logic` finds no clash between an object that holds no thing of a kind and a forbidden object that holds one
-- [r322] While a requirement uses `no-noun` and `holds-relation` and the requirement obliges an act and another requirement that forbids the act uses `holds-relation`, when the person runs `model logic`, `model` shall exit successfully.
-
-### [g320] `model logic` finds the clash of two objects that hold a thing
-- [r320] While a requirement uses `holds-relation` and `rc-subject` and the requirement obliges an act and another requirement that forbids the act uses `holds-relation`, when the person runs `model logic`, `model` shall print `L1`.
-
-### [g323] `model logic` reads `holds-exactly` whose restriction reaches a second thing
-- [r323] While a requirement of a capability uses `holds-exactly` and `of-relation` and the requirement obliges an act and another requirement of the capability that has the trigger of the requirement forbids the act, when the person runs `model logic`, `model` shall print `L1`.
-
-### [g324] `model forms --check` refuses a file form written by hand
-- [r324] While the writer of a file form is `hand`, when the person runs `model forms` with the `--check` option, `model` shall exit with an error naming the file form.
-
-### [g326] `model parse` reads an order that a closing comma ends before the recipient
-- [r326] While a requirement uses `order-by` and a closing comma, when the person runs `model parse` on the requirement, `model` shall exit successfully.
-
-### [g327] `model parse` reads an order on every K that a closing comma ends before the recipient
-- [r327] While a requirement uses `order-by-every` and a closing comma, when the person runs `model parse` on the requirement, `model` shall exit successfully.
-
-### [g325] `model parse` still reads an order before the recipient with no closing comma
-- [r325] While a requirement uses `order-by` and a recipient and the requirement uses no closing comma, when the person runs `model parse` on the requirement, `model` shall exit successfully.
-
-### [g328] `model logic` finds the clash of a forbidden object whose value is not one code with an obliged object of another value
-- [r328] While a requirement uses `not-relative` and a code and the requirement forbids an act and another requirement obliges the act and the requirement uses `rc-whose` and the requirement does not use the code, when the person runs `model logic`, `model` shall print `L1`.
-
-### [g329] `model logic` finds no clash of a forbidden object whose value is not one code with an obliged object of that value
-- [r329] While a requirement uses `not-relative` and a code and the requirement forbids an act and another requirement obliges the act and the requirement uses `rc-whose` and the code, when the person runs `model logic`, `model` shall exit successfully.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a
@@ -712,3 +105,303 @@ Restates: r37@0.29.
 - r122@0.29: retired with design-model-check#r35 in 0.31.0 (the-old-workflow-retired).
 - r123@0.29: retired with design-model-check#r46 in 0.31.0 (the-old-workflow-retired).
 - r124@0.29: retired with design-model-check#r39 in 0.31.0 (the-old-workflow-retired).
+## Moved
+
+Every line moved to a new capability with a new id (the domain contract, 0.38.0).
+
+| old | new |
+|---|---|
+| g50 | decisions#g16 |
+| r50 | decisions#r16 |
+| g54 | checking#g1 |
+| r54 | checking#r1 |
+| g55 | checking#g2 |
+| r55 | checking#r2 |
+| g56 | records#g1 |
+| r56 | records#r1 |
+| g156 | consistency#g1 |
+| r156 | consistency#r1 |
+| g174 | checking#g3 |
+| r174 | checking#r3 |
+| g175 | checking#g4 |
+| r175 | checking#r4 |
+| g176 | checking#g5 |
+| r176 | checking#r5 |
+| g177 | checking#g6 |
+| r177 | checking#r6 |
+| g178 | checking#g7 |
+| r178 | checking#r7 |
+| g179 | checking#g8 |
+| r179 | checking#r8 |
+| g180 | checking#g9 |
+| r180 | checking#r9 |
+| g181 | checking#g10 |
+| r181 | checking#r10 |
+| g182 | checking#g11 |
+| r182 | checking#r11 |
+| g183 | checking#g12 |
+| r183 | checking#r12 |
+| g184 | checking#g13 |
+| r184 | checking#r13 |
+| g185 | checking#g14 |
+| r185 | checking#r14 |
+| g186 | checking#g15 |
+| r186 | checking#r15 |
+| g187 | checking#g16 |
+| r187 | checking#r16 |
+| g188 | checking#g17 |
+| r188 | checking#r17 |
+| g189 | checking#g18 |
+| r189 | checking#r18 |
+| g190 | checking#g19 |
+| r190 | checking#r19 |
+| g191 | checking#g20 |
+| r191 | checking#r20 |
+| g192 | checking#g21 |
+| r192 | checking#r21 |
+| g193 | checking#g22 |
+| r193 | checking#r22 |
+| g194 | decisions#g17 |
+| r194 | decisions#r17 |
+| g195 | checking#g23 |
+| r195 | checking#r23 |
+| g196 | checking#g24 |
+| r196 | checking#r24 |
+| g197 | checking#g25 |
+| r197 | checking#r25 |
+| g198 | checking#g26 |
+| r198 | checking#r26 |
+| g199 | checking#g27 |
+| r199 | checking#r27 |
+| g200 | checking#g28 |
+| r200 | checking#r28 |
+| g201 | checking#g29 |
+| r201 | checking#r29 |
+| g202 | decisions#g18 |
+| r202 | decisions#r18 |
+| g203 | decisions#g19 |
+| r203 | decisions#r19 |
+| g204 | records#g2 |
+| r204 | records#r2 |
+| g205 | reading#g1 |
+| r205 | reading#r1 |
+| g206 | reading#g2 |
+| r206 | reading#r2 |
+| g207 | checking#g30 |
+| r207 | checking#r30 |
+| g208 | checking#g31 |
+| r208 | checking#r31 |
+| g209 | reading#g3 |
+| r209 | reading#r3 |
+| g210 | reading#g4 |
+| r210 | reading#r4 |
+| g211 | reading#g5 |
+| r211 | reading#r5 |
+| g212 | reading#g6 |
+| r212 | reading#r6 |
+| g213 | reading#g7 |
+| r213 | reading#r7 |
+| g214 | checking#g32 |
+| r214 | checking#r32 |
+| g215 | checking#g33 |
+| r215 | checking#r33 |
+| g216 | reading#g8 |
+| r216 | reading#r8 |
+| g217 | checking#g34 |
+| r217 | checking#r34 |
+| g218 | consistency#g2 |
+| r218 | consistency#r2 |
+| g219 | checking#g35 |
+| r219 | checking#r35 |
+| g220 | checking#g36 |
+| r220 | checking#r36 |
+| g221 | checking#g37 |
+| r221 | checking#r37 |
+| g222 | checking#g38 |
+| r222 | checking#r38 |
+| g223 | checking#g39 |
+| r223 | checking#r39 |
+| g224 | checking#g40 |
+| r224 | checking#r40 |
+| g225 | checking#g41 |
+| r225 | checking#r41 |
+| g226 | checking#g42 |
+| r226 | checking#r42 |
+| g227 | checking#g43 |
+| r227 | checking#r43 |
+| g228 | checking#g44 |
+| r228 | checking#r44 |
+| g229 | reading#g9 |
+| r229 | reading#r9 |
+| g230 | reading#g10 |
+| r230 | reading#r10 |
+| g231 | reading#g11 |
+| r231 | reading#r11 |
+| g232 | reading#g12 |
+| r232 | reading#r12 |
+| g233 | reading#g13 |
+| r233 | reading#r13 |
+| g234 | reading#g14 |
+| r234 | reading#r14 |
+| g235 | reading#g15 |
+| r235 | reading#r15 |
+| g236 | reading#g16 |
+| r236 | reading#r16 |
+| g237 | reading#g17 |
+| r237 | reading#r17 |
+| g238 | reading#g18 |
+| r238 | reading#r18 |
+| g239 | reading#g19 |
+| r239 | reading#r19 |
+| g240 | reading#g20 |
+| r240 | reading#r20 |
+| g241 | reading#g21 |
+| r241 | reading#r21 |
+| g242 | reading#g22 |
+| r242 | reading#r22 |
+| g243 | reading#g23 |
+| r243 | reading#r23 |
+| g244 | reading#g24 |
+| r244 | reading#r24 |
+| g245 | reading#g25 |
+| r245 | reading#r25 |
+| g246 | checking#g45 |
+| r246 | checking#r45 |
+| g247 | consistency#g3 |
+| r247 | consistency#r3 |
+| g248 | consistency#g4 |
+| r248 | consistency#r4 |
+| g249 | consistency#g5 |
+| r249 | consistency#r5 |
+| g250 | consistency#g6 |
+| r250 | consistency#r6 |
+| g251 | consistency#g7 |
+| r251 | consistency#r7 |
+| g252 | reading#g26 |
+| r252 | reading#r26 |
+| g253 | consistency#g8 |
+| r253 | consistency#r8 |
+| g254 | reading#g27 |
+| r254 | reading#r27 |
+| g255 | reading#g28 |
+| r255 | reading#r28 |
+| g256 | reading#g29 |
+| r256 | reading#r29 |
+| g257 | reading#g30 |
+| r257 | reading#r30 |
+| g258 | reading#g31 |
+| r258 | reading#r31 |
+| g259 | reading#g32 |
+| r259 | reading#r32 |
+| g260 | consistency#g9 |
+| r260 | consistency#r9 |
+| g261 | consistency#g10 |
+| r261 | consistency#r10 |
+| g262 | consistency#g11 |
+| r262 | consistency#r11 |
+| g263 | consistency#g12 |
+| r263 | consistency#r12 |
+| g264 | consistency#g13 |
+| r264 | consistency#r13 |
+| g279 | reading#g33 |
+| r279 | reading#r33 |
+| g280 | consistency#g14 |
+| r280 | consistency#r14 |
+| g281 | reading#g34 |
+| r281 | reading#r34 |
+| g282 | reading#g35 |
+| r282 | reading#r35 |
+| g283 | reading#g36 |
+| r283 | reading#r36 |
+| g284 | reading#g37 |
+| r284 | reading#r37 |
+| g285 | reading#g38 |
+| r285 | reading#r38 |
+| g286 | decisions#g20 |
+| r286 | decisions#r20 |
+| g287 | checking#g46 |
+| r287 | checking#r46 |
+| g288 | consistency#g15 |
+| r288 | consistency#r15 |
+| g289 | consistency#g16 |
+| r289 | consistency#r16 |
+| g290 | consistency#g17 |
+| r290 | consistency#r17 |
+| g293 | reading#g39 |
+| r293 | reading#r39 |
+| g294 | consistency#g18 |
+| r294 | consistency#r18 |
+| g295 | reading#g40 |
+| r295 | reading#r40 |
+| g291 | reading#g41 |
+| r291 | reading#r41 |
+| g292 | consistency#g19 |
+| r292 | consistency#r19 |
+| g298 | reading#g42 |
+| r298 | reading#r42 |
+| g299 | reading#g43 |
+| r299 | reading#r43 |
+| g300 | reading#g44 |
+| r300 | reading#r44 |
+| g301 | consistency#g20 |
+| r301 | consistency#r20 |
+| g302 | consistency#g21 |
+| r302 | consistency#r21 |
+| g303 | reading#g45 |
+| r303 | reading#r45 |
+| g304 | reading#g46 |
+| r304 | reading#r46 |
+| g305 | reading#g47 |
+| r305 | reading#r47 |
+| g296 | reading#g48 |
+| r296 | reading#r48 |
+| g297 | consistency#g22 |
+| r297 | consistency#r22 |
+| g306 | reading#g49 |
+| r306 | reading#r49 |
+| g307 | reading#g50 |
+| r307 | reading#r50 |
+| g308 | reading#g51 |
+| r308 | reading#r51 |
+| g311 | reading#g52 |
+| r311 | reading#r52 |
+| g312 | reading#g53 |
+| r312 | reading#r53 |
+| g313 | reading#g54 |
+| r313 | reading#r54 |
+| g309 | reading#g55 |
+| r309 | reading#r55 |
+| g310 | consistency#g23 |
+| r310 | consistency#r23 |
+| g314 | consistency#g24 |
+| r314 | consistency#r24 |
+| g315 | consistency#g25 |
+| r315 | consistency#r25 |
+| g316 | consistency#g26 |
+| r316 | consistency#r26 |
+| g317 | reading#g56 |
+| r317 | reading#r56 |
+| g318 | reading#g57 |
+| r318 | reading#r57 |
+| g319 | reading#g58 |
+| r319 | reading#r58 |
+| g321 | consistency#g27 |
+| r321 | consistency#r27 |
+| g322 | consistency#g28 |
+| r322 | consistency#r28 |
+| g320 | consistency#g29 |
+| r320 | consistency#r29 |
+| g323 | consistency#g30 |
+| r323 | consistency#r30 |
+| g324 | checking#g47 |
+| r324 | checking#r47 |
+| g326 | reading#g59 |
+| r326 | reading#r59 |
+| g327 | reading#g60 |
+| r327 | reading#r60 |
+| g325 | reading#g61 |
+| r325 | reading#r61 |
+| g328 | consistency#g31 |
+| r328 | consistency#r31 |
+| g329 | consistency#g32 |
+| r329 | consistency#r32 |

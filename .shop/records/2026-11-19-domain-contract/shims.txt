@@ -1,0 +1,5 @@
+# The as_namespace shims of plan 4, task 4 (design §6.3), one a line, for the reviewer: none.
+# decision_write.write and record_write.write took an argparse Namespace and now take keyword parameters by business
+# name (decisions.enter, records.keep); every other command of driven-commands.txt already called its core functions
+# with plain values from its cmd_* function (the CLI adapter's part), so it is only re-wrapped by
+# adapter_cli_respond.respond (the envelope under --json, a refusal's references spelled for a person).

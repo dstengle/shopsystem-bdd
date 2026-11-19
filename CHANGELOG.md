@@ -10,6 +10,7 @@ been renamed or retired since.
 
 | Line | Releases |
 |---|---|
+| 0.38 | [0.38.0](#0380-the-domain-contract) |
 | 0.37 | [0.37.0](#0370-whole-spec-faults-caught-before-a-batch-chores-new-capabilities-by-command-and-model-logics-precision) |
 | 0.36 | [0.36.0](#0360-migrate-records-the-version-orders-after-any-act-line-commands-groomed-ideas-and-requests-resolved-offered-and-confirmed) |
 | 0.35 | [0.35.1](#0351-collections-on-any-responses-object) · [0.35.0](#0350-collections-comparisons-and-orders) |
@@ -19,6 +20,72 @@ been renamed or retired since.
 | 0.31 | [0.31.5](#0315-released-as-240-the-request-watch-wakes-on-githubs-events-and-starts-with-the-session) · [0.31.4](#0314-released-as-231-a-batch-runs-in-one-fresh-agent-and-a-parked-item-leaves-the-batch-at-once) · [0.31.3](#0313-released-as-230-work-pushes-its-commits-requests-post-after-they-commit-and-work-watch) · [0.31.2](#0312-released-as-220-decisions-and-records-written-by-command) · [0.31.1](#0311-released-as-210-requests-exchanged-through-github-issues) · [0.31.0](#0310-released-as-200-the-workflow-simplified) |
 | 0.30 | [0.30.0](#0300-released-as-100-codified-requirements) |
 | 0.29 and before | [0.29.0](#0290-glossary-proposals-delegations-given-late-and-fewer-stops-from-outside-a-work-item) · [0.28.3](#0283-a-branch-review-that-runs-nothing) · [0.28.2](#0282-answers-a-round-cannot-hold-go-back-to-integration) · [0.28.1](#0281-work-run-stops-visibly-on-questions-and-spends-less-agent-time) · [0.28.0](#0280-one-set-of-request-commands-work-list-and-work-show-and-answers-that-redraft) · [0.27.0](#0270-transitions-from-how-a-session-ended-and-the-turn-of-an-accepted-request) · [0.26.0](#0260-requests-and-the-context-loop) · [0.25.0](#0250-work-items-side-by-side-answers-and-guarantees) · [0.24.0](#0240-work-items-named-by-ids-and-upgrades-between-plugin-releases) · [0.23.1](#0231---work-item-keeps-tests-that-are-not-scenarios) · [0.23.0](#0230-faults-settled-query-output-as-json-the-session-keeps-the-gate-measurement-on-v3) · [0.22.0](#0220-one-requirement-per-scenario-faults-and-the-lessons-of-a-blind-formulation) · [0.21.0](#0210-the-final-layout-and-delivery-by-work-run) |
+
+## 0.38.0: the domain contract
+
+A requirement used to say how a command-line tool is run: "When the person runs `work shape` on the item, `work`
+shall ...". The business rule and its one interface were one sentence, so the rule could not outlive the interface.
+0.38.0 separates them, ports and adapters: the specification is the domain's (a model, a vocabulary, requirements
+and decisions), and each interface is an adapter with its own contract.
+
+- **The domain model** (`spec/model/<area>.md`): one file per area of a bounded context (core, supporting or
+  generic), a ` ```model ` block of its objects with their attributes, lifecycles and relations, its services with
+  their operations (parameters, the kinds of outcome, the refusal reasons), its events and actors; the structure,
+  no rules. `spec check` holds it to itself (`v_m8`) and every line to it: a word naming no element (`v_m1`), a
+  parameter or value an operation does not declare (`v_m2`), a requester it does not allow (`v_m3`), a refusal reason
+  no line states (`v_m4`), a transition no line causes (`w_m5`) or the lifecycle forbids (`v_m6`), an operation no
+  line requests (`v_m7`). [The domain model](docs/reference/domain-model.md).
+- **The vocabulary** (`spec/vocabulary/<area>.md` and `shared.md`): each word names one element of the model, `-
+  **shape** (verb, action) → operation backlog.shape. Frame: <actor> shapes <item>.`; a frame is word order only, the
+  kinds come from the model; one layer per area, so one word may name two elements in two areas. `## Glossary`, `##
+  Terms` and `## Relations` are gone (`v_t18`-`v_t20` check the entries).
+- **Operations with parameters in the grammar.** A verb that names an operation is a request, its parameters after
+  its object: "When the person enters a design-decision with the tier `check`, ...", "If the person enters a
+  design-decision without a tier, then the decisions service shall refuse the request and name the tier." The logical
+  form says `request(e1, decisions.enter, ...)` with `param` and `noparam`; `spec logic` unifies two requests by
+  operation and parameters, and names every kind by its model element, qualified by its area.
+- **The request pack** (`grammar/packs/request.md`) replaces the CLI pack in every context's `imports:`: request,
+  parameter, service, reason, response, check; refuse, name, return, notify, complete, fail, keep. The CLI pack's
+  reading (a run with its options, the run frames, the bridge) stays live beside the request reading until b356, and
+  `imports: [cli]` is refused only in a context with a domain model (`v_t21`); the upgrade scaffolds one.
+- **The response envelope.** Every operation answers with `{outcome, content, errors, notices}`: `done`, `returned`,
+  `refused`, `passed` or `failed` (a failure of the infrastructure, `broken`, is outside the domain), its errors
+  naming business references (`parameter:tier`, `item:b12`). Every command takes `--json` and prints it.
+- **The CLI adapter's contract** (`spec/adapters/cli.toml`): each operation's command, each parameter's option or
+  place, how each outcome shows (exit 0 or 1, stdout or stderr), the hooks and the environment. `spec check` reads
+  each program's argparse (in a process of its own) and holds the two to each other both ways (`v_a1`-`v_a4`). The
+  protocol driver `tests/scenarios/driver_cli.py` makes a request through it and reads the envelope back; the
+  generated scenarios do not use it yet: their request steps are re-keyed to the CLI handlers, which read text and
+  exit codes, until b358. [Adapter contracts](docs/reference/adapters.md).
+- **This repository's spec moved whole**: six areas (specification, tracking, execution, measurement, analysis,
+  upgrades), 22 capabilities by service and lifecycle, every live line reworded under a new id, the old ids retired
+  with a `## Moved` table and `spec/moves.json` (old id to new id, read wherever an old id is named). U12, U14 and U15
+  are U17-U19 in request words; U13 and U16 retired into design-decisions. Mechanisms left the requirements for
+  design-decisions: the CLI, GitHub issues, pull requests, git as the store, the files, the hooks, the envelope.
+- **`model` is `spec`**: the command checks the specification, and "model" now means the domain model. `scripts/model`
+  still works for this release, with a notice on stderr.
+- **Records are kept, never cited**: a new item's `source:` naming a record is refused (`v_r1`; older ones warn,
+  `w_r1`).
+- **The upgrade step** 0.38.0 "the domain contract": `migrate upgrade` scaffolds the model, the vocabulary and the
+  CLI contract from a context's glossary, relations and the commands its lines run, imports the request pack, and
+  names by file and id each line a session rewords. [Upgrading](docs/upgrading.md#0380-the-domain-contract).
+- **`work line` lays model lines and vocabulary entries** (`--model`, `--relation "<object>: <phrase> → <object>
+  (<cardinality>)"`, `--term "<entry>"`) into `spec/model/` and `spec/vocabulary/` with the item's lines, through the
+  readiness bar and `work batch start`.
+
+### Breaking
+
+- **Every line in 0.37's words is refused** until reworded: a command, an option, print or exit in a line does not
+  parse (`v_p1`) or names no element (`v_m1`). `migrate upgrade` names each.
+- **`imports: [cli]` is refused** in a context with a domain model (`v_t21`).
+- **The `--json` shapes changed.** Each command that printed a JSON object of its own now prints the envelope, the
+  old object under `content`: `work backlog`, `work batch status`, `work list`, `work show`, `spec rules`, `spec
+  check`, `spec logic`, `spec restates`, `spec forms`, `features list`, `features deprecated`, `features bindings`,
+  `tools probe`, `tools map`, `tools tests-of`, `tools untested`, `tools refs`. Read `.content` where you read the
+  object.
+- **`model` is `spec`.** The alias `scripts/model` goes in the next release.
+- **The generated scenarios changed**: a When is a request ("When the person shapes the item i1"), a Then the
+  response ("Then the backlog service refuses this request"); step handlers keyed on a command re-key on the operation.
 
 ## 0.37.0: whole-spec faults caught before a batch, chores, new capabilities by command, and model logic's precision
 

@@ -1,4 +1,4 @@
-"""The facts of scripts/model: Model reads a repository into the facts model.lp solves, with the references that name
+"""The facts of scripts/spec: Model reads a repository into the facts model.lp solves, with the references that name
 nothing and the file problems."""
 
 import datetime
@@ -6,6 +6,7 @@ import re
 from pathlib import Path
 
 import spec_read
+from model_domain import DomainReading
 from model_parse import as_list, frontmatter, mention, scenarios
 from model_requests import RequestReading
 from model_spec import SpecReading
@@ -21,7 +22,7 @@ NOT_PROSE = re.compile(r'`[^`]*`|"[^"]*"|(?<!\w)@[\w-]+')
 OLD_LAYOUT = ("spec/decisions.md", "decisions/", "work/", "records/")    # what scripts/migrate moves (r61)
 
 
-class Model(SpecReading, WorkReading, RequestReading):
+class Model(SpecReading, WorkReading, RequestReading, DomainReading):
     def __init__(self, root, today=None):
         self.root = Path(root)
         self.today = today or datetime.date.today()
@@ -127,6 +128,7 @@ class Model(SpecReading, WorkReading, RequestReading):
     def read(self):
         self.read_layout()
         self.read_index()
+        self.read_domain()
         self.read_restated()
         self.read_universal()
         self.read_capabilities()
@@ -134,6 +136,7 @@ class Model(SpecReading, WorkReading, RequestReading):
         self.read_decisions()
         self.read_records()
         self.read_work()
+        self.read_sources()
         self.read_requests()
         self.check_refs()
         self.read_mentions()
@@ -249,6 +252,12 @@ class Model(SpecReading, WorkReading, RequestReading):
             return False
         return (self.root / ".shop" / "work" / "requests" / (rest.rsplit("/", 1)[-1] + ".md")).is_file()
 
+    def moved(self, ident):
+        """Whether `ident` is a requirement or group id that spec/moves.json maps (spec_moves)."""
+        import spec_moves
+        short = str(ident).rpartition("/")[2]
+        return short in spec_moves.load(self.root)
+
     def check_refs(self):
         for ident, kind, where in getattr(self, "_wanted", []):
             if str(ident).partition("/")[0] in FROZEN_KINDS:
@@ -257,6 +266,8 @@ class Model(SpecReading, WorkReading, RequestReading):
                 continue        # a retired universal condition a decision still rests on (b240 phase 14)
             if self.frozen_request(ident):
                 continue        # a request of the frozen queue is history too (D7): its file is still there
+            if self.moved(ident):
+                continue        # a requirement moved by the domain contract (0.38.0): spec/moves.json resolves it
             if str(ident).endswith("@0.29") and kind is None:
                 self.resolve_req(ident, where)      # a 0.29 id is history, looked up by its form alone
             if kind is None and ident not in self.nodes:

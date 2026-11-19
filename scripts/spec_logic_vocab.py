@@ -10,6 +10,8 @@ condition of more than one kind is suffixed with the kind's id. A relation is na
 A condition (an adjective) is **prose** to the check: grammar 4 reads no definition of it, so a clash that depends on
 it is an L6 (design-r3 §3.2, `prose(C)`).
 """
+import re
+
 import spec_lexicon
 import spec_lf_order
 import spec_relations
@@ -29,18 +31,44 @@ def _bare(text):
     return text.strip().strip("`")
 
 
+def qualified(category, element, value=None):
+    """The check's id of a model element (the domain contract design, §5.3): its category's letter and its qualified
+    id, each part slugged and the parts joined by `__` (`notes.note.status` -> t_notes__note__status), a value's after
+    its attribute's; never a word."""
+    parts = element.split(".") + ([_bare(value)] if value is not None else [])
+    return "%s_%s" % (spec_lexicon.LETTER[category], "__".join(
+        re.sub(r"[^a-z0-9]+", "_", p.lower()).strip("_") or "x" for p in parts))
+
+
+def ids_of(lexicon):
+    """{key: id} of a lexicon's words, a word naming a model element by the element's qualified id."""
+    ids = lexicon.ids()
+    for t in lexicon.terms:
+        if t.element:
+            ids[t.key] = qualified(t.category, t.element)
+            for v in t.values if t.category == "attribute" else ():
+                for kind in t.kinds:
+                    ids[("value", v, (kind, t.term))] = qualified("value", t.element, v)
+    return ids
+
+
 class Vocab:
     """The ids of a layered lexicon's words, by category: kinds (with grammar 4's kind tree), attributes (with their
     kind, values and transitions), conditions, functional relations, events, actors and resources."""
 
     def __init__(self, lexicon, parents):
-        ids = lexicon.ids()
+        ids = ids_of(lexicon)
         self.kinds = {ids[t.key]: t.term for t in lexicon.of("kind")}
         taken = set(self.kinds.values())
         self.kinds.update({spec_lexicon.ident(k, "kind"): k for k in parents if k not in taken})
         by_term = {term: kid for kid, term in self.kinds.items()}
         self.by_term = by_term
         self.events = {ids[t.key]: t.term for t in lexicon.of("event")}
+        self.senses = {}     # (verb, sense) -> its id: two senses of one verb that name two model elements
+        for t in lexicon.of("event"):
+            sense = 1 + sum(1 for k in self.senses if k[0] == t.term)
+            self.senses[(t.term, sense)] = qualified("event", t.element) if t.element else ids[t.key]
+            self.events[self.senses[(t.term, sense)]] = t.term
         self.actors = {ids[t.key]: t.term for t in lexicon.of("actor")}
         self.actor_kinds = {ids[t.key]: by_term[t.supertype] for t in lexicon.of("actor") if t.supertype in by_term}
         self.resources = {ids[t.key]: t for t in lexicon.of("resource")}

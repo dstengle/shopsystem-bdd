@@ -193,6 +193,7 @@ TABLE = ORDER.ROWS + [
     (("scenario refer requirement id",), old(C.scenario, "scenario", "s1", "misreferring"), {}),
     (("interpreter not import `clingo`",), clingoless("clingoless"), {}),
     (("no interpreter import `clingo`",), clingoless("unfound"), {}),
+    (("interpreter import `clingo`", "this interpreter not import `clingo`"), clingoless("clingoless"), {}),
     # model check: the entries of a verb
     (("verb has no frame",), frameless_verb, {}),
     (("term has no part of speech",), term("unlabelled"), {}),
@@ -231,6 +232,7 @@ TABLE = ORDER.ROWS + [
     (("requirement use `not-condition`",), requirement("negating"), {}),
     (("requirement use `bare-plural`",), requirement("plural"), {}),
     (("requirement use `option-set-to`",), requirement("optioned"), {}),
+    (("requirement use `request-params`",), requirement("optioned"), {}),     # the construct that took its place
     (("requirement use `of-relation`",), requirement("genitive"), {}),
     (("requirement use `no-noun`",), requirement("denying"), {}),
     (("requirement use `compound`",), requirement("compound"), {}),
@@ -259,7 +261,8 @@ TABLE = ORDER.ROWS + [
     (("compiled grammar exist",), CACHE.compiled, {}),
     (("no parse cache holds parse",), CACHE.unheld, {}),
     # model logic and model explain
-    (("`model` not unify code",), capability("unpairable"), {"r5": "r1"}),
+    (("`spec` not unify code",), capability("unpairable"), {"r5": "r1"}),
+    (("specification service not unify code",), capability("unpairable"), {"r5": "r1"}),
     (("precondition use `every`", "precondition use `not-condition`"), line(UNDONE), {}),     # b310
     (("requirement use `every`",), capability("exhaustive"), {}),
     (("capability has requirement", "requirement override requirement"), capability("overriding"), {}),
@@ -269,7 +272,7 @@ TABLE = ORDER.ROWS + [
     (("requirement add no consequence",), requirement("restating"), {}),
     (("requirement use refusal",), requirement("refusing"), {}),
     (("capability is `codified-2`",), capability("recodified"), {}),
-    (("capability is `codified-1`",), capability("old"), {}),
+    (("capability is `codified-1`",), capability("old"), {"c1": "thing"}),
     (("capability has requirement", "requirement conform language reference"), capability("recodified"), {}),
     (("capability has requirement", "requirement has no translation"), capability("unread"), {"r1": "shelf#r1"}),
     (("no capability holds requirement id",), old(C.requirement, "requirement id", "r1", "nonexistent"), {}),

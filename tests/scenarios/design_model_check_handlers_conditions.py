@@ -30,7 +30,7 @@ RECODIFIED = "shelf"
 NEW = [("While a session follows a stage, if the person runs `work start`, then `work` shall exit with an error naming "
         "the stage."),
        "When a session ends a stage, `work` shall print the stage."]
-# `thing` in the old language, which `model check` refuses, naming `migrate upgrade` (v_p0)
+# `thing` in the old language, which `spec check` refuses, naming `migrate upgrade` (v_p0)
 OLD = ["When the person runs `work start`, `work` shall exit successfully."]
 # a line grammar 4 stops in: the fixture glossary has no verb tell
 UNPARSED = "When the person runs `work start`, `work` shall tell the person."
@@ -59,7 +59,7 @@ def capability(step):
     if word in ("recodified", "old"):     # a codified-2 capability, or beside it `thing` in the old language
         C2.context(repo, H.PATH, NEW, RECODIFIED)
         step.context.setdefault("ids", {})[name] = RECODIFIED if word == "recodified" else "thing"
-        if word == "old":       # each group its scenario, so the old language is all `model check` finds
+        if word == "old":       # each group its scenario, so the old language is all `spec check` finds
             H.write(repo, "spec/capabilities/thing.md", C2.capability("thing", OLD, H.PATH).replace(
                 "language: codified-2", "language: codified-1"))
             H.write(repo, "features/%s.feature" % RECODIFIED, H.feature(RECODIFIED, "@r1", "@r2"))
@@ -70,9 +70,9 @@ def capability(step):
         step.context.setdefault("holds", {})["features/%s.feature" % GIVEN.NAME] = re.compile(
             re.escape(GIVEN.WRITTEN[word]))
         return
-    if word in CONSTRUCTS.LINES:     # a codified-2 construct `features generate` or `model logic` reads (b197)
+    if word in CONSTRUCTS.LINES:     # a codified-2 construct `features generate` or `spec logic` reads (b197)
         return CONSTRUCTS.capability(step, H.PATH, word)
-    if word in C2.CAPABILITIES:     # lines of grammar 4 that `model logic` reads through their logical form (I12a)
+    if word in C2.CAPABILITIES:     # lines of grammar 4 that `spec logic` reads through their logical form (I12a)
         C2.context(repo, H.PATH, C2.CAPABILITIES[word], name, C2.UNIVERSAL.get(word, ()))
         for k in range(1, len(C2.UNIVERSAL.get(word, ())) + 1):
             H.says(step, "u%d" % k, "U%d" % k)
@@ -104,7 +104,7 @@ def requirement(step):
         H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))
     elif word == "withholding":
         withholding(step)
-    elif word in C2.REQUIREMENTS:     # lines of grammar 4 that `model logic` checks for r1 (I13a)
+    elif word in C2.REQUIREMENTS:     # lines of grammar 4 that `spec logic` checks for r1 (I13a)
         lines, universal = C2.REQUIREMENTS[word]
         C2.context(repo, H.PATH, lines, universal=universal)
         step.context.setdefault("ids", {})[step.names[0]] = "thing#r1"

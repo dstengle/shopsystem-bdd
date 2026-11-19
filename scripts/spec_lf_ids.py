@@ -1,6 +1,8 @@
 """The check's names of a codified-2 context's words (the CNL 4 design, I12a), for spec_lf_facts: each kind, actor,
 verb, attribute and value, and relation row by the ids its logic Vocab (spec_logic_vocab) gives the codified-1 facts,
-so both kinds of file name one word alike; an attribute or a row found for a kind or a kind above it in grammar 4's
+so both kinds of file name one word alike; in a context with a domain model, a word naming a model element by the
+element's id qualified by its area (`k_notes__note`, `e_notes__add`: the domain contract design, §5.3), so two areas'
+one word never names one thing, a verb's sense by its own element; an attribute or a row found for a kind or a kind above it in grammar 4's
 kind tree; an attribute's absence its value `absent` (b240). A word with no id raises ValueError naming it.
 """
 import spec_lexicon
@@ -16,6 +18,7 @@ class Ids:
         self.events = {term: eid for eid, term in vocab.events.items()}
         self.parents = dict(parents)
         self.rows = list(lexicon.relations())
+        self.request = "request" in getattr(lexicon, "imports", ())     # the request pack's verbs are outcomes
 
     def kind(self, kind):
         return self.v.by_term.get(kind) or spec_lexicon.ident(kind, "kind")
@@ -47,7 +50,10 @@ class Ids:
                 return rid
         raise ValueError("no translation of the relation %s %s %s" % (k1, word, k2))
 
-    def event(self, term):
+    def event(self, term, sense=None):
+        """The id of a verb, of its sense `sense` when that sense names a model element of its own."""
+        if sense is not None and (term, sense) in self.v.senses:
+            return self.v.senses[(term, sense)]
         if term not in self.events:
             raise ValueError("no translation of the verb %s" % term)
         return self.events[term]

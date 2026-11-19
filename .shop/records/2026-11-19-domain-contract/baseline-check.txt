@@ -1,0 +1,27 @@
+warning w_example  a requirement holds example data: a code or quoted string that names no declared constant  (124)
+    capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r37, .venv/bin/python
+    capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r38, .venv/bin/python
+    capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r38, venv/bin/python
+    capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r39, $VIRTUAL_ENV/bin/python
+    capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r39, .venv/bin/python
+    capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r39, venv/bin/python
+    capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r40, $VIRTUAL_ENV/bin/python
+    capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r40, .venv/bin/python
+    capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r40, scripts/tools
+    capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r40, venv/bin/python
+    ... and 114 more
+warning w_uncited_obs  an observation no initiative cites  (16)
+    observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-15-closed-before-formulated
+    observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-15-proposal-argues-many
+    observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-15-script-behaviour-unpinned
+    observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-16-model-owned-by-knowledge
+    observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-16-release-0-19-0-defects
+    observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-16-script-defects-seen-in-sweep
+    observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-21-left-for-next-release
+    observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-21-release-gate
+    observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-22-migration-tools-as-is
+    observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-22-refusal-worked-around
+    ... and 6 more
+file: .shop/records/2026-11-18-cli-as-port/variant-a-decision-tiers.md: kind None is not a record kind
+file: .shop/records/2026-11-18-cli-as-port/variant-b-decision-tiers.md: kind None is not a record kind
+0 violations, 140 warnings, 0 unresolved references, 2 file problems

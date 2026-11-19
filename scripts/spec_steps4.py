@@ -4,7 +4,7 @@ I14a), the one meaning `model logic` reads (spec_lf), in the step grammar 4's tr
 - Givens: what the While and Where parts say, then what the trigger says of its referents besides its event, each a
   condition (`SCond`), a referent brought in at its first mention (`K_Given`, "a stage s1"), then each referent the
   event names not yet brought in (b263); a `not` with no referents of its own is its condition negated; "has no T"
-  spec_lf_values' Given. When: the trigger's event (`STrig`).
+  spec_lf_values' Given. When: the trigger's event (`STrig`), a request with its parameters (spec_steps4_request).
 - Thens: each act of the response in the present (`S_Does`; setting an attribute spec_lf_set's), its polarity kept:
   "change nothing" is "changes nothing", a `not` over an act on a referent of its own "does not V a K"; a condition of
   the response a condition, a row's atom its frame ("the session s1 has the worktree w1", "the worktree w1 holds the
@@ -35,6 +35,7 @@ import spec_lf_values
 import spec_rgl
 import spec_steps4_boxes as boxes
 import spec_steps4_counter as counter
+import spec_steps4_request as request
 from spec_lf_core import Atom, Box
 
 kid = spec_rgl.kid
@@ -106,6 +107,8 @@ class Reader:
             return boxes.np_image(self, ref, slot)
         if ref in self.dets:
             a = self.dets[ref]
+        if request.np(ref, slot):     # "the text", a parameter a response names (§5.1)
+            return request.np(ref, slot)
         if not a and ref.origin in ("constant", "parameter") and ref.value not in self.actors:
             return (S + "_Code", ("CodeLit", ref.value))
         det = a if isinstance(a, str) else "DetA"
@@ -280,13 +283,9 @@ def read(vocab, forms, entailed=None, r=None):
         for part in form.parts:
             if part.op in ("while", "where") and n == 0:
                 givens += [g for item in part.body for g in r.given(item)]
-            elif part.op in ("when", "if") and n == 0:
-                events = [i for i in part.body if isinstance(i, Atom) and i.pred == "event"]
-                givens += [g for item in part.body if item not in events for g in r.given(item)]
-                for event in events:      # one act on each of "two Ks" (b240): a When each
-                    givens += r.introduce(event)
-                    subject, s, vp = r.clause(event)
-                    when.append(("STrig", (kid(subject) + "_Event", s, vp)))
+            elif part.op in ("when", "if") and n == 0:     # a When each event, a request with its parameters
+                found = request.trigger(r, part)
+                givens, when = givens + found[0], when + found[1]
             elif part.op == "response":
                 boxes.bring_response(r, part)     # brought in before the When (b273, b286)
                 for act, tree in r.acts(part.body):

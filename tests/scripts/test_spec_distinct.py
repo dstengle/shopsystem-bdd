@@ -18,6 +18,7 @@ import toolchain
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
 FIXTURE = REPO / "tests" / "scripts" / "fixtures" / "codified-2"
+REQUEST = REPO / "tests" / "scripts" / "fixtures" / "request-4"     # language.md's context (the domain contract)
 SECTION = re.compile(r'^### "another K".*?(?=^### |^## )', re.MULTILINE | re.DOTALL)
 BLOCK = re.compile(r"^```reading\n(.*?)\n```$", re.MULTILINE | re.DOTALL)
 
@@ -43,9 +44,9 @@ def test_the_section_has_its_twins():
 
 @pytest.mark.parametrize("line", twins())
 def test_each_twin_parses_and_linearises_back(line):
-    p = spec_grammar4.parse(FIXTURE, line)
+    p = spec_grammar4.parse(REQUEST, line)
     assert p.tree, p.refusal
-    assert spec_grammar4.linearise(FIXTURE, p.tree) == line
+    assert spec_grammar4.linearise(REQUEST, p.tree) == line
 
 
 def test_two_ks_restricted_by_a_box_make_the_box_again_for_the_second():
@@ -63,7 +64,7 @@ def test_the_same_k_of_x_is_the_image_of_x():
 
 @pytest.mark.parametrize("line", twins())
 def test_the_check_and_the_steps_read_distinct(line):
-    found, why = spec_context.Four(FIXTURE).facts("thing#r1", line)
+    found, why = spec_context.Four(REQUEST).facts("thing#r1", line)
     assert why is None and any(f.startswith('distinct("thing#r1",') for f in found[1]), why
-    steps = spec_rgl_steps.load(FIXTURE)[0]
-    assert spec_steps4.cases(steps, [("thing#r1", spec_lf.form(steps, spec_grammar4.parse(FIXTURE, line).tree))])
+    steps = spec_rgl_steps.load(REQUEST)[0]
+    assert spec_steps4.cases(steps, [("thing#r1", spec_lf.form(steps, spec_grammar4.parse(REQUEST, line).tree))])
