@@ -1,0 +1,1131 @@
+# The domain contract: a domain model, operations with parameters, and adapters
+
+Design, 2026-11-19, for the refactoring settled with the person on 2026-11-18/19 (quote-50 and their correction,
+directives 5 to 9). The person is offline. Where a choice was open, the session made it (directive-1); each such
+choice is marked **session's call** and listed again in §12. Grounded in `main` at `1e891017b` (plugin 0.37.0).
+
+Background records: `2026-11-18-cli-as-port.md` (variants A and B on decision-tiers; the adapter sketch),
+`2026-11-18-features-as-gf-concrete.md` (spec_steps4's planning stays in Python), `2026-11-17-rest-contract/design.md`
+(the REST design this one replaces in part, §11).
+
+---
+
+## 1. Intent
+
+The spec of a bounded context becomes a **business-logic contract**: a domain model (structure and operation shapes),
+a vocabulary that names the model's elements, requirements that hold every rule, and design-decisions. Every way of
+interacting with it (the CLI today, an HTTP service for b42/b348 tomorrow, Claude Code's hooks) is an **adapter**
+with its own **interface contract**. Business requirements never change when an interface does (quote-50).
+
+Why now:
+- The spec is already request/response business logic; the CLI shows only in code spelling (`runs `work decision`
+  with the `--tier` option`), in `--json`, in hooks and in environment variables (cli-as-port: variant B read all 15
+  decision-tiers lines with no new term). The CLI pack's words (run, command, option, print, exit) are hardcoded in
+  ten modules as if they were the core meaning.
+- About 64 live lines name git's acts (commit, push, branch, worktree) and about 25 GitHub's (issue, pull request):
+  mechanisms that belong in decisions and adapters (directive-7).
+- One flat namespace for 126 glossary entries and every capability's `## Terms` makes collisions (finding, check,
+  review, request) accidents rather than distinctions (variant A's `replacement` collision, v_t2).
+- The REST contract (b42, b348) needs operations and schemas as the core and OpenAPI as one adapter; that cannot be
+  written until the core exists.
+
+### Goals
+
+1. A **domain model** artifact per area of this bounded context: objects, attributes, relations, lifecycles (states
+   and allowed transitions), services with operations (business-named parameters, the kinds of outcome), domain
+   events, actors. No rules.
+2. A **vocabulary** per area in which each word maps onto exactly one model element, with its forms and a thin frame
+   (word order and prepositions; slot kinds come from the model).
+3. **Operations with parameters on any operation verb** in grammar 4 ("When the person enters a design-decision with
+   the tier `check`, ..."), replacing the CLI pack's run/option/print/exit in the grammar, the logical form, the
+   logic check, the entailment check, the step grammar and the generated features.
+4. The **domain-request pack** (`grammar/packs/request.md`) in place of the CLI pack in lines: request, parameter,
+   refuse, return, notify, name, complete, fail, change, and the outcome words.
+5. One **response envelope** for every operation and port: outcome, content, errors, notices.
+6. **Checks of lines against the model** (a line uses only declared elements; every transition is caused by a line;
+   every declared refusal is stated by a line; a line breaking a lifecycle is caught) and of the model on its own.
+7. A **CLI adapter contract** (`spec/adapters/cli.toml`), checked both ways against argparse, read by a **CLI protocol
+   driver** that runs every scenario; handlers keyed on the operation, not on a command code.
+8. **Mechanisms out of requirements** into design-decisions (ADRs) and adapter contracts: the CLI, GitHub issues as
+   the request channel, pull requests for review, git as store and isolation, files as storage, hooks as a driving
+   adapter, the records policy.
+9. **This repository's spec migrated**: every one of the 455 live lines and the 5 live universal conditions reworded
+   into domain verbs and services, capability files reorganised by service and object lifecycle, tests, handlers, docs
+   and the notes-cli example with it.
+10. A **`migrate upgrade` step** for consuming bounded contexts, a **release** (0.38.0), then the **contract artifact**
+    (the revised REST contract for b42/b348, §11).
+
+### Non-goals
+
+- An HTTP server, an in-process protocol driver, or an OpenAPI generator in this pass (the seams are built: §6.4).
+- Moving the tooling ports (GF, clingo, pytest, ruff, the transcript store) behind adapters (brief, decision 6:
+  "tooling ports can stay as they are this pass"). Their lines are reworded; their code is not restructured.
+- Changing how `features generate` plans scenarios (the features-as-GF record: it stays in Python).
+- New grammar constructs beyond operations with parameters, the request pack's words, and per-area namespaces.
+- Renaming the CLI programs or their options: `work`, `features`, `tools`, `measure`, `migrate` keep every command
+  and option as they are; only `model` gets a new name (§5.6), with an alias.
+
+### Anti-goals
+
+- **Two machineries.** No path keeps the CLI pack's run/option reading beside operations. The CLI pack is retired
+  from lines in this release; there is one reading of a request.
+- **A generic request verb** ("the person requests `enter decision` with ...", approach B). Operations are domain
+  verbs.
+- **Parameters as attributes of domain things** (variant A's failure: the request disappears). A parameter belongs
+  to the act.
+- **Storage facts in the vocabulary** ("one file under spec/decisions/"): they go to ADRs and adapter contracts.
+- **Rules in the model.** A guard, a refusal's condition, what follows an operation: all are requirement lines.
+- **Ephemera in CLAUDE.md** (directive-2); nothing kept in Claude Code's memory.
+
+### Constraints
+
+- **300 lines** a tracked Python file (`python3 scripts/tools size --limit 300`). `spec_lexicon.py` is at 300 now;
+  every module that grows past the limit is split by the work that names it (§10).
+- **One branch** `domain-contract`, outside the batch workflow (work line, the readiness bar and work batch are
+  themselves changed), like the CNL 4 move. Merged by the session (directive-1).
+- **The check loop** (§10) until clean: every live line parses, the logic check finds nothing new, `features
+  generate` writes every group, the full suite, the size check, the docs test.
+- **A release** (0.38.0) with a `migrate upgrade` step for consuming bounded contexts.
+- **Requirements are never edited in place** (design-decision/requirements-retired-never-edited): §9.2.
+- **Directives:** never move a file by copying and deleting (`git mv`); unset `GH_TOKEN` before `gh`; operation and
+  parameter names in business terms (directive-5); request/response words, not "run" (directive-6); mechanisms in
+  ADRs and adapters (directive-7).
+
+---
+
+## 2. Approaches considered
+
+**A. Domain verbs as operations, in one pass (chosen).** Each operation is a verb of the vocabulary bound to one
+operation of the model; the request's parameters attach to the act ("enters a design-decision with the tier
+`check`"). The whole spec, the grammar and the tests move together on one branch.
+
+**B. A generic request verb.** Keep today's lines and re-spell codes: "the person requests `enter decision` with the
+`tier` parameter". Variant B showed it is cheap (no new term, a byte-identical feature). Rejected: operations stay
+codes, not words; nothing ties an operation to the object it changes, so lifecycle checks have nothing to stand on;
+directive-6 asks for the words of the domain, not of a call.
+
+**C. Staged.** Model and vocabulary first with the CLI pack kept, operations later. Rejected: it keeps two readings of
+a request side by side for at least one release (the anti-goal), and the spec would be migrated twice. The machinery
+that changes (work line, the bar, work batch) is the same machinery a staged migration would run through.
+
+**Why A.** It is the only approach in which the model can check lines (an operation is declared with its object,
+parameters and refusals; a line uses it), in which the request survives as a concept (parameters on the act), and in
+which a second adapter (HTTP) needs no line to change. The cost is one large branch; the CNL 4 move (0.33.0) shows the
+loop works at that size.
+
+---
+
+## 3. The domain model of this bounded context
+
+### 3.1 Areas
+
+| area | kind | what it is | services |
+|---|---|---|---|
+| `specification` | core | the bounded context's specification: model, vocabulary, requirements, decisions, adapter contracts, generated scenarios | `language`, `specification`, `decisions`, `scenarios` |
+| `tracking` | supporting | work to do: items, their lines, context requests between bounded contexts, the person's directives and quotes | `backlog`, `drafting`, `context requests`, `conversation` |
+| `execution` | supporting | work being done: batches, tasks, the change put up for review, reviews and their findings | `batches`, `reviews` |
+| `measurement` | generic | what work cost: measurements, defects, trials | `measurement` |
+| `analysis` | generic | the codebase read: the toolchain, coverage, references, lint, size, the Gherkin of feature files | `toolchain`, `code analysis`, `feature reading` |
+| `upgrades` | generic | moving a repository between plugin releases | `upgrades` |
+
+Grammar 4 (`Base`, `Steps4`, `Time`) is the foundation of every statement and is no area. The request pack and the
+spec pack are shared by every area (§4.3).
+
+### 3.2 Actors
+
+| actor | kind of | interacts by |
+|---|---|---|
+| the person | agent | commands and queries; merges a batch's change; gives directives |
+| a session | agent | commands and queries; is notified when it starts and when the person sends a prompt |
+| an agent (a batch's driver, `pr-reviewer`) | session | commands within a batch; records a review |
+| an asker | bounded context | sends a context request, its turns |
+| an upstream | bounded context | answers a context request, its turns |
+| the product | bounded context | an asker whose items are `product` provenance |
+
+Interaction kinds (brief, decision 2): a **command** asks for a change (outcome `done` or `refused` with reasons); a
+**query** asks what is (outcome `returned`, possibly with findings; or `refused`); a **notification** tells an actor an
+event happened, unasked. A **failure** (infrastructure broke: git refused, gh down, a solver timed out) is outside the
+domain, distinct from a refusal; the CLI shows both as exit 1 (b3's note: exits 0 and 1 only).
+
+### 3.3 The model, by area
+
+Syntax as in §4.1. Each block below is the draft the builder writes into `spec/model/<area>.md`; attribute values are
+today's (the glossary's `Values:` and `Transitions:`), so no data file changes.
+
+#### specification (core)
+
+```model
+object specification                      # one per bounded context; "this specification"
+  attributes: title (text); language: codified-2
+  relations: imports → pack (many); has → area (many); has → upstream (many)
+
+object area
+  attributes: name (text); kind: core | supporting | generic
+  relations: imports → area (many)
+
+object capability
+  attributes: name, narrator, purpose (text); group: service | guarantees; area → area
+  relations: specifies → service | object (one); holds → group (many); retired → id (many)
+
+object group
+  attributes: id, title (text)
+  relations: holds → requirement (many); gives → given block (one, optional)
+
+object requirement
+  attributes: id, text (text)
+  relations: uses → construct (many); violates → rule (many); retires → requirement (many)
+
+object universal condition
+  attributes: id, text (text)
+
+object term                               # a vocabulary entry
+  attributes: word (text); part of speech: noun | verb | adjective | attribute | proper noun | artifact;
+              aspect: state | action
+  relations: names → model element (one)
+
+object design-decision
+  attributes: title, summary, wording, context, consequences (text);
+              tier: check | requirement | judgement
+  lifecycle status: proposed → accepted;  proposed → rejected;  accepted → superseded
+  relations: supersedes → design-decision (many); enforced by → test | requirement (many);
+             verified by → route (many); rests on → universal condition (many)
+
+object route
+  attributes: kind: scenario | check | judgement | monitor
+
+object decisions index                    # derived; written whole from the decisions
+
+object adapter contract
+  attributes: port (text)
+  relations: maps → operation (many)
+
+object feature                            # derived from a capability
+  relations: of → capability (one); holds → scenario (many)
+
+object scenario
+  relations: of → group (one); holds → step (many)
+
+object finding                            # what a check returns
+  attributes: code (text); severity: violation | warning
+  relations: names → requirement | group | term | capability | design-decision | file (many)
+
+object logic finding
+  attributes: code: L0 | L1 | L2 | L3 | L4 | L5 | L6 | L7 | L8
+  relations: names → requirement (many)
+
+object record                             # a kept report (§8); the system references none
+  attributes: title, summary (text); kind: analysis | design | plan | measurement
+service language
+  operation parse(line, form: tree | logical form)
+    outcomes: returned → the reading | refused: no parse, two meanings, reading rule broken
+  operation explain(requirement)
+    outcomes: returned → what the requirement also means | refused: no such requirement
+  operation list terms(layer)
+    outcomes: returned → every term
+  operation catalogue constructs(audit)
+    outcomes: done | refused: stale catalogue, uncovered function
+
+service specification
+  operation check(scope)
+    outcomes: passed → findings | failed → findings
+  operation examine(scope, requirement)                    # today's `model logic`
+    outcomes: passed → logic findings | failed → logic findings
+  operation list rules()  outcomes: returned → every rule
+  operation catalogue rules(audit)  outcomes: done | refused: stale catalogue
+  operation list forms(audit)  outcomes: returned → every file form | refused: form written by hand
+  operation list facts()  outcomes: returned → every fact
+  operation trace restatements()  outcomes: returned → coverage of the 0.29 ids
+
+service decisions
+  operation enter(title, summary, tier, wording, context, consequences, routes, supersedes, enforced by,
+                  rests on, source, author)
+    outcomes: done → the design-decision | refused: no tier, no summary, no wording, id taken,
+              superseded decision not in force, route outside the four
+  operation index()  outcomes: done → the decisions index
+  operation audit()
+    outcomes: passed | failed → each failing design-decision | refused: stale index
+
+service scenarios
+  operation generate(capability, audit)
+    outcomes: done → features | refused: capability not in the language, unlabelled term | failed → stale feature
+  operation audit steps()  outcomes: passed | failed → each step with no handler
+
+service records
+  operation keep(title, kind, summary, about, body)
+    outcomes: done → the record | refused: path taken, about identifies nothing
+```
+
+`record` and the `records` service sit in this area because a record is kept beside the specification; §8 says what
+nothing may do with one.
+
+#### tracking (supporting)
+
+```model
+object item
+  attributes: title, note (text); value: low-value | medium-value | high-value;
+              urgency: low-urgency | medium-urgency | high-urgency; size: small | medium | large;
+              provenance: own | peer | product; question (text)
+  lifecycle status: idea → shaped; shaped → ready; ready → shaped; ready → in-batch; in-batch → delivered;
+              in-batch → needs-input; in-batch → ready; needs-input → shaped; idea → refused; shaped → refused;
+              idea → withdrawn; shaped → withdrawn; ready → withdrawn; needs-input → withdrawn
+  relations: depends on → item (many); holds → item line (many); holds → chore (one, optional);
+             taken in from → context request (one, optional); cites → quote | design-decision (many)
+
+object item line                          # a requirement line an item proposes
+  attributes: id, text (text); kind: requirement | term | relation | given block | universal condition |
+              upstream entry | capability
+  relations: of → capability (one); retires → requirement (many); came from → request line (one, optional)
+
+object chore
+  attributes: check (text)
+  relations: covers → file (many)
+
+object context request                    # between bounded contexts; "request" is the request pack's word
+  attributes: kind: ask | observation; origin (text); side: asker | upstream
+  lifecycle status: open → awaiting-asker; awaiting-asker → open; open → awaiting-upstream;
+              awaiting-upstream → open; open → accepted; accepted → delivered; open → refused;
+              awaiting-asker → withdrawn; open → withdrawn
+  relations: asked of → upstream (one); asked by → bounded context (one); holds → request line (many);
+             holds → question (many); holds → entry (many); raised for → context request (one, optional)
+
+object request line
+  attributes: text (text); line outcome: accepted | rewritten | refused | withdrawn | question;
+              line reason (text)
+
+object entry                              # one side's turn, as sent
+  attributes: side: asker | upstream; form: conforming | unreadable
+
+object upstream
+  attributes: id (text)
+
+object observation
+  attributes: id, text (text)
+
+object quote
+  attributes: words (text)
+  relations: cites → message (one); of → session (one)
+
+object message
+  attributes: text (text); queued: yes | no
+
+object directive
+  attributes: words (text); reason (text)
+  lifecycle status: live → promoted; live → dropped
+  relations: cites → quote (one); became → item | design-decision | instruction (one, optional)
+
+service backlog
+  operation note idea(title, note)  outcomes: done → the item
+  operation shape(item, note)  outcomes: done | refused: not an idea, no shaping note
+  operation rate(item, value, urgency, size)  outcomes: done
+  operation depend(item, prerequisite, drop)  outcomes: done | refused: cycle
+  operation ready(item)  outcomes: done | refused: not shaped, readiness bar unmet
+  operation decline(item, reason)  outcomes: done | refused: not an idea or shaped
+  operation withdraw(item)  outcomes: done | refused: in a batch or closed
+  operation answer(item, answer)  outcomes: done | refused: not awaiting input
+  operation show(item)  outcomes: returned → the item | refused: no such item
+  operation list()  outcomes: returned → the backlog
+
+service drafting                          # an item's lines; today's `work line` and `work chore`
+  operation add line(item, capability, group, text)  outcomes: done → the item line | refused: item holds a chore
+  operation add term(item, capability, entry)  outcomes: done
+  operation add relation(item, capability, row)  outcomes: done | refused: row not in form
+  operation add given(item, group, block)  outcomes: done | refused: block not example data
+  operation add universal condition(item, text, retiring)  outcomes: done | refused: no such condition
+  operation add upstream(item, entry)  outcomes: done | refused: entry not in form
+  operation add capability(item, name, narrator, group, purpose)  outcomes: done | refused: capability exists
+  operation retire(item, requirement, line)  outcomes: done | refused: no such requirement
+  operation recodify(item, capability)  outcomes: done | refused: already in the language
+  operation reword(item, requirement, text)  outcomes: done | refused: not the item's line
+  operation remove(item, requirement)  outcomes: done | refused: not the item's line
+  operation set chore(item, files, check)  outcomes: done | refused: item holds a requirement, file under spec
+
+service context requests
+  operation raise(upstream, origin, kind, raised for, from)
+    outcomes: done → the context request | refused: no origin, observation beside a thread, not this context,
+              upstream not hosted
+  operation ask(context request, question)  outcomes: done
+  operation reply(context request, answer)  outcomes: done | refused: asked of this context
+  operation offer(context request, capabilities)  outcomes: done
+  operation close as served(context request)  outcomes: done
+  operation propose(context request, lines)  outcomes: done
+  operation settle(request line, line outcome, line reason)
+    outcomes: done | refused: not this side's turn, line does not parse, refusal with no reason
+  operation pass turn(context request)  outcomes: done | refused: not this side's turn, turn passed
+  operation accept(context request)  outcomes: done → the item | refused: a line with no outcome
+  operation resolve(context request)  outcomes: done | refused: not accepted
+  operation catch up()  outcomes: done → what the other side sent
+  operation watch()  outcomes: notifies → each entry not held, each new ask
+  operation list()  outcomes: returned → every context request, every uncited observation
+  operation show(context request)  outcomes: returned → the context request
+
+service conversation
+  operation quote(words)  outcomes: done → the quote | refused: words in no message
+  operation give directive(words, quote)  outcomes: done → the directive
+  operation promote(directive, to)  outcomes: done | refused: not live, no such item
+  operation drop(directive, reason)  outcomes: done | refused: not live
+  operation show(quote | directive)  outcomes: returned
+  operation list directives(all)  outcomes: returned
+```
+
+#### execution (supporting)
+
+```model
+object batch
+  attributes: number (number)
+  lifecycle status: building → in-review; in-review → building; in-review → awaiting-merge;
+              awaiting-merge → merged; in-review → merged; building → abandoned; in-review → abandoned
+  relations: holds → item (many); has → task (many); has → workspace (one); has → change (one, optional);
+             has → review (many); has → brief (one)
+
+object task
+  lifecycle status: pending → running; running → done; running → failed; failed → running
+  relations: of → item (one); has → workspace (one); holds → kept change (many)
+
+object workspace                          # today's git branch with its worktree (ADR: git as isolation)
+  relations: of → batch | task (one)
+
+object kept change                        # today's commit (ADR: git as store)
+  relations: cites → item | review finding (many); touches → file (many)
+
+object change                             # the batch's change put up for review (ADR: pull requests)
+  lifecycle status: draft → ready; draft → merged; ready → merged; draft → closed; ready → closed
+  relations: cites → item (many)
+
+object review
+  attributes: number (number)
+  relations: of → batch (one); holds → review finding (many); reads → kept change (many)
+
+object review finding
+  attributes: grade: Critical | Important | Minor; triage: fix now | observation | drop
+  relations: for → item (one, optional)
+
+service batches
+  operation start()  outcomes: done → the batch | refused: spec has unkept edits, no ready item
+  operation resume(batch)  outcomes: done
+  operation finish(task)  outcomes: done | refused: workspace not clean, kept change cites no item, scenario fails,
+                         chore fails, file outside the chore
+  operation park(item, question, discard)  outcomes: done | refused: workspace not clean
+  operation submit(batch)  outcomes: done → the change | refused: task not done, kept change cites no item
+  operation close(batch)  outcomes: done | refused: change not merged
+  operation abandon(batch, discard)  outcomes: done | refused: workspace not clean
+  operation show(batch)  outcomes: returned → where the batch stands
+
+service reviews
+  operation brief(batch)  outcomes: returned → the brief | refused: batch not in review
+  operation record(batch, findings)  outcomes: done → the review | refused: findings not in form, head moved
+```
+
+#### measurement (generic)
+
+```model
+object measurement
+  relations: of → batch (one); holds → stage row | session row (many)
+object defect
+  relations: of → item (one); of → batch (one)
+object trial
+  relations: reads → target (one); writes → measurement (one)
+
+service measurement
+  operation measure(batch)  outcomes: done → the measurement | refused: batch not merged
+  operation record defect(batch, item, description)  outcomes: done → the defect
+  operation show(measurement)  outcomes: returned
+  operation compare(measurement, measurement)  outcomes: returned
+```
+
+#### analysis (generic)
+
+```model
+object toolchain
+  relations: has → Python interpreter (one); has → analysis tool (many); has → grammar tool (many)
+object Python interpreter
+  attributes: environment: virtualenv | system
+object analysis tool
+  attributes: name (text); state: installed | missing | uninstallable
+object coverage map
+  attributes: commit (text)
+object function, Python file, identifier, reference, lint finding, feature file, binding
+
+service toolchain
+  operation probe(python, log)  outcomes: returned → the toolchain | failed → each missing tool
+  operation install()  outcomes: done | refused: not a virtualenv
+service code analysis
+  operation map coverage()  outcomes: done → the coverage map
+  operation find tests(function, by file)  outcomes: returned | refused: no coverage map, function undefined,
+                                                   coverage missing
+  operation find untested(Python file)  outcomes: returned
+  operation find references(identifier)  outcomes: returned | refused: identifier undefined, jedi missing
+  operation lint()  outcomes: returned → lint findings | failed → missing tool
+  operation measure size(limit)  outcomes: passed | failed → each file over the limit
+service feature reading
+  operation list scenarios(tag, title)  outcomes: returned | refused: rule block
+  operation count scenarios(by tag)  outcomes: returned
+  operation list deprecated()  outcomes: returned
+  operation check bindings(unbound)  outcomes: passed | failed → each unbound scenario or binding
+```
+
+#### upgrades (generic)
+
+```model
+object repository
+  attributes: release (version)
+object upgrade step
+  attributes: release (version); title (text)
+
+service upgrades
+  operation show status()  outcomes: returned → the release and pending steps | refused: version file unreadable
+  operation upgrade()  outcomes: done → each step applied | refused: unkept edits
+  operation relocate()  outcomes: done | refused: unkept edits, ledger entry taking a taken id   # `migrate run`
+```
+
+### 3.4 Domain events and the policies that react to them
+
+| event | raised by | policy (area) | today |
+|---|---|---|---|
+| a context request is accepted | context requests.accept | an item is shaped from its accepted lines, each recorded with its request line (tracking) | work accept does both |
+| an item is readied | backlog.ready | **the readiness policy** guards shaped → ready: request lines settled, lines parse, no new violation, the logic check reads them, scenarios generate (tracking, asking specification) | readiness capability |
+| a batch is started | batches.start | ready items picked by rank and the readiness policy re-checked; an item that fails it goes back to shaped (execution → tracking) | batches g22-g24 |
+| an item is parked | batches.park | its lines leave the batch's workspace (execution) | batches g32 |
+| a review is recorded | reviews.record | a fix-now finding sends the batch back to building; none sends it to awaiting-merge (execution) | pr-review g18, g20 |
+| a batch's change is merged | the person (on the issue host) | batches.close: items delivered, the batch merged, workspaces removed; then the accepted context request each delivered item came from is resolved (execution → tracking) | batches g9, g31, g40 |
+| a directive is promoted | conversation.promote | — (the target must exist: a guard) | conversation g11 |
+| a session starts | Claude Code (hook) | notify the session of: live directives, names of items and batches, context requests waiting on the other side, pending upgrade steps | hooks |
+| the person sends a prompt | Claude Code (hook) | remember the session and its transcript for quoting | conversation g6 |
+| the other side sends an entry | the issue host | watch notifies; catch up records it | requests g86-g101 |
+
+The readiness bar becomes a **policy** on a transition, not a capability (brief, decision 8): its lines are the
+`backlog.ready` refusals and live in the `items` capability (§3.6).
+
+### 3.5 Vocabulary layers and the collisions they resolve
+
+One layer per area, `spec/vocabulary/<area>.md`, plus `spec/vocabulary/shared.md` (the actors and words every area
+uses) and the packs. A capability's lines read in the layers of its area, the areas its area imports, `shared`, and
+the packs.
+
+| word | specification | tracking | execution | analysis | resolved by |
+|---|---|---|---|---|---|
+| finding | object finding (of a check) | — | `review finding` (two words, as today) | object lint finding, said "finding" in analysis | areas |
+| check | operation specification.check (verb); tier value `check` (noun) | — | — | operation lint (was `tools check`) | session's call: analysis says lint |
+| review | — | — | object review | — | one place |
+| request | the request pack's noun (the call) | object **context request** | — | — | session's call: §4.3 |
+| refuse | the pack's verb | item operation **decline** (status value stays `refused`) | — | — | session's call |
+| outcome | — | `line outcome` | — | — | today's `outcome (attribute of test)` stays in specification |
+| status | each object's own lifecycle attribute | | | | attributes of different objects |
+| commit / push | — | — | — | — | out of lines: keep / share (§7) |
+
+### 3.6 The capability files after the move
+
+Capability files are reorganised by service and object lifecycle. Each lists its area and what it specifies in its
+frontmatter (`area:`, `specifies:`). Group counts are today's groups moved; one group a requirement throughout.
+
+| new capability | area | specifies | from (today's groups) | lines |
+|---|---|---|---|---|
+| `decisions` | specification | service decisions, object design-decision | decision-tiers (all 15); design-model-check g50, g194, g202, g203, g286 | 20 |
+| `checking` | specification | service specification: check, list rules, catalogue rules, list forms, list facts | design-model-check g54, g55, g174-g200, g201, g207, g208, g214, g215, g217, g219-g228, g246, g287, g324 | 48 |
+| `reading` | specification | service language: parse, list terms, catalogue constructs | design-model-check g205, g206, g209-g213, g216, g229-g245, g252, g254-g259, g279, g281-g285, g291, g293, g295, g296, g298-g300, g303-g309, g311-g313, g317-g319, g325-g327 | 59 |
+| `consistency` | specification | service specification: examine; language: explain | design-model-check g156, g218, g247-g251, g253, g260-g264, g280, g288-g290, g292, g294, g297, g301, g302, g310, g314-g316, g320-g323, g328, g329 | 38 |
+| `records` | specification | service records | design-model-check g56, g204 | 2 |
+| `scenarios` | specification | service scenarios | feature-file-tools g106-g135 | 33 |
+| `items` | tracking | object item, service backlog, the readiness policy, the names notification | backlog (all 19); readiness g4, g23-g25, g36, g41, g46, g50, g54, g58; conversation g8 | 30 |
+| `drafting` | tracking | service drafting | readiness g26-g35, g37-g40, g42, g44, g45, g47, g48, g51-g53, g55-g57 | 24 |
+| `context-requests` | tracking | object context request, service context requests | requests g59-g85, g88-g96, g102-g104, g107-g115; intake (all 4) | 49 |
+| `request-watch` | tracking | notifications of context requests | requests g86, g87, g97-g101, g105, g106 | 9 |
+| `quotes` | tracking | object quote, service conversation: quote, show | conversation g1, g6, g7, g9 | 4 |
+| `directives` | tracking | object directive, service conversation: directives | conversation g10-g16 | 7 |
+| `batches` | execution | object batch, object task, service batches | batches (all but g11, g29, g30, g35, g37) | 25 |
+| `reviews` | execution | object review, object change, service reviews | batches g11, g29, g30, g35, g37 | 5 |
+| `review-guarantees` | execution | guarantees of a review (group: guarantees) | pr-review (all 9) | 9 |
+| `measurement` | measurement | service measurement | telemetry (all 4); batch-measurement (all 5) | 9 |
+| `trials` | measurement | guarantees of a trial | trials (all 5), reworded in place of file | 5 |
+| `toolchain` | analysis | service toolchain | analysis-tools g7, g8, g36-g46, g62, g63, g66, g67 | 19 |
+| `code-analysis` | analysis | service code analysis | analysis-tools g47-g61, g64, g65, g68 | 16 |
+| `feature-reading` | analysis | service feature reading | feature-file-tools g88-g104 | 14 |
+| `upgrades` | upgrades | service upgrades | migration-tools (all 30) | 30 |
+| `shaping-guarantees` | tracking | guarantees of shaping with the person (group: guarantees) | brainstorming (all 3) | 3 |
+
+Sum: 455. The group sums above are drafted from the group titles; the builder generates the exact table
+(`spec/moves.json`, §9.2) and corrects a group that lands in the wrong file (e.g. a `model parse` group whose subject
+is the logic check). Universal conditions stay in `spec/universal.md` (§9.3).
+
+**Retired whole** (their files kept as the record of their ids, every id in `retired:`, a `## Moved` table naming
+each id's new id): `analysis-tools`, `backlog`, `batch-measurement`, `batches`, `brainstorming`, `conversation`,
+`decision-tiers`, `design-model-check`, `feature-file-tools`, `intake`, `migration-tools`, `pr-review`, `readiness`,
+`requests`, `telemetry`, `trials`. `batches` and `trials` are names reused: **session's call**, the old files are
+renamed with `git mv` to `batches-0.37.md` and `trials-0.37.md` before the new ones are written, so an old id
+`batches#r9` resolves through `spec/moves.json`, and `model check`'s retired-id rule reads both files.
+
+The capabilities already retired in 0.31.0 (supervision, work-queue, ...) stay as they are.
+
+### 3.7 Lines in the new words: examples
+
+```
+decisions
+- If the person enters a design-decision without a tier, then the decisions service shall refuse the request and
+  name the tier.
+- When the person enters a design-decision with the tier `check`, the decisions service shall keep the
+  design-decision and the decisions index.
+- While the tier of a design-decision is `check` and no test enforces the design-decision, if the person checks this
+  specification, then the specification service shall fail the check and name `v_d6`.
+- While a design-decision is not `accepted`, if the person enters a design-decision that supersedes the
+  design-decision, then the decisions service shall refuse the request and name the design-decision.
+
+items
+- While the status of an item is `idea`, when the person shapes the item with a note, the backlog service shall set
+  the status of the item to `shaped` and keep the item.
+- When the person lists the backlog, the backlog service shall return every item with its title, status, provenance
+  and ratings.
+- While the shared store does not take a change, when the person notes an idea, the backlog service shall keep the
+  item, name the shared store and complete the request.
+- While this repository is in the workspace of a task, if the person notes an idea, then the backlog service shall
+  refuse the request and name the task.
+
+context-requests
+- If the person raises a context request without an origin, then the context requests service shall refuse the
+  request and name the origin.
+- While a context request is `open` and every request line of the context request is `refused`, when the person
+  passes the turn of the context request, the context requests service shall set the status of the context request
+  to `refused`, send an entry and close the context request.
+
+directives
+- When a session starts, the conversation service shall notify the session of every directive whose status is
+  `live`.
+
+batches / reviews
+- While a batch is `building` and every task of the batch is `done`, when the person submits the batch, the batches
+  service shall submit the change of the batch and set the status of the batch to `in-review`.
+- While an item in a batch is `in-batch`, when the person merges the change of the batch, the batches service shall
+  set the status of the item to `delivered`.
+
+toolchain
+- While the Python interpreter is not a virtualenv, if the person installs the toolchain, then the toolchain service
+  shall refuse the request and name the Python interpreter.
+```
+
+---
+
+## 4. The new file forms
+
+### 4.1 The domain model: `spec/model/<area>.md`
+
+One file per area: frontmatter `id: model/<context>/<area>`, `area:`, `kind: core | supporting | generic`,
+`imports: [<area>, ...]`; a `## Purpose` paragraph (read by nothing); one fenced block ` ```model ` holding the area's
+elements. The block's grammar (EBNF; `#` to end of line is a comment; indentation two spaces):
+
+```
+block      = { element } ;
+element    = object | service | event | actor ;
+object     = "object" name NL { "  " ( attrs | lifecycle | relations ) NL } ;
+attrs      = "attributes:" attr { (";" | ",") attr } ;
+attr       = name [ ":" values | "(" type ")" | "→" name ] ;
+type       = "text" | "number" | "time" | "version" ;
+values     = value { "|" value } ;                     (the values, in order: an ordered attribute's order)
+lifecycle  = "lifecycle" name ":" trans { ";" trans } ;   (name: the status attribute; its values from the states)
+trans      = value "→" value ;
+relations  = "relations:" rel { ";" rel } ;
+rel        = phrase "→" name { "|" name } "(" card ")" ;
+card       = "one" | "many" | "one, optional" ;
+service    = "service" name NL { "  operation" op NL [ "    outcomes:" outcomes NL ] } ;
+op         = name "(" [ param { "," param } ] ")" ;
+param      = name [ ":" values ] ;                      (a parameter named as an attribute or an object is typed so)
+outcomes   = outcome { "|" outcome } ;
+outcome    = ( "done" | "returned" | "passed" | "failed" | "notifies" ) [ "→" phrase ]
+           | "refused" [ ":" reason { "," reason } ] ;
+event      = "event" phrase ":" "raised by" name "." name ;
+actor      = "actor" name [ "kind of" name ] ;
+```
+
+A parameter's type: when its name is an attribute of the operation's object (`tier`), the attribute's values; when it
+names an object (`supersedes` → design-decision, by the relation of the same name; `item`), that object; else
+`text`. Every `refused:` reason is a short business phrase; each must be stated by one requirement line (§5.5).
+
+**Reader:** `scripts/domain_model.py` (parse a block into `Model`: objects, attributes, lifecycles, relations,
+services, operations, parameters, outcomes, events, actors; a line that does not read refused naming file and line)
+and `scripts/domain_model_check.py` (the model's own rules, §5.5). The model replaces what today comes from the
+glossary for kinds, attributes, values and `Transitions:` (spec_lexicon), from `## Relations` tables
+(spec_relations) and from `Kind of:`; `spec_logic_vocab` reads its transitions from the model.
+
+### 4.2 The vocabulary: `spec/vocabulary/<area>.md` and `shared.md`
+
+Each entry names one model element:
+
+```
+- **design-decision** (noun) → object design-decision. Forms: design-decisions.
+- **supersede** (verb, state) → relation design-decision.supersedes. Forms: supersedes, superseded.
+  Frame: <from> supersedes <to>.
+- **enter** (verb, action) → operation decisions.enter. Forms: enters, entered. Frame: <actor> enters <design-decision>.
+- **accepted** (adjective) → value design-decision.status accepted.
+- **the decisions service** (proper noun) → service decisions.
+```
+
+- `→ <element>` is required (v_t18 when absent, v_t19 when it names no element of the model, v_t20 when two entries
+  of one layer name one element without being forms of each other).
+- **Frame** is thin: word order and prepositions; `<x>` slots are filled with the kinds the element gives (a
+  relation's ends; an operation's object and the actors allowed to request it). An operation's parameters need no
+  frame: they are written "with the <parameter> v" after the object (§5.1). A frame may name a parameter slot when an
+  operation's surface needs one ("promotes <directive> to <to>").
+- `Values:`, `Transitions:`, `Kind of:`, `Field of:`, `Order:`, `Type:`, `Schema:` leave the vocabulary for the
+  model. `Not:`, `Forms:`, `Plural:`, `This:`, `Redefines:` stay. A definition sentence stays prose.
+- `spec/index.md`'s `## Glossary` and every capability's `## Terms` and `## Relations` are emptied into these files
+  (§9.1). `spec/index.md` keeps Purpose, Constraints, Composition (by area), Testing, Upstreams.
+
+**Reader:** `scripts/spec_vocabulary.py` (entries, their element, the layers of an area); `spec_lexicon` keeps the
+entry syntax and its problems and reads its terms through `spec_vocabulary`; `spec_packs.layers` gains the area
+layers; `spec_rgl_vocab` builds one vocabulary **per area** (its layers), and `spec_grammar4._context` compiles one
+grammar per area (the compiled grammar cached by sha as today; six areas cost six compiles once, then hits).
+
+### 4.3 The domain-request pack: `grammar/packs/request.md`
+
+Replaces `cli` in `imports:`. Its words (each mapped onto the request machinery, not onto a model element):
+
+- **request** (noun): what an actor asks of a service by an operation. This: the request the trigger makes.
+- **parameter** (noun): a named input of a request.
+- **service** (noun): what answers a request. Kind of: agent.
+- **reason** (noun): why a service refuses a request.
+- **refuse** (verb, action): a service declines a request. Frame: service refuses request.
+- **name** (verb, action): an agent says which thing it means. Frame: agent names thing.
+- **return** (verb, action): a service gives a thing as the content of its response. Frame: service returns thing.
+- **notify** (verb, action): a service tells an actor of a thing, unasked. Frame: service notifies agent of thing.
+- **complete** (verb, action): a service ends a request with the outcome `done` or `returned`. Frame: service completes
+  request.
+- **fail** (verb, action): a service ends a check with the outcome `failed`. Frame: service fails check.
+- **check** (noun): the request of an operation whose outcomes are passed or failed. This: the check the trigger makes.
+- **keep** (verb, action): a service records a thing durably in the store. Frame: service keeps thing.
+- **change** (verb, action): as today (with "nothing": leaves every thing as it was).
+- **conform** (verb, state): as today.
+- **start** (verb, action): an actor's session begins. Frame: agent starts.
+- The outcome words `done`, `returned`, `refused`, `passed`, `failed` (values of `outcome (attribute of response)`).
+
+"request" is this pack's word in every area; the tracking area's object is **context request** (session's call:
+the alternative, renaming the pack's noun to "call", goes against directive-6's request/response). R2 binds "the
+request" to the trigger's request; "the context request" binds as any other noun.
+
+The CLI pack `grammar/packs/cli.md` stays in the plugin, marked `Deprecated: 0.38.0` in its header, read only by the
+upgrade step's report (§9.6); `spec check` refuses `imports: [cli]` with `v_t21` naming the upgrade step.
+
+### 4.4 Requirements and decisions beside them
+
+A capability file keeps: frontmatter (`area:`, `specifies:` naming its service or object, `narrator`, `group`,
+`language`, `retired`, `unbuilt`), `## Purpose`, `## Behaviour`, `## Dropped`, `## Moved`. No `## Terms`, no `##
+Relations`. Design-decisions stay in `spec/decisions/` written by `work decision`. The specification is: `spec/model/`,
+`spec/vocabulary/`, `spec/capabilities/` with `spec/universal.md`, `spec/decisions/`, `spec/adapters/`.
+
+### 4.5 `model forms` (renamed `spec forms`)
+
+`scripts/model_forms.py` `FORMS` gains:
+
+| form | path | writer |
+|---|---|---|
+| domain model area | `spec/model/<area>.md` | the plugin item raised for `spec model` commands (session's call: a `work idea` in this build, named here) |
+| vocabulary term | `spec/vocabulary/<area>.md` | the same item as today's "glossary term" (b13), retargeted |
+| adapter contract | `spec/adapters/<port>.toml` | an item raised in this build |
+| capability moves | `spec/moves.json` | `migrate upgrade` |
+
+and loses "glossary term", "glossary relation row" and "relation row" (the model holds relations; `work line
+--relation` becomes `drafting.add relation` writing a model block line into the item, laid into `spec/model/`).
+`spec forms --check` still exits 1 only for a `hand` form; every new form names its writer.
+
+---
+
+## 5. The grammar and logical-form change
+
+### 5.1 Operations with parameters in grammar 4
+
+For each operation O of service S bound to verb V by the vocabulary, `spec_rgl` generates (in place of `OPTION`'s
+`k_option_SetTo` and the CLI pack's run frames):
+
+- `V_O_Act : Actor -> Obj -> Params -> Event` — "the person enters a design-decision [params]"; the object slot's kind
+  is O's object (its first parameter naming an object), or none ("the person lists the backlog": a fixed object
+  phrase from the thin frame).
+- per parameter p: `O_p_Is : Val_p -> Param` ("with the tier `check`", "with the summary `x`", "with the item i1"),
+  `O_p_Some : Param` ("with a tier", "with a note"), `O_p_No : Param` ("without a tier"); `Params` an `and` list,
+  "without" coordinated with "or"-free "and" ("without a summary and a tier": both absent). A boolean parameter
+  (`audit`, `discard`, `all`) is **session's call**: modelled as a separate operation where one reads better
+  (catalogue / audit catalogue), else said "with the <parameter>" / "without the <parameter>" with no value.
+- A Params list appears only in a trigger and in a Given of history (`S_Done`). In a response, a service's acts are
+  the pack's verbs and the domain's state verbs.
+
+`spec_lf_option.py` is replaced by `spec_lf_request.py` (same responsibilities, one translation per place a line is
+read): the form's `request(e, O, actor, object)` with `param(e, p, v)` and `noparam(e, p)`; its line in `--form`;
+the check's facts (§5.3); spec_steps4's When ("When the person enters the design-decision d1 with the tier `check`")
+and the Givens of the things a parameter names; features_vocab4's `WhenRequests` Call with `operation`, `params`
+(each with its value or None) and `without`.
+
+### 5.2 The hardcoded words, module by module
+
+| module | today | after |
+|---|---|---|
+| `spec_lexicon` | `CORE_VERBS = {run, print, hold, exit, become, set, be}` (v_t6) | `{request-pack verbs} ∪ {hold, become, set, be}`; split: entry problems to `spec_lexicon_problems.py` (the file is at 300) |
+| `spec_rgl` | `OPTION = "option"`, `k_option_SetTo` | operations and parameters from the model (§5.1), split into `spec_rgl_ops.py` |
+| `spec_lf_option` | the run's options | removed; `spec_lf_request.py` |
+| `spec_lf_facts` | `verb == "run"` with a code object = a command | `vocab.operation(verb)` = a request; its object any referent |
+| `spec_lf_facts_atoms` | `WORDS` exit/print → `exit_ok`, `exit_error`, `print` | `refuse` → `refused`, `return` → `returned`, `fail` → `failed`, `complete` → `done`, `notify` → `notified` |
+| `spec_example` | a code after "runs" or before "option" is a declared constant | a value after "with the <parameter>" is example data unless a declared value; a code naming an operation is gone (no codes name operations) |
+| `spec_findings` | the exit kind | the outcome kind, worded with the vocabulary |
+| `spec_entail.refuse_defined` | the bridge: an error exit on a run is a refusal (`## Definitions` of cli) | removed: refuse is primitive; every refusal fires the refusal premises (U17's change nothing) |
+| `features_vocab4` | `WhenRuns` if verb == run; `ThenPrints`, `ThenExitsErr`, `ThenExitsOk` | `WhenRequests` if the verb names an operation, else `WhenHappens`; `ThenReturns(Not)`, `ThenRefuses` (with its names), `ThenCompletes`, `ThenFails`, `ThenNotifies`, `ThenKeeps`; `ThenChangesNothing` stays |
+| `spec_steps4`, `spec_steps4_boxes` | the run's option slots (`slot_arg`, `labels`) | the request's parameters |
+| `spec_rgl_steps` | `S_Does` per action frame | a request step per operation with its params |
+| `grammar/check.lp` | command = the run's code with its options | the request's operation with its parameter set; unification of two requests by operation and compatible params (a parameter absent in one and given in the other: two triggers, as two option sets today) |
+| `grammar/entail.lp` | the bridge rule | removed |
+| `model_constructs_table` | `k_option_SetTo`, `K_NamedAnd` in #12 | construct #12 becomes `request-params`; its example a request with two parameters |
+
+### 5.3 The check's facts
+
+`trig(R, I, req(O, Actor))`, `param(R, I, P, V)` (V a value id, a code string or a referent's term), `noparam(R, I,
+P)`; responses `resp(R, I, Pol, refused, D, X)` and `names(R, I, Thing)`, `resp(..., returned, ...)`,
+`resp(..., kept, ...)`. L1's rule over two lines with one trigger is unchanged in kind; the trigger's equality is over
+(operation, parameter set). L3 (a set with no transition) reads the model's lifecycles.
+
+### 5.4 The response envelope (core)
+
+`scripts/domain_envelope.py`: `Response(outcome, content, errors, notices)`:
+- `outcome`: `done` | `returned` | `refused` | `passed` | `failed` (a domain outcome) — and `broken` for a failure
+  (infrastructure), outside the domain, never stated by a line.
+- `content`: the domain object or list the operation returns, shaped by the model (its attributes by name).
+- `errors`: each `{reason, names: [element reference]}` — a refusal's reason (one of the operation's declared
+  `refused:` reasons) and the things it names, by **business name** (`parameter:tier`, `item:b12`, `rule:v_d6`).
+- `notices`: what completed but should be said (a kept change not shared: `{reason: "not shared", names:
+  [shared store]}`). **Session's call**: the brief named three fields; a fourth keeps "done, but not shared" out of
+  `errors` so that `errors` non-empty ⇔ refused/failed.
+
+`shop_refused.Refused` gains `reason` and `names` (business references) beside its message. Every command already
+reaches one refusal path (b145); the CLI adapter renders it.
+
+### 5.5 Checks of lines against the model, and of the model
+
+New rules in `scripts/model.lp` (catalogued by `spec rules --write`):
+
+| code | severity | rule |
+|---|---|---|
+| v_m1 | violation | a line's term names no element of the model (through the vocabulary) |
+| v_m2 | violation | a request names a parameter its operation does not declare, or a value outside the parameter's values |
+| v_m3 | violation | a requester the operation's actors do not include ("the upstream enters a design-decision") |
+| v_m4 | violation | a declared `refused:` reason of an operation that no line states (every refusal outcome covered) |
+| w_m5 | warning | a lifecycle transition no line causes (a set of the status from the pre-state's value) |
+| v_m6 | violation | a line sets a status by a transition the lifecycle does not allow (today's L3 promoted to `spec check` via the logic facts) |
+| v_m7 | violation | an operation with no line (no requirement requests it) |
+| v_m8 | violation | the model's own: a relation to an undeclared object; a transition over an undeclared value; two operations of one name in a service; an event raised by no operation |
+| v_t18-v_t21 | violation | vocabulary entry with no element, naming none, two entries for one element, an import of the retired cli pack |
+
+How v_m4 is read: a line "refuse the request and name X" under a trigger of O states the reason whose words match X
+(a parameter → "no <parameter>", a thing → the declared reason naming its kind); each reason carries an optional
+`names <element>` in the model so the match is exact — **session's call**: the model's reason syntax is
+`refused: no tier (names tier), ...`; the builder may simplify to "the reason's first noun".
+
+---
+
+## 6. Adapter contracts
+
+### 6.1 The CLI contract: `spec/adapters/cli.toml`
+
+TOML (stdlib `tomllib`; no new dependency). One table per operation:
+
+```toml
+adapter = "cli"
+[outcomes]
+done = { exit = 0 }
+returned = { exit = 0, content = "stdout" }
+passed = { exit = 0, content = "stdout" }
+refused = { exit = 1, errors = "stderr" }
+failed = { exit = 1, content = "stdout", errors = "stderr" }
+broken = { exit = 1, errors = "stderr" }
+json = "--json"            # every command takes it: the envelope as one JSON object on stdout
+
+[operations."decisions.enter"]
+command = "work decision"
+[operations."decisions.enter".parameters]
+title = { positional = 1, example = "A decision" }
+tier = { option = "--tier", example = "judgement" }
+summary = { option = "--summary", example = "One sentence." }
+wording = { option = "--decision", example = "We do it." }
+routes = { option = "--verified-by", repeat = true }
+supersedes = { option = "--supersedes", repeat = true }
+
+[operations."specification.check"]
+command = "spec check"
+
+[operations."conversation.notify-session-start"]
+hook = "SessionStart"
+command = "conversation_hook directives"
+```
+
+- **Names translated:** an error naming `parameter:tier` prints `--tier` in the human message; `item:b12` prints
+  `b12`; the JSON envelope keeps business references.
+- **`--json`** is the adapter's serialisation (brief, decision 3): every command gains it and prints the envelope;
+  the table layouts stay the human rendering. The 8 lines with `--json` leave the spec (U16 retires, §9.3).
+- **Hooks** are entries with `hook =` (a driving adapter of its own, ADR §7).
+- **Environment input** (`$VIRTUAL_ENV`, `$SHOPSYSTEM_*`) is listed under `[environment]` with the parameter or the
+  port it feeds.
+- **Checked both ways** (`scripts/adapter_cli.py`, `adapter_cli_check.py`, run by `spec check` as v_a1-v_a4 and by a
+  test): every operation of the model has a table or is listed under `[unexposed]` (v_a1); every table names a real
+  operation and parameter (v_a2); every command and option it names exists in argparse, caught as `test_docs`
+  catches parsers today (v_a3); every argparse subcommand and option is named by a table or listed under `[cli-only]`
+  (`--root`, `--json`, `--hook`, `--every`) (v_a4).
+
+### 6.2 The protocol driver for scenarios
+
+Farley's layers: the generated scenario (domain words) → step definitions (vocab4) → handlers keyed on
+`("WhenRequests", "<service>.<operation>")` → a **driver**. `tests/scenarios/driver_cli.py` reads `cli.toml`:
+builds argv from the operation and the step's parameters (the example values for required parameters a step leaves
+out), runs the command with `--json`, and returns the `Response`. Thens check the envelope: `ThenRefuses` →
+`outcome == refused` and the named references; `ThenReturns` → content; `ThenKeeps` → the store adapter's check that
+the thing was committed (and shared, U13's check moved here from vocab.py).
+
+The 27 handler files keyed on `WhenRuns` and a command code are re-keyed on the operation (mechanical: the adapter
+table gives command → operation). Handlers that build the world (Givens) are unchanged. `world_four.four` keeps its
+chain; the key's term is the operation's id.
+
+### 6.3 Core functions callable without argparse
+
+Every `cmd_*` becomes: argv → (CLI adapter) `Request(operation, params)` → core function → `Response` → rendering.
+In this pass (session's call, to bound the branch): the core function of each operation takes keyword parameters by
+business name, and **every refusal names business references**. Where a core function today reads an argparse
+`Namespace` (e.g. `decision_write.write(args)`, whose refusal names `--summary`), it is changed to
+`write(root, title, summary, tier, wording, ...)`; the adapter maps options to names. Modules whose functions
+already take plain values are only re-wrapped. An `as_namespace(request)` shim is allowed for a function whose
+conversion would push a file over 300 lines, listed in §11.
+
+### 6.4 The seams left for later
+
+An in-process driver (calling core functions directly) and an HTTP adapter (OpenAPI 3.1 as its contract, §11) need
+only a second contract file and a second driver; no line changes.
+
+---
+
+## 7. Design-decisions to write
+
+Each by `work decision "<title>" --summary ... --tier ... --decision ...` (never by hand), on the branch:
+
+| title | tier | decision (gist) |
+|---|---|---|
+| The CLI is an adapter | requirement | The CLI programs, commands, options, exit codes and streams are the CLI adapter's, specified by `spec/adapters/cli.toml` and checked against argparse (v_a1-v_a4); no requirement names one. Enforced by `adapter_cli_check`'s test. |
+| GitHub issues carry context requests | judgement | A context request's turns travel as comments on an issue of the upstream's repository (`$SHOPSYSTEM_WORK_GH`); the issue host is a driven port; another channel replaces the adapter, not a line. |
+| Pull requests carry a batch's change to review | judgement | Submitting a batch opens a draft pull request; a clean review marks it ready; the person merges it on the host; `batches.close` reads the merge. |
+| Git is the store and the isolation | requirement | To keep a thing is one commit of its named files on the branch checked out; to share is to push it to the upstream remote (else origin), never prompting; a workspace is a branch with its worktree. U13 retires into this decision. Enforced by the store adapter's test. |
+| Files under spec/ and .shop/ are the storage | judgement | Each object kind is stored as the file form `spec forms` lists; the forms are the store adapter's schema. |
+| Hooks are a driving adapter | judgement | Claude Code's SessionStart and UserPromptSubmit hooks drive notifications (session start, a prompt sent); `hooks/hooks.json` and `cli.toml`'s `hook =` entries are their contract; a hook never fails the session. |
+| The response envelope | requirement | Every operation answers with outcome, content, errors, notices; errors name business references; a failure (`broken`) is outside the domain. U16 retires into this decision. |
+| Domain words for the store's acts | judgement | keep (commit), share (push), workspace (branch and worktree), shared store (remote), submit and change (pull request), entry (comment), close (issue closed). |
+| Records are kept, never cited | requirement | §8. |
+| The specification has four parts | judgement | Model, vocabulary, requirements, decisions; adapter contracts beside them; grammar is no part of a context. Supersedes nothing; rests on design-decision/final-layout. |
+| One reword for the domain contract | requirement | §9.2: every line moved gets a new id in its new capability; the old ids retire with a `## Moved` entry. No exemption to requirements-retired-never-edited. |
+
+---
+
+## 8. Records policy and CLAUDE.md
+
+Records become a store of reports and research, kept but never referenced by the current system (brief, item 9).
+Session's call (directive-1):
+
+- A design's decisions become structured artifacts: design-decisions, model changes, an item's lines. The design's
+  prose is kept as an uncited record (this file is one).
+- A plan becomes work execution: a batch's tasks with their files and check (like `## Chore`). A plan file may still
+  be written under a design's folder as a report, but nothing executes from it.
+- An item's provenance cites only quotes, context requests and design-decisions, never a record. `backlog_items`
+  refuses a `source:` naming `record/...` on a new item (new rule v_r1 in `spec check`, warning on existing items).
+- Existing references to records in items and decisions stay as history; any a live artifact must stand on is
+  restated as a decision (this build: `the-workflow-simplified`'s and `final-layout`'s references are read; the index
+  `rests_on` of capabilities naming records, if any, are restated).
+
+CLAUDE.md, rewritten in the same branch:
+- "A design or a plan is a record too ..." → "A design is reported as a record; its decisions are written as
+  design-decisions, model changes and item lines. A plan is a batch's tasks; a plan file is a report."
+- "Every report ... is kept as `.shop/records/...`" stays; add "No artifact of the system cites a record."
+- `model forms` → `spec forms`; `model` → `spec` in the rules that name it.
+- The module map: rows for every new module (§10's list), rows of removed modules dropped, `spec_lf_option` replaced.
+- Nothing ephemeral added (directive-2).
+
+---
+
+## 9. The migration of this repository
+
+### 9.1 The model and vocabulary
+
+1. Write `spec/model/<area>.md` for the six areas from §3.3, reconciling with today's glossary (126 entries) and
+   every capability's `## Terms` and `## Relations`: each kind becomes an object or a kind of one, each attribute
+   with its values and transitions, each relation row a relation, each `Kind of:` an object's place.
+2. Write `spec/vocabulary/<area>.md` and `shared.md`: each existing term mapped onto its element; the operation verbs
+   new (enter, shape, note, rate, depend, ready, decline, withdraw, answer, list, show, add, retire, reword, remove,
+   raise, ask, reply, offer, propose, settle, pass, accept, resolve, catch up, watch, quote, promote, drop, start,
+   resume, finish, park, submit, close, abandon, brief, record, measure, compare, probe, install, map, find, lint,
+   upgrade, relocate, parse, explain, check, examine, catalogue, generate, audit, keep ...). Words of the retired
+   0.30 vocabulary (initiative, work-item, stage, worker, capability-proposal ...) stay only in the 0.37 files'
+   history, out of every layer.
+3. Delete the moved entries from `spec/index.md` and the capability files.
+
+### 9.2 Every live line reworded, with new ids
+
+The decision requirements-retired-never-edited holds; no exemption is needed, because every line moves to a new
+file:
+
+- each new capability starts its ids at r1/g1 (its own file);
+- each old capability's lines and groups leave `## Behaviour`, every id into `retired:`, and a `## Moved` section
+  lists `r<n> → <new-cap>#r<m>` (and groups);
+- `spec/moves.json` holds the whole map (old id → new id), written by a script of the build and read by `spec
+  check`'s retired-id rule, by `spec/restated.json`'s readers (a 0.29 id's restating group now in a new file), and
+  by `work` where an item or a request names an old id (`request_lines`, `retires:`): the old id resolves.
+- The corpus `grammar/corpus/spec/` is rewritten: each new id's block with `From: <old-cap>#r<n>.`; old blocks
+  removed.
+- Group titles are reworded with their lines (no command codes in titles).
+
+The rewording itself is a session's work, capability by capability, with `spec parse` until every line reads, then
+`spec examine` until no new finding. A script does the scaffolding (new files, ids, moves.json, the `## Moved`
+sections) from a table the session writes (old id → new capability, new text); **session's call**: the table is not a
+script's data in `scripts/`; it is an input kept as a supporting file of this record,
+`2026-11-19-domain-contract/rewording.tsv`.
+
+### 9.3 Universal conditions
+
+| old | new | why |
+|---|---|---|
+| U12 | U17: If a service refuses a request, then the service shall name a reason and change nothing. | words |
+| U13 | retired into the decision "Git is the store and the isolation" | mechanism |
+| U14 | U18: A session shall not change the status of a thing. | words |
+| U15 | U19: While a task has a workspace, the task shall change only things in the workspace. | words |
+| U16 | retired into the decision "The response envelope" | adapter |
+
+vocab.py's U12/U13/U16 checks after a scenario become U17 (the envelope's errors carry a reason; the store changed
+nothing) and the store adapter's check for keep/share.
+
+### 9.4 Tests and handlers
+
+- vocab4: `WhenRequests` and the new Then templates; the 27 `WhenRuns` handler files re-keyed (§6.2), driving
+  through `driver_cli`.
+- `tests/scripts/fixtures/codified-2/`, `codified-2-time/`, `generate/`, `glossary/`, `logic/`, `entailment/` (the
+  frozen copy of this spec) and `docs-shop/`, `docs-labels/` rewritten into the new forms: model, vocabulary,
+  request pack.
+- `grammar/corpus/core-4.txt`, `time-4.txt`, `constructs/` re-spelled from run/option to requests.
+- New unit tests: `domain_model`, `domain_model_check`, `spec_vocabulary`, `spec_lf_request`, `adapter_cli_check`,
+  `domain_envelope`, the upgrade step.
+
+### 9.5 Docs and the notes-cli example
+
+- README, `docs/*.md` (concepts, how-it-works, writing-requirements, capability-format, getting-started, tour,
+  recipes, troubleshooting, upgrading), `docs/reference/commands.md` (`spec` for `model`, every command's `--json`
+  envelope), a new `docs/reference/domain-model.md` (the model syntax, §4.1) and `docs/reference/adapters.md`.
+- `docs/examples/notes-cli/`: a model (`object note`, `service notes` with add, list), a vocabulary, its lines in
+  request words ("When the person adds a note with the text `x`, the notes service shall keep the note"), a
+  `spec/adapters/cli.toml` mapping `notes add`, its feature regenerated. test_docs runs it.
+- CHANGELOG 0.38.0 section; `docs/upgrading.md` the step.
+
+### 9.6 The `migrate upgrade` step for consuming contexts
+
+`scripts/migrate_upgrade_domain.py` with `migrate_upgrade_domain_report.py`, step `("0.38.0", "the domain
+contract", ...)`:
+
+Mechanical (rewritten):
+1. `spec/model/<context>.md`: one area named after the context (a consumer may split later), scaffolded from the
+   glossary and `## Terms`/`## Relations`: every noun an object, every attribute with values and `Transitions:` a
+   lifecycle, every row a relation; one `service <tool>` per tool code the lines run, one operation per command code,
+   named the command minus the tool (`notes add` → `add`), its parameters the options the lines give (`--text` →
+   `text`).
+2. `spec/vocabulary/<context>.md` and `shared.md`: every glossary and `## Terms` entry moved, with its `→ element`
+   filled where the scaffold made one; `## Glossary`, `## Terms`, `## Relations` emptied.
+3. `spec/adapters/cli.toml`: each operation with the command and options it was scaffolded from.
+4. `imports: [cli]` → `imports: [request]`.
+
+Reported (by file and id, for a session to reword, as the CNL 4 step did): each line that names a command or an
+option, with the operation and parameters the scaffold gave it; each line with `--json`, `print`, `exit`; each
+`Kind of: tool` entry; each verb that should name an operation; each line naming git or GitHub acts (commit, push,
+branch, pull request, issue). No line is reworded by the step; until it is, `spec check` refuses it (v_m1) and the
+upgrading doc says so. Lines are not given new ids by the step (a consumer's rewording is its own work).
+
+---
+
+## 10. The check loop, the definition of done, the release
+
+### Order of work on the branch `domain-contract`
+
+1. Model reader and checks (`domain_model`, `domain_model_check`), vocabulary reader (`spec_vocabulary`), area layers
+   (`spec_packs`, `spec_rgl_vocab`), with fixtures; `spec_lexicon` split first.
+2. The request pack; `spec_rgl` operations and parameters (`spec_rgl_ops`); `spec_lf_request` replacing
+   `spec_lf_option`; the facts, atoms, check.lp, entail.lp, findings, example, constructs; `features_vocab4`,
+   spec_steps4. Fixtures and corpora re-spelled.
+3. The envelope, `Refused` with business names, `--json` on every command, core functions by name (§6.3).
+4. The CLI contract, its check, `driver_cli`, handlers re-keyed.
+5. This spec: model, vocabulary, the reworded lines in the new capability files, moves.json, universal conditions,
+   features generated; the decisions of §7 by `work decision`.
+6. `model` renamed `spec` (`scripts/spec` the program; `scripts/model` a two-line alias printing a deprecation notice
+   on stderr and calling it, kept for one release; hooks, skills, agents, docs, CLAUDE.md updated). **Session's
+   call**: the name `spec`, because the command checks the specification and "model" now means the domain model.
+7. Records policy (v_r1), CLAUDE.md, docs, notes-cli, the upgrade step, the CHANGELOG.
+
+### The loop (each must be clean; run in order, repeat until all are)
+
+```
+python3 scripts/spec parse --all                 # every live line of spec/ reads, one meaning
+python3 scripts/spec check                       # 0 violations (v_m*, v_a*, v_t18-21 included)
+python3 scripts/spec examine                     # no finding not in main's `model logic` output (renamed codes aside)
+python3 scripts/features generate --check        # every group of every capability has its scenario
+python3 scripts/features vocab --check           # every step has a handler
+python3 -m pytest                                # the full suite, docs test included
+python3 scripts/tools size --limit 300           # no file over the limit
+python3 scripts/spec forms --check; python3 scripts/spec rules --check; python3 scripts/spec constructs --check
+```
+
+`spec parse --all` is new (the parse of every live line, as `model check`'s v_p rules do today, printed per line);
+the builder may use `model check`'s existing parse rules instead and skip the option.
+
+### Definition of done
+
+The loop is clean on the branch; the branch is merged into `main` by the session (directive-1) after one fresh
+reviewer of the whole branch (CLAUDE.md's rule); the release is made; `migrate upgrade` from 0.37.0 on a copy of the
+notes-cli example and of `tests/scripts/fixtures/docs-shop/` gives the scaffold and the report and the reworded copy
+passes the loop.
+
+### The release
+
+- Version 0.38.0 in `.claude-plugin/plugin.json` (and the marketplace entry if present). A y bump: every consumer's
+  spec changes (the cli pack retired); pre-1.0 numbering as since 0.34.1.
+- CHANGELOG `## 0.38.0: the domain contract` (model, vocabulary, operations with parameters, the envelope, the CLI
+  adapter, `spec` for `model`, the upgrade step), with the row in its table; `docs/upgrading.md`.
+- Tag `v0.38.0`, pushed; a GitHub release with the note (`gh release create`, `GH_TOKEN` unset).
+- A record `.shop/records/<date>-release-0.38.0-reviewed.md` of the branch's review, by `work record`.
+
+### Then: the contract artifact
+
+After the release, a revised REST contract for b42/b348 under this framing, kept as a record
+(`.shop/records/<date>-rest-contract-2/`) and published as an Artifact page for the person:
+
+- **The business contract:** the feed's domain model (objects, attributes, lifecycle, the feed service's operations
+  with business-named parameters and outcomes), the schemas of its requests, responses (the envelope) and passed
+  data generated from the model, and its requirement lines in request words (no HTTP word).
+- **The HTTP interface contract:** an OpenAPI 3.1 document as the HTTP adapter's contract, mapping each operation to
+  a method and path, each parameter to a path, query or body field, each outcome to a status (done → 200/201,
+  returned → 200, refused → 4xx by reason, broken → 5xx), its `components.schemas` the core schemas by reference.
+- What it supersedes in `2026-11-17-rest-contract/design.md`: the HTTP pack, schemas read *into* the model (now the
+  model generates them), the check both ways (now the adapter check of §6.1 applied to OpenAPI).
+
+---
+
+## 11. Left to the builder
+
+- The exact group-to-capability table (§3.6 is drafted from titles) and the reworded text of every line; where a line
+  reads badly in request words, the operation or a vocabulary word may be renamed, the model and the CLI contract
+  following.
+- Whether a boolean parameter is a separate operation or an adverbial word (§5.1).
+- The v_m4 matching of a refusal to a declared reason (§5.5).
+- The exact GF signature of operation acts with parameter lists, and how "without a X and a Y" coordinates.
+- Which core functions keep the `as_namespace` shim (§6.3); each named in the review.
+- Whether `spec parse --all` is added or `spec check`'s parse rules suffice.
+- The per-area grammar compile cost; if six compiles are too slow on a cold cache (b351), compile one grammar with
+  per-area prefixes instead and resolve collisions by prefix.
+- The `spec model` / vocabulary / adapter-contract commands are not built: the items raised for them are named in
+  `spec forms`.
+- How `work line` (drafting) lays model lines and vocabulary entries of an item into `spec/model/` and
+  `spec/vocabulary/` (today it lays terms and rows into capability files): the builder adapts `backlog_section`,
+  `backlog_lines`, `backlog_forms` to the new targets with the same lay/unlay discipline.
+
+## 12. The session's calls (the person may revisit)
+
+1. The operation verbs and parameter names of §3.3 (business names, directive-5).
+2. `context request` for the inter-context object, "request" kept for the pack (§4.3).
+3. `decline` for refusing an item, status value `refused` unchanged.
+4. `lint` for `tools check`.
+5. keep / share / workspace / shared store / submit / change / entry / close as git's and GitHub's domain words.
+6. `spec` as the new name of `model`, with a one-release alias.
+7. A fourth envelope field `notices`.
+8. `batches` and `trials` old files renamed `-0.37`; every moved line given a new id (no exemption).
+9. Model syntax as an indented block in Markdown; the CLI contract in TOML.
+10. The cli pack kept only for the upgrade report; `imports: [cli]` refused.
+11. Records policy as in §8, v_r1 a warning on existing items.
+12. The rewording table as a supporting file of this record.
