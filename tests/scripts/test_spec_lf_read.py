@@ -78,3 +78,16 @@ def test_model_parse_prints_a_reading_refusal_with_the_tree_and_exits_1():
     done = subprocess.run(model + ["--form", "The work service shall not write a file."], capture_output=True,
                           text=True)
     assert done.returncode == 0 and "not [x2: file]" in done.stdout, done.stdout + done.stderr
+
+
+def test_each_refusal_of_the_language_reference_names_the_reading_rule_of_its_section():
+    """b369: `spec parse` names the reading rule a refusal is said by, as the language reference's heading names it."""
+    text = LANGUAGE.read_text()
+    found = []
+    for code, body in re.findall(r"^## (R\d+)\. .*?\n(.*?)(?=^## |\Z)", text, re.MULTILINE | re.DOTALL):
+        for _, said in (b.split("\n", 1) for b in BLOCK.findall(body)):
+            if said.startswith("refused: "):
+                found.append(code)
+                assert spec_lf_read.rule(said) == code, (code, said)
+    assert {"R2", "R4", "R8", "R12"} <= set(found)
+    assert spec_lf_read.rule('refused: the line says "may not", which reads two ways') is None

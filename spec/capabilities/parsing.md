@@ -3,9 +3,11 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/parsing
 title: Parsing
 narrator: the person
 group: service
+area: specification
+specifies: service language: parse
 language: codified-2
 retired: []
-unbuilt: [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11]
+unbuilt: []
 ---
 
 # Parsing
