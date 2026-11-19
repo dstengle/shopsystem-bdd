@@ -6,10 +6,14 @@ Words of a context, not constructs: `k_\w+_n|a_\w+|t_[a-z0-9_]+_\d+_v_\w+|Many\d
 
 The joints of every line, not constructs: `k_\w+_(?:UseN|Det|One|Simple|Up_k_\w+|OneAct)|OneCond|OneResp|NoPre|PPos`.
 
+Each entry says its purpose, the item it came by (Since:) and the items that changed it (Changed:); Since: and Changed: name items of `missingmass.io/shopsystem/shopsystem-bdd`, kept in `grammar/catalogue-entries.toml`.
+
 ## when
 
 a line whose trigger is an event
 
+- Purpose: Ties a response to the moment an event happens, so the line says what the system does next whenever that event occurs.
+- Since: b240
 - Form: When <trigger>, <response>.
 - Functions: `When`
 - Cited by: no line
@@ -28,6 +32,8 @@ shall [x3: tool `work` (constant)]
 
 a line of an unwanted event, which takes precedence over a line of another form on its trigger
 
+- Purpose: Says how the system answers an unwanted event, so that this line wins over an ordinary line on the same trigger.
+- Since: b240
 - Form: If <trigger>, then <response>.
 - Functions: `If`
 - Cited by: no line
@@ -46,6 +52,8 @@ shall [x1: tool `work` (constant)]
 
 a line of responses with no trigger
 
+- Purpose: States an obligation or prohibition that holds whatever happens, so a rule like "never writes a file" needs no triggering event.
+- Since: b240
 - Form: <response>.
 - Functions: `Ubiq`
 - Cited by: no line
@@ -63,6 +71,8 @@ shall [x1: tool `work` (constant)]
 
 a line that holds at every moment
 
+- Purpose: States an invariant that holds at every moment, which the check reads as a necessity rather than a response to an event.
+- Since: b240
 - Form: <subject> always|never <verb> <object>.
 - Functions: `Necessary|MAlways|MNever|k_\w+_Nec`
 - Cited by: no line
@@ -79,6 +89,8 @@ always []
 
 a condition that holds while the trigger happens
 
+- Purpose: Limits a line to the states in which it applies, so the response follows the event only while that condition holds.
+- Since: b240
 - Form: While <condition>, ...
 - Functions: `While`
 - Cited by: no line
@@ -99,6 +111,8 @@ shall [x3: tool `work` (constant)]
 
 a condition of the context the line is built into
 
+- Purpose: Makes a line apply only in a configuration of the context, a standing condition set apart from the transient states While describes.
+- Since: b240
 - Form: Where <condition>, [while <condition>,] ...
 - Functions: `Where|WhereWhile`
 - Cited by: no line
@@ -121,6 +135,8 @@ shall [x4: tool `work` (constant)]
 
 two conditions that both hold
 
+- Purpose: Lets a line require several conditions at once, so it applies only when all of them hold together.
+- Since: b240
 - Form: <condition> and <condition>
 - Functions: `AndCond`
 - Cited by: no line
@@ -143,6 +159,8 @@ shall [x4: tool `work` (constant)]
 
 two conditions of which one holds, each a case of the line
 
+- Purpose: Lets one line cover alternative situations, each read as its own case and given its own scenario.
+- Since: b240
 - Form: <condition> or <condition>
 - Functions: `OrCond`
 - Cited by: no line
@@ -167,6 +185,8 @@ shall [x3: agent the person (constant), x4: command `work start` (parameter), x5
 
 two responses or two acts of one doer
 
+- Purpose: Lets one trigger oblige several acts, so a writer need not split a single reaction across separate lines.
+- Since: b240
 - Form: <response>, and <response>; <act> and <act>
 - Functions: `AndResp|k_\w+_AndAct`
 - Cited by: no line
@@ -186,6 +206,8 @@ shall [x3: tool `work` (constant)]
 
 a response the doer is obliged to
 
+- Purpose: Marks an act the doer is obliged to perform, the ordinary binding form of a requirement.
+- Since: b240
 - Form: <doer> shall <act>
 - Functions: `k_\w+_Shall`
 - Cited by: no line
@@ -204,6 +226,8 @@ shall [x3: tool `work` (constant)]
 
 a response the doer is permitted
 
+- Purpose: Grants a permission rather than an obligation, so the check can flag a line that forbids what another permits.
+- Since: b240
 - Form: <doer> may <act>
 - Functions: `k_\w+_May`
 - Cited by: no line
@@ -220,6 +244,8 @@ may []
 
 a response that forbids its act
 
+- Purpose: Forbids an act outright, so a line can rule out behaviour rather than only require it.
+- Since: b240
 - Form: <doer> shall not <act>
 - Functions: `k_\w+_Act_k_\w+|PNeg`
 - Cited by: no line
@@ -237,6 +263,8 @@ shall [x1: tool `work` (constant)]
 
 a trigger: an agent's act
 
+- Purpose: Names an agent's act as what triggers a line, keeping triggers to actions rather than states.
+- Since: b240
 - Form: <subject> <action verb> ...
 - Functions: `k_\w+_Event`
 - Cited by: no line
@@ -255,6 +283,8 @@ shall [x3: tool `work` (constant)]
 
 a condition: a state verb
 
+- Purpose: Describes a situation with a state verb, so conditions talk about what holds rather than what happens.
+- Since: b240
 - Form: <subject> <state verb> ...
 - Functions: `k_\w+_Holds`
 - Cited by: no line
@@ -275,6 +305,8 @@ shall [x3: agent the person (constant), x4: command `work start` (parameter), x5
 
 a condition that does not hold
 
+- Purpose: Lets a line apply when something does not hold or a thing lacks a value, without reading two ways.
+- Since: b240
 - Form: <subject> does not <verb> ...; ... is not <value>
 - Functions: `PNeg`
 - Cited by: consistency#r26, scenarios#r24, scenarios#r31, scenarios#r32
@@ -296,6 +328,8 @@ shall [x3: tool `work` (constant)]
 
 a condition of history: an act that has happened
 
+- Purpose: Lets a condition depend on what has already happened, not only on the current state.
+- Since: b240
 - Form: <subject> has <past participle> ...
 - Functions: `k_\w+_Done`
 - Cited by: reviews#r3, reviews#r5
@@ -316,6 +350,8 @@ shall [x3: agent the person (constant), x4: command `work start` (parameter), x5
 
 a condition of history after a moment
 
+- Purpose: Restricts a history condition to acts after a given moment, so a line can depend on recent activity.
+- Since: b240
 - Form: <subject> has <past participle> ... since <moment>
 - Functions: `k_\w+_DoneSince`
 - Cited by: no line
@@ -337,6 +373,8 @@ shall [x3: moment `2026-01-01` (parameter), x5: tool `work` (constant)]
 
 a verb's object, the kind right after the verb
 
+- Purpose: Fills the verb's direct object from its frame, so each act names exactly what it acts on.
+- Since: b240
 - Form: <subject> <verb> <object>
 - Functions: `frame:object`
 - Cited by: no line
@@ -355,6 +393,8 @@ shall [x3: tool `work` (constant)]
 
 a verb's role after "to"
 
+- Purpose: Names who or what receives an act, as the frame's recipient after "to".
+- Since: b240
 - Form: <subject> <verb> [<object>] to <role>
 - Functions: `frame:to`
 - Cited by: no line
@@ -373,6 +413,8 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x3
 
 a verb's role after a preposition other than "to"
 
+- Purpose: Adds a further participant after a preposition the frame declares, such as what a command is run on.
+- Since: b240
 - Form: <subject> <verb> ... <preposition> <role>
 - Functions: `frame:oblique`
 - Cited by: no line
@@ -391,6 +433,8 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x4
 
 fixed words of a verb's frame with no role after them
 
+- Purpose: Lets a verb carry set wording, like "exit successfully", that names a manner of the act rather than a participant.
+- Since: b240
 - Form: <subject> <verb> <fixed words>
 - Functions: `frame:fixed`
 - Cited by: no line
@@ -409,6 +453,8 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x3
 
 a relative clause whose subject is the noun
 
+- Purpose: Narrows a noun to the things that do something, so a line can pick out, for example, sessions that follow a stage.
+- Since: b240
 - Form: <noun> that <verb> ...
 - Functions: `k_\w+_Rel_k_\w+`
 - Cited by: consistency#r25, consistency#r27, consistency#r29, consistency#r33, scenarios#r21, scenarios#r26, scenarios#r32
@@ -430,6 +476,8 @@ shall [x3: tool `work` (constant)]
 
 a relative clause whose object is the noun
 
+- Purpose: Narrows a noun to the things something else acts on or relates to, with the noun as the clause's object.
+- Since: b240
 - Form: <noun> that <subject> <verb>
 - Functions: `k_\w+_Obj_k_\w+|g_\w+|r\d+_\w+_Gap`
 - Cited by: consistency#r24, scenarios#r20
@@ -451,6 +499,8 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x3
 
 a relative clause on the noun's attribute
 
+- Purpose: Picks out things by an attribute's value, so a line selects, for example, only stages whose status is done.
+- Since: b240
 - Form: <noun> whose <attribute> is <value>
 - Functions: `k_\w+_Whose_t_\w+`
 - Cited by: no line
@@ -472,6 +522,8 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x3
 
 a relative clause on the noun's relation
 
+- Purpose: Picks out things by what a related thing does or holds, reaching one relation further than a plain relative clause.
+- Since: b240
 - Form: <noun> whose <noun2> <verb> ...
 - Functions: `k_\w+_Whose_r\d+_k_\w+`
 - Cited by: no line
@@ -494,6 +546,8 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x3
 
 a relative clause that does not hold
 
+- Purpose: Picks out things that lack a relation or a value, giving a negated restriction one clear reading.
+- Since: b240
 - Form: <noun> that does not ...; <noun> whose ... is not
 - Functions: `PNeg`
 - Cited by: consistency#r31, consistency#r32
@@ -516,6 +570,8 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x4
 
 any one in a condition or a trigger, a new one in a response
 
+- Purpose: Introduces a thing: any such thing in a condition or trigger, a newly brought-about one in a response.
+- Since: b240
 - Form: a <noun>
 - Functions: `DetA`
 - Cited by: no line
@@ -534,6 +590,8 @@ shall [x3: tool `work` (constant)]
 
 the one the line gave before
 
+- Purpose: Refers back to a thing the line already introduced, and refuses the line when there is none to refer to.
+- Since: b240
 - Form: the <noun>
 - Functions: `DetThe`
 - Cited by: no line
@@ -552,6 +610,8 @@ shall [x3: tool `work` (constant)]
 
 each one
 
+- Purpose: Applies a response to each thing that meets the description, rather than to a single one.
+- Since: b240
 - Form: every <noun>
 - Functions: `DetEvery`
 - Cited by: consistency#r4, consistency#r26, scenarios#r9, scenarios#r12, scenarios#r24
@@ -572,6 +632,8 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x3
 
 a noun in the plural with no determiner
 
+- Purpose: Speaks of things in general without a determiner, read as any such things in conditions and as every one in a response.
+- Since: b240
 - Form: <nouns>
 - Functions: `DetPl`
 - Cited by: no line
@@ -590,6 +652,8 @@ shall [x3: tool `work` (constant)]
 
 the ones the line gave before
 
+- Purpose: Refers back to several things the line already introduced, as one group.
+- Since: b240
 - Form: the <nouns>
 - Functions: `DetThePl`
 - Cited by: no line
@@ -608,6 +672,8 @@ shall [x3: tool `work` (constant)]
 
 there is none
 
+- Purpose: States that no such thing exists within its clause, giving negation a single scope.
+- Since: b240
 - Form: no <noun>
 - Functions: `DetNo`
 - Cited by: consistency#r28, scenarios#r23
@@ -629,6 +695,8 @@ shall [x2: agent the person (constant), x3: command `work start` (parameter), x4
 
 a number of them, bounded
 
+- Purpose: Bounds how many things are involved, so a line can require or limit a quantity rather than just existence.
+- Since: b240
 - Form: at least|at most|exactly|more than|fewer than <number> <nouns>
 - Functions: `DetCount|AtLeast|AtMost|Exactly|MoreThan|FewerThan`
 - Cited by: consistency#r16, scenarios#r8, scenarios#r29
@@ -649,6 +717,8 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x3
 
 exactly one
 
+- Purpose: Requires exactly one thing, where "a" would allow one or more.
+- Since: b240
 - Form: one <noun>
 - Functions: `DetOne`
 - Cited by: no line
@@ -669,6 +739,8 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x3
 
 the one an earlier noun names
 
+- Purpose: Says two references name one shared thing, such as two sessions following the same stage.
+- Since: b240
 - Form: the same <noun>
 - Functions: `DetSame`
 - Cited by: no line
@@ -691,6 +763,8 @@ shall [x4: agent the person (constant), x5: command `work start` (parameter), x6
 
 one other than an earlier one
 
+- Purpose: Introduces a thing that must differ from one named earlier, so the two never collapse into one.
+- Since: b240
 - Form: another <noun>
 - Functions: `DetAnother`
 - Cited by: no line
@@ -710,6 +784,8 @@ shall [x4: tool `work` (constant)]
 
 one other than an earlier one
 
+- Purpose: Introduces a thing that must differ from one named earlier, as an alternative wording of "another".
+- Since: b240
 - Form: a different <noun>
 - Functions: `DetDifferent`
 - Cited by: no line
@@ -729,6 +805,8 @@ shall [x4: tool `work` (constant)]
 
 two distinct ones
 
+- Purpose: Introduces two distinct things at once, each meeting the same description.
+- Since: b240
 - Form: two <nouns>
 - Functions: `DetTwo`
 - Cited by: scenarios#r14
@@ -749,6 +827,8 @@ shall [x3: tool `work` (constant)]
 
 noun phrases joined by "and"
 
+- Purpose: Lets one act cover several things together, such as printing two values in one response.
+- Since: b240
 - Form: <np>, <np> and <np>
 - Functions: `k_\w+_And|k_\w+_Two|k_\w+_More`
 - Cited by: no line
@@ -770,6 +850,8 @@ shall [x3: tool `work` (constant)]
 
 noun phrases joined by "or"
 
+- Purpose: Lets an act take one of several alternatives, each a case of the line.
+- Since: b240
 - Form: <np> or <np>
 - Functions: `k_\w+_Or`
 - Cited by: no line
@@ -792,6 +874,8 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x3
 
 nothing but these
 
+- Purpose: Restricts an act to the things described, so acting on anything else breaks the line.
+- Since: b240
 - Form: only <np>
 - Functions: `k_\w+_Only`
 - Cited by: consistency#r3, consistency#r15, scenarios#r7, scenarios#r10
@@ -812,6 +896,8 @@ shall []
 
 the noun's own, of the subject of its clause
 
+- Purpose: Names something belonging to the subject of its clause, without repeating the subject's noun.
+- Since: b240
 - Form: its <noun>
 - Functions: `k_\w+_Its|t_[a-z0-9_]+_\d+_Its`
 - Cited by: no line
@@ -832,6 +918,8 @@ shall [x4: tool `work` (constant)]
 
 the run's own thing
 
+- Purpose: Names the thing the current request or run is about, such as the command being run.
+- Since: b240
 - Form: this <noun>
 - Functions: `k_\w+_This`
 - Cited by: no line
@@ -850,6 +938,9 @@ shall [x1: agent the person (constant), x2: command "the command the run runs" (
 
 no thing at all: after change, and after holds of each kind a relation row "in" lets it hold
 
+- Purpose: Says an act touches nothing or a container holds nothing, covering every kind it could hold.
+- Since: b240
+- Changed: b274
 - Form: nothing
 - Functions: `k_\w+_Nothing`
 - Cited by: consistency#r25, consistency#r27, scenarios#r16, scenarios#r21
@@ -871,6 +962,8 @@ shall [x3: agent the person (constant), x4: command `work start` (parameter), x5
 
 a code as a thing
 
+- Purpose: Names a specific literal thing, such as a file path, directly by its code.
+- Since: b240
 - Form: `<code>`
 - Functions: `k_\w+_Code`
 - Cited by: no line
@@ -888,6 +981,8 @@ shall [x1: tool `work` (constant), x2: thing `spec/index.md` (parameter)]
 
 a noun named by a code
 
+- Purpose: Names a specific thing of a kind by its code, keeping both its kind and its identity.
+- Since: b240
 - Form: the <noun> `<code>`
 - Functions: `k_\w+_Named`
 - Cited by: no line
@@ -908,6 +1003,8 @@ shall [x1: file `a` (parameter), x2: agent the person (constant), x3: command `w
 
 codes joined by "and" before a plural noun
 
+- Purpose: Names several specific options or things of one kind together in one phrase.
+- Since: b240
 - Form: the `<code>` and `<code>` <nouns>
 - Functions: `CodeTwo|CodeMore|k_\w+_NamedAnd`
 - Cited by: no line
@@ -926,6 +1023,8 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x3
 
 an option with its argument
 
+- Purpose: States the argument a command option is given, so a line can depend on an option's value.
+- Since: b240
 - Form: the `<option>` option set to <thing>
 - Functions: `k_\w+_SetTo`
 - Cited by: no line
@@ -945,6 +1044,8 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x3
 
 a verb that takes nothing after it (the request pack's start)
 
+- Purpose: Lets a verb stand alone with no object, for acts like a person starting that involve nothing else.
+- Since: 0.38.0
 - Form: <np> <verb>
 - Functions: `frame:intransitive`
 - Cited by: no line
@@ -966,6 +1067,8 @@ shall [x1: agent the person (constant), x2: service the decisions service (const
 
 a request with its parameters, given after "with" and absent after "without", in a context with a domain model (the domain contract design, §5.1)
 
+- Purpose: States which parameters a request carries and which it omits, so a line can depend on what was given.
+- Since: 0.38.0
 - Form: <actor> <operation verb> <np> with the <parameter> <value> and without a <parameter>
 - Functions: `q_\w+|o_\w+|k_\w+_Request|p_\w+_NP`
 - Cited by: no line
@@ -987,6 +1090,8 @@ shall [x1: agent the person (constant), x3: service the decisions service (const
 
 a noun of another by a relation row
 
+- Purpose: Reaches a thing through a relation, such as the worktree of a session, without a separate condition.
+- Since: b240
 - Form: <noun> of|in <np>
 - Functions: `r\d+_\w+_Mod`
 - Cited by: consistency#r30, scenarios#r28, scenarios#r30
@@ -1006,6 +1111,8 @@ shall [x3: tool `work` (constant)]
 
 a noun before another, by a relation row "of"
 
+- Purpose: Reaches a related thing by a short noun-before-noun phrase, such as "the session worktree".
+- Since: b240
 - Form: <noun2> <noun>
 - Functions: `r\d+_\w+_Cpd`
 - Cited by: no line
@@ -1025,6 +1132,8 @@ shall [x3: tool `work` (constant)]
 
 a state: the other noun of a relation row "of"
 
+- Purpose: States as a condition that a thing has a related thing, reading an "of" relation from the owner's side.
+- Since: b240
 - Form: <np> has <np>
 - Functions: `r\d+_\w+_Has`
 - Cited by: no line
@@ -1045,6 +1154,9 @@ shall [x3: agent the person (constant), x4: command `work start` (parameter), x5
 
 a state: the other noun of a relation row "in"
 
+- Purpose: States as a condition that a container holds a member, reading an "in" relation from the container's side.
+- Since: b240
+- Changed: b274
 - Form: <np> holds <np>
 - Functions: `r\d+_\w+_Holds`
 - Cited by: consistency#r15, consistency#r16, consistency#r28, consistency#r29, scenarios#r7, scenarios#r8, scenarios#r23, scenarios#r26, scenarios#r29
@@ -1065,6 +1177,8 @@ shall [x4: tool `work` (constant)]
 
 a state: a relation row "in" said from the member's side, as holds-relation
 
+- Purpose: States membership from the member's side, with the same meaning as the container holding it.
+- Since: b274
 - Form: <np> is in <np>
 - Functions: `r\d+_\w+_In`
 - Cited by: consistency#r19
@@ -1085,6 +1199,8 @@ shall [x3: agent the person (constant), x4: command `work start` (parameter), x5
 
 a state: every one that P is held and no one that is not P is, by a relation row "in"
 
+- Purpose: States that a container holds all the things meeting a description and nothing else, in one clause.
+- Since: b274
 - Form: <np> holds exactly the <nouns> that|whose ...
 - Functions: `r\d+_\w+_Exactly`
 - Cited by: consistency#r18, consistency#r24, consistency#r30, consistency#r33, scenarios#r15, scenarios#r20, scenarios#r30, scenarios#r31, scenarios#r32
@@ -1111,6 +1227,8 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x3
 
 a thing's attribute
 
+- Purpose: Names a thing's attribute as something a line can print, compare or set.
+- Since: b240
 - Form: the <attribute> of <np>; the <noun> <attribute>
 - Functions: `t_[a-z0-9_]+_\d+_(?:Of_k_\w+|Cpd_k_\w+|Up)`
 - Cited by: no line
@@ -1130,6 +1248,9 @@ shall [x3: tool `work` (constant)]
 
 an attribute's value, the full form, which any value takes
 
+- Purpose: States an attribute's value in a form every value accepts, keeping noun values unambiguous.
+- Since: b240
+- Changed: b257
 - Form: the <attribute> of <np> is <value>
 - Functions: `t_[a-z0-9_]+_\d+_IsOf`
 - Cited by: no line
@@ -1150,6 +1271,8 @@ shall [x3: tool `work` (constant)]
 
 an attribute's value in the short form, of a value its entry declares an adjective (`Values (adjective):`); a value declared a noun (`Values (noun):`) is refused in it, naming the full form (b257)
 
+- Purpose: Gives the short form "x is v" for values declared adjectives, refusing it where it would misread a noun.
+- Since: b257
 - Form: <np> is <value>
 - Functions: `t_[a-z0-9_]+_\d+_k_\w+_Is`
 - Cited by: no line
@@ -1170,6 +1293,9 @@ shall [x3: tool `work` (constant)]
 
 an attribute's value given as a code no entry lists, a noun when the attribute declares its values' kinds
 
+- Purpose: Lets an attribute take a literal value the lexicon does not list, such as a version number.
+- Since: b240
+- Changed: b257
 - Form: the <attribute> of <np> is `<code>`
 - Functions: `t_[a-z0-9_]+_\d+(?:_k_\w+)?_IsCode(?:Of)?`
 - Cited by: no line
@@ -1190,6 +1316,8 @@ shall [x2: agent the person (constant), x3: command `work start` (parameter), x4
 
 a doer gives an attribute a value
 
+- Purpose: Lets a response change an attribute's value, stating the value the thing has afterwards.
+- Since: b240
 - Form: set the <attribute> of <np> to <value>
 - Functions: `t_[a-z0-9_]+_\d+_Set`
 - Cited by: no line
@@ -1208,6 +1336,9 @@ shall [x3: tool `work` (constant)]
 
 one of a list of values, or none of them
 
+- Purpose: Lets a condition accept any of several values, or exclude several, in one line.
+- Since: b240
+- Changed: b257
 - Form: the <attribute> of <np> is one of <value> or <value>; is not <value> or <value> (after <np> alone, adjectives only)
 - Functions: `t_[a-z0-9_]+_\d+(?:_k_\w+)?_Is(?:One|None)Of|t_[a-z0-9_]+_\d+_Vals(?:\d+|More)`
 - Cited by: no line
@@ -1232,6 +1363,8 @@ shall [x2: agent the person (constant), x3: command `work start` (parameter), x4
 
 an attribute with no value
 
+- Purpose: Lets a line depend on an attribute being unset, distinct from having any particular value.
+- Since: b240
 - Form: <np> has no <attribute>
 - Functions: `t_[a-z0-9_]+_\d+_k_\w+_HasNo`
 - Cited by: no line
@@ -1252,6 +1385,8 @@ shall [x2: agent the person (constant), x3: command `work start` (parameter), x4
 
 an ordered attribute's value compared
 
+- Purpose: Compares an attribute's value against a fixed value by its declared order, such as priority above low.
+- Since: b240
 - Form: the <attribute> of <np> is after|before <value>
 - Functions: `t_[a-z0-9_]+_\d+_(?:Cmp|Between|PtCode|PtVal)|After|Before`
 - Cited by: no line
@@ -1272,6 +1407,9 @@ shall [x2: agent the person (constant), x3: command `work start` (parameter), x4
 
 one thing's value compared with another's, of one attribute word with one value order, the two of one entry or of two (b275, b287)
 
+- Purpose: Compares one thing's attribute with another's by their declared order, such as one version being later.
+- Since: b275
+- Changed: b287
 - Form: the <attribute> of <np> is after|before the <attribute> of <np>
 - Functions: `t_[a-z0-9_]+_\d+_CmpT(?:_t_[a-z0-9_]+_\d+)?`
 - Cited by: consistency#r20
@@ -1292,6 +1430,9 @@ shall [x1: worktree `a` (parameter), x4: tool `work` (constant)]
 
 one thing's value the same as another's, of any attribute word, the two of one entry or of two with one value order (b275, b287)
 
+- Purpose: Requires two things to share an attribute's value without naming the value.
+- Since: b275
+- Changed: b287
 - Form: the <attribute> of <np> is the same as the <attribute> of <np>
 - Functions: `t_[a-z0-9_]+_\d+_SameAs(?:_t_[a-z0-9_]+_\d+)?`
 - Cited by: no line
@@ -1312,6 +1453,9 @@ shall [x3: agent the person (constant), x4: command `work start` (parameter), x5
 
 a collection's members ordered by their attribute (b275)
 
+- Purpose: Says in which order a response presents a collection, so the order itself becomes checkable behaviour.
+- Since: b275
+- Changed: b301
 - Form: <np>, ordered by <attribute>, in ascending|descending order[,]
 - Functions: `r\d+_\w+_By_t_[a-z0-9_]+_\d+|Ascending|Descending`
 - Cited by: parsing#r12, scenarios#r22, scenarios#r27
@@ -1335,6 +1479,9 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x3
 
 a printed every ordered by its attribute (b275)
 
+- Purpose: Says in which order a response presents every such thing, so the printed order becomes checkable.
+- Since: b275
+- Changed: b301
 - Form: every <noun>, ordered by <attribute>, in ascending|descending order[,]
 - Functions: `t_[a-z0-9_]+_\d+_k_\w+_Every`
 - Cited by: scenarios#r25, scenarios#r28
@@ -1356,6 +1503,8 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x3
 
 a count as a value
 
+- Purpose: Treats how many things there are as a value a line can print or compare with a bound.
+- Since: b240
 - Form: the number of <nouns> is at least <number>
 - Functions: `Count_(?:Cmp|Code|Up|Op\w+)|k_\w+_NumberOf`
 - Cited by: no line
@@ -1376,6 +1525,8 @@ shall [x3: tool `work` (constant)]
 
 a thing there is
 
+- Purpose: States that a thing exists or that none does, for things whose presence alone matters.
+- Since: b240
 - Form: <np> exists; no <noun> exists
 - Functions: `Exists_St`
 - Cited by: no line
@@ -1396,6 +1547,8 @@ shall [x2: agent the person (constant), x3: command `work start` (parameter), x4
 
 a moment before or after another
 
+- Purpose: Lets a condition depend on one moment falling before or after another, such as a deadline.
+- Since: b240
 - Form: <moment> is after|before <moment>
 - Functions: `k_moment_Cmp`
 - Cited by: no line
@@ -1417,6 +1570,8 @@ shall [x3: moment `2026-01-01` (parameter), x5: tool `work` (constant)]
 
 a moment within the last span
 
+- Purpose: Lets a condition depend on a moment falling within a recent span of time before the trigger.
+- Since: b240
 - Form: <moment> is within the last <amount> <unit>
 - Functions: `k_moment_Within|u_\w+_Span|AmountInt|A_\w+`
 - Cited by: no line

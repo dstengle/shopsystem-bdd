@@ -24,7 +24,7 @@ area: specification
 - **preposition** (noun) → object preposition. A word such as `to` or `on` that a frame puts before an object or a recipient.
 - **job** (noun) → object job. A job of the product that a capability of a bounded context serves.
 - **index entry** (noun) → object index entry. The row of the decisions index for one design-decision, as `model decisions` writes it from the design-decision's file. Plural: index entries.
-- **catalogue entry** (noun) → object catalogue entry. The entry of the rule catalogue for one rule, as `model rules --write` writes it from the rule. Plural: catalogue entries.
+- **catalogue entry** (noun) → object catalogue entry. The entry of the rule catalogue for one rule or of the construct catalogue for one construct, as `spec rules --write` or `spec constructs --write` writes it, with its purpose and the items it came by and was changed by. Plural: catalogue entries.
 - **section** (noun) → object section. A part of a file under a `##` heading.
 - **precondition** (noun) → object precondition. The While clause of a requirement: the condition its trigger happens in.
 - **trigger** (noun) → object trigger. The When or If clause of a requirement: the event it answers.
@@ -192,4 +192,4 @@ area: specification
 - **severity** (attribute) → attribute rule.severity. Whether a violation of a rule fails the check or is only named.
 - **error** (noun) → value rule.severity error.
 - **warning** (noun) → value rule.severity warning.
-- **release** (noun) → object release. A section of CHANGELOG.md, named by the version it shipped, as `0.31.0`; a catalogue entry from before items were tracked mentions the release that shipped it, and a new or changed catalogue entry mentions an item. Plural: releases.
+- **release** (noun) → object release. A section of CHANGELOG.md, named by the version it shipped, as `0.31.0`, that a catalogue entry from before items were tracked mentions in place of an item, while a new or changed catalogue entry mentions an item. Plural: releases.
