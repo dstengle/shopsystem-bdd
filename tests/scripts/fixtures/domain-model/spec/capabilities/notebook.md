@@ -35,3 +35,14 @@ A person adds notes, files them and archives them.
 
 ### [g6] Listing the notes completes the request
 - [r6] When the person lists the notes, the notes service shall complete the request.
+
+### [g7] Only a draft note is filed
+- [r7] If the person files a note whose status is not `draft`, then the notes service shall refuse the request and name the
+  note.
+
+### [g8] A draft note filed becomes active
+- [r8] While a note is `draft`, when the person files the note, the notes service shall set the status of the note to
+  `active`.
+
+### [g9] A note archived is retired
+- [r9] When the person archives a note, the notes service shall set the status of the note to `retired`.

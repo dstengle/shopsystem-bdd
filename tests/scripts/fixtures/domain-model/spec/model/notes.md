@@ -24,7 +24,7 @@ object tag
 service notes
   operation add(text, priority, reminder (flag))  outcomes: done → the note | refused: no text
   operation file(note)
-    outcomes: done | refused: not a draft
+    outcomes: done | refused: not a draft note
   operation archive(note)  outcomes: done
   operation label(note, tag)  outcomes: done
   operation list()  outcomes: returned → every note

@@ -141,7 +141,7 @@ def test_the_fixtures_lines_read_in_its_vocabulary():
     import spec_read
     cap = spec_read.capability(FIXTURE / "spec" / "capabilities" / "notebook.md")
     lines = [r.text for g in cap.groups for r in g.requirements]
-    assert len(lines) == 6
+    assert len(lines) == 9
     for line in lines:
         parsed = spec_language.parse(FIXTURE, line)
         assert parsed.tree and not parsed.refusal, (line, parsed.refusal)

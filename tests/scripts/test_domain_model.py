@@ -115,6 +115,14 @@ def test_a_flag_parameter_is_written_with_flag(tmp_path):
     assert [(p.name, p.type) for p in op.parameters] == [("design-decision", "object"), ("discard", "flag")]
 
 
+def test_an_operation_names_the_actors_that_may_request_it_with_by(tmp_path):
+    text = DECISIONS.replace("  operation index()", "  operation withdraw(design-decision) by the person, a session"
+                                                    "  outcomes: done\n  operation index()")
+    op = _area(tmp_path, text).services["decisions"].operation("withdraw")
+    assert op.by == ("the person", "a session") and [o.kind for o in op.outcomes] == ["done"]
+    assert _area(tmp_path / "2").services["decisions"].operation("index").by == ()
+
+
 def test_elements_resolve_by_their_qualified_id(tmp_path):
     model = _area(tmp_path)
     assert model.resolve("object design-decision").kind == "object"

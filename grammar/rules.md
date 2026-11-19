@@ -1252,6 +1252,133 @@ the domain model breaks its own rules: a relation to an undeclared object, a tra
   typed("ctx").
   ```
 
+## v_m2
+
+a request names a parameter its operation does not declare, or a value outside the parameter's values
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  requester("c#r1","notes.add","the person").
+  req_param("c#r1","notes.add","colour").
+  op_param("notes.add","text").
+  ```
+
+- Passes on:
+
+  ```prolog
+  requester("c#r1","notes.add","the person").
+  req_param("c#r1","notes.add","text").
+  op_param("notes.add","text").
+  ```
+
+## v_m3
+
+a requester the operation's actors do not include
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  requester("c#r1","decisions.enter","the upstream").
+  op_by("decisions.enter","the person").
+  ```
+
+- Passes on:
+
+  ```prolog
+  requester("c#r1","decisions.enter","the person").
+  op_by("decisions.enter","the person").
+  ```
+
+## v_m4
+
+an operation declares a refusal reason that no line states
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  op_reason("notes.add","no text").
+  ```
+
+- Passes on:
+
+  ```prolog
+  op_reason("notes.add","no text").
+  states_reason("c#r4","notes.add","no text").
+  ```
+
+## w_m5
+
+a lifecycle transition no line causes
+
+- Severity: warning
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  transition("note","status","draft","active").
+  ```
+
+- Passes on:
+
+  ```prolog
+  transition("note","status","draft","active").
+  sets("c#r1","note","status","draft","active").
+  ```
+
+## v_m6
+
+a line sets a status by a transition its lifecycle does not allow
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  lifecycle("note","status").
+  transition("note","status","draft","active").
+  sets("c#r1","note","status","active","draft").
+  ```
+
+- Passes on:
+
+  ```prolog
+  lifecycle("note","status").
+  transition("note","status","draft","active").
+  sets("c#r1","note","status","draft","active").
+  ```
+
+## v_m7
+
+an operation no line requests
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  operation("notes.add").
+  ```
+
+- Passes on:
+
+  ```prolog
+  operation("notes.add").
+  requester("c#r1","notes.add","the person").
+  ```
+
 ## v_r1
 
 an item cites a record in its `source:`: an item's provenance cites quotes, requests and decisions, never a record

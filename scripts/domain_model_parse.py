@@ -78,6 +78,7 @@ class Operation:
     where: str = ""
     outcomes: list = field(default_factory=list)
     flags: tuple = ()       # the boolean parameters, written `<name> (flag)`
+    by: tuple = ()          # the actors (or kinds of actor) that may request it, written `by <actor>, ...`; none: any
     parameters: tuple = ()  # resolved by domain_model
     object: str = ""        # the object it acts on (domain_model)
 
@@ -238,7 +239,7 @@ class Reader:
         obj.lifecycles.append(Lifecycle(name, transitions))
 
     def operation(self, n, text):
-        found = re.match(r"^([^(]+)\((.*?)\)\s*(?:outcomes:(.*))?$", text)
+        found = re.match(r"^([^(]+)\((.*?)\)\s*(?:by\s+(.*?))?\s*(?:outcomes:(.*))?$", text)
         if not found:
             self.refuse(n, "an operation is `operation <name>(<parameter>, ...)`: %s" % text)
         raw = []
@@ -251,10 +252,11 @@ class Reader:
                 continue
             name, _, values = p.partition(":")
             raw.append((name.strip(), tuple(v.strip() for v in values.split("|") if v.strip())))
-        op = Operation(self.current.name, found.group(1).strip(), tuple(raw), self.where, flags=tuple(flags))
+        by = tuple(a.strip() for a in (found.group(3) or "").split(",") if a.strip())
+        op = Operation(self.current.name, found.group(1).strip(), tuple(raw), self.where, flags=tuple(flags), by=by)
         self.current.operations.append(op)
-        if found.group(3):
-            self.outcomes(n, op, found.group(3))
+        if found.group(4):
+            self.outcomes(n, op, found.group(4))
 
     def outcomes(self, n, op, text):
         for part in (p.strip() for p in text.split("|")):

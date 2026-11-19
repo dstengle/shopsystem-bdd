@@ -4,7 +4,8 @@ In a context with a domain model (`spec/model/`): `model_problem(S, Why)` of eac
 vocabulary's problems (spec_vocabulary) as `elementless(T, Why)` (v_t18), `unresolved(T, Why)` (v_t19),
 `named_twice(T, Why)` (v_t20) and `retired_import(C, P)` (v_t21), and `foreign_term(Q, W, Why)` (v_m1) of each word a
 parsed requirement of a capability with an `area:` uses (a kind, a verb, an attribute or an actor of its logical form)
-whose entries are all in vocabulary layers its area does not read. In any context: `cites_record(I, R)` of each
+whose entries are all in vocabulary layers its area does not read; the facts of model_domain_lines of the model and of
+each parsed requirement (v_m2-v_m7). In any context: `cites_record(I, R)` of each
 `record/...` or `.shop/records/` path an item's `source:` names, with `new_item(I)` for an item numbered from
 RECORDS_POLICY (the records policy, v_r1; an older item's citation is history, w_r1).
 """
@@ -12,6 +13,7 @@ import re
 
 import domain_model
 import domain_model_check
+import model_domain_lines
 import spec_vocabulary
 from backlog_items import RECORDS_POLICY
 from model_parse import as_list, frontmatter
@@ -54,6 +56,8 @@ class DomainReading:
             return
         for code, subject, why in domain_model_check.problems(domain_model.load(self.root)):
             self.fact("model_problem", subject, why)
+        for name, *args in model_domain_lines.model_facts(domain_model.load(self.root)):     # v_m2-v_m7
+            self.fact(name, *args)
         for code, term, why in spec_vocabulary.problems(self.root):
             if code == "v_t21":
                 self.fact("retired_import", self.context, term)
@@ -66,11 +70,9 @@ class DomainReading:
         return self._layers
 
     def domain_line(self, path, ident, text):
-        """foreign_term(Q, W, Why) of a parsed requirement of a capability with an `area:` (v_m1)."""
+        """foreign_term(Q, W, Why) of a parsed requirement of a capability with an `area:` (v_m1), and the facts of
+        its requests, refusals and sets against the model (model_domain_lines: v_m2-v_m7)."""
         if not domain_model.exists(self.root):
-            return
-        area = frontmatter(path.read_text())[0].get("area")
-        if not area:
             return
         import spec_grammar4
         import spec_language
@@ -79,9 +81,18 @@ class DomainReading:
         if parsed.tree is None:
             return
         vocab = spec_grammar4.load(self.root)[0]
+        form = spec_lf.form(vocab, parsed.tree)
+        if getattr(self, "_lines", None) is None:
+            import spec_lexicon
+            self._lines = model_domain_lines.Lines(domain_model.load(self.root), spec_lexicon.read(self.root))
+        for name, *args in self._lines.facts(ident, form):
+            self.fact(name, *args)
+        area = frontmatter(path.read_text())[0].get("area")
+        if not area:
+            return
         readable, layer_of = set(spec_vocabulary.layers_of(self.root, str(area))), self._layer_of()
         terms = self.lexicon_terms()
-        for cat, word in sorted(uses(spec_lf.form(vocab, parsed.tree))):
+        for cat, word in sorted(uses(form)):
             layers = {layer_of.get(t.where) for t in terms if t.category == cat and t.term == word}
             if layers and None not in layers and not layers & readable:
                 self.fact("foreign_term", ident, word, "%s is a word of %s, which the area %s does not read" % (

@@ -48,6 +48,11 @@
 #defined model_problem/2.         % model_problem(S, Why): the domain model breaks its own rules at S (domain_model_check)
 #defined elementless/2.  #defined unresolved/2.  #defined named_twice/2.  #defined retired_import/2.
 #defined foreign_term/3.          % foreign_term(Q, W, Why): Q uses W, a word of no vocabulary layer its area reads
+% the lines against the model (model_domain_lines; v_m2-v_m7)
+#defined operation/1.  #defined op_param/2.  #defined valued/2.  #defined param_value/3.  #defined op_by/2.
+#defined actor_kind/2.  #defined op_reason/2.  #defined lifecycle/2.  #defined transition/4.
+#defined requester/3.  #defined req_param/3.  #defined req_value/4.  #defined states_reason/3.
+#defined sets/5.  #defined sets_from_any/4.
 #defined cites_record/2.          % cites_record(I, R): item I's source: names the record R
 #defined new_item/1.              % new_item(I): item I came after the records policy
 % the codified spec (C3, C5-C7, C26, C28)
@@ -418,6 +423,41 @@ label("v_m8", "the domain model breaks its own rules: a relation to an undeclare
 % fail v_m8: model_problem("note.carries","the relation carries of note names tag, which the model does not declare").
 % pass v_m8: typed("ctx").
 v_m8(S, Why)  :- model_problem(S, Why).
+% the lines against the model (scripts/model_domain_lines.py): a request's operation O, parameters and requester, a
+% refusal's stated reasons, a set of a lifecycle's attribute
+label("v_m2", "a request names a parameter its operation does not declare, or a value outside the parameter's values").
+% fail v_m2: requester("c#r1","notes.add","the person"). req_param("c#r1","notes.add","colour"). op_param("notes.add","text").
+% pass v_m2: requester("c#r1","notes.add","the person"). req_param("c#r1","notes.add","text"). op_param("notes.add","text").
+v_m2(Q, P)    :- req_param(Q, O, P), not op_param(O, P).
+v_m2(Q, P)    :- req_value(Q, O, P, V), valued(O, P), not param_value(O, P, V).
+label("v_m3", "a requester the operation's actors do not include").
+% fail v_m3: requester("c#r1","decisions.enter","the upstream"). op_by("decisions.enter","the person").
+% pass v_m3: requester("c#r1","decisions.enter","the person"). op_by("decisions.enter","the person").
+allowed(O, A) :- requester(_, O, A), op_by(O, A).
+allowed(O, A) :- requester(_, O, A), op_by(O, K), actor_kind(A, K).
+v_m3(Q, A)    :- requester(Q, O, A), op_by(O, _), not allowed(O, A).
+label("v_m4", "an operation declares a refusal reason that no line states").
+% fail v_m4: op_reason("notes.add","no text").
+% pass v_m4: op_reason("notes.add","no text"). states_reason("c#r4","notes.add","no text").
+reason_stated(O, R) :- states_reason(_, O, R).
+v_m4(O, R)    :- op_reason(O, R), not reason_stated(O, R).
+label("w_m5", "a lifecycle transition no line causes").
+% fail w_m5: transition("note","status","draft","active").
+% pass w_m5: transition("note","status","draft","active"). sets("c#r1","note","status","draft","active").
+caused(Obj, T, F, To) :- sets(_, Obj, T, F, To).
+caused(Obj, T, F, To) :- sets_from_any(_, Obj, T, To), transition(Obj, T, F, To).
+w_m5(Obj, T, F, To) :- transition(Obj, T, F, To), not caused(Obj, T, F, To).
+label("v_m6", "a line sets a status by a transition its lifecycle does not allow").
+% fail v_m6: lifecycle("note","status"). transition("note","status","draft","active"). sets("c#r1","note","status","active","draft").
+% pass v_m6: lifecycle("note","status"). transition("note","status","draft","active"). sets("c#r1","note","status","draft","active").
+entered(Obj, T, To) :- transition(Obj, T, _, To).
+v_m6(Q, T, F, To) :- sets(Q, Obj, T, F, To), lifecycle(Obj, T), F != To, not transition(Obj, T, F, To).
+v_m6(Q, T, none, To) :- sets_from_any(Q, Obj, T, To), lifecycle(Obj, T), not entered(Obj, T, To).
+label("v_m7", "an operation no line requests").
+% fail v_m7: operation("notes.add").
+% pass v_m7: operation("notes.add"). requester("c#r1","notes.add","the person").
+requested(O)  :- requester(_, O, _).
+v_m7(O)       :- operation(O), not requested(O).
 
 % ---------------------------------------------------------------- records (the domain contract, §8)
 label("v_r1", "an item cites a record in its `source:`: an item's provenance cites quotes, requests and decisions, never a record").
@@ -498,7 +538,7 @@ w_example(Q, L)    :- exemplified(Q, L).
 #show v17/1. #show v18d/1.
 #show v_t1/3. #show v_t2/1. #show v_t3/1. #show v_t4/1. #show v_t5/1. #show v_t6/2. #show v_t11/1. #show v_t12/1. #show v_t13/2. #show v_t14/1. #show v_t15/1.
 #show v_t16/2. #show v_t17/2. #show v_t18/2. #show v_t19/2. #show v_t20/2. #show v_t21/2.
-#show v_m1/3. #show v_m8/2. #show v_r1/2. #show w_r1/2.
+#show v_m1/3. #show v_m2/2. #show v_m3/2. #show v_m4/2. #show w_m5/4. #show v_m6/4. #show v_m7/1. #show v_m8/2. #show v_r1/2. #show w_r1/2.
 #show v_p0/1. #show v_p1/2. #show v_p2/1. #show v_p3/2.
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
 #show w_many_requests/1. #show w_untiered/1. #show w_unrouted/1. #show w_example/2. #show w_value_kind/1.

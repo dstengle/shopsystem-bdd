@@ -40,3 +40,24 @@ Feature: Notebook
   Scenario: Listing the notes completes the request
     When the person lists the notes
     Then the notes service completes this request
+
+  @g7 @r7
+  Scenario: Only a draft note is filed
+    Given a note n1
+    And the status of the note n1 is not `draft`
+    When the person files the note n1
+    Then the notes service refuses this request
+    And the notes service names the note n1
+
+  @g8 @r8
+  Scenario: A draft note filed becomes active
+    Given a note n1
+    And the status of the note n1 is `draft`
+    When the person files the note n1
+    Then the notes service sets the status of the note n1 to `active`
+
+  @g9 @r9
+  Scenario: A note archived is retired
+    Given a note n1
+    When the person archives the note n1
+    Then the notes service sets the status of the note n1 to `retired`
