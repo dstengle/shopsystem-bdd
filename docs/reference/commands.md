@@ -30,7 +30,7 @@ $ work idea "work show prints the status of an item" --note "The person wants to
 b250 "work show prints the status of an item" idea
 $ work shape b250
 b250 "work show prints the status of an item" shaped
-$ work line b250 --into backlog --group "work show prints an item's status" 'When the person runs `work show` on an item, `work` shall print the status of the item.'
+$ work line b250 --into backlog --group "work show prints an item's status" 'When the person shows an item, the backlog service shall return the status of the item.'
 b250 "work show prints the status of an item": backlog#r43
 $ work ready b250
 b250 "work show prints the status of an item" ready
@@ -107,7 +107,7 @@ The line gets the next free id of its capability (`backlog#r43`). It goes into `
 `work line` does not parse the line; [`work ready`](#work-ready) does.
 
 ```console
-$ work line b250 --into backlog --group "work show prints an item's status" 'When the person runs `work show` on an item, `work` shall print the status of the item.'
+$ work line b250 --into backlog --group "work show prints an item's status" 'When the person shows an item, the backlog service shall return the status of the item.'
 b250 "work show prints the status of an item": backlog#r43
 ```
 
@@ -252,7 +252,7 @@ The person wants to see where an item stands at a glance.
 ### backlog
 
 #### [g43] work show prints an item's status
-- [r43] When the person runs `work show` on an item, `work` shall print the status of the item.
+- [r43] When the person shows an item, the backlog service shall return the status of the item.
 ```
 
 #### `work names`
@@ -471,7 +471,7 @@ The asker's lines, one `--line` each, in the upstream's words; it prints the req
 Synopsis: `work propose [--line LINES] request`
 
 ```console
-$ work propose q48 --line 'When the person runs `work show` on an item, `work` shall print the status of the item.'
+$ work propose q48 --line 'When the person shows an item, the backlog service shall return the status of the item.'
 q48 awaiting-asker asker
 ```
 
@@ -504,7 +504,7 @@ $ work reply q48 1 "Yes: the state the backlog shows it under."
 $ work show q48
 q48 awaiting-upstream upstream
 it is the upstream's turn, on https://github.com/ex/ctx/issues/1
-  line 1: unsettled - When the person runs `work show` on an item, `work` shall print the status of the item.
+  line 1: unsettled - When the person shows an item, the backlog service shall return the status of the item.
   question 1: line 1: Should the status be the item's state, such as ready?
   answer 1: Yes: the state the backlog shows it under.
 ```
@@ -690,7 +690,7 @@ Synopsis: `spec parse [--file FILE] [--form] [line]`
 - `--file`: parse every line of a file, numbered.
 
 ```console
-$ spec parse --form 'When the person runs `work show` on an item, `work` shall print the status of the item.'
+$ spec parse --form 'When the person shows an item, the backlog service shall return the status of the item.'
 shall [x1: agent the person (constant), x2: command `work show` (parameter), x4: tool `work` (constant)]
   when [x3: item]
     run(e1, subject: x1, object: x2, on: x3)
@@ -734,7 +734,7 @@ Synopsis: `spec explain requirement`
 
 ```console
 $ spec explain backlog#r38
-backlog#r38  While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
+backlog#r38  While the status of an item is not `idea`, if the person shapes the item, then the backlog service shall refuse the request and name the status of the item.
 which also means:
   `work` shall exit with an error (by the definition of refuse in the pack cli)
   `work` shall change nothing (by U12)

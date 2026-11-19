@@ -228,8 +228,8 @@ Two pairs from this repository's own spec show the most common rewordings. "Exit
 parses, but the refusal says it shorter and reads as one act:
 
 ```requirement
-While an analysis tool is `missing`, when the person runs `tools probe`, `tools` shall exit with an error naming the analysis tool.
-While an analysis tool is `missing`, if the person runs `tools probe`, then `tools` shall refuse the command and name the analysis tool.
+While an analysis tool is `missing`, when the person probes the toolchain, the toolchain service shall fail the check and name the analysis tool.
+While an analysis tool is `missing`, if the person probes the toolchain, then the toolchain service shall refuse the request and name the analysis tool.
 ```
 
 "The item" with nothing before it is refused:
@@ -239,7 +239,7 @@ When the person runs `work shape` on the item, `work` shall set the status of th
 ```
 
 ```requirement
-When the person runs `work shape` on an item, `work` shall set the status of the item to `shaped`.
+When the person shapes an item, the backlog service shall set the status of the item to `shaped`.
 ```
 
 [Writing requirements](writing-requirements.md) has the full set of pairs, and how to read a refusal. Claude knows

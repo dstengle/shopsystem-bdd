@@ -104,7 +104,7 @@ def test_a_line_shown_refused_that_parses_is_caught(tools):
 
 def test_a_sketch_line_read_in_this_repository_is_caught(tools):
     text = broken("docs/recipes.md", "<!-- docs: context tests/scripts/fixtures/docs-labels -->\n```text", "```text")
-    assert any("`work label`" in p for p in line_problems("docs/recipes.md", text))
+    assert any("tags an item with a label" in p for p in line_problems("docs/recipes.md", text))
 
 
 def test_a_scenario_that_is_not_gherkin_is_caught(tools):
@@ -131,8 +131,8 @@ def test_a_value_in_the_short_form_is_caught(tools):
 
 def test_a_quote_that_differs_from_its_feature_file_is_caught(tools):
     page = "docs/getting-started.md"
-    text = broken(page, "    Then `notes` deletes the note n1\n```", "    Then `notes` deletes the note n1\n"
-                  "    And `notes` exits successfully\n```")
+    last = "    Then the notes service sets the status of the note n1 to `removed`\n```"
+    text = broken(page, last, last[:-4] + "\n    And the notes service keeps the note n1\n```")
     assert any("is not as notes.feature has it" in p for p in gherkin_problems(page, text))
     text = broken(page, "Feature: Notes\n  Narrator: the person\n\n  @g1", "Feature: Notes\n  Narrator: a person\n\n  @g1")
     assert any("'Narrator: a person' is not notes.feature's" in p for p in gherkin_problems(page, text))

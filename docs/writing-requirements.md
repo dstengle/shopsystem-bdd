@@ -10,7 +10,7 @@ one, so what you read here is what the plugin does today.
 Here is a line, and what the plugin reads it as:
 
 ```reading
-While an item is `shaped` and the item passes the readiness bar, when the person runs `work ready` on the item, `work` shall set the status of the item to `ready`.
+While an item is `shaped` and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.
 shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x3: agent the person (constant), x4: command `work ready` (parameter), x5: tool `work` (constant)]
   while [x1: item]
     status(x1) = `shaped`
@@ -35,7 +35,7 @@ the first four.
 Something happens, and a tool answers. *When* is the moment it happens ([R9](../grammar/language.md#r9-when-is-an-edge-while-a-level-if-an-unwanted-event-first)).
 
 ```requirement
-When the person runs `work idea`, `work` shall write an item whose status is `idea` and commit the item.
+When the person notes an idea, the backlog service shall keep an item whose status is `idea`.
 ```
 
 ### State-driven: While
@@ -43,7 +43,7 @@ When the person runs `work idea`, `work` shall write an item whose status is `id
 *While* is a state that holds when the trigger comes. It goes before the trigger.
 
 ```requirement
-While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
+While the status of an item is `idea`, when the person shapes the item, the backlog service shall set the status of the item to `shaped`.
 ```
 
 ### Unwanted behaviour: If ... then
@@ -51,7 +51,7 @@ While the status of an item is `idea`, when the person runs `work shape` on the 
 *If* is the trigger of something that should not happen; *then* says how the tool answers it.
 
 ```requirement
-While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
+While the status of an item is not `idea`, if the person shapes the item, then the backlog service shall refuse the request and name the status of the item.
 ```
 
 ### Prohibition and restriction: shall not, shall ... only
@@ -60,8 +60,8 @@ While the status of an item is not `idea`, if the person runs `work shape` on th
 Universal U14 and trials r7:
 
 ```requirement
-A session shall not write a transition.
-`trial-runner` shall read only files in the target of a trial.
+A session shall not change the status of an item.
+`trial-runner` shall review only files in the target of a trial.
 ```
 
 A line that obliges with no trigger, like these, is allowed for *shall not* and *only*. A plain *shall* with no
@@ -227,15 +227,15 @@ gives "a batch holds an item", and from the member's side, "an item is in a batc
 ([`holds-relation`](../grammar/constructs.md#holds-relation), [`is-in`](../grammar/constructs.md#is-in)):
 
 ```requirement
-When the person runs `work batch status` on a batch, `work` shall print every item that the batch holds.
-While an item is in a batch, if the person runs `work shape` on the item, then `work` shall refuse the command and name the batch.
+When the person monitors a batch, the batches service shall return every item that the batch holds.
+While an item is in a batch, if the person shapes the item, then the backlog service shall refuse the request and name the batch.
 ```
 
 "holds exactly the Ks that P" says both halves: every K that meets P is held, and no K that does not is
 ([`holds-exactly`](../grammar/constructs.md#holds-exactly)). The form shows the two boxes:
 
 ```reading
-When the person runs `work batch start`, `work` shall write a batch that holds exactly the items whose status is `in-batch`.
+When the person opens a batch, the batches service shall keep a batch that holds exactly the items whose status is `in-batch`.
 shall [x1: agent the person (constant), x2: command `work batch start` (parameter), x3: tool `work` (constant)]
   when
     run(e1, subject: x1, object: x2)
@@ -262,7 +262,7 @@ does not hold it; "holds nothing" on a response's object gets the Then "the batc
 item" the Then "the batch b1 holds no item" with an item the batch does not hold.
 
 ```requirement
-While a batch holds nothing, when the person runs `work batch status` on the batch, `work` shall print the batch.
+While a batch holds nothing, when the person monitors the batch, the batches service shall return the batch.
 ```
 
 ### Size: at least, at most, exactly, the number of Ks
@@ -272,15 +272,15 @@ than" ([R7](../grammar/language.md#r7-one-k-is-exactly-one-a-k-at-least-one), [`
 "one K" alone is exactly one.
 
 ```requirement
-When the person runs `work batch start`, `work` shall write a batch that holds at least one item.
-When the person runs `work batch start`, `work` shall write a batch that holds at most three items.
+When the person opens a batch, the batches service shall keep a batch that holds at least one item.
+When the person opens a batch, the batches service shall keep a batch that holds at most three items.
 ```
 
 "the number of Ks" is the count as a value, to print or to compare
 ([the number of Ks](../grammar/language.md#the-number-of-ks-that-p-a-count-as-a-value)):
 
 ```requirement
-When the person runs `work batch status` on a batch, `work` shall print the number of items that the batch holds.
+When the person monitors a batch, the batches service shall return the number of items that the batch holds.
 ```
 
 A generated scenario of every and of only gives a thing that fails the restriction, with a negated Then. A count
@@ -310,7 +310,7 @@ listed.`, or a `Type:`, `number`, `time` or `text`, whose values are any literal
 takes as its object, printed, written or returned, or of a printed every ([`order-by`](../grammar/constructs.md#order-by), [`order-by-every`](../grammar/constructs.md#order-by-every)):
 
 ```reading
-When the person runs `migrate status`, `migrate` shall print every upgrade step, ordered by release, in ascending order.
+When the person queries this repository, the upgrades service shall return every upgrade step, ordered by release, in ascending order.
 shall [x1: agent the person (constant), x2: command `migrate status` (parameter), x3: tool `migrate` (constant)]
   when
     run(e1, subject: x1, object: x2)
@@ -348,7 +348,7 @@ When the person runs `work ready` on a shaped item, `work` shall set the status 
 Say the state in a While clause, and refer back to it with "the item":
 
 ```requirement
-While an item is `shaped` and the item passes the readiness bar, when the person runs `work ready` on the item, `work` shall set the status of the item to `ready`.
+While an item is `shaped` and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.
 ```
 
 ### The passive: name who acts
@@ -397,7 +397,7 @@ When the person runs `work backlog` with the `--json` option, `work` shall print
 This parses, but it says what is already said elsewhere:
 
 ```text
-While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall exit with an error naming the status of the item and change nothing.
+While the status of an item is not `idea`, if the person shapes the item, then the backlog service shall refuse the request, name the status of the item and change nothing.
 ```
 
 Write "refuse the command and name X". The rest follows from the `cli` pack's definition of refuse and from
@@ -405,7 +405,7 @@ universal U12, and `spec explain` shows it:
 
 ```console
 $ spec explain backlog#r38
-backlog#r38  While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
+backlog#r38  While the status of an item is not `idea`, if the person shapes the item, then the backlog service shall refuse the request and name the status of the item.
 which also means:
   `work` shall exit with an error (by the definition of refuse in the pack cli)
   `work` shall change nothing (by U12)
@@ -425,7 +425,7 @@ refused: "the item" has no antecedent: no earlier noun phrase, functional relati
 Give the item in the trigger, then point back at it. Backlog r15:
 
 ```requirement
-When the person runs `work show` on an item, `work` shall print the title of the item.
+When the person shows an item, the backlog service shall return the title of the item.
 ```
 
 ### "does not V a K" in a condition: say which you mean
@@ -441,7 +441,7 @@ refused: the While clause says "does not cite an item", which reads two ways: sa
 Batches r30 picks the first:
 
 ```requirement
-While a git branch of a task of a batch has a commit that cites no item, if the person runs `work batch review` on the batch, then `work` shall refuse the command and name the commit.
+While a workspace of a task of a batch holds a kept change that cites no item, if the person submits the batch, then the batches service shall refuse the request and name the kept change.
 ```
 
 ### A coined adjective: use the structure that holds it
@@ -455,7 +455,7 @@ While an item is unrated, when the person runs `work backlog`, `work` shall prin
 Say what makes it so, in words the glossary has:
 
 ```requirement
-While an item has no size, when the person runs `work backlog`, `work` shall print the item.
+While an item has no size, when the person lists the backlog, the backlog service shall return the item.
 ```
 
 A few adjectives stay, each defined by a sentence of the grammar, such as `passing` in the glossary: "An item is
@@ -467,7 +467,7 @@ This parses, but `` `m2` `` is example data, a name only one scenario uses. `spe
 (`w_example`):
 
 ```text
-When the person runs `measure show` on `m2`, `measure` shall print every stage row of `m2`.
+When the person views `m2`, the measurement service shall return every stage row of `m2`.
 ```
 
 The line names kinds; the group's given block holds the sample. Batch-measurement g24, as its capability file has it:
@@ -475,7 +475,7 @@ The line names kinds; the group's given block holds the sample. Batch-measuremen
 ````markdown
 ### [g24] `measure show` prints the stage rows of a measurement whose stage row has no round trip without a round trip
 Restates: r56@0.29.
-- [r24] When the person runs `measure show` on a measurement that has a stage row that has no round trip, `measure` shall print every stage row of the measurement and not print a round trip.
+- [r24] When the person views a measurement that has a stage row that has no round trip, the measurement service shall return every stage row of the measurement and not return a round trip.
 
 ```given
 the measurement `m2` holds:
@@ -518,8 +518,8 @@ When the person runs `work batch status` on a batch, `work` shall print the task
 "the T of X" always works, and nests:
 
 ```requirement
-When the person runs `work batch status` on a batch, `work` shall print the status of the batch.
-When the person runs `work batch status` on a batch, `work` shall print the status of every task of the batch.
+When the person monitors a batch, the batches service shall return the status of the batch.
+When the person monitors a batch, the batches service shall return the status of every task of the batch.
 ```
 
 A compound that is a thing of its own ("pull request", "git branch") is a declared noun, and that's fine.
@@ -573,7 +573,7 @@ refused: the While clause says "does not hold an item", which reads two ways: sa
 Pick the one you mean:
 
 ```requirement
-While a batch holds no item, when the person runs `work batch status` on the batch, `work` shall print the batch.
+While a batch holds no item, when the person monitors the batch, the batches service shall return the batch.
 ```
 
 The rest of the refusals, one by one, are in [troubleshooting](troubleshooting.md#a-line-is-refused).
@@ -584,7 +584,7 @@ A line that parses is not done. A parse says the words fit; the meaning says wha
 `spec parse --form`:
 
 ```console
-$ spec parse --form "When the person runs `work backlog`, `work` shall print an item."
+$ spec parse --form "When the person lists the backlog, the backlog service shall return an item."
 shall [x1: agent the person (constant), x2: command `work backlog` (parameter), x3: tool `work` (constant)]
   when
     run(e1, subject: x1, object: x2)
@@ -605,7 +605,7 @@ How to read it:
 If you meant every item, say so, and the form shows an `every` box:
 
 ```reading
-When the person runs `work backlog`, `work` shall print every item.
+When the person lists the backlog, the backlog service shall return every item.
 shall [x1: agent the person (constant), x2: command `work backlog` (parameter), x3: tool `work` (constant)]
   when
     run(e1, subject: x1, object: x2)
@@ -643,12 +643,12 @@ condition, as under §4) and which lines take precedence over it in some state:
 
 ```console
 $ spec explain readiness#r23
-readiness#r23  While an item is `shaped` and the item passes the readiness bar, when the person runs `work ready` on the item, `work` shall set the status of the item to `ready`.
+readiness#r23  While an item is `shaped` and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.
 taking precedence over it, where its state holds:
-  intake#r10  While an item is `shaped` and a request line of the item is not `accepted`, `refused` or `withdrawn`, if a session runs `work ready` on the item, then `work` shall refuse the command and name the request line.
-  readiness#r24  While an item is `shaped` and the item does not pass the readiness bar, if the person runs `work ready` on the item, then `work` shall refuse the command and name every bar check of the readiness bar that the item does not meet.
-  readiness#r25  While an item is not `shaped`, if the person runs `work ready` on the item, then `work` shall refuse the command and name the status of the item.
-  readiness#r36  While an item is `shaped` and a term in the item violates a rule, if the person runs `work ready` on the item, then `work` shall refuse the command and name the term and the rule.
+  intake#r10  While an item is `shaped` and a request line of the item is not `accepted`, `refused` or `withdrawn`, if a session readies the item, then the backlog service shall refuse the request and name the request line.
+  readiness#r24  While an item is `shaped` and the item does not meet the readiness bar, if the person readies the item, then the backlog service shall refuse the request and name every bar check that the item does not meet.
+  readiness#r25  While an item is not `shaped`, if the person readies the item, then the backlog service shall refuse the request and name the status of the item.
+  readiness#r36  While an item is `shaped` and a term in the item violates a rule, if the person readies the item, then the backlog service shall refuse the request and name the term and the rule.
 ```
 
 Each of those refusals wins over r23 in the state it names. Reading them tells you the whole behaviour of

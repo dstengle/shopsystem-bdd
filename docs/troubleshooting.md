@@ -25,7 +25,7 @@ The parser read "When an" and stopped. Nothing may follow there, because a When 
 "an item is readied" doesn't say who. Name the one who acts, and the line parses:
 
 ```requirement
-When the person runs `work ready` on an item, `work` shall commit the item.
+When the person readies an item, the backlog service shall keep the item.
 ```
 
 That's the pattern for the whole page. Read `parsed up to:` for where it stopped, `nearest words:` for words it
@@ -59,14 +59,14 @@ Every verb has frames: who does it, to what, and with which prepositions. The me
 "command or" is a known wording wart). Here, a person runs a *command*, on a thing. Pick a frame and fill it:
 
 ```requirement
-When the person runs `work show` on an item, `work` shall print the item.
+When the person shows an item, the backlog service shall return the item.
 ```
 
 You'll also meet this one when you put a state into the trigger, as in "runs `work show` on a shaped item". The
 state goes in a While clause instead:
 
 ```requirement
-While an item is `shaped`, when the person runs `work show` on the item, `work` shall print the status of the item.
+While an item is `shaped`, when the person shows the item, the backlog service shall return the status of the item.
 ```
 
 ### "… has no antecedent"
@@ -97,7 +97,7 @@ refused: the While clause says "does not have a dependency", which reads two way
 you both wordings. Pick the one you mean:
 
 ```requirement
-While an item has no dependency, when the person runs `work backlog`, `work` shall print the item.
+While an item has no dependency, when the person lists the backlog, the backlog service shall return the item.
 ```
 
 ### "more than one meaning"
@@ -114,7 +114,7 @@ Does the item have "a dependency and the dependency", or does `work` print "ever
 quoted words are where the two readings split. Rephrase so only one reading is left:
 
 ```requirement
-While an item has a dependency, when the person runs `work backlog`, `work` shall print the item and the dependency.
+While an item has a dependency, when the person lists the backlog, the backlog service shall return the item and the dependency.
 ```
 
 ### "the line has no trigger" (R12)
@@ -130,7 +130,7 @@ refused: the line has no trigger and neither "always" nor "never": it would obli
 A "shall" with no When or If would have to hold every moment. Say what sets it off:
 
 ```requirement
-When the person runs `work idea`, `work` shall commit an item.
+When the person notes an idea, the backlog service shall keep an item.
 ```
 
 A "shall not" or "only" line with no trigger is fine: forbidding something in every state is what it means.
@@ -149,7 +149,7 @@ While is for states (is, has, holds); When and If are for actions (runs, commits
 happens, so it goes in When:
 
 ```requirement
-When the person runs `work backlog`, `work` shall print an item.
+When the person lists the backlog, the backlog service shall return an item.
 ```
 
 ## `work ready` refuses
@@ -187,7 +187,7 @@ Reword it with a construct the step grammar has. The simplest fix is usually to 
 ```console
 $ work ready b252
 work: work ready: b252 "work show prints the status, asked" is not passing:
-  line 1 of request q15 is unanswered, not settled: When the person runs `work show` on an item, `work` shall print the status of the item.
+  line 1 of request q15 is unanswered, not settled: When the person shows an item, the backlog service shall return the status of the item.
 ```
 
 The item came in from a request, and the request still has a line with no outcome. Give it one with `work outcome`

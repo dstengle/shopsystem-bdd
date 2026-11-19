@@ -104,7 +104,7 @@ can take around it. In this language a state isn't an adjective on a noun. It go
 ### The reword, read back
 
 ```reading
-While an item is `shaped`, when the person runs `work show` on the item, `work` shall print the status of the item.
+While an item is `shaped`, when the person shows the item, the backlog service shall return the status of the item.
 shall [x2: agent the person (constant), x3: command `work show` (parameter), x4: tool `work` (constant)]
   while [x1: item]
     status(x1) = `shaped`
@@ -128,7 +128,7 @@ So the While clause goes.
 There's one more thing to settle. The backlog capability already has a line with the same trigger:
 
 ```reading
-When the person runs `work show` on an item, `work` shall print the title of the item.
+When the person shows an item, the backlog service shall return the title of the item.
 shall [x1: agent the person (constant), x2: command `work show` (parameter), x4: tool `work` (constant)]
   when [x3: item]
     run(e1, subject: x1, object: x2, on: x3)
@@ -142,7 +142,7 @@ new line replaces r15 rather than sitting beside it. A requirement is never edit
 new id, and r15's id is retired.
 
 ```reading
-When the person runs `work show` on an item, `work` shall print the title of the item and the status of the item.
+When the person shows an item, the backlog service shall return the title of the item and the status of the item.
 shall [x1: agent the person (constant), x2: command `work show` (parameter), x4: tool `work` (constant)]
   when [x3: item]
     run(e1, subject: x1, object: x2, on: x3)
@@ -157,7 +157,7 @@ In plain words: when the person runs `work show` on any item x3, `work` prints x
 That's what you asked for.
 
 ```console
-$ work line b250 --into backlog --retires backlog#r15 --group '`work show` names an item by its title and its status' 'When the person runs `work show` on an item, `work` shall print the title of the item and the status of the item.'
+$ work line b250 --into backlog --retires backlog#r15 --group '`work show` names an item by its title and its status' 'When the person shows an item, the backlog service shall return the title of the item and the status of the item.'
 b250 "work show prints the status of an item": backlog#r43 retires backlog#r15
 ```
 

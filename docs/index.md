@@ -5,22 +5,22 @@ This is the home of the plugin's documentation. Start here when you want to know
 With the plugin, you tell Claude what you want, and it is kept as one plain-English line that a tool can parse:
 
 ```requirement
-While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
+While the status of an item is `idea`, when the person shapes the item, the backlog service shall set the status of the item to `shaped`.
 ```
 
 That line becomes a scenario in a feature file, and the scenario is the acceptance test the work must pass:
 
 ```gherkin
-@g37 @r37
-Scenario: `work shape` shapes an idea
+@g14 @r14
+Scenario: An idea shaped becomes shaped
   Given an item i1
   And the status of the item i1 is `idea`
-  When the person runs `work shape` on the item i1
-  Then `work` sets the status of the item i1 to `shaped`
+  When the person shapes the item i1
+  Then the backlog service sets the status of the item i1 to `shaped`
 ```
 
-Both are real: they are `r37` of this repository's own [`spec/capabilities/backlog.md`](../spec/capabilities/backlog.md)
-and its scenario in [`features/backlog.feature`](../features/backlog.feature).
+Both are real: they are `r14` of this repository's own [`spec/capabilities/items.md`](../spec/capabilities/items.md)
+and its scenario in [`features/items.feature`](../features/items.feature).
 
 ## Where to start
 

@@ -19,7 +19,7 @@ Take the first row. You say you'd like `work show` to print an item's status. Cl
 in the backlog) and writes what you asked for as a requirement line, one sentence the plugin can parse:
 
 ```requirement
-When the person runs `work show` on an item, `work` shall print the status of the item.
+When the person shows an item, the backlog service shall return the status of the item.
 ```
 
 Claude checks the line, readies the item and builds it in a batch. The next thing you see is a pull request,

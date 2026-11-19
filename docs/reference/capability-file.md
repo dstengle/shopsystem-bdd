@@ -1,5 +1,5 @@
-<!-- Outputs on this page come from plugin 0.33.0, commit 28abbd977 of branch plan-docs, run 2026-11-10 in a scratch
-clone of this repository (no remote). Every requirement line quoted here is a live line of this repository's spec. -->
+<!-- Outputs on this page come from plugin 0.38.0, branch domain-contract, run 2026-11-19 in this repository and in a
+scratch clone of it (no remote). Every requirement line quoted here is a live line of this repository's spec. -->
 
 # The files of a spec
 
@@ -8,236 +8,158 @@ requirement lines. It walks through the files a bounded context keeps under `spe
 at a time, and says which of them a command writes for you and which you write by hand.
 
 Every example is this repository's own spec, in `language: codified-2`. Files that still say `codified-1` are
-refused since plugin 0.33; [upgrading](../upgrading.md) shows how `migrate upgrade` moves them over.
+refused since plugin 0.33, and a context with no domain model since 0.38; [upgrading](../upgrading.md) shows how
+`migrate upgrade` moves them over.
 
 ## The layout at a glance
 
 ```text
 spec/
-  index.md                 the bounded context: id, language, packs, glossary, relations, upstreams
-  capabilities/<name>.md   one capability: its terms, relations and groups of requirement lines
-  universal.md             the universal conditions, true everywhere
+  index.md                     the bounded context: id, language, packs, purpose, composition, upstreams
+  model/<area>.md              the domain model of one area: objects, lifecycles, relations, services, operations
+  vocabulary/<area>.md         the words of one area, each naming one element of the model
+  vocabulary/shared.md         the words every area reads
+  capabilities/<name>.md       one capability: its groups of requirement lines
+  universal.md                 the universal conditions, true everywhere
   decisions/<nnnn>-<slug>.md   one design-decision each
-  decisions/index.md       the decisions' table, generated
+  decisions/index.md           the decisions' table, generated
+  adapters/<port>.toml         one adapter's contract: the CLI's commands and options for each operation
+  moves.json                   the capability moves: an old id and the id it moved to
 features/
-  <name>.feature           one capability's scenarios, generated
+  <name>.feature               one capability's scenarios, generated
 ```
 
-A **capability** is one file under `spec/capabilities/`: one thing the context does, told as groups of lines. Its
-**feature** is the Gherkin file `features generate` writes from it. You never edit a feature by hand.
+The specification has four parts: the **domain model**, the **vocabulary**, the **requirements** (the capabilities
+and the universal conditions) and the **decisions**; the adapter contracts sit beside them. The model and the
+vocabulary have their own reference, [the domain model](domain-model.md); the adapter contracts theirs,
+[adapter contracts](adapters.md). A **capability** is one file under `spec/capabilities/`: the rules about one service
+or one object's lifecycle, told as groups of lines. Its **feature** is the Gherkin file `features generate` writes
+from it. You never edit a feature by hand.
 
 ## A capability file, section by section
 
-Here is `spec/capabilities/backlog.md`, abridged. Each part is explained below it.
+Here is `spec/capabilities/items.md`, abridged. Each part is explained below it.
 
 ### Frontmatter
 
 ```yaml
 ---
-id: capability/missingmass.io/shopsystem/shopsystem-bdd/backlog
-title: Backlog
-narrator: a person or session keeping the backlog
+id: capability/missingmass.io/shopsystem/shopsystem-bdd/items
+title: Items
+narrator: the person
 group: service
+area: tracking
+specifies: object item, service backlog, the readiness policy
 language: codified-2
-rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
-retired: [g1, r1, g2, r2, g3, r3, g4, r4, g6, r6, ..., g20, r20, g21, r21]
+retired: []
 unbuilt: []
 ---
 ```
 
-| key | what it holds |
-|---|---|
-| `id` | `capability/<context path>/<file name>`. The context path is the one in `spec/index.md`'s `id`. |
-| `title` | The heading, and the feature's `Feature:` name. |
-| `narrator` | Who the capability is told for. It becomes the feature's `Narrator:` line. |
-| `group` | `service` (its scenarios run as tests) or `guarantees` (checked by script tests, not scenarios). |
-| `language` | `codified-2`. A file without it is not read as a codified capability. |
-| `rests_on` | The design-decisions the capability stands on. |
-| `retired` | Group and requirement ids that are no longer live. They are never used again. |
-| `unbuilt` | Requirement ids laid by a batch whose code isn't built yet. Their scenarios run as strict expected failures. |
-
-`retired:` and `unbuilt:` are the two keys you'll see change most. Commands write both; the one hand edit is a
-task taking its id out of `unbuilt:` in the commit that makes its scenario pass (see
-[ids](#ids-groups-requirements-and-retired) below).
+- **`id`**: `capability/` and the context's path, then the file's name. Its groups and lines are written
+  `items#g14` and `items#r14` from anywhere else.
+- **`title`**: the feature's name.
+- **`narrator`**: who the scenarios are told for, written under the feature's title.
+- **`group`**: `service` (what a service does when it is asked) or `guarantees` (what holds of an agent's work).
+- **`area`**: the area of the domain model the lines are read in: the words of its vocabulary layer, the layers it
+  imports and `shared`.
+- **`specifies`**: what the capability is about, in words a person reads: a service, an object, a policy.
+- **`language: codified-2`**: the lines are in grammar 4, the plugin's controlled language.
+- **`retired`**: ids that are gone for good; **`unbuilt`**: ids whose code is not written yet, their scenarios run
+  as expected failures. A file may also say **`rests_on:`**, the design-decisions it stands on.
 
 ### Purpose
 
 ```markdown
 ## Purpose
-`work` keeps the backlog of a bounded context in the repository, so that any session can read or change it: one item
-for each piece of work, whatever its provenance, from a raw idea to its delivery (design goals 1 and 2). ...
+The backlog's items through their lifecycle: noted as ideas, shaped, rated, linked, readied against the readiness bar,
+declined, withdrawn, answered and listed.
 ```
 
-Plain prose, for people. No tool reads it. Say what the capability is for and what it leaves out.
-
-### Terms
-
-```markdown
-## Terms
-- **title** (noun): the name of an item that the person reads beside its id. Kind of: text.
-- **git branch** (noun): a branch of a git repository. Plural: git branches. Kind of: thing.
-- **upstream branch** (noun): the branch of a remote that a git branch pushes to. Kind of: thing.
-- **check out** (verb, state): a repository has a git branch as the one its working tree is on. Forms: checks out, checked out. Frame: repository checks out git branch.
-- **reject** (verb, state): a remote declines a push made to it. Forms: rejects, rejected. Frame: remote rejects push.
-```
-
-Terms are words only this capability uses. Words the whole context shares go in `spec/index.md`'s glossary
-instead. Each bullet has the same shape:
-
-- **the word** in bold, then its **part of speech** in brackets: `noun`, `proper noun`, `attribute of <kind>`,
-  `verb, action` or `verb, state`.
-- one sentence that says what it means;
-- then fields: `Kind of:` (the kind it is one of), `Plural:`, `Forms:` (a verb's other forms), `Frame:` (a verb's
-  subject, object and recipient by kind), `Values (adjective):` and `Values (noun):` (an attribute's values, by
-  how they read after "is"; see below), `Not:` (words to avoid),
-  `Redefines:` (a pack's word this entry takes over).
-
-The grammar is built from these entries, so a term is a word you can use in a line. `spec lexicon` lists every word
-the context has, by category.
-
-An attribute's values are declared by how they read after "is". `Values (adjective):` lists the ones that read as an
-adjective or a participle (`shaped`, `in-batch`): a line may say them the short way, "an item is `shaped`", or the
-full way, "the status of the item is `shaped`". `Values (noun):` lists every other value, a noun (`idea`, a tier
-`check`), a verb phrase (`needs-input`) or a release (`0.30.0`): a line says them only the full way, "the status of
-the item is `idea`" or "an item whose status is `idea`", and the short way is refused with that hint. One entry may
-give both. A plain `Values:` declares neither: its values keep the short way, and `spec check` warns
-`w_value_kind`. The generated scenarios always say the full way, "the status of the item i1 is `idea`".
-
-### Relations
-
-```markdown
-## Relations
-
-| from | word | to | cardinality |
-|---|---|---|---|
-| title | of | item | one |
-| git branch | of | task | one |
-| upstream branch | of | git branch | one |
-```
-
-A row says which kinds a preposition joins. `title | of | item | one` is what lets a line say "the title of the
-item", and `one` says an item has one title. Without the row, "the title of the item" is refused. Here's a line
-that leans on the row `git branch | of | task`, with its meaning as `spec parse --form` prints it:
-
-```reading
-While this repository checks out a git branch of a task, if the person runs `work idea`, then `work` shall refuse the command and name the task.
-shall [x1: repository "the repository the command runs in" (indexical), x4: agent the person (constant), x5: command `work idea` (parameter), x6: tool `work` (constant)]
-  while [x2: git branch, x3: task]
-    of(x2, x3)
-    check out(subject: x1, object: x2)
-  if
-    run(e1, subject: x4, object: x5)
-  response
-    refuse(e2, subject: x6, object: x5)
-    name(e3, subject: x6, object: x3)
-```
-
-`of(x2, x3)` is the relation row; `check out` is the state verb from the Terms above.
+One paragraph for people. No tool reads it. A capability has no `## Terms` and no `## Relations`: its words are the
+vocabulary's and its relations the model's.
 
 ### Behaviour: groups of lines
 
-This is the part everything else is generated from. Two groups from `backlog.md`:
+This is the part everything else is generated from. Two groups from `items.md`:
 
 ```markdown
 ## Behaviour
 
-### [g37] `work shape` shapes an idea
-- [r37] While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
+### [g14] An idea shaped becomes shaped
+- [r14] While the status of an item is `idea`, when the person shapes the item, the backlog service shall set the status of the item to `shaped`.
 
-### [g38] `work shape` refuses an item that is not an idea
-- [r38] While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
+### [g15] Only an idea is shaped
+- [r15] While the status of an item is not `idea`, if the person shapes the item, then the backlog service shall refuse the request and name the item.
 ```
 
-A **group** is a heading `### [g<n>] <title>`. Its title becomes the scenario's name, so write it as a short
-sentence a reader can scan. Under it are one or more **requirement lines**, each a bullet `- [r<n>] <line>`. A
-line is one sentence of the controlled language; [writing requirements](../writing-requirements.md) teaches it.
+`### [g<n>] <title>` opens a group; the title becomes the scenario's name. `- [r<n>] <line>` is one requirement.
+A group may hold several lines, which make one scenario together; two groups of one capability may not share their
+features, condition and trigger (`v15n`). A long line may be wrapped, its later lines indented two spaces.
 
-Every line must parse to exactly one meaning. Here is what g37's line means:
+Every line must parse to exactly one meaning. Here is what g14's line means:
 
 ```reading
-While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
-shall [x2: agent the person (constant), x3: command `work shape` (parameter), x4: tool `work` (constant)]
+While the status of an item is `idea`, when the person shapes the item, the backlog service shall set the status of the item to `shaped`.
+shall [x2: agent the person (constant), x3: service the backlog service (constant)]
   while [x1: item]
     status(x1) = `idea`
   when
-    run(e1, subject: x2, object: x3, on: x1)
+    request(e1, backlog.shape, subject: x2, object: x1)
   response
-    initiates(e2, subject: x4, status(x1) = `shaped`)
+    initiates(e2, subject: x3, status(x1) = `shaped`)
 ```
 
-And g38's, the refusal:
-
-```reading
-While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
-shall [x2: agent the person (constant), x3: command `work shape` (parameter), x4: tool `work` (constant)]
-  while [x1: item]
-    not
-      status(x1) = `idea`
-  if
-    run(e1, subject: x2, object: x3, on: x1)
-  response [x5: status]
-    refuse(e2, subject: x4, object: x3)
-    status(x1) = x5
-    name(e3, subject: x4, object: x5)
-```
-
-A line can mean more than it says. `spec explain` shows what else follows, here from the CLI pack's meaning of
-"refuse" and from the universal condition U12:
+"The person shapes the item" is a request of the operation `backlog.shape`, which `spec/model/tracking.md` declares
+with its outcomes (`done | refused: item not an idea, no note`). g15's line states the refusal `item not an idea`; a
+refusal reason no line states is a violation (`v_m4`). `spec explain` prints what else a line means, here from the
+universal condition U17:
 
 ```console
-$ spec explain 'backlog#r38'
-backlog#r38  While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
+$ spec explain items#r15
+items#r15  While the status of an item is not `idea`, if the person shapes the item, then the backlog service shall refuse the request and name the item.
 which also means:
-  `work` shall exit with an error (by the definition of refuse in the pack cli)
-  `work` shall change nothing (by U12)
-  `work` shall exit with an error (by U12)
+  the backlog service shall change nothing (by U17)
+  the backlog service shall name a reason (by U17)
 ```
-
-That's why g38 doesn't say "exit with an error and change nothing": it would only repeat what is already true.
 
 ### The sections after Behaviour
 
-`backlog.md` ends with two sections of prose that no tool parses:
+A capability may end with sections of prose that no tool parses:
 
-- **`## Implementation, may change`**: how the code does it today (`.shop/backlog/b<n>.md`, the score formula, the
-  table order). It helps a builder, but nothing here is a requirement, and a batch may change it.
-- **`## Not yet`**: what was asked and deliberately left out, with why.
-
-Some older capabilities also have a **`## Dropped`** section and **`Restates:`** lines. They tie the file to the ids
-of plugin 0.29 frozen in `spec/restated.json`: `Restates: r56@0.29.` under a group says it carries that old line,
-and a `## Dropped` bullet says why an old id went. You only meet them in a repository that came from 0.29.
+- **`## Implementation, may change`**: how the code does it today, for the developer; a line never says this.
+- **`## Not yet`**: what the capability deliberately leaves out.
+- **`## Dropped`**: 0.29 ids not restated, each with why; **`## Moved`**: each old id and the new id it moved to, in
+  a capability whose lines moved to another (0.38.0 moved every line; `spec/moves.json` holds the whole map).
 
 ## A given block: example data for a group
 
-Some behaviour needs a concrete value to test against. A sample value never goes in a line; it goes in the group's
-fenced `given` block. From `spec/capabilities/batch-measurement.md`:
+Sample values never go in a line. They go in a fenced `given` block under the group, from
+`spec/capabilities/measurement.md`:
 
 ````markdown
-### [g24] `measure show` prints the stage rows of a measurement whose stage row has no round trip without a round trip
-Restates: r56@0.29.
-- [r24] When the person runs `measure show` on a measurement that has a stage row that has no round trip, `measure` shall print every stage row of the measurement and not print a round trip.
-
+### [g6] A measurement viewed gives no round trip of a stage row that has none
+Restates: batch-measurement#r56@0.29.
+- [r6] When the person views a measurement that has a stage row that has no round trip, the measurement service shall
+  return every stage row of the measurement and not return a round trip.
 ```given
 the measurement `m2` holds:
   {"stages": [{"work-item": "cart-1", "stage": "research", "agent": "researcher", "session": "s-1", "turns": 14}], "work_items": [], "totals": {"stages": 1, "sessions": 1, "turns": 14}}
 ```
 ````
 
-A given line has one shape: `the <words> <name> holds:` with indented data under it (a docstring or a `|` table),
-or `the <words> <name> holds` followed by one code span or quoted string. Any other given line restates something
-the line already says, and `spec check` flags it. The block becomes the scenario's first Given, data and all (see
-[the feature](#the-generated-feature-beside-its-lines)).
+Each line of the block is a step of the step grammar: `the <kind> <name> holds:` with data under it, or `the <kind>
+<name> holds` and one code span or quoted string. `Restates:` names the 0.29 ids the group stands for. Add a block
+with `work line --given`.
 
 ## `spec/index.md`: the bounded context
-
-`spec/index.md` is the context's front page. This repository's, abridged:
 
 ```markdown
 ---
 id: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
 title: shopsystem-bdd
 language: codified-2
-imports: [cli, spec]
+imports: [request, spec]
 ---
 
 # shopsystem-bdd
@@ -248,55 +170,23 @@ A Claude Code plugin that runs a behaviour-driven workflow in a consuming reposi
 ## Constraints
 ## Composition
 ## Testing
-
-## Glossary
-- **the person** (proper noun): the human who asks, answers and approves. Kind of: agent.
-- **`work`** (proper noun): the command that writes statuses, transitions and requests. Kind of: tool.
-- **tool** (noun): any of the commands `work`, `features`, `tools`, `measure`, `migrate` and `model`. Kind of: agent. Redefines: cli.
-- **item** (noun): one file of the backlog, `.shop/backlog/b<n>.md`: ... Kind of: file.
-- **status** (attribute of item): Values (adjective): `shaped`, `ready`, `in-batch`, `delivered`, `refused`, `withdrawn`. Values (noun): `idea`, `needs-input`.
-- **commit** (verb, action): a session or a tool records changed files, ... Forms: commits, committed. Frame: agent commits text.
-...
-
-## Relations
-
-| from | word | to | cardinality |
-|---|---|---|---|
-| dependency | on | item | one |
-| item | in | batch | one |
-| task | of | batch | one |
-...
+## Upstreams
 ```
 
-The frontmatter:
-
-- **`id`**: `bounded-context/<owner>/<product>/<context name>`. Every other id in the context starts from this path.
-- **`language: codified-2`**: the language the context is written in. Plugin 0.33 and later read only this.
-- **`imports:`**: the packs the grammar starts from. A pack is a ready-made vocabulary: `cli` (commands, options,
-  exit, refuse), `spec`, `time`. Their words are in [`grammar/packs/`](../../grammar/packs/). A glossary entry that
-  takes a pack's word over says `Redefines: cli`.
-
-The sections:
-
-- **Purpose, Constraints, Composition, Testing**: prose for people. Composition usually lists the capabilities as
-  tables of `capability | narrator | group`.
-- **`## Glossary`**: the words every capability shares, in the same bullet shape as a capability's Terms. The
-  `status` entry above is what makes `` `idea` `` and `` `shaped` `` legal values in g37.
-- **`## Relations`**: rows shared by every capability, in the same table shape.
-- **`## Upstreams`**: the contexts this one asks for things, one bullet each. This repository has none, so here is
-  the shape `work line --upstream` checks, from the plugin's tests:
-
-  ```markdown
-  ## Upstreams
-  - bounded-context/ex.com/prod/up: the upstream, github: ex/up
-  ```
-
-  The `github:` part is where `work request` opens its issue.
+- **`id`**: `bounded-context/` and the context's path: every other id of the context starts from it.
+- **`language: codified-2`**: the language of every file that says nothing else.
+- **`imports:`**: the packs the grammar starts from. `request` (the words of a request and its response), `spec`,
+  `time`; their words are in [`grammar/packs/`](../../grammar/packs/). A vocabulary entry that takes a pack's word over
+  says `Redefines: <pack>`. `imports: [cli]` is refused since 0.38.0 (`v_t21`).
+- **`## Composition`**: the areas of the context, each with its kind (core, supporting, generic) and its
+  capabilities, narrators and groups.
+- **`## Upstreams`**: the contexts this one asks for things, each with its `github:` repository; `work line
+  --upstream` adds one.
 
 ## `spec/universal.md`: true everywhere
 
-Universal conditions are lines that hold in every state of every run. They're written once here and never repeated
-in a capability. Its frontmatter has `retired:` too; its Behaviour is bullets with `U` ids:
+Universal conditions are lines that hold in every state of every request. They're written once here and never
+repeated in a capability. Its frontmatter has `retired:` too; its Behaviour is bullets with `U` ids:
 
 ```markdown
 ---
@@ -305,97 +195,88 @@ title: Universal conditions
 narrator: every trace of every delivery and every tool
 group: guarantees
 language: codified-2
-retired: [U1, U2, U3, U6, U9, U10, U11, U4, U5, U7, U8]
+retired: [U1, U2, U3, U6, U9, U10, U11, U4, U5, U7, U8, U12, U13, U14, U15, U16]
 ---
 ...
 ## Behaviour
 
-- [U12] If a tool refuses a command, then the tool shall exit with an error naming a reason and change nothing.
-- [U13] When `work` writes a transition, `work` shall commit the transition and push the commit of the transition.
-...
+- [U17] If a service refuses a request, then the service shall name a reason and change nothing.
+- [U18] A session shall not change an item.
+- [U19] While a session has a workspace, the session shall change only files in the workspace.
 ```
 
 `spec logic` adds each one to the background of every check, and `spec explain` names it where it applies (the
-"by U12" above). Add one with `work line --universal`.
+"by U17" above). Add one with `work line --universal`.
 
 ## A decision file
 
 A design-decision is one file under `spec/decisions/`, named `<nnnn>-<slug>.md`. `work decision` writes it whole
-and regenerates `spec/decisions/index.md`; don't write one by hand. Here's `0091-one-refusal-path.md`, abridged:
+and regenerates `spec/decisions/index.md`; don't write one by hand. Here's `0104-the-response-envelope.md`, abridged:
 
 ```markdown
 ---
-id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/one-refusal-path
-summary: "Every refusal of every command reaches one base exception, shop_refused.Refused, and leaves through one catch a tool that exits 1 naming the reason and changes nothing."
-date: 2026-11-10
+id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-response-envelope
+summary: "Every operation answers with one envelope of outcome, content, errors and notices, its errors naming business references; a failure of the infrastructure is outside the domain. U16 retires into this decision."
+date: 2026-11-19
 status: accepted
 tier: check
-enforced_by: [tests/scripts/test_refusal_path.py::test_every_refusal_class_reaches_the_one_base, ...]
-verified_by: [check]
-rests_on: [U12]
-by: "the plan for b145, 2026-11-10"
+enforced_by: [tests/scripts/test_domain_envelope.py]
+supersedes: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/u8-is-checked-after-every-scenario-enforced-by-its-test]
 ---
 
-# 0091. One refusal path
+# 0104. The response envelope
 
-## Context
-...
 ## Decision
-Every refusal of every command is a `shop_refused.Refused` ...
+...
 ```
 
 `tier:` is one of `check` (tests named in `enforced_by:` hold it, and `spec decisions --check` runs them),
 `requirement` (requirement lines hold it) or `judgement` (a reviewer holds it). The `## Decision` section is
-standing; the rest of the file is record. A capability's `rests_on:` points at these ids.
+standing; the rest of the file is record. A mechanism (the CLI, git, GitHub issues, pull requests, the files) is a
+decision, never a requirement line. A capability's `rests_on:` points at these ids.
 
 ## The generated feature, beside its lines
 
-`features generate` reads each group and writes one scenario, tagged with the group's id and its lines' ids. Here are
-g37 and g38 again, then what they became in `features/backlog.feature`:
+g14 and g15 again, then what they became in `features/items.feature`:
 
 ```markdown
-### [g37] `work shape` shapes an idea
-- [r37] While the status of an item is `idea`, when the person runs `work shape` on the item, `work` shall set the status of the item to `shaped`.
+### [g14] An idea shaped becomes shaped
+- [r14] While the status of an item is `idea`, when the person shapes the item, the backlog service shall set the status of the item to `shaped`.
 
-### [g38] `work shape` refuses an item that is not an idea
-- [r38] While the status of an item is not `idea`, if the person runs `work shape` on the item, then `work` shall refuse the command and name the status of the item.
+### [g15] Only an idea is shaped
+- [r15] While the status of an item is not `idea`, if the person shapes the item, then the backlog service shall refuse the request and name the item.
 ```
 
 ```gherkin
-# generated from spec/capabilities/backlog.md by features generate; do not edit
-Feature: Backlog
-  Narrator: a person or session keeping the backlog
-  # ... the scenarios before g37
+# generated from spec/capabilities/items.md by features generate; do not edit
+Feature: Items
+  Narrator: the person
 
-  @g37 @r37
-  Scenario: `work shape` shapes an idea
+  # ... the scenarios before g14
+
+  @g14 @r14
+  Scenario: An idea shaped becomes shaped
     Given an item i1
     And the status of the item i1 is `idea`
-    When the person runs `work shape` on the item i1
-    Then `work` sets the status of the item i1 to `shaped`
+    When the person shapes the item i1
+    Then the backlog service sets the status of the item i1 to `shaped`
 
-  @g38 @r38
-  Scenario: `work shape` refuses an item that is not an idea
+  @g15 @r15
+  Scenario: Only an idea is shaped
     Given an item i1
     And the status of the item i1 is not `idea`
-    When the person runs `work shape` on the item i1
-    Then `work` refuses `work shape`
-    And `work` names the status of the item i1
+    When the person shapes the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the item i1
 ```
 
-Read them side by side:
-
-- **While** became the Givens: the item, then its state. "an item" turns into a named instance, `i1`, so later
-  steps can point at it.
-- **When** or **If** became the When.
-- **shall** became the Thens, one a response. "refuse the command and name ..." became two Thens.
-- The group's title became the scenario's name, and `@g38 @r38` tie it back to its lines.
-
-A given block comes first, as a Given with a docstring. Here is batch-measurement's g24, whole:
+The While clause became Givens, the request a When, the response Thens. "this request" is the request the When
+makes. A given block becomes a docstring, and "every" becomes two instances and their Thens, with a third the line
+excludes (g6 of `measurement.md`):
 
 ```gherkin
-  @g24 @r24
-  Scenario: `measure show` prints the stage rows of a measurement whose stage row has no round trip without a round trip
+  @g6 @r6
+  Scenario: A measurement viewed gives no round trip of a stage row that has none
     Given the measurement `m2` holds:
       """
       {"stages": [{"work-item": "cart-1", "stage": "research", "agent": "researcher", "session": "s-1", "turns": 14}], "work_items": [], "totals": {"stages": 1, "sessions": 1, "turns": 14}}
@@ -410,151 +291,125 @@ A given block comes first, as a Given with a docstring. Here is batch-measuremen
     And the measurement m1 has the stage row s3
     And a stage row s4
     And the measurement m1 does not have the stage row s4
-    When the person runs `measure show` on the measurement m1
-    Then `measure` prints the stage row s2
-    And `measure` prints the stage row s3
-    And `measure` does not print the stage row s4
-    And `measure` does not print a round trip
+    When the person views the measurement m1
+    Then the measurement service returns the stage row s2
+    And the measurement service returns the stage row s3
+    And the measurement service does not return the stage row s4
+    And the measurement service does not return a round trip
 ```
 
 The output is byte-stable: generate twice and you get the same file. `features generate --check` prints nothing and
-exits 0 when every feature matches its capability, which makes it a good CI step:
+exits 0 when every feature is current:
 
 ```console
-$ features generate --check backlog
-$ features generate backlog
-wrote features/backlog.feature
+$ features generate --check items
+$ features generate items
+wrote features/items.feature
 ```
-
-Your step definitions bind these steps with pytest-bdd. Run pytest with `-p work_items` and every scenario whose
-requirement is in `unbuilt:` becomes a strict expected failure: red is expected until it's built, and a pass fails
-the run until the id leaves `unbuilt:`.
 
 ## Ids: groups, requirements and `retired:`
 
-Ids are short and local to their file: `g37` and `r37` in `backlog.md`, written `backlog#r37` from elsewhere.
-Universal conditions are `U<n>`. Three rules keep them meaningful:
+Ids are short and local to their file: `g14` and `r14` in `items.md`, written `items#r14` from elsewhere. An id is
+never reused and a line is never edited in place: a changed line gets a new id and the old one goes to `retired:`
+([decision 0085](../../spec/decisions/0085-requirements-retired-never-edited.md)).
 
-1. **A line is never edited in place.** A changed line gets a new id, and the old id goes to `retired:`. A scenario
-   tagged `@r15` always means the same sentence.
-2. **A retired id is never reused.** `retired:` is the list of ids that are gone for good.
-3. **Lines reach `spec/` only through a batch.** You write them on an item; `work batch start` lays them in.
-
-Here is the whole path in a scratch clone of this repository. Say you want `work show` to print the status as well
-as the title. That changes `backlog#r15`, so the new line retires it:
+Here is the whole path in a scratch clone of this repository. Say you want showing an item to give its status as
+well as its title. That changes `items#r12`, so the new line retires it:
 
 ```console
-$ work idea '`work show` prints the status too' --note 'the person wants to see where an item stands beside its title'
-b250 "`work show` prints the status too" idea
+$ work idea 'Showing an item gives its status too' --note 'the person wants to see where an item stands beside its title'
+b250 "Showing an item gives its status too" idea
 $ work shape b250
-b250 "`work show` prints the status too" shaped
-$ work line b250 --into backlog --retires 'backlog#r15' --group '`work show` names an item by its title and status' 'When the person runs `work show` on an item, `work` shall print the title of the item and the status of the item.'
-b250 "`work show` prints the status too": backlog#r43 retires backlog#r15
+b250 "Showing an item gives its status too" shaped
+$ work line b250 --into items --retires 'items#r12' --group 'An item shown gives its title and status' 'When the person shows an item, the backlog service shall return the title of the item and the status of the item.'
+b250 "Showing an item gives its status too": items#r31 retires items#r12
 ```
 
-`work line` gave the line the next free ids of the capability, and the item now holds a block for `backlog`:
+`work line` gave the line the next free ids of the capability, and the item now holds a block for `items`:
 
 ```markdown
 ## Requirements
 
-### backlog
+### items
 
-retired: [r15]
+retired: [r12]
+retires: [r31 r12]
 
-#### [g43] `work show` names an item by its title and status
-- [r43] When the person runs `work show` on an item, `work` shall print the title of the item and the status of the item.
+#### [g31] An item shown gives its title and status
+- [r31] When the person shows an item, the backlog service shall return the title of the item and the status of the item.
 ```
 
-Meanwhile a second item, b251, also took a line for `backlog`. It was written before b250 reached `spec/`, so it got
-`r43` too:
+Meanwhile a second item, b251, also took a line for `items`. It was written before b250 reached `spec/`, so it got
+the same ids. That's fine: `work batch start` renumbers each item's ids past the capability's and the other picked
+items' when it lays them:
 
 ```console
-$ work line b251 --into backlog 'When the person runs `work show` on an item, `work` shall print the provenance of the item.'
-b251 "`work show` prints the provenance": backlog#r43
-```
-
-That's fine. Ids on an item are provisional. When both are rated, readied and picked, **`work batch start`
-renumbers** each item's ids past the capability's live and retired ids and past the items picked before it, and
-says so:
-
-```console
+$ work line b251 --into items --group 'An item shown gives its provenance' 'When the person shows an item, the backlog service shall return the provenance of the item.'
+b251 "Showing an item gives its provenance": items#r31
 $ work batch start
-batch-34 building: t1 b250 "`work show` prints the status too", t2 b251 "`work show` prints the provenance"
-batch brief: .../.shop/worktrees/batch-34-driver/brief.md
-b251 "`work show` prints the provenance" renumbered: backlog#g43 -> backlog#g44, backlog#r43 -> backlog#r44
+batch-34 building: t1 b250 "Showing an item gives its status too", t2 b251 "Showing an item gives its provenance"
+b251 "Showing an item gives its provenance" renumbered: items#g31 -> items#g32, items#r31 -> items#r32
 ```
 
-On the new branch `batch-34`, `backlog.md` changed like this (from `git diff`):
+On the new branch `batch-34`, one commit did four things:
 
-```diff
--retired: [g1, r1, ..., g21, r21]
--unbuilt: []
-+retired: [g1, r1, ..., g21, r21, g15, r15]
-+unbuilt: [r43, r44]
-...
--### [g15] `work show` names an item by its title
--- [r15] When the person runs `work show` on an item, `work` shall print the title of the item.
-...
-+### [g43] `work show` names an item by its title and status
-+- [r43] When the person runs `work show` on an item, `work` shall print the title of the item and the status of the item.
-+
-+### [g44] `work show` prints the provenance
-+- [r44] When the person runs `work show` on an item, `work` shall print the provenance of the item.
-```
-
-Four things happened in one commit:
-
-- `r15` went to `retired:`, and its group `g15` with it, since the group had no line left.
-- `r43` and `r44` went into `unbuilt:`. Their scenarios run as expected failures until the task that builds each
+- `r12` went to `retired:`, and its group `g12` with it, since the group had no line left.
+- `r31` and `r32` went into `unbuilt:`. Their scenarios run as expected failures until the task that builds each
   takes its id out, in the commit that makes it pass.
-- The feature was regenerated: `@g15 @r15` is gone, and `@g43 @r43` and `@g44 @r44` are new.
+- The feature was regenerated: `@g12 @r12` is gone, and `@g31 @r31` and `@g32 @r32` are new.
 - The commit cites both items (`Item: b250`, `Item: b251`).
 
 ## Who writes which file
 
 `spec forms` prints every file form a context keeps, its path, and the command that writes it. Where it says "no
 command yet", it names the plugin's item that will give the form one; `spec forms --check` fails on any form left
-to be written by hand. This is its output at b317, verbatim:
+to be written by hand. This is its output at 0.38.0, verbatim:
 
 ```console
 $ spec forms
-item                      .shop/backlog/b<n>.md                                work idea
-item's requirement line   .shop/backlog/b<n>.md ## Requirements                work line
-item's term bullet        .shop/backlog/b<n>.md ## Requirements                work line --term
-requirement line in spec  spec/capabilities/<name>.md ## Behaviour             work batch start
-batch plan                .shop/batches/<n>/plan.md                            work batch start
-review record             .shop/batches/<n>/review-<k>.md                      work batch reviewed
-defect                    .shop/batches/<n>/defect-<k>.md                      measure defect
-batch measurement         .shop/records/measurements/<date>-<batch>.md         measure batch
-request                   .shop/requests/q<n>.md                               work request
-quote                     .shop/quotes/<n>.md                                  work quote
-design-decision           spec/decisions/<nnnn>-<slug>.md                      work decision
-decisions index           spec/decisions/index.md                              model decisions
-rule catalogue            grammar/rules.md                                     model rules --write
-record                    .shop/records/<date>-<slug>.md                       work record
-records index row         .shop/records/README.md                              work record
-feature                   features/<capability>.feature                        features generate
-plugin version            .shop/plugin-version                                 migrate upgrade
-restated ids              spec/restated.json                                   migrate upgrade
-capability                spec/capabilities/<name>.md                          work line --capability
-glossary term             spec/index.md ## Glossary                            plugin item b13 (no command yet)
-relation row              spec/capabilities/<name>.md ## Relations             work line --relation
-glossary relation row     spec/index.md ## Relations                           plugin item b13 (no command yet)
-universal condition       spec/universal.md                                    work line --universal
-upstream entry            spec/index.md ## Upstreams                           work line --upstream
-given block               spec/capabilities/<name>.md, a group's fenced given  work line --given
-observation               .shop/records/observations.md ## <id>                plugin item b44 (no command yet)
-delivery settings         .shop/delivery.toml                                  plugin item b44 (no command yet)
-design record folder      .shop/records/<date>-<topic>/design.md               plugin item b44 (no command yet)
-plan record folder        .shop/records/<date>-<topic>/plan-<k>.md             plugin item b44 (no command yet)
+item                      .shop/backlog/b<n>.md                                   work idea
+item's requirement line   .shop/backlog/b<n>.md ## Requirements                   work line
+item's chore              .shop/backlog/b<n>.md ## Chore                          work chore
+item's term bullet        .shop/backlog/b<n>.md ## Requirements                   work line --term
+requirement line in spec  spec/capabilities/<name>.md ## Behaviour                work batch start
+batch plan                .shop/batches/<n>/plan.md                               work batch start
+review record             .shop/batches/<n>/review-<k>.md                         work batch reviewed
+defect                    .shop/batches/<n>/defect-<k>.md                         measure defect
+batch measurement         .shop/records/measurements/<date>-<batch>.md            measure batch
+request                   .shop/requests/q<n>.md                                  work request
+quote                     .shop/quotes/<n>.md                                     work quote
+directive                 .shop/directives/<n>.md                                 work directive
+design-decision           spec/decisions/<nnnn>-<slug>.md                         work decision
+decisions index           spec/decisions/index.md                                 spec decisions
+rule catalogue            grammar/rules.md                                        spec rules --write
+record                    .shop/records/<date>-<slug>.md                          work record
+records index row         .shop/records/README.md                                 work record
+feature                   features/<capability>.feature                           features generate
+plugin version            .shop/plugin-version                                    migrate upgrade
+restated ids              spec/restated.json                                      migrate upgrade
+capability                spec/capabilities/<name>.md                             work line --capability
+item's model lines        .shop/backlog/b<n>.md ## Requirements ### <area> model  work line --model
+domain model area         spec/model/<area>.md                                    plugin item b354 (no command yet)
+vocabulary term           spec/vocabulary/<area>.md                               plugin item b13 (no command yet)
+adapter contract          spec/adapters/<port>.toml                               plugin item b355 (no command yet)
+capability moves          spec/moves.json                                         migrate upgrade
+universal condition       spec/universal.md                                       work line --universal
+upstream entry            spec/index.md ## Upstreams                              work line --upstream
+given block               spec/capabilities/<name>.md, a group's fenced given     work line --given
+observation               .shop/records/observations.md ## <id>                   plugin item b44 (no command yet)
+delivery settings         .shop/delivery.toml                                     plugin item b44 (no command yet)
+design record folder      .shop/records/<date>-<topic>/design.md                  plugin item b44 (no command yet)
+plan record folder        .shop/records/<date>-<topic>/plan-<k>.md                plugin item b44 (no command yet)
 ```
 
 In short: a new capability is written on an item by `work line --capability` and reaches `spec/` through
-`work batch start`, as do lines, terms of a capability, relation rows of a capability, given blocks, universal
-conditions and upstreams, each by its `work line` option. A glossary term and a glossary relation row wait on plugin
-item b13, and the prose sections (Implementation, Not yet) are edited by hand. After a hand edit, run `spec check`
-and `spec lexicon --check` to catch a malformed entry.
+`work batch start`, as do lines, model lines and vocabulary entries (`work line --model`, `--relation`, `--term`),
+given blocks, universal conditions and upstreams, each by its `work line` option. A whole model area, a vocabulary
+entry outside an item and an adapter contract wait on plugin items b354, b13 and b355, and the prose sections
+(Implementation, Not yet) are edited by hand. After a hand edit, run `spec check` and `spec lexicon --check` to catch
+a malformed entry.
 
 Next: [writing requirements](../writing-requirements.md) for the language of a line,
-[the commands](commands.md) for every option of `work line` and `features generate`, or
-[the design model](design-model.md) for the rules `spec check` holds these files to.
+[the commands](commands.md) for every option of `work line` and `features generate`,
+[the domain model](domain-model.md) for the model and its words, or [the design model](design-model.md) for the rules
+`spec check` holds these files to.
