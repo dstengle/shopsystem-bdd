@@ -44,6 +44,41 @@ What happened in between:
   When (the request), the shall clause a Then (the response). Nobody wrote the feature file by hand.
 - A developer bound the steps once in pytest-bdd, and the scenario now runs in the suite.
 
+## What a context keeps
+
+A bounded context (one repository's part of a product) keeps its specification in `spec/`, in four parts, and the
+contract of each of its interfaces beside them:
+
+| part | where | what it holds |
+|---|---|---|
+| the domain model | `spec/model/<area>.md` | the structure, no rules: objects with their attributes, lifecycles and relations; services with their operations, each operation's parameters, kinds of outcome and refusal reasons; events and actors |
+| the vocabulary | `spec/vocabulary/<area>.md` | the words a line may use, each naming one element of the model: `shape` names the operation `backlog.shape` |
+| the requirements | `spec/capabilities/<name>.md`, `spec/universal.md` | the business rules, one line each: what a service does when an operation is requested of it |
+| the decisions | `spec/decisions/<nnnn>-<slug>.md` | the design choices, each with how it is held to: by a test, by a requirement line, or by a reviewer's judgement |
+| the adapter contracts | `spec/adapters/` | beside the four: for each operation, how one interface requests it (the CLI's command and options) and how each outcome shows |
+
+**Services and operations.** A line speaks of a service and the operations an actor requests of it: "the person
+shapes the item" is a request of the backlog service's `shape`. Every operation answers with one response (its
+outcome, `done`, `returned`, `refused`, `passed` or `failed`, with its content, errors and notices), whatever the
+interface.
+
+**Adapters and their contracts.** The CLI is one adapter; an HTTP service in front of the same model would be
+another. Each adapter contract maps the operations to its interface and, under each operation, lists the requirement
+lines that govern it, its refusals among them, so the business rules sit where the interface is used. `spec annotate`
+writes those lists from the spec, and `spec check` fails a contract that has fallen behind the lines, or that names
+a command or an option the program does not have.
+
+**The plugin's own language.** The grammar every context's lines are parsed in is the plugin's, no part of a
+context. Its construct catalogue (`grammar/constructs.md`) and rule catalogue (`grammar/rules.md`) are part of this
+repository's specification: each entry says what its construct or rule is for and the items that brought and changed
+it, and its example is its test.
+
+**Records are kept, never cited.** An analysis, a design or a plan is kept under `.shop/records/` for good, and no
+live part of the system stands on one: an item cites the person's quoted words, a request or a decision. A record
+a choice must rest on is restated as a decision.
+
+[Concepts](docs/concepts.md) has each of these with an example.
+
 ## How work moves
 
 ```mermaid
@@ -97,6 +132,8 @@ You need:
 | follow one feature from an idea to a merged batch | [The tour](docs/tour.md) |
 | know what to say to Claude, and what you will be asked | [Talking with Claude](docs/talking-with-claude.md) |
 | write and review requirement lines | [Writing requirements](docs/writing-requirements.md) |
+| know the four parts of a spec, adapters, catalogues and records | [Concepts](docs/concepts.md) |
+| map the operations to an interface and keep each operation's lines beside it | [Adapter contracts](docs/reference/adapters.md) |
 | look up a command | [Commands](docs/reference/commands.md) |
 | move a repository from an older release to this one | [Upgrading](docs/upgrading.md) |
 

@@ -21,6 +21,29 @@ been renamed or retired since.
 | 0.30 | [0.30.0](#0300-released-as-100-codified-requirements) |
 | 0.29 and before | [0.29.0](#0290-glossary-proposals-delegations-given-late-and-fewer-stops-from-outside-a-work-item) · [0.28.3](#0283-a-branch-review-that-runs-nothing) · [0.28.2](#0282-answers-a-round-cannot-hold-go-back-to-integration) · [0.28.1](#0281-work-run-stops-visibly-on-questions-and-spends-less-agent-time) · [0.28.0](#0280-one-set-of-request-commands-work-list-and-work-show-and-answers-that-redraft) · [0.27.0](#0270-transitions-from-how-a-session-ended-and-the-turn-of-an-accepted-request) · [0.26.0](#0260-requests-and-the-context-loop) · [0.25.0](#0250-work-items-side-by-side-answers-and-guarantees) · [0.24.0](#0240-work-items-named-by-ids-and-upgrades-between-plugin-releases) · [0.23.1](#0231---work-item-keeps-tests-that-are-not-scenarios) · [0.23.0](#0230-faults-settled-query-output-as-json-the-session-keeps-the-gate-measurement-on-v3) · [0.22.0](#0220-one-requirement-per-scenario-faults-and-the-lessons-of-a-blind-formulation) · [0.21.0](#0210-the-final-layout-and-delivery-by-work-run) |
 
+## Unreleased
+
+- **Each adapter contract's operation carries its business rules** (b368): `spec annotate` writes under each
+  operation of `spec/adapters/cli.toml` the requirement lines that govern it (a line governs an operation when its
+  trigger requests it), its refusals among them, as `requirements = ["<capability>#r<n>: <line>", ...]`; `--check`
+  names a stale contract and writes nothing. `spec check` fails an operation that misses a governing line (`v_a5`)
+  or holds one that no longer governs it (`v_a6`). [Adapter contracts](docs/reference/adapters.md).
+- **The capability reading is renamed parsing** (b369), its construct-by-construct lines replaced by the language
+  service's general behaviour: a line parsed to one meaning or refused naming why, its logical form returned, a line
+  that uses a construct the construct catalogue has no entry of refused naming the construct.
+- **The catalogues are specification** (b370): the construct catalogue (`grammar/constructs.md`) and the rule
+  catalogue (`grammar/rules.md`) specify the language and the checks, each entry with a purpose, `Since:` and
+  `Changed:` naming delivered items (or, for the 18 entries from before items were tracked, the release `0.38.0`, a
+  section of this file), and its example as its test; the purposes and items are kept in
+  `grammar/catalogue-entries.toml`. `spec check` holds them: `v_c1` a line naming a rule with no entry, `v_c2` an
+  entry with no purpose, `v_c3` one naming neither an item nor a release, `v_c4` one naming an item not delivered.
+  Checking's rule-by-rule lines are retired for general ones (a violation of an error rule fails the check naming
+  the rule, a warning is named and the request completes). [The catalogues](docs/reference/design-model.md#the-catalogues-are-specification).
+- **The documentation revised** (b371) around the specification's four parts (domain model, vocabulary,
+  requirements, decisions), services and operations, adapters and their contracts, the catalogues and the records
+  policy: the [README](README.md), [concepts](docs/concepts.md), [getting started](docs/getting-started.md), the
+  references, recipes, upgrading and [the notes-cli example](docs/examples/notes-cli/README.md).
+
 ## 0.38.0: the domain contract
 
 A requirement used to say how a command-line tool is run: "When the person runs `work shape` on the item, `work`
