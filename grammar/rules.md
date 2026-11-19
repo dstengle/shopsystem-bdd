@@ -1138,6 +1138,160 @@ an attribute does not say whether its values are adjectives or nouns (Values (ad
   typed("ctx").
   ```
 
+## v_t18
+
+a vocabulary entry names no element of the domain model
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/model_domain.py`, `scripts/spec_vocabulary.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  elementless("note","spec/vocabulary/notes.md: no element").
+  ```
+
+- Passes on:
+
+  ```prolog
+  category("note","kind").
+  ```
+
+## v_t19
+
+a vocabulary entry names an element the domain model does not declare
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/model_domain.py`, `scripts/spec_vocabulary.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  unresolved("shelf","spec/vocabulary/notes.md: object shelf").
+  ```
+
+- Passes on:
+
+  ```prolog
+  category("shelf","kind").
+  ```
+
+## v_t20
+
+two entries of one vocabulary layer name one element, and neither is a form of the other
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/model_domain.py`, `scripts/spec_vocabulary.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  named_twice("memo","spec/vocabulary/notes.md: note and memo both name object note").
+  ```
+
+- Passes on:
+
+  ```prolog
+  category("memo","kind").
+  ```
+
+## v_t21
+
+a context with a domain model imports the retired pack cli: run `migrate upgrade`
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/model_domain.py`, `scripts/spec_vocabulary.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  retired_import("ctx","cli").
+  ```
+
+- Passes on:
+
+  ```prolog
+  typed("ctx").
+  ```
+
+## v_m1
+
+a requirement uses a word that names no element through the vocabulary its capability's area reads
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  foreign_term("c#r1","finding","finding is a word of analysis, which the area notes does not read").
+  ```
+
+- Passes on:
+
+  ```prolog
+  parsed("c#r1").
+  ```
+
+## v_m8
+
+the domain model breaks its own rules: a relation to an undeclared object, a transition over an undeclared value, two operations of one name in a service, an event raised by no operation
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`, `scripts/domain_model_check.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  model_problem("note.carries","the relation carries of note names tag, which the model does not declare").
+  ```
+
+- Passes on:
+
+  ```prolog
+  typed("ctx").
+  ```
+
+## v_r1
+
+an item cites a record in its `source:`: an item's provenance cites quotes, requests and decisions, never a record
+
+- Severity: violation
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  cites_record("b400","record/x/y/z/2026-11-19-plan").
+  new_item("b400").
+  ```
+
+- Passes on:
+
+  ```prolog
+  cites_record("b300","record/x/y/z/2026-11-19-plan").
+  ```
+
+## w_r1
+
+an item older than the records policy cites a record in its `source:` (history, kept as it is)
+
+- Severity: warning
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  cites_record("b300","record/x/y/z/2026-11-19-plan").
+  ```
+
+- Passes on:
+
+  ```prolog
+  cites_record("b400","record/x/y/z/2026-11-19-plan").
+  new_item("b400").
+  ```
+
 ## v_p0
 
 a spec file is not codified (no `language: codified-2`, or a capability in `codified-1`): run `migrate upgrade`

@@ -175,6 +175,7 @@ class SpecReading:
                 self.req_text[qid] = q.text
                 self.group_of[qid] = gid
                 self.parsed(qid, q.text)
+                self.domain_line(path, qid, q.text)     # v_m1 (model_domain)
                 for word in spec_example.parameters(q.text, self.example_constants()):     # w_example (I18)
                     self.fact("exemplified", qid, word)
             for n, rid, text in g.odd:      # v15a with no id, v15b with an id used before

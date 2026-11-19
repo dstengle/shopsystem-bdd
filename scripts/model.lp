@@ -44,6 +44,12 @@
 #defined linearises/2.            % linearises(T, Words): term T is written Words in the grammar
 #defined frameless/1.             % frameless(T): verb T's entry gives no frame that reads (spec_frames)
 #defined relational/1.            % relational(T): condition T's definition names another kind with `the`
+% the domain contract: the domain model, the vocabulary naming its elements, the records policy (model_domain)
+#defined model_problem/2.         % model_problem(S, Why): the domain model breaks its own rules at S (domain_model_check)
+#defined elementless/2.  #defined unresolved/2.  #defined named_twice/2.  #defined retired_import/2.
+#defined foreign_term/3.          % foreign_term(Q, W, Why): Q uses W, a word of no vocabulary layer its area reads
+#defined cites_record/2.          % cites_record(I, R): item I's source: names the record R
+#defined new_item/1.              % new_item(I): item I came after the records policy
 % the codified spec (C3, C5-C7, C26, C28)
 #defined member_of/2.             % member_of(Q, G): requirement Q is a statement of group G
 #defined generates/2.             % generates(G, S): scenario S is generated from group G
@@ -386,6 +392,42 @@ label("v_t17", "`spec/index.md` imports a pack that neither the plugin nor the b
 % fail v_t17: misimported("ctx","p1").
 % pass v_t17: typed("ctx").
 v_t17(C, P)   :- misimported(C, P).
+label("v_t18", "a vocabulary entry names no element of the domain model").
+% fail v_t18: elementless("note","spec/vocabulary/notes.md: no element").
+% pass v_t18: category("note","kind").
+v_t18(T, Why) :- elementless(T, Why).
+label("v_t19", "a vocabulary entry names an element the domain model does not declare").
+% fail v_t19: unresolved("shelf","spec/vocabulary/notes.md: object shelf").
+% pass v_t19: category("shelf","kind").
+v_t19(T, Why) :- unresolved(T, Why).
+label("v_t20", "two entries of one vocabulary layer name one element, and neither is a form of the other").
+% fail v_t20: named_twice("memo","spec/vocabulary/notes.md: note and memo both name object note").
+% pass v_t20: category("memo","kind").
+v_t20(T, Why) :- named_twice(T, Why).
+label("v_t21", "a context with a domain model imports the retired pack cli: run `migrate upgrade`").
+% fail v_t21: retired_import("ctx","cli").
+% pass v_t21: typed("ctx").
+v_t21(C, P)   :- retired_import(C, P).
+
+% ---------------------------------------------------------------- the domain model (the domain contract, §5.5)
+label("v_m1", "a requirement uses a word that names no element through the vocabulary its capability's area reads").
+% fail v_m1: foreign_term("c#r1","finding","finding is a word of analysis, which the area notes does not read").
+% pass v_m1: parsed("c#r1").
+v_m1(Q, W, Why) :- foreign_term(Q, W, Why).
+label("v_m8", "the domain model breaks its own rules: a relation to an undeclared object, a transition over an undeclared value, two operations of one name in a service, an event raised by no operation").
+% fail v_m8: model_problem("note.carries","the relation carries of note names tag, which the model does not declare").
+% pass v_m8: typed("ctx").
+v_m8(S, Why)  :- model_problem(S, Why).
+
+% ---------------------------------------------------------------- records (the domain contract, §8)
+label("v_r1", "an item cites a record in its `source:`: an item's provenance cites quotes, requests and decisions, never a record").
+% fail v_r1: cites_record("b400","record/x/y/z/2026-11-19-plan"). new_item("b400").
+% pass v_r1: cites_record("b300","record/x/y/z/2026-11-19-plan").
+v_r1(I, R)    :- cites_record(I, R), new_item(I).
+label("w_r1", "an item older than the records policy cites a record in its `source:` (history, kept as it is)").
+% fail w_r1: cites_record("b300","record/x/y/z/2026-11-19-plan").
+% pass w_r1: cites_record("b400","record/x/y/z/2026-11-19-plan"). new_item("b400").
+w_r1(I, R)    :- cites_record(I, R), not new_item(I).
 
 % ---------------------------------------------------------------- the parse (C2, C25)
 % Every file of the spec is codified (§13.4): the 0.29 reader is gone, so `migrate upgrade` converts one that is not.
@@ -455,7 +497,8 @@ w_example(Q, L)    :- exemplified(Q, L).
 #show v_d6/1. #show v_d7/1. #show v_d8/2. #show v_d9/2.
 #show v17/1. #show v18d/1.
 #show v_t1/3. #show v_t2/1. #show v_t3/1. #show v_t4/1. #show v_t5/1. #show v_t6/2. #show v_t11/1. #show v_t12/1. #show v_t13/2. #show v_t14/1. #show v_t15/1.
-#show v_t16/2. #show v_t17/2.
+#show v_t16/2. #show v_t17/2. #show v_t18/2. #show v_t19/2. #show v_t20/2. #show v_t21/2.
+#show v_m1/3. #show v_m8/2. #show v_r1/2. #show w_r1/2.
 #show v_p0/1. #show v_p1/2. #show v_p2/1. #show v_p3/2.
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
 #show w_many_requests/1. #show w_untiered/1. #show w_unrouted/1. #show w_example/2. #show w_value_kind/1.
