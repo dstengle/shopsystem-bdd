@@ -1045,6 +1045,7 @@ shall [x1: agent the person (constant), x2: command `work start` (parameter), x3
 a verb that takes nothing after it (the request pack's start)
 
 - Purpose: Lets a verb stand alone with no object, for acts like a person starting that involve nothing else.
+- Since: 0.38.0
 - Form: <np> <verb>
 - Functions: `frame:intransitive`
 - Cited by: no line
@@ -1067,6 +1068,7 @@ shall [x1: agent the person (constant), x2: service the decisions service (const
 a request with its parameters, given after "with" and absent after "without", in a context with a domain model (the domain contract design, §5.1)
 
 - Purpose: States which parameters a request carries and which it omits, so a line can depend on what was given.
+- Since: 0.38.0
 - Form: <actor> <operation verb> <np> with the <parameter> <value> and without a <parameter>
 - Functions: `q_\w+|o_\w+|k_\w+_Request|p_\w+_NP`
 - Cited by: no line

@@ -4,7 +4,9 @@
 # `spec check` fails an entry with no purpose or no item, or one naming an item that is not delivered. A batch that
 # adds or changes a rule or a construct adds its item here. The first filling (b370) read each entry's history off
 # git: the commits that added or changed its label, examples or rule (scripts/model.lp, scripts/model_rules.py) or
-# its table entry (scripts/model_constructs_table.py), and the items they cite.
+# its table entry (scripts/model_constructs_table.py), and the items they cite; an entry whose commits cite no item
+# (work from before items were tracked) names the release whose tag first contains the commit that added it, a
+# section of CHANGELOG.md. A new or changed entry names an item.
 
 [rules.v2]
 purpose = "The lasting structure of the spec links only lasting artifacts, so nothing it stands on can be closed, delivered or thrown away."
@@ -278,6 +280,8 @@ changed = []
 
 [rules.v_t19]
 purpose = "Vocabulary refers only to declared model elements, so a word never names something that does not exist."
+since = "0.38.0"
+changed = []
 
 [rules.v_t20]
 purpose = "One element has one name per vocabulary layer, so synonyms do not split how lines talk about it."
@@ -286,24 +290,38 @@ changed = []
 
 [rules.v_t21]
 purpose = "A context with a domain model no longer depends on the retired cli pack, whose words the model now supplies."
+since = "0.38.0"
+changed = []
 
 [rules.v_m1]
 purpose = "A requirement uses only words its area can see, so each capability stays within its part of the domain."
+since = "0.38.0"
+changed = []
 
 [rules.v_m8]
 purpose = "The domain model is internally consistent, so the vocabulary, contracts and lines built on it rest on solid ground."
+since = "0.38.0"
+changed = []
 
 [rules.v_a1]
 purpose = "Every operation is reachable through the CLI contract or marked unexposed, so no behaviour is accidentally left out of the interface."
+since = "0.38.0"
+changed = []
 
 [rules.v_a2]
 purpose = "The CLI contract maps only to declared operations and parameters, so the interface never promises what the model lacks."
+since = "0.38.0"
+changed = []
 
 [rules.v_a3]
 purpose = "The CLI contract matches the program, so documented commands and options exist."
+since = "0.38.0"
+changed = []
 
 [rules.v_a4]
 purpose = "Every command and option of the program is accounted for, so the interface has no undocumented behaviour."
+since = "0.38.0"
+changed = []
 
 [rules.v_a5]
 purpose = "Each operation lists every requirement that governs it, so the contract shows which lines constrain it."
@@ -337,27 +355,43 @@ changed = []
 
 [rules.v_m2]
 purpose = "Requests use only the parameters and values their operation accepts, so lines describe calls that can really be made."
+since = "0.38.0"
+changed = []
 
 [rules.v_m3]
 purpose = "Only the actors an operation allows are said to request it, so lines respect who may do what."
+since = "0.38.0"
+changed = []
 
 [rules.v_m4]
 purpose = "Every refusal an operation declares is specified by a line, so no refusal goes untested or undocumented."
+since = "0.38.0"
+changed = []
 
 [rules.w_m5]
 purpose = "Each lifecycle transition is caused by some line, so the model holds no step nothing can ever take."
+since = "0.38.0"
+changed = []
 
 [rules.v_m6]
 purpose = "Lines move a status only along transitions its lifecycle allows, so the spec cannot contradict its own model."
+since = "0.38.0"
+changed = []
 
 [rules.v_m7]
 purpose = "Every declared operation is requested by some line, so the model holds no behaviour the spec never states."
+since = "0.38.0"
+changed = []
 
 [rules.v_r1]
 purpose = "An item's provenance rests on primary sources (quotes, requests, decisions), not on derived write-ups."
+since = "0.38.0"
+changed = []
 
 [rules.w_r1]
 purpose = "Older items citing records are flagged but kept, so history is preserved while the policy holds for new items."
+since = "0.38.0"
+changed = []
 
 [rules.v_p0]
 purpose = "Every spec file is in the current controlled language, so every line can be parsed, checked and tested."
@@ -681,9 +715,13 @@ changed = []
 
 [constructs.intransitive]
 purpose = "Lets a verb stand alone with no object, for acts like a person starting that involve nothing else."
+since = "0.38.0"
+changed = []
 
 [constructs.request-params]
 purpose = "States which parameters a request carries and which it omits, so a line can depend on what was given."
+since = "0.38.0"
+changed = []
 
 [constructs.of-relation]
 purpose = "Reaches a thing through a relation, such as the worktree of a session, without a separate condition."

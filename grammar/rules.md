@@ -1277,6 +1277,7 @@ a vocabulary entry names no element of the domain model
 a vocabulary entry names an element the domain model does not declare
 
 - Purpose: Vocabulary refers only to declared model elements, so a word never names something that does not exist.
+- Since: 0.38.0
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/model_domain.py`, `scripts/spec_vocabulary.py`
 - Cited by: no line
@@ -1318,6 +1319,7 @@ two entries of one vocabulary layer name one element, and neither is a form of t
 a context with a domain model imports the retired pack cli: run `migrate upgrade`
 
 - Purpose: A context with a domain model no longer depends on the retired cli pack, whose words the model now supplies.
+- Since: 0.38.0
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/model_domain.py`, `scripts/spec_vocabulary.py`
 - Cited by: no line
@@ -1338,6 +1340,7 @@ a context with a domain model imports the retired pack cli: run `migrate upgrade
 a requirement uses a word that names no element through the vocabulary its capability's area reads
 
 - Purpose: A requirement uses only words its area can see, so each capability stays within its part of the domain.
+- Since: 0.38.0
 - Severity: error
 - Implemented in: `scripts/model.lp`
 - Cited by: no line
@@ -1358,6 +1361,7 @@ a requirement uses a word that names no element through the vocabulary its capab
 the domain model breaks its own rules: a relation to an undeclared object, a transition over an undeclared value, two operations of one name in a service, an event raised by no operation
 
 - Purpose: The domain model is internally consistent, so the vocabulary, contracts and lines built on it rest on solid ground.
+- Since: 0.38.0
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/domain_model_check.py`
 - Cited by: no line
@@ -1378,6 +1382,7 @@ the domain model breaks its own rules: a relation to an undeclared object, a tra
 an operation of the domain model has no table in the CLI contract and is not unexposed
 
 - Purpose: Every operation is reachable through the CLI contract or marked unexposed, so no behaviour is accidentally left out of the interface.
+- Since: 0.38.0
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/adapter_cli_check.py`
 - Cited by: no line
@@ -1398,6 +1403,7 @@ an operation of the domain model has no table in the CLI contract and is not une
 the CLI contract names an operation the model does not declare, or a parameter its operation does not declare
 
 - Purpose: The CLI contract maps only to declared operations and parameters, so the interface never promises what the model lacks.
+- Since: 0.38.0
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/adapter_cli_check.py`
 - Cited by: no line
@@ -1418,6 +1424,7 @@ the CLI contract names an operation the model does not declare, or a parameter i
 the CLI contract names a command or an option the program's argparse lacks
 
 - Purpose: The CLI contract matches the program, so documented commands and options exist.
+- Since: 0.38.0
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/adapter_cli_check.py`
 - Cited by: no line
@@ -1438,6 +1445,7 @@ the CLI contract names a command or an option the program's argparse lacks
 a command or an option of the program's argparse is named by no table of the CLI contract and is not cli-only
 
 - Purpose: Every command and option of the program is accounted for, so the interface has no undocumented behaviour.
+- Since: 0.38.0
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/adapter_cli_check.py`
 - Cited by: no line
@@ -1597,6 +1605,7 @@ a catalogue entry mentions an item that is not delivered
 a request names a parameter its operation does not declare, or a value outside the parameter's values
 
 - Purpose: Requests use only the parameters and values their operation accepts, so lines describe calls that can really be made.
+- Since: 0.38.0
 - Severity: error
 - Implemented in: `scripts/model.lp`
 - Cited by: no line
@@ -1621,6 +1630,7 @@ a request names a parameter its operation does not declare, or a value outside t
 a requester the operation's actors do not include
 
 - Purpose: Only the actors an operation allows are said to request it, so lines respect who may do what.
+- Since: 0.38.0
 - Severity: error
 - Implemented in: `scripts/model.lp`
 - Cited by: no line
@@ -1643,6 +1653,7 @@ a requester the operation's actors do not include
 an operation declares a refusal reason that no line states
 
 - Purpose: Every refusal an operation declares is specified by a line, so no refusal goes untested or undocumented.
+- Since: 0.38.0
 - Severity: error
 - Implemented in: `scripts/model.lp`
 - Cited by: no line
@@ -1664,6 +1675,7 @@ an operation declares a refusal reason that no line states
 a lifecycle transition no line causes
 
 - Purpose: Each lifecycle transition is caused by some line, so the model holds no step nothing can ever take.
+- Since: 0.38.0
 - Severity: warning
 - Implemented in: `scripts/model.lp`
 - Cited by: no line
@@ -1685,6 +1697,7 @@ a lifecycle transition no line causes
 a line sets a status by a transition its lifecycle does not allow
 
 - Purpose: Lines move a status only along transitions its lifecycle allows, so the spec cannot contradict its own model.
+- Since: 0.38.0
 - Severity: error
 - Implemented in: `scripts/model.lp`
 - Cited by: no line
@@ -1709,6 +1722,7 @@ a line sets a status by a transition its lifecycle does not allow
 an operation no line requests
 
 - Purpose: Every declared operation is requested by some line, so the model holds no behaviour the spec never states.
+- Since: 0.38.0
 - Severity: error
 - Implemented in: `scripts/model.lp`
 - Cited by: no line
@@ -1730,6 +1744,7 @@ an operation no line requests
 an item cites a record in its `source:`: an item's provenance cites quotes, requests and decisions, never a record
 
 - Purpose: An item's provenance rests on primary sources (quotes, requests, decisions), not on derived write-ups.
+- Since: 0.38.0
 - Severity: error
 - Implemented in: `scripts/model.lp`
 - Cited by: no line
@@ -1751,6 +1766,7 @@ an item cites a record in its `source:`: an item's provenance cites quotes, requ
 an item older than the records policy cites a record in its `source:` (history, kept as it is)
 
 - Purpose: Older items citing records are flagged but kept, so history is preserved while the policy holds for new items.
+- Since: 0.38.0
 - Severity: warning
 - Implemented in: `scripts/model.lp`
 - Cited by: no line
