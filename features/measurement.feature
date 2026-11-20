@@ -6,6 +6,12 @@ Feature: Measurement
   Scenario: A merged batch measured keeps its time, tokens and cost
     Given a batch b1
     And the status of the batch b1 is `merged`
+    And a wall time w1
+    And the batch b1 has the wall time w1
+    And a session time s1
+    And the batch b1 has the session time s1
+    And a token t1
+    And the batch b1 has the token t1
     And a role r1
     And the batch b1 has the role r1
     And a role r2
@@ -14,11 +20,8 @@ Feature: Measurement
     Then the measurement service keeps the measurement m1
     And the batch b1 has the measurement m1
     And the measurement service returns the wall time w1
-    And the batch b1 has the wall time w1
     And the measurement service returns the session time s1
-    And the batch b1 has the session time s1
     And the measurement service returns the token t1
-    And the batch b1 has the token t1
     And the measurement service returns the cost c1
     And the role r1 has the cost c1
     And the measurement service returns the cost c2
@@ -90,6 +93,8 @@ Feature: Measurement
     And the stage row s1 has the round trip r1
     And a measurement m1
     And the measurement m1 has the stage row s1
+    And a total row t1
+    And the measurement m1 has the total row t1
     And a round trip r2
     And the stage row s1 has the round trip r2
     And a round trip r3
@@ -106,7 +111,6 @@ Feature: Measurement
     And the measurement service returns the stage row s3
     And the measurement service does not return the stage row s4
     And the measurement service returns the total row t1
-    And the measurement m1 has the total row t1
 
   @g6 @r6
   Scenario: A measurement viewed gives no round trip of a stage row that has none

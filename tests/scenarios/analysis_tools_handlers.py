@@ -181,6 +181,8 @@ def given_has(step):
         function(step, step.names[-1], "nowhere")
     elif step.nps[0].startswith("the function"):
         named(step)[step.names[0]] = "src/cart.py"
+    elif step.nps[0].startswith(("the pip command", "the heading")):    # what the run shows of the tool (b416)
+        step.context.setdefault("owned", {})[step.names[-1]] = (step.subject, step.nps[0])
     else:
         named(step)[step.names[0]] = "ruff"
         stand_in(step)["ruff"] = FINDING

@@ -156,9 +156,10 @@ Feature: Consistency
     And a capability c1
     And the capability c1 has the requirement r1
     And the requirement r1 conforms to the language reference
+    And a translation t1
+    And the requirement r1 has the translation t1
     When the person examines this specification with the capability c1
     Then the specification service returns the translation t1
-    And the requirement r1 has the translation t1
 
   @g15 @r15
   Scenario: `model logic` translates only over a relation in a response
@@ -167,9 +168,10 @@ Feature: Consistency
     And the capability c1 has the requirement r1
     And the requirement r1 uses `only`
     And the requirement r1 uses `holds-relation`
+    And a translation t1
+    And the requirement r1 has the translation t1
     When the person examines this specification with the capability c1
     Then the specification service returns the translation t1
-    And the requirement r1 has the translation t1
 
   @g16 @r16
   Scenario: `model logic` translates a count over a relation in a response
@@ -178,9 +180,10 @@ Feature: Consistency
     And the capability c1 has the requirement r1
     And the requirement r1 uses `count`
     And the requirement r1 uses `holds-relation`
+    And a translation t1
+    And the requirement r1 has the translation t1
     When the person examines this specification with the capability c1
     Then the specification service returns the translation t1
-    And the requirement r1 has the translation t1
 
   @g17 @r17
   Scenario: `model logic` names a requirement it has no translation of
@@ -338,9 +341,10 @@ Feature: Consistency
     And the requirement r1 has the precondition p1
     And the precondition p1 uses `every`
     And the precondition p1 uses `not-condition`
+    And a translation t1
+    And the requirement r1 has the translation t1
     When the person examines this specification with the capability c1
     Then the specification service returns the translation t1
-    And the requirement r1 has the translation t1
 
   @g27 @r27
   Scenario: `model logic` finds no clash between an object that holds nothing and a forbidden object that holds a thing
@@ -438,6 +442,7 @@ Feature: Consistency
     And the requirement r1 has the precondition p1
     And the precondition p1 uses `holds-exactly`
     And the precondition p1 uses `rc-subject`
+    And a translation t1
+    And the requirement r1 has the translation t1
     When the person examines this specification with the capability c1
     Then the specification service returns the translation t1
-    And the requirement r1 has the translation t1

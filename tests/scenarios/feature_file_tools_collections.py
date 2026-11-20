@@ -5,7 +5,8 @@ each must hold.
 
 `kind` picks the lines a scenario's Givens describe (`LINES`' key); `check` reads the feature back for its Then: a
 counter-example (r117-r119, r128, r134), the precondition satisfied (r114, r129), the boundary of a count (r115), each instance a Given
-introduces (r116; of a printed thing's holds and of an order, r131, r132) and no step that asserts an act `only` allows (r118)."""
+introduces (r116; of a printed thing's holds and of an order, r131, r132; of a thing a response names by its
+owner, scenarios#r33) and no step that asserts an act `only` allows (r118)."""
 import re
 
 # (line, [patterns its scenario must hold], [patterns it must not])
@@ -74,6 +75,9 @@ LINES = {
     "ordered": [    # b286: the order-by example, each member brought in
         (("When the person runs `work start`, `work` shall print a worktree that holds a file, ordered by version, in "
           "descending order."), [], [])],
+    "owned": [      # b416: the thing a response names by its owner, a trigger's thing, brought in with its row
+        ("When the person runs `work status` on a stage, `work` shall print the lines of the stage.", [], []),
+        ("When the person runs `work status` on a session, `work` shall print the worktree of the session.", [], [])],
 }
 
 
@@ -93,6 +97,8 @@ def kind(w, K):
             return "ordered"
         if {("use", "requirement", "`holds-relation`"), ("use", "requirement", "`rc-subject`")} <= facts:
             return "held"
+        if ("use", "requirement", "`of-relation`") in facts:     # b416
+            return "owned"
     for fact, name in ((("use", "precondition", "`every`"), "satisfy"), (("use", "requirement", "`no-noun`"), "noholds"),
                        (("holds", "precondition", "count"), "boundary"),
                        (("use", "requirement", "`two`"), "two"), (("has", "requirement", "upper bound"), "upper"),
