@@ -3,6 +3,7 @@ in the git dir for `work quote`, never committed, nothing printed, never failing
 import json
 import statistics
 import subprocess
+import sys
 import time
 
 import conversation_prompt as P
@@ -35,7 +36,8 @@ def shopped(repo):
     return repo
 
 
-def test_the_hook_keeps_the_session_for_work_quote(backlog_repo, store):
+@pytest.mark.usefixtures("store")
+def test_the_hook_keeps_the_session_for_work_quote(backlog_repo):
     shopped(backlog_repo)
     path = T.write(project_dir(backlog_repo), "s-1", T.CONVERSATION)
     done = hook(backlog_repo, prompt("s-1", path))
@@ -56,7 +58,6 @@ CASES = {
     "no keys": ("{}", "repo", None),
     "not strings": ('{"session_id": 3, "transcript_path": "x"}', "repo", None),
     "outside git": (prompt("s-1", "x"), "outside", None),
-    "no .shop": (prompt("s-1", "x"), "bare", None),
     "git dir unwritable": (prompt("s-1", "x"), "repo", gitdir_file),
 }
 
@@ -78,7 +79,31 @@ def test_the_prompt_hook_never_fails(backlog_repo, tmp_path_factory, case):
     assert not (cwd / "shopsystem").exists() and not (backlog_repo / "shopsystem").exists()
 
 
-def test_the_pointer_is_the_last_prompts_session(backlog_repo, store):
+@pytest.mark.usefixtures("store")
+def test_a_repository_without_a_shop_keeps_the_session(tmp_path):
+    """b417: the turn that runs `migrate init` in a fresh repository keeps its session, so `work quote` needs no
+    --transcript there."""
+    repo = tmp_path / "fresh"
+    repo.mkdir()
+    for args in (("init", "-q", "-b", "main"), ("config", "user.name", "T"), ("config", "user.email", "t@example.com"),
+                 ("config", "commit.gpgsign", "false")):
+        git(repo, *args)
+    path = T.write(project_dir(repo), "s-1", T.CONVERSATION)
+    done = hook(repo, prompt("s-1", path))
+    assert (done.returncode, done.stdout, done.stderr) == (0, "", "")
+    assert git(repo, "status", "--porcelain") == ""
+    assert P.kept(repo) == ("s-1", str(path))
+    done = subprocess.run([sys.executable, str(T.Path(__file__).resolve().parents[2] / "scripts" / "migrate"), "init",
+                           "--id", "bounded-context/example.org/checklists/checklists-cli"], cwd=repo,
+                          capture_output=True, text=True, timeout=60)
+    assert done.returncode == 0, done.stderr
+    done = work(repo, "quote", T.TEXTS[2])
+    assert done.returncode == 0, done.stderr
+    assert "\nsession: s-1\n" in (repo / ".shop/quotes/1.md").read_text()
+
+
+@pytest.mark.usefixtures("store")
+def test_the_pointer_is_the_last_prompts_session(backlog_repo):
     """Review Focus 5."""
     shopped(backlog_repo)
     one = T.write(project_dir(backlog_repo), "s-1", T.CONVERSATION)
@@ -92,7 +117,8 @@ def test_the_pointer_is_the_last_prompts_session(backlog_repo, store):
     assert done.returncode == 0, done.stderr
 
 
-def test_a_stale_pointer_is_refused_naming_its_path(backlog_repo, store):
+@pytest.mark.usefixtures("store")
+def test_a_stale_pointer_is_refused_naming_its_path(backlog_repo):
     """Review Focus 5."""
     shopped(backlog_repo)
     path = T.write(project_dir(backlog_repo), "s-1", T.CONVERSATION)
@@ -102,7 +128,8 @@ def test_a_stale_pointer_is_refused_naming_its_path(backlog_repo, store):
     assert done.returncode == 1 and str(path) in done.stderr, done.stderr
 
 
-def test_no_session_known_is_refused(backlog_repo, store):
+@pytest.mark.usefixtures("store")
+def test_no_session_known_is_refused(backlog_repo):
     done = work(backlog_repo, "quote", T.TEXTS[2])
     assert done.returncode == 1
     assert "work quote --hook" in done.stderr and "--session" in done.stderr, done.stderr
@@ -154,7 +181,8 @@ def test_the_hook_is_wired():
 
 
 @pytest.mark.timing
-def test_the_prompt_hook_is_fast(backlog_repo, store):
+@pytest.mark.usefixtures("store")
+def test_the_prompt_hook_is_fast(backlog_repo):
     """Review Focus 3: the hook's wall time on 200 items and 20 batches, the median of three runs."""
     T.crowded(backlog_repo)
     path = T.write(project_dir(backlog_repo), "s-1", T.CONVERSATION)
