@@ -28,7 +28,6 @@ area: upgrades
 - **restated file** (noun) → object restated file. The file `spec/restated.json`, the 0.29 requirements by id.
 - **frozen notice** (noun) → object frozen notice. The file `.shop/work/FROZEN.md`, which says that the queue of plugin 0.30 is frozen.
 - **frozen request** (noun) → object frozen request. A request of plugin 0.30 under `.shop/work/requests/`.
-- **index file** (noun) → object index file. The file `spec/index.md` of a bounded context.
 - **`no upgrade step is pending`** (proper noun) → object no upgrade step is pending. What `migrate upgrade` prints when no upgrade step is pending.
 - **`only on the person's yes`** (proper noun) → object only on the person's yes. The SessionStart hook's note that a session runs a pending upgrade only on the person's yes.
 - **`update the plugin`** (proper noun) → object update the plugin. The SessionStart hook's note to a session in a repository on a release after the plugin's.

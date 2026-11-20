@@ -42,4 +42,3 @@ area: execution
 - **the reviews service** (proper noun) → service reviews.
 - **the capability form** (proper noun) → object capability form. A capability file as 0.38 keeps it: its frontmatter names its `area:` and what it `specifies:`, and it holds no empty section.
 - **the index form** (proper noun) → object index form. `spec/index.md` as 0.38 keeps it: one `## Composition` section, whose table `| area | kind | capabilities |` has a row for each area, naming its capabilities.
-- **index file** (noun) → object index file. The file `spec/index.md` of a bounded context.
