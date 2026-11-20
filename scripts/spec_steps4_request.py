@@ -14,8 +14,8 @@ import re
 
 import spec_lf_request
 import spec_rgl
-import spec_steps4_boxes
 import spec_rgl_ops
+import spec_steps4_boxes
 from spec_lf_core import Atom
 
 kid = spec_rgl.kid
