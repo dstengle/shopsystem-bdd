@@ -11,7 +11,7 @@ Short answers to "how do I ...?", for the developer at the keyboard and the pers
 gives the situation in one line, the steps, and what you see. Most of the time you'll say the words in **You say**
 and Claude runs the commands; they're here so you know what happens, and so you can run them yourself.
 
-Commands are written as `work line`, `spec check` and so on. [Getting started](getting-started.md#3-how-commands-are-run)
+Commands are written as `work line`, `spec check` and so on. [How the commands are run](reference/commands.md#how-the-commands-are-run)
 shows how to run them from the plugin's directory. Every command's full contract is its `--help`; the
 [command reference](reference/commands.md) has the short version.
 
@@ -226,9 +226,9 @@ purpose: The person gives items short words, labels, to group them, and reads th
 Then add its model lines, vocabulary entries and lines through the same item with `work line b260 --into labels`, as in the first recipe; they
 take the ids `g1` and `r1` on. `work ready` checks them with the capability laid over a copy of `spec/`. When the
 batch starts, `work batch start` writes `spec/capabilities/labels.md` (its id your context's with `capability/` in
-front and the name at the end, its title, narrator and group, `language: codified-2`, `## Purpose`,
-`## Behaviour`, the item's lines with their ids in `unbuilt:`), its row in `spec/index.md`'s `## Composition`, and
-its feature:
+front and the name at the end, its title, narrator and group, its `area:` and `specifies:`, `language: codified-2`,
+`## Purpose`, `## Behaviour`, the item's lines with their ids in `unbuilt:`), its name in its area's row of the
+`| area | kind | capabilities |` table under `spec/index.md`'s `## Composition`, and its feature:
 
 <!-- docs: context tests/scripts/fixtures/docs-labels -->
 ```gherkin

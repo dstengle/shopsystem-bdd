@@ -3,7 +3,10 @@ the one fresh agent that runs the batch from `work batch resume` to `awaiting-me
 `.shop/worktrees/batch-<n>-driver/brief.md` beside the review folders, never committed.
 
 It names the batch and its base checkout, each task with its worktree, branch, item and requirement ids, the skill
-the agent follows (building-a-batch), the command prefix every push and gh call takes when `[batch] push` of
+the agent follows (building-a-batch), each task's acceptance tests run with the plugin's pytest plugin (`-p
+work_items`), and, for a context's first batch (a laid capability with no test module, or a domain model with no
+`spec/adapters/cli.toml`), how its first task makes the step bindings, the program and the adapter contract (b389), the
+command prefix every push and gh call takes when `[batch] push` of
 `.shop/delivery.toml` gives one, the rules every subagent is given, where the agent stops and what it replies. The
 session that started the batch dispatches the agent with the brief's path as its whole prompt."""
 from pathlib import Path
@@ -56,18 +59,56 @@ def _tasks(root, batch, picked):
     for task, item in zip(batch.tasks, picked):
         ids = backlog_lines.ids(backlog_lines.read(item, backlog_items.rel_of(item.name)))
         caps = sorted({i.split("#")[0] for i in ids})
-        tests = "; ".join("`python3 -m pytest -q tests/scenarios/test_%s.py -m \"%s\"`" % (
-            c.replace("-", "_"), " or ".join("r%s" % i.split("#r")[1] for i in ids if i.startswith(c + "#")))
+        tests = "; ".join("`PYTHONPATH=%s python3 -m pytest -p work_items -q %s -m \"%s\"`" % (
+            SCRIPTS, _module(c), " or ".join("r%s" % i.split("#r")[1] for i in ids if i.startswith(c + "#")))
             for c in caps) or "none"
+        unbound = [_module(c) for c in caps if not (root / _module(c)).exists()]
         chore = ["- %s" % said for said in backlog_chore.said(item)]       # in place of ids (b316)
         out += ["### %s %s" % (task.task, backlog_items.label(item)), "",
                 "- Worktree: %s (made by `work batch resume`)" % (trees_dir(root) / ("%s-%s" % (batch.name, task.task))),
                 "- Branch: %s" % task.branch,
                 "- Item file: %s" % (Path(root) / backlog_items.rel_of(item.name)),
                 *(chore or ["- Requirement ids: %s" % (", ".join(ids) or "none"),
-                            "- Acceptance tests (in the worktree): %s" % tests]),
+                            "- Acceptance tests (in the worktree): %s" % tests,
+                            *(["- Step bindings: none yet; this task writes %s (see `## A fresh context`)"
+                               % ", ".join(unbound)] if unbound else [])]),
                 "- Subagent description: `%s %s %s`" % (batch.name, task.task, item.name), ""]
     return out
+
+
+def _module(cap):
+    """The test module that binds a capability's generated feature."""
+    return "tests/scenarios/test_%s.py" % cap.replace("-", "_")
+
+
+FRESH = (
+    ("A context's first batch builds what its tests run against, and nothing of it is laid by `work batch start`. "
+     "The first task whose item needs a piece makes it; a later task that needs it too merges that task's branch "
+     "into its own (its commits cite the earlier in-batch item, which `done` accepts)."),
+    ("- Step bindings: one test module a capability, `tests/scenarios/test_<capability>.py`, binding "
+     "`features/<capability>.feature` with pytest-bdd's `scenarios(...)` and one step definition a step text; "
+     "`features vocab` lists the step grammar's shapes (the functions ending in `Step`) and %s, step 6, shows a "
+     "whole module. `tests/scenarios/conftest.py` (from `migrate init`) and `-p work_items` make an `unbuilt:` id's "
+     "scenario a strict xfail." % (SCRIPTS.parent / "docs" / "getting-started.md")),
+    ("- The program: the command-line program the lines' operations are requested of, with its argparse "
+     "subcommands and options; a When step runs it, a Then reads its exit, output and the files it kept."),
+    ("- The adapter contract `spec/adapters/cli.toml`: `[programs]` names the program's path, and each "
+     "`[operations.\"<service>.<operation>\"]` of the domain model the lines request maps it to its `command` and "
+     "its `parameters` to options; `spec check` holds it to the model and the program both ways (v_a1-v_a4), and "
+     "`spec annotate` writes each operation's governing requirements into it (`spec annotate --check` in the "
+     "suite). Without the file `spec annotate` and its `--check` do nothing and say nothing."),
+    ("- `work batch review` pushes the batch branch and opens a draft pull request: the repository needs a remote "
+     "and gh logged in to it (a remote and gh), or the review is refused."),
+)
+
+
+def _fresh(root, picked):
+    """Whether the brief says how a context's first batch makes its bindings, program and contract: a laid
+    capability with no test module, or a domain model with no CLI adapter contract."""
+    caps = {i.split("#")[0] for item in picked
+            for i in backlog_lines.ids(backlog_lines.read(item, backlog_items.rel_of(item.name)))}
+    unbound = any(not (root / _module(c)).exists() for c in caps)
+    return unbound or ((root / "spec" / "model").is_dir() and not (root / "spec" / "adapters" / "cli.toml").exists())
 
 
 def text(root, batch, picked, unwritten=()):
@@ -89,6 +130,8 @@ def text(root, batch, picked, unwritten=()):
            "fix loop until the review is clean." % (SKILL, batch.name), "",
            "## Tasks", ""]
     out += _tasks(root, batch, picked)
+    if _fresh(root, picked):
+        out += ["## A fresh context", "", FRESH[0], "", *FRESH[1:], ""]
     out += ["## The lay's bookkeeping", "",
             ("The lay's commit wrote each laid line's corpus block, took out each retired id's and wrote the "
              "catalogues again (b333): a block's form is the parser's, so the task whose item changes the grammar "

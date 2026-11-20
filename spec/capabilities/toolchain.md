@@ -107,3 +107,10 @@ Restates: analysis-tools#r17@0.29.
 
 ### [g17] A probe gives `gf-rgl`
 - [r17] When the person probes the toolchain, the toolchain service shall return `gf-rgl`.
+
+### [g18] An install in a repository with no Python file installs `gf-rgl`
+- [r18] While no Python file exists and `gf-rgl` is `missing` and the environment of the Python interpreter is `virtualenv`, when the person installs the toolchain, the toolchain service shall install `gf-rgl` and complete the request.
+
+### [g19] A probe in a repository with no Python file gives `gf-rgl`
+- [r19] While no Python file exists, when the person probes the toolchain, the toolchain service shall return `gf-rgl` and complete the request.
+

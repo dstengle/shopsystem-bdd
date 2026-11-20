@@ -279,3 +279,37 @@ shall [x1: agent the person (constant), x2: toolchain "the toolchain of this rep
   response
     return(e2, subject: x3, object: x4)
 ```
+
+## r18
+From: b388 r18.
+
+```reading
+While no Python file exists and `gf-rgl` is `missing` and the environment of the Python interpreter is `virtualenv`, when the person installs the toolchain, the toolchain service shall install `gf-rgl` and complete the request.
+shall [x2: analysis tool `gf-rgl` (constant), x3: Python interpreter "the Python interpreter `tools` runs the analysis tools with" (indexical), x4: agent the person (constant), x5: toolchain "the toolchain of this repository" (indexical), x6: service the toolchain service (constant), x7: request "the request the trigger makes" (indexical)]
+  while
+    not [x1: Python file]
+      exists(x1)
+    presence(x2) = `missing`
+    environment(x3) = `virtualenv`
+  when
+    request(e1, toolchain.install, subject: x4, object: x5)
+  response
+    install(e2, subject: x6, object: x2)
+    complete(e3, subject: x6, object: x7)
+```
+
+## r19
+From: b388 r19.
+
+```reading
+While no Python file exists, when the person probes the toolchain, the toolchain service shall return `gf-rgl` and complete the request.
+shall [x2: agent the person (constant), x3: toolchain "the toolchain of this repository" (indexical), x4: service the toolchain service (constant), x5: analysis tool `gf-rgl` (constant), x6: request "the request the trigger makes" (indexical)]
+  while
+    not [x1: Python file]
+      exists(x1)
+  when
+    request(e1, toolchain.probe, subject: x2, object: x3)
+  response
+    return(e2, subject: x4, object: x5)
+    complete(e3, subject: x4, object: x6)
+```

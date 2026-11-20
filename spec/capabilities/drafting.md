@@ -108,3 +108,10 @@ capabilities, retirements, rewordings and chores.
 ### [g24] Removing a requirement of an item keeps the requirement ids it does not retire
 - [r24] When the person removes a requirement in an item, the drafting service shall keep every requirement id in the
   item that the requirement does not retire.
+
+### [g25] A term written for a new capability of an item is kept
+- [r25] While an item holds a capability that does not exist, when the person writes a term into the item, the drafting service shall keep the term in the item.
+
+### [g26] A model line declared for a new capability of an item is kept
+- [r26] While an item holds a capability that does not exist, when the person declares a model line in the item, the drafting service shall keep the model line in the item.
+

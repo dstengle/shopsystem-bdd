@@ -118,13 +118,20 @@ def entries(grammar):
     return out, problems
 
 
+# The construct a line names: a code in backticks after "use" (the spec pack's "requirement uses construct"), and each
+# code of the list it heads ("uses `every`, `two` and `not-condition`"); a backticked value that spells a code (a
+# status `done`) is no citation (b390).
+USES = re.compile(r"\bus(?:e|es|ed) ((?:`[a-z-]+`(?:,? (?:and|or) |, )?)+)")
+
+
 def citing(root):
-    """{code: [<capability>#r<n>, ...]}: each requirement line that names a construct's code in backticks."""
+    """{code: [<capability>#r<n>, ...]}: each requirement line that says it uses a construct, by its code."""
     codes = {e["code"] for e in CONSTRUCTS}
     out = {}
     for path in sorted((Path(root) / "spec" / "capabilities").glob("*.md")):
         for n, line in re.findall(r"^- \[r(\d+)\] (.*)$", path.read_text(), re.MULTILINE):
-            for code in re.findall(r"`([a-z-]+)`", line):
+            named = [c for listed in USES.findall(line) for c in re.findall(r"`([a-z-]+)`", listed)]
+            for code in dict.fromkeys(named):
                 if code in codes:
                     out.setdefault(code, []).append("%s#r%s" % (path.stem, n))
     return out

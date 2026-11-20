@@ -8,6 +8,7 @@ id: vocabulary/missingmass.io/shopsystem/shopsystem-bdd/shared
 
 - **bounded context** (noun) → object bounded context. One repository's spec, with its index, capabilities, decisions and glossary. This: the bounded context whose repository the command runs in.
 - **capability** (noun) → object capability. One file under `spec/capabilities/`, with a group and a narrator. Plural: capabilities.
+- **index file** (noun) → object index file. The file `spec/index.md` of a bounded context.
 - **requirement** (noun) → object requirement. One codified statement of a capability, named `<capability>#r<n>`, that parses to one tree in the requirement grammar. Not: behaviour requirement, capability requirement, carry, carries, carried, carrying. Redefines: spec.
 - **requirement group** (noun) → object requirement group. The requirements of a capability that together make one scenario, named `<capability>#g<n>`, with a title.
 - **universal condition** (noun) → object universal condition. A statement of `spec/universal.md`, named `U<n>`, true in every state of every trace and never restated in a requirement.

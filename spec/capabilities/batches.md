@@ -6,7 +6,7 @@ group: service
 area: execution
 specifies: object batch, object task, service batches
 language: codified-2
-retired: []
+retired: [g69, r69]
 unbuilt: []
 ---
 
@@ -100,10 +100,6 @@ when the change is merged.
 - [r68] While an item is `ready` and the item holds a chore and the item meets the readiness bar, when the person opens
   a batch, the batches service shall keep a batch brief that holds the chore.
 
-### [g69] A batch opened keeps each new capability
-- [r69] While an item is `ready` and the item meets the readiness bar and the item holds a capability, when the person
-  opens a batch, the batches service shall keep the capability.
-
 ### [g70] A task finishes while a parked item's line is out of the batch
 - [r70] While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the
   batch is `needs-input` and the item has a requirement that is not in the workspace of the batch and a scenario of the
@@ -126,3 +122,10 @@ when the change is merged.
 ### [g74] A batch opened keeps the construct catalogue its lines use
 - [r74] While an item is `ready` and the item meets the readiness bar and a requirement of the item uses a construct,
   when the person opens a batch, the batches service shall keep the construct catalogue.
+
+### [g75] A batch opened keeps no construct catalogue for lines that use no construct
+- [r75] While no requirement of an item whose status is `ready` uses a construct and no construct catalogue exists, when the person opens a batch, the batches service shall keep no construct catalogue.
+
+### [g76] A new capability is laid in 0.38's form: area:, specifies:, no empty ## Terms, one ## Composition
+- [r76] While an item is `ready` and the item meets the readiness bar and the item holds a capability, when the person opens a batch, the batches service shall keep the capability that conforms to the capability form and keep an index file that conforms to the index form.
+

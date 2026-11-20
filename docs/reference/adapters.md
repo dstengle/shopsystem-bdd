@@ -122,7 +122,7 @@ builds the command line from the operation and the step's parameters, runs it wi
 response, so that "Then the notes service refuses this request" can check `outcome == "refused"` and "names the
 title" the error's names. This repository's generated scenarios do not go through it yet: their request steps are
 re-keyed to the earlier CLI handlers, which read the printed text and the exit code (b358 moves them onto the
-driver). The [getting started](../getting-started.md#7-bind-the-feature-see-red-then-green) binding makes the
+driver). The [getting started](../getting-started.md#6-the-session-builds-it) binding makes the
 request and checks the envelope by hand.
 
 ## Other ports

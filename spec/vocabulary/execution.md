@@ -40,3 +40,5 @@ area: execution
 - **conclude** (verb, action) → operation reviews.conclude. Forms: concludes, concluded. Frame: <actor> concludes <review>.
 - **the batches service** (proper noun) → service batches.
 - **the reviews service** (proper noun) → service reviews.
+- **the capability form** (proper noun) → object capability form. A capability file as 0.38 keeps it: its frontmatter names its `area:` and what it `specifies:`, and it holds no empty section.
+- **the index form** (proper noun) → object index form. `spec/index.md` as 0.38 keeps it: one `## Composition` section, whose table `| area | kind | capabilities |` has a row for each area, naming its capabilities.

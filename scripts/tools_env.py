@@ -51,11 +51,21 @@ def project_python(root):
     return sys.executable, "no virtualenv found: the interpreter running this script"
 
 
+NONE_OF_ITS_OWN = "no Python file: the analysis tools are not probed or installed; agents search by text, and say so"
+
+
 def is_python_project():
+    """A Python mark at the root, or a Python file of the project's own: one under a virtualenv (a folder holding
+    `pyvenv.cfg`), `.git` or `node_modules` is not (b388)."""
     marks = ("pyproject.toml", "setup.py", "setup.cfg", "pytest.ini", "requirements.txt", "tox.ini")
     if any(os.path.isfile(mark) for mark in marks):
         return True
-    return any(name.endswith(".py") for _, _, names in os.walk(".") for name in names)
+    for where, folders, names in os.walk("."):
+        if any(name.endswith(".py") for name in names):
+            return True
+        folders[:] = [folder for folder in folders if folder not in (".git", "node_modules")
+                      and not os.path.isfile(os.path.join(where, folder, "pyvenv.cfg"))]
+    return False
 
 
 def versions(python):
@@ -75,27 +85,33 @@ def probed(args):
 
 
 def cmd_probe(args):
+    """The analysis tools, of a project with a Python file, and the grammar tools; exit 1 when one is missing."""
     import tools_grammar
-    python, why, found = probed(args)
+    if is_python_project():
+        python, why, found = probed(args)
+    else:
+        python, why, found = None, NONE_OF_ITS_OWN, {package: None for _, package, _, _ in TOOLS}
+    tools = TOOLS if python else ()
     grammar, binary = tools_grammar.probed()
-    missing = [name for name, package, _, _ in TOOLS if not found[package]]
+    missing = [name for name, package, _, _ in tools if not found[package]]
     missing += [name for name, version in grammar.items() if version is None]
     if getattr(args, "json", False):
         print(json.dumps({"python": python, "source": why, "grammar": grammar,
-                          "tools": {name: found[package] for name, package, _, _ in TOOLS}}))
+                          "tools": {name: found[package] for name, package, _, _ in tools}}))
     elif args.log:
-        print("Probe: tools -> " + ", ".join(
-            "%s %s" % (name, found[package] or "missing") for name, package, _, _ in TOOLS))
+        print("Probe: tools -> " + (", ".join(
+            "%s %s" % (name, found[package] or "missing") for name, package, _, _ in tools) or NONE_OF_ITS_OWN))
     else:
-        for name, package, what, _ in TOOLS:
+        for name, package, what, _ in tools:
             print("%s %s" % (name, found[package]) if found[package] else "%s missing: %s" % (name, what))
-        print("python: %s (%s)" % (python, why))
+        print("python: %s (%s)" % (python, why) if python else NONE_OF_ITS_OWN)
         print("\n".join(tools_grammar.probe_lines(grammar, binary)))
     return 1 if missing else 0
 
 
 def cmd_install(args):
-    """The analysis tools into the project's interpreter, then the grammar tools; exit 1 when either fails."""
+    """The analysis tools into the project's interpreter (none in a project with no Python file), then the grammar
+    tools; exit 1 when either fails."""
     import tools_grammar
     analysis = install_analysis(args)
     try:
@@ -107,6 +123,9 @@ def cmd_install(args):
 
 
 def install_analysis(args):
+    if not is_python_project():
+        print(NONE_OF_ITS_OWN)
+        return 0
     python, why, found = probed(args)
     missing = [tool for tool in TOOLS if not found[tool[1]]]
     if not missing:

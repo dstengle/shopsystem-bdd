@@ -95,3 +95,30 @@ def test_a_member_line_joins_an_element_declared_with_its_kind():
     assert laid == ["object item kind of file", "  attributes: size (text)", "  relations: has → label (many)", "",
                     "service backlog", "  operation show(item)", "  operation tag(item)"]
     assert backlog_model.unmerged(laid, lines) == body
+
+
+def test_a_new_capability_takes_model_lines_in_its_own_area(modelled, tmp_path):
+    """b387: the model lines of a capability the item makes go to an area of its name, whose model file the lay makes
+    with the capability's purpose and the unlay removes."""
+    ok(work(modelled, "line", "b1", "--capability", "shelving", "--narrator", "a person", "Shelves of notes."))
+    ok(work(modelled, "line", "b1", "--into", "shelving", "--model", "object shelf\n  attributes: name (text)"))
+    blocks = backlog_section.read(backlog_items.find(modelled, "b1"), "b1")
+    assert blocks.models[0].area == "shelving"
+    assert blocks.models[0].lines == ("object shelf", "  attributes: name (text)")
+    into = tmp_path / "copy"
+    shutil.copytree(FIXTURE, into)
+    before = {p: p.read_bytes() for p in (into / "spec").rglob("*") if p.is_file()}
+    item, files = backlog_items.find(modelled, "b1"), []
+    backlog_lines.lay_onto(into, item, files)
+    model = (into / "spec/model/shelving.md").read_text()
+    assert "area: shelving\n" in model and "Shelves of notes." in model
+    assert "```model\nobject shelf\n  attributes: name (text)\n```" in model
+    assert "spec/model/shelving.md" in files
+    backlog_lines.unlay(into, item)
+    after = {p: p.read_bytes() for p in (into / "spec").rglob("*") if p.is_file()}
+    assert after == before
+
+
+def test_model_lines_for_an_unmade_capability_are_refused(modelled):
+    done = work(modelled, "line", "b1", "--into", "shelving", "--model", "object shelf")
+    assert done.returncode != 0 and "no codified capability shelving" in done.stderr

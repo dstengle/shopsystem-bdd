@@ -22,7 +22,29 @@ They are here for when you want to look, check or do a step by hand.
 > right and this page is wrong; please file it.
 
 Commands are written short, `work backlog` for `python3 "$SHOP/scripts/work" backlog`.
-[Getting started](../getting-started.md#3-how-commands-are-run) shows how to set that up.
+[How the commands are run](#how-the-commands-are-run) shows how to set that up.
+
+## How the commands are run
+
+Every console block on this page is what the session runs for you; you never need to. The tools are scripts in the
+installed plugin's `scripts/` folder, not commands on your `PATH`, so a shell finds no `work` or `tools` of its own.
+To run one yourself, keep the plugin's folder in `$SHOP`, from `claude plugin list --json`'s `installPath` (a path
+that ends in the version, such as `~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.39.0`; with
+`claude --plugin-dir`, the checkout):
+
+```console
+$ export SHOP="$(claude plugin list --json | python3 -c 'import json, sys; print(next(p["installPath"] for p in json.load(sys.stdin) if p["id"] == "shopsystem-bdd@shopsystem-bdd"))')"
+```
+
+Then give each tool a short name:
+
+```console
+$ alias work='python3 "$SHOP/scripts/work"' spec='python3 "$SHOP/scripts/spec"' features='python3 "$SHOP/scripts/features"'
+$ alias tools='python3 "$SHOP/scripts/tools"' measure='python3 "$SHOP/scripts/measure"' migrate='python3 "$SHOP/scripts/migrate"'
+```
+
+Put the `export` and the two `alias` lines in your shell's profile to keep them. The plugin's test plugin lives in
+the same folder: a suite runs with `PYTHONPATH="$SHOP/scripts" pytest -p work_items`.
 
 ## A first taste
 
@@ -112,7 +134,7 @@ Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CA
 - `--capability <name> --narrator "<who>" [--group service|guarantees] "<purpose>"`: a capability new to the
   context, written as a block of the item (its narrator, group, default `service`, and purpose); refused when
   `spec/capabilities/<name>.md` exists. Lines and terms go into it with `--into <name>`; `work batch start` writes
-  its file and its row under `## Composition` of `spec/index.md`.
+  its file (with `area:` and `specifies:`) and names it in its area's row under `## Composition` of `spec/index.md`.
 
 The line gets the next free id of its capability (`items#r31`). It goes into `spec/` only when a batch starts.
 `work line` does not parse the line; [`work ready`](#work-ready) does.
@@ -976,7 +998,8 @@ works in the project's own interpreter (`--python`, else `.venv`, `venv` or `$VI
 
 Installs any missing analysis tool into the project's virtualenv, then, every time, the grammar tools: GF 3.12, the
 pinned `pgf` and `clingo` wheels, and the resource grammar library `gf-rgl`. Linux x86_64 only; elsewhere, set
-`$SHOPSYSTEM_GF` to a GF you built.\
+`$SHOPSYSTEM_GF` to a GF you built. In a project with no Python file yet (a virtualenv's own files are not the
+project's) it installs no analysis tool and still installs the grammar tools.\
 Synopsis: `tools install [--python PYTHON]`
 
 ```console
@@ -990,7 +1013,8 @@ gf-rgl 20250812 already installed
 
 ### `tools probe`
 
-Prints one line a tool, its version or what is missing, then the grammar block. Exits 1 when any is missing.\
+Prints one line a tool, its version or what is missing, then the grammar block. Exits 1 when any is missing. In a
+project with no Python file yet it probes the grammar tools alone.\
 Synopsis: `tools probe [--python PYTHON] [--log] [--json]`
 
 ```console

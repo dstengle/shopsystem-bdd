@@ -60,4 +60,8 @@ service batches
 service reviews
   operation review(change)  outcomes: done → the review
   operation conclude(review)  outcomes: done
+
+object capability form kind of artifact
+
+object index form kind of artifact
 ```

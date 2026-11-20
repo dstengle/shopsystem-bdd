@@ -20,6 +20,9 @@ RETIRED = "r4"         # the fixture's work-queue#r4, whose group g3 holds no ot
 # trigger no other group of the fixture has.
 CITING = "When the person runs `work check`, `work` shall print `%s`."
 CODES = {"rule": "v15k", "construct": "order-by"}
+# A line uses a construct by its code after "uses" (the spec pack's "requirement uses construct", b390), in the
+# fixture's context with the spec pack imported.
+USING = "When the person runs `work check` on a requirement that uses `%s`, `work` shall exit successfully."
 
 
 def corpus(step, blocks=""):
@@ -75,7 +78,12 @@ def uses_given(step):
     if k1 != "requirement" or k2 not in CODES:
         return False
     step.context["cited"] = CODES[k2]
-    sys.modules["shop_readiness_world"].give_lines(step, step.context["proposed"][n1], CITING % CODES[k2])
+    R = sys.modules["shop_readiness_world"]
+    R.codify(step)
+    if k2 == "construct":
+        index = step.repo / "spec" / "index.md"
+        index.write_text(index.read_text().replace("imports: [cli]", "imports: [cli, spec]", 1))
+    R.give_lines(step, step.context["proposed"][n1], (USING if k2 == "construct" else CITING) % CODES[k2])
 
 
 def _laid(step, rel):

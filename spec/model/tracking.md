@@ -32,6 +32,7 @@ object item kind of file
   attributes: status: shaped | ready | in-batch | delivered | refused | withdrawn | idea | needs-input; provenance: own | peer | product; value: low-value | medium-value | high-value; urgency: low-urgency | medium-urgency | high-urgency; size: small | medium | large
   lifecycle status: idea → shaped; shaped → ready; ready → shaped; ready → in-batch; in-batch → delivered; in-batch → needs-input; in-batch → ready; needs-input → shaped; idea → refused; shaped → refused; idea → withdrawn; shaped → withdrawn; ready → withdrawn; needs-input → withdrawn
   relations: has → dependency | request line | title | shaping note | scenario | requirement | task | defect (many); holds → relation row | universal condition | upstream entry | given block | requirement | capability | term | requirement id | requirement group | chore (many); proposes → requirement (many); meets → readiness bar | bar check (many)
+  relations: holds → model line (many)
 
 object backlog
 
@@ -132,6 +133,8 @@ service drafting
   operation reword(requirement)  outcomes: done | refused: requirement of a capability
   operation remove(requirement)  outcomes: done | refused: requirement of a capability
   operation assign(chore, item)  outcomes: done | refused: requirement in the item
+  operation write(term, item)  outcomes: done
+  operation declare(model line, item)  outcomes: done
 
 service context requests
   operation raise(context request, origin, thread, text, bounded context)
@@ -160,4 +163,6 @@ service conversation
   operation read(quote)  outcomes: returned → the quote
 
 actor the person kind of agent
+
+object model line kind of text
 ```

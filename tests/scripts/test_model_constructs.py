@@ -93,3 +93,14 @@ def test_a_line_naming_a_code_cites_it(tmp_path):
         "- [r4] When the person runs `model parse` on a requirement that uses `rc-object`, `model` shall exit "
         "successfully.\n")
     assert model_constructs.citing(tmp_path) == {"rc-object": ["c#r4"]}
+
+
+def test_a_value_that_spells_a_code_cites_no_construct(tmp_path):
+    """A backticked value equal to a construct's code (`done`, a status) is no citation: only the codes a line says it
+    uses are (b390)."""
+    (tmp_path / "spec" / "capabilities").mkdir(parents=True)
+    (tmp_path / "spec" / "capabilities" / "c.md").write_text(
+        "- [r5] When the person checks an item, `work` shall set the status of the item to `done`.\n"
+        "- [r6] While a requirement uses `every`, `two` and `not-condition`, when the person parses the requirement, "
+        "`work` shall print `only`.\n")
+    assert model_constructs.citing(tmp_path) == {"every": ["c#r6"], "two": ["c#r6"], "not-condition": ["c#r6"]}

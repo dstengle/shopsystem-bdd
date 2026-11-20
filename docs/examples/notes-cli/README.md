@@ -6,8 +6,8 @@ This folder is a whole bounded context, small enough to read in ten minutes. It 
 tool that keeps short notes. It is not the plugin, so you see the requirement language working on somebody else's
 words.
 
-It's written for the developer setting up a first repository. [Getting started](../../getting-started.md) copies
-its files one by one. The docs test runs `spec check` and `features generate --check` on it, so what you read here
+It's written for the developer setting up a first repository. [Getting started](../../getting-started.md) shows
+them as the session writes them. The docs test runs `spec check` and `features generate --check` on it, so what you read here
 stays true.
 
 ## The whole idea in one line

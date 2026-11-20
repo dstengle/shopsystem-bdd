@@ -222,3 +222,25 @@ Feature: Drafting
     Then the drafting service keeps the requirement id r2
     And the drafting service keeps the requirement id r3
     And the drafting service does not keep the requirement id r4
+
+  @g25 @r25
+  Scenario: A term written for a new capability of an item is kept
+    Given a capability c1
+    And the capability c1 does not exist
+    And an item i1
+    And the item i1 holds the capability c1
+    And a term t1
+    When the person writes the term t1 into the item i1
+    Then the item i1 holds the term t1
+    And the drafting service keeps the term t1
+
+  @g26 @r26
+  Scenario: A model line declared for a new capability of an item is kept
+    Given a capability c1
+    And the capability c1 does not exist
+    And an item i1
+    And the item i1 holds the capability c1
+    And a model line m1
+    When the person declares the model line m1 in the item i1
+    Then the item i1 holds the model line m1
+    And the drafting service keeps the model line m1
