@@ -10,6 +10,7 @@ been renamed or retired since.
 
 | Line | Releases |
 |---|---|
+| 0.41 | [0.41.0](#0410-a-fresh-contexts-scenarios-run-with-plain-pytest-and-a-responses-owned-thing-given-before-the-when) |
 | 0.40 | [0.40.0](#0400-a-new-context-built-by-command-and-the-docs-as-prompts-to-the-session) |
 | 0.39 | [0.39.0](#0390-each-operation-carries-its-lines-the-catalogues-as-specification-migrate-init-and-the-docs-revised) |
 | 0.38 | [0.38.0](#0380-the-domain-contract) |
@@ -22,6 +23,25 @@ been renamed or retired since.
 | 0.31 | [0.31.5](#0315-released-as-240-the-request-watch-wakes-on-githubs-events-and-starts-with-the-session) · [0.31.4](#0314-released-as-231-a-batch-runs-in-one-fresh-agent-and-a-parked-item-leaves-the-batch-at-once) · [0.31.3](#0313-released-as-230-work-pushes-its-commits-requests-post-after-they-commit-and-work-watch) · [0.31.2](#0312-released-as-220-decisions-and-records-written-by-command) · [0.31.1](#0311-released-as-210-requests-exchanged-through-github-issues) · [0.31.0](#0310-released-as-200-the-workflow-simplified) |
 | 0.30 | [0.30.0](#0300-released-as-100-codified-requirements) |
 | 0.29 and before | [0.29.0](#0290-glossary-proposals-delegations-given-late-and-fewer-stops-from-outside-a-work-item) · [0.28.3](#0283-a-branch-review-that-runs-nothing) · [0.28.2](#0282-answers-a-round-cannot-hold-go-back-to-integration) · [0.28.1](#0281-work-run-stops-visibly-on-questions-and-spends-less-agent-time) · [0.28.0](#0280-one-set-of-request-commands-work-list-and-work-show-and-answers-that-redraft) · [0.27.0](#0270-transitions-from-how-a-session-ended-and-the-turn-of-an-accepted-request) · [0.26.0](#0260-requests-and-the-context-loop) · [0.25.0](#0250-work-items-side-by-side-answers-and-guarantees) · [0.24.0](#0240-work-items-named-by-ids-and-upgrades-between-plugin-releases) · [0.23.1](#0231---work-item-keeps-tests-that-are-not-scenarios) · [0.23.0](#0230-faults-settled-query-output-as-json-the-session-keeps-the-gate-measurement-on-v3) · [0.22.0](#0220-one-requirement-per-scenario-faults-and-the-lessons-of-a-blind-formulation) · [0.21.0](#0210-the-final-layout-and-delivery-by-work-run) |
+
+## 0.41.0: a fresh context's scenarios run with plain pytest, and a response's owned thing given before the When
+
+- **A response's thing that a trigger's thing has is brought in before the When** (b416, scenarios#r33): for a line
+  such as "return the items of the checklist", `features generate` writes the item and its row to the checklist as
+  Givens before the When, so no step mentions an instance no Given introduces.
+- **A fresh context's scenarios run with plain pytest** (b419): the plugin's pytest plugin `work_items` registers
+  each `@g<n>` and `@r<n>` tag of the context's `features/*.feature` as a mark, and the `tests/scenarios/conftest.py`
+  that `migrate init` writes loads `work_items` itself, finding the plugin's scripts on `PYTHONPATH`, else in
+  `$CLAUDE_PLUGIN_ROOT`, else in the plugin cache's folder of the release `.shop/plugin-version` names. Plain
+  `python -m pytest` then runs the scenarios with no unknown-mark warning and an unbuilt scenario as a strict
+  expected failure; [getting started](docs/getting-started.md) shows that command. A context founded before 0.41.0
+  keeps its old conftest (b423).
+- **A Given of a text attribute's value says its code** (b413): a value no entry lists, such as a title, is written
+  "the title of the checklist c1 is `groceries`", not as a placeholder.
+- **`work line --into` a capability no file holds names `--capability`** (b414): the refusal says a new capability
+  is given to an item with `work line <item> --capability <name>`.
+- **`migrate init` with no git identity is refused before it writes** (b415), naming `git config` and saying to ask
+  the person for their name and email.
 
 ## 0.40.0: a new context built by command, and the docs as prompts to the session
 
