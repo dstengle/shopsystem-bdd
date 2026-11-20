@@ -60,9 +60,13 @@ def test_lay_writes_the_file_and_row_and_unlay_takes_them_out(ready_repo, tmp_pa
     assert files == ["spec/index.md"]
     text = (tmp_path / "spec" / "capabilities" / "shelf.md").read_text()
     assert text.startswith("---\nid: capability/ex.com/prod/ctx/shelf\ntitle: Shelf\nnarrator: %s\ngroup: service\n"
-                           "language: codified-2\nretired: []\n---\n\n# Shelf\n\n## Purpose\n%s\n" % (NEW[0], NEW[2]))
+                           "area: shelf\nspecifies: service shelf\nlanguage: codified-2\nretired: []\n---\n\n# Shelf\n\n"
+                           "## Purpose\n%s\n\n## Behaviour\n" % (NEW[0], NEW[2]))
     assert "### [g1] Fix the parser\n- [r1] %s" % LINE in text
-    assert "| `shelf` | %s | service |" % NEW[0] in (tmp_path / "spec" / "index.md").read_text()
+    assert "## Terms" not in text
+    laid = (tmp_path / "spec" / "index.md").read_text()
+    assert laid.count("## Composition") == 1
+    assert "| area | kind | capabilities |\n|---|---|---|\n| shelf | core | shelf |" in laid
     files = []
     assert backlog_lines.unlay(tmp_path, item, files) == []
     assert not (tmp_path / "spec" / "capabilities" / "shelf.md").exists()
@@ -86,3 +90,19 @@ def test_a_new_capability_and_a_chore_exclude_each_other(ready_repo):
     assert work(ready_repo, "chore", "b2", "--file", "scripts/x.py", "--check", "true").returncode == 0
     done = work(ready_repo, "line", "b2", "--capability", "shelf", "--narrator", "n", "p")
     assert done.returncode == 1 and "a chore and requirement lines exclude each other" in done.stderr, done.stderr
+
+
+def test_lay_names_the_capability_in_its_area_row_and_unlay_takes_it_out(tmp_path):
+    from backlog_capability import lay, unlay
+    (tmp_path / "spec" / "capabilities").mkdir(parents=True)
+    was = ("---\nid: bounded-context/ex.com/prod/ctx\n---\n\n## Composition\n\n| area | kind | capabilities |\n"
+           "|---|---|---|\n| shelf | core | notes |\n| other | supporting | x |\n\n## Upstreams\n")
+    (tmp_path / "spec" / "index.md").write_text(was)
+    block = Block("shelf", [], [], new=NEW[:1] + ("guarantees",) + NEW[2:])
+    files = []
+    lay(tmp_path, block, files)
+    laid = (tmp_path / "spec" / "index.md").read_text()
+    assert "| shelf | core | notes, shelf |\n| other | supporting | x |" in laid, laid
+    assert "specifies: the shelf guarantees" in (tmp_path / "spec" / "capabilities" / "shelf.md").read_text()
+    unlay(tmp_path, block, files)
+    assert (tmp_path / "spec" / "index.md").read_text() == was

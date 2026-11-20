@@ -44,9 +44,12 @@ NEW = ("shelf", "a person shelving things", "Things kept on a shelf, each found 
 
 def new_capability(step, item, name):
     """The item's one block a capability new to the world's spec (`work line --capability`), its one group the
-    passing line under g1, r1."""
+    passing line under g1, r1; spec/index.md given the empty `## Composition` `migrate init` writes (b391)."""
     R = sys.modules["shop_readiness_world"]
     R.codify(step)
+    index = step.repo / "spec" / "index.md"
+    if "\n## Composition" not in index.read_text():
+        index.write_text(index.read_text().rstrip("\n") + "\n\n## Composition\n")
     capability, narrator, purpose = NEW
     step.context.setdefault("new_capability", {})[name] = capability
     lines = ("### %s\n\nnarrator: %s\ngroup: service\npurpose: %s\n\n#### [g1] Shelving\n- [r1] %s"
