@@ -104,13 +104,13 @@ def has_lines(step, name):
 
 
 def before_start(step):
-    """Under `work batch start`: the world's own ready, passing item (D21), and every ready item the scenario names
-    with no lines given a passing line."""
+    """Under `work batch start`: the world's own ready, passing item (D21), its line SECOND or the scenario's
+    `own_line`, and every ready item the scenario names with no lines given a passing line."""
     for name in list(step.context.get("items", {})):
         if status_of(step, name) == "ready" and not has_lines(step, name):
             R().give_lines(step, name, R().PASSING)
     B().write_item(step, OWN_START, title="an item the world readies", status="ready")
-    R().give_lines(step, OWN_START, SECOND)
+    R().give_lines(step, OWN_START, step.context.get("own_line", SECOND))     # a scenario's own line for it (b390)
 
 
 def batch_name(step, name):

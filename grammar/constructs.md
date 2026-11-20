@@ -332,7 +332,7 @@ a condition of history: an act that has happened
 - Since: b240
 - Form: <subject> has <past participle> ...
 - Functions: `k_\w+_Done`
-- Cited by: reviews#r3, reviews#r5
+- Cited by: no line
 - Example and its reading:
 
 ```construct
