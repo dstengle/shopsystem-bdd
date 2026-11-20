@@ -121,6 +121,23 @@ def _capability(step, item, line, value):
     return ["--capability", name, "--narrator", narrator, purpose]
 
 
+ENTRY = "- **shelf** (noun) → object shelf. A board things are kept on, each found by its name."
+
+
+def _term(step, item, line):
+    """b354's `--term` into an item holding a capability new to the context (a Given said it does not exist): the
+    fixture's spec given a domain model (`spec/model/`, as `migrate init` founds a context), the item given the new
+    capability (`NEW`) by `work line --capability`, and the vocabulary entry `ENTRY` kept as the piece written."""
+    R.codify(step)
+    _shaped(step, item)
+    (step.repo / "spec" / "model").mkdir(exist_ok=True)
+    name, narrator, purpose = NEW
+    assert step.context.get("new"), "no Given said the capability does not exist: %s" % step.text
+    _work(step, item, "--capability", name, "--narrator", narrator, purpose)
+    line["piece"] = ("term", ENTRY)
+    return ["--into", name, "--term", ENTRY]
+
+
 @handler("WhenRuns", "`work line`")
 def work_line(step):
     options = {code.strip("`"): value for code, value in step.options}
@@ -136,6 +153,8 @@ def work_line(step):
         args = ["--recodify", capability]
     elif "--capability" in options:
         args = _capability(step, item, line, options["--capability"])
+    elif "--term" in options:
+        args = _term(step, item, line)
     elif "--reword" in options or "--remove" in options:
         args = _changed(step, item, line, options)
     elif "--retires" in options and ("--universal" in options or "universal condition id" in options["--retires"]):

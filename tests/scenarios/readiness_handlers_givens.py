@@ -80,6 +80,9 @@ def given_does_not(step):
         R.codify(step)
         (step.repo / "spec" / "universal.md").unlink(missing_ok=True)
         return None
+    if R.mine(step) and step.term == "exist" and step.subject.startswith("the capability "):     # b354: a new one
+        step.context["new"] = step.names[0]
+        return None
     if R.mine(step) and step.term in ("hold", "holds") and step.nps[0].startswith("the requirement "):      # r50
         step.context.setdefault("owner", {})[step.names[-1]] = ("not", step.names[0])
         R.give_faults(step)

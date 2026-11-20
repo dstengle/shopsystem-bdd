@@ -124,7 +124,7 @@ def _checked(root, area, lines, blocks=()):
     """The model lines, refused unless they read as a model block (domain_model_parse); an area with no model file
     is refused unless it is a capability's the item makes (b387), whose file the lay makes."""
     import domain_model_parse
-    if not model_path(root, area).is_file() and backlog_model_area.new_block(blocks, area) is None:
+    if not model_path(root, area).is_file() and backlog_model_area.area_block(blocks, area) is None:
         raise Refused("work line: there is no spec/model/%s.md: the area %s has no model to add to" % (area, area))
     domain_model_parse.Reader("the item's model lines", area).read(lines, 1)
     return tuple(lines)
