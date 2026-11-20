@@ -116,7 +116,7 @@ two to each other:
 
 ## The scenarios' driver
 
-A generated scenario says the request in domain words: "When the person adds the note n1 without a title". A
+A generated scenario says the request in domain words: "When the person adds a note n1 without a title". A
 driver makes such a request through the adapter: this repository's `tests/scenarios/driver_cli.py` reads `cli.toml`,
 builds the command line from the operation and the step's parameters, runs it with `--json`, and reads back the
 response, so that "Then the notes service refuses this request" can check `outcome == "refused"` and "names the

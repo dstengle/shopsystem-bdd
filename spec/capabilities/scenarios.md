@@ -7,7 +7,7 @@ area: specification
 specifies: service scenarios
 language: codified-2
 retired: [g14, r14, g26, r26, g27, r27, g33, r33, g34, r34, g35, r35]
-unbuilt: [r36, r37, r38, r39, r40, r41, r42, r43]
+unbuilt: []
 ---
 
 # Scenarios
@@ -250,21 +250,21 @@ the capability `shelf` holds:
 ### [g37] generation introduces the thing an operation makes in the when step
 - [r37] While a requirement of a requirement group of a capability governs an operation that makes a referent, when the person generates the feature of the capability, the scenarios service shall keep a when step that introduces the instance of the referent and not keep a given step that introduces the instance of the referent.
 
-### [g38] A line can say that a request names a title another checklist has (a value in use), not only an example value
+### [g38] generation introduces each instance of two Ks
 - [r38] While a requirement of a requirement group of a capability uses `two`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step and no when step introduce.
 
-### [g39] A line can say that a request names a title another checklist has (a value in use), not only an example value
+### [g39] generation introduces the thing a printed thing holds
 - [r39] While a requirement of a requirement group of a capability uses `holds-relation` and `rc-subject`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step and no when step introduce.
 
-### [g40] A line can say that a request names a title another checklist has (a value in use), not only an example value
+### [g40] generation introduces each instance of an order
 - [r40] While a requirement of a requirement group of a capability uses `order-by`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step and no when step introduce.
 
-### [g41] A line can say that a request names a title another checklist has (a value in use), not only an example value
+### [g41] generation introduces the thing a response names by its owner
 - [r41] While a requirement of a requirement group of a capability uses `of-relation` and the precondition of the requirement does not use `of-relation`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step and no when step introduce.
 
-### [g42] A line can say that a request names a title another checklist has (a value in use), not only an example value
+### [g42] generation introduces the thing a response names by an indexical owner
 - [r42] While a requirement of a requirement group of a capability uses `of-relation` and `this`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step and no when step introduce.
 
-### [g43] A line can say that a request names a title another checklist has (a value in use), not only an example value
+### [g43] generation introduces the thing a response names by a While part's owner
 - [r43] While a requirement of a requirement group of a capability uses `of-relation` and `while`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step and no when step introduce.
 

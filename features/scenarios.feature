@@ -611,7 +611,7 @@ Feature: Scenarios
     And the when step w1 introduces the instance i1
 
   @g38 @r38
-  Scenario: A line can say that a request names a title another checklist has (a value in use), not only an example value
+  Scenario: generation introduces each instance of two Ks
     Given a requirement group r2
     And a capability c1
     And the capability c1 has the requirement group r2
@@ -629,7 +629,7 @@ Feature: Scenarios
     Then the scenarios service does not keep the step s1
 
   @g39 @r39
-  Scenario: A line can say that a request names a title another checklist has (a value in use), not only an example value
+  Scenario: generation introduces the thing a printed thing holds
     Given a requirement group r2
     And a capability c1
     And the capability c1 has the requirement group r2
@@ -648,7 +648,7 @@ Feature: Scenarios
     Then the scenarios service does not keep the step s1
 
   @g40 @r40
-  Scenario: A line can say that a request names a title another checklist has (a value in use), not only an example value
+  Scenario: generation introduces each instance of an order
     Given a requirement group r2
     And a capability c1
     And the capability c1 has the requirement group r2
@@ -666,7 +666,7 @@ Feature: Scenarios
     Then the scenarios service does not keep the step s1
 
   @g41 @r41
-  Scenario: A line can say that a request names a title another checklist has (a value in use), not only an example value
+  Scenario: generation introduces the thing a response names by its owner
     Given a requirement group r2
     And a capability c1
     And the capability c1 has the requirement group r2
@@ -687,7 +687,7 @@ Feature: Scenarios
     Then the scenarios service does not keep the step s1
 
   @g42 @r42
-  Scenario: A line can say that a request names a title another checklist has (a value in use), not only an example value
+  Scenario: generation introduces the thing a response names by an indexical owner
     Given a requirement group r2
     And a capability c1
     And the capability c1 has the requirement group r2
@@ -706,7 +706,7 @@ Feature: Scenarios
     Then the scenarios service does not keep the step s1
 
   @g43 @r43
-  Scenario: A line can say that a request names a title another checklist has (a value in use), not only an example value
+  Scenario: generation introduces the thing a response names by a While part's owner
     Given a requirement group r2
     And a capability c1
     And the capability c1 has the requirement group r2

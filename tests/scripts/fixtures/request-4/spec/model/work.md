@@ -45,7 +45,7 @@ service work
   operation write(file)  outcomes: done
   operation end(stage)  outcomes: done
   operation give(file)  outcomes: done
-  operation settle(line, note)  outcomes: done | refused: no note
+  operation settle(line, note, verdict)  outcomes: done | refused: no note
   operation assign(session)  outcomes: done
   operation inspect(worktree)  outcomes: returned → the worktree
 

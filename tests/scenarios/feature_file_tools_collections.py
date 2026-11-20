@@ -129,8 +129,11 @@ def scenarios(text):
 
 
 def introduced(text):
-    """Each instance a scenario mentions that no Given brings in."""
+    """Each instance a scenario mentions that no given step and no when step brings in (a when step's "a K x1", the
+    thing its request makes, b418)."""
     brought = set(re.findall(r"^    (?:Given|And) an? [a-z ]+? ([a-z]\d+)$", text, re.MULTILINE))
+    brought |= set(re.findall(r"\ban? [a-z -]+? ([a-z]\d+)\b", "\n".join(re.findall(r"^    When (.*)$", text,
+                                                                                       re.MULTILINE))))
     named = set(re.findall(r"\bthe [a-z]+ ([a-z]\d+)\b", text))
     return named - brought
 

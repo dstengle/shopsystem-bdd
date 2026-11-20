@@ -29,6 +29,7 @@ MEMBER = _sibling("design_model_check_worlds_member.py", "shop_design_model_chec
 NEGATED = _sibling("design_model_check_worlds_negated.py", "shop_design_model_check_worlds_negated")     # b232
 PARSING = _sibling("design_model_check_worlds_parsing.py", "shop_design_model_check_worlds_parsing")     # b369
 CATALOGUE = _sibling("design_model_check_worlds_catalogue.py", "shop_design_model_check_worlds_catalogue")     # b370
+VALUE = _sibling("design_model_check_worlds_value.py", "shop_design_model_check_worlds_value")     # b418
 FRAMES = _sibling("design_model_check_worlds_frames.py", "shop_design_model_check_worlds_frames")     # b420
 
 
@@ -244,7 +245,7 @@ TABLE = CATALOGUE.ROWS + ORDER.ROWS + [
     (("capability has requirement", "requirement conform language reference"), capability("recodified"), {}),
     (("capability has requirement", "requirement has no translation"), capability("unread"), {"r1": "shelf#r1"}),
     (("no capability holds requirement id",), old(C.requirement, "requirement id", "r1", "nonexistent"), {}),
-] + PARSING.ROWS
+] + VALUE.ROWS + PARSING.ROWS
 
 
 def build(step):

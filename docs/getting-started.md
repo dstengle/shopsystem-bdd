@@ -185,16 +185,14 @@ Feature: Notes
 
   @g1 @r1
   Scenario: A note added with a title and a tag is kept
-    Given a note n1
-    And a tag t1
-    When the person adds the note n1 with a title and the tag t1
+    Given a tag t1
+    When the person adds a note n1 with a title and the tag t1
     Then the note n1 is under the tag t1
     And the notes service keeps the note n1
 
   @g2 @r2
   Scenario: A note added without a title is refused
-    Given a note n1
-    When the person adds the note n1 without a title
+    When the person adds a note n1 without a title
     Then the notes service refuses this request
     And the notes service names the title
 

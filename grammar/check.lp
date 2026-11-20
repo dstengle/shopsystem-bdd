@@ -110,8 +110,13 @@ tcd(A,B,P,E) :- tdem(A,P,E,K,k(K1)), tkey(B,P,E,K,k(K2)), compat(K1,K2), A != B.
 tc(A,B,P,E) :- tcd(A,B,P,E).  tc(B,A,P,E) :- tcd(A,B,P,E).
 tp(A,B,X,Y,D1,D2) :- tc(A,B,P,E), trig(A,P,E,D1,X), trig(B,P,E,D2,Y).
 % a compatible doer, objects of compatible kinds (or one constant)
-kin(A,B,X,Y) :- tp(A,B,X,Y,_,_), role(A,X,K), role(B,Y,K2), compat(K,K2).
-kin(A,B,X,X) :- tp(A,B,X,X,_,_), not role(A,X,_), not role(B,X,_).
+% (an object with the things or values a request's parameters name, `pair(X,T)`, part by part: b418)
+tpp(A,B,X,Y) :- tp(A,B,X,Y,_,_).
+tpp(A,B,X1,Y1) :- tpp(A,B,pair(X1,X2),pair(Y1,Y2)).  tpp(A,B,X2,Y2) :- tpp(A,B,pair(X1,X2),pair(Y1,Y2)).
+kp(A,B,X,Y) :- tpp(A,B,X,Y), role(A,X,K), role(B,Y,K2), compat(K,K2).
+kp(A,B,X,X) :- tpp(A,B,X,X), not role(A,X,_), not role(B,X,_).
+kp(A,B,pair(X1,X2),pair(Y1,Y2)) :- tpp(A,B,pair(X1,X2),pair(Y1,Y2)), kp(A,B,X1,Y1), kp(A,B,X2,Y2).
+kin(A,B,X,Y) :- tp(A,B,X,Y,_,_), kp(A,B,X,Y).
 doerk(A,B,D1,D2) :- tp(A,B,_,_,D1,D2), role(A,D1,K), role(B,D2,K2), compat(K,K2).
 doerk(A,B,any,D) :- tp(A,B,_,_,any,D).
 doerk(A,B,D,any) :- tp(A,B,_,_,D,any).
