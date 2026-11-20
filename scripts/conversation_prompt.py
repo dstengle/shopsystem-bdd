@@ -1,7 +1,8 @@
 """The UserPromptSubmit hook's `work quote --hook` (capability conversation; workflow simplification plan 8, D5): the
 session and its transcript, read from the hook's stdin, kept in `<git dir>/shopsystem/prompt.json` for `work quote`.
 The git dir is the worktree's own and never tracked, so nothing is committed; the hook prints nothing, puts no tokens
-in the session's context, and never fails a prompt. A prompt whose `cwd` is in another repository is not kept (plan 8's
+in the session's context, and never fails a prompt. It is kept in any git repository, a `.shop/` or not, so the turn
+that runs `migrate init` keeps its session (b417). A prompt whose `cwd` is in another repository is not kept (plan 8's
 review, Q3). Standard library only."""
 import datetime
 import json
@@ -29,8 +30,9 @@ def git_dir(root):
 
 
 def keep(cwd, stdin_text):
-    """Write the pointer of the hook's session and transcript, when the cwd's top level has a `.shop/` and the cwd
-    stdin gives, if any, is in that top level; anything else writes nothing. Never raises."""
+    """Write the pointer of the hook's session and transcript, when the cwd is in a git repository (with a `.shop/`
+    or without one, b417) and the cwd stdin gives, if any, is in its top level; anything else writes nothing. Never
+    raises."""
     part = None
     try:
         given = json.loads(stdin_text)
@@ -38,7 +40,7 @@ def keep(cwd, stdin_text):
         if not isinstance(session, str) or not isinstance(transcript, str):
             return
         root = top_level(cwd)
-        where = git_dir(root) if root is not None and (root / ".shop").is_dir() else None
+        where = git_dir(root) if root is not None else None
         said = given.get("cwd")
         if where is None or (isinstance(said, str) and top_level(said) != root):
             return
