@@ -30,6 +30,7 @@ class Verb:
     term: object                # the spec_lexicon.Term of its entry
     aspect: str                 # state or action
     frames: tuple               # (subject kind, pieces) of each frame that reads
+    texts: tuple = ()           # the `Frame:` text of each of them, in order (b420: a refusal names it)
 
 
 @dataclass
@@ -136,9 +137,9 @@ def read(root):
                                     if r.k1 in vocab.kinds and r.k2 in vocab.kinds))
     actors = dict(vocab.actors)
     for t in lex.of("event"):
-        read_frames = tuple(f for f in (frame(t, text, vocab.kinds, actors) for text in t.frames) if f)
-        if t.aspect in spec_lexicon.ASPECTS and read_frames:
-            vocab.verbs.append(Verb(t, t.aspect, read_frames))
+        framed = [(f, text) for f, text in ((frame(t, text, vocab.kinds, actors), text) for text in t.frames) if f]
+        if t.aspect in spec_lexicon.ASPECTS and framed:
+            vocab.verbs.append(Verb(t, t.aspect, tuple(f for f, _ in framed), tuple(text for _, text in framed)))
     if domain_model.exists(root):     # the operations a verb may name (the domain contract design, §5.1)
         vocab.operations = {"%s.%s" % (op.service, op.name): op for op in domain_model.load(root).operations()}
     vocab.words = lex.words() | {sg for sg, _ in vocab.nouns.values()} | {pl for _, pl in vocab.nouns.values()}

@@ -23,6 +23,7 @@ import model_parse
 import spec_follow4
 import spec_gf
 import spec_meaning
+import spec_one_thing
 import spec_packs
 import spec_parse_cache
 import spec_refusal4
@@ -197,6 +198,12 @@ def parse(root, line):
     tokens = spec_gf.tokenise(line)
     words = {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
     trees, at = _trees(gram, words, tokens, name)
+    several = {t: spec_one_thing.plural(vocab, spec_meaning.read(t)) for t in trees}     # b420, decision 0111
+    if trees and all(several.values()):
+        return Parse(refusal=spec_one_thing.refusal(several[min(trees, key=lambda t: (len(t), t))],
+                                                    lambda x: _words(gram, line, spec_meaning.write(x))),
+                     trees=trees)
+    trees = [t for t in trees if not several[t]]
     if trees:
         try:
             kept, two = spec_meaning.one(trees, vocab)
@@ -205,9 +212,7 @@ def parse(root, line):
         noun = kept and spec_value_kinds.refusal(vocab, kept)     # a noun value's short form (b257)
         if kept:
             return Parse(refusal=noun, trees=[kept]) if noun else Parse(tree=kept, trees=trees)
-        words = spec_gf.detokenise(gram.languages[GRAMMAR + "Eng"].linearize(_expr(two[0])).split(" "))
-        words = words if words in spec_gf.normalise(line) else words[:1].lower() + words[1:]
-        return Parse(refusal='refused: more than one meaning: "%s" reads %d ways' % (words, two[1]), trees=trees)
+        return Parse(refusal=_two(gram, vocab, line, two), trees=trees)
     term = disagreeing(gram, vocab, tokens, at, name)
     if term:
         return Parse(refusal="refused: the verb %s does not agree in number with its subject" % term)
@@ -218,6 +223,23 @@ def parse(root, line):
     if at >= len(tokens):
         return Parse(refusal="the line ends before its sentence does (after %d tokens)" % len(tokens))
     return Parse(refusal="does not parse at %s (token %d of %d)" % (tokens[at], at + 1, len(tokens)))
+
+
+def _words(gram, line, tree):
+    """A subtree's words as the line spells them."""
+    words = spec_gf.detokenise(gram.languages[GRAMMAR + "Eng"].linearize(_expr(tree)).split(" "))
+    return words if words in spec_gf.normalise(line) else words[:1].lower() + words[1:]
+
+
+def _two(gram, vocab, line, two):
+    """The refusal of a line of two meanings: the words that read two ways, the nearest subtree with words of its own
+    above a verb phrase's (which has none alone), and the frames of a verb its readings differ by (b420)."""
+    pairs = two[2]
+    words = next((w for a, _ in reversed(pairs) for w in [_words(gram, line, spec_meaning.write(a))] if w.strip()),
+                 spec_gf.normalise(line))
+    frames = spec_one_thing.frames(vocab, *pairs[-1])
+    by = "; by the frames %s" % " and ".join(frames) if frames else ""
+    return 'refused: more than one meaning: "%s" reads %d ways%s' % (words, two[1], by)
 
 
 def _expr(tree):

@@ -270,6 +270,9 @@ class Model(SpecReading, WorkReading, RequestReading, DomainReading, CatalogueRe
                 continue        # a request of the frozen queue is history too (D7): its file is still there
             if self.moved(ident):
                 continue        # a requirement moved by the domain contract (0.38.0): spec/moves.json resolves it
+            if re.fullmatch(r"quote-(\d+)", str(ident)) and (self.root / ".shop" / "quotes" /
+                                                             ("%s.md" % str(ident)[6:])).is_file():
+                continue        # a quote of the person's words, kept as .shop/quotes/<n>.md (b420)
             if str(ident).endswith("@0.29") and kind is None:
                 self.resolve_req(ident, where)      # a 0.29 id is history, looked up by its form alone
             if kind is None and ident not in self.nodes:

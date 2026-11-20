@@ -66,6 +66,7 @@ def capability(node):
 # group whose own capability has handlers of its own is not listed
 ADDED = {"consistency#g33": "design-model-check",
          "drafting#g25": "readiness",                                           # b354: a term of a new capability
+         "measurement#g10": "telemetry", "measurement#g11": "batch-measurement",    # b420: compare's frames of two
          **{"checking#g%d" % n: "design-model-check" for n in range(52, 58)}}     # b370: the rule catalogue's checks
 
 
