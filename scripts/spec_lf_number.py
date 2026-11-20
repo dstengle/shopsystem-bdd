@@ -16,6 +16,7 @@ from dataclasses import replace
 
 import spec_lf_np as nps
 import spec_rgl
+import spec_rgl_rel
 from spec_lf_core import NP, Atom, Box, Ref
 
 KIND, COUNTS = "number", "counts"
@@ -138,18 +139,21 @@ def cn(r, box):
             tree = ("r%d_%s_Mod" % (n, spec_rgl.slug(item.args[0])), (K + "_n",), r.np(item.args[2], r.vocab.rows[
                 n - 1][2]))
         elif item.pred == "attr" and item.args[0] == y:
-            T = next("t_%s_%d" % (spec_rgl.slug(t.term), n) for n, (t, _) in enumerate(r.vocab.attributes, 1)
-                     if t.term == item.args[1])
-            mods.append(("%s_Whose_%s" % (K, T), p, (("%s_v_%s" % (T, spec_rgl.slug(item.args[2])),),)))
+            T = next("t_%s_%d" % (spec_rgl.slug(t.term), n) for n, (t, ks) in
+                         enumerate(r.vocab.attributes, 1) if t.term == item.args[1]
+                         and any(b in r.vocab.ancestors(y.kind) for b in ks))
+            v = ("%s_v_%s" % (T, spec_rgl.slug(item.args[2])),)
+            mods.append(lambda cn, T=T, p=p, v=v: spec_rgl_rel.whose_value(r.vocab, y.kind, T, p, cn, v))
         elif item.pred == "state" and item.args[2][0][1] == y:
             verb, sense, roles = item.args
             fun, subject, slots = r.frame(verb, sense, roles)
             vp = (fun,) + tuple(r.arg(x[1], k) for x, k in zip([x for x in roles[1:] if len(x) == 2], slots))
-            mods.append(("%s_Rel_%s" % (K, spec_rgl.kid(subject)), p, (vp,)))
+            mods.append(lambda cn, s=subject, p=p, vp=vp: spec_rgl_rel.rel_cn(
+                y.kind, s, cn, (spec_rgl.kid(s) + "_Rel", p, vp)))
         else:
             raise _trace("no step of the number of %ss there" % y.kind)
-    for fun, p, rest in mods:       # "lines of the stage whose outcome is `accepted`": a clause around the noun
-        tree = (fun, p, tree) + rest
+    for mod in mods:       # "lines of the stage whose outcome is `accepted`": a clause after the noun (b437)
+        tree = mod(tree)
     return (K + "_NumberOf", tree)
 
 

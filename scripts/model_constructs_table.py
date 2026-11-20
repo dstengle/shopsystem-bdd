@@ -10,7 +10,7 @@ pack's, kept beside `request-params` until the old reading is deleted (the domai
 
 K, T = r"k_\w+", r"t_[a-z0-9_]+_\d+"
 WORDS = r"%s_n|a_\w+|%s_v_\w+|Many\d+|Count_\d+|CodeLit" % (K, T)
-GLUE = r"%s_(?:UseN|Det|One|Simple|Up_k_\w+|OneAct)|OneCond|OneResp|NoPre|PPos" % K
+GLUE = r"%s_(?:UseN|Det|One|Simple|Up_k_\w+|OneAct|RelCN_k_\w+)|OneCond|OneResp|NoPre|PPos" % K
 NEG = "PNeg"
 
 
@@ -81,21 +81,21 @@ CONSTRUCTS = [
       "frame:fixed",
       "When the person runs `work start`, `work` shall exit successfully."),
     # relative clauses
-    c("rc-subject", "a relative clause whose subject is the noun", "<noun> that <verb> ...", r"%s_Rel_k_\w+" % K,
+    c("rc-subject", "a relative clause whose subject is the noun", "<noun> that <verb> ...", r"%s_Rel" % K,
       "When a session ends a stage, `work` shall print every session that follows the stage."),
     c("rc-object", "a relative clause whose object is the noun", "<noun> that <subject> <verb>",
-      r"%s_Obj_k_\w+|g_\w+|r\d+_\w+_Gap" % K,
+      r"%s_Gapped_k_\w+|g_\w+|r\d+_\w+_Gap" % K,
       "When the person runs `work start`, `work` shall print every stage that a session follows."),
     c("rc-whose", "a relative clause on the noun's attribute", "<noun> whose <attribute> is <value>",
-      r"%s_Whose_t_\w+" % K,
+      r"%s_Whose_k_\w+" % T,
       "When the person runs `work start`, `work` shall print every stage whose status is `done`."),
     c("rc-whose-relation", "a relative clause on the noun's relation", "<noun> whose <noun2> <verb> ...",
-      r"%s_Whose_r\d+_k_\w+" % K,
+      r"r\d+_Whose_k_\w+",
       "When the person runs `work start`, `work` shall print every session whose worktree holds a file."),
     c("not-relative", "a relative clause that does not hold", "<noun> that does not ...; <noun> whose ... is not",
       NEG,
       "When the person runs `work start` on a session, `work` shall print every stage that the session does "
-      "not follow.", r"_(?:Rel_k_\w+|Obj_k_\w+|Whose_\w+) PNeg"),
+      "not follow.", r"_(?:Rel|Gapped_k_\w+|Whose_k_\w+) PNeg"),
     # noun phrases
     c("a-noun", "any one in a condition or a trigger, a new one in a response", "a <noun>", "DetA",
       "When a session ends a stage, `work` shall write a file."),
