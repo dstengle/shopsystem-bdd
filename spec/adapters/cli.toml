@@ -475,6 +475,16 @@ requirements = [
 item = { positional = 1 }
 capability = { option = "--recodify" }
 
+[operations."drafting.declare"]
+command = "work line"
+cli-only = { options = ["--into"] }
+requirements = [
+  "drafting#r26: While an item holds a capability that does not exist, when the person declares a model line in the item, the drafting service shall keep the model line in the item.",
+]
+[operations."drafting.declare".parameters]
+item = { positional = 1 }
+"model line" = { option = "--model" }
+
 [operations."drafting.reword"]
 command = "work line"
 requirements = [

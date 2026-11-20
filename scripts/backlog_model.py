@@ -4,7 +4,8 @@ lines into spec/model/ and spec/vocabulary/"), in a context with a domain model 
 The item keeps them in a `### <area> model` block of its `## Requirements` (backlog_section reads and writes it): a
 ` ```model ` fence of model lines in the area's own syntax (domain_model_parse), then vocabulary entries `- **w**
 (...) → <element>. ...`. `work line --into <capability>` with `--model <lines>`, `--relation "<object>: <phrase> →
-<object> (<cardinality>)"` or a `--term` bullet writes into the block of the capability's `area:` (`add`), merged:
+<object> (<cardinality>)"` or a `--term` bullet writes into the block of the capability's `area:`, or of the
+own name of a capability the item makes (backlog_model_area, b387) (`add`), merged:
 an element the block names already gets the new member lines. `lay` puts them into `spec/model/<area>.md` (an element
 the area declares gets the member lines at its end, a new one is appended to the fence) and the entries at the end of
 `## Terms` of `spec/vocabulary/<area>.md` (made when missing); `unlay` takes them out again as `lay` put them."""
@@ -12,6 +13,7 @@ import re
 from collections import namedtuple
 from pathlib import Path
 
+import backlog_model_area
 import shop_files
 from backlog_items import Refused, commit, find, label, one_line
 
@@ -94,17 +96,12 @@ def unmerged(body, lines):
     return body
 
 
-def area_of(root, capability):
-    """The `area:` of a capability's file; refused when it has none."""
-    from backlog_section import capability_file
-    data, _ = shop_files.frontmatter(capability_file(root, capability).read_text())
-    if not data.get("area"):
-        raise Refused("work line: the capability %s names no area: its model lines have nowhere to go" % capability)
-    return str(data["area"])
+def area_of(root, capability, blocks=()):
+    """The area of a capability's model lines (backlog_model_area): a new capability's own name, else its `area:`."""
+    return backlog_model_area.area_of(root, capability, blocks)
 
 
-def model_path(root, area):
-    return Path(root) / "spec" / "model" / ("%s.md" % area)
+model_path = backlog_model_area.model_path
 
 
 def vocabulary_path(root, area):
@@ -123,10 +120,11 @@ def _fence(text, rel):
     return lines, start, end
 
 
-def _checked(root, area, lines):
-    """The model lines, refused unless they read as a model block (domain_model_parse)."""
+def _checked(root, area, lines, blocks=()):
+    """The model lines, refused unless they read as a model block (domain_model_parse); an area with no model file
+    is refused unless it is a capability's the item makes (b387), whose file the lay makes."""
     import domain_model_parse
-    if not model_path(root, area).is_file():
+    if not model_path(root, area).is_file() and backlog_model_area.new_block(blocks, area) is None:
         raise Refused("work line: there is no spec/model/%s.md: the area %s has no model to add to" % (area, area))
     domain_model_parse.Reader("the item's model lines", area).read(lines, 1)
     return tuple(lines)
@@ -146,8 +144,8 @@ def add(root, name, capability, model=None, relation=None, term=None):
     from backlog_section import SECTION, read, render, takes
     item = find(root, name)
     takes(item)
-    area = area_of(root, capability)
     blocks = read(item, "the item %s" % item.name)
+    area = area_of(root, capability, blocks)
     at = _block(blocks, area)
     block = blocks.models[at]
     if term is not None:
@@ -167,7 +165,7 @@ def add(root, name, capability, model=None, relation=None, term=None):
             lines = ["object %s" % found.group(1).strip(), "  relations: %s" % found.group(2).strip()]
         else:
             lines = [x.rstrip() for x in model.replace("\r\n", "\n").split("\n") if x.strip()]
-        _checked(root, area, lines)
+        _checked(root, area, lines, blocks)
         blocks.models[at] = block._replace(lines=tuple(merged(block.lines, lines)))
         said = "model lines of %s" % area
     item.sections[SECTION] = render(blocks)
@@ -216,6 +214,7 @@ def lay(into, blocks, files):
     for block in getattr(blocks, "models", ()):
         if block.lines:
             path, rel = model_path(into, block.area), "spec/model/%s.md" % block.area
+            backlog_model_area.made(into, block.area, blocks)
             lines, start, end = _fence(path.read_text(), rel)
             path.write_text("\n".join(lines[:start] + merged(lines[start:end], block.lines) + lines[end:]))
             files.append(rel)
@@ -237,6 +236,8 @@ def unlay(into, blocks, files):
             text = "\n".join(lines[:start] + unmerged(lines[start:end], block.lines) + lines[end:])
             if text != path.read_text():
                 path.write_text(text)
+                files.append(rel)
+            if backlog_model_area.unmade(into, block.area, blocks) and rel not in files:
                 files.append(rel)
         path = vocabulary_path(into, block.area)
         if block.terms and path.is_file():
