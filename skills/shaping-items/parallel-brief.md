@@ -19,7 +19,7 @@ Follow the shaping-items skill, steps 2-4, on your item: its model lines, relati
 ## Rules
 
 - Touch your own item only: every `work` command you run names `b<n>`. Never edit another item, `spec/`, `features/` or any file by hand.
-- Add all your model lines (`work line --into <capability> --model`), relations (`--relation "<object>: <phrase> → <object> (<cardinality>)"`) and vocabulary entries (`--term "- **<word>** (<part of speech>) → <element>. <one sentence>."`) before you check a line with `work ready`: each change to the vocabulary or the model recompiles grammar 4, so they go in at once.
+- Add all your model lines (`work line --into <capability> --model`), relations (`--relation "<object>: <phrase> → <object> (<cardinality>)"`) and term bullets, the vocabulary entries (`--term "- **<word>** (<part of speech>) → <element>. <one sentence>."`), before you check a line with `work ready`: each change to the vocabulary or the model recompiles grammar 4, so they go in at once.
 - Run a long command (`work ready`, `spec logic`, `features generate`) with a timeout of a few minutes; past it, say which command and stop.
 - No push, and no batch command: `work batch` is the session's, after the wave.
 - Never use `git stash`: every worktree shares one stash list, and the other agents of the wave work at the same time.
