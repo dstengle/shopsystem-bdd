@@ -10,6 +10,7 @@ been renamed or retired since.
 
 | Line | Releases |
 |---|---|
+| 0.40 | [0.40.0](#0400-a-new-context-built-by-command-and-the-docs-as-prompts-to-the-session) |
 | 0.39 | [0.39.0](#0390-each-operation-carries-its-lines-the-catalogues-as-specification-migrate-init-and-the-docs-revised) |
 | 0.38 | [0.38.0](#0380-the-domain-contract) |
 | 0.37 | [0.37.0](#0370-whole-spec-faults-caught-before-a-batch-chores-new-capabilities-by-command-and-model-logics-precision) |
@@ -21,6 +22,31 @@ been renamed or retired since.
 | 0.31 | [0.31.5](#0315-released-as-240-the-request-watch-wakes-on-githubs-events-and-starts-with-the-session) · [0.31.4](#0314-released-as-231-a-batch-runs-in-one-fresh-agent-and-a-parked-item-leaves-the-batch-at-once) · [0.31.3](#0313-released-as-230-work-pushes-its-commits-requests-post-after-they-commit-and-work-watch) · [0.31.2](#0312-released-as-220-decisions-and-records-written-by-command) · [0.31.1](#0311-released-as-210-requests-exchanged-through-github-issues) · [0.31.0](#0310-released-as-200-the-workflow-simplified) |
 | 0.30 | [0.30.0](#0300-released-as-100-codified-requirements) |
 | 0.29 and before | [0.29.0](#0290-glossary-proposals-delegations-given-late-and-fewer-stops-from-outside-a-work-item) · [0.28.3](#0283-a-branch-review-that-runs-nothing) · [0.28.2](#0282-answers-a-round-cannot-hold-go-back-to-integration) · [0.28.1](#0281-work-run-stops-visibly-on-questions-and-spends-less-agent-time) · [0.28.0](#0280-one-set-of-request-commands-work-list-and-work-show-and-answers-that-redraft) · [0.27.0](#0270-transitions-from-how-a-session-ended-and-the-turn-of-an-accepted-request) · [0.26.0](#0260-requests-and-the-context-loop) · [0.25.0](#0250-work-items-side-by-side-answers-and-guarantees) · [0.24.0](#0240-work-items-named-by-ids-and-upgrades-between-plugin-releases) · [0.23.1](#0231---work-item-keeps-tests-that-are-not-scenarios) · [0.23.0](#0230-faults-settled-query-output-as-json-the-session-keeps-the-gate-measurement-on-v3) · [0.22.0](#0220-one-requirement-per-scenario-faults-and-the-lessons-of-a-blind-formulation) · [0.21.0](#0210-the-final-layout-and-delivery-by-work-run) |
+
+## 0.40.0: a new context built by command, and the docs as prompts to the session
+
+- **A new capability on an item takes model lines and vocabulary entries** (b387, b354): `work line --into
+  <capability> --model ...` and `--term ...` keep them on the item for a capability the item itself adds with
+  `work line --capability`, in the area its block names, else its own name; the lay makes `spec/model/<area>.md`
+  when the context has none, and the unlay takes it out again. Nothing under `spec/model/` or `spec/vocabulary/` is
+  written by hand, from `migrate init` to `work ready`.
+- **A new capability is laid in 0.38's form** (b391): its file says `area:` and `specifies:` and holds no empty
+  `## Terms`; `spec/index.md` keeps one `## Composition` whose `| area | kind | capabilities |` table names it in its
+  area's row. An index still in the old `| capability | narrator | group |` tables is written in that form, its
+  other subsections (a retired list) kept, and the unlay puts it back byte for byte.
+- **`tools install` and `tools probe` in a project with no source file yet** (b388) reach the grammar tools: probe
+  prints the grammar block and says the analysis tools are not probed, install installs GF, pgf, clingo and the RGL;
+  a virtualenv's files are not the project's.
+- **The lay writes the construct catalogue only for a line that cites a construct** (b390): a code counts as a
+  citation after "uses" (or in its list), not as a backticked value such as a status `done`.
+- **A fresh context's first batch** (b389): the batch brief runs the acceptance tests with `-p work_items` and, for a
+  context with no step bindings or no `spec/adapters/cli.toml`, says how the first task makes the bindings, the
+  program and the adapter contract, and that `work batch review` needs a remote and gh.
+- **The user docs lead with prompts to the session** (b397): the [README](README.md) and
+  [getting started](docs/getting-started.md) say what the person says and what the session does, not commands they
+  run; the commands are in the [command reference](docs/reference/commands.md#how-the-commands-are-run). shaping-items
+  sets up a repository with no spec (`tools install`, `migrate init`, the first capability by `work line`) and writes
+  0.38's model lines, relations and vocabulary entries.
 
 ## 0.39.0: each operation carries its lines, the catalogues as specification, migrate init, and the docs revised
 
