@@ -112,7 +112,7 @@ Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CA
 - `--capability <name> --narrator "<who>" [--group service|guarantees] "<purpose>"`: a capability new to the
   context, written as a block of the item (its narrator, group, default `service`, and purpose); refused when
   `spec/capabilities/<name>.md` exists. Lines and terms go into it with `--into <name>`; `work batch start` writes
-  its file and its row under `## Composition` of `spec/index.md`.
+  its file (with `area:` and `specifies:`) and names it in its area's row under `## Composition` of `spec/index.md`.
 
 The line gets the next free id of its capability (`items#r31`). It goes into `spec/` only when a batch starts.
 `work line` does not parse the line; [`work ready`](#work-ready) does.
