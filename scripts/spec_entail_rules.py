@@ -36,6 +36,21 @@ def q(s):
     return '"%s"' % s.replace("\\", "\\\\").replace('"', '\\"')
 
 
+PAIR = re.compile(r"pair\((\w+),(\w+)\)")
+
+
+def _pair(x, term):
+    """An object with its recipient (`pair(a,b)`, b314) as the compound of its parts' terms, else None (b420: never
+    one quoted string, which two lines' pairs of other kinds would share)."""
+    found = PAIR.fullmatch(x)
+    return "pair(%s,%s)" % (term(found.group(1)), term(found.group(2))) if found else None
+
+
+def _parts(x):
+    found = PAIR.fullmatch(x)
+    return set(found.groups()) if found else set()
+
+
 def _quiet(x):
     return x.startswith(("value(", "number("))
 
@@ -83,7 +98,7 @@ class Premises:
         out = {a[0] for a in f["cond"] + f["ccond"]} | {a[1] for a in f["crel"]} | {a[2] for a in f["crel"]}
         out |= {a[0] for a in f["named"]} | {a[3] for a in f["resp"]}
         if r in self.trig:
-            out |= {self.trig[r][2], self.trig[r][3]}
+            out |= {self.trig[r][2], self.trig[r][3]} | _parts(self.trig[r][3])
         return out
 
     def existentials(self, r):
@@ -102,7 +117,8 @@ class Premises:
     def world(self, L, I, Q, bridge):
         """The facts of query Q: L's terms (and the actors it names), its antecedent, trigger and other responses."""
         f, can, ex, fx = self.reqs[L], self.canon(L), self.existentials(L), self.fixed(L)
-        tm = lambda x: fx[x] if x in fx else "t(%s)" % can[x] if x in can else q(x)
+        tm0 = lambda x: fx[x] if x in fx else "t(%s)" % can[x] if x in can else q(x)
+        tm = lambda x: _pair(x, tm0) or tm0(x)
         terms, out = {}, []
         for y, k in f["role"]:
             if can[y] == y and y not in ex:
@@ -133,7 +149,8 @@ class Premises:
                 out.append("bridgecmd(%s,%s)." % (Q, q(e)))
         kinds = dict(f["role"])
         for j, p, e, d, x in f["resp"]:
-            o = tm(x) if x in can and x not in ex else (x if _quiet(x) else ("x(%s)" % x if x in ex else q(x)))
+            o = tm(x) if x in can and x not in ex or _parts(x) else (
+                x if _quiet(x) else ("x(%s)" % x if x in ex else q(x)))
             if j != str(I):
                 out.append("r(%s,%s,%s,%s,%s,self)." % (Q, p, e, tm(d), o))
             elif x in ex and p == "neg":     # "shall not E a K": E is done to no K; the witness is any K
@@ -170,7 +187,8 @@ class Premises:
         every = {can[y] for y in self.every(M)} | {can[y] for y in self.neguniv(M)}
         ante = {can[y] for y in self.ante_roles(M) if y in can} | every
         fx = self.fixed(M)
-        V = lambda y: fx[y] if y in fx else "V_%s" % can[y] if y in can else ("none" if y == "none" else q(y))
+        V0 = lambda y: fx[y] if y in fx else "V_%s" % can[y] if y in can else ("none" if y == "none" else q(y))
+        V = lambda y: _pair(y, V0) or V0(y)
         a, na = ("a0", "na0") if M in self.trig else ("a1", "na1")
         body = ["use(Q,%s)" % mq]
         if M in self.trig:
@@ -193,6 +211,8 @@ class Premises:
             return sorted({can[e] for qq, a1, a2 in f["orel"] for e in (a1, a2) if z in (a1, a2) and can.get(e) in every})
 
         def obj(z):
+            if _parts(z):
+                return _pair(z, obj)
             if z in can and can[z] not in ante:
                 return "f(%s,%s%s)" % (mq, can[z], "".join(",V_%s" % e for e in deps(z)))
             return V(z) if z in can or z == "none" else (z if _quiet(z) else q(z))

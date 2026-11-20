@@ -122,7 +122,12 @@ When the person opens the board, the work service shall give a file to a session
 # counts (I15, call 4): a bound and a number before a noun, the noun agreeing with the number; "one" alone
 When the person opens the board, the work service shall return at least two stages.
 When the person opens the board, the work service shall return at most one stage, exactly three files or more than one session.
+When the person opens the board, the work service shall end fewer than ten stages and return one file.
+# a request acts on one thing (b420, decision 0111): a count, "every", a number word or a plural in a request's object
 When a session ends fewer than ten stages, the work service shall return one file.
+= refused: a request acts on one thing: "fewer than ten stages" is a plural object of end
+When the person ends the stages, the work service shall complete the request.
+= refused: a request acts on one thing: "the stages" is a plural object of end
 When the person opens the board, the work service shall return at least one stages.
 = refused: does not parse at stages
 # setting an attribute of a thing named earlier to a value (b216): "the T of x", "the K T", polarity, among other acts
