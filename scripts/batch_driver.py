@@ -87,9 +87,9 @@ FRESH = (
      "into its own (its commits cite the earlier in-batch item, which `done` accepts)."),
     ("- Step bindings: one test module a capability, `tests/scenarios/test_<capability>.py`, binding "
      "`features/<capability>.feature` with pytest-bdd's `scenarios(...)` and one step definition a step text; "
-     "`features vocab` lists the step grammar's shapes (the functions ending in `Step`) and docs/getting-started.md, "
-     "step 7, shows a whole module. `tests/scenarios/conftest.py` (from `migrate init`) and `-p work_items` make an "
-     "`unbuilt:` id's scenario a strict xfail."),
+     "`features vocab` lists the step grammar's shapes (the functions ending in `Step`) and %s, step 6, shows a "
+     "whole module. `tests/scenarios/conftest.py` (from `migrate init`) and `-p work_items` make an `unbuilt:` id's "
+     "scenario a strict xfail." % (SCRIPTS.parent / "docs" / "getting-started.md")),
     ("- The program: the command-line program the lines' operations are requested of, with its argparse "
      "subcommands and options; a When step runs it, a Then reads its exit, output and the files it kept."),
     ("- The adapter contract `spec/adapters/cli.toml`: `[programs]` names the program's path, and each "

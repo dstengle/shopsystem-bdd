@@ -42,7 +42,8 @@ def test_a_capability_with_no_test_module_is_bound_by_its_task(tmp_path, monkeyp
     (tmp_path / "tests" / "scenarios" / "test_notes.py").unlink()
     text = _brief(tmp_path, monkeypatch)
     assert "- Step bindings: none yet; this task writes tests/scenarios/test_notes.py" in text
-    assert "## A fresh context" in text and "getting-started" in text and "features vocab" in text
+    assert "## A fresh context" in text and "features vocab" in text
+    assert "%s, step 6, shows a whole module" % (SCRIPTS.parent / "docs" / "getting-started.md") in text
 
 
 def test_a_context_with_a_model_and_no_adapter_contract_is_told_how_to_make_one(tmp_path, monkeypatch):
