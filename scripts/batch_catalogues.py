@@ -1,6 +1,7 @@
 """The catalogues `work batch start` writes again on the batch's branch (batches r48, r49; b333): the rule catalogue
 `grammar/rules.md` and the construct catalogue `grammar/constructs.md`, each as `model rules --write` and `model
-constructs --write` write it, when the bounded context keeps it or a line the batch lays cites one of its codes;
+constructs --write` write it, when the bounded context keeps it or a line the batch lays cites one of its codes (a
+construct by its code after "uses", model_constructs.citing; a backticked value that spells a code is no citation, b390);
 their entries list the lines citing each code, so the lines a batch lays change them. A catalogue that cannot be
 written (an example that does not do what it says, an uncovered function a grammar item brings) is left as it is and
 its problems given back, for the batch brief to name and that item's task to mend, never refusing the start."""
