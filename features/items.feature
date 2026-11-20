@@ -144,9 +144,10 @@ Feature: Items
   @g12 @r12
   Scenario: An item shown gives its title
     Given an item i1
+    And a title t1
+    And the item i1 has the title t1
     When the person shows the item i1
     Then the backlog service returns the title t1
-    And the item i1 has the title t1
 
   @g13 @r13
   Scenario: An idea noted is kept as an item
@@ -309,10 +310,11 @@ Feature: Items
   Scenario: The backlog gives each item's title, status, provenance and ratings
     Given an item i1
     And the item i1 exists
+    And a title t1
+    And the item i1 has the title t1
     When the person lists this backlog
     Then the backlog service returns the item i1
     And the backlog service returns the title t1
-    And the item i1 has the title t1
     And the backlog service returns the status of the item i1
     And the backlog service returns the provenance of the item i1
     And the backlog service returns the value of the item i1

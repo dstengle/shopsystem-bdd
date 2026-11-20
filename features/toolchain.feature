@@ -113,9 +113,10 @@ Feature: Toolchain
     Given an analysis tool a1
     And the presence of the analysis tool a1 is `uninstallable`
     And the environment of this Python interpreter is `virtualenv`
+    And a pip command p1
+    And the analysis tool a1 has the pip command p1
     When the person installs this toolchain
     Then the toolchain service returns the pip command p1
-    And the analysis tool a1 has the pip command p1
     And the toolchain service refuses this request
     And the toolchain service names the analysis tool a1
 

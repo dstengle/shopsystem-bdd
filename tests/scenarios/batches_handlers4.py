@@ -75,7 +75,7 @@ def has_given(step, *given):
         T.given(step, "commit", n2)["item"] = step.context["given"]["task"][task]["item"]
     elif (k1, k2) == ("task", "worktree"):            # the task's workspace, the branch its kept changes are on
         step.context.setdefault("git_branches", {}).setdefault(n2, {})["task"] = n1
-    elif (k1, k2) not in (("batch", "git branch"), ("batch", "worktree")):
+    elif (k1, k2) not in (("batch", "git branch"), ("batch", "worktree"), ("batch", "batch plan")):    # its plan, b416
         return False
 
 

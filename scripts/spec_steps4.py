@@ -34,6 +34,7 @@ import spec_lf_set
 import spec_lf_values
 import spec_rgl
 import spec_steps4_boxes as boxes
+import spec_steps4_bring as bring
 import spec_steps4_counter as counter
 import spec_steps4_request as request
 from spec_lf_core import Atom, Box
@@ -289,8 +290,8 @@ def read(vocab, forms, entailed=None, r=None):
                 found = request.trigger(r, part)
                 givens, when = givens + found[0], when + found[1]
             elif part.op == "response":
-                boxes.bring_response(r, part)     # brought in before the When (b273, b286)
-                for act, tree in r.acts(part.body):
+                body = bring.bring_response(r, part)     # brought in before the When (b273, b286, b416)
+                for act, tree in r.acts(body):
                     number += act is True
                     thens.append(("#", "entailed: %s" % gone[number]) if act and number in gone else ("then", tree))
             elif part.op not in ("while", "where", "when", "if"):
