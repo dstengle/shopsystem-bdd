@@ -238,22 +238,21 @@ def test_generation_imports_no_solver():
 
 
 def test_check_on_the_live_repo_is_fast_and_clean():
-    """Every live service capability is read off its requirements' facts without a crash, in under 10 s of the
-    command's own CPU time with the parse cache warm: 2.8 s alone (2026-11-20), over 5 s under a full suite's load, so
-    10 s leaves headroom and still catches a regression of the order this was written for. A run over it is taken
-    again, once, since it may have warmed the cache; CPU time, not the wall clock, so the suite's parallel load counts
-    less against it (b420). The checked-in features may differ until layer 4 regenerates them."""
+    """Every live service capability is read off its requirements' facts without a crash, in under 5 s of the
+    command's own CPU time with the parse cache warm (a run over 5 s is taken again, once, since it may have warmed
+    the cache; CPU time, not the wall clock, so a full suite's parallel load does not count against it, b420); the
+    checked-in features may differ until layer 4 regenerates them."""
     toolchain.require()
     for _ in range(2):
         before = resource.getrusage(resource.RUSAGE_CHILDREN)
         done = features(REPO, "generate", "--check")
         after = resource.getrusage(resource.RUSAGE_CHILDREN)
         took = (after.ru_utime - before.ru_utime) + (after.ru_stime - before.ru_stime)
-        if took < 10:
+        if took < 5:
             break
     assert done.returncode in (0, 1), done.stdout + done.stderr
     assert "Traceback" not in done.stderr
-    assert took < 10, "features generate --check took %.1f s" % took
+    assert took < 5, "features generate --check took %.1f s" % took
 
 
 def test_byte_stable(tmp_path):

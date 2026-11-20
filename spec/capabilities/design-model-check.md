@@ -41,6 +41,8 @@ Moved to `spec/vocabulary/` and `spec/model/` (the domain contract, 0.38.0).
   `spec/restated.json`. A node is `<kind>/<context path>/<name>` or `<kind>/<name>`, and a bare `<name>` only in a
   field that fixes the kind (`rests_on`, `supersedes`, `argues`, `under`, `depends_on`) or the capability part of a
   reference. A decision's `source`, and not its `by`, is a list of ids.
+- A `quote-<n>` in a decision's `source` names the person's words kept as `.shop/quotes/<n>.md`, and resolves when that
+  file exists.
 - The glossary of `spec/index.md` (and each capability's `## Terms`) is read by `spec_lexicon` where the index is
   codified; a term is `term/<context path>/<term>`, and each word after `Not:` a word it avoids. A requirement or a
   scenario mentions a term or avoided word when it contains it as a whole word, whatever its case, with a plural "s"
