@@ -5,7 +5,8 @@ is read.
 - the form: a trigger whose verb names an operation is the atom `request(e, O, subject: actor, object: x)` (O the
   operation's qualified id), and each parameter the line says `param(e, p, v)` (v a value, a code's referent, a
   thing's referent, `some` of "with a p", `on` of a flag) or `noparam(e, p)` ("without a p", "without the p")
-  (`vp`, `frame`, `expand`); "the p" a response names a constant of the request pack's kind `parameter` (`np`);
+  (`vp`, `frame`, `expand`); a code given as the value of a parameter that is the word of an attribute T is of kind
+  T, as the image "the T of x" is (param-of, b418: `value_kind`); "the p" a response names a constant of the request pack's kind `parameter` (`np`);
   "the request" is the request the trigger makes, the pack's `This:` (R2's indexical, spec_lf_read's `the`). An act of
   a response keeps its event atom: a request is said in a trigger only.
 - its lines in `model parse --form` (`show`).
@@ -47,6 +48,12 @@ def _walk(st, tree, out):
     return out
 
 
+def value_kind(st, p):
+    """The kind of a code given as parameter p's value: the attribute's word when p is the word of an attribute (a
+    value of it, the kind of "the T of x" too: design-decision 0110), else thing."""
+    return p if any(t.term == p for t, _ in st.vocab.attributes) else "thing"
+
+
 def _thing(v):
     """True of a parameter's noun phrase, False of its code or value."""
     name = v if isinstance(v, str) else v[0]
@@ -77,7 +84,7 @@ def vp(st, tree, nps, frame_atom):
             elif role == "Flag":
                 given.append((p, ON))
             elif nps.fun(v) == "CodeLit":
-                given.append((p, nps.code(st, "thing", v).ref))
+                given.append((p, nps.code(st, value_kind(st, p), v).ref))
             elif not _thing(v):
                 given.append((p, "`%s`" % spec_rgl_ops.funs(st.vocab)[nps.fun(v)][2][2:]))
             else:

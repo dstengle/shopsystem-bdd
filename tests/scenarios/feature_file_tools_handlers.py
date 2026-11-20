@@ -34,7 +34,7 @@ KINDS = ("feature file", "scenario", "scenario title", "tag", "requirement tag",
          "scenario outline", "examples row", "rule block", "subdirectory", "replacement", "search text", "binding",
          "scenarios call", "test module", "step", "feature", "requirement", "requirement group", "universal condition",
          "capability", "handler", "act", "referent", "description", "precondition", "count", "restriction",
-         "upper bound", "instance", "counter-example", "boundary", "given step", "order", "verb")
+         "upper bound", "instance", "counter-example", "boundary", "given step", "order", "verb") + GEN.REQ.KINDS
 FILES = ("`features count`", "`features list`", "`features deprecated`", "`features bindings`")
 
 
@@ -66,7 +66,7 @@ def given_k(step):
 
 
 @W.own("GivenDoes", "has", "contain", "bind", "use", "conform", "entail", "holds", "bring in", "precede", "allow",
-       "assert", "mention", "take")
+       "assert", "mention", "take", "make", "govern", "introduce")
 def given_does(step):
     W.record(step)
     w = W.world(step)
@@ -160,10 +160,13 @@ def exits_err(step):
         assert said(step, np) in done.stdout + done.stderr, (said(step, np), done.stdout, done.stderr)
 
 
+@W.own("ThenDoes", "mention", "introduce")     # a request's feature's steps (b418)
 @W.own("ThenDoes", "write", "use", registry=False)
 @W.own("ThenDoes", "refuse", "name", "has", "follow", "satisfy")
 def then_does(step):
     done, w = result(step), W.world(step)
+    if GEN.REQ.mine(w):     # a request's feature (b418)
+        return GEN.REQ.then(step, w)
     if ORDER.mine(w, step):     # the order of a scenario's Thens (r111)
         getattr(ORDER, {"has": "has", "follow": "follows"}.get(step.term, "writes"))(step, w)
     elif step.term == "use" and step.subject.startswith("the step"):     # the step s2 uses `nothing` (b274)
@@ -187,6 +190,8 @@ def then_does(step):
 @W.own("ThenDoesNot", "write", "commit", "post", "keep", "make", "rewrite", "publish", registry=False)
 def then_does_not(step):
     w = W.world(step)
+    if GEN.REQ.mine(w):     # a request's feature (b418)
+        return GEN.REQ.then(step, w, False)
     (ORDER.writes_not if ORDER.mine(w, step) else GEN.writes_not)(step, w)
 
 

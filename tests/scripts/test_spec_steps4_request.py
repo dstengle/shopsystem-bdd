@@ -34,8 +34,7 @@ def steps(line):
 def test_the_when_of_a_request_with_a_code_a_value_and_an_absent_parameter():
     assert steps("When the person adds a note with the text `milk` and without a priority, the notes service shall "
                  "keep the note.") == [
-        ("given", "a note n1"),
-        ("when", "the person adds the note n1 with the text `milk` and without a priority"),
+        ("when", "the person adds a note n1 with the text `milk` and without a priority"),
         ("then", "the notes service keeps the note n1")]
 
 
@@ -45,7 +44,7 @@ def test_a_thing_a_parameter_names_is_brought_in_and_the_parameter_named():
         ("when", "the person labels the note n1 with the tag t1"), ("then", "the notes service keeps the tag t1")]
     assert steps("If the person adds a note without a text and the reminder, then the notes service shall refuse the "
                  "request and name the text.")[-3:] == [
-        ("when", "the person adds the note n1 without a text and the reminder"),
+        ("when", "the person adds a note n1 without a text and the reminder"),
         ("then", "the notes service refuses this request"), ("then", "the notes service names the text")]
 
 
@@ -61,6 +60,37 @@ def test_a_given_text_value_is_said_as_its_code_and_reads_back():
     said = [(k, spec_rgl_steps.text(gram, t)) for k, t in spec_steps4.read(vocab, [("notes#r1", form)])]
     assert ("given", "the title of the note n1 is `milk`") in said
     assert features_vocab4.step(notes, "given", "the title of the note n1 is `milk`").template == "GivenK_A"
+
+def test_the_thing_an_operation_makes_is_brought_in_by_the_when():
+    """b418: add's note is its `done →` outcome's and named by no parameter: "a note n1" in the When, no Given; a note
+    a parameter names (label's) keeps its Given."""
+    said = steps("When the person adds a note with a text, the notes service shall keep the note.")
+    assert said == [("when", "the person adds a note n1 with a text"), ("then", "the notes service keeps the note n1")]
+    assert features_vocab4.step(FIXTURE, "when", said[0][1]).operation == "notes.add"
+    assert steps("When the person labels a note with a tag, the notes service shall keep the tag.")[0] == \
+        ("given", "a note n1")
+
+
+def test_a_value_in_use_is_given_to_the_other_thing_and_to_the_request():
+    """b418 (param-of): the other note's value made up in a Given and the same value in the When's request; of an
+    attribute with listed values, its first."""
+    said = steps("If the person adds a note with the priority of another note, then the notes service shall refuse "
+                 "the request.")
+    assert said == [("given", "a note n2"), ("given", "the priority of the note n2 is `low`"),
+                    ("when", "the person adds a note n1 with the priority `low`"),
+                    ("then", "the notes service refuses this request")]
+    call = features_vocab4.step(FIXTURE, "when", said[2][1])
+    assert call.params == [("priority", "`low`")]
+    notes = REPO / "docs" / "examples" / "notes-cli"
+    vocab, gram = spec_rgl_steps.load(notes)
+    parsed = spec_grammar4.parse(notes, "If the person adds a note with the title of another note, then the notes "
+                                        "service shall refuse the request.")
+    assert parsed.tree, parsed.refusal
+    form = spec_lf.form(vocab, parsed.tree)
+    said = [(k, spec_rgl_steps.text(gram, t)) for k, t in spec_steps4.read(vocab, [("notes#r5", form)])]
+    assert said[:3] == [("given", "a note n2"), ("given", "the title of the note n2 is `t1`"),
+                        ("when", "the person adds a note n1 with the title `t1`")]
+
 
 @pytest.mark.parametrize("keyword, text, template, attrs", [
     ("when", "the person adds the note n1 with the text `milk` and the priority `high`", "WhenRequests",
@@ -89,7 +119,7 @@ def test_features_generate_writes_the_fixtures_feature_and_its_steps_read(tmp_pa
                          capture_output=True, text=True)
     assert run.returncode == 0, run.stderr
     feature = (tmp_path / "features" / "notebook.feature").read_text()
-    assert "When the person adds the note n1 with a text and the priority `high`" in feature
+    assert "When the person adds a note n1 with a text and the priority `high`" in feature
     kw = None
     for line in feature.splitlines():
         keyword, _, text = line.strip().partition(" ")

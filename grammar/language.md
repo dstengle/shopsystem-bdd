@@ -1784,6 +1784,34 @@ shall [x3: service the work service (constant), x4: request "the request the tri
 
 A parameter the operation does not declare is no word of the line: "with a colour" does not parse.
 
+### "with the T of another K": a value in use
+
+A parameter that is the word of an attribute T takes, beside a code and a value T lists, "the T of" a thing of a kind
+that has T as its value (b418, construct `param-of`): "with the verdict of another line" is a request whose parameter
+is the value another line has. Every wording of a parameter's value is one referent of the logical form with
+conditions on it (design-decision 0110): `param(e, T, v)` beside `T(x) = v`, and a code given as the value (of kind T,
+as the image is) or a value T lists is that referent too. In `spec logic` the parameter's value is part of what the
+request is on, so a line of the value in use and a line of a code or a listed value on the same request are one
+request when the unification keeps one value, and their responses are checked against each other. In a scenario the
+other thing is brought in by a Given with a value made up (a text's its referent's name, `t1`; of a T with listed
+values its first), and the When's request is given the same value as a code: nothing reads a collection.
+
+```reading
+If a session settles a line with the verdict of another line, then the work service shall refuse the request.
+shall [x5: service the work service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x1: session, x2: line, x3: line, x4: verdict]
+    distinct(x3, x2)
+    verdict(x3) = x4
+    request(e1, work.settle, subject: x1, object: x2)
+    param(e1, verdict, x4)
+  response
+    refuse(e2, subject: x5, object: x6)
+```
+
+An operation whose object is its `done →` outcome's and that no parameter names makes its object: a scenario brings
+it in in the When ("When the person adds a note n1 with a title"), never by a Given, which a test could read as the
+thing put in the store first.
+
 ### "this request", "the commit", "the push of the commit": the request's own things
 
 A thing a request makes is said, for a kind whose entry has `This:`, as the request's own K (R11: "the commit", "this

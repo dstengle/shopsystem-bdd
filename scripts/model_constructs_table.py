@@ -159,6 +159,11 @@ CONSTRUCTS = [
       r"q_\w+|o_\w+|%s_Request|p_\w+_NP" % K,
       "When the person enters a design-decision with the tier `check` and without a summary, the decisions service "
       "shall keep the design-decision.", r"o_\w+_WithWithout", "request"),
+    c("param-of", "a request parameter's value that is another thing's value of the attribute the parameter names, a "
+      "referent of the logical form (b418, design-decision 0110)", "<actor> <operation verb> <np> with the "
+      "<parameter> of <np>", r"o_\w+_Of_t_\w+",
+      "If the person enters a design-decision with the title of another design-decision, then the decisions service "
+      "shall refuse the request and name the title.", None, "request"),
     # relations
     c("of-relation", "a noun of another by a relation row", "<noun> of|in <np>", r"r\d+_\w+_Mod",
       "When a session ends a stage, `work` shall print the worktree of the session."),

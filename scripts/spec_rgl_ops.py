@@ -14,6 +14,9 @@ service (spec_vocabulary_terms' `operation`), the request with its parameters, g
   number, time or version a code (`o_<O>_<p>_Is : Code -> o_<O>_P`, "the text `milk`"); an object its noun phrase
   (`o_<O>_<p>_Is_<K> : K_NP -> o_<O>_P`, "a tag", "the tag t1"); "a p" given with no value said (`_Some`) and absent
   (`_No`, after "without"); a flag "the p" given (`_Flag`) or absent (`_NoFlag`).
+- param-of (b418, design-decision 0110): a parameter p that is not a flag nor an object and is the word of an
+  attribute T takes "the T of <np>" as its value (`o_<O>_<p>_Of_<T> : <T>_NP -> o_<O>_P`, "the title of another
+  checklist"), role "Is": its value is the image's referent, as a thing's is.
 - Per parameter name of no object, "the p" a noun phrase of the request pack's kind `parameter` (`p_<p>_NP`), which a
   response names: "refuse the request and name the text". None whose name is a kind's noun or an actor.
 
@@ -68,9 +71,17 @@ def funs(vocab):
                 out.update({"%s_%s" % (P, r): (op_id, p.name, r) for r in ROLES})
                 out.update({"%s_Is_%s" % (P, spec_rgl.kid(k)): (op_id, p.name, "Is") for k in p.targets})
                 out.update({"%s_v_%s" % (P, spec_rgl.slug(v)): (op_id, p.name, "v:" + v) for v in p.values})
+                out.update({"%s_Of_%s" % (P, T): (op_id, p.name, "Is") for T in attributes(vocab, p)})
         out.update({"p_%s_NP" % spec_rgl.slug(n): (None, n, "NP") for n in parameter_nps(vocab)})
         _funs[key] = (vocab, out)
     return _funs[key][1]
+
+
+def attributes(vocab, p):
+    """The ids `t_<T>_<n>` of the attribute entries whose word is the name of parameter p (of no flag or object)."""
+    if p.type in ("flag", "object"):
+        return []
+    return ["t_%s_%d" % (spec_rgl.slug(t.term), n) for n, (t, _) in enumerate(vocab.attributes, 1) if t.term == p.name]
 
 
 def _params(w, op_id, op, vocab):
@@ -99,6 +110,8 @@ def _params(w, op_id, op, vocab):
                           "{s = (mkUtt x).s}", "x")
             continue
         w.fun(P + "_Some", O + "_P", "{s = %s}" % spec_rgl.s(article(p.name)))
+        for T in (T for T in attributes(vocab, p) if T + "_NP" in w.cats):     # param-of (b418)
+            w.fun("%s_Of_%s" % (P, T), "%s_NP -> %s_P" % (T, O), "{s = (mkUtt x).s}", "x")
         if p.type == "values":
             w.cat(P + "_Val", "{s : Str}")
             for v in p.values:

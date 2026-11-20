@@ -1086,6 +1086,31 @@ shall [x1: agent the person (constant), x3: service the decisions service (const
     keep(e2, subject: x3, object: x2)
 ```
 
+## param-of
+
+a request parameter's value that is another thing's value of the attribute the parameter names, a referent of the logical form (b418, design-decision 0110)
+
+- Purpose: Gives a request parameter the value another thing already has, so a line can say a value in use is refused.
+- Since: b418
+- Form: <actor> <operation verb> <np> with the <parameter> of <np>
+- Functions: `o_\w+_Of_t_\w+`
+- Cited by: consistency#r34, parsing#r17, parsing#r18, scenarios#r36
+- Context: `grammar/corpus/constructs/request/`
+- Example and its reading:
+
+```construct
+If the person enters a design-decision with the title of another design-decision, then the decisions service shall refuse the request and name the title.
+shall [x1: agent the person (constant), x5: service the decisions service (constant), x6: request "the request the trigger makes" (indexical), x7: parameter title (constant)]
+  if [x2: design-decision, x3: design-decision, x4: title]
+    distinct(x3, x2)
+    title(x3) = x4
+    request(e1, decisions.enter, subject: x1, object: x2)
+    param(e1, title, x4)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x7)
+```
+
 ## of-relation
 
 a noun of another by a relation row

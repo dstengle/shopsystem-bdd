@@ -17,7 +17,8 @@ shows how to run them from the plugin's directory. Every command's full contract
 
 **The recipes:** [a vocabulary word](#add-a-word-to-the-vocabulary) ·
 [a relation, given block, universal or upstream](#add-a-relation-row-a-given-block-a-universal-condition-or-an-upstream) ·
-[change a delivered line](#change-a-delivered-line) · [a new capability](#start-a-new-capability) ·
+[change a delivered line](#change-a-delivered-line) · [a value already in use](#refuse-a-value-already-in-use) ·
+[a new capability](#start-a-new-capability) ·
 [a chore](#shape-a-chore) ·
 [what a line means](#see-what-a-line-means) ·
 [an adapter contract behind its lines](#bring-an-adapter-contract-up-to-its-lines) · [ready and blocked](#find-what-is-ready-and-what-blocks-it) ·
@@ -199,6 +200,28 @@ b252 "Declining an item keeps it": retires items#r19
 ```
 
 The item holds `retired: [r19]` and no new line; when a batch lays it, r19 and its scenario go.
+
+## Refuse a value already in use
+
+**When:** a request must not name a value another thing already has: two notes with one title, say.
+
+**You say:** "Adding a note with a title another note has should be refused."
+
+Say the value as the other thing's, "the title of another note", in the request's parameters. Any parameter that is
+the word of an attribute takes it (construct `param-of`):
+
+<!-- docs: context docs/examples/notes-cli -->
+```markdown
+- [r5] If the person adds a note with the title of another note, then the notes service shall refuse the request and name the title.
+```
+
+No example value is needed (a line with one, "with the title `groceries`", is example data, which `spec check` warns
+of). The scenario `features generate` writes gives the other note a made-up title in a Given and the same title to
+the request in the When ("Given a note n2", "And the title of the note n2 is `t1`", "When the person adds a note n1
+with the title `t1`"), so the test sets the service's state up and checks its answer, reading no list of notes. And
+`spec logic` reads the line beside one that names a code on the same request ("If the person adds a note with the
+title `t1`, then the notes service shall not refuse the request.") as one request, and finds the clash. See
+[the language reference](../grammar/language.md#with-the-t-of-another-k-a-value-in-use).
 
 ## Start a new capability
 
