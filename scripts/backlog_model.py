@@ -94,9 +94,13 @@ def unmerged(body, lines):
     return body
 
 
-def area_of(root, capability):
-    """The `area:` of a capability's file; refused when it has none."""
-    from backlog_section import capability_file
+def area_of(root, capability, blocks=()):
+    """The `area:` of a capability's file; of a capability a block of the item makes (`blocks`, b317), the block's
+    `area:`, else its own name (b354); refused when it has none."""
+    from backlog_section import NEW_FIELDS, capability_file
+    made = next((b for b in blocks if b.capability == capability and b.new), None)
+    if made is not None:
+        return dict(zip(NEW_FIELDS, made.new)).get("area") or capability
     data, _ = shop_files.frontmatter(capability_file(root, capability).read_text())
     if not data.get("area"):
         raise Refused("work line: the capability %s names no area: its model lines have nowhere to go" % capability)
@@ -146,8 +150,8 @@ def add(root, name, capability, model=None, relation=None, term=None):
     from backlog_section import SECTION, read, render, takes
     item = find(root, name)
     takes(item)
-    area = area_of(root, capability)
     blocks = read(item, "the item %s" % item.name)
+    area = area_of(root, capability, blocks)
     at = _block(blocks, area)
     block = blocks.models[at]
     if term is not None:
