@@ -29,8 +29,8 @@ flowchart LR
   S[you say it] --> I[item with lines] --> R[ready] --> B[batch] --> P[pull request] --> M[merged] --> D[delivered]
 ```
 
-Commands are written as `work backlog` for short. [Getting started](getting-started.md) shows how to run them
-yourself; on this tour, Claude runs them.
+Commands are written as `work backlog` for short. On this tour Claude runs them; [how the commands are run](reference/commands.md#how-the-commands-are-run)
+shows how to run one yourself.
 
 ## Stop 1: the idea
 
