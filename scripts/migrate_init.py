@@ -80,7 +80,47 @@ DELIVERY = """# How this repository's batches are delivered (`work batch`), ever
 # A model's price per million tokens, over the plugin's dated table: "<model>" = { input = 0.0, output = 0.0 }
 """
 
-CONFTEST_TEXT = '''"""The generated features' scenarios: one `test_<capability>.py` a capability binds its feature's steps."""
+CONFTEST_TEXT = '''"""The generated features' scenarios: one `test_<capability>.py` a capability binds its feature's steps.
+
+The plugin's pytest plugin `work_items` is loaded here, so that a plain `python -m pytest` registers each @g<n> and
+@r<n> tag as a mark and runs a scenario of an `unbuilt:` requirement as a strict expected failure. Its scripts are
+found on the path (PYTHONPATH), else in `$CLAUDE_PLUGIN_ROOT`, else in the plugin cache's folder of the release
+`.shop/plugin-version` names."""
+import importlib.util
+import os
+import pathlib
+import sys
+
+import pytest
+
+ROOT = pathlib.Path(__file__).resolve().parents[2]
+
+
+def _scripts():
+    """The plugin's scripts directory, or None when `work_items` is importable already."""
+    if importlib.util.find_spec("work_items") is not None:
+        return None
+    root = os.environ.get("CLAUDE_PLUGIN_ROOT")
+    places = [pathlib.Path(root) / "scripts"] if root else []
+    release = ROOT / ".shop" / "plugin-version"
+    if release.is_file():
+        home = pathlib.Path(os.environ.get("CLAUDE_CONFIG_DIR") or pathlib.Path.home() / ".claude")
+        version = release.read_text().strip()
+        places += sorted((home / "plugins" / "cache").glob("*/shopsystem-bdd/%s/scripts" % version))
+    for place in places:
+        if (place / "work_items.py").is_file():
+            return place
+    raise pytest.UsageError("the plugin's pytest plugin work_items is not found: put the plugin's scripts on "
+                            "PYTHONPATH or name the plugin in $CLAUDE_PLUGIN_ROOT")
+
+
+def pytest_configure(config):
+    if config.pluginmanager.has_plugin("work_items"):     # loaded already, as by -p work_items
+        return
+    scripts = _scripts()
+    if scripts is not None:
+        sys.path.append(str(scripts))
+    config.pluginmanager.import_plugin("work_items")
 '''
 
 
