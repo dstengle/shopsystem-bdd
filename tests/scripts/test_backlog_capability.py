@@ -106,3 +106,39 @@ def test_lay_names_the_capability_in_its_area_row_and_unlay_takes_it_out(tmp_pat
     assert "specifies: the shelf guarantees" in (tmp_path / "spec" / "capabilities" / "shelf.md").read_text()
     unlay(tmp_path, block, files)
     assert (tmp_path / "spec" / "index.md").read_text() == was
+
+
+OLD = ("---\nid: bounded-context/ex.com/prod/ctx\n---\n\n## Composition\n\nThe capabilities by area.\n\n"
+       "### shelf (core)\n\n| capability | narrator | group |\n|---|---|---|\n| `notes` | the person | service |\n\n"
+       "### other (supporting)\n\n| capability | narrator | group |\n|---|---|---|\n| `x` | the person | service |\n"
+       "| `y` | the person | guarantees |\n\n### Retired in 0.31.0\n\n| capability | narrator | group |\n|---|---|---|\n"
+       "| `gone` | the person | service |\n\n## Upstreams\n")
+
+
+def test_lay_writes_an_index_of_old_tables_in_the_index_form_and_unlay_puts_it_back(tmp_path):
+    """f1 of batch-51: an index whose Composition holds the old `| capability | narrator | group |` tables is written
+    in the index form, each area's row from the capability files' `area:` and its kind from spec/model/<area>.md, the
+    new capability in its area's row; the unlay puts the index back byte for byte."""
+    from backlog_capability import lay, unlay
+    caps = tmp_path / "spec" / "capabilities"
+    caps.mkdir(parents=True)
+    for name, where in (("notes", "shelf"), ("x", "other"), ("y", "other"), ("gone", None)):
+        (caps / ("%s.md" % name)).write_text("---\nid: c/%s\n%s---\n" % (name, "area: %s\n" % where if where else ""))
+    (tmp_path / "spec" / "model").mkdir()
+    (tmp_path / "spec" / "model" / "other.md").write_text("---\narea: other\nkind: supporting\n---\n")
+    (tmp_path / "spec" / "index.md").write_text(OLD)
+    git(tmp_path, "init", "-q")
+    git(tmp_path, "add", "-A")
+    git(tmp_path, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "spec")
+    block = Block("shelf", [], [], new=NEW)
+    files = []
+    lay(tmp_path, block, files)
+    laid = (tmp_path / "spec" / "index.md").read_text()
+    assert laid == ("---\nid: bounded-context/ex.com/prod/ctx\n---\n\n## Composition\n\nThe capabilities by area.\n\n"
+                    "| area | kind | capabilities |\n|---|---|---|\n| shelf | core | notes, shelf |\n"
+                    "| other | supporting | x, y |\n\n## Upstreams\n"), laid
+    git(tmp_path, "add", "-A")
+    git(tmp_path, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "laid")
+    unlay(tmp_path, block, files)
+    assert (tmp_path / "spec" / "index.md").read_text() == OLD
+    assert not (caps / "shelf.md").exists()
