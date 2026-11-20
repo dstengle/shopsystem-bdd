@@ -98,11 +98,13 @@ def put(root, files):
     return commit(root)
 
 
-def started(root, files=None):
-    """The project as a git repository with a pytest.ini and src/cart.py, once; these files added."""
+def started(root, files=None, project=True):
+    """The project as a git repository with a pytest.ini and src/cart.py (none with `project` false), once; these files
+    added."""
     if not (root / ".git").exists():
         git(root, "init", "-q")
-        files = {"pytest.ini": "[pytest]\ntestpaths = tests\npythonpath = src\n", "src/cart.py": CART, **(files or {})}
+        project = {"pytest.ini": "[pytest]\ntestpaths = tests\npythonpath = src\n", "src/cart.py": CART} if project else {}
+        files = {**project, **(files or {})}
     return put(root, files or {})
 
 
