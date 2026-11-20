@@ -11,6 +11,7 @@ from pathlib import Path
 import migrate_upgrade_answers
 import migrate_upgrade_cnl4
 import migrate_upgrade_codified
+import migrate_upgrade_conftest
 import migrate_upgrade_domain
 import migrate_upgrade_frames
 import migrate_upgrade_ids
@@ -185,6 +186,9 @@ def upgrade(root):
             subprocess.run(["git", "clean", "-fdq"], cwd=root, capture_output=True)
             print("migrate changed nothing; it could not make every change:\n" + "\n".join(refused), file=sys.stderr)
             return 1
+        conftest = migrate_upgrade_conftest.plan(root)     # on every upgrade, of no release (b423)
+        apply(root, conftest)
+        notes += conftest.notes
         if any(step[3] is migrate_upgrade_simplified for step in steps):
             notes = [note for note in notes if not migrate_upgrade_simplified.superseded(note)]
         (root / VERSION_FILE).write_text(plugin_version() + "\n")
@@ -201,8 +205,10 @@ def upgrade(root):
               % (getattr(error, "stderr", None) or error), file=sys.stderr)
         return 1
     shop_files.pushed(root)   # U4: after the try, so a push git refuses keeps the upgrade's commit
-    if not steps:  # r84: behind the plugin with no step between, only the version recorded
+    if not steps:  # r84: behind the plugin with no step between, only the version recorded (and the conftest)
         print("no upgrade step is pending")
+        for note in notes:
+            print(note)
         return 0
     print("upgraded to %s: %s" % (plugin_version(), ", ".join(s[1] for s in steps)))
     for note in notes:
