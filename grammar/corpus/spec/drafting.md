@@ -357,3 +357,37 @@ shall [x1: agent the person (constant), x4: service the drafting service (consta
       scope
         keep(e2, subject: x4, object: x5)
 ```
+
+## r25
+From: b354 r25.
+
+```reading
+While an item holds a capability that does not exist, when the person writes a term into the item, the drafting service shall keep the term in the item.
+shall [x3: agent the person (constant), x5: service the drafting service (constant)]
+  while [x1: item, x2: capability]
+    not
+      exists(x2)
+    in(x2, x1)
+  when [x4: term]
+    request(e1, drafting.write, subject: x3, object: x4, into: x1)
+  response
+    in(x4, x1)
+    keep(e2, subject: x5, object: x4)
+```
+
+## r26
+From: b387 r26.
+
+```reading
+While an item holds a capability that does not exist, when the person declares a model line in the item, the drafting service shall keep the model line in the item.
+shall [x3: agent the person (constant), x5: service the drafting service (constant)]
+  while [x1: item, x2: capability]
+    not
+      exists(x2)
+    in(x2, x1)
+  when [x4: model line]
+    request(e1, drafting.declare, subject: x3, object: x4, in: x1)
+  response
+    in(x4, x1)
+    keep(e2, subject: x5, object: x4)
+```

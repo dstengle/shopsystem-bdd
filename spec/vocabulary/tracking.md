@@ -134,3 +134,6 @@ area: tracking
 - **taking** (adjective) → value repository.store taking.
 - **rejecting** (adjective) → value repository.store rejecting.
 - **turn** (noun) → object turn. Whose move a context request waits on, the asker's or the upstream's.
+- **write** (verb, action) → operation drafting.write. Forms: writes, wrote, written. Frame: <actor> writes <term> into <item>.
+- **model line** (noun) → object model line. A line of the domain model's syntax, an element with its members or a relation, that an item keeps for the area of one of its capabilities until its batch lays it into `spec/model/<area>.md`. Plural: model lines.
+- **declare** (verb, action) → operation drafting.declare. Forms: declares, declared. Frame: <actor> declares <model line> in <item>.

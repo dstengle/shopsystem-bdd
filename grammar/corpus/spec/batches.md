@@ -361,22 +361,6 @@ shall [x3: readiness bar "the readiness bar of the plugin that runs the command"
     keep(e2, subject: x6, object: x7)
 ```
 
-## r69
-From: batches#r44, reworded in request words (0.38.0).
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item holds a capability, when the person opens a batch, the batches service shall keep the capability.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x4: agent the person (constant), x6: service the batches service (constant)]
-  while [x1: item, x3: capability]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    in(x3, x1)
-  when [x5: batch]
-    request(e1, batches.open, subject: x4, object: x5)
-  response
-    keep(e2, subject: x6, object: x3)
-```
-
 ## r70
 From: batches#r45, reworded in request words (0.38.0).
 
@@ -474,4 +458,43 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
     request(e1, batches.open, subject: x5, object: x6)
   response
     keep(e2, subject: x7, object: x8)
+```
+
+## r75
+From: b390 r75.
+
+```reading
+While no requirement of an item whose status is `ready` uses a construct and no construct catalogue exists, when the person opens a batch, the batches service shall keep no construct catalogue.
+shall [x5: agent the person (constant), x7: service the batches service (constant)]
+  while
+    not [x1: requirement, x2: item, x3: construct]
+      status(x2) = `ready`
+      of(x1, x2)
+      use(subject: x1, object: x3)
+    not [x4: construct catalogue]
+      exists(x4)
+  when [x6: batch]
+    request(e1, batches.open, subject: x5, object: x6)
+  response
+    not [x8: construct catalogue]
+      keep(e2, subject: x7, object: x8)
+```
+
+## r76
+Retires: r69. From: b391 r76.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds a capability, when the person opens a batch, the batches service shall keep the capability that conforms to the capability form and keep an index file that conforms to the index form.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x4: agent the person (constant), x6: service the batches service (constant), x7: artifact the capability form (constant), x9: artifact the index form (constant)]
+  while [x1: item, x3: capability]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    in(x3, x1)
+  when [x5: batch]
+    request(e1, batches.open, subject: x4, object: x5)
+  response [x8: index file]
+    conforms(x3, x7)
+    keep(e2, subject: x6, object: x3)
+    conforms(x8, x9)
+    keep(e3, subject: x6, object: x8)
 ```

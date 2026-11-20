@@ -271,17 +271,6 @@ Feature: Batches
     Then the batches service keeps the batch brief b2
     And the batch brief b2 holds the chore c1
 
-  @g69 @r69
-  Scenario: A batch opened keeps each new capability
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a capability c1
-    And the item i1 holds the capability c1
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service keeps the capability c1
-
   @g70 @r70
   Scenario: A task finishes while a parked item's line is out of the batch
     Given an item i1
@@ -363,3 +352,25 @@ Feature: Batches
     And a batch b1
     When the person opens the batch b1
     Then the batches service keeps this construct catalogue
+
+  @g75 @r75
+  Scenario: A batch opened keeps no construct catalogue for lines that use no construct
+    Given no item whose status is `ready` exists
+    And no construct catalogue exists
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service does not keep a construct catalogue
+
+  @g76 @r76
+  Scenario: A new capability is laid in 0.38's form: area:, specifies:, no empty ## Terms, one ## Composition
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a capability c1
+    And the item i1 holds the capability c1
+    And a batch b1
+    When the person opens the batch b1
+    Then the capability c1 conforms to the capability form
+    And the batches service keeps the capability c1
+    And the batches service keeps the index file i2
+    And the index file i2 conforms to the index form

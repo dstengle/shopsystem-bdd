@@ -146,3 +146,19 @@ Feature: Toolchain
   Scenario: A probe gives `gf-rgl`
     When the person probes this toolchain
     Then the toolchain service returns `gf-rgl`
+
+  @g18 @r18
+  Scenario: An install in a repository with no Python file installs `gf-rgl`
+    Given no Python file exists
+    And the presence of `gf-rgl` is `missing`
+    And the environment of this Python interpreter is `virtualenv`
+    When the person installs this toolchain
+    Then the toolchain service installs `gf-rgl`
+    And the toolchain service completes this request
+
+  @g19 @r19
+  Scenario: A probe in a repository with no Python file gives `gf-rgl`
+    Given no Python file exists
+    When the person probes this toolchain
+    Then the toolchain service returns `gf-rgl`
+    And the toolchain service completes this request
