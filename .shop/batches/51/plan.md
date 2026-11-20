@@ -18,7 +18,7 @@ pull_request:
 | t2 | b387 | done | batch-51-b387 |
 | t3 | b388 | done | batch-51-b388 |
 | t4 | b389 | done | batch-51-b389 |
-| t5 | b390 | running | batch-51-b390 |
+| t5 | b390 | done | batch-51-b390 |
 | t6 | b391 | done | batch-51-b391 |
 | t7 | b397 | running | batch-51-b397 |
 
