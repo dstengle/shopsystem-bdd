@@ -182,7 +182,9 @@ def then_does(step):
         GEN.writes(step, w)
 
 
-@W.own("ThenDoesNot", "write", registry=False)
+# "does not keep" is tried as each of these (requested.py's NEGATED): every one this feature's, so that another
+# feature's handler of one (requests' "does not post") never passes a step this one fails (b416)
+@W.own("ThenDoesNot", "write", "commit", "post", "keep", "make", "rewrite", "publish", registry=False)
 def then_does_not(step):
     w = W.world(step)
     (ORDER.writes_not if ORDER.mine(w, step) else GEN.writes_not)(step, w)

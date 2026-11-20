@@ -530,10 +530,11 @@ Feature: Upgrades
     And this repository has the plugin version file p1
     And the plugin version file p1 holds no version
     And a session s1
+    And a content c1
+    And the plugin version file p1 has the content c1
     When the session s1 starts
     Then the upgrades service notifies the session s1 of `holds no version`
     And the upgrades service notifies the session s1 of the content c1
-    And the plugin version file p1 has the content c1
 
   @g20 @r20
   Scenario: An upgrade to 0.31.0 freezes the work queue

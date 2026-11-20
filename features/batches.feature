@@ -72,9 +72,10 @@ Feature: Batches
     Given a batch b1
     And the status of the batch b1 is `building`
     And a session s1
+    And a batch plan b2
+    And the batch b1 has the batch plan b2
     When the session s1 resumes the batch b1
     Then the batches service returns the batch plan b2
-    And the batch b1 has the batch plan b2
     And the batches service does not ask a question
 
   @g57 @r57

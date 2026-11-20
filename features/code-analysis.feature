@@ -148,9 +148,10 @@ Feature: Code analysis
     And the analysis tool a1 has the finding f2
     And a file f1
     And the file f1 holds the finding f2
+    And a heading h1
+    And the analysis tool a1 has the heading h1
     When the person lints the file f1
     Then the code analysis service returns the heading h1
-    And the analysis tool a1 has the heading h1
     And the code analysis service returns the finding f2
     And the code analysis service fails this check
     And the code analysis service names the finding f2

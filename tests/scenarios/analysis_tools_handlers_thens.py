@@ -148,6 +148,9 @@ def prints(step):
             made = [next(g for g in m.groups() if g) for m in re.finditer(SHOWN["the commit "], output(step, True))]
             assert step.context.get("map_commit") in made, (np, made, step.context.get("map_commit"))
             continue
+        owned = step.context.get("owned", {}).pop(h.name_of(np), None)
+        if owned:     # a Given said whose it is: what its owner has (b416)
+            bind(step, h.name_of(np), has(step, *owned))
         prefix = next((p for p in SHOWN if np.startswith(p)), None)
         if prefix:
             observe(step, np, [next(g for g in m.groups() if g) for m in re.finditer(SHOWN[prefix], output(step, True))])
