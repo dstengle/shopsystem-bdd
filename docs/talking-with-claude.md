@@ -1,12 +1,15 @@
 # Talking with Claude
 
 This page is for the person who talks with Claude: you say what you want in your own words, and Claude does the
-rest. It covers what to say, what happens next, and the few things you're asked to do. You'll rarely type a command.
+rest. It covers what to say, what happens next, and the few things you're asked to do. You don't need to run the
+plugin's tools: the session works out what to run.
 
 ## What you say, and what follows
 
 | you say | the skill that takes it | you're asked to |
 |---|---|---|
+| "Set up this repository for the plugin." | [shaping-items](../skills/shaping-items/SKILL.md) | give the context's id, and a GitHub repository |
+| "I want an app that keeps my notes." | [shaping-items](../skills/shaping-items/SKILL.md), then [building-a-batch](../skills/building-a-batch/SKILL.md) | answer a question or two, merge the pull request |
 | "I'd like `work show` to print the status too." | [shaping-items](../skills/shaping-items/SKILL.md), then [building-a-batch](../skills/building-a-batch/SKILL.md) | merge the pull request |
 | "Build what's ready." | [building-a-batch](../skills/building-a-batch/SKILL.md) | merge the pull request |
 | "Check your requests." | [taking-in-a-request](../skills/taking-in-a-request/SKILL.md) | accept a request |

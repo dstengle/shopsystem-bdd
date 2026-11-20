@@ -98,29 +98,30 @@ merge it, and its items are delivered.
 
 ## Install
 
-In Claude Code's shell:
+In an empty folder for your project, start Claude Code and type these two commands into it:
 
-```console
-$ claude plugin marketplace add dstengle/shopsystem-bdd
-$ claude plugin install shopsystem-bdd@shopsystem-bdd
+```text
+/plugin marketplace add dstengle/shopsystem-bdd
+/plugin install shopsystem-bdd@shopsystem-bdd
 ```
 
-Then install the grammar tools once, from the installed plugin's directory:
+Restart the session, then tell it, in plain words:
 
-```console
-$ python3 ~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.39.0/scripts/tools install
-$ python3 ~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.39.0/scripts/tools probe
+```text
+Set up this repository for the plugin.
 ```
 
-`tools probe` shows what is installed. The rest of the docs write commands short, as `tools install` or
-`work backlog`; [getting started](docs/getting-started.md) shows how to run them that way.
+The session installs the grammar tools, founds the context (`spec/`, `.shop/`, `features/`) and commits it. Then say
+what you want built ("I want a command-line notes tool ...") and the session takes it from there. You don't run the
+plugin's tools yourself: they are scripts inside the plugin, not commands on your `PATH`, and the session runs them.
+[Getting started](docs/getting-started.md) walks through each thing to say and what you see.
 
 You need:
 
-- Linux x86_64 for `tools install` (elsewhere, point `$SHOPSYSTEM_GF` at your own GF 3.12);
-- Python 3, with pytest 9.1.1 and pytest-bdd 8.1.0 (`pip install 'pytest==9.1.1' 'pytest-bdd==8.1.0'`; with
-  pytest-bdd 9 an `unbuilt:` id's scenario is no longer marked an expected failure; pytest-xdist is optional, to run
-  the suite in parallel);
+- Linux x86_64, where the session can download the grammar tools (elsewhere, point `$SHOPSYSTEM_GF` at your own
+  GF 3.12);
+- Python 3; the session puts pytest 9.1.1 and pytest-bdd 8.1.0 in your project's virtualenv (with pytest-bdd 9 an
+  `unbuilt:` id's scenario is no longer marked an expected failure);
 - git, and `gh` logged in, for a batch's pull request and a request's issue;
 - Claude Code.
 
@@ -128,13 +129,13 @@ You need:
 
 | if you want to | read |
 |---|---|
-| set up a repository and see a first scenario go green | [Getting started](docs/getting-started.md) |
+| set up a repository by talking with Claude and see a first scenario go green | [Getting started](docs/getting-started.md) |
 | follow one feature from an idea to a merged batch | [The tour](docs/tour.md) |
 | know what to say to Claude, and what you will be asked | [Talking with Claude](docs/talking-with-claude.md) |
 | write and review requirement lines | [Writing requirements](docs/writing-requirements.md) |
 | know the four parts of a spec, adapters, catalogues and records | [Concepts](docs/concepts.md) |
 | map the operations to an interface and keep each operation's lines beside it | [Adapter contracts](docs/reference/adapters.md) |
-| look up a command | [Commands](docs/reference/commands.md) |
+| look up a command the session runs | [Commands](docs/reference/commands.md) |
 | move a repository from an older release to this one | [Upgrading](docs/upgrading.md) |
 
 Every page is listed in [the docs' home](docs/index.md). For the largest worked example there is, read this
@@ -146,7 +147,7 @@ Claude picks these up from what you say. You never have to name one.
 
 | skill | what it does |
 |---|---|
-| `shaping-items` | Turns what you want built here into an item with requirement lines, and readies it. |
+| `shaping-items` | Sets up a repository with no spec yet, and turns what you want built here into an item with requirement lines, and readies it. |
 | `building-a-batch` | Builds the ready items in a batch and takes it to one reviewed pull request. |
 | `taking-in-a-request` | Answers a request another context asked of this one, from offer to accepted item. |
 | `raising-a-request` | Asks an upstream context for behaviour you need, in that context's own words. |

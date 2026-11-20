@@ -11,7 +11,7 @@ Short answers to "how do I ...?", for the developer at the keyboard and the pers
 gives the situation in one line, the steps, and what you see. Most of the time you'll say the words in **You say**
 and Claude runs the commands; they're here so you know what happens, and so you can run them yourself.
 
-Commands are written as `work line`, `spec check` and so on. [Getting started](getting-started.md#3-how-commands-are-run)
+Commands are written as `work line`, `spec check` and so on. [How the commands are run](reference/commands.md#how-the-commands-are-run)
 shows how to run them from the plugin's directory. Every command's full contract is its `--help`; the
 [command reference](reference/commands.md) has the short version.
 

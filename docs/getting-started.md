@@ -1,22 +1,25 @@
 <!--
-Outputs on this page are from real runs on 2026-11-19: plugin 0.38.0, its scripts as at branch domain-contract,
-Python 3.11, pytest 9.1.1, pytest-bdd 8.1.0, in a scratch repository built from docs/examples/notes-cli/. The home
-directory is written as ~, and long paths are cut with "...".
+The spec, feature and test module on this page are docs/examples/notes-cli/'s, which the docs test checks. Outputs
+are from real runs on 2026-11-19: plugin 0.38.0, Python 3.11, pytest 9.1.1, pytest-bdd 8.1.0, in a scratch
+repository built from docs/examples/notes-cli/. The home directory is written as ~, and long paths are cut with "...".
 -->
 
 # Getting started
 
-This page takes you from an empty folder to a first green scenario. It's written for the developer setting up a
-repository. You'll write a tiny spec for a notes tool, let the plugin check it and turn it into Gherkin, bind the
-scenarios with pytest-bdd, and watch them go from red to green.
+This page takes you from an empty folder to a first green scenario, by talking with Claude Code. You say a few
+things in plain words; the session works out what to run. You don't run the plugin's tools yourself: they are
+scripts inside the plugin, not commands on your `PATH`, and the session knows where they are.
 
-Here is where you're heading. You write one line like this:
+Each step below is one thing to say, what the session does with it, and what you see. The example is a small notes
+tool, the one kept whole in [`docs/examples/notes-cli/`](examples/notes-cli/README.md).
+
+Here is where you're heading. You say what you want, and the session writes it as lines like this one:
 
 ```markdown
 - [r4] When the person removes a note, the notes service shall set the status of the note to `removed`.
 ```
 
-and the plugin writes its test scenario for you:
+and the plugin writes its test scenario from it:
 
 ```gherkin
 Feature: Notes
@@ -31,56 +34,43 @@ Feature: Notes
 
 ## 1. What you need
 
-- **Linux on x86_64**, for `tools install`, which downloads the grammar tools. Elsewhere, build GF 3.12 yourself
-  and set `$SHOPSYSTEM_GF` to its `gf`.
-- **Python 3**, in a virtualenv for your project.
-- **pytest and pytest-bdd.** The plugin's own suite runs on pytest 9.1 with pytest-bdd 8.1. Use those: with
-  pytest-bdd 9, `unbuilt:` ids are no longer marked as expected failures (step 7).
-- **`gh`, logged in**, for a batch's pull request and a request's issue. You won't need it on this page.
+- **Linux on x86_64**, where the session can download the grammar tools. Elsewhere, build GF 3.12 yourself and set
+  `$SHOPSYSTEM_GF` to its `gf`.
+- **Python 3.**
+- **git, and `gh` logged in** (`gh auth login`), for a batch's pull request and a request's issue.
 - **Claude Code.**
 
-## 2. Install the plugin and its grammar tools
+The session installs the rest: a virtualenv for your project with pytest 9.1 and pytest-bdd 8.1 (with pytest-bdd 9,
+an id the spec has not built yet is no longer an expected failure), and the grammar tools.
 
-```console
-$ claude plugin marketplace add dstengle/shopsystem-bdd
-$ claude plugin install shopsystem-bdd@shopsystem-bdd
+## 2. Install the plugin
+
+In an empty folder for your project, start Claude Code and type these two commands into it:
+
+```text
+/plugin marketplace add dstengle/shopsystem-bdd
+/plugin install shopsystem-bdd@shopsystem-bdd
 ```
 
-The commands below run from the plugin's `scripts/` folder. Keep its path in `$SHOP` (step 3 explains this line
-and gives the tools short names):
+Restart the session once it says the plugin is installed, so its skills and hooks load.
 
-```console
-$ export SHOP="$(claude plugin list --json | python3 -c 'import json, sys; print(next(p["installPath"] for p in json.load(sys.stdin) if p["id"] == "shopsystem-bdd@shopsystem-bdd"))')"
-```
+## 3. Say: "Set up this repository for the plugin"
 
-Make a folder for your project, with its own virtualenv and test tools:
+The session:
 
-```console
-$ mkdir notes && cd notes && git init -b main
-$ python3 -m venv .venv && source .venv/bin/activate
-$ pip install 'pytest==9.1.1' 'pytest-bdd==8.1.0'
-```
+- makes the folder a git repository, if it isn't one, and a virtualenv `.venv` with pytest and pytest-bdd;
+- installs the grammar tools once: GF (the Grammatical Framework, which parses requirement lines), clingo (which
+  checks them against each other), the pinned pgf wheel and GF's resource grammar library. In an empty folder there
+  is no code yet, and that's fine: the grammar tools are installed all the same;
+- asks you for the context's id, `bounded-context/<domain>/<path>` (say `bounded-context/example.org/notes/notes-cli`),
+  and founds the context with it: `spec/index.md`, `spec/universal.md`, the empty `spec/model/`, `spec/vocabulary/`
+  and `spec/capabilities/`, `.shop/` for the backlog and records, `features/` and `tests/scenarios/conftest.py`, in
+  one commit;
+- asks for, or creates with `gh`, the GitHub repository it pushes to, since a batch ends in a pull request there.
 
-The plugin parses requirement lines with GF (the Grammatical Framework) and checks them with clingo. `tools
-install` installs both, with the pinned pgf wheel and GF's resource grammar library. On this machine GF and the
-library were there already; on a fresh one they're downloaded first.
+What you see is the grammar tools it found, and the commit:
 
-```console
-$ python3 "$SHOP/scripts/tools" install
-coverage installed
-...
-pgf 1.1 installed
-clingo 5.8.2 installed
-gf 3.12 already installed
-gf-rgl 20250812 already installed
-```
-
-`tools probe` shows what you have. The block that matters is the last one, `grammar:`:
-
-```console
-$ python3 "$SHOP/scripts/tools" probe
-...
-python: .../notes/.venv/bin/python (the project's virtualenv)
+```text
 grammar:
   gf 3.12.0 (~/.local/share/shopsystem-bdd/gf-3.12/bin/gf)
   pgf 1.1
@@ -88,197 +78,82 @@ grammar:
   gf-rgl 20250812 (~/.local/share/shopsystem-bdd/gf-rgl-20250812)
 ```
 
-A tool that is missing says so on its line, with what you can't do without it.
+A tool that is missing says so on its line, with what can't be done without it. Setting up is once a repository; a
+repository that already has a `spec/index.md` or a `.shop/` is never founded again.
 
-## 3. How commands are run
+## 4. Say what you want
 
-Most days you won't type these commands. You talk with Claude, and Claude runs them from the plugin's `scripts/`
-folder. To run one yourself, you need that folder's path, which is why step 2 asked `claude plugin list --json`
-for the plugin's `installPath` and kept it in `$SHOP`. It's a path that ends in the version, such as
-`~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.39.0`. If you load a checkout with `claude --plugin-dir`, set `SHOP` to that checkout instead.
+Say it in your own words, as you would to a colleague:
 
-Then give each tool a short name:
-
-```console
-$ alias work='python3 "$SHOP/scripts/work"' spec='python3 "$SHOP/scripts/spec"' features='python3 "$SHOP/scripts/features"'
-$ alias tools='python3 "$SHOP/scripts/tools"' measure='python3 "$SHOP/scripts/measure"' migrate='python3 "$SHOP/scripts/migrate"'
+```text
+I want a command-line notes tool. I add a note with a title and a tag, I list the notes, and I remove one.
+A note without a title is refused.
 ```
 
-Put the `export` and the two `alias` lines in your shell's profile to keep them. The rest of the docs write
-commands this way: `work backlog` for `python3 "$SHOP/scripts/work" backlog`.
+The session takes this up with its `shaping-items` skill. It keeps your words (a quote under `.shop/quotes/`), makes
+an item in the backlog, and writes on it everything the context needs, in the four parts of a spec:
 
-## 4. The smallest context
+- the **domain model**: what there is and what can be asked of it. Here, a note with a title, a status and its
+  tags, and a notes service you request three operations of:
 
-A bounded context is one repository's part of a product, with its own words. Its spec lives in `spec/`, in four
-parts: the **domain model** (what there is and what can be asked of it), the **vocabulary** (the words, each naming
-an element of the model), the **requirements** (the rules, one line each) and the **decisions** (the choices behind
-them, which this small example does not need yet). Beside them sits each interface's **adapter contract**. You'll use
-the example context in [`docs/examples/notes-cli/`](examples/notes-cli/README.md): a notes service the person asks to
-add a note, list the notes and remove one, with `notes.py` as its command-line program.
+  ```model
+  object note
+    attributes: title (text); status: kept | removed
+    lifecycle status: kept → removed
+    relations: under → tag (many)
 
-First found the context. `migrate init` writes its scaffold and commits it: `spec/index.md` with the id you give (its
-last part the title), `spec/universal.md`, the empty `spec/model/`, `spec/vocabulary/` and `spec/capabilities/`,
-`.shop/` (the backlog, the records index, the plugin version and `delivery.toml`, every setting at its default),
-`features/` and `tests/scenarios/conftest.py`. `spec check` finds nothing wrong in it, and there is nothing to generate
-yet:
+  object tag
 
-```console
-$ migrate init --id bounded-context/example.org/notes/notes-cli
-wrote .shop/backlog/.gitkeep
-...
-wrote spec/index.md
-...
-wrote tests/scenarios/conftest.py
-```
+  service notes
+    operation add(title, tag)  outcomes: done → the note | refused: no title
+    operation list()  outcomes: returned → every note
+    operation remove(note)  outcomes: done
 
-It refuses a repository that has a `spec/index.md` or a `.shop/` already, and changes nothing there. The example's
-model, words and lines are written for you here; in your own context Claude writes them with you. Copy them in over the
-scaffold, or type them from below:
+  actor the person kind of agent
+  ```
 
-```console
-$ cp -r "$SHOP/docs/examples/notes-cli/spec" "$SHOP/docs/examples/notes-cli/notes.py" .
-```
+- the **vocabulary**: the words a line may use, each naming one element of the model. A verb that names an
+  operation is how a line says a request:
 
-**`spec/index.md`** names the context, its language and the pack it imports:
+  ```markdown
+  - **note** (noun) → object note. One short text the person keeps, with a title.
+  - **add** (verb, action) → operation notes.add. Forms: adds, added. Frame: <actor> adds <note>.
+  - **the notes service** (proper noun) → service notes. What answers the person's requests about notes.
+  ```
 
-```markdown
----
-id: bounded-context/example.org/notes/notes-cli
-title: notes
-language: codified-2
-imports: [request]
----
+- the **requirements**: the rules, one line each, in a new capability `notes`:
 
-# notes
+  ```markdown
+  ### [g1] A note added with a title and a tag is kept
+  - [r1] When the person adds a note with a title and a tag, the notes service shall keep the note under the tag.
 
-## Purpose
+  ### [g2] A note added without a title is refused
+  - [r2] If the person adds a note without a title, then the notes service shall refuse the request and name the title.
 
-A command-line tool that keeps short notes: the person adds a note, lists them and removes one. It is not an editor
-and not a sync service.
+  ### [g3] Listing the notes returns every note
+  - [r3] When the person lists the notes, the notes service shall return every note.
 
-## Composition
+  ### [g4] Removing a note sets its status to removed
+  - [r4] When the person removes a note, the notes service shall set the status of the note to `removed`.
+  ```
 
-| area | kind | capabilities |
-|---|---|---|
-| notes-cli | core | notes |
-```
+- the **decisions**, the choices behind them, which a tool this small doesn't need yet.
 
-`language: codified-2` says the lines are in the plugin's controlled language. `imports: [request]` brings in the
-words every context needs to say a request and its response (*request*, *service*, *refuse*, *name*, *return*,
-*keep* ...), so you don't define them.
+No line names a command, an option or an exit code: those belong to the CLI adapter, which the first batch writes
+(step 6). Then the session readies the item: every line parses to exactly one meaning, no two lines clash, and each
+group can be written as a scenario. It may ask you a question first, when what you said leaves a choice open ("may
+two notes have the same title?"). It won't ask you to approve the lines; it tells you afterwards which item is ready
+and what its lines say.
 
-**`spec/model/notes-cli.md`** is the domain model: the things, their attributes, a lifecycle, and the service with
-the operations a person can request of it. No rules here, only the shape:
+The item's lines stay on the item until its batch merges. [The capability file](reference/capability-file.md),
+[the domain model](reference/domain-model.md) and [the vocabulary](concepts.md) have every field of these files.
 
-```model
-object note
-  attributes: title (text); status: kept | removed
-  lifecycle status: kept → removed
-  relations: under → tag (many)
+## 5. Ask what a line means
 
-object tag
+Ask about any line, in plain words: "what does r4 say exactly?" The session reads it back from its logical form, the
+one meaning the plugin parsed it to:
 
-service notes
-  operation add(title, tag)  outcomes: done → the note | refused: no title
-  operation list()  outcomes: returned → every note
-  operation remove(note)  outcomes: done
-
-actor the person kind of agent
-```
-
-**`spec/vocabulary/notes-cli.md`** and **`shared.md`** give each element of the model its word. A verb that names an
-operation is how a line says a request:
-
-```markdown
-- **note** (noun) → object note. One short text the person keeps, with a title.
-- **add** (verb, action) → operation notes.add. Forms: adds, added. Frame: <actor> adds <note>.
-- **the notes service** (proper noun) → service notes. What answers the person's requests about notes.
-```
-
-**`spec/capabilities/notes.md`** holds the lines:
-
-```markdown
----
-id: capability/example.org/notes/notes-cli/notes
-title: Notes
-narrator: the person
-group: service
-area: notes-cli
-specifies: service notes
-language: codified-2
-rests_on: []
-retired: []
-unbuilt: []
----
-
-# Notes
-
-## Purpose
-
-Adding, listing and removing notes.
-
-## Behaviour
-
-### [g1] A note added with a title and a tag is kept
-- [r1] When the person adds a note with a title and a tag, the notes service shall keep the note under the tag.
-
-### [g2] A note added without a title is refused
-- [r2] If the person adds a note without a title, then the notes service shall refuse the request and name the title.
-
-### [g3] Listing the notes returns every note
-- [r3] When the person lists the notes, the notes service shall return every note.
-
-### [g4] Removing a note sets its status to removed
-- [r4] When the person removes a note, the notes service shall set the status of the note to `removed`.
-
-## Dropped
-```
-
-Each `### [g<n>]` is a group and each `- [r<n>]` a requirement line. No line names a command, an option or an exit
-code: those belong to the CLI adapter, **`spec/adapters/cli.toml`**, which maps each operation to the command and
-options of `notes.py` (`notes add --title ... --tag ...`). The [capability file reference](reference/capability-file.md)
-has every field; [the domain model](reference/domain-model.md) and [adapter contracts](reference/adapters.md) have the
-other two forms.
-
-The contract also lists, under each operation, the requirement lines that govern it: `notes#r1` and `notes#r2` under
-`notes.add`, the refusal among them. You don't type those; `spec annotate` writes them in step 6.
-
-## 5. Ask what the words are, and what a line means
-
-`spec lexicon` lists every word a line may use. The pack's are marked:
-
-```console
-$ spec lexicon
-actor (2)
-  the notes service
-  the person
-kind (9)
-  request  [pack request]
-  ...
-  note
-  tag
-attribute (3)
-  ...
-  status (of note): `kept` (adjective), `removed` (adjective)
-event (13)
-  refuse  [pack request]
-  ...
-  add
-  list
-  remove
-```
-
-`spec parse` parses one line. It prints the tree it found:
-
-```console
-$ spec parse "When the person removes a note, the notes service shall set the status of the note to \`removed\`."
-When NoPre (k_agent_Event (k_agent_One (k_agent_Simple a_the_person_2)) (e_remove_action_13_1 (k_note_One (k_note_Simple (k_note_Det DetA (k_note_UseN k_note_n)))))) (OneResp (k_service_Shall a_the_notes_service_1 (k_service_OneAct (k_service_Act_k_agent PPos (t_status_3_Set (t_status_3_Of_k_note (k_note_Simple (k_note_Det DetThe (k_note_UseN k_note_n)))) t_status_3_v_removed)))))
-```
-
-A tree says the line parsed. `--form` says what it means, which is easier to read:
-
-```console
-$ spec parse --form "When the person removes a note, the notes service shall set the status of the note to \`removed\`."
+```text
 shall [x1: agent the person (constant), x3: service the notes service (constant)]
   when [x2: note]
     request(e1, notes.remove, subject: x1, object: x2)
@@ -287,56 +162,21 @@ shall [x1: agent the person (constant), x3: service the notes service (constant)
 ```
 
 **When** the person requests `notes.remove` of a note x2, the notes service **shall** set the status of that same x2
-to `removed`. Now leave out where the note comes from, and the line is refused (a counter-example):
+to `removed`. A line that could be read two ways, or that leaves something out, is refused before anyone builds it.
+Say "the note" where nothing gave a note, and the plugin won't guess which:
 
-```console
-$ spec parse "When the person removes the note, the notes service shall set the status of the note to \`removed\`."
-refused: "the note" has no antecedent: no earlier noun phrase, functional relation or declared indexical gives a note
-  tree: ...
+```refused
+When the person removes the note, the notes service shall set the status of the note to `removed`.
 ```
 
-Which note? The plugin won't guess. [Writing requirements](writing-requirements.md) has more pairs like this.
+The session rewords such a line itself, from what the refusal says. If you want a line changed, say so: "a removed
+note should be kept for a week". [Writing requirements](writing-requirements.md) has more pairs like this.
 
-## 6. Check the spec, and generate the feature
+## 6. The session builds it
 
-`spec check` holds the whole repository to the design model's rules, and the adapter contract to `notes.py`'s
-argparse. Run it now:
-
-```console
-$ spec check
-v_s3  a group has no scenario  (4)
-    capability/example.org/notes/notes-cli/notes#g1
-    capability/example.org/notes/notes-cli/notes#g2
-    capability/example.org/notes/notes-cli/notes#g3
-    capability/example.org/notes/notes-cli/notes#g4
-4 violations, 0 warnings, 0 unresolved references, 0 file problems
-```
-
-Every group needs a scenario, and there's no feature file yet. Before writing it, `spec logic` checks that no two
-lines clash (say, one that keeps a note where another refuses the same request):
-
-```console
-$ spec logic
-no findings
-$ features generate
-wrote features/notes.feature
-$ spec check
-0 violations, 0 warnings, 0 unresolved references, 0 file problems
-```
-
-The contract you copied already lists each operation's lines. Had it not, `spec check` would have named each missing
-one (`v_a5`), and `spec annotate` writes them:
-
-```console
-$ spec annotate --check
-spec annotate: spec/adapters/cli.toml is stale: its operations do not hold the requirements that govern them; run `spec annotate`
-$ spec annotate
-annotated spec/adapters/cli.toml
-```
-
-Run it again whenever a line changes: a contract that has fallen behind its lines fails the check.
-
-Here's what it wrote, one scenario a group, tagged with the group and its lines:
+Readying an item is the decision to build it, so the session starts a batch without asking. The batch lays the
+item's lines into `spec/`, writes the feature file from them, and hands the work to one fresh agent, which builds
+what the lines say and opens one pull request. Nobody writes the feature file by hand:
 
 ```gherkin
 # generated from spec/capabilities/notes.md by features generate; do not edit
@@ -373,25 +213,18 @@ Feature: Notes
     Then the notes service sets the status of the note n1 to `removed`
 ```
 
-## 7. Bind the feature, see red, then green
+In a new context the first batch also makes three things nothing has made yet:
 
-The steps are plain pytest-bdd steps. Every step comes from a small step grammar, and `features vocab` lists its
-functions; those that end in `Step` are the shapes a step can take:
+- **the program**, here `notes.py`, a small command-line tool;
+- **the adapter contract**, `spec/adapters/cli.toml`, which maps each operation of the model to the program's
+  command and options (`notes.add` is `notes add --title ... --tag ...`) and lists under each operation the lines
+  that govern it, its refusal among them. The plugin checks the contract against the program's argparse both ways;
+  [adapter contracts](reference/adapters.md) has its form;
+- **the step bindings**, `tests/scenarios/test_notes.py`: plain pytest-bdd steps, one step definition a step text.
+  A When makes the request through the adapter, here by running `notes.py` with the command and options the
+  contract names; a Then reads the response: the exit code, what it printed, what it kept.
 
-```console
-$ features vocab | grep -E '^(k_note|k_service)_.*Step$'
-k_note_Given : k_note_N -> Name -> Step
-k_note_HoldsBlock : k_note_N -> Name -> Step
-k_note_HoldsText : k_note_N -> Name -> Quoted -> Step
-k_service_Does : Pol -> k_service_Arg -> k_service_V -> Step
-...
-```
-
-`k_note_Given` is the step "a note n1"; `k_service_Does` is "the notes service keeps the note n1" and every other act
-of a service. You'll mostly read the feature file itself. Write `tests/scenarios/test_notes.py`, one step
-definition a step text. A When is a request: the step definition makes it through the adapter, here by running
-`notes.py` with the command and options `cli.toml` names. A Then reads the response: the exit code, what it printed,
-what it kept. The shape of it:
+The shape of the bindings:
 
 ```python
 from pytest_bdd import given, parsers, scenarios, then, when
@@ -517,57 +350,51 @@ def sets_status(world, n, value):
 
 </details>
 
-pytest-bdd turns the tags `@g1 @r1` into marks; a `pytest.ini` keeps it from warning about them:
+### Red, then green
 
-```ini
-[pytest]
-filterwarnings = ignore::pytest.PytestUnknownMarkWarning
-```
+While the lines are laid and the code is not written, the batch keeps their ids in the capability's `unbuilt:` list,
+and the plugin's pytest plugin runs those scenarios as strict expected failures. The spec is ahead of the code, and
+the suite says so honestly:
 
-Run the suite with the plugin's pytest plugin, `-p work_items`, which lives in `$SHOP/scripts`. Take `notes.py` out
-of the folder for a moment, as if the code were not written yet, and it's red:
-
-```console
-$ PYTHONPATH="$SHOP/scripts" pytest -p work_items -q
-FFFF                                                                     [100%]
-...
-FAILED tests/scenarios/test_notes.py::test_removing_a_note_sets_its_status_to_removed
-4 failed in 0.27s
-```
-
-That red is honest: the spec is ahead of the code. A capability says so in its `unbuilt:` list, and `-p work_items`
-then runs those scenarios as strict expected failures. Put `unbuilt: [r1, r2, r3, r4]` in the frontmatter of
-`notes.md` and run again:
-
-```console
-$ PYTHONPATH="$SHOP/scripts" pytest -p work_items -q -rx
+```text
 xxxx                                                                     [100%]
-...
 XFAIL tests/scenarios/test_notes.py::test_removing_a_note_sets_its_status_to_removed - unbuilt: notes#r4
 4 xfailed in 0.27s
 ```
 
-In your day-to-day, a batch fills `unbuilt:` when it lays new lines and empties it as the code lands. Now put
-`notes.py` back. With the ids still listed, each passing scenario fails the suite with `[XPASS(strict)] unbuilt:
-notes#r1`: built work must leave `unbuilt:`. Set it back to `unbuilt: []`:
+As each line's code lands, its id leaves `unbuilt:` (a scenario that passes while still listed fails the suite, with
+`[XPASS(strict)] unbuilt: notes#r1`). Once the batch is built:
 
-```console
-$ PYTHONPATH="$SHOP/scripts" pytest -p work_items -q
+```text
 ....                                                                     [100%]
 4 passed in 0.22s
 ```
 
-Green. Four lines of spec, four scenarios, four passing tests.
+Green: four lines of spec, four scenarios, four passing tests.
 
-## 8. From here, tell Claude what you want
+## 7. Review and merge
 
-You've done by hand what Claude does for you from now on. Start Claude Code in the repository and say what you
-want, in your own words: "listing the notes should give their tags too." Claude shapes an item with lines like the ones
-above, checks them, and builds ready items in a batch that ends in one pull request for you to review and merge.
+The batch's pull request is reviewed once by a fresh reviewer, and what it finds is fixed before the pull request
+reaches you. The session tells you when it is ready. Read it on GitHub (the lines, the feature, the code) and merge
+it. Then say:
+
+```text
+The pull request is merged.
+```
+
+The session marks the item delivered, cleans up the batch's branches, and starts the next batch if anything else is
+ready.
+
+## 8. From here, keep saying what you want
+
+You've seen the whole loop once. From now on it's the same: say what you want, in your own words ("listing the notes
+should give their tags too"), and the session shapes an item, readies it and builds it in a batch that ends in one
+pull request for you to merge.
 
 Next:
 
-- [The tour](tour.md): one feature from an idea to a merged batch.
+- [Talking with Claude](talking-with-claude.md): what to say, what follows, and the few things you're asked.
+- [The tour](tour.md): one feature from an idea to a merged batch, with every command the session runs.
 - [Writing requirements](writing-requirements.md): the language, with "this, not that" pairs.
-- [The capability file](reference/capability-file.md): every section of these files.
-- [Commands](reference/commands.md): every command and its options.
+- [Commands](reference/commands.md): every command the session runs, for when you want to look or do a step by
+  hand.

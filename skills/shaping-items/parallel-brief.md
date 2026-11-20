@@ -14,12 +14,12 @@ Your item: `b<n>`. The others are shaped by other agents at the same time; read 
 
 ## What to do
 
-Follow the shaping-items skill, steps 2-4, on your item: its terms and relation rows, then its lines (or `work chore` when nothing a scenario checks), then `work rate` when it has no rating, then `work ready`. Read raising-a-request's "Writing a line in grammar 4" before the first line.
+Follow the shaping-items skill, steps 2-4, on your item: its model lines, relations and vocabulary entries, then its lines (or `work chore` when nothing a scenario checks), then `work rate` when it has no rating, then `work ready`. Read raising-a-request's "Writing a line in grammar 4" before the first line.
 
 ## Rules
 
 - Touch your own item only: every `work` command you run names `b<n>`. Never edit another item, `spec/`, `features/` or any file by hand.
-- Add all your term bullets (vocabulary entries) and model lines before you check a line with `work ready`: each change to the vocabulary or the model recompiles grammar 4, which takes minutes, so the terms go in at once.
+- Add all your model lines (`work line --into <capability> --model`), relations (`--relation "<object>: <phrase> → <object> (<cardinality>)"`) and term bullets, the vocabulary entries (`--term "- **<word>** (<part of speech>) → <element>. <one sentence>."`), before you check a line with `work ready`: each change to the vocabulary or the model recompiles grammar 4, so they go in at once.
 - Run a long command (`work ready`, `spec logic`, `features generate`) with a timeout of a few minutes; past it, say which command and stop.
 - No push, and no batch command: `work batch` is the session's, after the wave.
 - Never use `git stash`: every worktree shares one stash list, and the other agents of the wave work at the same time.
