@@ -6,7 +6,7 @@ group: service
 area: measurement
 specifies: service measurement
 language: codified-2
-retired: []
+retired: [g4, r4, g8, r8]
 unbuilt: []
 ---
 
@@ -32,9 +32,6 @@ items.
 ### [g3] A defect reported in a delivered item is kept for its batch
 - [r3] While an item in a batch is `delivered`, when the person reports a defect in the item, the measurement service
   shall keep a defect for the batch that the item has.
-
-### [g4] Two batches compared give their measurements and a ratio
-- [r4] When the person compares two batches, the measurement service shall return two measurements and a ratio.
 
 ### [g5] A measurement viewed gives the round trips of a stage row
 Restates: batch-measurement#r44@0.29, batch-measurement#r54@0.29.
@@ -64,16 +61,6 @@ the measurement `m3` holds:
   {"stages": [], "work_items": [], "totals": {"stages": 0, "sessions": 0}, "sessions": [{"session": "s-9", "started": null, "dispatched_by": null, "output_tokens": 9000, "new_input_tokens": 4000, "cache_read_tokens": 80000, "round_trips": 6, "tool_uses": {"Bash": 2}, "dispatched": ["s-11"], "compactions": 1}]}
 ```
 
-### [g8] Two measurements compared give their total rows and a ratio
-Restates: batch-measurement#r45@0.29.
-- [r8] When the person compares two measurements, the measurement service shall return two total rows and a ratio.
-```given
-the measurement `m1` holds:
-  {"stages": [{"work-item": "cart-1", "stage": "research", "agent": "researcher", "session": "s-1", "turns": 14, "round_trips": 7}], "work_items": [], "totals": {"stages": 1, "sessions": 1, "turns": 14, "round_trips": 7}}
-the measurement `m3` holds:
-  {"stages": [], "work_items": [], "totals": {"stages": 0, "sessions": 0}, "sessions": [{"session": "s-9", "started": null, "dispatched_by": null, "output_tokens": 9000, "new_input_tokens": 4000, "cache_read_tokens": 80000, "round_trips": 6, "tool_uses": {"Bash": 2}, "dispatched": ["s-11"], "compactions": 1}]}
-```
-
 ### [g9] A measurement compared gives its tool uses and compactions
 Restates: batch-measurement#r62@0.29.
 - [r9] When the person compares a measurement that has a session row, the measurement service shall return the number of
@@ -82,3 +69,19 @@ Restates: batch-measurement#r62@0.29.
 the measurement `m3` holds:
   {"stages": [], "work_items": [], "totals": {"stages": 0, "sessions": 0}, "sessions": [{"session": "s-9", "started": null, "dispatched_by": null, "output_tokens": 9000, "new_input_tokens": 4000, "cache_read_tokens": 80000, "round_trips": 6, "tool_uses": {"Bash": 2}, "dispatched": ["s-11"], "compactions": 1}]}
 ```
+
+### [g10] A batch compared with another batch gives their measurements and a ratio
+- [r10] When the person compares a batch with another batch, the measurement service shall return two measurements and a ratio.
+
+### [g11] A measurement compared with another measurement gives their total rows and a ratio
+- [r11] When the person compares a measurement with another measurement, the measurement service shall return two total rows and a ratio.
+
+```given
+the measurement `m1` holds:
+  {"stages": [{"work-item": "cart-1", "stage": "research", "agent": "researcher", "session": "s-1", "turns": 14, "round_trips": 7}], "work_items": [], "totals": {"stages": 1, "sessions": 1, "turns": 14, "round_trips": 7}}
+the measurement `m3` holds:
+  {"stages": [], "work_items": [], "totals": {"stages": 0, "sessions": 0}, "sessions": [{"session": "s-9", "started": null, "dispatched_by": null, "output_tokens": 9000, "new_input_tokens": 4000, "cache_read_tokens": 80000, "round_trips": 6, "tool_uses": {"Bash": 2}, "dispatched": ["s-11"], "compactions": 1}]}
+```
+
+## Dropped
+- batch-measurement#r45@0.29: retired with measurement#r8 by b420.

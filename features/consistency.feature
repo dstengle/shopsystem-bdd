@@ -446,3 +446,16 @@ Feature: Consistency
     And the requirement r1 has the translation t1
     When the person examines this specification with the capability c1
     Then the specification service returns the translation t1
+
+  @g34 @r34
+  Scenario: `spec logic` reads a value in use and a code of the same value as one request
+    Given a requirement r1
+    And the requirement r1 uses `param-of`
+    And an act a1
+    And the requirement r1 obliges the act a1
+    And a requirement r2
+    And the requirement r2 forbids the act a1
+    And a trigger t1
+    And the requirement r2 has the trigger t1
+    When the person examines this specification
+    Then the specification service returns `L1`

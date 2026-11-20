@@ -5,7 +5,8 @@ written out (`text`) and a step's text parsed back into its trees (`trees`), GF'
 spec_parse_cache (b240 phase 13, from b153).
 
 Per kind K: its instance `K_Inst : K_N -> Name -> K_NP0` ("the stage s1") and a Given that brings one in, `K_Given :
-K_N -> Name -> Step` ("a stage s1"), and its example data, `K_HoldsBlock : K_N -> Name -> Step` ("the file `a` holds:",
+K_N -> Name -> Step` ("a stage s1"), the instance a When brings in, `K_New : K_N -> Name -> K_NP0` ("the person
+creates a checklist c2", the thing its request makes, b418), and its example data, `K_HoldsBlock : K_N -> Name -> Step` ("the file `a` holds:",
 its docstring or table under the step) and `K_HoldsText : K_N -> Name -> Quoted -> Step` ("the file `a` holds
 "3.0.0""). Per relation row whose word is neither `of` nor `in`, its condition `r<n>_<word>_Is : Pol -> K1_Arg ->
 K2_Arg -> Cond` ("the stage s1 is on the worktree w1", b197). Per subject kind S of an action frame: `S_Does : Pol -> S_Arg -> S_V -> Step`, an
@@ -40,6 +41,7 @@ def modules(vocab):
         K = spec_rgl.kid(k)
         w.fun(K + "_Inst", "%s_N -> Name -> %s_NP0" % (K, K), "inst n x.s", "n x")
         w.fun(K + "_Given", "%s_N -> Name -> Step" % K, "intro n x.s", "n x")
+        w.fun(K + "_New", "%s_N -> Name -> %s_NP0" % (K, K), "fresh n x.s", "n x")     # b418
         w.fun(K + "_HoldsBlock", "%s_N -> Name -> Step" % K, 'holds n x.s ":"', "n x")
         w.fun(K + "_HoldsText", "%s_N -> Name -> Quoted -> Step" % K, "holds n x.s q.s", "n x q")
     subjects = dict.fromkeys(subject for v in vocab.verbs if v.aspect == "action" for subject, _ in v.frames)

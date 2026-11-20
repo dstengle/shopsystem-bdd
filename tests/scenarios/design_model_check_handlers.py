@@ -228,7 +228,9 @@ def named(step):
 def model_prints(step):
     done = step.context["result"]
     if step.nps and step.nps[0].startswith("one logical form"):     # counted (b273): one form, of the line's
-        assert len(re.findall(r"^\S+: (?:shall|may) \[", done.stdout, re.MULTILINE)) == 1, done.stdout
+        forms = re.findall(r"^\S+: (?:shall|may) \[", done.stdout, re.MULTILINE)
+        trees = re.findall(r"^\d+: (?:When|If|While|Where|NoPre) ", done.stdout, re.MULTILINE)   # without --form
+        assert done.returncode == 0 and len(forms or trees) == 1, done.stdout
         return
     for word in named(step):
         assert word in done.stdout, (word, done.stdout, done.stderr)

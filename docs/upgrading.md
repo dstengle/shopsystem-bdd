@@ -125,7 +125,7 @@ check` holds the two to each other: an operation no line requests is `v_m7`, a r
 The whole worked result is [`docs/examples/notes-cli/`](examples/notes-cli/README.md); the test of the step checks
 that the reworded copy passes `spec check`, `features generate --check` and `spec logic`.
 
-Then run `features generate`: every scenario's When is now a request ("When the person adds the note n1 without a
+Then run `features generate`: every scenario's When is now a request ("When the person adds a note n1 without a
 title") and its Thens the response ("Then the notes service refuses this request"). Re-key the step handlers on
 the operations, and drive the program through its adapter.
 

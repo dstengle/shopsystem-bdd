@@ -6,7 +6,7 @@ group: service
 area: specification
 specifies: service language: parse
 language: codified-2
-retired: []
+retired: [g4, r4]
 unbuilt: []
 ---
 
@@ -26,9 +26,6 @@ A line parsed in the controlled language to one meaning or refused with why, its
 
 ### [g3] A requirement outside the language is refused
 - [r3] If the person parses a requirement that does not conform to the language reference, then the language service shall refuse the request and name the requirement.
-
-### [g4] A requirement of two meanings is refused
-- [r4] If the person parses a requirement that has more than one logical form, then the language service shall refuse the request and name the requirement.
 
 ### [g5] A requirement that breaks a reading rule is refused
 - [r5] If the person parses a requirement that violates a reading rule, then the language service shall refuse the request and name the reading rule.
@@ -53,4 +50,22 @@ A line parsed in the controlled language to one meaning or refused with why, its
 
 ### [g12] The logical form puts an order after a collection on its members
 - [r12] When the person parses a requirement that uses `order-by` with the logical form, the language service shall return a logical form that uses an order of a member of a collection.
+
+### [g13] A requirement of a verb of two frames is read by one frame
+- [r13] While a verb has two frames, when the person parses a requirement that uses a frame of the verb, the language service shall return one logical form of the requirement and complete the request.
+
+### [g14] A request on more than one thing is outside the language
+- [r14] If the person parses a requirement that has a plural object, then the language service shall refuse the request and name the requirement.
+
+### [g15] A requirement of two meanings is refused naming its ambiguous text
+- [r15] If the person parses a requirement that has more than one logical form, then the language service shall refuse the request and name the requirement and the ambiguous text of the requirement.
+
+### [g16] A requirement read by two frames of a verb is refused naming the two frames
+- [r16] If the person parses a requirement whose ambiguous text uses two frames of a verb, then the language service shall refuse the request and name every frame that the ambiguous text uses.
+
+### [g17] A request parameter's value that is another thing's value is parsed
+- [r17] When the person parses a requirement that uses `param-of`, the language service shall complete the request.
+
+### [g18] The logical form keeps a value in use
+- [r18] When the person parses a requirement that uses `param-of` with the logical form, the language service shall return a logical form that holds a value in use.
 

@@ -723,6 +723,11 @@ purpose = "States which parameters a request carries and which it omits, so a li
 since = "0.38.0"
 changed = []
 
+[constructs.param-of]
+purpose = "Gives a request parameter the value another thing already has, so a line can say a value in use is refused."
+since = "b418"
+changed = []
+
 [constructs.of-relation]
 purpose = "Reaches a thing through a relation, such as the worktree of a session, without a separate condition."
 since = "b240"

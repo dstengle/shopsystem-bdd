@@ -24,7 +24,10 @@ def facts(root, ident):
 
 def test_a_request_with_parameters_given_and_absent():
     got = facts(FIXTURE, "notebook#r3")
-    assert 'trig(req,req(e_notes__add,(p(priority,"high"),p(text,some))),a_notes__the_person,x2).' in got
+    # a value of an attribute's parameter is `val` in the key and a named term in the object (b418)
+    assert "trig(req,req(e_notes__add,(p(priority,val),p(text,some))),a_notes__the_person,pair(x2,pv_priority))." \
+        in got
+    assert 'named(pv_priority,"`high`").' in got and "role(pv_priority,k_priority)." in got
     assert 'param(1,priority,"high").' in got and "param(1,text,some)." in got
     got = facts(FIXTURE, "notebook#r4")
     assert "trig(req,req(e_notes__add,(p(reminder,no),p(text,no))),a_notes__the_person,x2)." in got

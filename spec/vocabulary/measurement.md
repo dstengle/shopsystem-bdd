@@ -29,3 +29,4 @@ area: measurement
 - **conduct** (verb, action) → operation measurement.conduct. Forms: conducts, conducted. Frame: <actor> conducts <trial>.
 - **the measurement service** (proper noun) → service measurement.
 - **hand** (verb, action) → operation measurement.hand. Forms: hands, handed. Frame: <actor> hands <trial> to <session>.
+- **compare** (verb, action) → operation measurement.compare. Forms: compares, compared. Frame: <actor> compares <batch> with <batch>. Frame: <actor> compares <measurement> with <measurement>.

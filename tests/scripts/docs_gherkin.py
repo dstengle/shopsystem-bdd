@@ -11,6 +11,7 @@
 import re
 
 import features_vocab4
+from gherkin.errors import ParserError
 from gherkin.parser import Parser
 
 SHORT = re.compile(r"_k_\w+_Is(?:Code|OneOf|NoneOf)?$")
@@ -25,7 +26,7 @@ def gherkin_problem(body):
         text = "Feature: excerpt\n" + text
     try:
         Parser().parse(text)
-    except Exception as err:      # the parser's CompositeParserException and its kin
+    except ParserError as err:      # the parser's CompositeParserException and its kin
         return "not valid Gherkin: %s" % str(err).replace("\n", "; ")
     return None
 
@@ -50,7 +51,7 @@ def steps(lines):
     passed over."""
     out, keyword, doc = [], None, False
     for s in lines:
-        if s.startswith('"""') or s.startswith("```"):
+        if s.startswith(('"""', "```")):
             doc = not doc
             continue
         m = None if doc else STEP.match(s)
@@ -60,9 +61,18 @@ def steps(lines):
     return out
 
 
+def fresh(tree):
+    """The names of the instances a When's tree brings in ("the person adds a note n1": `K_New`, b418)."""
+    if not isinstance(tree, tuple):
+        return set()
+    if tree[0].endswith("_New") and len(tree) == 3:
+        return {tree[2][1]}
+    return {n for t in tree[1:] for n in fresh(t)}
+
+
 def step_problems(root, lines):
     """What is wrong with a scenario's steps in a context: a step of no reading or two, an instance a Given or a
-    When names that no Given brought in, a value in the short form."""
+    When names that no Given or that When brought in, a value in the short form."""
     out, brought = [], set()
     for keyword, text in steps(lines):
         try:
@@ -73,6 +83,7 @@ def step_problems(root, lines):
         if call.template in ("GivenK", "GivenCode", "GivenCodeText"):
             brought.update(call.names)
         elif keyword in ("given", "when"):
+            brought.update(fresh(call.tree) if keyword == "when" else ())     # "a note n1" a When brings in (b418)
             loose = [n for n in call.names if n not in brought]
             if loose:
                 out.append("%s %s: names %s, which no Given brought in" % (keyword, text, ", ".join(loose)))

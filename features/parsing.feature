@@ -29,17 +29,6 @@ Feature: Parsing
     Then the language service refuses this request
     And the language service names the requirement r1
 
-  @g4 @r4
-  Scenario: A requirement of two meanings is refused
-    Given a logical form l1
-    And a requirement r1
-    And the requirement r1 has the logical form l1
-    And a logical form l2
-    And the requirement r1 has the logical form l2
-    When the person parses the requirement r1
-    Then the language service refuses this request
-    And the language service names the requirement r1
-
   @g5 @r5
   Scenario: A requirement that breaks a reading rule is refused
     Given a requirement r1
@@ -120,3 +109,85 @@ Feature: Parsing
     And the member m1 has the order o1
     And the language service returns the logical form l1
     And the logical form l1 uses the order o1
+
+  @g13 @r13
+  Scenario: A requirement of a verb of two frames is read by one frame
+    Given a frame f1
+    And a verb v1
+    And the verb v1 has the frame f1
+    And a frame f2
+    And the verb v1 has the frame f2
+    And a frame f3
+    And the verb v1 has the frame f3
+    And a requirement r1
+    And the requirement r1 uses the frame f3
+    And a logical form l1
+    And the requirement r1 has the logical form l1
+    And a logical form l2
+    And the requirement r1 has the logical form l2
+    When the person parses the requirement r1
+    Then the language service returns one logical form of the requirement r1
+    And the language service completes this request
+
+  @g14 @r14
+  Scenario: A request on more than one thing is outside the language
+    Given a plural object p1
+    And a requirement r1
+    And the requirement r1 has the plural object p1
+    When the person parses the requirement r1
+    Then the language service refuses this request
+    And the language service names the requirement r1
+
+  @g15 @r15
+  Scenario: A requirement of two meanings is refused naming its ambiguous text
+    Given a logical form l1
+    And a requirement r1
+    And the requirement r1 has the logical form l1
+    And a logical form l2
+    And the requirement r1 has the logical form l2
+    When the person parses the requirement r1
+    Then the language service refuses this request
+    And the language service names the requirement r1
+    And the language service names the ambiguous text a1
+    And the requirement r1 has the ambiguous text a1
+
+  @g16 @r16
+  Scenario: A requirement read by two frames of a verb is refused naming the two frames
+    Given an ambiguous text a1
+    And a requirement r1
+    And the requirement r1 has the ambiguous text a1
+    And a frame f1
+    And a verb v1
+    And the verb v1 has the frame f1
+    And the ambiguous text a1 uses the frame f1
+    And a frame f2
+    And the verb v1 has the frame f2
+    And the ambiguous text a1 uses the frame f2
+    And a frame f3
+    And the ambiguous text a1 uses the frame f3
+    And a frame f4
+    And the ambiguous text a1 uses the frame f4
+    And a frame f5
+    And the ambiguous text a1 does not use the frame f5
+    When the person parses the requirement r1
+    Then the language service refuses this request
+    And the language service names the frame f3
+    And the language service names the frame f4
+    And the language service does not name the frame f5
+
+  @g17 @r17
+  Scenario: A request parameter's value that is another thing's value is parsed
+    Given a requirement r1
+    And the requirement r1 uses `param-of`
+    When the person parses the requirement r1
+    Then the language service completes this request
+
+  @g18 @r18
+  Scenario: The logical form keeps a value in use
+    Given a requirement r1
+    And the requirement r1 uses `param-of`
+    And a value in use v1
+    And a logical form l1
+    When the person parses the requirement r1 with the logical form
+    Then the language service returns the logical form l1
+    And the logical form l1 holds the value in use v1

@@ -69,19 +69,6 @@ Feature: Measurement
     And the defect d2 is for the batch b1
     And the item i1 has the defect d2
 
-  @g4 @r4
-  Scenario: Two batches compared give their measurements and a ratio
-    Given a batch b1
-    And a batch b2
-    And a measurement m1
-    And a measurement m2
-    And a ratio r1
-    When the person compares the batch b1
-    And the person compares the batch b2
-    Then the measurement service returns the measurement m1
-    And the measurement service returns the measurement m2
-    And the measurement service returns the ratio r1
-
   @g5 @r5
   Scenario: A measurement viewed gives the round trips of a stage row
     Given the measurement `m1` holds:
@@ -164,27 +151,6 @@ Feature: Measurement
     And the measurement service does not return the dispatch d3
     And the measurement service returns the number of compactions of the session row s1
 
-  @g8 @r8
-  Scenario: Two measurements compared give their total rows and a ratio
-    Given the measurement `m1` holds:
-      """
-      {"stages": [{"work-item": "cart-1", "stage": "research", "agent": "researcher", "session": "s-1", "turns": 14, "round_trips": 7}], "work_items": [], "totals": {"stages": 1, "sessions": 1, "turns": 14, "round_trips": 7}}
-      """
-    And the measurement `m3` holds:
-      """
-      {"stages": [], "work_items": [], "totals": {"stages": 0, "sessions": 0}, "sessions": [{"session": "s-9", "started": null, "dispatched_by": null, "output_tokens": 9000, "new_input_tokens": 4000, "cache_read_tokens": 80000, "round_trips": 6, "tool_uses": {"Bash": 2}, "dispatched": ["s-11"], "compactions": 1}]}
-      """
-    And a measurement m1
-    And a measurement m2
-    And a total row t1
-    And a total row t2
-    And a ratio r1
-    When the person compares the measurement m1
-    And the person compares the measurement m2
-    Then the measurement service returns the total row t1
-    And the measurement service returns the total row t2
-    And the measurement service returns the ratio r1
-
   @g9 @r9
   Scenario: A measurement compared gives its tool uses and compactions
     Given the measurement `m3` holds:
@@ -205,3 +171,35 @@ Feature: Measurement
     When the person compares the measurement m1
     Then the measurement service returns the number of tool uses in the measurement m1
     And the measurement service returns the number of compactions in the measurement m1
+
+  @g10 @r10
+  Scenario: A batch compared with another batch gives their measurements and a ratio
+    Given a batch b1
+    And a batch b2
+    And a measurement m1
+    And a measurement m2
+    And a ratio r1
+    When the person compares the batch b1 with the batch b2
+    Then the measurement service returns the measurement m1
+    And the measurement service returns the measurement m2
+    And the measurement service returns the ratio r1
+
+  @g11 @r11
+  Scenario: A measurement compared with another measurement gives their total rows and a ratio
+    Given the measurement `m1` holds:
+      """
+      {"stages": [{"work-item": "cart-1", "stage": "research", "agent": "researcher", "session": "s-1", "turns": 14, "round_trips": 7}], "work_items": [], "totals": {"stages": 1, "sessions": 1, "turns": 14, "round_trips": 7}}
+      """
+    And the measurement `m3` holds:
+      """
+      {"stages": [], "work_items": [], "totals": {"stages": 0, "sessions": 0}, "sessions": [{"session": "s-9", "started": null, "dispatched_by": null, "output_tokens": 9000, "new_input_tokens": 4000, "cache_read_tokens": 80000, "round_trips": 6, "tool_uses": {"Bash": 2}, "dispatched": ["s-11"], "compactions": 1}]}
+      """
+    And a measurement m1
+    And a measurement m2
+    And a total row t1
+    And a total row t2
+    And a ratio r1
+    When the person compares the measurement m1 with the measurement m2
+    Then the measurement service returns the total row t1
+    And the measurement service returns the total row t2
+    And the measurement service returns the ratio r1

@@ -26,6 +26,7 @@ area: measurement
 - **report** (verb, action) → operation measurement.report. Forms: reports, reported. Frame: <actor> reports <defect> in <item>.
 - **view** (verb, action) → operation measurement.view. Forms: views, viewed. Frame: <actor> views <measurement>.
 - **compare** (verb, action) → operation measurement.compare. Forms: compares, compared. Frame: <actor> compares <measurement>. Frame: <actor> compares <batch>.
+- **compare** (verb, action) → operation measurement.compare. Forms: compares, compared. Frame: <actor> compares <batch> with <batch>. Frame: <actor> compares <measurement> with <measurement>.
 - **conduct** (verb, action) → operation measurement.conduct. Forms: conducts, conducted. Frame: <actor> conducts <trial>.
 - **the measurement service** (proper noun) → service measurement.
 - **hand** (verb, action) → operation measurement.hand. Forms: hands, handed. Frame: <actor> hands <trial> to <session>.

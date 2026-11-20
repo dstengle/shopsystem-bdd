@@ -22,6 +22,7 @@ object capability kind of file
 object requirement kind of text
   relations: has → precondition | trigger | logical form | consequence | parse | compiled grammar | translation | response | act | restriction | upper bound | requirement id (many); omits → requirement (many); allows → act (many); oblige → requirement (many); overrides → requirement (many); adds → consequence (many); permits → act (many); retires → requirement id (many); uses → construct | rule (many)
   relations: governs → operation (many)
+  relations: has → ambiguous text | plural object (many)
 
 object requirement group
   relations: has → requirement | scenario (many)
@@ -87,6 +88,7 @@ object pack kind of file
   relations: has → term (many)
 
 object logical form kind of text
+  relations: holds → value in use (many)
 
 object verb kind of term
 
@@ -187,6 +189,7 @@ object construct catalogue kind of file
 
 object referent
   relations: has → description (many)
+  relations: has → instance (one)
 
 object description kind of text
 
@@ -270,6 +273,7 @@ object adapter contract kind of file
 
 object operation
   relations: holds → requirement (many)
+  relations: makes → referent (many)
 
 object reading rule kind of rule
 
@@ -282,4 +286,12 @@ object member
 object purpose kind of text
 
 object release kind of text
+
+object ambiguous text kind of text
+
+object plural object kind of noun phrase
+
+object when step kind of step
+
+object value in use kind of text
 ```

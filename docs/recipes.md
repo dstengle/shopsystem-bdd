@@ -3,7 +3,8 @@ this repository with no remote and the suite's stand-in gh (tests/scripts/stub_g
 quote numbers (b250-b252, batch-34, batch-35, 0092, quote-24) are the clone's. Long paths are cut with `...`.
 "Shape a chore" is from a run on 2026-11-18, plugin 0.37.0, in a scratch clone with no remote (its b350). The first
 three recipes and "See what a line means" are from runs on 2026-11-19, plugin 0.38.0, in a scratch clone with no remote
-(its b359 and b361 written here as b250 and b252). -->
+(its b359 and b361 written here as b250 and b252). "One verb for several operations" is from runs on 2026-11-20,
+plugin 0.41.0 with b420, in its sketch context tests/scripts/fixtures/docs-checklists. -->
 
 # Recipes
 
@@ -16,8 +17,10 @@ shows how to run them from the plugin's directory. Every command's full contract
 [command reference](reference/commands.md) has the short version.
 
 **The recipes:** [a vocabulary word](#add-a-word-to-the-vocabulary) ·
+[one verb for several operations](#one-verb-for-several-operations) ·
 [a relation, given block, universal or upstream](#add-a-relation-row-a-given-block-a-universal-condition-or-an-upstream) ·
-[change a delivered line](#change-a-delivered-line) · [a new capability](#start-a-new-capability) ·
+[change a delivered line](#change-a-delivered-line) · [a value already in use](#refuse-a-value-already-in-use) ·
+[a new capability](#start-a-new-capability) ·
 [a chore](#shape-a-chore) ·
 [what a line means](#see-what-a-line-means) ·
 [an adapter contract behind its lines](#bring-an-adapter-contract-up-to-its-lines) · [ready and blocked](#find-what-is-ready-and-what-blocks-it) ·
@@ -113,6 +116,91 @@ verbs. To give one of them your own meaning, mark your entry `Redefines: request
 says `v_t16  <word>  <file>: the pack request defines <word> too; mark the entry Redefines: request`; with it,
 `spec lexicon` lists the word as `<word>  [redefines request]`.
 
+## One verb for several operations
+
+**When:** the person uses a word again for another operation: "list all my checklists", when "list" already names
+the request for the notes of one checklist.
+
+**You say:** "List the checklists, and list a checklist: a checklist is a container of things."
+
+Keep the person's word. Don't coin a verb they never said (`browse`): the word gets a second vocabulary entry, naming
+the other operation, with a frame that tells it apart. Listing takes a container: one checklist (the frame's
+object), the service's whole collection (the frame's own words, "the checklists"), or a part of one thing that its
+fixed words name ("the characters of a note"). You wouldn't list a note, but you could list its characters, and
+show its length. Here are the model's operations and the entries, two of `list` and `show` beside the third `list`:
+
+<!-- docs: context tests/scripts/fixtures/docs-checklists -->
+```text
+service checklists
+  operation contents(checklist)  outcomes: returned → every note
+  operation list()  outcomes: returned → every checklist
+  operation characters(note)  outcomes: returned → every character
+  operation length(note)  outcomes: returned → the note
+  operation show(note)  outcomes: returned → the note
+- **list** (verb, action) → operation checklists.contents. Forms: lists, listed. Frame: <actor> lists <checklist>.
+- **list** (verb, action) → operation checklists.list. Forms: lists, listed. Frame: <actor> lists the checklists.
+- **list** (verb, action) → operation checklists.characters. Forms: lists, listed. Frame: <actor> lists the characters of <note>.
+- **show** (verb, action) → operation checklists.length. Forms: shows, shown. Frame: <actor> shows the length of <note>.
+- **show** (verb, action) → operation checklists.show. Forms: shows, shown. Frame: <actor> shows <note>.
+```
+
+Each entry names its own operation, so the operation's name says what it does (`contents`, `length`) while every
+line keeps the person's verb. A line reads by the frame its words fit, one way each:
+
+<!-- docs: context tests/scripts/fixtures/docs-checklists -->
+```console
+$ spec parse --form "When the person lists a checklist, the checklists service shall return every note in the checklist."
+shall [x1: agent the person (constant), x3: service the checklists service (constant)]
+  when [x2: checklist]
+    request(e1, checklists.contents, subject: x1, object: x2)
+  response
+    every [x4: note]
+      in(x4, x2)
+      scope
+        return(e2, subject: x3, object: x4)
+$ spec parse --form "When the person lists the checklists, the checklists service shall return every checklist."
+shall [x1: agent the person (constant), x2: service the checklists service (constant)]
+  when
+    request(e1, checklists.list, subject: x1, the checklists)
+  response
+    every [x3: checklist]
+      scope
+        return(e2, subject: x2, object: x3)
+$ spec parse --form "When the person lists the characters of a note, the checklists service shall return every character of the note."
+shall [x1: agent the person (constant), x3: service the checklists service (constant)]
+  when [x2: note]
+    request(e1, checklists.characters, subject: x1, the characters of: x2)
+  response
+    every [x4: character]
+      of(x4, x2)
+      scope
+        return(e2, subject: x3, object: x4)
+$ spec parse --form "When the person shows the length of a note, the checklists service shall return the note."
+shall [x1: agent the person (constant), x3: service the checklists service (constant)]
+  when [x2: note]
+    request(e1, checklists.length, subject: x1, the length of: x2)
+  response
+    return(e2, subject: x3, object: x2)
+```
+
+"The checklists" can't read as the first frame's object either: a request acts on one thing, so a plural, "every"
+or a count in a request's object slot is no reading. Said on purpose, it is refused, and a frame no word fits stops
+the parse at the verb:
+
+<!-- docs: context tests/scripts/fixtures/docs-checklists -->
+```console
+$ spec parse "When the person lists every checklist, the checklists service shall return every checklist."
+refused: a request acts on one thing: "every checklist" is a plural object of list; say one thing, or the collection by its frame's own words
+$ spec parse "When the person lists a note, the checklists service shall return the note."
+refused: the verb list takes as its object checklist or a kind of it: agent lists checklist
+  parsed up to: When the person lists a
+  nearest words: note, notes, notifies, notified, no
+  may follow: (none)
+```
+
+Two frames that a line still fits both ways (two entries whose fixed words overlap) are refused naming the words
+that read two ways and both frames with their operations; give one of them other fixed words.
+
 ## Add a relation row, a given block, a universal condition or an upstream
 
 **When:** a line needs more than words: how two kinds relate, example data for its scenario, a rule true
@@ -199,6 +287,28 @@ b252 "Declining an item keeps it": retires items#r19
 ```
 
 The item holds `retired: [r19]` and no new line; when a batch lays it, r19 and its scenario go.
+
+## Refuse a value already in use
+
+**When:** a request must not name a value another thing already has: two notes with one title, say.
+
+**You say:** "Adding a note with a title another note has should be refused."
+
+Say the value as the other thing's, "the title of another note", in the request's parameters. Any parameter that is
+the word of an attribute takes it (construct `param-of`):
+
+<!-- docs: context docs/examples/notes-cli -->
+```markdown
+- [r5] If the person adds a note with the title of another note, then the notes service shall refuse the request and name the title.
+```
+
+No example value is needed (a line with one, "with the title `groceries`", is example data, which `spec check` warns
+of). The scenario `features generate` writes gives the other note a made-up title in a Given and the same title to
+the request in the When ("Given a note n2", "And the title of the note n2 is `t1`", "When the person adds a note n1
+with the title `t1`"), so the test sets the service's state up and checks its answer, reading no list of notes. And
+`spec logic` reads the line beside one that names a code on the same request ("If the person adds a note with the
+title `t1`, then the notes service shall not refuse the request.") as one request, and finds the clash. See
+[the language reference](../grammar/language.md#with-the-t-of-another-k-a-value-in-use).
 
 ## Start a new capability
 

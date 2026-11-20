@@ -93,7 +93,7 @@ a condition that holds while the trigger happens
 - Since: b240
 - Form: While <condition>, ...
 - Functions: `While`
-- Cited by: scenarios#r35
+- Cited by: scenarios#r43
 - Example and its reading:
 
 ```construct
@@ -457,7 +457,7 @@ a relative clause whose subject is the noun
 - Since: b240
 - Form: <noun> that <verb> ...
 - Functions: `k_\w+_Rel_k_\w+`
-- Cited by: consistency#r25, consistency#r27, consistency#r29, consistency#r33, scenarios#r21, scenarios#r26, scenarios#r32
+- Cited by: consistency#r25, consistency#r27, consistency#r29, consistency#r33, scenarios#r21, scenarios#r32, scenarios#r39
 - Example and its reading:
 
 ```construct
@@ -809,7 +809,7 @@ two distinct ones
 - Since: b240
 - Form: two <nouns>
 - Functions: `DetTwo`
-- Cited by: scenarios#r14
+- Cited by: scenarios#r38
 - Example and its reading:
 
 ```construct
@@ -922,7 +922,7 @@ the run's own thing
 - Since: b240
 - Form: this <noun>
 - Functions: `k_\w+_This`
-- Cited by: scenarios#r34
+- Cited by: scenarios#r42
 - Example and its reading:
 
 ```construct
@@ -1086,6 +1086,31 @@ shall [x1: agent the person (constant), x3: service the decisions service (const
     keep(e2, subject: x3, object: x2)
 ```
 
+## param-of
+
+a request parameter's value that is another thing's value of the attribute the parameter names, a referent of the logical form (b418, design-decision 0110)
+
+- Purpose: Gives a request parameter the value another thing already has, so a line can say a value in use is refused.
+- Since: b418
+- Form: <actor> <operation verb> <np> with the <parameter> of <np>
+- Functions: `o_\w+_Of_t_\w+`
+- Cited by: consistency#r34, parsing#r17, parsing#r18, scenarios#r36
+- Context: `grammar/corpus/constructs/request/`
+- Example and its reading:
+
+```construct
+If the person enters a design-decision with the title of another design-decision, then the decisions service shall refuse the request and name the title.
+shall [x1: agent the person (constant), x5: service the decisions service (constant), x6: request "the request the trigger makes" (indexical), x7: parameter title (constant)]
+  if [x2: design-decision, x3: design-decision, x4: title]
+    distinct(x3, x2)
+    title(x3) = x4
+    request(e1, decisions.enter, subject: x1, object: x2)
+    param(e1, title, x4)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x7)
+```
+
 ## of-relation
 
 a noun of another by a relation row
@@ -1094,7 +1119,7 @@ a noun of another by a relation row
 - Since: b240
 - Form: <noun> of|in <np>
 - Functions: `r\d+_\w+_Mod`
-- Cited by: consistency#r30, scenarios#r28, scenarios#r30, scenarios#r33, scenarios#r34, scenarios#r35
+- Cited by: consistency#r30, scenarios#r28, scenarios#r30, scenarios#r41, scenarios#r42, scenarios#r43
 - Example and its reading:
 
 ```construct
@@ -1159,7 +1184,7 @@ a state: the other noun of a relation row "in"
 - Changed: b274
 - Form: <np> holds <np>
 - Functions: `r\d+_\w+_Holds`
-- Cited by: consistency#r15, consistency#r16, consistency#r28, consistency#r29, scenarios#r7, scenarios#r8, scenarios#r23, scenarios#r26, scenarios#r29
+- Cited by: consistency#r15, consistency#r16, consistency#r28, consistency#r29, scenarios#r7, scenarios#r8, scenarios#r23, scenarios#r29, scenarios#r39
 - Example and its reading:
 
 ```construct
@@ -1458,7 +1483,7 @@ a collection's members ordered by their attribute (b275)
 - Changed: b301
 - Form: <np>, ordered by <attribute>, in ascending|descending order[,]
 - Functions: `r\d+_\w+_By_t_[a-z0-9_]+_\d+|Ascending|Descending`
-- Cited by: parsing#r12, scenarios#r22, scenarios#r27
+- Cited by: parsing#r12, scenarios#r22, scenarios#r40
 - Example and its reading:
 
 ```construct

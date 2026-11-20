@@ -308,23 +308,6 @@ Feature: Scenarios
     And the requirement group r2 has the scenario s1
     And the scenario s1 has the boundary b1
 
-  @g14 @r14
-  Scenario: generation introduces each instance of two Ks
-    Given a requirement group r2
-    And a capability c1
-    And the capability c1 has the requirement group r2
-    And a requirement r1
-    And the requirement group r2 has the requirement r1
-    And the requirement r1 uses `two`
-    And a feature f1
-    And the capability c1 has the feature f1
-    And a step s1
-    And an instance i1
-    And no given step introduces the instance i1
-    And the step s1 mentions the instance i1
-    When the person generates the feature f1
-    Then the scenarios service does not keep the step s1
-
   @g15 @r15
   Scenario: generation writes the member a collection must not hold
     Given a requirement r1
@@ -511,41 +494,6 @@ Feature: Scenarios
     And the requirement group r2 has the scenario s1
     And the scenario s1 has the order counter-example o1
 
-  @g26 @r26
-  Scenario: generation introduces the thing a printed thing holds
-    Given a requirement group r2
-    And a capability c1
-    And the capability c1 has the requirement group r2
-    And a requirement r1
-    And the requirement group r2 has the requirement r1
-    And the requirement r1 uses `holds-relation`
-    And the requirement r1 uses `rc-subject`
-    And a feature f1
-    And the capability c1 has the feature f1
-    And a step s1
-    And an instance i1
-    And no given step introduces the instance i1
-    And the step s1 mentions the instance i1
-    When the person generates the feature f1
-    Then the scenarios service does not keep the step s1
-
-  @g27 @r27
-  Scenario: generation introduces each instance of an order
-    Given a requirement group r2
-    And a capability c1
-    And the capability c1 has the requirement group r2
-    And a requirement r1
-    And the requirement group r2 has the requirement r1
-    And the requirement r1 uses `order-by`
-    And a feature f1
-    And the capability c1 has the feature f1
-    And a step s1
-    And an instance i1
-    And no given step introduces the instance i1
-    And the step s1 mentions the instance i1
-    When the person generates the feature f1
-    Then the scenarios service does not keep the step s1
-
   @g28 @r28
   Scenario: generation writes the scenario of `order-by-every` on every K in a collection
     Given a requirement group r2
@@ -625,7 +573,99 @@ Feature: Scenarios
     And the scenarios service keeps the scenario s2
     And the scenario s2 has the step s1
 
-  @g33 @r33
+  @g36 @r36
+  Scenario: generation gives a value in use to a given step and to the when step
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And the requirement r1 uses `param-of`
+    And a feature f1
+    And the capability c1 has the feature f1
+    When the person generates the feature f1
+    Then the scenarios service keeps the given step g1
+    And the given step g1 mentions the code c2
+    And the scenarios service keeps the when step w1
+    And the when step w1 mentions the code c2
+
+  @g37 @r37
+  Scenario: generation introduces the thing an operation makes in the when step
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And an operation o1
+    And a referent r3
+    And the operation o1 makes the referent r3
+    And the requirement r1 governs the operation o1
+    And a feature f1
+    And the capability c1 has the feature f1
+    And a given step g1
+    And the given step g1 introduces the instance i1
+    When the person generates the feature f1
+    Then the scenarios service keeps the when step w1
+    And the scenarios service does not keep the given step g1
+    And the referent r3 has the instance i1
+    And the when step w1 introduces the instance i1
+
+  @g38 @r38
+  Scenario: generation introduces each instance of two Ks
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And the requirement r1 uses `two`
+    And a feature f1
+    And the capability c1 has the feature f1
+    And a step s1
+    And an instance i1
+    And no given step introduces the instance i1
+    And no when step introduces the instance i1
+    And the step s1 mentions the instance i1
+    When the person generates the feature f1
+    Then the scenarios service does not keep the step s1
+
+  @g39 @r39
+  Scenario: generation introduces the thing a printed thing holds
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And the requirement r1 uses `holds-relation`
+    And the requirement r1 uses `rc-subject`
+    And a feature f1
+    And the capability c1 has the feature f1
+    And a step s1
+    And an instance i1
+    And no given step introduces the instance i1
+    And no when step introduces the instance i1
+    And the step s1 mentions the instance i1
+    When the person generates the feature f1
+    Then the scenarios service does not keep the step s1
+
+  @g40 @r40
+  Scenario: generation introduces each instance of an order
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And the requirement r1 uses `order-by`
+    And a feature f1
+    And the capability c1 has the feature f1
+    And a step s1
+    And an instance i1
+    And no given step introduces the instance i1
+    And no when step introduces the instance i1
+    And the step s1 mentions the instance i1
+    When the person generates the feature f1
+    Then the scenarios service does not keep the step s1
+
+  @g41 @r41
   Scenario: generation introduces the thing a response names by its owner
     Given a requirement group r2
     And a capability c1
@@ -641,11 +681,12 @@ Feature: Scenarios
     And a step s1
     And an instance i1
     And no given step introduces the instance i1
+    And no when step introduces the instance i1
     And the step s1 mentions the instance i1
     When the person generates the feature f1
     Then the scenarios service does not keep the step s1
 
-  @g34 @r34
+  @g42 @r42
   Scenario: generation introduces the thing a response names by an indexical owner
     Given a requirement group r2
     And a capability c1
@@ -659,11 +700,12 @@ Feature: Scenarios
     And a step s1
     And an instance i1
     And no given step introduces the instance i1
+    And no when step introduces the instance i1
     And the step s1 mentions the instance i1
     When the person generates the feature f1
     Then the scenarios service does not keep the step s1
 
-  @g35 @r35
+  @g43 @r43
   Scenario: generation introduces the thing a response names by a While part's owner
     Given a requirement group r2
     And a capability c1
@@ -677,6 +719,7 @@ Feature: Scenarios
     And a step s1
     And an instance i1
     And no given step introduces the instance i1
+    And no when step introduces the instance i1
     And the step s1 mentions the instance i1
     When the person generates the feature f1
     Then the scenarios service does not keep the step s1

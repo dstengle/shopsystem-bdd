@@ -4,8 +4,7 @@ Feature: Notebook
 
   @g1 @r1
   Scenario: A note added is filed
-    Given a note n1
-    When the person adds the note n1
+    When the person adds a note n1
     Then the notes service files the note n1
 
   @g2 @r2
@@ -18,14 +17,12 @@ Feature: Notebook
 
   @g3 @r3
   Scenario: A note added with a text and a priority is kept
-    Given a note n1
-    When the person adds the note n1 with a text and the priority `high`
+    When the person adds a note n1 with a text and the priority `high`
     Then the notes service keeps the note n1
 
   @g4 @r4
   Scenario: A note added without a text is refused
-    Given a note n1
-    When the person adds the note n1 without a text and the reminder
+    When the person adds a note n1 without a text and the reminder
     Then the notes service refuses this request
     And the notes service names the text
 
