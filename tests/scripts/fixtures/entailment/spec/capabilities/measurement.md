@@ -34,7 +34,7 @@ items.
   shall keep a defect for the batch that the item has.
 
 ### [g4] Two batches compared give their measurements and a ratio
-- [r4] When the person compares two batches, the measurement service shall return two measurements and a ratio.
+- [r4] When the person compares a batch with another batch, the measurement service shall return two measurements and a ratio.
 
 ### [g5] A measurement viewed gives the round trips of a stage row
 Restates: batch-measurement#r44@0.29, batch-measurement#r54@0.29.
@@ -66,7 +66,7 @@ the measurement `m3` holds:
 
 ### [g8] Two measurements compared give their total rows and a ratio
 Restates: batch-measurement#r45@0.29.
-- [r8] When the person compares two measurements, the measurement service shall return two total rows and a ratio.
+- [r8] When the person compares a measurement with another measurement, the measurement service shall return two total rows and a ratio.
 ```given
 the measurement `m1` holds:
   {"stages": [{"work-item": "cart-1", "stage": "research", "agent": "researcher", "session": "s-1", "turns": 14, "round_trips": 7}], "work_items": [], "totals": {"stages": 1, "sessions": 1, "turns": 14, "round_trips": 7}}

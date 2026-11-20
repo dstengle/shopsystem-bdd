@@ -55,23 +55,31 @@ def fun(tree):
     return tree if isinstance(tree, str) else tree[0]
 
 
-def split(a, b):
-    """The subtree of `a` (nested lists) whose words read two ways: below the last node `a` and `b` share, the one
-    argument whose meaning differs, or that node itself when more than one does."""
+def path(a, b):
+    """The pairs of subtrees of `a` and `b` (nested lists) from the root down to where their words read two ways:
+    below the last node they share, the one argument whose meaning differs, or that node itself when more than one
+    does. The last pair's `a` is `split`'s."""
+    out = [(a, b)]
     while not isinstance(a, str) and not isinstance(b, str) and fun(a) == fun(b) and len(a) == len(b):
         differ = [i for i in range(1, len(a)) if meaning(write(a[i])) != meaning(write(b[i]))]
         if len(differ) != 1:
-            return a
+            return out
         i = differ[0]
+        out.append((a[i], b[i]))
         if fun(a[i]) != fun(b[i]):
-            return a[i]
+            return out
         a, b = a[i], b[i]
-    return a
+    return out
+
+
+def split(a, b):
+    """The subtree of `a` (nested lists) whose words read two ways (`path`'s last)."""
+    return path(a, b)[-1][0]
 
 
 def one(trees, vocab=None):
     """(the tree kept, None) when every tree means one thing, else (None, (the subtree's text of the first tree whose
-    words read two ways, the number of meanings)). The trees are taken shortest first, then by their text; their
+    words read two ways, the number of meanings, `path`'s pairs of the first tree of each of two meanings)). The trees are taken shortest first, then by their text; their
     meanings are logical forms over `vocab` when it is given. A tree whose logical form has no translation is not
     a meaning of the line (b240 review: "set to (a K and the `--y` option)"); when no tree has one, the first tree's
     ValueError is raised."""
@@ -90,4 +98,5 @@ def one(trees, vocab=None):
         return ordered[0], None
     first = next(t for t in ordered if of[t] == meanings[0])
     second = next(t for t in ordered if of[t] == meanings[1])
-    return None, (write(split(read(first), read(second))), len(meanings))
+    pairs = path(read(first), read(second))
+    return None, (write(pairs[-1][0]), len(meanings), pairs)

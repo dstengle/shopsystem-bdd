@@ -7,7 +7,7 @@ area: measurement
 specifies: service measurement
 language: codified-2
 retired: [g4, r4, g8, r8]
-unbuilt: [r10, r11]
+unbuilt: []
 ---
 
 # Measurement

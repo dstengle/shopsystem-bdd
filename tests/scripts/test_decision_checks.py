@@ -44,10 +44,10 @@ def test_the_live_decisions_keep_their_tiers():
 
 def test_the_sort_holds_its_totals():
     found = model_decisions.decisions(ROOT)
-    assert len(found) == 108, len(found)       # the domain contract's twelve (0098-0109), three superseding
-    assert collections.Counter(d.status for d in found) == {"accepted": 49, "superseded": 57, "rejected": 2}
+    assert len(found) == 110, len(found)       # the domain contract's twelve (0098-0109), three superseding; 0110, 0111
+    assert collections.Counter(d.status for d in found) == {"accepted": 51, "superseded": 57, "rejected": 2}
     tiers = collections.Counter(d.tier for d in found if d.status == "accepted")
-    assert tiers == {"check": 11, "requirement": 13, "judgement": 25}, tiers
+    assert tiers == {"check": 11, "requirement": 13, "judgement": 27}, tiers     # 0110 and 0111 judgements (b418, b420)
     # `work decision --supersedes` (b179) sets only the status of the decision it replaces, so a decision out of force
     # keeps its tier only when it was superseded so; `model decisions --check` runs none of them.
     kept = [d.rel for d in found if d.status != "accepted" and d.tier]
@@ -69,7 +69,8 @@ def test_the_judgement_decisions_reach_the_brief():
     assert "spec/decisions/0092-versions-are-0-y-z-until-1-0.md" in found, found
     assert "spec/decisions/0097-while-alpha-a-change-breaks-consumers-cleanly-with-no-compatibility-path.md" in found, found
     assert "spec/decisions/0107-the-specification-has-four-parts.md" in found, found
-    assert len(found) == 25, found
+    assert "spec/decisions/0111-a-request-acts-on-one-thing.md" in found, found
+    assert len(found) == 27, found     # 0110 and 0111 (b418, b420)
 
 
 def test_0060_is_superseded_by_measure_a_batch():

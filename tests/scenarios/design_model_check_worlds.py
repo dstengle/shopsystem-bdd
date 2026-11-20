@@ -30,6 +30,7 @@ NEGATED = _sibling("design_model_check_worlds_negated.py", "shop_design_model_ch
 PARSING = _sibling("design_model_check_worlds_parsing.py", "shop_design_model_check_worlds_parsing")     # b369
 CATALOGUE = _sibling("design_model_check_worlds_catalogue.py", "shop_design_model_check_worlds_catalogue")     # b370
 VALUE = _sibling("design_model_check_worlds_value.py", "shop_design_model_check_worlds_value")     # b418
+FRAMES = _sibling("design_model_check_worlds_frames.py", "shop_design_model_check_worlds_frames")     # b420
 
 
 class As:
@@ -154,6 +155,7 @@ def nothing(step):
 
 
 NONCONFORMING = "When a session ends a stage, `work` shall banana the stage."
+AMBIGUOUS = "every session that follows a stage and the stage"     # the words r1 of "ambiguous" reads two ways
 UNDONE = "While every stage is not `done`, when the person runs `work start`, `work` shall exit successfully."
 TABLE = CATALOGUE.ROWS + ORDER.ROWS + [
     # the base world: nothing violates a rule, and it has facts
@@ -210,7 +212,7 @@ TABLE = CATALOGUE.ROWS + ORDER.ROWS + [
     (("rule catalogue not holds catalogue entry",), stale_catalogue, {}),
     (("text not conform node id form",), unattributed, {}),
     (("requirement not conform language reference",), line(NONCONFORMING), {}),
-] + MEMBER.ROWS + NEGATED.ROWS + [
+] + MEMBER.ROWS + NEGATED.ROWS + FRAMES.ROWS + [
     # model parse: the constructs
     (("capability has requirement", "requirement use `only`", "requirement allow act"), capability("restricting"),
      {}),
@@ -220,7 +222,7 @@ TABLE = CATALOGUE.ROWS + ORDER.ROWS + [
      capability("capping"), {}),
     (("requirement has logical form", "requirement conform language reference"), nothing, {}),
     (("this corpus holds logical form",), nothing, {}),
-    (("requirement has logical form",), requirement("ambiguous"), {}),
+    (("requirement has logical form",), requirement("ambiguous"), {"a1": AMBIGUOUS}),
     (("run on fragment",), requirement("unfinished"), {"f1": "thing#r1"}),
     (("count contradict count",), capability("overcounted"), {}),
     # model parse: the caches
