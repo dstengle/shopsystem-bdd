@@ -193,3 +193,8 @@ area: specification
 - **error** (noun) → value rule.severity error.
 - **warning** (noun) → value rule.severity warning.
 - **release** (noun) → object release. A section of CHANGELOG.md, named by the version it shipped, as `0.31.0`, that a catalogue entry from before items were tracked mentions in place of an item, while a new or changed catalogue entry mentions an item. Plural: releases.
+- **ambiguous text** (noun) → object ambiguous text. The words of a requirement that two of its logical forms read two ways: two noun phrases, or the words of two frames of one verb. Plural: ambiguous texts.
+- **plural object** (noun) → object plural object. A noun phrase in the plural, or with `every`, a count or a number word, after a verb that names an operation of the domain model, in a slot where a frame of the verb names a kind: a request acts on one thing. Plural: plural objects.
+- **when step** (noun) → object when step. A step of a scenario that opens with `When`, or with `And` or `But` under one.
+- **make** (verb, state) → relation operation.makes. An operation brings a thing into being: the thing is the object of its `done →` outcome and no parameter of the operation names it, as an operation that creates a checklist makes the checklist. Forms: makes, made. Frame: <operation> makes <referent>.
+- **value in use** (noun) → object value in use. The value of a request's parameter that is another referent's value of the attribute the parameter names, as "with the title of another checklist", which a requirement that uses `param-of` says and its logical form keeps as `param(e, T, v)` beside `T(x) = v`.

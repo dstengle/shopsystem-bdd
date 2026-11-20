@@ -69,23 +69,6 @@ shall [x3: agent the person (constant), x5: service the measurement service (con
     keep(e2, subject: x5, object: x6)
 ```
 
-## r4
-From: telemetry#r8, reworded in request words (0.38.0).
-
-```reading
-When the person compares two batches, the measurement service shall return two measurements and a ratio.
-shall [x1: agent the person (constant), x4: service the measurement service (constant)]
-  when [x2: batch, x3: batch]
-    request(e1, measurement.compare, subject: x1, object: x2)
-    distinct(x3, x2)
-    request(e2, measurement.compare, subject: x1, object: x3)
-  response [x5: measurement, x6: measurement, x7: ratio]
-    return(e3, subject: x4, object: x5)
-    distinct(x6, x5)
-    return(e4, subject: x4, object: x6)
-    return(e5, subject: x4, object: x7)
-```
-
 ## r5
 From: batch-measurement#r23, reworded in request words (0.38.0).
 
@@ -150,23 +133,6 @@ shall [x1: agent the person (constant), x4: service the measurement service (con
     return(e4, subject: x4, object: x8)
 ```
 
-## r8
-From: batch-measurement#r26, reworded in request words (0.38.0).
-
-```reading
-When the person compares two measurements, the measurement service shall return two total rows and a ratio.
-shall [x1: agent the person (constant), x4: service the measurement service (constant)]
-  when [x2: measurement, x3: measurement]
-    request(e1, measurement.compare, subject: x1, object: x2)
-    distinct(x3, x2)
-    request(e2, measurement.compare, subject: x1, object: x3)
-  response [x5: total row, x6: total row, x7: ratio]
-    return(e3, subject: x4, object: x5)
-    distinct(x6, x5)
-    return(e4, subject: x4, object: x6)
-    return(e5, subject: x4, object: x7)
-```
-
 ## r9
 From: batch-measurement#r27, reworded in request words (0.38.0).
 
@@ -183,4 +149,36 @@ shall [x1: agent the person (constant), x4: service the measurement service (con
     number x7 of [x8: compaction]
       in(x8, x2)
     return(e3, subject: x4, object: x7)
+```
+
+## r10
+Retires: r4. From: b420 r10.
+
+```reading
+When the person compares a batch with another batch, the measurement service shall return two measurements and a ratio.
+shall [x1: agent the person (constant), x4: service the measurement service (constant)]
+  when [x2: batch, x3: batch]
+    distinct(x3, x2)
+    request(e1, measurement.compare, subject: x1, object: x2, with: x3)
+  response [x5: measurement, x6: measurement, x7: ratio]
+    return(e2, subject: x4, object: x5)
+    distinct(x6, x5)
+    return(e3, subject: x4, object: x6)
+    return(e4, subject: x4, object: x7)
+```
+
+## r11
+Retires: r8. From: b420 r11.
+
+```reading
+When the person compares a measurement with another measurement, the measurement service shall return two total rows and a ratio.
+shall [x1: agent the person (constant), x4: service the measurement service (constant)]
+  when [x2: measurement, x3: measurement]
+    distinct(x3, x2)
+    request(e1, measurement.compare, subject: x1, object: x2, with: x3)
+  response [x5: total row, x6: total row, x7: ratio]
+    return(e2, subject: x4, object: x5)
+    distinct(x6, x5)
+    return(e3, subject: x4, object: x6)
+    return(e4, subject: x4, object: x7)
 ```

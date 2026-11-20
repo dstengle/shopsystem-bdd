@@ -265,27 +265,6 @@ shall [x6: agent the person (constant), x8: service the scenarios service (const
     keep(e2, subject: x8, object: x9)
 ```
 
-## r14
-From: feature-file-tools#r116, reworded in request words (0.38.0).
-
-```reading
-While a requirement of a requirement group of a capability uses `two`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step introduces.
-shall [x4: thing `two` (parameter), x5: agent the person (constant), x7: service the scenarios service (constant)]
-  while [x1: requirement, x2: requirement group, x3: capability]
-    of(x2, x3)
-    of(x1, x2)
-    use(subject: x1, object: x4)
-  when [x6: feature]
-    of(x6, x3)
-    request(e1, scenarios.generate, subject: x5, object: x6)
-  response
-    not [x8: step, x9: instance]
-      not [x10: given step]
-        introduce(subject: x10, object: x9)
-      mention(subject: x8, object: x9)
-      keep(e2, subject: x7, object: x8)
-```
-
 ## r15
 From: feature-file-tools#r120, reworded in request words (0.38.0).
 
@@ -515,49 +494,6 @@ shall [x4: thing `order-by-every` (parameter), x7: noun phrase `thing` (constant
     keep(e2, subject: x10, object: x11)
 ```
 
-## r26
-From: feature-file-tools#r132, reworded in request words (0.38.0).
-
-```reading
-While a requirement of a requirement group of a capability uses `holds-relation` and `rc-subject`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step introduces.
-shall [x4: thing `holds-relation` (parameter), x5: thing `rc-subject` (parameter), x6: agent the person (constant), x8: service the scenarios service (constant)]
-  while [x1: requirement, x2: requirement group, x3: capability]
-    of(x2, x3)
-    of(x1, x2)
-    use(subject: x1, object: x4)
-    use(subject: x1, object: x5)
-  when [x7: feature]
-    of(x7, x3)
-    request(e1, scenarios.generate, subject: x6, object: x7)
-  response
-    not [x9: step, x10: instance]
-      not [x11: given step]
-        introduce(subject: x11, object: x10)
-      mention(subject: x9, object: x10)
-      keep(e2, subject: x8, object: x9)
-```
-
-## r27
-From: feature-file-tools#r131, reworded in request words (0.38.0).
-
-```reading
-While a requirement of a requirement group of a capability uses `order-by`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step introduces.
-shall [x4: thing `order-by` (parameter), x5: agent the person (constant), x7: service the scenarios service (constant)]
-  while [x1: requirement, x2: requirement group, x3: capability]
-    of(x2, x3)
-    of(x1, x2)
-    use(subject: x1, object: x4)
-  when [x6: feature]
-    of(x6, x3)
-    request(e1, scenarios.generate, subject: x5, object: x6)
-  response
-    not [x8: step, x9: instance]
-      not [x10: given step]
-        introduce(subject: x10, object: x9)
-      mention(subject: x8, object: x9)
-      keep(e2, subject: x7, object: x8)
-```
-
 ## r28
 From: feature-file-tools#r133, reworded in request words (0.38.0).
 
@@ -657,11 +593,124 @@ shall [x4: thing `holds-exactly` (parameter), x5: thing `rc-subject` (parameter)
     keep(e2, subject: x8, object: x9)
 ```
 
-## r33
-From: b416 r33.
+## r36
+From: b418 r36.
 
 ```reading
-While a requirement of a requirement group of a capability uses `of-relation` and the precondition of the requirement does not use `of-relation`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step introduces.
+While a requirement of a requirement group of a capability uses `param-of`, when the person generates the feature of the capability, the scenarios service shall keep a given step that mentions a code and keep a when step that mentions the code.
+shall [x4: thing `param-of` (parameter), x5: agent the person (constant), x7: service the scenarios service (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability]
+    of(x2, x3)
+    of(x1, x2)
+    use(subject: x1, object: x4)
+  when [x6: feature]
+    of(x6, x3)
+    request(e1, scenarios.generate, subject: x5, object: x6)
+  response [x8: given step, x9: code, x10: when step]
+    mention(subject: x8, object: x9)
+    keep(e2, subject: x7, object: x8)
+    mention(subject: x10, object: x9)
+    keep(e3, subject: x7, object: x10)
+```
+
+## r37
+From: b418 r37.
+
+```reading
+While a requirement of a requirement group of a capability governs an operation that makes a referent, when the person generates the feature of the capability, the scenarios service shall keep a when step that introduces the instance of the referent and not keep a given step that introduces the instance of the referent.
+shall [x6: agent the person (constant), x8: service the scenarios service (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability, x4: operation, x5: referent]
+    of(x2, x3)
+    of(x1, x2)
+    make(subject: x4, object: x5)
+    govern(subject: x1, object: x4)
+  when [x7: feature]
+    of(x7, x3)
+    request(e1, scenarios.generate, subject: x6, object: x7)
+  response [x9: when step, x10: instance]
+    of(x10, x5)
+    introduce(subject: x9, object: x10)
+    keep(e2, subject: x8, object: x9)
+    not [x11: given step]
+      introduce(subject: x11, object: x10)
+      keep(e3, subject: x8, object: x11)
+```
+
+## r38
+Retires: r14. From: b418 r38.
+
+```reading
+While a requirement of a requirement group of a capability uses `two`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step and no when step introduce.
+shall [x4: thing `two` (parameter), x5: agent the person (constant), x7: service the scenarios service (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability]
+    of(x2, x3)
+    of(x1, x2)
+    use(subject: x1, object: x4)
+  when [x6: feature]
+    of(x6, x3)
+    request(e1, scenarios.generate, subject: x5, object: x6)
+  response
+    not [x8: step, x9: instance]
+      not [x10: given step]
+        introduce(subject: x10, object: x9)
+      not [x11: when step]
+        introduce(subject: x11, object: x9)
+      mention(subject: x8, object: x9)
+      keep(e2, subject: x7, object: x8)
+```
+
+## r39
+Retires: r26. From: b418 r39.
+
+```reading
+While a requirement of a requirement group of a capability uses `holds-relation` and `rc-subject`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step and no when step introduce.
+shall [x4: thing `holds-relation` (parameter), x5: thing `rc-subject` (parameter), x6: agent the person (constant), x8: service the scenarios service (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability]
+    of(x2, x3)
+    of(x1, x2)
+    use(subject: x1, object: x4)
+    use(subject: x1, object: x5)
+  when [x7: feature]
+    of(x7, x3)
+    request(e1, scenarios.generate, subject: x6, object: x7)
+  response
+    not [x9: step, x10: instance]
+      not [x11: given step]
+        introduce(subject: x11, object: x10)
+      not [x12: when step]
+        introduce(subject: x12, object: x10)
+      mention(subject: x9, object: x10)
+      keep(e2, subject: x8, object: x9)
+```
+
+## r40
+Retires: r27. From: b418 r40.
+
+```reading
+While a requirement of a requirement group of a capability uses `order-by`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step and no when step introduce.
+shall [x4: thing `order-by` (parameter), x5: agent the person (constant), x7: service the scenarios service (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability]
+    of(x2, x3)
+    of(x1, x2)
+    use(subject: x1, object: x4)
+  when [x6: feature]
+    of(x6, x3)
+    request(e1, scenarios.generate, subject: x5, object: x6)
+  response
+    not [x8: step, x9: instance]
+      not [x10: given step]
+        introduce(subject: x10, object: x9)
+      not [x11: when step]
+        introduce(subject: x11, object: x9)
+      mention(subject: x8, object: x9)
+      keep(e2, subject: x7, object: x8)
+```
+
+## r41
+Retires: r33. From: b418 r41.
+
+```reading
+While a requirement of a requirement group of a capability uses `of-relation` and the precondition of the requirement does not use `of-relation`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step and no when step introduce.
 shall [x4: thing `of-relation` (parameter), x6: agent the person (constant), x8: service the scenarios service (constant)]
   while [x1: requirement, x2: requirement group, x3: capability, x5: precondition]
     of(x2, x3)
@@ -677,15 +726,17 @@ shall [x4: thing `of-relation` (parameter), x6: agent the person (constant), x8:
     not [x9: step, x10: instance]
       not [x11: given step]
         introduce(subject: x11, object: x10)
+      not [x12: when step]
+        introduce(subject: x12, object: x10)
       mention(subject: x9, object: x10)
       keep(e2, subject: x8, object: x9)
 ```
 
-## r34
-From: b421 r34.
+## r42
+Retires: r34. From: b418 r42.
 
 ```reading
-While a requirement of a requirement group of a capability uses `of-relation` and `this`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step introduces.
+While a requirement of a requirement group of a capability uses `of-relation` and `this`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step and no when step introduce.
 shall [x4: thing `of-relation` (parameter), x5: thing `this` (constant), x6: agent the person (constant), x8: service the scenarios service (constant)]
   while [x1: requirement, x2: requirement group, x3: capability]
     of(x2, x3)
@@ -699,15 +750,17 @@ shall [x4: thing `of-relation` (parameter), x5: thing `this` (constant), x6: age
     not [x9: step, x10: instance]
       not [x11: given step]
         introduce(subject: x11, object: x10)
+      not [x12: when step]
+        introduce(subject: x12, object: x10)
       mention(subject: x9, object: x10)
       keep(e2, subject: x8, object: x9)
 ```
 
-## r35
-From: b421 r35.
+## r43
+Retires: r35. From: b418 r43.
 
 ```reading
-While a requirement of a requirement group of a capability uses `of-relation` and `while`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step introduces.
+While a requirement of a requirement group of a capability uses `of-relation` and `while`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step and no when step introduce.
 shall [x4: thing `of-relation` (parameter), x5: thing `while` (parameter), x6: agent the person (constant), x8: service the scenarios service (constant)]
   while [x1: requirement, x2: requirement group, x3: capability]
     of(x2, x3)
@@ -721,6 +774,8 @@ shall [x4: thing `of-relation` (parameter), x5: thing `while` (parameter), x6: a
     not [x9: step, x10: instance]
       not [x11: given step]
         introduce(subject: x11, object: x10)
+      not [x12: when step]
+        introduce(subject: x12, object: x10)
       mention(subject: x9, object: x10)
       keep(e2, subject: x8, object: x9)
 ```

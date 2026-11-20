@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: examine; service language: explain
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r34]
 ---
 
 # Consistency
@@ -165,4 +165,7 @@ The requirements examined together: contradictions, what a line adds over the ot
 
 ### [g33] holds-exactly in a precondition
 - [r33] While the precondition of a requirement of a capability uses `holds-exactly` and `rc-subject`, when the person examines this specification with the capability, the specification service shall return a translation of the requirement.
+
+### [g34] `spec logic` reads a value in use and a code of the same value as one request
+- [r34] While a requirement uses `param-of` and the requirement obliges an act and another requirement that forbids the act has the trigger of the requirement, when the person examines this specification, the specification service shall return `L1`.
 

@@ -93,7 +93,7 @@ a condition that holds while the trigger happens
 - Since: b240
 - Form: While <condition>, ...
 - Functions: `While`
-- Cited by: scenarios#r35
+- Cited by: scenarios#r43
 - Example and its reading:
 
 ```construct
@@ -457,7 +457,7 @@ a relative clause whose subject is the noun
 - Since: b240
 - Form: <noun> that <verb> ...
 - Functions: `k_\w+_Rel_k_\w+`
-- Cited by: consistency#r25, consistency#r27, consistency#r29, consistency#r33, scenarios#r21, scenarios#r26, scenarios#r32
+- Cited by: consistency#r25, consistency#r27, consistency#r29, consistency#r33, scenarios#r21, scenarios#r32, scenarios#r39
 - Example and its reading:
 
 ```construct
@@ -809,7 +809,7 @@ two distinct ones
 - Since: b240
 - Form: two <nouns>
 - Functions: `DetTwo`
-- Cited by: scenarios#r14
+- Cited by: scenarios#r38
 - Example and its reading:
 
 ```construct
@@ -922,7 +922,7 @@ the run's own thing
 - Since: b240
 - Form: this <noun>
 - Functions: `k_\w+_This`
-- Cited by: scenarios#r34
+- Cited by: scenarios#r42
 - Example and its reading:
 
 ```construct
@@ -1094,7 +1094,7 @@ a noun of another by a relation row
 - Since: b240
 - Form: <noun> of|in <np>
 - Functions: `r\d+_\w+_Mod`
-- Cited by: consistency#r30, scenarios#r28, scenarios#r30, scenarios#r33, scenarios#r34, scenarios#r35
+- Cited by: consistency#r30, scenarios#r28, scenarios#r30, scenarios#r41, scenarios#r42, scenarios#r43
 - Example and its reading:
 
 ```construct
@@ -1159,7 +1159,7 @@ a state: the other noun of a relation row "in"
 - Changed: b274
 - Form: <np> holds <np>
 - Functions: `r\d+_\w+_Holds`
-- Cited by: consistency#r15, consistency#r16, consistency#r28, consistency#r29, scenarios#r7, scenarios#r8, scenarios#r23, scenarios#r26, scenarios#r29
+- Cited by: consistency#r15, consistency#r16, consistency#r28, consistency#r29, scenarios#r7, scenarios#r8, scenarios#r23, scenarios#r29, scenarios#r39
 - Example and its reading:
 
 ```construct
@@ -1458,7 +1458,7 @@ a collection's members ordered by their attribute (b275)
 - Changed: b301
 - Form: <np>, ordered by <attribute>, in ascending|descending order[,]
 - Functions: `r\d+_\w+_By_t_[a-z0-9_]+_\d+|Ascending|Descending`
-- Cited by: parsing#r12, scenarios#r22, scenarios#r27
+- Cited by: parsing#r12, scenarios#r22, scenarios#r40
 - Example and its reading:
 
 ```construct

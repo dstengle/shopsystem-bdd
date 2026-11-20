@@ -46,22 +46,6 @@ shall [x1: agent the person (constant), x3: artifact the language reference (con
     name(e3, subject: x4, object: x2)
 ```
 
-## r4
-From: b369 r4.
-
-```reading
-If the person parses a requirement that has more than one logical form, then the language service shall refuse the request and name the requirement.
-shall [x1: agent the person (constant), x4: service the language service (constant), x5: request "the request the trigger makes" (indexical)]
-  if [x2: requirement]
-    count more than 1 [x3: logical form]
-      scope
-        of(x3, x2)
-    request(e1, language.parse, subject: x1, object: x2)
-  response
-    refuse(e2, subject: x4, object: x5)
-    name(e3, subject: x4, object: x2)
-```
-
 ## r5
 From: b369 r5.
 
@@ -191,5 +175,109 @@ shall [x1: agent the person (constant), x3: thing `order-by` (parameter), x4: se
     of(x7, x8)
     of(x6, x7)
     use(subject: x5, object: x6)
+    return(e2, subject: x4, object: x5)
+```
+
+## r13
+From: b420 r13.
+
+```reading
+While a verb has two frames, when the person parses a requirement that uses a frame of the verb, the language service shall return one logical form of the requirement and complete the request.
+shall [x4: agent the person (constant), x7: service the language service (constant), x9: request "the request the trigger makes" (indexical)]
+  while [x1: verb, x2: frame, x3: frame]
+    of(x2, x1)
+    distinct(x3, x2)
+    of(x3, x1)
+  when [x5: requirement, x6: frame]
+    of(x6, x1)
+    use(subject: x5, object: x6)
+    request(e1, language.parse, subject: x4, object: x5)
+  response
+    count exactly 1 [x8: logical form]
+      of(x8, x5)
+      scope
+        return(e2, subject: x7, object: x8)
+    complete(e3, subject: x7, object: x9)
+```
+
+## r14
+From: b420 r14.
+
+```reading
+If the person parses a requirement that has a plural object, then the language service shall refuse the request and name the requirement.
+shall [x1: agent the person (constant), x4: service the language service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: requirement, x3: plural object]
+    of(x3, x2)
+    request(e1, language.parse, subject: x1, object: x2)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r15
+Retires: r4. From: b420 r15.
+
+```reading
+If the person parses a requirement that has more than one logical form, then the language service shall refuse the request and name the requirement and the ambiguous text of the requirement.
+shall [x1: agent the person (constant), x4: service the language service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: requirement]
+    count more than 1 [x3: logical form]
+      scope
+        of(x3, x2)
+    request(e1, language.parse, subject: x1, object: x2)
+  response [x6: ambiguous text]
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+    of(x6, x2)
+    name(e4, subject: x4, object: x6)
+```
+
+## r16
+From: b420 r16.
+
+```reading
+If the person parses a requirement whose ambiguous text uses two frames of a verb, then the language service shall refuse the request and name every frame that the ambiguous text uses.
+shall [x1: agent the person (constant), x7: service the language service (constant), x8: request "the request the trigger makes" (indexical)]
+  if [x2: requirement, x3: ambiguous text, x4: frame, x5: verb, x6: frame]
+    of(x3, x2)
+    of(x4, x5)
+    use(subject: x3, object: x4)
+    distinct(x6, x4)
+    of(x6, x5)
+    use(subject: x3, object: x6)
+    request(e1, language.parse, subject: x1, object: x2)
+  response
+    refuse(e2, subject: x7, object: x8)
+    every [x9: frame]
+      use(subject: x3, object: x9)
+      scope
+        name(e3, subject: x7, object: x9)
+```
+
+## r17
+From: b418 r17.
+
+```reading
+When the person parses a requirement that uses `param-of`, the language service shall complete the request.
+shall [x1: agent the person (constant), x3: thing `param-of` (parameter), x4: service the language service (constant), x5: request "the request the trigger makes" (indexical)]
+  when [x2: requirement]
+    use(subject: x2, object: x3)
+    request(e1, language.parse, subject: x1, object: x2)
+  response
+    complete(e2, subject: x4, object: x5)
+```
+
+## r18
+From: b418 r18.
+
+```reading
+When the person parses a requirement that uses `param-of` with the logical form, the language service shall return a logical form that holds a value in use.
+shall [x1: agent the person (constant), x3: thing `param-of` (parameter), x4: service the language service (constant)]
+  when [x2: requirement]
+    use(subject: x2, object: x3)
+    request(e1, language.parse, subject: x1, object: x2)
+    param(e1, logical form, on)
+  response [x5: logical form, x6: value in use]
+    in(x6, x5)
     return(e2, subject: x4, object: x5)
 ```

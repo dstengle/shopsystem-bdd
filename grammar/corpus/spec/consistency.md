@@ -614,3 +614,21 @@ shall [x4: thing `holds-exactly` (parameter), x5: thing `rc-subject` (parameter)
     of(x9, x1)
     return(e2, subject: x8, object: x9)
 ```
+
+## r34
+From: b418 r34.
+
+```reading
+While a requirement uses `param-of` and the requirement obliges an act and another requirement that forbids the act has the trigger of the requirement, when the person examines this specification, the specification service shall return `L1`.
+shall [x2: thing `param-of` (parameter), x6: agent the person (constant), x7: specification "the specification of this bounded context" (indexical), x8: service the specification service (constant), x9: agent `L1` (constant)]
+  while [x1: requirement, x3: act, x4: requirement, x5: trigger]
+    use(subject: x1, object: x2)
+    oblige(subject: x1, object: x3)
+    distinct(x4, x1)
+    forbid(subject: x4, object: x3)
+    of(x5, x4)
+  when
+    request(e1, specification.examine, subject: x6, object: x7)
+  response
+    return(e2, subject: x8, object: x9)
+```
