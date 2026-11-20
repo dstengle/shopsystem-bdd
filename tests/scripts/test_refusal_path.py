@@ -47,7 +47,7 @@ def _state(repo):
 
 CASES = {
     "work": (["work", "show", "b9"], ["work: there is no item b9"], {}),
-    "tools": (["tools", "--python", "/nonexistent/python", "probe"], ["tools: no analysis tools are known"], {}),
+    "tools": (["tools", "--python", "/nonexistent/python", "check"], ["tools: no analysis tools are known"], {}),
     "features": (["features", "count", "--by-tag"], ["features: ", "Rule: blocks are not supported"],
                  {"features/a.feature": "Feature: a\n  Rule: r\n"}),
     "measure": (["measure", "show", "nothing"], ["measure show: no measurement at nothing"], {}),

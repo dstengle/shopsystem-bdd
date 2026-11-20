@@ -147,3 +147,17 @@ class ToolsTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_a_virtualenvs_library_is_no_python_file_of_the_project(tmp_path, monkeypatch):
+    """b388: a folder holding only a virtualenv is no Python project; a Python file of its own makes it one."""
+    sys.path.insert(0, str(SCRIPT.parent))
+    import tools_env
+    site = tmp_path / "env" / "lib" / "python3" / "site-packages"
+    site.mkdir(parents=True)
+    (tmp_path / "env" / "pyvenv.cfg").write_text("home = /usr/bin\n")
+    (site / "six.py").write_text("x = 1\n")
+    monkeypatch.chdir(tmp_path)
+    assert not tools_env.is_python_project()
+    (tmp_path / "app.py").write_text("x = 1\n")
+    assert tools_env.is_python_project()

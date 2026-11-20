@@ -134,8 +134,11 @@ INTERPRETERS = {"`.venv/bin/python`": ".venv", "`venv/bin/python`": "venv", "`$V
 @handler("GivenDoesNot", "exist")
 def given_exists(step):
     """An interpreter of the first match exists (made where `tools` looks for it) or does not (left out); a coverage
-    map exists (made before the command runs), or none does."""
+    map exists (made before the command runs), or none does; no Python file exists (the project holds none, b388)."""
     ctx, there = step.context, step.template == "GivenDoes" and not step.subject.startswith("no ")
+    if step.subject == "no Python file":
+        ctx["bare"] = True
+        return
     if step.subject.endswith("coverage map") or step.subject.startswith("the coverage map"):
         ctx["map"] = there
         return
@@ -265,7 +268,10 @@ def options(step):
 def runs_tools(step):
     ctx, repo = step.context, step.repo
     tests = {} if any(k.startswith("tests/") for k in files(step)) else {"tests/test_cart.py": TEST_CART}
-    w.started(repo, {**tests, **files(step)})
+    if ctx.get("bare"):
+        w.started(repo, files(step), project=False)
+    else:
+        w.started(repo, {**tests, **files(step)})
     grammar_stub(step)
     argv = shlex.split(bare(step.command))[1:]
     argv += options(step) + target(step, argv)

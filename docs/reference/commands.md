@@ -976,7 +976,8 @@ works in the project's own interpreter (`--python`, else `.venv`, `venv` or `$VI
 
 Installs any missing analysis tool into the project's virtualenv, then, every time, the grammar tools: GF 3.12, the
 pinned `pgf` and `clingo` wheels, and the resource grammar library `gf-rgl`. Linux x86_64 only; elsewhere, set
-`$SHOPSYSTEM_GF` to a GF you built.\
+`$SHOPSYSTEM_GF` to a GF you built. In a project with no Python file yet (a virtualenv's own files are not the
+project's) it installs no analysis tool and still installs the grammar tools.\
 Synopsis: `tools install [--python PYTHON]`
 
 ```console
@@ -990,7 +991,8 @@ gf-rgl 20250812 already installed
 
 ### `tools probe`
 
-Prints one line a tool, its version or what is missing, then the grammar block. Exits 1 when any is missing.\
+Prints one line a tool, its version or what is missing, then the grammar block. Exits 1 when any is missing. In a
+project with no Python file yet it probes the grammar tools alone.\
 Synopsis: `tools probe [--python PYTHON] [--log] [--json]`
 
 ```console
