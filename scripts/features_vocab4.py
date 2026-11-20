@@ -73,11 +73,14 @@ def owner(names, cond):
     return names.attr(cond[2][0])[1][len("Of_"):] + "_" if rest in ("IsOf", "IsCodeOf") else rest
 
 
+WHOSE = re.compile(r"^t_\w+_\d+_Whose_k_")    # an attribute's "whose" clause (spec_rgl_rel, b437)
+
+
 def whose(cond):
-    """The "whose" node of "no K whose T is v exists", the value Given of "no K" (b257), or None."""
+    """The noun followed by a "whose" clause of "no K whose T is v exists", the value Given of "no K" (b257), or None."""
     if cond[0] != "k_thing_Holds" or cond[3] != (spec_rgl_np.EXISTS,):
         return None
-    found = [n for n in nodes(cond[2]) if "_Whose_t_" in n[0]]
+    found = [n for n in nodes(cond[2]) if "_RelCN_" in n[0] and WHOSE.match(n[2][0])]
     return found[0] if found and any(n == ("DetNo",) for n in nodes(cond[2])) else None
 
 
@@ -100,8 +103,9 @@ def template(names, keyword, tree):
     if fun == "SCond" and args[0][0] == "Count_Cmp":     # the number of Ks compared (b240)
         return keyword.capitalize() + "Count", None, None, None
     if fun == "SCond" and whose(args[0]):     # "no item whose status is `idea` exists": a value (b257)
-        kind = names.kind(whose(args[0])[0])[0]
-        return keyword.capitalize() + "K_A", kind, names.attr(whose(args[0])[0].split("_Whose_")[1] + "_")[0].term, kind
+        node = whose(args[0])
+        kind = names.kind(node[0])[0]
+        return keyword.capitalize() + "K_A", kind, names.attr(node[2][0])[0].term, kind
     if fun == "SCond":
         cond = args[0]
         t = names.attr(cond[0])[0]

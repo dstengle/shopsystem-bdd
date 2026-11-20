@@ -7,6 +7,7 @@ puts every given K2 into the object fails the Then (`then`). A restrictor other 
 ten, is a TraceError naming it.
 """
 import spec_rgl
+import spec_rgl_rel
 import spec_steps4_boxes as boxes
 from spec_lf_core import Atom, Ref
 from spec_steps4_boxes import TraceError
@@ -44,7 +45,7 @@ def cond(r, box):
                   if t.term == c.args[1] and any(x in r.vocab.ancestors(k.kind) for x in kinds)), None)
         if T is None:
             raise TraceError("no Then of the %s of a %s" % (c.args[1], k.kind))
-        cn = (K + "_Whose_" + T, ("PPos",), cn, ("%s_v_%s" % (T, spec_rgl.slug(c.args[2])),))
+        cn = spec_rgl_rel.whose_value(r.vocab, k.kind, T, ("PPos",), cn, ("%s_v_%s" % (T, spec_rgl.slug(c.args[2])),))
     if box.op == "only":
         det = ("DetPl",)
     elif box.count[0] in BOUNDS and isinstance(box.count[1], int) and 1 <= box.count[1] <= 10:
