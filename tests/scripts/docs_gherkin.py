@@ -11,6 +11,7 @@
 import re
 
 import features_vocab4
+from gherkin.errors import ParserError
 from gherkin.parser import Parser
 
 SHORT = re.compile(r"_k_\w+_Is(?:Code|OneOf|NoneOf)?$")
@@ -25,7 +26,7 @@ def gherkin_problem(body):
         text = "Feature: excerpt\n" + text
     try:
         Parser().parse(text)
-    except Exception as err:      # the parser's CompositeParserException and its kin
+    except ParserError as err:      # the parser's CompositeParserException and its kin
         return "not valid Gherkin: %s" % str(err).replace("\n", "; ")
     return None
 
@@ -50,7 +51,7 @@ def steps(lines):
     passed over."""
     out, keyword, doc = [], None, False
     for s in lines:
-        if s.startswith('"""') or s.startswith("```"):
+        if s.startswith(('"""', "```")):
             doc = not doc
             continue
         m = None if doc else STEP.match(s)
