@@ -60,3 +60,6 @@ area: upgrades
 - **the bounded context id form** (proper noun) → object bounded context id form. `bounded-context/<domain>/<path>`, the id of a bounded context, its last part a name.
 - **context id** (noun) → object context id. The id a bounded context is founded with, as `bounded-context/<domain>/<path>`.
 - **found** (verb, action) → operation upgrades.found. Forms: founds, founded. Frame: <actor> founds <bounded context>.
+- **scenario conftest** (noun) → object scenario conftest. The file `tests/scenarios/conftest.py` of a repository, which pytest loads before the scenarios of its features.
+- **the scenario conftest form** (proper noun) → object scenario conftest form. The text of the scenario conftest that founding a bounded context writes, which loads `work_items` so that plain pytest registers each tag of the features as a mark.
+- **the old scenario conftest form** (proper noun) → object old scenario conftest form. The text of the scenario conftest that founding a bounded context wrote before 0.41.0, which does not load `work_items`.

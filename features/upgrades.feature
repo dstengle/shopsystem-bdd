@@ -1054,3 +1054,26 @@ Feature: Upgrades
     Then the upgrades service refuses this request
     And the upgrades service names the shop directory s1
     # entailed: U17
+
+  @g36 @r36
+  Scenario: An upgrade rewrites a scenario conftest of the old form
+    Given the release of this repository is `0.23.1`
+    And the release of this plugin is `0.34.1`
+    And a scenario conftest s1
+    And this repository has the scenario conftest s1
+    And the scenario conftest s1 conforms to the old scenario conftest form
+    When the person upgrades this repository
+    Then the upgrades service changes the scenario conftest s1
+    And the upgrades service keeps the scenario conftest s1
+
+  @g37 @r37
+  Scenario: An upgrade names a scenario conftest of neither form and leaves it alone
+    Given the release of this repository is `0.23.1`
+    And the release of this plugin is `0.34.1`
+    And a scenario conftest s1
+    And this repository has the scenario conftest s1
+    And the scenario conftest s1 does not conform to the old scenario conftest form
+    And the scenario conftest s1 does not conform to the scenario conftest form
+    When the person upgrades this repository
+    Then the upgrades service returns the scenario conftest s1
+    And the upgrades service does not change the scenario conftest s1

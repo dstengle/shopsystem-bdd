@@ -93,7 +93,7 @@ a condition that holds while the trigger happens
 - Since: b240
 - Form: While <condition>, ...
 - Functions: `While`
-- Cited by: no line
+- Cited by: scenarios#r35
 - Example and its reading:
 
 ```construct
@@ -922,7 +922,7 @@ the run's own thing
 - Since: b240
 - Form: this <noun>
 - Functions: `k_\w+_This`
-- Cited by: no line
+- Cited by: scenarios#r34
 - Example and its reading:
 
 ```construct
@@ -1094,7 +1094,7 @@ a noun of another by a relation row
 - Since: b240
 - Form: <noun> of|in <np>
 - Functions: `r\d+_\w+_Mod`
-- Cited by: consistency#r30, scenarios#r28, scenarios#r30, scenarios#r33
+- Cited by: consistency#r30, scenarios#r28, scenarios#r30, scenarios#r33, scenarios#r34, scenarios#r35
 - Example and its reading:
 
 ```construct

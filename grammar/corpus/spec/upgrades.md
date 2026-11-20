@@ -668,3 +668,41 @@ shall [x1: repository "the repository the request is made in" (indexical), x3: a
     not [x8: file]
       change(e4, subject: x6, object: x8)
 ```
+
+## r36
+From: b423 r36.
+
+```reading
+While the release of this repository is before the release of the plugin and the scenario conftest of this repository conforms to the old scenario conftest form, when the person upgrades this repository, the upgrades service shall change the scenario conftest of this repository and keep the scenario conftest.
+shall [x1: repository "the repository the request is made in" (indexical), x2: plugin "the plugin the request is made with" (indexical), x4: artifact the old scenario conftest form (constant), x5: agent the person (constant), x6: service the upgrades service (constant)]
+  while [x3: scenario conftest]
+    cmp(release(x1), before, release(x2))
+    of(x3, x1)
+    conforms(x3, x4)
+  when
+    request(e1, upgrades.upgrade, subject: x5, object: x1)
+  response
+    change(e2, subject: x6, object: x3)
+    keep(e3, subject: x6, object: x3)
+```
+
+## r37
+From: b423 r37.
+
+```reading
+While the release of this repository is before the release of the plugin and the scenario conftest of this repository does not conform to the old scenario conftest form and the scenario conftest of this repository does not conform to the scenario conftest form, when the person upgrades this repository, the upgrades service shall return the scenario conftest and not change the scenario conftest.
+shall [x1: repository "the repository the request is made in" (indexical), x2: plugin "the plugin the request is made with" (indexical), x4: artifact the old scenario conftest form (constant), x5: artifact the scenario conftest form (constant), x6: agent the person (constant), x7: service the upgrades service (constant)]
+  while [x3: scenario conftest]
+    cmp(release(x1), before, release(x2))
+    of(x3, x1)
+    not
+      conforms(x3, x4)
+    not
+      conforms(x3, x5)
+  when
+    request(e1, upgrades.upgrade, subject: x6, object: x1)
+  response
+    return(e2, subject: x7, object: x3)
+    not
+      change(e3, subject: x7, object: x3)
+```

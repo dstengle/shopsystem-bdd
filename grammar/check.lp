@@ -83,9 +83,31 @@ key(R,ev(ord,E)) :- ordx(R,_,E,_,_,_,_).  dem(R,ev(ord,E)) :- key(R,ev(ord,E)).
 % a count (`count(R,I,E,D,X,B,N)`, CNL 4's call 4, I15) can clash only with a count of its act E
 key(R,ev(cnt,E)) :- count(R,_,E,_,_,_,_).  dem(R,ev(cnt,E)) :- key(R,ev(cnt,E)).
 % cc(A,B) holds exactly when dem(A,K), key(B,K) for some K; a pair can clash when either way holds.
-% (1) two triggers of one event: joined on the trigger and the key at once
-tdem(A,P,E,K) :- trig(A,P,E,_,_), dem(A,K).  tkey(B,P,E,K) :- trig(B,P,E,_,_), key(B,K).
-tc(A,B,P,E) :- tdem(A,P,E,K), tkey(B,P,E,K), A != B.  tc(B,A,P,E) :- tdem(A,P,E,K), tkey(B,P,E,K), A != B.
+% (1) two triggers of one event: joined on the trigger and the key at once. A key's clash but exit's, an outcome's
+% and change nothing's asks one thing of both responses (`same`), which the unification gives only to roles of
+% compatible kinds: each key with its object's kind (`ko`: `k(K)` of a role, `any` of a code's role, whose canon may
+% be of another kind, or of a constant), each demand with the kind of the object of the key it is demanded by (`do`),
+% and the demands no object binds (`dfree`), so that two lines on one trigger whose responses are on things of
+% incompatible kinds ("keep the scenario", "not keep the step") are no pair (b421)
+ko(R,X,k(K)) :- role(R,X,K), not named(R,X,_).  ko(R,X,any) :- term(R,X), not ko(R,X,k(_)).
+keyo(R,ev(P,E),O) :- resp(R,_,P,E,_,X), ko(R,X,O).  keyo(R,at(T,V),O) :- set(R,_,X,T,V), ko(R,X,O).
+keyo(R,use,O) :- uses(R,_,X), ko(R,X,O).  keyo(R,nouse,O) :- nouse(R,_,X), ko(R,X,O).
+keyo(R,ev(only,E),O) :- only(R,_,E,_,X), ko(R,X,O).  keyo(R,ev(ord,E),O) :- ordx(R,_,E,_,X,_,_), ko(R,X,O).
+keyo(R,ev(cnt,E),O) :- count(R,_,E,_,X,_,_), ko(R,X,O).
+do(R,ev(neg,E),O) :- keyo(R,ev(pos,E),O).  do(R,ev(pos,E),O) :- keyo(R,ev(neg,E),O).
+do(R,at(T,W),O) :- keyo(R,at(T,V),O), vals(T,W), V != W.  do(R,nouse,O) :- keyo(R,use,O).
+do(R,ev(neg,E),O) :- keyo(R,ev(may,E),O).  do(R,ev(may,E),O) :- keyo(R,ev(neg,E),O).
+do(R,ev(pos,E),O) :- keyo(R,ev(only,E),O).  do(R,ev(only,E),O) :- keyo(R,ev(pos,E),O).
+do(R,ev(ord,E),O) :- keyo(R,ev(ord,E),O).  do(R,ev(cnt,E),O) :- keyo(R,ev(cnt,E),O).
+dfree(R,ev(pos,exit_error)) :- key(R,ev(pos,exit_ok)).
+dfree(R,ev(pos,O2)) :- key(R,ev(pos,O1)), oclash(O1,O2).
+dfree(R,ev(pos,E)) :- key(R,ev(pos,change_nothing)), posev(E), not quiet(E), not own(R,E).
+tdem(A,P,E,K,O) :- trig(A,P,E,_,_), do(A,K,O).  tdem(A,P,E,K,any) :- trig(A,P,E,_,_), dfree(A,K).
+tkey(B,P,E,K,O) :- trig(B,P,E,_,_), keyo(B,K,O).
+tcd(A,B,P,E) :- tdem(A,P,E,K,any), tkey(B,P,E,K,_), A != B.
+tcd(A,B,P,E) :- tdem(A,P,E,K,_), tkey(B,P,E,K,any), A != B.
+tcd(A,B,P,E) :- tdem(A,P,E,K,k(K1)), tkey(B,P,E,K,k(K2)), compat(K1,K2), A != B.
+tc(A,B,P,E) :- tcd(A,B,P,E).  tc(B,A,P,E) :- tcd(A,B,P,E).
 tp(A,B,X,Y,D1,D2) :- tc(A,B,P,E), trig(A,P,E,D1,X), trig(B,P,E,D2,Y).
 % a compatible doer, objects of compatible kinds (or one constant)
 kin(A,B,X,Y) :- tp(A,B,X,Y,_,_), role(A,X,K), role(B,Y,K2), compat(K,K2).

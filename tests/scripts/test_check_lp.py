@@ -193,6 +193,15 @@ def test_disjoint_kinds_are_never_paired():
     assert 'pair("r2","r53")' in solve(R2 + R53 + DOM, "#show pair/2.")
 
 
+def test_responses_on_things_of_disjoint_kinds_are_never_paired():
+    # b421: r53 forbids starting a stage, r81 obliges starting a delegation, on one trigger: no unification makes the
+    # two objects one, so the two lines are no pair; a code's object (its canon may be of any kind) still pairs
+    other = req("r81", "role(R,v3,k_delegation). resp(R,1,pos,e_start,a_work_run,v3).")
+    assert not any(a.startswith("pair(") for a in solve(R53 + other + DOM, "#show pair/2."))
+    coded = other.replace('resp("r81"', 'named("r81",v3,"`d1`"). resp("r81"')
+    assert 'pair("r53","r81")' in solve(R53 + coded + DOM, "#show pair/2.")
+
+
 def test_a_pair_that_cannot_fire_hides_no_other_finding():
     atoms = solve(R27 + DELEGATION + R2 + R53 + R98 + DOM)   # r27 and r80 can never fire together
     assert 'clash("r2","r53",pos_neg)' in atoms and 'bad_set("r98",t_status,v_drafted,v_done)' in atoms
