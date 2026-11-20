@@ -6,7 +6,7 @@ each must hold.
 `kind` picks the lines a scenario's Givens describe (`LINES`' key); `check` reads the feature back for its Then: a
 counter-example (r117-r119, r128, r134), the precondition satisfied (r114, r129), the boundary of a count (r115), each instance a Given
 introduces (r116; of a printed thing's holds and of an order, r131, r132; of a thing a response names by its
-owner, scenarios#r33, an indexical, r34) and no step that asserts an act `only` allows (r118)."""
+owner, scenarios#r33, an indexical or a While part's, r34, r35) and no step that asserts an act `only` allows (r118)."""
 import re
 
 # (line, [patterns its scenario must hold], [patterns it must not])
@@ -80,6 +80,9 @@ LINES = {
         ("When the person runs `work status` on a session, `work` shall print the worktree of the session.", [], [])],
     "owned-this": [     # b421: the owner an indexical, this K
         ("When the person runs `work status`, `work` shall print the push of this command.", [], [])],
+    "owned-while": [    # b421: the owner a While part's thing
+        (("While a stage is `open`, when the person runs `work status`, `work` shall print the lines of the stage."),
+         [], [])],
 }
 
 
@@ -100,7 +103,7 @@ def kind(w, K):
         if {("use", "requirement", "`holds-relation`"), ("use", "requirement", "`rc-subject`")} <= facts:
             return "held"
         if ("use", "requirement", "`of-relation`") in facts:     # b416, b421
-            for code in ("this",):
+            for code in ("this", "while"):
                 if ("use", "requirement", "`%s`" % code) in facts:
                     return "owned-" + code
             return "owned"
