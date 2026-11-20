@@ -465,6 +465,15 @@ requirement = { positional = 2 }
 "universal condition id" = { option = "--retires" }
 capability = { option = "--capability" }
 
+[operations."drafting.write"]
+command = "work line"
+requirements = [
+  "drafting#r25: While an item holds a capability that does not exist, when the person writes a term into the item, the drafting service shall keep the term in the item.",
+]
+[operations."drafting.write".parameters]
+item = { positional = 1 }
+term = { option = "--term" }
+
 [operations."drafting.recodify"]
 command = "work line"
 requirements = [
