@@ -68,6 +68,7 @@ def test_line_refuses_a_capability_that_is_not_codified(ready_repo):
         done = work(ready_repo, "line", "b1", "--into", capability, ABANDON)
         assert done.returncode == 1, done.stdout
         assert "no codified capability %s" % capability in done.stderr, done.stderr
+        assert ("--capability nothing" in done.stderr) == (capability == "nothing"), done.stderr
         assert state(ready_repo) == before
 
 

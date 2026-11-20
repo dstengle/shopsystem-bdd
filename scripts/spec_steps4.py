@@ -167,8 +167,10 @@ class Reader:
                     T = "t_%s_%d" % (spec_rgl.slug(term), n)
                     if self.dets.get(x) == "DetNo":
                         return boxes.none_whose(self, x, T, pol, ("%s_v_%s" % (T, spec_rgl.slug(value)),))
-                    return (T + "_IsOf", pol, ("%s_Of_%s" % (T, kid(k)), self.np(x, k)),     # the full form (b257)
-                            ("%s_v_%s" % (T, spec_rgl.slug(value)),))
+                    owner = ("%s_Of_%s" % (T, kid(k)), self.np(x, k))      # the full form (b257)
+                    if value not in t.values:       # a code no entry lists: a text's value (b413)
+                        return (T + "_IsCodeOf", pol, owner, ("CodeLit", value))
+                    return (T + "_IsOf", pol, owner, ("%s_v_%s" % (T, spec_rgl.slug(value)),))
         if item.pred == "rel":
             return self.row(item.args, pol)
         if item.pred == spec_lf_exist.PRED:     # "the file f1 exists" (b240)

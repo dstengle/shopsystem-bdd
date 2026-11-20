@@ -9,7 +9,7 @@ import re
 from pathlib import Path
 
 import shop_files
-from migrate_upgrade import plugin_version
+from migrate_upgrade import identity, plugin_version
 from migrate_write import top_level
 from record_write import README_HEAD
 from shop_refused import Refused
@@ -117,6 +117,9 @@ def run(args):
     if root is None:
         raise Refused("could not find a git repository at %s" % Path.cwd())
     check(root, args.id)
+    if not identity(root):      # the person's name and email, asked for, never made up (b415)
+        raise Refused('git has no identity to commit the context with: ask the person for theirs and set it with git '
+                      'config user.name "…" and git config user.email "…"; nothing written')
     files = scaffold(args.id)
     if not (root / "features").exists():
         files["features/.gitkeep"] = ""
