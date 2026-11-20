@@ -10,6 +10,7 @@ been renamed or retired since.
 
 | Line | Releases |
 |---|---|
+| 0.42 | [0.42.0](#0420-a-request-acts-on-one-thing-one-verb-for-several-operations-and-a-made-thing-introduced-by-the-when) |
 | 0.41 | [0.41.0](#0410-a-fresh-contexts-scenarios-run-with-plain-pytest-and-a-responses-owned-thing-given-before-the-when) |
 | 0.40 | [0.40.0](#0400-a-new-context-built-by-command-and-the-docs-as-prompts-to-the-session) |
 | 0.39 | [0.39.0](#0390-each-operation-carries-its-lines-the-catalogues-as-specification-migrate-init-and-the-docs-revised) |
@@ -23,6 +24,39 @@ been renamed or retired since.
 | 0.31 | [0.31.5](#0315-released-as-240-the-request-watch-wakes-on-githubs-events-and-starts-with-the-session) · [0.31.4](#0314-released-as-231-a-batch-runs-in-one-fresh-agent-and-a-parked-item-leaves-the-batch-at-once) · [0.31.3](#0313-released-as-230-work-pushes-its-commits-requests-post-after-they-commit-and-work-watch) · [0.31.2](#0312-released-as-220-decisions-and-records-written-by-command) · [0.31.1](#0311-released-as-210-requests-exchanged-through-github-issues) · [0.31.0](#0310-released-as-200-the-workflow-simplified) |
 | 0.30 | [0.30.0](#0300-released-as-100-codified-requirements) |
 | 0.29 and before | [0.29.0](#0290-glossary-proposals-delegations-given-late-and-fewer-stops-from-outside-a-work-item) · [0.28.3](#0283-a-branch-review-that-runs-nothing) · [0.28.2](#0282-answers-a-round-cannot-hold-go-back-to-integration) · [0.28.1](#0281-work-run-stops-visibly-on-questions-and-spends-less-agent-time) · [0.28.0](#0280-one-set-of-request-commands-work-list-and-work-show-and-answers-that-redraft) · [0.27.0](#0270-transitions-from-how-a-session-ended-and-the-turn-of-an-accepted-request) · [0.26.0](#0260-requests-and-the-context-loop) · [0.25.0](#0250-work-items-side-by-side-answers-and-guarantees) · [0.24.0](#0240-work-items-named-by-ids-and-upgrades-between-plugin-releases) · [0.23.1](#0231---work-item-keeps-tests-that-are-not-scenarios) · [0.23.0](#0230-faults-settled-query-output-as-json-the-session-keeps-the-gate-measurement-on-v3) · [0.22.0](#0220-one-requirement-per-scenario-faults-and-the-lessons-of-a-blind-formulation) · [0.21.0](#0210-the-final-layout-and-delivery-by-work-run) |
+
+## 0.42.0: a request acts on one thing, one verb for several operations, and a made thing introduced by the When
+
+- **A request acts on one thing** (b420, parsing#r13-r16): a verb names an operation by each of its frames, so
+  "the person lists a checklist" and "the person lists the checklists" are two requests of one word, each read one
+  way. A request's object is one thing: a line whose request has a plural object ("the person deletes two
+  checklists") no longer parses and is refused naming the line; a collection is said by the frame's own words. A
+  line that reads two ways is refused naming the words that read two ways and, where two frames of a verb read
+  them, each frame. Lines of the old form need rewording: say the collection in a frame of its own.
+- **measurement#r4 and #r8 retired for #r10 and #r11** (b420): `measure compare` of two batches, and of two
+  measurements, is one request returning two measurements (or two total rows) and a ratio.
+- **One verb for several operations** (b429): shaping keeps the person's verb and gives it a second entry with a
+  frame that tells it apart, never a coined verb; [recipes](docs/recipes.md#one-verb-for-several-operations) shows the
+  entries and their lines.
+- **A request can name a value another thing has** (b418, parsing#r17, #r18, consistency#r34, scenarios#r36-#r43): a
+  line can say that a request names a title another checklist has (a value in use, `param-of`), not only an example
+  value; its logical form keeps it, `spec logic` reads it and a code of the same value as one request, and the
+  generated scenario gives the code to a Given and to the When. [Recipes](docs/recipes.md#refuse-a-value-already-in-use)
+  shows it.
+- **Generated features of operations that make their object change once** (b418, scenarios#r37): the thing an
+  operation makes is introduced by the When ("the person adds the checklist c1 ..."), not by a Given, so the scenario
+  no longer says the thing exists before the request that makes it. Regenerate your features
+  (`features generate`) after upgrading; handlers that keyed on a Given of the made thing take it from the When.
+- **`migrate upgrade` rewrites an old scenario conftest** (b423, upgrades#r36, #r37): a `tests/scenarios/conftest.py`
+  that is still the form `migrate init` wrote before 0.41.0 is rewritten to the one that loads `work_items`, so plain
+  pytest warns of no unknown mark; a conftest of neither form is named and left alone.
+- **A response's thing owned by an indexical or a While part's thing is brought in before the When** (b421,
+  scenarios#r34, #r35): "the items of this backlog" and the like get a Given and its row, so no step names an
+  instance no Given introduces.
+- **The prompt hook keeps the session in a repository `migrate init` founds in that same turn** (b417): `work quote`
+  works on the person's first words in a fresh repository with no `--transcript`.
+- **A decision may cite the person's words** (b435): `spec check` resolves a `quote-<n>` in a decision's `source` to
+  `.shop/quotes/<n>.md` when that file is kept.
 
 ## 0.41.0: a fresh context's scenarios run with plain pytest, and a response's owned thing given before the When
 
