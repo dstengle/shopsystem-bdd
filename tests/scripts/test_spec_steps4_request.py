@@ -49,6 +49,19 @@ def test_a_thing_a_parameter_names_is_brought_in_and_the_parameter_named():
         ("then", "the notes service refuses this request"), ("then", "the notes service names the text")]
 
 
+
+def test_a_given_text_value_is_said_as_its_code_and_reads_back():
+    """A value of an attribute no entry lists (a text's) is the code itself, never a placeholder (b413)."""
+    notes = REPO / "docs" / "examples" / "notes-cli"
+    vocab, gram = spec_rgl_steps.load(notes)
+    parsed = spec_grammar4.parse(notes, "While the title of a note is `milk`, when the person removes the note, the "
+                                        "notes service shall set the status of the note to `removed`.")
+    assert parsed.tree, parsed.refusal
+    form = spec_lf.form(vocab, parsed.tree)
+    said = [(k, spec_rgl_steps.text(gram, t)) for k, t in spec_steps4.read(vocab, [("notes#r1", form)])]
+    assert ("given", "the title of the note n1 is `milk`") in said
+    assert features_vocab4.step(notes, "given", "the title of the note n1 is `milk`").template == "GivenK_A"
+
 @pytest.mark.parametrize("keyword, text, template, attrs", [
     ("when", "the person adds the note n1 with the text `milk` and the priority `high`", "WhenRequests",
      {"operation": "notes.add", "params": [("text", "`milk`"), ("priority", "`high`")], "without": []}),
