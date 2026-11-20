@@ -1371,7 +1371,8 @@ These four say it:
 
 `spec logic` reads `distinct(y, x)` as two things its unification never makes one: when one line's two referents
 it holds would be one thing of a pair (one code named of both, a definite both bind to), the pair is not read under
-that unification. A trigger of one act on each of "two Ks" ("writes two files") is one act of the line, a trigger of
+that unification. A trigger of one act on each of "two Ks" ("writes two files", of a verb naming no operation: a
+request acts on one thing, so "two Ks" in a request's object is no reading, b420) is one act of the line, a trigger of
 each part: two lines fire on one act when each part of either is a part of the other, so "writes a file" is not the
 act of "writes two files". So two lines on one act whose states differ only in which things are one never clash:
 "another file in the same worktree" and "another file in a different worktree" below (the twin of design-model-check
@@ -1441,16 +1442,18 @@ shall [x4: agent the person (constant), x5: service the work service (constant)]
 What restricts "two Ks" restricts each, and a K it makes is one both share:
 
 ```reading
-When a session writes two files in a worktree, the work service shall return the worktree.
-shall [x5: service the work service (constant)]
-  when [x1: session, x2: file, x3: worktree, x4: file]
-    in(x2, x3)
-    request(e1, work.write, subject: x1, object: x2)
-    distinct(x4, x2)
-    in(x4, x3)
-    request(e2, work.write, subject: x1, object: x4)
+While two files in a worktree cover a line, when the person opens the board, the work service shall return the worktree.
+shall [x5: agent the person (constant), x6: service the work service (constant)]
+  while [x1: file, x2: worktree, x4: line, x3: file]
+    in(x1, x2)
+    cover(subject: x1, object: x4)
+    distinct(x3, x1)
+    in(x3, x2)
+    cover(subject: x3, object: x4)
+  when
+    request(e1, work.open, subject: x5, the board)
   response
-    return(e3, subject: x5, object: x3)
+    return(e2, subject: x6, object: x2)
 ```
 
 In a response, two new Ks:
@@ -1469,47 +1472,53 @@ shall [x3: service the work service (constant)]
 "another K" after "two Ks" is distinct from both:
 
 ```reading
-When a session gives two files to a session, the work service shall write another file.
-shall [x5: service the work service (constant)]
-  when [x1: session, x2: file, x4: session, x3: file]
-    request(e1, work.give, subject: x1, object: x2, to: x4)
-    distinct(x3, x2)
-    request(e2, work.give, subject: x1, object: x3, to: x4)
-  response [x6: file]
-    distinct(x6, x2)
-    distinct(x6, x3)
-    write(e3, subject: x5, object: x6)
-```
-
-Two lines on one act in two states: the first's two files are in one worktree, the second's in two, so `spec logic`
-finds no witness where both fire, and no L1:
-
-```reading
-When a session writes a file in a worktree and another file in the same worktree, the work service shall return the worktree.
-shall [x5: service the work service (constant)]
-  when [x1: session, x2: file, x3: worktree, x4: file]
-    in(x2, x3)
-    request(e1, work.write, subject: x1, object: x2)
-    distinct(x4, x2)
-    in(x4, x3)
-    request(e2, work.write, subject: x1, object: x4)
+While two sessions follow a stage, when the person assigns another session, the work service shall return the stage.
+shall [x4: agent the person (constant), x6: service the work service (constant)]
+  while [x1: session, x3: stage, x2: session]
+    follow(subject: x1, object: x3)
+    distinct(x2, x1)
+    follow(subject: x2, object: x3)
+  when [x5: session]
+    distinct(x5, x1)
+    distinct(x5, x2)
+    request(e1, work.assign, subject: x4, object: x5)
   response
-    return(e3, subject: x5, object: x3)
+    return(e2, subject: x6, object: x3)
+```
+
+Two lines on one request in two states: the first's two files are in one worktree, the second's in two, so `spec
+logic` finds no witness where both fire, and no L1:
+
+```reading
+While a file in a worktree and another file in the same worktree cover a line, when the person opens the board, the work service shall return the worktree.
+shall [x5: agent the person (constant), x6: service the work service (constant)]
+  while [x1: file, x2: worktree, x4: line, x3: file]
+    in(x1, x2)
+    cover(subject: x1, object: x4)
+    distinct(x3, x1)
+    in(x3, x2)
+    cover(subject: x3, object: x4)
+  when
+    request(e1, work.open, subject: x5, the board)
+  response
+    return(e2, subject: x6, object: x2)
 ```
 
 ```reading
-When a session writes a file in a worktree and another file in a different worktree, the work service shall not return the worktree.
-shall [x6: service the work service (constant)]
-  when [x1: session, x2: file, x3: worktree, x4: file, x5: worktree]
-    in(x2, x3)
-    request(e1, work.write, subject: x1, object: x2)
+While a file in a worktree and another file in a different worktree cover a line, when the person opens the board, the work service shall not return the worktree.
+shall [x6: agent the person (constant), x7: service the work service (constant)]
+  while [x1: file, x2: worktree, x5: line, x3: file, x4: worktree]
+    in(x1, x2)
+    cover(subject: x1, object: x5)
+    distinct(x3, x1)
     distinct(x4, x2)
-    distinct(x5, x3)
-    in(x4, x5)
-    request(e2, work.write, subject: x1, object: x4)
+    in(x3, x4)
+    cover(subject: x3, object: x5)
+  when
+    request(e1, work.open, subject: x6, the board)
   response
     not
-      return(e3, subject: x6, object: x5)
+      return(e2, subject: x7, object: x4)
 ```
 
 The refusals: "another K" with no K before it, or with every K before it inside a box; "the same K" with neither an
@@ -1783,6 +1792,24 @@ shall [x3: service the work service (constant), x4: request "the request the tri
 ```
 
 A parameter the operation does not declare is no word of the line: "with a colour" does not parse.
+
+### "the person lists a checklist", "the person lists the checklists": a request acts on one thing
+
+A request, a verb naming an operation in a trigger, acts on one thing (b420, design-decision 0111): a slot its frame
+names a kind of takes one thing's noun phrase, never one in the plural, with "every", a count or a number word, or a
+list joined by "and". A collection a request acts on is said by its frame's own words, and one verb may name several
+operations, one by each frame: "Frame: <actor> lists <checklist>." (the items of one checklist) beside "Frame: <actor>
+lists the checklists." (every checklist) read "the person lists the checklists" by the second frame alone, since the
+first frame's object would be a plural. A line whose every reading gives a request a plural object is refused naming
+the object and the verb; one request on several objects is several requests. A response's act of such a verb is no
+request and keeps its plurals ("the toolchain service shall install every analysis tool"), and so do the frames of a
+verb naming no operation. A line that still reads two ways is refused naming its words and, when its readings are two
+frames of one verb, both frames.
+
+```reading
+When the person ends every stage, the work service shall complete the request.
+refused: a request acts on one thing: "every stage" is a plural object of end; say one thing, or the collection by its frame's own words
+```
 
 ### "this request", "the commit", "the push of the commit": the request's own things
 
