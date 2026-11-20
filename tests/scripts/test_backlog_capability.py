@@ -136,9 +136,46 @@ def test_lay_writes_an_index_of_old_tables_in_the_index_form_and_unlay_puts_it_b
     laid = (tmp_path / "spec" / "index.md").read_text()
     assert laid == ("---\nid: bounded-context/ex.com/prod/ctx\n---\n\n## Composition\n\nThe capabilities by area.\n\n"
                     "| area | kind | capabilities |\n|---|---|---|\n| shelf | core | notes, shelf |\n"
-                    "| other | supporting | x, y |\n\n## Upstreams\n"), laid
+                    "| other | supporting | x, y |\n\n### Retired in 0.31.0\n\n| capability | narrator | group |\n"
+                    "|---|---|---|\n| `gone` | the person | service |\n\n## Upstreams\n"), laid
     git(tmp_path, "add", "-A")
     git(tmp_path, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "laid")
     unlay(tmp_path, block, files)
     assert (tmp_path / "spec" / "index.md").read_text() == OLD
     assert not (caps / "shelf.md").exists()
+
+
+REPO = ("---\nid: bounded-context/ex.com/prod/ctx\n---\n\n## Composition\n\nPlugin 0.38.0: the domain contract.\n\n"
+        "### specification (core)\n\n| capability | narrator | group |\n|---|---|---|\n| `decisions` | the person | service |\n"
+        "\n### upgrades (generic)\n\n| capability | narrator | group |\n|---|---|---|\n| `upgrades` | the person | service |\n"
+        "\n### Retired in 0.38.0\n\nEvery line moved with a new id: `backlog`, `intake`.\n\n### Retired in 0.31.0\n\n"
+        "| capability | narrator | group |\n|---|---|---|\n| `supervision` | the person who started `work run` | service |\n"
+        "\n## Testing\n\n- The suite.\n")
+
+
+def test_lay_keeps_the_retired_subsections_of_an_index_shaped_as_this_repositorys(tmp_path):
+    """f1 of batch-51: of an index shaped as this repository's spec/index.md, the area subsections become the index
+    form's table (an area's kind from its `### <area> (<kind>)` heading where no model file gives one) and every other
+    subsection (the Retired lists) is kept verbatim after it; the unlay puts the index back byte for byte."""
+    from backlog_capability import lay, unlay
+    caps = tmp_path / "spec" / "capabilities"
+    caps.mkdir(parents=True)
+    for name, where in (("decisions", "specification"), ("upgrades", "upgrades"), ("supervision", None)):
+        (caps / ("%s.md" % name)).write_text("---\nid: c/%s\n%s---\n" % (name, "area: %s\n" % where if where else ""))
+    (tmp_path / "spec" / "index.md").write_text(REPO)
+    git(tmp_path, "init", "-q")
+    git(tmp_path, "add", "-A")
+    git(tmp_path, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "spec")
+    block = Block("shelf", [], [], new=NEW)
+    files = []
+    lay(tmp_path, block, files)
+    laid = (tmp_path / "spec" / "index.md").read_text()
+    assert laid == ("---\nid: bounded-context/ex.com/prod/ctx\n---\n\n## Composition\n\nPlugin 0.38.0: the domain "
+                    "contract.\n\n| area | kind | capabilities |\n|---|---|---|\n| specification | core | decisions |\n"
+                    "| upgrades | generic | upgrades |\n| shelf | core | shelf |\n\n### Retired in 0.38.0\n\nEvery line moved with a new id: "
+                    "`backlog`, `intake`.\n\n### Retired in 0.31.0\n\n| capability | narrator | group |\n|---|---|---|\n"
+                    "| `supervision` | the person who started `work run` | service |\n\n## Testing\n\n- The suite.\n"), laid
+    git(tmp_path, "add", "-A")
+    git(tmp_path, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "laid")
+    unlay(tmp_path, block, files)
+    assert (tmp_path / "spec" / "index.md").read_text() == REPO

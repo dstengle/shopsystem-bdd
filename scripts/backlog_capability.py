@@ -118,22 +118,34 @@ def _field(path, name):
     return found.group(1) if found else None
 
 
+AREA = re.compile(r"(?m)\A### (\S+) \(([^()\s]+)\)[ \t]*$")
+
+
 def _converted(root, body, block):
     """The old tables' `body` written in the index form (b391, f1 of batch-51): its prose before the first heading
     or table kept, then one table `| area | kind | capabilities |`, a row for each area of the capabilities the old
-    tables name whose file says `area:` (in the order they name them), its kind from spec/model/<area>.md's `kind`
-    (else core), the new capability named last in its area's row."""
-    areas = {}
+    tables name whose file says `area:` (in the order they name them), its kind from spec/model/<area>.md's `kind`,
+    else its `### <area> (<kind>)` heading's, else core, the new capability named last in its area's row; then every
+    subsection that is no `### <area> (<kind>)` table (the Retired lists), verbatim."""
+    areas, kinds = {}, {}
     names = re.findall(r"(?m)^\|[ \t]*`([^`|]+)`[ \t]*\|", body) + [block.capability]
     for name in names:
         where = area(block) if name == block.capability else _field(path_of(root, name), "area")
         if where and name not in areas.setdefault(where, []):
             areas[where].append(name)
+    subsections = [m.group(0) for m in re.finditer(r"(?ms)^###[ \t].*?(?=^###[ \t]|\Z)", body)]
+    kept = []
+    for sub in subsections:
+        heading = AREA.match(sub)
+        if heading and _old(sub):
+            kinds[heading.group(1)] = heading.group(2)
+        else:
+            kept.append(sub.rstrip("\n") + "\n")
     model = Path(root) / "spec" / "model"
-    rows = ["| %s | %s | %s |" % (a, _field(model / ("%s.md" % a), "kind") or "core", ", ".join(n))
+    rows = ["| %s | %s | %s |" % (a, _field(model / ("%s.md" % a), "kind") or kinds.get(a, "core"), ", ".join(n))
             for a, n in areas.items()]
     lead = re.split(r"(?m)^(?:###|\|)", body, maxsplit=1)[0].rstrip("\n")
-    return ((lead + "\n\n" if lead.strip() else "\n") + "%s\n%s\n" % (HEADER, "\n".join(rows))
+    return ((lead + "\n\n" if lead.strip() else "\n") + "\n".join(["%s\n%s\n" % (HEADER, "\n".join(rows))] + kept)
             + ("\n" if body.endswith("\n\n") else ""))
 
 
