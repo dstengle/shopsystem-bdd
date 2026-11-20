@@ -1,0 +1,301 @@
+---
+id: measurement/example.org/checklists/checklists-cli/2026-11-20-batch-1
+kind: measurement
+about: bounded-context/example.org/checklists/checklists-cli
+date: 2026-11-20
+---
+
+# Measurement of batch-1
+
+## Summary
+
+totals
+total             | value
+------------------+----------------------
+wall time         | 19 minutes 43 seconds
+session time      | 15 minutes 7 seconds
+waiting for merge | 1 minute 10 seconds
+output tokens     | 66225
+new input tokens  | 284235
+cache-read tokens | 6371644
+cost              | 4.07
+
+cost by role
+role         | sessions | session time         | output tokens | new input tokens | cache-read tokens | cost
+-------------+----------+----------------------+---------------+------------------+-------------------+-----
+planning     | 2        | 5 minutes 15 seconds | 12919         | 79565            | 1438279           | 0.99
+implementing | 1        | 6 minutes 54 seconds | 35915         | 102649           | 3896120           | 2.01
+review       | 2        | 1 minute 40 seconds  | 10270         | 63330            | 486016            | 0.62
+fixing       | 1        | 1 minute 18 seconds  | 7121          | 38691            | 551229            | 0.45
+
+review findings by grade
+grade     | findings
+----------+---------
+Critical  | 0
+Important | 1
+Minor     | 5
+
+defects
+item     | review | after merge
+---------+--------+------------
+b1       | 2      | 0
+per item | 2.00   |
+
+knobs
+knob          | value
+--------------+-----------
+batch_size    | 4
+items         | 1
+changed_lines | 663
+size_limit    | 1000
+reviews       | 2
+readiness_bar | mechanical
+
+```json
+{
+  "batch": "batch-1",
+  "status": "merged",
+  "pull_request": "https://github.com/ex/ctx/pull/1",
+  "items": [
+    {
+      "item": "b1",
+      "title": "Keep checklists from the command line",
+      "status": "delivered"
+    }
+  ],
+  "window": {
+    "started": "2026-11-20T01:38:01Z",
+    "first_review": "2026-11-20T01:52:14Z",
+    "built": "2026-11-20T01:56:34Z",
+    "closed": "2026-11-20T01:57:44Z"
+  },
+  "wall_time_seconds": 1183,
+  "wall_time": "19 minutes 43 seconds",
+  "waiting_for_merge_seconds": 70,
+  "session_time_seconds": 907,
+  "session_time": "15 minutes 7 seconds",
+  "tokens": {
+    "output_tokens": 66225,
+    "new_input_tokens": 284235,
+    "cache_read_tokens": 6371644
+  },
+  "cost": 4.068217,
+  "unpriced": {},
+  "prices_as_of": "2026-10-06",
+  "cost_by_role": {
+    "planning": {
+      "sessions": 2,
+      "session_time_seconds": 315,
+      "session_time": "5 minutes 15 seconds",
+      "output_tokens": 12919,
+      "new_input_tokens": 79565,
+      "cache_read_tokens": 1438279,
+      "cost": 0.992256
+    },
+    "implementing": {
+      "sessions": 1,
+      "session_time_seconds": 414,
+      "session_time": "6 minutes 54 seconds",
+      "output_tokens": 35915,
+      "new_input_tokens": 102649,
+      "cache_read_tokens": 3896120,
+      "cost": 2.010661
+    },
+    "review": {
+      "sessions": 2,
+      "session_time_seconds": 100,
+      "session_time": "1 minute 40 seconds",
+      "output_tokens": 10270,
+      "new_input_tokens": 63330,
+      "cache_read_tokens": 486016,
+      "cost": 0.619217
+    },
+    "fixing": {
+      "sessions": 1,
+      "session_time_seconds": 78,
+      "session_time": "1 minute 18 seconds",
+      "output_tokens": 7121,
+      "new_input_tokens": 38691,
+      "cache_read_tokens": 551229,
+      "cost": 0.446083
+    }
+  },
+  "sessions": [
+    {
+      "session": "bdf79871-0b6b-40b1-8e5b-bc675fc51efe",
+      "agent": null,
+      "agent_type": null,
+      "role": "planning",
+      "driver": true,
+      "started": "2026-11-20T01:38:04.293000+00:00",
+      "requests": 15,
+      "session_time_seconds": 285,
+      "output_tokens": 8407,
+      "new_input_tokens": 16182,
+      "cache_read_tokens": 1205927,
+      "cost": 0.538653
+    },
+    {
+      "session": "bdf79871-0b6b-40b1-8e5b-bc675fc51efe",
+      "agent": "a0dfbc97e1c31da1a",
+      "agent_type": "general-purpose",
+      "role": "planning",
+      "driver": false,
+      "started": "2026-11-20T01:38:08.482000+00:00",
+      "requests": 10,
+      "session_time_seconds": 30,
+      "output_tokens": 4512,
+      "new_input_tokens": 63383,
+      "cache_read_tokens": 232352,
+      "cost": 0.453603
+    },
+    {
+      "session": "bdf79871-0b6b-40b1-8e5b-bc675fc51efe",
+      "agent": "ade51ce09d7fc287c",
+      "agent_type": "general-purpose",
+      "role": "implementing",
+      "driver": false,
+      "started": "2026-11-20T01:38:30.665000+00:00",
+      "requests": 54,
+      "session_time_seconds": 414,
+      "output_tokens": 35915,
+      "new_input_tokens": 102649,
+      "cache_read_tokens": 3896120,
+      "cost": 2.010661
+    },
+    {
+      "session": "bdf79871-0b6b-40b1-8e5b-bc675fc51efe",
+      "agent": "a3b9fa300a5839a28",
+      "agent_type": "shopsystem-bdd:pr-reviewer",
+      "role": "review",
+      "driver": false,
+      "started": "2026-11-20T01:52:24.428000+00:00",
+      "requests": 14,
+      "session_time_seconds": 81,
+      "output_tokens": 8409,
+      "new_input_tokens": 50690,
+      "cache_read_tokens": 448404,
+      "cost": 0.511283
+    },
+    {
+      "session": "bdf79871-0b6b-40b1-8e5b-bc675fc51efe",
+      "agent": "a358d993cbd4d3f9c",
+      "agent_type": "general-purpose",
+      "role": "fixing",
+      "driver": false,
+      "started": "2026-11-20T01:54:35.469000+00:00",
+      "requests": 19,
+      "session_time_seconds": 78,
+      "output_tokens": 7121,
+      "new_input_tokens": 38691,
+      "cache_read_tokens": 551229,
+      "cost": 0.446083
+    },
+    {
+      "session": "bdf79871-0b6b-40b1-8e5b-bc675fc51efe",
+      "agent": "a964d544c3db13df5",
+      "agent_type": "shopsystem-bdd:pr-reviewer",
+      "role": "review",
+      "driver": false,
+      "started": "2026-11-20T01:56:08.058000+00:00",
+      "requests": 4,
+      "session_time_seconds": 19,
+      "output_tokens": 1861,
+      "new_input_tokens": 12640,
+      "cache_read_tokens": 37612,
+      "cost": 0.107934
+    }
+  ],
+  "sessions_from": "/home/vscode/.claude/projects/-tmp-claude-1000--home-vscode-shopsystem-bdd-0871dbcd-a17a-4bbe-aee5-3445375f749d-scratchpad-ux-checklists-2",
+  "sessions_found": 6,
+  "reviews": [
+    {
+      "review": 1,
+      "result": "fix-now",
+      "findings": 5,
+      "lines": 663
+    },
+    {
+      "review": 2,
+      "result": "clean",
+      "findings": 1,
+      "lines": 20
+    }
+  ],
+  "findings": [
+    {
+      "finding": "f1",
+      "review": 1,
+      "grade": "Important",
+      "triage": "fix now",
+      "item": "b1"
+    },
+    {
+      "finding": "f2",
+      "review": 1,
+      "grade": "Minor",
+      "triage": "fix now",
+      "item": "b1"
+    },
+    {
+      "finding": "f3",
+      "review": 1,
+      "grade": "Minor",
+      "triage": "observation",
+      "item": "b1"
+    },
+    {
+      "finding": "f4",
+      "review": 1,
+      "grade": "Minor",
+      "triage": "observation",
+      "item": null
+    },
+    {
+      "finding": "f5",
+      "review": 1,
+      "grade": "Minor",
+      "triage": "observation",
+      "item": null
+    },
+    {
+      "finding": "f6",
+      "review": 2,
+      "grade": "Minor",
+      "triage": "observation",
+      "item": "b1"
+    }
+  ],
+  "findings_by_grade": {
+    "Critical": 0,
+    "Important": 1,
+    "Minor": 5
+  },
+  "findings_by_triage": {
+    "fix now": 2,
+    "observation": 4,
+    "drop": 0
+  },
+  "defects": {
+    "review": {
+      "b1": 2
+    },
+    "after_merge": {},
+    "per_item": 2.0
+  },
+  "knobs": {
+    "batch_size": 4,
+    "items": 1,
+    "changed_lines": 663,
+    "size_limit": 1000,
+    "reviews": 2,
+    "readiness_bar": "mechanical"
+  },
+  "goals": {
+    "wall_time_seconds": 1183,
+    "cost": 4.068217,
+    "defects_per_item": 2.0
+  },
+  "date": "2026-11-20"
+}
+```

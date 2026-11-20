@@ -1,0 +1,18 @@
+I've done the first steps of the setup. Before I can create the context I need one thing from you.
+
+**Done so far:**
+- **Git:** the repository already existed on `main`, with no commits yet. It already has an `origin` remote at `../ux-checklists-2-origin.git`, which is a local bare repository, not GitHub.
+- **Virtualenv:** I created `.venv` and installed `pytest 9.1.1` and `pytest-bdd 8.1.0`.
+- **Grammar tools:** these were already installed. The probe reports:
+  ```
+  grammar:
+    gf 3.12.0 (/home/vscode/.local/share/shopsystem-bdd/gf-3.12/bin/gf)
+    pgf 1.1
+    clingo 5.8.2
+    gf-rgl 20250812 (/home/vscode/.local/share/shopsystem-bdd/gf-rgl-20250812)
+  ```
+
+**What I need from you:**
+1. **The bounded context id**, in the form `bounded-context/<domain>/<path>`. For example, if this is a UX checklists app, it might be `bounded-context/ux/checklists`, but tell me what it actually is. Once I have it, I'll run `migrate init`, which creates the `spec/`, `.shop/`, `features/` and test-scaffold folders and makes the first commit.
+2. **The remote:** do you want to keep the current local `origin`, or should I create a GitHub repository with `gh repo create` and use that? Each batch ends in a pull request, and that needs a GitHub repository.
+3. **The first thing to build:** what should the app do first, in your own words? I'll turn that into the first item and its requirement lines, then start building it.

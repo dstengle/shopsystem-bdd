@@ -1,0 +1,91 @@
+---
+id: item/example.org/checklists/checklists-cli/b1
+kind: item
+status: delivered
+provenance: own
+value: high-value
+urgency: high-urgency
+size: small
+depends_on: []
+---
+
+# Keep checklists from the command line
+
+## Notes
+
+A small CLI keeping checklists: create a checklist, add items to it, check items off, list checklists and their items; the person's words in quote-1
+
+## Requirements
+
+### checklists
+
+narrator: the person
+group: service
+purpose: The checklists the person keeps from the command line: creating a checklist, adding items to it, checking items off and listing them.
+
+#### [g1] Create a checklist
+- [r1] When the person creates a checklist with a title, the checklists service shall keep the checklist and return the checklist.
+
+#### [g2] Create a checklist without a title
+- [r2] If the person creates a checklist without a title, then the checklists service shall refuse the request and name the title.
+
+#### [g3] Create a checklist with a title in use
+- [r3] While the title of a checklist is `groceries`, if the person creates a checklist with the title `groceries`, then the checklists service shall refuse the request and name the title.
+
+#### [g4] Add an item to a checklist
+- [r4] When the person adds an item to a checklist with a text, the checklists service shall keep the item and return the item.
+
+#### [g5] Add an item without a text
+- [r5] If the person adds an item to a checklist without a text, then the checklists service shall refuse the request and name the text.
+
+#### [g6] Add an item to a missing checklist
+- [r6] If the person adds an item to a checklist that does not exist, then the checklists service shall refuse the request and name the checklist.
+
+#### [g7] Check an item off
+- [r7] While an item is `open`, when the person checks the item, the checklists service shall keep the item and complete the request.
+
+#### [g8] Check an item already checked
+- [r8] While an item is `checked`, if the person checks the item, then the checklists service shall refuse the request and name the item.
+
+#### [g9] Check a missing item
+- [r9] If the person checks an item that does not exist, then the checklists service shall refuse the request and name the item.
+
+#### [g10] List a checklist
+- [r10] When the person lists a checklist, the checklists service shall return the items of the checklist.
+
+#### [g11] List a missing checklist
+- [r11] If the person lists a checklist that does not exist, then the checklists service shall refuse the request and name the checklist.
+
+### checklists model
+
+```model
+actor the person
+
+object checklist
+  attributes: title (text)
+  relations: has → item (many)
+
+object item
+  attributes: text (text); status: open | checked
+  lifecycle status: open → checked
+
+service checklists
+  operation create(checklist, title)  outcomes: done → the checklist | refused: no title, title in use
+  operation add(item, checklist, text)  outcomes: done → the item | refused: no checklist, no text
+  operation check(item)  outcomes: done | refused: no item, item checked
+  operation list(checklist)  outcomes: returned → the item | refused: no checklist
+```
+
+- **the person** (proper noun) → actor the person. The one who keeps the checklists.
+- **the checklists service** (proper noun) → service checklists. What keeps the person's checklists and answers their requests.
+- **checklist** (noun) → object checklist. A list of items the person keeps under a title.
+- **item** (noun) → object item. One thing to do on a checklist, said by its text.
+- **title** (attribute) → attribute checklist.title. The words that tell one checklist from another.
+- **text** (attribute) → attribute item.text. The words of an item.
+- **status** (attribute) → attribute item.status. Whether an item is still to do or done.
+- **open** (adjective) → value item.status open. An item is open when it has not been checked off.
+- **checked** (adjective) → value item.status checked. An item is checked when the person has checked it off.
+- **create** (verb, action) → operation checklists.create. Forms: creates, created. Frame: <actor> creates <checklist>.
+- **add** (verb, action) → operation checklists.add. Forms: adds, added. Frame: <actor> adds <item> to <checklist>.
+- **check** (verb, action) → operation checklists.check. Forms: checks, checked. Frame: <actor> checks <item>. Redefines: request.
+- **list** (verb, action) → operation checklists.list. Forms: lists, listed. Frame: <actor> lists <checklist>.

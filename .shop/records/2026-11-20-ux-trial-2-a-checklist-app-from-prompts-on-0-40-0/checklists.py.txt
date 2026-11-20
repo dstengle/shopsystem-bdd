@@ -1,0 +1,166 @@
+#!/usr/bin/env python3
+"""checklists: the CLI adapter of the checklists service. Each command is a request of one operation
+(spec/adapters/cli.toml): `checklists create --title T`, `checklists add --checklist T --text X`,
+`checklists check N`, `checklists list T`, `checklists browse`. The checklists are kept in checklists.json under --root.
+
+Every command answers with one response: an outcome (`done`, `returned`, `refused`, `broken`), its content, and
+its errors, each a reason and the business references it names (`parameter:title`, `checklist:groceries`,
+`item:3`). It prints for a person (content on stdout; a refusal on stderr, a parameter spelled as its option), or as
+one JSON object under --json; it exits 0 when done or returned, 1 otherwise."""
+import argparse
+import json
+import sys
+from pathlib import Path
+
+STORE = "checklists.json"
+OPTIONS = {"title": "--title", "text": "--text", "checklist": "--checklist"}
+
+
+def quoted(value):
+    """A value a person gave, quoted in a refusal's message."""
+    return repr(value).replace("%", "%%")
+
+
+class Refused(Exception):
+    def __init__(self, reason, message, *names):
+        super().__init__(message)
+        self.reason, self.message, self.names = reason, message, list(names)
+
+
+def load(root):
+    path = Path(root) / STORE
+    return json.loads(path.read_text()) if path.is_file() else {"next": 1, "checklists": []}
+
+
+def save(root, store):
+    (Path(root) / STORE).write_text(json.dumps(store, indent=1) + "\n")
+
+
+def kept(store, title):
+    """The checklist with the title, refused when there is none."""
+    if not title:
+        raise Refused("no checklist", "an item needs %s", "parameter:checklist")
+    checklist = next((k for k in store["checklists"] if k["title"] == title), None)
+    if checklist is None:
+        raise Refused("no checklist", "no checklist has the title %s", f"checklist:{title}")
+    return checklist
+
+
+HANDLERS = {}
+
+
+def handles(command):
+    def register(handler):
+        HANDLERS[command] = handler
+        return handler
+    return register
+
+
+@handles("create")
+def create(store, args):
+    if not args.title:
+        raise Refused("no title", "a checklist needs %s", "parameter:title")
+    if any(k["title"] == args.title for k in store["checklists"]):
+        raise Refused("title in use", "%s: another checklist has the title " + quoted(args.title), "parameter:title")
+    store["checklists"].append({"title": args.title, "items": []})
+    return "done", {"checklist": {"title": args.title}}
+
+
+@handles("add")
+def add(store, args):
+    if not args.text:
+        raise Refused("no text", "an item needs %s", "parameter:text")
+    checklist = kept(store, args.checklist)
+    item = {"id": store["next"], "text": args.text, "status": "open"}
+    store["next"] += 1
+    checklist["items"].append(item)
+    return "done", {"item": item}
+
+
+@handles("check")
+def check(store, args):
+    item = next((i for k in store["checklists"] for i in k["items"] if i["id"] == args.item), None)
+    if item is None:
+        raise Refused("no item", "no item has the number %s", f"item:{args.item:d}")
+    if item["status"] == "checked":
+        raise Refused("item checked", "the item %s is checked already", f"item:{args.item:d}")
+    item["status"] = "checked"
+    return "done", None
+
+
+@handles("list")
+def list_items(store, args):
+    return "returned", {"items": kept(store, args.checklist)["items"]}
+
+
+@handles("browse")
+def browse(store, args):
+    """Every checklist, each with the number of its items left to check (whose status is `open`)."""
+    return "returned", {"checklists": [{"title": k["title"], "open": sum(1 for i in k["items"] if i["status"] == "open")}
+                                       for k in store["checklists"]]}
+
+
+def parser():
+    top = argparse.ArgumentParser(prog="checklists", description=__doc__.split("\n\n")[0])
+    top.add_argument("--root", default=".", help="the folder checklists.json is kept in")
+    sub = top.add_subparsers(dest="command", required=True)
+    create = sub.add_parser("create", help="create a checklist")
+    create.add_argument("--title", help="the checklist's title, which no other checklist has")
+    add = sub.add_parser("add", help="add an item to a checklist")
+    add.add_argument("--checklist", help="the title of the checklist")
+    add.add_argument("--text", help="the item's text")
+    sub.add_parser("check", help="check an item off").add_argument("item", type=int, help="the item's number")
+    sub.add_parser("list", help="list a checklist's items").add_argument("checklist", help="the checklist's title")
+    sub.add_parser("browse", help="list every checklist")
+    for leaf in sub.choices.values():
+        leaf.add_argument("--json", action="store_true", help="print the response as one JSON object")
+    return top
+
+
+def spell(ref):
+    kind, _, name = ref.partition(":")
+    return OPTIONS.get(name, name) if kind == "parameter" else name
+
+
+def render(args, outcome, content, errors):
+    if args.json:
+        errors = [{"reason": e["reason"], "names": e["names"]} for e in errors]
+        print(json.dumps({"outcome": outcome, "content": content, "errors": errors, "notices": []}, indent=1))
+        return
+    for error in errors:
+        print(f"checklists {args.command}: {error['message']}", file=sys.stderr)
+    if content is not None:
+        print(text(content))
+
+
+def text(content):
+    """The content as a person reads it: a checklist by its title (browsed, with the number of its items left to
+    check), an item as `<number> [ ] <text>`."""
+    if "checklist" in content:
+        return content["checklist"]["title"]
+    if "checklists" in content:
+        return "\n".join("{} ({:d} left to check)".format(k["title"], k["open"]) for k in content["checklists"])
+    items = content["items"] if "items" in content else [content["item"]]
+    return "\n".join("{:d} [{}] {}".format(i["id"], "x" if i["status"] == "checked" else " ", i["text"]) for i in items)
+
+
+def main(argv=None):
+    args = parser().parse_args(argv)
+    try:
+        store = load(args.root)
+        outcome, content = HANDLERS[args.command](store, args)
+    except Refused as refusal:
+        error = {"reason": refusal.reason, "names": refusal.names,
+                 "message": refusal.message % tuple(spell(n) for n in refusal.names)}
+        render(args, "refused", None, [error])
+        return 1
+    except (OSError, ValueError) as broken:     # infrastructure, outside the domain: the store unread or not JSON
+        render(args, "broken", None, [{"reason": "broken", "names": [], "message": str(broken)}])
+        return 1
+    save(args.root, store)
+    render(args, outcome, content, [])
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

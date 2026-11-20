@@ -1,0 +1,23 @@
+I've shaped `b2` "List every checklist with the items left to check", it passed its readiness check, and batch 2 is now being built by a driver agent in the background. I'll pass on the pull request link when it's ready for you to merge.
+
+**What `b2` adds**
+- **New request: browse.** It sits beside the existing `list`, which shows one checklist's items. I needed a new verb because each verb can name only one operation, so on the command line it will probably be a separate subcommand such as `browse`. If you'd rather the command be called something else, say so; the command name is set in the CLI adapter file, not in the requirement lines.
+- **Rating:** high value, medium urgency, small.
+- **Two requirement lines**, since a line can't say "each checklist with its own count":
+  - **r12:** when you browse, the service returns every checklist.
+  - **r13:** for any checklist, browsing also returns the number of its items whose status is `open`.
+
+  Together they give you all your checklists, each with its count of items left to check.
+
+Batch 2, building `b2` "List every checklist with the items left to check", is ready for you to merge: https://github.com/ex/ctx/pull/2
+
+- **What it adds:** a `checklists browse` command, which lists every checklist with its number of open items. The command is registered in `spec/adapters/cli.toml` and has test steps for both lines (r12 and r13). The driver reports that the whole test suite passed.
+- **Review:** one pass, with nothing to fix before merge. The batch status confirms the last review is clean.
+
+The review left two small things I haven't added to the backlog:
+- `browse` only reads, yet it creates an empty `checklists.json` when none exists.
+- With no checklists, `browse` prints one blank line and no message.
+
+Either could become a small backlog item if you want it fixed.
+
+Once you've merged, tell me and I'll record the batch as merged and measure it.

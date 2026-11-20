@@ -1,0 +1,57 @@
+---
+id: capability/example.org/checklists/checklists-cli/checklists
+title: Checklists
+narrator: the person
+group: service
+area: checklists
+specifies: service checklists
+language: codified-2
+retired: []
+unbuilt: []
+---
+
+# Checklists
+
+## Purpose
+The checklists the person keeps from the command line: creating a checklist, adding items to it, checking items off and listing them.
+
+## Behaviour
+### [g1] Create a checklist
+- [r1] When the person creates a checklist with a title, the checklists service shall keep the checklist and return the checklist.
+
+### [g2] Create a checklist without a title
+- [r2] If the person creates a checklist without a title, then the checklists service shall refuse the request and name the title.
+
+### [g3] Create a checklist with a title in use
+- [r3] While the title of a checklist is `groceries`, if the person creates a checklist with the title `groceries`, then the checklists service shall refuse the request and name the title.
+
+### [g4] Add an item to a checklist
+- [r4] When the person adds an item to a checklist with a text, the checklists service shall keep the item and return the item.
+
+### [g5] Add an item without a text
+- [r5] If the person adds an item to a checklist without a text, then the checklists service shall refuse the request and name the text.
+
+### [g6] Add an item to a missing checklist
+- [r6] If the person adds an item to a checklist that does not exist, then the checklists service shall refuse the request and name the checklist.
+
+### [g7] Check an item off
+- [r7] While an item is `open`, when the person checks the item, the checklists service shall keep the item and complete the request.
+
+### [g8] Check an item already checked
+- [r8] While an item is `checked`, if the person checks the item, then the checklists service shall refuse the request and name the item.
+
+### [g9] Check a missing item
+- [r9] If the person checks an item that does not exist, then the checklists service shall refuse the request and name the item.
+
+### [g10] List a checklist
+- [r10] When the person lists a checklist, the checklists service shall return the items of the checklist.
+
+### [g11] List a missing checklist
+- [r11] If the person lists a checklist that does not exist, then the checklists service shall refuse the request and name the checklist.
+
+### [g12] Browse the checklists
+- [r12] When the person browses, the checklists service shall return every checklist.
+
+### [g13] Browse the items left to check
+- [r13] While a checklist exists, when the person browses, the checklists service shall return the number of items of the checklist whose status is `open`.
+

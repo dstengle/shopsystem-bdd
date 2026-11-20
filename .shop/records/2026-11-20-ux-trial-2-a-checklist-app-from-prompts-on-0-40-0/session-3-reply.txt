@@ -1,0 +1,15 @@
+Batch 1, building `b1` "Keep checklists from the command line", passed its review. The pull request is ready for you to merge: https://github.com/ex/ctx/pull/1 (opened through your gh stand-in on the local origin).
+
+- **First review:** two things had to be fixed before merge, both on `b1`'s branch:
+  - **f1:** `features/checklists.feature` didn't match what the generator writes from the spec. It was regenerated, which changed one line: the duplicate-title test now reads `` `groceries` `` instead of a placeholder. The test bindings needed no change.
+  - **f2:** ruff errors in the new files. `checklists.py` is now executable, the percent formatting became f-strings, and the test passes `check=False` to `subprocess.run`. The catch-all `except Exception` now only catches errors from reading the store (`OSError`, `ValueError`).
+- **Second review:** both fixes confirmed, nothing left that blocks the merge. After the fixes, all 11 tests pass and the spec, feature-file and lint checks pass.
+
+Things the reviews raised that I left alone; each could become a backlog item:
+- **Store with the wrong shape:** narrowing that `except` means a `checklists.json` that is valid JSON but the wrong shape (e.g. `[]`) now crashes with a Python traceback instead of a `broken` response. No requirement line covers a malformed store.
+- **Unspecified refusal:** `add` with no `--checklist` is refused, but no requirement line covers that case.
+- **Bad item number:** `check abc --json` gets argparse's usage error instead of a JSON response.
+- **Weak check-off test:** the check-off test doesn't confirm the item ends up `checked`; only the already-checked test catches that indirectly.
+- **Spec warnings:** `spec check` notes that `groceries` is a sample value written into a line, and that no line says the open-to-checked change happens.
+
+Once you've merged, tell me and I'll run `work batch merged` to deliver `b1`, then `measure batch` and commit its record.

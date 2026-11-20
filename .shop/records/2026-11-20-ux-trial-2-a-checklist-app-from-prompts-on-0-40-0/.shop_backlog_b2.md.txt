@@ -1,0 +1,35 @@
+---
+id: item/example.org/checklists/checklists-cli/b2
+kind: item
+status: delivered
+provenance: own
+value: high-value
+urgency: medium-urgency
+size: small
+depends_on: []
+---
+
+# List every checklist with the items left to check
+
+## Notes
+
+List every checklist the person keeps, each with the number of its items still open (left to check); a new operation of the checklists service beside list, which lists one checklist's items. The language has no 'each X with its Y', so one line returns every checklist and another returns, for any checklist, the number of its open items. The person's words in quote-2
+
+## Requirements
+
+### checklists
+
+#### [g12] Browse the checklists
+- [r12] When the person browses, the checklists service shall return every checklist.
+
+#### [g13] Browse the items left to check
+- [r13] While a checklist exists, when the person browses, the checklists service shall return the number of items of the checklist whose status is `open`.
+
+### checklists model
+
+```model
+service checklists
+  operation browse()  outcomes: returned → the checklist
+```
+
+- **browse** (verb, action) → operation checklists.browse. Forms: browses, browsed. Frame: <actor> browses.

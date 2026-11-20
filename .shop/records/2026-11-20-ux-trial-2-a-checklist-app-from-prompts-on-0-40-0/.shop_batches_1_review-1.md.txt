@@ -1,0 +1,71 @@
+---
+id: review/example.org/checklists/checklists-cli/batch-1/review-1
+kind: review
+batch: batch-1
+pull_request: https://github.com/ex/ctx/pull/1
+head: fc90b0a1a81adfc545f9e474535c7f0aed2966fe
+range: 56d22e827af5ce743f2782fb465d47d644f35457..fc90b0a1a81adfc545f9e474535c7f0aed2966fe
+result: fix-now
+---
+
+# batch-1 review 1
+
+## Verdict
+
+The batch builds all eleven lines of b1. The program behaves as each line says. Two checks that passed at the base fail at `Head:`, and both must be fixed on b1's branch before merge.
+
+## Findings
+
+### f1 Important fix now: features/checklists.feature is not what `features generate` writes
+- item: b1
+- where: features/checklists.feature:1
+At `Head:`, `features generate --check` exits 1 (base: 0) with this output:
+
+```
+differs: features/checklists.feature
+```
+
+Only one commit in the range touches the file: 9c75c90, the requirement-lines commit. No later commit edits it, so the scenarios were not written by hand. But the file no longer matches what the generator makes from `spec/capabilities/checklists.md` at `Head:`. Between 9c75c90 and `Head:`, the only change to that capability file is the `unbuilt:` list, which went from `[r1 … r11]` to `[]`. I looked at `/home/vscode/shopsystem-bdd/scripts/features` and found nothing tying the generator's output to `unbuilt:`, so I could not tell which lines differ. One likely candidate is the stand-in the generator writes for a word it lacks, `[t_title_2_v_groceries]` at features/checklists.feature:23. As long as the file differs, the scenarios being run are not the ones the spec says, and the check stays red.
+
+Fix: run `features generate` in the worktree and commit the result on b1's branch. Then rerun `features bindings --unbound` and the scenarios. If a step's wording changed, adjust its binding in tests/scenarios/test_checklists.py. `code()` there already accepts both `` `groceries` `` and `[t_…_v_groceries]`.
+
+### f2 Minor fix now: `tools check` fails on ruff in the batch's new files
+- item: b1
+- where: checklists.py:1
+At `Head:`, `tools check` exits 1 (base: 0). All 10 ruff errors are in files this batch adds:
+
+```
+checklists.py:1:1: EXE001 Shebang is present but file is not executable
+checklists.py:45:72: UP031 Use format specifiers instead of percent format
+checklists.py:84:63: UP031 ...
+checklists.py:86:73: UP031 ...
+checklists.py:123:15: UP031 ...
+checklists.py:133:22: UP031 ...
+checklists.py:146:12: BLE001 Do not catch blind exception: `Exception`
+tests/scenarios/test_checklists.py:25:12: PLW1510 `subprocess.run` without explicit `check` argument
+tests/scenarios/test_checklists.py:167:72: UP031 ...
+tests/scenarios/test_checklists.py:249:12: UP031 ...
+```
+
+Fix:
+- Make checklists.py executable, or remove the shebang.
+- Change the `"..." % x` formatting to f-strings or `.format`. The refusal templates that are filled from `names` can stay as they are if they carry a `# noqa: UP031`, or they can switch to `{}` with `.format`.
+- Pass `check=False` to `subprocess.run` in the test.
+- Either narrow the `broken` handler at checklists.py:152 to the infrastructure errors it is meant for (`OSError`, `ValueError` from `json`), or mark it `# noqa: BLE001` with the reason.
+
+### f3 Minor observation: `add` without `--checklist` refuses by naming a parameter, which no line asks for
+- item: b1
+- where: checklists.py:47
+`kept()` refuses a missing `--checklist` with reason `no checklist`, names `parameter:checklist`, and prints the message `an item needs --checklist`. Line r6 only covers a checklist that does not exist, and says to name the checklist (`checklist:<title>`). Without this guard, the same request would be refused naming `checklist:None`, so the guard is reasonable hardening. Still, it is a refusal no line gives, and no scenario covers it.
+
+Reproduction: `checklists.py add --text milk --json` returns `{"outcome": "refused", "errors": [{"reason": "no checklist", "names": ["parameter:checklist"]}], ...}`. If it should stay, add a line for it.
+
+### f4 Minor observation: argparse errors skip the response envelope under `--json`
+- item: -
+- where: checklists.py:111
+`check` takes `type=int`, and argparse handles bad arguments before `main` reaches its `try`. So `checklists.py check abc --json` prints argparse's usage error on stderr and exits 2. It returns no `{"outcome": "refused", ...}` object, and the exit code is not one of the 0/1 values in `spec/adapters/cli.toml`'s `[outcomes]`. No line names this input today.
+
+### f5 Minor observation: the r7 scenario does not assert that the item ends `checked`
+- item: -
+- where: tests/scenarios/test_checklists.py:668
+`keeps_item` only compares the kept item's text. A `check` handler that left the item `open` would still pass "Check an item off". That mistake is caught only indirectly, because the r8 scenario's setup checks an item and then expects a refusal. If `keeps_item` should hold the status too, it could compare against the status the request should leave.

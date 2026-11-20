@@ -1,0 +1,298 @@
+"""The steps of features/checklists.feature. A Given names a checklist or an item and what holds of it; the When
+keeps what the Givens name (all but what the request makes) and makes the request by running checklists.py with
+the command and options of spec/adapters/cli.toml, under --json; a Then reads the response (its outcome, content
+and errors) and what checklists.json keeps."""
+import json
+import pathlib
+import re
+import subprocess
+import sys
+
+import pytest
+from pytest_bdd import given, parsers, scenarios, then, when
+
+PROGRAM = pathlib.Path(__file__).parents[2] / "checklists.py"
+scenarios("../../features/checklists.feature")
+
+
+@pytest.fixture
+def world(tmp_path):
+    return {"dir": tmp_path, "checklists": {}, "items": {}}
+
+
+def run(world, *args):
+    """The response of one request: the program run under --json, its exit and its envelope."""
+    done = subprocess.run([sys.executable, PROGRAM, "--root", str(world["dir"]), *args, "--json"],
+                          capture_output=True, text=True, check=False)
+    response = json.loads(done.stdout) if done.stdout.strip() else {}
+    response["exit"] = done.returncode
+    world["response"] = response
+    return response
+
+
+def kept_content(world, *args):
+    response = run(world, *args)
+    assert response["exit"] == 0, response
+    return response["content"]
+
+
+def saved(world):
+    path = world["dir"] / "checklists.json"
+    return json.loads(path.read_text())["checklists"] if path.exists() else []
+
+
+def code(value):
+    """A value a Given or a When says: `groceries`, or as the generator writes an attribute's value it has no word
+    for, [t_title_2_v_groceries]."""
+    found = re.fullmatch(r"`(.*)`|\[t_\w+?_\d+_v_(\w+)\]", value)
+    assert found, value
+    return found.group(1) if found.group(1) is not None else found.group(2)
+
+
+def kept(world, *making):
+    """Keeps the checklists and items the Givens name that exist, all but those the request makes: each item on the
+    checklist a Given says has it, or else on the first checklist kept (or one of its own), checked when its status
+    is `checked`; an item that does not exist gets a number none has."""
+    holder = None
+    for c, checklist in world["checklists"].items():
+        if checklist["exists"] and c not in making:
+            kept_content(world, "create", "--title", checklist["title"])
+            holder = holder or checklist["title"]
+    for i, item in world["items"].items():
+        if not item["exists"] or i in making:
+            continue
+        if holder is None and "checklist" not in item:
+            holder = "Checklist for " + i
+            kept_content(world, "create", "--title", holder)
+        title = world["checklists"][item["checklist"]]["title"] if "checklist" in item else holder
+        item["id"] = kept_content(world, "add", "--checklist", title, "--text", item["text"])["item"]["id"]
+        if item["status"] == "checked":
+            kept_content(world, "check", str(item["id"]))
+    unused = 1 + sum(1 for c in saved(world) for _ in c["items"])
+    for item in world["items"].values():
+        if not item["exists"]:
+            item["id"] = unused
+
+
+# Given
+
+
+@given(parsers.parse("a checklist {c:w}"))
+def a_checklist(world, c):
+    world["checklists"][c] = {"title": "Checklist " + c, "exists": True}
+
+
+@given(parsers.parse("the title of the checklist {c:w} is {value}"))
+def checklist_title(world, c, value):
+    world["checklists"][c]["title"] = code(value)
+
+
+@given(parsers.parse("the checklist {c:w} exists"))
+def checklist_exists(world, c):
+    world["checklists"][c]["exists"] = True
+
+
+@given(parsers.parse("the checklist {c:w} has the item {i:w}"))
+def checklist_has(world, c, i):
+    world["items"][i]["checklist"] = c
+
+
+@given(parsers.parse("the checklist {c:w} does not exist"))
+def no_checklist(world, c):
+    world["checklists"][c]["exists"] = False
+
+
+@given(parsers.parse("an item {i:w}"))
+def an_item(world, i):
+    world["items"][i] = {"text": "Item " + i, "status": None, "exists": True}
+
+
+@given(parsers.parse("the status of the item {i:w} is {value}"))
+def item_status(world, i, value):
+    world["items"][i]["status"] = code(value)
+
+
+@given(parsers.parse("the item {i:w} does not exist"))
+def no_item(world, i):
+    world["items"][i]["exists"] = False
+
+
+# When
+
+
+@when(parsers.parse("the person creates the checklist {c:w} with a title"))
+def create(world, c):
+    kept(world, c)
+    run(world, "create", "--title", world["checklists"][c]["title"])
+
+
+@when(parsers.parse("the person creates the checklist {c:w} without a title"))
+def create_without_title(world, c):
+    kept(world, c)
+    run(world, "create")
+
+
+@when(parsers.parse("the person creates the checklist {c:w} with the title {value}"))
+def create_with_title(world, c, value):
+    kept(world, c)
+    run(world, "create", "--title", code(value))
+
+
+def add(world, i, c, *text):
+    """Adds the item i to the checklist c, the number it is given kept."""
+    kept(world, i)
+    response = run(world, "add", "--checklist", world["checklists"][c]["title"], *text)
+    if response["exit"] == 0:
+        world["items"][i]["id"] = response["content"]["item"]["id"]
+
+
+@when(parsers.parse("the person adds the item {i:w} to the checklist {c:w} with a text"))
+def add_with_text(world, i, c):
+    add(world, i, c, "--text", world["items"][i]["text"])
+
+
+@when(parsers.parse("the person adds the item {i:w} to the checklist {c:w} without a text"))
+def add_without_text(world, i, c):
+    add(world, i, c)
+
+
+@when(parsers.parse("the person adds the item {i:w} to the checklist {c:w}"))
+def add_to(world, i, c):
+    add(world, i, c, "--text", world["items"][i]["text"])
+
+
+@when(parsers.parse("the person checks the item {i:w}"))
+def check(world, i):
+    kept(world)
+    run(world, "check", str(world["items"][i]["id"]))
+
+
+@when(parsers.parse("the person lists the checklist {c:w}"))
+def list_checklist(world, c):
+    """Lists the checklist c, kept with two items of its own and another checklist with one, that the items the
+    response returns are told from the others."""
+    kept(world)
+    title = world["checklists"][c]["title"]
+    if world["checklists"][c]["exists"]:
+        for n in (1, 2):
+            kept_content(world, "add", "--checklist", title, "--text", f"Item {n:d} of {c}")
+        kept_content(world, "create", "--title", "Another checklist")
+        kept_content(world, "add", "--checklist", "Another checklist", "--text", "Another item")
+    world["listed"] = c
+    run(world, "list", title)
+
+
+@when("the person browses")
+def browse(world):
+    """Browses, the checklists kept each with one checked item more, beside one no Given names with an open item,
+    that a checklist the response returns is told from the others and an open item from a checked one."""
+    kept(world)
+    for checklist in world["checklists"].values():
+        if checklist["exists"]:
+            item = kept_content(world, "add", "--checklist", checklist["title"], "--text", "A checked item")["item"]
+            kept_content(world, "check", str(item["id"]))
+    kept_content(world, "create", "--title", "Another checklist")
+    kept_content(world, "add", "--checklist", "Another checklist", "--text", "Another item")
+    world["browsed"] = True
+    run(world, "browse")
+
+
+# Then
+
+
+@then(parsers.parse("the checklists service keeps the checklist {c:w}"))
+def keeps_checklist(world, c):
+    assert world["response"]["exit"] == 0
+    assert [k["title"] for k in saved(world)].count(world["checklists"][c]["title"]) == 1
+
+
+@then(parsers.parse("the checklists service returns the checklist {c:w}"))
+def returns_checklist(world, c):
+    """The checklist a create returns, or one of the checklists a browse returns: every checklist kept, and no
+    other."""
+    if "browsed" in world:
+        titles = [k["title"] for k in world["response"]["content"]["checklists"]]
+        assert world["response"]["outcome"] == "returned"
+        assert sorted(titles) == sorted(k["title"] for k in saved(world))
+        assert world["checklists"][c]["title"] in titles
+        return
+    assert world["response"]["outcome"] == "done"
+    assert world["response"]["content"]["checklist"]["title"] == world["checklists"][c]["title"]
+
+
+@then("the checklists service refuses this request")
+def refuses(world):
+    assert world["response"]["exit"] == 1 and world["response"]["outcome"] == "refused"
+
+
+def named(world):
+    return [name for error in world["response"]["errors"] for name in error["names"]]
+
+
+@then("the checklists service names the title")
+def names_title(world):
+    assert "parameter:title" in named(world)
+
+
+def saved_item(world, i):
+    """(the title of the checklist that keeps the item i, the item as kept), or None."""
+    number = world["items"][i].get("id")
+    return next(((k["title"], item) for k in saved(world) for item in k["items"] if item["id"] == number), None)
+
+
+@then(parsers.parse("the checklists service keeps the item {i:w}"))
+def keeps_item(world, i):
+    assert world["response"]["exit"] == 0
+    assert saved_item(world, i)[1]["text"] == world["items"][i]["text"]
+
+
+@then(parsers.parse("the checklists service returns the item {i:w}"))
+def returns_item(world, i):
+    """The item an add returns, or one of the items a list returns: every item of the listed checklist, and no
+    other; an item no Given names is the first of them."""
+    response = world["response"]
+    if "listed" not in world:
+        assert response["outcome"] == "done"
+        assert response["content"]["item"] == saved_item(world, i)[1]
+        return
+    title = world["checklists"][world["listed"]]["title"]
+    items = next(k["items"] for k in saved(world) if k["title"] == title)
+    world["items"].setdefault(i, {"id": items[0]["id"], "text": items[0]["text"], "exists": True})
+    assert response["outcome"] == "returned"
+    assert response["content"]["items"] == items
+    assert saved_item(world, i)[1] in response["content"]["items"]
+
+
+@then("the checklists service names the text")
+def names_text(world):
+    assert "parameter:text" in named(world)
+
+
+@then(parsers.parse("the checklists service names the checklist {c:w}"))
+def names_checklist(world, c):
+    assert "checklist:" + world["checklists"][c]["title"] in named(world)
+
+
+@then("the checklists service completes this request")
+def completes(world):
+    assert world["response"]["exit"] == 0 and world["response"]["outcome"] == "done"
+
+
+@then(parsers.parse("the checklists service names the item {i:w}"))
+def names_item(world, i):
+    assert f"item:{world['items'][i]['id']:d}" in named(world)
+
+
+@then(parsers.parse("the checklist {c:w} has the item {i:w}"))
+def has_item(world, c, i):
+    assert saved_item(world, i)[0] == world["checklists"][c]["title"]
+
+
+@then(parsers.parse("the checklists service returns the number of items of the checklist {c:w} whose status is {value}"))
+def returns_number(world, c, value):
+    """The number a browse returns with the checklist c: of its items as kept whose status is the value."""
+    title = world["checklists"][c]["title"]
+    items = next(k["items"] for k in saved(world) if k["title"] == title)
+    returned = next(k for k in world["response"]["content"]["checklists"] if k["title"] == title)
+    assert world["response"]["outcome"] == "returned"
+    assert returned["open"] == sum(1 for item in items if item["status"] == code(value))

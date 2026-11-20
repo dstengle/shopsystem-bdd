@@ -1,0 +1,64 @@
+# The CLI adapter's contract of the checklists service: each operation of the domain model with the command that
+# requests it and the option or argument of each parameter, checked both ways against checklists.py's argparse by
+# `spec check`. A checklist is named by its title, an item by its number.
+adapter = "cli"
+json = "--json"
+
+[programs]
+checklists = "checklists.py"
+
+[outcomes]
+done = { exit = 0, content = "stdout" }
+returned = { exit = 0, content = "stdout" }
+refused = { exit = 1, errors = "stderr" }
+broken = { exit = 1, errors = "stderr" }
+
+[cli-only]
+options = ["--root", "--json"]
+
+[operations."checklists.create"]
+command = "checklists create"
+requirements = [
+  "checklists#r1: When the person creates a checklist with a title, the checklists service shall keep the checklist and return the checklist.",
+  "checklists#r2: If the person creates a checklist without a title, then the checklists service shall refuse the request and name the title.",
+  "checklists#r3: While the title of a checklist is `groceries`, if the person creates a checklist with the title `groceries`, then the checklists service shall refuse the request and name the title.",
+]
+[operations."checklists.create".parameters]
+title = { option = "--title", example = "Groceries" }
+
+[operations."checklists.add"]
+command = "checklists add"
+requirements = [
+  "checklists#r4: When the person adds an item to a checklist with a text, the checklists service shall keep the item and return the item.",
+  "checklists#r5: If the person adds an item to a checklist without a text, then the checklists service shall refuse the request and name the text.",
+  "checklists#r6: If the person adds an item to a checklist that does not exist, then the checklists service shall refuse the request and name the checklist.",
+]
+[operations."checklists.add".parameters]
+checklist = { option = "--checklist", example = "Groceries" }
+text = { option = "--text", example = "Buy milk" }
+
+[operations."checklists.check"]
+command = "checklists check"
+requirements = [
+  "checklists#r7: While an item is `open`, when the person checks the item, the checklists service shall keep the item and complete the request.",
+  "checklists#r8: While an item is `checked`, if the person checks the item, then the checklists service shall refuse the request and name the item.",
+  "checklists#r9: If the person checks an item that does not exist, then the checklists service shall refuse the request and name the item.",
+]
+[operations."checklists.check".parameters]
+item = { positional = 1, example = "1" }
+
+[operations."checklists.list"]
+command = "checklists list"
+requirements = [
+  "checklists#r10: When the person lists a checklist, the checklists service shall return the items of the checklist.",
+  "checklists#r11: If the person lists a checklist that does not exist, then the checklists service shall refuse the request and name the checklist.",
+]
+[operations."checklists.list".parameters]
+checklist = { positional = 1, example = "Groceries" }
+
+[operations."checklists.browse"]
+command = "checklists browse"
+requirements = [
+  "checklists#r12: When the person browses, the checklists service shall return every checklist.",
+  "checklists#r13: While a checklist exists, when the person browses, the checklists service shall return the number of items of the checklist whose status is `open`.",
+]

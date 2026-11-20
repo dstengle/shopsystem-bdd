@@ -1,0 +1,105 @@
+6c7e1a2 migrate init: bounded-context/example.org/checklists/checklists-cli
+f1388bc Ignore virtualenv and caches
+06c85ca work idea: b1 "Keep checklists from the command line" idea
+4f50030 quote: quote-1 from the session bdf79871
+dedda35 work shape: b1 "Keep checklists from the command line" idea -> shaped
+b0dde17 work line: b1 "Keep checklists from the command line" a new capability checklists
+e72dd12 work line: b1 "Keep checklists from the command line" model lines of checklists
+71d0ec5 work line: b1 "Keep checklists from the command line" a vocabulary entry of checklists
+84ce810 work line: b1 "Keep checklists from the command line" a vocabulary entry of checklists
+ad38550 work line: b1 "Keep checklists from the command line" a vocabulary entry of checklists
+a54acfa work line: b1 "Keep checklists from the command line" a vocabulary entry of checklists
+1a0c028 work line: b1 "Keep checklists from the command line" a vocabulary entry of checklists
+916a34a work line: b1 "Keep checklists from the command line" a vocabulary entry of checklists
+0d9ecd5 work line: b1 "Keep checklists from the command line" a vocabulary entry of checklists
+a913b37 work line: b1 "Keep checklists from the command line" a vocabulary entry of checklists
+9b9779c work line: b1 "Keep checklists from the command line" a vocabulary entry of checklists
+71ff81c work line: b1 "Keep checklists from the command line" a vocabulary entry of checklists
+5623539 work line: b1 "Keep checklists from the command line" a vocabulary entry of checklists
+e2f5320 work line: b1 "Keep checklists from the command line" a vocabulary entry of checklists
+453b768 work line: b1 "Keep checklists from the command line" a vocabulary entry of checklists
+f7e3427 work line: b1 "Keep checklists from the command line" checklists#r1
+bb2e443 work line: b1 "Keep checklists from the command line" checklists#r2
+7279c18 work line: b1 "Keep checklists from the command line" checklists#r3
+408b37f work line: b1 "Keep checklists from the command line" checklists#r4
+2adf29a work line: b1 "Keep checklists from the command line" checklists#r5
+9a5f38a work line: b1 "Keep checklists from the command line" checklists#r6
+fcc8d8a work line: b1 "Keep checklists from the command line" checklists#r7
+b92c1b2 work line: b1 "Keep checklists from the command line" checklists#r8
+aaed9cd work line: b1 "Keep checklists from the command line" checklists#r9
+f5478fe work line: b1 "Keep checklists from the command line" checklists#r10
+3dd305f work line: b1 "Keep checklists from the command line" checklists#r11
+8ac5d08 work rate: b1 "Keep checklists from the command line" value=high-value urgency=high-urgency size=small
+9d21fa1 work line: b1 "Keep checklists from the command line" removes checklists#r11
+7271bb7 work line: b1 "Keep checklists from the command line" removes checklists#r10
+b4a56ab work line: b1 "Keep checklists from the command line" removes checklists#r9
+659d7c6 work line: b1 "Keep checklists from the command line" removes checklists#r8
+1e8d9a2 work line: b1 "Keep checklists from the command line" removes checklists#r7
+3805f52 work line: b1 "Keep checklists from the command line" removes checklists#r6
+339320d work line: b1 "Keep checklists from the command line" removes checklists#r5
+ccef290 work line: b1 "Keep checklists from the command line" removes checklists#r4
+84b2fb3 work line: b1 "Keep checklists from the command line" removes checklists#r3
+e07a7f9 work line: b1 "Keep checklists from the command line" removes checklists#r2
+c5d62b8 work line: b1 "Keep checklists from the command line" removes checklists#r1
+b181725 work line: b1 "Keep checklists from the command line" a new capability checklists
+4b1d1e6 work line: b1 "Keep checklists from the command line" checklists#r1
+8d0f4dc work line: b1 "Keep checklists from the command line" checklists#r2
+d42e7f5 work line: b1 "Keep checklists from the command line" checklists#r3
+76add0d work line: b1 "Keep checklists from the command line" checklists#r4
+518252b work line: b1 "Keep checklists from the command line" checklists#r5
+b2d5c09 work line: b1 "Keep checklists from the command line" checklists#r6
+145e070 work line: b1 "Keep checklists from the command line" checklists#r7
+2ee7812 work line: b1 "Keep checklists from the command line" checklists#r8
+35bddab work line: b1 "Keep checklists from the command line" checklists#r9
+46859ac work line: b1 "Keep checklists from the command line" checklists#r10
+aa38c37 work line: b1 "Keep checklists from the command line" checklists#r11
+fbe1e82 work line: b1 "Keep checklists from the command line" rewords checklists#r3
+87ebb39 work line: b1 "Keep checklists from the command line" rewords checklists#r3
+6c4e340 work line: b1 "Keep checklists from the command line" rewords checklists#r3
+56d22e8 work ready: b1 "Keep checklists from the command line" shaped -> ready
+a944a8b work batch start: batch-1 b1 "Keep checklists from the command line"
+9c75c90 batch-1: the requirement lines of b1 "Keep checklists from the command line"
+103e40c work batch resume: batch-1 t1 running
+871cfac checklists: create a checklist with a title (checklists#r1), the program, its CLI contract and the step bindings
+6db7c02 checklists: refuse a checklist without a title (checklists#r2)
+043dd09 checklists: refuse a checklist with a title in use (checklists#r3)
+e759a71 checklists: add an item to a checklist (checklists#r4)
+d617b20 checklists: refuse an item without a text (checklists#r5)
+022918d checklists: refuse an item for a missing checklist (checklists#r6)
+426eeb3 checklists: check an open item off (checklists#r7)
+b9796b0 checklists: refuse checking an item already checked (checklists#r8)
+4bf69b9 checklists: refuse checking a missing item (checklists#r9)
+a48f166 checklists: list a checklist's items, refused for a missing checklist (checklists#r10, checklists#r11)
+ab3bf14 work batch done: batch-1 t1 b1 "Keep checklists from the command line"
+fc90b0a batch-1: b1 "Keep checklists from the command line"
+0043bea work batch review: batch-1 -> in-review https://github.com/ex/ctx/pull/1
+054cc8f work batch reviewed: batch-1 review 1 -> building; open f1 b1 "Keep checklists from the command line", f2 b1 "Keep checklists from the command line"
+570e438 features: regenerate checklists.feature from the spec
+6e645fd checklists: clear ruff findings (executable, format strings, narrow except, check=False)
+ca16549 batch-1: b1 "Keep checklists from the command line"
+8ae7632 work batch review: batch-1 -> in-review https://github.com/ex/ctx/pull/1
+625ac4d work batch reviewed: batch-1 review 2 -> awaiting-merge
+531d6cc Merge pull request #1 from batch-1
+eebd41a work batch merged: batch-1 -> merged; b1 "Keep checklists from the command line" delivered
+7a9126e measure: batch-1 record
+756ca6e work idea: b2 "List every checklist with the items left to check" idea
+3187ed6 quote: quote-2 from the session bdf79871
+719553a work shape: b2 "List every checklist with the items left to check" idea -> shaped
+ae32830 work line: b2 "List every checklist with the items left to check" model lines of checklists
+259b08d work line: b2 "List every checklist with the items left to check" a vocabulary entry of checklists
+6959d75 work line: b2 "List every checklist with the items left to check" checklists#r12
+76749c2 work line: b2 "List every checklist with the items left to check" checklists#r13
+f04390a work rate: b2 "List every checklist with the items left to check" value=high-value urgency=medium-urgency size=small
+f755dbc work ready: b2 "List every checklist with the items left to check" shaped -> ready
+a9249f1 work batch start: batch-2 b2 "List every checklist with the items left to check"
+f33a93b batch-2: the requirement lines of b2 "List every checklist with the items left to check"
+1c4c892 work batch resume: batch-2 t1 running
+2ffdf40 Browse every checklist: checklists browse returns each checklist kept (checklists#r12)
+18a966e Browse the items left to check: each browsed checklist with the number of its open items (checklists#r13)
+2d41c34 work batch done: batch-2 t1 b2 "List every checklist with the items left to check"
+62d5fb4 batch-2: b2 "List every checklist with the items left to check"
+6c1a79f work batch review: batch-2 -> in-review https://github.com/ex/ctx/pull/2
+010c750 work batch reviewed: batch-2 review 1 -> awaiting-merge
+e766e92 Merge pull request #2 from batch-2
+7be74c5 work batch merged: batch-2 -> merged; b2 "List every checklist with the items left to check" delivered
+cf033ee measure: batch-2 record

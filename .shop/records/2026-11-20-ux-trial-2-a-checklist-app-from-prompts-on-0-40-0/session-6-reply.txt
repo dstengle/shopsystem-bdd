@@ -1,0 +1,21 @@
+Warning: no stdin data received in 3s, proceeding without it. If piping from a slow command, redirect stdin explicitly: < /dev/null to skip, or wait longer.
+`b2` "List every checklist with the items left to check" is delivered and batch 2 is closed. I pulled your merge into `main`, recorded the batch as merged, and committed and pushed its measurement record (`.shop/records/measurements/2026-11-20-batch-2.md`).
+
+| | |
+|---|---|
+| Wall time | 5 min 32 s (2 min 20 s of that waiting for your merge) |
+| Cost | 1.13 (batch 1 cost 4.07) |
+
+Both items are delivered and nothing is waiting in the backlog. The CLI now does what you asked for:
+- create a checklist
+- add items
+- check items off
+- list one checklist's items
+- browse all checklists, each with its number of items left to check
+
+Small follow-ups from the two reviews, which I haven't added to the backlog:
+- **Store errors:** a malformed `checklists.json` crashes instead of answering `broken`, and `browse` creates an empty store file when none exists.
+- **Bad input:** `add` with no checklist, and `check` with a non-numeric item number, have no requirement lines and don't answer in the usual response format.
+- **Empty output:** `browse` with no checklists prints a blank line and no message.
+
+Tell me if you want any of these shaped into items.

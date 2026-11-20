@@ -1,0 +1,111 @@
+# generated from spec/capabilities/checklists.md by features generate; do not edit
+Feature: Checklists
+  Narrator: the person
+
+  @g1 @r1
+  Scenario: Create a checklist
+    Given a checklist c1
+    When the person creates the checklist c1 with a title
+    Then the checklists service keeps the checklist c1
+    And the checklists service returns the checklist c1
+
+  @g2 @r2
+  Scenario: Create a checklist without a title
+    Given a checklist c1
+    When the person creates the checklist c1 without a title
+    Then the checklists service refuses this request
+    And the checklists service names the title
+
+  @g3 @r3
+  Scenario: Create a checklist with a title in use
+    Given a checklist c1
+    And the title of the checklist c1 is `groceries`
+    And a checklist c2
+    When the person creates the checklist c2 with the title `groceries`
+    Then the checklists service refuses this request
+    And the checklists service names the title
+
+  @g4 @r4
+  Scenario: Add an item to a checklist
+    Given an item i1
+    And a checklist c1
+    When the person adds the item i1 to the checklist c1 with a text
+    Then the checklists service keeps the item i1
+    And the checklists service returns the item i1
+
+  @g5 @r5
+  Scenario: Add an item without a text
+    Given an item i1
+    And a checklist c1
+    When the person adds the item i1 to the checklist c1 without a text
+    Then the checklists service refuses this request
+    And the checklists service names the text
+
+  @g6 @r6
+  Scenario: Add an item to a missing checklist
+    Given a checklist c1
+    And the checklist c1 does not exist
+    And an item i1
+    When the person adds the item i1 to the checklist c1
+    Then the checklists service refuses this request
+    And the checklists service names the checklist c1
+
+  @g7 @r7
+  Scenario: Check an item off
+    Given an item i1
+    And the status of the item i1 is `open`
+    When the person checks the item i1
+    Then the checklists service keeps the item i1
+    And the checklists service completes this request
+
+  @g8 @r8
+  Scenario: Check an item already checked
+    Given an item i1
+    And the status of the item i1 is `checked`
+    When the person checks the item i1
+    Then the checklists service refuses this request
+    And the checklists service names the item i1
+
+  @g9 @r9
+  Scenario: Check a missing item
+    Given an item i1
+    And the item i1 does not exist
+    When the person checks the item i1
+    Then the checklists service refuses this request
+    And the checklists service names the item i1
+
+  @g10 @r10
+  Scenario: List a checklist
+    Given a checklist c1
+    When the person lists the checklist c1
+    Then the checklists service returns the item i1
+    And the checklist c1 has the item i1
+
+  @g11 @r11
+  Scenario: List a missing checklist
+    Given a checklist c1
+    And the checklist c1 does not exist
+    When the person lists the checklist c1
+    Then the checklists service refuses this request
+    And the checklists service names the checklist c1
+
+  @g12 @r12
+  Scenario: Browse the checklists
+    Given a checklist c1
+    And a checklist c2
+    When the person browses
+    Then the checklists service returns the checklist c1
+    And the checklists service returns the checklist c2
+
+  @g13 @r13
+  Scenario: Browse the items left to check
+    Given a checklist c1
+    And the checklist c1 exists
+    And an item i1
+    And the checklist c1 has the item i1
+    And the status of the item i1 is `open`
+    And an item i2
+    And the checklist c1 has the item i2
+    And the status of the item i2 is `open`
+    When the person browses
+    Then the checklists service returns the number of items of the checklist c1 whose status is `open`

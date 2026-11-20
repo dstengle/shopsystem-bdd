@@ -1,0 +1,19 @@
+`b1` "Keep checklists from the command line" is delivered and batch 1 is closed.
+
+- **Delivered:** your merge commit wasn't in the local `main` at first, so I pulled it, then recorded the batch as merged. `main` now has the program, the `checklists` spec (model and vocabulary), the generated feature file and the step bindings.
+- **Measured:** the batch record is committed and pushed as `.shop/records/measurements/2026-11-20-batch-1.md`.
+
+| | |
+|---|---|
+| Wall time | 19 min 43 s (1 min 10 s of that waiting for your merge) |
+| Cost | 4.07 in total, of which implementing 2.01, planning 0.99, review 0.62, fixing 0.45 |
+| Review findings | 1 Important, 5 Minor, none open |
+
+Nothing else is ready in the backlog, so no next batch starts.
+
+Possible next items, from your original ask and the reviews:
+- **List all checklists:** "list" currently shows the items of one checklist only.
+- **Store hardening:** a `checklists.json` with the wrong shape should get a `broken` response instead of a traceback.
+- **Uncovered input handling:** add requirement lines for `add` with no checklist and for a non-numeric item number.
+
+Tell me which you want and I'll shape them.

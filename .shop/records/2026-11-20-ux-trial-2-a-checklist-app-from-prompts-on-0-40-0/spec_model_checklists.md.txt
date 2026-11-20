@@ -1,0 +1,31 @@
+---
+id: model/example.org/checklists/checklists-cli/checklists
+area: checklists
+kind: core
+imports: []
+---
+
+# Checklists
+
+## Purpose
+
+The checklists the person keeps from the command line: creating a checklist, adding items to it, checking items off and listing them.
+
+```model
+actor the person
+
+object checklist
+  attributes: title (text)
+  relations: has → item (many)
+
+object item
+  attributes: text (text); status: open | checked
+  lifecycle status: open → checked
+
+service checklists
+  operation create(checklist, title)  outcomes: done → the checklist | refused: no title, title in use
+  operation add(item, checklist, text)  outcomes: done → the item | refused: no checklist, no text
+  operation check(item)  outcomes: done | refused: no item, item checked
+  operation list(checklist)  outcomes: returned → the item | refused: no checklist
+  operation browse()  outcomes: returned → the checklist
+```

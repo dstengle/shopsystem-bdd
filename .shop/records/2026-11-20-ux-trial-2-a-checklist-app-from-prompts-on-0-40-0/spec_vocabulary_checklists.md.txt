@@ -1,0 +1,23 @@
+---
+id: vocabulary/example.org/checklists/checklists-cli/checklists
+area: checklists
+---
+
+# The words of checklists
+
+## Terms
+
+- **the person** (proper noun) → actor the person. The one who keeps the checklists.
+- **the checklists service** (proper noun) → service checklists. What keeps the person's checklists and answers their requests.
+- **checklist** (noun) → object checklist. A list of items the person keeps under a title.
+- **item** (noun) → object item. One thing to do on a checklist, said by its text.
+- **title** (attribute) → attribute checklist.title. The words that tell one checklist from another.
+- **text** (attribute) → attribute item.text. The words of an item.
+- **status** (attribute) → attribute item.status. Whether an item is still to do or done.
+- **open** (adjective) → value item.status open. An item is open when it has not been checked off.
+- **checked** (adjective) → value item.status checked. An item is checked when the person has checked it off.
+- **create** (verb, action) → operation checklists.create. Forms: creates, created. Frame: <actor> creates <checklist>.
+- **add** (verb, action) → operation checklists.add. Forms: adds, added. Frame: <actor> adds <item> to <checklist>.
+- **check** (verb, action) → operation checklists.check. Forms: checks, checked. Frame: <actor> checks <item>. Redefines: request.
+- **list** (verb, action) → operation checklists.list. Forms: lists, listed. Frame: <actor> lists <checklist>.
+- **browse** (verb, action) → operation checklists.browse. Forms: browses, browsed. Frame: <actor> browses.
