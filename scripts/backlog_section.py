@@ -249,7 +249,9 @@ def capability_file(root, capability):
     """spec/capabilities/<capability>.md of `root`; refused when there is none, or it is not codified (D4)."""
     path = Path(root) / "spec" / "capabilities" / ("%s.md" % capability)
     if "/" in capability or capability in (UNIVERSAL, INDEX) or not spec_read.codified(path):
-        raise Refused("there is no codified capability %s in spec/capabilities/" % capability)
+        new = "" if path.exists() else "; a new one is given to an item with `work line <item> --capability %s`" % (
+            capability)
+        raise Refused("there is no codified capability %s in spec/capabilities/%s" % (capability, new))
     return path
 
 
