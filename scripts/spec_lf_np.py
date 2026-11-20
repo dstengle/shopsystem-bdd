@@ -244,20 +244,23 @@ def restricting(st, cn, ref):
     rest = st.names.kind(name)[1]
     if rest == "UseN":
         return [], []
-    refs, conds = restricting(st, a[1], ref)
-    pol = a[0] == "PNeg"
-    if rest.startswith("Rel_"):
-        more = st.clauses.clause(st, core.fixed(ref), a[2], pol)
-    elif rest.startswith("Obj_"):
-        more = st.clauses.gapped(st, ref, np(st, a[2]), a[3], pol)
-    elif rest.startswith("Whose_r"):
-        row = st.names.rows[int(re.match(r"Whose_r(\d+)_", rest).group(1))]
+    if not rest.startswith("RelCN_"):
+        raise unknown(cn)
+    refs, conds = restricting(st, a[0], ref)
+    rs = a[1]       # the relative clause, built once of the kind it follows (spec_rgl_rel, b437)
+    name, pol, a = fun(rs), args(rs)[0] == "PNeg", args(rs)[1:]
+    whose = re.match(r"^r(\d+)_Whose_", name)
+    if name.endswith("_Rel"):
+        more = st.clauses.clause(st, core.fixed(ref), a[0], pol)
+    elif "_Gapped_" in name:
+        more = st.clauses.gapped(st, ref, np(st, a[0]), a[1], pol)
+    elif whose:
+        row = st.names.rows[int(whose.group(1))]
         y, new = st.image((row, ref), row[0])
-        r2, c2 = st.clauses.clause(st, core.fixed(y), a[2], pol)
+        r2, c2 = st.clauses.clause(st, core.fixed(y), a[0], pol)
         more = ([y] if new else []) + r2, [Atom("rel", ("of", y, ref))] + c2
-    elif rest.startswith("Whose_"):
-        t, _ = st.names.attr(rest[len("Whose_"):] + "_")
-        atom = Atom("attr", (ref, t.term, st.names.value(fun(a[2]))))
+    elif st.names.attr(name)[1].startswith("Whose_"):
+        atom = Atom("attr", (ref, st.names.attr(name)[0].term, st.names.value(fun(a[0]))))
         more = [], [Box("not", (), (atom,)) if pol else atom]
     else:
         raise unknown(cn)
