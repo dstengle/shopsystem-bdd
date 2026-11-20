@@ -656,3 +656,27 @@ shall [x4: thing `holds-exactly` (parameter), x5: thing `rc-subject` (parameter)
     use(subject: x10, object: x11)
     keep(e2, subject: x8, object: x9)
 ```
+
+## r33
+From: b416 r33.
+
+```reading
+While a requirement of a requirement group of a capability uses `of-relation` and the precondition of the requirement does not use `of-relation`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step introduces.
+shall [x4: thing `of-relation` (parameter), x6: agent the person (constant), x8: service the scenarios service (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability, x5: precondition]
+    of(x2, x3)
+    of(x1, x2)
+    use(subject: x1, object: x4)
+    of(x5, x1)
+    not
+      use(subject: x5, object: x4)
+  when [x7: feature]
+    of(x7, x3)
+    request(e1, scenarios.generate, subject: x6, object: x7)
+  response
+    not [x9: step, x10: instance]
+      not [x11: given step]
+        introduce(subject: x11, object: x10)
+      mention(subject: x9, object: x10)
+      keep(e2, subject: x8, object: x9)
+```

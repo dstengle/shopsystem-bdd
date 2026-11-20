@@ -1094,7 +1094,7 @@ a noun of another by a relation row
 - Since: b240
 - Form: <noun> of|in <np>
 - Functions: `r\d+_\w+_Mod`
-- Cited by: consistency#r30, scenarios#r28, scenarios#r30
+- Cited by: consistency#r30, scenarios#r28, scenarios#r30, scenarios#r33
 - Example and its reading:
 
 ```construct

@@ -624,3 +624,23 @@ Feature: Scenarios
     Then the step s1 uses `not-condition`
     And the scenarios service keeps the scenario s2
     And the scenario s2 has the step s1
+
+  @g33 @r33
+  Scenario: generation introduces the thing a response names by its owner
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And the requirement r1 uses `of-relation`
+    And a precondition p1
+    And the requirement r1 has the precondition p1
+    And the precondition p1 does not use `of-relation`
+    And a feature f1
+    And the capability c1 has the feature f1
+    And a step s1
+    And an instance i1
+    And no given step introduces the instance i1
+    And the step s1 mentions the instance i1
+    When the person generates the feature f1
+    Then the scenarios service does not keep the step s1
