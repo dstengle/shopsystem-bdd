@@ -7,7 +7,7 @@ area: upgrades
 specifies: service upgrades
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r36, r37]
 ---
 
 # Upgrades
@@ -703,4 +703,10 @@ the tracked file `spec/index.md` holds "# notes"
 ```given
 the tracked file `.shop/backlog/b1.md` holds "# b1"
 ```
+
+### [g36] An upgrade rewrites a scenario conftest of the old form
+- [r36] While the release of this repository is before the release of the plugin and the scenario conftest of this repository conforms to the old scenario conftest form, when the person upgrades this repository, the upgrades service shall change the scenario conftest of this repository and keep the scenario conftest.
+
+### [g37] An upgrade names a scenario conftest of neither form and leaves it alone
+- [r37] While the release of this repository is before the release of the plugin and the scenario conftest of this repository does not conform to the old scenario conftest form and the scenario conftest of this repository does not conform to the scenario conftest form, when the person upgrades this repository, the upgrades service shall return the scenario conftest and not change the scenario conftest.
 

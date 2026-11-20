@@ -7,7 +7,7 @@ area: specification
 specifies: service scenarios
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r34, r35]
 ---
 
 # Scenarios
@@ -260,4 +260,10 @@ the capability `shelf` holds:
 
 ### [g33] generation introduces the thing a response names by its owner
 - [r33] While a requirement of a requirement group of a capability uses `of-relation` and the precondition of the requirement does not use `of-relation`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step introduces.
+
+### [g34] generation introduces the thing a response names by an indexical owner
+- [r34] While a requirement of a requirement group of a capability uses `of-relation` and `this`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step introduces.
+
+### [g35] generation introduces the thing a response names by a While part's owner
+- [r35] While a requirement of a requirement group of a capability uses `of-relation` and `while`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step introduces.
 

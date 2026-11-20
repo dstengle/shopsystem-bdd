@@ -89,4 +89,10 @@ object context scaffold kind of file
 object context id kind of text
 
 object bounded context id form kind of artifact
+
+object scenario conftest kind of tracked file
+
+object scenario conftest form kind of artifact
+
+object old scenario conftest form kind of artifact
 ```

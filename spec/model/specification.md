@@ -208,6 +208,7 @@ object repository
   attributes: release: 0.23.1 < 0.24.0 < 0.25.0 < 0.29.0 < 0.30.0 < 0.31.0 < 0.32.0 < 0.32.1 < 0.33.0 < 0.34.0 < 0.34.1 < 0.99.0; store: taking | rejecting
   relations: holds → old-layout directory | uncommitted change (many); has → decision ledger | plugin version file | shop directory | capability | decisions index | frozen notice | initiative (many); rejects → kept change (many)
   relations: has → context scaffold (one)
+  relations: has → scenario conftest (one)
 
 object construct
   relations: has → catalogue entry (many)
