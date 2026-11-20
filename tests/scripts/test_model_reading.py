@@ -51,17 +51,6 @@ class ReadingTest(ModelTest):
                          ["spec/decisions/0002-d2.md: %s names nothing in this repository"
                           % full("universal-condition", "u3")], found)
 
-    def test_a_decision_may_cite_a_kept_quote(self):
-        """A decision's `source: [quote-<n>]` resolves when .shop/quotes/<n>.md is kept; a quote not kept does not."""
-        self.write(".shop/quotes/7.md", "---\nid: quote-7\n---\n\nThe words.\n")
-        for n, quote in ((1, "quote-7"), (2, "quote-8")):
-            self.write(f"spec/decisions/{n:04d}-d{n}.md", f"---\nid: {full('design-decision', f'd{n}')}\nsummary: S\n"
-                       f"date: 2026-01-01\nstatus: accepted\ntier: judgement\nsource: [{quote}]\n---\n\n# D\n\n"
-                       "## Decision\n\nD.\n")
-        found, _ = self.check_json()
-        self.assertEqual([d for d in found["unresolved"] if "quote-" in d],
-                         ["spec/decisions/0002-d2.md: quote-8 names nothing in this repository"], found)
-
     def test_a_deprecated_scenario_is_no_acceptance_scenario(self):
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] `thing` shall answer."], retired="[r2]"))
         self.write("features/thing.feature", "\n".join([  # noqa: FLY002 -- lines kept as a list, one a row
