@@ -273,6 +273,9 @@ class Model(SpecReading, WorkReading, RequestReading, DomainReading, CatalogueRe
             if re.fullmatch(r"quote-(\d+)", str(ident)) and (self.root / ".shop" / "quotes" /
                                                              ("%s.md" % str(ident)[6:])).is_file():
                 continue        # a quote of the person's words, kept as .shop/quotes/<n>.md (b435)
+            item = re.fullmatch(r"item/%s/(b\d+)" % re.escape(self.path or ""), str(ident))
+            if item and (self.root / ".shop" / "backlog" / ("%s.md" % item.group(1))).is_file():
+                continue        # an item of this context's backlog, kept as .shop/backlog/b<n>.md (b516)
             if str(ident).endswith("@0.29") and kind is None:
                 self.resolve_req(ident, where)      # a 0.29 id is history, looked up by its form alone
             if kind is None and ident not in self.nodes:

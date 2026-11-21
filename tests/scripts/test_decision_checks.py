@@ -44,10 +44,11 @@ def test_the_live_decisions_keep_their_tiers():
 
 def test_the_sort_holds_its_totals():
     found = model_decisions.decisions(ROOT)
-    assert len(found) == 111, len(found)       # the domain contract's twelve (0098-0109), three superseding; 0110, 0111, 0112
-    assert collections.Counter(d.status for d in found) == {"accepted": 52, "superseded": 57, "rejected": 2}
+    assert len(found) == 113, len(found)       # the domain contract's twelve (0098-0109), three superseding; 0110-0114
+    assert collections.Counter(d.status for d in found) == {"accepted": 52, "superseded": 59, "rejected": 2}
     tiers = collections.Counter(d.tier for d in found if d.status == "accepted")
-    assert tiers == {"check": 11, "requirement": 13, "judgement": 28}, tiers     # 0110, 0111 and 0112 judgements (b418, b420, b430)
+    assert tiers == {"check": 11, "requirement": 13, "judgement": 28}, tiers     # 0110-0112 judgements (b418, b420, b430)
+    # 0113 (check) superseded a check decision and was itself superseded by 0114 (check), so the check tier holds 11
     # `work decision --supersedes` (b179) sets only the status of the decision it replaces, so a decision out of force
     # keeps its tier only when it was superseded so; `model decisions --check` runs none of them.
     kept = [d.rel for d in found if d.status != "accepted" and d.tier]
