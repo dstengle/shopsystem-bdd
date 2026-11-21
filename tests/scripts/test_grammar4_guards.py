@@ -31,6 +31,7 @@ import sys
 import time
 from types import SimpleNamespace
 
+import pytest
 import spec_gf
 import spec_grammar4
 import spec_rgl
@@ -151,6 +152,7 @@ def parse_time(root, lines):
     return time.perf_counter() - start
 
 
+@pytest.mark.budget
 def test_the_line_set_parses_within_its_budget():
     toolchain.require()
     lines = line_set()
