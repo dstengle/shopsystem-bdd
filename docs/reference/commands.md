@@ -1158,13 +1158,15 @@ Founds a new bounded context in the repository it is run in: writes its scaffold
 `spec/universal.md` (no condition), `spec/model/`, `spec/vocabulary/`, `spec/capabilities/`, `.shop/backlog/`,
 `.shop/records/README.md` (an empty records index), `.shop/plugin-version` (the plugin's release),
 `.shop/delivery.toml` (every key commented out at its default), `features/` and `tests/scenarios/conftest.py`, each
-empty folder with a `.gitkeep`. An existing `features/` or conftest is left as it is. It refuses, changing nothing,
+empty folder with a `.gitkeep`, and `.gitignore` naming `.venv/`, `__pycache__/`, `.pytest_cache/` and
+`.ruff_cache/` (an existing one given the names it lacks). An existing `features/` or conftest is left as it is. It refuses, changing nothing,
 without `--id`, with an id that is not `bounded-context/<domain>/<path>`, and in a repository that has a
 `spec/index.md` or a `.shop/` already.\
 Synopsis: `migrate init --id ID`
 
 ```console
 $ migrate init --id bounded-context/example.org/notes/notes-cli
+wrote .gitignore
 wrote .shop/backlog/.gitkeep
 ...
 wrote tests/scenarios/conftest.py
