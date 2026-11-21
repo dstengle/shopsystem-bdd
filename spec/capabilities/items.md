@@ -6,7 +6,7 @@ group: service
 area: tracking
 specifies: object item, service backlog, the readiness policy
 language: codified-2
-retired: []
+retired: [g3, r3]
 unbuilt: []
 ---
 
@@ -25,10 +25,6 @@ declined, withdrawn, answered and listed.
 ### [g2] An item that does not meet the readiness bar is refused, naming each bar check it does not meet
 - [r2] While an item is `shaped` and the item does not meet the readiness bar, if the person readies the item, then the
   backlog service shall refuse the request and name every bar check that the item does not meet.
-
-### [g3] An item that is not shaped is not readied
-- [r3] While an item is not `shaped`, if the person readies the item, then the backlog service shall refuse the request
-  and name the item.
 
 ### [g4] Readying an item asks the person nothing
 - [r4] When the person readies an item, the backlog service shall not ask a question.
@@ -144,4 +140,25 @@ declined, withdrawn, answered and listed.
 
 ### [g32] Only a ready item is reopened
 - [r32] While an item is not `ready`, if the person reopens the item, then the backlog service shall refuse the request and name the item.
+
+### [g38] A note on an open item is kept
+- [r38] While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person annotates the item with a note, the backlog service shall keep the item.
+
+### [g39] A closed item takes no note
+- [r39] While the status of an item is one of `delivered`, `refused` or `withdrawn`, if the person annotates the item, then the backlog service shall refuse the request and name the item.
+
+### [g33] An open item merged into another item is withdrawn
+- [r33] While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person merges the item with a successor and a reason, the backlog service shall set the status of the item to `withdrawn` and keep the item.
+
+### [g34] A closed item is not merged
+- [r34] While the status of an item is one of `delivered`, `refused` or `withdrawn`, if the person merges the item, then the backlog service shall refuse the request and name the item.
+
+### [g35] A ready item that meets the readiness bar is checked again
+- [r35] While an item is `ready` and the item meets the readiness bar, when the person readies the item, the backlog service shall complete the request and keep the item.
+
+### [g36] A ready item that does not meet the readiness bar is refused, naming each bar check it does not meet
+- [r36] While an item is `ready` and the item does not meet the readiness bar, if the person readies the item, then the backlog service shall refuse the request and name every bar check that the item does not meet.
+
+### [g37] An item that is neither shaped nor ready is not readied
+- [r37] While an item is not `shaped` and the item is not `ready`, if the person readies the item, then the backlog service shall refuse the request and name the item.
 

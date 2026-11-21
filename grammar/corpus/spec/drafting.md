@@ -409,3 +409,118 @@ shall [x3: agent the person (constant), x5: service the drafting service (consta
     in(x2, x1)
     keep(e2, subject: x5, object: x2)
 ```
+
+## r28
+From: b458 r28.
+
+```reading
+When the person drafts an item with a requirement id of a requirement that enforces a design-decision, the drafting service shall keep a requirement in the item and name the design-decision.
+shall [x1: agent the person (constant), x6: service the drafting service (constant)]
+  when [x2: item, x3: requirement id, x4: requirement, x5: design-decision]
+    enforce(subject: x4, object: x5)
+    of(x3, x4)
+    request(e1, drafting.draft, subject: x1, object: x2)
+    param(e1, requirement id, x3)
+  response [x7: requirement]
+    in(x7, x2)
+    keep(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x5)
+```
+
+## r29
+From: b461 r29.
+
+```reading
+When the person applies a retirement list to an item, the drafting service shall keep the item and every requirement that the retirement list holds.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: retirement list, x3: item]
+    request(e1, drafting.apply, subject: x1, object: x2, to: x3)
+  response
+    keep(e2, subject: x4, object: x3)
+    every [x5: requirement]
+      in(x5, x2)
+      scope
+        keep(e3, subject: x4, object: x5)
+```
+
+## r30
+From: b461 r30.
+
+```reading
+If the person applies a retirement list that holds a requirement id that no requirement has to an item, then the drafting service shall refuse the request, name the requirement id and not keep the item.
+shall [x1: agent the person (constant), x6: service the drafting service (constant), x7: request "the request the trigger makes" (indexical)]
+  if [x2: retirement list, x3: requirement id, x5: item]
+    not [x4: requirement]
+      of(x3, x4)
+    in(x3, x2)
+    request(e1, drafting.apply, subject: x1, object: x2, to: x5)
+  response
+    refuse(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x3)
+    not
+      keep(e4, subject: x6, object: x5)
+```
+
+## r31
+From: b355 r31.
+
+```reading
+When the person exposes an operation table in an item, the drafting service shall keep the operation table in the item.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: operation table, x3: item]
+    request(e1, drafting.expose, subject: x1, object: x2, in: x3)
+  response
+    in(x2, x3)
+    keep(e2, subject: x4, object: x2)
+```
+
+## r32
+From: b355 r32.
+
+```reading
+While an operation does not exist, if the person exposes an operation table of the operation in an item, then the drafting service shall refuse the request and name the operation table.
+shall [x2: agent the person (constant), x5: service the drafting service (constant), x6: request "the request the trigger makes" (indexical)]
+  while [x1: operation]
+    not
+      exists(x1)
+  if [x3: operation table, x4: item]
+    of(x3, x1)
+    request(e1, drafting.expose, subject: x2, object: x3, in: x4)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x3)
+```
+
+## r33
+From: b355 r33.
+
+```reading
+While an item holds an operation table of an operation, when the person exposes another operation table of the operation in the item, the drafting service shall keep only one operation table of the operation in the item.
+shall [x4: agent the person (constant), x6: service the drafting service (constant)]
+  while [x1: item, x2: operation table, x3: operation]
+    of(x2, x3)
+    in(x2, x1)
+  when [x5: operation table]
+    distinct(x5, x2)
+    of(x5, x3)
+    request(e1, drafting.expose, subject: x4, object: x5, in: x1)
+  response
+    only [x7: operation table]
+      in(x3, x1)
+      of(x7, x3)
+      scope
+        keep(e2, subject: x6, object: x7)
+```
+
+## r34
+From: b355 r34.
+
+```reading
+When the person withholds an operation in an item, the drafting service shall keep the operation in the item.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: operation, x3: item]
+    request(e1, drafting.withhold, subject: x1, object: x2, in: x3)
+  response
+    in(x2, x3)
+    keep(e2, subject: x4, object: x2)
+```

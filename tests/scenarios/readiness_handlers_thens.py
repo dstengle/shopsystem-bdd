@@ -142,8 +142,19 @@ def kept(step):
     assert re.search(r"(?m)^retired: \[%s\]$" % step.context["line"]["kept"], held), (step.text, held)
 
 
+def keeps(step):
+    """b281's `work` keeps the item i1 of `work ready` on a ready item: the run made no commit of its file, which
+    still holds the status the Givens wrote."""
+    _done(step)
+    name = step.names[0]
+    rel = B.item_rel(step.context, name)
+    head = step.context.get("head")
+    assert rel and head and rel not in W.git(step.repo, "diff", "--name-only", head, "HEAD").split(), (step.text, rel)
+    assert W.field(step.repo / rel, "status") == step.context["item_fields"][name]["status"], step.text
+
+
 THENS = {"refuse": lambda step: _done(step, 1), "name": named, "write": written, "holds": written,
-         "commit": committed, "set": sets, "remove": removed}
+         "commit": committed, "set": sets, "remove": removed, "keep": keeps}
 
 
 @local("ThenDoesNot")

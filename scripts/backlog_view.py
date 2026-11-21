@@ -6,6 +6,8 @@ The score is (value + urgency) / size, low = small = 1, medium = 2, high = large
 score from high to low, ties to the item added first; an item missing a rating has no score and ranks after the
 rated. An item is blocked by each dependency on an item that is not `delivered`, a missing one included (D9). Reading
 only direct dependencies, the view never walks a cycle written by hand."""
+import json
+
 import backlog_items
 import batch_plan
 
@@ -106,3 +108,22 @@ def as_json(root):
     items = backlog_items.items(root)
     by_name = {i.name: i for i in items}
     return {"items": [row_json(item, by_name, n, root) for _, its in ordered(items) for n, item in enumerate(its, 1)]}
+
+
+def show(args):
+    """`work show b<n>`: the item, its label first; with --json one object `{"item": {...}}`."""
+    item = backlog_items.find(args.root, args.target)
+    if args.json:
+        items = backlog_items.items(args.root)
+        print(json.dumps({"item": row_json(item, {i.name: i for i in items},
+                                         rank_of(item, items), args.root)}))
+        return 0
+    print(backlog_items.label(item))
+    for key in ("status", "provenance", *backlog_items.RATINGS):
+        print("  %s: %s" % (key, getattr(item, key) or "-"))
+    by_name = {i.name: i for i in backlog_items.items(args.root)}
+    print("  depends on: %s" % (", ".join(backlog_items.label(by_name[n]) if n in by_name else "%s (missing)" % n
+                                          for n in item.depends_on) or "-"))
+    for heading, text in item.sections.items():
+        print("\n## %s\n\n%s" % (heading, text))
+    return 0

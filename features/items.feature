@@ -24,14 +24,6 @@ Feature: Items
     And the backlog service names the bar check b1
     And the backlog service names the bar check b2
 
-  @g3 @r3
-  Scenario: An item that is not shaped is not readied
-    Given an item i1
-    And the status of the item i1 is not `shaped`
-    When the person readies the item i1
-    Then the backlog service refuses this request
-    And the backlog service names the item i1
-
   @g4 @r4
   Scenario: Readying an item asks the person nothing
     Given an item i1
@@ -391,5 +383,145 @@ Feature: Items
     Given an item i1
     And the status of the item i1 is not `ready`
     When the person reopens the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the item i1
+
+  @g33 @r33
+  Scenario: An open item merged into another item is withdrawn (case 1)
+    Given an item i1
+    And the status of the item i1 is `idea`
+    When the person merges the item i1 with a successor and a reason
+    Then the backlog service sets the status of the item i1 to `withdrawn`
+    And the backlog service keeps the item i1
+
+  @g33 @r33
+  Scenario: An open item merged into another item is withdrawn (case 2)
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    When the person merges the item i1 with a successor and a reason
+    Then the backlog service sets the status of the item i1 to `withdrawn`
+    And the backlog service keeps the item i1
+
+  @g33 @r33
+  Scenario: An open item merged into another item is withdrawn (case 3)
+    Given an item i1
+    And the status of the item i1 is `ready`
+    When the person merges the item i1 with a successor and a reason
+    Then the backlog service sets the status of the item i1 to `withdrawn`
+    And the backlog service keeps the item i1
+
+  @g33 @r33
+  Scenario: An open item merged into another item is withdrawn (case 4)
+    Given an item i1
+    And the status of the item i1 is `needs-input`
+    When the person merges the item i1 with a successor and a reason
+    Then the backlog service sets the status of the item i1 to `withdrawn`
+    And the backlog service keeps the item i1
+
+  @g34 @r34
+  Scenario: A closed item is not merged (case 1)
+    Given an item i1
+    And the status of the item i1 is `delivered`
+    When the person merges the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the item i1
+
+  @g34 @r34
+  Scenario: A closed item is not merged (case 2)
+    Given an item i1
+    And the status of the item i1 is `refused`
+    When the person merges the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the item i1
+
+  @g34 @r34
+  Scenario: A closed item is not merged (case 3)
+    Given an item i1
+    And the status of the item i1 is `withdrawn`
+    When the person merges the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the item i1
+
+  @g35 @r35
+  Scenario: A ready item that meets the readiness bar is checked again
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    When the person readies the item i1
+    Then the backlog service completes this request
+    And the backlog service keeps the item i1
+
+  @g36 @r36
+  Scenario: A ready item that does not meet the readiness bar is refused, naming each bar check it does not meet
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 does not meet this readiness bar
+    And a bar check b1
+    And the item i1 does not meet the bar check b1
+    And a bar check b2
+    And the item i1 does not meet the bar check b2
+    When the person readies the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the bar check b1
+    And the backlog service names the bar check b2
+
+  @g37 @r37
+  Scenario: An item that is neither shaped nor ready is not readied
+    Given an item i1
+    And the status of the item i1 is not `shaped`
+    And the status of the item i1 is not `ready`
+    When the person readies the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the item i1
+
+  @g38 @r38
+  Scenario: A note on an open item is kept (case 1)
+    Given an item i1
+    And the status of the item i1 is `idea`
+    When the person annotates the item i1 with a note
+    Then the backlog service keeps the item i1
+
+  @g38 @r38
+  Scenario: A note on an open item is kept (case 2)
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    When the person annotates the item i1 with a note
+    Then the backlog service keeps the item i1
+
+  @g38 @r38
+  Scenario: A note on an open item is kept (case 3)
+    Given an item i1
+    And the status of the item i1 is `ready`
+    When the person annotates the item i1 with a note
+    Then the backlog service keeps the item i1
+
+  @g38 @r38
+  Scenario: A note on an open item is kept (case 4)
+    Given an item i1
+    And the status of the item i1 is `needs-input`
+    When the person annotates the item i1 with a note
+    Then the backlog service keeps the item i1
+
+  @g39 @r39
+  Scenario: A closed item takes no note (case 1)
+    Given an item i1
+    And the status of the item i1 is `delivered`
+    When the person annotates the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the item i1
+
+  @g39 @r39
+  Scenario: A closed item takes no note (case 2)
+    Given an item i1
+    And the status of the item i1 is `refused`
+    When the person annotates the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the item i1
+
+  @g39 @r39
+  Scenario: A closed item takes no note (case 3)
+    Given an item i1
+    And the status of the item i1 is `withdrawn`
+    When the person annotates the item i1
     Then the backlog service refuses this request
     And the backlog service names the item i1

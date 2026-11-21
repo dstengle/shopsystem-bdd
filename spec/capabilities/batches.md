@@ -132,3 +132,12 @@ when the change is merged.
 ### [g77] A task finishes with its tests run by the workspace's virtual environment
 - [r77] While a task of an item is `running` and the workspace of the task holds a virtual environment and a scenario of the item succeeds in the workspace of the task, when a session finishes the task, the batches service shall set the status of the task to `done`.
 
+### [g78] A task finishes while a scenario its change does not reach breaks
+- [r78] While a task of an item is `running` and a scenario breaks in the workspace of the task and the scenario has a capability and the item holds no requirement id that is in the capability and no kept change in the workspace of the task touches the feature of the capability, when a session finishes the task, the batches service shall set the status of the task to `done`.
+
+### [g79] An operation table of an item is laid into the adapter contract
+- [r79] While an item is `ready` and the item meets the readiness bar and the item holds an operation table, when the person opens a batch, the batches service shall keep an adapter contract that holds the operation table.
+
+### [g80] An operation withheld in an item leaves the adapter contract
+- [r80] While an item is `ready` and the item meets the readiness bar and the item holds an operation, when the person opens a batch, the batches service shall keep an adapter contract and keep no operation table of the operation.
+

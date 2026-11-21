@@ -256,3 +256,86 @@ Feature: Drafting
     When the person removes the requirement r1
     Then the item i1 holds the capability c1
     And the drafting service keeps the capability c1
+
+  @g28 @r28
+  Scenario: `work line --retires` names the decisions the retired requirement enforces
+    Given a requirement r2
+    And a design-decision d1
+    And the requirement r2 enforces the design-decision d1
+    And a requirement id r1
+    And the requirement r2 has the requirement id r1
+    And an item i1
+    When the person drafts the item i1 with the requirement id r1
+    Then the drafting service keeps the requirement r3
+    And the item i1 holds the requirement r3
+    And the drafting service names the design-decision d1
+
+  @g29 @r29
+  Scenario: A retirement list applied to an item keeps every requirement it holds
+    Given a retirement list r1
+    And an item i1
+    And a requirement r2
+    And the retirement list r1 holds the requirement r2
+    And a requirement r3
+    And the retirement list r1 holds the requirement r3
+    And a requirement r4
+    And the retirement list r1 does not hold the requirement r4
+    When the person applies the retirement list r1 to the item i1
+    Then the drafting service keeps the item i1
+    And the drafting service keeps the requirement r2
+    And the drafting service keeps the requirement r3
+    And the drafting service does not keep the requirement r4
+
+  @g30 @r30
+  Scenario: A retirement list that names a requirement id no requirement has is refused whole
+    Given a requirement id r2
+    And no requirement has the requirement id r2
+    And a retirement list r1
+    And the retirement list r1 holds the requirement id r2
+    And an item i1
+    When the person applies the retirement list r1 to the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the requirement id r2
+    And the drafting service does not keep the item i1
+
+  @g31 @r31
+  Scenario: An operation table exposed in an item is kept
+    Given an operation table o1
+    And an item i1
+    When the person exposes the operation table o1 in the item i1
+    Then the item i1 holds the operation table o1
+    And the drafting service keeps the operation table o1
+
+  @g32 @r32
+  Scenario: An operation table of an operation that does not exist is refused
+    Given an operation o1
+    And the operation o1 does not exist
+    And an operation table o2
+    And the operation o1 has the operation table o2
+    And an item i1
+    When the person exposes the operation table o2 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the operation table o2
+
+  @g33 @r33
+  Scenario: An operation exposed again keeps only its new operation table
+    Given an operation table o1
+    And an operation o2
+    And the operation o2 has the operation table o1
+    And an item i1
+    And the item i1 holds the operation table o1
+    And an operation table o3
+    And the operation o2 has the operation table o3
+    And an operation table o4
+    And the item i1 holds the operation o2
+    And the operation o2 does not have the operation table o4
+    When the person exposes the operation table o3 in the item i1
+    Then the drafting service does not keep the operation table o4
+
+  @g34 @r34
+  Scenario: An operation withheld in an item is kept
+    Given an operation o1
+    And an item i1
+    When the person withholds the operation o1 in the item i1
+    Then the item i1 holds the operation o1
+    And the drafting service keeps the operation o1

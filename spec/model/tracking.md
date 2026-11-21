@@ -33,6 +33,7 @@ object item kind of file
   lifecycle status: idea → shaped; shaped → ready; ready → shaped; ready → in-batch; in-batch → delivered; in-batch → needs-input; in-batch → ready; needs-input → shaped; idea → refused; shaped → refused; idea → withdrawn; shaped → withdrawn; ready → withdrawn; needs-input → withdrawn
   relations: has → dependency | request line | title | shaping note | scenario | requirement | task | defect (many); holds → relation row | universal condition | upstream entry | given block | requirement | capability | term | requirement id | requirement group | chore (many); proposes → requirement (many); meets → readiness bar | bar check (many)
   relations: holds → model line (many)
+  relations: holds → operation table | operation (many)
 
 object backlog
 
@@ -126,6 +127,8 @@ service backlog
   operation show(item)  outcomes: returned → the item
   operation list()  outcomes: returned → every item
   operation reopen(item)  outcomes: done | refused: item not ready
+  operation annotate(item, note)  outcomes: done | refused: item closed
+  operation merge(item, successor, reason)  outcomes: done | refused: item closed
 
 service drafting
   operation draft(item, relation row, universal condition, universal condition id, upstream entry, given block, requirement id, requirement, capability)
@@ -136,6 +139,9 @@ service drafting
   operation assign(chore, item)  outcomes: done | refused: requirement in the item
   operation write(term, item)  outcomes: done
   operation declare(model line, item)  outcomes: done
+  operation apply(retirement list, item)  outcomes: done | refused: requirement id of no requirement
+  operation expose(operation table, item)  outcomes: done | refused: operation table of no operation
+  operation withhold(operation, item)  outcomes: done
 
 service context requests
   operation raise(context request, origin, thread, text, bounded context)
@@ -166,4 +172,7 @@ service conversation
 actor the person kind of agent
 
 object model line kind of text
+
+object retirement list kind of file
+  relations: holds → requirement id | requirement (many)
 ```

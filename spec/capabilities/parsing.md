@@ -69,3 +69,12 @@ A line parsed in the controlled language to one meaning or refused with why, its
 ### [g18] The logical form keeps a value in use
 - [r18] When the person parses a requirement that uses `param-of` with the logical form, the language service shall return a logical form that holds a value in use.
 
+### [g19] A requirement that uses an item's term is parsed for the item
+- [r19] While an item holds a term, when the person previews a requirement that uses the term for the item, the language service shall complete the request.
+
+### [g20] The logical form of a requirement that uses an item's term is returned for the item
+- [r20] While an item holds a term, when the person previews a requirement that uses the term for the item with the logical form, the language service shall return one logical form of the requirement and complete the request.
+
+### [g22] A requirement outside the language is refused for an item
+- [r22] If the person previews a requirement that does not conform to the language reference for an item, then the language service shall refuse the request and name the requirement.
+

@@ -175,3 +175,31 @@ Feature: Decisions
     When the person validates this specification
     Then the specification service fails this check
     And the specification service names the design-decision d1
+
+  @g21 @r21
+  Scenario: `work decision --amend` adds an enforcer to an accepted decision
+    Given a design-decision d1
+    And the status of the design-decision d1 is `accepted`
+    And an enforcer e1
+    When the person amends the design-decision d1 with the enforcer e1
+    Then the decisions service keeps the design-decision d2
+    And the design-decision d2 has the enforcer e2
+    And the decisions service keeps this decisions index
+
+  @g22 @r22
+  Scenario: `work decision --amend` adds a foundation to an accepted decision
+    Given a design-decision d1
+    And the status of the design-decision d1 is `accepted`
+    And a foundation f1
+    When the person amends the design-decision d1 with the foundation f1
+    Then the decisions service keeps the design-decision d2
+    And the design-decision d2 has the foundation f2
+    And the decisions service keeps this decisions index
+
+  @g23 @r23
+  Scenario: `work decision --amend` refuses a decision not in force
+    Given a design-decision d1
+    And the status of the design-decision d1 is not `accepted`
+    When the person amends the design-decision d1
+    Then the decisions service refuses this request
+    And the decisions service names the design-decision d1

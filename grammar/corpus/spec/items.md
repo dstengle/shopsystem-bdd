@@ -36,22 +36,6 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
         name(e3, subject: x4, object: x6)
 ```
 
-## r3
-From: readiness#r25, reworded in request words (0.38.0).
-
-```reading
-While an item is not `shaped`, if the person readies the item, then the backlog service shall refuse the request and name the item.
-shall [x2: agent the person (constant), x3: service the backlog service (constant), x4: request "the request the trigger makes" (indexical)]
-  while [x1: item]
-    not
-      status(x1) = `shaped`
-  if
-    request(e1, backlog.ready, subject: x2, object: x1)
-  response
-    refuse(e2, subject: x3, object: x4)
-    name(e3, subject: x3, object: x1)
-```
-
 ## r4
 From: readiness#r4, reworded in request words (0.38.0).
 
@@ -569,6 +553,151 @@ shall [x2: agent the person (constant), x3: service the backlog service (constan
       status(x1) = `ready`
   if
     request(e1, backlog.reopen, subject: x2, object: x1)
+  response
+    refuse(e2, subject: x3, object: x4)
+    name(e3, subject: x3, object: x1)
+```
+
+## r33
+From: b281 r33.
+
+```reading
+While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person merges the item with a successor and a reason, the backlog service shall set the status of the item to `withdrawn` and keep the item.
+shall [x2: agent the person (constant), x3: service the backlog service (constant)]
+  while [x1: item]
+    or
+      case
+        status(x1) = `idea`
+      case
+        status(x1) = `shaped`
+      case
+        status(x1) = `ready`
+      case
+        status(x1) = `needs-input`
+  when
+    request(e1, backlog.merge, subject: x2, object: x1)
+    param(e1, successor, some)
+    param(e1, reason, some)
+  response
+    initiates(e2, subject: x3, status(x1) = `withdrawn`)
+    keep(e3, subject: x3, object: x1)
+```
+
+## r34
+From: b281 r34.
+
+```reading
+While the status of an item is one of `delivered`, `refused` or `withdrawn`, if the person merges the item, then the backlog service shall refuse the request and name the item.
+shall [x2: agent the person (constant), x3: service the backlog service (constant), x4: request "the request the trigger makes" (indexical)]
+  while [x1: item]
+    or
+      case
+        status(x1) = `delivered`
+      case
+        status(x1) = `refused`
+      case
+        status(x1) = `withdrawn`
+  if
+    request(e1, backlog.merge, subject: x2, object: x1)
+  response
+    refuse(e2, subject: x3, object: x4)
+    name(e3, subject: x3, object: x1)
+```
+
+## r35
+From: b281 r35.
+
+```reading
+While an item is `ready` and the item meets the readiness bar, when the person readies the item, the backlog service shall complete the request and keep the item.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x3: agent the person (constant), x4: service the backlog service (constant), x5: request "the request the trigger makes" (indexical)]
+  while [x1: item]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+  when
+    request(e1, backlog.ready, subject: x3, object: x1)
+  response
+    complete(e2, subject: x4, object: x5)
+    keep(e3, subject: x4, object: x1)
+```
+
+## r36
+From: b281 r36.
+
+```reading
+While an item is `ready` and the item does not meet the readiness bar, if the person readies the item, then the backlog service shall refuse the request and name every bar check that the item does not meet.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x3: agent the person (constant), x4: service the backlog service (constant), x5: request "the request the trigger makes" (indexical)]
+  while [x1: item]
+    status(x1) = `ready`
+    not
+      meet(subject: x1, object: x2)
+  if
+    request(e1, backlog.ready, subject: x3, object: x1)
+  response
+    refuse(e2, subject: x4, object: x5)
+    every [x6: bar check]
+      not
+        meet(subject: x1, object: x6)
+      scope
+        name(e3, subject: x4, object: x6)
+```
+
+## r37
+Retires: r3. From: b281 r37.
+
+```reading
+While an item is not `shaped` and the item is not `ready`, if the person readies the item, then the backlog service shall refuse the request and name the item.
+shall [x2: agent the person (constant), x3: service the backlog service (constant), x4: request "the request the trigger makes" (indexical)]
+  while [x1: item]
+    not
+      status(x1) = `shaped`
+    not
+      status(x1) = `ready`
+  if
+    request(e1, backlog.ready, subject: x2, object: x1)
+  response
+    refuse(e2, subject: x3, object: x4)
+    name(e3, subject: x3, object: x1)
+```
+
+## r38
+From: b281 r38.
+
+```reading
+While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person annotates the item with a note, the backlog service shall keep the item.
+shall [x2: agent the person (constant), x3: service the backlog service (constant)]
+  while [x1: item]
+    or
+      case
+        status(x1) = `idea`
+      case
+        status(x1) = `shaped`
+      case
+        status(x1) = `ready`
+      case
+        status(x1) = `needs-input`
+  when
+    request(e1, backlog.annotate, subject: x2, object: x1)
+    param(e1, note, some)
+  response
+    keep(e2, subject: x3, object: x1)
+```
+
+## r39
+From: b281 r39.
+
+```reading
+While the status of an item is one of `delivered`, `refused` or `withdrawn`, if the person annotates the item, then the backlog service shall refuse the request and name the item.
+shall [x2: agent the person (constant), x3: service the backlog service (constant), x4: request "the request the trigger makes" (indexical)]
+  while [x1: item]
+    or
+      case
+        status(x1) = `delivered`
+      case
+        status(x1) = `refused`
+      case
+        status(x1) = `withdrawn`
+  if
+    request(e1, backlog.annotate, subject: x2, object: x1)
   response
     refuse(e2, subject: x3, object: x4)
     name(e3, subject: x3, object: x1)

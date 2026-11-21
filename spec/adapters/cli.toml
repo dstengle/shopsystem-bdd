@@ -60,6 +60,19 @@ requirements = [
 text = { positional = 1 }
 "logical form" = { option = "--form", flag = true }
 
+[operations."language.preview"]
+command = "spec parse"
+cli-only = { options = ["--file"] }
+requirements = [
+  "parsing#r19: While an item holds a term, when the person previews a requirement that uses the term for the item, the language service shall complete the request.",
+  "parsing#r20: While an item holds a term, when the person previews a requirement that uses the term for the item with the logical form, the language service shall return one logical form of the requirement and complete the request.",
+  "parsing#r22: If the person previews a requirement that does not conform to the language reference for an item, then the language service shall refuse the request and name the requirement.",
+]
+[operations."language.preview".parameters]
+text = { positional = 1 }
+item = { option = "--item" }
+"logical form" = { option = "--form", flag = true }
+
 [operations."language.explain"]
 command = "spec explain"
 requirements = [
@@ -215,6 +228,18 @@ tier = { option = "--tier" }
 wording = { option = "--decision" }
 route = { option = "--verified-by", repeat = true }
 supersedes = { option = "--supersedes", repeat = true }
+
+[operations."decisions.amend"]
+command = "work decision"
+requirements = [
+  "decisions#r21: When the person amends a design-decision whose status is `accepted` with an enforcer, the decisions service shall keep a design-decision that has an enforcer and keep the decisions index.",
+  "decisions#r22: When the person amends a design-decision whose status is `accepted` with a foundation, the decisions service shall keep a design-decision that has a foundation and keep the decisions index.",
+  "decisions#r23: If the person amends a design-decision whose status is not `accepted`, then the decisions service shall refuse the request and name the design-decision.",
+]
+[operations."decisions.amend".parameters]
+"design-decision" = { option = "--amend" }
+enforcer = { option = "--enforced-by", repeat = true }
+foundation = { option = "--rests-on", repeat = true }
 
 [operations."decisions.rebuild"]
 command = "spec decisions"
@@ -388,7 +413,6 @@ command = "work ready"
 requirements = [
   "items#r1: While an item is `shaped` and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.",
   "items#r2: While an item is `shaped` and the item does not meet the readiness bar, if the person readies the item, then the backlog service shall refuse the request and name every bar check that the item does not meet.",
-  "items#r3: While an item is not `shaped`, if the person readies the item, then the backlog service shall refuse the request and name the item.",
   "items#r4: When the person readies an item, the backlog service shall not ask a question.",
   "items#r5: While an item is `shaped` and a term in the item violates a rule, if the person readies the item, then the backlog service shall refuse the request and name the term and the rule.",
   "items#r6: While an item is `shaped` and a requirement in the item has no translation, if the person readies the item, then the backlog service shall refuse the request and name the requirement.",
@@ -397,6 +421,9 @@ requirements = [
   "items#r9: While an item is `shaped` and the item holds a chore and the item holds no requirement, when the person readies the item, the backlog service shall set the status of the item to `ready`.",
   "items#r10: While an item is `shaped` and a requirement group in the item violates a rule, if the person readies the item, then the backlog service shall refuse the request and name the requirement group and the rule.",
   "items#r30: While an item is `shaped` and a request line of the item is not `accepted`, `refused` or `withdrawn`, if a session readies the item, then the backlog service shall refuse the request and name the request line.",
+  "items#r35: While an item is `ready` and the item meets the readiness bar, when the person readies the item, the backlog service shall complete the request and keep the item.",
+  "items#r36: While an item is `ready` and the item does not meet the readiness bar, if the person readies the item, then the backlog service shall refuse the request and name every bar check that the item does not meet.",
+  "items#r37: While an item is not `shaped` and the item is not `ready`, if the person readies the item, then the backlog service shall refuse the request and name the item.",
   "shaping-guarantees#r1: When the brainstorming session readies an item, the brainstorming session shall not ask a question.",
 ]
 [operations."backlog.ready".parameters]
@@ -417,6 +444,27 @@ requirements = [
 ]
 [operations."backlog.withdraw".parameters]
 item = { positional = 1 }
+
+[operations."backlog.annotate"]
+command = "work annotate"
+requirements = [
+  "items#r38: While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person annotates the item with a note, the backlog service shall keep the item.",
+  "items#r39: While the status of an item is one of `delivered`, `refused` or `withdrawn`, if the person annotates the item, then the backlog service shall refuse the request and name the item.",
+]
+[operations."backlog.annotate".parameters]
+item = { positional = 1 }
+note = { positional = 2 }
+
+[operations."backlog.merge"]
+command = "work merge"
+requirements = [
+  "items#r33: While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person merges the item with a successor and a reason, the backlog service shall set the status of the item to `withdrawn` and keep the item.",
+  "items#r34: While the status of an item is one of `delivered`, `refused` or `withdrawn`, if the person merges the item, then the backlog service shall refuse the request and name the item.",
+]
+[operations."backlog.merge".parameters]
+item = { positional = 1 }
+successor = { option = "--into" }
+reason = { option = "--reason" }
 
 [operations."backlog.reopen"]
 command = "work reopen"
@@ -473,6 +521,7 @@ requirements = [
   "drafting#r21: If the person drafts an item that holds a chore, then the drafting service shall refuse the request and name the chore.",
   "drafting#r22: When the person drafts an item with a capability, the drafting service shall keep the capability in the item.",
   "drafting#r23: If the person drafts an item with a capability that exists, then the drafting service shall refuse the request and name the capability.",
+  "drafting#r28: When the person drafts an item with a requirement id of a requirement that enforces a design-decision, the drafting service shall keep a requirement in the item and name the design-decision.",
 ]
 [operations."drafting.draft".parameters]
 item = { positional = 1 }
@@ -533,6 +582,16 @@ requirements = [
 [operations."drafting.remove".parameters]
 requirement = { option = "--remove" }
 
+[operations."drafting.apply"]
+command = "work line"
+requirements = [
+  "drafting#r29: When the person applies a retirement list to an item, the drafting service shall keep the item and every requirement that the retirement list holds.",
+  "drafting#r30: If the person applies a retirement list that holds a requirement id that no requirement has to an item, then the drafting service shall refuse the request, name the requirement id and not keep the item.",
+]
+[operations."drafting.apply".parameters]
+item = { positional = 1 }
+"retirement list" = { option = "--retirement-list" }
+
 [operations."drafting.assign"]
 command = "work chore"
 cli-only = { options = ["--check", "--file"] }
@@ -542,6 +601,26 @@ requirements = [
 ]
 [operations."drafting.assign".parameters]
 item = { positional = 1 }
+
+[operations."drafting.expose"]
+command = "work line"
+requirements = [
+  "drafting#r31: When the person exposes an operation table in an item, the drafting service shall keep the operation table in the item.",
+  "drafting#r32: While an operation does not exist, if the person exposes an operation table of the operation in an item, then the drafting service shall refuse the request and name the operation table.",
+  "drafting#r33: While an item holds an operation table of an operation, when the person exposes another operation table of the operation in the item, the drafting service shall keep only one operation table of the operation in the item.",
+]
+[operations."drafting.expose".parameters]
+item = { positional = 1 }
+"operation table" = { option = "--expose" }
+
+[operations."drafting.withhold"]
+command = "work line"
+requirements = [
+  "drafting#r34: When the person withholds an operation in an item, the drafting service shall keep the operation in the item.",
+]
+[operations."drafting.withhold".parameters]
+item = { positional = 1 }
+operation = { option = "--withhold" }
 
 [operations."context requests.raise"]
 command = "work request"
@@ -764,6 +843,8 @@ requirements = [
   "batches#r74: While an item is `ready` and the item meets the readiness bar and a requirement of the item uses a construct, when the person opens a batch, the batches service shall keep the construct catalogue.",
   "batches#r75: While no requirement of an item whose status is `ready` uses a construct and no construct catalogue exists, when the person opens a batch, the batches service shall keep no construct catalogue.",
   "batches#r76: While an item is `ready` and the item meets the readiness bar and the item holds a capability, when the person opens a batch, the batches service shall keep the capability that conforms to the capability form and keep an index file that conforms to the index form.",
+  "batches#r79: While an item is `ready` and the item meets the readiness bar and the item holds an operation table, when the person opens a batch, the batches service shall keep an adapter contract that holds the operation table.",
+  "batches#r80: While an item is `ready` and the item meets the readiness bar and the item holds an operation, when the person opens a batch, the batches service shall keep an adapter contract and keep no operation table of the operation.",
 ]
 
 [operations."batches.resume"]
@@ -783,6 +864,7 @@ requirements = [
   "batches#r67: While a task of an item is `running` and the item holds a chore and a kept change in the workspace of the task touches a file that is not in the chore, if a session finishes the task, then the batches service shall refuse the request and name the file.",
   "batches#r70: While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the batch is `needs-input` and the item has a requirement that is not in the workspace of the batch and a scenario of the item breaks in the workspace of the task, when a session finishes the task, the batches service shall set the status of the task to `done`.",
   "batches#r77: While a task of an item is `running` and the workspace of the task holds a virtual environment and a scenario of the item succeeds in the workspace of the task, when a session finishes the task, the batches service shall set the status of the task to `done`.",
+  "batches#r78: While a task of an item is `running` and a scenario breaks in the workspace of the task and the scenario has a capability and the item holds no requirement id that is in the capability and no kept change in the workspace of the task touches the feature of the capability, when a session finishes the task, the batches service shall set the status of the task to `done`.",
 ]
 [operations."batches.finish".parameters]
 task = { positional = 2 }

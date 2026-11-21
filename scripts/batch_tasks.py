@@ -22,6 +22,7 @@ import backlog_moves
 import batch_fix
 import batch_parked
 import batch_plan
+import batch_reach
 import spec_unbuilt
 from batch_git import (
     delivery,
@@ -78,12 +79,12 @@ def interpreter(*places):
     return None
 
 
-def run_tests(root, tree, strict=True, workspace=None):
+def run_tests(root, tree, strict=True, workspace=None, unreached=()):
     """`[batch] tests` of `.shop/delivery.toml` (default `python3 -m pytest -q -p work_items`) run in `tree`, the
     plugin's scripts on PYTHONPATH (D12), its leading `python3` (or `python`) the `.venv/bin/python` of `tree`, else
     of the `workspace` the tests stand for, else of `root`, when one holds a virtual environment (batches r77, reviews
     r6, b449); with `strict` false, an unbuilt scenario that passes in `tree` is no failure (`spec_unbuilt.NONSTRICT`,
-    batches r19)."""
+    batches r19); the test files `unreached` left out of collection by the pytest plugin (batch_reach, b456)."""
     words = shlex.split(delivery(root).get("batch", {}).get("tests", TESTS))
     python = interpreter(tree, workspace, root)
     if python and words and words[0] in ("python3", "python"):
@@ -92,11 +93,14 @@ def run_tests(root, tree, strict=True, workspace=None):
     env.pop(spec_unbuilt.NONSTRICT, None)
     if not strict:
         env[spec_unbuilt.NONSTRICT] = str(Path(tree).resolve())
+    env.pop(batch_reach.ENV, None)
+    if unreached:
+        env[batch_reach.ENV] = "\n".join(unreached)
     return shlex.join(words), subprocess.run(words, cwd=tree, capture_output=True, text=True, env=env)
 
 
-def tests_pass(root, tree, command_name, strict=True, workspace=None):
-    command, done = run_tests(root, tree, strict, workspace)
+def tests_pass(root, tree, command_name, strict=True, workspace=None, unreached=()):
+    command, done = run_tests(root, tree, strict, workspace, unreached)
     if done.returncode != 0:
         tail = "\n".join((done.stdout + done.stderr).splitlines()[-20:])
         raise Refused("%s: the tests `%s` failed in %s (exit %d):\n%s" % (command_name, command, tree,
@@ -196,13 +200,15 @@ def checked(root, batch, task):
     item = backlog_items.find(root, task.item)
     backlog_chore.in_scope(root, since, task.branch, item, "%s: %s" % (command, label))      # b316
     left = spec_unbuilt.unbuilt(tree)
-    unbuilt = [i for i in item_ids(root, backlog_items.find(root, task.item))
-               if i.split("#")[1] in left.get(i.split("#")[0], ())]
+    ids = item_ids(root, item)
+    unbuilt = [i for i in ids if i.split("#")[1] in left.get(i.split("#")[0], ())]
     if unbuilt:
         raise Refused("%s: %s: still in unbuilt: %s" % (command, label, ", ".join(unbuilt)))
     head = git(tree, "rev-parse", "HEAD").stdout.strip()
+    skipped = batch_reach.unreached(git, tree, since, head, ids)        # only the tests the change reaches (b456)
     with batch_parked.tested_tree(root, batch, task, tree, head, command) as tested:     # no parked lines (r18)
-        tests_pass(root, tested, "%s: %s" % (command, label), strict=False, workspace=tree)   # its own ids are built (r19)
+        tests_pass(root, tested, "%s: %s" % (command, label), strict=False, workspace=tree,
+                   unreached=skipped)       # its own ids are built (r19)
     backlog_chore.passes(item, tree, "%s: %s" % (command, label))     # a chore's check, after the tests (b316)
     return head
 

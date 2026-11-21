@@ -58,7 +58,11 @@ def add_parsers(sub):
     p.add_argument("text", nargs="?", help="the requirement line (or --term)")
     p.add_argument("--retires", metavar="CAP#rN", help="the live requirement `<capability>#r<n>` the line replaces: "
                    "its id goes under the block's retired:, the line into that capability; with --universal, the "
-                   "live universal condition `universal#U<n>` it replaces")
+                   "live universal condition `universal#U<n>` it replaces; each design-decision whose enforced_by names "
+                   "the requirement is named")
+    p.add_argument("--retirement-list", metavar="FILE", help="a file of pairs `<capability>#r<n> <line>`, each line "
+                   "retiring its live requirement as --retires does, all in one commit; refused whole on an id no "
+                   "requirement has")
     p.add_argument("--no-line", action="store_true", help="with --retires: the live requirement retired with no line "
                    "replacing it, its id under the block's retired: and no line written")
     p.add_argument("--reword", metavar="CAP#rN", help="the item's own line `<capability>#r<n>` the requirement line "
@@ -79,6 +83,7 @@ def add_parsers(sub):
     p.add_argument("--capability", help="a capability new to the context, written as a block of the item with "
                    "--narrator, --group (service or guarantees, default service) and its purpose as the text")
     p.add_argument("--narrator", help="with --capability: who the new capability's lines speak for")
+    __import__("backlog_adapter").add_arguments(p)
     p.add_argument("--upstream", help="an upstream entry `bounded-context/<path>: ..., github: <owner>/<name>` for "
                    "spec/index.md's ## Upstreams, with no --into")
 
@@ -132,13 +137,17 @@ def cmd_depend(args):
 PIECES = ("text", "term", "relation", "given", "universal", "upstream", "recodify", "model")
 
 
-def _changed(args):
-    """`work line --reword <cap>#r<n> <line>` and `work line --remove <cap>#r<n>` (b14): an item's own line."""
-    import backlog_reword
+def _change_shape(args):
+    """The options of `work line --reword` or `--remove` refused before the item is read: one of them, alone."""
     others = [k for k in PIECES[1:] + ("into", "retires", "group", "in_group") if getattr(args, k) is not None]
     if (args.reword is not None) == (args.remove is not None) or others:
         raise backlog_items.Refused("work line: --reword takes a requirement line and --remove none, one of them, "
                                     "with no other option")
+
+
+def _changed(args):
+    """`work line --reword <cap>#r<n> <line>` and `work line --remove <cap>#r<n>` (b14): an item's own line."""
+    import backlog_reword
     if args.reword is not None:
         if args.text is None:
             raise backlog_items.Refused("work line: --reword %s takes the requirement line" % args.reword)
@@ -161,7 +170,15 @@ def _unreplaced(args):
                                     "requirement line or other piece")
     item = backlog_lines.retire(args.root, args.name, args.retires, None, args.into)[0]
     print("%s: retires %s" % (backlog_items.label(item), args.retires))
+    _enforcing(args)
     return 0
+
+
+def _enforcing(args):
+    """Each design-decision the retired requirement enforces, named (drafting r28)."""
+    import decision_amend
+    for line in decision_amend.enforcing(args.root, args.retires):
+        print(line)
 
 
 def _modelled(root):
@@ -174,10 +191,17 @@ def cmd_line(args):
     import backlog_chore
     import backlog_forms
     import backlog_lines
+    if args.reword is not None or args.remove is not None:
+        _change_shape(args)
     backlog_chore.refuse_line(args.root, args.name)
     if args.capability is not None:
         import backlog_capability
         return backlog_capability.cmd(args)
+    if args.expose is not None or args.withhold is not None:
+        return __import__("backlog_adapter").cmd(args)
+    if args.retirement_list is not None:
+        import backlog_retirements
+        return backlog_retirements.cmd(args)
     if args.no_line:
         return _unreplaced(args)
     if args.reword is not None or args.remove is not None:
@@ -203,6 +227,7 @@ def cmd_line(args):
         item, ident = backlog_lines.retire(args.root, args.name, args.retires, args.text, args.into, args.group,
                                            args.in_group)
         print("%s: %s retires %s" % (backlog_items.label(item), ident, args.retires))
+        _enforcing(args)
         return 0
     if (args.into is None) != (piece in ("universal", "upstream")):
         raise backlog_items.Refused("work line: %s %s --into <capability>" % (
@@ -268,22 +293,3 @@ COMMANDS = {"idea": cmd_idea, "shape": cmd_shape, "refuse": cmd_refuse, "rate": 
             "backlog": cmd_backlog, "line": cmd_line, "ready": cmd_ready,
             "reopen": cmd_reopen}
 
-
-def show(args):
-    """`work show b<n>`: the item, its label first; with --json one object `{"item": {...}}`."""
-    import backlog_view
-    item = backlog_items.find(args.root, args.target)
-    if args.json:
-        items = backlog_items.items(args.root)
-        print(json.dumps({"item": backlog_view.row_json(item, {i.name: i for i in items},
-                                                        backlog_view.rank_of(item, items), args.root)}))
-        return 0
-    print(backlog_items.label(item))
-    for key in ("status", "provenance", *backlog_items.RATINGS):
-        print("  %s: %s" % (key, getattr(item, key) or "-"))
-    by_name = {i.name: i for i in backlog_items.items(args.root)}
-    print("  depends on: %s" % (", ".join(backlog_items.label(by_name[n]) if n in by_name else "%s (missing)" % n
-                                          for n in item.depends_on) or "-"))
-    for heading, text in item.sections.items():
-        print("\n## %s\n\n%s" % (heading, text))
-    return 0
