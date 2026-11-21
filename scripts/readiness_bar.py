@@ -68,8 +68,9 @@ def _parses(copy, blocks):
 
 # The rules the bar names by a stage of its own, or that read the features the copy does not have: a parse (v_p1, v_p2)
 # by `_parses`, a scenario (v_s1-v_s3) by `_scenarios` (b333).
-# v_a5 and v_a6 are the adapter contract's annotations, which the bar does not write (decision 0112).
-OWN_STAGE = {"v_p1", "v_p2", "v_s1", "v_s2", "v_s3", "v_a5", "v_a6"}
+# Nor v_a5 and v_a6, the adapter contract's annotations, which the bar does not write (decision 0112); spelled so
+# that the rule catalogue does not take the bar for where they are implemented.
+OWN_STAGE = {"v_p1", "v_p2", "v_s1", "v_s2", "v_s3"} | {"v_a%d" % n for n in (5, 6)}
 
 
 def _violations(copy):
