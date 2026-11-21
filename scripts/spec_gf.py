@@ -3,8 +3,12 @@ compiled and cached, a pgf expression read into nested tuples and written back, 
 String callback of a literal slot.
 
 A compiled PGF is cached under `${XDG_CACHE_HOME:-~/.cache}/shopsystem-bdd/pgf/<sha>/`, the sha being that of every
-source, and is written by a rename so two processes compiling at once both get a whole one.
+source, and is written by a rename so two processes compiling at once both get a whole one. A grammar over another
+already compiled (the step grammar over grammar 4) is compiled beside that one's .gf and .gfo files, copied with
+their times, so GF reads its modules and compiles only the new ones (`compiled`'s `reuse`, b439), under a lock of its
+sha so that processes side by side compile it once.
 """
+import fcntl
 import os
 import re
 import shutil
@@ -76,8 +80,33 @@ def _run_gf(gf, directory, concrete):
                           capture_output=True, text=True, env=env)
 
 
-def compile(srcs, sha, grammar):
-    """`<grammar>.pgf` of the sources {file name: text}, written under the cache's folder `sha`."""
+def compiled(srcs, sha, grammar, reuse=None):
+    """`<grammar>.pgf` of the sources under the cache's folder `sha`, compiled unless it is there, under a lock of
+    `sha`; the modules compiled in the folder `reuse` read from their .gfo."""
+    base = cache()
+    base.mkdir(parents=True, exist_ok=True)
+    with open(base / (".lock-" + sha), "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        if not (base / sha / ("%s.pgf" % grammar)).is_file():
+            compile(srcs, sha, grammar, reuse)
+
+
+def _reused(tmp, srcs, reuse):
+    """The names of `srcs` whose .gf and .gfo the folder `reuse` holds, copied into `tmp` with their times (a .gfo
+    newer than its .gf, so GF compiles it not again)."""
+    out = set()
+    for name in srcs:
+        gfo = Path(reuse) / (name[:-3] + ".gfo")
+        if name.endswith(".gf") and gfo.is_file() and (Path(reuse) / name).is_file():
+            shutil.copy2(Path(reuse) / name, tmp / name)
+            shutil.copy2(gfo, tmp / gfo.name)
+            out.add(name)
+    return out
+
+
+def compile(srcs, sha, grammar, reuse=None):
+    """`<grammar>.pgf` of the sources {file name: text}, written under the cache's folder `sha`; the modules
+    compiled in the folder `reuse` read from their .gfo."""
     gf = tools_grammar.gf_binary()
     if not gf:
         raise GrammarError("no gf: run `python3 scripts/tools install`, or set $SHOPSYSTEM_GF")
@@ -85,8 +114,10 @@ def compile(srcs, sha, grammar):
     base.mkdir(parents=True, exist_ok=True)
     tmp = Path(tempfile.mkdtemp(dir=base, prefix=".tmp-"))
     try:
+        copied = _reused(tmp, srcs, reuse) if reuse else set()
         for name, text in srcs.items():
-            (tmp / name).write_text(text)
+            if name not in copied:
+                (tmp / name).write_text(text)
         done = _run_gf(gf, tmp, "%sEng.gf" % grammar)
         if not (tmp / ("%s.pgf" % grammar)).is_file():
             raise GrammarError("gf could not compile %s:\n%s%s" % (grammar, done.stdout[-2000:], done.stderr[-2000:]))
