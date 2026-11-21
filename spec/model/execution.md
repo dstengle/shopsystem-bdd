@@ -23,11 +23,13 @@ object workspace
 
 object kept change
   relations: for → review finding (many); touches → file (many); cites → item (many)
+  relations: conflicts with → kept change (many)
 
 object batch kind of file
   attributes: status: building | in-review | awaiting-merge | merged | abandoned
   lifecycle status: building → in-review; in-review → building; in-review → awaiting-merge; awaiting-merge → merged; in-review → merged; building → abandoned; in-review → abandoned
   relations: holds → item (many); has → task | proposed change | review folder | batch plan | kept change | measurement | wall time | session time | token | role | workspace | review (many)
+  lifecycle status: awaiting-merge → in-review
 
 object batch plan kind of file
 
@@ -52,7 +54,7 @@ service batches
   operation resume(batch)  outcomes: done
   operation finish(task)  outcomes: done | refused: chore breaking, file outside the chore
   operation park(item)  outcomes: done
-  operation submit(batch)  outcomes: done → the proposed change | refused: task not done, kept change citing no item
+  operation submit(batch)  outcomes: done → the proposed change | refused: task not done, kept change citing no item, batch with no base merge
   operation merge(proposed change)  outcomes: done
   operation abandon(batch)  outcomes: done
   operation monitor(batch)  outcomes: returned → the batch
@@ -78,4 +80,6 @@ object settings file kind of file
   relations: holds → setting (many)
 
 object delivery settings form kind of artifact
+
+object base merge kind of kept change
 ```

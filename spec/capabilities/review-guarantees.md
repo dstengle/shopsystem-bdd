@@ -7,7 +7,7 @@ area: execution
 specifies: guarantees of a review
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r10]
 ---
 
 # Review guarantees
@@ -51,3 +51,7 @@ What `pr-reviewer` reads and writes in reviewing a batch's change, and where its
 ### [g9] A review finding names its grade and triage
 - [r9] When `pr-reviewer` reviews a proposed change, `pr-reviewer` shall name the grade of every review finding on the
   proposed change and the triage of every review finding on the proposed change.
+
+### [g10] A review after a base merge reads only the base merge
+- [r10] While the workspace of a batch holds a base merge and the proposed change of the batch has a review and no review finding on the proposed change whose triage is `fix now` exists, when `pr-reviewer` reviews the proposed change, `pr-reviewer` shall review only the base merge.
+
