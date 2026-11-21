@@ -11,9 +11,11 @@ and says on stderr which repositories it polls.
 
 At its start, once the forwards run and the notifications' baseline is taken, it checks once as `work watch` polls
 (request_watch's `report`), for what came while no watch ran; then each event, and each notification of a polled
-repository, wakes the same check. What it finds it prints, and it exits 0, as `work watch` does: it writes nothing
-in the repository. One wait lasts at most `--every` seconds; `--polls <n>` ends a watch that has found nothing after
-n waits, exit 1. The forwards end with it.
+repository, wakes the same check, as does the call that takes the baseline when it is not taken before the start's
+check (its gh failed or gave no 200 then, or the repository is first polled later, when its forward ends), since
+what came before that baseline no later notification lists. What it finds it prints, and it exits 0, as `work watch`
+does: it writes nothing in the repository. One wait lasts at most `--every` seconds; `--polls <n>` ends a watch that
+has found nothing after n waits, exit 1. The forwards end with it.
 """
 import email.utils
 import http.server
@@ -108,8 +110,9 @@ class Notifications:
         self.root, self.since, self.interval, self.due = root, None, floor, 0.0
 
     def changed(self, polled):
-        """Whether a notification of a repository in `polled` came since the last call; the first call is the
-        baseline, and a call before the interval asked for, or a gh that fails, is no change."""
+        """Whether a notification of a repository in `polled` came since the last call; the first call that gets a
+        200 is the baseline, and a change, for what came before it; a call before the interval asked for, a gh that
+        fails, or another status is no change."""
         if time.time() < self.due:
             return False
         args = ["api", "--include", "notifications"]
@@ -136,9 +139,9 @@ class Notifications:
         try:
             listed = json.loads(body or "[]")
         except ValueError:
-            return False
-        return not first and any((n.get("repository") or {}).get("full_name") in polled for n in listed
-                                 if isinstance(n, dict))
+            return first
+        return first or any((n.get("repository") or {}).get("full_name") in polled for n in listed
+                            if isinstance(n, dict))
 
 
 class Watched:
