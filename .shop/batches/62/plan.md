@@ -20,7 +20,7 @@ pull_request:
 | t4 | b481 | running | batch-62-b481 |
 | t5 | b482 | running | batch-62-b482 |
 | t6 | b367 | running | batch-62-b367 |
-| t7 | b471 | running | batch-62-b471 |
+| t7 | b471 | pending | batch-62-b471 |
 
 ## Plan
 
