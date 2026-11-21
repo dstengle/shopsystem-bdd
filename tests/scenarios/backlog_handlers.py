@@ -44,12 +44,14 @@ def given_item_is(step):
     """`an item i1 that is v`, `the item i1 is v`; `the item i1 is not v` keeps the item's value when it is another,
     else takes the first of the attribute's values that is not v."""
     name, value, attribute = step.names[0], bare(step.values[0]), step.attribute
-    if " is not " in step.text:
+    if " is not " in step.text:     # every value an earlier Given said it is not stays excluded (b459)
+        excluded = step.context.setdefault("is_not", {}).setdefault((name, attribute), set())
+        excluded.add(value)
         had = B.fields_of(step, name)
-        if had and had[attribute] != value:
+        if had and had[attribute] not in excluded:
             return
         allowed = backlog_items.STATUSES if attribute == "status" else backlog_items.RATINGS[attribute]
-        value = next(v for v in allowed if v != value)
+        value = next(v for v in allowed if v not in excluded)
     B.write_item(step, name, **{attribute: value})
 
 

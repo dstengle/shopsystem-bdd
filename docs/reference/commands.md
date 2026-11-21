@@ -305,6 +305,30 @@ $ work annotate b250 "value high: every session reads the status"
 b250 "work show prints the status of an item": a note
 ```
 
+#### `work retitle`
+
+Gives an item that is not `delivered`, `refused` or `withdrawn` a new title, keeping its id, in one commit of the
+item; a closed item is refused, named.\
+Synopsis: `work retitle name title`
+
+```console
+$ work retitle b250 "work show prints the status and the batch of an item"
+b250 "work show prints the status and the batch of an item"
+```
+
+#### `work split`
+
+Moves requirement lines of an item that is `idea` or `shaped` to a new item, numbered next, that derives from it
+(`derives_from:`): each line with its group's id, title and given block, the id it retires with it, and its status,
+provenance, ratings, dependencies and request copied; both items in one commit. An item in another state is refused,
+named, and so is a line the item does not hold. The new item is titled after the old one; `work retitle` names it.\
+Synopsis: `work split name --requirement CAPABILITY#rN [--requirement ...]`
+
+```console
+$ work split b250 --requirement items#r12
+b251 "work show prints the status of an item (split from b250)" split from b250 "work show prints the status of an item"
+```
+
 #### `work answer`
 
 Answers the question of an item that is `needs-input` (parked mid-batch), and moves it back to `shaped`.\

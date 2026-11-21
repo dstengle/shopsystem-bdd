@@ -15,6 +15,7 @@ import backlog_chore
 import backlog_cli
 import backlog_items
 import backlog_note
+import backlog_split
 import batch_cli
 import conversation_cli
 import decision_write
@@ -132,6 +133,7 @@ def main(argv=None):
     backlog_cli.add_parsers(sub)
     backlog_chore.add_parser(sub)
     backlog_note.add_parsers(sub)
+    backlog_split.add_parsers(sub)
     batch_cli.add_parsers(sub)
     conversation_cli.add_parsers(sub)
     decision_write.add_parser(sub)
@@ -144,7 +146,7 @@ def main(argv=None):
                "resolve": cmd_resolve, **backlog_cli.COMMANDS, **batch_cli.COMMANDS,
                **conversation_cli.COMMANDS, **request_cli.COMMANDS, **decision_write.COMMANDS,
                **record_write.COMMANDS, **backlog_chore.COMMANDS,
-               **backlog_note.COMMANDS, **delivery_settings.COMMANDS}[args.cmd]
+               **backlog_note.COMMANDS, **backlog_split.COMMANDS, **delivery_settings.COMMANDS}[args.cmd]
     return respond("work", handler, args, names=getattr(handler, "parameters", None))
 
 
