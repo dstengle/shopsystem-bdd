@@ -11,3 +11,6 @@ checks = [
   "python3 scripts/features bindings --unbound",
   "python3 scripts/spec decisions --check",
 ]
+
+[batch]
+rules = ["Never chain cp and rm in one shell command, and keep shell variables few.", "Worktrees of older work (.shop/worktrees/* of other or earlier batches, .claude/worktrees/) are never reference material: the reference is the base branch and its own worktree."]
