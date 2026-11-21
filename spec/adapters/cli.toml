@@ -216,6 +216,18 @@ wording = { option = "--decision" }
 route = { option = "--verified-by", repeat = true }
 supersedes = { option = "--supersedes", repeat = true }
 
+[operations."decisions.amend"]
+command = "work decision"
+requirements = [
+  "decisions#r21: When the person amends a design-decision whose status is `accepted` with an enforcer, the decisions service shall keep a design-decision that has an enforcer and keep the decisions index.",
+  "decisions#r22: When the person amends a design-decision whose status is `accepted` with a foundation, the decisions service shall keep a design-decision that has a foundation and keep the decisions index.",
+  "decisions#r23: If the person amends a design-decision whose status is not `accepted`, then the decisions service shall refuse the request and name the design-decision.",
+]
+[operations."decisions.amend".parameters]
+"design-decision" = { option = "--amend" }
+enforcer = { option = "--enforced-by", repeat = true }
+foundation = { option = "--rests-on", repeat = true }
+
 [operations."decisions.rebuild"]
 command = "spec decisions"
 requirements = [

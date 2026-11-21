@@ -120,7 +120,8 @@ Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CA
   item's groups instead.
 - `--retires <cap>#r<n>`: the line replaces a live requirement, whose id goes to `retired:`, and the pair of the
   two to the block's `retires:` line. Ids are never reused. With `--no-line` and no line, the requirement is retired
-  with nothing in its place, and no pair is written.
+  with nothing in its place, and no pair is written. Each design-decision whose `enforced_by` names the retired
+  requirement is named, with the `work decision --amend` that names what holds it now.
 - `--reword <cap>#r<n>`: the line takes the place of one of the item's own lines, keeping its id and group.
   `--remove <cap>#r<n>` takes one of them out, its group with it when it was the last line, and the id its
   `retires:` pair names; an id no pair names stays. Either refuses an id that is no line of the item, a live requirement's among them.
@@ -692,7 +693,7 @@ Synopsis: `work drop --why WHY name`
 #### `work decision`
 
 Writes a design-decision, `spec/decisions/<nnnn>-<slug>.md`, rewrites `spec/decisions/index.md`, and commits both.\
-Synopsis: `work decision [--summary SUMMARY] [--tier {check,requirement,judgement}] [--decision DECISION] [--context CONTEXT] [--alternatives ALTERNATIVES] [--enforced-by ENFORCED_BY] [--verified-by {scenario,check,judgement,monitor}] [--rests-on RESTS_ON] [--supersedes SUPERSEDES] [--source SOURCE] [--by BY] [--slug SLUG] [--date DATE] title`
+Synopsis: `work decision [--amend DECISION] [--summary SUMMARY] [--tier {check,requirement,judgement}] [--decision DECISION] [--context CONTEXT] [--alternatives ALTERNATIVES] [--enforced-by ENFORCED_BY] [--verified-by {scenario,check,judgement,monitor}] [--rests-on RESTS_ON] [--supersedes SUPERSEDES] [--source SOURCE] [--by BY] [--slug SLUG] [--date DATE] [title]`
 
 - `--summary`, `--tier`, `--decision`: required; it is refused, naming each one missing.
 - `--context`, `--alternatives`: the other sections. These three take text, or `@<file>`.
@@ -700,6 +701,9 @@ Synopsis: `work decision [--summary SUMMARY] [--tier {check,requirement,judgemen
 - `--rests-on`, `--verified-by`: for a decision that routes a universal condition.
 - `--supersedes <id>`: an accepted decision this one replaces (its id, path or number); it is set `superseded`
   and committed with the new one. A decision not accepted, or an id that names none, is refused, naming it; repeatable.
+- `--amend <id>`: in place of a title, adds each `--enforced-by` and `--rests-on` an accepted decision (its id, path
+  or number) does not name yet, changes nothing else of it, and commits it with the index. A decision not accepted
+  is refused, naming it.
 
 ```console
 $ work decision "The command reference defers to --help" --summary "Where the command reference and --help differ, --help wins." --tier judgement --decision "Each command's --help is its contract; the reference page links to it and never overrides it."
