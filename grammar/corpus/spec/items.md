@@ -896,22 +896,22 @@ shall [x3: agent the person (constant), x4: service the backlog service (constan
 From: b459 r51.
 
 ```reading
-While the status of an item is one of `idea` or `shaped` and another item holds a requirement, if the person splits the item with the requirement, then the backlog service shall refuse the request and name the requirement.
+While a requirement is in an item and the status of another item is one of `idea` or `shaped`, if the person splits the item with the requirement, then the backlog service shall refuse the request and name the requirement.
 shall [x4: agent the person (constant), x5: service the backlog service (constant), x6: request "the request the trigger makes" (indexical)]
-  while [x1: item, x2: item, x3: requirement]
+  while [x1: requirement, x2: item, x3: item]
+    in(x1, x2)
+    distinct(x3, x2)
     or
       case
-        status(x1) = `idea`
+        status(x3) = `idea`
       case
-        status(x1) = `shaped`
-    distinct(x2, x1)
-    in(x3, x2)
+        status(x3) = `shaped`
   if
-    request(e1, backlog.split, subject: x4, object: x2)
-    param(e1, requirement, x3)
+    request(e1, backlog.split, subject: x4, object: x3)
+    param(e1, requirement, x1)
   response
     refuse(e2, subject: x5, object: x6)
-    name(e3, subject: x5, object: x3)
+    name(e3, subject: x5, object: x1)
 ```
 
 ## r52
@@ -931,3 +931,4 @@ shall [x2: agent the person (constant), x3: service the backlog service (constan
     refuse(e2, subject: x3, object: x4)
     name(e3, subject: x3, object: x1)
 ```
+
