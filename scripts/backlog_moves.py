@@ -16,13 +16,14 @@ from backlog_items import (
 )
 
 # The moves of an item's status that a command makes, before -> after: the glossary's transitions of `status` of item
-# by `work shape`, `work refuse`, `work withdraw`, `work answer` and `work ready`.
+# by `work shape`, `work refuse`, `work withdraw`, `work answer`, `work ready` and `work reopen`.
 TRANSITIONS = {"work shape": {"idea": "shaped"},
                "work refuse": {"idea": "refused", "shaped": "refused"},
                "work withdraw": {"idea": "withdrawn", "shaped": "withdrawn", "ready": "withdrawn",
                                  "needs-input": "withdrawn"},
                "work answer": {"needs-input": "shaped"},
-               "work ready": {"shaped": "ready"}}
+               "work ready": {"shaped": "ready"},
+               "work reopen": {"ready": "shaped"}}
 
 
 def text_line(text, what):
@@ -93,6 +94,12 @@ def refuse(root, name, reason):
 def withdraw(root, name):
     """`idea`, `shaped`, `ready` or `needs-input` -> `withdrawn` (r9-r12)."""
     return move(root, name, "work withdraw")
+
+
+def reopen(root, name):
+    """`ready` -> `shaped` (items#r31), so that its lines can change before `work ready` again; an item that is not
+    `ready` refused, naming it (items#r32)."""
+    return move(root, name, "work reopen")
 
 
 def answer(root, name, text):

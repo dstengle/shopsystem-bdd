@@ -45,6 +45,8 @@ def add_parsers(sub):
     on.add_argument("--drop", help="an item it depends on, the dependency to drop")
     p = sub.add_parser("ready", help="move an item that is shaped to ready, when it passes the readiness bar")
     p.add_argument("name")
+    p = sub.add_parser("reopen", help="move an item that is ready back to shaped, so that its lines can change")
+    p.add_argument("name")
     p = sub.add_parser("line", help="write a requirement line (or a term bullet, relation row, given block, universal "
                        "condition or upstream entry) into an item's ## Requirements, and commit it")
     p.__class__ = _LineParser
@@ -98,6 +100,11 @@ def cmd_shape(args):
 def cmd_refuse(args):
     import backlog_moves
     return moved(backlog_moves.refuse(args.root, args.name, args.reason))
+
+
+def cmd_reopen(args):
+    import backlog_moves
+    return moved(backlog_moves.reopen(args.root, args.name))
 
 
 def cmd_rate(args):
@@ -255,7 +262,8 @@ def answer(args):
 
 
 COMMANDS = {"idea": cmd_idea, "shape": cmd_shape, "refuse": cmd_refuse, "rate": cmd_rate, "depend": cmd_depend,
-            "backlog": cmd_backlog, "line": cmd_line, "ready": cmd_ready}
+            "backlog": cmd_backlog, "line": cmd_line, "ready": cmd_ready,
+            "reopen": cmd_reopen}
 
 
 def show(args):

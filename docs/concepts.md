@@ -378,6 +378,7 @@ stateDiagram-v2
   shaped --> ready: work ready
   ready --> in_batch: work batch start
   ready --> shaped: work batch start (fails the bar alone)
+  ready --> shaped: work reopen
   in_batch --> delivered: work batch merged
   in_batch --> needs_input: work batch park
   in_batch --> ready: work batch abandon
