@@ -53,3 +53,14 @@ def test_a_context_with_a_model_and_no_adapter_contract_is_told_how_to_make_one(
     assert "## A fresh context" in text
     assert "spec/adapters/cli.toml" in text and "spec annotate" in text and "v_a1" in text
     assert "a remote and gh" in text
+
+
+def test_batch_rules_that_are_not_a_list_of_texts_are_refused(tmp_path):
+    (tmp_path / ".shop").mkdir()
+    (tmp_path / ".shop" / "delivery.toml").write_text('[batch]\nrules = "one"\n', encoding="utf-8")
+    try:
+        batch_driver.batch_rules(tmp_path)
+    except batch_driver.Refused as why:
+        assert "[batch] rules is not a list of texts" in str(why)
+    else:
+        raise AssertionError("a text in place of a list was taken")
