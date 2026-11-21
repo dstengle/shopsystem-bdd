@@ -81,3 +81,17 @@ def test_two_entries_of_an_attribute_word_on_one_kind_are_v_t2(tmp_path):
     index.write_text(text.replace("- **stage** (noun)", twice + "- **stage** (noun)", 1))
     out = _model_check(root)
     assert "v_t2 " in out, out
+
+
+def test_two_overlapping_senses_of_a_verb_are_v_t15(tmp_path):
+    """b538 f1: two senses of a verb whose frames take the same kinds (as the overlapping entries of
+    design_model_check_handlers_conditions.SENSES, said in the fixture's kinds) still give v_t15 under spec check's
+    facts beside the attribute senses."""
+    root = _codified_2(tmp_path)
+    index = root / "spec" / "index.md"
+    senses = ("- **mark** (verb, action): a session marks a file. Frame: session marks file.\n"
+              "- **mark** (verb, state): a session bears a file's mark. Frame: session marks file.\n")
+    text = index.read_text()
+    index.write_text(text.replace("- **stage** (noun)", senses + "- **stage** (noun)", 1))
+    out = _model_check(root)
+    assert "v_t15 " in out, out

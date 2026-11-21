@@ -87,10 +87,10 @@ class SpecReading:
             if t.category == "event" and sum(u.category == "event" for u in terms if u.term == t.term) > 1:
                 # two senses of one verb, a noun of its word beside them another term (`<word> event`, b475)
                 self.fact("senses", ident)
-            if t.category == "attribute" and attribute_senses(terms, t.term):
-                self.fact("senses", ident)     # one attribute word of two kinds (b538)
                 if t.term in overlapping:
                     self.fact("overlapping", ident)
+            if t.category == "attribute" and attribute_senses(terms, t.term):
+                self.fact("senses", ident)     # one attribute word of two kinds (b538)
             for name in unmarked.get((t.where, t.term), ()):
                 self.fact("unmarked", ident, name)
             if t.category == "condition" and spec_frames.relational(t, kinds):
