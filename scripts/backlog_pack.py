@@ -61,7 +61,8 @@ def _words(text):
 
 def write(root, name, pack, terms):
     """`work line <item> --pack <pack> --term <bullet>...`: each term kept in the item's block of the pack."""
-    from backlog_section import SECTION, read, render as rendered, takes
+    from backlog_section import SECTION, read, takes
+    from backlog_section import render as rendered
     if not NAME.match(pack) or (spec_packs.PLUGIN / ("%s.md" % pack)).is_file():
         raise Refused("work line: --pack %s names %s; a context's own pack has a name of its own" % (
             pack, "the plugin's own pack" if NAME.match(pack) else "no pack name"))
@@ -123,15 +124,25 @@ def _index(into, name, wanted, files):
         files.append("spec/index.md")
 
 
+def _glossed(text, terms):
+    """`text` with `terms` after the last line of its `## Glossary` (made at the end when it has none)."""
+    found = re.search(r"(?ms)^## Glossary[ \t]*\n(.*?)(?=^## |\Z)", text)
+    if found is None:
+        return text.rstrip("\n") + "\n\n## Glossary\n\n" + "\n".join(terms) + "\n"
+    inside = found.group(1).rstrip("\n")
+    body = (inside + "\n" if inside.strip() else "\n") + "\n".join(terms) + "\n"
+    rest = text[found.end(1):]
+    return text[:found.start(1)] + body + ("\n" + rest if rest else "")
+
+
 def lay(into, blocks, files):
     """Each pack block's entries appended to its pack's `## Glossary` (the pack made when missing), the pack imported;
     each path changed added to `files`."""
-    from backlog_forms import with_lines
     for block in getattr(blocks, "packs", ()):
         path = path_of(into, block.name)
         text = path.read_text(encoding="utf-8") if path.is_file() else MADE % (block.name, block.name)
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(with_lines(text, "Glossary", block.terms), encoding="utf-8")
+        path.write_text(_glossed(text, block.terms), encoding="utf-8")
         files.append(path.relative_to(into).as_posix())
         _index(into, block.name, True, files)
 

@@ -69,7 +69,7 @@ def test_json_is_one_object(tmp_path):
     done = run(SCRIPTS / "spec", "--root", tmp_path, "forms", "--json")
     forms = json.loads(done.stdout)["content"]["forms"]
     assert forms == [dict(f._asdict(), kind=f.kind) for f in model_forms.FORMS]
-    assert {f["kind"] for f in forms} == {"command", "item", "hand"}
+    assert {f["kind"] for f in forms} <= {"command", "item", "hand"}     # no form by hand left once b472 gave the term pack its command
 
 
 def test_check_refuses_each_form_by_hand_and_passes_with_none(monkeypatch, capsys):

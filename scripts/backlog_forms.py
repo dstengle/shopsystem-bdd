@@ -235,8 +235,8 @@ def _universal_file(into):
 
 
 def lay_spec(into, blocks, files):
-    """The item's universal conditions and upstream entries laid into `into/spec`; each path changed added to
-    `files`."""
+    """The item's universal conditions, upstream entries and pack terms (backlog_pack) laid into `into/spec`; each
+    path changed added to `files`."""
     if blocks.universal:
         path = _universal_file(into)
         path.write_text(with_lines(path.read_text(), "Behaviour", ["- [%s] %s" % u for u in blocks.universal]))
