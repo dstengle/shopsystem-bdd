@@ -171,7 +171,7 @@ def then_does(step):
         assert any(e.split(". ", 1)[-1] == text_of(step, step.names[-1]) for e in lines), (step.text, lines)
     elif step.event == "holds" and step.subject.startswith("the item ") and step.names[-1] in step.context.get(
             "terms", {}):
-        assert "**%s**" % word(step, step.names[-1]) in item_text(step), (step.text, item_text(step))
+        assert read_terms(step, word(step, step.names[-1])), (step.text, item_text(step))
     else:
         return False
 
@@ -187,3 +187,15 @@ def then_does_not(step):
 
 def item_text(step):
     return (step.repo / B.bind_written(step, step.names[0])).read_text()
+
+
+def read_terms(step, term):
+    """The entries of the item's blocks for the term that the lexicon reads as term entries (r58, f1)."""
+    import backlog_items
+    import backlog_section
+    import spec_lexicon
+    item = backlog_items.parse(item_text(step), "the item")
+    blocks = backlog_section.read(item, "the item")
+    bullets = [b for block in blocks for b in block.terms] + [b for m in blocks.models for b in m.terms]
+    found = [spec_lexicon.entry(b, "the item") for b in bullets]
+    return [e for e in found if e and e.term == term]
