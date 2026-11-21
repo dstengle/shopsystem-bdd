@@ -108,7 +108,8 @@ def wrote(step, what, name):
         rel = decision(step, name)
         assert "id: design-decision/%s/%s\n" % (CONTEXT, re.sub(r"^\d+-", "", rel.rsplit("/", 1)[1][:-3])) in M.read(step, rel)
     else:
-        rel = {"restated file": "spec/restated.json", "frozen notice": ".shop/work/FROZEN.md"}[what]
+        rel = {"restated file": "spec/restated.json", "frozen notice": ".shop/work/FROZEN.md",
+               "index file": "spec/index.md"}[what]
         assert (step.repo / rel).is_file(), rel
 
 
@@ -120,6 +121,8 @@ def has(step):
         return
     elif other == "context scaffold":
         F.scaffolded(step)
+    elif other == "context purpose":
+        F.purposed(step)
     else:
         rel = {"decisions index": "spec/decisions/index.md", "plugin version file": ".shop/plugin-version",
                "index file": "spec/index.md"}[other]
