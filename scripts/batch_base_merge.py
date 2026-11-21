@@ -13,7 +13,6 @@ from pathlib import Path
 import batch_findings
 import batch_plan
 from batch_git import git, push, remote, remove_tree, tree_for, trees_dir, trees_path
-from batch_tasks import tests_pass
 from shop_files import Refused
 
 
@@ -40,9 +39,10 @@ def merges(root, batch, head=None):
     return out
 
 
-def resubmit(root, batch, command):
+def resubmit(root, batch, command, tests_pass):
     """The pull request's URL: the batch `awaiting-merge` whose branch holds a base merge tested, pushed and
-    `in-review` (r9); refused naming the batch when its branch holds none (r10). Run under the lock."""
+    `in-review` (r9); refused naming the batch when its branch holds none (r10). Run under the lock, the tests by
+    `tests_pass` (batch_tasks', which reaches batch_brief, which reads this module)."""
     batch_plan.on_base(root, batch)
     if not merges(root, batch):
         raise Refused("%s: %s is awaiting-merge and its branch %s holds no merge of %s since its last review; %s "
