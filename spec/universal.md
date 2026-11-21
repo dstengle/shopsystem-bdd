@@ -14,7 +14,7 @@ retired: [U1, U2, U3, U6, U9, U10, U11, U4, U5, U7, U8, U12, U13, U14, U15, U16]
 The statements that are true in every state of every trace (design model v5, `docs/reference/design-model.md`). Each
 is written once here, in the requirement grammar, and is never restated in a requirement: a line that only restated
 one is dropped with the U as its reason. `model logic` adds each as an `always` constraint to the background
-of every check, and where a U is observable in a test (U17) the scenario conftest checks it after every
+of every check, and where a U is observable in a test (U17, U20) the scenario conftest checks it after every
 scenario that makes its trigger true. They come from the domain model's §7 (`.shop/records/2026-11-02-domain-model/`).
 U1, U2, U6, U9 and U10 stated guarantees of `work run`, its stages and initiatives, and are retired in plugin 0.31.0
 (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired). U11, U4, U5, U7 and U8 are
@@ -38,6 +38,9 @@ response envelope": a commit, a push and `--json` are the adapters', not the dom
   session's own edit.
 - U19: a workspace is a task's, made when a batch is opened, and the session that builds the task works in it. A
   session with no workspace, such as a reviewer, is not bound by it.
+- U20: a task's workspace is its branch; every service that keeps a change refuses there, naming the task, so what
+  it keeps lands on the base branch, never in the item's work. The batches service keeps its own changes on the base
+  branch's checkout, so it is not refused by it.
 
 ### An "If" line takes precedence
 
