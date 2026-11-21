@@ -136,18 +136,22 @@ def recodify(root, name, capability):
     return item
 
 
-def add_term(root, name, capability, bullet):
-    """`work line --term`: one term bullet written into the item's block for `capability` and committed."""
+def add_term(root, name, capability, bullets):
+    """`work line --term`, given once or more (b453): each term bullet, in the order given, written into the item's
+    block for `capability` and committed once; one that is no term entry refuses them all, writing none."""
     item = find(root, name)
     takes(item)
     blocks = read(item, "the item %s" % item.name)
     _spec_of(root, capability, blocks)
-    bullet = one_line(bullet, "term bullet")
-    if spec_lexicon.entry(bullet, capability) is None:
-        raise Refused("work line: the term bullet %s is not a term entry `- **<term>** (<part of speech>): <text>`" % bullet)
-    _block(blocks, capability).terms.append(bullet)
+    bullets = [one_line(b, "term bullet") for b in ([bullets] if isinstance(bullets, str) else bullets)]
+    for bullet in bullets:
+        if spec_lexicon.entry(bullet, capability) is None:
+            raise Refused("work line: the term bullet %s is not a term entry `- **<term>** (<part of speech>): "
+                          "<text>`" % bullet)
+    _block(blocks, capability).terms.extend(bullets)
     item.sections[SECTION] = render(blocks)
-    commit(root, item, "work line: %s a term of %s" % (label(item), capability))
+    said = "a term" if len(bullets) == 1 else "%d terms" % len(bullets)
+    commit(root, item, "work line: %s %s of %s" % (label(item), said, capability))
     return item
 
 
