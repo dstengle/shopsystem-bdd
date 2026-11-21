@@ -206,7 +206,7 @@ def task_of(root, branch):
 def refuse_task_branch(root):
     """Refused when the branch checked out in `root` is a task's: a task's commits are its item's work, and what work
     commits under .shop/ belongs on the base branch, so nothing is written there and the task branch is never pushed
-    (backlog r20)."""
+    (backlog r20; every command that keeps a change, U20)."""
     branch = branch_of(root)
     task = task_of(root, branch)
     if task is not None:
