@@ -589,6 +589,15 @@ requirements = [
 [operations."drafting.remove".parameters]
 requirement = { option = "--remove" }
 
+[operations."drafting.retract"]
+command = "work line"
+requirements = [
+  "drafting#r35: While an item holds a capability and the item holds a model line, when the person removes the capability from the item, the drafting service shall not keep the capability in the item and not keep the model line in the item.",
+]
+[operations."drafting.retract".parameters]
+item = { positional = 1 }
+capability = { option = "--remove" }
+
 [operations."drafting.apply"]
 command = "work line"
 requirements = [

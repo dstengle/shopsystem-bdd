@@ -35,13 +35,18 @@ def path_of(root, capability):
 
 def check(root, item, capability, group):
     """Refused, naming the capability, when its name is no capability name, its file exists in `spec/`, or the item
-    holds a block for it already; or when the group is neither service nor guarantees."""
+    holds a block for it already; naming the other item and its batch when another item holds one (b450); or when
+    the group is neither service nor guarantees."""
     if not CAP.match("### %s" % capability) or capability in (UNIVERSAL, INDEX):
         raise Refused("%s: %s is no capability name: lowercase words joined by -" % (COMMAND, capability))
     if path_of(root, capability).exists():
         raise Refused("%s: the capability %s exists: spec/capabilities/%s.md" % (COMMAND, capability, capability))
     if any(b.capability == capability for b in read(item, "the item %s" % item.name)):
         raise Refused("%s: %s holds a block of the capability %s already" % (COMMAND, label(item), capability))
+    others = __import__("backlog_retract").holders(root, capability, besides=item.name)
+    if others:
+        raise Refused("%s: the capability %s is new on %s already; its lines go into that item"
+                      % (COMMAND, capability, ", ".join(others)))
     if group not in GROUPS:
         raise Refused("%s: the group %s is neither %s" % (COMMAND, group, " nor ".join(GROUPS)))
 
