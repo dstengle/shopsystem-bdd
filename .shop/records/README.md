@@ -114,3 +114,4 @@ A record file is a node for `scripts/model` only when its frontmatter has an `id
 | `2026-11-21-a-plan-to-publish-contracts-between-bounded-contexts.md` | What a published contract holds (business rules and ports), how ports link to the core, how a downstream reads it and falls back to a request; for the person's review | analysis |
 | `2026-11-21-release-0-43-0.md` | Release 0.43.0: batch-57 (b437, b441) and batch-58 (b439, b430) with decision 0112; the readiness bar in seconds; tag v0.43.0 and its GitHub release. | analysis |
 | `2026-11-21-release-0-44-0.md` | Release 0.44.0: batch-59 and batch-60, the commands for what was edited by hand; one forms fix on main, no upgrade step; tag v0.44.0 and the GitHub release | analysis |
+| `2026-11-21-shopsystem-bdd-batches-62-69-performance.md` | Batches 62-69 against 58-61: cost per 100 lines down to 0.6-0.9 under the review limit, one review a batch from 66 on | analysis |
