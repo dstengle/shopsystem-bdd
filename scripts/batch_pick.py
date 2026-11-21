@@ -5,8 +5,9 @@ alone and then laid over the items picked before it, its ids renumbered past its
 An item is blocked unless each item it depends on is `delivered` or picked earlier in this pick; the pick goes over
 the table again until a pass picks nothing more, so a dependency ranked lower is still picked first. An item that no
 longer passes alone goes back to `shaped`, its reasons under `## Notes`; one that passes alone but not laid with the
-picked is left out and stays `ready`, as is one that exceeds the review limit (batch_estimate, b483: the pick goes on
-to the items after it, the first item taken whatever its estimate). Nothing is written: `batch_start` commits what the pick gives."""
+picked is left out and stays `ready`, as is one that passes alone but exceeds the review limit (batch_estimate, b483:
+checked after the bar alone, so an item that fails it goes back `shaped` whatever its estimate; the pick goes on to the
+items after it, the first item taken whatever its estimate). Nothing is written: `batch_start` commits what the pick gives."""
 import copy
 from collections import namedtuple
 
@@ -61,14 +62,14 @@ def pick(root, size=None):
             if item.name in done or _blocked(item, by_name, picked):
                 continue
             done.add(item.name)
-            if batch_estimate.exceeds(spent, item, len(picked), review_limit):
-                left_out.append((item, [batch_estimate.reason(spent, item, review_limit)]))
-                continue
             reasons = _alone(root, item)
             if reasons:
                 item.status = "shaped"
                 backlog_moves.add_note(item, "returned by work batch start: %s" % "; ".join(reasons))
                 returned.append((item, reasons))
+                continue
+            if batch_estimate.exceeds(spent, item, len(picked), review_limit):
+                left_out.append((item, [batch_estimate.reason(spent, item, review_limit)]))
                 continue
             trial, trial_taken = copy.deepcopy(item), copy.deepcopy(taken)
             pairs = backlog_lines.renumber(root, trial, trial_taken)

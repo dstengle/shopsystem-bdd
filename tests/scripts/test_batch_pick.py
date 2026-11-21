@@ -128,3 +128,17 @@ def test_the_first_item_is_picked_whatever_its_estimate(repo):
     git(repo, "add", "-A")
     git(repo, "commit", "-q", "-m", "limit")
     assert names(batch_pick.pick(repo).picked) == ["b1"]
+
+
+def test_an_item_over_the_review_limit_that_fails_the_bar_goes_back_to_shaped(repo):
+    """f1: the bar is checked before the review limit, so an item that no longer passes alone is returned `shaped`
+    whatever its estimate (batches r54)."""
+    ready_item(repo, "b1", "First", ABANDON, value="high-value", urgency="high-urgency", size="large")
+    ready_item(repo, "b2", "Frobnicate", FROBNICATE, size="large")
+    (repo / ".shop" / "delivery.toml").write_text("[review]\nsize = 1\n")
+    git(repo, "add", "-A")
+    git(repo, "commit", "-q", "-m", "limit")
+    found = batch_pick.pick(repo)
+    assert names(found.picked) == ["b1"] and not found.left_out, (found.returned, found.left_out)
+    (back, _), = found.returned
+    assert back.name == "b2" and back.status == "shaped"
