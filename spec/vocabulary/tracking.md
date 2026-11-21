@@ -162,3 +162,6 @@ area: tracking
 - **retitle** (verb, action) → operation backlog.retitle. Forms: retitles, retitled. Frame: <actor> retitles <item>.
 - **split** (verb, action) → operation backlog.split. Forms: splits, split. Frame: <actor> splits <item>.
 - **derive** (verb, state) → relation item.derives from. An item split from another names that item as the one its lines came from. Forms: derives, derived. Frame: <item> derives from <item>.
+- **availability** (attribute) → attribute channel.availability. Whether the channel takes a change to a thread it holds.
+- **available** (noun) → value channel.availability available.
+- **rejecting** (noun) → value channel.availability rejecting.

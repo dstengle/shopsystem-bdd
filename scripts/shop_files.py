@@ -144,7 +144,9 @@ def push_timeout():
 
 def bounded(argv, root, env, seconds):
     """`argv` run in `root` in its own process group, its output captured: the completed process, or None when it ran
-    past `seconds`, the whole group killed (git's children, a remote's hook, hold the pipes open past git itself)."""
+    past `seconds`, the whole group killed (git's children, a remote's hook, hold the pipes open past git itself); a
+    process outside the group that still holds the pipes (an ssh ControlPersist master in a session of its own) waited
+    for a few seconds at most, then the pipes closed (b59)."""
     proc = subprocess.Popen(argv, cwd=root, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE, text=True, start_new_session=True)
     try:
@@ -154,7 +156,12 @@ def bounded(argv, root, env, seconds):
             os.killpg(proc.pid, signal.SIGKILL)
         except ProcessLookupError:
             pass
-        proc.communicate()
+        try:
+            proc.communicate(timeout=2)
+        except subprocess.TimeoutExpired:
+            proc.stdout.close()
+            proc.stderr.close()
+            proc.wait()
         return None
     return subprocess.CompletedProcess(argv, proc.returncode, out, err)
 

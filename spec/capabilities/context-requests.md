@@ -6,7 +6,7 @@ group: service
 area: tracking
 specifies: object context request, service context requests
 language: codified-2
-retired: []
+retired: [g19, r19, g29, r29]
 unbuilt: []
 ---
 
@@ -108,11 +108,6 @@ Restates: requests#r12@0.29, requests#r4@0.29, requests#r44@0.29, requests#r28@0
 - [r18] While a context request is `open`, when a session offers on the context request, the context requests service
   shall keep an entry on the context request and set the status of the context request to `awaiting-asker`.
 
-### [g19] A context request served is delivered with its resolution
-- [r19] While a context request is `awaiting-asker`, when the person serves the context request, the context requests
-  service shall set the status of the context request to `delivered`, keep a resolution and keep an entry on the context
-  request.
-
 ### [g20] Lines proposed to a context request are kept
 - [r20] While a context request is `awaiting-asker`, when the person proposes to the context request, the context
   requests service shall keep a request line.
@@ -161,12 +156,6 @@ Restates: requests#r2@0.29, requests#r59@0.29.
 ### [g28] A context request with a request line not settled is not accepted
 - [r28] While a request line in a context request is not `accepted`, `refused` or `withdrawn`, if the person accepts the
   context request, then the context requests service shall refuse the request and name the request line.
-
-### [g29] An accepted context request resolved is delivered with its resolution
-Restates: requests#r10@0.29, requests#r11@0.29, requests#r12@0.29, requests#r24@0.29.
-- [r29] While a context request is `accepted`, when the person resolves the context request, the context requests
-  service shall set the status of the context request to `delivered`, keep a resolution, set the side of the context
-  request to `asker` and keep an entry on the context request.
 
 ### [g30] No context request is raised while this repository rejects a change
 - [r30] While this repository is `rejecting`, if the person raises a context request, then the context requests service
@@ -262,3 +251,19 @@ Restates: requests#r30@0.29.
 - [r50] While a term is in the bounded context and a capability has no requirement that mentions the term, when a
   session offers on a context request with the capability, the context requests service shall keep an entry that does
   not hold the term.
+
+### [g51] A context request is not resolved while its channel rejects a change to its thread
+- [r51] While a context request is `accepted` and the context request has a thread on a channel whose availability is `rejecting`, if the person resolves the context request, then the context requests service shall refuse the request and name the thread.
+
+### [g52] A context request is not served while its channel rejects a change to its thread
+- [r52] While a context request is `awaiting-asker` and the context request has a thread on a channel whose availability is `rejecting`, if the person serves the context request, then the context requests service shall refuse the request and name the thread.
+
+### [g54] A request's issue is never left out of step with its record
+- [r54] While a context request is `awaiting-asker`, when the person serves the context request, the context requests service shall set the status of the context request to `delivered`, keep a resolution, keep an entry on the context request and set the status of the thread of the context request to `closed`.
+
+### [g55] An accepted context request resolved is delivered and its thread closed
+- [r55] While a context request is `accepted`, when the person resolves the context request, the context requests service shall set the status of the context request to `delivered`, keep a resolution, set the side of the context request to `asker`, keep an entry on the context request and set the status of the thread of the context request to `closed`.
+
+## Dropped
+- requests#r11@0.29: retired with context-requests#r29 by b68.
+- requests#r24@0.29: retired with context-requests#r29 by b68.

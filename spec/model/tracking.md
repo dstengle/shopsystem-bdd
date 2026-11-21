@@ -96,6 +96,7 @@ object requirement grammar kind of artifact
 
 object channel
   relations: holds → thread (many)
+  attributes: availability: available | rejecting
 
 object field kind of text
   attributes: side: asker | upstream

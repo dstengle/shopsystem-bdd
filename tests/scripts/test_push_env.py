@@ -10,6 +10,8 @@ from shop_files import push_env
 def repo(tmp_path, monkeypatch):
     for name in ("GIT_SSH_COMMAND", "GIT_SSH"):
         monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("GIT_CONFIG_GLOBAL", "/dev/null")
+    monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
     subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
     return tmp_path
 
