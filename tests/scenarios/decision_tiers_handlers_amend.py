@@ -42,7 +42,7 @@ def amends(step):
     path = step.repo / "spec" / "decisions" / ("%s.md" % name)
     words = ["--amend", "design-decision/%s/%s" % (D.PATH, name)]
     added = {}
-    for kind, (option, key, value) in GIVEN.items():
+    for option, key, value in GIVEN.values():
         if option in options:
             words += [option, value]
             added[key] = value
