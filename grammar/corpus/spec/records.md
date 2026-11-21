@@ -43,6 +43,21 @@ shall [x1: agent the person (constant), x5: service the records service (constan
     keep(e2, subject: x5, object: x2)
 ```
 
+## r4
+From: b475 r4.
+
+```reading
+When the person files a plan with a design, the records service shall keep the plan and keep the design that holds the plan.
+shall [x1: agent the person (constant), x4: service the records service (constant)]
+  when [x2: plan, x3: design]
+    request(e1, records.file plan, subject: x1, object: x2)
+    param(e1, design, x3)
+  response
+    keep(e2, subject: x4, object: x2)
+    in(x2, x3)
+    keep(e3, subject: x4, object: x3)
+```
+
 ## r5
 From: b49 r5.
 
@@ -77,4 +92,44 @@ shall [x1: agent the person (constant), x5: service the records service (constan
   response
     concern(subject: x2, object: x4)
     keep(e2, subject: x5, object: x2)
+```
+
+## r7
+From: b475 r7.
+
+```reading
+When the person files a design, the records service shall keep the design.
+shall [x1: agent the person (constant), x3: service the records service (constant)]
+  when [x2: design]
+    request(e1, records.file design, subject: x1, object: x2)
+  response
+    keep(e2, subject: x3, object: x2)
+```
+
+## r8
+From: b475 r8.
+
+```reading
+If the person files a plan with a design that does not exist, then the records service shall refuse the request and name the design.
+shall [x1: agent the person (constant), x4: service the records service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: plan, x3: design]
+    not
+      exists(x3)
+    request(e1, records.file plan, subject: x1, object: x2)
+    param(e1, design, x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x3)
+```
+
+## r9
+From: b475 r9.
+
+```reading
+When the person files an observation, the records service shall keep the observation.
+shall [x1: agent the person (constant), x3: service the records service (constant)]
+  when [x2: observation]
+    request(e1, records.file observation, subject: x1, object: x2)
+  response
+    keep(e2, subject: x3, object: x2)
 ```

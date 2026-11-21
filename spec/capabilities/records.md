@@ -7,7 +7,7 @@ area: specification
 specifies: service records
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r7, r4, r8, r9]
 ---
 
 # Records
@@ -33,4 +33,16 @@ the system cites one.
 
 ### [g5] `work record` keeps a record about a batch
 - [r6] When the person files a record with a text that denotes a batch, the records service shall keep the record that concerns the batch.
+
+### [g7] `work record --design` files a design in its folder
+- [r7] When the person files a design, the records service shall keep the design.
+
+### [g8] `work record --plan` files a plan in the folder of its design
+- [r4] When the person files a plan with a design, the records service shall keep the plan and keep the design that holds the plan.
+
+### [g9] `work record --plan` refuses a design that does not exist
+- [r8] If the person files a plan with a design that does not exist, then the records service shall refuse the request and name the design.
+
+### [g6] `work observe` files an observation
+- [r9] When the person files an observation, the records service shall keep the observation.
 

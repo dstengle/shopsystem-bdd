@@ -47,3 +47,33 @@ Feature: Records
     When the person files the record r1 with the text t1
     Then the record r1 concerns the batch b1
     And the records service keeps the record r1
+
+  @g6 @r9
+  Scenario: `work observe` files an observation
+    Given an observation o1
+    When the person files the observation o1
+    Then the records service keeps the observation o1
+
+  @g7 @r7
+  Scenario: `work record --design` files a design in its folder
+    Given a design d1
+    When the person files the design d1
+    Then the records service keeps the design d1
+
+  @g8 @r4
+  Scenario: `work record --plan` files a plan in the folder of its design
+    Given a plan p1
+    And a design d1
+    When the person files the plan p1 with the design d1
+    Then the records service keeps the plan p1
+    And the design d1 holds the plan p1
+    And the records service keeps the design d1
+
+  @g9 @r8
+  Scenario: `work record --plan` refuses a design that does not exist
+    Given a design d1
+    And the design d1 does not exist
+    And a plan p1
+    When the person files the plan p1 with the design d1
+    Then the records service refuses this request
+    And the records service names the design d1

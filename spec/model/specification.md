@@ -273,6 +273,9 @@ service decisions
 
 service records
   operation file(record, title, summary, text)  outcomes: done → the record | refused: text not a node id
+  operation file design(design, title, summary)  outcomes: done → the design
+  operation file plan(plan, design, title)  outcomes: done → the plan | refused: design that does not exist
+  operation file observation(observation, summary)  outcomes: done → the observation
 
 service scenarios
   operation generate(feature, capability, audit (flag))  outcomes: done → the feature | failed → each stale feature
@@ -315,4 +318,9 @@ object operation table kind of text
   relations: names → operation (one)
 
 object node
+
+object design kind of file
+  relations: holds → plan (many)
+
+object plan kind of file
 ```

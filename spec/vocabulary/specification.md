@@ -207,3 +207,8 @@ area: specification
 - **node** (noun) → object node. A thing of the design model that `spec` gives an id, such as a capability, a requirement or a design-decision.
 - **denote** (verb, state) → relation text.denotes. A text is the id of a node, an item or a batch that this repository holds. Forms: denotes, denoted. Frame: <text> denotes <to>.
 - **concern** (verb, state) → relation record.concerns. A record concerns the node, the item or the batch that it is kept about. Forms: concerns, concerned. Frame: <record> concerns <to>.
+- **design** (noun) → object design. A folder `.shop/records/<date>-<topic>/` whose `design.md` says how a piece of work is to be built and which holds the plans that carry the design out.
+- **plan** (noun) → object plan. A file `plan-<k>.md` in the folder of its design: the tasks that carry out the design.
+- **file** (verb, action) → operation records.file design. Forms: files, filed. Frame: <actor> files <design>.
+- **file** (verb, action) → operation records.file plan. Forms: files, filed. Frame: <actor> files <plan>.
+- **file** (verb, action) → operation records.file observation. Forms: files, filed. Frame: <actor> files <observation>.

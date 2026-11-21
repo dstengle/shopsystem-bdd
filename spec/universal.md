@@ -21,10 +21,10 @@ U1, U2, U6, U9 and U10 stated guarantees of `work run`, its stages and initiativ
 reworded in grammar 4 (b155, b240) as U12, U16 and U13 to U15. Retired ids are in `retired:` and are never used again.
 
 ## Behaviour
-
 - [U17] If a service refuses a request, then the service shall name a reason and change nothing.
 - [U18] A session shall not change an item.
 - [U19] While a session has a workspace, the session shall change only files in the workspace.
+- [U20] While this repository is in the workspace of a task, if a service keeps a kept change, then the service shall refuse the request and name the task.
 
 ## Reading
 
