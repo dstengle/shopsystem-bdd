@@ -21,16 +21,22 @@ def parked(root, batch):
 def as_laid(root, batch, items):
     """Each of `items` as `work batch start` laid it (batches r45, b324): its file in the base's commit that added the
     batch's plan, its ids renumbered; the item as it now reads when that commit or its file there is not found."""
-    added = git(root, "log", "--diff-filter=A", "--format=%H", "--", batch_plan.rel_of(batch.name)).stdout.split()
+    added = base_of(root, batch)
     laid = []
     for item in items:
         rel = backlog_items.rel_of(item.name)
-        source = amended(root, batch, item) or (added[-1] if added else None)
+        source = amended(root, batch, item) or added
         try:
             laid.append(backlog_items.parse(git(root, "show", "%s:%s" % (source, rel)).stdout, rel) if source else item)
         except GitFailed:
             laid.append(item)
     return laid
+
+
+def base_of(root, batch):
+    """The base's commit that added the batch's plan, which the batch was laid on (b479), or None."""
+    added = git(root, "log", "--diff-filter=A", "--format=%H", "--", batch_plan.rel_of(batch.name)).stdout.split()
+    return added[-1] if added else None
 
 
 def amended(root, batch, item):
@@ -52,7 +58,7 @@ def take_out(root, batch, items, command):
     made = tree_for(root, tree, batch.branch, command)
     try:
         before = git(tree, "rev-parse", "HEAD").stdout.strip()
-        changed = batch_start.unlay_lines(tree, as_laid(root, batch, items), command)
+        changed = batch_start.unlay_lines(tree, as_laid(root, batch, items), command, base_of(root, batch))
         if changed and git(tree, "status", "--porcelain", "--", *changed).stdout.strip():
             git(tree, "add", "--", *changed)
             git(tree, "commit", "-q", "-m", "%s: the requirement lines of %s taken out\n%s" % (
@@ -84,7 +90,7 @@ def tested_tree(root, batch, task, tree, head, command):
     remove_tree(root, other)
     git(root, "worktree", "add", "-q", "--detach", str(other), head)
     try:
-        batch_start.unlay_lines(other, as_laid(root, batch, items), command)
+        batch_start.unlay_lines(other, as_laid(root, batch, items), command, base_of(root, batch))
         yield other
     finally:
         remove_tree(root, other)
