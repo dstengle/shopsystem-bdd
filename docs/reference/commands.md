@@ -113,7 +113,7 @@ b250 "work show prints the status of an item" shaped
 #### `work line`
 
 Writes a requirement line into an item's `## Requirements`, under the capability it goes into, and commits it.\
-Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--no-line] [--reword CAP#rN] [--remove CAP#rN] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--upstream UPSTREAM] name [text]`
+Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--upstream UPSTREAM] name [text]`
 
 - `--into <capability>`: the codified capability the line goes into.
 - `--group "<title>"`: open a new group with this title (default: the item's title). `--in g<n>` joins one of the
@@ -122,6 +122,9 @@ Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CA
   two to the block's `retires:` line. Ids are never reused. With `--no-line` and no line, the requirement is retired
   with nothing in its place, and no pair is written. Each design-decision whose `enforced_by` names the retired
   requirement is named, with the `work decision --amend` that names what holds it now.
+- `--retirement-list <file>`: a retirement list, one pair a line, `<cap>#r<n> <line>`: each line retires its live
+  requirement as `--retires` does, all in one commit. An id no requirement has refuses the whole list, naming it,
+  and the item is left as it was.
 - `--reword <cap>#r<n>`: the line takes the place of one of the item's own lines, keeping its id and group.
   `--remove <cap>#r<n>` takes one of them out, its group with it when it was the last line, and the id its
   `retires:` pair names; an id no pair names stays. Either refuses an id that is no line of the item, a live requirement's among them.
