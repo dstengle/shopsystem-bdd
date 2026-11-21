@@ -83,8 +83,8 @@ def add_parsers(sub):
     p.add_argument("--capability", help="a capability new to the context, written as a block of the item with "
                    "--narrator, --group (service or guarantees, default service) and its purpose as the text")
     p.add_argument("--narrator", help="with --capability: who the new capability's lines speak for")
-    __import__("backlog_adapter").add_arguments(p)
-    __import__("backlog_model_edit").add_arguments(p)
+    for module in ("backlog_adapter", "backlog_model_edit", "backlog_pack"):
+        __import__(module).add_arguments(p)
     p.add_argument("--upstream", help="an upstream entry `bounded-context/<path>: ..., github: <owner>/<name>` for "
                    "spec/index.md's ## Upstreams, with no --into")
 
@@ -200,6 +200,8 @@ def cmd_line(args):
         return backlog_capability.cmd(args)
     if args.expose is not None or args.withhold is not None:
         return __import__("backlog_adapter").cmd(args)
+    if args.pack is not None:
+        return __import__("backlog_pack").cmd(args)
     if __import__("backlog_model_edit").given(args):
         return __import__("backlog_model_edit").cmd(args)
     if args.retirement_list is not None:
@@ -214,9 +216,8 @@ def cmd_line(args):
         raise backlog_items.Refused("work line: give one of a requirement line, --term, --relation, --model, "
                                     "--given, --universal, --upstream or --recodify")
     piece = given[0]
+    backlog_forms.refuse_beside(args, piece)
     if piece == "recodify":
-        if args.into is not None or args.retires is not None:
-            raise backlog_items.Refused("work line: --recodify takes no --into or --retires")
         item = backlog_lines.recodify(args.root, args.name, args.recodify)
         print("%s: %s recodified" % (backlog_items.label(item), args.recodify))
         return 0

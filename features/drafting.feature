@@ -504,3 +504,22 @@ Feature: Drafting
     When the person rewords the term t1 in the item i1
     Then the drafting service refuses this request
     And the drafting service names the term t1
+
+  @g51 @r51
+  Scenario: A term written into a pack for an item is kept
+    Given a term t1
+    And a pack p1
+    And an item i1
+    When the person writes the term t1 into the pack p1 with the item i1
+    Then the item i1 holds the term t1
+    And the drafting service keeps the term t1
+
+  @g52 @r52
+  Scenario: A term that its pack has already is refused
+    Given a term t1
+    And a pack p1
+    And the pack p1 has the term t1
+    And an item i1
+    When the person writes the term t1 into the pack p1 with the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the term t1

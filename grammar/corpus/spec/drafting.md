@@ -786,3 +786,33 @@ shall [x1: agent the person (constant), x4: service the drafting service (consta
     refuse(e2, subject: x4, object: x5)
     name(e3, subject: x4, object: x2)
 ```
+
+## r51
+From: b472 r51.
+
+```reading
+When the person writes a term into a pack with an item, the drafting service shall keep the term in the item.
+shall [x1: agent the person (constant), x5: service the drafting service (constant)]
+  when [x2: term, x3: pack, x4: item]
+    request(e1, drafting.write into pack, subject: x1, object: x2, into: x3)
+    param(e1, item, x4)
+  response
+    in(x2, x4)
+    keep(e2, subject: x5, object: x2)
+```
+
+## r52
+From: b472 r52.
+
+```reading
+While a pack has a term, if the person writes the term into the pack with an item, then the drafting service shall refuse the request and name the term.
+shall [x3: agent the person (constant), x5: service the drafting service (constant), x6: request "the request the trigger makes" (indexical)]
+  while [x1: pack, x2: term]
+    of(x2, x1)
+  if [x4: item]
+    request(e1, drafting.write into pack, subject: x3, object: x2, into: x1)
+    param(e1, item, x4)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x2)
+```

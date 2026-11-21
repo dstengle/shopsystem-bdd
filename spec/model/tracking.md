@@ -148,6 +148,7 @@ service drafting
   operation reword model line(model line, item)  outcomes: done | refused: model line not in the item
   operation remove term(term, item)  outcomes: done | refused: term not in the item
   operation reword term(term, item)  outcomes: done | refused: term not in the item
+  operation write into pack(term, pack, item)  outcomes: done | refused: term in the pack
 
 service context requests
   operation raise(context request, origin, thread, text, bounded context)

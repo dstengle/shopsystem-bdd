@@ -115,11 +115,11 @@ b250 "work show prints the status of an item" shaped
 Writes a requirement line into an item's `## Requirements`, under the capability it goes into, and commits it. It
 takes an item that is `idea`, `shaped` or `in-batch`; an in-batch item's changed lines reach its batch with
 [`work batch amend`](#work-batch-amend).\
-Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN|CAP] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--expose TABLES] [--withhold SERVICE.OPERATION] [--remove-model MODEL] [--reword-model HEADER] [--remove-term TERM] [--reword-term TERM] [--upstream UPSTREAM] name [text]`
+Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN|CAP] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--expose TABLES] [--withhold SERVICE.OPERATION] [--remove-model MODEL] [--reword-model HEADER] [--remove-term TERM] [--reword-term TERM] [--pack NAME] [--upstream UPSTREAM] name [text]`
 
 - `--into <capability>`: the codified capability the line goes into.
 - `--group "<title>"`: open a new group with this title (default: the item's title). `--in g<n>` joins one of the
-  item's groups instead.
+  item's groups instead. Both go with a requirement line only; beside another piece they are refused.
 - `--retires <cap>#r<n>`: the line replaces a live requirement, whose id goes to `retired:`, and the pair of the
   two to the block's `retires:` line. Ids are never reused. With `--no-line` and no line, the requirement is retired
   with nothing in its place, and no pair is written. Each design-decision whose `enforced_by` names the retired
@@ -142,6 +142,10 @@ Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CA
 - `--term "<bullet>"`: a vocabulary entry (`- **<word>** (<part of speech>) → <element>. ...`) for the vocabulary of
   the capability's area, in place of a line. Give `--term` more than once to write several entries in one commit;
   one that does not read refuses them all.
+- `--pack <name> --term "<bullet>"`: a term entry of the context's own pack `spec/packs/<name>.md`, kept in the
+  item's `### <name> pack` block; `work batch start` appends it to the pack's `## Glossary`, makes the pack when it
+  is missing and adds its name to `spec/index.md`'s `imports:`. A term the pack has already is refused, naming the
+  term, and so is the name of one of the plugin's own packs, which a pack of the context's would shadow whole.
 - `--model "<lines>"`: model lines for the domain model of the capability's area (`object label`, `item: has → label (many)`); an element the area declares already gets the member lines, and an operation it declares already (same service and name) is restated: laid in place of its own line, with the parameters, outcomes and reasons the model line gives, and put back when the item leaves the batch.
 - `--relation "<object>: <phrase> → <object> (<cardinality>)"`, `--given`, `--universal`, `--upstream`: the other
   spec pieces an item can carry: a relation of the model, a group's given block, a universal condition, an upstream
@@ -930,6 +934,8 @@ Prints every file form a context keeps: its name, its path and the command that 
 that will give it one).\
 Synopsis: `spec forms [--json] [--check]`
 
+- `--json`: print `{"forms": [{"name", "path", "writer", "kind"}]}`, each form's `kind` the kind of its writer:
+  `command`, `item` (a plugin item that will give it one) or `hand`.
 - `--check`: print nothing and exit 0 unless a form is written by hand; each such form is named on stderr and it
   exits 1.
 
