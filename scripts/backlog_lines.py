@@ -65,7 +65,7 @@ def _text(text, what, item, command="work line"):
     return text
 
 
-def _block(blocks, capability):
+def block_of(blocks, capability):
     found = next((b for b in blocks if b.capability == capability), None)
     if found is None:
         found = Block(capability, [], [])
@@ -82,7 +82,7 @@ def add_line_to(root, item, capability, text, group=None, in_group=None, command
     _spec_of(root, capability, blocks)
     text = _text(text, "line", item, command)
     g_next, r_next = next_ids(root, capability, blocks)
-    block = _block(blocks, capability)
+    block = block_of(blocks, capability)
     if in_group is not None:
         target = next((g for g in block.groups if g.id == in_group), None)
         if target is None:
@@ -112,7 +112,7 @@ def retire(root, name, ident, text, into=None, group=None, in_group=None):
     capability, rid = backlog_retires.check(root, item, ident, into)
     if text is None:
         blocks = read(item, "the item %s" % item.name)
-        _block(blocks, capability)
+        block_of(blocks, capability)
         item.sections[SECTION] = render(blocks)
         new = None
     else:
@@ -149,7 +149,7 @@ def add_term(root, name, capability, bullets):
         if spec_lexicon.entry(bullet, capability) is None:
             raise Refused("work line: the term bullet %s is not a term entry `- **<term>** (<part of speech>): "
                           "<text>`" % bullet)
-    _block(blocks, capability).terms.extend(bullets)
+    block_of(blocks, capability).terms.extend(bullets)
     item.sections[SECTION] = render(blocks)
     said = "a term" if len(bullets) == 1 else "%d terms" % len(bullets)
     commit(root, item, "work line: %s %s of %s" % (label(item), said, capability))

@@ -23,9 +23,13 @@ def check(root, lines):
     old = uncodified(root)
     if old:
         raise Refused("the upstream's %s is not codified: run `migrate upgrade`" % old)
+    import request_terms
     import spec_gf
     import spec_language
     for number, line in enumerate(lines, 1):
+        if request_terms.is_proposal(line):     # a term proposal is checked against its form, not parsed (b42)
+            request_terms.check(line, "work outcome")
+            continue
         try:
             parsed = spec_language.parse(root, line)
         except (ImportError, spec_gf.GrammarError) as err:

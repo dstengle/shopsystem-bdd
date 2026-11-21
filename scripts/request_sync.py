@@ -37,7 +37,7 @@ CLOSED = ("delivered", "refused", "withdrawn")
 COMMAND = "work sync"
 
 
-ASKER_STEPS, UPSTREAM_STEPS = ("ask", "fits"), ("offer", "accept", "resolve")
+ASKER_STEPS, UPSTREAM_STEPS = ("ask", "fits", "suggest"), ("offer", "accept", "resolve")
 
 
 def poster(text, step):

@@ -637,6 +637,19 @@ $ work propose q48 --line 'When the person shows an item, the backlog service sh
 q48 awaiting-asker asker
 ```
 
+#### `work suggest`
+
+The asker's term proposal: terms for the upstream to take into its own vocabulary, each a vocabulary entry
+`- **<word>** (<part of speech>) → <model element>. <definition>`. It is kept as the request's next line, posted on
+its issue, and settled with `work outcome` like any line; `work accept` writes the terms of an accepted one into the
+item. It prints the request, its status and its turn.\
+Synopsis: `work suggest --term-proposal TERM_PROPOSAL request`
+
+```console
+$ work suggest q48 --term-proposal='- **shelf** (noun) → object shelf. A place the person keeps books on.'
+q48 awaiting-asker asker
+```
+
 #### `work turn`
 
 Passes a request's turn to the other side, posts it, and prints the request, its status and its turn.\
