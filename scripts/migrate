@@ -4,7 +4,7 @@
   migrate run --context <owner/product/context>
   migrate status [--hook]
   migrate upgrade
-  migrate init --id <bounded context id>
+  migrate init --id <bounded context id> [--purpose <context purpose>]
 
 It works on the top level of the git repository it is run in. Every change is computed first (moves, new texts,
 removals), checked, and only then written; a write that fails part way puts the repository back at its commit. A
@@ -68,11 +68,13 @@ def main(argv=None):
                        "tests/scenarios/ scaffold and commit it")
     i.add_argument("--id", help="the context id: bounded-context/<domain>/<path>, its <domain> with a dot "
                    "(example.org)")
+    i.add_argument("--purpose", help="the context purpose: what the bounded context is for, in a sentence or two, "
+                   "written under the index file's ## Purpose")
     args = prepare(ap).parse_args(argv)
     if args.cmd in ("status", "upgrade"):
         return respond("migrate", lambda args: run_upgrade(args.cmd, getattr(args, "hook", False)), args)
     if args.cmd == "init":
-        return respond("migrate", migrate_init.run, args, names={"context id": "id"})
+        return respond("migrate", migrate_init.run, args, names={"context id": "id", "context purpose": "purpose"})
     return respond("migrate", cmd_run, args)
 
 

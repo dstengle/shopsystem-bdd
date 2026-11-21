@@ -1,6 +1,7 @@
-"""`migrate init --id <bounded context id>` (b318): a new bounded context founded in the repository it is run in, its
-context scaffold written and committed in one commit: `spec/index.md` (the id, its last part the title,
-`language: codified-2`, `imports: [request]`), `spec/universal.md` (no condition), `spec/model/`, `spec/vocabulary/`,
+"""`migrate init --id <bounded context id> [--purpose <context purpose>]` (b318): a new bounded context founded in the
+repository it is run in, its context scaffold written and committed in one commit: `spec/index.md` (the id, its last
+part the title, `language: codified-2`, `imports: [request]`, the context purpose, if given, under `## Purpose`, b464),
+`spec/universal.md` (no condition), `spec/model/`, `spec/vocabulary/`,
 `spec/capabilities/`, `.shop/backlog/`, `.shop/records/README.md` (an empty records index), `.shop/plugin-version`
 (the plugin's release), `.shop/delivery.toml` (every key commented out at its default), `features/` and
 `tests/scenarios/conftest.py`, each empty directory with a `.gitkeep`, and the ignore file `.gitignore` naming the
@@ -32,7 +33,7 @@ imports: [request]
 # {title}
 
 ## Purpose
-
+{purpose}
 ## Composition
 """
 
@@ -128,10 +129,12 @@ def pytest_configure(config):
 '''
 
 
-def scaffold(ident):
-    """{path: text} of the context scaffold of the bounded context `ident`."""
+def scaffold(ident, purpose=None):
+    """{path: text} of the context scaffold of the bounded context `ident`, its context purpose, if given, under the
+    index file's `## Purpose` (b464)."""
     path = ident.split("/", 1)[1]
-    return {"spec/index.md": INDEX.format(id=ident, title=ident.rsplit("/", 1)[1]),
+    said = "\n%s\n" % purpose.strip() if purpose and purpose.strip() else ""
+    return {"spec/index.md": INDEX.format(id=ident, title=ident.rsplit("/", 1)[1], purpose=said),
             "spec/universal.md": UNIVERSAL.format(path=path),
             **{rel: "" for rel in KEEP},
             ".shop/records/README.md": README_HEAD,
@@ -177,7 +180,7 @@ def run(args):
     if not identity(root):      # the person's name and email, asked for, never made up (b415)
         raise Refused('git has no identity to commit the context with: ask the person for theirs and set it with git '
                       'config user.name "…" and git config user.email "…"; nothing written')
-    files = scaffold(args.id)
+    files = scaffold(args.id, getattr(args, "purpose", None))
     if not (root / "features").exists():
         files["features/.gitkeep"] = ""
     if not (root / CONFTEST).exists():
