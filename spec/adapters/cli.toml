@@ -614,6 +614,48 @@ requirements = [
 item = { positional = 1 }
 capability = { option = "--remove" }
 
+[operations."drafting.remove model line"]
+command = "work line"
+cli-only = { options = ["--into"] }
+requirements = [
+  "drafting#r43: When the person removes a model line from an item, the drafting service shall not keep the model line in the item.",
+  "drafting#r44: If the person removes a model line from an item that does not hold the model line, then the drafting service shall refuse the request and name the model line.",
+]
+[operations."drafting.remove model line".parameters]
+item = { positional = 1 }
+"model line" = { option = "--remove-model" }
+
+[operations."drafting.reword model line"]
+command = "work line"
+cli-only = { options = ["--into"] }
+requirements = [
+  "drafting#r45: When the person rewords a model line in an item, the drafting service shall keep a different model line in the item.",
+  "drafting#r46: If the person rewords a model line in an item that does not hold the model line, then the drafting service shall refuse the request and name the model line.",
+]
+[operations."drafting.reword model line".parameters]
+item = { positional = 1 }
+"model line" = { option = "--reword-model" }
+
+[operations."drafting.remove term"]
+command = "work line"
+requirements = [
+  "drafting#r47: When the person removes a term from an item, the drafting service shall not keep the term in the item.",
+  "drafting#r48: If the person removes a term from an item that does not hold the term, then the drafting service shall refuse the request and name the term.",
+]
+[operations."drafting.remove term".parameters]
+item = { positional = 1 }
+term = { option = "--remove-term" }
+
+[operations."drafting.reword term"]
+command = "work line"
+requirements = [
+  "drafting#r49: When the person rewords a term in an item, the drafting service shall keep a different term in the item.",
+  "drafting#r50: If the person rewords a term in an item that does not hold the term, then the drafting service shall refuse the request and name the term.",
+]
+[operations."drafting.reword term".parameters]
+item = { positional = 1 }
+term = { option = "--reword-term" }
+
 [operations."drafting.apply"]
 command = "work line"
 requirements = [
