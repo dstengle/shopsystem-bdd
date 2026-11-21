@@ -71,6 +71,8 @@ DELIVERY = """# How this repository's batches are delivered (`work batch`), ever
 # tests = "python3 -m pytest -q -p work_items"
 # Where a batch's worktrees go.
 # worktrees = ".shop/worktrees"
+# The batch rules of this context's own setup, each given to every agent that runs a batch.
+# rules = []
 
 # [review]
 # The changed lines a pull request review reads before it says the batch is too big.
