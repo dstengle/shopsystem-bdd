@@ -954,7 +954,7 @@ a word the glossary avoids
 
 ## v_t2
 
-a term has two entries, other than the senses of one verb
+a term has two entries, other than the senses of one verb or of one attribute word
 
 - Purpose: Each term has one definition, so every line using it means the same thing.
 - Since: b123

@@ -346,10 +346,10 @@ label("v_t1", "a word the glossary avoids").
 % fail v_t1: node("s","scenario"). node("x","bounded-context"). term_of("t","x"). avoid("t","job"). mentions("s","job").
 % pass v_t1: node("s","scenario"). node("x","bounded-context"). term_of("t","x"). avoid("t","job"). mentions("s","work-item").
 v_t1(X, W, T) :- mentions(X, W), avoid(T, W), term_of(T, Ctx), ctx_of(X, Ctx).
-label("v_t2", "a term has two entries, other than the senses of one verb").
+label("v_t2", "a term has two entries, other than the senses of one verb or of one attribute word").
 % fail v_t2: glossary_entry("t",1,"thing"). glossary_entry("t",2,"thing"). senses("u").
 % pass v_t2: glossary_entry("t",1,"thing"). glossary_entry("t",2,"thing"). senses("t").
-v_t2(T)       :- glossary_entry(T, N1, _), glossary_entry(T, N2, _), N1 < N2, not senses(T).   % a verb's senses: v_t15
+v_t2(T)       :- glossary_entry(T, N1, _), glossary_entry(T, N2, _), N1 < N2, not senses(T).   % a verb's senses (v_t15), an attribute's of other kinds (b538)
 label("v_t3", "an avoided word is a term").
 % fail v_t3: term_of("t","x"). avoid("t","job"). term_of("t2","x"). glossary_entry("t2",3,"job").
 % pass v_t3: term_of("t","x"). avoid("t","job"). term_of("t2","x"). glossary_entry("t2",3,"task").

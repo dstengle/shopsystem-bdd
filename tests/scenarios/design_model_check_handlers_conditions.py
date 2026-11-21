@@ -238,6 +238,8 @@ SENSES = {"aspectless": "- **V** (verb): an agent marks a text. Frame: agent Vs 
                          "agent.\n",
           "polysemous": ("- **V** (verb, action): an agent marks a text. Frame: agent Vs text.\n"
                          "- **V** (verb, state): a text bears a thing's mark. Frame: text Vs thing.\n"),
+          "attributed": ("- **V** (attribute of stage): how far a stage has come. Values (adjective): `new`, `old`.\n"
+                         "- **V** (attribute of file): how far a file has come. Values (adjective): `new`, `old`.\n"),
           "overlapping": ("- **V** (verb, action): an agent marks a text. Frame: agent Vs text.\n"
                           "- **V** (verb, state): a session bears a text's mark. Frame: session Vs text.\n"),
           "oblique": "- **V** (verb, action): an agent keeps a thing in a text. Frame: agent Vs thing in text.\n"}
