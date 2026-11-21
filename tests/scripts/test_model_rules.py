@@ -51,3 +51,18 @@ def test_write_and_check_are_not_given_together(tmp_path):
 def test_the_plugins_catalogue_is_current():
     done = run("--root", REPO, "rules", "--check")
     assert done.returncode == 0, done.stdout + done.stderr + "\nrun `model rules --write`"
+
+
+def test_a_module_that_skips_a_rule_does_not_implement_it():
+    skipping = 'SKIPPED_RULES = {"v_a5", "v_a6"}\nOWN = {"v_p1"} | SKIPPED_RULES\n'
+    assert not model_rules.gives(skipping, "v_a5")
+    assert model_rules.gives(skipping, "v_p1")
+    assert model_rules.gives('x = "v_a5"\n', "v_a5")
+
+
+def test_the_bar_names_v_a5_and_v_a6_and_is_not_where_they_are_implemented():
+    text = (SCRIPTS / "readiness_bar.py").read_text()
+    assert '"v_a5"' in text and '"v_a6"' in text
+    assert model_rules.implemented("v_a5", "facts") == ["scripts/model.lp"]
+    assert model_rules.implemented("v_a6", "facts") == ["scripts/model.lp"]
+    assert "scripts/readiness_bar.py" in model_rules.implemented("v_p1", "facts")
