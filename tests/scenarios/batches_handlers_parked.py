@@ -97,6 +97,8 @@ def batch_done(step):
         step.context["delivery"] = failing_tests(step)
     if step.context.get("passing"):
         step.context["delivery"] = passing_tests(step, step.names[-1])
+    if step.context.get("venv"):            # the default tests, which the virtual environment runs (b449)
+        step.context["delivery"] = ""
     T.prepare(step)
     T.ensure_batch(step)
     T.batch_git.trees_dir(step.repo)        # its `.gitignore`, as `work batch resume` leaves it
