@@ -1292,8 +1292,8 @@ requirements = [
   "items#r49: While the status of an item is one of `delivered`, `refused` or `withdrawn`, if the person retitles the item, then the backlog service shall refuse the request and name the item.",
 ]
 [operations."backlog.retitle".parameters]
-item = { option = "--item", example = "item-1" }
-title = { option = "--title", example = "title-1" }
+item = { positional = 1 }
+title = { positional = 2 }
 
 [operations."backlog.split"]
 command = "work split"
@@ -1303,5 +1303,5 @@ requirements = [
   "items#r52: While the status of an item is not `idea` or `shaped`, if the person splits the item, then the backlog service shall refuse the request and name the item.",
 ]
 [operations."backlog.split".parameters]
-item = { option = "--item", example = "item-1" }
-requirement = { option = "--requirement", example = "requirement-1" }
+item = { positional = 1 }
+requirement = { option = "--requirement", repeat = true }
