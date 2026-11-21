@@ -14,7 +14,7 @@ pull_request:
 
 | task | item | status | branch |
 |---|---|---|---|
-| t1 | b455 | running | batch-60-b455 |
+| t1 | b455 | done | batch-60-b455 |
 | t2 | b458 | running | batch-60-b458 |
 | t3 | b461 | done | batch-60-b461 |
 | t4 | b281 | running | batch-60-b281 |
