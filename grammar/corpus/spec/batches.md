@@ -862,3 +862,35 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
     initiates(e2, subject: x10, status(x1) = `shaped`)
     name(e3, subject: x10, object: x5)
 ```
+
+## r98
+From: b75 r98.
+
+```reading
+While a settings file holds a batch rule, when the person opens a batch, the batches service shall keep a batch brief that holds the batch rule.
+shall [x3: agent the person (constant), x5: service the batches service (constant)]
+  while [x1: settings file, x2: batch rule]
+    in(x2, x1)
+  when [x4: batch]
+    request(e1, batches.open, subject: x3, object: x4)
+  response [x6: batch brief]
+    in(x2, x6)
+    keep(e2, subject: x5, object: x6)
+```
+
+## r99
+From: b75 r99.
+
+```reading
+While no settings file holds a batch rule, when the person opens a batch, the batches service shall keep a batch brief that holds no batch rule.
+shall [x3: agent the person (constant), x5: service the batches service (constant)]
+  while
+    not [x1: settings file, x2: batch rule]
+      in(x2, x1)
+  when [x4: batch]
+    request(e1, batches.open, subject: x3, object: x4)
+  response [x6: batch brief]
+    not [x7: batch rule]
+      in(x7, x6)
+    keep(e2, subject: x5, object: x6)
+```

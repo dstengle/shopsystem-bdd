@@ -641,3 +641,22 @@ Feature: Batches
     When the person opens the batch b1
     Then the batches service sets the status of the item i1 to `shaped`
     And the batches service names the scenario s1
+
+  @g98 @r98
+  Scenario: A batch opened keeps a brief that holds each batch rule of the settings file
+    Given a batch rule b1
+    And a settings file s1
+    And the settings file s1 holds the batch rule b1
+    And a batch b2
+    When the person opens the batch b2
+    Then the batches service keeps the batch brief b3
+    And the batch brief b3 holds the batch rule b1
+
+  @g99 @r99
+  Scenario: A batch opened with no batch rule keeps a brief that holds none
+    Given no settings file holds a batch rule
+    And a batch b1
+    And a batch rule b3
+    When the person opens the batch b1
+    Then the batches service keeps the batch brief b2
+    And the batch brief b2 holds no batch rule

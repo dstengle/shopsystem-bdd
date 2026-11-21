@@ -274,6 +274,9 @@ cli-only = { options = ["--body", "--date", "--kind", "--slug"] }
 requirements = [
   "records#r1: When the person files a record, the records service shall keep the record.",
   "records#r2: If the person files a record with a text that does not conform to the node id form, then the records service shall refuse the request and name the text.",
+  "records#r3: When the person files a record with a text that denotes an item, the records service shall keep the record that concerns the item.",
+  "records#r5: While a text denotes no node and the text denotes no item and the text denotes no batch, if the person files a record with the text, then the records service shall refuse the request and name the text.",
+  "records#r6: When the person files a record with a text that denotes a batch, the records service shall keep the record that concerns the batch.",
 ]
 [operations."records.file".parameters]
 title = { positional = 1 }
@@ -935,6 +938,8 @@ requirements = [
   "batches#r94: While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit, when the person opens a batch, the batches service shall set the status of the item to `in-batch`, keep a batch that holds the item and keep a batch plan of the batch.",
   "batches#r95: While an item is `ready` and the item meets the readiness bar and the item holds a term of a pack, when the person opens a batch, the batches service shall keep the pack that has the term and keep the pack that this bounded context imports.",
   "batches#r97: While an item is `ready` and the item meets the readiness bar and a requirement of the item retires no requirement id and a scenario of the item refers to the requirement id of the requirement and the scenario succeeds in a workspace of a batch, if the person opens the batch, then the batches service shall set the status of the item to `shaped` and name the scenario.",
+  "batches#r98: While a settings file holds a batch rule, when the person opens a batch, the batches service shall keep a batch brief that holds the batch rule.",
+  "batches#r99: While no settings file holds a batch rule, when the person opens a batch, the batches service shall keep a batch brief that holds no batch rule.",
 ]
 
 [operations."batches.resume"]

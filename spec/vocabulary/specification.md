@@ -204,3 +204,6 @@ area: specification
 - **preview** (verb, action) → operation language.preview. A person parses a requirement as it reads once the terms and model lines an item holds are laid into the specification, as `spec parse --item` does. Forms: previews, previewed. Frame: <actor> previews <text> for <item>.
 - **operation table** (noun) → object operation table. How an adapter requests one operation of the domain model, kept in its adapter contract: for the CLI adapter, the command, each parameter as a positional argument or an option with its example, its flags and its cli-only options. Plural: operation tables.
 - **describe** (verb, action) → operation specification.describe. Forms: describes, described. Frame: <actor> describes <catalogue entry>.
+- **node** (noun) → object node. A thing of the design model that `spec` gives an id, such as a capability, a requirement or a design-decision.
+- **denote** (verb, state) → relation text.denotes. A text is the id of a node, an item or a batch that this repository holds. Forms: denotes, denoted. Frame: <text> denotes <to>.
+- **concern** (verb, state) → relation record.concerns. A record concerns the node, the item or the batch that it is kept about. Forms: concerns, concerned. Frame: <record> concerns <to>.
