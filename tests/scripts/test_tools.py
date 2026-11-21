@@ -144,6 +144,30 @@ class ToolsTest(unittest.TestCase):
             self.assertIn("== %s ==" % name, done.stdout)
         self.assertRegex(done.stdout, r"== import-linter ==\n(missing: |the project states no import contracts)")
 
+    def test_check_with_no_paths_lints_only_the_branchs_kept_changes(self):
+        """b490 f1: a file only main changed after the fork, or an uncommitted edit, is not the branch's change."""
+        def git(*args):
+            subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", *args], cwd=self.tmp, check=True,
+                           capture_output=True)
+        (self.tmp / "shelf" / "late.py").write_text("import os\n")
+        git("init", "-b", "main")
+        git("add", "-A")
+        git("commit", "-m", "start")
+        git("checkout", "-b", "feature")
+        git("checkout", "main")
+        (self.tmp / "shelf" / "late.py").write_text("import os\n\nos.sep\n")
+        git("commit", "-am", "main changes a file")
+        git("checkout", "feature")
+        (self.tmp / "shelf" / "own.py").write_text("def own():\n    return 1\n")
+        git("add", "-A")
+        git("commit", "-m", "the branch's change")
+        (self.tmp / "shelf" / "__init__.py").write_text("import sys\n")
+        done = self.run_script("check")
+        self.assertNotIn("late.py", done.stdout)
+        self.assertNotIn("__init__.py", done.stdout)
+        self.assertNotIn("nothing to check", done.stdout)
+        self.assertNotIn("F401", done.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

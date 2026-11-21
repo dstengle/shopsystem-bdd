@@ -1,6 +1,6 @@
 """tools: ruff, vulture and import-linter over the paths given or changed (check): with no paths, the Python files
-the branch checked out changed against `--base`, else against its base branch (`base`), `main` or the branch the
-`base` of `.shop/delivery.toml` names (b490)."""
+the branch checked out changed against `--base`, else its kept changes since it forked from its base branch (`base`),
+`main` or the branch the `base` of `.shop/delivery.toml` names (b490)."""
 import os
 import subprocess
 import tomllib
@@ -23,7 +23,8 @@ def cmd_check(args):
     python, _why, found = probed(args)
     paths = args.paths
     if args.base or not paths:
-        done = subprocess.run(["git", "diff", "--name-only", "--diff-filter=d", args.base or base(), "--", "*.py"],
+        since = args.base or base() + "...HEAD"   # the base branch: the kept changes since the fork, not its later tip
+        done = subprocess.run(["git", "diff", "--name-only", "--diff-filter=d", since, "--", "*.py"],
                               capture_output=True, text=True)
         if done.returncode:
             raise Refused(done.stderr.strip())
