@@ -28,7 +28,8 @@ def _modules():
 W, B, T = _modules()
 MEASUREMENTS = ".shop/records/measurements/"
 # a figure's noun -> the key of the measurement's figures that gives it
-FIGURE = {"wall time": "wall_time", "session time": "session_time", "token": "tokens", "cost": "cost_by_role"}
+FIGURE = {"wall time": "wall_time", "session time": "session_time", "token": "tokens", "cost": "cost_by_role",
+          "duration": "test_runs", "opening time": "opening_time"}
 
 
 def telemetry(step):
@@ -75,6 +76,12 @@ def has(step):
     one, other = kind_of(step.subject), kind_of(step.nps[0])
     if (one, other) == ("item", "defect"):
         assert defect_field(step, "item") == B.ident(step.names[0]), step.text
+    elif (one, other) == ("test run", "duration"):      # b73: its own duration, as `work batch done` kept it
+        seconds = T.given(step, "test run", step.names[0])["seconds"]
+        assert seconds in [r["seconds"] for r in ran(step).figures()["test_runs"]], (step.text, seconds)
+    elif (one, other) == ("measurement", "opening time"):
+        figures = ran(step).figures()
+        assert figures["opening_time_seconds"] == step.context["opening seconds"], (step.text, figures)
     elif one == "batch" and other == "measurement":
         assert ran(step).figures()["batch"] == T.batch_name(step, step.names[0]), step.text
     elif other in FIGURE:

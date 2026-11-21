@@ -13,6 +13,7 @@ import batch_findings
 import batch_git
 import batch_pick
 import batch_plan
+import batch_timings
 import measure_batch_read
 import measure_batch_sessions
 import measure_cost
@@ -123,6 +124,7 @@ def _figures(root, name, sessions_dir):
     wall = _seconds(at["started"], at["closed"] or stop)
     seconds = sum(s["session_time_seconds"] for s in sessions)
     cost = round(sum(s["cost"] or 0 for s in sessions), 6)
+    timed = batch_timings.figures(root, name)       # test runs and opening time (b73)
     return {"batch": name, "status": batch.status, "pull_request": batch.pull_request,
             "items": [{"item": i.name, "title": i.title, "status": i.status} for i in items],
             "window": window, "wall_time_seconds": wall,
@@ -132,6 +134,9 @@ def _figures(root, name, sessions_dir):
             "tokens": {k: sum(s[k] for s in sessions) for k in measure_cost.KINDS},
             "cost": cost, "unpriced": unpriced, "prices_as_of": measure_cost.AS_OF,
             "cost_by_role": measure_batch_sessions.roles_of(sessions),
+            **timed, "test_time": measure_cost.duration(timed["test_time_seconds"]),
+            "opening_time": None if timed["opening_time_seconds"] is None
+            else measure_cost.duration(timed["opening_time_seconds"]),
             "sessions": sessions, "sessions_from": str(directory),
             "sessions_found": len(list(directory.rglob("*.jsonl"))) if directory.is_dir() else 0,
             **review, "defects": defects, "knobs": knobs_of(root, batch, reviews),
