@@ -909,26 +909,6 @@ shall [x4: agent the person (constant), x5: service the context requests service
     name(e3, subject: x5, object: x2)
 ```
 
-## r53
-Retires: r29. From: b68 r53.
-
-```reading
-While a context request is `accepted`, when the person resolves the context request, the context requests service shall set the status of the context request to `delivered`, keep a resolution, set the side of the context request to `asker`, keep an entry on the context request and set the status of the thread of the context request to `closed`.
-shall [x2: agent the person (constant), x3: service the context requests service (constant)]
-  while [x1: context request]
-    status(x1) = `accepted`
-  when
-    request(e1, context requests.resolve, subject: x2, object: x1)
-  response [x4: resolution, x5: entry, x6: thread]
-    initiates(e2, subject: x3, status(x1) = `delivered`)
-    keep(e3, subject: x3, object: x4)
-    initiates(e4, subject: x3, side(x1) = `asker`)
-    on(x5, x1)
-    keep(e5, subject: x3, object: x5)
-    of(x6, x1)
-    initiates(e6, subject: x3, status(x6) = `closed`)
-```
-
 ## r54
 Retires: r19. From: b68 r54.
 
@@ -946,4 +926,24 @@ shall [x2: agent the person (constant), x3: service the context requests service
     keep(e4, subject: x3, object: x5)
     of(x6, x1)
     initiates(e5, subject: x3, status(x6) = `closed`)
+```
+
+## r55
+Retires: r29. From: b68 r55.
+
+```reading
+While a context request is `accepted`, when the person resolves the context request, the context requests service shall set the status of the context request to `delivered`, keep a resolution, set the side of the context request to `asker`, keep an entry on the context request and set the status of the thread of the context request to `closed`.
+shall [x2: agent the person (constant), x3: service the context requests service (constant)]
+  while [x1: context request]
+    status(x1) = `accepted`
+  when
+    request(e1, context requests.resolve, subject: x2, object: x1)
+  response [x4: resolution, x5: entry, x6: thread]
+    initiates(e2, subject: x3, status(x1) = `delivered`)
+    keep(e3, subject: x3, object: x4)
+    initiates(e4, subject: x3, side(x1) = `asker`)
+    on(x5, x1)
+    keep(e5, subject: x3, object: x5)
+    of(x6, x1)
+    initiates(e6, subject: x3, status(x6) = `closed`)
 ```
