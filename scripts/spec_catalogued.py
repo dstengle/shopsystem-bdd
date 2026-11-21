@@ -18,11 +18,13 @@ def _codes(path, _stamp):
 
 def missing(root):
     """The constructs of grammar 4 the context's catalogue has no entry of ([] when it keeps none)."""
+    import spec_held
     from model_constructs_table import CONSTRUCTS
     path = Path(root) / CATALOGUE
-    if not path.is_file():
+    stamp = spec_held.memo(root, ("catalogue",), lambda: path.stat().st_mtime_ns if path.is_file() else None)
+    if stamp is None:
         return []
-    have = _codes(str(path), path.stat().st_mtime_ns)
+    have = _codes(str(path), stamp)
     return [e for e in CONSTRUCTS if e["code"] not in have]
 
 

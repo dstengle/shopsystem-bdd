@@ -121,10 +121,11 @@ def _names(finding, scope):
     return any(i.rpartition("#")[0] in scope for i in finding.ids)
 
 
-def run(root, capability=None, extra=None):
+def run(root, capability=None, extra=None, entail=True):
     """The findings of the codified capabilities of the context at `root`, with drafted capability files `extra` laid
     over it (a draft replacing the capability of its name). The solve is always the whole context; `capability`
-    keeps the findings that name one of its requirements; a requirement's id, those that name it."""
+    keeps the findings that name one of its requirements; a requirement's id, those that name it. With `entail`
+    false, no L2 and no L8 (the readiness bar's, decision 0112)."""
     requirement = capability if capability and "#" in capability else None
     capability = capability.rpartition("#")[0] if requirement else capability
     ctx = spec_context.load(root, extra or ())
@@ -136,8 +137,8 @@ def run(root, capability=None, extra=None):
     scope = set(ctx.caps) if capability is None else {capability} & set(ctx.caps)
     if capability is not None:
         found = [f for f in found if _names(f, scope)]
-    found += l2(ctx.statements, scope)
-    found += spec_entail.findings(root, ctx, scope)
+    if entail:
+        found += l2(ctx.statements, scope) + spec_entail.findings(root, ctx, scope)
     if requirement is not None:
         found = [f for f in found if f.code == "L0" or requirement in {split(i) for i in f.ids}]
     if not done and scope:

@@ -9,7 +9,7 @@ and is refused naming the words that read two ways when they do not (spec_meanin
 I9, I11a).
 
 Its sources, their sha and the vocabulary are computed once a process for one state of the context's spec files, the
-plugin's packs and the base grammar's files (`_context`); its parses are kept on disk by spec_parse_cache, keyed by
+plugin's packs and the base grammar's files that its vocabulary reads (`_context`, spec_held); its parses are kept on disk by spec_parse_cache, keyed by
 that sha, the lexicon's words and the text (b239).
 """
 import difflib
@@ -22,9 +22,9 @@ from pathlib import Path
 import model_parse
 import spec_follow4
 import spec_gf
+import spec_held
 import spec_meaning
 import spec_one_thing
-import spec_packs
 import spec_parse_cache
 import spec_refusal4
 import spec_rgl
@@ -39,7 +39,7 @@ MARKER = "codified-2"
 GRAMMAR = "Context"
 BASE = ("Base.gf", "BaseEng.gf", "Time.gf", "TimeEng.gf")
 LIMIT = 50
-_loaded, _contexts = {}, {}
+_loaded, _contexts, _rgls = {}, {}, {}
 
 
 @dataclass
@@ -71,21 +71,11 @@ def sha(srcs):
         "%s\0%s\0" % kv for kv in sorted(srcs.items()))).encode()).hexdigest()[:32]
 
 
-def _md(top):
-    """The paths of the .md files under `top`, sorted: os.walk, since pathlib's glob is the most of a parse's time."""
-    return sorted(os.path.join(d, f) for d, _, names in os.walk(top) for f in names if f.endswith(".md"))
-
-
-def _state(root):
-    files = (_md(root / "spec") + sorted(str(p) for p in spec_packs.PLUGIN.glob("*.md"))
-             + [str(spec_gf.GRAMMARS / name) for name in BASE])
-    return tuple((p, st.st_mtime_ns, st.st_size) for p, st in ((p, os.stat(p)) for p in files))
-
-
 def _context(root):
-    """(vocab, sources, sha) of the context at `root`, computed again when a file under `spec/`, a plugin pack or a
-    base grammar file changes, or when `spec_rgl_vocab.read` is replaced (a stub)."""
-    key, state = (spec_rgl_vocab.read, str(Path(root).resolve())), _state(Path(root).resolve())
+    """(vocab, sources, sha) of the context at `root`, computed again when an input of its vocabulary changes
+    (spec_held's state: statted once while the root is held), or when `spec_rgl_vocab.read` is replaced (a stub)."""
+    resolved = spec_held.resolved(root)
+    key, state = (spec_rgl_vocab.read, str(resolved)), spec_held.state(resolved)
     hit = _contexts.get(key)
     if hit is None or hit[0] != state:
         vocab = spec_rgl_vocab.read(root)
@@ -111,7 +101,7 @@ def load(root):
 def _named(root):
     """(vocab, the PGF, the sources' sha): load's, and parse's with one look at the files' state."""
     import pgf
-    if not tools_grammar.rgl_path():
+    if not _rgl():
         raise spec_gf.GrammarError("gf-rgl is missing: run `python3 scripts/tools install`")
     vocab, srcs, name = _context(root)
     if name not in _loaded:
@@ -120,6 +110,15 @@ def _named(root):
             spec_gf.compile(srcs, name, GRAMMAR)
         _loaded[name] = pgf.readPGF(str(target))
     return vocab, _loaded[name], name
+
+
+def _rgl():
+    """The built RGL's path, once found kept a process for one data directory and one lookup (a stub)."""
+    key = (tools_grammar.rgl_path, os.environ.get("XDG_DATA_HOME"), os.environ.get("HOME"))
+    if not _rgls.get(key):
+        _rgls.clear()
+        _rgls[key] = tools_grammar.rgl_path()
+    return _rgls[key]
 
 
 def _literal(words, text):
@@ -193,7 +192,11 @@ def misaspected(vocab, tokens, at):
 
 
 def parse(root, line):
-    """One line parsed in grammar 4."""
+    """One line parsed in grammar 4; once a state of the root's inputs while it is held (spec_held)."""
+    return spec_held.memo(root, ("grammar4", line), lambda: _parse(root, line))
+
+
+def _parse(root, line):
     vocab, gram, name = _named(root)
     tokens = spec_gf.tokenise(line)
     words = {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
