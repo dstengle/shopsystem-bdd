@@ -67,6 +67,7 @@ def capability(node):
 ADDED = {"consistency#g33": "design-model-check", "consistency#g34": "design-model-check",     # b418
          "drafting#g25": "readiness", "reviews#g6": "batches",   # b354: a term of a new capability; b449
          "measurement#g10": "telemetry", "measurement#g11": "batch-measurement",    # b420: compare's frames of two
+         "items#g31": "backlog", "items#g32": "backlog",                         # b431: work reopen
          **{"checking#g%d" % n: "design-model-check" for n in range(52, 58)}}     # b370: the rule catalogue's checks
 
 

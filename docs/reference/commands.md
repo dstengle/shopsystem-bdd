@@ -213,6 +213,17 @@ work: work ready: b253 "work names prints every item" is not passing:
 
 What each reason means is in [Troubleshooting](../troubleshooting.md).
 
+#### `work reopen`
+
+Moves a `ready` item back to `shaped`, so that `work line` can change its lines; `work ready` readies it again. An
+item that is not `ready` is refused, named.\
+Synopsis: `work reopen name`
+
+```console
+$ work reopen b250
+b250 "work show prints the status of an item" shaped
+```
+
 #### `work refuse`
 
 Moves an item that is `idea` or `shaped` to `refused`, with the reason.\

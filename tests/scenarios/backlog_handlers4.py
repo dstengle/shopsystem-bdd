@@ -25,6 +25,7 @@ def ensure(step, name):
 
 
 @four("WhenRuns", "`work withdraw`", *BOTH)
+@four("WhenRuns", "`work reopen`", *BOTH)
 @four("WhenRuns", "`work answer`", *BOTH)
 @four("WhenRuns", "`work show`", *BOTH)
 @four("WhenRuns", "`work refuse`", *BOTH)
