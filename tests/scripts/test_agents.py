@@ -1,12 +1,14 @@
-"""The 2.0 agents (design-decision/the-2-0-agents, 0083), checked by reading the agent definitions under agents/:
-`pr-reviewer` (opus; no Edit, Write or shell), `architecture-reviewer` (opus; no Edit or Write) and `trial-runner`
-(sonnet), and no agent can start an agent. A reviewer's findings are its reply (plan-9 rulings Q2)."""
+"""The batch agents (design-decision/the-batch-agents, 0113), checked by reading the agent definitions under agents/:
+`batch-implementer` (opus; builds one task of a batch), `pr-reviewer` (opus; no Edit, Write or shell),
+`architecture-reviewer` (opus; no Edit or Write) and `trial-runner` (sonnet), and no agent can start an agent.
+building-a-batch's step 4 dispatches each running task to `batch-implementer`. A reviewer's findings are its reply
+(plan-9 rulings Q2)."""
 import pathlib
 import unittest
 
 AGENTS = pathlib.Path(__file__).resolve().parents[2] / "agents"
 REVIEWERS = ("architecture-reviewer", "pr-reviewer")
-AGENTS_2_0 = ("architecture-reviewer", "pr-reviewer", "trial-runner")
+AGENTS_2_0 = ("architecture-reviewer", "batch-implementer", "pr-reviewer", "trial-runner")
 SKILLS = AGENTS.parent / "skills"
 FORMULATOR = "feature-" + "formulator"     # spelled so, the plan's grep for it finds no file
 SHELL = ("Bash",)
@@ -43,7 +45,7 @@ class RoleBoundaries(unittest.TestCase):
         self.assertIn(name, self.agents, "agents/%s.md is missing" % name)
         return self.agents[name]
 
-    def test_the_agents_are_the_2_0_set(self):
+    def test_the_agents_are_the_batch_set(self):
         self.assertEqual(sorted(self.agents), list(AGENTS_2_0))
 
     def test_no_agent_starts_an_agent(self):
@@ -68,10 +70,16 @@ class RoleBoundaries(unittest.TestCase):
                 self.assertNotIn(old, text)
 
     def test_each_agent_names_its_model(self):
-        expected = {"architecture-reviewer": "opus", "pr-reviewer": "opus", "trial-runner": "sonnet"}
+        expected = {"architecture-reviewer": "opus", "batch-implementer": "opus", "pr-reviewer": "opus",
+                    "trial-runner": "sonnet"}
         for name, model in expected.items():
             with self.subTest(agent=name):
                 self.assertEqual(self.named(name).get("model"), model)
+
+    def test_building_a_batch_dispatches_each_task_to_batch_implementer(self):
+        self.named("batch-implementer")
+        text = (SKILLS / "building-a-batch" / "SKILL.md").read_text()
+        self.assertIn("batch-implementer", text)
 
 
 if __name__ == "__main__":
