@@ -6,8 +6,8 @@ group: service
 area: tracking
 specifies: object context request, service context requests
 language: codified-2
-retired: [g29, r29, g19, r19]
-unbuilt: []
+retired: [g19, r19, g29, r29]
+unbuilt: [r55]
 ---
 
 # Context requests
@@ -258,11 +258,11 @@ Restates: requests#r30@0.29.
 ### [g52] A context request is not served while its channel rejects a change to its thread
 - [r52] While a context request is `awaiting-asker` and the context request has a thread on a channel whose availability is `rejecting`, if the person serves the context request, then the context requests service shall refuse the request and name the thread.
 
-### [g53] A request's issue is never left out of step with its record
-- [r53] While a context request is `accepted`, when the person resolves the context request, the context requests service shall set the status of the context request to `delivered`, keep a resolution, set the side of the context request to `asker`, keep an entry on the context request and set the status of the thread of the context request to `closed`.
-
 ### [g54] A request's issue is never left out of step with its record
 - [r54] While a context request is `awaiting-asker`, when the person serves the context request, the context requests service shall set the status of the context request to `delivered`, keep a resolution, keep an entry on the context request and set the status of the thread of the context request to `closed`.
+
+### [g55] An accepted context request resolved is delivered and its thread closed
+- [r55] While a context request is `accepted`, when the person resolves the context request, the context requests service shall set the status of the context request to `delivered`, keep a resolution, set the side of the context request to `asker`, keep an entry on the context request and set the status of the thread of the context request to `closed`.
 
 ## Dropped
 - requests#r11@0.29: retired with context-requests#r29 by b68.

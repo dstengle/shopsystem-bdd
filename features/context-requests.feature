@@ -670,19 +670,6 @@ Feature: Context requests
     Then the context requests service refuses this request
     And the context requests service names the thread t1
 
-  @g53 @r53
-  Scenario: A request's issue is never left out of step with its record
-    Given a context request c1
-    And the status of the context request c1 is `accepted`
-    When the person resolves the context request c1
-    Then the context requests service sets the status of the context request c1 to `delivered`
-    And the context requests service keeps the resolution r1
-    And the context requests service sets the side of the context request c1 to `asker`
-    And the context requests service keeps the entry e1
-    And the entry e1 is on the context request c1
-    And the context requests service sets the status of the thread t1 to `closed`
-    And the context request c1 has the thread t1
-
   @g54 @r54
   Scenario: A request's issue is never left out of step with its record
     Given a context request c1
@@ -690,6 +677,19 @@ Feature: Context requests
     When the person serves the context request c1
     Then the context requests service sets the status of the context request c1 to `delivered`
     And the context requests service keeps the resolution r1
+    And the context requests service keeps the entry e1
+    And the entry e1 is on the context request c1
+    And the context requests service sets the status of the thread t1 to `closed`
+    And the context request c1 has the thread t1
+
+  @g55 @r55
+  Scenario: An accepted context request resolved is delivered and its thread closed
+    Given a context request c1
+    And the status of the context request c1 is `accepted`
+    When the person resolves the context request c1
+    Then the context requests service sets the status of the context request c1 to `delivered`
+    And the context requests service keeps the resolution r1
+    And the context requests service sets the side of the context request c1 to `asker`
     And the context requests service keeps the entry e1
     And the entry e1 is on the context request c1
     And the context requests service sets the status of the thread t1 to `closed`
