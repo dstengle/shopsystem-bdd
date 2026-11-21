@@ -65,10 +65,10 @@ FORMS = [
     Form("universal condition", "spec/universal.md", "work line --universal"),
     Form("upstream entry", "spec/index.md ## Upstreams", "work line --upstream"),
     Form("given block", "spec/capabilities/<name>.md, a group's fenced given", "work line --given"),
-    Form("observation", ".shop/records/observations.md ## <id>", "plugin item b475 (no command yet)"),
+    Form("observation", ".shop/records/observations.md ## <id>", "work observe"),
     Form("delivery settings", ".shop/delivery.toml", "work settings set"),
-    Form("design record folder", ".shop/records/<date>-<topic>/design.md", "plugin item b475 (no command yet)"),
-    Form("plan record folder", ".shop/records/<date>-<topic>/plan-<k>.md", "plugin item b475 (no command yet)"),
+    Form("design record folder", ".shop/records/<date>-<topic>/design.md", "work record --design"),
+    Form("plan record folder", ".shop/records/<date>-<topic>/plan-<k>.md", "work record --plan"),
 ]
 
 

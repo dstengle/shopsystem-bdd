@@ -55,3 +55,16 @@ def test_a_codified_1_index_still_reads_agent_as_unknown(tmp_path):
     index.write_text(text)
     out = _model_check(root)
     assert "v_t13" in out and "write" in out, out
+
+
+def test_two_senses_of_a_verb_beside_a_noun_of_its_word_are_no_v_t2(tmp_path):
+    """b475: the verb file's senses (records.file design, plan, ...) beside the noun file are the senses of one
+    verb, keyed `file event`, and the noun one term of its own: no term with two entries."""
+    root = _codified_2(tmp_path)
+    index = root / "spec" / "index.md"
+    senses = ("- **file** (verb, action): an agent files a stage. Forms: files, filed. Frame: agent files stage.\n"
+              "- **file** (verb, action): an agent files a line. Forms: files, filed. Frame: agent files line.\n")
+    text = index.read_text()
+    index.write_text(text.replace("- **stage** (noun)", senses + "- **stage** (noun)", 1))
+    out = _model_check(root)
+    assert "v_t2 " not in out, out
