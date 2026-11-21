@@ -77,8 +77,8 @@ class SpecReading:
                 self.fact("frameless", ident)
             if t.category == "event" and not t.aspect:
                 self.fact("aspectless", ident)
-            if t.category == "event" and words[t.term] > 1 and all(
-                    u.category == "event" for u in terms if u.term == t.term):     # two senses of one verb
+            if t.category == "event" and sum(u.category == "event" for u in terms if u.term == t.term) > 1:
+                # two senses of one verb, a noun of its word beside them another term (`<word> event`, b475)
                 self.fact("senses", ident)
                 if t.term in overlapping:
                     self.fact("overlapping", ident)
