@@ -46,7 +46,6 @@ FORMS = [
     Form("catalogue entries", "grammar/catalogue-entries.toml", "plugin item b462 (no command yet)"),
     Form("spec corpus block", "grammar/corpus/spec/<capability>.md", "work batch start"),
     Form("term pack", "spec/packs/<name>.md", "by hand (no command yet)"),
-    Form("working rules", "CLAUDE.md", "by hand (no command yet)"),
     Form("record", ".shop/records/<date>-<slug>.md", "work record"),
     Form("records index row", ".shop/records/README.md", "work record"),
     Form("feature", "features/<capability>.feature", "features generate"),
@@ -60,16 +59,16 @@ FORMS = [
          "work line --model"),
     Form("domain model area", "spec/model/<area>.md", "plugin item b398 (no command yet)"),
     Form("vocabulary term", "spec/vocabulary/<area>.md", "plugin item b398 (no command yet)"),
-    Form("adapter contract", "spec/adapters/<port>.toml", "plugin item b355 (no command yet)"),
+    Form("adapter contract", "spec/adapters/<port>.toml", "work line --expose"),
     Form("adapter contract's requirements", "spec/adapters/<port>.toml, each operation's requirements", "spec annotate"),
     Form("capability moves", "spec/moves.json", "migrate upgrade"),
     Form("universal condition", "spec/universal.md", "work line --universal"),
     Form("upstream entry", "spec/index.md ## Upstreams", "work line --upstream"),
     Form("given block", "spec/capabilities/<name>.md, a group's fenced given", "work line --given"),
-    Form("observation", ".shop/records/observations.md ## <id>", "plugin item b44 (no command yet)"),
+    Form("observation", ".shop/records/observations.md ## <id>", "plugin item b475 (no command yet)"),
     Form("delivery settings", ".shop/delivery.toml", "migrate init"),
-    Form("design record folder", ".shop/records/<date>-<topic>/design.md", "plugin item b44 (no command yet)"),
-    Form("plan record folder", ".shop/records/<date>-<topic>/plan-<k>.md", "plugin item b44 (no command yet)"),
+    Form("design record folder", ".shop/records/<date>-<topic>/design.md", "plugin item b475 (no command yet)"),
+    Form("plan record folder", ".shop/records/<date>-<topic>/plan-<k>.md", "plugin item b475 (no command yet)"),
 ]
 
 
