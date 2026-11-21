@@ -7,7 +7,7 @@ area: execution
 specifies: object review, object proposed change, service batches: submit
 language: codified-2
 retired: []
-unbuilt: [r7, r8, r9, r10]
+unbuilt: [r7, r8]
 ---
 
 # Reviews

@@ -14,6 +14,7 @@ import shutil
 import subprocess
 
 import backlog_items
+import batch_base_merge
 import batch_fix
 import batch_gh
 import batch_merge
@@ -115,6 +116,8 @@ def _put_back(root, tree, before, name, branch, remote_before, pushed):
 def review(root, name):
     """The pull request's URL (r8): the batch merged, tested, pushed and published, and `in-review`."""
     with locked(root):
+        if batch_plan.find(root, name).status == "awaiting-merge":     # its branch merged its base (b492)
+            return batch_base_merge.resubmit(root, batch_plan.find(root, name), COMMAND)
         batch = building(root, name, COMMAND)
         mine = checked(root, batch)
         batch_fix.check(root, batch, mine, COMMAND)     # a batch with a recorded review: its fixes (plan 5, D11)
