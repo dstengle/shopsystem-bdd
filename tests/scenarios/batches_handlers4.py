@@ -126,6 +126,8 @@ def passes_given(step):
     if k == "item":
         if step.template == "GivenDoesNot":
             sys.modules["shop_readiness_world"].give_lines(step, name, sys.modules["shop_readiness_world"].FAILING)
+    elif name not in step.context.get("scenario_of", {}):     # a scenario of a capability (batches_handlers_reach)
+        return False
     else:
         item = step.context["scenario_of"][name]
         step.context["failing" if step.term == "fail" else "passing"] = item
