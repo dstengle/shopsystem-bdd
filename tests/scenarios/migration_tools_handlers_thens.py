@@ -10,7 +10,10 @@ import sys
 
 from scenarios import migration_tools_handlers as M
 from scenarios import migration_tools_handlers_counter as C
-from scenarios import upgrades_handlers_conftest  # noqa: F401 -- its locals, taken before these
+from scenarios import (
+    upgrades_handlers_conftest,  # noqa: F401 -- its locals, taken before these
+    upgrades_handlers_ignore,  # noqa: F401 -- its locals, taken before these
+)
 from scenarios import upgrades_handlers_found as F
 from scenarios.migration_old import CONTEXT
 
@@ -117,8 +120,6 @@ def has(step):
         return
     elif other == "context scaffold":
         F.scaffolded(step)
-    elif other == "ignore file":
-        F.ignored(step)
     else:
         rel = {"decisions index": "spec/decisions/index.md", "plugin version file": ".shop/plugin-version",
                "index file": "spec/index.md"}[other]

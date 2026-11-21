@@ -112,8 +112,10 @@ b250 "work show prints the status of an item" shaped
 
 #### `work line`
 
-Writes a requirement line into an item's `## Requirements`, under the capability it goes into, and commits it.\
-Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--expose TABLES] [--withhold SERVICE.OPERATION] [--upstream UPSTREAM] name [text]`
+Writes a requirement line into an item's `## Requirements`, under the capability it goes into, and commits it. It
+takes an item that is `idea`, `shaped` or `in-batch`; an in-batch item's changed lines reach its batch with
+[`work batch amend`](#work-batch-amend).\
+Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN|CAP] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--expose TABLES] [--withhold SERVICE.OPERATION] [--upstream UPSTREAM] name [text]`
 
 - `--into <capability>`: the codified capability the line goes into.
 - `--group "<title>"`: open a new group with this title (default: the item's title). `--in g<n>` joins one of the
@@ -128,6 +130,8 @@ Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CA
 - `--reword <cap>#r<n>`: the line takes the place of one of the item's own lines, keeping its id and group.
   `--remove <cap>#r<n>` takes one of them out, its group with it when it was the last line, and the id its
   `retires:` pair names; an id no pair names stays. Either refuses an id that is no line of the item, a live requirement's among them.
+  `--remove <cap>` with no `#r<n>` takes the item's whole block of the capability out, a new capability's
+  declaration with it, and the item's model lines of its area unless another of its blocks goes to that area.
 - `--term "<bullet>"`: a vocabulary entry (`- **<word>** (<part of speech>) → <element>. ...`) for the vocabulary of
   the capability's area, in place of a line. Give `--term` more than once to write several entries in one commit;
   one that does not read refuses them all.
@@ -138,7 +142,9 @@ Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CA
 - `--recodify <cap>`: switch a capability's block to the current language (`codified-2`).
 - `--capability <name> --narrator "<who>" [--group service|guarantees] "<purpose>"`: a capability new to the
   context, written as a block of the item (its narrator, group, default `service`, and purpose); refused when
-  `spec/capabilities/<name>.md` exists. Lines and terms go into it with `--into <name>`; `work batch start` writes
+  `spec/capabilities/<name>.md` exists, or when another item holds a block of it, naming that item and the batch
+  it is in. `--into <name>` of a capability no file and no block of the item holds names the item that holds it
+  and its batch, in place of suggesting `--capability`. Lines and terms go into it with `--into <name>`; `work batch start` writes
   its file (with `area:` and `specifies:`) and names it in its area's row under `## Composition` of `spec/index.md`.
 - `--expose '<tables>'`: the tables of one operation for the CLI adapter contract, `[operations."<service>.<operation>"]`
   with its `command` and its `[operations."<service>.<operation>".parameters]`, kept in the item's `### cli adapter`
@@ -212,7 +218,8 @@ Moves a `shaped` item to `ready` when it passes the readiness bar, and otherwise
 Any other item is refused, named.\
 Synopsis: `work ready name`
 
-The bar lays the item's lines over a temporary copy of `spec/` and checks that they parse, that `spec logic` finds
+The bar lays the item's lines over a temporary copy of `spec/` and the construct catalogue and checks that they
+parse (using no construct the catalogue has no entry of), that `spec logic` finds
 no clash naming them, and that `features generate` writes their scenarios. A line from a request must be settled.
 Readying is the decision to build: a ready item goes into the next batch.
 
@@ -420,6 +427,20 @@ $ work batch done batch-34 t1
 batch-34 t1 b250 "work show prints the status of an item": done
 ```
 
+#### `work batch amend`
+
+Lays an in-batch item's lines again on `batch-<n>` and on its task's branch, after `work line` changed them: the lines
+it last laid are taken out and its lines as they now read laid in, one commit on each branch citing the item. A new id
+is renumbered past the other items' lines on the batch branch (the item committed again on the base), a line laid
+before with the same text keeps its place in `unbuilt:`, and a `done` task is set `running` again. Refused for an item
+that is not `in-batch`, and while the task's worktree has uncommitted changes.\
+Synopsis: `work batch amend item`
+
+```console
+$ work batch amend b253
+batch-35 b253 "work names prints every item" amended: laid on batch-35, batch-35-b253
+```
+
 #### `work batch park`
 
 Sets an item of the batch `needs-input` with a question, and takes its lines out of `batch-<n>`; the rest of the
@@ -494,6 +515,21 @@ Synopsis: `work batch abandon [--discard] batch`
 ```console
 $ work batch abandon batch-35
 batch-35 abandoned
+```
+
+#### `work settings set`
+
+Sets one setting of `.shop/delivery.toml` in its own table, every comment and other key kept, and commits it. The
+settings are `batch_size`, `batch.push`, `batch.tests`, `batch.worktrees`, `review.size`, `review.checks` and
+`prices.<model>`; a setting the plugin does not read, or a value not of its type, is refused, naming it.\
+Synopsis: `work settings set setting value`
+
+- `value`: a TOML value (`7`, `["a", "b"]`, `{ input = 3.0, output = 15.0, cache_read = 0.3 }`); a text setting's may
+  be the bare text.
+
+```console
+$ work settings set review.size 1500
+.shop/delivery.toml: review.size = 1500
 ```
 
 ### Requests
@@ -952,6 +988,21 @@ $ spec constructs --check
 grammar/constructs.md is current
 ```
 
+### `spec catalogue entry`
+
+Writes what an entry of the rule or the construct catalogue says into `grammar/catalogue-entries.toml`, and its
+`- Purpose:`, `- Since:` and `- Changed:` lines into the catalogue when it holds the entry: its purpose, and the item
+it came by, or, once it has one, an item that changed it. An entry of no rule or no construct is refused, naming it.\
+Synopsis: `spec catalogue entry [--purpose P] [--item b<n>] entry`
+
+- `entry`: `rules#<code>` or `constructs#<code>`.
+
+```console
+$ spec catalogue entry rules#v_c2 --item b462
+wrote grammar/catalogue-entries.toml
+wrote grammar/rules.md
+```
+
 ### `spec restates`
 
 For a repository that came from plugin 0.29: whether every old id is restated by a group, dropped or moved.\
@@ -1213,7 +1264,8 @@ Founds a new bounded context in the repository it is run in: writes its scaffold
 `.shop/records/README.md` (an empty records index), `.shop/plugin-version` (the plugin's release),
 `.shop/delivery.toml` (every key commented out at its default), `features/` and `tests/scenarios/conftest.py`, each
 empty folder with a `.gitkeep`, and `.gitignore` naming `.venv/`, `__pycache__/`, `.pytest_cache/` and
-`.ruff_cache/` (an existing one given the names it lacks). An existing `features/` or conftest is left as it is. It refuses, changing nothing,
+`.ruff_cache/` (an existing one given the names it lacks, a name it holds with or without a leading or a trailing
+`/` not lacked; one that lacks none left alone, out of the commit and of what it prints). An existing `features/` or conftest is left as it is. It refuses, changing nothing,
 without `--id`, with an id that is not `bounded-context/<domain>/<path>` (its `<domain>` a domain name with a dot,
 `example.org`, and its `<path>` one part or more), and in a repository that has a
 `spec/index.md` or a `.shop/` already.\

@@ -73,6 +73,7 @@ ADDED = {"consistency#g33": "design-model-check", "consistency#g34": "design-mod
          "parsing#g22": "design-model-check",
          **{"items#g%d" % n: "backlog" for n in (33, 34, 38, 39)},               # b281: work merge, work annotate
          "items#g35": "readiness", "items#g36": "readiness",                     # b281: a ready item checked again
+         "items#g40": "readiness",                                               # b444: a construct uncatalogued
          **{"checking#g%d" % n: "design-model-check" for n in range(52, 58)}}     # b370: the rule catalogue's checks
 
 

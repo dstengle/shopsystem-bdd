@@ -1,10 +1,10 @@
 """The readiness bar's result of the copy before the item's lines are laid, kept on disk (b430): the lexicon's problems
 and the violations of `model.lp`'s rules of the copy's `spec/` (after a batch's `others`), which every run on one
 state of `spec/` computes alike. Kept under `${XDG_CACHE_HOME:-~/.cache}/shopsystem-bdd/readiness/<key>.json`, the key
-everything it reads (`key`): each file of the copy's `spec/` by its path and bytes, the plugin's scripts, grammar and
-packs, the RGL's release and path, GF's binary, `$SHOPSYSTEM_GF_RGL_SRC`, and pgf's and clingo's versions. The copy's
-own path is written as a placeholder, so a result is the same for every copy of one `spec/`. A result that cannot be
-written or read is computed again, never an error."""
+everything it reads (`key`): each file of the copy's `spec/` and `grammar/` (its construct catalogue, b444) by its path
+and bytes, the plugin's scripts, grammar and packs, the RGL's release and path, GF's binary, `$SHOPSYSTEM_GF_RGL_SRC`,
+and pgf's and clingo's versions. The copy's own path is written as a placeholder, so a result is the same for every
+copy of one `spec/`. A result that cannot be written or read is computed again, never an error."""
 import hashlib
 import json
 import os
@@ -50,8 +50,9 @@ def key(copy):
     stamp = os.stat(gf) if gf and os.path.exists(gf) else None
     add(VERSION, tools_grammar.RGL_RELEASE, tools_grammar.rgl_path(), gf, stamp and (stamp.st_mtime_ns, stamp.st_size),
         os.environ.get("SHOPSYSTEM_GF_RGL_SRC"), _version("pgf"), _version("clingo"))
-    for top, suffixes in ((Path(copy) / "spec", None), (PLUGIN / "scripts", None),
+    for top, suffixes in ((Path(copy) / "spec", None), (Path(copy) / "grammar", None), (PLUGIN / "scripts", None),
                           (PLUGIN / "grammar", (".gf", ".lp", ".md", ".toml"))):
+        add(top.relative_to(copy) if top.is_relative_to(copy) else "plugin/%s" % top.name)
         for path in _files(top, suffixes):
             with open(path, "rb") as handle:
                 add(os.path.relpath(path, top), handle.read())
