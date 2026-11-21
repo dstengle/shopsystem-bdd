@@ -79,6 +79,7 @@ def cmd_parse(args):
     `migrate upgrade`. With `--item b<n>`, the line (or the file) read on a copy with the item laid (spec_preview)."""
     if getattr(args, "item", None):
         import argparse
+
         import spec_preview
         with spec_preview.laid(args.root, args.item) as copy:
             file = spec_preview.on_copy(args.root, copy, args.file) if args.file else None
