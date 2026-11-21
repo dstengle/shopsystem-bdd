@@ -74,19 +74,21 @@ def _load(root):
     import pgf
     if not tools_grammar.rgl_path():
         raise spec_gf.GrammarError("gf-rgl is missing: run `python3 scripts/tools install`")
-    vocab, srcs, context = spec_grammar4._context(root)
+    vocab, grammar4, context = spec_grammar4._context(root)
     hit = _by_context.get(context)
     if hit is not None and hit[0] is vocab:
         return hit
-    srcs = dict(srcs)
+    srcs = dict(grammar4)
     srcs.update({name: (spec_gf.GRAMMARS / name).read_text() for name in BASE})
     srcs.update(modules(vocab))
     sha = hashlib.sha256(("steps 4 rgl %s\0" % tools_grammar.RGL_RELEASE + "".join(
         "%s\0%s\0" % kv for kv in sorted(srcs.items()))).encode()).hexdigest()[:32]
     if sha not in _loaded:
         target = spec_gf.cache() / sha / ("%s.pgf" % GRAMMAR)
-        if not target.is_file():
-            spec_gf.compile(srcs, sha, GRAMMAR)
+        if not target.is_file():     # over grammar 4's compiled modules, compiled first when they are not (b439)
+            if not (spec_gf.cache() / context / ("%s.pgf" % spec_grammar4.GRAMMAR)).is_file():
+                spec_gf.compiled(grammar4, context, spec_grammar4.GRAMMAR)
+            spec_gf.compiled(srcs, sha, GRAMMAR, reuse=spec_gf.cache() / context)
         _loaded[sha] = pgf.readPGF(str(target))
     if len(_by_context) >= 16:
         _by_context.clear()
