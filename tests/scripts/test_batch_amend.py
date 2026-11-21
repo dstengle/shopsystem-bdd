@@ -48,3 +48,24 @@ def test_amend_refuses_an_item_not_in_batch_and_a_loose_worktree(started):  # no
     done = work(started, "batch", "amend", "b1")
     assert done.returncode == 1 and "wip.py" in done.stderr, done.stderr
     assert state(started) == before
+
+
+def test_a_failed_amend_puts_back_the_bases_commit_with_the_branches(started):  # noqa: F811
+    """b486: the base's commit of the plan and the item, made once the lines are relaid, is undone with the branches
+    when a branch's commit then fails (here a commit-msg hook refusing the `Laid:` commits)."""
+    resumed(started)
+    build(started, "t1", "b1", ["r5"])
+    assert work(started, "batch", "done", "batch-1", "t1").returncode == 0
+    assert work(started, "line", "b1", "--into", "work-queue", THIRD).returncode == 0
+    files = [batch_plan.rel_of("batch-1"), backlog_items.rel_of("b1")]
+    was = [(started / rel).read_text() for rel in files]
+    heads = [git(started, "rev-parse", b).strip() for b in ("batch-1", "batch-1-b1")]
+    hook = started / ".git" / "hooks" / "commit-msg"
+    hook.write_text("#!/bin/sh\n! grep -q '^Laid: ' \"$1\"\n")
+    hook.chmod(0o755)
+    done = work(started, "batch", "amend", "b1")
+    assert done.returncode == 1 and "Laid: " in done.stderr, done.stderr
+    assert [(started / rel).read_text() for rel in files] == was
+    assert [git(started, "rev-parse", b).strip() for b in ("batch-1", "batch-1-b1")] == heads
+    assert "undone" in git(started, "log", "-1", "--format=%s")
+    assert not git(started, "status", "--porcelain").strip()

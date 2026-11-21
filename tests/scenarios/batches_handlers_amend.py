@@ -47,8 +47,9 @@ def _change(step, name):
         item.sections.pop(backlog_lines.SECTION)
     else:
         text = item.sections[backlog_lines.SECTION]
+        failing = name in step.context.get("unready", ())     # an amend that does not meet the bar (r96)
         for _, line in [r for b in blocks for g in b.groups for r in g.requirements]:
-            other = T.SECOND if line != T.SECOND else T.R().PASSING
+            other = T.R().FAILING if failing else T.SECOND if line != T.SECOND else T.R().PASSING
             text = text.replace(line, other)
         item.sections[backlog_lines.SECTION] = text
         step.context["amended"] = [(b.capability, r, t) for b in backlog_lines.read(item, item.name)

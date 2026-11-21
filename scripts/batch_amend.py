@@ -9,8 +9,12 @@ batch branch's (the other items' lines laid there), the item committed on the ba
 before with the same text keeps its place in `unbuilt:`, built or not; a new or changed line is unbuilt, and a line
 the item no longer holds leaves `unbuilt:` and the corpus. A `done` task is set `running` again, so that its new
 lines are built. Refused, changing nothing, unless the item is `in-batch` (naming it, r83), its batch `building` on
-its base, the item's file committed and the task's worktree free of uncommitted changes."""
+its base, the item's file committed and the task's worktree free of uncommitted changes; refused too when the
+item's lines, laid over the batch's workspace less its old ones, do not meet the readiness bar (r96, b486). All or
+nothing: the base's commit is made once both worktrees are relaid, and a failure after it puts it back in a commit of
+its own with the branches reset; a refusal is said as `work batch amend`'s."""
 import re
+import shutil
 from pathlib import Path
 
 import backlog_items
@@ -18,6 +22,8 @@ import backlog_lines
 import batch_parked
 import batch_plan
 import batch_start
+import readiness_bar
+import shop_files
 import spec_corpus_write
 import spec_unbuilt
 from batch_git import (
@@ -28,6 +34,7 @@ from batch_git import (
     remove_tree,
     tree_for,
     trees_dir,
+    trees_path,
     uncommitted,
 )
 from batch_tasks import building, tree_of
@@ -92,17 +99,34 @@ def _corpus(tree, old, new):
     return changed
 
 
-def relay(tree, old, new, renumber=False):
-    """`old`'s lines out of the worktree and `new`'s in (renumbered past the tree's first, with `renumber`); the
-    paths changed and the renumbered pairs."""
+def relay(tree, old, new, renumber=False, root=None):
+    """`old`'s lines out of the worktree and `new`'s in (renumbered past the tree's first, with `renumber`); with
+    `root`, `new` checked by the readiness bar over the worktree before it is laid (b486); the paths changed and the
+    renumbered pairs."""
     caps = set(_lines(old)) | set(_lines(new))
     before = _unbuilt(tree, caps)
     changed = batch_start.unlay_lines(tree, [old], COMMAND)
     pairs = backlog_lines.renumber(tree, new, {}) if renumber else []
-    changed += batch_start.lay_lines(tree, [new])
+    if root is not None:
+        _bar(root, tree, new)
+    changed += batch_start.lay_lines(tree, [new], command=COMMAND)
     changed += _keep_built(tree, _lines(old), _lines(new), before)
     changed += _corpus(tree, _lines(old), _lines(new))
     return list(dict.fromkeys(changed)), pairs
+
+
+def _bar(root, tree, item):
+    """The item's lines checked as `work ready` checks them, the batch's workspace less the lines it laid before in
+    place of `spec/` (batches r96); an item left with no line passes, its lines taken out (r90). Refused naming the
+    item and the bar's reasons."""
+    blocks = backlog_lines.read(item, backlog_items.rel_of(item.name))
+    lined = backlog_lines.ids(blocks) or any(b.retired for b in blocks) or blocks.adapters
+    reasons = (readiness_bar.unsettled(root, item) + (readiness_bar.well_formed(tree, item)[0] if lined else [])
+               + readiness_bar.decision_reasons(root, blocks))
+    if reasons:
+        raise Refused("%s: %s does not meet the readiness bar:\n%s" % (
+            COMMAND, backlog_items.label(item), "\n".join("  " + r for r in reasons)),
+            reason="item not ready", names=["item:%s" % item.name])
 
 
 def _commit(tree, batch, item, changed, laid):
@@ -137,50 +161,69 @@ def _checked(root, name):
 
 
 def amend(root, name):
-    """(the batch, the task, the branches laid on, the renumbered pairs) of `work batch amend`, under the lock."""
+    """(the batch, the task, the branches laid on, the renumbered pairs) of `work batch amend`, under the lock: the
+    lines relaid in each worktree first, then the base's commit of the item and the plan, then each branch's commit;
+    a failure puts the branches back and, once it is made, the base's commit (b486)."""
+    fresh = not trees_path(root).exists()
     with locked(root):
         item, batch, task = _checked(root, name)
         old = batch_parked.as_laid(root, batch, [item])[0]
-        tree = trees_dir(root) / batch.name
-        made, heads, laid_on = tree_for(root, tree, batch.branch, COMMAND), {}, []
+        heads, made, laid_on, undo = {}, [], [], None
         try:
-            heads[batch.branch] = (tree, git(tree, "rev-parse", "HEAD").stdout.strip())
-            changed, pairs = relay(tree, old, item, renumber=True)
+            tree = _tree(root, trees_dir(root) / batch.name, batch.branch, heads, made)
+            changed, pairs = relay(tree, old, item, renumber=True, root=root)
+            trees = [(tree, batch.branch, changed)]
+            if has_branch(root, task.branch):
+                there = _tree(root, tree_of(root, batch, task), task.branch, heads, made)
+                trees.append((there, task.branch, relay(there, old, item)[0]))
             reopened = task.status == "done"
             if reopened:
                 task.status = "running"
             if pairs or reopened:
-                batch_plan.commit(root, batch, [item], "%s: %s %s" % (COMMAND, batch.name, backlog_items.label(item)))
+                undo = _based(root, batch, item)
             laid = git(root, "rev-parse", "HEAD").stdout.strip()
-            _commit(tree, batch, item, changed, laid)
-            laid_on.append(batch.branch)
-            if has_branch(root, task.branch):
-                laid_on.append(_task(root, batch, task, old, item, laid, heads))
+            for where, branch, paths in trees:
+                _commit(where, batch, item, paths, laid)
+                laid_on.append(branch)
         except BaseException:
             for branch, (where, head) in heads.items():
                 if is_tree(where, branch):
                     git(where, "reset", "-q", "--hard", head)
+                    git(where, "clean", "-fdq")
                 else:
                     git(root, "update-ref", "refs/heads/%s" % branch, head)
+            if undo is not None:
+                undo()
+            for where in made:
+                remove_tree(root, where)
+            if fresh:            # the worktrees folder and its `.gitignore` made for this amend (U17)
+                shutil.rmtree(trees_path(root), ignore_errors=True)
             raise
-        finally:
-            if made:
-                remove_tree(root, tree)
+        for where in made:
+            remove_tree(root, where)
         return batch, task, laid_on, pairs
 
 
-def _task(root, batch, task, old, item, laid, heads):
-    """The item laid again on its task's branch, in its worktree (made, and removed again, when it is not there)."""
-    tree = tree_of(root, batch, task)
-    made = tree_for(root, tree, task.branch, COMMAND)
-    try:
-        heads[task.branch] = (tree, git(tree, "rev-parse", "HEAD").stdout.strip())
-        changed, _ = relay(tree, old, item)
-        _commit(tree, batch, item, changed, laid)
-        return task.branch
-    finally:
-        if made:
-            remove_tree(root, tree)
+def _tree(root, tree, branch, heads, made):
+    """The branch's worktree (made, and listed in `made`, when it is not there), its head kept in `heads`."""
+    if tree_for(root, tree, branch, COMMAND):
+        made.append(tree)
+    heads[branch] = (tree, git(tree, "rev-parse", "HEAD").stdout.strip())
+    return tree
+
+
+def _based(root, batch, item):
+    """The plan and the item committed on the base; what puts them back as they were in a commit of its own."""
+    rels = [batch_plan.rel_of(batch.name), backlog_items.rel_of(item.name)]
+    was = [(Path(root) / rel).read_bytes() for rel in rels]
+    batch_plan.commit(root, batch, [item], "%s: %s %s" % (COMMAND, batch.name, backlog_items.label(item)))
+
+    def undo():
+        def write():
+            for rel, data in zip(rels, was):
+                (Path(root) / rel).write_bytes(data)
+        shop_files.committed(root, rels, "%s: %s %s undone" % (COMMAND, batch.name, backlog_items.label(item)), write)
+    return undo
 
 
 def said(root, batch, task, laid_on, pairs):
