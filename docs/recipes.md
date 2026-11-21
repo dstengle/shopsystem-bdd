@@ -661,7 +661,7 @@ cache_read = 0.20
 | `[batch] tests` | what `work batch done` and `review` run | `python3 -m pytest -q -p work_items` |
 | `[batch] push` | a prefix the batch's agent puts before every `git push` and `gh` call | none |
 | `[batch] worktrees` | where a batch's worktrees go | `.shop/worktrees/` |
-| `[review] size` | the changed lines over which the reviewer's brief says "over the limit" | 1000 |
+| `[review] size` | the changed lines over which the reviewer's brief says "over the limit", and past which `work batch start` picks no more items by their estimates | 1000 |
 | `[review] checks` | the commands the reviewer's brief runs, with `{scripts}` and `{forked_from}` filled in | `tools size --limit 300`, `tools check`, `features generate --check`, `features bindings --unbound`, `spec decisions --check` |
 | `[prices."<model>"]` | dollars per million tokens: `input`, `output`, `cache_read`, all three | a dated table in `scripts/measure_cost.py` |
 
