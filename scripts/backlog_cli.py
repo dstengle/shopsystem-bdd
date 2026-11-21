@@ -214,6 +214,8 @@ def cmd_line(args):
         raise backlog_items.Refused("work line: give one of a requirement line, --term, --relation, --model, "
                                     "--given, --universal, --upstream or --recodify")
     piece = given[0]
+    if piece != "text" and {args.group, args.in_group} != {None}:
+        raise backlog_items.Refused("work line: --group and --in take a requirement line, not --%s" % piece)
     if piece == "recodify":
         if args.into is not None or args.retires is not None:
             raise backlog_items.Refused("work line: --recodify takes no --into or --retires")

@@ -138,11 +138,12 @@ class _Reader:
             self.mfence.append(line.rstrip())
 
     def given(self, line):
-        if line.strip() == CLOSE:
+        if line.strip() == CLOSE:        # a docstring's blank lines kept, the fence's first and last not (b476)
             groups = self.blocks[-1].groups
-            groups[-1] = groups[-1]._replace(given=tuple(self.fence))
+            text = "\n".join(self.fence).strip("\n")
+            groups[-1] = groups[-1]._replace(given=tuple(text.split("\n")) if text else ())
             self.fence = None
-        elif line.strip():
+        else:
             self.fence.append(line.rstrip())
 
     def new(self, m):

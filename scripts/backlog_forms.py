@@ -64,9 +64,9 @@ def upstream_entry(bullet):
 def given_block(text):
     """The lines of a given block (its fence, when given, taken off); refused unless every given line is example data
     in the form spec_read_given reads, the data indented two spaces under a line ending in ':'."""
-    lines = [x.rstrip() for x in text.replace("\r\n", "\n").split("\n") if x.strip()]
+    lines = _kept_blanks([x.rstrip() for x in text.replace("\r\n", "\n").split("\n")])
     if lines and lines[0].strip() == "```given":
-        lines = lines[1:-1] if lines[-1].strip() == "```" else lines[1:]
+        lines = _kept_blanks(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
     shown = lines[0].strip() if lines else ""
     if not lines:
         _refuse("given block", "(empty)", "it has no line")
@@ -74,7 +74,7 @@ def given_block(text):
     for line in lines:
         if line.strip().startswith("```") or line.lstrip().startswith("#") and not line.startswith("  "):
             _refuse("given block", shown, "the line %s would end the block or read as a heading" % line.strip())
-        if line.startswith("  "):
+        if not line or line.startswith("  "):
             if not steps or not steps[-1][0].endswith(":"):
                 _refuse("given block", shown, "the indented line %s is under no line ending in ':'" % line.strip())
             kind = "table" if line.strip().startswith("|") else "docstring"
@@ -88,6 +88,17 @@ def given_block(text):
             _refuse("given block", shown, "%s is not example data (`the <words> <name> holds:` with data under it, "
                     "or `the <words> <name> holds` and one code span or quoted string)" % step)
     return tuple(lines)
+
+
+def _kept_blanks(lines):
+    """`lines` less each blank line that is not inside a docstring, between two of its indented text lines (b476)."""
+    kept = []
+    for i, line in enumerate(lines):
+        before = next((x for x in reversed(lines[:i]) if x), "")
+        after = next((x for x in lines[i + 1:] if x), "")
+        if line or before.startswith("  ") and after.startswith("  ") and not before.strip().startswith("|"):
+            kept.append(line)
+    return kept
 
 
 def _capability_block(blocks, capability):
@@ -188,6 +199,15 @@ def add_upstream(root, name, bullet):
     return item
 
 
+def laid_already(into, blocks):
+    """A reason for each upstream entry of the item that `into/spec/index.md` names already, before the item's lay:
+    there since the entry was written, or laid by an item picked before it (b476)."""
+    index = Path(into) / INDEX_REL
+    known = upstreams(index.read_text() if index.is_file() else "")
+    return ["the upstream entry %s: %s is an upstream of spec/index.md already, or of an item laid before it"
+            % (b, UPSTREAM.match(b).group(1)) for b in blocks.upstreams if UPSTREAM.match(b).group(1) in known]
+
+
 def with_lines(text, heading, lines, made=(), before=None):
     """`text` with `lines` added to its `## <heading>` section: after the last row of its table when `made` (a table's
     header and rule) is given, the table made when it has none, else after its last line; the section made before
@@ -225,12 +245,16 @@ def without_lines(text, heading, lines, made=()):
     return text[:found.start(1)] + "\n".join(kept).strip("\n") + "\n\n" + text[found.end(1):].lstrip("\n")
 
 
+def _scaffold(into):
+    """The text of the `spec/universal.md` a lay makes when the spec has none."""
+    return ("---\nid: capability/%s/universal\ntitle: Universal conditions\ngroup: guarantees\nlanguage: "
+            "codified-2\nretired: []\n---\n\n# Universal conditions\n\n## Behaviour\n" % shop_files.context_path(into))
+
+
 def _universal_file(into):
     path = Path(into) / UNIVERSAL_REL
     if not path.is_file():
-        path.write_text("---\nid: capability/%s/universal\ntitle: Universal conditions\ngroup: guarantees\nlanguage: "
-                        "codified-2\nretired: []\n---\n\n# Universal conditions\n\n## Behaviour\n"
-                        % shop_files.context_path(into))
+        path.write_text(_scaffold(into))
     return path
 
 
@@ -248,14 +272,18 @@ def lay_spec(into, blocks, files):
 
 
 def unlay_spec(into, blocks, files):
-    """The reverse of `lay_spec`; each path changed added to `files`."""
+    """The reverse of `lay_spec`, a `spec/universal.md` the lay made taken out again (b476); each path changed added
+    to `files`."""
     universal, index = Path(into) / UNIVERSAL_REL, Path(into) / INDEX_REL
     if blocks.universal and universal.is_file():
         text = universal.read_text()
         for line in ["- [%s] %s" % u for u in blocks.universal]:
             found = re.search(r"(?m)^%s\n?" % re.escape(line), text)
             text = text if found is None else text[:found.start()] + text[found.end():]
-        if text != universal.read_text():
+        if text.rstrip("\n") == _scaffold(into).rstrip("\n"):     # the file the lay made, taken out (b476)
+            universal.unlink()
+            files.append(UNIVERSAL_REL)
+        elif text != universal.read_text():
             universal.write_text(text)
             files.append(UNIVERSAL_REL)
     if blocks.upstreams and index.is_file():

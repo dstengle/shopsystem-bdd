@@ -119,7 +119,7 @@ Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CA
 
 - `--into <capability>`: the codified capability the line goes into.
 - `--group "<title>"`: open a new group with this title (default: the item's title). `--in g<n>` joins one of the
-  item's groups instead.
+  item's groups instead. Both go with a requirement line only; beside another piece they are refused.
 - `--retires <cap>#r<n>`: the line replaces a live requirement, whose id goes to `retired:`, and the pair of the
   two to the block's `retires:` line. Ids are never reused. With `--no-line` and no line, the requirement is retired
   with nothing in its place, and no pair is written. Each design-decision whose `enforced_by` names the retired
