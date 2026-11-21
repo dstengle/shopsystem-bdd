@@ -89,6 +89,17 @@ def test_start_refuses_a_detached_head(two):
     assert state(two) == before and branches(two) == had
 
 
+def test_start_refuses_malformed_rules_before_writing(two):
+    """batch-72 review f1: `[batch] rules` that is not a list of texts is refused before the branch is made."""
+    path = two / ".shop" / "delivery.toml"
+    path.write_text(path.read_text().replace("[batch]\n", '[batch]\nrules = "one"\n', 1))
+    git(two, "commit", "-q", "-am", "rules")
+    before, had = state(two), branches(two)
+    done = work(two, "batch", "start")
+    assert done.returncode == 1 and "[batch] rules" in done.stderr, done.stderr
+    assert state(two) == before and branches(two) == had
+
+
 def test_start_with_no_ready_item_is_refused(batch_repo):
     write_item(batch_repo, "b1", status="shaped")
     before = state(batch_repo)

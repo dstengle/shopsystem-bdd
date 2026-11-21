@@ -52,7 +52,7 @@ def test_a_comment_not_held_is_printed_by_every_watch_and_nothing_is_written(bac
         OTHER: issue(comments=[(OTHER + "#issuecomment-1", TURN), (OTHER + "#issuecomment-2", TURN)]),
         OTHER.replace("/4", "/5"): issue(comments=[(OTHER.replace("/4", "/5") + "#issuecomment-3", TURN)])}, monkeypatch)
     before = git(backlog_repo, "rev-parse", "HEAD")
-    line = "q1 %s comment 2: %s#issuecomment-2 (`work sync` records it)" % (OTHER, OTHER)
+    line = "q1 %s comment 2: %s#issuecomment-2 (`work sync` applies it)" % (OTHER, OTHER)
     for _ in range(2):      # still unrecorded, so a later watch prints it again
         done = watch(backlog_repo, env=env)
         assert done.returncode == 0, done.stderr
@@ -69,8 +69,8 @@ def test_an_unreadable_comment_is_printed_once(backlog_repo, tmp_path_factory, m
     done = watch(backlog_repo, env=env)
     assert done.returncode == 0, done.stderr
     assert done.stdout.splitlines() == [
-        "q1 %s comment 2: %s#issuecomment-2 (`work sync` records it)" % (OTHER, OTHER)]
-    again = watch(backlog_repo, env=env)        # sync never records it: a later watch passes over it
+        "q1 %s comment 2: %s#issuecomment-2 (unreadable: `work sync` notes it as such, applying nothing)" % (OTHER, OTHER)]
+    again = watch(backlog_repo, env=env)        # kept by its URL: a later watch passes over it
     assert again.returncode == 1 and again.stdout == "", again.stdout
     assert "nothing new after 1 poll" in again.stderr
     assert git(backlog_repo, "status", "--porcelain") == ""

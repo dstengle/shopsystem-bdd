@@ -42,6 +42,7 @@ object proposed change
 
 object batch brief kind of file
   relations: holds → chore (many)
+  relations: holds → batch rule (many)
 
 object review folder kind of file
 
@@ -78,8 +79,11 @@ object setting value kind of text
 
 object settings file kind of file
   relations: holds → setting (many)
+  relations: holds → batch rule (many)
 
 object delivery settings form kind of artifact
 
 object base merge kind of kept change
+
+object batch rule kind of text
 ```

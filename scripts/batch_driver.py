@@ -6,9 +6,10 @@ It names the batch and its base checkout, each task with its worktree, branch, i
 the agent follows (building-a-batch), each task's acceptance tests run with the plugin's pytest plugin (`-p
 work_items`), and, for a context's first batch (a laid capability with no test module, or a domain model with no
 `spec/adapters/cli.toml`), how its first task makes the step bindings, the program and the adapter contract (b389), the
-command prefix every push and gh call takes when `[batch] push` of
-`.shop/delivery.toml` gives one, the rules every subagent is given, where the agent stops and what it replies. The
-session that started the batch dispatches the agent with the brief's path as its whole prompt."""
+command prefix every push and gh call takes when `[batch] push` of `.shop/delivery.toml` gives one, the rules every
+subagent is given (the plugin's own, then each batch rule of `[batch] rules`, the context's own setup, which the
+plugin's code never keeps: b75), where the agent stops and what it replies. The session that started the batch dispatches
+the agent with the brief's path as its whole prompt."""
 from pathlib import Path
 
 import backlog_chore
@@ -29,9 +30,6 @@ RULES = (
     ("End every commit message with the line `Item: b<j>` (`git commit -m \"<subject>\" --trailer \"Item: b<j>\"`); a "
      "fix also `--trailer \"Finding: f<m>\"`, both in the message's last paragraph."),
     "Change nothing under `.shop/` (`.shop/backlog/`, `.shop/batches/` are the base checkout's batch commands' only).",
-    ("Worktrees of older work (`.shop/worktrees/*` of other or earlier batches, `.claude/worktrees/`) are never "
-     "reference material: the reference is the base branch and its own worktree."),
-    "Don't chain `cp` and `rm` in one shell command; keep shell variables few.",
     ("Never use `git stash`: every worktree shares one stash list, so two tasks' stashes swap; to see a test "
      "red, put files back with `git checkout <commit> -- <path>` or a scratch copy."),
     "Don't push and don't run `work` commands that commit.",
@@ -52,6 +50,15 @@ def push_prefix(root):
     if given is not None and not isinstance(given, str):
         raise Refused("work batch start: .shop/delivery.toml: [batch] push is not a string")
     return given or None
+
+
+def batch_rules(root):
+    """`[batch] rules` of `.shop/delivery.toml`: the context's own batch rules, each a text, in order (none when it
+    gives none)."""
+    given = delivery(root).get("batch", {}).get("rules", [])
+    if not isinstance(given, list) or not all(isinstance(r, str) for r in given):
+        raise Refused("work batch start: .shop/delivery.toml: [batch] rules is not a list of texts")
+    return [r for r in given if r.strip()]
 
 
 def _tasks(root, batch, picked):
@@ -143,7 +150,7 @@ def text(root, batch, picked, unwritten=()):
             "`.shop/delivery.toml` gives no `[batch] push`: git push and gh run as they are; `work` pushes its own "
             "commits.", "",
             "## The rules every subagent is given", ""]
-    out += ["- %s" % r for r in RULES]
+    out += ["- %s" % r for r in (*RULES, *batch_rules(root))]
     out += ["", "## Where you stop", "",
             ("At `-> awaiting-merge`, once the pull request is clean and marked ready. You never merge the pull "
              "request, and never run `work batch merged` nor `measure batch`: the session that started you does, "

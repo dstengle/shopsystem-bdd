@@ -57,6 +57,7 @@ object version kind of text
 
 object text
   relations: forbids → act (many); contains → text (many); precedes → act (many); follows → act (many); introduces → instance (many); mentions → text (many); identifies → bounded context (many)
+  relations: denotes → node | item | batch (many)
 
 object test
   attributes: verdict: passed | failed
@@ -65,6 +66,7 @@ object test
 object violation
 
 object record kind of file
+  relations: concerns → node | item | batch (one)
 
 object route kind of text
   attributes: kind: scenario | check | judgement | monitor
@@ -311,4 +313,6 @@ object foundation kind of text
 
 object operation table kind of text
   relations: names → operation (one)
+
+object node
 ```

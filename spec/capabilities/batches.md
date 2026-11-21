@@ -181,3 +181,9 @@ when the change is merged.
 ### [g97] A ready item whose new line's scenario passes on the lay goes back to shaped
 - [r97] While an item is `ready` and the item meets the readiness bar and a requirement of the item retires no requirement id and a scenario of the item refers to the requirement id of the requirement and the scenario succeeds in a workspace of a batch, if the person opens the batch, then the batches service shall set the status of the item to `shaped` and name the scenario.
 
+### [g98] A batch opened keeps a brief that holds each batch rule of the settings file
+- [r98] While a settings file holds a batch rule, when the person opens a batch, the batches service shall keep a batch brief that holds the batch rule.
+
+### [g99] A batch opened with no batch rule keeps a brief that holds none
+- [r99] While no settings file holds a batch rule, when the person opens a batch, the batches service shall keep a batch brief that holds no batch rule.
+

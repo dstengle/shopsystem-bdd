@@ -565,8 +565,8 @@ batch-35 abandoned
 #### `work settings set`
 
 Sets one setting of `.shop/delivery.toml` in its own table, every comment and other key kept, and commits it. The
-settings are `base`, `batch_size`, `batch.push`, `batch.tests`, `batch.worktrees`, `review.size`, `review.checks` and
-`prices.<model>`; a setting the plugin does not read, or a value not of its type, is refused, naming it.\
+settings are `base`, `batch_size`, `batch.push`, `batch.tests`, `batch.worktrees`, `batch.rules`, `review.size`,
+`review.checks` and `prices.<model>`; a setting the plugin does not read, or a value not of its type, is refused, naming it.\
 Synopsis: `work settings set setting value`
 
 - `value`: a TOML value (`7`, `["a", "b"]`, `{ input = 3.0, output = 15.0, cache_read = 0.3 }`); a text setting's may
@@ -834,7 +834,7 @@ Synopsis: `work record --kind {analysis,design,measurement,review-finding,decisi
 
 - `--body <file>`: the record's text, under its title.
 - `--summary`: its row in the index, one line.
-- `--about <id>`: the node it is about (default: the bounded context).
+- `--about <id>`: the node, item or batch it is about, one this repository holds (default: the bounded context).
 
 ```console
 $ work record "Command reference layout" --kind analysis --summary "Why the command reference has one section a tool" --body body.md
