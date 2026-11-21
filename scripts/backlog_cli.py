@@ -133,13 +133,17 @@ def cmd_depend(args):
 PIECES = ("text", "term", "relation", "given", "universal", "upstream", "recodify", "model")
 
 
-def _changed(args):
-    """`work line --reword <cap>#r<n> <line>` and `work line --remove <cap>#r<n>` (b14): an item's own line."""
-    import backlog_reword
+def _change_shape(args):
+    """The options of `work line --reword` or `--remove` refused before the item is read: one of them, alone."""
     others = [k for k in PIECES[1:] + ("into", "retires", "group", "in_group") if getattr(args, k) is not None]
     if (args.reword is not None) == (args.remove is not None) or others:
         raise backlog_items.Refused("work line: --reword takes a requirement line and --remove none, one of them, "
                                     "with no other option")
+
+
+def _changed(args):
+    """`work line --reword <cap>#r<n> <line>` and `work line --remove <cap>#r<n>` (b14): an item's own line."""
+    import backlog_reword
     if args.reword is not None:
         if args.text is None:
             raise backlog_items.Refused("work line: --reword %s takes the requirement line" % args.reword)
@@ -183,6 +187,8 @@ def cmd_line(args):
     import backlog_chore
     import backlog_forms
     import backlog_lines
+    if args.reword is not None or args.remove is not None:
+        _change_shape(args)
     backlog_chore.refuse_line(args.root, args.name)
     if args.capability is not None:
         import backlog_capability
@@ -278,22 +284,3 @@ COMMANDS = {"idea": cmd_idea, "shape": cmd_shape, "refuse": cmd_refuse, "rate": 
             "backlog": cmd_backlog, "line": cmd_line, "ready": cmd_ready,
             "reopen": cmd_reopen}
 
-
-def show(args):
-    """`work show b<n>`: the item, its label first; with --json one object `{"item": {...}}`."""
-    import backlog_view
-    item = backlog_items.find(args.root, args.target)
-    if args.json:
-        items = backlog_items.items(args.root)
-        print(json.dumps({"item": backlog_view.row_json(item, {i.name: i for i in items},
-                                                        backlog_view.rank_of(item, items), args.root)}))
-        return 0
-    print(backlog_items.label(item))
-    for key in ("status", "provenance", *backlog_items.RATINGS):
-        print("  %s: %s" % (key, getattr(item, key) or "-"))
-    by_name = {i.name: i for i in backlog_items.items(args.root)}
-    print("  depends on: %s" % (", ".join(backlog_items.label(by_name[n]) if n in by_name else "%s (missing)" % n
-                                          for n in item.depends_on) or "-"))
-    for heading, text in item.sections.items():
-        print("\n## %s\n\n%s" % (heading, text))
-    return 0

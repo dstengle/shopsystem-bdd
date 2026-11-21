@@ -440,7 +440,7 @@ deletes the note):
 
 ```console
 $ work ready b2
-work: work ready: b2 "notes remove keeps the note" is not passing:
+work ready: b2 "notes remove keeps the note" is not passing:
   L1 notes#r4 and #r5 clash: on "the person runs `notes remove` on a note", r4 obliges and r5 forbids `notes` to delete a note
 ```
 
