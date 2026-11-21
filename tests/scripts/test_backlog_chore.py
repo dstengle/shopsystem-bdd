@@ -25,6 +25,14 @@ def test_owned_or_outside_paths_refused(ready_repo):
     assert state(ready_repo) == before
 
 
+def test_in_batch_item_refused(ready_repo):
+    write_item(ready_repo, "b1", status="in-batch")
+    before = state(ready_repo)
+    done = work(ready_repo, "chore", "b1", "--file", "scripts/a.py", "--check", "true")
+    assert done.returncode == 1 and "in-batch" in done.stderr, done.stderr
+    assert state(ready_repo) == before
+
+
 def test_covers_files_and_directories():
     chore = backlog_chore.Chore(("scripts/a.py", "docs/"), "true")
     assert backlog_chore.outside(chore, ["scripts/a.py", "docs/x/y.md", "scripts/b.py", "docsx.md"]) == [
