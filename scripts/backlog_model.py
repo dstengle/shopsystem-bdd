@@ -244,13 +244,15 @@ def lay(into, blocks, files):
             files.append("spec/vocabulary/%s.md" % block.area)
 
 
-def unlay(into, blocks, files):
-    """The reverse of `lay`, each path changed added to `files`; a vocabulary file `lay` made removed."""
+def unlay(into, blocks, files, base=None):
+    """The reverse of `lay`, each path changed added to `files`; a vocabulary file `lay` made removed; an operation a
+    model line restates put back as the commit `base` (the batch's base, b485) held it, else as git's history did."""
     for block in getattr(blocks, "models", ()):
         path, rel = model_path(into, block.area), "spec/model/%s.md" % block.area
         if block.lines and path.is_file():
             lines, start, end = _fence(path.read_text(), rel)
-            held = functools.partial(backlog_model_ops.held, path)
+            held = (functools.partial(backlog_model_ops.at_base, path, base) if base
+                    else functools.partial(backlog_model_ops.held, path))
             text = "\n".join(lines[:start] + unmerged(lines[start:end], block.lines, held) + lines[end:])
             if text != path.read_text():
                 path.write_text(text)

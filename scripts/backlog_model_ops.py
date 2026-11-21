@@ -2,8 +2,9 @@
 the same name as an operation the service declares, laid in place of the operation (its line and the lines indented
 under it: `outcomes:`, continuations) rather than appended as a second operation of that name (v_m8); a parameter
 added, renamed or removed, an outcome or a reason added. backlog_model's `merged` lays it (`restate`), its `unmerged`
-puts the operation back as the model file held it before the lay (`held`, read off git; `unrestate`), or takes the
-line out when no version held the operation (a new one)."""
+puts the operation back as the model file held it before the lay (`at_base`, the batch's base, b485; else `held`,
+read off git's history; `unrestate`), or takes the line out when no version held the operation (a new one). A line
+that repeats the operation unchanged is a restatement too: only the base tells it from a new operation."""
 import re
 import subprocess
 from pathlib import Path
@@ -76,6 +77,22 @@ def unrestate(body, at, end, header, ops, before):
         body[here[0]:here[1]] = put
         end += len(put) - len(lines)
     return end
+
+
+def at_base(path, base, header, op, lines):
+    """The model lines of `path`'s fence at the commit `base` (the batch's base, which the lay was made on); None when
+    that commit holds no such file or no fence. `header`, `op` and `lines` are `held`'s, unread."""
+    from backlog_model import _fence
+    path = Path(path)
+
+    def git(*args):
+        return subprocess.run(["git", "-C", str(path.parent), *args], capture_output=True, text=True)
+    prefix = git("rev-parse", "--show-prefix").stdout.strip()
+    shown = git("show", "%s:%s%s" % (base, prefix, path.name))
+    if shown.returncode != 0 or "```model" not in shown.stdout:
+        return None
+    text, start, end = _fence(shown.stdout, path.name)
+    return text[start:end]
 
 
 def held(path, header, op, lines):
