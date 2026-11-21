@@ -156,7 +156,10 @@ Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CA
 - `--expose '<tables>'`: the tables of one operation for the CLI adapter contract, `[operations."<service>.<operation>"]`
   with its `command` and its `[operations."<service>.<operation>".parameters]`, kept in the item's `### cli adapter`
   block in place of that operation's own; refused when the domain model, with the item's model lines, has no such
-  operation. `--withhold <service>.<operation>` keeps an operation no command requests instead. `work batch start`
+  operation. `--expose <service>.<operation>`, the operation alone, writes its tables from the domain model's
+  operation: its command named after the operation (after the program the contract's other operations of its service
+  are requested by, else the service), and each parameter an option named after it with an example of its type (its
+  first value, its object's name, a flag `flag = true`). `--withhold <service>.<operation>` keeps an operation no command requests instead. `work batch start`
   lays each into `spec/adapters/cli.toml` (the table in place of the operation's own, a withheld operation under
   `[unexposed]` with its table out), the contract made when there is none.
 

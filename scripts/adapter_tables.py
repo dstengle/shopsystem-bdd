@@ -4,7 +4,8 @@ each `[operations."<service>.<operation>".<key>]` under it, each with the lines 
 
 `table` gives an operation's tables, `without` takes them out, `with_table` puts one in (in place of the operation's
 own, after the contract's last operation table, else at its end), `listed` puts an operation into or out of
-`[unexposed]`'s `operations`, and `one` reads the text `work line --expose` is given: one operation's tables."""
+`[unexposed]`'s `operations`, `one` reads the text `work line --expose` is given: one operation's tables, and `of`
+writes them from a domain model's operation when it is given the operation alone (b482, the operation-table form)."""
 import re
 import tomllib
 
@@ -112,3 +113,49 @@ def one(text):
     if not (ops[ident].get("command") or ops[ident].get("hook")):
         raise Refused("work line: the operation table %s has no command" % ident)
     return ident, table(text, ident)
+
+
+EXAMPLES = {"text": "a %s", "number": 1, "time": "2026-01-01", "version": "1.0.0"}
+
+
+def _program(contract, service):
+    """The command's first word: the one of the contract's other operations of `service`, else `service`."""
+    for ident in operations(contract):
+        if ident.rpartition(".")[0] == service:
+            found = re.search(r'(?m)^command\s*=\s*"(\S+)', table(contract, ident))
+            if found:
+                return found.group(1)
+    return service
+
+
+def _example(param):
+    """An example of the parameter's type: its first value, its object's name, else EXAMPLES' of its type."""
+    if param.values:
+        return param.values[0]
+    if param.targets:
+        return "%s-1" % param.targets[0]
+    found = EXAMPLES.get(param.type, EXAMPLES["text"])
+    return found % param.name if isinstance(found, str) and "%s" in found else found
+
+
+def of(op, contract=""):
+    """The operation-table form of the domain model's operation `op`: its command named after the operation (the
+    program the contract's other operations of its service are requested by), and each parameter an option named after
+    it with an example of its type (a flag `flag = true`)."""
+    ident = "%s.%s" % (op.service, op.name)
+    lines = ['[operations."%s"]' % ident, 'command = "%s %s"' % (_program(contract, op.service), op.name)]
+    if op.parameters:
+        lines.append('[operations."%s".parameters]' % ident)
+    for param in op.parameters:
+        option = "--" + "-".join(param.name.split())
+        spec = "flag = true" if param.type == "flag" else "example = %s" % _toml(_example(param))
+        lines.append('%s = { option = "%s", %s }' % (_key(param.name), option, spec))
+    return "\n".join(lines)
+
+
+def _key(name):
+    return name if re.match(r"^[A-Za-z0-9_-]+$", name) else '"%s"' % name
+
+
+def _toml(value):
+    return str(value) if isinstance(value, int) else '"%s"' % str(value).replace("\\", "\\\\").replace('"', '\\"')
