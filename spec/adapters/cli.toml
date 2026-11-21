@@ -1254,7 +1254,7 @@ term = { option = "--term" }
 pack = { option = "--pack" }
 
 [operations."drafting.take out"]
-command = "work take out"
+command = "work line"
 requirements = [
   "drafting#r53: When the person removes a universal condition from an item, the drafting service shall not keep the universal condition in the item.",
   "drafting#r54: When the person removes an upstream entry from an item, the drafting service shall not keep the upstream entry in the item.",
@@ -1264,13 +1264,13 @@ requirements = [
   "drafting#r58: If the person removes a given block from an item that does not hold the given block, then the drafting service shall refuse the request and name the given block.",
 ]
 [operations."drafting.take out".parameters]
-item = { option = "--item", example = "item-1" }
-"universal condition" = { option = "--universal-condition", example = "universal condition-1" }
-"upstream entry" = { option = "--upstream-entry", example = "upstream entry-1" }
-"given block" = { option = "--given-block", example = "given block-1" }
+item = { positional = 1 }
+"universal condition" = { option = "--remove-universal" }
+"upstream entry" = { option = "--remove-upstream" }
+"given block" = { option = "--remove-given" }
 
 [operations."drafting.replace"]
-command = "work replace"
+command = "work line"
 requirements = [
   "drafting#r59: When the person replaces a universal condition in an item, the drafting service shall keep a different universal condition in the item.",
   "drafting#r60: When the person replaces an upstream entry in an item, the drafting service shall keep a different upstream entry in the item.",
@@ -1280,7 +1280,7 @@ requirements = [
   "drafting#r64: If the person replaces a given block in an item that does not hold the given block, then the drafting service shall refuse the request and name the given block.",
 ]
 [operations."drafting.replace".parameters]
-item = { option = "--item", example = "item-1" }
-"universal condition" = { option = "--universal-condition", example = "universal condition-1" }
-"upstream entry" = { option = "--upstream-entry", example = "upstream entry-1" }
-"given block" = { option = "--given-block", example = "given block-1" }
+item = { positional = 1 }
+"universal condition" = { option = "--replace-universal" }
+"upstream entry" = { option = "--replace-upstream" }
+"given block" = { option = "--replace-given" }
