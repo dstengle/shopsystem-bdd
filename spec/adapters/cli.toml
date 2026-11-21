@@ -1355,5 +1355,5 @@ requirements = [
   "context-requests#r60: If the person suggests a term proposal that does not conform to the vocabulary-entry form, then the context requests service shall refuse the request and name the term proposal.",
 ]
 [operations."context requests.suggest".parameters]
-"context request" = { option = "--context-request", example = "context request-1" }
-"term proposal" = { option = "--term-proposal", example = "term proposal-1" }
+"context request" = { positional = 1 }
+"term proposal" = { option = "--term-proposal", example = "- **shelf** (noun) → object shelf. A place the person keeps books on." }

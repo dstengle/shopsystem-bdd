@@ -80,7 +80,8 @@ ADDED = {"consistency#g33": "design-model-check", "consistency#g34": "design-mod
          "items#g53": "readiness", "items#g54": "readiness",                     # b516: universal conditions only
          **{"checking#g%d" % n: "design-model-check" for n in range(52, 58)},
          "reviews#g9": "batches", "reviews#g10": "batches",     # b492: a base merge resubmitted; b370: the rule catalogue's checks
-         **{"context-requests#g%d" % n: "requests" for n in (51, 52, 54, 55, 56)}}    # b68: a thread out of step; b71
+         **{"context-requests#g%d" % n: "requests" for n in (51, 52, 54, 55, 56)},    # b68: a thread out of step; b71
+         **{"context-requests#g%d" % n: "requests" for n in (53, 57, 58, 59)}}    # b42: a term proposal
 
 
 def origin(node):

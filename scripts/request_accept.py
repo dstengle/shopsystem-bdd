@@ -11,6 +11,7 @@ import backlog_lines
 import intake_moves
 import request_moves
 import request_post
+import request_terms
 import shop_files
 from backlog_items import Item, label, next_name, one_line, rel_of, render
 from request_text import SETTLED, countered, entries, field, with_field
@@ -55,6 +56,9 @@ def _write_lines(root, item, accepted):
     shared = {}
     for number, line, into in accepted:
         capability, _, group = into.partition(" ")
+        if request_terms.is_proposal(line):     # its terms into the item, no requirement (b42)
+            request_terms.into_item(root, item, capability, line)
+            continue
         in_group = group if re.fullmatch(r"g[1-9]\d*", group) else None
         if not group and capability in shared:
             in_group = shared[capability]
