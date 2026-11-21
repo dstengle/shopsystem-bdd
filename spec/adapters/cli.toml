@@ -760,8 +760,9 @@ capability = { option = "--capability" }
 command = "work fits"
 cli-only = { options = ["--serves"] }
 requirements = [
-  "context-requests#r19: While a context request is `awaiting-asker`, when the person serves the context request, the context requests service shall set the status of the context request to `delivered`, keep a resolution and keep an entry on the context request.",
   "context-requests#r32: While this repository is `rejecting` and a context request is `awaiting-asker`, if the person serves the context request, then the context requests service shall refuse the request, name this repository and not keep an entry on the context request.",
+  "context-requests#r52: While a context request is `awaiting-asker` and the context request has a thread on a channel whose availability is `rejecting`, if the person serves the context request, then the context requests service shall refuse the request and name the thread.",
+  "context-requests#r54: While a context request is `awaiting-asker`, when the person serves the context request, the context requests service shall set the status of the context request to `delivered`, keep a resolution, keep an entry on the context request and set the status of the thread of the context request to `closed`.",
 ]
 [operations."context requests.serve".parameters]
 "context request" = { positional = 1 }
@@ -823,7 +824,8 @@ command = "work resolve"
 cli-only = { options = ["--line"] }
 requirements = [
   "context-requests#r13: While a context request is not `accepted`, if the person resolves the context request, then the context requests service shall refuse the request and name the context request.",
-  "context-requests#r29: While a context request is `accepted`, when the person resolves the context request, the context requests service shall set the status of the context request to `delivered`, keep a resolution, set the side of the context request to `asker` and keep an entry on the context request.",
+  "context-requests#r51: While a context request is `accepted` and the context request has a thread on a channel whose availability is `rejecting`, if the person resolves the context request, then the context requests service shall refuse the request and name the thread.",
+  "context-requests#r53: While a context request is `accepted`, when the person resolves the context request, the context requests service shall set the status of the context request to `delivered`, keep a resolution, set the side of the context request to `asker`, keep an entry on the context request and set the status of the thread of the context request to `closed`.",
 ]
 [operations."context requests.resolve".parameters]
 "context request" = { positional = 1 }

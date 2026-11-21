@@ -190,16 +190,6 @@ Feature: Context requests
     And the entry e1 is on the context request c1
     And the context requests service sets the status of the context request c1 to `awaiting-asker`
 
-  @g19 @r19
-  Scenario: A context request served is delivered with its resolution
-    Given a context request c1
-    And the status of the context request c1 is `awaiting-asker`
-    When the person serves the context request c1
-    Then the context requests service sets the status of the context request c1 to `delivered`
-    And the context requests service keeps the resolution r1
-    And the context requests service keeps the entry e1
-    And the entry e1 is on the context request c1
-
   @g20 @r20
   Scenario: Lines proposed to a context request are kept
     Given a context request c1
@@ -388,17 +378,6 @@ Feature: Context requests
     When the person accepts the context request c1
     Then the context requests service refuses this request
     And the context requests service names the request line r1
-
-  @g29 @r29
-  Scenario: An accepted context request resolved is delivered with its resolution
-    Given a context request c1
-    And the status of the context request c1 is `accepted`
-    When the person resolves the context request c1
-    Then the context requests service sets the status of the context request c1 to `delivered`
-    And the context requests service keeps the resolution r1
-    And the context requests service sets the side of the context request c1 to `asker`
-    And the context requests service keeps the entry e1
-    And the entry e1 is on the context request c1
 
   @g30 @r30
   Scenario: No context request is raised while this repository rejects a change
@@ -664,3 +643,54 @@ Feature: Context requests
     When the session s1 offers on the context request c2 with the capability c1
     Then the context requests service keeps the entry e1
     And the entry e1 does not hold the term t1
+
+  @g51 @r51
+  Scenario: A context request is not resolved while its channel rejects a change to its thread
+    Given a context request c1
+    And the status of the context request c1 is `accepted`
+    And a channel c2
+    And the availability of the channel c2 is `rejecting`
+    And a thread t1
+    And the thread t1 is on the channel c2
+    And the context request c1 has the thread t1
+    When the person resolves the context request c1
+    Then the context requests service refuses this request
+    And the context requests service names the thread t1
+
+  @g52 @r52
+  Scenario: A context request is not served while its channel rejects a change to its thread
+    Given a context request c1
+    And the status of the context request c1 is `awaiting-asker`
+    And a channel c2
+    And the availability of the channel c2 is `rejecting`
+    And a thread t1
+    And the thread t1 is on the channel c2
+    And the context request c1 has the thread t1
+    When the person serves the context request c1
+    Then the context requests service refuses this request
+    And the context requests service names the thread t1
+
+  @g53 @r53
+  Scenario: A request's issue is never left out of step with its record
+    Given a context request c1
+    And the status of the context request c1 is `accepted`
+    When the person resolves the context request c1
+    Then the context requests service sets the status of the context request c1 to `delivered`
+    And the context requests service keeps the resolution r1
+    And the context requests service sets the side of the context request c1 to `asker`
+    And the context requests service keeps the entry e1
+    And the entry e1 is on the context request c1
+    And the context requests service sets the status of the thread t1 to `closed`
+    And the context request c1 has the thread t1
+
+  @g54 @r54
+  Scenario: A request's issue is never left out of step with its record
+    Given a context request c1
+    And the status of the context request c1 is `awaiting-asker`
+    When the person serves the context request c1
+    Then the context requests service sets the status of the context request c1 to `delivered`
+    And the context requests service keeps the resolution r1
+    And the context requests service keeps the entry e1
+    And the entry e1 is on the context request c1
+    And the context requests service sets the status of the thread t1 to `closed`
+    And the context request c1 has the thread t1

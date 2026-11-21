@@ -299,23 +299,6 @@ shall [x3: service the context requests service (constant)]
     initiates(e3, subject: x3, status(x1) = `awaiting-asker`)
 ```
 
-## r19
-From: requests#r74, reworded in request words (0.38.0).
-
-```reading
-While a context request is `awaiting-asker`, when the person serves the context request, the context requests service shall set the status of the context request to `delivered`, keep a resolution and keep an entry on the context request.
-shall [x2: agent the person (constant), x3: service the context requests service (constant)]
-  while [x1: context request]
-    status(x1) = `awaiting-asker`
-  when
-    request(e1, context requests.serve, subject: x2, object: x1)
-  response [x4: resolution, x5: entry]
-    initiates(e2, subject: x3, status(x1) = `delivered`)
-    keep(e3, subject: x3, object: x4)
-    on(x5, x1)
-    keep(e4, subject: x3, object: x5)
-```
-
 ## r20
 From: requests#r75, reworded in request words (0.38.0).
 
@@ -512,24 +495,6 @@ shall [x3: agent the person (constant), x4: service the context requests service
   response
     refuse(e2, subject: x4, object: x5)
     name(e3, subject: x4, object: x1)
-```
-
-## r29
-From: requests#r85, reworded in request words (0.38.0).
-
-```reading
-While a context request is `accepted`, when the person resolves the context request, the context requests service shall set the status of the context request to `delivered`, keep a resolution, set the side of the context request to `asker` and keep an entry on the context request.
-shall [x2: agent the person (constant), x3: service the context requests service (constant)]
-  while [x1: context request]
-    status(x1) = `accepted`
-  when
-    request(e1, context requests.resolve, subject: x2, object: x1)
-  response [x4: resolution, x5: entry]
-    initiates(e2, subject: x3, status(x1) = `delivered`)
-    keep(e3, subject: x3, object: x4)
-    initiates(e4, subject: x3, side(x1) = `asker`)
-    on(x5, x1)
-    keep(e5, subject: x3, object: x5)
 ```
 
 ## r30
@@ -906,4 +871,79 @@ shall [x2: bounded context "the bounded context whose repository the command run
     not
       in(x1, x8)
     keep(e2, subject: x7, object: x8)
+```
+
+## r51
+From: b68 r51.
+
+```reading
+While a context request is `accepted` and the context request has a thread on a channel whose availability is `rejecting`, if the person resolves the context request, then the context requests service shall refuse the request and name the thread.
+shall [x4: agent the person (constant), x5: service the context requests service (constant), x6: request "the request the trigger makes" (indexical)]
+  while [x1: context request, x2: thread, x3: channel]
+    status(x1) = `accepted`
+    availability(x3) = `rejecting`
+    on(x2, x3)
+    of(x2, x1)
+  if
+    request(e1, context requests.resolve, subject: x4, object: x1)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x2)
+```
+
+## r52
+From: b68 r52.
+
+```reading
+While a context request is `awaiting-asker` and the context request has a thread on a channel whose availability is `rejecting`, if the person serves the context request, then the context requests service shall refuse the request and name the thread.
+shall [x4: agent the person (constant), x5: service the context requests service (constant), x6: request "the request the trigger makes" (indexical)]
+  while [x1: context request, x2: thread, x3: channel]
+    status(x1) = `awaiting-asker`
+    availability(x3) = `rejecting`
+    on(x2, x3)
+    of(x2, x1)
+  if
+    request(e1, context requests.serve, subject: x4, object: x1)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x2)
+```
+
+## r53
+Retires: r29. From: b68 r53.
+
+```reading
+While a context request is `accepted`, when the person resolves the context request, the context requests service shall set the status of the context request to `delivered`, keep a resolution, set the side of the context request to `asker`, keep an entry on the context request and set the status of the thread of the context request to `closed`.
+shall [x2: agent the person (constant), x3: service the context requests service (constant)]
+  while [x1: context request]
+    status(x1) = `accepted`
+  when
+    request(e1, context requests.resolve, subject: x2, object: x1)
+  response [x4: resolution, x5: entry, x6: thread]
+    initiates(e2, subject: x3, status(x1) = `delivered`)
+    keep(e3, subject: x3, object: x4)
+    initiates(e4, subject: x3, side(x1) = `asker`)
+    on(x5, x1)
+    keep(e5, subject: x3, object: x5)
+    of(x6, x1)
+    initiates(e6, subject: x3, status(x6) = `closed`)
+```
+
+## r54
+Retires: r19. From: b68 r54.
+
+```reading
+While a context request is `awaiting-asker`, when the person serves the context request, the context requests service shall set the status of the context request to `delivered`, keep a resolution, keep an entry on the context request and set the status of the thread of the context request to `closed`.
+shall [x2: agent the person (constant), x3: service the context requests service (constant)]
+  while [x1: context request]
+    status(x1) = `awaiting-asker`
+  when
+    request(e1, context requests.serve, subject: x2, object: x1)
+  response [x4: resolution, x5: entry, x6: thread]
+    initiates(e2, subject: x3, status(x1) = `delivered`)
+    keep(e3, subject: x3, object: x4)
+    on(x5, x1)
+    keep(e4, subject: x3, object: x5)
+    of(x6, x1)
+    initiates(e5, subject: x3, status(x6) = `closed`)
 ```
