@@ -71,7 +71,7 @@ def kept(step):
     """The settings file changed and committed alone by HEAD, as it now is."""
     done = step.context["result"]
     assert done.returncode == 0, done.stdout + done.stderr
-    git = lambda *a: subprocess.run(["git", *a], cwd=step.repo, capture_output=True, text=True).stdout  # noqa: E731
+    git = lambda *a: subprocess.run(["git", *a], cwd=step.repo, capture_output=True, text=True).stdout
     assert git("show", "HEAD:%s" % REL) == (step.repo / REL).read_text() != BEFORE
     assert git("show", "--name-only", "--format=", "HEAD").split() == [REL]
 

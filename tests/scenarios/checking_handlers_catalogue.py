@@ -76,7 +76,7 @@ def table(step):
     catalogue, _, code = entry(world(step)).partition("#")
     data = tomllib.loads((step.repo / "grammar" / FILES[0]).read_text())
     md = (step.repo / "grammar" / ("%s.md" % catalogue)).read_text()
-    body = re.search(r"^## %s\n(.*?)(?=^## |\Z)" % re.escape(code), md, re.S | re.M).group(1)
+    body = re.search(r"^## %s\n(.*?)(?=^## |\Z)" % re.escape(code), md, re.DOTALL | re.MULTILINE).group(1)
     return data[catalogue][code], body
 
 
@@ -93,7 +93,7 @@ def then(step):
         return None
     if step.term == "mention" and "item" in step.text:
         assert ITEM == found.get("since") or ITEM in found.get("changed", []), found
-        assert re.search(r"^- (Since|Changed): .*\b%s\b" % ITEM, body, re.M), body
+        assert re.search(r"^- (Since|Changed): .*\b%s\b" % ITEM, body, re.MULTILINE), body
         return None
     return False
 
