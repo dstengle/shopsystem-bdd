@@ -60,6 +60,19 @@ requirements = [
 text = { positional = 1 }
 "logical form" = { option = "--form", flag = true }
 
+[operations."language.preview"]
+command = "spec parse"
+cli-only = { options = ["--file"] }
+requirements = [
+  "parsing#r19: While an item holds a term, when the person previews a requirement that uses the term for the item, the language service shall complete the request.",
+  "parsing#r20: While an item holds a term, when the person previews a requirement that uses the term for the item with the logical form, the language service shall return one logical form of the requirement and complete the request.",
+  "parsing#r22: If the person previews a requirement that does not conform to the language reference for an item, then the language service shall refuse the request and name the requirement.",
+]
+[operations."language.preview".parameters]
+text = { positional = 1 }
+item = { option = "--item" }
+"logical form" = { option = "--form", flag = true }
+
 [operations."language.explain"]
 command = "spec explain"
 requirements = [

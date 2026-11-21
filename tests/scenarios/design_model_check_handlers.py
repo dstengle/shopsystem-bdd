@@ -198,7 +198,12 @@ def model_parse(step):
         step.context.setdefault("facts", []).append("run on fragment")
         step.context["build"] = sibling("design_model_check_worlds.py").build
     built(step)
-    run_model(step, "parse", "--file", holding(step))
+    run_model(step, "parse", "--file", holding(step), *item(step))
+
+
+def item(step):
+    """`--item b1` when the When previews for an item (design_model_check_worlds_item, b452)."""
+    return sibling("design_model_check_worlds_item.py").args(step) if flag(step, "--item") else []
 
 
 # What an instance no Given named is printed as, by its kind and number: `spec facts` and `spec rules` print every

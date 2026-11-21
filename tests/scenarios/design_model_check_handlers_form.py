@@ -34,4 +34,4 @@ def model_parse_form(step):
         C2.context(step.repo, H.PATH, [LINE])
         H.says(step, "l1", TRIGGER)
     held = caps / "shelf.md" if (caps / "shelf.md").is_file() else caps / "thing.md"
-    H.run_model(step, "parse", "--form", "--file", str(held))
+    H.run_model(step, "parse", "--form", "--file", str(held), *H.item(step))

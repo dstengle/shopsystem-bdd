@@ -175,6 +175,10 @@ contract:
     (spec_lf): its modality and the referents no part introduces, each
     with its origin, then its Where, While, trigger and response, each a box
     of referents, atoms and boxes.
+  - parse --item b<n> reads the line (or a --file F of the specification)
+    as it reads once the terms, relation rows, lines and model lines the
+    item b<n> holds are laid on a copy of spec/, as the readiness bar lays
+    them (spec_preview); an item with no file is refused, naming it.
   - lexicon lists the terms by category; lexicon --check prints v_t4-v_t10
     (`<code>  <term>  <message>`) and exits 1 when there is any: v_t7 a
     gloss of more than one sentence, v_t8 a relation entry (a relation is a
@@ -260,6 +264,7 @@ def main(argv=None):
     p.add_argument("line", nargs="?")
     p.add_argument("--file")
     p.add_argument("--form", action="store_true", help="print each line's logical form in place of its tree")
+    p.add_argument("--item", metavar="b<n>", help="read the line with the terms and model lines item b<n> holds laid")
     x = sub.add_parser("lexicon", help="list the terms by category; --check gives v_t4-v_t10")
     x.add_argument("--check", action="store_true")
     g = sub.add_parser("logic", help="the temporal check of the codified requirements")
