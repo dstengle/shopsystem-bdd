@@ -1,4 +1,4 @@
-"""Context requests' thread and its channel (b68, context-requests r51-r54): a request's thread is the issue it is
+"""Context requests' thread and its channel (b68, context-requests r51, r52, r54, r55): a request's thread is the issue it is
 on in the stand-in gh (requests_world), its channel GitHub; a channel whose availability is `rejecting` is a stand-in
 whose `gh issue close` fails (`$STUB_GH_FAIL`, requests_world.env); the thread `closed` is the issue's state in the
 stand-in once the command ran. Each a `local` of work_queue_world's table, loaded after requests_handlers_givens so
@@ -10,7 +10,7 @@ W = sys.modules["shop_work_queue_world"]
 Q = sys.modules["shop_requests_world"]
 
 
-GROUPS = {"g51", "g52", "g53", "g54"}     # context-requests' groups of b68, the only scenarios these steps are taken in
+GROUPS = {"g51", "g52", "g54", "g55"}     # context-requests' groups of b68, the only scenarios these steps are taken in
 
 
 def _ours(step):
