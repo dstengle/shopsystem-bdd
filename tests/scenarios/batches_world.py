@@ -30,6 +30,7 @@ OWN_START, OWN_IN = "i92", "i93"
 URL = "https://github.com/ex/ctx/pull/%d"
 CAP = "spec/capabilities/work-queue.md"
 AFTER_BATCH = []        # what handler modules do once a batch is made, each called with (step, its name) (b324)
+BEFORE_RUN = []         # what handler modules do just before `work batch <command>` runs, called with step (b449)
 
 
 def W():
@@ -281,4 +282,6 @@ def task_row(step, name):
 
 def run_batch(step, command, *args):
     """`work batch <command> <args>`, run in the repository after the world is prepared."""
+    for before in BEFORE_RUN:
+        before(step)
     return B().run_work(step, "batch", command, *args, env=env(step), stdin=subprocess.DEVNULL, timeout=120)

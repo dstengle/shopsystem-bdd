@@ -65,7 +65,7 @@ def capability(node):
 # groups added since the move whose scenarios an old capability's handlers take, as its moved groups' (b309); a
 # group whose own capability has handlers of its own is not listed
 ADDED = {"consistency#g33": "design-model-check", "consistency#g34": "design-model-check",     # b418
-         "drafting#g25": "readiness",                                           # b354: a term of a new capability
+         "drafting#g25": "readiness", "reviews#g6": "batches",   # b354: a term of a new capability; b449
          "measurement#g10": "telemetry", "measurement#g11": "batch-measurement",    # b420: compare's frames of two
          **{"checking#g%d" % n: "design-model-check" for n in range(52, 58)}}     # b370: the rule catalogue's checks
 
