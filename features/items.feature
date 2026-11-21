@@ -808,22 +808,22 @@ Feature: Items
 
   @g51 @r51
   Scenario: An item is not split with a requirement of another item (case 1)
-    Given an item i1
-    And the status of the item i1 is `idea`
-    And a requirement r1
+    Given a requirement r1
+    And an item i1
+    And the item i1 holds the requirement r1
     And an item i2
-    And the item i2 holds the requirement r1
+    And the status of the item i2 is `idea`
     When the person splits the item i2 with the requirement r1
     Then the backlog service refuses this request
     And the backlog service names the requirement r1
 
   @g51 @r51
   Scenario: An item is not split with a requirement of another item (case 2)
-    Given an item i1
-    And the status of the item i1 is `shaped`
-    And a requirement r1
+    Given a requirement r1
+    And an item i1
+    And the item i1 holds the requirement r1
     And an item i2
-    And the item i2 holds the requirement r1
+    And the status of the item i2 is `shaped`
     When the person splits the item i2 with the requirement r1
     Then the backlog service refuses this request
     And the backlog service names the requirement r1
