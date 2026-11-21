@@ -19,6 +19,7 @@ import tempfile
 from pathlib import Path
 
 import backlog_chore
+import backlog_forms
 import backlog_lines
 import features_generate
 import model_decisions
@@ -216,6 +217,7 @@ def _laid(copy, item, blocks, mine):
         spec_prefetch.prefetch(copy, spec_prefetch.texts(copy))
         return set(spec_lexicon.problems(spec_lexicon.read(copy), outer)), _violations(copy)[0]
     before, before_lay = readiness_before.before(copy, unlaid)
+    doubled = backlog_forms.laid_already(copy, blocks)      # an upstream an item picked before lays (b476)
     backlog_lines.lay_onto(copy, item)
     reasons = ["%s.md: %s" % (b.capability, p) for b in blocks
                for p in spec_read.capability(backlog_lines.capability_file(copy, b.capability)).problems]
@@ -223,12 +225,12 @@ def _laid(copy, item, blocks, mine):
     reasons += ["the lexicon: %s %s: %s" % found for found in spec_lexicon.problems(spec_lexicon.read(copy), outer)
                 if found not in before]                                                             # r15
     if reasons:                  # a broken lexicon breaks grammar 4's compile: no stage after it runs
-        return reasons, []
+        return doubled + reasons, []
     spec_prefetch.prefetch(copy, spec_prefetch.texts(copy))     # the lay's misses side by side, after the lexicon
     unparsed = _parses(copy, blocks)       # every stage after it runs whatever it finds, each line named once (b305)
     reasons, warnings = _logic(copy, mine, [uid for uid, _ in blocks.universal], unparsed)
-    return (list(unparsed.values()) + _broken(copy, blocks, before_lay) + reasons + _scenarios(copy, blocks, unparsed),
-            warnings)
+    return (doubled + list(unparsed.values()) + _broken(copy, blocks, before_lay) + reasons
+            + _scenarios(copy, blocks, unparsed), warnings)
 
 
 _RAN = {}     # (resolved root, decision's path): its run, once a process (D13)

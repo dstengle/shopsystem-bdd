@@ -216,9 +216,8 @@ def cmd_line(args):
         raise backlog_items.Refused("work line: give one of a requirement line, --term, --relation, --model, "
                                     "--given, --universal, --upstream or --recodify")
     piece = given[0]
+    backlog_forms.refuse_beside(args, piece)
     if piece == "recodify":
-        if args.into is not None or args.retires is not None:
-            raise backlog_items.Refused("work line: --recodify takes no --into or --retires")
         item = backlog_lines.recodify(args.root, args.name, args.recodify)
         print("%s: %s recodified" % (backlog_items.label(item), args.recodify))
         return 0
