@@ -10,6 +10,7 @@ been renamed or retired since.
 
 | Line | Releases |
 |---|---|
+| 0.43 | [0.43.0](#0430-the-readiness-bar-answers-in-seconds-and-grammar-4-builds-and-parses-faster) |
 | 0.42 | [0.42.0](#0420-a-request-acts-on-one-thing-one-verb-for-several-operations-and-a-made-thing-introduced-by-the-when) |
 | 0.41 | [0.41.0](#0410-a-fresh-contexts-scenarios-run-with-plain-pytest-and-a-responses-owned-thing-given-before-the-when) |
 | 0.40 | [0.40.0](#0400-a-new-context-built-by-command-and-the-docs-as-prompts-to-the-session) |
@@ -24,6 +25,24 @@ been renamed or retired since.
 | 0.31 | [0.31.5](#0315-released-as-240-the-request-watch-wakes-on-githubs-events-and-starts-with-the-session) · [0.31.4](#0314-released-as-231-a-batch-runs-in-one-fresh-agent-and-a-parked-item-leaves-the-batch-at-once) · [0.31.3](#0313-released-as-230-work-pushes-its-commits-requests-post-after-they-commit-and-work-watch) · [0.31.2](#0312-released-as-220-decisions-and-records-written-by-command) · [0.31.1](#0311-released-as-210-requests-exchanged-through-github-issues) · [0.31.0](#0310-released-as-200-the-workflow-simplified) |
 | 0.30 | [0.30.0](#0300-released-as-100-codified-requirements) |
 | 0.29 and before | [0.29.0](#0290-glossary-proposals-delegations-given-late-and-fewer-stops-from-outside-a-work-item) · [0.28.3](#0283-a-branch-review-that-runs-nothing) · [0.28.2](#0282-answers-a-round-cannot-hold-go-back-to-integration) · [0.28.1](#0281-work-run-stops-visibly-on-questions-and-spends-less-agent-time) · [0.28.0](#0280-one-set-of-request-commands-work-list-and-work-show-and-answers-that-redraft) · [0.27.0](#0270-transitions-from-how-a-session-ended-and-the-turn-of-an-accepted-request) · [0.26.0](#0260-requests-and-the-context-loop) · [0.25.0](#0250-work-items-side-by-side-answers-and-guarantees) · [0.24.0](#0240-work-items-named-by-ids-and-upgrades-between-plugin-releases) · [0.23.1](#0231---work-item-keeps-tests-that-are-not-scenarios) · [0.23.0](#0230-faults-settled-query-output-as-json-the-session-keeps-the-gate-measurement-on-v3) · [0.22.0](#0220-one-requirement-per-scenario-faults-and-the-lessons-of-a-blind-formulation) · [0.21.0](#0210-the-final-layout-and-delivery-by-work-run) |
+
+## 0.43.0: the readiness bar answers in seconds, and grammar 4 builds and parses faster
+
+- **The readiness bar answers in seconds** (b430, decision 0112): `work ready` stats the spec once, parses each line
+  once and only the lines a lay's change can reach (the misses several at once), reads the model facts once and keeps
+  its result before the lay on disk. On this repository: 7.5 s to 1.6 s warm, and 35 s to 12.8 s on the first run
+  after a vocabulary change. What it refuses is unchanged.
+- **The bar checks an item's lines, not the adapter contract's annotations** (decision 0112): it no longer runs
+  `spec annotate`, compares v_a5 or v_a6, or runs `spec logic`'s L2 and the entailment check (L8). Those stay with
+  `spec check`, `spec logic` and the batch's tests.
+- **Grammar 4 factors its relative clauses as the RGL's RelCN does** (b437): an object relative clause is built once
+  per verb and gap and attached per kind, so the grammar grows by a few funs a kind, not a fun per gap and kind. A cold
+  readiness bar run: 434 s to 44 s. Every line keeps its reading and its logical form; only the funs' names in a tree
+  change (`spec parse` shows the new names, and the construct catalogue's Functions follow).
+- **The step grammar reuses grammar 4's compiled modules** (b439): ContextSteps compiles in 2.2 s in place of 6.0 s,
+  its PGF byte for byte the same.
+- **Guards on grammar 4's size and parse time** (b441): tests bound the funs per kind of the generated grammar and the
+  parse time of a fixed set of lines, so a generator that multiplies is caught before a release.
 
 ## 0.42.0: a request acts on one thing, one verb for several operations, and a made thing introduced by the When
 
