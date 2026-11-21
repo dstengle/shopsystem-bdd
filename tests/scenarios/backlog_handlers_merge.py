@@ -18,7 +18,7 @@ def given_successor(step):
 
 @four("GivenDoes", "exist", *BOTH)
 def successor_exists(step):
-    k, name = parts(step)[0]
+    k, _ = parts(step)[0]
     if k != "successor":
         return False
     given_successor(step)
