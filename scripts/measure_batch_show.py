@@ -10,7 +10,8 @@ from transcripts import Refused
 
 TOTALS = (("wall time", "wall_time"), ("session time", "session_time"), ("waiting for merge", "waiting_for_merge"),
           ("output tokens", "output_tokens"), ("new input tokens", "new_input_tokens"),
-          ("cache-read tokens", "cache_read_tokens"), ("cost", "cost"))
+          ("cache-read tokens", "cache_read_tokens"), ("cost", "cost"), ("test runs", "test_runs"),
+          ("test time", "test_time"), ("opening time", "opening_time"))
 SESSION_HEAD = ("session", "agent type", "role", "started", "requests", "session time", "output tokens",
                 "new input tokens", "cache-read tokens", "cost")
 COMPARED = ("tokens", "cost", "defects", "findings_by_grade", "knobs")
@@ -25,7 +26,9 @@ def _duration(seconds):
 def _totals(figures):
     values = dict(figures.get("tokens", {}), wall_time=figures.get("wall_time"),
                   session_time=figures.get("session_time"),
-                  waiting_for_merge=_duration(figures.get("waiting_for_merge_seconds")), cost=figures.get("cost"))
+                  waiting_for_merge=_duration(figures.get("waiting_for_merge_seconds")), cost=figures.get("cost"),
+                  test_runs=len(figures["test_runs"]) if "test_runs" in figures else None,
+                  test_time=figures.get("test_time"), opening_time=figures.get("opening_time"))
     return table(["total", "value"], [(name, values.get(key)) for name, key in TOTALS])
 
 
@@ -90,7 +93,9 @@ def _rows(figures):
     """(name, shown, value the ratio is of) of each row of `compare`, the sizes (knobs) last (plan 7 review M7)."""
     tokens, defects = figures.get("tokens", {}), figures.get("defects", {})
     out = [("wall time", figures.get("wall_time"), figures.get("wall_time_seconds")),
-           ("session time", figures.get("session_time"), figures.get("session_time_seconds"))]
+           ("session time", figures.get("session_time"), figures.get("session_time_seconds")),
+           ("test time", figures.get("test_time"), figures.get("test_time_seconds")),
+           ("opening time", figures.get("opening_time"), figures.get("opening_time_seconds"))]
     out += [(name, tokens.get(key), tokens.get(key)) for name, key in TOTALS[3:6]]
     out += [("cost", figures.get("cost"), figures.get("cost")),
             ("defects per item", defects.get("per_item"), defects.get("per_item"))]

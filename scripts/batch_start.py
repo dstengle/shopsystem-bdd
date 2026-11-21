@@ -13,6 +13,7 @@ violates a rule of severity error there, which the readiness bar's copy of `spec
 none, has a scenario that already passes on the lay, naming the scenario (batch_laid, b488)."""
 import contextlib
 import io
+import time
 from pathlib import Path
 
 import adapter_annotate
@@ -23,6 +24,7 @@ import batch_catalogues
 import batch_driver
 import batch_laid
 import batch_pick
+import batch_timings
 import features_generate
 import shop_files
 import spec_corpus_write
@@ -175,7 +177,9 @@ def _build(root, base, picked, returned):
 
 
 def start(root):
-    """(the batch or None, the Pick) of `work batch start`, under the lock."""
+    """(the batch or None, the Pick) of `work batch start`, under the lock; the time it took to open a batch kept as
+    its opening time (b73)."""
+    began = time.monotonic()
     with locked(root):
         base = current_branch(root)
         if base is None:
@@ -194,7 +198,9 @@ def start(root):
         pick = batch_pick.pick(root)
         while pick.picked:
             try:
-                return _build(root, base, pick.picked, pick.returned), pick
+                batch = _build(root, base, pick.picked, pick.returned)
+                batch_timings.kept(root, batch.name, "opening", time.monotonic() - began)
+                return batch, pick
             except _Broken as err:          # laid again without the items whose lines broke a rule (b478)
                 broken = err.args[0]
             for item, reasons in broken:

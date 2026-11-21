@@ -19,6 +19,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.append(str(SCRIPTS))
 
 import batch_findings
+import batch_timings
 
 
 def shared(name, file):
@@ -89,7 +90,9 @@ def given_link(step):
     if not telemetry(step) or step.term not in ("on", "has", "holds"):
         return False
     one, other = step.names
-    if step.term == "on":
+    if step.nps[0].startswith("the test run "):        # the measurement m1 has the test run t2 (b73)
+        T.given(step, "test run", other)
+    elif step.term == "on":
         T.given(step, "review finding", one)["pull request"] = other
     elif step.nps[0].startswith("the pull request"):
         T.given(step, "pull request", other)["batch"] = one
@@ -133,7 +136,20 @@ def measure_batch(step):
     T.prepare(step)
     T.ensure_batch(step)
     write_reviews(step)
+    keep_timings(step, T.batch_name(step, step.names[-1]))
     run_measure(step, "batch", T.batch_name(step, step.names[-1]))
+
+
+def keep_timings(step, batch):
+    """b73: each test run a Given names kept as `work batch done` keeps one, of its own duration (21 s, 22 s ...),
+    and of a batch with test runs the opening time `work batch start` keeps (95 s)."""
+    runs = step.context.get("given", {}).get("test run", {})
+    for k, (name, found) in enumerate(sorted(runs.items()), 1):
+        found["seconds"] = 20 + k
+        batch_timings.kept(step.repo, batch, "done", found["seconds"], "t%d" % k)
+    if runs:
+        step.context["opening seconds"] = 95
+        batch_timings.kept(step.repo, batch, "opening", 95)
 
 
 @handler("WhenRuns", "`measure defect`")

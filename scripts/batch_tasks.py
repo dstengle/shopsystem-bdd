@@ -24,6 +24,7 @@ import batch_parked
 import batch_plan
 import batch_reach
 import batch_rerun
+import batch_timings
 import spec_unbuilt
 from batch_git import (
     delivery,
@@ -212,7 +213,8 @@ def checked(root, batch, task):
         raise Refused("%s: %s: still in unbuilt: %s" % (command, label, ", ".join(unbuilt)))
     head = git(tree, "rev-parse", "HEAD").stdout.strip()
     skipped = batch_reach.unreached(git, tree, since, head, ids)        # only the tests the change reaches (b456)
-    with batch_parked.tested_tree(root, batch, task, tree, head, command) as tested:     # no parked lines (r18)
+    with batch_parked.tested_tree(root, batch, task, tree, head, command) as tested, \
+            batch_timings.timed(root, batch.name, "done", task.task):    # no parked lines (r18); its duration (b73)
         tests_pass(root, tested, "%s: %s" % (command, label), strict=False, workspace=tree,
                    unreached=skipped, key="%s-%s" % (batch.name, task.task))       # its own ids are built (r19)
     backlog_chore.passes(item, tree, "%s: %s" % (command, label))     # a chore's check, after the tests (b316)

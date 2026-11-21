@@ -12,6 +12,7 @@ from pathlib import Path
 
 import batch_findings
 import batch_plan
+import batch_timings
 from batch_git import git, push, remote, remove_tree, tree_for, trees_dir, trees_path
 from shop_files import Refused
 
@@ -53,7 +54,8 @@ def resubmit(root, batch, command, tests_pass):
     made = False
     try:
         made = tree_for(root, tree, batch.branch, command)
-        tests_pass(root, tree, "%s: %s" % (command, batch.name))
+        with batch_timings.timed(root, batch.name, "review"):       # the test run's duration (b73)
+            tests_pass(root, tree, "%s: %s" % (command, batch.name))
         push(root, remote(root, batch.base), batch.branch, command)
     except BaseException:
         if made:
