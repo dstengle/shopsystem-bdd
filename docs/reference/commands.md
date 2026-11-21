@@ -112,7 +112,9 @@ b250 "work show prints the status of an item" shaped
 
 #### `work line`
 
-Writes a requirement line into an item's `## Requirements`, under the capability it goes into, and commits it.\
+Writes a requirement line into an item's `## Requirements`, under the capability it goes into, and commits it. It
+takes an item that is `idea`, `shaped` or `in-batch`; an in-batch item's changed lines reach its batch with
+[`work batch amend`](#work-batch-amend).\
 Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--expose TABLES] [--withhold SERVICE.OPERATION] [--upstream UPSTREAM] name [text]`
 
 - `--into <capability>`: the codified capability the line goes into.
@@ -418,6 +420,20 @@ work batch done: t1 b250 "work show prints the status of an item": the tests `py
 ...
 $ work batch done batch-34 t1
 batch-34 t1 b250 "work show prints the status of an item": done
+```
+
+#### `work batch amend`
+
+Lays an in-batch item's lines again on `batch-<n>` and on its task's branch, after `work line` changed them: the lines
+it last laid are taken out and its lines as they now read laid in, one commit on each branch citing the item. A new id
+is renumbered past the other items' lines on the batch branch (the item committed again on the base), a line laid
+before with the same text keeps its place in `unbuilt:`, and a `done` task is set `running` again. Refused for an item
+that is not `in-batch`, and while the task's worktree has uncommitted changes.\
+Synopsis: `work batch amend item`
+
+```console
+$ work batch amend b253
+batch-35 b253 "work names prints every item" amended: laid on batch-35, batch-35-b253
 ```
 
 #### `work batch park`

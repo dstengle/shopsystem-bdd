@@ -27,7 +27,7 @@ from backlog_model import ModelBlock
 
 SECTION = "Requirements"
 UNIVERSAL, INDEX = "universal", "index"
-TAKES = ("idea", "shaped")
+TAKES = ("idea", "shaped", "in-batch")     # an in-batch item's lines are laid again by `work batch amend` (b460)
 Group = namedtuple("Group", "id title requirements given", defaults=((),))
 Block = namedtuple("Block", "capability terms groups relations retired language new retires",
                    defaults=((), (), None, None, ()))
@@ -270,7 +270,7 @@ def capability_file(root, capability):
 
 
 def takes(item, command="work line"):
-    """Refused unless the item is idea or shaped, the states whose lines may change."""
+    """Refused unless the item is idea, shaped or in-batch, the states whose lines may change."""
     if item.status not in TAKES:
-        raise Refused("%s: %s is %s; %s takes an item that is idea or shaped" % (command, label(item), item.status,
-                                                                               command))
+        raise Refused("%s: %s is %s; %s takes an item that is idea, shaped or in-batch" % (
+            command, label(item), item.status, command))
