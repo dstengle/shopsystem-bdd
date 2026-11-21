@@ -43,7 +43,7 @@ FORMS = [
     Form("decisions index", "spec/decisions/index.md", "spec decisions"),
     Form("rule catalogue", "grammar/rules.md", "spec rules --write"),
     Form("construct catalogue", "grammar/constructs.md", "spec constructs --write"),
-    Form("catalogue entries", "grammar/catalogue-entries.toml", "plugin item b462 (no command yet)"),
+    Form("catalogue entries", "grammar/catalogue-entries.toml", "spec catalogue entry"),
     Form("spec corpus block", "grammar/corpus/spec/<capability>.md", "work batch start"),
     Form("term pack", "spec/packs/<name>.md", "by hand (no command yet)"),
     Form("working rules", "CLAUDE.md", "by hand (no command yet)"),
@@ -67,7 +67,7 @@ FORMS = [
     Form("upstream entry", "spec/index.md ## Upstreams", "work line --upstream"),
     Form("given block", "spec/capabilities/<name>.md, a group's fenced given", "work line --given"),
     Form("observation", ".shop/records/observations.md ## <id>", "plugin item b44 (no command yet)"),
-    Form("delivery settings", ".shop/delivery.toml", "migrate init"),
+    Form("delivery settings", ".shop/delivery.toml", "work settings set"),
     Form("design record folder", ".shop/records/<date>-<topic>/design.md", "plugin item b44 (no command yet)"),
     Form("plan record folder", ".shop/records/<date>-<topic>/plan-<k>.md", "plugin item b44 (no command yet)"),
 ]

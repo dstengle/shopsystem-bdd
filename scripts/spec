@@ -10,6 +10,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from adapter_cli_respond import prepare, respond
+from model_contract import CONTRACT
 from model_forms import cmd_forms
 
 # what scripts/migrate and the migration steps read by loading this file
@@ -23,195 +24,6 @@ from model_report import (  # noqa: F401
 )
 from model_restates import cmd_restates
 
-CONTRACT = """\
-contract:
-  - It reads, under --root (default: the current directory):
-    spec/index.md, whose frontmatter `id` names the bounded-context,
-    written bounded-context/<context path>, the path being
-    <owner>/<product>/<context name>, and whose `## Glossary` bullets are
-    the context's terms. When its frontmatter has `language: codified-1`
-    the glossary is typed: each bullet `- **<term>** (<part of speech>): ...`,
-    read by spec_lexicon, every capability's `## Terms` too; otherwise each
-    bullet is `- **<term>**: <definition>. Not: <word>, <word>.`. A term is
-    term/<context path>/<term lowercased, spaces as hyphens> (an attribute or
-    condition entry with no gloss, opening with a field such as Values:, is
-    `<term> of <kind>`, a relation `<term> of <kind> to <kind>`, a word given
-    in a second category `<term> <category>`, a value `<value> of <kind>`); a
-    bullet of that section in no such form is a file problem. A
-    `## Relations` table, in spec/index.md or a capability, gives the
-    relations as rows `| from kind | word | to kind |`, and a kind's
-    `Kind of: <kind>` its supertype (spec_relations). A verb's part of speech
-    names its aspect, `(verb, state)` or `(verb, action)` (v_t14 when it names
-    neither); its entry may give several `Frame:` fields (one meaning), and
-    two entries of one verb are two senses, which their kinds tell apart
-    (v_t15 when their frames overlap in every slot);
-    spec/capabilities/*.md, each a capability with frontmatter (id, narrator,
-    group, rests_on, retired) and a `## Behaviour` section; a `formulated_as`
-    key is a file problem. A file whose own frontmatter has
-    `language: codified-2` is codified (design model v5): its Behaviour is
-    groups `### [g<n>] <title>`, each with an optional
-    `Restates: r<n>@0.29, <cap>#r<n>@0.29.` line, `- [r<n>] <statement>`
-    bullets and an optional fenced `given` block of example data; its
-    `## Dropped` lists the
-    0.29 ids no group restates. A capability file, spec/index.md or
-    spec/universal.md without that marker (or `codified-1`, which
-    spec/index.md and spec/universal.md may still say) is not read: it is
-    v_p0, which `migrate upgrade` converts;
-    spec/universal.md, the universal conditions `- [U<n>] <statement>`;
-    spec/restated.json, the 0.29 ids `<cap>#r<n>` with their text;
-    features/**/*.feature, the containers of scenarios, a capability
-    <name>'s being features/<name>.feature; any other feature file is a file
-    problem;
-    spec/decisions/*.md but index.md, one design-decision each (frontmatter
-    id, summary, date, status, supersedes, revisit_when, revisit_signal,
-    tier, enforced_by);
-    .shop/requests/q<n>.md, one request each (a file not of the form
-    `work request` writes is a file problem); .shop/work/ is frozen, read
-    only for the observations its initiatives' and requests' `source`
-    cite (cited), and a reference to one of its kinds (initiative,
-    work-item, proposal) is history, never resolved;
-    .shop/records/observations.md (one `## <id>` heading an observation) and
-    any other Markdown under .shop/records/ whose frontmatter has an `id`.
-    It reads no other layout: spec/decisions.md and a decisions/, work/ or
-    records/ directory at the root are each a file problem naming
-    scripts/migrate, which moves them.
-  - Ids are type-first: a node's id is <kind>/<context path>/<name>, with
-    the design model's kind name and <name> matching [a-z0-9]+(-[a-z0-9]+)*;
-    an id in any other form is a file problem. A capability's id is
-    capability/<context path>/<its file name>. A reference may be written in
-    full, in short as <kind>/<name> (in this context), or as the bare <name>
-    in a field that fixes the kind (rests_on, supersedes, argues, under,
-    depends_on, and the capability of a requirement reference). The forms
-    <context name>/<name>, decision/<name> and obs/<name> name nothing.
-  - A requirement is <capability>#r<n>, a group <capability>#g<n>, a
-    universal condition universal-condition/<context path>/u<n>. A
-    requirement of a codified file is a member of its group (member_of; the
-    capability's has_req is derived); a statement with no [r<n>] has no id
-    (v15a), and one whose id came before is a second id (v15b), each beside
-    its file problem. `retired: [r4, g2, ...]`
-    lists ids the capability used and retired. A reference is written
-    <capability>#r<n> (a list may write <capability>#r<a>-r<b>);
-    <capability>#r<n>@0.29 names a 0.29 id: it is history, never read
-    against the live spec; its text is in spec/restated.json.
-  - Every statement of a codified file and of spec/universal.md is parsed in
-    grammar 4 (spec_language): parsed, unparsed (v_p1) or ambiguous (v_p2);
-    a group's statements share their preconditions and trigger (v15k), and a
-    group has one statement (v15l); a given line is example data, `the
-    <words> <name> holds:` with a docstring or table under it or `the
-    <words> <name> holds` and one code span or quoted string (v15m); no two
-    groups of a capability share preconditions and trigger (v15n). A scenario of a codified capability names
-    its group by a tag @g<n> (generates). A scenario tagged @deprecated is no
-    scenario; one tagged @holding is a file problem.
-  - facts prints the facts it read, one a line, in clingo's syntax, under
-    grammar.md's relation names. A term gives node(T, "term"),
-    term_of(T, <bounded-context>), avoid(T, <word>) for each word after its
-    `Not:`, glossary_entry(T, <entry number>, <word>) and, typed,
-    category(T, <category>), value_of(V, K, A) and linearises(T, <text>);
-    a statement that does not parse, and a scenario of a feature file that
-    is no capability's, gives mentions(X, <word>) for each term or avoided
-    word it contains, as a whole word in any case, with a plural "s" allowed
-    (a parsed statement and a generated scenario use lexicon words, so give
-    none). A codified statement needs the grammar tools (`tools install`).
-  - Every rule of model.lp has one plain label, label("<code>", "<label>"),
-    written beside it. check prints `<code>  <label>  (<count>)` above each
-    non-empty v_ relation's rows, and `warning <code>  <label>  (<count>)`
-    above each w_ relation's; `rules` prints every `<code>  <label>`,
-    the v_ rules then the w_ rules, and exits 0; check --json adds "labels",
-    {code: label} for the codes it prints.
-  - check solves the facts with model.lp (beside this script) and prints every
-    non-empty v_ relation, then the w_ relations with their counts and rows, then the
-    references that name nothing and the file problems (a missing id, a
-    status not in a lifecycle, a block it cannot read). It exits 1 when any
-    v_ relation is non-empty, any reference names nothing or any file has a
-    problem, 0 otherwise. It needs the clingo package. When the
-    interpreter that runs it lacks clingo, check runs again, once, under the
-    first of $SHOPSYSTEM_MODEL_PYTHON, each python3 on PATH outside the
-    active virtualenv's bin/, /usr/local/bin/python3 and /usr/bin/python3
-    whose `-c "import clingo"` succeeds; when none does, it says so with the
-    command that installs clingo and each interpreter it tried, and exits 2.
-  - A decision's tier is check, requirement or judgement; enforced_by lists
-    pytest node ids (<path>.py[::<name>...]) for a check decision and
-    requirement ids (an entry with #) for a requirement decision, and a
-    judgement decision has none; any other tier or entry is a file problem.
-    w_untiered names a decision in force (not superseded or rejected, or with
-    no status) that gives no tier; v_d6 a check decision with no test, v_d7 a
-    requirement decision with no requirement, v_d8 an accepted decision that
-    supersedes one still accepted. verified_by lists a decision's
-    verification routes (scenario, check, judgement or monitor; v_d9 names
-    any other), and rests_on the ids it rests on (a bare U<n> is the
-    universal condition); w_unrouted names a universal condition that no
-    decision in force rests on with a route.
-  - decisions writes spec/decisions/index.md, the generated index of
-    spec/decisions/, each row linked to its file, and nothing else; --check
-    writes nothing and says whether the file on disk is what it would
-    write, then runs the tests of each check decision in force (one pytest
-    run a decision under the project's interpreter, the repository's addopts
-    cleared, no cache or bytecode of its own written; what the tests write is
-    theirs) and prints `holds` or `failing` with each decision's path and id,
-    then the count; a skipped, xfailed, xpassed or deselected test, or an
-    entry that is not a test of the repository, is failing; it exits 1 when
-    the index is stale or any decision fails.
-  - rules --json prints one object, "rules", each {"code", "label",
-    "kind": "violation" or "warning"}.
-  - rules --write writes the rule catalogue grammar/rules.md under --root
-    (model_rules): each rule's code, label, severity, where it is
-    implemented, the lines citing it, a failing and a passing example, each
-    example run first; rules --check writes nothing and exits 1 when the
-    file is not what --write would write.
-  - constructs --write writes the construct catalogue grammar/constructs.md
-    under --root (model_constructs): each construct's code, label, form,
-    functions, the lines citing it, and an example with its reading, each
-    example parsed in grammar/corpus/constructs/ first; constructs --check
-    writes nothing and exits 1 when the file is not what --write would write.
-  - parse <line> | --file F prints the line's tree in grammar 4 (spec_language)
-    as a requirement and exits 0; a refused line prints the refusal (the
-    token and its position, or the reading rule), the longest prefix that
-    parsed, the lexicon words nearest the refused token and the terms that
-    may follow, and exits 1. A file's lines are numbered `<n>: `, a refused
-    requirement of a capability file named `<capability>#r<n>`. It exits 2
-    when the grammar cannot be built, and in a context whose spec/index.md
-    does not say `language: codified-2`, naming `migrate upgrade`.
-  - parse --form prints, in place of a line's tree, its logical form
-    (spec_lf): its modality and the referents no part introduces, each
-    with its origin, then its Where, While, trigger and response, each a box
-    of referents, atoms and boxes.
-  - parse --item b<n> reads the line (or a --file F of the specification)
-    as it reads once the terms, relation rows, lines and model lines the
-    item b<n> holds are laid on a copy of spec/, as the readiness bar lays
-    them (spec_preview); an item with no file is refused, naming it.
-  - lexicon lists the terms by category; lexicon --check prints v_t4-v_t10
-    (`<code>  <term>  <message>`) and exits 1 when there is any: v_t7 a
-    gloss of more than one sentence, v_t8 a relation entry (a relation is a
-    row of `## Relations`), v_t9 a meaning given as a field rather than a sentence,
-    v_t10 two relation rows with one (from, word, to), and spec_frames'
-    v_t11-v_t15.
-  - logic [--json] [<capability> | <capability>#r<n>] runs the temporal check
-    (spec_solve; L7, a "shall not" line that forbids what a "may" line
-    permits) and the entailment check (spec_entail: L8, a requirement each
-    of whose Thens other requirements entail) and prints its report, with its
-    exit code; given a requirement's id, the findings that name it.
-  - explain <capability>#r<n> prints the requirement's id and line, then
-    under "which also means:" each response other requirements force where
-    its trigger, state and responses hold, with its premise (a universal
-    condition, a requirement, or an imported pack's definition of refuse),
-    and under "taking precedence over it" each If requirement of its trigger
-    (when it is of another form), and exits 0; an id no capability holds is
-    refused, naming it, with exit 1 and nothing written (model_explain).
-  - forms [--json | --check] prints one line for each file form a bounded context
-    keeps: its name, its path pattern and the command that writes it (or
-    the plugin's item that will give it one, or "by hand"), and exits 0;
-    --json prints {"forms": [{"name", "path", "writer"}]}; --check prints
-    nothing and exits 0 unless a form is written by hand, which it names,
-    exiting 1.
-  - annotate [<adapter contract> ...] [--check] writes under each operation
-    of each adapter contract the requirements that govern it; --check writes
-    nothing and exits 1 naming each stale contract (adapter_annotate).
-  - restates [--json] [<capability>] exits 0 when every 0.29 id (of the
-    capability, or of every one) is restated by a group, dropped, or moved
-    (a move into a codified capability must be restated there; one into an
-    uncodified capability is pending), and 1 otherwise, printing each id that
-    is missing or pending.
-"""
 
 
 def cmd_facts(args):
@@ -281,6 +93,7 @@ def main(argv=None):
     a = sub.add_parser("annotate", help="write each operation's governing requirements into the adapter contracts")
     a.add_argument("contract", nargs="*", help="an adapter contract's path (every one of the context by default)")
     a.add_argument("--check", action="store_true", help="exit 1 naming each stale adapter contract, writing nothing")
+    __import__("model_catalogue_write").add_parser(sub)
     args = prepare(ap).parse_args(argv)
     if args.cmd == "parse" and (args.line is None) == (args.file is None):
         ap.error("parse takes a line or --file, not both")
@@ -292,7 +105,7 @@ def main(argv=None):
                "parse": cmd_parse, "lexicon": cmd_lexicon, "logic": cmd_logic, "restates": cmd_restates,
                "forms": cmd_forms, "explain": cmd_explain,
                "annotate": lambda x: __import__("adapter_annotate").annotate(x.root, x.check, x.contract),
-               "constructs": cmd_constructs}[args.cmd]
+               "constructs": cmd_constructs, "catalogue": lambda x: __import__("model_catalogue_write").cmd(x)}[args.cmd]
     return respond("spec", handler, args, checks=args.cmd in ("check", "logic"))
 
 

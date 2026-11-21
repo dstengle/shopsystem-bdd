@@ -209,6 +209,19 @@ requirements = [
 "adapter contract" = { positional = 1 }
 audit = { option = "--check", flag = true }
 
+[operations."specification.describe"]
+command = "spec catalogue entry"
+requirements = [
+  "checking#r59: When the person describes a catalogue entry with a purpose, the specification service shall keep a catalogue entry that has the purpose and complete the request.",
+  "checking#r60: When the person describes a catalogue entry with an item, the specification service shall keep a catalogue entry that mentions the item and complete the request.",
+  "checking#r61: If the person describes a catalogue entry in the rule catalogue that no rule has, then the specification service shall refuse the request and name the catalogue entry.",
+  "checking#r62: If the person describes a catalogue entry in the construct catalogue that no construct has, then the specification service shall refuse the request and name the catalogue entry.",
+]
+[operations."specification.describe".parameters]
+"catalogue entry" = { positional = 1, example = "rules#v_c1" }
+purpose = { option = "--purpose" }
+item = { option = "--item" }
+
 [operations."decisions.enter"]
 command = "work decision"
 cli-only = { options = ["--alternatives", "--by", "--context", "--date", "--enforced-by", "--rests-on", "--slug", "--source"] }
@@ -927,6 +940,17 @@ requirements = [
 ]
 [operations."batches.monitor".parameters]
 batch = { positional = 1 }
+
+[operations."batches.configure"]
+command = "work settings set"
+requirements = [
+  "batches#r84: When the person configures a setting with a setting value, the batches service shall keep a settings file that holds the setting, keep the settings file that conforms to the delivery settings form and complete the request.",
+  "batches#r85: If the person configures a setting that does not conform to the delivery settings form, then the batches service shall refuse the request and name the setting.",
+  "batches#r86: If the person configures a setting with a setting value that does not conform to the delivery settings form, then the batches service shall refuse the request and name the setting value.",
+]
+[operations."batches.configure".parameters]
+setting = { positional = 1, example = "batch_size" }
+"setting value" = { positional = 2, example = "7" }
 
 [operations."reviews.conclude"]
 command = "work batch reviewed"

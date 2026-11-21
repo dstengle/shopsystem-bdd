@@ -496,6 +496,21 @@ $ work batch abandon batch-35
 batch-35 abandoned
 ```
 
+#### `work settings set`
+
+Sets one setting of `.shop/delivery.toml` in its own table, every comment and other key kept, and commits it. The
+settings are `batch_size`, `batch.push`, `batch.tests`, `batch.worktrees`, `review.size`, `review.checks` and
+`prices.<model>`; a setting the plugin does not read, or a value not of its type, is refused, naming it.\
+Synopsis: `work settings set setting value`
+
+- `value`: a TOML value (`7`, `["a", "b"]`, `{ input = 3.0, output = 15.0, cache_read = 0.3 }`); a text setting's may
+  be the bare text.
+
+```console
+$ work settings set review.size 1500
+.shop/delivery.toml: review.size = 1500
+```
+
 ### Requests
 
 A request is one bounded context asking another (its upstream, or itself) for behaviour, carried on a GitHub issue.
@@ -950,6 +965,21 @@ Synopsis: `spec constructs [--write] [--check]`
 ```console
 $ spec constructs --check
 grammar/constructs.md is current
+```
+
+### `spec catalogue entry`
+
+Writes what an entry of the rule or the construct catalogue says into `grammar/catalogue-entries.toml`, and its
+`- Purpose:`, `- Since:` and `- Changed:` lines into the catalogue when it holds the entry: its purpose, and the item
+it came by, or, once it has one, an item that changed it. An entry of no rule or no construct is refused, naming it.\
+Synopsis: `spec catalogue entry [--purpose P] [--item b<n>] entry`
+
+- `entry`: `rules#<code>` or `constructs#<code>`.
+
+```console
+$ spec catalogue entry rules#v_c2 --item b462
+wrote grammar/catalogue-entries.toml
+wrote grammar/rules.md
 ```
 
 ### `spec restates`
