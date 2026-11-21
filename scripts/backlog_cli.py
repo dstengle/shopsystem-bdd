@@ -132,13 +132,17 @@ def cmd_depend(args):
 PIECES = ("text", "term", "relation", "given", "universal", "upstream", "recodify", "model")
 
 
-def _changed(args):
-    """`work line --reword <cap>#r<n> <line>` and `work line --remove <cap>#r<n>` (b14): an item's own line."""
-    import backlog_reword
+def _change_shape(args):
+    """The options of `work line --reword` or `--remove` refused before the item is read: one of them, alone."""
     others = [k for k in PIECES[1:] + ("into", "retires", "group", "in_group") if getattr(args, k) is not None]
     if (args.reword is not None) == (args.remove is not None) or others:
         raise backlog_items.Refused("work line: --reword takes a requirement line and --remove none, one of them, "
                                     "with no other option")
+
+
+def _changed(args):
+    """`work line --reword <cap>#r<n> <line>` and `work line --remove <cap>#r<n>` (b14): an item's own line."""
+    import backlog_reword
     if args.reword is not None:
         if args.text is None:
             raise backlog_items.Refused("work line: --reword %s takes the requirement line" % args.reword)
@@ -174,6 +178,8 @@ def cmd_line(args):
     import backlog_chore
     import backlog_forms
     import backlog_lines
+    if args.reword is not None or args.remove is not None:
+        _change_shape(args)
     backlog_chore.refuse_line(args.root, args.name)
     if args.capability is not None:
         import backlog_capability
