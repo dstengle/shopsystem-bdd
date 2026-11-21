@@ -538,6 +538,20 @@ $ work batch reviewed batch-34
 batch-34 review 1: 1 finding -> awaiting-merge; the pull request https://github.com/ex/ctx/pull/1 is ready for the person's merge
 ```
 
+#### `work batch reopen`
+
+Takes a batch that is `awaiting-merge` back to `building` with the person's comment on its pull request, saved as a
+findings file (the form `work batch reviewed` reads, with at least one `fix now` finding): writes it as
+`.shop/batches/<n>/review-<k>.md`, puts the pull request back to a draft, and commits both. A batch in any other
+state is refused, naming it.\
+Synopsis: `work batch reopen batch --finding file`
+
+```console
+$ work batch reopen batch-34 --finding findings.md
+batch-34 review 2: 1 finding, 1 fix now -> building
+  open f2 Important b12 "Recover a post whose URL was never committed" src/request_post.py: the post is lost
+```
+
 #### `work batch merged`
 
 Records the merge of the batch's pull request once GitHub says it is merged and its merge commit is in the base: the

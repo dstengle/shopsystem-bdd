@@ -21,6 +21,7 @@ import batch_merge
 import batch_parked
 import batch_plan
 import batch_start
+import batch_timings
 from batch_git import (
     git,
     locked,
@@ -140,7 +141,8 @@ def review(root, name):
             _take_out_parked(root, tree, batch)
             for task, item in mine:
                 _merge(root, tree, batch, task, item, mine)
-            tests_pass(root, tree, "%s: %s" % (COMMAND, batch.name))
+            with batch_timings.timed(root, batch.name, "review"):       # the test run's duration (b73)
+                tests_pass(root, tree, "%s: %s" % (COMMAND, batch.name))
             push(root, where, batch.branch, COMMAND)
             pushed = True
             url = batch.pull_request or batch_gh.create(

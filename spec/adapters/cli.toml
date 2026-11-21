@@ -1054,8 +1054,8 @@ requirements = [
 command = "measure batch"
 cli-only = { options = ["--replace", "--sessions"] }
 requirements = [
-  "measurement#r1: While a batch is `merged`, when the person measures the batch, the measurement service shall keep a measurement of the batch and return the wall time of the batch, the session time of the batch, the tokens of the batch and the cost of every role of the batch.",
   "measurement#r2: When the person measures a batch that has a proposed change, the measurement service shall keep a measurement of the batch and return the number of review findings on the proposed change whose grade is `Critical`, the number of review findings on the proposed change whose grade is `Important` and the number of review findings on the proposed change whose grade is `Minor`.",
+  "measurement#r12: While a batch is `merged`, when the person measures the batch, the measurement service shall keep a measurement of the batch and return the wall time of the batch, the session time of the batch, the tokens of the batch, the cost of every role of the batch, the duration of every test run of the measurement and the opening time of the measurement.",
 ]
 [operations."measurement.measure".parameters]
 batch = { positional = 1 }
@@ -1357,3 +1357,13 @@ requirements = [
 [operations."context requests.suggest".parameters]
 "context request" = { positional = 1 }
 "term proposal" = { option = "--term-proposal", example = "- **shelf** (noun) → object shelf. A place the person keeps books on." }
+
+[operations."batches.reopen"]
+command = "work batch reopen"
+requirements = [
+  "reviews#r11: While a batch is `awaiting-merge`, when the person reopens the batch with a review finding, the batches service shall keep a review of the batch that holds the review finding and set the status of the batch to `building`.",
+  "reviews#r12: While a batch is not `awaiting-merge`, if the person reopens the batch with a review finding, then the batches service shall refuse the request and name the batch.",
+]
+[operations."batches.reopen".parameters]
+batch = { positional = 1 }
+"review finding" = { option = "--finding", example = "findings.md" }

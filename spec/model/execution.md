@@ -13,6 +13,7 @@ Work being done: batches of ready items, their tasks and workspaces, the change 
 
 ```model
 object review kind of text
+  relations: holds → review finding (many)
 
 object review finding kind of text
   attributes: grade: Critical | Important | Minor; triage: fix now | observation | drop
@@ -30,6 +31,7 @@ object batch kind of file
   lifecycle status: building → in-review; in-review → building; in-review → awaiting-merge; awaiting-merge → merged; in-review → merged; building → abandoned; in-review → abandoned
   relations: holds → item (many); has → task | proposed change | review folder | batch plan | kept change | measurement | wall time | session time | token | role | workspace | review (many)
   lifecycle status: awaiting-merge → in-review
+  lifecycle status: awaiting-merge → building
 
 object batch plan kind of file
 
@@ -62,6 +64,7 @@ service batches
   operation amend(item)  outcomes: done | refused: item not in batch
   operation configure(setting, setting value)
     outcomes: done → the settings file | refused: setting outside the delivery settings form, setting value outside the delivery settings form
+  operation reopen(batch, review finding)  outcomes: done → the review | refused: batch not awaiting merge
 
 service reviews
   operation review(change)  outcomes: done → the review

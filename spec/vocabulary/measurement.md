@@ -30,3 +30,6 @@ area: measurement
 - **the measurement service** (proper noun) → service measurement.
 - **hand** (verb, action) → operation measurement.hand. Forms: hands, handed. Frame: <actor> hands <trial> to <session>.
 - **compare** (verb, action) → operation measurement.compare. Forms: compares, compared. Frame: <actor> compares <batch> with <batch>. Frame: <actor> compares <measurement> with <measurement>.
+- **test run** (noun) → object test run. One run of the tests of a batch when `work` finishes a task of the batch or submits the batch.
+- **duration** (noun) → object duration. The time a thing took from its start to its end.
+- **opening time** (noun) → object opening time. The time `work` takes to open a batch: its readiness check of the items again, its lay of their lines and its run of their scenarios.

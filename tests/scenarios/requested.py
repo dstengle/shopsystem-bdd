@@ -69,6 +69,7 @@ ADDED = {"consistency#g33": "design-model-check", "consistency#g34": "design-mod
          "reviews#g7": "batches", "reviews#g8": "batches",      # b491: task branches merged in task order
          "drafting#g28": "readiness",                            # b458: the decisions a retired requirement enforces
          "measurement#g10": "telemetry", "measurement#g11": "batch-measurement",    # b420: compare's frames of two
+         "measurement#g12": "telemetry",                                         # b73: test runs, opening time
          "items#g31": "backlog", "items#g32": "backlog",                         # b431: work reopen
          "parsing#g19": "design-model-check", "parsing#g20": "design-model-check",     # b452: spec parse --item
          "parsing#g22": "design-model-check",
@@ -80,6 +81,7 @@ ADDED = {"consistency#g33": "design-model-check", "consistency#g34": "design-mod
          "items#g53": "readiness", "items#g54": "readiness",                     # b516: universal conditions only
          **{"checking#g%d" % n: "design-model-check" for n in range(52, 58)},
          "reviews#g9": "batches", "reviews#g10": "batches",     # b492: a base merge resubmitted; b370: the rule catalogue's checks
+         "reviews#g11": "batches", "reviews#g12": "batches",    # b69: a batch reopened with the person's finding
          **{"context-requests#g%d" % n: "requests" for n in (51, 52, 54, 55, 56)},    # b68: a thread out of step; b71
          **{"context-requests#g%d" % n: "requests" for n in (53, 57, 58, 59)}}    # b42: a term proposal
 

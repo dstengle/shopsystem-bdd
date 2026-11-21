@@ -2,31 +2,6 @@
 Feature: Measurement
   Narrator: the person
 
-  @g1 @r1
-  Scenario: A merged batch measured keeps its time, tokens and cost
-    Given a batch b1
-    And the status of the batch b1 is `merged`
-    And a wall time w1
-    And the batch b1 has the wall time w1
-    And a session time s1
-    And the batch b1 has the session time s1
-    And a token t1
-    And the batch b1 has the token t1
-    And a role r1
-    And the batch b1 has the role r1
-    And a role r2
-    And the batch b1 has the role r2
-    When the person measures the batch b1
-    Then the measurement service keeps the measurement m1
-    And the batch b1 has the measurement m1
-    And the measurement service returns the wall time w1
-    And the measurement service returns the session time s1
-    And the measurement service returns the token t1
-    And the measurement service returns the cost c1
-    And the role r1 has the cost c1
-    And the measurement service returns the cost c2
-    And the role r2 has the cost c2
-
   @g2 @r2
   Scenario: A batch measured keeps its review findings by grade
     Given a proposed change p1
@@ -203,3 +178,38 @@ Feature: Measurement
     Then the measurement service returns the total row t1
     And the measurement service returns the total row t2
     And the measurement service returns the ratio r1
+
+  @g12 @r12
+  Scenario: A merged batch measured keeps its time, tokens, cost, test runs and opening time
+    Given a batch b1
+    And the status of the batch b1 is `merged`
+    And a wall time w1
+    And the batch b1 has the wall time w1
+    And a session time s1
+    And the batch b1 has the session time s1
+    And a token t1
+    And the batch b1 has the token t1
+    And a role r1
+    And the batch b1 has the role r1
+    And a role r2
+    And the batch b1 has the role r2
+    And a test run t2
+    And the measurement m1 has the test run t2
+    And a test run t3
+    And the measurement m1 has the test run t3
+    When the person measures the batch b1
+    Then the measurement service keeps the measurement m1
+    And the batch b1 has the measurement m1
+    And the measurement service returns the wall time w1
+    And the measurement service returns the session time s1
+    And the measurement service returns the token t1
+    And the measurement service returns the cost c1
+    And the role r1 has the cost c1
+    And the measurement service returns the cost c2
+    And the role r2 has the cost c2
+    And the measurement service returns the duration d1
+    And the test run t2 has the duration d1
+    And the measurement service returns the duration d2
+    And the test run t3 has the duration d2
+    And the measurement service returns the opening time o1
+    And the measurement m1 has the opening time o1
