@@ -124,7 +124,8 @@ def given_does(step):
     whose conditions differ (v15k: b333), the group and the rule named by their ids; has no translation or no parse: the requirement a
     line of the item that holds it which `spec logic` reads no translation of (r41) or grammar 4 no parse of (r50)
     (`R.give_faults`), or the universal condition the item's one, beside a passing line
-    (b203); holds a universal condition: the item's `U1`, one `spec logic` reads, beside a passing line; the capability
+    (b203); holds a universal condition: the item's `U1`, one `spec logic` reads, beside a passing line unless it holds
+    no requirement (b516); the capability
     c1 exists: the When names a capability of the spec (b317)."""
     if R.mine(step) and step.term == "exist" and step.subject.startswith("the capability "):     # b317's r56
         step.context.setdefault("exists", set()).add(step.names[0])
@@ -133,8 +134,14 @@ def given_does(step):
         return False
     if _owned(step):
         return None
-    if step.term == "pass":
+    if step.term == "pass" and step.names[0] in step.context.get("universal_of", {}):     # b516: kept, passing
+        R.give_universal(step, step.names[0], step.context["universal_of"][step.names[0]])
+    elif step.term == "pass":
         R.give_lines(step, step.names[0], R.PASSING)
+    elif step.term == "holds" and step.nps == ["no requirement"]:      # b516: its universal conditions its only lines
+        step.context.setdefault("lineless", set()).add(step.names[0])
+        if step.names[0] in step.context.get("universal_of", {}):
+            R.give_universal(step, step.names[0], step.context["universal_of"][step.names[0]])
     elif step.term == "holds" and step.nps[0].startswith("the universal condition "):       # b203
         R.give_universal(step, step.names[0], R.TRANSLATED_U)
         says(step, step.names[1], "universal#%s" % R.ITEM_U)

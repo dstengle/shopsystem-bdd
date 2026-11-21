@@ -194,3 +194,9 @@ declined, withdrawn, answered and listed.
 ### [g52] An item that is neither an idea nor shaped is not split
 - [r52] While the status of an item is not `idea` or `shaped`, if the person splits the item, then the backlog service shall refuse the request and name the item.
 
+### [g53] A shaped item whose only lines are universal conditions that have a translation is readied
+- [r53] While an item is `shaped` and the item holds a universal condition and the item holds no requirement and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.
+
+### [g54] An item whose only lines are universal conditions is checked, naming a universal condition that has no translation
+- [r54] While an item is `shaped` and the item holds no requirement and a universal condition in the item has no translation, if the person readies the item, then the backlog service shall refuse the request and name the universal condition.
+

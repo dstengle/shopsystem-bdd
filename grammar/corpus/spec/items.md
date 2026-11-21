@@ -932,3 +932,40 @@ shall [x2: agent the person (constant), x3: service the backlog service (constan
     name(e3, subject: x3, object: x1)
 ```
 
+## r53
+From: b516 r53.
+
+```reading
+While an item is `shaped` and the item holds a universal condition and the item holds no requirement and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.
+shall [x4: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x6: service the backlog service (constant)]
+  while [x1: item, x2: universal condition]
+    status(x1) = `shaped`
+    in(x2, x1)
+    not [x3: requirement]
+      in(x3, x1)
+    meet(subject: x1, object: x4)
+  when
+    request(e1, backlog.ready, subject: x5, object: x1)
+  response
+    initiates(e2, subject: x6, status(x1) = `ready`)
+```
+
+## r54
+From: b516 r54.
+
+```reading
+While an item is `shaped` and the item holds no requirement and a universal condition in the item has no translation, if the person readies the item, then the backlog service shall refuse the request and name the universal condition.
+shall [x5: agent the person (constant), x6: service the backlog service (constant), x7: request "the request the trigger makes" (indexical)]
+  while [x1: item, x3: universal condition]
+    status(x1) = `shaped`
+    not [x2: requirement]
+      in(x2, x1)
+    in(x3, x1)
+    not [x4: translation]
+      of(x4, x3)
+  if
+    request(e1, backlog.ready, subject: x5, object: x1)
+  response
+    refuse(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x3)
+```
