@@ -721,3 +721,6 @@ the tracked file `.gitignore` holds:
   .ruff_cache
 ```
 
+### [g41] Founding a bounded context with a context purpose writes it in the index file
+- [r41] While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id and a context purpose, the upgrades service shall keep an index file that has the context purpose and complete the request.
+

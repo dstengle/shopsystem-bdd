@@ -65,6 +65,7 @@ object frozen request kind of file
   attributes: status: open | awaiting-asker | awaiting-upstream | accepted | delivered | refused | withdrawn; asker: internal
 
 object index file kind of file
+  relations: has → context purpose (one)
 
 object plugin
   attributes: release: 0.34.1 < 0.99.0
@@ -82,7 +83,7 @@ service upgrades
   operation query(repository)  outcomes: returned → the release and every pending upgrade step | refused: content not a version
   operation upgrade(repository)  outcomes: done | refused: uncommitted change
   operation relocate(bounded context)  outcomes: done | refused: uncommitted change, tracked file of a ledger stem
-  operation found(bounded context, context id)  outcomes: done | refused: bounded context with no context id, context id not a bounded context id, index file present, shop directory present
+  operation found(bounded context, context id, context purpose)  outcomes: done | refused: bounded context with no context id, context id not a bounded context id, index file present, shop directory present
 
 object context scaffold kind of file
 
@@ -99,4 +100,6 @@ object old scenario conftest form kind of artifact
 object ignore file kind of tracked file
 
 object ignore file form kind of artifact
+
+object context purpose kind of text
 ```

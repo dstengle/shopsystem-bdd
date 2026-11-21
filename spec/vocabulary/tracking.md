@@ -152,3 +152,4 @@ area: tracking
 - **reword** (verb, action) → operation drafting.reword model line. Forms: rewords, reworded. Frame: <actor> rewords <model line> in <item>.
 - **remove** (verb, action) → operation drafting.remove term. Forms: removes, removed. Frame: <actor> removes <term> from <item>.
 - **reword** (verb, action) → operation drafting.reword term. Forms: rewords, reworded. Frame: <actor> rewords <term> in <item>.
+- **specify** (verb, state) → relation model line.specifies. A model line declares an operation of a service, its parameters, outcomes and reasons, whether or not the domain model declares the operation already. Forms: specifies, specified. Frame: <model line> specifies <operation>.

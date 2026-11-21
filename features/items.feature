@@ -185,34 +185,6 @@ Feature: Items
     Then the backlog service returns the item i2
     And the backlog service returns the dependency d1
 
-  @g18 @r18
-  Scenario: An open item withdrawn becomes withdrawn (case 1)
-    Given an item i1
-    And the status of the item i1 is `idea`
-    When the person withdraws the item i1
-    Then the backlog service sets the status of the item i1 to `withdrawn`
-
-  @g18 @r18
-  Scenario: An open item withdrawn becomes withdrawn (case 2)
-    Given an item i1
-    And the status of the item i1 is `shaped`
-    When the person withdraws the item i1
-    Then the backlog service sets the status of the item i1 to `withdrawn`
-
-  @g18 @r18
-  Scenario: An open item withdrawn becomes withdrawn (case 3)
-    Given an item i1
-    And the status of the item i1 is `ready`
-    When the person withdraws the item i1
-    Then the backlog service sets the status of the item i1 to `withdrawn`
-
-  @g18 @r18
-  Scenario: An open item withdrawn becomes withdrawn (case 4)
-    Given an item i1
-    And the status of the item i1 is `needs-input`
-    When the person withdraws the item i1
-    Then the backlog service sets the status of the item i1 to `withdrawn`
-
   @g19 @r19
   Scenario: An idea or a shaped item declined becomes refused (case 1)
     Given an item i1
@@ -552,3 +524,35 @@ Feature: Items
     Then the backlog service refuses this request
     And the backlog service names the model line m1
     And the backlog service names the rule r1
+
+  @g42 @r42
+  Scenario: An open item withdrawn with its reason becomes withdrawn (case 1)
+    Given an item i1
+    And the status of the item i1 is `idea`
+    When the person withdraws the item i1 with a reason
+    Then the backlog service sets the status of the item i1 to `withdrawn`
+    And the backlog service keeps the item i1
+
+  @g42 @r42
+  Scenario: An open item withdrawn with its reason becomes withdrawn (case 2)
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    When the person withdraws the item i1 with a reason
+    Then the backlog service sets the status of the item i1 to `withdrawn`
+    And the backlog service keeps the item i1
+
+  @g42 @r42
+  Scenario: An open item withdrawn with its reason becomes withdrawn (case 3)
+    Given an item i1
+    And the status of the item i1 is `ready`
+    When the person withdraws the item i1 with a reason
+    Then the backlog service sets the status of the item i1 to `withdrawn`
+    And the backlog service keeps the item i1
+
+  @g42 @r42
+  Scenario: An open item withdrawn with its reason becomes withdrawn (case 4)
+    Given an item i1
+    And the status of the item i1 is `needs-input`
+    When the person withdraws the item i1 with a reason
+    Then the backlog service sets the status of the item i1 to `withdrawn`
+    And the backlog service keeps the item i1

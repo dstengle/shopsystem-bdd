@@ -2,7 +2,8 @@
 scaffold `migrate init` kept in the scenario's repository, in one commit on the given one (its ignore file in it only
 when it changed one, b470), the repository's other files left as they were, in which `spec check` finds nothing and
 `features generate` writes nothing (`scaffolded`); the ignore file it kept, the repository's own lines first, each
-ignored name once as git matches lines (`ignored`, b454, b470); and what each refusal names (`NAMED`)."""
+ignored name once as git matches lines (`ignored`, b454, b470); the context purpose it was founded with under the
+index file's `## Purpose`, in its one commit (`purposed`, b464); and what each refusal names (`NAMED`)."""
 import json
 import subprocess
 import sys
@@ -57,3 +58,11 @@ def ignored(step):
     assert text.startswith(M.held(step).get(".gitignore", "")), text
     names = [line.strip().strip("/") for line in text.splitlines()]
     assert all(names.count(name.strip("/")) == 1 for name in IGNORED), names
+
+
+def purposed(step):
+    """The index file `migrate init` kept in its one commit holds the context purpose under its `## Purpose`."""
+    assert step.context["done"].returncode == 0, M.said(step)
+    assert "spec/index.md" in step.context["old"].git("show", "--name-only", "--format=", "HEAD").stdout.split()
+    index = M.read(step, "spec/index.md")
+    assert "\n## Purpose\n\n%s\n\n## Composition\n" % M.PURPOSE in index, index

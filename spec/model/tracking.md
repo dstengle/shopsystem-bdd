@@ -122,7 +122,7 @@ service backlog
   operation ready(item)
     outcomes: done → the item | refused: item not shaped, bar check unmet, term violating a rule, requirement with no translation, universal condition with no translation, requirement group violating a rule, request line not settled
   operation decline(item)  outcomes: done
-  operation withdraw(item)  outcomes: done
+  operation withdraw(item, reason)  outcomes: done
   operation answer(item, answer)  outcomes: done
   operation show(item)  outcomes: returned → the item
   operation list()  outcomes: returned → every item
@@ -178,6 +178,7 @@ actor the person kind of agent
 
 object model line kind of text
   relations: restates → operation (one)
+  relations: specifies → operation (one)
 
 object retirement list kind of file
   relations: holds → requirement id | requirement (many)

@@ -87,3 +87,10 @@ Restates: analysis-tools#r50@0.29, analysis-tools#r51@0.29, analysis-tools#r52@0
 Restates: analysis-tools#r52@0.29.
 - [r14] While no Python file exceeds the `300` size limit, when the person sizes this repository without a size limit,
   the code analysis service shall complete the request.
+
+### [g15] Linting this repository checks the Python files its branch changed
+- [r15] While a Python file differs from the base branch and the Python file holds a finding of an analysis tool, when the person lints this repository, the code analysis service shall return the finding and fail the check.
+
+### [g16] Linting this repository leaves the Python files its branch did not change
+- [r16] While a Python file holds a finding of an analysis tool and the Python file does not differ from the base branch, when the person lints this repository, the code analysis service shall complete the request.
+

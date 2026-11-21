@@ -1102,3 +1102,14 @@ Feature: Upgrades
     And this repository has the context scaffold c2
     And the upgrades service does not change the ignore file i1
     And the upgrades service completes this request
+
+  @g41 @r41
+  Scenario: Founding a bounded context with a context purpose writes it in the index file
+    Given this bounded context has no index file
+    And this repository has no shop directory
+    And a context id c1
+    And a context purpose c2
+    When the person founds this bounded context with the context id c1 and the context purpose c2
+    Then the upgrades service keeps the index file i1
+    And the index file i1 has the context purpose c2
+    And the upgrades service completes this request

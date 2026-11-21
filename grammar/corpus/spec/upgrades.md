@@ -734,3 +734,24 @@ shall [x1: bounded context "the bounded context whose repository the command run
       change(e3, subject: x9, object: x5)
     complete(e4, subject: x9, object: x11)
 ```
+
+## r41
+From: b464 r41.
+
+```reading
+While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id and a context purpose, the upgrades service shall keep an index file that has the context purpose and complete the request.
+shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x3: repository "the repository the request is made in" (indexical), x5: agent the person (constant), x8: service the upgrades service (constant), x10: request "the request the trigger makes" (indexical)]
+  while
+    not [x2: index file]
+      of(x2, x1)
+    not [x4: shop directory]
+      of(x4, x3)
+  when [x6: context id, x7: context purpose]
+    request(e1, upgrades.found, subject: x5, object: x1)
+    param(e1, context id, x6)
+    param(e1, context purpose, x7)
+  response [x9: index file]
+    of(x7, x9)
+    keep(e2, subject: x8, object: x9)
+    complete(e3, subject: x8, object: x10)
+```

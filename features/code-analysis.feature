@@ -179,3 +179,26 @@ Feature: Code analysis
     Given no Python file exceeds `300`
     When the person sizes this repository without a size limit
     Then the code analysis service completes this request
+
+  @g15 @r15
+  Scenario: Linting this repository checks the Python files its branch changed
+    Given a Python file p1
+    And the Python file p1 differs from this base branch
+    And a finding f1
+    And an analysis tool a1
+    And the analysis tool a1 has the finding f1
+    And the Python file p1 holds the finding f1
+    When the person lints this repository
+    Then the code analysis service returns the finding f1
+    And the code analysis service fails this check
+
+  @g16 @r16
+  Scenario: Linting this repository leaves the Python files its branch did not change
+    Given a finding f1
+    And an analysis tool a1
+    And the analysis tool a1 has the finding f1
+    And a Python file p1
+    And the Python file p1 holds the finding f1
+    And the Python file p1 does not differ from this base branch
+    When the person lints this repository
+    Then the code analysis service completes this request

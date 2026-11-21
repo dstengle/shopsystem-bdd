@@ -27,6 +27,7 @@ object coverage map kind of file
 
 object Python file kind of file
   relations: has → function (many); holds → test (many); defines → identifier (many); exceeds → size limit (many)
+  relations: differs from → base branch (one)
 
 object function kind of identifier
 
@@ -104,7 +105,7 @@ service code analysis
   operation trace(identifier, file view (flag))  outcomes: returned | refused: identifier undefined, coverage map missing, analysis tool missing
   operation screen(Python file)  outcomes: returned
   operation locate(identifier)  outcomes: returned | refused: identifier undefined, analysis tool missing
-  operation lint(file)  outcomes: returned → the findings | failed → each finding
+  operation lint(file, repository)  outcomes: returned → the findings | failed → each finding
   operation size(repository, size limit)  outcomes: passed | failed → each Python file over the size limit
 
 service feature reading
@@ -112,4 +113,7 @@ service feature reading
   operation count(feature file)  outcomes: returned | refused: feature file with a rule block
   operation scan(repository)  outcomes: returned
   operation vet(repository, unbound listing (flag))  outcomes: passed | failed → each unbound scenario or binding
+
+object base branch
+  relations: holds → kept change (many)
 ```

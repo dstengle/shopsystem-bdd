@@ -266,11 +266,11 @@ b251 "work show prints an item's dependencies" refused
 
 #### `work withdraw`
 
-Moves an item to `withdrawn`: nobody wants it any more.\
-Synopsis: `work withdraw name`
+Moves an item to `withdrawn`: nobody wants it any more, writing why under its `## Withdrawn`.\
+Synopsis: `work withdraw name --reason REASON`
 
 ```console
-$ work withdraw b252
+$ work withdraw b252 --reason "work backlog's tables are read in a terminal's own colours"
 b252 "A colour theme for work backlog" withdrawn
 ```
 
@@ -530,7 +530,7 @@ batch-35 abandoned
 #### `work settings set`
 
 Sets one setting of `.shop/delivery.toml` in its own table, every comment and other key kept, and commits it. The
-settings are `batch_size`, `batch.push`, `batch.tests`, `batch.worktrees`, `review.size`, `review.checks` and
+settings are `base`, `batch_size`, `batch.push`, `batch.tests`, `batch.worktrees`, `review.size`, `review.checks` and
 `prices.<model>`; a setting the plugin does not read, or a value not of its type, is refused, naming it.\
 Synopsis: `work settings set setting value`
 
@@ -1145,7 +1145,8 @@ grammar:
 
 ### `tools check`
 
-Runs ruff, vulture and import-linter over the paths given, or the Python files changed since `--base`.\
+Runs ruff, vulture and import-linter over the paths given, or the Python files changed since `--base`; with neither,
+the Python files changed since the base branch, `base` of `.shop/delivery.toml` or else `main`.\
 Synopsis: `tools check [--python PYTHON] [--base BASE] [paths ...]`
 
 ```console
@@ -1269,8 +1270,8 @@ $ measure defect b250 --says "work show prints the status under the notes when t
 ### `migrate init`
 
 Founds a new bounded context in the repository it is run in: writes its scaffold and commits it in one commit.
-`spec/index.md` (the id given, its last part the title, `language: codified-2`, `imports: [request]`),
-`spec/universal.md` (no condition), `spec/model/`, `spec/vocabulary/`, `spec/capabilities/`, `.shop/backlog/`,
+`spec/index.md` (the id given, its last part the title, `language: codified-2`, `imports: [request]`, and the
+`--purpose` given, if any, under its `## Purpose`), `spec/universal.md` (no condition), `spec/model/`, `spec/vocabulary/`, `spec/capabilities/`, `.shop/backlog/`,
 `.shop/records/README.md` (an empty records index), `.shop/plugin-version` (the plugin's release),
 `.shop/delivery.toml` (every key commented out at its default), `features/` and `tests/scenarios/conftest.py`, each
 empty folder with a `.gitkeep`, and `.gitignore` naming `.venv/`, `__pycache__/`, `.pytest_cache/` and
@@ -1279,7 +1280,10 @@ empty folder with a `.gitkeep`, and `.gitignore` naming `.venv/`, `__pycache__/`
 without `--id`, with an id that is not `bounded-context/<domain>/<path>` (its `<domain>` a domain name with a dot,
 `example.org`, and its `<path>` one part or more), and in a repository that has a
 `spec/index.md` or a `.shop/` already.\
-Synopsis: `migrate init --id ID`
+Synopsis: `migrate init --id ID [--purpose PURPOSE]`
+
+- `--purpose`: the context purpose, what the bounded context is for in a sentence or two, written under the index
+  file's `## Purpose`; with none the section is left empty.
 
 ```console
 $ migrate init --id bounded-context/example.org/notes/notes-cli

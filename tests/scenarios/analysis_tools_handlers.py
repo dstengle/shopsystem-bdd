@@ -274,6 +274,7 @@ def runs_tools(step):
         w.started(repo, files(step), project=False)
     else:
         w.started(repo, {**tests, **files(step)})
+    w.branched(repo, ctx.get("branch"))
     grammar_stub(step)
     argv = shlex.split(bare(step.command))[1:]
     argv += options(step) + target(step, argv)

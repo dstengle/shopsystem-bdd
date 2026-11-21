@@ -108,6 +108,17 @@ def started(root, files=None, project=True):
     return put(root, files or {})
 
 
+def branched(root, branch):
+    """The project's commits as its base branch `main` and a branch `work` forked from it, checked out; with branch
+    `differs`, src/cart.py (the file the finding is in) changed on `work`; nothing with no branch given."""
+    if not branch:
+        return
+    git(root, "branch", "-M", "main")
+    git(root, "checkout", "-q", "-b", "work")
+    if branch == "differs":
+        put(root, {"src/cart.py": (root / "src/cart.py").read_text() + "\n\ndef changed():\n    return 1\n"})
+
+
 # --- the interpreter ---
 
 def fake(where, log=None, **config):

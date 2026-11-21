@@ -70,9 +70,10 @@ def amend(step):
 
 @four("ThenDoes", "has", *BOTH)
 def task_has_workspace(step):
-    """The task has the workspace: the run exited 0, and the workspace is the task's branch."""
+    """The task has the workspace: the run exited 0, and the workspace is the task's branch (of an item reworded, or of
+    one that no longer holds its requirement)."""
     (k1, n1), (k2, n2) = parts(step)
-    if (k1, k2) != ("task", "worktree") or "amended" not in step.context:
+    if (k1, k2) != ("task", "worktree") or not {"amended", "dropped"} & set(step.context):
         return False
     assert step.context["result"].returncode == 0, (step.text, step.context["result"].stderr)
     step.context.setdefault("workspace_of", {})[n2] = n1

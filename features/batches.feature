@@ -456,23 +456,6 @@ Feature: Batches
     And the task t1 has the workspace w2
     And the workspace w2 holds the requirement r1
 
-  @g82 @r82
-  Scenario: An in-batch item amended has a line it no longer holds taken out of the batch's workspace
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a workspace w1
-    And the batch b1 has the workspace w1
-    And a requirement r1
-    And the item i1 has the requirement r1
-    And the workspace w1 holds the requirement r1
-    And the item i1 does not hold the requirement r1
-    When the person amends the item i1
-    Then the batches service keeps the workspace w2
-    And the batch b1 has the workspace w2
-    And the workspace w2 does not hold the requirement r1
-
   @g83 @r83
   Scenario: Amending an item that is not in a batch is refused
     Given an item i1
@@ -524,22 +507,6 @@ Feature: Batches
     And the batches service keeps the domain model d1
     And the domain model d1 does not hold the operation o1
 
-  @g88 @r88
-  Scenario: An item parked takes its restating model line out of the domain model
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a model line m1
-    And an operation o1
-    And the model line m1 restates the operation o1
-    And the item i1 holds the model line m1
-    And this domain model holds the model line m1
-    And a session s1
-    When the session s1 parks the item i1
-    Then the batches service keeps the domain model d1
-    And the domain model d1 does not hold the model line m1
-
   @g89 @r89
   Scenario: A ready item whose lines laid violate a rule goes back to shaped
     Given an item i1
@@ -554,3 +521,64 @@ Feature: Batches
     When the person opens the batch b1
     Then the batches service sets the status of the item i1 to `shaped`
     And the batches service names the rule r2
+
+  @g90 @r90
+  Scenario: A line removed from an in-batch item leaves its task's workspace too, not only the batch's
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And a workspace w1
+    And the batch b1 has the workspace w1
+    And a requirement r1
+    And the item i1 has the requirement r1
+    And the workspace w1 holds the requirement r1
+    And a workspace w2
+    And the task t1 has the workspace w2
+    And the workspace w2 holds the requirement r1
+    And the item i1 does not hold the requirement r1
+    When the person amends the item i1
+    Then the batches service keeps the workspace w3
+    And the batch b1 has the workspace w3
+    And the workspace w3 does not hold the requirement r1
+    And the batches service keeps the workspace w4
+    And the task t1 has the workspace w4
+    And the workspace w4 does not hold the requirement r1
+
+  @g91 @r91
+  Scenario: An item parked puts back the operation its model line restates
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a model line m1
+    And an operation o1
+    And the model line m1 restates the operation o1
+    And the item i1 holds the model line m1
+    And this domain model holds the model line m1
+    And a session s1
+    When the session s1 parks the item i1
+    Then the batches service keeps the domain model d1
+    And the domain model d1 holds the operation o1
+
+  @g92 @r92
+  Scenario: A batch opened writes the operation table of an operation an item adds with none given
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a model line m1
+    And the item i1 holds the model line m1
+    And an operation o1
+    And the model line m1 specifies the operation o1
+    And this domain model does not hold the operation o1
+    And the operation o1 has no operation table
+    And a batch b1
+    And an operation table o2
+    And an adapter contract a1
+    When the person opens the batch b1
+    Then the operation o1 has the operation table o2
+    And the batches service keeps the adapter contract a1
+    And the adapter contract a1 holds the operation table o2

@@ -6,7 +6,7 @@ group: service
 area: tracking
 specifies: object item, service backlog, the readiness policy
 language: codified-2
-retired: [g3, r3]
+retired: [g3, r3, g18, r18]
 unbuilt: []
 ---
 
@@ -80,10 +80,6 @@ declined, withdrawn, answered and listed.
 ### [g17] The backlog gives an open item's dependencies
 - [r17] While an item is not `delivered` and a dependency on the item exists and another item has the dependency, when
   the person lists the backlog, the backlog service shall return the item and the dependency.
-
-### [g18] An open item withdrawn becomes withdrawn
-- [r18] While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person withdraws the
-  item, the backlog service shall set the status of the item to `withdrawn`.
 
 ### [g19] An idea or a shaped item declined becomes refused
 - [r19] While the status of an item is one of `idea` or `shaped`, when the person declines the item, the backlog service
@@ -167,4 +163,7 @@ declined, withdrawn, answered and listed.
 
 ### [g41] An item a model line of which violates a rule is not readied
 - [r41] While an item is `shaped` and a model line in the item violates a rule, if the person readies the item, then the backlog service shall refuse the request and name the model line and the rule.
+
+### [g42] An open item withdrawn with its reason becomes withdrawn
+- [r42] While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person withdraws the item with a reason, the backlog service shall set the status of the item to `withdrawn` and keep the item.
 

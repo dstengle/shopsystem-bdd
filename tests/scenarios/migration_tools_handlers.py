@@ -28,6 +28,7 @@ from scenarios.migration_old import CONTEXT, Old, plugin
 PLUGIN = HERE.parents[1]
 WHO = {"GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t", "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"}
 HOOKS = {"`migrate status --hook`": "SessionStart"}
+PURPOSE = "Notes kept for a household."     # the context purpose a founding is given (b464)
 
 
 def _queue_world():
@@ -124,6 +125,8 @@ def runs_migrate(step):
         args += ["--context", CONTEXT]
     if args == ["init"] and any(code == "`--id`" for code, _ in step.options):
         args += ["--id", step.context.get("context id", "bounded-context/%s" % CONTEXT)]
+    if args[:1] == ["init"] and any(code == "`--purpose`" for code, _ in step.options):
+        args += ["--purpose", PURPOSE]
     run = runner(step.repo, step.request, scripts=ours(step)[0] / "scripts")
     step.context["done"] = run("migrate", *args, env=dict(os.environ, **WHO))
 
