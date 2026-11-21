@@ -139,11 +139,33 @@ def committed(root, path, message, after, posted=None, others=(), write=None):
     try:
         shop_files.committed(root, rels[:1], "%s: posted" % message, lambda: path.write_text(final))
     except Refused as why:
-        raise Refused(not_recorded(why, "the comment", said)) from None
-    finally:
-        if posted.close:
-            request_gh.close(root, url, posted.command)
+        refusal = not_recorded(why, "the comment", said)
+        if posted.close:     # the issue closed all the same, or its failure said beside the URL's (b68)
+            try:
+                request_gh.close(root, url, posted.command)
+            except Refused as unclosed:
+                refusal += "; and %s: the issue %s is still open" % (unclosed, url)
+        raise Refused(refusal) from None
+    if posted.close:
+        closed(root, rels, before, message, url, posted.command)
     return final
+
+
+def closed(root, rels, before, message, url, command):
+    """The issue `url` closed once the step is recorded (b68, context-requests r51-r54); a close GitHub refuses puts
+    the files back as they were before the step, in a commit, and is refused naming the issue, so the record is never
+    left closed while its issue stays open: the command again finds the comment it posted (`unrecorded`) and closes
+    the issue."""
+    try:
+        request_gh.close(root, url, command)
+    except Refused as why:
+        try:
+            shop_files.committed(root, rels, "%s: put back, issue not closed" % message,
+                                 lambda: _put_back(root, rels, before))
+            kept = "the request is put back as it was; the command again closes it"
+        except Refused as unkept:
+            kept = "and the request could not be put back: %s" % unkept
+        raise Refused("%s; the issue %s is not closed: %s" % (why, url, kept)) from None
 
 
 def not_recorded(why, what, url):

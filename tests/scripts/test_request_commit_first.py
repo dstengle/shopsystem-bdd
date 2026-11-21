@@ -92,3 +92,21 @@ def test_the_request_is_committed_then_its_issue_recorded(on_issue):
         git(repo, "show", "%s:.shop/requests/q1.md" % second), "issue")
     assert url and request_text.entries(git(repo, "show", "%s:.shop/requests/q1.md" % second), "Comments") == [
         "1. %s ask" % url]
+
+
+def test_a_close_github_refuses_puts_the_record_back_and_a_rerun_closes(on_issue, monkeypatch):
+    """b68 (context-requests r51, r53): the record is never left delivered while its issue stays open; the command
+    again records the comment it posted, without posting it again, and closes the issue."""
+    repo, where, write = on_issue
+    before = write(lines=(ABANDON,), outcomes=("accepted",), status="accepted").read_text()
+    monkeypatch.setenv("STUB_GH_FAIL", "issue close")
+    done = work(repo, "resolve", "q1", "--line", "1", "work-queue#r1", "1.0.0")
+    assert done.returncode != 0 and ISSUE in done.stderr, (done.stdout, done.stderr)
+    assert (repo / ".shop" / "requests" / "q1.md").read_text() == before
+    assert git(repo, "status", "--porcelain", "--", ".shop") == ""
+    monkeypatch.delenv("STUB_GH_FAIL")
+    again = work(repo, "resolve", "q1", "--line", "1", "work-queue#r1", "1.0.0")
+    assert again.returncode == 0, again.stderr
+    assert len(calls(where, "issue", "comment")) == 1, calls(where, "issue")
+    assert json.loads((where / "gh-issues.json").read_text())[ISSUE]["state"] == "CLOSED"
+    assert request_text.field((repo / ".shop" / "requests" / "q1.md").read_text(), "status") == "delivered"
