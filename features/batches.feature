@@ -392,3 +392,47 @@ Feature: Batches
     And a session s2
     When the session s2 finishes the task t1
     Then the batches service sets the status of the task t1 to `done`
+
+  @g78 @r78
+  Scenario: A task finishes while a scenario its change does not reach breaks
+    Given a task t1
+    And an item i1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And a workspace w1
+    And the task t1 has the workspace w1
+    And a scenario s1
+    And the scenario s1 breaks in the workspace w1
+    And a capability c1
+    And the scenario s1 has the capability c1
+    And the capability c1 holds no requirement id
+    And the workspace w1 holds no kept change
+    And a session s2
+    When the session s2 finishes the task t1
+    Then the batches service sets the status of the task t1 to `done`
+
+  @g79 @r79
+  Scenario: An operation table of an item is laid into the adapter contract
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And an operation table o1
+    And the item i1 holds the operation table o1
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service keeps the adapter contract a1
+    And the adapter contract a1 holds the operation table o1
+
+  @g80 @r80
+  Scenario: An operation withheld in an item leaves the adapter contract
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And an operation o1
+    And the item i1 holds the operation o1
+    And a batch b1
+    And an operation table o2
+    And the operation o1 has the operation table o2
+    When the person opens the batch b1
+    Then the batches service keeps the adapter contract a1
+    And the batches service does not keep the operation table o2

@@ -191,3 +191,37 @@ Feature: Parsing
     When the person parses the requirement r1 with the logical form
     Then the language service returns the logical form l1
     And the logical form l1 holds the value in use v1
+
+  @g19 @r19
+  Scenario: A requirement that uses an item's term is parsed for the item
+    Given a term t1
+    And an item i1
+    And the item i1 holds the term t1
+    And a requirement r1
+    And the requirement r1 uses the term t1
+    When the person previews the requirement r1 for the item i1
+    Then the language service completes this request
+
+  @g20 @r20
+  Scenario: The logical form of a requirement that uses an item's term is returned for the item
+    Given a term t1
+    And an item i1
+    And the item i1 holds the term t1
+    And a requirement r1
+    And the requirement r1 uses the term t1
+    And a logical form l1
+    And the requirement r1 has the logical form l1
+    And a logical form l2
+    And the requirement r1 has the logical form l2
+    When the person previews the requirement r1 for the item i1 with the logical form
+    Then the language service returns one logical form of the requirement r1
+    And the language service completes this request
+
+  @g22 @r22
+  Scenario: A requirement outside the language is refused for an item
+    Given a requirement r1
+    And the requirement r1 does not conform to the language reference
+    And an item i1
+    When the person previews the requirement r1 for the item i1
+    Then the language service refuses this request
+    And the language service names the requirement r1

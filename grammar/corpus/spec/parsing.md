@@ -281,3 +281,53 @@ shall [x1: agent the person (constant), x3: thing `param-of` (parameter), x4: se
     in(x6, x5)
     return(e2, subject: x4, object: x5)
 ```
+
+## r19
+From: b452 r19.
+
+```reading
+While an item holds a term, when the person previews a requirement that uses the term for the item, the language service shall complete the request.
+shall [x3: agent the person (constant), x5: service the language service (constant), x6: request "the request the trigger makes" (indexical)]
+  while [x1: item, x2: term]
+    in(x2, x1)
+  when [x4: requirement]
+    use(subject: x4, object: x2)
+    request(e1, language.preview, subject: x3, object: x4, for: x1)
+  response
+    complete(e2, subject: x5, object: x6)
+```
+
+## r20
+From: b452 r20.
+
+```reading
+While an item holds a term, when the person previews a requirement that uses the term for the item with the logical form, the language service shall return one logical form of the requirement and complete the request.
+shall [x3: agent the person (constant), x5: service the language service (constant), x7: request "the request the trigger makes" (indexical)]
+  while [x1: item, x2: term]
+    in(x2, x1)
+  when [x4: requirement]
+    use(subject: x4, object: x2)
+    request(e1, language.preview, subject: x3, object: x4, for: x1)
+    param(e1, logical form, on)
+  response
+    count exactly 1 [x6: logical form]
+      of(x6, x4)
+      scope
+        return(e2, subject: x5, object: x6)
+    complete(e3, subject: x5, object: x7)
+```
+
+## r22
+From: b452 r22.
+
+```reading
+If the person previews a requirement that does not conform to the language reference for an item, then the language service shall refuse the request and name the requirement.
+shall [x1: agent the person (constant), x3: artifact the language reference (constant), x5: service the language service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x2: requirement, x4: item]
+    not
+      conforms(x2, x3)
+    request(e1, language.preview, subject: x1, object: x2, for: x4)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x2)
+```

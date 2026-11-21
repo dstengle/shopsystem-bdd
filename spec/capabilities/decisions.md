@@ -7,7 +7,7 @@ area: specification
 specifies: service decisions, object design-decision
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r21, r22, r23]
 ---
 
 # Decisions
@@ -102,3 +102,13 @@ Restates: design-model-check#r37@0.29.
 ### [g20] A decision with no Decision section
 - [r20] While a design-decision has no section whose heading is `Decision`, if the person validates this specification,
   then the specification service shall fail the check and name the design-decision.
+
+### [g21] `work decision --amend` adds an enforcer to an accepted decision
+- [r21] When the person amends a design-decision whose status is `accepted` with an enforcer, the decisions service shall keep a design-decision that has an enforcer and keep the decisions index.
+
+### [g22] `work decision --amend` adds a foundation to an accepted decision
+- [r22] When the person amends a design-decision whose status is `accepted` with a foundation, the decisions service shall keep a design-decision that has a foundation and keep the decisions index.
+
+### [g23] `work decision --amend` refuses a decision not in force
+- [r23] If the person amends a design-decision whose status is not `accepted`, then the decisions service shall refuse the request and name the design-decision.
+

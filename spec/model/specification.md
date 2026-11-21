@@ -37,6 +37,7 @@ object term
 object design-decision kind of file
   attributes: status: proposed | accepted | rejected | superseded; tier: check | requirement | judgement
   relations: supersedes → design-decision (many); has → route | index entry | section | id (many); holds → qualifier (many); supersedes (supersede) → design-decision (many); verifies → universal condition (many)
+  relations: has → enforcer | foundation (many)
 
 object feature kind of file
   relations: has → scenario | step (many); holds → scenario (many)
@@ -247,6 +248,8 @@ service language
     outcomes: returned → the reading | refused: requirement not in the language, requirement of more than one logical form, reading rule broken, construct with no catalogue entry, fragment
   operation explain(text)  outcomes: returned | refused: requirement id of no requirement
   operation look up(pack)  outcomes: returned → every term of the pack
+  operation preview(text, item, logical form (flag))
+    outcomes: returned → the reading | refused: requirement not in the language
 
 service specification
   operation check(specification, capability)  outcomes: passed → findings | failed → findings, an interpreter without clingo | refused: capability not in the language
@@ -261,6 +264,8 @@ service decisions
   operation enter(design-decision, title, summary, tier, wording, route, supersedes)
     outcomes: done → the design-decision | refused: no tier, no summary, no wording, design-decision not in force
   operation rebuild(decisions index, audit (flag))  outcomes: done | failed → each failing design-decision
+  operation amend(design-decision, enforcer, foundation)
+    outcomes: done → the design-decision | refused: design-decision not in force
 
 service records
   operation file(record, title, summary, text)  outcomes: done → the record | refused: text not a node id
@@ -271,10 +276,12 @@ service scenarios
 
 object adapter contract kind of file
   relations: holds → operation (many)
+  relations: holds → operation table (many)
 
 object operation
   relations: holds → requirement (many)
   relations: makes → referent (many)
+  relations: has → operation table (one)
 
 object reading rule kind of rule
 
@@ -295,4 +302,11 @@ object plural object kind of noun phrase
 object when step kind of step
 
 object value in use kind of text
+
+object enforcer kind of text
+
+object foundation kind of text
+
+object operation table kind of text
+  relations: names → operation (one)
 ```

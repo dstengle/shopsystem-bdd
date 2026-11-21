@@ -321,3 +321,50 @@ shall [x3: agent the person (constant), x4: specification "the specification of 
     fail(e2, subject: x5, object: x6)
     name(e3, subject: x5, object: x1)
 ```
+
+## r21
+From: b458 r21.
+
+```reading
+When the person amends a design-decision whose status is `accepted` with an enforcer, the decisions service shall keep a design-decision that has an enforcer and keep the decisions index.
+shall [x1: agent the person (constant), x4: service the decisions service (constant), x7: decisions index "the decisions index of this bounded context" (indexical)]
+  when [x2: design-decision, x3: enforcer]
+    status(x2) = `accepted`
+    request(e1, decisions.amend, subject: x1, object: x2)
+    param(e1, enforcer, x3)
+  response [x5: design-decision, x6: enforcer]
+    of(x6, x5)
+    keep(e2, subject: x4, object: x5)
+    keep(e3, subject: x4, object: x7)
+```
+
+## r22
+From: b458 r22.
+
+```reading
+When the person amends a design-decision whose status is `accepted` with a foundation, the decisions service shall keep a design-decision that has a foundation and keep the decisions index.
+shall [x1: agent the person (constant), x4: service the decisions service (constant), x7: decisions index "the decisions index of this bounded context" (indexical)]
+  when [x2: design-decision, x3: foundation]
+    status(x2) = `accepted`
+    request(e1, decisions.amend, subject: x1, object: x2)
+    param(e1, foundation, x3)
+  response [x5: design-decision, x6: foundation]
+    of(x6, x5)
+    keep(e2, subject: x4, object: x5)
+    keep(e3, subject: x4, object: x7)
+```
+
+## r23
+From: b458 r23.
+
+```reading
+If the person amends a design-decision whose status is not `accepted`, then the decisions service shall refuse the request and name the design-decision.
+shall [x1: agent the person (constant), x3: service the decisions service (constant), x4: request "the request the trigger makes" (indexical)]
+  if [x2: design-decision]
+    not
+      status(x2) = `accepted`
+    request(e1, decisions.amend, subject: x1, object: x2)
+  response
+    refuse(e2, subject: x3, object: x4)
+    name(e3, subject: x3, object: x2)
+```

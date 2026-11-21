@@ -517,3 +517,64 @@ shall [x7: service the batches service (constant)]
   response
     initiates(e2, subject: x7, status(x1) = `done`)
 ```
+
+## r78
+From: b456 r78.
+
+```reading
+While a task of an item is `running` and a scenario breaks in the workspace of the task and the scenario has a capability and the item holds no requirement id that is in the capability and no kept change in the workspace of the task touches the feature of the capability, when a session finishes the task, the batches service shall set the status of the task to `done`.
+shall [x10: service the batches service (constant)]
+  while [x1: task, x2: item, x3: scenario, x4: workspace, x5: capability]
+    of(x1, x2)
+    status(x1) = `running`
+    of(x4, x1)
+    break(subject: x3, in: x4)
+    of(x5, x3)
+    not [x6: requirement id]
+      in(x6, x5)
+      in(x6, x2)
+    not [x7: kept change, x8: feature]
+      in(x7, x4)
+      of(x8, x5)
+      touch(subject: x7, object: x8)
+  when [x9: session]
+    request(e1, batches.finish, subject: x9, object: x1)
+  response
+    initiates(e2, subject: x10, status(x1) = `done`)
+```
+
+## r79
+From: b355 r79.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds an operation table, when the person opens a batch, the batches service shall keep an adapter contract that holds the operation table.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x4: agent the person (constant), x6: service the batches service (constant)]
+  while [x1: item, x3: operation table]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    in(x3, x1)
+  when [x5: batch]
+    request(e1, batches.open, subject: x4, object: x5)
+  response [x7: adapter contract]
+    in(x3, x7)
+    keep(e2, subject: x6, object: x7)
+```
+
+## r80
+From: b355 r80.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds an operation, when the person opens a batch, the batches service shall keep an adapter contract and keep no operation table of the operation.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x4: agent the person (constant), x6: service the batches service (constant)]
+  while [x1: item, x3: operation]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    in(x3, x1)
+  when [x5: batch]
+    request(e1, batches.open, subject: x4, object: x5)
+  response [x7: adapter contract]
+    keep(e2, subject: x6, object: x7)
+    not [x8: operation table]
+      of(x8, x3)
+      keep(e3, subject: x6, object: x8)
+```

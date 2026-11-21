@@ -7,7 +7,7 @@ area: tracking
 specifies: service drafting
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r28, r29, r30, r31, r32, r33, r34]
 ---
 
 # Drafting
@@ -117,4 +117,25 @@ capabilities, retirements, rewordings and chores.
 
 ### [g27] Removing the last requirement of a new capability of an item keeps the capability
 - [r27] While an item holds a capability that does not exist, when the person removes a requirement of the capability, the drafting service shall keep the capability in the item.
+
+### [g28] `work line --retires` names the decisions the retired requirement enforces
+- [r28] When the person drafts an item with a requirement id of a requirement that enforces a design-decision, the drafting service shall keep a requirement in the item and name the design-decision.
+
+### [g29] A retirement list applied to an item keeps every requirement it holds
+- [r29] When the person applies a retirement list to an item, the drafting service shall keep the item and every requirement that the retirement list holds.
+
+### [g30] A retirement list that names a requirement id no requirement has is refused whole
+- [r30] If the person applies a retirement list that holds a requirement id that no requirement has to an item, then the drafting service shall refuse the request, name the requirement id and not keep the item.
+
+### [g31] An operation table exposed in an item is kept
+- [r31] When the person exposes an operation table in an item, the drafting service shall keep the operation table in the item.
+
+### [g32] An operation table of an operation that does not exist is refused
+- [r32] While an operation does not exist, if the person exposes an operation table of the operation in an item, then the drafting service shall refuse the request and name the operation table.
+
+### [g33] An operation exposed again keeps only its new operation table
+- [r33] While an item holds an operation table of an operation, when the person exposes another operation table of the operation in the item, the drafting service shall keep only one operation table of the operation in the item.
+
+### [g34] An operation withheld in an item is kept
+- [r34] When the person withholds an operation in an item, the drafting service shall keep the operation in the item.
 

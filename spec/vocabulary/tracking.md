@@ -138,3 +138,9 @@ area: tracking
 - **model line** (noun) → object model line. A line of the domain model's syntax, an element with its members or a relation, that an item keeps for the area of one of its capabilities until its batch lays it into `spec/model/<area>.md`. Plural: model lines.
 - **declare** (verb, action) → operation drafting.declare. Forms: declares, declared. Frame: <actor> declares <model line> in <item>.
 - **reopen** (verb, action) → operation backlog.reopen. Forms: reopens, reopened. Frame: <actor> reopens <item>.
+- **retirement list** (noun) → object retirement list. A file of pairs, each a requirement id and the requirement that retires it, which an item takes in one request.
+- **apply** (verb, action) → operation drafting.apply. Forms: applies, applied. Frame: <actor> applies <retirement list> to <item>.
+- **annotate** (verb, action) → operation backlog.annotate. Forms: annotates, annotated. Frame: <actor> annotates <item>.
+- **merge** (verb, action) → operation backlog.merge. Forms: merges, merged. Frame: <actor> merges <item>.
+- **expose** (verb, action) → operation drafting.expose. Forms: exposes, exposed. Frame: <actor> exposes <operation table> in <item>.
+- **withhold** (verb, action) → operation drafting.withhold. Forms: withholds, withheld. Frame: <actor> withholds <operation> in <item>.
