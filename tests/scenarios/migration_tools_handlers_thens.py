@@ -98,6 +98,8 @@ def rewritten(step, what):
 
 
 def wrote(step, what, name):
+    if what == "ignore file":
+        return F.ignored(step)
     ok(step)
     if what == "design-decision":
         rel = decision(step, name)
@@ -115,6 +117,8 @@ def has(step):
         return
     elif other == "context scaffold":
         F.scaffolded(step)
+    elif other == "ignore file":
+        F.ignored(step)
     else:
         rel = {"decisions index": "spec/decisions/index.md", "plugin version file": ".shop/plugin-version",
                "index file": "spec/index.md"}[other]

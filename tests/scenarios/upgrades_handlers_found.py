@@ -1,5 +1,5 @@
 """upgrades' founding of a bounded context (b318, `migrate init`), read by migration_tools_handlers_thens: the context
-scaffold `migrate init` kept in the scenario's repository, in one commit on the given one, in which `spec check`
+scaffold `migrate init` kept, with its ignore file (`ignored`, b454), in the scenario's repository, in one commit on the given one, in which `spec check`
 finds nothing and `features generate` writes nothing (`scaffolded`); and what each refusal names (`NAMED`)."""
 import json
 import subprocess
@@ -10,7 +10,9 @@ from scenarios.migration_old import CONTEXT
 
 FILES = ("spec/index.md", "spec/universal.md", "spec/model/.gitkeep", "spec/vocabulary/.gitkeep",
          "spec/capabilities/.gitkeep", ".shop/backlog/.gitkeep", ".shop/records/README.md", ".shop/plugin-version",
-         ".shop/delivery.toml", "features/.gitkeep", "tests/scenarios/conftest.py")
+         ".shop/delivery.toml", "features/.gitkeep", "tests/scenarios/conftest.py", ".gitignore")
+# what the ignore file names: the interpreter and the caches (b454)
+IGNORED = (".venv/", "__pycache__/", ".pytest_cache/", ".ruff_cache/")
 # what a refusal of `migrate init` names: the option of the context id it lacks, the id it was given, the index file,
 # the shop directory
 NAMED = {"bounded context": "--id", "context id": "not-a-context-id", "index file": "spec/index.md",
@@ -40,3 +42,12 @@ def scaffolded(step):
     assert (report["violations"], report["unresolved"], report["problems"]) == ([], [], []), checked.stdout
     generated = tool(step, "features", "generate")
     assert generated.returncode == 0 and old.git("status", "--porcelain").stdout == "", generated.stdout
+
+
+def ignored(step):
+    """The ignore file `migrate init` kept in its one commit, naming the interpreter and the caches."""
+    assert step.context["done"].returncode == 0, M.said(step)
+    old = step.context["old"]
+    assert ".gitignore" in old.git("show", "--name-only", "--format=", "HEAD").stdout.split()
+    lines = M.read(step, ".gitignore").splitlines()
+    assert all(name in lines for name in IGNORED), lines
