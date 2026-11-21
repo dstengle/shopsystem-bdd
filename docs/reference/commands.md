@@ -773,8 +773,8 @@ Synopsis: `work decision [--amend DECISION] [--summary SUMMARY] [--tier {check,r
 - `--supersedes <id>`: an accepted decision this one replaces (its id, path or number); it is set `superseded`
   and committed with the new one. A decision not accepted, or an id that names none, is refused, naming it; repeatable.
 - `--amend <id>`: in place of a title, adds each `--enforced-by` and `--rests-on` an accepted decision (its id, path
-  or number) does not name yet, changes nothing else of it, and commits it with the index. A decision not accepted
-  is refused, naming it.
+  or number) does not name yet, changes nothing else of it, and commits it with the index. When it names every one
+  already, it completes and changes no file. A decision not accepted is refused, naming it.
 
 ```console
 $ work decision "The command reference defers to --help" --summary "Where the command reference and --help differ, --help wins." --tier judgement --decision "Each command's --help is its contract; the reference page links to it and never overrides it."

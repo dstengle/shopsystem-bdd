@@ -1,8 +1,10 @@
 """Handlers of features/decisions.feature's `work decision --amend` (b458, r21-r23): the When that amends a
 design-decision with an enforcer or a foundation, and the Thens of the decision amended in place (the scenario's d2,
 the decision d1 as it now reads: the one id under `enforced_by` or `rests_on` added, nothing else of it changed),
-committed with the decisions index. Each takes a step only after a When that ran `work decision --amend`
-(`amending`)."""
+committed with the decisions index; and of an amendment with an id the decision names already (b481, r24, r25): the
+Given that the decision names it (world_run's ThenChangesNothing the Then that no file changed). Each Then takes a
+step only after a When that ran `work decision --amend` (`amending`)."""
+import re
 import subprocess
 import sys
 
@@ -27,6 +29,17 @@ def tiers():
         spec.loader.exec_module(D)
     H = sys.modules["shop_design_model_check_handlers"]
     return D
+
+
+@W.local("GivenDoes")
+def names_already(step):
+    """`the design-decision d1 has the enforcer e1` (the foundation f1): the decision's list names the id the When
+    amends it with."""
+    match = re.search(r" has the (enforcer|foundation) \S+$", step.text)
+    if step.term != "has" or not match or not step.text.startswith("the design-decision "):
+        return False
+    _, key, value = GIVEN[match.group(1)]
+    tiers().field(step, D.bare(step.names[0]), key, "[%s]" % value)
 
 
 @W.local("WhenRuns")
@@ -96,3 +109,4 @@ def amended(step):
     if step.term in ("keep", "write", "commit") and ("design-decision" in step.text or "decisions index" in step.text):
         return kept(step)
     return False
+
