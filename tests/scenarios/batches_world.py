@@ -31,6 +31,7 @@ URL = "https://github.com/ex/ctx/pull/%d"
 CAP = "spec/capabilities/work-queue.md"
 AFTER_BATCH = []        # what handler modules do once a batch is made, each called with (step, its name) (b324)
 BEFORE_RUN = []         # what handler modules do just before `work batch <command>` runs, called with step (b449)
+BEFORE_START = []       # what handler modules do before `work batch start`'s world is prepared, called with step (b488)
 
 
 def W():
@@ -112,6 +113,8 @@ def before_start(step):
             R().give_lines(step, name, R().PASSING)
     B().write_item(step, OWN_START, title="an item the world readies", status="ready")
     R().give_lines(step, OWN_START, step.context.get("own_line", SECOND))     # a scenario's own line for it (b390)
+    for before in BEFORE_START:
+        before(step)
 
 
 def batch_name(step, name):

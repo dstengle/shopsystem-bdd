@@ -79,12 +79,13 @@ def interpreter(*places):
     return None
 
 
-def run_tests(root, tree, strict=True, workspace=None, unreached=()):
+def run_tests(root, tree, strict=True, workspace=None, unreached=(), extra=None):
     """`[batch] tests` of `.shop/delivery.toml` (default `python3 -m pytest -q -p work_items`) run in `tree`, the
     plugin's scripts on PYTHONPATH (D12), its leading `python3` (or `python`) the `.venv/bin/python` of `tree`, else
     of the `workspace` the tests stand for, else of `root`, when one holds a virtual environment (batches r77, reviews
     r6, b449); with `strict` false, an unbuilt scenario that passes in `tree` is no failure (`spec_unbuilt.NONSTRICT`,
-    batches r19); the test files `unreached` left out of collection by the pytest plugin (batch_reach, b456)."""
+    batches r19); the test files `unreached` left out of collection by the pytest plugin (batch_reach, b456); `extra`
+    more of the run's environment (batch_laid's, b488)."""
     words = shlex.split(delivery(root).get("batch", {}).get("tests", TESTS))
     python = interpreter(tree, workspace, root)
     if python and words and words[0] in ("python3", "python"):
@@ -96,6 +97,7 @@ def run_tests(root, tree, strict=True, workspace=None, unreached=()):
     env.pop(batch_reach.ENV, None)
     if unreached:
         env[batch_reach.ENV] = "\n".join(unreached)
+    env.update(extra or {})
     return shlex.join(words), subprocess.run(words, cwd=tree, capture_output=True, text=True, env=env)
 
 
