@@ -213,9 +213,9 @@ def _cut(text, chunk):
 def unlay(into, item, files=None, base=None):
     """The reverse of `lay_onto` (plan 4 review, B1): the item's pieces taken out of `into/spec` where they are as
     `lay_onto` laid them, the paths outside spec/capabilities/ changed added to `files`; a capability the item made
-    removed whole, its paths added to `files` too (backlog_capability, b317); its operation tables put back as the commit
-    `base` held them (backlog_adapter, b479). The names of the
-    capabilities whose file changed."""
+    removed whole, its paths added to `files` too (backlog_capability, b317); its operation tables and the operations
+    its model lines restate put back as the commit `base` held them (backlog_adapter, b479; backlog_model, b485). The
+    names of the capabilities whose file changed."""
     changed, blocks = [], read(item, "the item %s" % item.name)
     files = [] if files is None else files
     for block in blocks:
@@ -237,7 +237,7 @@ def unlay(into, item, files=None, base=None):
             changed.append(block.capability)
     backlog_forms.unlay_spec(into, blocks, files)
     backlog_universal.unlay(into, blocks, files)
-    backlog_model.unlay(into, blocks, files)
+    backlog_model.unlay(into, blocks, files, base)
     backlog_adapter.unlay(into, blocks, files, base)
     return changed
 

@@ -1,6 +1,8 @@
 """A model line that restates an operation, laid by `work batch start` and taken out by `work batch park` (batches
-r87, r88, b463): the domain-model fixture's spec as the world's (its operation `archive(note)`), the item's line of
-notebook and its `### notes model` block holding notes' `archive` with a parameter added, and the Thens read `spec/model/notes.md` off the batch's branch after the command."""
+r87, r91, b463, b485): the domain-model fixture's spec as the world's (its operation `archive(note)`), the item's line
+of notebook and its `### notes model` block holding notes' `archive` with a parameter added (r87) or as the model
+holds it, byte for byte (r91, the park after the lay), and the Thens read `spec/model/notes.md` off the batch's
+branch after the command."""
 import shutil
 import sys
 from pathlib import Path
@@ -49,6 +51,8 @@ def holds(step):
         return False
     if k1 == "item":
         B.write_item(step, n1, sections={"Requirements": BLOCK})
+    elif step.context.get("items"):       # the lay holds it: the line repeats the operation unchanged (r91)
+        B.write_item(step, next(iter(step.context["items"])), sections={"Requirements": BLOCK.replace(LINE, OLD)})
 
 
 def _model(step):
@@ -69,6 +73,17 @@ def model_holds(step):
         return False
     lines = _model(step)
     assert [x for x in lines if x.startswith("  operation archive(")] == [LINE], lines
+
+
+@four("ThenDoes", "holds", *BOTH)
+def model_holds_operation(step):
+    """the domain model d1 holds the operation o1: after the park, the batch's notes model declares `archive` once, as
+    the model held it before the lay."""
+    (k1, _), (k2, _) = parts(step)
+    if k1 != "domain model" or k2 != "operation":
+        return False
+    lines = _model(step)
+    assert [x for x in lines if x.startswith("  operation archive(")] == [OLD], lines
 
 
 @four("ThenDoesNot", "holds", *BOTH)
