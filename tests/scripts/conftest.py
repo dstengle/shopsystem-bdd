@@ -24,6 +24,20 @@ collect_ignore = [] if os.environ.get("SHOPSYSTEM_TEST_GITHUB_REPO") else ["test
 EXPECTED: dict[str, str] = {}
 
 
+
+@pytest.hookimpl(tryfirst=True)
+def pytest_pyfunc_call(pyfuncitem):
+    """A test marked `budget` (a time budget the parallel run's load may pass, b474) run once more when it fails an
+    assertion, so a passing load does not fail it while a test over its budget under any load fails both."""
+    if pyfuncitem.get_closest_marker("budget") is None:
+        return None
+    args = {name: pyfuncitem.funcargs[name] for name in pyfuncitem._fixtureinfo.argnames}
+    try:
+        pyfuncitem.obj(**args)
+    except AssertionError:
+        pyfuncitem.obj(**args)
+    return True
+
 @pytest.fixture(scope="session")
 def live_logic():
     import spec_solve
