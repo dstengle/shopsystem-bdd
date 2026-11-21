@@ -642,3 +642,20 @@ shall [x1: agent the person (constant), x3: construct catalogue "the construct c
     refuse(e2, subject: x5, object: x6)
     name(e3, subject: x5, object: x2)
 ```
+
+## r63
+From: b538 r63.
+
+```reading
+While a term whose part of speech is `attribute` has more than one sense, when the person validates this specification, the specification service shall complete the request.
+shall [x3: agent the person (constant), x4: specification "the specification of this bounded context" (indexical), x5: service the specification service (constant), x6: request "the request the trigger makes" (indexical)]
+  while [x1: term]
+    part of speech(x1) = `attribute`
+    count more than 1 [x2: sense]
+      scope
+        of(x2, x1)
+  when
+    request(e1, specification.check, subject: x3, object: x4)
+  response
+    complete(e2, subject: x5, object: x6)
+```

@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56]
-unbuilt: []
+unbuilt: [r63]
 ---
 
 # Checking
@@ -172,6 +172,9 @@ Restates: design-model-check#r13@0.29.
 
 ### [g62] `spec catalogue entry` refuses a construct catalogue entry of no construct
 - [r62] If the person describes a catalogue entry in the construct catalogue that no construct has, then the specification service shall refuse the request and name the catalogue entry.
+
+### [g63] the check passes an attribute with two senses told apart by kinds
+- [r63] While a term whose part of speech is `attribute` has more than one sense, when the person validates this specification, the specification service shall complete the request.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

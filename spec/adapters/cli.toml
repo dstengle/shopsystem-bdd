@@ -121,6 +121,7 @@ requirements = [
   "checking#r55: While a catalogue entry has no purpose, if the person validates this specification, then the specification service shall fail the check and name the catalogue entry.",
   "checking#r57: While a catalogue entry mentions an item whose status is not `delivered`, if the person validates this specification, then the specification service shall fail the check and name the catalogue entry and the item.",
   "checking#r58: While a catalogue entry mentions no item and the catalogue entry mentions no release, if the person validates this specification, then the specification service shall fail the check and name the catalogue entry.",
+  "checking#r63: While a term whose part of speech is `attribute` has more than one sense, when the person validates this specification, the specification service shall complete the request.",
   "decisions#r1: While a design-decision is not `superseded` or `rejected` and the design-decision has no tier, when the person validates this specification, the specification service shall return `w_untiered`.",
   "decisions#r2: While the tier of a design-decision is `check` and no test enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d6`.",
   "decisions#r3: While the tier of a design-decision is `requirement` and no requirement enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d7`.",
