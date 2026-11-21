@@ -67,8 +67,8 @@ FORMS = [
     Form("given block", "spec/capabilities/<name>.md, a group's fenced given", "work line --given"),
     Form("observation", ".shop/records/observations.md ## <id>", "plugin item b475 (no command yet)"),
     Form("delivery settings", ".shop/delivery.toml", "work settings set"),
-    Form("design record folder", ".shop/records/<date>-<topic>/design.md", "plugin item b475 (no command yet)"),
-    Form("plan record folder", ".shop/records/<date>-<topic>/plan-<k>.md", "plugin item b475 (no command yet)"),
+    Form("design record folder", ".shop/records/<date>-<topic>/design.md", "work record --design"),
+    Form("plan record folder", ".shop/records/<date>-<topic>/plan-<k>.md", "work record --plan"),
 ]
 
 

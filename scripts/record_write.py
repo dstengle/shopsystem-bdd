@@ -2,7 +2,8 @@
 frontmatter (id, kind, about, date) and `# <title>` over the body a file gives, its row appended to the table of
 `.shop/records/README.md`, and the two committed together. A path that exists already is refused, since a committed
 record is never edited, and so is an `--about` that is not one line or not the id of a kind of node `model` knows
-(r57), or that denotes no node, item or batch the repository holds (records r3, r5, r6, b49)."""
+(r57), or that denotes no node, item or batch the repository holds (records r3, r5, r6, b49). With `--design` or
+`--plan` the request is records.file design or records.file plan, written by record_design (b475)."""
 import datetime
 import re
 from pathlib import Path
@@ -16,7 +17,7 @@ KINDS = ("analysis", "design", "measurement", "review-finding", "decision-argume
 HISTORY = {"design": "record", "analysis": "record"}     # their ids are record/<path>/<name>
 README_HEAD = ("# Records\n\nDated, never edited. Paths are under `.shop/records/`.\n\n| path | record | kind |\n"
                "|---|---|---|\n")
-HELP = ("write a record, .shop/records/<date>-<slug>.md, with its frontmatter (id, kind, about, date) and # <title> "
+HELP = ("write a record (or with --design a design's folder, with --plan a plan in it), .shop/records/<date>-<slug>.md, with its frontmatter (id, kind, about, date) and # <title> "
         "over the body of --body; append its row to .shop/records/README.md; commit both")
 EPILOG = """\
 The file written:
@@ -34,7 +35,16 @@ The file written:
 
 and the row `| `<date>-<slug>.md` | <--summary> | <--kind> |` at the end of the table of .shop/records/README.md
 (the file made with its table when it is missing). A record that exists already is refused: a committed record is
-never edited, so give another --slug. It prints the path written."""
+never edited, so give another --slug. It prints the path written.
+
+work record "<title>" --design --summary "<row>" --body <file> files a design: the folder
+.shop/records/<date>-<slug>/ with its design.md (the frontmatter above, kind design) and the row
+`| `<date>-<slug>/design.md` | <--summary> | design |`, committed together.
+
+work record "<title>" --plan --design <design> --body <file> files a plan in the folder of the design
+(its folder's name <date>-<topic>, its path or its id record/<context path>/<date>-<topic>): plan-<k>.md,
+k the next number of the folder's plans, `# <title>` over the body, committed. A design that does not
+exist is refused."""
 
 
 def add_parser(sub):
@@ -42,8 +52,13 @@ def add_parser(sub):
     p = sub.add_parser("record", help=HELP, description=HELP + ".", epilog=EPILOG,
                        formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("title", help="the record's title, its heading; the slug of its file and id comes from it")
-    p.add_argument("--kind", required=True, choices=KINDS, help="the record's kind")
-    p.add_argument("--summary", required=True, help="the text of its row in .shop/records/README.md, one line")
+    p.add_argument("--kind", choices=KINDS, help="the record's kind (a record but a design or a plan gives it)")
+    p.add_argument("--summary", help="the text of its row in .shop/records/README.md, one line (a record and a design "
+                   "give it)")
+    p.add_argument("--design", nargs="?", const=True, metavar="DESIGN",
+                   help="alone: file a design, the folder .shop/records/<date>-<slug>/ with its design.md; with --plan: "
+                   "the design the plan goes in (its folder's name <date>-<topic>, its path or its id)")
+    p.add_argument("--plan", action="store_true", help="file a plan, plan-<k>.md in the folder of the --design given")
     p.add_argument("--body", required=True, help="a file whose text is the record's body, under its title")
     p.add_argument("--about", help="the id of the node, item or batch the record is about, <kind>/<...> on one line, one this "
                    "repository holds (default: the bounded context)")
@@ -56,6 +71,15 @@ def one_line(text, what):
     if not text or any(ch in text for ch in shop_files.LINE_BREAKS):
         raise shop_files.Refused("the %s is one line of text" % what)
     return text
+
+
+def slugged(slug, title):
+    """The file's name after its date: `slug`, else lowercase words of the title joined by hyphens."""
+    slug = slug or re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
+    if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", slug):
+        raise shop_files.Refused("the slug %r is not lowercase words joined by hyphens" % slug, reason="not a slug",
+                                 names=["parameter:slug"])
+    return slug
 
 
 def attributed(about, root="."):
@@ -104,10 +128,7 @@ def write(root, title, summary, kind, body, *, about=None, slug=None, date=None)
     date = date or datetime.date.today().isoformat()
     if not re.fullmatch(r"\d{4}-\d\d-\d\d", date):
         raise shop_files.Refused("the date %s is not YYYY-MM-DD" % date, reason="not a date", names=["parameter:date"])
-    slug = slug or re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
-    if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", slug):
-        raise shop_files.Refused("the slug %r is not lowercase words joined by hyphens" % slug, reason="not a slug",
-                                 names=["parameter:slug"])
+    slug = slugged(slug, title)
     body_path = Path(body)
     if not body_path.is_file():
         raise shop_files.Refused("{names}: no file %s" % body, reason="no such file", names=["parameter:body"])
@@ -135,10 +156,33 @@ def write(root, title, summary, kind, body, *, about=None, slug=None, date=None)
 def record(args):
     """`work record`: the request records.keep, its parameters read off the command line by business name."""
     from domain_envelope import Response
-    rel = write(args.root, args.title, args.summary, args.kind, args.body, about=args.about, slug=args.slug,
-                date=args.date)
+    import record_design
+    if args.plan:
+        if not isinstance(args.design, str):
+            raise shop_files.Refused("a plan gives {names}, the design it goes in", reason="missing parameters",
+                                     names=["parameter:design"])
+        rel = record_design.plan(args.root, args.title, args.design, args.body)
+    elif args.design is not None:
+        if args.design is not True:
+            raise shop_files.Refused("{names} names a design only with --plan; alone it files one",
+                                     reason="design without plan", names=["parameter:design"])
+        required(args, "summary")
+        rel = record_design.design(args.root, args.title, args.summary, args.body, about=args.about, slug=args.slug,
+                                   date=args.date)
+    else:
+        required(args, "kind", "summary")
+        rel = write(args.root, args.title, args.summary, args.kind, args.body, about=args.about, slug=args.slug,
+                    date=args.date)
     print(rel)
     return Response("done", {"path": rel})
+
+
+def required(args, *names):
+    """Refused naming each of `names` the command line does not give."""
+    missing = [name for name in names if getattr(args, name) is None]
+    if missing:
+        raise shop_files.Refused("{names} must be given", reason="missing parameters",
+                                 names=["parameter:%s" % name for name in missing])
 
 
 COMMANDS = {"record": record}

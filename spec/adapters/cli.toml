@@ -1317,31 +1317,31 @@ item = { positional = 1 }
 requirement = { option = "--requirement", repeat = true }
 
 [operations."records.file design"]
-command = "work file design"
+command = "work record"
 requirements = [
   "records#r7: When the person files a design, the records service shall keep the design.",
 ]
 [operations."records.file design".parameters]
-design = { option = "--design", example = "design-1" }
-title = { option = "--title", example = "title-1" }
-summary = { option = "--summary", example = "a summary" }
+design = { option = "--design", flag = true }
+title = { positional = 1 }
+summary = { option = "--summary" }
 
 [operations."records.file plan"]
-command = "work file plan"
+command = "work record"
 requirements = [
   "records#r4: When the person files a plan with a design, the records service shall keep the plan and keep the design that holds the plan.",
   "records#r8: If the person files a plan with a design that does not exist, then the records service shall refuse the request and name the design.",
 ]
 [operations."records.file plan".parameters]
-plan = { option = "--plan", example = "plan-1" }
-design = { option = "--design", example = "design-1" }
-title = { option = "--title", example = "title-1" }
+plan = { option = "--plan", flag = true }
+design = { option = "--design", example = "2026-01-01-a-design" }
+title = { positional = 1 }
 
 [operations."records.file observation"]
-command = "work file observation"
+command = "work observe"
+cli-only = { options = ["--about", "--by", "--date", "--slug"] }
 requirements = [
   "records#r9: When the person files an observation, the records service shall keep the observation.",
 ]
 [operations."records.file observation".parameters]
-observation = { option = "--observation", example = "observation-1" }
-summary = { option = "--summary", example = "a summary" }
+summary = { positional = 1 }
