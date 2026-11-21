@@ -96,7 +96,7 @@ def test_reviewed_refuses_a_malformed_findings_file(briefed, batch_outside, case
     before, calls = state(briefed), gh_calls(batch_outside)
     done = reviewed(briefed, MALFORMED[case])
     assert done.returncode == 1 and "findings.md" in done.stderr, done.stderr
-    assert done.stderr.startswith("work: work batch reviewed: batch-1: "), done.stderr
+    assert done.stderr.startswith("work batch reviewed: batch-1: "), done.stderr
     assert state(briefed) == before and gh_calls(batch_outside) == calls
     assert batch_plan.find(briefed, "batch-1").status == "in-review"
 
