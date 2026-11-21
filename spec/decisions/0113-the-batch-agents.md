@@ -6,7 +6,7 @@ status: superseded
 tier: check
 enforced_by: [tests/scripts/test_agents.py::RoleBoundaries]
 supersedes: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-2-0-agents]
-source: [item/missingmass.io/shopsystem/shopsystem-bdd/b34]
+source: [quote-42]
 by: "batch-70's driver, under directive-1"
 ---
 
