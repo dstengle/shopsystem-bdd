@@ -212,6 +212,7 @@ object repository
   relations: holds → old-layout directory | uncommitted change (many); has → decision ledger | plugin version file | shop directory | capability | decisions index | frozen notice | initiative (many); rejects → kept change (many)
   relations: has → context scaffold (one)
   relations: has → scenario conftest (one)
+  relations: has → ignore file (one)
 
 object construct
   relations: has → catalogue entry (many)

@@ -61,3 +61,19 @@ Feature: Reviews
     Then the batches service keeps the proposed change p1
     And the batch b1 has the proposed change p1
     And the batches service sets the status of the batch b1 to `in-review`
+
+  @g6 @r6
+  Scenario: A batch is submitted with its tests run by the batch's virtual environment
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    And a task t1
+    And the batch b1 has the task t1
+    And the status of the task t1 is `done`
+    And a workspace w1
+    And the batch b1 has the workspace w1
+    And a virtual environment v1
+    And the workspace w1 holds the virtual environment v1
+    When the person submits the batch b1
+    Then the batches service keeps the proposed change p1
+    And the batch b1 has the proposed change p1
+    And the batches service sets the status of the batch b1 to `in-review`

@@ -3,7 +3,8 @@ context scaffold written and committed in one commit: `spec/index.md` (the id, i
 `language: codified-2`, `imports: [request]`), `spec/universal.md` (no condition), `spec/model/`, `spec/vocabulary/`,
 `spec/capabilities/`, `.shop/backlog/`, `.shop/records/README.md` (an empty records index), `.shop/plugin-version`
 (the plugin's release), `.shop/delivery.toml` (every key commented out at its default), `features/` and
-`tests/scenarios/conftest.py`, each empty directory with a `.gitkeep`. A repository with an index file or a shop
+`tests/scenarios/conftest.py`, each empty directory with a `.gitkeep`, and the ignore file `.gitignore` naming the
+interpreter and the caches (b454; an existing one given the names it lacks). A repository with an index file or a shop
 directory is refused, never merged into; an existing `features/` or conftest is left as it is."""
 import re
 from pathlib import Path
@@ -17,6 +18,8 @@ from shop_refused import Refused
 FORM = re.compile(r"bounded-context/[a-z0-9-]+(\.[a-z0-9-]+)+(/[A-Za-z0-9][A-Za-z0-9._-]*)+")
 KEEP = ("spec/model/.gitkeep", "spec/vocabulary/.gitkeep", "spec/capabilities/.gitkeep", ".shop/backlog/.gitkeep")
 CONFTEST = "tests/scenarios/conftest.py"
+IGNORE = ".gitignore"
+IGNORED = (".venv/", "__pycache__/", ".pytest_cache/", ".ruff_cache/")
 
 INDEX = """---
 id: {id}
@@ -135,6 +138,16 @@ def scaffold(ident):
             ".shop/delivery.toml": DELIVERY}
 
 
+def ignore_text(root):
+    """The ignore file's text: the repository's own, if any, with each name of IGNORED it lacks added at its end."""
+    path = root / IGNORE
+    text = path.read_text() if path.is_file() else ""
+    missing = [name for name in IGNORED if name not in text.splitlines()]
+    if text and not text.endswith("\n"):
+        text += "\n"
+    return text + "".join(name + "\n" for name in missing)
+
+
 def check(root, ident):
     """Refused unless `ident` is a bounded context id and the repository at `root` holds no context yet."""
     if ident is None:
@@ -165,6 +178,7 @@ def run(args):
         files["features/.gitkeep"] = ""
     if not (root / CONFTEST).exists():
         files[CONFTEST] = CONFTEST_TEXT
+    files[IGNORE] = ignore_text(root)
 
     made = sorted({p for rel in files for p in (root / rel).parents if root in p.parents and not p.exists()},
                   key=lambda p: -len(p.parts))

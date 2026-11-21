@@ -138,9 +138,22 @@ def _block(blocks, area):
     return found
 
 
+def _entries(terms):
+    """The vocabulary entries `--term` gave (once or more, b453), each checked; one that does not read refuses all."""
+    import spec_vocabulary
+    bullets = tuple(one_line(t, "vocabulary entry") for t in terms)
+    for bullet in bullets:
+        found = spec_vocabulary.ENTRY.match(bullet)
+        if not found or not found.group("arrow") or not spec_vocabulary.REF.match(found.group("text")):
+            raise Refused("work line: the vocabulary entry %s is not `- **<word>** (<part of speech>) → <element>. "
+                          "...`" % bullet)
+    return bullets
+
+
 def add(root, name, capability, model=None, relation=None, term=None):
-    """`work line --into <capability>` with `--model`, `--relation` or `--term` in a context with a domain model: the
-    piece written into the item's model block of the capability's area and committed. What was written, said."""
+    """`work line --into <capability>` with `--model`, `--relation` or `--term` (once or more) in a context with a
+    domain model: the piece written into the item's model block of the capability's area and committed. What was
+    written, said."""
     from backlog_section import SECTION, read, render, takes
     item = find(root, name)
     takes(item)
@@ -149,13 +162,10 @@ def add(root, name, capability, model=None, relation=None, term=None):
     at = _block(blocks, area)
     block = blocks.models[at]
     if term is not None:
-        import spec_vocabulary
-        bullet = one_line(term, "vocabulary entry")
-        found = spec_vocabulary.ENTRY.match(bullet)
-        if not found or not found.group("arrow") or not spec_vocabulary.REF.match(found.group("text")):
-            raise Refused("work line: the vocabulary entry %s is not `- **<word>** (<part of speech>) → <element>. "
-                          "...`" % bullet)
-        blocks.models[at], said = block._replace(terms=block.terms + (bullet,)), "a vocabulary entry of %s" % area
+        bullets = _entries([term] if isinstance(term, str) else term)
+        blocks.models[at] = block._replace(terms=block.terms + bullets)
+        said = "%s of %s" % ("a vocabulary entry" if len(bullets) == 1 else "%d vocabulary entries" % len(bullets),
+                             area)
     else:
         if relation is not None:
             found = RELATION.match(one_line(relation, "relation"))

@@ -377,3 +377,19 @@ Feature: Items
     When the session s1 readies the item i1
     Then the backlog service refuses this request
     And the backlog service names the request line r1
+
+  @g31 @r31
+  Scenario: A ready item reopened becomes shaped
+    Given an item i1
+    And the status of the item i1 is `ready`
+    When the person reopens the item i1
+    Then the backlog service sets the status of the item i1 to `shaped`
+    And the backlog service keeps the item i1
+
+  @g32 @r32
+  Scenario: Only a ready item is reopened
+    Given an item i1
+    And the status of the item i1 is not `ready`
+    When the person reopens the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the item i1

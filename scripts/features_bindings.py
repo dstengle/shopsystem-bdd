@@ -5,26 +5,34 @@ import os
 
 from features_gherkin import Refused
 
+_PARSED = {}  # path -> (source bytes, its entry): a module parsed once while its bytes stay the same (b457)
+
 
 def test_modules(tests):
     """Every *.py under tests, parsed: (path, source bytes, tree, the module's top-level string assignments)."""
     found = []
     for root, _, names in sorted(os.walk(tests)):
         for name in sorted(names):
-            if not name.endswith(".py"):
-                continue
-            path = os.path.join(root, name)
-            with open(path, "rb") as handle:
-                source = handle.read()
-            try:
-                tree = ast.parse(source, path)
-            except SyntaxError as why:
-                raise Refused("%s does not parse: %s" % (path, why))
-            strings = {t.id: n.value.value for n in tree.body if isinstance(n, ast.Assign)
-                       and isinstance(n.value, ast.Constant) and isinstance(n.value.value, str)
-                       for t in n.targets if isinstance(t, ast.Name)}
-            found.append((path, source, tree, strings))
+            if name.endswith(".py"):
+                found.append(_parsed(os.path.join(root, name)))
     return found
+
+
+def _parsed(path):
+    with open(path, "rb") as handle:
+        source = handle.read()
+    kept = _PARSED.get(path)
+    if kept is not None and kept[0] == source:
+        return kept[1]
+    try:
+        tree = ast.parse(source, path)
+    except SyntaxError as why:
+        raise Refused("%s does not parse: %s" % (path, why))
+    strings = {t.id: n.value.value for n in tree.body if isinstance(n, ast.Assign)
+               and isinstance(n.value, ast.Constant) and isinstance(n.value.value, str)
+               for t in n.targets if isinstance(t, ast.Name)}
+    _PARSED[path] = (source, (path, source, tree, strings))
+    return _PARSED[path][1]
 
 
 _ALIASES = {}  # id(tree) -> (tree, {alias: pytest_bdd name}): each module's imports read once, not once a call

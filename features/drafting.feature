@@ -244,3 +244,15 @@ Feature: Drafting
     When the person declares the model line m1 in the item i1
     Then the item i1 holds the model line m1
     And the drafting service keeps the model line m1
+
+  @g27 @r27
+  Scenario: Removing the last requirement of a new capability of an item keeps the capability
+    Given a capability c1
+    And the capability c1 does not exist
+    And an item i1
+    And the item i1 holds the capability c1
+    And a requirement r1
+    And the capability c1 has the requirement r1
+    When the person removes the requirement r1
+    Then the item i1 holds the capability c1
+    And the drafting service keeps the capability c1

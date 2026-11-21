@@ -375,3 +375,20 @@ Feature: Batches
     And the batches service keeps the capability c1
     And the batches service keeps the index file i2
     And the index file i2 conforms to the index form
+
+  @g77 @r77
+  Scenario: A task finishes with its tests run by the workspace's virtual environment
+    Given a task t1
+    And an item i1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And a workspace w1
+    And the task t1 has the workspace w1
+    And a virtual environment v1
+    And the workspace w1 holds the virtual environment v1
+    And a scenario s1
+    And the item i1 has the scenario s1
+    And the scenario s1 succeeds in the workspace w1
+    And a session s2
+    When the session s2 finishes the task t1
+    Then the batches service sets the status of the task t1 to `done`

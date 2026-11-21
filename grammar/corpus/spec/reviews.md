@@ -91,3 +91,25 @@ shall [x3: agent the person (constant), x4: service the batches service (constan
     keep(e2, subject: x4, object: x5)
     initiates(e3, subject: x4, status(x1) = `in-review`)
 ```
+
+## r6
+From: b449 r6.
+
+```reading
+While a batch is `building` and every task of the batch is `done` and the workspace of the batch holds a virtual environment, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.
+shall [x5: agent the person (constant), x6: service the batches service (constant)]
+  while [x1: batch, x3: workspace, x4: virtual environment]
+    status(x1) = `building`
+    every [x2: task]
+      of(x2, x1)
+      scope
+        status(x2) = `done`
+    of(x3, x1)
+    in(x4, x3)
+  when
+    request(e1, batches.submit, subject: x5, object: x1)
+  response [x7: proposed change]
+    of(x7, x1)
+    keep(e2, subject: x6, object: x7)
+    initiates(e3, subject: x6, status(x1) = `in-review`)
+```

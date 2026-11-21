@@ -542,3 +542,34 @@ shall [x4: service the backlog service (constant), x5: request "the request the 
     refuse(e2, subject: x4, object: x5)
     name(e3, subject: x4, object: x2)
 ```
+
+## r31
+From: b431 r31.
+
+```reading
+While an item is `ready`, when the person reopens the item, the backlog service shall set the status of the item to `shaped` and keep the item.
+shall [x2: agent the person (constant), x3: service the backlog service (constant)]
+  while [x1: item]
+    status(x1) = `ready`
+  when
+    request(e1, backlog.reopen, subject: x2, object: x1)
+  response
+    initiates(e2, subject: x3, status(x1) = `shaped`)
+    keep(e3, subject: x3, object: x1)
+```
+
+## r32
+From: b431 r32.
+
+```reading
+While an item is not `ready`, if the person reopens the item, then the backlog service shall refuse the request and name the item.
+shall [x2: agent the person (constant), x3: service the backlog service (constant), x4: request "the request the trigger makes" (indexical)]
+  while [x1: item]
+    not
+      status(x1) = `ready`
+  if
+    request(e1, backlog.reopen, subject: x2, object: x1)
+  response
+    refuse(e2, subject: x3, object: x4)
+    name(e3, subject: x3, object: x1)
+```

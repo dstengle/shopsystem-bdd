@@ -125,7 +125,8 @@ Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CA
   `--remove <cap>#r<n>` takes one of them out, its group with it when it was the last line, and the id its
   `retires:` pair names; an id no pair names stays. Either refuses an id that is no line of the item, a live requirement's among them.
 - `--term "<bullet>"`: a vocabulary entry (`- **<word>** (<part of speech>) → <element>. ...`) for the vocabulary of
-  the capability's area, in place of a line.
+  the capability's area, in place of a line. Give `--term` more than once to write several entries in one commit;
+  one that does not read refuses them all.
 - `--model "<lines>"`: model lines for the domain model of the capability's area (`object label`, `item: has → label (many)`); an element the area declares already gets the member lines.
 - `--relation "<object>: <phrase> → <object> (<cardinality>)"`, `--given`, `--universal`, `--upstream`: the other
   spec pieces an item can carry: a relation of the model, a group's given block, a universal condition, an upstream
@@ -212,6 +213,17 @@ work: work ready: b253 "work names prints every item" is not passing:
 ```
 
 What each reason means is in [Troubleshooting](../troubleshooting.md).
+
+#### `work reopen`
+
+Moves a `ready` item back to `shaped`, so that `work line` can change its lines; `work ready` readies it again. An
+item that is not `ready` is refused, named.\
+Synopsis: `work reopen name`
+
+```console
+$ work reopen b250
+b250 "work show prints the status of an item" shaped
+```
 
 #### `work refuse`
 
@@ -1158,13 +1170,15 @@ Founds a new bounded context in the repository it is run in: writes its scaffold
 `spec/universal.md` (no condition), `spec/model/`, `spec/vocabulary/`, `spec/capabilities/`, `.shop/backlog/`,
 `.shop/records/README.md` (an empty records index), `.shop/plugin-version` (the plugin's release),
 `.shop/delivery.toml` (every key commented out at its default), `features/` and `tests/scenarios/conftest.py`, each
-empty folder with a `.gitkeep`. An existing `features/` or conftest is left as it is. It refuses, changing nothing,
+empty folder with a `.gitkeep`, and `.gitignore` naming `.venv/`, `__pycache__/`, `.pytest_cache/` and
+`.ruff_cache/` (an existing one given the names it lacks). An existing `features/` or conftest is left as it is. It refuses, changing nothing,
 without `--id`, with an id that is not `bounded-context/<domain>/<path>`, and in a repository that has a
 `spec/index.md` or a `.shop/` already.\
 Synopsis: `migrate init --id ID`
 
 ```console
 $ migrate init --id bounded-context/example.org/notes/notes-cli
+wrote .gitignore
 wrote .shop/backlog/.gitkeep
 ...
 wrote tests/scenarios/conftest.py

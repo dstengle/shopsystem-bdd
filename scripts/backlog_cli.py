@@ -45,6 +45,8 @@ def add_parsers(sub):
     on.add_argument("--drop", help="an item it depends on, the dependency to drop")
     p = sub.add_parser("ready", help="move an item that is shaped to ready, when it passes the readiness bar")
     p.add_argument("name")
+    p = sub.add_parser("reopen", help="move an item that is ready back to shaped, so that its lines can change")
+    p.add_argument("name")
     p = sub.add_parser("line", help="write a requirement line (or a term bullet, relation row, given block, universal "
                        "condition or upstream entry) into an item's ## Requirements, and commit it")
     p.__class__ = _LineParser
@@ -63,7 +65,9 @@ def add_parsers(sub):
                    "takes the place of, keeping its id and group")
     p.add_argument("--remove", metavar="CAP#rN", help="the item's own line `<capability>#r<n>` taken out of it, its "
                    "group too when it was the last line")
-    p.add_argument("--term", help="a term bullet for the capability's ## Terms, in place of a line")
+    p.add_argument("--term", action="append", help="a term bullet for the capability's ## Terms (or, with a "
+                   "domain model, a vocabulary entry for its area), in place of a line; given more than once, all in "
+                   "one commit")
     p.add_argument("--recodify", metavar="CAP", help="the codified capability the item switches to the new language: "
                    "`language: codified-2` written into its block (`universal`: spec/universal.md)")
     p.add_argument("--relation", help="a row `| from | word | to | cardinality |` for the capability's ## Relations; "
@@ -98,6 +102,11 @@ def cmd_shape(args):
 def cmd_refuse(args):
     import backlog_moves
     return moved(backlog_moves.refuse(args.root, args.name, args.reason))
+
+
+def cmd_reopen(args):
+    import backlog_moves
+    return moved(backlog_moves.reopen(args.root, args.name))
 
 
 def cmd_rate(args):
@@ -210,7 +219,8 @@ def cmd_line(args):
         import backlog_model
         item, said = backlog_model.add(args.root, args.name, args.into, **{piece: getattr(args, piece)})
     elif piece == "term":
-        item, said = backlog_lines.add_term(args.root, args.name, args.into, args.term), "a term of %s" % args.into
+        item = backlog_lines.add_term(args.root, args.name, args.into, args.term)
+        said = "%s of %s" % ("a term" if len(args.term) == 1 else "%d terms" % len(args.term), args.into)
     elif piece == "relation":
         item = backlog_forms.add_relation(args.root, args.name, args.into, args.relation)
         said = "a relation row of %s" % args.into
@@ -255,7 +265,8 @@ def answer(args):
 
 
 COMMANDS = {"idea": cmd_idea, "shape": cmd_shape, "refuse": cmd_refuse, "rate": cmd_rate, "depend": cmd_depend,
-            "backlog": cmd_backlog, "line": cmd_line, "ready": cmd_ready}
+            "backlog": cmd_backlog, "line": cmd_line, "ready": cmd_ready,
+            "reopen": cmd_reopen}
 
 
 def show(args):

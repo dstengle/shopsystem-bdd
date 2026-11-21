@@ -129,3 +129,6 @@ when the change is merged.
 ### [g76] A new capability is laid in 0.38's form: area:, specifies:, no empty ## Terms, one ## Composition
 - [r76] While an item is `ready` and the item meets the readiness bar and the item holds a capability, when the person opens a batch, the batches service shall keep the capability that conforms to the capability form and keep an index file that conforms to the index form.
 
+### [g77] A task finishes with its tests run by the workspace's virtual environment
+- [r77] While a task of an item is `running` and the workspace of the task holds a virtual environment and a scenario of the item succeeds in the workspace of the task, when a session finishes the task, the batches service shall set the status of the task to `done`.
+

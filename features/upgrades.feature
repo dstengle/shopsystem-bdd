@@ -1008,17 +1008,6 @@ Feature: Upgrades
     And this repository has the plugin version file p1
     And the upgrades service keeps the plugin version file p1
 
-  @g31 @r31
-  Scenario: Founding a bounded context keeps its context scaffold
-    Given the tracked file `README.md` holds "A new context."
-    And this bounded context has no index file
-    And this repository has no shop directory
-    And a context id c1
-    When the person founds this bounded context with the context id c1
-    Then the upgrades service keeps the context scaffold c2
-    And this repository has the context scaffold c2
-    And the upgrades service completes this request
-
   @g32 @r32
   Scenario: A bounded context is not founded without a context id
     When the person founds this bounded context without a context id
@@ -1077,3 +1066,16 @@ Feature: Upgrades
     When the person upgrades this repository
     Then the upgrades service returns the scenario conftest s1
     And the upgrades service does not change the scenario conftest s1
+
+  @g38 @r38
+  Scenario: Founding a bounded context keeps its context scaffold and its ignore file
+    Given the tracked file `README.md` holds "A new context."
+    And this bounded context has no index file
+    And this repository has no shop directory
+    And a context id c1
+    When the person founds this bounded context with the context id c1
+    Then the upgrades service keeps the context scaffold c2
+    And this repository has the context scaffold c2
+    And the upgrades service keeps the ignore file i1
+    And this repository has the ignore file i1
+    And the upgrades service completes this request

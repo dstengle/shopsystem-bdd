@@ -69,20 +69,34 @@ def under_shop(root, since, branch):
     return sorted(set(filter(None, out.splitlines())))
 
 
-def run_tests(root, tree, strict=True):
+def interpreter(*places):
+    """`<place>/.venv/bin/python` of the first place that holds a virtual environment, else None (b449)."""
+    for place in filter(None, places):
+        python = Path(place).resolve() / ".venv" / "bin" / "python"
+        if python.is_file():
+            return python
+    return None
+
+
+def run_tests(root, tree, strict=True, workspace=None):
     """`[batch] tests` of `.shop/delivery.toml` (default `python3 -m pytest -q -p work_items`) run in `tree`, the
-    plugin's scripts on PYTHONPATH (D12); with `strict` false, an unbuilt scenario that passes in `tree` is no
-    failure (`spec_unbuilt.NONSTRICT`, batches r19)."""
-    command = delivery(root).get("batch", {}).get("tests", TESTS)
+    plugin's scripts on PYTHONPATH (D12), its leading `python3` (or `python`) the `.venv/bin/python` of `tree`, else
+    of the `workspace` the tests stand for, else of `root`, when one holds a virtual environment (batches r77, reviews
+    r6, b449); with `strict` false, an unbuilt scenario that passes in `tree` is no failure (`spec_unbuilt.NONSTRICT`,
+    batches r19)."""
+    words = shlex.split(delivery(root).get("batch", {}).get("tests", TESTS))
+    python = interpreter(tree, workspace, root)
+    if python and words and words[0] in ("python3", "python"):
+        words[0] = str(python)
     env = scripts_env()
     env.pop(spec_unbuilt.NONSTRICT, None)
     if not strict:
         env[spec_unbuilt.NONSTRICT] = str(Path(tree).resolve())
-    return command, subprocess.run(shlex.split(command), cwd=tree, capture_output=True, text=True, env=env)
+    return shlex.join(words), subprocess.run(words, cwd=tree, capture_output=True, text=True, env=env)
 
 
-def tests_pass(root, tree, command_name, strict=True):
-    command, done = run_tests(root, tree, strict)
+def tests_pass(root, tree, command_name, strict=True, workspace=None):
+    command, done = run_tests(root, tree, strict, workspace)
     if done.returncode != 0:
         tail = "\n".join((done.stdout + done.stderr).splitlines()[-20:])
         raise Refused("%s: the tests `%s` failed in %s (exit %d):\n%s" % (command_name, command, tree,
@@ -188,7 +202,7 @@ def checked(root, batch, task):
         raise Refused("%s: %s: still in unbuilt: %s" % (command, label, ", ".join(unbuilt)))
     head = git(tree, "rev-parse", "HEAD").stdout.strip()
     with batch_parked.tested_tree(root, batch, task, tree, head, command) as tested:     # no parked lines (r18)
-        tests_pass(root, tested, "%s: %s" % (command, label), strict=False)   # its own ids are built (r19)
+        tests_pass(root, tested, "%s: %s" % (command, label), strict=False, workspace=tree)   # its own ids are built (r19)
     backlog_chore.passes(item, tree, "%s: %s" % (command, label))     # a chore's check, after the tests (b316)
     return head
 

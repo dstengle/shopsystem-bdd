@@ -583,26 +583,6 @@ shall [x1: repository "the repository the request is made in" (indexical), x2: p
     keep(e4, subject: x4, object: x6)
 ```
 
-## r31
-From: b318 r31.
-
-```reading
-While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold of this repository and complete the request.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x3: repository "the repository the request is made in" (indexical), x5: agent the person (constant), x7: service the upgrades service (constant), x9: request "the request the trigger makes" (indexical)]
-  while
-    not [x2: index file]
-      of(x2, x1)
-    not [x4: shop directory]
-      of(x4, x3)
-  when [x6: context id]
-    request(e1, upgrades.found, subject: x5, object: x1)
-    param(e1, context id, x6)
-  response [x8: context scaffold]
-    of(x8, x3)
-    keep(e2, subject: x7, object: x8)
-    complete(e3, subject: x7, object: x9)
-```
-
 ## r32
 From: b318 r32.
 
@@ -705,4 +685,26 @@ shall [x1: repository "the repository the request is made in" (indexical), x2: p
     return(e2, subject: x7, object: x3)
     not
       change(e3, subject: x7, object: x3)
+```
+
+## r38
+Retires: r31. From: b454 r38.
+
+```reading
+While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold and the ignore file of this repository and complete the request.
+shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x3: repository "the repository the request is made in" (indexical), x5: agent the person (constant), x7: service the upgrades service (constant), x10: request "the request the trigger makes" (indexical)]
+  while
+    not [x2: index file]
+      of(x2, x1)
+    not [x4: shop directory]
+      of(x4, x3)
+  when [x6: context id]
+    request(e1, upgrades.found, subject: x5, object: x1)
+    param(e1, context id, x6)
+  response [x8: context scaffold, x9: ignore file]
+    of(x8, x3)
+    keep(e2, subject: x7, object: x8)
+    of(x9, x3)
+    keep(e3, subject: x7, object: x9)
+    complete(e4, subject: x7, object: x10)
 ```
