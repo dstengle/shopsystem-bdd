@@ -7,7 +7,7 @@ area: specification
 specifies: service decisions, object design-decision
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r24, r25]
 ---
 
 # Decisions
@@ -111,4 +111,10 @@ Restates: design-model-check#r37@0.29.
 
 ### [g23] `work decision --amend` refuses a decision not in force
 - [r23] If the person amends a design-decision whose status is not `accepted`, then the decisions service shall refuse the request and name the design-decision.
+
+### [g24] `work decision --amend` with ids the decision names already changes nothing
+- [r24] While a design-decision whose status is `accepted` has an enforcer, when the person amends the design-decision with the enforcer, the decisions service shall complete the request and change no file.
+
+### [g25] `work decision --amend` with a foundation the decision names already changes nothing
+- [r25] While a design-decision whose status is `accepted` has a foundation, when the person amends the design-decision with the foundation, the decisions service shall complete the request and change no file.
 

@@ -729,3 +729,22 @@ shall [x5: domain model "the domain model of this bounded context" (indexical), 
       in(x3, x8)
     keep(e2, subject: x7, object: x8)
 ```
+
+## r89
+From: b478 r89.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and a requirement of the item violates a rule whose severity is `error`, if the person opens a batch, then the batches service shall set the status of the item to `shaped` and name the rule.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant)]
+  while [x1: item, x3: requirement, x4: rule]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    of(x3, x1)
+    severity(x4) = `error`
+    violate(subject: x3, object: x4)
+  if [x6: batch]
+    request(e1, batches.open, subject: x5, object: x6)
+  response
+    initiates(e2, subject: x7, status(x1) = `shaped`)
+    name(e3, subject: x7, object: x4)
+```

@@ -539,3 +539,18 @@ Feature: Batches
     When the session s1 parks the item i1
     Then the batches service keeps the domain model d1
     And the domain model d1 does not hold the model line m1
+
+  @g89 @r89
+  Scenario: A ready item whose lines laid violate a rule goes back to shaped
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a requirement r1
+    And the item i1 has the requirement r1
+    And a rule r2
+    And the severity of the rule r2 is `error`
+    And the requirement r1 violates the rule r2
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service sets the status of the item i1 to `shaped`
+    And the batches service names the rule r2

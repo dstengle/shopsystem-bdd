@@ -539,3 +539,16 @@ Feature: Items
     Then the backlog service refuses this request
     And the backlog service names the requirement r1
     And the backlog service names the construct c1
+
+  @g41 @r41
+  Scenario: An item a model line of which violates a rule is not readied
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    And a model line m1
+    And the item i1 holds the model line m1
+    And a rule r1
+    And the model line m1 violates the rule r1
+    When the person readies the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the model line m1
+    And the backlog service names the rule r1

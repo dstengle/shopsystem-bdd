@@ -423,3 +423,84 @@ Feature: Drafting
     When the person declares the model line m1 in the item i1
     Then the item i1 holds the model line m1
     And the drafting service keeps the model line m1
+
+  @g42 @r42
+  Scenario: An operation exposed in an item without a table given gets its table from the domain model
+    Given an operation table o2
+    And an operation o1
+    And the operation o1 has the operation table o2
+    And an item i1
+    When the person exposes the operation table o2 in the item i1
+    Then the operation table o2 conforms to the operation-table form
+    And the drafting service keeps the operation table o2
+    And the item i1 holds the operation table o2
+
+  @g43 @r43
+  Scenario: A model line removed from an item leaves it
+    Given a model line m1
+    And an item i1
+    When the person removes the model line m1 from the item i1
+    Then the item i1 does not hold the model line m1
+    And the drafting service does not keep the model line m1
+
+  @g44 @r44
+  Scenario: Removing a model line that an item does not hold is refused
+    Given a model line m1
+    And an item i1
+    And the item i1 does not hold the model line m1
+    When the person removes the model line m1 from the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the model line m1
+
+  @g45 @r45
+  Scenario: Rewording a model line of an item keeps the new model line
+    Given a model line m1
+    And an item i1
+    And a model line m2
+    When the person rewords the model line m1 in the item i1
+    Then the drafting service keeps the model line m2
+    And the item i1 holds the model line m2
+
+  @g46 @r46
+  Scenario: Rewording a model line that an item does not hold is refused
+    Given a model line m1
+    And an item i1
+    And the item i1 does not hold the model line m1
+    When the person rewords the model line m1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the model line m1
+
+  @g47 @r47
+  Scenario: A term removed from an item leaves it
+    Given a term t1
+    And an item i1
+    When the person removes the term t1 from the item i1
+    Then the item i1 does not hold the term t1
+    And the drafting service does not keep the term t1
+
+  @g48 @r48
+  Scenario: Removing a term that an item does not hold is refused
+    Given a term t1
+    And an item i1
+    And the item i1 does not hold the term t1
+    When the person removes the term t1 from the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the term t1
+
+  @g49 @r49
+  Scenario: Rewording a term of an item keeps the new term
+    Given a term t1
+    And an item i1
+    And a term t2
+    When the person rewords the term t1 in the item i1
+    Then the drafting service keeps the term t2
+    And the item i1 holds the term t2
+
+  @g50 @r50
+  Scenario: Rewording a term that an item does not hold is refused
+    Given a term t1
+    And an item i1
+    And the item i1 does not hold the term t1
+    When the person rewords the term t1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the term t1

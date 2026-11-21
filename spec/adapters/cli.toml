@@ -248,6 +248,8 @@ requirements = [
   "decisions#r21: When the person amends a design-decision whose status is `accepted` with an enforcer, the decisions service shall keep a design-decision that has an enforcer and keep the decisions index.",
   "decisions#r22: When the person amends a design-decision whose status is `accepted` with a foundation, the decisions service shall keep a design-decision that has a foundation and keep the decisions index.",
   "decisions#r23: If the person amends a design-decision whose status is not `accepted`, then the decisions service shall refuse the request and name the design-decision.",
+  "decisions#r24: While a design-decision whose status is `accepted` has an enforcer, when the person amends the design-decision with the enforcer, the decisions service shall complete the request and change no file.",
+  "decisions#r25: While a design-decision whose status is `accepted` has a foundation, when the person amends the design-decision with the foundation, the decisions service shall complete the request and change no file.",
 ]
 [operations."decisions.amend".parameters]
 "design-decision" = { option = "--amend" }
@@ -438,6 +440,7 @@ requirements = [
   "items#r36: While an item is `ready` and the item does not meet the readiness bar, if the person readies the item, then the backlog service shall refuse the request and name every bar check that the item does not meet.",
   "items#r37: While an item is not `shaped` and the item is not `ready`, if the person readies the item, then the backlog service shall refuse the request and name the item.",
   "items#r40: While an item is `shaped` and a requirement in the item uses a construct that has no catalogue entry, if the person readies the item, then the backlog service shall refuse the request and name the requirement and the construct.",
+  "items#r41: While an item is `shaped` and a model line in the item violates a rule, if the person readies the item, then the backlog service shall refuse the request and name the model line and the rule.",
   "shaping-guarantees#r1: When the brainstorming session readies an item, the brainstorming session shall not ask a question.",
 ]
 [operations."backlog.ready".parameters]
@@ -637,6 +640,7 @@ requirements = [
   "drafting#r31: When the person exposes an operation table in an item, the drafting service shall keep the operation table in the item.",
   "drafting#r32: While an operation does not exist, if the person exposes an operation table of the operation in an item, then the drafting service shall refuse the request and name the operation table.",
   "drafting#r33: While an item holds an operation table of an operation, when the person exposes another operation table of the operation in the item, the drafting service shall keep only one operation table of the operation in the item.",
+  "drafting#r42: When the person exposes the operation table of an operation in an item, the drafting service shall keep the operation table that conforms to the operation-table form and keep the operation table in the item.",
 ]
 [operations."drafting.expose".parameters]
 item = { positional = 1 }
@@ -875,6 +879,7 @@ requirements = [
   "batches#r79: While an item is `ready` and the item meets the readiness bar and the item holds an operation table, when the person opens a batch, the batches service shall keep an adapter contract that holds the operation table.",
   "batches#r80: While an item is `ready` and the item meets the readiness bar and the item holds an operation, when the person opens a batch, the batches service shall keep an adapter contract and keep no operation table of the operation.",
   "batches#r87: While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an operation, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the operation.",
+  "batches#r89: While an item is `ready` and the item meets the readiness bar and a requirement of the item violates a rule whose severity is `error`, if the person opens a batch, then the batches service shall set the status of the item to `shaped` and name the rule.",
 ]
 
 [operations."batches.resume"]
