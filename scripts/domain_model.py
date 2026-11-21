@@ -81,7 +81,9 @@ class Model:
 
 
 def exists(root):
-    return (Path(root) / "spec" / "model").is_dir()
+    """True when `root` has a domain model folder; looked once a held state (spec_held, b430)."""
+    import spec_held
+    return spec_held.memo(root, ("domain_model.exists",), lambda: (Path(root) / "spec" / "model").is_dir())
 
 
 def _block(text):
@@ -170,7 +172,13 @@ def _stamp(root):
 
 
 def load(root):
-    """The Model of the context at `root`, read once per state of its `spec/model/` files."""
+    """The Model of the context at `root`, read once per state of its `spec/model/` files (statted once a held state,
+    spec_held, b430)."""
+    import spec_held
+    return spec_held.memo(root, ("domain_model",), lambda: _load(root))
+
+
+def _load(root):
     key, stamp = str(Path(root).resolve()), _stamp(root)
     hit = _CACHE.get(key)
     if hit and hit[0] == stamp:

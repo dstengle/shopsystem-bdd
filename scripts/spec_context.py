@@ -15,6 +15,7 @@ from collections import namedtuple
 from pathlib import Path
 
 import spec_grammar4
+import spec_held
 import spec_language
 import spec_lf
 import spec_lf_facts
@@ -105,7 +106,7 @@ def load(root, extra=()):
     """The Context of the spec at `root`, with the drafted files of `extra` laid over it."""
     extra = tuple(str(p) for p in extra or ())
     key = (str(Path(root).resolve()), extra)
-    stamp = fingerprint(root, extra)
+    stamp = spec_held.memo(root, ("spec_context", extra), lambda: fingerprint(root, extra))     # b430
     hit = _CACHE.get(key)
     if hit and hit[0] == stamp:
         return hit[1]

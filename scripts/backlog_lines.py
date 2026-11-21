@@ -16,6 +16,7 @@ import backlog_model
 import backlog_recodify
 import backlog_retires
 import backlog_universal
+import spec_held
 import spec_lexicon
 import spec_read
 from backlog_items import Refused, commit, find, label, one_line
@@ -163,6 +164,7 @@ def _append(text, heading, body, before="Behaviour"):
     return text[:found.start(1)] + joined + text[found.end(1):]
 
 
+@spec_held.writes
 def lay_onto(into, item, files=None):
     """The item's blocks laid over `into/spec`: term bullets at the end of the capability file's `## Terms`, relation
     rows at the end of its `## Relations` table (made when it has none), the lines it retires out of its `## Behaviour`
@@ -201,6 +203,7 @@ def _cut(text, chunk):
     return text if found is None else text[:found.start()] + text[found.end():]
 
 
+@spec_held.writes
 def unlay(into, item, files=None):
     """The reverse of `lay_onto` (plan 4 review, B1): the item's pieces taken out of `into/spec` where they are as
     `lay_onto` laid them, the paths outside spec/capabilities/ changed added to `files`; a capability the item made
