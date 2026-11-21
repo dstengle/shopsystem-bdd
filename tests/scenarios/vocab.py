@@ -1,7 +1,7 @@
 """The step vocabulary in pytest-bdd (design §14.3): one step definition for each keyword, matching a step the step
 grammar 4 reads (vocab4), dispatching to the handler `lookup` finds, and the checks of the observable
 universal conditions after every generated scenario: U17, a refused request names a reason and changes nothing;
-and the store's check of the decision "Git is the store and the isolation" (U13 retired into it), a request's kept
+U20, a run on a task's branch keeps no change there (b60); and the store's check of the decision "Git is the store and the isolation" (U13 retired into it), a request's kept
 commit shared to its upstream remote, but under a remote the scenario made unpushable (store_git).
 
 Each text is parsed once a process. `install(namespace, root, tests_dir)`
@@ -24,6 +24,7 @@ import pytest
 SCRIPTS = Path(__file__).resolve().parents[2] / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.append(str(SCRIPTS))
+import shop_files
 import store_git
 
 if __name__ in sys.modules:   # a loader by path puts the module in sys.modules first, as importlib's recipe does
@@ -108,12 +109,22 @@ def u_problems(records, unpushable=False):
         command = " ".join(map(str, r["args"]))
         if r["returncode"] == 0 and r.get("unshared") and not unpushable:
             out.append("store: `%s` kept a commit not shared to %s" % (command, r["unshared"]))
+        if r.get("task") and r.get("kept"):
+            out.append("U20: `%s` kept a change on the branch of %s" % (command, r["task"]))
         if r["returncode"] != 0 and r["changed"]:
             out.append("U17: `%s` was refused (exit %d) and changed %s" % (command, r["returncode"],
                                                                          ", ".join(r["changed"])))
         elif r["returncode"] != 0 and not ((r.get("stderr") or "") + r["stdout"]).strip():   # the CLI says why on either
             out.append("U17: `%s` was refused (exit %d) and named no reason" % (command, r["returncode"]))
     return out
+
+
+def tasked(repo, at):
+    """U20's part of a run's record: the task whose branch was checked out at `at` (a store_git head, taken before
+    the run), else None, and whether a commit was kept on that branch since."""
+    task = shop_files.task_of(repo, at[0]) if at else None
+    now = store_git.head(repo)
+    return {"task": task, "kept": bool(task) and now is not None and now[0] == at[0] and now[1] != at[1]}
 
 
 def runner(repo, request, scripts=SCRIPTS):
@@ -129,7 +140,7 @@ def runner(repo, request, scripts=SCRIPTS):
             changed = sorted(k for k in set(before) | set(after) if before.get(k) != after.get(k))
             request.node.__dict__.setdefault("_shop_runs", []).append(
                 {"args": [script, *args], "returncode": done.returncode, "stdout": done.stdout,
-                 "stderr": done.stderr, "changed": changed, "unshared": store_git.unshared(repo, at)})
+                 "stderr": done.stderr, "changed": changed, "unshared": store_git.unshared(repo, at), **tasked(repo, at)})
         return done
     return _run
 

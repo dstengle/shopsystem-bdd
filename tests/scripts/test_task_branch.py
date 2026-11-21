@@ -3,7 +3,6 @@ request and names the task. A task's workspace is its branch `batch-<n>-b<j>` (i
 the base), and every command that keeps a change does so through shop_files.committed, which refuses there first
 (refuse_task_branch): each command below exits 1 naming the task, and nothing is committed or written."""
 import pytest
-
 from backlog_testing import git, state, work, write_item
 from test_directive import quote
 from test_record_write import body, with_readme
