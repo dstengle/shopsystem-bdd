@@ -39,6 +39,10 @@ def add_parsers(sub):
                     ).add_argument("batch")
     cmds.add_parser("brief", help="write the brief of the next review of a batch's pull request, for pr-reviewer"
                     ).add_argument("batch")
+    s = cmds.add_parser("reopen", help="take a batch awaiting its merge back to building with the person's findings "
+                                       "file, kept as a review")
+    s.add_argument("batch")
+    s.add_argument("--finding", required=True, help="the findings file of the person's comment on the pull request")
 
 
 def _item(root, name):
@@ -146,6 +150,13 @@ def reviewed(args):
     return 0
 
 
+def reopen(args):
+    import batch_reopen
+    import batch_reviewed
+    print(batch_reviewed.said(args.root, batch_reopen.reopen(args.root, args.batch, args.finding)))
+    return 0
+
+
 def merged(args):
     import batch_close
     batch, requests = batch_close.merged(args.root, args.batch)
@@ -164,7 +175,8 @@ def abandon(args):
 
 def cmd_batch(args):
     return {"start": start, "status": status, "resume": resume, "done": done, "park": park, "amend": amend,
-            "review": review, "brief": brief, "reviewed": reviewed, "merged": merged, "abandon": abandon}[args.batch_cmd](args)
+            "review": review, "brief": brief, "reviewed": reviewed, "reopen": reopen,
+            "merged": merged, "abandon": abandon}[args.batch_cmd](args)
 
 
 COMMANDS = {"batch": cmd_batch}

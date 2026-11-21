@@ -1359,11 +1359,11 @@ requirements = [
 "term proposal" = { option = "--term-proposal", example = "- **shelf** (noun) → object shelf. A place the person keeps books on." }
 
 [operations."batches.reopen"]
-command = "work reopen"
+command = "work batch reopen"
 requirements = [
   "reviews#r11: While a batch is `awaiting-merge`, when the person reopens the batch with a review finding, the batches service shall keep a review of the batch that holds the review finding and set the status of the batch to `building`.",
   "reviews#r12: While a batch is not `awaiting-merge`, if the person reopens the batch with a review finding, then the batches service shall refuse the request and name the batch.",
 ]
 [operations."batches.reopen".parameters]
-batch = { option = "--batch", example = "batch-1" }
-"review finding" = { option = "--review-finding", example = "review finding-1" }
+batch = { positional = 1 }
+"review finding" = { option = "--finding", example = "findings.md" }
