@@ -1067,15 +1067,38 @@ Feature: Upgrades
     Then the upgrades service returns the scenario conftest s1
     And the upgrades service does not change the scenario conftest s1
 
-  @g38 @r38
-  Scenario: Founding a bounded context keeps its context scaffold and its ignore file
+  @g39 @r39
+  Scenario: Founding a bounded context keeps its context scaffold and an ignore file that does not conform
     Given the tracked file `README.md` holds "A new context."
     And this bounded context has no index file
     And this repository has no shop directory
+    And an ignore file i1
+    And this repository has the ignore file i1
+    And the ignore file i1 does not conform to the ignore file form
     And a context id c1
     When the person founds this bounded context with the context id c1
     Then the upgrades service keeps the context scaffold c2
     And this repository has the context scaffold c2
     And the upgrades service keeps the ignore file i1
+    And the upgrades service completes this request
+
+  @g40 @r40
+  Scenario: Founding a bounded context leaves an ignore file that conforms alone
+    Given the tracked file `.gitignore` holds:
+      """
+      .venv
+      /__pycache__/
+      .pytest_cache/
+      .ruff_cache
+      """
+    And this bounded context has no index file
+    And this repository has no shop directory
+    And an ignore file i1
     And this repository has the ignore file i1
+    And the ignore file i1 conforms to the ignore file form
+    And a context id c1
+    When the person founds this bounded context with the context id c1
+    Then the upgrades service keeps the context scaffold c2
+    And this repository has the context scaffold c2
+    And the upgrades service does not change the ignore file i1
     And the upgrades service completes this request

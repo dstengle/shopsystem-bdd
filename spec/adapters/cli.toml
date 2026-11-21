@@ -424,6 +424,7 @@ requirements = [
   "items#r35: While an item is `ready` and the item meets the readiness bar, when the person readies the item, the backlog service shall complete the request and keep the item.",
   "items#r36: While an item is `ready` and the item does not meet the readiness bar, if the person readies the item, then the backlog service shall refuse the request and name every bar check that the item does not meet.",
   "items#r37: While an item is not `shaped` and the item is not `ready`, if the person readies the item, then the backlog service shall refuse the request and name the item.",
+  "items#r40: While an item is `shaped` and a requirement in the item uses a construct that has no catalogue entry, if the person readies the item, then the backlog service shall refuse the request and name the requirement and the construct.",
   "shaping-guarantees#r1: When the brainstorming session readies an item, the brainstorming session shall not ask a question.",
 ]
 [operations."backlog.ready".parameters]
@@ -522,6 +523,9 @@ requirements = [
   "drafting#r22: When the person drafts an item with a capability, the drafting service shall keep the capability in the item.",
   "drafting#r23: If the person drafts an item with a capability that exists, then the drafting service shall refuse the request and name the capability.",
   "drafting#r28: When the person drafts an item with a requirement id of a requirement that enforces a design-decision, the drafting service shall keep a requirement in the item and name the design-decision.",
+  "drafting#r36: While an item holds a capability that does not exist, if the person drafts another item with the capability, then the drafting service shall refuse the request and name another item that holds the capability.",
+  "drafting#r37: While a batch holds an item and the item holds a capability that does not exist, if the person drafts another item with a requirement of the capability, then the drafting service shall refuse the request and name the batch and another item that holds the capability.",
+  "drafting#r39: While an item is `in-batch`, when the person drafts the item with a requirement, the drafting service shall keep the requirement in the item.",
 ]
 [operations."drafting.draft".parameters]
 item = { positional = 1 }
@@ -558,6 +562,7 @@ command = "work line"
 cli-only = { options = ["--into"] }
 requirements = [
   "drafting#r26: While an item holds a capability that does not exist, when the person declares a model line in the item, the drafting service shall keep the model line in the item.",
+  "drafting#r41: While a model line restates an operation, when the person declares the model line in an item, the drafting service shall keep the model line in the item.",
 ]
 [operations."drafting.declare".parameters]
 item = { positional = 1 }
@@ -568,6 +573,7 @@ command = "work line"
 requirements = [
   "drafting#r14: When the person rewords a requirement in an item, the drafting service shall keep a different requirement in the item.",
   "drafting#r15: If the person rewords a requirement of a capability, then the drafting service shall refuse the request and name the requirement.",
+  "drafting#r38: While an item is `in-batch`, when the person rewords a requirement in the item, the drafting service shall keep a different requirement in the item.",
 ]
 [operations."drafting.reword".parameters]
 requirement = { option = "--reword" }
@@ -578,6 +584,7 @@ requirements = [
   "drafting#r16: If the person removes a requirement of a capability, then the drafting service shall refuse the request and name the requirement.",
   "drafting#r24: When the person removes a requirement in an item, the drafting service shall keep every requirement id in the item that the requirement does not retire.",
   "drafting#r27: While an item holds a capability that does not exist, when the person removes a requirement of the capability, the drafting service shall keep the capability in the item.",
+  "drafting#r40: While an item is `in-batch`, when the person removes a requirement in the item, the drafting service shall not keep the requirement in the item.",
 ]
 [operations."drafting.remove".parameters]
 requirement = { option = "--remove" }
@@ -845,6 +852,7 @@ requirements = [
   "batches#r76: While an item is `ready` and the item meets the readiness bar and the item holds a capability, when the person opens a batch, the batches service shall keep the capability that conforms to the capability form and keep an index file that conforms to the index form.",
   "batches#r79: While an item is `ready` and the item meets the readiness bar and the item holds an operation table, when the person opens a batch, the batches service shall keep an adapter contract that holds the operation table.",
   "batches#r80: While an item is `ready` and the item meets the readiness bar and the item holds an operation, when the person opens a batch, the batches service shall keep an adapter contract and keep no operation table of the operation.",
+  "batches#r87: While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an operation, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the operation.",
 ]
 
 [operations."batches.resume"]
@@ -875,6 +883,7 @@ cli-only = { options = ["--discard", "--question"] }
 requirements = [
   "batches#r57: While an item in a batch is `in-batch`, when a session parks the item, the batches service shall set the status of the item to `needs-input`, keep a question on the item and not set the status of the batch to `abandoned`.",
   "batches#r60: While an item in a batch is `in-batch` and the workspace of the batch holds a requirement of the item, when a session parks the item, the batches service shall keep a workspace of the batch that does not hold the requirement.",
+  "batches#r88: While an item in a batch is `in-batch` and the item holds a model line that restates an operation and the domain model holds the model line, when a session parks the item, the batches service shall keep a domain model that does not hold the model line.",
 ]
 [operations."batches.park".parameters]
 item = { positional = 2 }
@@ -1111,7 +1120,8 @@ requirements = [
   "upgrades#r33: If the person founds this bounded context with a context id that does not conform to the bounded context id form, then the upgrades service shall refuse the request and name the context id.",
   "upgrades#r34: While this bounded context has an index file, if the person founds this bounded context with a context id, then the upgrades service shall refuse the request, name the index file and change no file.",
   "upgrades#r35: While this repository has a shop directory, if the person founds this bounded context with a context id, then the upgrades service shall refuse the request, name the shop directory and change no file.",
-  "upgrades#r38: While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold and the ignore file of this repository and complete the request.",
+  "upgrades#r39: While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository does not conform to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold and the ignore file of this repository and complete the request.",
+  "upgrades#r40: While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository conforms to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold, not change the ignore file and complete the request.",
 ]
 [operations."upgrades.found".parameters]
 "context id" = { option = "--id" }

@@ -7,7 +7,7 @@ area: execution
 specifies: object batch, object task, service batches
 language: codified-2
 retired: [g69, r69]
-unbuilt: []
+unbuilt: [r81, r82, r83, r84, r85, r86, r87, r88]
 ---
 
 # Batches
@@ -140,4 +140,28 @@ when the change is merged.
 
 ### [g80] An operation withheld in an item leaves the adapter contract
 - [r80] While an item is `ready` and the item meets the readiness bar and the item holds an operation, when the person opens a batch, the batches service shall keep an adapter contract and keep no operation table of the operation.
+
+### [g81] An in-batch item amended has its lines laid again on its batch's and its task's workspaces
+- [r81] While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement, when the person amends the item, the batches service shall keep a workspace of the batch that holds the requirement and keep a workspace of the task that holds the requirement.
+
+### [g82] An in-batch item amended has a line it no longer holds taken out of the batch's workspace
+- [r82] While an item in a batch is `in-batch` and the workspace of the batch holds a requirement of the item and the item does not hold the requirement, when the person amends the item, the batches service shall keep a workspace of the batch that does not hold the requirement.
+
+### [g83] Amending an item that is not in a batch is refused
+- [r83] While an item is not `in-batch`, if the person amends the item, then the batches service shall refuse the request and name the item.
+
+### [g84] `work settings set` writes a setting in its own table
+- [r84] When the person configures a setting with a setting value, the batches service shall keep a settings file that holds the setting, keep the settings file that conforms to the delivery settings form and complete the request.
+
+### [g85] `work settings set` refuses a setting the plugin does not read
+- [r85] If the person configures a setting that does not conform to the delivery settings form, then the batches service shall refuse the request and name the setting.
+
+### [g86] `work settings set` refuses a value of the wrong type
+- [r86] If the person configures a setting with a setting value that does not conform to the delivery settings form, then the batches service shall refuse the request and name the setting value.
+
+### [g87] A batch opened lays a model line in place of the operation it restates
+- [r87] While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an operation, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the operation.
+
+### [g88] An item parked takes its restating model line out of the domain model
+- [r88] While an item in a batch is `in-batch` and the item holds a model line that restates an operation and the domain model holds the model line, when a session parks the item, the batches service shall keep a domain model that does not hold the model line.
 

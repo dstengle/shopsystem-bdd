@@ -578,3 +578,154 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
       of(x8, x3)
       keep(e3, subject: x6, object: x8)
 ```
+
+## r81
+From: b460 r81.
+
+```reading
+While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement, when the person amends the item, the batches service shall keep a workspace of the batch that holds the requirement and keep a workspace of the task that holds the requirement.
+shall [x5: agent the person (constant), x6: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: task, x4: requirement]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    of(x3, x1)
+    status(x3) = `running`
+    in(x4, x1)
+  when
+    request(e1, batches.amend, subject: x5, object: x1)
+  response [x7: workspace, x8: workspace]
+    of(x7, x2)
+    in(x4, x7)
+    keep(e2, subject: x6, object: x7)
+    of(x8, x3)
+    in(x4, x8)
+    keep(e3, subject: x6, object: x8)
+```
+
+## r82
+From: b460 r82.
+
+```reading
+While an item in a batch is `in-batch` and the workspace of the batch holds a requirement of the item and the item does not hold the requirement, when the person amends the item, the batches service shall keep a workspace of the batch that does not hold the requirement.
+shall [x5: agent the person (constant), x6: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: workspace, x4: requirement]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    of(x3, x2)
+    of(x4, x1)
+    in(x4, x3)
+    not
+      in(x4, x1)
+  when
+    request(e1, batches.amend, subject: x5, object: x1)
+  response [x7: workspace]
+    of(x7, x2)
+    not
+      in(x4, x7)
+    keep(e2, subject: x6, object: x7)
+```
+
+## r83
+From: b460 r83.
+
+```reading
+While an item is not `in-batch`, if the person amends the item, then the batches service shall refuse the request and name the item.
+shall [x2: agent the person (constant), x3: service the batches service (constant), x4: request "the request the trigger makes" (indexical)]
+  while [x1: item]
+    not
+      status(x1) = `in-batch`
+  if
+    request(e1, batches.amend, subject: x2, object: x1)
+  response
+    refuse(e2, subject: x3, object: x4)
+    name(e3, subject: x3, object: x1)
+```
+
+## r84
+From: b462 r84.
+
+```reading
+When the person configures a setting with a setting value, the batches service shall keep a settings file that holds the setting, keep the settings file that conforms to the delivery settings form and complete the request.
+shall [x1: agent the person (constant), x4: service the batches service (constant), x6: artifact the delivery settings form (constant), x7: request "the request the trigger makes" (indexical)]
+  when [x2: setting, x3: setting value]
+    request(e1, batches.configure, subject: x1, object: x2)
+    param(e1, setting value, x3)
+  response [x5: settings file]
+    in(x2, x5)
+    keep(e2, subject: x4, object: x5)
+    conforms(x5, x6)
+    keep(e3, subject: x4, object: x5)
+    complete(e4, subject: x4, object: x7)
+```
+
+## r85
+From: b462 r85.
+
+```reading
+If the person configures a setting that does not conform to the delivery settings form, then the batches service shall refuse the request and name the setting.
+shall [x1: agent the person (constant), x3: artifact the delivery settings form (constant), x4: service the batches service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: setting]
+    not
+      conforms(x2, x3)
+    request(e1, batches.configure, subject: x1, object: x2)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r86
+From: b462 r86.
+
+```reading
+If the person configures a setting with a setting value that does not conform to the delivery settings form, then the batches service shall refuse the request and name the setting value.
+shall [x1: agent the person (constant), x4: artifact the delivery settings form (constant), x5: service the batches service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x2: setting, x3: setting value]
+    not
+      conforms(x3, x4)
+    request(e1, batches.configure, subject: x1, object: x2)
+    param(e1, setting value, x3)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x3)
+```
+
+## r87
+From: b463 r87.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an operation, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the operation.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant), x8: domain model "the domain model of this bounded context" (indexical)]
+  while [x1: item, x3: model line, x4: operation]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    restate(subject: x3, object: x4)
+    in(x3, x1)
+  when [x6: batch]
+    request(e1, batches.open, subject: x5, object: x6)
+  response [x9: domain model]
+    in(x3, x8)
+    keep(e2, subject: x7, object: x3)
+    not
+      in(x4, x9)
+    keep(e3, subject: x7, object: x9)
+```
+
+## r88
+From: b463 r88.
+
+```reading
+While an item in a batch is `in-batch` and the item holds a model line that restates an operation and the domain model holds the model line, when a session parks the item, the batches service shall keep a domain model that does not hold the model line.
+shall [x5: domain model "the domain model of this bounded context" (indexical), x7: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: model line, x4: operation]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    restate(subject: x3, object: x4)
+    in(x3, x1)
+    in(x3, x5)
+  when [x6: session]
+    request(e1, batches.park, subject: x6, object: x1)
+  response [x8: domain model]
+    not
+      in(x3, x8)
+    keep(e2, subject: x7, object: x8)
+```

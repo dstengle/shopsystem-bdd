@@ -56,6 +56,9 @@ service batches
   operation merge(proposed change)  outcomes: done
   operation abandon(batch)  outcomes: done
   operation monitor(batch)  outcomes: returned → the batch
+  operation amend(item)  outcomes: done | refused: item not in batch
+  operation configure(setting, setting value)
+    outcomes: done → the settings file | refused: setting outside the delivery settings form, setting value outside the delivery settings form
 
 service reviews
   operation review(change)  outcomes: done → the review
@@ -66,4 +69,13 @@ object capability form kind of artifact
 object index form kind of artifact
 
 object virtual environment kind of file
+
+object setting kind of text
+
+object setting value kind of text
+
+object settings file kind of file
+  relations: holds → setting (many)
+
+object delivery settings form kind of artifact
 ```

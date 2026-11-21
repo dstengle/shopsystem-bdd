@@ -580,3 +580,65 @@ shall [x4: agent the person (constant), x5: specification "the specification of 
     fail(e2, subject: x6, object: x7)
     name(e3, subject: x6, object: x1)
 ```
+
+## r59
+From: b462 r59.
+
+```reading
+When the person describes a catalogue entry with a purpose, the specification service shall keep a catalogue entry that has the purpose and complete the request.
+shall [x1: agent the person (constant), x4: service the specification service (constant), x6: request "the request the trigger makes" (indexical)]
+  when [x2: catalogue entry, x3: purpose]
+    request(e1, specification.describe, subject: x1, object: x2)
+    param(e1, purpose, x3)
+  response [x5: catalogue entry]
+    of(x3, x5)
+    keep(e2, subject: x4, object: x5)
+    complete(e3, subject: x4, object: x6)
+```
+
+## r60
+From: b462 r60.
+
+```reading
+When the person describes a catalogue entry with an item, the specification service shall keep a catalogue entry that mentions the item and complete the request.
+shall [x1: agent the person (constant), x4: service the specification service (constant), x6: request "the request the trigger makes" (indexical)]
+  when [x2: catalogue entry, x3: item]
+    request(e1, specification.describe, subject: x1, object: x2)
+    param(e1, item, x3)
+  response [x5: catalogue entry]
+    mention(subject: x5, object: x3)
+    keep(e2, subject: x4, object: x5)
+    complete(e3, subject: x4, object: x6)
+```
+
+## r61
+From: b462 r61.
+
+```reading
+If the person describes a catalogue entry in the rule catalogue that no rule has, then the specification service shall refuse the request and name the catalogue entry.
+shall [x1: agent the person (constant), x3: rule catalogue "the rule catalogue of the plugin" (indexical), x5: service the specification service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x2: catalogue entry]
+    in(x2, x3)
+    not [x4: rule]
+      of(x2, x4)
+    request(e1, specification.describe, subject: x1, object: x2)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x2)
+```
+
+## r62
+From: b462 r62.
+
+```reading
+If the person describes a catalogue entry in the construct catalogue that no construct has, then the specification service shall refuse the request and name the catalogue entry.
+shall [x1: agent the person (constant), x3: construct catalogue "the construct catalogue of the bounded context the command runs in" (indexical), x5: service the specification service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x2: catalogue entry]
+    in(x2, x3)
+    not [x4: construct]
+      of(x2, x4)
+    request(e1, specification.describe, subject: x1, object: x2)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x2)
+```

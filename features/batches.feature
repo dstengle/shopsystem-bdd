@@ -436,3 +436,106 @@ Feature: Batches
     When the person opens the batch b1
     Then the batches service keeps the adapter contract a1
     And the batches service does not keep the operation table o2
+
+  @g81 @r81
+  Scenario: An in-batch item amended has its lines laid again on its batch's and its task's workspaces
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And a requirement r1
+    And the item i1 holds the requirement r1
+    When the person amends the item i1
+    Then the batches service keeps the workspace w1
+    And the batch b1 has the workspace w1
+    And the workspace w1 holds the requirement r1
+    And the batches service keeps the workspace w2
+    And the task t1 has the workspace w2
+    And the workspace w2 holds the requirement r1
+
+  @g82 @r82
+  Scenario: An in-batch item amended has a line it no longer holds taken out of the batch's workspace
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a workspace w1
+    And the batch b1 has the workspace w1
+    And a requirement r1
+    And the item i1 has the requirement r1
+    And the workspace w1 holds the requirement r1
+    And the item i1 does not hold the requirement r1
+    When the person amends the item i1
+    Then the batches service keeps the workspace w2
+    And the batch b1 has the workspace w2
+    And the workspace w2 does not hold the requirement r1
+
+  @g83 @r83
+  Scenario: Amending an item that is not in a batch is refused
+    Given an item i1
+    And the status of the item i1 is not `in-batch`
+    When the person amends the item i1
+    Then the batches service refuses this request
+    And the batches service names the item i1
+
+  @g84 @r84
+  Scenario: `work settings set` writes a setting in its own table
+    Given a setting s1
+    And a setting value s2
+    When the person configures the setting s1 with the setting value s2
+    Then the batches service keeps the settings file s3
+    And the settings file s3 holds the setting s1
+    And the settings file s3 conforms to the delivery settings form
+    And the batches service completes this request
+
+  @g85 @r85
+  Scenario: `work settings set` refuses a setting the plugin does not read
+    Given a setting s1
+    And the setting s1 does not conform to the delivery settings form
+    When the person configures the setting s1
+    Then the batches service refuses this request
+    And the batches service names the setting s1
+
+  @g86 @r86
+  Scenario: `work settings set` refuses a value of the wrong type
+    Given a setting value s2
+    And the setting value s2 does not conform to the delivery settings form
+    And a setting s1
+    When the person configures the setting s1 with the setting value s2
+    Then the batches service refuses this request
+    And the batches service names the setting value s2
+
+  @g87 @r87
+  Scenario: A batch opened lays a model line in place of the operation it restates
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a model line m1
+    And an operation o1
+    And the model line m1 restates the operation o1
+    And the item i1 holds the model line m1
+    And a batch b1
+    When the person opens the batch b1
+    Then this domain model holds the model line m1
+    And the batches service keeps the model line m1
+    And the batches service keeps the domain model d1
+    And the domain model d1 does not hold the operation o1
+
+  @g88 @r88
+  Scenario: An item parked takes its restating model line out of the domain model
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a model line m1
+    And an operation o1
+    And the model line m1 restates the operation o1
+    And the item i1 holds the model line m1
+    And this domain model holds the model line m1
+    And a session s1
+    When the session s1 parks the item i1
+    Then the batches service keeps the domain model d1
+    And the domain model d1 does not hold the model line m1

@@ -702,3 +702,23 @@ shall [x2: agent the person (constant), x3: service the backlog service (constan
     refuse(e2, subject: x3, object: x4)
     name(e3, subject: x3, object: x1)
 ```
+
+## r40
+From: b444 r40.
+
+```reading
+While an item is `shaped` and a requirement in the item uses a construct that has no catalogue entry, if the person readies the item, then the backlog service shall refuse the request and name the requirement and the construct.
+shall [x5: agent the person (constant), x6: service the backlog service (constant), x7: request "the request the trigger makes" (indexical)]
+  while [x1: item, x2: requirement, x3: construct]
+    status(x1) = `shaped`
+    in(x2, x1)
+    not [x4: catalogue entry]
+      of(x4, x3)
+    use(subject: x2, object: x3)
+  if
+    request(e1, backlog.ready, subject: x5, object: x1)
+  response
+    refuse(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x2)
+    name(e4, subject: x6, object: x3)
+```

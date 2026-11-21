@@ -203,3 +203,4 @@ area: specification
 - **foundation** (noun) → object foundation. An id that a design-decision names under its `rests_on` as what it rests on, such as the universal condition it routes. Plural: foundations.
 - **preview** (verb, action) → operation language.preview. A person parses a requirement as it reads once the terms and model lines an item holds are laid into the specification, as `spec parse --item` does. Forms: previews, previewed. Frame: <actor> previews <text> for <item>.
 - **operation table** (noun) → object operation table. How an adapter requests one operation of the domain model, kept in its adapter contract: for the CLI adapter, the command, each parameter as a positional argument or an option with its example, its flags and its cli-only options. Plural: operation tables.
+- **describe** (verb, action) → operation specification.describe. Forms: describes, described. Frame: <actor> describes <catalogue entry>.

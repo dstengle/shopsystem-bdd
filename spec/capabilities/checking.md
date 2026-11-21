@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56]
-unbuilt: []
+unbuilt: [r59, r60, r61, r62]
 ---
 
 # Checking
@@ -160,6 +160,18 @@ Restates: design-model-check#r13@0.29.
 
 ### [g58] A catalogue entry that names neither an item nor a release fails the check
 - [r58] While a catalogue entry mentions no item and the catalogue entry mentions no release, if the person validates this specification, then the specification service shall fail the check and name the catalogue entry.
+
+### [g59] `spec catalogue entry` writes a catalogue entry's purpose
+- [r59] When the person describes a catalogue entry with a purpose, the specification service shall keep a catalogue entry that has the purpose and complete the request.
+
+### [g60] `spec catalogue entry` writes the item a catalogue entry came by
+- [r60] When the person describes a catalogue entry with an item, the specification service shall keep a catalogue entry that mentions the item and complete the request.
+
+### [g61] `spec catalogue entry` refuses an entry of no rule and no construct
+- [r61] If the person describes a catalogue entry in the rule catalogue that no rule has, then the specification service shall refuse the request and name the catalogue entry.
+
+### [g62] `spec catalogue entry` refuses a construct catalogue entry of no construct
+- [r62] If the person describes a catalogue entry in the construct catalogue that no construct has, then the specification service shall refuse the request and name the catalogue entry.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
