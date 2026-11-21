@@ -816,3 +816,177 @@ shall [x3: agent the person (constant), x5: service the drafting service (consta
     refuse(e2, subject: x5, object: x6)
     name(e3, subject: x5, object: x2)
 ```
+
+## r53
+From: b48 r53.
+
+```reading
+When the person removes a universal condition from an item, the drafting service shall not keep the universal condition in the item.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: universal condition, x3: item]
+    request(e1, drafting.take out, subject: x1, object: x2, from: x3)
+  response
+    not
+      in(x2, x3)
+      keep(e2, subject: x4, object: x2)
+```
+
+## r54
+From: b48 r54.
+
+```reading
+When the person removes an upstream entry from an item, the drafting service shall not keep the upstream entry in the item.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: upstream entry, x3: item]
+    request(e1, drafting.take out, subject: x1, object: x2, from: x3)
+  response
+    not
+      in(x2, x3)
+      keep(e2, subject: x4, object: x2)
+```
+
+## r55
+From: b48 r55.
+
+```reading
+When the person removes a given block from an item, the drafting service shall not keep the given block in the item.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: given block, x3: item]
+    request(e1, drafting.take out, subject: x1, object: x2, from: x3)
+  response
+    not
+      in(x2, x3)
+      keep(e2, subject: x4, object: x2)
+```
+
+## r56
+From: b48 r56.
+
+```reading
+If the person removes a universal condition from an item that does not hold the universal condition, then the drafting service shall refuse the request and name the universal condition.
+shall [x1: agent the person (constant), x4: service the drafting service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: universal condition, x3: item]
+    not
+      in(x2, x3)
+    request(e1, drafting.take out, subject: x1, object: x2, from: x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r57
+From: b48 r57.
+
+```reading
+If the person removes an upstream entry from an item that does not hold the upstream entry, then the drafting service shall refuse the request and name the upstream entry.
+shall [x1: agent the person (constant), x4: service the drafting service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: upstream entry, x3: item]
+    not
+      in(x2, x3)
+    request(e1, drafting.take out, subject: x1, object: x2, from: x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r58
+From: b48 r58.
+
+```reading
+If the person removes a given block from an item that does not hold the given block, then the drafting service shall refuse the request and name the given block.
+shall [x1: agent the person (constant), x4: service the drafting service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: given block, x3: item]
+    not
+      in(x2, x3)
+    request(e1, drafting.take out, subject: x1, object: x2, from: x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r59
+From: b48 r59.
+
+```reading
+When the person replaces a universal condition in an item, the drafting service shall keep a different universal condition in the item.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: universal condition, x3: item]
+    request(e1, drafting.replace, subject: x1, object: x2, in: x3)
+  response [x5: universal condition]
+    distinct(x5, x2)
+    in(x5, x3)
+    keep(e2, subject: x4, object: x5)
+```
+
+## r60
+From: b48 r60.
+
+```reading
+When the person replaces an upstream entry in an item, the drafting service shall keep a different upstream entry in the item.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: upstream entry, x3: item]
+    request(e1, drafting.replace, subject: x1, object: x2, in: x3)
+  response [x5: upstream entry]
+    distinct(x5, x2)
+    in(x5, x3)
+    keep(e2, subject: x4, object: x5)
+```
+
+## r61
+From: b48 r61.
+
+```reading
+When the person replaces a given block in an item, the drafting service shall keep a different given block in the item.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: given block, x3: item]
+    request(e1, drafting.replace, subject: x1, object: x2, in: x3)
+  response [x5: given block]
+    distinct(x5, x2)
+    in(x5, x3)
+    keep(e2, subject: x4, object: x5)
+```
+
+## r62
+From: b48 r62.
+
+```reading
+If the person replaces a universal condition in an item that does not hold the universal condition, then the drafting service shall refuse the request and name the universal condition.
+shall [x1: agent the person (constant), x4: service the drafting service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: universal condition, x3: item]
+    not
+      in(x2, x3)
+    request(e1, drafting.replace, subject: x1, object: x2, in: x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r63
+From: b48 r63.
+
+```reading
+If the person replaces an upstream entry in an item that does not hold the upstream entry, then the drafting service shall refuse the request and name the upstream entry.
+shall [x1: agent the person (constant), x4: service the drafting service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: upstream entry, x3: item]
+    not
+      in(x2, x3)
+    request(e1, drafting.replace, subject: x1, object: x2, in: x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r64
+From: b48 r64.
+
+```reading
+If the person replaces a given block in an item that does not hold the given block, then the drafting service shall refuse the request and name the given block.
+shall [x1: agent the person (constant), x4: service the drafting service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: given block, x3: item]
+    not
+      in(x2, x3)
+    request(e1, drafting.replace, subject: x1, object: x2, in: x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```

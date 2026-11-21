@@ -115,7 +115,7 @@ b250 "work show prints the status of an item" shaped
 Writes a requirement line into an item's `## Requirements`, under the capability it goes into, and commits it. It
 takes an item that is `idea`, `shaped` or `in-batch`; an in-batch item's changed lines reach its batch with
 [`work batch amend`](#work-batch-amend).\
-Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN|CAP] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--expose TABLES] [--withhold SERVICE.OPERATION] [--remove-model MODEL] [--reword-model HEADER] [--remove-term TERM] [--reword-term TERM] [--pack NAME] [--upstream UPSTREAM] name [text]`
+Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN|CAP] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--expose TABLES] [--withhold SERVICE.OPERATION] [--remove-model MODEL] [--reword-model HEADER] [--remove-term TERM] [--reword-term TERM] [--pack NAME] [--remove-universal U<n>] [--replace-universal U<n>] [--remove-upstream ID] [--replace-upstream ID] [--remove-given CAP#g<n>] [--replace-given CAP#g<n>] [--upstream UPSTREAM] name [text]`
 
 - `--into <capability>`: the codified capability the line goes into.
 - `--group "<title>"`: open a new group with this title (default: the item's title). `--in g<n>` joins one of the
@@ -139,6 +139,11 @@ Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CA
   in its place (`--` before an entry that opens with `-`); a term is named by its word, by `<word> → <element>` when
   two entries share the word, or by its whole bullet. A model block left empty goes. Each refuses a model line or a
   term the item does not hold, naming it, and `--into <capability>` picks the area of a model line two areas hold.
+- `--remove-universal U<n>`, `--remove-upstream <bounded-context id>`, `--remove-given <cap>#g<n>`: the item's own
+  universal condition, upstream entry or given block of its group taken out. `--replace-universal U<n> "<statement>"`,
+  `--replace-upstream <id> "<entry>"` and `--replace-given <cap>#g<n> "<block>"` put the one given (checked as
+  `--universal`'s, `--upstream`'s and `--given`'s are) in its place, a universal condition keeping its id. Each
+  refuses a piece the item does not hold, naming it.
 - `--term "<bullet>"`: a vocabulary entry (`- **<word>** (<part of speech>) → <element>. ...`) for the vocabulary of
   the capability's area, in place of a line. Give `--term` more than once to write several entries in one commit;
   one that does not read refuses them all.

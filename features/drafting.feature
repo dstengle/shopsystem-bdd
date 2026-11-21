@@ -523,3 +523,108 @@ Feature: Drafting
     When the person writes the term t1 into the pack p1 with the item i1
     Then the drafting service refuses this request
     And the drafting service names the term t1
+
+  @g53 @r53
+  Scenario: A universal condition removed from an item is no longer kept
+    Given a universal condition u1
+    And an item i1
+    When the person removes the universal condition u1 from the item i1
+    Then the item i1 does not hold the universal condition u1
+    And the drafting service does not keep the universal condition u1
+
+  @g54 @r54
+  Scenario: An upstream entry removed from an item is no longer kept
+    Given an upstream entry u1
+    And an item i1
+    When the person removes the upstream entry u1 from the item i1
+    Then the item i1 does not hold the upstream entry u1
+    And the drafting service does not keep the upstream entry u1
+
+  @g55 @r55
+  Scenario: A given block removed from an item is no longer kept
+    Given a given block g1
+    And an item i1
+    When the person removes the given block g1 from the item i1
+    Then the item i1 does not hold the given block g1
+    And the drafting service does not keep the given block g1
+
+  @g56 @r56
+  Scenario: Removing a universal condition that the item does not hold is refused
+    Given a universal condition u1
+    And an item i1
+    And the item i1 does not hold the universal condition u1
+    When the person removes the universal condition u1 from the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the universal condition u1
+
+  @g57 @r57
+  Scenario: Removing an upstream entry that the item does not hold is refused
+    Given an upstream entry u1
+    And an item i1
+    And the item i1 does not hold the upstream entry u1
+    When the person removes the upstream entry u1 from the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the upstream entry u1
+
+  @g58 @r58
+  Scenario: Removing a given block that the item does not hold is refused
+    Given a given block g1
+    And an item i1
+    And the item i1 does not hold the given block g1
+    When the person removes the given block g1 from the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the given block g1
+
+  @g59 @r59
+  Scenario: A universal condition replaced in an item keeps the new one
+    Given a universal condition u1
+    And an item i1
+    And a universal condition u2
+    When the person replaces the universal condition u1 in the item i1
+    Then the drafting service keeps the universal condition u2
+    And the item i1 holds the universal condition u2
+
+  @g60 @r60
+  Scenario: An upstream entry replaced in an item keeps the new one
+    Given an upstream entry u1
+    And an item i1
+    And an upstream entry u2
+    When the person replaces the upstream entry u1 in the item i1
+    Then the drafting service keeps the upstream entry u2
+    And the item i1 holds the upstream entry u2
+
+  @g61 @r61
+  Scenario: A given block replaced in an item keeps the new one
+    Given a given block g1
+    And an item i1
+    And a given block g2
+    When the person replaces the given block g1 in the item i1
+    Then the drafting service keeps the given block g2
+    And the item i1 holds the given block g2
+
+  @g62 @r62
+  Scenario: Replacing a universal condition that the item does not hold is refused
+    Given a universal condition u1
+    And an item i1
+    And the item i1 does not hold the universal condition u1
+    When the person replaces the universal condition u1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the universal condition u1
+
+  @g63 @r63
+  Scenario: Replacing an upstream entry that the item does not hold is refused
+    Given an upstream entry u1
+    And an item i1
+    And the item i1 does not hold the upstream entry u1
+    When the person replaces the upstream entry u1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the upstream entry u1
+
+  @g64 @r64
+  Scenario: Replacing a given block that the item does not hold is refused
+    Given a given block g1
+    And an item i1
+    And the item i1 does not hold the given block g1
+    When the person replaces the given block g1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the given block g1
