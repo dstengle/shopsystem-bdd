@@ -53,7 +53,8 @@ written.
 
 work decision --amend <decision> [--enforced-by <id>]... [--rests-on <id>]... adds to an accepted decision (its id,
 path or number) each enforcer under enforced_by and each foundation under rests_on it does not name yet, nothing else
-of it changed, rewrites the index and commits both; a decision whose status is not accepted is refused, naming it,
+of it changed, rewrites the index and commits both; when it names every one already, it completes and changes no
+file; a decision whose status is not accepted is refused, naming it,
 and nothing is written. It prints the path amended."""
 
 

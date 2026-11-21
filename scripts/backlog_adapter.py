@@ -6,11 +6,12 @@ The item keeps them in a `### <port> adapter` block of its `## Requirements` (ba
 the model blocks): an optional `withheld: [<service>.<operation>, ...]` line, the operations no command of the adapter
 requests, then a ` ```toml ` fence of operation tables in the contract's own syntax. `work line <item> --expose
 "<tables>"` keeps one operation's tables (`[operations."<service>.<operation>"]` with its command and its
-parameters) in place of that operation's own, refused when the domain model, with the item's model lines laid, has no
+parameters) in place of that operation's own (given `<service>.<operation>` alone, the tables adapter_tables' `of`
+writes from the domain model's operation), refused when the domain model, with the item's model lines laid, has no
 such operation; `work line <item> --withhold <service>.<operation>` keeps the operation withheld, its table out.
 `lay` puts each table into the contract in place of the operation's own and out of `[unexposed]`, and each withheld
 operation into `[unexposed]` with its table out (the contract made when missing); `unlay` puts back what the contract
-held before, as git last held it otherwise."""
+held at the batch's base (b479), as git last held it otherwise when no base is given."""
 import re
 import shutil
 import subprocess
@@ -31,7 +32,9 @@ AdapterBlock = namedtuple("AdapterBlock", "port tables withheld", defaults=((), 
 def add_arguments(p):
     """`work line`'s options of the adapter contract."""
     p.add_argument("--expose", metavar="TABLES", help='the tables of one operation for the CLI adapter contract, '
-                   '`[operations."<service>.<operation>"]` with its command and parameters, kept in place of its own')
+                   '`[operations."<service>.<operation>"]` with its command and parameters, kept in place of its own; '
+                   'or the operation `<service>.<operation>` alone, its tables written from the domain model\'s '
+                   'operation (its command after the operation, each parameter an option with an example)')
     p.add_argument("--withhold", metavar="SERVICE.OPERATION", help="an operation no command of the CLI adapter "
                    "requests, kept under the contract's [unexposed] with its table out")
 
@@ -81,8 +84,8 @@ def _at(blocks, port):
     return found
 
 
-def operations(root, blocks):
-    """The operations `<service>.<operation>` of the domain model, with the item's model lines laid on a copy."""
+def model(root, blocks):
+    """The domain model, with the item's model lines laid on a copy."""
     import backlog_model
     import domain_model
     if not getattr(blocks, "models", ()):
@@ -95,7 +98,12 @@ def operations(root, blocks):
             model = domain_model.read(copy)
         finally:
             shutil.rmtree(copy, ignore_errors=True)
-    return {"%s.%s" % (o.service, o.name) for o in model.operations()}
+    return model
+
+
+def operations(root, blocks):
+    """The operations `<service>.<operation>` of the domain model, with the item's model lines laid on a copy."""
+    return {"%s.%s" % (o.service, o.name): o for o in model(root, blocks).operations()}
 
 
 def _changed(root, name, change):
@@ -112,12 +120,19 @@ def _changed(root, name, change):
 
 
 def expose(root, name, text):
-    """`work line <item> --expose <tables>`: one operation's tables kept in the item in place of its own."""
-    ident, tables = adapter_tables.one(text)
+    """`work line <item> --expose <tables>`: one operation's tables kept in the item in place of its own; given the
+    operation `<service>.<operation>` alone, its tables written from the domain model's operation (b482)."""
+    alone = bool(adapter_tables.IDENT.match(text.strip()))
+    ident, tables = (text.strip(), None) if alone else adapter_tables.one(text)
 
     def change(blocks, at):
-        if ident not in operations(root, blocks):
+        nonlocal tables
+        found = operations(root, blocks).get(ident)
+        if found is None:
             raise Refused("work line: the operation table %s names no operation of the domain model" % ident)
+        if alone:
+            path = contract_path(root, PORT)
+            tables = adapter_tables.of(found, path.read_text(encoding="utf-8") if path.is_file() else "")
         block = blocks.adapters[at]
         blocks.adapters[at] = block._replace(
             tables=tuple(t for t in block.tables if t[0] != ident) + ((ident, tables),),
@@ -188,18 +203,32 @@ def _versions(path):
     return [s.stdout for s in shown if s.returncode == 0]
 
 
-def unlay(into, blocks, files):
-    """The reverse of `lay`: each operation the block names put back as the newest version git holds of the contract
-    held
-    it otherwise (no table and not unexposed when none did); a contract left with nothing removed."""
+def _at_base(path, base):
+    """The text of `path` at the commit `base`, empty when that commit holds no such file."""
+    def git(*args):
+        return subprocess.run(["git", "-C", str(path.parent), *args], capture_output=True, text=True)
+    prefix = git("rev-parse", "--show-prefix").stdout.strip()
+    shown = git("show", "%s:%s%s" % (base, prefix, path.name))
+    return shown.stdout if shown.returncode == 0 else ""
+
+
+def unlay(into, blocks, files, base=None):
+    """The reverse of `lay`: each operation the block names put back as the contract at the commit `base` (the batch's
+    base, b479) held it, no table and not unexposed when it held none, nothing else of the contract changed; with no
+    `base`, as the newest version git holds that held it otherwise. A contract left with nothing removed."""
     for block in getattr(blocks, "adapters", ()):
         path = contract_path(into, block.port)
         if not path.is_file():
             continue
-        text, versions = path.read_text(encoding="utf-8"), _versions(path)
+        text = path.read_text(encoding="utf-8")
+        versions = None if base else _versions(path)
+        held = _at_base(path, base) if base else None
         for ident in [i for i, _ in block.tables] + list(block.withheld):
-            now = _state(text, ident)
-            tables, listed = next((s for s in (_state(v, ident) for v in versions) if s != now), (None, False))
+            if base:
+                tables, listed = _state(held, ident)
+            else:
+                now = _state(text, ident)
+                tables, listed = next((s for s in (_state(v, ident) for v in versions) if s != now), (None, False))
             text = adapter_tables.without(text, ident)
             text = adapter_tables.listed(adapter_tables.with_table(text, tables) if tables else text, ident, listed)
         if not text.strip():

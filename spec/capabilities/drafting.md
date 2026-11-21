@@ -160,3 +160,30 @@ capabilities, retirements, rewordings and chores.
 ### [g41] A model line that restates an operation is kept in the item
 - [r41] While a model line restates an operation, when the person declares the model line in an item, the drafting service shall keep the model line in the item.
 
+### [g42] An operation exposed in an item without a table given gets its table from the domain model
+- [r42] When the person exposes the operation table of an operation in an item, the drafting service shall keep the operation table that conforms to the operation-table form and keep the operation table in the item.
+
+### [g43] A model line removed from an item leaves it
+- [r43] When the person removes a model line from an item, the drafting service shall not keep the model line in the item.
+
+### [g44] Removing a model line that an item does not hold is refused
+- [r44] If the person removes a model line from an item that does not hold the model line, then the drafting service shall refuse the request and name the model line.
+
+### [g45] Rewording a model line of an item keeps the new model line
+- [r45] When the person rewords a model line in an item, the drafting service shall keep a different model line in the item.
+
+### [g46] Rewording a model line that an item does not hold is refused
+- [r46] If the person rewords a model line in an item that does not hold the model line, then the drafting service shall refuse the request and name the model line.
+
+### [g47] A term removed from an item leaves it
+- [r47] When the person removes a term from an item, the drafting service shall not keep the term in the item.
+
+### [g48] Removing a term that an item does not hold is refused
+- [r48] If the person removes a term from an item that does not hold the term, then the drafting service shall refuse the request and name the term.
+
+### [g49] Rewording a term of an item keeps the new term
+- [r49] When the person rewords a term in an item, the drafting service shall keep a different term in the item.
+
+### [g50] Rewording a term that an item does not hold is refused
+- [r50] If the person rewords a term in an item that does not hold the term, then the drafting service shall refuse the request and name the term.
+

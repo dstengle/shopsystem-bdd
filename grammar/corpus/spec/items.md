@@ -722,3 +722,21 @@ shall [x5: agent the person (constant), x6: service the backlog service (constan
     name(e3, subject: x6, object: x2)
     name(e4, subject: x6, object: x3)
 ```
+
+## r41
+From: b477 r41.
+
+```reading
+While an item is `shaped` and a model line in the item violates a rule, if the person readies the item, then the backlog service shall refuse the request and name the model line and the rule.
+shall [x4: agent the person (constant), x5: service the backlog service (constant), x6: request "the request the trigger makes" (indexical)]
+  while [x1: item, x2: model line, x3: rule]
+    status(x1) = `shaped`
+    in(x2, x1)
+    violate(subject: x2, object: x3)
+  if
+    request(e1, backlog.ready, subject: x4, object: x1)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x2)
+    name(e4, subject: x5, object: x3)
+```

@@ -143,6 +143,10 @@ service drafting
   operation expose(operation table, item)  outcomes: done | refused: operation table of no operation
   operation withhold(operation, item)  outcomes: done
   operation retract(capability, item)  outcomes: done
+  operation remove model line(model line, item)  outcomes: done | refused: model line not in the item
+  operation reword model line(model line, item)  outcomes: done | refused: model line not in the item
+  operation remove term(term, item)  outcomes: done | refused: term not in the item
+  operation reword term(term, item)  outcomes: done | refused: term not in the item
 
 service context requests
   operation raise(context request, origin, thread, text, bounded context)
@@ -180,4 +184,6 @@ object retirement list kind of file
 
 object domain model kind of file
   relations: holds → model line | operation (many)
+
+object operation-table form kind of artifact
 ```

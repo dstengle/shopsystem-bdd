@@ -203,3 +203,23 @@ Feature: Decisions
     When the person amends the design-decision d1
     Then the decisions service refuses this request
     And the decisions service names the design-decision d1
+
+  @g24 @r24
+  Scenario: `work decision --amend` with ids the decision names already changes nothing
+    Given a design-decision d1
+    And the status of the design-decision d1 is `accepted`
+    And an enforcer e1
+    And the design-decision d1 has the enforcer e1
+    When the person amends the design-decision d1 with the enforcer e1
+    Then the decisions service completes this request
+    And the decisions service does not change a file
+
+  @g25 @r25
+  Scenario: `work decision --amend` with a foundation the decision names already changes nothing
+    Given a design-decision d1
+    And the status of the design-decision d1 is `accepted`
+    And a foundation f1
+    And the design-decision d1 has the foundation f1
+    When the person amends the design-decision d1 with the foundation f1
+    Then the decisions service completes this request
+    And the decisions service does not change a file

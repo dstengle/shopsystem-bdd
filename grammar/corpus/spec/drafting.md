@@ -654,3 +654,135 @@ shall [x3: agent the person (constant), x5: service the drafting service (consta
     in(x1, x4)
     keep(e2, subject: x5, object: x1)
 ```
+
+## r42
+From: b482 r42.
+
+```reading
+When the person exposes the operation table of an operation in an item, the drafting service shall keep the operation table that conforms to the operation-table form and keep the operation table in the item.
+shall [x1: agent the person (constant), x5: service the drafting service (constant), x6: artifact the operation-table form (constant)]
+  when [x2: operation, x3: operation table, x4: item]
+    of(x3, x2)
+    request(e1, drafting.expose, subject: x1, object: x3, in: x4)
+  response
+    conforms(x3, x6)
+    keep(e2, subject: x5, object: x3)
+    in(x3, x4)
+    keep(e3, subject: x5, object: x3)
+```
+
+## r43
+From: b367 r43.
+
+```reading
+When the person removes a model line from an item, the drafting service shall not keep the model line in the item.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: model line, x3: item]
+    request(e1, drafting.remove model line, subject: x1, object: x2, from: x3)
+  response
+    not
+      in(x2, x3)
+      keep(e2, subject: x4, object: x2)
+```
+
+## r44
+From: b367 r44.
+
+```reading
+If the person removes a model line from an item that does not hold the model line, then the drafting service shall refuse the request and name the model line.
+shall [x1: agent the person (constant), x4: service the drafting service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: model line, x3: item]
+    not
+      in(x2, x3)
+    request(e1, drafting.remove model line, subject: x1, object: x2, from: x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r45
+From: b367 r45.
+
+```reading
+When the person rewords a model line in an item, the drafting service shall keep a different model line in the item.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: model line, x3: item]
+    request(e1, drafting.reword model line, subject: x1, object: x2, in: x3)
+  response [x5: model line]
+    distinct(x5, x2)
+    in(x5, x3)
+    keep(e2, subject: x4, object: x5)
+```
+
+## r46
+From: b367 r46.
+
+```reading
+If the person rewords a model line in an item that does not hold the model line, then the drafting service shall refuse the request and name the model line.
+shall [x1: agent the person (constant), x4: service the drafting service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: model line, x3: item]
+    not
+      in(x2, x3)
+    request(e1, drafting.reword model line, subject: x1, object: x2, in: x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r47
+From: b367 r47.
+
+```reading
+When the person removes a term from an item, the drafting service shall not keep the term in the item.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: term, x3: item]
+    request(e1, drafting.remove term, subject: x1, object: x2, from: x3)
+  response
+    not
+      in(x2, x3)
+      keep(e2, subject: x4, object: x2)
+```
+
+## r48
+From: b367 r48.
+
+```reading
+If the person removes a term from an item that does not hold the term, then the drafting service shall refuse the request and name the term.
+shall [x1: agent the person (constant), x4: service the drafting service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: term, x3: item]
+    not
+      in(x2, x3)
+    request(e1, drafting.remove term, subject: x1, object: x2, from: x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r49
+From: b367 r49.
+
+```reading
+When the person rewords a term in an item, the drafting service shall keep a different term in the item.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: term, x3: item]
+    request(e1, drafting.reword term, subject: x1, object: x2, in: x3)
+  response [x5: term]
+    distinct(x5, x2)
+    in(x5, x3)
+    keep(e2, subject: x4, object: x5)
+```
+
+## r50
+From: b367 r50.
+
+```reading
+If the person rewords a term in an item that does not hold the term, then the drafting service shall refuse the request and name the term.
+shall [x1: agent the person (constant), x4: service the drafting service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: term, x3: item]
+    not
+      in(x2, x3)
+    request(e1, drafting.reword term, subject: x1, object: x2, in: x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```

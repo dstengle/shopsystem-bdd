@@ -165,3 +165,6 @@ when the change is merged.
 ### [g88] An item parked takes its restating model line out of the domain model
 - [r88] While an item in a batch is `in-batch` and the item holds a model line that restates an operation and the domain model holds the model line, when a session parks the item, the batches service shall keep a domain model that does not hold the model line.
 
+### [g89] A ready item whose lines laid violate a rule goes back to shaped
+- [r89] While an item is `ready` and the item meets the readiness bar and a requirement of the item violates a rule whose severity is `error`, if the person opens a batch, then the batches service shall set the status of the item to `shaped` and name the rule.
+

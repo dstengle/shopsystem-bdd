@@ -101,3 +101,17 @@ def test_lay_makes_a_contract_and_unlay_removes_it(tmp_path):
     assert path.read_text() == ARCHIVE + "\n"
     backlog_adapter.unlay(tmp_path, blocks, [])
     assert not path.exists()
+
+
+def test_operation_table_written_from_the_model():
+    """b482: the operation-table form of an operation, its program the contract's other operations', else its
+    service; each parameter an option with an example of its type, a flag `flag = true`."""
+    from domain_model_parse import Operation, Parameter
+    op = Operation("notes", "pin", parameters=(Parameter("priority", "values", ("low", "high")),
+                                               Parameter("due date", "time"), Parameter("loud", "flag")))
+    contract = CONTRACT.replace('command = "notes add"', 'command = "jot add"')
+    assert adapter_tables.of(op, contract) == (
+        '[operations."notes.pin"]\ncommand = "jot pin"\n[operations."notes.pin".parameters]\n'
+        'priority = { option = "--priority", example = "low" }\n'
+        '"due date" = { option = "--due-date", example = "2026-01-01" }\nloud = { option = "--loud", flag = true }')
+    assert adapter_tables.of(Operation("tasks", "sweep")) == '[operations."tasks.sweep"]\ncommand = "tasks sweep"'

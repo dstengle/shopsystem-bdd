@@ -1,7 +1,8 @@
 """`work decision --amend <decision>` (decisions r21-r23, b458): the operation decisions.amend, an accepted
 design-decision given more enforcers (`--enforced-by`, its `enforced_by`) and foundations (`--rests-on`, its
 `rests_on`), each added once after those it names already, nothing else of it changed, and the decisions index
-rewritten, the two committed together; a decision whose status is not accepted refused naming it, before anything
+rewritten, the two committed together; an amendment whose every id the decision names already completes and changes
+no file (b481, r24, r25); a decision whose status is not accepted refused naming it, before anything
 is written."""
 import re
 from pathlib import Path
@@ -71,7 +72,10 @@ def amend(root, decision, enforcers=(), foundations=()):
         if not value.strip() or re.search(r"[\[\],\n\r]", value):
             raise shop_files.Refused("%r is no id: an enforcer or a foundation is one id" % value, reason="not an id",
                                      names=["parameter:enforcer" if value in enforcers else "parameter:foundation"])
-    text = amended(path.read_text(encoding="utf-8"), {"enforced_by": list(enforcers), "rests_on": list(foundations)})
+    before = path.read_text(encoding="utf-8")
+    text = amended(before, {"enforced_by": list(enforcers), "rests_on": list(foundations)})
+    if text == before:      # every id named already: the amendment completes and changes nothing (decisions r24, r25)
+        return rel
     index = (DECISIONS / "index.md").as_posix()
     title = next((line[2:] for line in text.splitlines() if line.startswith("# ")), path.stem)
 

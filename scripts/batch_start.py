@@ -5,7 +5,11 @@ On `batch-<n>`, in its own worktree, one commit lays every picked item's lines i
 capability's `unbuilt:` and writes each service capability's feature again; it cites every item it carries. Then the
 base gets one commit: `plan.md` with a `pending` task for each item, the picked items `in-batch`, and the items the
 pick returned `shaped`. The base checkout's own `spec/` and `features/` are never written, and its branch never
-switched; a failure once the branch is made removes its worktree and the branch before it is raised again."""
+switched; a failure once the branch is made removes its worktree and the branch before it is raised again.
+
+Before the lay is committed, `spec check`'s rules run on the worktree once (b478): an item a requirement of which
+violates a rule of severity error there, which the readiness bar's copy of `spec/` alone could not find, goes back to
+`shaped` naming the rule, and the batch is laid again without it."""
 import contextlib
 import io
 from pathlib import Path
@@ -13,6 +17,7 @@ from pathlib import Path
 import adapter_annotate
 import backlog_items
 import backlog_lines
+import backlog_moves
 import batch_catalogues
 import batch_driver
 import batch_pick
@@ -83,13 +88,14 @@ def _generated(tree, capability, command):
     return changed + [feature.relative_to(tree).as_posix()]
 
 
-def unlay_lines(tree, items, command):
+def unlay_lines(tree, items, command, base=None):
     """Every item's lines taken out of the worktree's `spec/` and their ids out of `unbuilt:`, and the feature of each
-    service capability changed written again (plan 4 review, B1); the paths changed."""
+    service capability changed written again (plan 4 review, B1), the operation tables as the commit `base` (the
+    batch's base, b479) held them; the paths changed."""
     changed = []
     for item in items:
         ids = backlog_lines.ids(backlog_lines.read(item, backlog_items.rel_of(item.name)))
-        for capability in backlog_lines.unlay(tree, item, changed):
+        for capability in backlog_lines.unlay(tree, item, changed, base):
             path = backlog_lines.capability_file(tree, capability)
             path.write_text(spec_unbuilt.without_unbuilt(
                 path.read_text(), [i.split("#")[1] for i in ids if i.split("#")[0] == capability]))
@@ -107,6 +113,32 @@ def _returns(root, returned):
                         write)
 
 
+class _Broken(Exception):
+    """The lay broke a rule: (item, reasons) of each picked item whose requirement violates one."""
+
+
+def violating(tree, picked):
+    """(item, reasons) of each picked item a requirement of which violates a `model.lp` rule of severity error (a code
+    `v...`; `w_...` is a warning) on the laid worktree, each reason naming the requirement and the rule (b478)."""
+    from model_check import solve
+    from model_facts import Model
+    relations, labels = solve(Model(tree).read())
+    found = []
+    for item in picked:
+        mine = set(backlog_lines.ids(backlog_lines.read(item, backlog_items.rel_of(item.name))))
+        reasons = []
+        for name, args in relations:
+            short = [str(a).rsplit("/", 1)[-1] for a in args]
+            for k, node in enumerate(short):
+                if name.startswith("v") and node in mine:
+                    others = short[:k] + short[k + 1:]
+                    reasons.append("%s: %s %s%s" % (node, name, labels.get(name, ""),
+                                                    ": with %s" % ", ".join(others) if others else ""))
+        if reasons:
+            found.append((item, list(dict.fromkeys(reasons))))
+    return found
+
+
 def _build(root, base, picked, returned):
     batch_driver.push_prefix(root)      # a malformed `[batch] push` refused before anything is written
     name = next_name(root)
@@ -116,6 +148,9 @@ def _build(root, base, picked, returned):
         add_tree(root, tree, name, forked)
         unwritten = []
         changed = lay_lines(tree, picked, unwritten)
+        broken = violating(tree, picked)
+        if broken:
+            raise _Broken(broken)
         if changed:                 # a pick of chore items only lays no line (b316): the commit is still made
             git(tree, "add", "--", *changed)
         git(tree, "commit", "-q", "--allow-empty", "-m", "%s: the requirement lines of %s\n%s" % (
@@ -154,11 +189,20 @@ def start(root):
         if not any(i.status == "ready" for i in backlog_items.items(root)):
             raise Refused("work batch start: no item is ready")
         pick = batch_pick.pick(root)
-        if not pick.picked:
-            if pick.returned:
-                _returns(root, pick.returned)
-            return None, pick
-        return _build(root, base, pick.picked, pick.returned), pick
+        while pick.picked:
+            try:
+                return _build(root, base, pick.picked, pick.returned), pick
+            except _Broken as err:          # laid again without the items whose lines broke a rule (b478)
+                broken = err.args[0]
+            for item, reasons in broken:
+                item.status = "shaped"
+                backlog_moves.add_note(item, "returned by work batch start: %s" % "; ".join(reasons))
+            gone = {i.name for i, _ in broken}
+            pick = pick._replace(picked=[i for i in pick.picked if i.name not in gone],
+                                 returned=pick.returned + broken)
+        if pick.returned:
+            _returns(root, pick.returned)
+        return None, pick
 
 
 def said(root, batch, pick):

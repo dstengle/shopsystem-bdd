@@ -115,7 +115,7 @@ b250 "work show prints the status of an item" shaped
 Writes a requirement line into an item's `## Requirements`, under the capability it goes into, and commits it. It
 takes an item that is `idea`, `shaped` or `in-batch`; an in-batch item's changed lines reach its batch with
 [`work batch amend`](#work-batch-amend).\
-Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN|CAP] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--expose TABLES] [--withhold SERVICE.OPERATION] [--upstream UPSTREAM] name [text]`
+Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN|CAP] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--expose TABLES] [--withhold SERVICE.OPERATION] [--remove-model MODEL] [--reword-model HEADER] [--remove-term TERM] [--reword-term TERM] [--upstream UPSTREAM] name [text]`
 
 - `--into <capability>`: the codified capability the line goes into.
 - `--group "<title>"`: open a new group with this title (default: the item's title). `--in g<n>` joins one of the
@@ -132,6 +132,13 @@ Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CA
   `retires:` pair names; an id no pair names stays. Either refuses an id that is no line of the item, a live requirement's among them.
   `--remove <cap>` with no `#r<n>` takes the item's whole block of the capability out, a new capability's
   declaration with it, and the item's model lines of its area unless another of its blocks goes to that area.
+- `--remove-model "<header>"`: the item's own element (`object label`, `service notes`) taken out of its model
+  lines with its members; given with indented member lines, only those members go. `--reword-model "<header>"
+  "<lines>"` puts the model lines given (checked as `--model`'s) in place of the element and its members.
+  `--remove-term <term>` takes one of the item's terms out, and `--reword-term <term> -- "<entry>"` puts the entry
+  in its place (`--` before an entry that opens with `-`); a term is named by its word, by `<word> → <element>` when
+  two entries share the word, or by its whole bullet. A model block left empty goes. Each refuses a model line or a
+  term the item does not hold, naming it, and `--into <capability>` picks the area of a model line two areas hold.
 - `--term "<bullet>"`: a vocabulary entry (`- **<word>** (<part of speech>) → <element>. ...`) for the vocabulary of
   the capability's area, in place of a line. Give `--term` more than once to write several entries in one commit;
   one that does not read refuses them all.
@@ -149,7 +156,10 @@ Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CA
 - `--expose '<tables>'`: the tables of one operation for the CLI adapter contract, `[operations."<service>.<operation>"]`
   with its `command` and its `[operations."<service>.<operation>".parameters]`, kept in the item's `### cli adapter`
   block in place of that operation's own; refused when the domain model, with the item's model lines, has no such
-  operation. `--withhold <service>.<operation>` keeps an operation no command requests instead. `work batch start`
+  operation. `--expose <service>.<operation>`, the operation alone, writes its tables from the domain model's
+  operation: its command named after the operation (after the program the contract's other operations of its service
+  are requested by, else the service), and each parameter an option named after it with an example of its type (its
+  first value, its object's name, a flag `flag = true`). `--withhold <service>.<operation>` keeps an operation no command requests instead. `work batch start`
   lays each into `spec/adapters/cli.toml` (the table in place of the operation's own, a withheld operation under
   `[unexposed]` with its table out), the contract made when there is none.
 
@@ -773,8 +783,8 @@ Synopsis: `work decision [--amend DECISION] [--summary SUMMARY] [--tier {check,r
 - `--supersedes <id>`: an accepted decision this one replaces (its id, path or number); it is set `superseded`
   and committed with the new one. A decision not accepted, or an id that names none, is refused, naming it; repeatable.
 - `--amend <id>`: in place of a title, adds each `--enforced-by` and `--rests-on` an accepted decision (its id, path
-  or number) does not name yet, changes nothing else of it, and commits it with the index. A decision not accepted
-  is refused, naming it.
+  or number) does not name yet, changes nothing else of it, and commits it with the index. When it names every one
+  already, it completes and changes no file. A decision not accepted is refused, naming it.
 
 ```console
 $ work decision "The command reference defers to --help" --summary "Where the command reference and --help differ, --help wins." --tier judgement --decision "Each command's --help is its contract; the reference page links to it and never overrides it."

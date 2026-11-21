@@ -147,3 +147,8 @@ area: tracking
 - **remove** (verb, action) → operation drafting.retract. Forms: removes, removed. Frame: <actor> removes <capability> from <item>.
 - **restate** (verb, state) → relation model line.restates. A model line declares an operation that a service of the domain model declares already, under the same service and name, with the parameters, outcomes and reasons the operation is to have in place of its own. Forms: restates, restated. Frame: <model line> restates <operation>.
 - **domain model** (noun) → object domain model. The files `spec/model/<area>.md` of this bounded context, each declaring the objects, services and operations of one area. This: the domain model of this bounded context. Plural: domain models.
+- **the operation-table form** (proper noun) → object operation-table form. The `[operations."<service>.<operation>"]` table of one operation of the CLI adapter contract as the domain model gives it: its command named after the operation, and each parameter of the operation an option named after the parameter with an example of the parameter's type.
+- **remove** (verb, action) → operation drafting.remove model line. Forms: removes, removed. Frame: <actor> removes <model line> from <item>.
+- **reword** (verb, action) → operation drafting.reword model line. Forms: rewords, reworded. Frame: <actor> rewords <model line> in <item>.
+- **remove** (verb, action) → operation drafting.remove term. Forms: removes, removed. Frame: <actor> removes <term> from <item>.
+- **reword** (verb, action) → operation drafting.reword term. Forms: rewords, reworded. Frame: <actor> rewords <term> in <item>.

@@ -368,3 +368,39 @@ shall [x1: agent the person (constant), x3: service the decisions service (const
     refuse(e2, subject: x3, object: x4)
     name(e3, subject: x3, object: x2)
 ```
+
+## r24
+From: b481 r24.
+
+```reading
+While a design-decision whose status is `accepted` has an enforcer, when the person amends the design-decision with the enforcer, the decisions service shall complete the request and change no file.
+shall [x3: agent the person (constant), x4: service the decisions service (constant), x5: request "the request the trigger makes" (indexical)]
+  while [x1: design-decision, x2: enforcer]
+    status(x1) = `accepted`
+    of(x2, x1)
+  when
+    request(e1, decisions.amend, subject: x3, object: x1)
+    param(e1, enforcer, x2)
+  response
+    complete(e2, subject: x4, object: x5)
+    not [x6: file]
+      change(e3, subject: x4, object: x6)
+```
+
+## r25
+From: b481 r25.
+
+```reading
+While a design-decision whose status is `accepted` has a foundation, when the person amends the design-decision with the foundation, the decisions service shall complete the request and change no file.
+shall [x3: agent the person (constant), x4: service the decisions service (constant), x5: request "the request the trigger makes" (indexical)]
+  while [x1: design-decision, x2: foundation]
+    status(x1) = `accepted`
+    of(x2, x1)
+  when
+    request(e1, decisions.amend, subject: x3, object: x1)
+    param(e1, foundation, x2)
+  response
+    complete(e2, subject: x4, object: x5)
+    not [x6: file]
+      change(e3, subject: x4, object: x6)
+```
