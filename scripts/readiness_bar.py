@@ -2,7 +2,8 @@
 request line of the item is settled and its requirement lines are well-formed: they parse in grammar 4
 (spec_language), they bring no problem of the lexicon (v_t4 to v_t13) that the lexicon without them does
 not have (readiness r15), they bring no violation of a `model.lp` rule of `model check` that
-names a group or a requirement of theirs (v15k, v15l, v15n alike: b77, b333), `model logic` finds no L0 and no L1 naming them and reads each of them (r41), and
+names a group or a requirement of theirs (v15k, v15l, v15n alike: b77, b333) or an element of its model lines (v_m4,
+b477), `model logic` finds no L0 and no L1 naming them and reads each of them (r41), and
 `features generate` writes a scenario for each of their groups that has a step; every stage after the lexicon's runs
 whatever the stages before it found, so one run names every failing line (b305). The lines are checked on a copy of `spec/` under the temporary directory
 with the item's lines laid in, removed afterwards whatever happens; `spec/` itself is never written. The copy is held
@@ -12,6 +13,7 @@ annotate`, compares no v_a5 or v_a6 and runs no entailment (decision 0112, b430)
 capability of the item's lines rests on run their tests on the root checkout, each once a process (plan 6, D13)."""
 import contextlib
 import io
+import re
 import shutil
 import tempfile
 from pathlib import Path
@@ -86,8 +88,9 @@ def _violations(copy):
 
 def _broken(copy, blocks, before):
     """A reason for each violation of a `model.lp` rule that names a group or a requirement of the item, naming it and
-    the rule (and any other node the violation names), unless the violation is in `before`, the copy's before the
-    item's lines were laid (b77, b333)."""
+    the rule (and any other node the violation names), and for each that names none of them but an element of the
+    item's model lines by a domain model rule (`v_m<n>`: v_m4 of a reason no line states, b477), naming the model line by its element and the rule,
+    unless the violation is in `before`, the copy's before the item's lines were laid (b77, b333)."""
     mine = {"%s#%s" % (b.capability, g.id) for b in blocks for g in b.groups} | set(backlog_lines.ids(blocks))
     found, labels = _violations(copy)
     reasons = []
@@ -98,7 +101,43 @@ def _broken(copy, blocks, before):
                 others = short[:k] + short[k + 1:]
                 reasons.append("%s: %s %s%s" % (node, name, labels.get(name, ""),
                                                 ": with %s" % ", ".join(others) if others else ""))
+        if name.startswith("v_m") and not set(short) & mine:    # a domain model rule over its model lines (b477)
+            reasons += _modelled(blocks, name, labels.get(name, ""), args)
     return list(dict.fromkeys(reasons))
+
+
+def model_elements(blocks):
+    """{qualified id: what the refusal calls it} of each element the item's model lines declare or restate: an
+    object or a service by its name, an operation as `<service>.<operation>` (b477)."""
+    import backlog_model
+    found = {}
+    for model in getattr(blocks, "models", ()):
+        for header, members in backlog_model.chunks(model.lines):
+            kind, _, rest = header.partition(" ")
+            name = rest.split(" kind of ", 1)[0].strip()
+            if kind not in ("object", "service") or not name:
+                continue
+            found.setdefault(name, "%s %s" % (kind, name))
+            for member in members if kind == "service" else ():
+                op = re.match(r"\s*operation\s+([\w-]+)", member)
+                if op:
+                    found["%s.%s" % (name, op.group(1))] = "operation %s.%s" % (name, op.group(1))
+    return found
+
+
+def _modelled(blocks, name, label, args):
+    """The reason of a violation the lay brings that names an element of the item's model lines (the most specific
+    one: an operation before its service), naming the model line by its element and the rule, else none."""
+    elements = model_elements(blocks)
+    for arg in args:
+        hit = elements.get(arg) or next((elements[e] for e in sorted(elements, key=len, reverse=True)
+                                         if arg.startswith(e + ".")), None)
+        if hit:
+            others = [a for a in args if a != arg]
+            return ["the model line of %s (%s model): %s %s%s" % (
+                hit, ", ".join(m.area for m in blocks.models), name, label,
+                ": with %s" % ", ".join(others) if others else "")]
+    return []
 
 
 def _logic(copy, mine, conditions=(), unparsed=()):
