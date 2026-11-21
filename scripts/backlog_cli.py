@@ -67,8 +67,8 @@ def add_parsers(sub):
                    "replacing it, its id under the block's retired: and no line written")
     p.add_argument("--reword", metavar="CAP#rN", help="the item's own line `<capability>#r<n>` the requirement line "
                    "takes the place of, keeping its id and group")
-    p.add_argument("--remove", metavar="CAP#rN", help="the item's own line `<capability>#r<n>` taken out of it, its "
-                   "group too when it was the last line")
+    p.add_argument("--remove", metavar="CAP#rN|CAP", help="the item's own line `<capability>#r<n>` taken out of "
+                   "it, its group too when it was the last line; or a bare <capability>: its whole block and model lines")
     p.add_argument("--term", action="append", help="a term bullet for the capability's ## Terms (or, with a "
                    "domain model, a vocabulary entry for its area), in place of a line; given more than once, all in "
                    "one commit")
