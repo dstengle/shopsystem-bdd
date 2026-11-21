@@ -88,6 +88,14 @@ def view(root, url, command):
     return data.get("body") or "", comments, data.get("state")
 
 
+def authored(root, url, command):
+    """[(comment URL, body)] of the comments on the issue `url` that the account gh runs as wrote (its own posts,
+    `viewerDidAuthor`), never another account's."""
+    data = _json(batch_gh.gh(root, "issue", "view", url, "--json", "comments", command=command), command, "issue view")
+    return [(c.get("url"), c.get("body") or "") for c in data.get("comments") or []
+            if c.get("url") and c.get("viewerDidAuthor")]
+
+
 def listed(root, repo, command):
     """[(URL, title, body)] of the open issues of `repo`."""
     data = _json(batch_gh.gh(root, "issue", "list", "--repo", repo, "--state", "open", "--limit", "200", "--json",

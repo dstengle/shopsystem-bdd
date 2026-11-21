@@ -1,5 +1,7 @@
 """A post GitHub took whose URL git then refused to commit (b36, finding f6): the refusal names what was posted and
 `work sync`, which records it; a run of the command again records it too and posts nothing twice."""
+import json
+
 import request_text
 from backlog_testing import git, work
 from request_testing import calls, issues
@@ -46,6 +48,34 @@ def test_a_comment_posted_but_not_recorded_is_not_posted_again(on_issue):  # noq
     done = work(repo, "turn", "q1")
     assert done.returncode == 0, done.stderr
     assert len(calls(where, "issue", "comment")) == 1 and len(issues(where)[ISSUE]["comments"]) == 1
+    url = issues(where)[ISSUE]["comments"][0]["url"]
+    assert request_text.entries(record(repo), "Comments") == ["1. %s turn" % url]
+
+
+def test_another_accounts_comment_of_the_same_body_is_not_taken_as_this_sides(on_issue):  # noqa: F811
+    """b71: a comment the record does not hold whose body is the step's, written by another account, is not this
+    side's earlier post: the step is posted and its own comment recorded."""
+    repo, where, write = on_issue
+    write(lines=(ABANDON,), outcomes=("accepted",))
+    hook = refuses_urls(repo)
+    assert work(repo, "turn", "q1").returncode != 0
+    hook.unlink()
+    held = issues(where)
+    del held[ISSUE]["comments"][0]["viewerDidAuthor"]
+    (where / "gh-issues.json").write_text(json.dumps(held))
+    done = work(repo, "turn", "q1")
+    assert done.returncode == 0, done.stderr
+    second = issues(where)[ISSUE]["comments"]
+    assert len(second) == 2 and request_text.entries(record(repo), "Comments") == ["1. %s turn" % second[1]["url"]]
+
+
+def test_a_step_is_posted_when_its_issue_cannot_be_read(on_issue, monkeypatch):  # noqa: F811
+    """b71: a failed read of the issue does not refuse the step: it is posted and recorded."""
+    repo, where, write = on_issue
+    write(lines=(ABANDON,), outcomes=("accepted",))
+    monkeypatch.setenv("STUB_GH_FAIL", "issue view")
+    done = work(repo, "turn", "q1")
+    assert done.returncode == 0, done.stderr
     url = issues(where)[ISSUE]["comments"][0]["url"]
     assert request_text.entries(record(repo), "Comments") == ["1. %s turn" % url]
 
