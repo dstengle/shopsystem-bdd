@@ -830,7 +830,7 @@ spec/decisions/0093-the-command-reference-defers-to-help.md
 
 Writes a record, `.shop/records/<date>-<slug>.md`, adds its row to `.shop/records/README.md`, and commits both. A
 record that exists is refused: a committed record is never edited.\
-Synopsis: `work record --kind {analysis,design,measurement,review-finding,decision-argument} --summary SUMMARY --body BODY [--about ABOUT] [--slug SLUG] [--date DATE] title`
+Synopsis: `work record [--kind {analysis,design,measurement,review-finding,decision-argument}] [--summary SUMMARY] --body BODY [--about ABOUT] [--slug SLUG] [--date DATE] [--design [DESIGN]] [--plan] title`
 
 - `--body <file>`: the record's text, under its title.
 - `--summary`: its row in the index, one line.
@@ -839,6 +839,28 @@ Synopsis: `work record --kind {analysis,design,measurement,review-finding,decisi
 ```console
 $ work record "Command reference layout" --kind analysis --summary "Why the command reference has one section a tool" --body body.md
 .shop/records/2026-11-10-command-reference-layout.md
+```
+
+With `--design` it files a design: the folder `.shop/records/<date>-<slug>/` with its `design.md` and its row in the
+index. With `--plan --design <design>` it files a plan, `plan-<k>.md`, in the folder of that design (its folder's
+name, path or id); a design that does not exist is refused, naming it.
+
+```console
+$ work record "Notes app" --design --summary "How the notes app is built" --body design.md
+.shop/records/2026-11-21-notes-app/design.md
+$ work record "Plan 1: the store" --plan --design 2026-11-21-notes-app --body plan.md
+.shop/records/2026-11-21-notes-app/plan-1.md
+```
+
+#### `work observe`
+
+Files an observation: an entry of `.shop/records/observations.md`, its heading the id
+`observation/<context path>/<date>-<slug>`, with `about:`, `by:` and `date:` over its text, and commits it.\
+Synopsis: `work observe [--about ABOUT] [--by BY] [--slug SLUG] [--date DATE] text`
+
+```console
+$ work observe "The batch brief names no test command when [batch] tests is unset."
+observation/example.com/shop/ctx/2026-11-21-the-batch-brief-names-no-test
 ```
 
 ## spec: the spec, checked

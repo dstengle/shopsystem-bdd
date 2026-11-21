@@ -155,8 +155,8 @@ def write(root, title, summary, kind, body, *, about=None, slug=None, date=None)
 
 def record(args):
     """`work record`: the request records.keep, its parameters read off the command line by business name."""
-    from domain_envelope import Response
     import record_design
+    from domain_envelope import Response
     if args.plan:
         if not isinstance(args.design, str):
             raise shop_files.Refused("a plan gives {names}, the design it goes in", reason="missing parameters",
