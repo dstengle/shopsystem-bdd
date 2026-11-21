@@ -163,7 +163,7 @@ The vocabulary is the lexicon every line is parsed with, so its entries are chec
 | code | `spec rules` says | when it fires |
 |---|---|---|
 | `v_t1` | a word the glossary avoids | A line or scenario uses a word listed after a term's `Not:`. Use the term. |
-| `v_t2` | a term has two entries, other than the senses of one verb | Merge the two entries into one. |
+| `v_t2` | a term has two entries, other than the senses of one verb or of one attribute word | Merge the two entries into one; an attribute word said of two kinds keeps an entry for each. |
 | `v_t3` | an avoided word is a term | Drop the word from the other entry's `Not:`, or rename one term. |
 | `v_t4` | a term of a typed glossary does not name its part of speech | Write it in the bullet: `- **<term>** (<part of speech>): ...`. |
 | `v_t5` | a value names no attribute, or more than one | List the value under exactly one attribute's `Values:`. |
@@ -297,7 +297,7 @@ rule catches is its catalogue entry, and the entry's examples are its test. Here
 ```markdown
 ## v_t2
 
-a term has two entries, other than the senses of one verb
+a term has two entries, other than the senses of one verb or of one attribute word
 
 - Purpose: Each term has one definition, so every line using it means the same thing.
 - Since: b123

@@ -374,3 +374,14 @@ Feature: Checking
     When the person describes the catalogue entry c1
     Then the specification service refuses this request
     And the specification service names the catalogue entry c1
+
+  @g63 @r63
+  Scenario: the check passes an attribute with two senses told apart by kinds
+    Given a term t1
+    And the part of speech of the term t1 is `attribute`
+    And a sense s1
+    And the term t1 has the sense s1
+    And a sense s2
+    And the term t1 has the sense s2
+    When the person validates this specification
+    Then the specification service completes this request

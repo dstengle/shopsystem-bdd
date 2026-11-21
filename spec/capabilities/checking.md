@@ -173,6 +173,9 @@ Restates: design-model-check#r13@0.29.
 ### [g62] `spec catalogue entry` refuses a construct catalogue entry of no construct
 - [r62] If the person describes a catalogue entry in the construct catalogue that no construct has, then the specification service shall refuse the request and name the catalogue entry.
 
+### [g63] the check passes an attribute with two senses told apart by kinds
+- [r63] While a term whose part of speech is `attribute` has more than one sense, when the person validates this specification, the specification service shall complete the request.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.

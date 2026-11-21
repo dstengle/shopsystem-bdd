@@ -38,6 +38,13 @@ def term_word(t, shared=False):
     return word
 
 
+def attribute_senses(terms, word):
+    """True when `word`'s attribute entries are more than one and each is of other kinds: one quality said of two
+    kinds (the availability of a shared store and of a channel) is two senses, which their kinds tell apart (b538)."""
+    kinds = [tuple(sorted(u.kinds)) for u in terms if u.term == word and u.category == "attribute"]
+    return len(kinds) > 1 and all(kinds) and len(set(kinds)) == len(kinds)
+
+
 def bare(value):
     return value.replace("`", "").strip()
 
@@ -82,6 +89,8 @@ class SpecReading:
                 self.fact("senses", ident)
                 if t.term in overlapping:
                     self.fact("overlapping", ident)
+            if t.category == "attribute" and attribute_senses(terms, t.term):
+                self.fact("senses", ident)     # one attribute word of two kinds (b538)
             for name in unmarked.get((t.where, t.term), ()):
                 self.fact("unmarked", ident, name)
             if t.category == "condition" and spec_frames.relational(t, kinds):
