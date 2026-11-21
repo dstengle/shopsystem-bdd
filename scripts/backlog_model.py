@@ -9,11 +9,13 @@ own name of a capability the item makes (backlog_model_area, b387) (`add`), merg
 an element the block names already gets the new member lines. `lay` puts them into `spec/model/<area>.md` (an element
 the area declares gets the member lines at its end, a new one is appended to the fence) and the entries at the end of
 `## Terms` of `spec/vocabulary/<area>.md` (made when missing); `unlay` takes them out again as `lay` put them."""
+import functools
 import re
 from collections import namedtuple
 from pathlib import Path
 
 import backlog_model_area
+import backlog_model_ops
 import shop_files
 from backlog_items import Refused, commit, find, label, one_line
 
@@ -66,7 +68,7 @@ def merged(body, lines):
     for header, members in chunks(lines):
         at = _at(body, header)
         if at is not None:
-            end = _end(body, at)
+            members, end = backlog_model_ops.restate(body, at, _end(body, at), members)
             body[end:end] = members
         else:
             at = len(body)
@@ -76,20 +78,25 @@ def merged(body, lines):
     return body
 
 
-def unmerged(body, lines):
-    """The reverse of `merged`: each chunk's members taken off its element's end, and an element left with no member
-    taken out whole with the blank line before it (the chunk made it)."""
+def unmerged(body, lines, held=None):
+    """The reverse of `merged`: each operation a chunk restated put back as `held(header, operation, lines)` gives
+    the model lines before the lay (backlog_model_ops, b463; taken out when it gives None), the chunk's other members
+    taken off its element's end, and an element left with no member taken out whole with the blank line before it
+    (the chunk made it)."""
     body = list(body)
     for header, members in reversed(chunks(lines)):
         at = _at(body, header)
         if at is None:
             continue
+        ops, members = backlog_model_ops.restated(members, body, at, _end(body, at))
         end = _end(body, at)
         first = end - len(members)
-        if first < at + 1 or body[first:end] != members:
-            continue
-        del body[first:end]
-        if first == at + 1 and _end(body, at) == at + 1:
+        if first >= at + 1 and body[first:end] == members:
+            del body[first:end]
+        for op, unit in ops:
+            before = held(header, op, unit) if held else None
+            backlog_model_ops.unrestate(body, at, _end(body, at), header, [(op, unit)], before)
+        if _end(body, at) == at + 1 and (members or ops):
             del body[at]
             if at > 0 and not body[at - 1].strip():
                 del body[at - 1]
@@ -243,7 +250,8 @@ def unlay(into, blocks, files):
         path, rel = model_path(into, block.area), "spec/model/%s.md" % block.area
         if block.lines and path.is_file():
             lines, start, end = _fence(path.read_text(), rel)
-            text = "\n".join(lines[:start] + unmerged(lines[start:end], block.lines) + lines[end:])
+            held = functools.partial(backlog_model_ops.held, path)
+            text = "\n".join(lines[:start] + unmerged(lines[start:end], block.lines, held) + lines[end:])
             if text != path.read_text():
                 path.write_text(text)
                 files.append(rel)

@@ -131,7 +131,7 @@ Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CA
 - `--term "<bullet>"`: a vocabulary entry (`- **<word>** (<part of speech>) → <element>. ...`) for the vocabulary of
   the capability's area, in place of a line. Give `--term` more than once to write several entries in one commit;
   one that does not read refuses them all.
-- `--model "<lines>"`: model lines for the domain model of the capability's area (`object label`, `item: has → label (many)`); an element the area declares already gets the member lines.
+- `--model "<lines>"`: model lines for the domain model of the capability's area (`object label`, `item: has → label (many)`); an element the area declares already gets the member lines, and an operation it declares already (same service and name) is restated: laid in place of its own line, with the parameters, outcomes and reasons the model line gives, and put back when the item leaves the batch.
 - `--relation "<object>: <phrase> → <object> (<cardinality>)"`, `--given`, `--universal`, `--upstream`: the other
   spec pieces an item can carry: a relation of the model, a group's given block, a universal condition, an upstream
   entry.
