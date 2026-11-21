@@ -179,3 +179,18 @@ declined, withdrawn, answered and listed.
 ### [g47] An in-batch item takes no note
 - [r47] While the status of an item is `in-batch`, if the person annotates the item, then the backlog service shall refuse the request and name the item.
 
+### [g48] An open item retitled keeps its id and takes the new title
+- [r48] While the status of an item is one of `idea`, `shaped`, `ready`, `in-batch` or `needs-input`, when the person retitles the item with a title, the backlog service shall keep the item and the title of the item.
+
+### [g49] A closed item is not retitled
+- [r49] While the status of an item is one of `delivered`, `refused` or `withdrawn`, if the person retitles the item, then the backlog service shall refuse the request and name the item.
+
+### [g50] An item split keeps a new item that holds the chosen requirement and derives from it
+- [r50] While the status of an item is one of `idea` or `shaped` and the item holds a requirement, when the person splits the item with the requirement, the backlog service shall keep another item that holds the requirement and name the item.
+
+### [g51] An item is not split with a requirement of another item
+- [r51] While a requirement is in an item and the status of another item is one of `idea` or `shaped`, if the person splits the item with the requirement, then the backlog service shall refuse the request and name the requirement.
+
+### [g52] An item that is neither an idea nor shaped is not split
+- [r52] While the status of an item is not `idea` or `shaped`, if the person splits the item, then the backlog service shall refuse the request and name the item.
+

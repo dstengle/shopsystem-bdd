@@ -35,6 +35,7 @@ class Item:
     asked_by: str | None = None     # that request's asker
     request_lines: dict = field(default_factory=dict)   # {<cap>#r<n>: the request's line number} (b6)
     source: tuple = ()      # what the item was raised from: quotes, requests, decisions; never a record (v_r1)
+    derives_from: str | None = None     # the item it was split from (`work split`, b459)
 
     @property
     def question(self):
@@ -131,12 +132,15 @@ def parse(text, rel):
         raise Refused("%s: asked_by %r is not an asker's id" % (rel, asked_by))
     request_lines = _request_lines(data.get("request_lines", []), rel)
     source = _source(data.get("source"), rel, ident)
+    derives = data.get("derives_from")
+    if derives is not None and not (isinstance(derives, str) and is_item(derives)):
+        raise Refused("%s: derives_from %r is not b<n>" % (rel, derives))
     title, sections = _body(body, rel)
     return Item(name=ident.rsplit("/", 1)[-1], ident=ident, title=title, status=_choice(data, rel, "status", STATUSES),
                 provenance=_choice(data, rel, "provenance", PROVENANCES),
                 **{k: _choice(data, rel, k, allowed, optional=True) for k, allowed in RATINGS.items()},
                 depends_on=tuple(depends), sections=sections, request=request, asked_by=asked_by,
-                request_lines=request_lines, source=source)
+                request_lines=request_lines, source=source, derives_from=derives)
 
 
 def render(item):
@@ -145,7 +149,7 @@ def render(item):
         return "%s:%s" % (key, " %s" % value if value else "")
     head = [line("id", item.ident), "kind: item", line("status", item.status), line("provenance", item.provenance)]
     head += [line(k, getattr(item, k)) for k in RATINGS] + ["depends_on: [%s]" % ", ".join(item.depends_on)]
-    head += [line(k, getattr(item, k)) for k in ("request", "asked_by") if getattr(item, k)]
+    head += [line(k, getattr(item, k)) for k in ("derives_from", "request", "asked_by") if getattr(item, k)]
     if item.request_lines:
         head.append("request_lines: [%s]" % ", ".join("%s=%d" % kv for kv in item.request_lines.items()))
     if item.source:
@@ -209,7 +213,7 @@ def as_dict(item):
     out = {"id": item.name, "title": item.title, "status": item.status, "provenance": item.provenance,
            "value": item.value, "urgency": item.urgency, "size": item.size, "depends_on": list(item.depends_on),
            "question": item.question}
-    out.update({k: getattr(item, k) for k in ("request", "asked_by") if getattr(item, k)})
+    out.update({k: getattr(item, k) for k in ("derives_from", "request", "asked_by") if getattr(item, k)})
     return out
 
 

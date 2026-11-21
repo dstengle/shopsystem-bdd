@@ -820,3 +820,115 @@ shall [x2: agent the person (constant), x3: service the backlog service (constan
     refuse(e2, subject: x3, object: x4)
     name(e3, subject: x3, object: x1)
 ```
+
+## r48
+From: b459 r48.
+
+```reading
+While the status of an item is one of `idea`, `shaped`, `ready`, `in-batch` or `needs-input`, when the person retitles the item with a title, the backlog service shall keep the item and the title of the item.
+shall [x2: agent the person (constant), x4: service the backlog service (constant)]
+  while [x1: item]
+    or
+      case
+        status(x1) = `idea`
+      case
+        status(x1) = `shaped`
+      case
+        status(x1) = `ready`
+      case
+        status(x1) = `in-batch`
+      case
+        status(x1) = `needs-input`
+  when [x3: title]
+    request(e1, backlog.retitle, subject: x2, object: x1)
+    param(e1, title, x3)
+  response [x5: title]
+    keep(e2, subject: x4, object: x1)
+    of(x5, x1)
+    keep(e3, subject: x4, object: x5)
+```
+
+## r49
+From: b459 r49.
+
+```reading
+While the status of an item is one of `delivered`, `refused` or `withdrawn`, if the person retitles the item, then the backlog service shall refuse the request and name the item.
+shall [x2: agent the person (constant), x3: service the backlog service (constant), x4: request "the request the trigger makes" (indexical)]
+  while [x1: item]
+    or
+      case
+        status(x1) = `delivered`
+      case
+        status(x1) = `refused`
+      case
+        status(x1) = `withdrawn`
+  if
+    request(e1, backlog.retitle, subject: x2, object: x1)
+  response
+    refuse(e2, subject: x3, object: x4)
+    name(e3, subject: x3, object: x1)
+```
+
+## r50
+From: b459 r50.
+
+```reading
+While the status of an item is one of `idea` or `shaped` and the item holds a requirement, when the person splits the item with the requirement, the backlog service shall keep another item that holds the requirement and name the item.
+shall [x3: agent the person (constant), x4: service the backlog service (constant)]
+  while [x1: item, x2: requirement]
+    or
+      case
+        status(x1) = `idea`
+      case
+        status(x1) = `shaped`
+    in(x2, x1)
+  when
+    request(e1, backlog.split, subject: x3, object: x1)
+    param(e1, requirement, x2)
+  response [x5: item]
+    distinct(x5, x1)
+    in(x2, x5)
+    keep(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x5)
+```
+
+## r51
+From: b459 r51.
+
+```reading
+While a requirement is in an item and the status of another item is one of `idea` or `shaped`, if the person splits the item with the requirement, then the backlog service shall refuse the request and name the requirement.
+shall [x4: agent the person (constant), x5: service the backlog service (constant), x6: request "the request the trigger makes" (indexical)]
+  while [x1: requirement, x2: item, x3: item]
+    in(x1, x2)
+    distinct(x3, x2)
+    or
+      case
+        status(x3) = `idea`
+      case
+        status(x3) = `shaped`
+  if
+    request(e1, backlog.split, subject: x4, object: x3)
+    param(e1, requirement, x1)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x1)
+```
+
+## r52
+From: b459 r52.
+
+```reading
+While the status of an item is not `idea` or `shaped`, if the person splits the item, then the backlog service shall refuse the request and name the item.
+shall [x2: agent the person (constant), x3: service the backlog service (constant), x4: request "the request the trigger makes" (indexical)]
+  while [x1: item]
+    not
+      status(x1) = `idea`
+    not
+      status(x1) = `shaped`
+  if
+    request(e1, backlog.split, subject: x2, object: x1)
+  response
+    refuse(e2, subject: x3, object: x4)
+    name(e3, subject: x3, object: x1)
+```
+

@@ -707,3 +707,132 @@ Feature: Items
     When the person annotates the item i1
     Then the backlog service refuses this request
     And the backlog service names the item i1
+
+  @g48 @r48
+  Scenario: An open item retitled keeps its id and takes the new title (case 1)
+    Given an item i1
+    And the status of the item i1 is `idea`
+    And a title t1
+    When the person retitles the item i1 with the title t1
+    Then the backlog service keeps the item i1
+    And the backlog service keeps the title t2
+    And the item i1 has the title t2
+
+  @g48 @r48
+  Scenario: An open item retitled keeps its id and takes the new title (case 2)
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    And a title t1
+    When the person retitles the item i1 with the title t1
+    Then the backlog service keeps the item i1
+    And the backlog service keeps the title t2
+    And the item i1 has the title t2
+
+  @g48 @r48
+  Scenario: An open item retitled keeps its id and takes the new title (case 3)
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And a title t1
+    When the person retitles the item i1 with the title t1
+    Then the backlog service keeps the item i1
+    And the backlog service keeps the title t2
+    And the item i1 has the title t2
+
+  @g48 @r48
+  Scenario: An open item retitled keeps its id and takes the new title (case 4)
+    Given an item i1
+    And the status of the item i1 is `in-batch`
+    And a title t1
+    When the person retitles the item i1 with the title t1
+    Then the backlog service keeps the item i1
+    And the backlog service keeps the title t2
+    And the item i1 has the title t2
+
+  @g48 @r48
+  Scenario: An open item retitled keeps its id and takes the new title (case 5)
+    Given an item i1
+    And the status of the item i1 is `needs-input`
+    And a title t1
+    When the person retitles the item i1 with the title t1
+    Then the backlog service keeps the item i1
+    And the backlog service keeps the title t2
+    And the item i1 has the title t2
+
+  @g49 @r49
+  Scenario: A closed item is not retitled (case 1)
+    Given an item i1
+    And the status of the item i1 is `delivered`
+    When the person retitles the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the item i1
+
+  @g49 @r49
+  Scenario: A closed item is not retitled (case 2)
+    Given an item i1
+    And the status of the item i1 is `refused`
+    When the person retitles the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the item i1
+
+  @g49 @r49
+  Scenario: A closed item is not retitled (case 3)
+    Given an item i1
+    And the status of the item i1 is `withdrawn`
+    When the person retitles the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the item i1
+
+  @g50 @r50
+  Scenario: An item split keeps a new item that holds the chosen requirement and derives from it (case 1)
+    Given an item i1
+    And the status of the item i1 is `idea`
+    And a requirement r1
+    And the item i1 holds the requirement r1
+    And an item i2
+    When the person splits the item i1 with the requirement r1
+    Then the backlog service keeps the item i2
+    And the item i2 holds the requirement r1
+    And the backlog service names the item i2
+
+  @g50 @r50
+  Scenario: An item split keeps a new item that holds the chosen requirement and derives from it (case 2)
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    And a requirement r1
+    And the item i1 holds the requirement r1
+    And an item i2
+    When the person splits the item i1 with the requirement r1
+    Then the backlog service keeps the item i2
+    And the item i2 holds the requirement r1
+    And the backlog service names the item i2
+
+  @g51 @r51
+  Scenario: An item is not split with a requirement of another item (case 1)
+    Given a requirement r1
+    And an item i1
+    And the item i1 holds the requirement r1
+    And an item i2
+    And the status of the item i2 is `idea`
+    When the person splits the item i2 with the requirement r1
+    Then the backlog service refuses this request
+    And the backlog service names the requirement r1
+
+  @g51 @r51
+  Scenario: An item is not split with a requirement of another item (case 2)
+    Given a requirement r1
+    And an item i1
+    And the item i1 holds the requirement r1
+    And an item i2
+    And the status of the item i2 is `shaped`
+    When the person splits the item i2 with the requirement r1
+    Then the backlog service refuses this request
+    And the backlog service names the requirement r1
+
+  @g52 @r52
+  Scenario: An item that is neither an idea nor shaped is not split
+    Given an item i1
+    And the status of the item i1 is not `idea`
+    And the status of the item i1 is not `shaped`
+    When the person splits the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the item i1
