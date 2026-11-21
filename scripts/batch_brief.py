@@ -12,6 +12,7 @@ import json
 import re
 import shlex
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import backlog_chore
@@ -108,6 +109,14 @@ def _run(command, where):
     return subprocess.run(shlex.split(command), cwd=where, capture_output=True, text=True, env=scripts_env())
 
 
+def _all(commands, where):
+    """{command: its completed run in `where`}, every command started at once (b457)."""
+    if not commands:
+        return {}
+    with ThreadPoolExecutor(max_workers=len(commands)) as pool:
+        return dict(zip(commands, pool.map(lambda c: _run(c, where), commands)))
+
+
 def base_runs(root, batch, commands):
     """{command: exit code} of each check run at the batch's `forked_from`, in a throwaway worktree, once a batch:
     kept in the first review's scratch directory as `base-runs.json` (review S5, plan 5 rulings Q2)."""
@@ -119,7 +128,7 @@ def base_runs(root, batch, commands):
         remove_tree(root, tree)
         git(root, "worktree", "add", "-q", "--detach", str(tree), batch.forked_from)
         try:
-            found.update({c: _run(c, tree).returncode for c in missing})
+            found.update({c: done.returncode for c, done in _all(missing, tree).items()})
         finally:
             remove_tree(root, tree)
         cache.parent.mkdir(parents=True, exist_ok=True)
@@ -132,9 +141,13 @@ def _runs(root, tree, batch):
     if not isinstance(checks, list) or not all(isinstance(c, str) for c in checks):
         raise Refused("%s: .shop/delivery.toml: [review] checks is not a list of strings" % COMMAND)
     commands = [c.replace("{scripts}", str(SCRIPTS)).replace("{forked_from}", batch.forked_from) for c in checks]
-    base, out = base_runs(root, batch, commands), []
+    with ThreadPoolExecutor(max_workers=1) as pool:     # the base's runs beside the head's
+        later = pool.submit(base_runs, root, batch, commands)
+        runs = _all(commands, tree)
+        base = later.result()
+    out = []
     for command in commands:
-        done = _run(command, tree)
+        done = runs[command]
         tail = "\n".join((done.stdout + done.stderr).splitlines()[-TAIL:])
         out.append("### `%s`\n\nExit code: %d (base: %d)\n\n%s" % (command, done.returncode, base[command],
                                                                        _indented(tail)))
