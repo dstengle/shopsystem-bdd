@@ -382,7 +382,9 @@ It makes the branch `batch-<n>` in its own worktree, lays the items' lines into 
 regenerates the features and commits that, citing each item. On the base branch it commits
 `.shop/batches/<n>/plan.md` with the items moved to `in-batch`. It writes the batch brief for the driver (never
 committed). It is refused while `spec/` or `features/` has uncommitted changes, and the batch size comes from
-`[batch] batch_size` in `.shop/delivery.toml`.
+`batch_size` in `.shop/delivery.toml`. It stops short of the review limit (`[review] size`, 1000 changed lines): an
+item whose estimated change (from its size rating, its requirement lines and its model lines) would take the batch past
+it after the items picked before is left out and stays `ready`; the first item is picked whatever its estimate.
 
 ```console
 $ work batch start
