@@ -1,31 +1,5 @@
 # measurement: every live line with its intended reading (the domain contract, 0.38.0)
 
-## r1
-From: telemetry#r5, reworded in request words (0.38.0).
-
-```reading
-While a batch is `merged`, when the person measures the batch, the measurement service shall keep a measurement of the batch and return the wall time of the batch, the session time of the batch, the tokens of the batch and the cost of every role of the batch.
-shall [x2: agent the person (constant), x3: service the measurement service (constant)]
-  while [x1: batch]
-    status(x1) = `merged`
-  when
-    request(e1, measurement.measure, subject: x2, object: x1)
-  response [x4: measurement, x5: wall time, x6: session time, x7: token]
-    of(x4, x1)
-    keep(e2, subject: x3, object: x4)
-    of(x5, x1)
-    return(e3, subject: x3, object: x5)
-    of(x6, x1)
-    return(e4, subject: x3, object: x6)
-    of(x7, x1)
-    return(e5, subject: x3, object: x7)
-    every [x8: role]
-      of(x8, x1)
-      scope [x9: cost]
-        of(x9, x8)
-        return(e6, subject: x3, object: x9)
-```
-
 ## r2
 From: telemetry#r6, reworded in request words (0.38.0).
 
@@ -181,4 +155,37 @@ shall [x1: agent the person (constant), x4: service the measurement service (con
     distinct(x6, x5)
     return(e3, subject: x4, object: x6)
     return(e4, subject: x4, object: x7)
+```
+
+## r12
+Retires: r1. From: b73 r12.
+
+```reading
+While a batch is `merged`, when the person measures the batch, the measurement service shall keep a measurement of the batch and return the wall time of the batch, the session time of the batch, the tokens of the batch, the cost of every role of the batch, the duration of every test run of the measurement and the opening time of the measurement.
+shall [x2: agent the person (constant), x3: service the measurement service (constant)]
+  while [x1: batch]
+    status(x1) = `merged`
+  when
+    request(e1, measurement.measure, subject: x2, object: x1)
+  response [x4: measurement, x5: wall time, x6: session time, x7: token, x12: opening time]
+    of(x4, x1)
+    keep(e2, subject: x3, object: x4)
+    of(x5, x1)
+    return(e3, subject: x3, object: x5)
+    of(x6, x1)
+    return(e4, subject: x3, object: x6)
+    of(x7, x1)
+    return(e5, subject: x3, object: x7)
+    every [x8: role]
+      of(x8, x1)
+      scope [x9: cost]
+        of(x9, x8)
+        return(e6, subject: x3, object: x9)
+    every [x10: test run]
+      of(x10, x4)
+      scope [x11: duration]
+        of(x11, x10)
+        return(e7, subject: x3, object: x11)
+    of(x12, x4)
+    return(e8, subject: x3, object: x12)
 ```

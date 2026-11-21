@@ -213,3 +213,38 @@ shall [x4: agent the person (constant), x5: service the batches service (constan
     refuse(e2, subject: x5, object: x6)
     name(e3, subject: x5, object: x1)
 ```
+
+## r11
+From: b69 r11.
+
+```reading
+While a batch is `awaiting-merge`, when the person reopens the batch with a review finding, the batches service shall keep a review of the batch that holds the review finding and set the status of the batch to `building`.
+shall [x2: agent the person (constant), x4: service the batches service (constant)]
+  while [x1: batch]
+    status(x1) = `awaiting-merge`
+  when [x3: review finding]
+    request(e1, batches.reopen, subject: x2, object: x1)
+    param(e1, review finding, x3)
+  response [x5: review]
+    of(x5, x1)
+    in(x3, x5)
+    keep(e2, subject: x4, object: x5)
+    initiates(e3, subject: x4, status(x1) = `building`)
+```
+
+## r12
+From: b69 r12.
+
+```reading
+While a batch is not `awaiting-merge`, if the person reopens the batch with a review finding, then the batches service shall refuse the request and name the batch.
+shall [x2: agent the person (constant), x4: service the batches service (constant), x5: request "the request the trigger makes" (indexical)]
+  while [x1: batch]
+    not
+      status(x1) = `awaiting-merge`
+  if [x3: review finding]
+    request(e1, batches.reopen, subject: x2, object: x1)
+    param(e1, review finding, x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x1)
+```

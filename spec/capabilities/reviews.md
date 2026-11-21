@@ -7,7 +7,7 @@ area: execution
 specifies: object review, object proposed change, service batches: submit
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r11, r12]
 ---
 
 # Reviews
@@ -51,4 +51,10 @@ A batch's change submitted for review once its tasks are done, holding only the 
 
 ### [g10] A batch awaiting its merge with no base merge is not submitted
 - [r10] While a batch is `awaiting-merge` and the workspace of the batch holds no base merge, if the person submits the batch, then the batches service shall refuse the request and name the batch.
+
+### [g11] A person's finding on a batch awaiting its merge reopens the batch
+- [r11] While a batch is `awaiting-merge`, when the person reopens the batch with a review finding, the batches service shall keep a review of the batch that holds the review finding and set the status of the batch to `building`.
+
+### [g12] A batch not awaiting its merge is not reopened
+- [r12] While a batch is not `awaiting-merge`, if the person reopens the batch with a review finding, then the batches service shall refuse the request and name the batch.
 

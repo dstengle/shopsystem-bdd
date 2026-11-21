@@ -167,3 +167,23 @@ Feature: Reviews
     When the person submits the batch b1
     Then the batches service refuses this request
     And the batches service names the batch b1
+
+  @g11 @r11
+  Scenario: A person's finding on a batch awaiting its merge reopens the batch
+    Given a batch b1
+    And the status of the batch b1 is `awaiting-merge`
+    And a review finding r1
+    When the person reopens the batch b1 with the review finding r1
+    Then the batches service keeps the review r2
+    And the batch b1 has the review r2
+    And the review r2 holds the review finding r1
+    And the batches service sets the status of the batch b1 to `building`
+
+  @g12 @r12
+  Scenario: A batch not awaiting its merge is not reopened
+    Given a batch b1
+    And the status of the batch b1 is not `awaiting-merge`
+    And a review finding r1
+    When the person reopens the batch b1 with the review finding r1
+    Then the batches service refuses this request
+    And the batches service names the batch b1
