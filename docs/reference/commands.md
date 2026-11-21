@@ -197,7 +197,9 @@ b251 "work show prints an item's dependencies" no longer depends on b250 "work s
 
 #### `work ready`
 
-Moves a `shaped` item to `ready` when it passes the readiness bar, and otherwise names every reason it does not.\
+Moves a `shaped` item to `ready` when it passes the readiness bar, and otherwise names every reason it does not. A
+`ready` item is checked again: it stays `ready` when it still passes, and every reason is named when it does not.
+Any other item is refused, named.\
 Synopsis: `work ready name`
 
 The bar lays the item's lines over a temporary copy of `spec/` and checks that they parse, that `spec logic` finds
@@ -243,6 +245,28 @@ Synopsis: `work withdraw name`
 ```console
 $ work withdraw b252
 b252 "A colour theme for work backlog" withdrawn
+```
+
+#### `work merge`
+
+Moves an item that is `idea`, `shaped`, `ready` or `needs-input` to `withdrawn` because another item takes its
+place, writing which and why under its `## Withdrawn`. A closed item is refused, named.\
+Synopsis: `work merge name --into INTO --reason REASON`
+
+```console
+$ work merge b252 --into b250 --reason "b250 prints the theme too"
+b252 "A colour theme for work backlog" withdrawn
+```
+
+#### `work note`
+
+Adds a line to the `## Notes` of an item that is `idea`, `shaped`, `ready` or `needs-input` (a rating's reason, a
+finding while shaping), in one commit of the item; a closed item is refused, named.\
+Synopsis: `work note name note`
+
+```console
+$ work note b250 "value high: every session reads the status"
+b250 "work show prints the status of an item": a note
 ```
 
 #### `work answer`

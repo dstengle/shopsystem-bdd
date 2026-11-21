@@ -35,6 +35,20 @@ def run_on_item(step):
     B.run_work(step, verb, B.ident(step.names[-1]), *TEXT.get(verb, ()))
 
 
+@four("WhenRuns", "`work note`", *BOTH)
+def work_note(step):
+    """b281: a note on the item, given or not ("annotates the item i1 with a note", "annotates the item i1")."""
+    B.run_work(step, "note", B.ident(step.names[-1]), "a note the person adds")
+
+
+@four("WhenRuns", "`work merge --into --reason`", *BOTH)
+@four("WhenRuns", "`work merge`", *BOTH)
+def work_merge(step):
+    """b281: the item merged into the world's own item, which takes its place, with a reason."""
+    ensure(step, B.OWN)
+    B.run_work(step, "merge", B.ident(step.names[-1]), "--into", B.ident(B.OWN), "--reason", "one item does both")
+
+
 @four("WhenRuns", "`work rate --value high-value --urgency low-urgency --size small`", *BOTH)
 def work_rate(step):
     B.run_work(step, *shlex.split(B.bare(step.term))[1:2], B.ident(step.names[-1]), *shlex.split(B.bare(step.term))[2:])
