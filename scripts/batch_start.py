@@ -88,13 +88,14 @@ def _generated(tree, capability, command):
     return changed + [feature.relative_to(tree).as_posix()]
 
 
-def unlay_lines(tree, items, command):
+def unlay_lines(tree, items, command, base=None):
     """Every item's lines taken out of the worktree's `spec/` and their ids out of `unbuilt:`, and the feature of each
-    service capability changed written again (plan 4 review, B1); the paths changed."""
+    service capability changed written again (plan 4 review, B1), the operation tables as the commit `base` (the
+    batch's base, b479) held them; the paths changed."""
     changed = []
     for item in items:
         ids = backlog_lines.ids(backlog_lines.read(item, backlog_items.rel_of(item.name)))
-        for capability in backlog_lines.unlay(tree, item, changed):
+        for capability in backlog_lines.unlay(tree, item, changed, base):
             path = backlog_lines.capability_file(tree, capability)
             path.write_text(spec_unbuilt.without_unbuilt(
                 path.read_text(), [i.split("#")[1] for i in ids if i.split("#")[0] == capability]))

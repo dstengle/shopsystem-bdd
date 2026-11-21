@@ -10,7 +10,7 @@ parameters) in place of that operation's own, refused when the domain model, wit
 such operation; `work line <item> --withhold <service>.<operation>` keeps the operation withheld, its table out.
 `lay` puts each table into the contract in place of the operation's own and out of `[unexposed]`, and each withheld
 operation into `[unexposed]` with its table out (the contract made when missing); `unlay` puts back what the contract
-held before, as git last held it otherwise."""
+held at the batch's base (b479), as git last held it otherwise when no base is given."""
 import re
 import shutil
 import subprocess
@@ -188,18 +188,32 @@ def _versions(path):
     return [s.stdout for s in shown if s.returncode == 0]
 
 
-def unlay(into, blocks, files):
-    """The reverse of `lay`: each operation the block names put back as the newest version git holds of the contract
-    held
-    it otherwise (no table and not unexposed when none did); a contract left with nothing removed."""
+def _at_base(path, base):
+    """The text of `path` at the commit `base`, empty when that commit holds no such file."""
+    def git(*args):
+        return subprocess.run(["git", "-C", str(path.parent), *args], capture_output=True, text=True)
+    prefix = git("rev-parse", "--show-prefix").stdout.strip()
+    shown = git("show", "%s:%s%s" % (base, prefix, path.name))
+    return shown.stdout if shown.returncode == 0 else ""
+
+
+def unlay(into, blocks, files, base=None):
+    """The reverse of `lay`: each operation the block names put back as the contract at the commit `base` (the batch's
+    base, b479) held it, no table and not unexposed when it held none, nothing else of the contract changed; with no
+    `base`, as the newest version git holds that held it otherwise. A contract left with nothing removed."""
     for block in getattr(blocks, "adapters", ()):
         path = contract_path(into, block.port)
         if not path.is_file():
             continue
-        text, versions = path.read_text(encoding="utf-8"), _versions(path)
+        text = path.read_text(encoding="utf-8")
+        versions = None if base else _versions(path)
+        held = _at_base(path, base) if base else None
         for ident in [i for i, _ in block.tables] + list(block.withheld):
-            now = _state(text, ident)
-            tables, listed = next((s for s in (_state(v, ident) for v in versions) if s != now), (None, False))
+            if base:
+                tables, listed = _state(held, ident)
+            else:
+                now = _state(text, ident)
+                tables, listed = next((s for s in (_state(v, ident) for v in versions) if s != now), (None, False))
             text = adapter_tables.without(text, ident)
             text = adapter_tables.listed(adapter_tables.with_table(text, tables) if tables else text, ident, listed)
         if not text.strip():
