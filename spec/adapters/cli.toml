@@ -1235,12 +1235,12 @@ requirements = [
 "context purpose" = { option = "--purpose", example = "Notes kept for a household." }
 
 [operations."drafting.write into pack"]
-command = "work write into pack"
+command = "work line"
 requirements = [
   "drafting#r51: When the person writes a term into a pack with an item, the drafting service shall keep the term in the item.",
   "drafting#r52: While a pack has a term, if the person writes the term into the pack with an item, then the drafting service shall refuse the request and name the term.",
 ]
 [operations."drafting.write into pack".parameters]
-term = { option = "--term", example = "term-1" }
-pack = { option = "--pack", example = "pack-1" }
-item = { option = "--item", example = "item-1" }
+item = { positional = 1 }
+term = { option = "--term" }
+pack = { option = "--pack" }
