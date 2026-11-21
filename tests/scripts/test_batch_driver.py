@@ -10,7 +10,7 @@ from batch_plan import Batch, Task
 def _brief(root, monkeypatch, ids=("notes#r1", "notes#r2")):
     monkeypatch.setattr(batch_driver, "push_prefix", lambda root: None)
     monkeypatch.setattr(batch_driver.backlog_lines, "read", lambda item, rel: None)
-    monkeypatch.setattr(batch_driver.backlog_lines, "ids", lambda blocks: list(ids))
+    monkeypatch.setattr(batch_driver.backlog_lines, "ids", lambda _blocks: list(ids))
     monkeypatch.setattr(batch_driver.backlog_chore, "said", lambda item: [])
     batch = Batch(name="batch-1", ident="batch/x/batch-1", status="building", base="main", forked_from="0",
                   branch="batch-1", pull_request=None, tasks=[Task("t1", "b7", "pending", "batch-1-b7")])

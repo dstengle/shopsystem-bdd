@@ -143,6 +143,7 @@ def violating(tree, picked):
 
 def _build(root, base, picked, returned):
     batch_driver.push_prefix(root)      # a malformed `[batch] push` refused before anything is written
+    batch_driver.batch_rules(root)      # and a malformed `[batch] rules`
     name = next_name(root)
     forked = git(root, "rev-parse", "HEAD").stdout.strip()
     tree = trees_dir(root) / name
