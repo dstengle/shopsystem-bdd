@@ -4,6 +4,7 @@ where it is implemented, the lines citing it and a failing and a passing example
 model.lp's rules with the examples written below each label, then the rules of `model lexicon --check` that model.lp
 does not hold (LEXICON). Each example is run before the file is written, so the catalogue never says what the code
 does not do."""
+import ast
 import re
 import sys
 import tempfile
@@ -84,12 +85,26 @@ def wrong(entries):
     return out
 
 
+def gives(text, code):
+    """Whether a module's text gives a rule's code: it holds it quoted and does not name it in its `SKIPPED_RULES`, the
+    set of the codes a module leaves out and implements nothing of (b467)."""
+    return '"%s"' % code in text and code not in skipped(text)
+
+
+def skipped(text):
+    """The codes of a module's `SKIPPED_RULES = {...}` assignment, at the top of the module."""
+    for node in ast.parse(text).body:
+        if isinstance(node, ast.Assign) and any(getattr(t, "id", None) == "SKIPPED_RULES" for t in node.targets):
+            return {n.value for n in ast.walk(node.value) if isinstance(n, ast.Constant) and isinstance(n.value, str)}
+    return set()
+
+
 def implemented(code, kind):
     """Where a rule is implemented: model.lp for its rules, and each module of the plugin that gives the code."""
     found = ["scripts/model.lp"] if kind == "facts" else []
     here = Path(__file__).resolve()
     for path in sorted((PLUGIN / "scripts").glob("*.py")):
-        if path != here and '"%s"' % code in path.read_text():
+        if path != here and gives(path.read_text(), code):
             found.append(path.relative_to(PLUGIN).as_posix())
     return found
 
