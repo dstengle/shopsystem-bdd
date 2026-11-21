@@ -400,7 +400,9 @@ Sets a running task done, once its worktree is clean, its commits cite the item 
 Synopsis: `work batch done batch task`
 
 The tests are `[batch] tests` of `.shop/delivery.toml` (default `python3 -m pytest -q -p work_items`), run in the
-task's worktree. For an item that holds a chore, it then runs the chore's check there and refuses while it exits
+task's worktree, only the ones the task's change reaches: a capability's `tests/scenarios/test_<capability>.py` when
+the item holds one of its ids or a commit of the task touches its feature, and a `tests/scripts/` test that names a
+module the task touches; the pytest plugin `work_items` leaves the others out. `work batch review` runs them all. For an item that holds a chore, it then runs the chore's check there and refuses while it exits
 non-zero, and refuses a commit of the task that touches a path the chore does not name. A refusal names what is
 missing:
 

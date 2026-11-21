@@ -17,7 +17,8 @@ def add_parsers(sub):
     s.add_argument("--json", action="store_true", help="print one JSON object instead of lines")
     s = cmds.add_parser("resume", help="give each pending task its worktree and print what each running task builds")
     s.add_argument("batch")
-    s = cmds.add_parser("done", help="set a running task done, once its ids are built and the tests pass in its worktree")
+    s = cmds.add_parser("done", help="set a running task done, once its ids are built and the tests its change "
+                                     "reaches pass in its worktree")
     s.add_argument("batch")
     s.add_argument("task")
     s = cmds.add_parser("park", help="set an item of the batch needs-input with its question; the rest carries on")

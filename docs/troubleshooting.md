@@ -248,7 +248,8 @@ FAILED tests/scenarios/test_items.py::test_an_item_shown_gives_its_status - As..
 ```
 
 The last twenty lines of the run come with the refusal. The command is `[batch] tests` of `.shop/delivery.toml`
-(default `python3 -m pytest -q -p work_items`). Fix the code, commit, run `done` again.
+(default `python3 -m pytest -q -p work_items`), less the tests the task's change does not reach. Fix the code,
+commit, run `done` again.
 
 ### `work batch review`: a branch does not merge
 

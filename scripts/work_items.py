@@ -12,9 +12,16 @@ spec modules that mark a tree's scenarios are the tree's, not those of the plugi
 Each @g<n> and @r<n> tag of the context's features/*.feature is registered as a mark (b419), so that a context's
 scenarios run with no PytestUnknownMarkWarning; registering a mark this repository's conftest registers too is
 harmless. A context founded by `migrate init` loads this plugin from its tests/scenarios/conftest.py.
+
+Under `work batch done`, each test file `$SHOPSYSTEM_UNREACHED` names (one path a line, relative to where pytest was
+started: the tests the task's change does not reach, batch_reach, b456) is left out of collection, and a run that
+then collects nothing passes.
 """
+import os
 import pathlib
 import re
+
+UNREACHED = "SHOPSYSTEM_UNREACHED"      # batch_reach.ENV
 
 TAG = re.compile(r"(?<![\w@])@([rg][1-9]\d*)(?![\w-])")
 
@@ -48,3 +55,19 @@ def pytest_collection_modifyitems(config, items):
     import spec_unbuilt
 
     spec_unbuilt.mark(items, spec_root(config))     # an unbuilt requirement's scenario is a strict xfail
+
+
+def _unreached(config):
+    start = pathlib.Path(config.invocation_params.dir).resolve()
+    return {(start / p).resolve() for p in os.environ.get(UNREACHED, "").splitlines() if p.strip()}
+
+
+def pytest_ignore_collect(collection_path, config):
+    if UNREACHED in os.environ and pathlib.Path(collection_path).resolve() in _unreached(config):
+        return True
+    return None
+
+
+def pytest_sessionfinish(session, exitstatus):
+    if os.environ.get(UNREACHED) and exitstatus == 5:      # every test left out: nothing the change reaches failed
+        session.exitstatus = 0
