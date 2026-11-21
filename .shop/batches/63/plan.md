@@ -19,7 +19,7 @@ pull_request:
 | t3 | b485 | done | batch-63-b485 |
 | t4 | b489 | running | batch-63-b489 |
 | t5 | b490 | running | batch-63-b490 |
-| t6 | b464 | running | batch-63-b464 |
+| t6 | b464 | done | batch-63-b464 |
 | t7 | b465 | running | batch-63-b465 |
 
 ## Plan
