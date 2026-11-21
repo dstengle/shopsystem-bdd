@@ -6,7 +6,8 @@ The item keeps them in a `### <port> adapter` block of its `## Requirements` (ba
 the model blocks): an optional `withheld: [<service>.<operation>, ...]` line, the operations no command of the adapter
 requests, then a ` ```toml ` fence of operation tables in the contract's own syntax. `work line <item> --expose
 "<tables>"` keeps one operation's tables (`[operations."<service>.<operation>"]` with its command and its
-parameters) in place of that operation's own, refused when the domain model, with the item's model lines laid, has no
+parameters) in place of that operation's own (given `<service>.<operation>` alone, the tables adapter_tables' `of`
+writes from the domain model's operation), refused when the domain model, with the item's model lines laid, has no
 such operation; `work line <item> --withhold <service>.<operation>` keeps the operation withheld, its table out.
 `lay` puts each table into the contract in place of the operation's own and out of `[unexposed]`, and each withheld
 operation into `[unexposed]` with its table out (the contract made when missing); `unlay` puts back what the contract
@@ -31,7 +32,9 @@ AdapterBlock = namedtuple("AdapterBlock", "port tables withheld", defaults=((), 
 def add_arguments(p):
     """`work line`'s options of the adapter contract."""
     p.add_argument("--expose", metavar="TABLES", help='the tables of one operation for the CLI adapter contract, '
-                   '`[operations."<service>.<operation>"]` with its command and parameters, kept in place of its own')
+                   '`[operations."<service>.<operation>"]` with its command and parameters, kept in place of its own; '
+                   'or the operation `<service>.<operation>` alone, its tables written from the domain model\'s '
+                   'operation (its command after the operation, each parameter an option with an example)')
     p.add_argument("--withhold", metavar="SERVICE.OPERATION", help="an operation no command of the CLI adapter "
                    "requests, kept under the contract's [unexposed] with its table out")
 
@@ -81,8 +84,8 @@ def _at(blocks, port):
     return found
 
 
-def operations(root, blocks):
-    """The operations `<service>.<operation>` of the domain model, with the item's model lines laid on a copy."""
+def model(root, blocks):
+    """The domain model, with the item's model lines laid on a copy."""
     import backlog_model
     import domain_model
     if not getattr(blocks, "models", ()):
@@ -95,7 +98,12 @@ def operations(root, blocks):
             model = domain_model.read(copy)
         finally:
             shutil.rmtree(copy, ignore_errors=True)
-    return {"%s.%s" % (o.service, o.name) for o in model.operations()}
+    return model
+
+
+def operations(root, blocks):
+    """The operations `<service>.<operation>` of the domain model, with the item's model lines laid on a copy."""
+    return {"%s.%s" % (o.service, o.name): o for o in model(root, blocks).operations()}
 
 
 def _changed(root, name, change):
@@ -112,12 +120,19 @@ def _changed(root, name, change):
 
 
 def expose(root, name, text):
-    """`work line <item> --expose <tables>`: one operation's tables kept in the item in place of its own."""
-    ident, tables = adapter_tables.one(text)
+    """`work line <item> --expose <tables>`: one operation's tables kept in the item in place of its own; given the
+    operation `<service>.<operation>` alone, its tables written from the domain model's operation (b482)."""
+    alone = bool(adapter_tables.IDENT.match(text.strip()))
+    ident, tables = (text.strip(), None) if alone else adapter_tables.one(text)
 
     def change(blocks, at):
-        if ident not in operations(root, blocks):
+        nonlocal tables
+        found = operations(root, blocks).get(ident)
+        if found is None:
             raise Refused("work line: the operation table %s names no operation of the domain model" % ident)
+        if alone:
+            path = contract_path(root, PORT)
+            tables = adapter_tables.of(found, path.read_text(encoding="utf-8") if path.is_file() else "")
         block = blocks.adapters[at]
         blocks.adapters[at] = block._replace(
             tables=tuple(t for t in block.tables if t[0] != ident) + ((ident, tables),),

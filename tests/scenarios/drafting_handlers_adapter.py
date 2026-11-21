@@ -24,7 +24,7 @@ W = shared("shop_work_queue_world", "work_queue_world.py")
 B = shared("shop_backlog_world", "backlog_world.py")
 local = W.local
 FIXTURE = Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "domain-model" / "spec"
-TAGS = {"r31", "r32", "r33", "r34"}
+TAGS = {"r31", "r32", "r33", "r34", "r42"}
 
 
 def mine(step):
@@ -32,6 +32,11 @@ def mine(step):
     found = sys.modules["vocab"].vocab4.requested.scenario(step.request.node)
     return sys.modules["vocab"].origin(step.request.node) == "drafting" and found is not None \
         and bool(TAGS & set(found.tags))
+
+
+def _generated(step):
+    """True in r42's scenario: the operation exposed without a table given, its table the operation-table form's."""
+    return "r42" in set(sys.modules["vocab"].vocab4.requested.scenario(step.request.node).tags)
 
 
 def _world(step):
@@ -55,6 +60,11 @@ def text(world, table):
     op = _operation(world, table)
     return ('[operations."%s"]\ncommand = "notes %s"\n[operations."%s".parameters]\nnote = { positional = 1, '
             'example = "%s" }' % (op, op.split(".")[1], op, table))
+
+
+# The operation-table form of notes.archive(note): its command after the operation, its parameter an option.
+FORM = '[operations."%s"]\ncommand = "notes %s"\n[operations."%s".parameters]\nnote = { option = "--note", ' \
+    'example = "note-1" }'
 
 
 @local("GivenK")
@@ -124,7 +134,11 @@ def run(step):
     if "--expose" in options:
         name = re.search(r"\bthe operation table (o\d+)", step.text).group(1)
         step.context["exposed"] = name
-        B.run_work(step, "line", B.ident(item), "--expose", text(world, name))
+        if _generated(step):
+            op = _operation(world, name)
+            world["form"] = FORM % (op, op.split(".")[1], op)
+        given = _operation(world, name) if _generated(step) else text(world, name)
+        B.run_work(step, "line", B.ident(item), "--expose", given)
     else:
         name = re.search(r"\bthe operation (o\d+)", step.text).group(1)
         B.run_work(step, "line", B.ident(item), "--withhold", world["operations"][name])
@@ -144,10 +158,10 @@ def _done(step):
 
 
 def _held(world, item, kind, name):
-    """Whether the item's text holds the operation table `name` (its tables, of one operation), or the operation
-    withheld."""
+    """Whether the item's text holds the operation table `name` (its tables, of one operation, or the operation-table
+    form's of its operation when none was given), or the operation withheld."""
     if kind == "operation table":
-        return text(world, name) in item
+        return world.get("form", text(world, name)) in item
     found = re.search(r"(?m)^withheld: \[(.*)\]$", item)
     return bool(found) and world["operations"][name] in [w.strip() for w in found.group(1).split(",")]
 
@@ -167,6 +181,9 @@ def kept(step):
     if step.term == "name":
         name = re.search(r"\bthe operation table (o\d+)", step.text).group(1)
         assert _operation(world, name) in done.stdout + done.stderr, (done.stdout, done.stderr)
+        return None
+    if step.term in ("conform", "conforms"):
+        assert world.get("form") and world["form"] in _done(step), (world.get("form"), _item_text(step))
         return None
     kind = "operation table" if "operation table" in step.text else "operation"
     name = re.search(r"\bthe %s (o\d+)" % kind, step.text).group(1)
