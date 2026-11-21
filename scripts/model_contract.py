@@ -177,7 +177,8 @@ contract:
   - forms [--json | --check] prints one line for each file form a bounded context
     keeps: its name, its path pattern and the command that writes it (or
     the plugin's item that will give it one, or "by hand"), and exits 0;
-    --json prints {"forms": [{"name", "path", "writer"}]}; --check prints
+    --json prints {"forms": [{"name", "path", "writer", "kind"}]}, each
+    form's kind the kind of its writer (command, item or hand); --check prints
     nothing and exits 0 unless a form is written by hand, which it names,
     exiting 1.
   - annotate [<adapter contract> ...] [--check] writes under each operation
