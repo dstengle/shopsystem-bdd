@@ -10,9 +10,9 @@ import sys
 
 from scenarios import migration_tools_handlers as M
 from scenarios import migration_tools_handlers_counter as C
-from scenarios import (
-    upgrades_handlers_conftest,  # noqa: F401 -- its locals, taken before these
-    upgrades_handlers_ignore,  # noqa: F401 -- its locals, taken before these
+from scenarios import (  # noqa: F401 -- their locals, taken before these
+    upgrades_handlers_conftest,
+    upgrades_handlers_ignore,
 )
 from scenarios import upgrades_handlers_found as F
 from scenarios.migration_old import CONTEXT
