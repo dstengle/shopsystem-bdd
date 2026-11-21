@@ -670,6 +670,24 @@ Feature: Context requests
     Then the context requests service refuses this request
     And the context requests service names the thread t1
 
+  @g53 @r58
+  Scenario: An accepted term proposal brings its term into the item
+    Given a term proposal t1
+    And the line outcome of the term proposal t1 is `accepted`
+    And a context request c1
+    And the context request c1 holds the term proposal t1
+    And a term t2
+    And the term proposal t1 concerns the term t2
+    And a term t3
+    And the term proposal t1 concerns the term t3
+    And a term t4
+    And the term proposal t1 does not concern the term t4
+    When the person accepts the context request c1
+    Then the context requests service keeps the item i1
+    And the item i1 holds the term t2
+    And the item i1 holds the term t3
+    And the item i1 does not hold the term t4
+
   @g54 @r54
   Scenario: A request's issue is never left out of step with its record
     Given a context request c1
@@ -710,3 +728,30 @@ Feature: Context requests
     And the context requests service sets the side of the context request c1 to `upstream`
     And the context requests service keeps the entry e1
     And the entry e1 is on the context request c1
+
+  @g57 @r57
+  Scenario: A term proposal suggested is kept on its context request
+    Given a term proposal t1
+    And a context request c1
+    When the person suggests the term proposal t1 for the context request c1
+    Then the context requests service keeps the context request c2
+    And the context request c2 holds the term proposal t1
+    And the context requests service keeps the entry e1
+    And the entry e1 is on the context request c2
+
+  @g58 @r59
+  Scenario: A term proposal out of the asker's turn is refused
+    Given a context request c1
+    And the status of the context request c1 is `awaiting-upstream`
+    And a term proposal t1
+    When the person suggests the term proposal t1 for the context request c1
+    Then the context requests service refuses this request
+    And the context requests service names the context request c1
+
+  @g59 @r60
+  Scenario: A term proposal out of the vocabulary-entry form is refused
+    Given a term proposal t1
+    And the term proposal t1 does not conform to the vocabulary-entry form
+    When the person suggests the term proposal t1
+    Then the context requests service refuses this request
+    And the context requests service names the term proposal t1

@@ -821,6 +821,7 @@ command = "work accept"
 requirements = [
   "context-requests#r27: While a context request is `open` and a request line in the context request is `accepted` and every request line in the context request is one of `accepted`, `refused` or `withdrawn`, when the person accepts the context request, the context requests service shall set the status of the context request to `accepted`, keep an item whose status is `shaped` and keep an entry on the context request.",
   "context-requests#r28: While a request line in a context request is not `accepted`, `refused` or `withdrawn`, if the person accepts the context request, then the context requests service shall refuse the request and name the request line.",
+  "context-requests#r58: While a context request holds a term proposal whose line outcome is `accepted`, when the person accepts the context request, the context requests service shall keep an item that holds every term that the term proposal concerns.",
 ]
 [operations."context requests.accept".parameters]
 "context request" = { positional = 1 }
@@ -1345,3 +1346,14 @@ requirements = [
 ]
 [operations."records.file observation".parameters]
 summary = { positional = 1 }
+
+[operations."context requests.suggest"]
+command = "work suggest"
+requirements = [
+  "context-requests#r57: When the person suggests a term proposal for a context request, the context requests service shall keep a context request that holds the term proposal and keep an entry on the context request.",
+  "context-requests#r59: While a context request is `awaiting-upstream`, if the person suggests a term proposal for the context request, then the context requests service shall refuse the request and name the context request.",
+  "context-requests#r60: If the person suggests a term proposal that does not conform to the vocabulary-entry form, then the context requests service shall refuse the request and name the term proposal.",
+]
+[operations."context requests.suggest".parameters]
+"context request" = { positional = 1 }
+"term proposal" = { option = "--term-proposal", example = "- **shelf** (noun) → object shelf. A place the person keeps books on." }

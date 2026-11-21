@@ -11,7 +11,7 @@ import re
 from dataclasses import dataclass, field
 
 FENCE, END = "~~~shop-request", "~~~"
-STEPS = ("ask", "offer", "fits", "turn", "accept", "resolve")
+STEPS = ("ask", "offer", "fits", "turn", "accept", "resolve", "suggest")
 SINGLE = ("step", "request", "asker", "upstream", "title", "status", "turn", "ask", "offer")
 # A numbered field's name, and the section of the request file its entries are.
 NUMBERED = {"line": "Lines", "answer": "Answers", "question": "Questions", "outcome": "Outcomes", "into": "Into",

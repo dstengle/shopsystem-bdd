@@ -1,5 +1,5 @@
 """The commands of `work` for the steps of a request's conversation on its issue (capability requests, r29-r33,
-r39, r43, r44, r54-r58): `offer`, `fits`, `propose`, `accept`, `sync` and `watch`, their parsers, dispatch and what they print."""
+r39, r43, r44, r54-r58): `offer`, `fits`, `propose`, `suggest` (b42), `accept`, `sync` and `watch`, their parsers, dispatch and what they print."""
 import request_view
 
 
@@ -14,6 +14,10 @@ def add_parsers(sub):
     p = sub.add_parser("propose", help="the asker: write lines into the request, in the upstream's terms")
     p.add_argument("request")
     p.add_argument("--line", action="append", default=[], dest="lines", help="one line; give it once a line")
+    p = sub.add_parser("suggest", help="the asker: propose terms for the upstream's vocabulary, as a line of the request")
+    p.add_argument("request")
+    p.add_argument("--term-proposal", required=True,
+                   help="one vocabulary entry or more: - **<word>** (<part of speech>) → <model element>. <definition>")
     p = sub.add_parser("accept", help="the upstream's person: accept a request whose lines are settled, as an item")
     p.add_argument("request")
     sub.add_parser("sync", help="record what the other side of each request posted, and print every live request")
@@ -44,6 +48,12 @@ def cmd_propose(args):
     return request_view.said(args.root, args.request)
 
 
+def cmd_suggest(args):
+    import request_terms
+    request_terms.suggest(args.root, args.request, args.term_proposal)
+    return request_view.said(args.root, args.request)
+
+
 def cmd_accept(args):
     import backlog_items
     import request_accept
@@ -71,5 +81,5 @@ def cmd_watch(args):
         return 130
 
 
-COMMANDS = {"offer": cmd_offer, "fits": cmd_fits, "propose": cmd_propose, "accept": cmd_accept, "sync": cmd_sync,
+COMMANDS = {"offer": cmd_offer, "fits": cmd_fits, "propose": cmd_propose, "suggest": cmd_suggest, "accept": cmd_accept, "sync": cmd_sync,
             "watch": cmd_watch}

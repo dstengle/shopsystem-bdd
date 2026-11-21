@@ -174,6 +174,8 @@ service context requests
   operation watch(bounded context)  outcomes: notifies → each entry not held
   operation survey(bounded context)  outcomes: returned → every context request
   operation inspect(context request)  outcomes: returned → the context request
+  operation suggest(context request, term proposal) by the person
+    outcomes: done → the term proposal | refused: term proposal not in the vocabulary-entry form, context request not this side's turn
 
 service conversation
   operation quote(message)  outcomes: done → the quote
@@ -200,4 +202,9 @@ object operation-table form kind of artifact
 object successor kind of item
 
 object review limit
+
+object term proposal kind of request line
+  relations: concerns → term (many)
+
+object vocabulary-entry form kind of artifact
 ```

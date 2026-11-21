@@ -267,6 +267,18 @@ Restates: requests#r30@0.29.
 ### [g56] A turn passed is posted though the channel does not provide its thread
 - [r56] While a context request is `awaiting-asker` and a channel does not provide the thread of the context request, when the person passes the turn of the context request, the context requests service shall set the status of the context request to `awaiting-upstream`, set the side of the context request to `upstream` and keep an entry on the context request.
 
+### [g57] A term proposal suggested is kept on its context request
+- [r57] When the person suggests a term proposal for a context request, the context requests service shall keep a context request that holds the term proposal and keep an entry on the context request.
+
+### [g53] An accepted term proposal brings its term into the item
+- [r58] While a context request holds a term proposal whose line outcome is `accepted`, when the person accepts the context request, the context requests service shall keep an item that holds every term that the term proposal concerns.
+
+### [g58] A term proposal out of the asker's turn is refused
+- [r59] While a context request is `awaiting-upstream`, if the person suggests a term proposal for the context request, then the context requests service shall refuse the request and name the context request.
+
+### [g59] A term proposal out of the vocabulary-entry form is refused
+- [r60] If the person suggests a term proposal that does not conform to the vocabulary-entry form, then the context requests service shall refuse the request and name the term proposal.
+
 ## Dropped
 - requests#r11@0.29: retired with context-requests#r29 by b68.
 - requests#r24@0.29: retired with context-requests#r29 by b68.

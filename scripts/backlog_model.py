@@ -137,7 +137,7 @@ def _checked(root, area, lines, blocks=()):
     return tuple(lines)
 
 
-def _block(blocks, area):
+def block_of(blocks, area):
     found = next((i for i, b in enumerate(blocks.models) if b.area == area), None)
     if found is None:
         blocks.models.append(ModelBlock(area))
@@ -166,7 +166,7 @@ def add(root, name, capability, model=None, relation=None, term=None):
     takes(item)
     blocks = read(item, "the item %s" % item.name)
     area = area_of(root, capability, blocks)
-    at = _block(blocks, area)
+    at = block_of(blocks, area)
     block = blocks.models[at]
     if term is not None:
         bullets = _entries([term] if isinstance(term, str) else term)
