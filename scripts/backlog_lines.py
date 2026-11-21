@@ -10,7 +10,7 @@ import re
 import shutil
 from pathlib import Path
 
-import backlog_adapter
+import backlog_adapter_ops
 import backlog_capability
 import backlog_forms
 import backlog_model
@@ -197,8 +197,7 @@ def lay_onto(into, item, files=None):
         path.write_text(text)
     backlog_forms.lay_spec(into, blocks, files)
     backlog_universal.lay(into, blocks, files)
-    backlog_model.lay(into, blocks, files)
-    backlog_adapter.lay(into, blocks, files)
+    backlog_adapter_ops.lay(into, blocks, files)        # the model lines, the adapter blocks, a new operation's table
     return [b.capability for b in blocks]
 
 
@@ -238,7 +237,7 @@ def unlay(into, item, files=None, base=None):
     backlog_forms.unlay_spec(into, blocks, files)
     backlog_universal.unlay(into, blocks, files)
     backlog_model.unlay(into, blocks, files)
-    backlog_adapter.unlay(into, blocks, files, base)
+    backlog_adapter_ops.unlay(into, blocks, files, base)
     return changed
 
 

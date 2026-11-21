@@ -74,7 +74,7 @@ def keeps(step):
 def contract_holds(step):
     """the adapter contract a1 holds the operation table o1: the item's table in it, in place of any of its own."""
     (k1, _), (k2, n2) = parts(step)
-    if (k1, k2) != ("adapter contract", "operation table"):
+    if (k1, k2) != ("adapter contract", "operation table") or step.context.get("specified"):
         return False
     text = _contract(step)
     assert table(n2) in text and text.count('[operations."%s"]' % OPERATION) == 1, text
