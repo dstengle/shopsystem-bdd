@@ -280,28 +280,6 @@ shall [x4: agent the person (constant), x5: backlog "the backlog of this bounded
     return(e3, subject: x6, object: x2)
 ```
 
-## r18
-From: backlog#r39, reworded in request words (0.38.0).
-
-```reading
-While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person withdraws the item, the backlog service shall set the status of the item to `withdrawn`.
-shall [x2: agent the person (constant), x3: service the backlog service (constant)]
-  while [x1: item]
-    or
-      case
-        status(x1) = `idea`
-      case
-        status(x1) = `shaped`
-      case
-        status(x1) = `ready`
-      case
-        status(x1) = `needs-input`
-  when
-    request(e1, backlog.withdraw, subject: x2, object: x1)
-  response
-    initiates(e2, subject: x3, status(x1) = `withdrawn`)
-```
-
 ## r19
 From: backlog#r40, reworded in request words (0.38.0).
 
@@ -739,4 +717,28 @@ shall [x4: agent the person (constant), x5: service the backlog service (constan
     refuse(e2, subject: x5, object: x6)
     name(e3, subject: x5, object: x2)
     name(e4, subject: x5, object: x3)
+```
+
+## r42
+Retires: r18. From: b465 r42.
+
+```reading
+While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person withdraws the item with a reason, the backlog service shall set the status of the item to `withdrawn` and keep the item.
+shall [x2: agent the person (constant), x3: service the backlog service (constant)]
+  while [x1: item]
+    or
+      case
+        status(x1) = `idea`
+      case
+        status(x1) = `shaped`
+      case
+        status(x1) = `ready`
+      case
+        status(x1) = `needs-input`
+  when
+    request(e1, backlog.withdraw, subject: x2, object: x1)
+    param(e1, reason, some)
+  response
+    initiates(e2, subject: x3, status(x1) = `withdrawn`)
+    keep(e3, subject: x3, object: x1)
 ```

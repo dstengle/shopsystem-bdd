@@ -602,29 +602,6 @@ shall [x5: agent the person (constant), x6: service the batches service (constan
     keep(e3, subject: x6, object: x8)
 ```
 
-## r82
-From: b460 r82.
-
-```reading
-While an item in a batch is `in-batch` and the workspace of the batch holds a requirement of the item and the item does not hold the requirement, when the person amends the item, the batches service shall keep a workspace of the batch that does not hold the requirement.
-shall [x5: agent the person (constant), x6: service the batches service (constant)]
-  while [x1: item, x2: batch, x3: workspace, x4: requirement]
-    in(x1, x2)
-    status(x1) = `in-batch`
-    of(x3, x2)
-    of(x4, x1)
-    in(x4, x3)
-    not
-      in(x4, x1)
-  when
-    request(e1, batches.amend, subject: x5, object: x1)
-  response [x7: workspace]
-    of(x7, x2)
-    not
-      in(x4, x7)
-    keep(e2, subject: x6, object: x7)
-```
-
 ## r83
 From: b460 r83.
 
@@ -710,26 +687,6 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
     keep(e3, subject: x7, object: x9)
 ```
 
-## r88
-From: b463 r88.
-
-```reading
-While an item in a batch is `in-batch` and the item holds a model line that restates an operation and the domain model holds the model line, when a session parks the item, the batches service shall keep a domain model that does not hold the model line.
-shall [x5: domain model "the domain model of this bounded context" (indexical), x7: service the batches service (constant)]
-  while [x1: item, x2: batch, x3: model line, x4: operation]
-    in(x1, x2)
-    status(x1) = `in-batch`
-    restate(subject: x3, object: x4)
-    in(x3, x1)
-    in(x3, x5)
-  when [x6: session]
-    request(e1, batches.park, subject: x6, object: x1)
-  response [x8: domain model]
-    not
-      in(x3, x8)
-    keep(e2, subject: x7, object: x8)
-```
-
 ## r89
 From: b478 r89.
 
@@ -747,4 +704,78 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
   response
     initiates(e2, subject: x7, status(x1) = `shaped`)
     name(e3, subject: x7, object: x4)
+```
+
+## r90
+Retires: r82. From: b466 r90.
+
+```reading
+While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch holds a requirement of the item and the workspace of the task holds the requirement and the item does not hold the requirement, when the person amends the item, the batches service shall keep a workspace of the batch that does not hold the requirement and keep a workspace of the task that does not hold the requirement.
+shall [x7: agent the person (constant), x8: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: task, x4: workspace, x5: requirement, x6: workspace]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    of(x3, x1)
+    status(x3) = `running`
+    of(x4, x2)
+    of(x5, x1)
+    in(x5, x4)
+    of(x6, x3)
+    in(x5, x6)
+    not
+      in(x5, x1)
+  when
+    request(e1, batches.amend, subject: x7, object: x1)
+  response [x9: workspace, x10: workspace]
+    of(x9, x2)
+    not
+      in(x5, x9)
+    keep(e2, subject: x8, object: x9)
+    of(x10, x3)
+    not
+      in(x5, x10)
+    keep(e3, subject: x8, object: x10)
+```
+
+## r91
+Retires: r88. From: b485 r91.
+
+```reading
+While an item in a batch is `in-batch` and the item holds a model line that restates an operation and the domain model holds the model line, when a session parks the item, the batches service shall keep a domain model that holds the operation.
+shall [x5: domain model "the domain model of this bounded context" (indexical), x7: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: model line, x4: operation]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    restate(subject: x3, object: x4)
+    in(x3, x1)
+    in(x3, x5)
+  when [x6: session]
+    request(e1, batches.park, subject: x6, object: x1)
+  response [x8: domain model]
+    in(x4, x8)
+    keep(e2, subject: x7, object: x8)
+```
+
+## r92
+From: b489 r92.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds a model line and the model line specifies an operation and the domain model does not hold the operation and the item holds no operation table of the operation, when the person opens a batch, the batches service shall keep an adapter contract that holds an operation table of the operation.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: domain model "the domain model of this bounded context" (indexical), x7: agent the person (constant), x9: service the batches service (constant)]
+  while [x1: item, x3: model line, x4: operation]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    in(x3, x1)
+    specify(subject: x3, object: x4)
+    not
+      in(x4, x5)
+    not [x6: operation table]
+      of(x6, x4)
+      in(x6, x1)
+  when [x8: batch]
+    request(e1, batches.open, subject: x7, object: x8)
+  response [x10: adapter contract, x11: operation table]
+    of(x11, x4)
+    in(x11, x10)
+    keep(e2, subject: x9, object: x10)
 ```

@@ -457,7 +457,7 @@ item = { positional = 1 }
 [operations."backlog.withdraw"]
 command = "work withdraw"
 requirements = [
-  "items#r18: While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person withdraws the item, the backlog service shall set the status of the item to `withdrawn`.",
+  "items#r42: While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person withdraws the item with a reason, the backlog service shall set the status of the item to `withdrawn` and keep the item.",
 ]
 [operations."backlog.withdraw".parameters]
 item = { positional = 1 }
@@ -922,6 +922,7 @@ requirements = [
   "batches#r80: While an item is `ready` and the item meets the readiness bar and the item holds an operation, when the person opens a batch, the batches service shall keep an adapter contract and keep no operation table of the operation.",
   "batches#r87: While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an operation, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the operation.",
   "batches#r89: While an item is `ready` and the item meets the readiness bar and a requirement of the item violates a rule whose severity is `error`, if the person opens a batch, then the batches service shall set the status of the item to `shaped` and name the rule.",
+  "batches#r92: While an item is `ready` and the item meets the readiness bar and the item holds a model line and the model line specifies an operation and the domain model does not hold the operation and the item holds no operation table of the operation, when the person opens a batch, the batches service shall keep an adapter contract that holds an operation table of the operation.",
 ]
 
 [operations."batches.resume"]
@@ -952,7 +953,7 @@ cli-only = { options = ["--discard", "--question"] }
 requirements = [
   "batches#r57: While an item in a batch is `in-batch`, when a session parks the item, the batches service shall set the status of the item to `needs-input`, keep a question on the item and not set the status of the batch to `abandoned`.",
   "batches#r60: While an item in a batch is `in-batch` and the workspace of the batch holds a requirement of the item, when a session parks the item, the batches service shall keep a workspace of the batch that does not hold the requirement.",
-  "batches#r88: While an item in a batch is `in-batch` and the item holds a model line that restates an operation and the domain model holds the model line, when a session parks the item, the batches service shall keep a domain model that does not hold the model line.",
+  "batches#r91: While an item in a batch is `in-batch` and the item holds a model line that restates an operation and the domain model holds the model line, when a session parks the item, the batches service shall keep a domain model that holds the operation.",
 ]
 [operations."batches.park".parameters]
 item = { positional = 2 }
@@ -961,8 +962,8 @@ item = { positional = 2 }
 command = "work batch amend"
 requirements = [
   "batches#r81: While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement, when the person amends the item, the batches service shall keep a workspace of the batch that holds the requirement and keep a workspace of the task that holds the requirement.",
-  "batches#r82: While an item in a batch is `in-batch` and the workspace of the batch holds a requirement of the item and the item does not hold the requirement, when the person amends the item, the batches service shall keep a workspace of the batch that does not hold the requirement.",
   "batches#r83: While an item is not `in-batch`, if the person amends the item, then the batches service shall refuse the request and name the item.",
+  "batches#r90: While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch holds a requirement of the item and the workspace of the task holds the requirement and the item does not hold the requirement, when the person amends the item, the batches service shall keep a workspace of the batch that does not hold the requirement and keep a workspace of the task that does not hold the requirement.",
 ]
 [operations."batches.amend".parameters]
 item = { positional = 1 }
@@ -1144,6 +1145,8 @@ cli-only = { options = ["--base", "--python"] }
 requirements = [
   "code-analysis#r11: While a file holds a finding of an analysis tool, when the person lints the file, the code analysis service shall return the heading of the analysis tool and the finding, fail the check and name the finding.",
   "code-analysis#r12: While `vulture` is `missing`, when the person lints a file, the code analysis service shall fail the check and name `vulture`.",
+  "code-analysis#r15: While a Python file differs from the base branch and the Python file holds a finding of an analysis tool, when the person lints this repository, the code analysis service shall return the finding and fail the check.",
+  "code-analysis#r16: While a Python file holds a finding of an analysis tool and the Python file does not differ from the base branch, when the person lints this repository, the code analysis service shall complete the request.",
 ]
 [operations."code analysis.lint".parameters]
 file = { positional = 1 }
@@ -1203,6 +1206,14 @@ requirements = [
 [operations."upgrades.relocate".parameters]
 "bounded context" = { option = "--context" }
 
+[operations."conversation.prompt"]
+hook = "UserPromptSubmit"
+command = "work quote"
+requirements = [
+  "quotes#r2: When the person prompts a session, the conversation service shall keep the transcript of the session.",
+  "shaping-guarantees#r3: When the person prompts the brainstorming session, the brainstorming session shall quote a message.",
+]
+
 [operations."upgrades.found"]
 command = "migrate init"
 requirements = [
@@ -1212,14 +1223,8 @@ requirements = [
   "upgrades#r35: While this repository has a shop directory, if the person founds this bounded context with a context id, then the upgrades service shall refuse the request, name the shop directory and change no file.",
   "upgrades#r39: While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository does not conform to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold and the ignore file of this repository and complete the request.",
   "upgrades#r40: While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository conforms to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold, not change the ignore file and complete the request.",
+  "upgrades#r41: While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id and a context purpose, the upgrades service shall keep an index file that has the context purpose and complete the request.",
 ]
 [operations."upgrades.found".parameters]
 "context id" = { option = "--id" }
-
-[operations."conversation.prompt"]
-hook = "UserPromptSubmit"
-command = "work quote"
-requirements = [
-  "quotes#r2: When the person prompts a session, the conversation service shall keep the transcript of the session.",
-  "shaping-guarantees#r3: When the person prompts the brainstorming session, the brainstorming session shall quote a message.",
-]
+"context purpose" = { option = "--purpose", example = "Notes kept for a household." }

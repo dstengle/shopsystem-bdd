@@ -65,3 +65,4 @@ area: upgrades
 - **the old scenario conftest form** (proper noun) → object old scenario conftest form. The text of the scenario conftest that founding a bounded context wrote before 0.41.0, which does not load `work_items`.
 - **ignore file** (noun) → object ignore file. The file `.gitignore` of a repository, which founding a bounded context writes naming `.venv/`, `__pycache__/`, `.pytest_cache/` and `.ruff_cache/`, so that the interpreter and the caches are never committed.
 - **the ignore file form** (proper noun) → object ignore file form. An ignore file that names `.venv/`, `__pycache__/`, `.pytest_cache/` and `.ruff_cache/` as git matches its lines, so that a name with or without its leading or trailing slash is the same entry.
+- **context purpose** (noun) → object context purpose. What a bounded context is for, in a sentence or two, given when it is founded and written under the `## Purpose` heading of its index file. Plural: context purposes.

@@ -62,3 +62,6 @@ area: analysis
 - **scan** (verb, action) → operation feature reading.scan. Forms: scans, scanned. Frame: <actor> scans <repository>.
 - **vet** (verb, action) → operation feature reading.vet. Forms: vets, vetted. Frame: <actor> vets <repository>.
 - **the feature reading service** (proper noun) → service feature reading.
+- **base branch** (noun) → object base branch. The branch a repository's work forks from: `main`, or the branch the `base` of `.shop/delivery.toml` names. This: the base branch of the repository the request is made in.
+- **lint** (verb, action) → operation code analysis.lint. Forms: lints, linted. Frame: <actor> lints <repository>.
+- **differ** (verb, state) → relation Python file.differs from. The kept changes of the branch checked out that its base branch does not hold add or alter the Python file. Forms: differs, differed. Frame: <Python file> differs from <base branch>.

@@ -245,3 +245,37 @@ shall [x2: size limit `300` (parameter), x3: agent the person (constant), x4: re
   response
     complete(e2, subject: x5, object: x6)
 ```
+
+## r15
+From: b490 r15.
+
+```reading
+While a Python file differs from the base branch and the Python file holds a finding of an analysis tool, when the person lints this repository, the code analysis service shall return the finding and fail the check.
+shall [x2: base branch "the base branch of the repository the request is made in" (indexical), x5: agent the person (constant), x6: repository "the repository the request is made in" (indexical), x7: service the code analysis service (constant), x8: check "the check the trigger makes" (indexical)]
+  while [x1: Python file, x3: finding, x4: analysis tool]
+    differ(subject: x1, from: x2)
+    of(x3, x4)
+    in(x3, x1)
+  when
+    request(e1, code analysis.lint, subject: x5, object: x6)
+  response
+    return(e2, subject: x7, object: x3)
+    fail(e3, subject: x7, object: x8)
+```
+
+## r16
+From: b490 r16.
+
+```reading
+While a Python file holds a finding of an analysis tool and the Python file does not differ from the base branch, when the person lints this repository, the code analysis service shall complete the request.
+shall [x4: base branch "the base branch of the repository the request is made in" (indexical), x5: agent the person (constant), x6: repository "the repository the request is made in" (indexical), x7: service the code analysis service (constant), x8: request "the request the trigger makes" (indexical)]
+  while [x1: Python file, x2: finding, x3: analysis tool]
+    of(x2, x3)
+    in(x2, x1)
+    not
+      differ(subject: x1, from: x4)
+  when
+    request(e1, code analysis.lint, subject: x5, object: x6)
+  response
+    complete(e2, subject: x7, object: x8)
+```

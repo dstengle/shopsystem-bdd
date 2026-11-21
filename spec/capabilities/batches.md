@@ -6,8 +6,8 @@ group: service
 area: execution
 specifies: object batch, object task, service batches
 language: codified-2
-retired: [g69, r69]
-unbuilt: []
+retired: [g69, r69, g82, r82, g88, r88]
+unbuilt: [r90, r91, r92]
 ---
 
 # Batches
@@ -144,9 +144,6 @@ when the change is merged.
 ### [g81] An in-batch item amended has its lines laid again on its batch's and its task's workspaces
 - [r81] While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement, when the person amends the item, the batches service shall keep a workspace of the batch that holds the requirement and keep a workspace of the task that holds the requirement.
 
-### [g82] An in-batch item amended has a line it no longer holds taken out of the batch's workspace
-- [r82] While an item in a batch is `in-batch` and the workspace of the batch holds a requirement of the item and the item does not hold the requirement, when the person amends the item, the batches service shall keep a workspace of the batch that does not hold the requirement.
-
 ### [g83] Amending an item that is not in a batch is refused
 - [r83] While an item is not `in-batch`, if the person amends the item, then the batches service shall refuse the request and name the item.
 
@@ -162,9 +159,15 @@ when the change is merged.
 ### [g87] A batch opened lays a model line in place of the operation it restates
 - [r87] While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an operation, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the operation.
 
-### [g88] An item parked takes its restating model line out of the domain model
-- [r88] While an item in a batch is `in-batch` and the item holds a model line that restates an operation and the domain model holds the model line, when a session parks the item, the batches service shall keep a domain model that does not hold the model line.
-
 ### [g89] A ready item whose lines laid violate a rule goes back to shaped
 - [r89] While an item is `ready` and the item meets the readiness bar and a requirement of the item violates a rule whose severity is `error`, if the person opens a batch, then the batches service shall set the status of the item to `shaped` and name the rule.
+
+### [g90] A line removed from an in-batch item leaves its task's workspace too, not only the batch's
+- [r90] While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch holds a requirement of the item and the workspace of the task holds the requirement and the item does not hold the requirement, when the person amends the item, the batches service shall keep a workspace of the batch that does not hold the requirement and keep a workspace of the task that does not hold the requirement.
+
+### [g91] An item parked puts back the operation its model line restates
+- [r91] While an item in a batch is `in-batch` and the item holds a model line that restates an operation and the domain model holds the model line, when a session parks the item, the batches service shall keep a domain model that holds the operation.
+
+### [g92] A batch opened writes the operation table of an operation an item adds with none given
+- [r92] While an item is `ready` and the item meets the readiness bar and the item holds a model line and the model line specifies an operation and the domain model does not hold the operation and the item holds no operation table of the operation, when the person opens a batch, the batches service shall keep an adapter contract that holds an operation table of the operation.
 
