@@ -1,11 +1,11 @@
 ---
 id: batch/missingmass.io/shopsystem/shopsystem-bdd/batch-64
 kind: batch
-status: building
+status: in-review
 base: main
 forked_from: 4a81676a9cfb48fedbbe96d3faa8d23238a88cb7
 branch: batch-64
-pull_request:
+pull_request: https://github.com/dstengle/shopsystem-bdd/pull/88
 ---
 
 # batch-64
