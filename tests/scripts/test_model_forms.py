@@ -41,11 +41,16 @@ def test_each_item_it_names_is_open():
             assert not re.search(r"^status: (delivered|withdrawn|refused)$", text, re.MULTILINE), form
 
 
-def test_it_lists_the_catalogues_the_corpus_the_packs_and_the_working_rules():
+def test_it_lists_the_catalogues_the_corpus_and_the_packs():
     paths = {f.path for f in model_forms.FORMS}
     for path in ("grammar/constructs.md", "grammar/corpus/spec/<capability>.md", "grammar/catalogue-entries.toml",
-                 "spec/packs/<name>.md", "CLAUDE.md"):
+                 "spec/packs/<name>.md"):
         assert path in paths, path
+
+
+def test_it_lists_no_working_rules():
+    """CLAUDE.md is the person's and the sessions' working rules, no file form of a bounded context (b473)."""
+    assert "CLAUDE.md" not in {f.path for f in model_forms.FORMS}
 
 
 def test_it_prints_every_form_on_its_line(tmp_path):
