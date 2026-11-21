@@ -761,10 +761,13 @@ works in 0.38 and prints a notice that it goes in the next release. Only `decisi
 ### `spec parse`
 
 Parses a line in the context's grammar and prints its tree, or its refusal with a hint.\
-Synopsis: `spec parse [--file FILE] [--form] [line]`
+Synopsis: `spec parse [--file FILE] [--form] [--item b<n>] [line]`
 
 - `--form`: print the line's meaning (its logical form) instead of its tree. Read this one.
 - `--file`: parse every line of a file, numbered.
+- `--item b<n>`: read the line as it reads once the terms, relation rows, lines and model lines the item holds are
+  laid into the specification, on a copy, as `work ready` lays them; nothing in `spec/` changes. Use it to see why
+  a line of an item is refused without running `work ready`.
 
 ```console
 $ spec parse --form 'When the person shows an item, the backlog service shall return the status of the item.'
