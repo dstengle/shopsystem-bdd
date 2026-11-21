@@ -157,3 +157,5 @@ area: tracking
 - **the review limit** (proper noun) → object review limit. The number of changed lines a pull request review reads in one batch's change, 1000.
 - **exceed** (verb, state) → relation item.exceeds. The estimate of an item's change, from its size rating, its requirement lines and its model lines, added to the estimates of the items a pick took before it, is more than the review limit, and the pick took one item or more before it. Forms: exceeds, exceeded. Frame: <item> exceeds <review limit>.
 - **write** (verb, action) → operation drafting.write into pack. Forms: writes, wrote, written. Frame: <actor> writes <term> into <pack>.
+- **remove** (verb, action) → operation drafting.take out. Forms: removes, removed. Frame: <actor> removes <universal condition> from <item>. Frame: <actor> removes <upstream entry> from <item>. Frame: <actor> removes <given block> from <item>.
+- **replace** (verb, action) → operation drafting.replace. Forms: replaces, replaced. Frame: <actor> replaces <universal condition> in <item>. Frame: <actor> replaces <upstream entry> in <item>. Frame: <actor> replaces <given block> in <item>.

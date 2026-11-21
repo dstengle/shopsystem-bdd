@@ -7,7 +7,7 @@ area: tracking
 specifies: service drafting
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r53, r54, r55, r56, r57, r58, r59, r60, r61, r62, r63, r64]
 ---
 
 # Drafting
@@ -192,4 +192,40 @@ capabilities, retirements, rewordings and chores.
 
 ### [g52] A term that its pack has already is refused
 - [r52] While a pack has a term, if the person writes the term into the pack with an item, then the drafting service shall refuse the request and name the term.
+
+### [g53] A universal condition removed from an item is no longer kept
+- [r53] When the person removes a universal condition from an item, the drafting service shall not keep the universal condition in the item.
+
+### [g54] An upstream entry removed from an item is no longer kept
+- [r54] When the person removes an upstream entry from an item, the drafting service shall not keep the upstream entry in the item.
+
+### [g55] A given block removed from an item is no longer kept
+- [r55] When the person removes a given block from an item, the drafting service shall not keep the given block in the item.
+
+### [g56] Removing a universal condition that the item does not hold is refused
+- [r56] If the person removes a universal condition from an item that does not hold the universal condition, then the drafting service shall refuse the request and name the universal condition.
+
+### [g57] Removing an upstream entry that the item does not hold is refused
+- [r57] If the person removes an upstream entry from an item that does not hold the upstream entry, then the drafting service shall refuse the request and name the upstream entry.
+
+### [g58] Removing a given block that the item does not hold is refused
+- [r58] If the person removes a given block from an item that does not hold the given block, then the drafting service shall refuse the request and name the given block.
+
+### [g59] A universal condition replaced in an item keeps the new one
+- [r59] When the person replaces a universal condition in an item, the drafting service shall keep a different universal condition in the item.
+
+### [g60] An upstream entry replaced in an item keeps the new one
+- [r60] When the person replaces an upstream entry in an item, the drafting service shall keep a different upstream entry in the item.
+
+### [g61] A given block replaced in an item keeps the new one
+- [r61] When the person replaces a given block in an item, the drafting service shall keep a different given block in the item.
+
+### [g62] Replacing a universal condition that the item does not hold is refused
+- [r62] If the person replaces a universal condition in an item that does not hold the universal condition, then the drafting service shall refuse the request and name the universal condition.
+
+### [g63] Replacing an upstream entry that the item does not hold is refused
+- [r63] If the person replaces an upstream entry in an item that does not hold the upstream entry, then the drafting service shall refuse the request and name the upstream entry.
+
+### [g64] Replacing a given block that the item does not hold is refused
+- [r64] If the person replaces a given block in an item that does not hold the given block, then the drafting service shall refuse the request and name the given block.
 
