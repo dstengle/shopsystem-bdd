@@ -17,7 +17,7 @@ pull_request:
 | t1 | b442 | running | batch-63-b442 |
 | t2 | b466 | done | batch-63-b466 |
 | t3 | b485 | done | batch-63-b485 |
-| t4 | b489 | running | batch-63-b489 |
+| t4 | b489 | done | batch-63-b489 |
 | t5 | b490 | done | batch-63-b490 |
 | t6 | b464 | done | batch-63-b464 |
 | t7 | b465 | running | batch-63-b465 |
