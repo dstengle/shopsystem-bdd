@@ -1284,3 +1284,24 @@ item = { positional = 1 }
 "universal condition" = { option = "--replace-universal" }
 "upstream entry" = { option = "--replace-upstream" }
 "given block" = { option = "--replace-given" }
+
+[operations."backlog.retitle"]
+command = "work retitle"
+requirements = [
+  "items#r48: While the status of an item is one of `idea`, `shaped`, `ready`, `in-batch` or `needs-input`, when the person retitles the item with a title, the backlog service shall keep the item and the title of the item.",
+  "items#r49: While the status of an item is one of `delivered`, `refused` or `withdrawn`, if the person retitles the item, then the backlog service shall refuse the request and name the item.",
+]
+[operations."backlog.retitle".parameters]
+item = { option = "--item", example = "item-1" }
+title = { option = "--title", example = "title-1" }
+
+[operations."backlog.split"]
+command = "work split"
+requirements = [
+  "items#r50: While the status of an item is one of `idea` or `shaped` and the item holds a requirement, when the person splits the item with the requirement, the backlog service shall keep another item that holds the requirement and name the item.",
+  "items#r51: While the status of an item is one of `idea` or `shaped` and another item holds a requirement, if the person splits the item with the requirement, then the backlog service shall refuse the request and name the requirement.",
+  "items#r52: While the status of an item is not `idea` or `shaped`, if the person splits the item, then the backlog service shall refuse the request and name the item.",
+]
+[operations."backlog.split".parameters]
+item = { option = "--item", example = "item-1" }
+requirement = { option = "--requirement", example = "requirement-1" }

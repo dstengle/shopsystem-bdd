@@ -159,3 +159,6 @@ area: tracking
 - **write** (verb, action) → operation drafting.write into pack. Forms: writes, wrote, written. Frame: <actor> writes <term> into <pack>.
 - **remove** (verb, action) → operation drafting.take out. Forms: removes, removed. Frame: <actor> removes <universal condition> from <item>. Frame: <actor> removes <upstream entry> from <item>. Frame: <actor> removes <given block> from <item>.
 - **replace** (verb, action) → operation drafting.replace. Forms: replaces, replaced. Frame: <actor> replaces <universal condition> in <item>. Frame: <actor> replaces <upstream entry> in <item>. Frame: <actor> replaces <given block> in <item>.
+- **retitle** (verb, action) → operation backlog.retitle. Forms: retitles, retitled. Frame: <actor> retitles <item>.
+- **split** (verb, action) → operation backlog.split. Forms: splits, split. Frame: <actor> splits <item>.
+- **derive** (verb, state) → relation item.derives from. An item split from another names that item as the one its lines came from. Forms: derives, derived. Frame: <item> derives from <item>.
