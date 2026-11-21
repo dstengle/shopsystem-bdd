@@ -5,6 +5,7 @@ import datetime
 import re
 from pathlib import Path
 
+import shop_ids
 import spec_read
 from model_catalogue import CatalogueReading
 from model_domain import DomainReading
@@ -268,6 +269,8 @@ class Model(SpecReading, WorkReading, RequestReading, DomainReading, CatalogueRe
                 continue        # a retired universal condition a decision still rests on (b240 phase 14)
             if self.frozen_request(ident):
                 continue        # a request of the frozen queue is history too (D7): its file is still there
+            if shop_ids.held(self.root, ident, self.path):
+                continue        # an item or a batch a record is about, by the file that holds it (b49)
             if self.moved(ident):
                 continue        # a requirement moved by the domain contract (0.38.0): spec/moves.json resolves it
             if re.fullmatch(r"quote-(\d+)", str(ident)) and (self.root / ".shop" / "quotes" /

@@ -28,6 +28,18 @@ def with_readme(repo):
     git(repo, "commit", "-q", "-m", "records")
 
 
+def with_nodes(repo):
+    """The capability `thing` and the record `2026-11-05-x`, nodes an `--about` may denote (b49), committed."""
+    (repo / "spec/capabilities").mkdir(parents=True)
+    (repo / "spec/capabilities/thing.md").write_text("---\nid: capability/ex.com/prod/ctx/thing\n---\n# Thing\n")
+    (repo / ".shop/records").mkdir(parents=True, exist_ok=True)
+    (repo / ".shop/records/2026-11-05-x.md").write_text(
+        "---\nid: record/ex.com/prod/ctx/2026-11-05-x\nkind: analysis\nabout: capability/thing\ndate: 2026-11-05\n"
+        "---\n\n# X\n")
+    git(repo, "add", "-A")
+    git(repo, "commit", "-q", "-m", "nodes")
+
+
 def test_the_record_is_written_whole(backlog_repo, tmp_path_factory):
     done = record(backlog_repo, tmp_path_factory)
     assert done.returncode == 0, done.stderr
@@ -39,6 +51,7 @@ def test_the_record_is_written_whole(backlog_repo, tmp_path_factory):
 
 
 def test_a_measurement_is_named_by_its_kind(backlog_repo, tmp_path_factory):
+    with_nodes(backlog_repo)
     done = work(backlog_repo, "record", "Runs", "--kind", "measurement", "--summary", "s", "--body",
                 body(tmp_path_factory), "--date", "2026-11-05", "--about", "capability/thing")
     data, _ = frontmatter((backlog_repo / done.stdout.strip()).read_text())
@@ -73,6 +86,7 @@ def test_an_existing_path_is_refused(backlog_repo, tmp_path_factory):
 
 
 def test_an_about_that_names_no_node_is_refused(backlog_repo, tmp_path_factory):
+    with_nodes(backlog_repo)
     before = state(backlog_repo)
     for about in ("capability/thing\nkind: forged", "thing", "widget/thing", "capability/"):
         done = record(backlog_repo, tmp_path_factory, "--about", about)

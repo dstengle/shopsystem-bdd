@@ -2,7 +2,7 @@
 frontmatter (id, kind, about, date) and `# <title>` over the body a file gives, its row appended to the table of
 `.shop/records/README.md`, and the two committed together. A path that exists already is refused, since a committed
 record is never edited, and so is an `--about` that is not one line or not the id of a kind of node `model` knows
-(r57)."""
+(r57), or that denotes no node, item or batch the repository holds (records r3, r5, r6, b49)."""
 import datetime
 import re
 from pathlib import Path
@@ -45,7 +45,8 @@ def add_parser(sub):
     p.add_argument("--kind", required=True, choices=KINDS, help="the record's kind")
     p.add_argument("--summary", required=True, help="the text of its row in .shop/records/README.md, one line")
     p.add_argument("--body", required=True, help="a file whose text is the record's body, under its title")
-    p.add_argument("--about", help="the id of the node the record is about, <kind>/<...> on one line (default: the bounded context)")
+    p.add_argument("--about", help="the id of the node, item or batch the record is about, <kind>/<...> on one line, one this "
+                   "repository holds (default: the bounded context)")
     p.add_argument("--slug", help="the file's name after its date (default: from the title)")
     p.add_argument("--date", help="the record's date, YYYY-MM-DD (default: today)")
 
@@ -57,17 +58,33 @@ def one_line(text, what):
     return text
 
 
-def attributed(about):
+def attributed(about, root="."):
     """An `--about` as the frontmatter holds it: one line, `<kind>/<...>` of a kind of node `model` knows (a design or
-    an analysis is `record/...`)."""
+    an analysis is `record/...`), an item or a batch, that denotes a node, an item or a batch this repository holds
+    (b49): its id, or `<kind>/<name>` in this context."""
+    import shop_ids
     from model_facts import KINDS as NODE_KINDS
+    kinds = NODE_KINDS | set(HISTORY.values()) | set(shop_ids.KINDS)
     kind, _, rest = about.strip().partition("/")
     if (any(ch in about for ch in shop_files.LINE_BREAKS) or not rest or not re.fullmatch(r"\S+", rest)
-            or kind not in NODE_KINDS | set(HISTORY.values())):
+            or kind not in kinds):
         raise shop_files.Refused("{names} %r is not one line naming a node: <kind>/<...>, the kind one of %s"
-                                 % (about, ", ".join(sorted(NODE_KINDS | set(HISTORY.values())))),
-                                 reason="names no node", names=["parameter:about"])
+                                 % (about, ", ".join(sorted(kinds))), reason="names no node", names=["parameter:about"])
+    if not denotes(Path(root), about.strip()):
+        raise shop_files.Refused("{names} %r denotes no node, item or batch this repository holds" % about.strip(),
+                                 reason="denotes nothing", names=["parameter:about"])
     return about.strip()
+
+
+def denotes(root, about):
+    """True when `about` is the id of an item or a batch the root holds, or of a node `model` reads there."""
+    import shop_ids
+    if about.partition("/")[0] in shop_ids.KINDS:
+        return shop_ids.held(root, about, shop_files.context_path(root))
+    from model_facts import Model
+    model = Model(root)
+    model.read()
+    return model.qualify(about) in model.nodes
 
 
 def with_row(readme, row):
@@ -101,7 +118,7 @@ def write(root, title, summary, kind, body, *, about=None, slug=None, date=None)
     if (root / rel).exists():
         raise shop_files.Refused("%s exists, and a committed record is never edited: give another {names}" % rel,
                                  reason="record exists", names=["parameter:slug"])
-    about = attributed(about) if about is not None else "bounded-context/%s" % path
+    about = attributed(about, root) if about is not None else "bounded-context/%s" % path
     text = ("---\nid: %s/%s/%s\nkind: %s\nabout: %s\ndate: %s\n---\n\n# %s\n\n%s\n"
             % (HISTORY.get(kind, kind), path, name, kind, about, date, title, text_of_body))
     row = "| `%s.md` | %s | %s |\n" % (name, summary, kind)
