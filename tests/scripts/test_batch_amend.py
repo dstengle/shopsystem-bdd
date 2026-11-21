@@ -27,7 +27,7 @@ def test_an_amended_item_is_laid_again_renumbered_and_its_built_lines_kept(start
     assert 'work-queue#r6 -> work-queue#r7' in done.stdout
     item = backlog_items.find(started, "b1")
     assert "- [r7] %s" % THIRD in item.sections["Requirements"]
-    assert [t.status for t in batch_plan.find(started, "batch-1").tasks][0] == "running"
+    assert next(t.status for t in batch_plan.find(started, "batch-1").tasks) == "running"
     lined = git(started, "show", "batch-1:%s" % CAP)
     assert "- [r7] %s" % THIRD in lined and "- [r6] " in lined and unbuilt(lined) == ["r5", "r6", "r7"], lined
     task = git(started, "show", "batch-1-b1:%s" % CAP)

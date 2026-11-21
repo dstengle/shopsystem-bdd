@@ -20,7 +20,16 @@ import batch_plan
 import batch_start
 import spec_corpus_write
 import spec_unbuilt
-from batch_git import git, has_branch, is_tree, locked, remove_tree, tree_for, trees_dir, uncommitted
+from batch_git import (
+    git,
+    has_branch,
+    is_tree,
+    locked,
+    remove_tree,
+    tree_for,
+    trees_dir,
+    uncommitted,
+)
 from batch_tasks import building, tree_of
 from shop_files import Refused
 

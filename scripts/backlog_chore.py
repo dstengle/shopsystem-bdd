@@ -22,6 +22,7 @@ from backlog_section import SECTION, takes
 
 HEADING = "Chore"
 OWNED = ("spec", "features", ".shop")
+TAKES = ("idea", "shaped")       # an in-batch item's chore is not changed: `work batch amend` lays only lines (b460)
 
 
 class Chore(NamedTuple):
@@ -82,7 +83,7 @@ def write(root, item_name, files, check):
     """`work chore`: the item's `## Chore` written (or replaced) and the item committed; refused while the item holds
     a requirement, naming it."""
     item = find(root, item_name)
-    takes(item, "work chore")
+    takes(item, "work chore", TAKES)
     held = requirements(item)
     if held:
         import backlog_lines

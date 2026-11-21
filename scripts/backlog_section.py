@@ -273,8 +273,8 @@ def capability_file(root, capability):
     return path
 
 
-def takes(item, command="work line"):
-    """Refused unless the item is idea, shaped or in-batch, the states whose lines may change."""
-    if item.status not in TAKES:
-        raise Refused("%s: %s is %s; %s takes an item that is idea, shaped or in-batch" % (
-            command, label(item), item.status, command))
+def takes(item, command="work line", states=TAKES):
+    """Refused unless the item is in one of `states` (idea, shaped or in-batch, the states whose lines may change)."""
+    if item.status not in states:
+        raise Refused("%s: %s is %s; %s takes an item that is %s" % (
+            command, label(item), item.status, command, " or ".join((", ".join(states[:-1]), states[-1]))))
