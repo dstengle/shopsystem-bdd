@@ -59,6 +59,9 @@ def add_parsers(sub):
     p.add_argument("--retires", metavar="CAP#rN", help="the live requirement `<capability>#r<n>` the line replaces: "
                    "its id goes under the block's retired:, the line into that capability; with --universal, the "
                    "live universal condition `universal#U<n>` it replaces")
+    p.add_argument("--retirement-list", metavar="FILE", help="a file of pairs `<capability>#r<n> <line>`, each line "
+                   "retiring its live requirement as --retires does, all in one commit; refused whole on an id no "
+                   "requirement has")
     p.add_argument("--no-line", action="store_true", help="with --retires: the live requirement retired with no line "
                    "replacing it, its id under the block's retired: and no line written")
     p.add_argument("--reword", metavar="CAP#rN", help="the item's own line `<capability>#r<n>` the requirement line "
@@ -178,6 +181,9 @@ def cmd_line(args):
     if args.capability is not None:
         import backlog_capability
         return backlog_capability.cmd(args)
+    if args.retirement_list is not None:
+        import backlog_retirements
+        return backlog_retirements.cmd(args)
     if args.no_line:
         return _unreplaced(args)
     if args.reword is not None or args.remove is not None:
