@@ -78,9 +78,9 @@ $ work ready b250
 b250 "Items carry labels" ready
 ```
 
-The first `work ready` after a new word takes longer (seconds on a small spec, under a minute on a large one), because
-the grammar is rebuilt with the word in it and the spec's lines are parsed again in it, several at once; after that it
-answers in a second or two.
+The first `work ready` after a new word takes longer than the ones after it, because the grammar is rebuilt with the
+word in it and the spec's lines are parsed again in it, several at once; after that the parses are kept, and it answers
+from them.
 The line has a precondition ("While an item has a label") because the items capability holds a group on the same
 trigger already ("When the person shows an item"); two groups of one capability with the same condition and trigger
 are refused (`v15n`), and the bar says which.
