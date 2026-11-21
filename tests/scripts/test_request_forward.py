@@ -30,7 +30,7 @@ def test_a_repository_not_administered_is_polled_through_notifications(backlog_r
     done = watch(backlog_repo, env, "--every", "0.2", "--polls", "50")
     assert done.returncode == 0, done.stderr
     assert done.stdout.splitlines() == [
-        "q1 %s comment 9: %s#issuecomment-9 (`work sync` records it)" % (OTHER, OTHER)]
+        "q1 %s comment 9: %s#issuecomment-9 (`work sync` applies it)" % (OTHER, OTHER)]
     assert "polling GitHub's notifications for ex/up" in done.stderr
     forwards = calls(where, "webhook", "forward")
     assert [argv[argv.index("--repo") + 1] for argv in forwards] == ["ex/ctx"]
@@ -71,7 +71,7 @@ def test_a_comment_listed_by_the_notifications_baseline_wakes_the_watch(backlog_
     done = watch(backlog_repo, env, "--every", "0.2", "--polls", "5")
     assert done.returncode == 0, done.stderr
     assert done.stdout.splitlines() == [
-        "q1 %s comment 9: %s#issuecomment-9 (`work sync` records it)" % (OTHER, OTHER)]
+        "q1 %s comment 9: %s#issuecomment-9 (`work sync` applies it)" % (OTHER, OTHER)]
     assert "If-Modified-Since" not in " ".join(calls(where, "api")[0])
 
 
@@ -109,7 +109,7 @@ def a_comment_after_the_start_is_reported(backlog_repo, tmp_path_factory, monkey
     done = watch(backlog_repo, env, "--every", "0.2", "--polls", "5")
     assert done.returncode == 0, done.stderr
     assert done.stdout.splitlines() == [
-        "q1 %s comment 9: %s#issuecomment-9 (`work sync` records it)" % (OTHER, OTHER)]
+        "q1 %s comment 9: %s#issuecomment-9 (`work sync` applies it)" % (OTHER, OTHER)]
     return where
 
 

@@ -85,8 +85,9 @@ def found(root):
         if not issue:
             continue
         for url, body in request_sync.unheld_comments(root, text, COMMAND):
-            line = "%s %s comment %s: %s (`work sync` records it)" % (name, issue, comment_number(url), url)
-            out.append((url, line, not is_readable(body)))
+            bad = not is_readable(body)
+            end = "unreadable: `work sync` notes it as such, applying nothing" if bad else "`work sync` applies it"
+            out.append((url, "%s %s comment %s: %s (%s)" % (name, issue, comment_number(url), url, end), bad))
     for url, title, body in request_sync.unheld_issues(root, COMMAND):
         if is_ask(body):
             out.append((url, "ask %s %s (`work sync` takes it in)" % (url, " ".join(title.split())), False))
