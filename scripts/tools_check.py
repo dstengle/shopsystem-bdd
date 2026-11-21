@@ -1,16 +1,29 @@
-"""tools: ruff, vulture and import-linter over the paths given or changed (check)."""
+"""tools: ruff, vulture and import-linter over the paths given or changed (check): with no paths, the Python files
+the branch checked out changed against `--base`, else against its base branch (`base`), `main` or the branch the
+`base` of `.shop/delivery.toml` names (b490)."""
 import os
 import subprocess
+import tomllib
 from pathlib import Path
 
 from tools_env import TOOLS, Refused, probed
 
 
+def base():
+    """The base branch of the repository: the `base` of `.shop/delivery.toml`, else `main`."""
+    path = Path(".shop/delivery.toml")
+    try:
+        named = tomllib.loads(path.read_text(encoding="utf-8")).get("base") if path.is_file() else None
+    except tomllib.TOMLDecodeError as err:
+        raise Refused("%s: %s" % (path, err)) from None
+    return named if isinstance(named, str) and named else "main"
+
+
 def cmd_check(args):
     python, _why, found = probed(args)
     paths = args.paths
-    if args.base:
-        done = subprocess.run(["git", "diff", "--name-only", "--diff-filter=d", args.base, "--", "*.py"],
+    if args.base or not paths:
+        done = subprocess.run(["git", "diff", "--name-only", "--diff-filter=d", args.base or base(), "--", "*.py"],
                               capture_output=True, text=True)
         if done.returncode:
             raise Refused(done.stderr.strip())
