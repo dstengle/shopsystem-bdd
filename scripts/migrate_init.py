@@ -57,6 +57,9 @@ requirement.
 
 DELIVERY = """# How this repository's batches are delivered (`work batch`), every key at its default: uncomment one to change it.
 
+# The base branch `tools check` with no paths checks the branch's change against.
+# base = "main"
+
 # How many ready items a batch picks.
 # batch_size = 4
 

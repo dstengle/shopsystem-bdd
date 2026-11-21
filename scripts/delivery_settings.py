@@ -1,6 +1,6 @@
 """`work settings set <setting> <value>` (b462, batches r84-r86): one setting of `.shop/delivery.toml` set in its own
 table (toml_edit: every comment and other key kept) and committed. The delivery settings form is the settings the
-plugin reads there, each under its table and of its type (`FORM`): `batch_size`, `batch.push`, `batch.tests`,
+plugin reads there, each under its table and of its type (`FORM`): `base`, `batch_size`, `batch.push`, `batch.tests`,
 `batch.worktrees`, `review.size`, `review.checks` and `prices.<model>`; a setting named otherwise is refused naming
 the setting, and a value not of its type naming the value (`setting`, `value`). `problems`, the keys of a settings
 file's text outside the form."""
@@ -33,13 +33,13 @@ def _price(v):
 
 
 # each setting: (its table, its key) -> (what its value is, the check of it)
-FORM = {((), "batch_size"): ("a whole number of 1 or more", _count),
+FORM = {((), "base"): ("a text", _text), ((), "batch_size"): ("a whole number of 1 or more", _count),
         (("batch",), "push"): ("a text", _text), (("batch",), "tests"): ("a text", _text),
         (("batch",), "worktrees"): ("a text", _text),
         (("review",), "size"): ("a whole number of 1 or more", _count),
         (("review",), "checks"): ("a list of texts", _texts)}
 PRICE = ("a table of %s, numbers of 0 or more" % ", ".join(FIELDS), _price)
-NAMES = ["batch_size", "batch.push", "batch.tests", "batch.worktrees", "review.size", "review.checks",
+NAMES = ["base", "batch_size", "batch.push", "batch.tests", "batch.worktrees", "review.size", "review.checks",
          "prices.<model>"]
 
 

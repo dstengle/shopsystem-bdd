@@ -530,7 +530,7 @@ batch-35 abandoned
 #### `work settings set`
 
 Sets one setting of `.shop/delivery.toml` in its own table, every comment and other key kept, and commits it. The
-settings are `batch_size`, `batch.push`, `batch.tests`, `batch.worktrees`, `review.size`, `review.checks` and
+settings are `base`, `batch_size`, `batch.push`, `batch.tests`, `batch.worktrees`, `review.size`, `review.checks` and
 `prices.<model>`; a setting the plugin does not read, or a value not of its type, is refused, naming it.\
 Synopsis: `work settings set setting value`
 
@@ -1145,7 +1145,8 @@ grammar:
 
 ### `tools check`
 
-Runs ruff, vulture and import-linter over the paths given, or the Python files changed since `--base`.\
+Runs ruff, vulture and import-linter over the paths given, or the Python files changed since `--base`; with neither,
+the Python files changed since the base branch, `base` of `.shop/delivery.toml` or else `main`.\
 Synopsis: `tools check [--python PYTHON] [--base BASE] [paths ...]`
 
 ```console
