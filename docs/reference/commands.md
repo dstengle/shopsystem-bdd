@@ -258,14 +258,14 @@ $ work merge b252 --into b250 --reason "b250 prints the theme too"
 b252 "A colour theme for work backlog" withdrawn
 ```
 
-#### `work note`
+#### `work annotate`
 
 Adds a line to the `## Notes` of an item that is `idea`, `shaped`, `ready` or `needs-input` (a rating's reason, a
 finding while shaping), in one commit of the item; a closed item is refused, named.\
-Synopsis: `work note name note`
+Synopsis: `work annotate name note`
 
 ```console
-$ work note b250 "value high: every session reads the status"
+$ work annotate b250 "value high: every session reads the status"
 b250 "work show prints the status of an item": a note
 ```
 

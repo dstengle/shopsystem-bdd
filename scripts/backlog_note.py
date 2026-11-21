@@ -1,4 +1,4 @@
-"""`work note` and `work merge` (b281): a note added to an open item, and an open item withdrawn into the item that
+"""`work annotate` and `work merge` (b281): a note added to an open item, and an open item withdrawn into the item that
 takes its place, with the reason; each one commit of the item's file, read just before it is written so that what
 another commit wrote to it is kept (backlog.annotate, backlog.merge)."""
 from backlog_items import Refused, commit, find, label
@@ -27,9 +27,9 @@ def note(root, name, text):
     """A line under ## Notes of an item that is open (items#r38); a closed one refused, naming it (items#r39)."""
     from backlog_moves import text_line
     item = find(root, name)
-    _open(item, "work note")
+    _open(item, "work annotate")
     with_note(item, text_line(text, "note"))
-    commit(root, item, "work note: %s" % label(item))
+    commit(root, item, "work annotate: %s" % label(item))
     return item
 
 
@@ -53,7 +53,7 @@ def merge(root, name, into, reason):
 
 
 def add_parsers(sub):
-    p = sub.add_parser("note", help="add a line to the ## Notes of an item that is idea, shaped, ready or needs-input")
+    p = sub.add_parser("annotate", help="add a line to the ## Notes of an item that is idea, shaped, ready or needs-input")
     p.add_argument("name")
     p.add_argument("note")
     p = sub.add_parser("merge", help="withdraw an item that is idea, shaped, ready or needs-input into the item that "
@@ -75,4 +75,4 @@ def cmd_merge(args):
     return 0
 
 
-COMMANDS = {"note": cmd_note, "merge": cmd_merge}
+COMMANDS = {"annotate": cmd_note, "merge": cmd_merge}

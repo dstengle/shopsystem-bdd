@@ -421,7 +421,7 @@ requirements = [
 item = { positional = 1 }
 
 [operations."backlog.annotate"]
-command = "work note"
+command = "work annotate"
 requirements = [
   "items#r38: While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person annotates the item with a note, the backlog service shall keep the item.",
   "items#r39: While the status of an item is one of `delivered`, `refused` or `withdrawn`, if the person annotates the item, then the backlog service shall refuse the request and name the item.",

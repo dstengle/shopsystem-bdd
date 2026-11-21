@@ -35,10 +35,10 @@ def run_on_item(step):
     B.run_work(step, verb, B.ident(step.names[-1]), *TEXT.get(verb, ()))
 
 
-@four("WhenRuns", "`work note`", *BOTH)
+@four("WhenRuns", "`work annotate`", *BOTH)
 def work_note(step):
     """b281: a note on the item, given or not ("annotates the item i1 with a note", "annotates the item i1")."""
-    B.run_work(step, "note", B.ident(step.names[-1]), "a note the person adds")
+    B.run_work(step, "annotate", B.ident(step.names[-1]), "a note the person adds")
 
 
 @four("WhenRuns", "`work merge --into --reason`", *BOTH)
