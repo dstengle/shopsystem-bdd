@@ -225,8 +225,9 @@ XFAIL tests/scenarios/test_items.py::test_an_item_shown_gives_its_status - unbui
 ### The readiness bar, on a copy of `spec/`
 
 An item becomes `ready` only by passing a mechanical check, so the questions come before the build, not during it.
-`work ready` copies `spec/` to a temporary directory, lays the item's lines into the copy, and runs the pipeline
-above over it: every line parses, the lexicon gains no problem, `spec logic` finds no L0 and no L1 naming the
+`work ready` copies `spec/` (and the construct catalogue `grammar/constructs.md`, when the context keeps one) to a
+temporary directory, lays the item's lines into the copy, and runs the pipeline above over it: every line parses
+(and uses no construct the catalogue has no entry of), the lexicon gains no problem, `spec logic` finds no L0 and no L1 naming the
 item's lines, and `features generate` writes a scenario for each group. Your real `spec/` is never written.
 
 Here is an item whose line contradicts a delivered one:

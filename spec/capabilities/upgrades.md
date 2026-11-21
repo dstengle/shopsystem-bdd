@@ -7,7 +7,7 @@ area: upgrades
 specifies: service upgrades
 language: codified-2
 retired: [g31, r31, g38, r38]
-unbuilt: [r39, r40]
+unbuilt: []
 ---
 
 # Upgrades

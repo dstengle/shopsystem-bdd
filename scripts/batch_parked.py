@@ -2,8 +2,10 @@
 out of `batch-<n>` at once, in one commit citing it (`take_out`), and `work batch done` runs a task's tests in a
 worktree of the task's head with every parked item's lines taken out (`tested_tree`), so that a parked item's scenario
 holds up no other task. Both take the lines out as `work batch review` does (`batch_start.unlay_lines`), each item as it
-was laid (`as_laid`, b324): an item reshaped after its park is taken out by the lines the batch branch holds."""
+was laid (`as_laid`, b324; after `work batch amend`, as it last laid it, b460): an item reshaped after its park is
+taken out by the lines the batch branch holds."""
 import contextlib
+import re
 
 import backlog_items
 import batch_plan
@@ -20,16 +22,27 @@ def as_laid(root, batch, items):
     """Each of `items` as `work batch start` laid it (batches r45, b324): its file in the base's commit that added the
     batch's plan, its ids renumbered; the item as it now reads when that commit or its file there is not found."""
     added = git(root, "log", "--diff-filter=A", "--format=%H", "--", batch_plan.rel_of(batch.name)).stdout.split()
-    if not added:
-        return list(items)
     laid = []
     for item in items:
         rel = backlog_items.rel_of(item.name)
+        source = amended(root, batch, item) or (added[-1] if added else None)
         try:
-            laid.append(backlog_items.parse(git(root, "show", "%s:%s" % (added[-1], rel)).stdout, rel))
+            laid.append(backlog_items.parse(git(root, "show", "%s:%s" % (source, rel)).stdout, rel) if source else item)
         except GitFailed:
             laid.append(item)
     return laid
+
+
+def amended(root, batch, item):
+    """The base's commit named by the `Laid:` line of the latest `work batch amend` commit of the item on the batch
+    branch (b460), or None."""
+    try:
+        body = git(root, "log", "-1", "--format=%B", "--all-match", "--grep=^Item: %s$" % item.name,
+                   "--grep=^Laid: ", batch.branch, "--").stdout
+    except GitFailed:
+        return None
+    found = re.search(r"(?m)^Laid: ([0-9a-f]{7,40})$", body)
+    return found.group(1) if found else None
 
 
 def take_out(root, batch, items, command):

@@ -27,7 +27,7 @@ from backlog_model import ModelBlock
 
 SECTION = "Requirements"
 UNIVERSAL, INDEX = "universal", "index"
-TAKES = ("idea", "shaped")
+TAKES = ("idea", "shaped", "in-batch")     # an in-batch item's lines are laid again by `work batch amend` (b460)
 Group = namedtuple("Group", "id title requirements given", defaults=((),))
 Block = namedtuple("Block", "capability terms groups relations retired language new retires",
                    defaults=((), (), None, None, ()))
@@ -260,17 +260,21 @@ def ids(blocks):
 
 
 def capability_file(root, capability):
-    """spec/capabilities/<capability>.md of `root`; refused when there is none, or it is not codified (D4)."""
+    """spec/capabilities/<capability>.md of `root`; refused when there is none, or it is not codified (D4), naming
+    the item that holds it as a new capability and its batch, when one does (b450)."""
     path = Path(root) / "spec" / "capabilities" / ("%s.md" % capability)
     if "/" in capability or capability in (UNIVERSAL, INDEX) or not spec_read.codified(path):
         new = "" if path.exists() else "; a new one is given to an item with `work line <item> --capability %s`" % (
             capability)
+        holders = [] if path.exists() else __import__("backlog_retract").holders(root, capability)
+        if holders:
+            new = "; it is new on %s, and its lines go into that item" % ", ".join(holders)
         raise Refused("there is no codified capability %s in spec/capabilities/%s" % (capability, new))
     return path
 
 
 def takes(item, command="work line"):
-    """Refused unless the item is idea or shaped, the states whose lines may change."""
+    """Refused unless the item is idea, shaped or in-batch, the states whose lines may change."""
     if item.status not in TAKES:
-        raise Refused("%s: %s is %s; %s takes an item that is idea or shaped" % (command, label(item), item.status,
-                                                                               command))
+        raise Refused("%s: %s is %s; %s takes an item that is idea, shaped or in-batch" % (
+            command, label(item), item.status, command))

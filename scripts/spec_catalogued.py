@@ -28,6 +28,16 @@ def missing(root):
     return [e for e in CONSTRUCTS if e["code"] not in have]
 
 
+def copy(root, to):
+    """The context's catalogue at `root` copied to the same path under `to`, a copy of its `spec/` (the readiness bar's,
+    `spec parse --item`'s), so a line read there is refused as it is in the context (b444); none kept, nothing."""
+    import shutil
+    path = Path(root) / CATALOGUE
+    if path.is_file():
+        (Path(to) / CATALOGUE).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, Path(to) / CATALOGUE)
+
+
 def refusal(root, vocab, tree):
     """The refusal of a tree that uses a construct the catalogue has no entry of, naming the construct, or None."""
     lacking = missing(root)
