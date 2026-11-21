@@ -66,10 +66,13 @@ def capability(node):
 # group whose own capability has handlers of its own is not listed
 ADDED = {"consistency#g33": "design-model-check", "consistency#g34": "design-model-check",     # b418
          "drafting#g25": "readiness", "reviews#g6": "batches",   # b354: a term of a new capability; b449
+         "drafting#g28": "readiness",                            # b458: the decisions a retired requirement enforces
          "measurement#g10": "telemetry", "measurement#g11": "batch-measurement",    # b420: compare's frames of two
          "items#g31": "backlog", "items#g32": "backlog",                         # b431: work reopen
          "parsing#g19": "design-model-check", "parsing#g20": "design-model-check",     # b452: spec parse --item
          "parsing#g22": "design-model-check",
+         **{"items#g%d" % n: "backlog" for n in (33, 34, 38, 39)},               # b281: work merge, work annotate
+         "items#g35": "readiness", "items#g36": "readiness",                     # b281: a ready item checked again
          **{"checking#g%d" % n: "design-model-check" for n in range(52, 58)}}     # b370: the rule catalogue's checks
 
 

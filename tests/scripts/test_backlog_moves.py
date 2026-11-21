@@ -10,7 +10,8 @@ from backlog_testing import REPO, git, state, work, write_item
 MOVES = sorted((command, before, after) for command, row in backlog_moves.TRANSITIONS.items()
                for before, after in row.items())
 REFUSED = sorted((command, status) for command, row in backlog_moves.TRANSITIONS.items()
-                 for status in backlog_items.STATUSES if status not in row)
+                 for status in backlog_items.STATUSES if status not in row
+                 and (command, status) != ("work ready", "ready"))     # checked again (items#r35, r36)
 
 
 def args_of(command):

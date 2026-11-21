@@ -167,7 +167,7 @@ once, so you can fix them in one go.
 
 ```console
 $ work ready b250
-work: work ready: b250 "The backlog keeps quiet about an item's title" is not passing:
+work ready: b250 "The backlog keeps quiet about an item's title" is not passing:
   items#g31: v15n two groups of a capability share features, condition and trigger: with items#g12
   L1 items#r12 and #r31 clash: on "the person shows an item", r12 obliges and r31 forbids the backlog service to return a title
 ```
@@ -180,7 +180,7 @@ change r12, say so: `work line b250 --into items --retires items#r12 "<the new l
 
 ```console
 $ work ready b255
-work: work ready: b255 "probe steps 3" is not passing:
+work ready: b255 "probe steps 3" is not passing:
   items: items#r31: refused: no translation of no there
 ```
 
@@ -193,7 +193,7 @@ Reword it with a construct the step grammar has. The simplest fix is usually to 
 
 ```console
 $ work ready b252
-work: work ready: b252 "work show prints the status, asked" is not passing:
+work ready: b252 "work show prints the status, asked" is not passing:
   line 1 of request q15 is unanswered, not settled: When the person shows an item, the backlog service shall return the status of the item.
 ```
 
@@ -210,7 +210,7 @@ terminal.
 
 ```console
 $ work batch done batch-34 t1
-work: work batch done: t1 b251 "work show prints the status" has uncommitted changes in .shop/worktrees/batch-34-t1: scripts/backlog_cli.py
+work batch done: t1 b251 "work show prints the status" has uncommitted changes in .shop/worktrees/batch-34-t1: scripts/backlog_cli.py
 ```
 
 A task is done only when everything in its worktree is committed. Commit the file or throw the change away.
@@ -219,7 +219,7 @@ A task is done only when everything in its worktree is committed. Commit the fil
 
 ```console
 $ work batch done batch-34 t1
-work: work batch done: t1 b251 "work show prints the status": a commit on batch-34-b251 cites no item (an `Item: b251` line): b5c6deced "work show: print the status"
+work batch done: t1 b251 "work show prints the status": a commit on batch-34-b251 cites no item (an `Item: b251` line): b5c6deced "work show: print the status"
 ```
 
 Every commit on a task's branch ends with a last paragraph `Item: b251`, so the history says why it was made. Amend
@@ -229,7 +229,7 @@ the commit's message (or reword it during a rebase) to add that line.
 
 ```console
 $ work batch done batch-34 t1
-work: work batch done: t1 b251 "work show prints the status": still in unbuilt: items#r31
+work batch done: t1 b251 "work show prints the status": still in unbuilt: items#r31
 ```
 
 `work batch start` put the item's ids into the capability's `unbuilt:`, so their scenarios run as expected
@@ -239,7 +239,7 @@ failures. The commit that makes a scenario pass takes its id out of `unbuilt:`. 
 
 ```console
 $ work batch done batch-34 t1
-work: work batch done: t1 b251 "work show prints the status": the tests `python3 -m pytest -q -p work_items tests/scenarios/test_items.py` failed in .shop/worktrees/batch-34-t1 (exit 1):
+work batch done: t1 b251 "work show prints the status": the tests `python3 -m pytest -q -p work_items tests/scenarios/test_items.py` failed in .shop/worktrees/batch-34-t1 (exit 1):
 ...
 E       AssertionError: ('the backlog service returns the status of the item i1', 'b1 "Title of i1"\n  status: idea\n ...')
 ...
@@ -254,7 +254,7 @@ The last twenty lines of the run come with the refusal. The command is `[batch] 
 
 ```console
 $ work batch review batch-34
-work: work batch review: t1 b251 "work show prints the status": batch-34-b251 does not merge: CONFLICT (content): Merge conflict in README.md into batch-34
+work batch review: t1 b251 "work show prints the status": batch-34-b251 does not merge: CONFLICT (content): Merge conflict in README.md into batch-34
 ```
 
 Two branches changed the same lines. `review` puts everything back as it was, so nothing is half-merged. Resolve
@@ -264,14 +264,14 @@ it on the task's branch (rebase it onto `batch-34`, or change the file so it mer
 
 ```console
 $ work batch review batch-34
-work: work batch review: batch-34: f1 b251 "work show prints the status" (fix now) has no commit citing it; fix it on batch-34-b251 with Finding: f1, or park b251
+work batch review: batch-34: f1 b251 "work show prints the status" (fix now) has no commit citing it; fix it on batch-34-b251 with Finding: f1, or park b251
 ```
 
 After a review with "fix now" findings, each fix commit carries `Finding: f1` beside its `Item:` line, and each open
 finding needs a commit that cites it. The opposite case is refused too:
 
 ```text
-work: work batch review: batch-34: 669c007c0 "README: the task edit taken out" on batch-34-b251 cites no open finding (a Finding: f<m> line); the open findings are f1 (b251)
+work batch review: batch-34: 669c007c0 "README: the task edit taken out" on batch-34-b251 cites no open finding (a Finding: f<m> line); the open findings are f1 (b251)
 ```
 
 `work batch resume batch-34` prints where to fix each finding.
@@ -372,7 +372,7 @@ after another. One batch is open at a time:
 
 ```console
 $ work batch start
-work: work batch start: batch-34 is building; one batch is open at a time
+work batch start: batch-34 is building; one batch is open at a time
 ```
 
 And `work` commits nothing from a task's branch, so the backlog only moves on the base branch:

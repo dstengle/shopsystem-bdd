@@ -385,10 +385,10 @@ stateDiagram-v2
   needs_input --> shaped: work answer
   idea --> refused: work refuse
   shaped --> refused: work refuse
-  idea --> withdrawn: work withdraw
-  shaped --> withdrawn: work withdraw
-  ready --> withdrawn: work withdraw
-  needs_input --> withdrawn: work withdraw
+  idea --> withdrawn: work withdraw or work merge
+  shaped --> withdrawn: work withdraw or work merge
+  ready --> withdrawn: work withdraw or work merge
+  needs_input --> withdrawn: work withdraw or work merge
 ```
 
 In words: an idea is **shaped** once it has a purpose and lines, **ready** once it passes the readiness bar, and
@@ -440,7 +440,7 @@ deletes the note):
 
 ```console
 $ work ready b2
-work: work ready: b2 "notes remove keeps the note" is not passing:
+work ready: b2 "notes remove keeps the note" is not passing:
   L1 notes#r4 and #r5 clash: on "the person runs `notes remove` on a note", r4 obliges and r5 forbids `notes` to delete a note
 ```
 

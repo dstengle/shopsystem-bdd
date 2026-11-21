@@ -64,7 +64,7 @@ sentence>.` Leave off the leading `- ` and `work line` tells you so:
 
 ```console
 $ work line b250 --into items --term "**label** (noun) → object label. A short word."
-work: work line: the vocabulary entry **label** (noun) → object label. A short word. is not `- **<word>** (<part of speech>) → <element>. ...`
+work line: the vocabulary entry **label** (noun) → object label. A short word. is not `- **<word>** (<part of speech>) → <element>. ...`
 ```
 
 `spec parse` in your checkout doesn't know `label` yet: the word lives on the item until a batch lays it into
@@ -226,7 +226,7 @@ b251 "work backlog shows labels": an upstream entry
 
   ```console
   $ work line b250 --into items --relation "item: has label"
-  work: work line: the relation item: has label is not `<object>: <phrase> → <object> (<cardinality>)`
+  work line: the relation item: has label is not `<object>: <phrase> → <object> (<cardinality>)`
   ```
 - **`--given <group> '<data>'`** puts example data under one of the item's own groups. Sample values belong
   here, never in a line. The data must look like data: `the <words> <name> holds` and a code span or a quoted
@@ -234,7 +234,7 @@ b251 "work backlog shows labels": an upstream entry
 
   ```console
   $ work line b251 --into backlog --given g38 'the item has a label'
-  work: work line: the given block the item has a label is malformed: the item has a label is not example data (`the <words> <name> holds:` with data under it, or `the <words> <name> holds` and one code span or quoted string)
+  work line: the given block the item has a label is malformed: the item has a label is not example data (`the <words> <name> holds:` with data under it, or `the <words> <name> holds` and one code span or quoted string)
   ```
 
 - **`--universal "<line>"`** adds a condition to `spec/universal.md`, true in every state. It takes no `--into`.
@@ -278,7 +278,7 @@ capability's and the other picked items' when it lays them. `--retires` names a 
 
 ```console
 $ work line b252 --into items --retires items#r1000 "When the person shows an item, the backlog service shall return the title of the item."
-work: work line: items#r1000 is nonexistent: items holds no live requirement r1000
+work line: items#r1000 is nonexistent: items holds no live requirement r1000
 ```
 
 A line retired with nothing in its place takes `--no-line` in place of the new line:
@@ -460,7 +460,7 @@ and passes over a blocked one, unless its blocker is picked first. A dependency 
 
 ```console
 $ work depend b250 --on b251
-work: work depend: b250 "Items carry labels" on b251 "work backlog shows labels" closes the cycle b250 "Items carry labels" -> b251 "work backlog shows labels" -> b250 "Items carry labels"
+work depend: b250 "Items carry labels" on b251 "work backlog shows labels" closes the cycle b250 "Items carry labels" -> b251 "work backlog shows labels" -> b250 "Items carry labels"
 ```
 
 `work depend b251 --drop b250` takes a dependency off. `work backlog --json` prints the same as one JSON object.
@@ -474,7 +474,7 @@ carries on:
 
 ```console
 $ work batch park batch-34 b250 --question "Should work show print the labels sorted, or in the order they were given?"
-work: work batch park: t1 b250 "Items carry labels" has uncommitted changes in .shop/worktrees/batch-34-t1: scripts/backlog_view.py; commit them on batch-34-b250 with `Item: b250`, or pass --discard
+work batch park: t1 b250 "Items carry labels" has uncommitted changes in .shop/worktrees/batch-34-t1: scripts/backlog_view.py; commit them on batch-34-b250 with `Item: b250`, or pass --discard
 $ work batch park batch-34 b250 --discard --question "Should work show print the labels sorted, or in the order they were given?"
 batch-34 b250 "Items carry labels" -> needs-input: Should work show print the labels sorted, or in the order they were given?
 ```
@@ -500,7 +500,7 @@ goes through `work ready` and into a later batch.
 
 ```console
 $ work batch abandon batch-35
-work: work batch abandon: t1 b250 "Items carry labels" has uncommitted changes in .shop/worktrees/batch-35-t1: scripts/backlog_view.py; commit them on batch-35-b250 with `Item: b250`, or pass --discard
+work batch abandon: t1 b250 "Items carry labels" has uncommitted changes in .shop/worktrees/batch-35-t1: scripts/backlog_view.py; commit them on batch-35-b250 with `Item: b250`, or pass --discard
 $ work batch abandon batch-35 --discard
 batch-35 abandoned
 ```
