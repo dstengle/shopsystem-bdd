@@ -42,6 +42,11 @@ FORMS = [
     Form("design-decision", "spec/decisions/<nnnn>-<slug>.md", "work decision"),
     Form("decisions index", "spec/decisions/index.md", "spec decisions"),
     Form("rule catalogue", "grammar/rules.md", "spec rules --write"),
+    Form("construct catalogue", "grammar/constructs.md", "spec constructs --write"),
+    Form("catalogue entries", "grammar/catalogue-entries.toml", "plugin item b462 (no command yet)"),
+    Form("spec corpus block", "grammar/corpus/spec/<capability>.md", "work batch start"),
+    Form("term pack", "spec/packs/<name>.md", "by hand (no command yet)"),
+    Form("working rules", "CLAUDE.md", "by hand (no command yet)"),
     Form("record", ".shop/records/<date>-<slug>.md", "work record"),
     Form("records index row", ".shop/records/README.md", "work record"),
     Form("feature", "features/<capability>.feature", "features generate"),
@@ -53,8 +58,8 @@ FORMS = [
     Form("capability", "spec/capabilities/<name>.md", "work line --capability"),
     Form("item's model lines", ".shop/backlog/b<n>.md ## Requirements ### <area> model",
          "work line --model"),
-    Form("domain model area", "spec/model/<area>.md", "plugin item b354 (no command yet)"),
-    Form("vocabulary term", "spec/vocabulary/<area>.md", "plugin item b13 (no command yet)"),
+    Form("domain model area", "spec/model/<area>.md", "plugin item b398 (no command yet)"),
+    Form("vocabulary term", "spec/vocabulary/<area>.md", "plugin item b398 (no command yet)"),
     Form("adapter contract", "spec/adapters/<port>.toml", "plugin item b355 (no command yet)"),
     Form("adapter contract's requirements", "spec/adapters/<port>.toml, each operation's requirements", "spec annotate"),
     Form("capability moves", "spec/moves.json", "migrate upgrade"),
@@ -78,7 +83,7 @@ def cmd_forms(args):
                   % (form.name, form.path), file=sys.stderr)
         return 1 if hand else 0
     if args.json:
-        print(json.dumps({"forms": [form._asdict() for form in FORMS]}))
+        print(json.dumps({"forms": [dict(form._asdict(), kind=form.kind) for form in FORMS]}))
         return 0
     name = max(len(f.name) for f in FORMS)
     path = max(len(f.path) for f in FORMS)

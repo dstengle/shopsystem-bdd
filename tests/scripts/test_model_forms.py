@@ -32,6 +32,22 @@ def test_each_form_without_a_command_names_an_item_or_the_hand():
         assert not found or (REPO / ".shop" / "backlog" / ("%s.md" % found.group(1))).is_file(), form
 
 
+def test_each_item_it_names_is_open():
+    """A form names an item that will give it a command only while that item is open (b451)."""
+    for form in model_forms.FORMS:
+        found = re.fullmatch(r"plugin item (b\d+) \(no command yet\)", form.writer)
+        if found:
+            text = (REPO / ".shop" / "backlog" / ("%s.md" % found.group(1))).read_text()
+            assert not re.search(r"^status: (delivered|withdrawn|refused)$", text, re.M), form
+
+
+def test_it_lists_the_catalogues_the_corpus_the_packs_and_the_working_rules():
+    paths = {f.path for f in model_forms.FORMS}
+    for path in ("grammar/constructs.md", "grammar/corpus/spec/<capability>.md", "grammar/catalogue-entries.toml",
+                 "spec/packs/<name>.md", "CLAUDE.md"):
+        assert path in paths, path
+
+
 def test_it_prints_every_form_on_its_line(tmp_path):
     done = run(SCRIPTS / "spec", "--root", tmp_path, "forms")
     assert done.returncode == 0, done.stderr
@@ -46,13 +62,21 @@ def test_it_prints_every_form_on_its_line(tmp_path):
 
 def test_json_is_one_object(tmp_path):
     done = run(SCRIPTS / "spec", "--root", tmp_path, "forms", "--json")
-    assert json.loads(done.stdout)["content"] == {"forms": [f._asdict() for f in model_forms.FORMS]}
+    forms = json.loads(done.stdout)["content"]["forms"]
+    assert forms == [dict(f._asdict(), kind=f.kind) for f in model_forms.FORMS]
+    assert {f["kind"] for f in forms} == {"command", "item", "hand"}
 
 
-def test_check_passes_this_repository_and_refuses_a_form_by_hand(tmp_path, monkeypatch, capsys):
-    """No form of this plugin is written by hand: a new form by hand fails here (b317)."""
+def test_check_refuses_each_form_by_hand_and_passes_with_none(monkeypatch, capsys):
+    """`--check` names each form written by hand and exits 1 (b317, b451); with none it exits 0, printing nothing."""
+    hand = [f for f in model_forms.FORMS if f.kind == "hand"]
     done = run(SCRIPTS / "spec", "--root", REPO, "forms", "--check")
-    assert (done.returncode, done.stdout, done.stderr) == (0, "", "")
+    assert (done.returncode, done.stdout) == (1 if hand else 0, "")
+    for form in hand:
+        assert "%s (%s) is written by hand" % (form.name, form.path) in done.stderr
+    args = type("A", (), {"check": True, "json": False})()
+    monkeypatch.setattr(model_forms, "FORMS", [f for f in model_forms.FORMS if f.kind != "hand"])
+    assert model_forms.cmd_forms(args) == 0
     monkeypatch.setattr(model_forms, "FORMS", model_forms.FORMS + [model_forms.Form("x", "x.md", "by hand")])
-    assert model_forms.cmd_forms(type("A", (), {"check": True, "json": False})()) == 1
+    assert model_forms.cmd_forms(args) == 1
     assert "x (x.md) is written by hand" in capsys.readouterr().err
