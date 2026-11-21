@@ -112,3 +112,4 @@ A record file is a node for `scripts/model` only when its frontmatter has an `id
 | `2026-11-21-the-readiness-bar-before-and-after-batch-57.md` | b437 cut the bar's cold run on a fresh item from 434 s to 44 s; warm stays 14 s, which is b430's | measurement |
 | `2026-11-21-the-new-user-flow-missing-commands-and-time-outside-agent-time.md` | A fresh context runs fine; 15 command gaps and defects ranked by hand commits; the suite at batch done and the cold grammar are the top non-agent costs | analysis |
 | `2026-11-21-a-plan-to-publish-contracts-between-bounded-contexts.md` | What a published contract holds (business rules and ports), how ports link to the core, how a downstream reads it and falls back to a request; for the person's review | analysis |
+| `2026-11-21-release-0-43-0.md` | Release 0.43.0: batch-57 (b437, b441) and batch-58 (b439, b430) with decision 0112; the readiness bar in seconds; tag v0.43.0 and its GitHub release. | analysis |
