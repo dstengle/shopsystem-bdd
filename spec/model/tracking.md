@@ -34,6 +34,7 @@ object item kind of file
   relations: has → dependency | request line | title | shaping note | scenario | requirement | task | defect (many); holds → relation row | universal condition | upstream entry | given block | requirement | capability | term | requirement id | requirement group | chore (many); proposes → requirement (many); meets → readiness bar | bar check (many)
   relations: holds → model line (many)
   relations: holds → operation table | operation (many)
+  relations: exceeds → review limit (many)
 
 object backlog
 
@@ -128,7 +129,7 @@ service backlog
   operation list()  outcomes: returned → every item
   operation reopen(item)  outcomes: done | refused: item not ready
   operation annotate(item, note)  outcomes: done | refused: item closed
-  operation merge(item, successor, reason)  outcomes: done | refused: item closed
+  operation merge(item, successor, reason)  outcomes: done | refused: item closed, successor closed, successor that is the item
 
 service drafting
   operation draft(item, relation row, universal condition, universal condition id, upstream entry, given block, requirement id, requirement, capability)
@@ -187,4 +188,8 @@ object domain model kind of file
   relations: holds → model line | operation (many)
 
 object operation-table form kind of artifact
+
+object successor kind of item
+
+object review limit
 ```

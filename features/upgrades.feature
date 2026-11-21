@@ -1067,9 +1067,26 @@ Feature: Upgrades
     Then the upgrades service returns the scenario conftest s1
     And the upgrades service does not change the scenario conftest s1
 
-  @g39 @r39
-  Scenario: Founding a bounded context keeps its context scaffold and an ignore file that does not conform
-    Given the tracked file `README.md` holds "A new context."
+  @g41 @r41
+  Scenario: Founding a bounded context with a context purpose writes it in the index file
+    Given this bounded context has no index file
+    And this repository has no shop directory
+    And a context id c1
+    And a context purpose c2
+    When the person founds this bounded context with the context id c1 and the context purpose c2
+    Then the upgrades service keeps the index file i1
+    And the index file i1 has the context purpose c2
+    And the upgrades service completes this request
+
+  @g42 @r42
+  Scenario: Founding a bounded context adds a name an anchored entry covers only at the top
+    Given the tracked file `.gitignore` holds:
+      """
+      .venv/
+      /__pycache__/
+      .pytest_cache/
+      .ruff_cache/
+      """
     And this bounded context has no index file
     And this repository has no shop directory
     And an ignore file i1
@@ -1077,17 +1094,18 @@ Feature: Upgrades
     And the ignore file i1 does not conform to the ignore file form
     And a context id c1
     When the person founds this bounded context with the context id c1
-    Then the upgrades service keeps the context scaffold c2
+    Then the upgrades service changes the ignore file i1
+    And the upgrades service keeps the context scaffold c2
     And this repository has the context scaffold c2
     And the upgrades service keeps the ignore file i1
     And the upgrades service completes this request
 
-  @g40 @r40
-  Scenario: Founding a bounded context leaves an ignore file that conforms alone
+  @g43 @r43
+  Scenario: Founding a bounded context leaves an ignore file that conforms as git reads it alone
     Given the tracked file `.gitignore` holds:
       """
       .venv
-      /__pycache__/
+      __pycache__
       .pytest_cache/
       .ruff_cache
       """
@@ -1101,15 +1119,4 @@ Feature: Upgrades
     Then the upgrades service keeps the context scaffold c2
     And this repository has the context scaffold c2
     And the upgrades service does not change the ignore file i1
-    And the upgrades service completes this request
-
-  @g41 @r41
-  Scenario: Founding a bounded context with a context purpose writes it in the index file
-    Given this bounded context has no index file
-    And this repository has no shop directory
-    And a context id c1
-    And a context purpose c2
-    When the person founds this bounded context with the context id c1 and the context purpose c2
-    Then the upgrades service keeps the index file i1
-    And the index file i1 has the context purpose c2
     And the upgrades service completes this request

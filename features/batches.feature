@@ -29,20 +29,6 @@ Feature: Batches
     When the person abandons the batch b1
     Then the batches service does not keep the review folder r1
 
-  @g53 @r53
-  Scenario: A ready item that meets the bar and depends on nothing open goes into the batch opened
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And the item i1 has no dependency
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service sets the status of the item i1 to `in-batch`
-    And the batches service keeps the batch b2
-    And the batch b2 holds the item i1
-    And the batches service keeps the batch plan b3
-    And the batch b2 has the batch plan b3
-
   @g54 @r54
   Scenario: A ready item that no longer meets the bar goes back to shaped
     Given an item i1
@@ -582,3 +568,28 @@ Feature: Batches
     Then the operation o1 has the operation table o2
     And the batches service keeps the adapter contract a1
     And the adapter contract a1 holds the operation table o2
+
+  @g93 @r93
+  Scenario: A ready item whose change would take the batch past the review limit stays out of the batch
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And the item i1 exceeds the review limit
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service does not set the status of the item i1 to `in-batch`
+
+  @g94 @r94
+  Scenario: work batch start splits a batch whose items' change would pass the reviewer's 1000-line limit
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And the item i1 has no dependency
+    And the item i1 does not exceed the review limit
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service sets the status of the item i1 to `in-batch`
+    And the batches service keeps the batch b2
+    And the batch b2 holds the item i1
+    And the batches service keeps the batch plan b3
+    And the batch b2 has the batch plan b3

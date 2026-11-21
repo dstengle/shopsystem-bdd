@@ -358,38 +358,6 @@ Feature: Items
     Then the backlog service refuses this request
     And the backlog service names the item i1
 
-  @g33 @r33
-  Scenario: An open item merged into another item is withdrawn (case 1)
-    Given an item i1
-    And the status of the item i1 is `idea`
-    When the person merges the item i1 with a successor and a reason
-    Then the backlog service sets the status of the item i1 to `withdrawn`
-    And the backlog service keeps the item i1
-
-  @g33 @r33
-  Scenario: An open item merged into another item is withdrawn (case 2)
-    Given an item i1
-    And the status of the item i1 is `shaped`
-    When the person merges the item i1 with a successor and a reason
-    Then the backlog service sets the status of the item i1 to `withdrawn`
-    And the backlog service keeps the item i1
-
-  @g33 @r33
-  Scenario: An open item merged into another item is withdrawn (case 3)
-    Given an item i1
-    And the status of the item i1 is `ready`
-    When the person merges the item i1 with a successor and a reason
-    Then the backlog service sets the status of the item i1 to `withdrawn`
-    And the backlog service keeps the item i1
-
-  @g33 @r33
-  Scenario: An open item merged into another item is withdrawn (case 4)
-    Given an item i1
-    And the status of the item i1 is `needs-input`
-    When the person merges the item i1 with a successor and a reason
-    Then the backlog service sets the status of the item i1 to `withdrawn`
-    And the backlog service keeps the item i1
-
   @g34 @r34
   Scenario: A closed item is not merged (case 1)
     Given an item i1
@@ -556,3 +524,170 @@ Feature: Items
     When the person withdraws the item i1 with a reason
     Then the backlog service sets the status of the item i1 to `withdrawn`
     And the backlog service keeps the item i1
+
+  @g43 @r43
+  Scenario: An item is not merged into itself
+    Given a successor s1
+    When the person merges the successor s1 with the successor s1 and a reason
+    Then the backlog service refuses this request
+    And the backlog service names the successor s1
+
+  @g44 @r44
+  Scenario: An open item merged into a successor is withdrawn (case 1)
+    Given a successor s1
+    And the successor s1 exists
+    And an item i1
+    And the status of the item i1 is `idea`
+    When the person merges the item i1 with the successor s1 and a reason
+    Then the backlog service sets the status of the item i1 to `withdrawn`
+    And the backlog service keeps the item i1
+
+  @g44 @r44
+  Scenario: An open item merged into a successor is withdrawn (case 2)
+    Given a successor s1
+    And the successor s1 exists
+    And an item i1
+    And the status of the item i1 is `shaped`
+    When the person merges the item i1 with the successor s1 and a reason
+    Then the backlog service sets the status of the item i1 to `withdrawn`
+    And the backlog service keeps the item i1
+
+  @g44 @r44
+  Scenario: An open item merged into a successor is withdrawn (case 3)
+    Given a successor s1
+    And the successor s1 exists
+    And an item i1
+    And the status of the item i1 is `ready`
+    When the person merges the item i1 with the successor s1 and a reason
+    Then the backlog service sets the status of the item i1 to `withdrawn`
+    And the backlog service keeps the item i1
+
+  @g44 @r44
+  Scenario: An open item merged into a successor is withdrawn (case 4)
+    Given a successor s1
+    And the successor s1 exists
+    And an item i1
+    And the status of the item i1 is `needs-input`
+    When the person merges the item i1 with the successor s1 and a reason
+    Then the backlog service sets the status of the item i1 to `withdrawn`
+    And the backlog service keeps the item i1
+
+  @g45 @r45
+  Scenario: An item is not merged into a closed successor (case 1)
+    Given a successor s1
+    And the status of the successor s1 is `delivered`
+    And an item i1
+    And the status of the item i1 is `idea`
+    When the person merges the item i1 with the successor s1 and a reason
+    Then the backlog service refuses this request
+    And the backlog service names the successor s1
+
+  @g45 @r45
+  Scenario: An item is not merged into a closed successor (case 2)
+    Given a successor s1
+    And the status of the successor s1 is `delivered`
+    And an item i1
+    And the status of the item i1 is `shaped`
+    When the person merges the item i1 with the successor s1 and a reason
+    Then the backlog service refuses this request
+    And the backlog service names the successor s1
+
+  @g45 @r45
+  Scenario: An item is not merged into a closed successor (case 3)
+    Given a successor s1
+    And the status of the successor s1 is `delivered`
+    And an item i1
+    And the status of the item i1 is `ready`
+    When the person merges the item i1 with the successor s1 and a reason
+    Then the backlog service refuses this request
+    And the backlog service names the successor s1
+
+  @g45 @r45
+  Scenario: An item is not merged into a closed successor (case 4)
+    Given a successor s1
+    And the status of the successor s1 is `delivered`
+    And an item i1
+    And the status of the item i1 is `needs-input`
+    When the person merges the item i1 with the successor s1 and a reason
+    Then the backlog service refuses this request
+    And the backlog service names the successor s1
+
+  @g45 @r45
+  Scenario: An item is not merged into a closed successor (case 5)
+    Given a successor s1
+    And the status of the successor s1 is `refused`
+    And an item i1
+    And the status of the item i1 is `idea`
+    When the person merges the item i1 with the successor s1 and a reason
+    Then the backlog service refuses this request
+    And the backlog service names the successor s1
+
+  @g45 @r45
+  Scenario: An item is not merged into a closed successor (case 6)
+    Given a successor s1
+    And the status of the successor s1 is `refused`
+    And an item i1
+    And the status of the item i1 is `shaped`
+    When the person merges the item i1 with the successor s1 and a reason
+    Then the backlog service refuses this request
+    And the backlog service names the successor s1
+
+  @g45 @r45
+  Scenario: An item is not merged into a closed successor (case 7)
+    Given a successor s1
+    And the status of the successor s1 is `refused`
+    And an item i1
+    And the status of the item i1 is `ready`
+    When the person merges the item i1 with the successor s1 and a reason
+    Then the backlog service refuses this request
+    And the backlog service names the successor s1
+
+  @g45 @r45
+  Scenario: An item is not merged into a closed successor (case 8)
+    Given a successor s1
+    And the status of the successor s1 is `refused`
+    And an item i1
+    And the status of the item i1 is `needs-input`
+    When the person merges the item i1 with the successor s1 and a reason
+    Then the backlog service refuses this request
+    And the backlog service names the successor s1
+
+  @g45 @r45
+  Scenario: An item is not merged into a closed successor (case 9)
+    Given a successor s1
+    And the status of the successor s1 is `withdrawn`
+    And an item i1
+    And the status of the item i1 is `idea`
+    When the person merges the item i1 with the successor s1 and a reason
+    Then the backlog service refuses this request
+    And the backlog service names the successor s1
+
+  @g45 @r45
+  Scenario: An item is not merged into a closed successor (case 10)
+    Given a successor s1
+    And the status of the successor s1 is `withdrawn`
+    And an item i1
+    And the status of the item i1 is `shaped`
+    When the person merges the item i1 with the successor s1 and a reason
+    Then the backlog service refuses this request
+    And the backlog service names the successor s1
+
+  @g45 @r45
+  Scenario: An item is not merged into a closed successor (case 11)
+    Given a successor s1
+    And the status of the successor s1 is `withdrawn`
+    And an item i1
+    And the status of the item i1 is `ready`
+    When the person merges the item i1 with the successor s1 and a reason
+    Then the backlog service refuses this request
+    And the backlog service names the successor s1
+
+  @g45 @r45
+  Scenario: An item is not merged into a closed successor (case 12)
+    Given a successor s1
+    And the status of the successor s1 is `withdrawn`
+    And an item i1
+    And the status of the item i1 is `needs-input`
+    When the person merges the item i1 with the successor s1 and a reason
+    Then the backlog service refuses this request
+    And the backlog service names the successor s1
