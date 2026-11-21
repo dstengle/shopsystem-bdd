@@ -45,7 +45,7 @@ FORMS = [
     Form("construct catalogue", "grammar/constructs.md", "spec constructs --write"),
     Form("catalogue entries", "grammar/catalogue-entries.toml", "spec catalogue entry"),
     Form("spec corpus block", "grammar/corpus/spec/<capability>.md", "work batch start"),
-    Form("term pack", "spec/packs/<name>.md", "by hand (no command yet)"),
+    Form("term pack", "spec/packs/<name>.md", "work line --pack"),
     Form("record", ".shop/records/<date>-<slug>.md", "work record"),
     Form("records index row", ".shop/records/README.md", "work record"),
     Form("feature", "features/<capability>.feature", "features generate"),

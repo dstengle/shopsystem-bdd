@@ -28,6 +28,15 @@ def _blocks(item):
     return read(item, "the item %s" % item.name)
 
 
+def refuse_beside(args, piece):
+    """`work line`'s options refused beside the one piece given: `--group` and `--in` beside any but a requirement
+    line (b476), `--into` and `--retires` beside `--recodify`."""
+    if piece != "text" and {args.group, args.in_group} != {None}:
+        raise Refused("work line: --group and --in take a requirement line, not --%s" % piece)
+    if piece == "recodify" and (args.into is not None or args.retires is not None):
+        raise Refused("work line: --recodify takes no --into or --retires")
+
+
 def _refuse(what, text, why):
     raise Refused("work line: the %s %s is malformed: %s" % (what, text, why))
 
@@ -92,13 +101,11 @@ def given_block(text):
 
 def _kept_blanks(lines):
     """`lines` less each blank line that is not inside a docstring, between two of its indented text lines (b476)."""
-    kept = []
-    for i, line in enumerate(lines):
+    def inside(i):
         before = next((x for x in reversed(lines[:i]) if x), "")
         after = next((x for x in lines[i + 1:] if x), "")
-        if line or before.startswith("  ") and after.startswith("  ") and not before.strip().startswith("|"):
-            kept.append(line)
-    return kept
+        return before.startswith("  ") and after.startswith("  ") and not before.strip().startswith("|")
+    return [line for i, line in enumerate(lines) if line or inside(i)]
 
 
 def _capability_block(blocks, capability):
@@ -259,8 +266,8 @@ def _universal_file(into):
 
 
 def lay_spec(into, blocks, files):
-    """The item's universal conditions and upstream entries laid into `into/spec`; each path changed added to
-    `files`."""
+    """The item's universal conditions, upstream entries and pack terms (backlog_pack) laid into `into/spec`; each
+    path changed added to `files`."""
     if blocks.universal:
         path = _universal_file(into)
         path.write_text(with_lines(path.read_text(), "Behaviour", ["- [%s] %s" % u for u in blocks.universal]))
@@ -269,6 +276,7 @@ def lay_spec(into, blocks, files):
         path = Path(into) / INDEX_REL
         path.write_text(with_lines(path.read_text(), "Upstreams", ["- %s" % b for b in blocks.upstreams]))
         files.append(INDEX_REL)
+    __import__("backlog_pack").lay(into, blocks, files)
 
 
 def unlay_spec(into, blocks, files):
@@ -280,14 +288,13 @@ def unlay_spec(into, blocks, files):
         for line in ["- [%s] %s" % u for u in blocks.universal]:
             found = re.search(r"(?m)^%s\n?" % re.escape(line), text)
             text = text if found is None else text[:found.start()] + text[found.end():]
-        if text.rstrip("\n") == _scaffold(into).rstrip("\n"):     # the file the lay made, taken out (b476)
-            universal.unlink()
-            files.append(UNIVERSAL_REL)
-        elif text != universal.read_text():
-            universal.write_text(text)
+        made = text.rstrip("\n") == _scaffold(into).rstrip("\n")     # the file the lay made, taken out (b476)
+        if made or text != universal.read_text():
+            universal.unlink() if made else universal.write_text(text)
             files.append(UNIVERSAL_REL)
     if blocks.upstreams and index.is_file():
         text = without_lines(index.read_text(), "Upstreams", ["- %s" % b for b in blocks.upstreams])
         if text != index.read_text():
             index.write_text(text)
             files.append(INDEX_REL)
+    __import__("backlog_pack").unlay(into, blocks, files)
