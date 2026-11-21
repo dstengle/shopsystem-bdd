@@ -40,3 +40,18 @@ shall []
         change(e1, subject: x1, object: x3)
 ```
 
+## U20
+From: b60 U20.
+
+```reading
+While this repository is in the workspace of a task, if a service keeps a kept change, then the service shall refuse the request and name the task.
+shall [x1: repository "the repository the request is made in" (indexical), x6: request "the request the trigger makes" (indexical)]
+  while [x2: task, x3: workspace]
+    of(x3, x2)
+    in(x1, x3)
+  if [x4: service, x5: kept change]
+    keep(e1, subject: x4, object: x5)
+  response
+    refuse(e2, subject: x4, object: x6)
+    name(e3, subject: x4, object: x2)
+```

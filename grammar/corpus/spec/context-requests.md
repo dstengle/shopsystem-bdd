@@ -947,3 +947,24 @@ shall [x2: agent the person (constant), x3: service the context requests service
     of(x6, x1)
     initiates(e6, subject: x3, status(x6) = `closed`)
 ```
+
+## r56
+From: b71 r56.
+
+```reading
+While a context request is `awaiting-asker` and a channel does not provide the thread of the context request, when the person passes the turn of the context request, the context requests service shall set the status of the context request to `awaiting-upstream`, set the side of the context request to `upstream` and keep an entry on the context request.
+shall [x4: agent the person (constant), x6: service the context requests service (constant)]
+  while [x1: context request, x2: channel, x3: thread]
+    status(x1) = `awaiting-asker`
+    of(x3, x1)
+    not
+      provide(subject: x2, object: x3)
+  when [x5: turn]
+    of(x5, x1)
+    request(e1, context requests.pass turn, subject: x4, object: x5)
+  response [x7: entry]
+    initiates(e2, subject: x6, status(x1) = `awaiting-upstream`)
+    initiates(e3, subject: x6, side(x1) = `upstream`)
+    on(x7, x1)
+    keep(e4, subject: x6, object: x7)
+```

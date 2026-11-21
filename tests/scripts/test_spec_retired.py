@@ -69,9 +69,9 @@ def test_the_spec_integration_steps_are_gone():
 def test_the_universal_conditions_of_work_run_are_retired():
     """U1, U2, U6, U9 and U10 stated guarantees of `work run` and initiatives (plan-9 review S2, the-old-workflow-retired);
     U11, U4, U5, U7 and U8 are reworded in grammar 4 as U12-U16 (b155, b240), and those in request words as U17-U19,
-    U13 and U16 retired into design-decisions (the domain contract, 0.38.0)."""
+    U13 and U16 retired into design-decisions (the domain contract, 0.38.0); U20 is new (b60)."""
     doc = spec_read.read_universal(REPO)
     assert doc.problems == []
     assert doc.frontmatter["retired"] == ["U1", "U2", "U3", "U6", "U9", "U10", "U11", "U4", "U5", "U7", "U8", "U12",
                                           "U13", "U14", "U15", "U16"]
-    assert [u.id for u in doc.conditions] == ["U17", "U18", "U19"]
+    assert [u.id for u in doc.conditions] == ["U17", "U18", "U19", "U20"]

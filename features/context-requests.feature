@@ -694,3 +694,19 @@ Feature: Context requests
     And the entry e1 is on the context request c1
     And the context requests service sets the status of the thread t1 to `closed`
     And the context request c1 has the thread t1
+
+  @g56 @r56
+  Scenario: A turn passed is posted though the channel does not provide its thread
+    Given a context request c1
+    And the status of the context request c1 is `awaiting-asker`
+    And a thread t1
+    And the context request c1 has the thread t1
+    And a channel c2
+    And the channel c2 does not provide the thread t1
+    And a turn t2
+    And the context request c1 has the turn t2
+    When the person passes the turn t2
+    Then the context requests service sets the status of the context request c1 to `awaiting-upstream`
+    And the context requests service sets the side of the context request c1 to `upstream`
+    And the context requests service keeps the entry e1
+    And the entry e1 is on the context request c1

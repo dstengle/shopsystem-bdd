@@ -3,7 +3,8 @@
 Keep the person's words with the turns around them in .shop/quotes/, named `quote-<n>` (capability conversation).
 Keep the requests between bounded contexts in .shop/requests/, named `q<n>` (capability requests).
 Write a design-decision under spec/decisions/ with `work decision` (capability decision-tiers), and a
-record under .shop/records/ with `work record` (capability design-model-check).
+record, a design's folder or a plan in it under .shop/records/ with `work record`, and an observation with
+`work observe` (capability records).
 Plugin 0.30's queue of initiatives and work-items is frozen under .shop/work/ and read as files (workflow simplification
 plan 9)."""
 import argparse
@@ -20,6 +21,7 @@ import batch_cli
 import conversation_cli
 import decision_write
 import delivery_settings
+import observation_write
 import record_write
 import request_cli
 import request_moves
@@ -139,13 +141,14 @@ def main(argv=None):
     decision_write.add_parser(sub)
     delivery_settings.add_parser(sub)
     record_write.add_parser(sub)
+    observation_write.add_parser(sub)
     request_cli.add_parsers(sub)
     args = prepare(ap).parse_args(argv)
     handler = {"show": cmd_show, "list": cmd_list, "answer": cmd_answer, "withdraw": cmd_withdraw,
                "request": cmd_request, "outcome": cmd_outcome, "ask": cmd_ask, "reply": cmd_reply, "turn": cmd_turn,
                "resolve": cmd_resolve, **backlog_cli.COMMANDS, **batch_cli.COMMANDS,
                **conversation_cli.COMMANDS, **request_cli.COMMANDS, **decision_write.COMMANDS,
-               **record_write.COMMANDS, **backlog_chore.COMMANDS,
+               **record_write.COMMANDS, **observation_write.COMMANDS, **backlog_chore.COMMANDS,
                **backlog_note.COMMANDS, **backlog_split.COMMANDS, **delivery_settings.COMMANDS}[args.cmd]
     return respond("work", handler, args, names=getattr(handler, "parameters", None))
 

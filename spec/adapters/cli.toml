@@ -811,6 +811,7 @@ requirements = [
   "context-requests#r35: While a context request originates from this bounded context and the context request does not address this bounded context and the context request is `open`, if the person passes the turn of the context request, then the context requests service shall refuse the request and name the context request.",
   "context-requests#r36: While a context request originates from this bounded context and the context request does not address this bounded context and the context request is `awaiting-upstream`, if the person passes the turn of the context request, then the context requests service shall refuse the request and name the context request.",
   "context-requests#r45: When the person passes the turn of a context request, the context requests service shall return the context request and the status of the context request.",
+  "context-requests#r56: While a context request is `awaiting-asker` and a channel does not provide the thread of the context request, when the person passes the turn of the context request, the context requests service shall set the status of the context request to `awaiting-upstream`, set the side of the context request to `upstream` and keep an entry on the context request.",
 ]
 [operations."context requests.pass turn".parameters]
 turn = { positional = 1 }
@@ -1314,3 +1315,33 @@ requirements = [
 [operations."backlog.split".parameters]
 item = { positional = 1 }
 requirement = { option = "--requirement", repeat = true }
+
+[operations."records.file design"]
+command = "work record"
+requirements = [
+  "records#r7: When the person files a design, the records service shall keep the design.",
+]
+[operations."records.file design".parameters]
+design = { option = "--design", flag = true }
+title = { positional = 1 }
+summary = { option = "--summary" }
+
+[operations."records.file plan"]
+command = "work record"
+requirements = [
+  "records#r4: When the person files a plan with a design, the records service shall keep the plan and keep the design that holds the plan.",
+  "records#r8: If the person files a plan with a design that does not exist, then the records service shall refuse the request and name the design.",
+]
+[operations."records.file plan".parameters]
+plan = { option = "--plan", flag = true }
+design = { option = "--design", example = "2026-01-01-a-design" }
+title = { positional = 1 }
+
+[operations."records.file observation"]
+command = "work observe"
+cli-only = { options = ["--about", "--by", "--date", "--slug"] }
+requirements = [
+  "records#r9: When the person files an observation, the records service shall keep the observation.",
+]
+[operations."records.file observation".parameters]
+summary = { positional = 1 }

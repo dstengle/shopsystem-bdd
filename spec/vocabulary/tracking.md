@@ -165,3 +165,4 @@ area: tracking
 - **availability** (attribute) → attribute channel.availability. Whether the channel takes a change to a thread it holds.
 - **available** (noun) → value channel.availability available.
 - **rejecting** (noun) → value channel.availability rejecting.
+- **provide** (verb, state) → relation channel.provides. A channel gives a thread with its entries to the one that reads the thread. Forms: provides, provided. Frame: <channel> provides <thread>.

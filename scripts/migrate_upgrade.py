@@ -154,6 +154,11 @@ def identity(root):
 
 
 def upgrade(root):
+    try:  # U20: it commits by itself, not through shop_files.committed, so it refuses a task's branch before any step
+        shop_files.refuse_task_branch(root)
+    except shop_files.Refused as refused:
+        print("migrate changed nothing; %s" % refused, file=sys.stderr)
+        return 1
     held = no_version(root)
     if held:
         print("migrate changed nothing; " + refusal(held), file=sys.stderr)

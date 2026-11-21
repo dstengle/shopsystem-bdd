@@ -264,6 +264,9 @@ Restates: requests#r30@0.29.
 ### [g55] An accepted context request resolved is delivered and its thread closed
 - [r55] While a context request is `accepted`, when the person resolves the context request, the context requests service shall set the status of the context request to `delivered`, keep a resolution, set the side of the context request to `asker`, keep an entry on the context request and set the status of the thread of the context request to `closed`.
 
+### [g56] A turn passed is posted though the channel does not provide its thread
+- [r56] While a context request is `awaiting-asker` and a channel does not provide the thread of the context request, when the person passes the turn of the context request, the context requests service shall set the status of the context request to `awaiting-upstream`, set the side of the context request to `upstream` and keep an entry on the context request.
+
 ## Dropped
 - requests#r11@0.29: retired with context-requests#r29 by b68.
 - requests#r24@0.29: retired with context-requests#r29 by b68.

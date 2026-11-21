@@ -1,7 +1,8 @@
-"""Context requests' thread and its channel (b68, context-requests r51, r52, r54, r55): a request's thread is the issue it is
-on in the stand-in gh (requests_world), its channel GitHub; a channel whose availability is `rejecting` is a stand-in
-whose `gh issue close` fails (`$STUB_GH_FAIL`, requests_world.env); the thread `closed` is the issue's state in the
-stand-in once the command ran. Each a `local` of work_queue_world's table, loaded after requests_handlers_givens so
+"""Context requests' thread and its channel (b68, context-requests r51, r52, r54, r55; b71, r56): a request's thread is
+the issue it is on in the stand-in gh (requests_world), its channel GitHub; a channel whose availability is `rejecting`
+is a stand-in whose `gh issue close` fails (`$STUB_GH_FAIL`, requests_world.env), and a channel that does not provide
+a thread one whose `gh issue view` fails; the thread `closed` is the issue's state in the stand-in once the command
+ran. Each a `local` of work_queue_world's table, loaded after requests_handlers_givens so
 it is tried first, passing on any step not of a thread or a channel or of another scenario than b68's groups'."""
 import sys
 from pathlib import Path
@@ -10,7 +11,7 @@ W = sys.modules["shop_work_queue_world"]
 Q = sys.modules["shop_requests_world"]
 
 
-GROUPS = {"g51", "g52", "g54", "g55"}     # context-requests' groups of b68, the only scenarios these steps are taken in
+GROUPS = {"g51", "g52", "g54", "g55", "g56"}     # context-requests' groups of b68 and b71, the only scenarios these steps are taken in
 
 
 def _ours(step):
@@ -51,6 +52,14 @@ def given_channel(step):
         return False
     if step.values and step.values[0].strip("`") == "rejecting" and " not " not in step.text:
         step.context["gh_fail"] = "issue close"
+
+
+@W.local("GivenDoesNot")
+def given_unprovided(step):
+    """`the channel c2 does not provide the thread t1`: GitHub fails to show the issue."""
+    if not _ours(step) or step.term != "provide":
+        return False
+    step.context["gh_fail"] = "issue view"
 
 
 @W.local("GivenDoes")
