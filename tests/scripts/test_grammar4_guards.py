@@ -10,7 +10,14 @@ of the construct catalogue's contexts, with no compile:
 - the whole grammar's funs at most `FUNS_PER_KIND` a kind;
 - spec_rgl_np.senses' funs, 2A(A-1) for A attribute entries sharing a word (79,600 at A = 200), at most `SENSES`;
 
-and, compiled, the parse of a fixed set of lines within `BUDGET` seconds, loose enough for 32 xdist workers at once.
+and, compiled, the parse of a fixed set of lines within `BUDGET` seconds, parsed once more before it fails.
+
+The line set parses in 1.6 s alone. `LOADED` is the slowest parse measured under load (b442, 2026-11-21, 32 CPUs):
+the whole suite under `python3 -m pytest -n 32` took 6.1 s (load average 20), and seven such suites at once in one
+worktree, as `work batch done` runs seven tasks' suites, took 5.3 s to 18.1 s over two rounds of seven (load average
+220 to 254). Twice `LOADED` reaches the 28.6 s of the grammar before b437, so `BUDGET` is not doubled: it sits between
+`LOADED` and 28.6 s, and a parse over it is retried once, so a passing load does not fail the guard while a grammar
+that multiplies, slower than 28.6 s under any load, fails both.
 
 The grammar before b437's factoring had, in this repository, 1480 funs taking a slash category for 218 kinds (6.8 a
 kind) and 8929 funs (41.0 a kind), and parsed the line set in 28.6 s; after it, 820 (3.8 a kind), 7824 (35.9 a kind)
@@ -42,7 +49,8 @@ SLASHED = ("VPSlash", "ClSlash", "RS")
 SLASH_PER_KIND = 5
 FUNS_PER_KIND = 40
 SENSES = 400
-BUDGET = 10.0
+LOADED = 18.1
+BUDGET = 25.0
 SENSE = re.compile(r"^t_\w+_\d+_(CmpT|SameAs)_t_\w+_\d+$")
 
 
@@ -142,4 +150,6 @@ def test_the_line_set_parses_within_its_budget():
     toolchain.require()
     lines = line_set()
     assert len(lines) == 42
-    assert parse_time(REPO, lines) <= BUDGET
+    assert LOADED < BUDGET < 28.6
+    # a parse over the budget is retried once: a load passes, a grammar that multiplies fails both
+    assert parse_time(REPO, lines) <= BUDGET or parse_time(REPO, lines) <= BUDGET
