@@ -11,11 +11,13 @@ conditions (after an optional `language: codified-2` line and an optional `retir
 switched and the conditions the item's replace: backlog_universal) and a `### index` block of upstream entries (`- bounded-context/<path>: ...`), the pieces of
 `spec/universal.md` and of `spec/index.md`'s `## Upstreams` (b43). Between the capability blocks and the universal
 block, in a context with a domain model, a `### <area> model` block for each area the item adds to: a ` ```model `
-fence of model lines, then vocabulary entries (backlog_model, the domain contract)."""
+fence of model lines, then vocabulary entries (backlog_model, the domain contract), then a `### <port> adapter` block
+of withheld operations and operation tables (backlog_adapter, b355)."""
 import re
 from collections import namedtuple
 from pathlib import Path
 
+import backlog_adapter
 import spec_read
 from backlog_items import Refused, label
 from backlog_model import CLOSE as MODEL_CLOSE
@@ -49,15 +51,17 @@ class Blocks(list):
     marker (`universal_language`) and the U ids its conditions replace (`universal_retired`)."""
 
     def __init__(self, blocks=(), universal=(), upstreams=(), universal_language=None, universal_retired=(),
-                 models=()):
+                 models=(), adapters=()):
         super().__init__(blocks)
         self.universal, self.upstreams, self.models = list(universal), list(upstreams), list(models)
+        self.adapters = list(adapters)
         self.universal_language, self.universal_retired = universal_language, tuple(universal_retired)
 
 
 class _Reader:
     def __init__(self, rel):
         self.rel, self.blocks, self.mode, self.fence, self.mfence = rel, Blocks(), None, None, None
+        self.adapter = backlog_adapter.Lines(self.blocks.adapters, self.refuse)
 
     def refuse(self, what):
         raise Refused("%s: %s: %s" % (self.rel, SECTION, what))
@@ -67,10 +71,19 @@ class _Reader:
             return self.given(line)
         if self.mfence is not None:
             return self.model_fence(line)
+        if self.adapter.fence is not None:
+            return self.adapter.line(line)
         if not line.strip():
             return None
+        if (m := backlog_adapter.HEAD.match(line)):
+            if self.mode in (UNIVERSAL, INDEX):
+                self.refuse("the adapter block of %s is after the universal or index block" % m.group(1))
+            self.mode = "adapter"
+            return self.adapter.head(m.group(1))
+        if self.mode == "adapter" and not line.startswith("### "):
+            return self.adapter.line(line)
         if (m := MODEL_HEAD.match(line)):
-            if self.mode in (UNIVERSAL, INDEX) or any(b.area == m.group(1) for b in self.blocks.models):
+            if self.mode in (UNIVERSAL, INDEX, "adapter") or any(b.area == m.group(1) for b in self.blocks.models):
                 self.refuse("the model block of %s is there twice, or after the universal or index block" % m.group(1))
             self.mode = "model"
             return self.blocks.models.append(ModelBlock(m.group(1)))
@@ -145,7 +158,7 @@ class _Reader:
     def capability_line(self, line):
         blocks = self.blocks
         if (m := CAP.match(line)):
-            if any(b.capability == m.group(1) for b in blocks) or self.mode == "model":
+            if any(b.capability == m.group(1) for b in blocks) or self.mode in ("model", "adapter"):
                 self.refuse("the capability %s has two blocks, or comes after a model block" % m.group(1))
             blocks.append(Block(m.group(1), [], []))
         elif (m := LANGUAGE.match(line)):
@@ -201,7 +214,7 @@ def read(item, rel):
     reader = _Reader(rel)
     for line in item.sections.get(SECTION, "").split("\n"):
         reader.line(line)
-    if reader.fence is not None or reader.mfence is not None:
+    if reader.fence is not None or reader.mfence is not None or reader.adapter.fence is not None:
         reader.refuse("a given block or a model block is not closed")
     if any(b.new and len(b.new) != len(NEW_FIELDS) for b in reader.blocks):
         reader.refuse("a new capability's block without each of %s" % ", ".join(NEW_FIELDS))
@@ -229,6 +242,7 @@ def render(blocks):
         parts = ["### %s model" % model.area] + (["%s\n%s\n%s" % (MODEL_FENCE, "\n".join(model.lines), MODEL_CLOSE)]
                                                  if model.lines else [])
         out.append("\n\n".join(parts + (["\n".join(model.terms)] if model.terms else [])))
+    out += [backlog_adapter.render(a) for a in getattr(blocks, "adapters", ())]
     language, retired = getattr(blocks, "universal_language", None), getattr(blocks, "universal_retired", ())
     if getattr(blocks, "universal", None) or language or retired:
         parts = ["### %s" % UNIVERSAL] + (["language: %s" % language] if language else [])

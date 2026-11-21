@@ -59,7 +59,8 @@ def apply(root, name, path):
 def cmd(args):
     """`work line <item> --retirement-list <file>`, with no other piece."""
     others = [k for k in ("text", "term", "relation", "given", "universal", "upstream", "recodify", "model", "into",
-                          "retires", "reword", "remove", "group", "in_group", "capability") if getattr(args, k, None)]
+                          "retires", "reword", "remove", "group", "in_group", "capability", "expose", "withhold")
+              if getattr(args, k, None)]
     if others or args.no_line:
         raise Refused("work line: --retirement-list takes no requirement line or other option")
     item, done = apply(args.root, args.name, args.retirement_list)

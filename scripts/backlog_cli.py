@@ -83,6 +83,7 @@ def add_parsers(sub):
     p.add_argument("--capability", help="a capability new to the context, written as a block of the item with "
                    "--narrator, --group (service or guarantees, default service) and its purpose as the text")
     p.add_argument("--narrator", help="with --capability: who the new capability's lines speak for")
+    __import__("backlog_adapter").add_arguments(p)
     p.add_argument("--upstream", help="an upstream entry `bounded-context/<path>: ..., github: <owner>/<name>` for "
                    "spec/index.md's ## Upstreams, with no --into")
 
@@ -196,6 +197,8 @@ def cmd_line(args):
     if args.capability is not None:
         import backlog_capability
         return backlog_capability.cmd(args)
+    if args.expose is not None or args.withhold is not None:
+        return __import__("backlog_adapter").cmd(args)
     if args.retirement_list is not None:
         import backlog_retirements
         return backlog_retirements.cmd(args)

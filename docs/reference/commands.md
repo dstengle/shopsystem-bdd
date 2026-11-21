@@ -113,7 +113,7 @@ b250 "work show prints the status of an item" shaped
 #### `work line`
 
 Writes a requirement line into an item's `## Requirements`, under the capability it goes into, and commits it.\
-Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--upstream UPSTREAM] name [text]`
+Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--expose TABLES] [--withhold SERVICE.OPERATION] [--upstream UPSTREAM] name [text]`
 
 - `--into <capability>`: the codified capability the line goes into.
 - `--group "<title>"`: open a new group with this title (default: the item's title). `--in g<n>` joins one of the
@@ -140,6 +140,12 @@ Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CA
   context, written as a block of the item (its narrator, group, default `service`, and purpose); refused when
   `spec/capabilities/<name>.md` exists. Lines and terms go into it with `--into <name>`; `work batch start` writes
   its file (with `area:` and `specifies:`) and names it in its area's row under `## Composition` of `spec/index.md`.
+- `--expose '<tables>'`: the tables of one operation for the CLI adapter contract, `[operations."<service>.<operation>"]`
+  with its `command` and its `[operations."<service>.<operation>".parameters]`, kept in the item's `### cli adapter`
+  block in place of that operation's own; refused when the domain model, with the item's model lines, has no such
+  operation. `--withhold <service>.<operation>` keeps an operation no command requests instead. `work batch start`
+  lays each into `spec/adapters/cli.toml` (the table in place of the operation's own, a withheld operation under
+  `[unexposed]` with its table out), the contract made when there is none.
 
 The line gets the next free id of its capability (`items#r31`). It goes into `spec/` only when a batch starts.
 `work line` does not parse the line; [`work ready`](#work-ready) does.

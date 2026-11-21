@@ -151,7 +151,7 @@ def well_formed(root, item, others=()):
         return backlog_chore.unlined(item), []
     blocks = backlog_lines.read(item, rel_of(item.name))
     mine = set(backlog_lines.ids(blocks))
-    if not mine and not any(b.retired for b in blocks):
+    if not mine and not any(b.retired for b in blocks) and not blocks.adapters:     # an operation table (b355)
         return ["it has no requirement line: give it one with `work line`"], []
     copy = Path(tempfile.mkdtemp(prefix="readiness-"))
     try:
