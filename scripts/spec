@@ -88,7 +88,8 @@ def main(argv=None):
     e = sub.add_parser("explain", help="print a requirement, what it also means and what takes precedence over it")
     e.add_argument("requirement", help="a requirement's id <capability>#r<n>")
     f = sub.add_parser("forms", help="print every file form: its name, its path pattern and the command that writes it")
-    f.add_argument("--json", action="store_true")
+    f.add_argument("--json", action="store_true",
+                   help="print the forms as JSON, each its name, path, writer and kind (command, item or hand)")
     f.add_argument("--check", action="store_true", help="exit 1 naming each form written by hand")
     a = sub.add_parser("annotate", help="write each operation's governing requirements into the adapter contracts")
     a.add_argument("contract", nargs="*", help="an adapter contract's path (every one of the context by default)")

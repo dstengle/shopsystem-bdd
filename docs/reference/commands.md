@@ -930,6 +930,8 @@ Prints every file form a context keeps: its name, its path and the command that 
 that will give it one).\
 Synopsis: `spec forms [--json] [--check]`
 
+- `--json`: print `{"forms": [{"name", "path", "writer", "kind"}]}`, each form's `kind` the kind of its writer:
+  `command`, `item` (a plugin item that will give it one) or `hand`.
 - `--check`: print nothing and exit 0 unless a form is written by hand; each such form is named on stderr and it
   exits 1.
 
