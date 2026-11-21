@@ -608,3 +608,36 @@ Feature: Batches
     Then the pack p1 has the term t1
     And the batches service keeps the pack p1
     And this bounded context imports the pack p1
+
+  @g96 @r96
+  Scenario: An in-batch item amended that does not meet the readiness bar is refused and nothing changes
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And the item i1 does not meet this readiness bar
+    When the person amends the item i1
+    Then the batches service refuses this request
+    And the batches service names the item i1
+    # entailed: U17
+
+  @g97 @r97
+  Scenario: A ready item whose new line's scenario passes on the lay goes back to shaped
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a requirement r1
+    And the item i1 has the requirement r1
+    And the requirement r1 retires no requirement id
+    And a scenario s1
+    And the item i1 has the scenario s1
+    And a requirement id r2
+    And the requirement r1 has the requirement id r2
+    And the scenario s1 refers to the requirement id r2
+    And a workspace w1
+    And a batch b1
+    And the batch b1 has the workspace w1
+    And the scenario s1 succeeds in the workspace w1
+    When the person opens the batch b1
+    Then the batches service sets the status of the item i1 to `shaped`
+    And the batches service names the scenario s1

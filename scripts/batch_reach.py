@@ -63,3 +63,9 @@ def unreached(git, tree, since, branch, ids):
         return []
     capabilities = {i.split("#")[0] for i in ids}
     return _scenario_tests(tree, capabilities, changed) + _script_tests(tree, changed)
+
+
+def laid(tree, capabilities):
+    """The test files of `tree` but the scenario tests of `capabilities` (b488): what `work batch start`'s run of the
+    laid lines' scenarios (batch_laid) leaves out."""
+    return _scenario_tests(tree, set(capabilities), set()) + _script_tests(tree, set())

@@ -9,7 +9,8 @@ switched; a failure once the branch is made removes its worktree and the branch 
 
 Before the lay is committed, `spec check`'s rules run on the worktree once (b478): an item a requirement of which
 violates a rule of severity error there, which the readiness bar's copy of `spec/` alone could not find, goes back to
-`shaped` naming the rule, and the batch is laid again without it."""
+`shaped` naming the rule, and the batch is laid again without it; so does an item one of whose requirements, retiring
+none, has a scenario that already passes on the lay, naming the scenario (batch_laid, b488)."""
 import contextlib
 import io
 from pathlib import Path
@@ -20,6 +21,7 @@ import backlog_lines
 import backlog_moves
 import batch_catalogues
 import batch_driver
+import batch_laid
 import batch_pick
 import features_generate
 import shop_files
@@ -39,11 +41,11 @@ def cites(items):
     return "".join("\nItem: %s" % i.name for i in items)
 
 
-def lay_lines(tree, picked, unwritten=None):
+def lay_lines(tree, picked, unwritten=None, command="work batch start"):
     """Every picked item's lines laid into the worktree's `spec/`, their ids appended to `unbuilt:`, the feature of
     each service capability laid written again, and the bookkeeping of the lay (b333): the corpus's blocks
     (spec_corpus_write), the adapter contracts annotated (b379) and the catalogues (batch_catalogues), a catalogue
-    that cannot be written added to `unwritten`; the paths changed."""
+    that cannot be written added to `unwritten`; a refusal said as `command`'s (b486); the paths changed."""
     ids, files = {}, []
     for item in picked:
         backlog_lines.lay_onto(tree, item, files)
@@ -53,7 +55,7 @@ def lay_lines(tree, picked, unwritten=None):
     for capability, listed in ids.items():
         path = backlog_lines.capability_file(tree, capability)
         path.write_text(spec_unbuilt.with_unbuilt(path.read_text(), listed))
-        changed += _generated(tree, capability, "work batch start")
+        changed += _generated(tree, capability, command)
     changed += spec_corpus_write.write(tree, picked)
     changed += _annotated(tree)
     catalogues, problems = batch_catalogues.write(tree, ["%s#%s" % (c, r) for c, rs in ids.items() for r in rs])
@@ -148,7 +150,7 @@ def _build(root, base, picked, returned):
         add_tree(root, tree, name, forked)
         unwritten = []
         changed = lay_lines(tree, picked, unwritten)
-        broken = violating(tree, picked)
+        broken = violating(tree, picked) or batch_laid.passing(root, tree, picked)
         if broken:
             raise _Broken(broken)
         if changed:                 # a pick of chore items only lays no line (b316): the commit is still made

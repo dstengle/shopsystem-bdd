@@ -468,6 +468,7 @@ command = "work annotate"
 requirements = [
   "items#r38: While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person annotates the item with a note, the backlog service shall keep the item.",
   "items#r39: While the status of an item is one of `delivered`, `refused` or `withdrawn`, if the person annotates the item, then the backlog service shall refuse the request and name the item.",
+  "items#r47: While the status of an item is `in-batch`, if the person annotates the item, then the backlog service shall refuse the request and name the item.",
 ]
 [operations."backlog.annotate".parameters]
 item = { positional = 1 }
@@ -480,6 +481,7 @@ requirements = [
   "items#r43: If the person merges a successor with the successor and a reason, then the backlog service shall refuse the request and name the successor.",
   "items#r44: While a successor exists and the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person merges the item with the successor and a reason, the backlog service shall set the status of the item to `withdrawn` and keep the item.",
   "items#r45: While the status of a successor is one of `delivered`, `refused` or `withdrawn` and the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, if the person merges the item with the successor and a reason, then the backlog service shall refuse the request and name the successor.",
+  "items#r46: While the status of an item is `in-batch`, if the person merges the item, then the backlog service shall refuse the request and name the item.",
 ]
 [operations."backlog.merge".parameters]
 item = { positional = 1 }
@@ -928,6 +930,7 @@ requirements = [
   "batches#r93: While an item is `ready` and the item meets the readiness bar and the item exceeds the review limit, when the person opens a batch, the batches service shall not set the status of the item to `in-batch`.",
   "batches#r94: While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit, when the person opens a batch, the batches service shall set the status of the item to `in-batch`, keep a batch that holds the item and keep a batch plan of the batch.",
   "batches#r95: While an item is `ready` and the item meets the readiness bar and the item holds a term of a pack, when the person opens a batch, the batches service shall keep the pack that has the term and keep the pack that this bounded context imports.",
+  "batches#r97: While an item is `ready` and the item meets the readiness bar and a requirement of the item retires no requirement id and a scenario of the item refers to the requirement id of the requirement and the scenario succeeds in a workspace of a batch, if the person opens the batch, then the batches service shall set the status of the item to `shaped` and name the scenario.",
 ]
 
 [operations."batches.resume"]
@@ -969,6 +972,7 @@ requirements = [
   "batches#r81: While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement, when the person amends the item, the batches service shall keep a workspace of the batch that holds the requirement and keep a workspace of the task that holds the requirement.",
   "batches#r83: While an item is not `in-batch`, if the person amends the item, then the batches service shall refuse the request and name the item.",
   "batches#r90: While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch holds a requirement of the item and the workspace of the task holds the requirement and the item does not hold the requirement, when the person amends the item, the batches service shall keep a workspace of the batch that does not hold the requirement and keep a workspace of the task that does not hold the requirement.",
+  "batches#r96: While an item in a batch is `in-batch` and the item does not meet the readiness bar, if the person amends the item, then the batches service shall refuse the request, name the item and change nothing.",
 ]
 [operations."batches.amend".parameters]
 item = { positional = 1 }

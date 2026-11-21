@@ -691,3 +691,19 @@ Feature: Items
     When the person merges the item i1 with the successor s1 and a reason
     Then the backlog service refuses this request
     And the backlog service names the successor s1
+
+  @g46 @r46
+  Scenario: An in-batch item is not merged
+    Given an item i1
+    And the status of the item i1 is `in-batch`
+    When the person merges the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the item i1
+
+  @g47 @r47
+  Scenario: An in-batch item takes no note
+    Given an item i1
+    And the status of the item i1 is `in-batch`
+    When the person annotates the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the item i1
