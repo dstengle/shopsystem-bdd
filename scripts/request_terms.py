@@ -8,7 +8,8 @@ request in the asker's turn, appended to `## Lines` numbered on and posted on it
 asker's part, which the upstream's `work sync` takes in as it takes the asker's lines. The upstream settles it with
 `work outcome` as any line (an accepted one is checked against the form, not parsed: `check`), and `work accept`
 writes each term an accepted proposal concerns into the item (`into_item`): into the model block of the area of the
-capability its outcome named in a context with a domain model, else as a term bullet of that capability's block."""
+capability its outcome named in a context with a domain model, else as a term bullet of that capability's block, in
+the capability term form `- **<word>** (<part of speech>): <definition>` (`term_entry`)."""
 import re
 from pathlib import Path
 
@@ -83,5 +84,21 @@ def into_item(root, item, capability, proposal):
             b for b in bullets if b not in blocks.models[at].terms))
     else:
         block = backlog_lines.block_of(blocks, capability)
-        block.terms.extend(b for b in bullets if b not in block.terms)
+        terms = [term_entry(b, capability, proposal) for b in bullets]
+        block.terms.extend(t for t in terms if t not in block.terms)
     item.sections[SECTION] = render(blocks)
+
+
+def term_entry(entry, capability, proposal):
+    """A vocabulary entry written in the capability term form, `- **<word>** (<part of speech>): <definition>`, which
+    spec_lexicon reads; refused naming the proposal when it does not read so (f1)."""
+    import spec_lexicon
+    import spec_vocabulary
+    match = spec_vocabulary.ENTRY.match(entry)
+    ref = spec_vocabulary.REF.match(match.group("text"))
+    term = "- **%s** (%s): %s" % (match.group("term").strip(), match.group("label").strip(),
+                                  (ref.group("rest") or "").strip())
+    if spec_lexicon.entry(term, capability) is None:
+        raise Refused("work accept: the term proposal %s gives no term entry `- **<term>** (<part of speech>): "
+                      "<text>` of %s" % (proposal.strip(), capability))
+    return term

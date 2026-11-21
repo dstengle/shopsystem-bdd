@@ -9,6 +9,7 @@ import backlog_section
 import pytest
 import request_lines
 import request_terms
+import spec_lexicon
 from shop_files import Refused
 
 FIXTURE = Path(__file__).resolve().parent / "fixtures" / "domain-model"
@@ -55,4 +56,7 @@ def test_into_a_term_bullet_of_the_capability_without_a_domain_model(tmp_path):
     found = item()
     request_terms.into_item(tmp_path, found, "work-queue", SHELF)
     blocks = backlog_section.read(found, "b1")
-    assert [(b.capability, b.terms) for b in blocks] == [("work-queue", [SHELF])]
+    assert [(b.capability, b.terms) for b in blocks] == [
+        ("work-queue", ["- **shelf** (noun): A place the person keeps books on."])]
+    read = spec_lexicon.entry(blocks[0].terms[0], "work-queue")
+    assert (read.term, read.category) == ("shelf", "kind")
