@@ -211,7 +211,7 @@ changed = []
 [rules.v_t2]
 purpose = "Each term has one definition, so every line using it means the same thing."
 since = "b123"
-changed = ["b131"]
+changed = ["b131", "b538"]
 
 [rules.v_t3]
 purpose = "A word cannot be both avoided and defined, so the glossary gives one clear instruction about it."

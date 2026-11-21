@@ -958,7 +958,7 @@ a term has two entries, other than the senses of one verb or of one attribute wo
 
 - Purpose: Each term has one definition, so every line using it means the same thing.
 - Since: b123
-- Changed: b131
+- Changed: b131, b538
 - Severity: error
 - Implemented in: `scripts/model.lp`
 - Cited by: no line
