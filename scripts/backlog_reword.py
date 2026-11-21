@@ -45,7 +45,8 @@ def reword(root, name, ident, text):
 
 def remove(root, name, ident):
     """`work line --remove <cap>#r<n>`: the item's line of that id taken out, its group too when it was the last line,
-    and the id the line retires (its pair under `retires:`) out of the block's `retired:`; committed."""
+    and the id the line retires (its pair under `retires:`) out of the block's `retired:`; a block left empty goes too,
+    but never a new capability's declaration (its narrator, group and purpose: b448); committed."""
     item = find(root, name)
     blocks, b, g, rid = _found(item, ident, "--remove")
     block = blocks[b]
@@ -57,7 +58,7 @@ def remove(root, name, ident):
     if retiring:
         blocks[b] = block = block._replace(retired=tuple(r for r in block.retired if r not in retiring),
                                            retires=tuple(p for p in block.retires if p[0] != rid))
-    if not (block.groups or block.terms or block.relations or block.retired or block.language):
+    if not (block.groups or block.terms or block.relations or block.retired or block.language or block.new):
         del blocks[b]
     item.sections[SECTION] = render(blocks)
     commit(root, item, "work line: %s removes %s" % (label(item), ident))
