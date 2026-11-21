@@ -16,12 +16,20 @@ harmless. A context founded by `migrate init` loads this plugin from its tests/s
 Under `work batch done`, each test file `$SHOPSYSTEM_UNREACHED` names (one path a line, relative to where pytest was
 started: the tests the task's change does not reach, batch_reach, b456) is left out of collection, and a run that
 then collects nothing passes.
+
+Under `work batch start` (batch_laid, b488), `$SHOPSYSTEM_LAID` names the laid lines' requirement ids
+(`<capability>#r<n>`, one a line): every scenario but an unbuilt one of those ids is deselected, and each that passes
+(non-strict, so an expected failure that passes is passed with its xfail reason) is written to the file
+`$SHOPSYSTEM_LAID_REPORT` names, one line `<its ids, comma separated>\t<its title>`, by the process that reports it
+(the controller under xdist, never a worker).
 """
 import os
 import pathlib
 import re
 
 UNREACHED = "SHOPSYSTEM_UNREACHED"      # batch_reach.ENV
+LAID, LAID_REPORT = "SHOPSYSTEM_LAID", "SHOPSYSTEM_LAID_REPORT"     # batch_laid's
+_WORKER = False
 
 TAG = re.compile(r"(?<![\w@])@([rg][1-9]\d*)(?![\w-])")
 
@@ -46,6 +54,8 @@ def tags(root):
 
 
 def pytest_configure(config):
+    global _WORKER
+    _WORKER = hasattr(config, "workerinput")        # an xdist worker (its environment may be inherited by a child)
     for mark in tags(spec_root(config)):     # a scenario's tags are marks (b419)
         config.addinivalue_line("markers", "%s: scenario of %s" % (mark, mark))
 
@@ -55,6 +65,40 @@ def pytest_collection_modifyitems(config, items):
     import spec_unbuilt
 
     spec_unbuilt.mark(items, spec_root(config))     # an unbuilt requirement's scenario is a strict xfail
+    if os.environ.get(LAID):
+        _keep_laid(config, items)
+
+
+def _unbuilt_ids(item):
+    marker = item.get_closest_marker("xfail")
+    reason = str(marker.kwargs.get("reason", "")) if marker else ""
+    return set(reason.removeprefix("unbuilt: ").split(", ")) if reason.startswith("unbuilt: ") else set()
+
+
+def _keep_laid(config, items):
+    """Only the unbuilt scenarios of the ids `$SHOPSYSTEM_LAID` names kept, each with its title as a user property."""
+    wanted = set(filter(None, os.environ[LAID].split()))
+    kept, gone = [], []
+    for item in items:
+        if _unbuilt_ids(item) & wanted:
+            scenario = item.function.__scenario__
+            item.user_properties.append(("scenario", scenario.name))
+            kept.append(item)
+        else:
+            gone.append(item)
+    if gone:
+        config.hook.pytest_deselected(items=gone)
+        items[:] = kept
+
+
+def pytest_runtest_logreport(report):
+    path = os.environ.get(LAID_REPORT)
+    reason = getattr(report, "wasxfail", None)
+    if not path or _WORKER or report.when != "call" or not report.passed or not reason:
+        return
+    title = dict(report.user_properties).get("scenario", report.nodeid)
+    with open(path, "a", encoding="utf-8") as out:
+        out.write("%s\t%s\n" % (str(reason).removeprefix("unbuilt: "), title))
 
 
 def _unreached(config):

@@ -9,7 +9,8 @@ switched; a failure once the branch is made removes its worktree and the branch 
 
 Before the lay is committed, `spec check`'s rules run on the worktree once (b478): an item a requirement of which
 violates a rule of severity error there, which the readiness bar's copy of `spec/` alone could not find, goes back to
-`shaped` naming the rule, and the batch is laid again without it."""
+`shaped` naming the rule, and the batch is laid again without it; so does an item one of whose requirements, retiring
+none, has a scenario that already passes on the lay, naming the scenario (batch_laid, b488)."""
 import contextlib
 import io
 from pathlib import Path
@@ -20,6 +21,7 @@ import backlog_lines
 import backlog_moves
 import batch_catalogues
 import batch_driver
+import batch_laid
 import batch_pick
 import features_generate
 import shop_files
@@ -148,7 +150,7 @@ def _build(root, base, picked, returned):
         add_tree(root, tree, name, forked)
         unwritten = []
         changed = lay_lines(tree, picked, unwritten)
-        broken = violating(tree, picked)
+        broken = violating(tree, picked) or batch_laid.passing(root, tree, picked)
         if broken:
             raise _Broken(broken)
         if changed:                 # a pick of chore items only lays no line (b316): the commit is still made

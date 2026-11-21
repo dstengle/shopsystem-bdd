@@ -76,13 +76,19 @@ def passing_tests(step, task):
     T.given(step, "task", task).setdefault("item", T.OWN_IN)
     found = step.context["given"]["task"][task]
     tree = step.repo / ".shop" / "worktrees" / ("%s-%s" % (T.batch_name(step, found["batch"]), T.task_id(step, task)))
-    title = step.context["item_fields"][step.context["passing"]]["title"]
+    return bound_tests(step, tree / "features" / "work-queue.feature",
+                       step.context["item_fields"][step.context["passing"]]["title"])
+
+
+def bound_tests(step, feature, title):
+    """`[batch] tests` that run the scenario `title` of `feature` under the plugin's pytest plugin, every step bound
+    to a step that passes."""
     test = T.outside(step) / "passing" / "test_passing.py"
     test.parent.mkdir(exist_ok=True)
     test.write_text("from pytest_bdd import given, parsers, scenario, then, when\n\n\n@scenario(%r, %r)\n"
                     "def test_passing():\n    pass\n\n\n@given(parsers.re('.*'))\ndef _given():\n    pass\n\n\n"
                     "@when(parsers.re('.*'))\ndef _when():\n    pass\n\n\n@then(parsers.re('.*'))\ndef _then():\n"
-                    "    pass\n" % (str(tree / "features" / "work-queue.feature"), title))
+                    "    pass\n" % (str(feature), title))
     return "[batch]\ntests = 'python3 -m pytest -q -p work_items -p no:cacheprovider %s'\n" % test
 
 
