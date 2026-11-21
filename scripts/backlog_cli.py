@@ -281,9 +281,9 @@ def cmd_backlog(args):
 
 
 def withdraw(args):
-    """`work withdraw b<n>`."""
+    """`work withdraw b<n> --reason R`."""
     import backlog_moves
-    return moved(backlog_moves.withdraw(args.root, args.name))
+    return moved(backlog_moves.withdraw(args.root, args.name, args.reason))
 
 
 def answer(args):

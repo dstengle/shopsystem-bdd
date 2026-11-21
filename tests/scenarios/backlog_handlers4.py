@@ -1,5 +1,5 @@
 """Handlers of features/backlog.feature in grammar 4 (b240, b158): its steps keyed by the verb or the command alone
-(`ThenDoes set`, `GivenDoes has`, `WhenRuns `work withdraw``), each in world_four's chain of the backlog's and the
+(`ThenDoes set`, `GivenDoes has`, `WhenRuns `work reopen``), each in world_four's chain of the backlog's and the
 batches' handlers, over the items backlog_world.py writes. A handler here returns False for a step of another kind
 than the backlog's, which the batches' handlers (batches_handlers4.py) or the registry then take."""
 import json
@@ -24,7 +24,6 @@ def ensure(step, name):
         B.write_item(step, name)
 
 
-@four("WhenRuns", "`work withdraw`", *BOTH)
 @four("WhenRuns", "`work reopen`", *BOTH)
 @four("WhenRuns", "`work answer`", *BOTH)
 @four("WhenRuns", "`work show`", *BOTH)
@@ -33,6 +32,12 @@ def ensure(step, name):
 def run_on_item(step):
     verb = B.bare(step.term).split()[1]
     B.run_work(step, verb, B.ident(step.names[-1]), *TEXT.get(verb, ()))
+
+
+@four("WhenRuns", "`work withdraw --reason`", *BOTH)
+def work_withdraw(step):
+    """b465: the item withdrawn with its reason."""
+    B.run_work(step, "withdraw", B.ident(step.names[-1]), "--reason", "no longer wanted")
 
 
 @four("WhenRuns", "`work annotate`", *BOTH)

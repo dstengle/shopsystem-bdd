@@ -15,10 +15,12 @@ REFUSED = sorted((command, status) for command, row in backlog_moves.TRANSITIONS
 
 
 def args_of(command):
-    """The command line of `work <verb> b1`, with the text it takes (`work shape` its shaping note, r43)."""
+    """The command line of `work <verb> b1`, with the text it takes (`work shape` its shaping note, r43;
+    `work withdraw` its reason, b465)."""
     verb = command.split()[1]
     return [verb, "b1"] + {"refuse": ["out of scope"], "answer": ["The first"],
-                           "shape": ["--note", "Parse every line."]}.get(verb, [])
+                           "shape": ["--note", "Parse every line."],
+                           "withdraw": ["--reason", "Nobody wants it."]}.get(verb, [])
 
 
 # `work ready` moves only an item that passes the bar: test_readiness_bar.py's test_ready_readies_a_passing_item.
@@ -72,6 +74,14 @@ def test_refuse_writes_the_reason(backlog_repo):
     write_item(backlog_repo, "b1")
     assert work(backlog_repo, "refuse", "b1", "out of scope").returncode == 0
     assert backlog_items.find(backlog_repo, "b1").sections["Refused"] == "out of scope"
+
+
+def test_withdraw_writes_the_reason(backlog_repo):
+    """b465: the reason under `## Withdrawn`, as `work merge` keeps its own; none is refused by the parser."""
+    write_item(backlog_repo, "b1")
+    assert work(backlog_repo, "withdraw", "b1").returncode != 0
+    assert work(backlog_repo, "withdraw", "b1", "--reason", "nobody wants it").returncode == 0
+    assert backlog_items.find(backlog_repo, "b1").sections["Withdrawn"] == "nobody wants it"
 
 
 def test_shape_keeps_its_note(backlog_repo):

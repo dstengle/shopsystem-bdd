@@ -266,11 +266,11 @@ b251 "work show prints an item's dependencies" refused
 
 #### `work withdraw`
 
-Moves an item to `withdrawn`: nobody wants it any more.\
-Synopsis: `work withdraw name`
+Moves an item to `withdrawn`: nobody wants it any more, writing why under its `## Withdrawn`.\
+Synopsis: `work withdraw name --reason REASON`
 
 ```console
-$ work withdraw b252
+$ work withdraw b252 --reason "work backlog's tables are read in a terminal's own colours"
 b252 "A colour theme for work backlog" withdrawn
 ```
 

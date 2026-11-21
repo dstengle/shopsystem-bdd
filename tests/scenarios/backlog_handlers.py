@@ -79,8 +79,8 @@ TEXT = {"`work refuse`": ("out of scope",), "`work answer`": ("the first reading
 
 @local("WhenRuns", "item")
 def run_on_item(step):
-    """`work show`, `work withdraw` and `work answer` on an item; on any other kind they are the work-queue's."""
-    if step.term not in ("`work show`", "`work withdraw`", "`work answer`"):
+    """`work show` and `work answer` on an item; on any other kind they are the work-queue's."""
+    if step.term not in ("`work show`", "`work answer`"):
         return False
     B.run_work(step, bare(step.term).split()[1], B.ident(step.names[0]), *TEXT.get(step.term, ()))
 

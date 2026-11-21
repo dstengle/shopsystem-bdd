@@ -7,7 +7,7 @@ area: tracking
 specifies: object item, service backlog, the readiness policy
 language: codified-2
 retired: [g3, r3, g18, r18]
-unbuilt: [r42]
+unbuilt: []
 ---
 
 # Items
