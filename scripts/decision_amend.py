@@ -82,3 +82,17 @@ def amend(root, decision, enforcers=(), foundations=()):
         (root / index).write_text(render_decisions(root), encoding="utf-8")
     shop_files.committed(root, [rel, index], "work decision --amend: %s" % title, put)
     return rel
+
+
+def enforcing(root, requirement):
+    """The line `work line --retires` prints of each design-decision whose `enforced_by` names the requirement it
+    retires (drafting r28): its id and path, and the amendment that names the requirement's replacement."""
+    root = Path(root)
+    out = []
+    for path in decision_files(root):
+        data, _ = shop_files.frontmatter(shop_files.read(path, root))
+        held = data.get("enforced_by") or []
+        if requirement in (held if isinstance(held, list) else [held]):
+            out.append("%s enforces %s (%s): name what holds it now with `work decision --amend %s --enforced-by "
+                       "<id>`" % (requirement, data.get("id"), path.relative_to(root).as_posix(), data.get("id")))
+    return out

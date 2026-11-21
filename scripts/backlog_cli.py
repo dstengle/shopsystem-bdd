@@ -58,7 +58,8 @@ def add_parsers(sub):
     p.add_argument("text", nargs="?", help="the requirement line (or --term)")
     p.add_argument("--retires", metavar="CAP#rN", help="the live requirement `<capability>#r<n>` the line replaces: "
                    "its id goes under the block's retired:, the line into that capability; with --universal, the "
-                   "live universal condition `universal#U<n>` it replaces")
+                   "live universal condition `universal#U<n>` it replaces; each design-decision whose enforced_by names "
+                   "the requirement is named")
     p.add_argument("--no-line", action="store_true", help="with --retires: the live requirement retired with no line "
                    "replacing it, its id under the block's retired: and no line written")
     p.add_argument("--reword", metavar="CAP#rN", help="the item's own line `<capability>#r<n>` the requirement line "
@@ -161,7 +162,15 @@ def _unreplaced(args):
                                     "requirement line or other piece")
     item = backlog_lines.retire(args.root, args.name, args.retires, None, args.into)[0]
     print("%s: retires %s" % (backlog_items.label(item), args.retires))
+    _enforcing(args)
     return 0
+
+
+def _enforcing(args):
+    """Each design-decision the retired requirement enforces, named (drafting r28)."""
+    import decision_amend
+    for line in decision_amend.enforcing(args.root, args.retires):
+        print(line)
 
 
 def _modelled(root):
@@ -203,6 +212,7 @@ def cmd_line(args):
         item, ident = backlog_lines.retire(args.root, args.name, args.retires, args.text, args.into, args.group,
                                            args.in_group)
         print("%s: %s retires %s" % (backlog_items.label(item), ident, args.retires))
+        _enforcing(args)
         return 0
     if (args.into is None) != (piece in ("universal", "upstream")):
         raise backlog_items.Refused("work line: %s %s --into <capability>" % (
