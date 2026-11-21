@@ -39,11 +39,11 @@ def cites(items):
     return "".join("\nItem: %s" % i.name for i in items)
 
 
-def lay_lines(tree, picked, unwritten=None):
+def lay_lines(tree, picked, unwritten=None, command="work batch start"):
     """Every picked item's lines laid into the worktree's `spec/`, their ids appended to `unbuilt:`, the feature of
     each service capability laid written again, and the bookkeeping of the lay (b333): the corpus's blocks
     (spec_corpus_write), the adapter contracts annotated (b379) and the catalogues (batch_catalogues), a catalogue
-    that cannot be written added to `unwritten`; the paths changed."""
+    that cannot be written added to `unwritten`; a refusal said as `command`'s (b486); the paths changed."""
     ids, files = {}, []
     for item in picked:
         backlog_lines.lay_onto(tree, item, files)
@@ -53,7 +53,7 @@ def lay_lines(tree, picked, unwritten=None):
     for capability, listed in ids.items():
         path = backlog_lines.capability_file(tree, capability)
         path.write_text(spec_unbuilt.with_unbuilt(path.read_text(), listed))
-        changed += _generated(tree, capability, "work batch start")
+        changed += _generated(tree, capability, command)
     changed += spec_corpus_write.write(tree, picked)
     changed += _annotated(tree)
     catalogues, problems = batch_catalogues.write(tree, ["%s#%s" % (c, r) for c, rs in ids.items() for r in rs])
