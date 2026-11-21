@@ -94,6 +94,11 @@ def _read(result, code, out, err, args, checks):
     return Response("returned" if own else "done", content)
 
 
+def said(tool, text):
+    """A refusal's line on stderr: `<tool>: <text>`, or the text alone when it names its command already."""
+    return "%s\n" % (text if text.startswith(tool + " ") else "%s: %s" % (tool, text))
+
+
 def respond(tool, handler, args, checks=False, names=None):
     """Run `handler(args)` and give its exit; under `args.json` print its response's envelope on stdout."""
     spell = spelling(getattr(args, "parser", None), names)
@@ -101,7 +106,7 @@ def respond(tool, handler, args, checks=False, names=None):
         try:
             result = handler(args)
         except Refused as why:
-            sys.stderr.write("%s: %s\n" % (tool, why.spelled(spell)))
+            sys.stderr.write(said(tool, why.spelled(spell)))
             return 1
         if isinstance(result, Response):
             return 1 if result.outcome in domain_envelope.ERRING else 0
@@ -116,10 +121,10 @@ def respond(tool, handler, args, checks=False, names=None):
         response = _read(result, result if isinstance(result, int) else 0, out.getvalue(), err.getvalue(), args,
                          checks)
     except Refused as why:
-        sys.stderr.write("%s: %s\n" % (tool, why.spelled(spell)))
+        sys.stderr.write(said(tool, why.spelled(spell)))
         response = domain_envelope.refused(why)
     except Exception as exc:  # noqa: BLE001 -- a failure outside the domain: broken, said on stderr too
-        sys.stderr.write("%s: %s\n" % (tool, exc))
+        sys.stderr.write(said(tool, str(exc)))
         response = domain_envelope.broken(exc)
     print(response.json())
     return 1 if response.outcome in domain_envelope.ERRING else 0

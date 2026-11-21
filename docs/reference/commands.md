@@ -113,14 +113,15 @@ b250 "work show prints the status of an item" shaped
 #### `work line`
 
 Writes a requirement line into an item's `## Requirements`, under the capability it goes into, and commits it.\
-Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN] [--term TERM] [--recodify CAP] [--relation RELATION] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--upstream UPSTREAM] name [text]`
+Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--upstream UPSTREAM] name [text]`
 
 - `--into <capability>`: the codified capability the line goes into.
 - `--group "<title>"`: open a new group with this title (default: the item's title). `--in g<n>` joins one of the
   item's groups instead.
 - `--retires <cap>#r<n>`: the line replaces a live requirement, whose id goes to `retired:`, and the pair of the
   two to the block's `retires:` line. Ids are never reused. With `--no-line` and no line, the requirement is retired
-  with nothing in its place, and no pair is written.
+  with nothing in its place, and no pair is written. Each design-decision whose `enforced_by` names the retired
+  requirement is named, with the `work decision --amend` that names what holds it now.
 - `--retirement-list <file>`: a retirement list, one pair a line, `<cap>#r<n> <line>`: each line retires its live
   requirement as `--retires` does, all in one commit. An id no requirement has refuses the whole list, naming it,
   and the item is left as it was.
@@ -211,7 +212,7 @@ Readying is the decision to build: a ready item goes into the next batch.
 $ work ready b250
 b250 "work show prints the status of an item" ready
 $ work ready b253
-work: work ready: b253 "work names prints every item" is not passing:
+work ready: b253 "work names prints every item" is not passing:
   items#r32: refused: the verb ready takes a subject, which a passive leaves out: agent readies item
 ```
 
@@ -381,7 +382,7 @@ missing:
 
 ```console
 $ work batch done batch-34 t1
-work: work batch done: t1 b250 "work show prints the status of an item": the tests `python3 -m pytest -q -p work_items` failed in .shop/worktrees/batch-34-t1 (exit 1):
+work batch done: t1 b250 "work show prints the status of an item": the tests `python3 -m pytest -q -p work_items` failed in .shop/worktrees/batch-34-t1 (exit 1):
 ...
 $ work batch done batch-34 t1
 batch-34 t1 b250 "work show prints the status of an item": done
@@ -695,7 +696,7 @@ Synopsis: `work drop --why WHY name`
 #### `work decision`
 
 Writes a design-decision, `spec/decisions/<nnnn>-<slug>.md`, rewrites `spec/decisions/index.md`, and commits both.\
-Synopsis: `work decision [--summary SUMMARY] [--tier {check,requirement,judgement}] [--decision DECISION] [--context CONTEXT] [--alternatives ALTERNATIVES] [--enforced-by ENFORCED_BY] [--verified-by {scenario,check,judgement,monitor}] [--rests-on RESTS_ON] [--supersedes SUPERSEDES] [--source SOURCE] [--by BY] [--slug SLUG] [--date DATE] title`
+Synopsis: `work decision [--amend DECISION] [--summary SUMMARY] [--tier {check,requirement,judgement}] [--decision DECISION] [--context CONTEXT] [--alternatives ALTERNATIVES] [--enforced-by ENFORCED_BY] [--verified-by {scenario,check,judgement,monitor}] [--rests-on RESTS_ON] [--supersedes SUPERSEDES] [--source SOURCE] [--by BY] [--slug SLUG] [--date DATE] [title]`
 
 - `--summary`, `--tier`, `--decision`: required; it is refused, naming each one missing.
 - `--context`, `--alternatives`: the other sections. These three take text, or `@<file>`.
@@ -703,6 +704,9 @@ Synopsis: `work decision [--summary SUMMARY] [--tier {check,requirement,judgemen
 - `--rests-on`, `--verified-by`: for a decision that routes a universal condition.
 - `--supersedes <id>`: an accepted decision this one replaces (its id, path or number); it is set `superseded`
   and committed with the new one. A decision not accepted, or an id that names none, is refused, naming it; repeatable.
+- `--amend <id>`: in place of a title, adds each `--enforced-by` and `--rests-on` an accepted decision (its id, path
+  or number) does not name yet, changes nothing else of it, and commits it with the index. A decision not accepted
+  is refused, naming it.
 
 ```console
 $ work decision "The command reference defers to --help" --summary "Where the command reference and --help differ, --help wins." --tier judgement --decision "Each command's --help is its contract; the reference page links to it and never overrides it."
@@ -1175,7 +1179,8 @@ Founds a new bounded context in the repository it is run in: writes its scaffold
 `.shop/delivery.toml` (every key commented out at its default), `features/` and `tests/scenarios/conftest.py`, each
 empty folder with a `.gitkeep`, and `.gitignore` naming `.venv/`, `__pycache__/`, `.pytest_cache/` and
 `.ruff_cache/` (an existing one given the names it lacks). An existing `features/` or conftest is left as it is. It refuses, changing nothing,
-without `--id`, with an id that is not `bounded-context/<domain>/<path>`, and in a repository that has a
+without `--id`, with an id that is not `bounded-context/<domain>/<path>` (its `<domain>` a domain name with a dot,
+`example.org`, and its `<path>` one part or more), and in a repository that has a
 `spec/index.md` or a `.shop/` already.\
 Synopsis: `migrate init --id ID`
 

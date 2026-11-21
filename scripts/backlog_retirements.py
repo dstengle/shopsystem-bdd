@@ -63,6 +63,9 @@ def cmd(args):
     if others or args.no_line:
         raise Refused("work line: --retirement-list takes no requirement line or other option")
     item, done = apply(args.root, args.name, args.retirement_list)
+    import decision_amend
     for new, old in done:
         print("%s: %s retires %s" % (label(item), new, old))
+        for line in decision_amend.enforcing(args.root, old):
+            print(line)
     return 0

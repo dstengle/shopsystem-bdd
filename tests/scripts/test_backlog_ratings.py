@@ -25,7 +25,7 @@ def test_rate_refuses_a_value_of_another_attribute(backlog_repo, flag, value, al
     write_item(backlog_repo, "b1")
     before = state(backlog_repo)
     done = work(backlog_repo, "rate", "b1", flag, value)
-    assert done.returncode == 1 and allowed in done.stderr and done.stderr.startswith("work: "), done.stderr
+    assert done.returncode == 1 and allowed in done.stderr and done.stderr.startswith("work rate: "), done.stderr
     assert state(backlog_repo) == before
 
 
