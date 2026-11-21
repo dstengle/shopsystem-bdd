@@ -6,6 +6,7 @@ import subprocess
 import sys
 
 from backlog_testing import SCRIPTS, git
+from batch_testing import STUB
 from request_testing import calls
 from test_request_watch import OTHER, TURN, issue, request, world
 
@@ -72,3 +73,56 @@ def test_a_comment_listed_by_the_notifications_baseline_wakes_the_watch(backlog_
     assert done.stdout.splitlines() == [
         "q1 %s comment 9: %s#issuecomment-9 (`work sync` records it)" % (OTHER, OTHER)]
     assert "If-Modified-Since" not in " ".join(calls(where, "api")[0])
+
+
+STAGED = '''import json, os, sys
+calls, stub, how = os.environ["STUB_GH_CALLS"], sys.argv[1], os.environ["STAGED"]
+argv = sys.argv[2:]
+noted = [json.loads(line)["argv"] for line in open(calls)] if os.path.exists(calls) else []
+first = argv[:1] == ["api"] and not any(c[:1] == ["api"] for c in noted)
+if how == "end" and argv[:2] == ["webhook", "forward"] or how == "503" and first:
+    open(calls, "a").write(json.dumps({"argv": argv}) + "\\n")
+    if first:
+        print("HTTP/2.0 503 Service Unavailable\\nX-Poll-Interval: 0\\n")
+    sys.exit(1 if first else 0)
+os.environ["STUB_GH_FAIL" if how == "fail" and first else "STUB_GH_BASELINE"] = "api --include" if first else "1"
+os.execv(sys.executable, [sys.executable, stub, *argv])
+'''
+
+
+def staged(where, env, how):
+    """The stand-in gh behind a script whose first notifications call fails (`fail`) or is a 503 (`503`), or whose
+    forwards end at once (`end`); each later notifications call with no If-Modified-Since lists what is pending."""
+    (where / "staged.py").write_text(STAGED)
+    (where / "gh").write_text('#!/bin/sh\nexec %s %s %s "$@"\n' % (sys.executable, where / "staged.py",
+                                                                    STUB))
+    env["STAGED"] = how
+    return env
+
+
+def a_comment_after_the_start_is_reported(backlog_repo, tmp_path_factory, monkeypatch, how, unadministered):
+    where = tmp_path_factory.mktemp("gh")
+    request(backlog_repo, "q1", OTHER)
+    env = staged(where, world(backlog_repo, where, {OTHER: issue()}, monkeypatch), how)
+    env["STUB_GH_NOT_ADMIN"] = unadministered
+    pending(where, {OTHER: issue(comments=[(OTHER + "#issuecomment-9", TURN)])})
+    done = watch(backlog_repo, env, "--every", "0.2", "--polls", "5")
+    assert done.returncode == 0, done.stderr
+    assert done.stdout.splitlines() == [
+        "q1 %s comment 9: %s#issuecomment-9 (`work sync` records it)" % (OTHER, OTHER)]
+    return where
+
+
+def test_a_failed_baseline_then_a_comment_is_reported(backlog_repo, tmp_path_factory, monkeypatch):
+    where = a_comment_after_the_start_is_reported(backlog_repo, tmp_path_factory, monkeypatch, "fail", "ex/ctx,ex/up")
+    assert [" ".join(argv).count("If-Modified-Since") for argv in calls(where, "api")][:2] == [0, 0]
+
+
+def test_a_comment_before_a_delayed_ready_is_reported(backlog_repo, tmp_path_factory, monkeypatch):
+    a_comment_after_the_start_is_reported(backlog_repo, tmp_path_factory, monkeypatch, "503", "ex/ctx,ex/up")
+
+
+def test_a_comment_before_a_repository_first_polled_after_its_forward_is_reported(backlog_repo, tmp_path_factory,
+                                                                                    monkeypatch):
+    where = a_comment_after_the_start_is_reported(backlog_repo, tmp_path_factory, monkeypatch, "end", "")
+    assert calls(where, "webhook", "forward") and calls(where, "api")
