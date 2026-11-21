@@ -96,6 +96,7 @@ def main(argv=None):
     s.add_argument("--json", action="store_true", help="print one JSON object instead of lines")
     w = sub.add_parser("withdraw", help="move an item b<n> to withdrawn")
     w.add_argument("name")
+    w.add_argument("--reason", required=True, help="why, written under the item's ## Withdrawn")
     n = sub.add_parser("answer", help="answer the question of an item b<n> that is needs-input")
     n.add_argument("name")
     n.add_argument("answer")

@@ -461,6 +461,7 @@ requirements = [
 ]
 [operations."backlog.withdraw".parameters]
 item = { positional = 1 }
+reason = { option = "--reason" }
 
 [operations."backlog.annotate"]
 command = "work annotate"

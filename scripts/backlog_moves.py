@@ -91,9 +91,11 @@ def refuse(root, name, reason):
     return move(root, name, "work refuse", lambda item: item.sections.__setitem__("Refused", reason))
 
 
-def withdraw(root, name):
-    """`idea`, `shaped`, `ready` or `needs-input` -> `withdrawn` (r9-r12)."""
-    return move(root, name, "work withdraw")
+def withdraw(root, name, reason):
+    """`idea`, `shaped`, `ready` or `needs-input` -> `withdrawn` (items#r42), the reason under its `## Withdrawn` as
+    `work merge` keeps its own (b465)."""
+    reason = text_line(reason, "reason")
+    return move(root, name, "work withdraw", lambda item: item.sections.__setitem__("Withdrawn", reason))
 
 
 def reopen(root, name):
