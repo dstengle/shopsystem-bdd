@@ -76,7 +76,13 @@ def cmd_parse(args):
     the nearest lexicon words and the terms that may follow; a refused requirement of a capability file named
     `<capability>#r<n>` (I9); a line that parses and that a reading rule refuses (spec_lf_read, I11b) printed with its
     refusal and its tree. A context whose `spec/index.md` does not say `language: codified-2` is refused, naming
-    `migrate upgrade`."""
+    `migrate upgrade`. With `--item b<n>`, the line (or the file) read on a copy with the item laid (spec_preview)."""
+    if getattr(args, "item", None):
+        import argparse
+        import spec_preview
+        with spec_preview.laid(args.root, args.item) as copy:
+            file = spec_preview.on_copy(args.root, copy, args.file) if args.file else None
+            return cmd_parse(argparse.Namespace(**{**vars(args), "root": str(copy), "file": file, "item": None}))
     import spec_gf
     import spec_grammar4
     import spec_language

@@ -155,7 +155,8 @@ def check(root, ident):
                       "bounded-context/<domain>/<path>" % root, reason="bounded context with no context id",
                       names=["parameter:context id"])
     if not FORM.fullmatch(ident):
-        raise Refused("the context id %s is not a bounded context id: bounded-context/<domain>/<path>" % ident,
+        raise Refused("the context id %s is not a bounded context id: bounded-context/<domain>/<path>, "
+                      "its <domain> a domain name with a dot (example.org)" % ident,
                       reason="context id not a bounded context id", names=["parameter:context id"])
     if (root / "spec/index.md").exists():
         raise Refused("this bounded context has an index file already: spec/index.md; nothing written",

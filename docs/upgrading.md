@@ -320,7 +320,7 @@ item's lines laid in, so a line left behind stops it:
 $ work shape b1 --note "Reword the lines of buy that grammar 4 refuses."
 b1 "Reword buy for grammar 4" shaped
 $ work ready b1
-work: work ready: b1 "Reword buy for grammar 4" is not passing:
+work ready: b1 "Reword buy for grammar 4" is not passing:
   buy: buy#r3: refused: "the till" has no antecedent: no earlier noun phrase, functional relation or declared indexical gives a till
 ```
 

@@ -235,7 +235,7 @@ Here is an item whose line contradicts a delivered one:
 $ work line b250 --into items --group "An item shown keeps quiet about its title" "When the person shows an item, the backlog service shall not return the title of the item."
 b250 "The backlog keeps quiet about an item's title": items#r31
 $ work ready b250
-work: work ready: b250 "The backlog keeps quiet about an item's title" is not passing:
+work ready: b250 "The backlog keeps quiet about an item's title" is not passing:
   items#g31: v15n two groups of a capability share features, condition and trigger: with items#g12
   L1 items#r12 and #r31 clash: on "the person shows an item", r12 obliges and r31 forbids the backlog service to return a title
 ```
@@ -330,8 +330,8 @@ people browsing GitHub. This is the body of an ask, as `work request` renders it
 ```text
 ~~~shop-request
 step: ask
-request: request/ex/notes/notes-cli/q3
-asker: bounded-context/ex/notes/notes-cli
+request: request/example.org/notes/notes-cli/q3
+asker: bounded-context/example.org/notes/notes-cli
 upstream: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
 title: Show the status of an item
 status: open

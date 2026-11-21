@@ -134,7 +134,7 @@ def test_brief_refuses(pub, case):
     make(pub)
     before = state(pub)
     done = work(pub, "batch", "brief", "batch-1")
-    assert done.returncode == 1 and named in done.stderr and done.stderr.startswith("work: work batch brief: "), \
+    assert done.returncode == 1 and named in done.stderr and done.stderr.startswith("work batch brief: "), \
         done.stderr
     assert state(pub) == before and not (scratch(pub) / "brief.md").exists()
 
