@@ -147,11 +147,12 @@ def scaffold(ident, purpose=None):
 
 def ignore_text(root):
     """The ignore file's text: the repository's own, if any, with each name of IGNORED it lacks added at its end; a
-    name it holds with or without a leading or a trailing slash is not lacked (b470)."""
+    name it holds with or without a trailing slash is not lacked (b470), as git matches a line: one with a leading
+    slash is anchored at the top, so it covers no name of IGNORED, each to be ignored at any depth (b487)."""
     path = root / IGNORE
     text = path.read_text() if path.is_file() else ""
-    held = {line.strip().strip("/") for line in text.splitlines()}
-    missing = [name for name in IGNORED if name.strip("/") not in held]
+    held = {line.strip().rstrip("/") for line in text.splitlines()}
+    missing = [name for name in IGNORED if name.rstrip("/") not in held]
     if text and not text.endswith("\n"):
         text += "\n"
     return text + "".join(name + "\n" for name in missing)
