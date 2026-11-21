@@ -10,6 +10,7 @@ been renamed or retired since.
 
 | Line | Releases |
 |---|---|
+| 0.44 | [0.44.0](#0440-commands-for-what-was-edited-by-hand) |
 | 0.43 | [0.43.0](#0430-the-readiness-bar-answers-in-seconds-and-grammar-4-builds-and-parses-faster) |
 | 0.42 | [0.42.0](#0420-a-request-acts-on-one-thing-one-verb-for-several-operations-and-a-made-thing-introduced-by-the-when) |
 | 0.41 | [0.41.0](#0410-a-fresh-contexts-scenarios-run-with-plain-pytest-and-a-responses-owned-thing-given-before-the-when) |
@@ -25,6 +26,36 @@ been renamed or retired since.
 | 0.31 | [0.31.5](#0315-released-as-240-the-request-watch-wakes-on-githubs-events-and-starts-with-the-session) · [0.31.4](#0314-released-as-231-a-batch-runs-in-one-fresh-agent-and-a-parked-item-leaves-the-batch-at-once) · [0.31.3](#0313-released-as-230-work-pushes-its-commits-requests-post-after-they-commit-and-work-watch) · [0.31.2](#0312-released-as-220-decisions-and-records-written-by-command) · [0.31.1](#0311-released-as-210-requests-exchanged-through-github-issues) · [0.31.0](#0310-released-as-200-the-workflow-simplified) |
 | 0.30 | [0.30.0](#0300-released-as-100-codified-requirements) |
 | 0.29 and before | [0.29.0](#0290-glossary-proposals-delegations-given-late-and-fewer-stops-from-outside-a-work-item) · [0.28.3](#0283-a-branch-review-that-runs-nothing) · [0.28.2](#0282-answers-a-round-cannot-hold-go-back-to-integration) · [0.28.1](#0281-work-run-stops-visibly-on-questions-and-spends-less-agent-time) · [0.28.0](#0280-one-set-of-request-commands-work-list-and-work-show-and-answers-that-redraft) · [0.27.0](#0270-transitions-from-how-a-session-ended-and-the-turn-of-an-accepted-request) · [0.26.0](#0260-requests-and-the-context-loop) · [0.25.0](#0250-work-items-side-by-side-answers-and-guarantees) · [0.24.0](#0240-work-items-named-by-ids-and-upgrades-between-plugin-releases) · [0.23.1](#0231---work-item-keeps-tests-that-are-not-scenarios) · [0.23.0](#0230-faults-settled-query-output-as-json-the-session-keeps-the-gate-measurement-on-v3) · [0.22.0](#0220-one-requirement-per-scenario-faults-and-the-lessons-of-a-blind-formulation) · [0.21.0](#0210-the-final-layout-and-delivery-by-work-run) |
+
+## 0.44.0: commands for what was edited by hand
+
+- **`work reopen`** (b431, items#r31, r32): a ready item goes back to shaped to take more lines; an item that is not
+  ready is refused, named.
+- **`work annotate`, `work merge`, and `work ready` on a ready item** (b281, items#r33-r39): a note on any open item,
+  a withdrawal with its reason and the item it went into, and a ready item checked against the bar again.
+- **`work decision <id> --amend`** (b458, decisions#r21-r23): an accepted design-decision given `enforced_by` and
+  `rests_on` entries in place, in one commit.
+- **`work line --retirement-list`** (b461, drafting#r29, r30): a list of requirements to retire applied to an item in
+  one commit, refused whole on an id no requirement has; `work line --retires` names each design-decision the retired
+  requirement enforces (drafting#r28).
+- **`work line --expose` and `--withhold`** (b355, drafting#r31-r34, batches#r79, r80): an operation's CLI table, or
+  its withholding, kept in an item and laid into `spec/adapters/cli.toml` by `work batch start`.
+- **`work line --term` repeatable** (b453): several entries in one run, one commit, all or none.
+- **`work line --remove` keeps a new capability** (b448, drafting#r27): removing the last line of a capability new on
+  the item leaves its narrator, group and purpose, so the next `--into` still finds it.
+- **`spec parse --item b<n>`** (b452, parsing#r19, r20, r22): a line read with an item's terms and model lines laid on
+  a copy of the spec.
+- **`spec forms` gives the current writers** (b451): every form a context keeps is listed (the construct catalogue,
+  the catalogue entries, the spec corpus, the term packs, CLAUDE.md among them), `--json` carries each form's `kind`,
+  and `--check` names the forms still written by hand.
+- **`migrate init` writes `.gitignore`** (b454, upgrades#r38): naming `.venv/` and the caches; an existing one is
+  given the names it lacks. An existing context needs no upgrade step.
+- **Tests run by the `.venv` interpreter** (b449, batches#r77): the tests command's leading `python3` is the
+  `.venv/bin/python` of the tree it runs in, of the task's worktree or of the checkout, when one holds one.
+- **`work batch done` runs only the tests a change reaches** (b456, batches#r78), and **`work batch brief` runs its
+  checks in parallel** (b457), with `features bindings` parsing each test module once.
+- **Docs fixes** (b455): a bounded context id's domain has a dot, `work line` shows `--model`, and a refusal naming
+  its command is no longer prefixed twice (`work: work ...`).
 
 ## 0.43.0: the readiness bar answers in seconds, and grammar 4 builds and parses faster
 
