@@ -834,7 +834,7 @@ Synopsis: `work record --kind {analysis,design,measurement,review-finding,decisi
 
 - `--body <file>`: the record's text, under its title.
 - `--summary`: its row in the index, one line.
-- `--about <id>`: the node it is about (default: the bounded context).
+- `--about <id>`: the node, item or batch it is about, one this repository holds (default: the bounded context).
 
 ```console
 $ work record "Command reference layout" --kind analysis --summary "Why the command reference has one section a tool" --body body.md
