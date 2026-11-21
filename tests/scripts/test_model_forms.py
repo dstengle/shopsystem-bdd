@@ -38,7 +38,7 @@ def test_each_item_it_names_is_open():
         found = re.fullmatch(r"plugin item (b\d+) \(no command yet\)", form.writer)
         if found:
             text = (REPO / ".shop" / "backlog" / ("%s.md" % found.group(1))).read_text()
-            assert not re.search(r"^status: (delivered|withdrawn|refused)$", text, re.M), form
+            assert not re.search(r"^status: (delivered|withdrawn|refused)$", text, re.MULTILINE), form
 
 
 def test_it_lists_the_catalogues_the_corpus_the_packs_and_the_working_rules():
