@@ -16,6 +16,7 @@ import backlog_forms
 import backlog_model
 import backlog_recodify
 import backlog_retires
+import backlog_section
 import backlog_universal
 import spec_held
 import spec_lexicon
@@ -28,12 +29,13 @@ from backlog_section import (
     Blocks,
     Group,
     capability_file,
-    ids,  # noqa: F401  (backlog_lines.ids, as its callers read it)
     laid_group,
     read,
     render,
     takes,
 )
+
+ids = backlog_section.ids  # backlog_lines.ids, as its callers read it
 
 
 def _number(ident):
