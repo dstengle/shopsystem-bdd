@@ -14,13 +14,13 @@ pull_request:
 
 | task | item | status | branch |
 |---|---|---|---|
-| t1 | b484 | pending | batch-64-b484 |
-| t2 | b487 | pending | batch-64-b487 |
-| t3 | b483 | pending | batch-64-b483 |
-| t4 | b443 | pending | batch-64-b443 |
-| t5 | b445 | pending | batch-64-b445 |
-| t6 | b467 | pending | batch-64-b467 |
-| t7 | b468 | pending | batch-64-b468 |
+| t1 | b484 | running | batch-64-b484 |
+| t2 | b487 | running | batch-64-b487 |
+| t3 | b483 | running | batch-64-b483 |
+| t4 | b443 | running | batch-64-b443 |
+| t5 | b445 | running | batch-64-b445 |
+| t6 | b467 | running | batch-64-b467 |
+| t7 | b468 | running | batch-64-b468 |
 
 ## Plan
 
