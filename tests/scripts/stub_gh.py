@@ -11,7 +11,8 @@ print nothing.
 The issues of a request (capability requests) are kept in the JSON file `$STUB_GH_ISSUES` (else `gh-issues.json`
 beside `$STUB_GH_CALLS`), `{url: {"title", "body", "state", "comments": [{"url", "body"}]}}`, which a test may write
 first: `issue create --repo <r>` adds `https://github.com/<r>/issues/<k>` and prints it, `issue comment <url>` adds
-`<url>#issuecomment-<k>` and prints it, `issue close <url>` sets its state `CLOSED`, `issue view <url>` prints its
+`<url>#issuecomment-<k>` (`viewerDidAuthor` true: the stand-in's account wrote it; a comment a test writes without it is
+another account's) and prints it, `issue close <url>` sets its state `CLOSED`, `issue view <url>` prints its
 body, comments and state, and `issue list --repo <r>` its open issues.
 
 GitHub's events (`work watch --forward`, requests r57, r58): `repo view <r> --json viewerPermission` prints `ADMIN`,
@@ -65,7 +66,7 @@ def issue(argv):
         out = url
     elif argv[1] == "comment":
         url = "%s#issuecomment-%d" % (argv[2], 1 + sum(len(i["comments"]) for i in issues.values()))
-        issues[argv[2]]["comments"].append({"url": url, "body": opt(argv, "--body")})
+        issues[argv[2]]["comments"].append({"url": url, "body": opt(argv, "--body"), "viewerDidAuthor": True})
         out = url
     elif argv[1] == "close":
         issues[argv[2]]["state"] = "CLOSED"

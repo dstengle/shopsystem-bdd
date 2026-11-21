@@ -175,9 +175,14 @@ def not_recorded(why, what, url):
 
 
 def unrecorded(root, text, said, command):
-    """The URL of a comment on the issue of the record `text` whose body is `said` and which the record does not
-    hold: one posted before whose URL was never committed (f6); None when there is none."""
-    _, comments, _ = request_gh.view(root, field(text, "issue"), command)
+    """The URL of a comment this side posted on the issue of the record `text` whose body is `said` and which the
+    record does not hold: one posted before whose URL was never committed (f6); None when there is none, and when the
+    issue cannot be read, so that a step is posted though its thread is not provided (b71, context-requests r56). A
+    comment of the other side's account is never taken as this side's post, whatever its body."""
+    try:
+        comments = request_gh.authored(root, field(text, "issue"), command)
+    except Refused:
+        return None
     held = recorded(text)
     return next((u for u, b in comments if u not in held and b.strip() == said.strip()), None)
 
