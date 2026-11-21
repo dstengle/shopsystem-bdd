@@ -49,9 +49,10 @@ def work_note(step):
 @four("WhenRuns", "`work merge --into --reason`", *BOTH)
 @four("WhenRuns", "`work merge`", *BOTH)
 def work_merge(step):
-    """b281: the item merged into the world's own item, which takes its place, with a reason."""
-    ensure(step, B.OWN)
-    B.run_work(step, "merge", B.ident(step.names[-1]), "--into", B.ident(B.OWN), "--reason", "one item does both")
+    """b281: the item merged into the successor the step names (b484), else the world's own item, with a reason."""
+    into = next((kind(v)[1] for p, v in getattr(step, "params", None) or [] if p == "successor"), B.OWN)
+    ensure(step, into)
+    B.run_work(step, "merge", B.ident(step.names[0]), "--into", B.ident(into), "--reason", "one item does both")
 
 
 @four("WhenRuns", "`work rate --value high-value --urgency low-urgency --size small`", *BOTH)

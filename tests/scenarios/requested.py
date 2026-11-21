@@ -71,7 +71,7 @@ ADDED = {"consistency#g33": "design-model-check", "consistency#g34": "design-mod
          "items#g31": "backlog", "items#g32": "backlog",                         # b431: work reopen
          "parsing#g19": "design-model-check", "parsing#g20": "design-model-check",     # b452: spec parse --item
          "parsing#g22": "design-model-check",
-         **{"items#g%d" % n: "backlog" for n in (33, 34, 38, 39, 42)},           # b281: work merge, work annotate; b465
+         **{"items#g%d" % n: "backlog" for n in (33, 34, 38, 39, 42, 43, 44, 45)},   # b281: work merge, work annotate; b465, b484
          "items#g35": "readiness", "items#g36": "readiness",                     # b281: a ready item checked again
          "items#g40": "readiness",                                               # b444: a construct uncatalogued
          "items#g41": "readiness",                                               # b477: a model line breaks a rule

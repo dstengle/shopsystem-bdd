@@ -28,8 +28,9 @@ def W():
 
 
 def ident(name):
-    """The item file's name of the scenario's item: `i3` is `b3`."""
-    return "b" + re.sub(r"^\D+", "", name)
+    """The item file's name of the scenario's item: `i3` is `b3`; a successor's past the items', `s1` is `b81` (b484)."""
+    number = re.sub(r"^\D+", "", name)
+    return "b%d" % (int(number) + 80) if re.fullmatch(r"s\d+", name) else "b" + number
 
 
 def item_rel(context, name):
