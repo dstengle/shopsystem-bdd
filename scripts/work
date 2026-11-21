@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import backlog_chore
 import backlog_cli
 import backlog_items
+import backlog_note
 import batch_cli
 import conversation_cli
 import decision_write
@@ -128,6 +129,7 @@ def main(argv=None):
     q.add_argument("--line", nargs=3, action="append", default=[], metavar=("N", "REQUIREMENT", "VERSION"))
     backlog_cli.add_parsers(sub)
     backlog_chore.add_parser(sub)
+    backlog_note.add_parsers(sub)
     batch_cli.add_parsers(sub)
     conversation_cli.add_parsers(sub)
     decision_write.add_parser(sub)
@@ -138,7 +140,8 @@ def main(argv=None):
                "request": cmd_request, "outcome": cmd_outcome, "ask": cmd_ask, "reply": cmd_reply, "turn": cmd_turn,
                "resolve": cmd_resolve, **backlog_cli.COMMANDS, **batch_cli.COMMANDS,
                **conversation_cli.COMMANDS, **request_cli.COMMANDS, **decision_write.COMMANDS,
-               **record_write.COMMANDS, **backlog_chore.COMMANDS}[args.cmd]
+               **record_write.COMMANDS, **backlog_chore.COMMANDS,
+               **backlog_note.COMMANDS}[args.cmd]
     return respond("work", handler, args, names=getattr(handler, "parameters", None))
 
 

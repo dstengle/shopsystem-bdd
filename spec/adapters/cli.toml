@@ -432,6 +432,27 @@ requirements = [
 [operations."backlog.withdraw".parameters]
 item = { positional = 1 }
 
+[operations."backlog.annotate"]
+command = "work annotate"
+requirements = [
+  "items#r38: While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person annotates the item with a note, the backlog service shall keep the item.",
+  "items#r39: While the status of an item is one of `delivered`, `refused` or `withdrawn`, if the person annotates the item, then the backlog service shall refuse the request and name the item.",
+]
+[operations."backlog.annotate".parameters]
+item = { positional = 1 }
+note = { positional = 2 }
+
+[operations."backlog.merge"]
+command = "work merge"
+requirements = [
+  "items#r33: While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person merges the item with a successor and a reason, the backlog service shall set the status of the item to `withdrawn` and keep the item.",
+  "items#r34: While the status of an item is one of `delivered`, `refused` or `withdrawn`, if the person merges the item, then the backlog service shall refuse the request and name the item.",
+]
+[operations."backlog.merge".parameters]
+item = { positional = 1 }
+successor = { option = "--into" }
+reason = { option = "--reason" }
+
 [operations."backlog.reopen"]
 command = "work reopen"
 requirements = [

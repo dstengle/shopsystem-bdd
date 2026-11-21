@@ -385,10 +385,10 @@ stateDiagram-v2
   needs_input --> shaped: work answer
   idea --> refused: work refuse
   shaped --> refused: work refuse
-  idea --> withdrawn: work withdraw
-  shaped --> withdrawn: work withdraw
-  ready --> withdrawn: work withdraw
-  needs_input --> withdrawn: work withdraw
+  idea --> withdrawn: work withdraw or work merge
+  shaped --> withdrawn: work withdraw or work merge
+  ready --> withdrawn: work withdraw or work merge
+  needs_input --> withdrawn: work withdraw or work merge
 ```
 
 In words: an idea is **shaped** once it has a purpose and lines, **ready** once it passes the readiness bar, and
