@@ -133,11 +133,13 @@ ITEM_U = "U1"
 
 def give_universal(step, name, condition):
     """The item `name` given the passing line and the universal condition `condition` as `U1` of its universal
-    block."""
+    block; with no requirement line when a Given said the item holds no requirement (`lineless`, b516)."""
     codify(step)
+    step.context.setdefault("universal_of", {})[name] = condition
     fields = step.context.get("item_fields", {}).get(name, {})
-    text = block(fields.get("title", "Title of %s" % name), PASSING) + "\n\n### universal\n\n- [%s] %s" % (
-        ITEM_U, condition)
+    lines = "" if name in step.context.get("lineless", ()) else block(fields.get("title", "Title of %s" % name),
+                                                                       PASSING) + "\n\n"
+    text = lines + "### universal\n\n- [%s] %s" % (ITEM_U, condition)
     B().write_item(step, name, sections={"Requirements": text})
 
 

@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-batch-agents
 summary: "The plugin's agents are four, each with exactly its role's tools and its model in its definition: `batch-implementer` (opus; builds one task of a batch), `pr-reviewer` (opus; no Edit, Write or shell), `architecture-reviewer` (opus; no Edit or Write) and `trial-runner` (sonnet); no agent can start an agent."
 date: 2026-11-21
-status: accepted
+status: superseded
 tier: check
 enforced_by: [tests/scripts/test_agents.py::RoleBoundaries]
 supersedes: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-2-0-agents]

@@ -77,6 +77,7 @@ ADDED = {"consistency#g33": "design-model-check", "consistency#g34": "design-mod
          **{"items#g%d" % n: "backlog" for n in range(48, 53)},                 # b459: work retitle, work split
          "items#g40": "readiness",                                               # b444: a construct uncatalogued
          "items#g41": "readiness",                                               # b477: a model line breaks a rule
+         "items#g53": "readiness", "items#g54": "readiness",                     # b516: universal conditions only
          **{"checking#g%d" % n: "design-model-check" for n in range(52, 58)},
          "reviews#g9": "batches", "reviews#g10": "batches",     # b492: a base merge resubmitted; b370: the rule catalogue's checks
          **{"context-requests#g%d" % n: "requests" for n in (51, 52, 54, 55)}}    # b68: a thread out of step
