@@ -226,8 +226,13 @@ def ident(term, category):
 
 def read(root):
     """The lexicon of the context at `root`: the glossary of `spec/index.md` and every capability's `## Terms`; of a
-    context with a domain model (`spec/model/`), its vocabulary named onto the model (spec_vocabulary_terms)."""
-    root = Path(root)
+    context with a domain model (`spec/model/`), its vocabulary named onto the model (spec_vocabulary_terms); once a
+    state of its files while the root is held (spec_held, b430)."""
+    import spec_held
+    return spec_held.memo(root, ("lexicon",), lambda: _read(Path(root)))
+
+
+def _read(root):
     import spec_packs  # here: spec_packs imports this module
     if (root / "spec" / "model").is_dir():     # the domain contract: the terms name the model's elements
         import spec_vocabulary_terms

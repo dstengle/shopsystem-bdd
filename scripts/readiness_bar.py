@@ -5,7 +5,10 @@ not have (readiness r15), they bring no violation of a `model.lp` rule of `model
 names a group or a requirement of theirs (v15k, v15l, v15n alike: b77, b333), `model logic` finds no L0 and no L1 naming them and reads each of them (r41), and
 `features generate` writes a scenario for each of their groups that has a step; every stage after the lexicon's runs
 whatever the stages before it found, so one run names every failing line (b305). The lines are checked on a copy of `spec/` under the temporary directory
-with the item's lines laid in, removed afterwards whatever happens; `spec/` itself is never written. The `check` design-decisions that a
+with the item's lines laid in, removed afterwards whatever happens; `spec/` itself is never written. The copy is held
+(spec_held) so its inputs are statted once a state and each line parsed once; the result before the lay is kept on
+disk (readiness_before); a lay's parse misses are parsed side by side (spec_prefetch); and the bar runs no `spec
+annotate`, compares no v_a5 or v_a6 and runs no entailment (decision 0112, b430). The `check` design-decisions that a
 capability of the item's lines rests on run their tests on the root checkout, each once a process (plan 6, D13)."""
 import contextlib
 import io
@@ -13,15 +16,17 @@ import shutil
 import tempfile
 from pathlib import Path
 
-import adapter_annotate
 import backlog_chore
 import backlog_lines
 import features_generate
 import model_decisions
+import readiness_before
 import request_moves
 import request_text
+import spec_held
 import spec_language
 import spec_lexicon
+import spec_prefetch
 import spec_read
 import spec_rgl_vocab
 import spec_solve
@@ -63,7 +68,9 @@ def _parses(copy, blocks):
 
 # The rules the bar names by a stage of its own, or that read the features the copy does not have: a parse (v_p1, v_p2)
 # by `_parses`, a scenario (v_s1-v_s3) by `_scenarios` (b333).
-OWN_STAGE = {"v_p1", "v_p2", "v_s1", "v_s2", "v_s3"}
+# Nor v_a5 and v_a6, the adapter contract's annotations, which the bar does not write (decision 0112); spelled so
+# that the rule catalogue does not take the bar for where they are implemented.
+OWN_STAGE = {"v_p1", "v_p2", "v_s1", "v_s2", "v_s3"} | {"v_a%d" % n for n in (5, 6)}
 
 
 def _violations(copy):
@@ -99,7 +106,7 @@ def _logic(copy, mine, conditions=(), unparsed=()):
     (`spec_solve.unread`, r41), an unread requirement elsewhere not, nor one named in `unparsed` already (b305); an L3
     naming one of them is a warning."""
     reasons, warnings = [], []
-    for f in spec_solve.run(copy):
+    for f in spec_solve.run(copy, entail=False):        # no L2 and no L8 (decision 0112)
         said = "%s %s" % (f.code, f.text)
         if f.code == "L0" or (f.code == "L1" and set(f.ids) & mine):
             reasons.append(said)
@@ -151,25 +158,33 @@ def well_formed(root, item, others=()):
         shutil.copytree(Path(root) / "spec", copy / "spec")      # backlog_lines.lay, the lexicon read before the item
         for other in others:
             backlog_lines.lay_onto(copy, other)
-        outer = spec_rgl_vocab.outer(copy)
-        before = set(spec_lexicon.problems(spec_lexicon.read(copy), outer))
-        before_lay, _ = _violations(copy)
-        backlog_lines.lay_onto(copy, item)
-        with contextlib.redirect_stdout(io.StringIO()):     # the contract annotated as the lay writes it (b379)
-            adapter_annotate.annotate(copy)
-        reasons = ["%s.md: %s" % (b.capability, p) for b in blocks
-                   for p in spec_read.capability(backlog_lines.capability_file(copy, b.capability)).problems]
-        reasons += ["universal.md: %s" % p for p in spec_read.read_universal(copy).problems] if blocks.universal else []
-        reasons += ["the lexicon: %s %s: %s" % found for found in spec_lexicon.problems(spec_lexicon.read(copy), outer)
-                    if found not in before]                                                             # r15
-        if reasons:                  # a broken lexicon breaks grammar 4's compile: no stage after it runs
-            return reasons, []
-        unparsed = _parses(copy, blocks)       # every stage after it runs whatever it finds, each line named once (b305)
-        reasons, warnings = _logic(copy, mine, [uid for uid, _ in blocks.universal], unparsed)
-        return (list(unparsed.values()) + _broken(copy, blocks, before_lay) + reasons + _scenarios(copy, blocks, unparsed),
-                warnings)
+        with spec_held.held(copy):          # the copy's inputs statted once a state, each line parsed once (b430)
+            return _laid(copy, item, blocks, mine)
     finally:
         shutil.rmtree(copy, ignore_errors=True)
+
+
+def _laid(copy, item, blocks, mine):
+    """well_formed's stages on the copy: the state before the lay (readiness_before), the lay, then each stage."""
+    outer = spec_rgl_vocab.outer(copy)
+
+    def unlaid():
+        spec_prefetch.prefetch(copy, spec_prefetch.texts(copy))
+        return set(spec_lexicon.problems(spec_lexicon.read(copy), outer)), _violations(copy)[0]
+    before, before_lay = readiness_before.before(copy, unlaid)
+    backlog_lines.lay_onto(copy, item)
+    reasons = ["%s.md: %s" % (b.capability, p) for b in blocks
+               for p in spec_read.capability(backlog_lines.capability_file(copy, b.capability)).problems]
+    reasons += ["universal.md: %s" % p for p in spec_read.read_universal(copy).problems] if blocks.universal else []
+    reasons += ["the lexicon: %s %s: %s" % found for found in spec_lexicon.problems(spec_lexicon.read(copy), outer)
+                if found not in before]                                                             # r15
+    if reasons:                  # a broken lexicon breaks grammar 4's compile: no stage after it runs
+        return reasons, []
+    spec_prefetch.prefetch(copy, spec_prefetch.texts(copy))     # the lay's misses side by side, after the lexicon
+    unparsed = _parses(copy, blocks)       # every stage after it runs whatever it finds, each line named once (b305)
+    reasons, warnings = _logic(copy, mine, [uid for uid, _ in blocks.universal], unparsed)
+    return (list(unparsed.values()) + _broken(copy, blocks, before_lay) + reasons + _scenarios(copy, blocks, unparsed),
+            warnings)
 
 
 _RAN = {}     # (resolved root, decision's path): its run, once a process (D13)

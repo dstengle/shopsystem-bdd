@@ -7,6 +7,7 @@ and of a line that uses a construct the context's construct catalogue has no ent
 from pathlib import Path
 
 import spec_grammar4
+import spec_held
 import spec_read
 
 
@@ -22,7 +23,12 @@ def four(root, capability=None, universal=False):
 
 
 def parse(root, text):
-    """The line parsed in grammar 4: an object with `tree`, `trees` and `refusal`, as spec_grammar4's parse has."""
+    """The line parsed in grammar 4: an object with `tree`, `trees` and `refusal`, as spec_grammar4's parse has; once a
+    state of the root's inputs while it is held (spec_held, b430)."""
+    return spec_held.memo(root, ("language", text), lambda: _parse(root, text))
+
+
+def _parse(root, text):
     import spec_catalogued
     import spec_lf_read
     parsed = spec_grammar4.parse(root, text)

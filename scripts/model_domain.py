@@ -80,9 +80,11 @@ class DomainReading:
     def requirement_id(self, short):
         """`<capability>#r<n>` as the facts name a requirement: its capability's `id:` before `#r<n>`."""
         name, _, n = short.partition("#")
-        path = self.root / "spec" / "capabilities" / ("%s.md" % name)
-        found = frontmatter(path.read_text())[0].get("id") if path.is_file() else None
-        return "%s#%s" % (found or name, n)
+        ids = self.__dict__.setdefault("_capability_ids", {})
+        if name not in ids:
+            path = self.root / "spec" / "capabilities" / ("%s.md" % name)
+            ids[name] = frontmatter(path.read_text())[0].get("id") if path.is_file() else None
+        return "%s#%s" % (ids[name] or name, n)
 
     def _layer_of(self):
         if getattr(self, "_layers", None) is None:
