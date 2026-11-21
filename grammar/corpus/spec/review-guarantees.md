@@ -154,3 +154,26 @@ shall [x1: dispatch `pr-reviewer` (constant)]
         triage(x5) = x6
         name(e3, subject: x1, object: x6)
 ```
+
+## r10
+From: b492 r10.
+
+```reading
+While the workspace of a batch holds a base merge and the proposed change of the batch has a review and no review finding on the proposed change whose triage is `fix now` exists, when `pr-reviewer` reviews the proposed change, `pr-reviewer` shall review only the base merge.
+shall [x7: dispatch `pr-reviewer` (constant)]
+  while [x1: batch, x2: workspace, x3: base merge, x4: proposed change, x5: review]
+    of(x2, x1)
+    in(x3, x2)
+    of(x4, x1)
+    of(x5, x4)
+    not [x6: review finding]
+      on(x6, x4)
+      triage(x6) = `fix now`
+      exists(x6)
+  when
+    request(e1, reviews.review, subject: x7, object: x4)
+  response
+    only
+      scope
+        review(e2, subject: x7, object: x3)
+```

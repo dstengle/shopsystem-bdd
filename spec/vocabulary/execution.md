@@ -49,3 +49,5 @@ area: execution
 - **setting value** (noun) → object setting value. The value a setting is given, of the type the plugin reads it as, as `7` for `batch_size`. Plural: setting values.
 - **settings file** (noun) → object settings file. The file `.shop/delivery.toml` of a bounded context, which holds its settings. Plural: settings files.
 - **the delivery settings form** (proper noun) → object delivery settings form. The settings the plugin reads in `.shop/delivery.toml`: each key under its own table and its value of its own type.
+- **conflict** (verb, state) → relation kept change.conflicts with. A task's kept change alters a part of a file, other than a capability's `unbuilt:` line, that a kept change of an earlier task in the batch alters otherwise, so that merging the task branches in task order, each after the ones before, with git's recorded resolutions, leaves the part unsettled. Forms: conflicts, conflicted. Frame: <kept change> conflicts with <kept change>.
+- **base merge** (noun) → object base merge. A kept change on a batch's branch that merges the branch the batch started from into it, made after the batch's last review. Plural: base merges.

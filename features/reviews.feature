@@ -77,3 +77,93 @@ Feature: Reviews
     Then the batches service keeps the proposed change p1
     And the batch b1 has the proposed change p1
     And the batches service sets the status of the batch b1 to `in-review`
+
+  @g7 @r7
+  Scenario: A batch whose task branches touch one file without a conflict is submitted, merged in task order
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    And a task t1
+    And the batch b1 has the task t1
+    And the status of the task t1 is `done`
+    And an item i1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a kept change k1
+    And a file f1
+    And the kept change k1 touches the file f1
+    And the kept change k1 cites the item i1
+    And a kept change k2
+    And the kept change k2 touches the file f1
+    And an item i2
+    And the batch b1 holds the item i2
+    And the status of the item i2 is `in-batch`
+    And the kept change k2 cites the item i2
+    And no kept change conflicts with a kept change
+    When the person submits the batch b1
+    Then the batches service keeps the proposed change p1
+    And the batch b1 has the proposed change p1
+    And the proposed change p1 holds the kept change k2
+    And the batches service sets the status of the batch b1 to `in-review`
+
+  @g8 @r8
+  Scenario: A batch whose task branches conflict is not submitted, naming the file and both items
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a kept change k1
+    And the kept change k1 cites the item i1
+    And an item i2
+    And the batch b1 holds the item i2
+    And the status of the item i2 is `in-batch`
+    And a kept change k2
+    And the kept change k2 cites the item i2
+    And the kept change k1 conflicts with the kept change k2
+    And a file f1
+    And the kept change k2 touches the file f1
+    And an item i3
+    And a kept change k3
+    And the batch b1 holds the item i3
+    And the kept change k3 conflicts with the kept change k2
+    And the kept change k3 cites the item i3
+    And an item i4
+    And a kept change k4
+    And the batch b1 holds the item i4
+    And the kept change k4 conflicts with the kept change k2
+    And the kept change k4 cites the item i4
+    And an item i5
+    And a kept change k5
+    And the batch b1 holds the item i5
+    And the kept change k5 conflicts with the kept change k2
+    And the kept change k5 does not cite the item i5
+    When the person submits the batch b1
+    Then the batches service refuses this request
+    And the batches service names the file f1
+    And the batches service names the item i2
+    And the batches service names the item i3
+    And the batches service names the item i4
+    And the batches service does not name the item i5
+
+  @g9 @r9
+  Scenario: A batch awaiting its merge whose branch merged its base is submitted for review again
+    Given a batch b1
+    And the status of the batch b1 is `awaiting-merge`
+    And a workspace w1
+    And the batch b1 has the workspace w1
+    And a base merge b2
+    And the workspace w1 holds the base merge b2
+    When the person submits the batch b1
+    Then the batches service keeps the proposed change p1
+    And the batch b1 has the proposed change p1
+    And the batches service sets the status of the batch b1 to `in-review`
+
+  @g10 @r10
+  Scenario: A batch awaiting its merge with no base merge is not submitted
+    Given a batch b1
+    And the status of the batch b1 is `awaiting-merge`
+    And a workspace w1
+    And the batch b1 has the workspace w1
+    And the workspace w1 holds no base merge
+    When the person submits the batch b1
+    Then the batches service refuses this request
+    And the batches service names the batch b1

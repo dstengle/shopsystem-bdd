@@ -4,7 +4,7 @@ published as one pull request.
 Under the lock: every task of an `in-batch` item must be `done`, and every commit on their branches since the lines
 commit must cite its item (or an earlier in-batch item, whose branch it merged) and leave `.shop/` alone. Then, in the
 batch's worktree, one commit takes every parked item's lines out of `spec/` (plan 4 review, B1), each in-batch item's
-branch is merged into `batch-<n>` with `--no-ff` in plan order (a parked item's branch never is, so its commits stay out), the
+branch is merged into `batch-<n>` with `--no-ff` in task order, each after the ones before (batch_merge) (a parked item's branch never is, so its commits stay out), the
 tests run there, the branch is pushed to the base's remote, and a draft pull request is created through gh unless the
 batch has one already (plan 5's fix loop pushes only, once each commit since the last review cites an open finding
 and each open finding has a commit: `batch_fix.check`). Last, the batch is `in-review` with its pull request,
@@ -14,6 +14,7 @@ import shutil
 import subprocess
 
 import backlog_items
+import batch_base_merge
 import batch_fix
 import batch_gh
 import batch_merge
@@ -86,9 +87,13 @@ def checked(root, batch):
     return mine
 
 
-def _merge(root, tree, batch, task, item):
+def _merge(root, tree, batch, task, item, mine):
+    """The item's branch merged after the ones before it; a conflict left names the other items whose branches
+    conflict with it (reviews r8)."""
+    others = [(backlog_items.label(i), t.branch) for t, i in mine if t.branch != task.branch]
     try:
-        batch_merge.merge(tree, task.branch, "%s: %s\n\nItem: %s" % (batch.name, backlog_items.label(item), item.name))
+        batch_merge.merge(tree, task.branch, "%s: %s\n\nItem: %s" % (batch.name, backlog_items.label(item), item.name),
+                          backlog_items.label(item), others)
     except Refused as refused:
         raise Refused("%s: %s: %s into %s" % (COMMAND, task_label(root, task), refused, batch.branch)) from None
 
@@ -115,6 +120,8 @@ def _put_back(root, tree, before, name, branch, remote_before, pushed):
 def review(root, name):
     """The pull request's URL (r8): the batch merged, tested, pushed and published, and `in-review`."""
     with locked(root):
+        if batch_plan.find(root, name).status == "awaiting-merge":     # its branch merged its base (b492)
+            return batch_base_merge.resubmit(root, batch_plan.find(root, name), COMMAND, tests_pass)
         batch = building(root, name, COMMAND)
         mine = checked(root, batch)
         batch_fix.check(root, batch, mine, COMMAND)     # a batch with a recorded review: its fixes (plan 5, D11)
@@ -132,7 +139,7 @@ def review(root, name):
         try:
             _take_out_parked(root, tree, batch)
             for task, item in mine:
-                _merge(root, tree, batch, task, item)
+                _merge(root, tree, batch, task, item, mine)
             tests_pass(root, tree, "%s: %s" % (COMMAND, batch.name))
             push(root, where, batch.branch, COMMAND)
             pushed = True

@@ -66,6 +66,7 @@ def capability(node):
 # group whose own capability has handlers of its own is not listed
 ADDED = {"consistency#g33": "design-model-check", "consistency#g34": "design-model-check",     # b418
          "drafting#g25": "readiness", "reviews#g6": "batches",   # b354: a term of a new capability; b449
+         "reviews#g7": "batches", "reviews#g8": "batches",      # b491: task branches merged in task order
          "drafting#g28": "readiness",                            # b458: the decisions a retired requirement enforces
          "measurement#g10": "telemetry", "measurement#g11": "batch-measurement",    # b420: compare's frames of two
          "items#g31": "backlog", "items#g32": "backlog",                         # b431: work reopen
@@ -75,7 +76,8 @@ ADDED = {"consistency#g33": "design-model-check", "consistency#g34": "design-mod
          "items#g35": "readiness", "items#g36": "readiness",                     # b281: a ready item checked again
          "items#g40": "readiness",                                               # b444: a construct uncatalogued
          "items#g41": "readiness",                                               # b477: a model line breaks a rule
-         **{"checking#g%d" % n: "design-model-check" for n in range(52, 58)}}     # b370: the rule catalogue's checks
+         **{"checking#g%d" % n: "design-model-check" for n in range(52, 58)},
+         "reviews#g9": "batches", "reviews#g10": "batches"}                      # b492: a base merge resubmitted     # b370: the rule catalogue's checks
 
 
 def origin(node):
