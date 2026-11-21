@@ -790,3 +790,33 @@ shall [x3: agent the person (constant), x4: service the backlog service (constan
     refuse(e2, subject: x4, object: x5)
     name(e3, subject: x4, object: x1)
 ```
+
+## r46
+From: b480 r46.
+
+```reading
+While the status of an item is `in-batch`, if the person merges the item, then the backlog service shall refuse the request and name the item.
+shall [x2: agent the person (constant), x3: service the backlog service (constant), x4: request "the request the trigger makes" (indexical)]
+  while [x1: item]
+    status(x1) = `in-batch`
+  if
+    request(e1, backlog.merge, subject: x2, object: x1)
+  response
+    refuse(e2, subject: x3, object: x4)
+    name(e3, subject: x3, object: x1)
+```
+
+## r47
+From: b480 r47.
+
+```reading
+While the status of an item is `in-batch`, if the person annotates the item, then the backlog service shall refuse the request and name the item.
+shall [x2: agent the person (constant), x3: service the backlog service (constant), x4: request "the request the trigger makes" (indexical)]
+  while [x1: item]
+    status(x1) = `in-batch`
+  if
+    request(e1, backlog.annotate, subject: x2, object: x1)
+  response
+    refuse(e2, subject: x3, object: x4)
+    name(e3, subject: x3, object: x1)
+```

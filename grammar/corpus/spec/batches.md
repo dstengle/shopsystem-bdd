@@ -818,3 +818,47 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
     import(subject: x8, object: x4)
     keep(e3, subject: x7, object: x4)
 ```
+
+## r96
+From: b486 r96.
+
+```reading
+While an item in a batch is `in-batch` and the item does not meet the readiness bar, if the person amends the item, then the batches service shall refuse the request, name the item and change nothing.
+shall [x3: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x4: agent the person (constant), x5: service the batches service (constant), x6: request "the request the trigger makes" (indexical)]
+  while [x1: item, x2: batch]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    not
+      meet(subject: x1, object: x3)
+  if
+    request(e1, batches.amend, subject: x4, object: x1)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x1)
+    not [x7: thing]
+      change(e4, subject: x5, object: x7)
+```
+
+## r97
+From: b488 r97.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and a requirement of the item retires no requirement id and a scenario of the item refers to the requirement id of the requirement and the scenario succeeds in a workspace of a batch, if the person opens the batch, then the batches service shall set the status of the item to `shaped` and name the scenario.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x9: agent the person (constant), x10: service the batches service (constant)]
+  while [x1: item, x3: requirement, x5: scenario, x6: requirement id, x7: workspace, x8: batch]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    of(x3, x1)
+    not [x4: requirement id]
+      retire(subject: x3, object: x4)
+    of(x5, x1)
+    of(x6, x3)
+    refer(subject: x5, to: x6)
+    of(x7, x8)
+    succeed(subject: x5, in: x7)
+  if
+    request(e1, batches.open, subject: x9, object: x8)
+  response
+    initiates(e2, subject: x10, status(x1) = `shaped`)
+    name(e3, subject: x10, object: x5)
+```

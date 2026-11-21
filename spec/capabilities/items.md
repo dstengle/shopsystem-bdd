@@ -7,7 +7,7 @@ area: tracking
 specifies: object item, service backlog, the readiness policy
 language: codified-2
 retired: [g3, r3, g18, r18, g33, r33]
-unbuilt: []
+unbuilt: [r46, r47]
 ---
 
 # Items
@@ -172,4 +172,10 @@ declined, withdrawn, answered and listed.
 
 ### [g43] An item is not merged into itself
 - [r43] If the person merges a successor with the successor and a reason, then the backlog service shall refuse the request and name the successor.
+
+### [g46] An in-batch item is not merged
+- [r46] While the status of an item is `in-batch`, if the person merges the item, then the backlog service shall refuse the request and name the item.
+
+### [g47] An in-batch item takes no note
+- [r47] While the status of an item is `in-batch`, if the person annotates the item, then the backlog service shall refuse the request and name the item.
 

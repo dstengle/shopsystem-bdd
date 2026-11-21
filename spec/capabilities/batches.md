@@ -7,7 +7,7 @@ area: execution
 specifies: object batch, object task, service batches
 language: codified-2
 retired: [g69, r69, g82, r82, g88, r88, g53, r53]
-unbuilt: []
+unbuilt: [r96, r97]
 ---
 
 # Batches
@@ -174,4 +174,10 @@ when the change is merged.
 
 ### [g95] A batch opened keeps each term of a pack in the pack, and the pack imported
 - [r95] While an item is `ready` and the item meets the readiness bar and the item holds a term of a pack, when the person opens a batch, the batches service shall keep the pack that has the term and keep the pack that this bounded context imports.
+
+### [g96] An in-batch item amended that does not meet the readiness bar is refused and nothing changes
+- [r96] While an item in a batch is `in-batch` and the item does not meet the readiness bar, if the person amends the item, then the batches service shall refuse the request, name the item and change nothing.
+
+### [g97] A ready item whose new line's scenario passes on the lay goes back to shaped
+- [r97] While an item is `ready` and the item meets the readiness bar and a requirement of the item retires no requirement id and a scenario of the item refers to the requirement id of the requirement and the scenario succeeds in a workspace of a batch, if the person opens the batch, then the batches service shall set the status of the item to `shaped` and name the scenario.
 
