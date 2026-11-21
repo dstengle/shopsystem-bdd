@@ -3,7 +3,7 @@
 item does not hold refused, naming it and changing nothing."""
 import backlog_items
 import backlog_section
-from backlog_testing import git, state, work, write_item
+from backlog_testing import git, state, work
 from test_backlog_terms import modelled  # noqa: F401  (the fixture)
 
 FOLDER = "object folder\n  attributes: name (text)\n  relations: holds → note (many)"
