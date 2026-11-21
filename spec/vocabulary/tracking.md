@@ -166,3 +166,7 @@ area: tracking
 - **available** (noun) → value channel.availability available.
 - **rejecting** (noun) → value channel.availability rejecting.
 - **provide** (verb, state) → relation channel.provides. A channel gives a thread with its entries to the one that reads the thread. Forms: provides, provided. Frame: <channel> provides <thread>.
+- **term proposal** (noun) → object term proposal. A request line that proposes a term, with the model elements the term names, for the upstream to take into its own vocabulary in its own words.
+- **suggest** (verb, action) → operation context requests.suggest. Forms: suggests, suggested. Frame: <actor> suggests <term proposal>. Frame: <actor> suggests <term proposal> for <context request>.
+- **the vocabulary-entry form** (proper noun) → object vocabulary-entry form. A bullet `- **<word>** (<part of speech>) → <model element>. <definition>`, with the model lines that declare the element when the upstream has none.
+- **concern** (verb, state) → relation term proposal.concerns. A term proposal is about a term: the term it adds, or the term whose entry it changes. Forms: concerns, concerned. Frame: <term proposal> concerns <term>.

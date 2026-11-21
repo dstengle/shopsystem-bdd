@@ -968,3 +968,67 @@ shall [x4: agent the person (constant), x6: service the context requests service
     on(x7, x1)
     keep(e4, subject: x6, object: x7)
 ```
+
+## r57
+From: b42 r57.
+
+```reading
+When the person suggests a term proposal for a context request, the context requests service shall keep a context request that holds the term proposal and keep an entry on the context request.
+shall [x1: agent the person (constant), x4: service the context requests service (constant)]
+  when [x2: term proposal, x3: context request]
+    request(e1, context requests.suggest, subject: x1, object: x2, for: x3)
+  response [x5: context request, x6: entry]
+    in(x2, x5)
+    keep(e2, subject: x4, object: x5)
+    on(x6, x5)
+    keep(e3, subject: x4, object: x6)
+```
+
+## r58
+From: b42 r58.
+
+```reading
+While a context request holds a term proposal whose line outcome is `accepted`, when the person accepts the context request, the context requests service shall keep an item that holds every term that the term proposal concerns.
+shall [x3: agent the person (constant), x4: service the context requests service (constant)]
+  while [x1: context request, x2: term proposal]
+    line outcome(x2) = `accepted`
+    in(x2, x1)
+  when
+    request(e1, context requests.accept, subject: x3, object: x1)
+  response [x5: item]
+    every [x6: term]
+      concern#2(subject: x2, object: x6)
+      scope
+        in(x6, x5)
+    keep(e2, subject: x4, object: x5)
+```
+
+## r59
+From: b42 r59.
+
+```reading
+While a context request is `awaiting-upstream`, if the person suggests a term proposal for the context request, then the context requests service shall refuse the request and name the context request.
+shall [x2: agent the person (constant), x4: service the context requests service (constant), x5: request "the request the trigger makes" (indexical)]
+  while [x1: context request]
+    status(x1) = `awaiting-upstream`
+  if [x3: term proposal]
+    request(e1, context requests.suggest, subject: x2, object: x3, for: x1)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x1)
+```
+
+## r60
+From: b42 r60.
+
+```reading
+If the person suggests a term proposal that does not conform to the vocabulary-entry form, then the context requests service shall refuse the request and name the term proposal.
+shall [x1: agent the person (constant), x3: artifact the vocabulary-entry form (constant), x4: service the context requests service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: term proposal]
+    not
+      conforms(x2, x3)
+    request(e1, context requests.suggest, subject: x1, object: x2)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
