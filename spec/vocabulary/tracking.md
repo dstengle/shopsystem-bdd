@@ -144,3 +144,6 @@ area: tracking
 - **merge** (verb, action) → operation backlog.merge. Forms: merges, merged. Frame: <actor> merges <item>.
 - **expose** (verb, action) → operation drafting.expose. Forms: exposes, exposed. Frame: <actor> exposes <operation table> in <item>.
 - **withhold** (verb, action) → operation drafting.withhold. Forms: withholds, withheld. Frame: <actor> withholds <operation> in <item>.
+- **remove** (verb, action) → operation drafting.retract. Forms: removes, removed. Frame: <actor> removes <capability> from <item>.
+- **restate** (verb, state) → relation model line.restates. A model line declares an operation that a service of the domain model declares already, under the same service and name, with the parameters, outcomes and reasons the operation is to have in place of its own. Forms: restates, restated. Frame: <model line> restates <operation>.
+- **domain model** (noun) → object domain model. The files `spec/model/<area>.md` of this bounded context, each declaring the objects, services and operations of one area. This: the domain model of this bounded context. Plural: domain models.

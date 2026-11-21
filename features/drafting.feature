@@ -339,3 +339,87 @@ Feature: Drafting
     When the person withholds the operation o1 in the item i1
     Then the item i1 holds the operation o1
     And the drafting service keeps the operation o1
+
+  @g35 @r35
+  Scenario: Removing a capability from an item takes it and its model lines out
+    Given a capability c1
+    And an item i1
+    And the item i1 holds the capability c1
+    And a model line m1
+    And the item i1 holds the model line m1
+    When the person removes the capability c1 from the item i1
+    Then the item i1 does not hold the capability c1
+    And the drafting service does not keep the capability c1
+    And the item i1 does not hold the model line m1
+    And the drafting service does not keep the model line m1
+
+  @g36 @r36
+  Scenario: Drafting a new capability that another item holds is refused naming that item
+    Given a capability c1
+    And the capability c1 does not exist
+    And an item i1
+    And the item i1 holds the capability c1
+    And an item i2
+    And an item i3
+    When the person drafts the item i2 with the capability c1
+    Then the drafting service refuses this request
+    And the drafting service names the item i3
+    And the item i3 holds the capability c1
+
+  @g37 @r37
+  Scenario: Drafting into a new capability an in-batch item holds is refused naming the item and its batch
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And a capability c1
+    And the capability c1 does not exist
+    And the item i1 holds the capability c1
+    And a requirement r1
+    And the capability c1 has the requirement r1
+    And an item i2
+    And an item i3
+    When the person drafts the item i2 with the requirement r1
+    Then the drafting service refuses this request
+    And the drafting service names the batch b1
+    And the drafting service names the item i3
+    And the item i3 holds the capability c1
+
+  @g38 @r38
+  Scenario: A requirement of an in-batch item is reworded
+    Given an item i1
+    And the status of the item i1 is `in-batch`
+    And a requirement r1
+    And the item i1 holds the requirement r1
+    And a requirement r2
+    When the person rewords the requirement r1
+    Then the drafting service keeps the requirement r2
+    And the item i1 holds the requirement r2
+
+  @g39 @r39
+  Scenario: A requirement drafted into an in-batch item is kept
+    Given an item i1
+    And the status of the item i1 is `in-batch`
+    And a requirement r1
+    When the person drafts the item i1 with the requirement r1
+    Then the item i1 holds the requirement r1
+    And the drafting service keeps the requirement r1
+
+  @g40 @r40
+  Scenario: A requirement removed from an in-batch item is not kept
+    Given an item i1
+    And the status of the item i1 is `in-batch`
+    And a requirement r1
+    And the item i1 holds the requirement r1
+    When the person removes the requirement r1
+    Then the item i1 does not hold the requirement r1
+    And the drafting service does not keep the requirement r1
+
+  @g41 @r41
+  Scenario: A model line that restates an operation is kept in the item
+    Given a model line m1
+    And an operation o1
+    And the model line m1 restates the operation o1
+    And an item i1
+    When the person declares the model line m1 in the item i1
+    Then the item i1 holds the model line m1
+    And the drafting service keeps the model line m1

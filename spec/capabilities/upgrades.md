@@ -6,7 +6,7 @@ group: service
 area: upgrades
 specifies: service upgrades
 language: codified-2
-retired: [g31, r31]
+retired: [g31, r31, g38, r38]
 unbuilt: []
 ---
 
@@ -703,10 +703,21 @@ the tracked file `.shop/backlog/b1.md` holds "# b1"
 ### [g37] An upgrade names a scenario conftest of neither form and leaves it alone
 - [r37] While the release of this repository is before the release of the plugin and the scenario conftest of this repository does not conform to the old scenario conftest form and the scenario conftest of this repository does not conform to the scenario conftest form, when the person upgrades this repository, the upgrades service shall return the scenario conftest and not change the scenario conftest.
 
-### [g38] Founding a bounded context keeps its context scaffold and its ignore file
-- [r38] While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold and the ignore file of this repository and complete the request.
+### [g39] Founding a bounded context keeps its context scaffold and an ignore file that does not conform
+- [r39] While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository does not conform to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold and the ignore file of this repository and complete the request.
 
 ```given
 the tracked file `README.md` holds "A new context."
+```
+
+### [g40] Founding a bounded context leaves an ignore file that conforms alone
+- [r40] While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository conforms to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold, not change the ignore file and complete the request.
+
+```given
+the tracked file `.gitignore` holds:
+  .venv
+  /__pycache__/
+  .pytest_cache/
+  .ruff_cache
 ```
 

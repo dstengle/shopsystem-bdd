@@ -97,4 +97,6 @@ object scenario conftest form kind of artifact
 object old scenario conftest form kind of artifact
 
 object ignore file kind of tracked file
+
+object ignore file form kind of artifact
 ```

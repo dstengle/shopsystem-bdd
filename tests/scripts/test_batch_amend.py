@@ -1,0 +1,50 @@
+"""`work batch amend` (batches r81-r83, b460): an in-batch item's lines changed by `work line` laid again on the batch
+branch and its task's branch, a new id renumbered past the other items', a line laid before with the same text kept
+built on the task's branch, and a later park taking out the lines the amend laid."""
+import re
+
+import backlog_items
+import batch_plan
+from backlog_testing import git, state, work
+from test_batch_pick import THIRD
+from test_batch_tasks import CAP, build, resumed, started, tree  # noqa: F401  (the fixture)
+
+
+def unbuilt(text):
+    return re.search(r"(?m)^unbuilt: \[(.*)\]$", text).group(1).split(", ")
+
+
+def test_an_amended_item_is_laid_again_renumbered_and_its_built_lines_kept(started):  # noqa: F811
+    resumed(started)
+    build(started, "t1", "b1", ["r5"])
+    assert work(started, "batch", "done", "batch-1", "t1").returncode == 0
+    drafted = work(started, "line", "b1", "--into", "work-queue", THIRD)
+    assert drafted.returncode == 0, drafted.stderr
+    assert "work-queue#r6" in drafted.stdout          # r6 is b2's on the batch branch
+    done = work(started, "batch", "amend", "b1")
+    assert done.returncode == 0, done.stderr
+    assert done.stdout.splitlines()[0] == 'batch-1 b1 "Abandon" amended: laid on batch-1, batch-1-b1', done.stdout
+    assert 'work-queue#r6 -> work-queue#r7' in done.stdout
+    item = backlog_items.find(started, "b1")
+    assert "- [r7] %s" % THIRD in item.sections["Requirements"]
+    assert next(t.status for t in batch_plan.find(started, "batch-1").tasks) == "running"
+    lined = git(started, "show", "batch-1:%s" % CAP)
+    assert "- [r7] %s" % THIRD in lined and "- [r6] " in lined and unbuilt(lined) == ["r5", "r6", "r7"], lined
+    task = git(started, "show", "batch-1-b1:%s" % CAP)
+    assert "- [r7] %s" % THIRD in task and unbuilt(task) == ["r6", "r7"], task
+    assert "Laid: " in git(started, "log", "-1", "--format=%B", "batch-1")
+    parked = work(started, "batch", "park", "batch-1", "b1", "--question", "Which?")
+    assert parked.returncode == 0, parked.stderr
+    left = git(started, "show", "batch-1:%s" % CAP)
+    assert "[r5]" not in left and "[r7]" not in left and "- [r6] " in left and unbuilt(left) == ["r6"], left
+
+
+def test_amend_refuses_an_item_not_in_batch_and_a_loose_worktree(started):  # noqa: F811
+    resumed(started)
+    before = state(started)
+    done = work(started, "batch", "amend", "b9")
+    assert done.returncode == 1
+    (tree(started, "t1") / "wip.py").write_text("half\n")
+    done = work(started, "batch", "amend", "b1")
+    assert done.returncode == 1 and "wip.py" in done.stderr, done.stderr
+    assert state(started) == before

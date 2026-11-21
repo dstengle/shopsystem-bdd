@@ -142,6 +142,7 @@ service drafting
   operation apply(retirement list, item)  outcomes: done | refused: requirement id of no requirement
   operation expose(operation table, item)  outcomes: done | refused: operation table of no operation
   operation withhold(operation, item)  outcomes: done
+  operation retract(capability, item)  outcomes: done
 
 service context requests
   operation raise(context request, origin, thread, text, bounded context)
@@ -172,7 +173,11 @@ service conversation
 actor the person kind of agent
 
 object model line kind of text
+  relations: restates → operation (one)
 
 object retirement list kind of file
   relations: holds → requirement id | requirement (many)
+
+object domain model kind of file
+  relations: holds → model line | operation (many)
 ```

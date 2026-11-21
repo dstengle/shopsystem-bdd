@@ -161,6 +161,18 @@ Restates: design-model-check#r13@0.29.
 ### [g58] A catalogue entry that names neither an item nor a release fails the check
 - [r58] While a catalogue entry mentions no item and the catalogue entry mentions no release, if the person validates this specification, then the specification service shall fail the check and name the catalogue entry.
 
+### [g59] `spec catalogue entry` writes a catalogue entry's purpose
+- [r59] When the person describes a catalogue entry with a purpose, the specification service shall keep a catalogue entry that has the purpose and complete the request.
+
+### [g60] `spec catalogue entry` writes the item a catalogue entry came by
+- [r60] When the person describes a catalogue entry with an item, the specification service shall keep a catalogue entry that mentions the item and complete the request.
+
+### [g61] `spec catalogue entry` refuses an entry of no rule and no construct
+- [r61] If the person describes a catalogue entry in the rule catalogue that no rule has, then the specification service shall refuse the request and name the catalogue entry.
+
+### [g62] `spec catalogue entry` refuses a construct catalogue entry of no construct
+- [r62] If the person describes a catalogue entry in the construct catalogue that no construct has, then the specification service shall refuse the request and name the catalogue entry.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.

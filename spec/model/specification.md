@@ -259,6 +259,8 @@ service specification
   operation inventory(specification, audit (flag))  outcomes: returned → every file form | failed → each form written by hand
   operation translate(specification)  outcomes: returned → every fact
   operation annotate(adapter contract, audit (flag))  outcomes: done → the adapter contract | failed → each stale adapter contract
+  operation describe(catalogue entry, purpose, item)
+    outcomes: done → the catalogue entry | refused: catalogue entry of no rule or construct
 
 service decisions
   operation enter(design-decision, title, summary, tier, wording, route, supersedes)

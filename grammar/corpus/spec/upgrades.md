@@ -687,24 +687,50 @@ shall [x1: repository "the repository the request is made in" (indexical), x2: p
       change(e3, subject: x7, object: x3)
 ```
 
-## r38
-Retires: r31. From: b454 r38.
+## r39
+Retires: r38. From: b470 r39.
 
 ```reading
-While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold and the ignore file of this repository and complete the request.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x3: repository "the repository the request is made in" (indexical), x5: agent the person (constant), x7: service the upgrades service (constant), x10: request "the request the trigger makes" (indexical)]
-  while
+While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository does not conform to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold and the ignore file of this repository and complete the request.
+shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x3: repository "the repository the request is made in" (indexical), x6: artifact the ignore file form (constant), x7: agent the person (constant), x9: service the upgrades service (constant), x11: request "the request the trigger makes" (indexical)]
+  while [x5: ignore file]
     not [x2: index file]
       of(x2, x1)
     not [x4: shop directory]
       of(x4, x3)
-  when [x6: context id]
-    request(e1, upgrades.found, subject: x5, object: x1)
-    param(e1, context id, x6)
-  response [x8: context scaffold, x9: ignore file]
-    of(x8, x3)
-    keep(e2, subject: x7, object: x8)
-    of(x9, x3)
-    keep(e3, subject: x7, object: x9)
-    complete(e4, subject: x7, object: x10)
+    of(x5, x3)
+    not
+      conforms(x5, x6)
+  when [x8: context id]
+    request(e1, upgrades.found, subject: x7, object: x1)
+    param(e1, context id, x8)
+  response [x10: context scaffold]
+    of(x10, x3)
+    keep(e2, subject: x9, object: x10)
+    keep(e3, subject: x9, object: x5)
+    complete(e4, subject: x9, object: x11)
+```
+
+## r40
+From: b470 r40.
+
+```reading
+While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository conforms to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold, not change the ignore file and complete the request.
+shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x3: repository "the repository the request is made in" (indexical), x6: artifact the ignore file form (constant), x7: agent the person (constant), x9: service the upgrades service (constant), x11: request "the request the trigger makes" (indexical)]
+  while [x5: ignore file]
+    not [x2: index file]
+      of(x2, x1)
+    not [x4: shop directory]
+      of(x4, x3)
+    of(x5, x3)
+    conforms(x5, x6)
+  when [x8: context id]
+    request(e1, upgrades.found, subject: x7, object: x1)
+    param(e1, context id, x8)
+  response [x10: context scaffold]
+    of(x10, x3)
+    keep(e2, subject: x9, object: x10)
+    not
+      change(e3, subject: x9, object: x5)
+    complete(e4, subject: x9, object: x11)
 ```

@@ -162,3 +162,6 @@ declined, withdrawn, answered and listed.
 ### [g37] An item that is neither shaped nor ready is not readied
 - [r37] While an item is not `shaped` and the item is not `ready`, if the person readies the item, then the backlog service shall refuse the request and name the item.
 
+### [g40] An item a requirement of which uses a construct the construct catalogue does not define is not readied
+- [r40] While an item is `shaped` and a requirement in the item uses a construct that has no catalogue entry, if the person readies the item, then the backlog service shall refuse the request and name the requirement and the construct.
+

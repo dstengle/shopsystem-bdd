@@ -43,3 +43,9 @@ area: execution
 - **the capability form** (proper noun) → object capability form. A capability file as 0.38 keeps it: its frontmatter names its `area:` and what it `specifies:`, and it holds no empty section.
 - **the index form** (proper noun) → object index form. `spec/index.md` as 0.38 keeps it: one `## Composition` section, whose table `| area | kind | capabilities |` has a row for each area, naming its capabilities.
 - **virtual environment** (noun) → object virtual environment. The directory `.venv` at the top of a workspace, whose `bin/python` runs the tests of a task and of a batch in place of the `python3` on `PATH`.
+- **amend** (verb, action) → operation batches.amend. An item's lines laid again on the workspaces of its batch and of its task after they changed. Forms: amends, amended. Frame: <actor> amends <item>.
+- **configure** (verb, action) → operation batches.configure. Forms: configures, configured. Frame: <actor> configures <setting>.
+- **setting** (noun) → object setting. One key of `.shop/delivery.toml` that the plugin reads, under the table it belongs to, as `batch_size` or `[review] checks`. Plural: settings.
+- **setting value** (noun) → object setting value. The value a setting is given, of the type the plugin reads it as, as `7` for `batch_size`. Plural: setting values.
+- **settings file** (noun) → object settings file. The file `.shop/delivery.toml` of a bounded context, which holds its settings. Plural: settings files.
+- **the delivery settings form** (proper noun) → object delivery settings form. The settings the plugin reads in `.shop/delivery.toml`: each key under its own table and its value of its own type.

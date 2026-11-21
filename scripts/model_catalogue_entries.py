@@ -25,7 +25,11 @@ def data():
 
 def lines(catalogue, code):
     """The entry's `- Purpose:`, `- Since:` and `- Changed:` lines (catalogue "rules" or "constructs")."""
-    found = data().get(catalogue, {}).get(code, {})
+    return said(data().get(catalogue, {}).get(code, {}))
+
+
+def said(found):
+    """The `- Purpose:`, `- Since:` and `- Changed:` lines of one entry's table."""
     out = ["- Purpose: %s" % found["purpose"]] if found.get("purpose") else []
     out += ["- Since: %s" % found["since"]] if found.get("since") else []
     out += ["- Changed: %s" % ", ".join(found["changed"])] if found.get("changed") else []

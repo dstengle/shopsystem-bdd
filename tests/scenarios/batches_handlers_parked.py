@@ -21,7 +21,8 @@ def item_proposes(step):
 
 @local("ThenDoes", "requirement")
 def removes_requirement(step):
-    """The run exited 0, and the ids of the item that proposes the requirement are out of the batch branch's spec and
+    """The run exited 0, and the ids of the item that proposes the requirement (or that it held before it was
+    amended) are out of the batch branch's spec and
     its `unbuilt:`, where the lines commit laid them."""
     if step.term != "remove" or step.names[0] not in step.context.get("proposed", {}):
         return False
@@ -29,7 +30,8 @@ def removes_requirement(step):
     assert done.returncode == 0, done.stderr
     item = step.context["proposed"][step.names[0]]
     found = backlog_items.find(step.repo, B.ident(item))
-    ids = [i.split("#")[1] for i in backlog_lines.ids(backlog_lines.read(found, found.name))]
+    ids = step.context.get("dropped", {}).get(step.names[0]) or [      # the ids an amended item no longer holds (b460)
+        i.split("#")[1] for i in backlog_lines.ids(backlog_lines.read(found, found.name))]
     assert ids, (step.text, "the item has no lines")
     batch = T.batch_name(step, next(iter(step.context["given"]["batch"])))
     spec = T.git(step, "show", "%s:%s" % (batch, T.CAP))

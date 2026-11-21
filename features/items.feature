@@ -525,3 +525,17 @@ Feature: Items
     When the person annotates the item i1
     Then the backlog service refuses this request
     And the backlog service names the item i1
+
+  @g40 @r40
+  Scenario: An item a requirement of which uses a construct the construct catalogue does not define is not readied
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    And a requirement r1
+    And the item i1 holds the requirement r1
+    And a construct c1
+    And the construct c1 has no catalogue entry
+    And the requirement r1 uses the construct c1
+    When the person readies the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the requirement r1
+    And the backlog service names the construct c1

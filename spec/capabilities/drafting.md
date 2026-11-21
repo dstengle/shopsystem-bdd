@@ -139,3 +139,24 @@ capabilities, retirements, rewordings and chores.
 ### [g34] An operation withheld in an item is kept
 - [r34] When the person withholds an operation in an item, the drafting service shall keep the operation in the item.
 
+### [g35] Removing a capability from an item takes it and its model lines out
+- [r35] While an item holds a capability and the item holds a model line, when the person removes the capability from the item, the drafting service shall not keep the capability in the item and not keep the model line in the item.
+
+### [g36] Drafting a new capability that another item holds is refused naming that item
+- [r36] While an item holds a capability that does not exist, if the person drafts another item with the capability, then the drafting service shall refuse the request and name another item that holds the capability.
+
+### [g37] Drafting into a new capability an in-batch item holds is refused naming the item and its batch
+- [r37] While a batch holds an item and the item holds a capability that does not exist, if the person drafts another item with a requirement of the capability, then the drafting service shall refuse the request and name the batch and another item that holds the capability.
+
+### [g38] A requirement of an in-batch item is reworded
+- [r38] While an item is `in-batch`, when the person rewords a requirement in the item, the drafting service shall keep a different requirement in the item.
+
+### [g39] A requirement drafted into an in-batch item is kept
+- [r39] While an item is `in-batch`, when the person drafts the item with a requirement, the drafting service shall keep the requirement in the item.
+
+### [g40] A requirement removed from an in-batch item is not kept
+- [r40] While an item is `in-batch`, when the person removes a requirement in the item, the drafting service shall not keep the requirement in the item.
+
+### [g41] A model line that restates an operation is kept in the item
+- [r41] While a model line restates an operation, when the person declares the model line in an item, the drafting service shall keep the model line in the item.
+

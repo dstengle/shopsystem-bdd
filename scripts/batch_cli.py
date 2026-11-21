@@ -26,6 +26,8 @@ def add_parsers(sub):
     s.add_argument("item")
     s.add_argument("--question", required=True)
     s.add_argument("--discard", action="store_true", help="discard the uncommitted changes of the item's worktree")
+    cmds.add_parser("amend", help="lay an in-batch item's lines again on its batch's branch and its task's branch, "
+                                  "after work line changed them").add_argument("item")
     cmds.add_parser("merged", help="record the merge of a batch's pull request: its in-batch items delivered"
                     ).add_argument("batch")
     s = cmds.add_parser("abandon", help="abandon a batch: its pull request closed, its in-batch items ready again")
@@ -115,6 +117,12 @@ def park(args):
     return 0
 
 
+def amend(args):
+    import batch_amend
+    print(batch_amend.said(args.root, *batch_amend.amend(args.root, args.item)))
+    return 0
+
+
 def review(args):
     import batch_review
     url = batch_review.review(args.root, args.batch)
@@ -155,8 +163,8 @@ def abandon(args):
 
 
 def cmd_batch(args):
-    return {"start": start, "status": status, "resume": resume, "done": done, "park": park, "review": review,
-            "brief": brief, "reviewed": reviewed, "merged": merged, "abandon": abandon}[args.batch_cmd](args)
+    return {"start": start, "status": status, "resume": resume, "done": done, "park": park, "amend": amend,
+            "review": review, "brief": brief, "reviewed": reviewed, "merged": merged, "abandon": abandon}[args.batch_cmd](args)
 
 
 COMMANDS = {"batch": cmd_batch}

@@ -338,3 +338,39 @@ Feature: Checking
     When the person validates this specification
     Then the specification service fails this check
     And the specification service names the catalogue entry c1
+
+  @g59 @r59
+  Scenario: `spec catalogue entry` writes a catalogue entry's purpose
+    Given a catalogue entry c1
+    And a purpose p1
+    When the person describes the catalogue entry c1 with the purpose p1
+    Then the specification service keeps the catalogue entry c2
+    And the catalogue entry c2 has the purpose p1
+    And the specification service completes this request
+
+  @g60 @r60
+  Scenario: `spec catalogue entry` writes the item a catalogue entry came by
+    Given a catalogue entry c1
+    And an item i1
+    When the person describes the catalogue entry c1 with the item i1
+    Then the specification service keeps the catalogue entry c2
+    And the catalogue entry c2 mentions the item i1
+    And the specification service completes this request
+
+  @g61 @r61
+  Scenario: `spec catalogue entry` refuses an entry of no rule and no construct
+    Given a catalogue entry c1
+    And this rule catalogue holds the catalogue entry c1
+    And no rule has the catalogue entry c1
+    When the person describes the catalogue entry c1
+    Then the specification service refuses this request
+    And the specification service names the catalogue entry c1
+
+  @g62 @r62
+  Scenario: `spec catalogue entry` refuses a construct catalogue entry of no construct
+    Given a catalogue entry c1
+    And this construct catalogue holds the catalogue entry c1
+    And no construct has the catalogue entry c1
+    When the person describes the catalogue entry c1
+    Then the specification service refuses this request
+    And the specification service names the catalogue entry c1

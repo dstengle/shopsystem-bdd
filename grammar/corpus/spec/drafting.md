@@ -524,3 +524,133 @@ shall [x1: agent the person (constant), x4: service the drafting service (consta
     in(x2, x3)
     keep(e2, subject: x4, object: x2)
 ```
+
+## r35
+From: b450 r35.
+
+```reading
+While an item holds a capability and the item holds a model line, when the person removes the capability from the item, the drafting service shall not keep the capability in the item and not keep the model line in the item.
+shall [x4: agent the person (constant), x5: service the drafting service (constant)]
+  while [x1: item, x2: capability, x3: model line]
+    in(x2, x1)
+    in(x3, x1)
+  when
+    request(e1, drafting.retract, subject: x4, object: x2, from: x1)
+  response
+    not
+      in(x2, x1)
+      keep(e2, subject: x5, object: x2)
+    not
+      in(x3, x1)
+      keep(e3, subject: x5, object: x3)
+```
+
+## r36
+From: b450 r36.
+
+```reading
+While an item holds a capability that does not exist, if the person drafts another item with the capability, then the drafting service shall refuse the request and name another item that holds the capability.
+shall [x3: agent the person (constant), x5: service the drafting service (constant), x6: request "the request the trigger makes" (indexical)]
+  while [x1: item, x2: capability]
+    not
+      exists(x2)
+    in(x2, x1)
+  if [x4: item]
+    distinct(x4, x1)
+    request(e1, drafting.draft, subject: x3, object: x4)
+    param(e1, capability, x2)
+  response [x7: item]
+    refuse(e2, subject: x5, object: x6)
+    distinct(x7, x4)
+    in(x2, x7)
+    name(e3, subject: x5, object: x7)
+```
+
+## r37
+From: b450 r37.
+
+```reading
+While a batch holds an item and the item holds a capability that does not exist, if the person drafts another item with a requirement of the capability, then the drafting service shall refuse the request and name the batch and another item that holds the capability.
+shall [x4: agent the person (constant), x7: service the drafting service (constant), x8: request "the request the trigger makes" (indexical)]
+  while [x1: batch, x2: item, x3: capability]
+    in(x2, x1)
+    not
+      exists(x3)
+    in(x3, x2)
+  if [x5: item, x6: requirement]
+    distinct(x5, x2)
+    of(x6, x3)
+    request(e1, drafting.draft, subject: x4, object: x5)
+    param(e1, requirement, x6)
+  response [x9: item]
+    refuse(e2, subject: x7, object: x8)
+    name(e3, subject: x7, object: x1)
+    distinct(x9, x5)
+    in(x3, x9)
+    name(e4, subject: x7, object: x9)
+```
+
+## r38
+From: b460 r38.
+
+```reading
+While an item is `in-batch`, when the person rewords a requirement in the item, the drafting service shall keep a different requirement in the item.
+shall [x2: agent the person (constant), x4: service the drafting service (constant)]
+  while [x1: item]
+    status(x1) = `in-batch`
+  when [x3: requirement]
+    in(x3, x1)
+    request(e1, drafting.reword, subject: x2, object: x3)
+  response [x5: requirement]
+    distinct(x5, x3)
+    in(x5, x1)
+    keep(e2, subject: x4, object: x5)
+```
+
+## r39
+From: b460 r39.
+
+```reading
+While an item is `in-batch`, when the person drafts the item with a requirement, the drafting service shall keep the requirement in the item.
+shall [x2: agent the person (constant), x4: service the drafting service (constant)]
+  while [x1: item]
+    status(x1) = `in-batch`
+  when [x3: requirement]
+    request(e1, drafting.draft, subject: x2, object: x1)
+    param(e1, requirement, x3)
+  response
+    in(x3, x1)
+    keep(e2, subject: x4, object: x3)
+```
+
+## r40
+From: b460 r40.
+
+```reading
+While an item is `in-batch`, when the person removes a requirement in the item, the drafting service shall not keep the requirement in the item.
+shall [x2: agent the person (constant), x4: service the drafting service (constant)]
+  while [x1: item]
+    status(x1) = `in-batch`
+  when [x3: requirement]
+    in(x3, x1)
+    request(e1, drafting.remove, subject: x2, object: x3)
+  response
+    not
+      in(x3, x1)
+      keep(e2, subject: x4, object: x3)
+```
+
+## r41
+From: b463 r41.
+
+```reading
+While a model line restates an operation, when the person declares the model line in an item, the drafting service shall keep the model line in the item.
+shall [x3: agent the person (constant), x5: service the drafting service (constant)]
+  while [x1: model line, x2: operation]
+    restate(subject: x1, object: x2)
+  when [x4: item]
+    request(e1, drafting.declare, subject: x3, object: x1, in: x4)
+  response
+    in(x1, x4)
+    keep(e2, subject: x5, object: x1)
+```
