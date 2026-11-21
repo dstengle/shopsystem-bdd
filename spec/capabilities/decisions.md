@@ -7,7 +7,7 @@ area: specification
 specifies: service decisions, object design-decision
 language: codified-2
 retired: []
-unbuilt: [r21, r22, r23]
+unbuilt: []
 ---
 
 # Decisions

@@ -143,7 +143,7 @@ def withhold(root, name, ident):
 def cmd(args):
     """`work line --expose` and `--withhold`: one of them, and no other piece."""
     from backlog_cli import PIECES
-    if (args.expose is None) == (args.withhold is None) or args.into or args.retires \
+    if (args.expose is None) == (args.withhold is None) or args.into or args.retires or args.retirement_list \
             or any(getattr(args, k) is not None for k in PIECES):
         raise Refused("work line: give one of --expose and --withhold, with no --into, line or other piece")
     if args.expose is not None:

@@ -69,8 +69,8 @@ def move(root, name, command, change=None):
 
 def add_note(item, note):
     if note is not None:
-        had = item.sections.get("Notes")
-        item.sections["Notes"] = "%s\n%s" % (had, note) if had else note
+        from backlog_note import with_note
+        with_note(item, note)
 
 
 def shape(root, name, note=None):
@@ -115,8 +115,9 @@ def answer(root, name, text):
 
 
 def ready(root, name):
-    """`shaped` -> `ready` (readiness r1-r3): refused with every reason the bar gives, so nothing is committed (D8);
-    the item and the bar's warnings."""
+    """`shaped` -> `ready` (items#r1, r2): refused with every reason the bar gives, so nothing is committed (D8); a
+    `ready` item checked again, kept as it is when it passes (items#r35) and refused with the reasons when it does not
+    (items#r36); any other item refused, naming it (items#r37). The item and the bar's warnings."""
     import readiness_bar
     warnings = []
 
@@ -125,6 +126,13 @@ def ready(root, name):
         if reasons:
             raise Refused("work ready: %s is not passing:\n%s" % (label(item), "\n".join("  " + r for r in reasons)))
         warnings.extend(warns)
+    item = find(root, name)
+    if item.status == "ready":
+        check(item)
+        return item, warnings
+    if item.status != "shaped":
+        raise Refused("work ready: %s is %s; work ready takes an item that is shaped or ready" % (
+            label(item), item.status))
     return move(root, name, "work ready", check), warnings
 
 

@@ -113,14 +113,18 @@ b250 "work show prints the status of an item" shaped
 #### `work line`
 
 Writes a requirement line into an item's `## Requirements`, under the capability it goes into, and commits it.\
-Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--no-line] [--reword CAP#rN] [--remove CAP#rN] [--term TERM] [--recodify CAP] [--relation RELATION] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--expose TABLES] [--withhold SERVICE.OPERATION] [--upstream UPSTREAM] name [text]`
+Synopsis: `work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--expose TABLES] [--withhold SERVICE.OPERATION] [--upstream UPSTREAM] name [text]`
 
 - `--into <capability>`: the codified capability the line goes into.
 - `--group "<title>"`: open a new group with this title (default: the item's title). `--in g<n>` joins one of the
   item's groups instead.
 - `--retires <cap>#r<n>`: the line replaces a live requirement, whose id goes to `retired:`, and the pair of the
   two to the block's `retires:` line. Ids are never reused. With `--no-line` and no line, the requirement is retired
-  with nothing in its place, and no pair is written.
+  with nothing in its place, and no pair is written. Each design-decision whose `enforced_by` names the retired
+  requirement is named, with the `work decision --amend` that names what holds it now.
+- `--retirement-list <file>`: a retirement list, one pair a line, `<cap>#r<n> <line>`: each line retires its live
+  requirement as `--retires` does, all in one commit. An id no requirement has refuses the whole list, naming it,
+  and the item is left as it was.
 - `--reword <cap>#r<n>`: the line takes the place of one of the item's own lines, keeping its id and group.
   `--remove <cap>#r<n>` takes one of them out, its group with it when it was the last line, and the id its
   `retires:` pair names; an id no pair names stays. Either refuses an id that is no line of the item, a live requirement's among them.
@@ -203,7 +207,9 @@ b251 "work show prints an item's dependencies" no longer depends on b250 "work s
 
 #### `work ready`
 
-Moves a `shaped` item to `ready` when it passes the readiness bar, and otherwise names every reason it does not.\
+Moves a `shaped` item to `ready` when it passes the readiness bar, and otherwise names every reason it does not. A
+`ready` item is checked again: it stays `ready` when it still passes, and every reason is named when it does not.
+Any other item is refused, named.\
 Synopsis: `work ready name`
 
 The bar lays the item's lines over a temporary copy of `spec/` and checks that they parse, that `spec logic` finds
@@ -214,7 +220,7 @@ Readying is the decision to build: a ready item goes into the next batch.
 $ work ready b250
 b250 "work show prints the status of an item" ready
 $ work ready b253
-work: work ready: b253 "work names prints every item" is not passing:
+work ready: b253 "work names prints every item" is not passing:
   items#r32: refused: the verb ready takes a subject, which a passive leaves out: agent readies item
 ```
 
@@ -249,6 +255,28 @@ Synopsis: `work withdraw name`
 ```console
 $ work withdraw b252
 b252 "A colour theme for work backlog" withdrawn
+```
+
+#### `work merge`
+
+Moves an item that is `idea`, `shaped`, `ready` or `needs-input` to `withdrawn` because another item takes its
+place, writing which and why under its `## Withdrawn`. A closed item is refused, named.\
+Synopsis: `work merge name --into INTO --reason REASON`
+
+```console
+$ work merge b252 --into b250 --reason "b250 prints the theme too"
+b252 "A colour theme for work backlog" withdrawn
+```
+
+#### `work annotate`
+
+Adds a line to the `## Notes` of an item that is `idea`, `shaped`, `ready` or `needs-input` (a rating's reason, a
+finding while shaping), in one commit of the item; a closed item is refused, named.\
+Synopsis: `work annotate name note`
+
+```console
+$ work annotate b250 "value high: every session reads the status"
+b250 "work show prints the status of an item": a note
 ```
 
 #### `work answer`
@@ -378,13 +406,15 @@ Sets a running task done, once its worktree is clean, its commits cite the item 
 Synopsis: `work batch done batch task`
 
 The tests are `[batch] tests` of `.shop/delivery.toml` (default `python3 -m pytest -q -p work_items`), run in the
-task's worktree. For an item that holds a chore, it then runs the chore's check there and refuses while it exits
+task's worktree, only the ones the task's change reaches: a capability's `tests/scenarios/test_<capability>.py` when
+the item holds one of its ids or a commit of the task touches its feature, and a `tests/scripts/` test that names a
+module the task touches; the pytest plugin `work_items` leaves the others out. `work batch review` runs them all. For an item that holds a chore, it then runs the chore's check there and refuses while it exits
 non-zero, and refuses a commit of the task that touches a path the chore does not name. A refusal names what is
 missing:
 
 ```console
 $ work batch done batch-34 t1
-work: work batch done: t1 b250 "work show prints the status of an item": the tests `python3 -m pytest -q -p work_items` failed in .shop/worktrees/batch-34-t1 (exit 1):
+work batch done: t1 b250 "work show prints the status of an item": the tests `python3 -m pytest -q -p work_items` failed in .shop/worktrees/batch-34-t1 (exit 1):
 ...
 $ work batch done batch-34 t1
 batch-34 t1 b250 "work show prints the status of an item": done
@@ -698,7 +728,7 @@ Synopsis: `work drop --why WHY name`
 #### `work decision`
 
 Writes a design-decision, `spec/decisions/<nnnn>-<slug>.md`, rewrites `spec/decisions/index.md`, and commits both.\
-Synopsis: `work decision [--summary SUMMARY] [--tier {check,requirement,judgement}] [--decision DECISION] [--context CONTEXT] [--alternatives ALTERNATIVES] [--enforced-by ENFORCED_BY] [--verified-by {scenario,check,judgement,monitor}] [--rests-on RESTS_ON] [--supersedes SUPERSEDES] [--source SOURCE] [--by BY] [--slug SLUG] [--date DATE] title`
+Synopsis: `work decision [--amend DECISION] [--summary SUMMARY] [--tier {check,requirement,judgement}] [--decision DECISION] [--context CONTEXT] [--alternatives ALTERNATIVES] [--enforced-by ENFORCED_BY] [--verified-by {scenario,check,judgement,monitor}] [--rests-on RESTS_ON] [--supersedes SUPERSEDES] [--source SOURCE] [--by BY] [--slug SLUG] [--date DATE] [title]`
 
 - `--summary`, `--tier`, `--decision`: required; it is refused, naming each one missing.
 - `--context`, `--alternatives`: the other sections. These three take text, or `@<file>`.
@@ -706,6 +736,9 @@ Synopsis: `work decision [--summary SUMMARY] [--tier {check,requirement,judgemen
 - `--rests-on`, `--verified-by`: for a decision that routes a universal condition.
 - `--supersedes <id>`: an accepted decision this one replaces (its id, path or number); it is set `superseded`
   and committed with the new one. A decision not accepted, or an id that names none, is refused, naming it; repeatable.
+- `--amend <id>`: in place of a title, adds each `--enforced-by` and `--rests-on` an accepted decision (its id, path
+  or number) does not name yet, changes nothing else of it, and commits it with the index. A decision not accepted
+  is refused, naming it.
 
 ```console
 $ work decision "The command reference defers to --help" --summary "Where the command reference and --help differ, --help wins." --tier judgement --decision "Each command's --help is its contract; the reference page links to it and never overrides it."
@@ -736,10 +769,13 @@ works in 0.38 and prints a notice that it goes in the next release. Only `decisi
 ### `spec parse`
 
 Parses a line in the context's grammar and prints its tree, or its refusal with a hint.\
-Synopsis: `spec parse [--file FILE] [--form] [line]`
+Synopsis: `spec parse [--file FILE] [--form] [--item b<n>] [line]`
 
 - `--form`: print the line's meaning (its logical form) instead of its tree. Read this one.
 - `--file`: parse every line of a file, numbered.
+- `--item b<n>`: read the line as it reads once the terms, relation rows, lines and model lines the item holds are
+  laid into the specification, on a copy, as `work ready` lays them; nothing in `spec/` changes. Use it to see why
+  a line of an item is refused without running `work ready`.
 
 ```console
 $ spec parse --form 'When the person shows an item, the backlog service shall return the status of the item.'
@@ -1178,7 +1214,8 @@ Founds a new bounded context in the repository it is run in: writes its scaffold
 `.shop/delivery.toml` (every key commented out at its default), `features/` and `tests/scenarios/conftest.py`, each
 empty folder with a `.gitkeep`, and `.gitignore` naming `.venv/`, `__pycache__/`, `.pytest_cache/` and
 `.ruff_cache/` (an existing one given the names it lacks). An existing `features/` or conftest is left as it is. It refuses, changing nothing,
-without `--id`, with an id that is not `bounded-context/<domain>/<path>`, and in a repository that has a
+without `--id`, with an id that is not `bounded-context/<domain>/<path>` (its `<domain>` a domain name with a dot,
+`example.org`, and its `<path>` one part or more), and in a repository that has a
 `spec/index.md` or a `.shop/` already.\
 Synopsis: `migrate init --id ID`
 
