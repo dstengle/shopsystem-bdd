@@ -22,8 +22,8 @@ def item_proposes(step):
 @local("ThenDoes", "requirement")
 def removes_requirement(step):
     """The run exited 0, and the ids of the item that proposes the requirement (or that it held before it was
-    amended) are out of the batch branch's spec and
-    its `unbuilt:`, where the lines commit laid them."""
+    amended) are out of the spec and the `unbuilt:` of the batch's branch, or of the task's when the workspace is the
+    one an earlier Then named the task's, where the lines commit laid them."""
     if step.term != "remove" or step.names[0] not in step.context.get("proposed", {}):
         return False
     done = step.context["result"]
@@ -34,11 +34,13 @@ def removes_requirement(step):
         i.split("#")[1] for i in backlog_lines.ids(backlog_lines.read(found, found.name))]
     assert ids, (step.text, "the item has no lines")
     batch = T.batch_name(step, next(iter(step.context["given"]["batch"])))
-    spec = T.git(step, "show", "%s:%s" % (batch, T.CAP))
+    task = step.context.get("workspace_of", {}).get(getattr(step, "workspace", None))
+    branch = T.task_row(step, task)[1] if task else batch
+    spec = T.git(step, "show", "%s:%s" % (branch, T.CAP))
     unbuilt = next(line for line in spec.splitlines() if line.startswith("unbuilt:"))
     for rid in ids:
         assert "[%s]" % rid not in spec and rid not in unbuilt.replace("[", " ").replace(",", " ").split(), (
-            step.text, rid, spec)
+            step.text, branch, rid, spec)
 
 
 def scenario_of(step):

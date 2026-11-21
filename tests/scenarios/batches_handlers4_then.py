@@ -201,9 +201,10 @@ def keeps_lay(step):
 def holds_not_after(step):
     """`the worktree w2 does not hold the requirement r1`, `the corpus c1 does not hold the requirement r2`: the
     requirement removed, as the reword of "`work` removes the requirement r1" (the remove handlers')."""
-    (k1, _), (k2, name) = parts(step)
+    (k1, n1), (k2, name) = parts(step)
     if k1 not in ("worktree", "corpus") or k2 != "requirement":
         return False
+    step.workspace = n1
     step.template, step.term, step.event = "ThenDoes", "remove", "remove"
     step.subject, step.nps, step.names = "`work`", ["the requirement %s" % name], [name]
     return F._chain(("ThenDoes", "remove"), frozenset(BOTH))(step)
