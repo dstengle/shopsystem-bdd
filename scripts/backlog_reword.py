@@ -46,7 +46,11 @@ def reword(root, name, ident, text):
 def remove(root, name, ident):
     """`work line --remove <cap>#r<n>`: the item's line of that id taken out, its group too when it was the last line,
     and the id the line retires (its pair under `retires:`) out of the block's `retired:`; a block left empty goes too,
-    but never a new capability's declaration (its narrator, group and purpose: b448); committed."""
+    but never a new capability's declaration (its narrator, group and purpose: b448); committed. A bare `<cap>` takes
+    the item's whole block of the capability out with its model lines (backlog_retract, b450)."""
+    if ident and "#" not in ident:
+        import backlog_retract
+        return backlog_retract.retract(root, name, ident)
     item = find(root, name)
     blocks, b, g, rid = _found(item, ident, "--remove")
     block = blocks[b]

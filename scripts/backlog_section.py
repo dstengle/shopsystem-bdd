@@ -260,11 +260,15 @@ def ids(blocks):
 
 
 def capability_file(root, capability):
-    """spec/capabilities/<capability>.md of `root`; refused when there is none, or it is not codified (D4)."""
+    """spec/capabilities/<capability>.md of `root`; refused when there is none, or it is not codified (D4), naming
+    the item that holds it as a new capability and its batch, when one does (b450)."""
     path = Path(root) / "spec" / "capabilities" / ("%s.md" % capability)
     if "/" in capability or capability in (UNIVERSAL, INDEX) or not spec_read.codified(path):
         new = "" if path.exists() else "; a new one is given to an item with `work line <item> --capability %s`" % (
             capability)
+        holders = [] if path.exists() else __import__("backlog_retract").holders(root, capability)
+        if holders:
+            new = "; it is new on %s, and its lines go into that item" % ", ".join(holders)
         raise Refused("there is no codified capability %s in spec/capabilities/%s" % (capability, new))
     return path
 
