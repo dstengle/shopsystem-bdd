@@ -593,3 +593,18 @@ Feature: Batches
     And the batch b2 holds the item i1
     And the batches service keeps the batch plan b3
     And the batch b2 has the batch plan b3
+
+  @g95 @r95
+  Scenario: A batch opened keeps each term of a pack in the pack, and the pack imported
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a term t1
+    And a pack p1
+    And the pack p1 has the term t1
+    And the item i1 holds the term t1
+    And a batch b1
+    When the person opens the batch b1
+    Then the pack p1 has the term t1
+    And the batches service keeps the pack p1
+    And this bounded context imports the pack p1

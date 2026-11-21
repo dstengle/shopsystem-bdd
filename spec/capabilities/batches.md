@@ -7,7 +7,7 @@ area: execution
 specifies: object batch, object task, service batches
 language: codified-2
 retired: [g69, r69, g82, r82, g88, r88, g53, r53]
-unbuilt: []
+unbuilt: [r95]
 ---
 
 # Batches
@@ -171,4 +171,7 @@ when the change is merged.
 
 ### [g94] work batch start splits a batch whose items' change would pass the reviewer's 1000-line limit
 - [r94] While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit, when the person opens a batch, the batches service shall set the status of the item to `in-batch`, keep a batch that holds the item and keep a batch plan of the batch.
+
+### [g95] A batch opened keeps each term of a pack in the pack, and the pack imported
+- [r95] While an item is `ready` and the item meets the readiness bar and the item holds a term of a pack, when the person opens a batch, the batches service shall keep the pack that has the term and keep the pack that this bounded context imports.
 

@@ -7,7 +7,7 @@ area: tracking
 specifies: service drafting
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r51, r52]
 ---
 
 # Drafting
@@ -186,4 +186,10 @@ capabilities, retirements, rewordings and chores.
 
 ### [g50] Rewording a term that an item does not hold is refused
 - [r50] If the person rewords a term in an item that does not hold the term, then the drafting service shall refuse the request and name the term.
+
+### [g51] A term written into a pack for an item is kept
+- [r51] When the person writes a term into a pack with an item, the drafting service shall keep the term in the item.
+
+### [g52] A term that its pack has already is refused
+- [r52] While a pack has a term, if the person writes the term into the pack with an item, then the drafting service shall refuse the request and name the term.
 

@@ -798,3 +798,23 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
     of(x10, x9)
     keep(e4, subject: x8, object: x10)
 ```
+
+## r95
+From: b472 r95.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds a term of a pack, when the person opens a batch, the batches service shall keep the pack that has the term and keep the pack that this bounded context imports.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant), x8: bounded context "the bounded context whose repository the command runs in" (indexical)]
+  while [x1: item, x3: term, x4: pack]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    of(x3, x4)
+    in(x3, x1)
+  when [x6: batch]
+    request(e1, batches.open, subject: x5, object: x6)
+  response
+    of(x3, x4)
+    keep(e2, subject: x7, object: x4)
+    import(subject: x8, object: x4)
+    keep(e3, subject: x7, object: x4)
+```

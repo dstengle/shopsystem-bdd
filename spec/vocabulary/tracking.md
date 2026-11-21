@@ -156,3 +156,4 @@ area: tracking
 - **successor** (noun) → object successor. The item another item is merged into, which takes its place in the backlog. Plural: successors.
 - **the review limit** (proper noun) → object review limit. The number of changed lines a pull request review reads in one batch's change, 1000.
 - **exceed** (verb, state) → relation item.exceeds. The estimate of an item's change, from its size rating, its requirement lines and its model lines, added to the estimates of the items a pick took before it, is more than the review limit, and the pick took one item or more before it. Forms: exceeds, exceeded. Frame: <item> exceeds <review limit>.
+- **write** (verb, action) → operation drafting.write into pack. Forms: writes, wrote, written. Frame: <actor> writes <term> into <pack>.
