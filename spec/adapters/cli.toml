@@ -476,8 +476,10 @@ note = { positional = 2 }
 [operations."backlog.merge"]
 command = "work merge"
 requirements = [
-  "items#r33: While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person merges the item with a successor and a reason, the backlog service shall set the status of the item to `withdrawn` and keep the item.",
   "items#r34: While the status of an item is one of `delivered`, `refused` or `withdrawn`, if the person merges the item, then the backlog service shall refuse the request and name the item.",
+  "items#r43: If the person merges a successor with the successor and a reason, then the backlog service shall refuse the request and name the successor.",
+  "items#r44: While a successor exists and the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person merges the item with the successor and a reason, the backlog service shall set the status of the item to `withdrawn` and keep the item.",
+  "items#r45: While the status of a successor is one of `delivered`, `refused` or `withdrawn` and the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, if the person merges the item with the successor and a reason, then the backlog service shall refuse the request and name the successor.",
 ]
 [operations."backlog.merge".parameters]
 item = { positional = 1 }
@@ -908,7 +910,6 @@ quote = { positional = 1 }
 command = "work batch start"
 requirements = [
   "batches#r51: When the person opens a batch, the batches service shall keep a batch brief and return the batch brief.",
-  "batches#r53: While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered`, when the person opens a batch, the batches service shall set the status of the item to `in-batch`, keep a batch that holds the item and keep a batch plan of the batch.",
   "batches#r54: While an item is `ready` and the item does not meet the readiness bar, when the person opens a batch, the batches service shall set the status of the item to `shaped`.",
   "batches#r55: While an item is not `ready` or `delivered` and a dependency on the item exists and another item whose status is `ready` has the dependency, when the person opens a batch, the batches service shall not set the status of the item to `in-batch`.",
   "batches#r64: While `universal` does not exist and an item is `ready` and the item meets the readiness bar and a universal condition is in the item, when the person opens a batch, the batches service shall keep `universal` and set the language of `universal` to `codified-2`.",
@@ -924,6 +925,8 @@ requirements = [
   "batches#r87: While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an operation, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the operation.",
   "batches#r89: While an item is `ready` and the item meets the readiness bar and a requirement of the item violates a rule whose severity is `error`, if the person opens a batch, then the batches service shall set the status of the item to `shaped` and name the rule.",
   "batches#r92: While an item is `ready` and the item meets the readiness bar and the item holds a model line and the model line specifies an operation and the domain model does not hold the operation and the item holds no operation table of the operation, when the person opens a batch, the batches service shall keep an adapter contract that holds an operation table of the operation.",
+  "batches#r93: While an item is `ready` and the item meets the readiness bar and the item exceeds the review limit, when the person opens a batch, the batches service shall not set the status of the item to `in-batch`.",
+  "batches#r94: While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit, when the person opens a batch, the batches service shall set the status of the item to `in-batch`, keep a batch that holds the item and keep a batch plan of the batch.",
 ]
 
 [operations."batches.resume"]
@@ -1222,9 +1225,9 @@ requirements = [
   "upgrades#r33: If the person founds this bounded context with a context id that does not conform to the bounded context id form, then the upgrades service shall refuse the request and name the context id.",
   "upgrades#r34: While this bounded context has an index file, if the person founds this bounded context with a context id, then the upgrades service shall refuse the request, name the index file and change no file.",
   "upgrades#r35: While this repository has a shop directory, if the person founds this bounded context with a context id, then the upgrades service shall refuse the request, name the shop directory and change no file.",
-  "upgrades#r39: While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository does not conform to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold and the ignore file of this repository and complete the request.",
-  "upgrades#r40: While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository conforms to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold, not change the ignore file and complete the request.",
   "upgrades#r41: While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id and a context purpose, the upgrades service shall keep an index file that has the context purpose and complete the request.",
+  "upgrades#r42: While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository does not conform to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall change the ignore file of this repository, keep the context scaffold and the ignore file of this repository and complete the request.",
+  "upgrades#r43: While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository conforms to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold, not change the ignore file and complete the request.",
 ]
 [operations."upgrades.found".parameters]
 "context id" = { option = "--id" }

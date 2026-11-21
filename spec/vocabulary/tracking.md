@@ -153,3 +153,6 @@ area: tracking
 - **remove** (verb, action) → operation drafting.remove term. Forms: removes, removed. Frame: <actor> removes <term> from <item>.
 - **reword** (verb, action) → operation drafting.reword term. Forms: rewords, reworded. Frame: <actor> rewords <term> in <item>.
 - **specify** (verb, state) → relation model line.specifies. A model line declares an operation of a service, its parameters, outcomes and reasons, whether or not the domain model declares the operation already. Forms: specifies, specified. Frame: <model line> specifies <operation>.
+- **successor** (noun) → object successor. The item another item is merged into, which takes its place in the backlog. Plural: successors.
+- **the review limit** (proper noun) → object review limit. The number of changed lines a pull request review reads in one batch's change, 1000.
+- **exceed** (verb, state) → relation item.exceeds. The estimate of an item's change, from its size rating, its requirement lines and its model lines, added to the estimates of the items a pick took before it, is more than the review limit, and the pick took one item or more before it. Forms: exceeds, exceeded. Frame: <item> exceeds <review limit>.

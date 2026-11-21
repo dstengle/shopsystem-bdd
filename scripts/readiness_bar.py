@@ -71,9 +71,12 @@ def _parses(copy, blocks):
 
 # The rules the bar names by a stage of its own, or that read the features the copy does not have: a parse (v_p1, v_p2)
 # by `_parses`, a scenario (v_s1-v_s3) by `_scenarios` (b333).
-# Nor v_a5 and v_a6, the adapter contract's annotations, which the bar does not write (decision 0112); spelled so
-# that the rule catalogue does not take the bar for where they are implemented.
-OWN_STAGE = {"v_p1", "v_p2", "v_s1", "v_s2", "v_s3"} | {"v_a%d" % n for n in (5, 6)}
+# Nor v_a5 and v_a6, the adapter contract's annotations, which the bar does not write (decision 0112); nor v_a3 and
+# v_a4, the contract against its program, which the copy does not hold and an item's change has not yet built (b445):
+# none names an item's group or requirement, and `spec check` checks them on the built tree. Skipped, so that the rule
+# catalogue does not take the bar for where they are implemented (model_rules.skipped, b467).
+SKIPPED_RULES = {"v_a3", "v_a4", "v_a5", "v_a6"}
+OWN_STAGE = {"v_p1", "v_p2", "v_s1", "v_s2", "v_s3"} | SKIPPED_RULES
 
 
 def _violations(copy):

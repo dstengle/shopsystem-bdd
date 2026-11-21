@@ -687,11 +687,32 @@ shall [x1: repository "the repository the request is made in" (indexical), x2: p
       change(e3, subject: x7, object: x3)
 ```
 
-## r39
-Retires: r38. From: b470 r39.
+## r41
+From: b464 r41.
 
 ```reading
-While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository does not conform to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold and the ignore file of this repository and complete the request.
+While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id and a context purpose, the upgrades service shall keep an index file that has the context purpose and complete the request.
+shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x3: repository "the repository the request is made in" (indexical), x5: agent the person (constant), x8: service the upgrades service (constant), x10: request "the request the trigger makes" (indexical)]
+  while
+    not [x2: index file]
+      of(x2, x1)
+    not [x4: shop directory]
+      of(x4, x3)
+  when [x6: context id, x7: context purpose]
+    request(e1, upgrades.found, subject: x5, object: x1)
+    param(e1, context id, x6)
+    param(e1, context purpose, x7)
+  response [x9: index file]
+    of(x7, x9)
+    keep(e2, subject: x8, object: x9)
+    complete(e3, subject: x8, object: x10)
+```
+
+## r42
+Retires: r39. From: b487 r42.
+
+```reading
+While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository does not conform to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall change the ignore file of this repository, keep the context scaffold and the ignore file of this repository and complete the request.
 shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x3: repository "the repository the request is made in" (indexical), x6: artifact the ignore file form (constant), x7: agent the person (constant), x9: service the upgrades service (constant), x11: request "the request the trigger makes" (indexical)]
   while [x5: ignore file]
     not [x2: index file]
@@ -705,14 +726,15 @@ shall [x1: bounded context "the bounded context whose repository the command run
     request(e1, upgrades.found, subject: x7, object: x1)
     param(e1, context id, x8)
   response [x10: context scaffold]
+    change(e2, subject: x9, object: x5)
     of(x10, x3)
-    keep(e2, subject: x9, object: x10)
-    keep(e3, subject: x9, object: x5)
-    complete(e4, subject: x9, object: x11)
+    keep(e3, subject: x9, object: x10)
+    keep(e4, subject: x9, object: x5)
+    complete(e5, subject: x9, object: x11)
 ```
 
-## r40
-From: b470 r40.
+## r43
+Retires: r40. From: b487 r43.
 
 ```reading
 While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository conforms to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold, not change the ignore file and complete the request.
@@ -733,25 +755,4 @@ shall [x1: bounded context "the bounded context whose repository the command run
     not
       change(e3, subject: x9, object: x5)
     complete(e4, subject: x9, object: x11)
-```
-
-## r41
-From: b464 r41.
-
-```reading
-While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id and a context purpose, the upgrades service shall keep an index file that has the context purpose and complete the request.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x3: repository "the repository the request is made in" (indexical), x5: agent the person (constant), x8: service the upgrades service (constant), x10: request "the request the trigger makes" (indexical)]
-  while
-    not [x2: index file]
-      of(x2, x1)
-    not [x4: shop directory]
-      of(x4, x3)
-  when [x6: context id, x7: context purpose]
-    request(e1, upgrades.found, subject: x5, object: x1)
-    param(e1, context id, x6)
-    param(e1, context purpose, x7)
-  response [x9: index file]
-    of(x7, x9)
-    keep(e2, subject: x8, object: x9)
-    complete(e3, subject: x8, object: x10)
 ```

@@ -78,9 +78,9 @@ $ work ready b250
 b250 "Items carry labels" ready
 ```
 
-The first `work ready` after a new word takes longer (seconds on a small spec, under a minute on a large one), because
-the grammar is rebuilt with the word in it and the spec's lines are parsed again in it, several at once; after that it
-answers in a second or two.
+The first `work ready` after a new word takes longer than the ones after it, because the grammar is rebuilt with the
+word in it and the spec's lines are parsed again in it, several at once; after that the parses are kept, and it answers
+from them.
 The line has a precondition ("While an item has a label") because the items capability holds a group on the same
 trigger already ("When the person shows an item"); two groups of one capability with the same condition and trigger
 are refused (`v15n`), and the bar says which.
@@ -661,7 +661,7 @@ cache_read = 0.20
 | `[batch] tests` | what `work batch done` and `review` run | `python3 -m pytest -q -p work_items` |
 | `[batch] push` | a prefix the batch's agent puts before every `git push` and `gh` call | none |
 | `[batch] worktrees` | where a batch's worktrees go | `.shop/worktrees/` |
-| `[review] size` | the changed lines over which the reviewer's brief says "over the limit" | 1000 |
+| `[review] size` | the changed lines over which the reviewer's brief says "over the limit", and past which `work batch start` picks no more items by their estimates | 1000 |
 | `[review] checks` | the commands the reviewer's brief runs, with `{scripts}` and `{forked_from}` filled in | `tools size --limit 300`, `tools check`, `features generate --check`, `features bindings --unbound`, `spec decisions --check` |
 | `[prices."<model>"]` | dollars per million tokens: `input`, `output`, `cache_read`, all three | a dated table in `scripts/measure_cost.py` |
 

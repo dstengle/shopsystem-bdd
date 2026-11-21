@@ -6,7 +6,7 @@ group: service
 area: execution
 specifies: object batch, object task, service batches
 language: codified-2
-retired: [g69, r69, g82, r82, g88, r88]
+retired: [g69, r69, g82, r82, g88, r88, g53, r53]
 unbuilt: []
 ---
 
@@ -27,11 +27,6 @@ when the change is merged.
 
 ### [g52] A batch abandoned keeps no review folder
 - [r52] When the person abandons a batch, the batches service shall keep no review folder of the batch.
-
-### [g53] A ready item that meets the bar and depends on nothing open goes into the batch opened
-- [r53] While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose
-  status is not `delivered`, when the person opens a batch, the batches service shall set the status of the item to
-  `in-batch`, keep a batch that holds the item and keep a batch plan of the batch.
 
 ### [g54] A ready item that no longer meets the bar goes back to shaped
 - [r54] While an item is `ready` and the item does not meet the readiness bar, when the person opens a batch, the
@@ -170,4 +165,10 @@ when the change is merged.
 
 ### [g92] A batch opened writes the operation table of an operation an item adds with none given
 - [r92] While an item is `ready` and the item meets the readiness bar and the item holds a model line and the model line specifies an operation and the domain model does not hold the operation and the item holds no operation table of the operation, when the person opens a batch, the batches service shall keep an adapter contract that holds an operation table of the operation.
+
+### [g93] A ready item whose change would take the batch past the review limit stays out of the batch
+- [r93] While an item is `ready` and the item meets the readiness bar and the item exceeds the review limit, when the person opens a batch, the batches service shall not set the status of the item to `in-batch`.
+
+### [g94] work batch start splits a batch whose items' change would pass the reviewer's 1000-line limit
+- [r94] While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit, when the person opens a batch, the batches service shall set the status of the item to `in-batch`, keep a batch that holds the item and keep a batch plan of the batch.
 

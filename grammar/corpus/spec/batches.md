@@ -44,30 +44,6 @@ shall [x1: agent the person (constant), x3: service the batches service (constan
       keep(e2, subject: x3, object: x4)
 ```
 
-## r53
-From: batches#r22, reworded in request words (0.38.0).
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered`, when the person opens a batch, the batches service shall set the status of the item to `in-batch`, keep a batch that holds the item and keep a batch plan of the batch.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant)]
-  while [x1: item]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    not [x3: dependency, x4: item]
-      not
-        status(x4) = `delivered`
-      on(x3, x4)
-      of(x3, x1)
-  when [x6: batch]
-    request(e1, batches.open, subject: x5, object: x6)
-  response [x8: batch, x9: batch plan]
-    initiates(e2, subject: x7, status(x1) = `in-batch`)
-    in(x1, x8)
-    keep(e3, subject: x7, object: x8)
-    of(x9, x8)
-    keep(e4, subject: x7, object: x9)
-```
-
 ## r54
 From: batches#r23, reworded in request words (0.38.0).
 
@@ -778,4 +754,47 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
     of(x11, x4)
     in(x11, x10)
     keep(e2, subject: x9, object: x10)
+```
+
+## r93
+From: b483 r93.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item exceeds the review limit, when the person opens a batch, the batches service shall not set the status of the item to `in-batch`.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x3: agent the review limit (constant), x4: agent the person (constant), x6: service the batches service (constant)]
+  while [x1: item]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    exceed#2(subject: x1, object: x3)
+  when [x5: batch]
+    request(e1, batches.open, subject: x4, object: x5)
+  response
+    not
+      initiates(e2, subject: x6, status(x1) = `in-batch`)
+```
+
+## r94
+Retires: r53. From: b483 r94.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit, when the person opens a batch, the batches service shall set the status of the item to `in-batch`, keep a batch that holds the item and keep a batch plan of the batch.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the review limit (constant), x6: agent the person (constant), x8: service the batches service (constant)]
+  while [x1: item]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    not [x3: dependency, x4: item]
+      not
+        status(x4) = `delivered`
+      on(x3, x4)
+      of(x3, x1)
+    not
+      exceed#2(subject: x1, object: x5)
+  when [x7: batch]
+    request(e1, batches.open, subject: x6, object: x7)
+  response [x9: batch, x10: batch plan]
+    initiates(e2, subject: x8, status(x1) = `in-batch`)
+    in(x1, x9)
+    keep(e3, subject: x8, object: x9)
+    of(x10, x9)
+    keep(e4, subject: x8, object: x10)
 ```

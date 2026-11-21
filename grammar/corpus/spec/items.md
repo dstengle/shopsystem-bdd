@@ -536,31 +536,6 @@ shall [x2: agent the person (constant), x3: service the backlog service (constan
     name(e3, subject: x3, object: x1)
 ```
 
-## r33
-From: b281 r33.
-
-```reading
-While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person merges the item with a successor and a reason, the backlog service shall set the status of the item to `withdrawn` and keep the item.
-shall [x2: agent the person (constant), x3: service the backlog service (constant)]
-  while [x1: item]
-    or
-      case
-        status(x1) = `idea`
-      case
-        status(x1) = `shaped`
-      case
-        status(x1) = `ready`
-      case
-        status(x1) = `needs-input`
-  when
-    request(e1, backlog.merge, subject: x2, object: x1)
-    param(e1, successor, some)
-    param(e1, reason, some)
-  response
-    initiates(e2, subject: x3, status(x1) = `withdrawn`)
-    keep(e3, subject: x3, object: x1)
-```
-
 ## r34
 From: b281 r34.
 
@@ -741,4 +716,77 @@ shall [x2: agent the person (constant), x3: service the backlog service (constan
   response
     initiates(e2, subject: x3, status(x1) = `withdrawn`)
     keep(e3, subject: x3, object: x1)
+```
+
+## r43
+From: b484 r43.
+
+```reading
+If the person merges a successor with the successor and a reason, then the backlog service shall refuse the request and name the successor.
+shall [x1: agent the person (constant), x3: service the backlog service (constant), x4: request "the request the trigger makes" (indexical)]
+  if [x2: successor]
+    request(e1, backlog.merge, subject: x1, object: x2)
+    param(e1, successor, x2)
+    param(e1, reason, some)
+  response
+    refuse(e2, subject: x3, object: x4)
+    name(e3, subject: x3, object: x2)
+```
+
+## r44
+Retires: r33. From: b484 r44.
+
+```reading
+While a successor exists and the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person merges the item with the successor and a reason, the backlog service shall set the status of the item to `withdrawn` and keep the item.
+shall [x3: agent the person (constant), x4: service the backlog service (constant)]
+  while [x1: successor, x2: item]
+    exists(x1)
+    or
+      case
+        status(x2) = `idea`
+      case
+        status(x2) = `shaped`
+      case
+        status(x2) = `ready`
+      case
+        status(x2) = `needs-input`
+  when
+    request(e1, backlog.merge, subject: x3, object: x2)
+    param(e1, successor, x1)
+    param(e1, reason, some)
+  response
+    initiates(e2, subject: x4, status(x2) = `withdrawn`)
+    keep(e3, subject: x4, object: x2)
+```
+
+## r45
+From: b484 r45.
+
+```reading
+While the status of a successor is one of `delivered`, `refused` or `withdrawn` and the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, if the person merges the item with the successor and a reason, then the backlog service shall refuse the request and name the successor.
+shall [x3: agent the person (constant), x4: service the backlog service (constant), x5: request "the request the trigger makes" (indexical)]
+  while [x1: successor, x2: item]
+    or
+      case
+        status(x1) = `delivered`
+      case
+        status(x1) = `refused`
+      case
+        status(x1) = `withdrawn`
+    or
+      case
+        status(x2) = `idea`
+      case
+        status(x2) = `shaped`
+      case
+        status(x2) = `ready`
+      case
+        status(x2) = `needs-input`
+  if
+    request(e1, backlog.merge, subject: x3, object: x2)
+    param(e1, successor, x1)
+    param(e1, reason, some)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x1)
 ```

@@ -56,8 +56,8 @@ def ignored(step):
     assert ".gitignore" in old.git("show", "--name-only", "--format=", "HEAD").stdout.split()
     text = M.read(step, ".gitignore")
     assert text.startswith(M.held(step).get(".gitignore", "")), text
-    names = [line.strip().strip("/") for line in text.splitlines()]
-    assert all(names.count(name.strip("/")) == 1 for name in IGNORED), names
+    names = [line.strip().rstrip("/") for line in text.splitlines()]
+    assert all(names.count(name.rstrip("/")) == 1 for name in IGNORED), names
 
 
 def purposed(step):

@@ -75,6 +75,11 @@ def oversized(vocab, srcs):
         for said in ["%d %s for %d kinds, over %d" % (count, said, kinds, bound)]]
 
 
+def fired(found):
+    """The names of the guards `oversized` said broke, in its order, without the counts a context's size gives."""
+    return [said.split(" for ")[0].split(" ", 1)[1] for said in found]
+
+
 def test_each_context_s_grammar_is_within_its_bounds():
     assert {name: oversized(*spec_grammar4.sources(root)) for name, root in ROOTS.items()} == {
         name: [] for name in ROOTS}
@@ -107,7 +112,7 @@ def a_gap_per_pair_of_kinds(w, vocab):
 
 def test_the_guards_catch_a_fun_per_gap_and_kind():
     found = oversized(*generated(CONSTRUCTS, a_gap_per_pair_of_kinds))
-    assert [said.split(" for ")[0].split(" ", 1)[1] for said in found] == ["funs taking VPSlash/ClSlash/RS", "funs"]
+    assert fired(found) == ["funs taking VPSlash/ClSlash/RS", "funs"]
 
 
 def test_the_guards_catch_a_fun_per_pair_of_values():
@@ -117,7 +122,7 @@ def test_the_guards_catch_a_fun_per_pair_of_values():
             for n in range(60):
                 w.fun("%s_Pair_Guard_%d" % (spec_rgl.kid(k), n), "%s_NP -> Cond" % spec_rgl.kid(k), "x", "x")
     found = oversized(*generated(CONSTRUCTS, per))
-    assert len(found) == 1 and found[0].endswith("funs for 27 kinds, over 1080")
+    assert fired(found) == ["funs"]
 
 
 def test_the_senses_guard_catches_two_hundred_entries_of_one_word():
@@ -126,8 +131,8 @@ def test_the_senses_guard_catches_two_hundred_entries_of_one_word():
     spec_rgl_np.senses(w, SimpleNamespace(attributes=[(entry, ["thing"])] * 200))
     vocab, srcs = spec_grammar4.sources(CONSTRUCTS)
     srcs["Context.gf"] = srcs["Context.gf"].replace("\n  fun\n", "\n  fun\n%s\n" % "\n".join(w.funs), 1)
-    # 79,600 beside the catalogue's own 12; the whole grammar's bound breaks too
-    assert "79612 senses' funs for 27 kinds, over 400" in oversized(vocab, srcs)
+    # 79,600 beside the catalogue's own; the whole grammar's bound breaks too
+    assert fired(oversized(vocab, srcs)) == ["funs", "senses' funs"]
 
 
 def line_set():

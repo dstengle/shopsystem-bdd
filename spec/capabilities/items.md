@@ -6,7 +6,7 @@ group: service
 area: tracking
 specifies: object item, service backlog, the readiness policy
 language: codified-2
-retired: [g3, r3, g18, r18]
+retired: [g3, r3, g18, r18, g33, r33]
 unbuilt: []
 ---
 
@@ -143,9 +143,6 @@ declined, withdrawn, answered and listed.
 ### [g39] A closed item takes no note
 - [r39] While the status of an item is one of `delivered`, `refused` or `withdrawn`, if the person annotates the item, then the backlog service shall refuse the request and name the item.
 
-### [g33] An open item merged into another item is withdrawn
-- [r33] While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person merges the item with a successor and a reason, the backlog service shall set the status of the item to `withdrawn` and keep the item.
-
 ### [g34] A closed item is not merged
 - [r34] While the status of an item is one of `delivered`, `refused` or `withdrawn`, if the person merges the item, then the backlog service shall refuse the request and name the item.
 
@@ -166,4 +163,13 @@ declined, withdrawn, answered and listed.
 
 ### [g42] An open item withdrawn with its reason becomes withdrawn
 - [r42] While the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person withdraws the item with a reason, the backlog service shall set the status of the item to `withdrawn` and keep the item.
+
+### [g44] An open item merged into a successor is withdrawn
+- [r44] While a successor exists and the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, when the person merges the item with the successor and a reason, the backlog service shall set the status of the item to `withdrawn` and keep the item.
+
+### [g45] An item is not merged into a closed successor
+- [r45] While the status of a successor is one of `delivered`, `refused` or `withdrawn` and the status of an item is one of `idea`, `shaped`, `ready` or `needs-input`, if the person merges the item with the successor and a reason, then the backlog service shall refuse the request and name the successor.
+
+### [g43] An item is not merged into itself
+- [r43] If the person merges a successor with the successor and a reason, then the backlog service shall refuse the request and name the successor.
 
