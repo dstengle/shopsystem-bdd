@@ -23,6 +23,7 @@ import model_decisions
 import readiness_before
 import request_moves
 import request_text
+import spec_catalogued
 import spec_held
 import spec_language
 import spec_lexicon
@@ -156,6 +157,7 @@ def well_formed(root, item, others=()):
     copy = Path(tempfile.mkdtemp(prefix="readiness-"))
     try:
         shutil.copytree(Path(root) / "spec", copy / "spec")      # backlog_lines.lay, the lexicon read before the item
+        spec_catalogued.copy(root, copy)        # parsing#r6 refuses on the copy as in the context (b444)
         for other in others:
             backlog_lines.lay_onto(copy, other)
         with spec_held.held(copy):          # the copy's inputs statted once a state, each line parsed once (b430)

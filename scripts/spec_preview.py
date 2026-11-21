@@ -20,10 +20,7 @@ def laid(root, name):
     copy = Path(tempfile.mkdtemp(prefix="preview-"))
     try:
         shutil.copytree(Path(root) / "spec", copy / "spec")
-        catalogue = Path(root) / spec_catalogued.CATALOGUE
-        if catalogue.is_file():
-            (copy / catalogue.parent.name).mkdir()
-            shutil.copy2(catalogue, copy / spec_catalogued.CATALOGUE)
+        spec_catalogued.copy(root, copy)
         backlog_lines.lay_onto(copy, item)
         yield copy
     finally:

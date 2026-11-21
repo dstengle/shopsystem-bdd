@@ -212,7 +212,8 @@ Moves a `shaped` item to `ready` when it passes the readiness bar, and otherwise
 Any other item is refused, named.\
 Synopsis: `work ready name`
 
-The bar lays the item's lines over a temporary copy of `spec/` and checks that they parse, that `spec logic` finds
+The bar lays the item's lines over a temporary copy of `spec/` and the construct catalogue and checks that they
+parse (using no construct the catalogue has no entry of), that `spec logic` finds
 no clash naming them, and that `features generate` writes their scenarios. A line from a request must be settled.
 Readying is the decision to build: a ready item goes into the next batch.
 
