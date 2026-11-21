@@ -1,11 +1,13 @@
 """Records' `--about` of an item, a batch or nothing (r3, r5, r6, b49): the item `.shop/backlog/b<n>.md` and the batch
 `.shop/batches/<n>/plan.md` a Given brings in, each written with its id; a text that denotes one of them, or nothing,
 given to `work record` as its `--about` by design_model_check_handlers_forms' When; and the Then of the record's
-`about:`, the id of what it concerns. Each handler a `local` taken only in records' scenarios."""
+`about:`, the id of what it concerns. Each Given a `local` taken only in records' scenarios."""
 import importlib.util
 import re
 import sys
 from pathlib import Path
+
+from vocab import handler
 
 
 def shared(name, file):
@@ -60,11 +62,10 @@ def given_denotes(step):
         H.says(step, name, about)
 
 
-@local("ThenDoes")
+@handler("ThenDoes", "concern")
 def concerns(step):
-    """`the record r1 concerns the item i1`: the record `work record` wrote is about the item's id."""
-    if not mine(step) or step.term != "concern":
-        return False
+    """`the record r1 concerns the item i1`: the record `work record` wrote is about the item's id; the registry's
+    handler of its key, which `features vocab --check` finds (no other feature says concern)."""
     done = step.context["result"]
     assert done.returncode == 0, (done.stdout, done.stderr)
     text = (step.repo / done.stdout.strip().splitlines()[-1]).read_text()
