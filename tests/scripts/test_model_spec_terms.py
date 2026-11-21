@@ -68,3 +68,16 @@ def test_two_senses_of_a_verb_beside_a_noun_of_its_word_are_no_v_t2(tmp_path):
     index.write_text(text.replace("- **stage** (noun)", senses + "- **stage** (noun)", 1))
     out = _model_check(root)
     assert "v_t2 " not in out, out
+
+
+def test_two_entries_of_an_attribute_word_on_one_kind_are_v_t2(tmp_path):
+    """b538: an attribute word's entries are senses only when each is of other kinds; two of one kind are a term
+    with two entries."""
+    root = _codified_2(tmp_path)
+    index = root / "spec" / "index.md"
+    twice = ("- **reach** (attribute of stage): how far a stage has come. Values (adjective): `near`, `far`.\n"
+             "- **reach** (attribute of stage): how far a stage goes. Values (adjective): `short`, `long`.\n")
+    text = index.read_text()
+    index.write_text(text.replace("- **stage** (noun)", twice + "- **stage** (noun)", 1))
+    out = _model_check(root)
+    assert "v_t2 " in out, out

@@ -21,7 +21,8 @@ contract:
     names its aspect, `(verb, state)` or `(verb, action)` (v_t14 when it names
     neither); its entry may give several `Frame:` fields (one meaning), and
     two entries of one verb are two senses, which their kinds tell apart
-    (v_t15 when their frames overlap in every slot);
+    (v_t15 when their frames overlap in every slot), and so are two
+    entries of one attribute word each of other kinds;
     spec/capabilities/*.md, each a capability with frontmatter (id, narrator,
     group, rests_on, retired) and a `## Behaviour` section; a `formulated_as`
     key is a file problem. A file whose own frontmatter has

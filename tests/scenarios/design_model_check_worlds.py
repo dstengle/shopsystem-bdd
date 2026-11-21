@@ -204,6 +204,7 @@ TABLE = ITEM.ROWS + CATALOGUE.ROWS + ORDER.ROWS + [
     (("term has no part of speech",), term("unlabelled"), {}),
     (("term has frame", "frame has preposition"), term("prepositional"), {}),
     (("term has frame",), term("multiframed"), {}),
+    (("term is `attribute`", "term has sense"), term("attributed"), {}),     # b538: one attribute word, two kinds
     (("term has sense",), term("polysemous"), {}),
     (("term redefine pack",), term("redefining"), {}),
     (("this bounded context import pack",), importing, {}),
