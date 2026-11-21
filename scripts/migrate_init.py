@@ -4,7 +4,8 @@ context scaffold written and committed in one commit: `spec/index.md` (the id, i
 `spec/capabilities/`, `.shop/backlog/`, `.shop/records/README.md` (an empty records index), `.shop/plugin-version`
 (the plugin's release), `.shop/delivery.toml` (every key commented out at its default), `features/` and
 `tests/scenarios/conftest.py`, each empty directory with a `.gitkeep`, and the ignore file `.gitignore` naming the
-interpreter and the caches (b454; an existing one given the names it lacks). A repository with an index file or a shop
+interpreter and the caches (b454; an existing one given the names it lacks, a name matched as git matches a line, its
+leading or trailing slash no other entry, and left out of the commit when it lacks none, b470). A repository with an index file or a shop
 directory is refused, never merged into; an existing `features/` or conftest is left as it is."""
 import re
 from pathlib import Path
@@ -139,10 +140,12 @@ def scaffold(ident):
 
 
 def ignore_text(root):
-    """The ignore file's text: the repository's own, if any, with each name of IGNORED it lacks added at its end."""
+    """The ignore file's text: the repository's own, if any, with each name of IGNORED it lacks added at its end; a
+    name it holds with or without a leading or a trailing slash is not lacked (b470)."""
     path = root / IGNORE
     text = path.read_text() if path.is_file() else ""
-    missing = [name for name in IGNORED if name not in text.splitlines()]
+    held = {line.strip().strip("/") for line in text.splitlines()}
+    missing = [name for name in IGNORED if name.strip("/") not in held]
     if text and not text.endswith("\n"):
         text += "\n"
     return text + "".join(name + "\n" for name in missing)
@@ -179,7 +182,9 @@ def run(args):
         files["features/.gitkeep"] = ""
     if not (root / CONFTEST).exists():
         files[CONFTEST] = CONFTEST_TEXT
-    files[IGNORE] = ignore_text(root)
+    ignore = ignore_text(root)
+    if not (root / IGNORE).is_file() or (root / IGNORE).read_text() != ignore:     # one that lacks nothing left alone
+        files[IGNORE] = ignore
 
     made = sorted({p for rel in files for p in (root / rel).parents if root in p.parents and not p.exists()},
                   key=lambda p: -len(p.parts))
