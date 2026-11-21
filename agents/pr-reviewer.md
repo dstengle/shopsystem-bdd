@@ -11,7 +11,7 @@ You review one batch's pull request, once: whether the batch's commits build its
 
 Your prompt is the path of your brief, `brief.md`. Read it first. Its header gives:
 
-- `Review:` the review's number, and whether it is the first (the pull request is unreviewed) or a re-review of the fix;
+- `Review:` the review's number, and whether it is the first (the pull request is unreviewed) a re-review of the fix, or a re-review of the base merge;
 - `Batch:`, `Pull request:` and `Base:`;
 - `Range:` the commits reviewed, `<from>..<head>`, and `Head:` the batch branch's head;
 - `Tree:` the batch's worktree, at `Head:`, where the files are as the change leaves them;
@@ -22,6 +22,7 @@ Then its sections, in order:
 
 - `## Items` (first review): each item of the batch with its file under `.shop/backlog/` and each of its requirement lines, `<capability>#r<n>: <text>`;
 - `## Earlier findings` (re-review, in place of `## Items`): each finding still open, with its grade, triage, title, item, where, the commits for it and its text;
+- `## Base merges` (re-review of the base merge, in place of `## Earlier findings`): each merge of the base into the batch branch made after the last clean review, with `resolution: <path>`, how it settled a conflict (empty when it settled none);
 - `## Judgement decisions`: each design-decision whose tier is `judgement`, with its summary, or `none`;
 - `## Rules`: the repository's `CLAUDE.md`, or `none`;
 - `## Size`: the files and lines the range changes, `.shop/` left out, and the limit;
@@ -36,6 +37,8 @@ Read every requirement the brief's `## Items` gives and every commit its `## Com
 Read every design-decision the brief's `## Judgement decisions` lists, and check the change against each. Read `CLAUDE.md` when `## Rules` names it: its rules and its module map are binding. Read the capability files the requirement lines are in (`spec/capabilities/<capability>.md` in the `Tree:`) for their Purpose, terms and Implementation section.
 
 On a re-review, read every commit the brief lists under each finding of `## Earlier findings`, and write `fixed` or `not fixed: <why>` for each. Read the re-review's `## Commits` and `change.diff` too: they are only what changed since the last review, the fixes and their merges, and any commit that took a parked item's lines out.
+
+On a re-review of the base merge, review only the base merges `## Base merges` lists: read each one's resolution patch and `change.diff`, what it brought from the base, and look for a conflict settled wrongly or a base change the batch's code no longer fits. The rest of the batch was reviewed clean; write no finding of it, and no `## Earlier findings`.
 
 Read code outside the change only to verify a risk you can name, one focused look a risk, and say in the finding what the risk was and what you verified. The runs in `## Runs` are given; you run nothing.
 

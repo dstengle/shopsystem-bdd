@@ -18,6 +18,7 @@ from pathlib import Path
 import backlog_chore
 import backlog_items
 import backlog_lines
+import batch_base_merge
 import batch_findings
 import batch_fix
 import batch_plan
@@ -54,10 +55,10 @@ def judgement(root):
     return found
 
 
-def commits(root, rng, patches=None):
+def commits(root, rng, patches=None, first_parent=False):
     """`<short sha> "<subject>" Item: b1 Finding: f1` of each commit of `rng`, oldest first, with `; patch: <path>`
     when `patches` has its own (review S4); a missing trailer is left out of its line."""
-    out = git(root, "log", "--reverse", "--format=%h%x00%s%x00%(trailers:key=Item,valueonly,separator=%x2c)%x00"
+    out = git(root, "log", "--reverse", *(["--first-parent"] if first_parent else []), "--format=%h%x00%s%x00%(trailers:key=Item,valueonly,separator=%x2c)%x00"
               "%(trailers:key=Finding,valueonly,separator=%x2c)%x1e", rng).stdout
     lines = []
     for entry in filter(str.strip, out.split("\x1e")):
@@ -198,8 +199,9 @@ def published(root, name, command=COMMAND):
     return batch, head
 
 
-def _header(batch, k, rng, head, tree, where, first):
-    kind = "first; the pull request is unreviewed" if first else "re-review of the fix"
+def _header(batch, k, rng, head, tree, where, first, merged=False):
+    kind = ("first; the pull request is unreviewed" if first else
+            "re-review of the base merge" if merged else "re-review of the fix")
     return ["# The review of %s's pull request" % batch.name, "", "Review: %d (%s)" % (k, kind),
             "Batch: %s" % batch.name, "Pull request: %s" % batch.pull_request, "Base: %s" % batch.base,
             "Range: %s" % rng, "Head: %s" % head, "Tree: %s" % tree, "Findings file: %s" % (where / "findings.md"),
@@ -236,15 +238,17 @@ def brief(root, name):
         (where / "findings.md").unlink()
         removed.append("findings.md")
     (where / "change.diff").write_text(git(tree, "diff", rng, "--", ".", ":(exclude).shop").stdout, encoding="utf-8")
-    own = patches(tree, rng, where)
+    merged = None if first else batch_base_merge.section(root, tree, batch, head, where)    # b492
+    own = {} if merged else patches(tree, rng, where)
     decisions = judgement(root)
-    sections = [("Items", _items(root, batch)) if first else ("Earlier findings", _earlier(root, batch, own)),
+    sections = [("Items", _items(root, batch)) if first else ("Base merges", merged) if merged else (
+                    "Earlier findings", _earlier(root, batch, own)),
                 ("Judgement decisions", "\n".join("- %s: %s" % d for d in decisions)
                  or "none: no design-decision is tier: judgement"),
                 ("Rules", _rules(tree)), ("Size", _size(root, tree, rng)), ("Runs", _runs(root, tree, batch)),
-                ("Commits", "\n".join("- %s" % c for c in commits(tree, rng, own)) or "none"),
+                ("Commits", "\n".join("- %s" % c for c in commits(tree, rng, own, bool(merged))) or "none"),
                 ("Change", "%s: `git diff %s -- . ':(exclude).shop'`" % (where / "change.diff", rng))]
-    text = "\n".join(_header(batch, k, rng, head, tree, where, first)) + "".join(
+    text = "\n".join(_header(batch, k, rng, head, tree, where, first, bool(merged))) + "".join(
         "\n\n## %s\n\n%s" % s for s in sections) + "\n"
     (where / "brief.md").write_text(text, encoding="utf-8")
     return where / "brief.md", removed

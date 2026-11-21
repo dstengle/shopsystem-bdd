@@ -7,7 +7,7 @@ import batch_plan
 import pytest
 from backlog_testing import git, state, work
 from batch_testing import commit_on
-from review_testing import findings, ok, published, scratch
+from review_testing import CLEAN, findings, ok, published, scratch
 from test_backlog_lines import ABANDON
 from test_batch_pick import SECOND
 
@@ -172,3 +172,28 @@ def test_each_run_gives_the_bases_exit_code_once_a_batch(batch_repo):
     cache = scratch(batch_repo) / "base-runs.json"
     cache.write_text(cache.read_text().replace(": 1", ": 7"))
     assert "Exit code: 0 (base: 7)" in section(brief(batch_repo)[2], "Runs")
+
+
+@pytest.mark.requirement("review-guarantees#r10")
+def test_a_re_review_after_a_base_merge_reads_only_the_base_merge(pub):
+    """b492: after a clean review the base moves on and is merged into the batch's branch; the batch submitted again
+    is re-reviewed on only that merge: its range from the clean review's head, its one commit the merge."""
+    brief(pub)
+    findings(pub).write_text(CLEAN)
+    ok(work(pub, "batch", "reviewed", "batch-1"))
+    reviewed = git(pub, "rev-parse", "batch-1").strip()
+    (pub / "src").mkdir(exist_ok=True)
+    (pub / "src" / "base.txt").write_text("the base moved on\n")
+    git(pub, "add", "src/base.txt")
+    git(pub, "commit", "-q", "-m", "the base moves on")
+    git(pub / ".shop" / "worktrees" / "batch-1", "merge", "-q", "--no-ff", "-m", "Merge main into batch-1", "main")
+    merge = git(pub, "rev-parse", "batch-1").strip()
+    ok(work(pub, "batch", "review", "batch-1"))
+    assert batch_plan.find(pub, "batch-1").status == "in-review"
+    text = brief(pub)[2]
+    lines = text.splitlines()
+    assert lines[2] == "Review: 2 (re-review of the base merge)", lines[2]
+    assert "Range: %s..%s" % (reviewed, merge) in lines
+    listed = [line.split()[1] for line in section(text, "Commits").splitlines() if line.startswith("- ")]
+    assert len(listed) == 1 and merge.startswith(listed[0]), listed
+    assert merge[:12] in section(text, "Base merges") and "## Items" not in text and "## Earlier findings" not in text

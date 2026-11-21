@@ -39,6 +39,13 @@ def test_r14_the_re_review_reads_every_commit_for_each_finding():
     has("On a re-review, a new finding is `fix now` only when the fix's own change is wrong.")
 
 
+@pytest.mark.requirement("review-guarantees#r10")
+def test_a_re_review_of_the_base_merge_reads_only_the_base_merge():
+    """b492: the brief's `## Base merges` is all a re-review of the base merge reads."""
+    has("On a re-review of the base merge, review only the base merges `## Base merges` lists")
+    has("The rest of the batch was reviewed clean; write no finding of it, and no `## Earlier findings`.")
+
+
 def example():
     """The first fenced block after the findings file's heading."""
     body = PATH.read_text().split("## The findings file", 1)[1]

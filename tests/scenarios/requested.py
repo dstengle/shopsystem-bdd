@@ -76,7 +76,8 @@ ADDED = {"consistency#g33": "design-model-check", "consistency#g34": "design-mod
          "items#g35": "readiness", "items#g36": "readiness",                     # b281: a ready item checked again
          "items#g40": "readiness",                                               # b444: a construct uncatalogued
          "items#g41": "readiness",                                               # b477: a model line breaks a rule
-         **{"checking#g%d" % n: "design-model-check" for n in range(52, 58)}}     # b370: the rule catalogue's checks
+         **{"checking#g%d" % n: "design-model-check" for n in range(52, 58)},
+         "reviews#g9": "batches", "reviews#g10": "batches"}                      # b492: a base merge resubmitted     # b370: the rule catalogue's checks
 
 
 def origin(node):

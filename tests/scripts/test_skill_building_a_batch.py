@@ -137,3 +137,10 @@ def test_an_abandoned_batch_is_measured_too():
     text = SKILL.read_text()
     abandon = text.index("work batch abandon <batch>")
     assert "measure batch <batch>" in text[abandon:abandon + 300], text[abandon:abandon + 300]
+
+
+def test_a_base_merge_is_submitted_again():
+    """b492: a batch awaiting its merge whose pull request conflicts with its base is merged, submitted and
+    re-reviewed on the base merge alone."""
+    one = step("awaiting-merge` conflicts with its base")
+    assert "work batch review <batch>` takes the batch again" in one and "re-review of only the base merge" in one
