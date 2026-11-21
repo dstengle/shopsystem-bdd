@@ -1213,7 +1213,8 @@ Founds a new bounded context in the repository it is run in: writes its scaffold
 `.shop/records/README.md` (an empty records index), `.shop/plugin-version` (the plugin's release),
 `.shop/delivery.toml` (every key commented out at its default), `features/` and `tests/scenarios/conftest.py`, each
 empty folder with a `.gitkeep`, and `.gitignore` naming `.venv/`, `__pycache__/`, `.pytest_cache/` and
-`.ruff_cache/` (an existing one given the names it lacks). An existing `features/` or conftest is left as it is. It refuses, changing nothing,
+`.ruff_cache/` (an existing one given the names it lacks, a name it holds with or without a leading or a trailing
+`/` not lacked; one that lacks none left alone, out of the commit and of what it prints). An existing `features/` or conftest is left as it is. It refuses, changing nothing,
 without `--id`, with an id that is not `bounded-context/<domain>/<path>` (its `<domain>` a domain name with a dot,
 `example.org`, and its `<path>` one part or more), and in a repository that has a
 `spec/index.md` or a `.shop/` already.\
