@@ -38,7 +38,8 @@ def cmd_show(args):
     if args.target is None:
         return request_view.listing(args.root, args.json)
     if backlog_items.is_item(args.target):
-        return backlog_cli.show(args)
+        import backlog_view
+        return backlog_view.show(args)
     if conversation_cli.is_quote(args.target) or conversation_cli.is_directive(args.target):
         return conversation_cli.show(args)
     return request_view.show(args.root, args.target, args.json)

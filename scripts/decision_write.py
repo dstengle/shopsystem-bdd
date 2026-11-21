@@ -9,6 +9,7 @@ import datetime
 import re
 from pathlib import Path
 
+import decision_amend
 import shop_files
 from model_decisions import ROUTES
 from model_parse import DECISIONS, decision_files
@@ -48,14 +49,24 @@ routes a universal condition rests on it (--rests-on universal-condition/u<n>) a
 (--supersedes <id>, its id, its path or its number): that decision's status is set to superseded and committed with
 the new one; one whose status is not accepted, or an id that names no decision, is refused and nothing is written. With any of --summary,
 --decision and --tier missing the command is refused, naming each one missing, and writes nothing. It prints the path
-written."""
+written.
+
+work decision --amend <decision> [--enforced-by <id>]... [--rests-on <id>]... adds to an accepted decision (its id,
+path or number) each enforcer under enforced_by and each foundation under rests_on it does not name yet, nothing else
+of it changed, rewrites the index and commits both; a decision whose status is not accepted is refused, naming it,
+and nothing is written. It prints the path amended."""
 
 
 def add_parser(sub):
     import argparse
     p = sub.add_parser("decision", help=HELP, description=HELP + ".", epilog=EPILOG,
                        formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("title", help="the decision's title, its heading; the slug of its file and id comes from it")
+    p.add_argument("title", nargs="?",
+                   help="the decision's title, its heading; the slug of its file and id comes from it (required "
+                        "but with --amend)")
+    p.add_argument("--amend", metavar="DECISION",
+                   help="amend this accepted design-decision (its id, path or number) in place of writing one: add "
+                        "each --enforced-by to its enforced_by and each --rests-on to its rests_on")
     p.add_argument("--summary", help="one sentence, the index's summary (required)")
     p.add_argument("--tier", choices=TIERS, help="check, requirement or judgement (required)")
     p.add_argument("--decision", help="the ## Decision section: what is decided (text or @<file>) (required)")
@@ -112,21 +123,8 @@ def superseded(root, refs):
     or a decision whose status is not accepted, refused naming it."""
     found = []
     for ref in refs:
-        hits = []
-        for path in decision_files(root):
-            data, _ = shop_files.frontmatter(shop_files.read(path, root))
-            rel = path.relative_to(root).as_posix()
-            if ref in (data.get("id"), rel, path.name, path.stem) or path.name.startswith(ref + "-"):
-                hits.append((path, rel, data))
-        if len(hits) != 1:
-            raise shop_files.Refused("{names} %s names %s design-decision" % (ref, "no" if not hits else "more than one"),
-                                     reason="names no design-decision" if not hits else "names more than one "
-                                     "design-decision", names=["parameter:supersedes"])
-        path, rel, data = hits[0]
-        if data.get("status") != "accepted":
-            raise shop_files.Refused("%s (%s) is %s, not accepted: only a design-decision in force is superseded"
-                                     % (rel, data.get("id"), data.get("status") or "of no status"),
-                                     reason="not accepted", names=["design-decision:%s" % data.get("id")])
+        path, rel, data = decision_amend.found(root, ref, "supersedes")
+        decision_amend.in_force(rel, data, "superseded")
         found.append((path, data.get("id")))
     return found
 
@@ -207,17 +205,31 @@ def write(root, title, summary=None, tier=None, wording=None, *, context=None, a
     return rel
 
 
-# the CLI adapter's request of decisions.enter: each business parameter's argparse dest where the two differ
-PARAMETERS = {"wording": "decision", "routes": "verified_by", "author": "by"}
+# the CLI adapter's requests of decisions.enter and decisions.amend: each business parameter's argparse dest where the two differ
+PARAMETERS = {"wording": "decision", "routes": "verified_by", "author": "by", "enforcer": "enforced_by",
+              "foundation": "rests_on"}
 
 
 def decision(args):
     """`work decision`: the request decisions.enter, its parameters read off the command line by business name."""
     from domain_envelope import Response
+    if args.amend is not None:
+        return amend(args)
+    if args.title is None:
+        raise shop_files.Refused("a design-decision gives {names}", reason="missing parameters",
+                                 names=["parameter:title"])
     rel = write(args.root, args.title, args.summary, args.tier, args.decision, context=args.context,
                 alternatives=args.alternatives, enforced_by=args.enforced_by, routes=args.verified_by,
                 rests_on=args.rests_on, supersedes=args.supersedes, source=args.source, author=args.by,
                 slug=args.slug, date=args.date)
+    print(rel)
+    return Response("done", {"path": rel})
+
+
+def amend(args):
+    """`work decision --amend`: the request decisions.amend, its enforcers and foundations off the command line."""
+    from domain_envelope import Response
+    rel = decision_amend.amend(args.root, args.amend, args.enforced_by, args.rests_on)
     print(rel)
     return Response("done", {"path": rel})
 
