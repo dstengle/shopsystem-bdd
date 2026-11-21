@@ -33,7 +33,8 @@ def env(step):
     where = outside(step)
     return dict(os.environ, SHOPSYSTEM_WORK_GH="%s %s" % (shlex.quote(sys.executable), shlex.quote(str(STUB))),
                 STUB_GH_CALLS=str(where / "gh-calls.jsonl"), STUB_GH_ISSUES=str(where / "gh-issues.json"),
-                GH_TOKEN="", GIT_TERMINAL_PROMPT="0")
+                GH_TOKEN="", GIT_TERMINAL_PROMPT="0", **({"STUB_GH_FAIL": step.context["gh_fail"]}
+                                                         if step.context.get("gh_fail") else {}))
 
 
 def gh_calls(step):
