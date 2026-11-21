@@ -64,4 +64,6 @@ service reviews
 object capability form kind of artifact
 
 object index form kind of artifact
+
+object virtual environment kind of file
 ```

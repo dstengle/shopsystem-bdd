@@ -7,7 +7,7 @@ area: tracking
 specifies: object item, service backlog, the readiness policy
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r31, r32]
 ---
 
 # Items
@@ -138,3 +138,10 @@ declined, withdrawn, answered and listed.
 ### [g30] An item with a request line not settled is not readied
 - [r30] While an item is `shaped` and a request line of the item is not `accepted`, `refused` or `withdrawn`, if a
   session readies the item, then the backlog service shall refuse the request and name the request line.
+
+### [g31] A ready item reopened becomes shaped
+- [r31] While an item is `ready`, when the person reopens the item, the backlog service shall set the status of the item to `shaped` and keep the item.
+
+### [g32] Only a ready item is reopened
+- [r32] While an item is not `ready`, if the person reopens the item, then the backlog service shall refuse the request and name the item.
+

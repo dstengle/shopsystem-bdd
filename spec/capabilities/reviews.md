@@ -7,7 +7,7 @@ area: execution
 specifies: object review, object proposed change, service batches: submit
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r6]
 ---
 
 # Reviews
@@ -36,3 +36,7 @@ A batch's change submitted for review once its tasks are done, holding only the 
 ### [g5] A batch whose tasks are done is submitted for review
 - [r5] While a batch is `building` and every task of the batch is `done`, when the person submits the batch, the batches
   service shall keep a proposed change of the batch and set the status of the batch to `in-review`.
+
+### [g6] A batch is submitted with its tests run by the batch's virtual environment
+- [r6] While a batch is `building` and every task of the batch is `done` and the workspace of the batch holds a virtual environment, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.
+

@@ -125,6 +125,7 @@ service backlog
   operation answer(item, answer)  outcomes: done
   operation show(item)  outcomes: returned → the item
   operation list()  outcomes: returned → every item
+  operation reopen(item)  outcomes: done | refused: item not ready
 
 service drafting
   operation draft(item, relation row, universal condition, universal condition id, upstream entry, given block, requirement id, requirement, capability)

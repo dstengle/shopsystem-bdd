@@ -519,6 +519,7 @@ command = "work line"
 requirements = [
   "drafting#r16: If the person removes a requirement of a capability, then the drafting service shall refuse the request and name the requirement.",
   "drafting#r24: When the person removes a requirement in an item, the drafting service shall keep every requirement id in the item that the requirement does not retire.",
+  "drafting#r27: While an item holds a capability that does not exist, when the person removes a requirement of the capability, the drafting service shall keep the capability in the item.",
 ]
 [operations."drafting.remove".parameters]
 requirement = { option = "--remove" }
@@ -772,6 +773,7 @@ requirements = [
   "batches#r66: While a task of an item is `running` and the item holds a chore and the chore breaks in the workspace of the task, if a session finishes the task, then the batches service shall refuse the request and name the chore.",
   "batches#r67: While a task of an item is `running` and the item holds a chore and a kept change in the workspace of the task touches a file that is not in the chore, if a session finishes the task, then the batches service shall refuse the request and name the file.",
   "batches#r70: While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the batch is `needs-input` and the item has a requirement that is not in the workspace of the batch and a scenario of the item breaks in the workspace of the task, when a session finishes the task, the batches service shall set the status of the task to `done`.",
+  "batches#r77: While a task of an item is `running` and the workspace of the task holds a virtual environment and a scenario of the item succeeds in the workspace of the task, when a session finishes the task, the batches service shall set the status of the task to `done`.",
 ]
 [operations."batches.finish".parameters]
 task = { positional = 2 }
@@ -795,6 +797,7 @@ requirements = [
   "reviews#r3: While a task of a batch is not `done`, if the person submits the batch, then the batches service shall refuse the request and name the task.",
   "reviews#r4: While a workspace of a task of a batch holds a kept change that cites no item, if the person submits the batch, then the batches service shall refuse the request and name the kept change.",
   "reviews#r5: While a batch is `building` and every task of the batch is `done`, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.",
+  "reviews#r6: While a batch is `building` and every task of the batch is `done` and the workspace of the batch holds a virtual environment, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.",
 ]
 [operations."batches.submit".parameters]
 batch = { positional = 1 }
@@ -1013,11 +1016,11 @@ requirements = [
 [operations."upgrades.found"]
 command = "migrate init"
 requirements = [
-  "upgrades#r31: While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold of this repository and complete the request.",
   "upgrades#r32: If the person founds this bounded context without a context id, then the upgrades service shall refuse the request and name this bounded context.",
   "upgrades#r33: If the person founds this bounded context with a context id that does not conform to the bounded context id form, then the upgrades service shall refuse the request and name the context id.",
   "upgrades#r34: While this bounded context has an index file, if the person founds this bounded context with a context id, then the upgrades service shall refuse the request, name the index file and change no file.",
   "upgrades#r35: While this repository has a shop directory, if the person founds this bounded context with a context id, then the upgrades service shall refuse the request, name the shop directory and change no file.",
+  "upgrades#r38: While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold and the ignore file of this repository and complete the request.",
 ]
 [operations."upgrades.found".parameters]
 "context id" = { option = "--id" }

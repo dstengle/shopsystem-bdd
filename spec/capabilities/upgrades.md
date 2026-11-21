@@ -6,8 +6,8 @@ group: service
 area: upgrades
 specifies: service upgrades
 language: codified-2
-retired: []
-unbuilt: []
+retired: [g31, r31]
+unbuilt: [r38]
 ---
 
 # Upgrades
@@ -677,13 +677,6 @@ the tracked file `.shop/work/i1/initiative.md` holds:
   upgrades this repository, the upgrades service shall return `no upgrade step is pending`, change the plugin version
   file of this repository and keep the plugin version file.
 
-### [g31] Founding a bounded context keeps its context scaffold
-- [r31] While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold of this repository and complete the request.
-
-```given
-the tracked file `README.md` holds "A new context."
-```
-
 ### [g32] A bounded context is not founded without a context id
 - [r32] If the person founds this bounded context without a context id, then the upgrades service shall refuse the request and name this bounded context.
 
@@ -709,4 +702,11 @@ the tracked file `.shop/backlog/b1.md` holds "# b1"
 
 ### [g37] An upgrade names a scenario conftest of neither form and leaves it alone
 - [r37] While the release of this repository is before the release of the plugin and the scenario conftest of this repository does not conform to the old scenario conftest form and the scenario conftest of this repository does not conform to the scenario conftest form, when the person upgrades this repository, the upgrades service shall return the scenario conftest and not change the scenario conftest.
+
+### [g38] Founding a bounded context keeps its context scaffold and its ignore file
+- [r38] While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold and the ignore file of this repository and complete the request.
+
+```given
+the tracked file `README.md` holds "A new context."
+```
 

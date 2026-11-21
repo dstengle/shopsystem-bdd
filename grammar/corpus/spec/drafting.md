@@ -391,3 +391,21 @@ shall [x3: agent the person (constant), x5: service the drafting service (consta
     in(x4, x1)
     keep(e2, subject: x5, object: x4)
 ```
+
+## r27
+From: b448 r27.
+
+```reading
+While an item holds a capability that does not exist, when the person removes a requirement of the capability, the drafting service shall keep the capability in the item.
+shall [x3: agent the person (constant), x5: service the drafting service (constant)]
+  while [x1: item, x2: capability]
+    not
+      exists(x2)
+    in(x2, x1)
+  when [x4: requirement]
+    of(x4, x2)
+    request(e1, drafting.remove, subject: x3, object: x4)
+  response
+    in(x2, x1)
+    keep(e2, subject: x5, object: x2)
+```

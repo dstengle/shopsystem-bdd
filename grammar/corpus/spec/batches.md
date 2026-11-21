@@ -498,3 +498,22 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
     conforms(x8, x9)
     keep(e3, subject: x6, object: x8)
 ```
+
+## r77
+From: b449 r77.
+
+```reading
+While a task of an item is `running` and the workspace of the task holds a virtual environment and a scenario of the item succeeds in the workspace of the task, when a session finishes the task, the batches service shall set the status of the task to `done`.
+shall [x7: service the batches service (constant)]
+  while [x1: task, x2: item, x3: workspace, x4: virtual environment, x5: scenario]
+    of(x1, x2)
+    status(x1) = `running`
+    of(x3, x1)
+    in(x4, x3)
+    of(x5, x2)
+    succeed(subject: x5, in: x3)
+  when [x6: session]
+    request(e1, batches.finish, subject: x6, object: x1)
+  response
+    initiates(e2, subject: x7, status(x1) = `done`)
+```

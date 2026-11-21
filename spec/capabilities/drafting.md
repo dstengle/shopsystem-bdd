@@ -7,7 +7,7 @@ area: tracking
 specifies: service drafting
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r27]
 ---
 
 # Drafting
@@ -114,4 +114,7 @@ capabilities, retirements, rewordings and chores.
 
 ### [g26] A model line declared for a new capability of an item is kept
 - [r26] While an item holds a capability that does not exist, when the person declares a model line in the item, the drafting service shall keep the model line in the item.
+
+### [g27] Removing the last requirement of a new capability of an item keeps the capability
+- [r27] While an item holds a capability that does not exist, when the person removes a requirement of the capability, the drafting service shall keep the capability in the item.
 
