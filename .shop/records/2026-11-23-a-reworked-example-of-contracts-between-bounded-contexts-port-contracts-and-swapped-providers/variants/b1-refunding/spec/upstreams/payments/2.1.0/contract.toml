@@ -1,0 +1,97 @@
+# The published contract of payments 2.1.0, as ordering obtains it: read-only, replaced whole by the next version.
+# In payments' words.
+context = "bounded-context/example.org/shop/payments"
+version = "2.1.0"
+published = "2026-11-18"
+
+[objects.card]
+gloss = "A payment card a cardholder pays with."
+attributes = { number = "text", standing = ["good", "blocked"] }
+
+[objects.authorisation]
+gloss = "An amount a card's issuer has agreed to pay a merchant."
+attributes = { amount = "number", currency = ["EUR", "USD", "GBP"], reference = "text", status = ["granted", "captured", "voided", "settled", "reversed"] }
+lifecycle = ["granted → captured", "granted → voided", "captured → settled", "captured → reversed"]
+
+[objects.payout]
+gloss = "Money paid out to the merchant."
+
+[objects.dispute]
+gloss = "A cardholder's challenge to a payment."
+
+[operations."payments.authorise"]
+by = ["the merchant"]
+parameters = { card = "card", amount = "number", currency = ["EUR", "USD", "GBP"], reference = "text" }
+outcomes = ["done → the authorisation", "refused: card declined", "refused: amount over limit"]
+idempotent = "by reference"
+compensated-by = "payments.void"
+reply = "synchronous, within 5 s"
+limits = { amount = "below 10000 in any currency" }
+requirements = [
+  "charging#r1: When the merchant authorises a card with an amount and a currency and a reference, the payments service shall keep an authorisation on the card.",
+  "charging#r2: If the merchant authorises a card whose standing is `blocked`, then the payments service shall refuse the request and name the card.",
+  "charging#r3: If the merchant authorises a card with the amount `10000`, then the payments service shall refuse the request and name the amount.",
+]
+
+[operations."payments.capture"]
+by = ["the merchant"]
+parameters = { authorisation = "authorisation" }
+outcomes = ["done", "refused: voided authorisation"]
+followed-by = ["an authorisation settles", "an authorisation is reversed"]
+idempotent = "yes"
+reply = "synchronous acceptance, within 5 s; settled or reversed later by the network"
+requirements = [
+  "charging#r4: When the merchant captures an authorisation whose status is `granted`, the payments service shall set the status of the authorisation to `captured`.",
+  "charging#r5: If the merchant captures an authorisation whose status is `voided`, then the payments service shall refuse the request and name the authorisation.",
+]
+
+[operations."payments.void"]
+by = ["the merchant"]
+parameters = { authorisation = "authorisation" }
+outcomes = ["done", "refused: captured authorisation"]
+idempotent = "yes"
+reply = "synchronous, within 5 s"
+requirements = [
+  "charging#r6: When the merchant voids an authorisation whose status is `granted`, the payments service shall set the status of the authorisation to `voided`.",
+  "charging#r7: If the merchant voids an authorisation whose status is `captured`, then the payments service shall refuse the request and name the authorisation.",
+]
+
+[operations."payments.disburse"]
+by = ["the merchant"]
+parameters = { payout = "payout" }
+outcomes = ["done"]
+requirements = ["payouts#r1: When the merchant disburses a payout, the payments service shall keep the payout."]
+
+[operations."payments.resolve"]
+by = ["the merchant"]
+parameters = { dispute = "dispute" }
+outcomes = ["done"]
+requirements = ["payouts#r3: When the merchant resolves a dispute, the payments service shall complete the request."]
+
+# payments.settle and payments.reverse are the network's, payments.contest the cardholder's: published as events.
+[events."an authorisation settles"]
+raised-by = "payments.settle"
+notifies = "the merchant of the authorisation"
+carries = "the authorisation"
+delivery = "asynchronous, at least once, within 3 days of the capture"
+requirements = [
+  "charging#r8: When the network settles an authorisation whose status is `captured`, the payments service shall set the status of the authorisation to `settled` and notify the merchant of the authorisation.",
+]
+
+[events."an authorisation is reversed"]
+raised-by = "payments.reverse"
+notifies = "the merchant of the authorisation"
+carries = "the authorisation"
+delivery = "asynchronous, at least once, within 3 days of the capture"
+requirements = [
+  "charging#r9: When the network reverses an authorisation whose status is `captured`, the payments service shall set the status of the authorisation to `reversed` and notify the merchant of the authorisation.",
+]
+
+[events."a dispute is opened"]
+raised-by = "payments.contest"
+notifies = "the merchant of the authorisation"
+carries = "the authorisation"
+delivery = "asynchronous, at least once"
+requirements = [
+  "payouts#r2: When the cardholder contests an authorisation, the payments service shall keep a dispute on the authorisation and notify the merchant of the authorisation.",
+]

@@ -1,0 +1,22 @@
+# The trace of the stock adapter over inventory (provider A): which provider operations and lines the adapter's code
+# uses for each port operation and port line. Evidence and impact analysis, never a binding: the conformance tests of
+# capability stock-port bind the adapter.
+adapter = "provider"
+port = "stock"
+provider = "bounded-context/example.org/shop/inventory"
+contract = "1.4.0"                       # spec/upstreams/inventory/1.4.0/contract.toml
+
+[uses]                                    # port operation = the provider operations its code calls
+"stock.reserve" = ["inventory.hold"]
+"stock.free" = ["inventory.release"]
+"stock.take" = ["inventory.consume"]
+"stock.count" = ["inventory.query"]
+"notify lapsed" = ["event: an allocation lapses"]
+
+[stands-on]                               # port line = the provider lines the adapter relies on to keep it
+"stock-port#r1" = ["holding#r2"]
+"stock-port#r2" = ["holding#r5"]
+"stock-port#r3" = ["holding#r7"]
+"stock-port#r4" = ["holding#r8"]
+"stock-port#r5" = ["holding#r9"]
+"stock-port#r6" = ["holding#r10"]

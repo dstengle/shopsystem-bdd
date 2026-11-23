@@ -1,0 +1,13 @@
+# The trace of the charges adapter over the card processor, an invented third party: no published contract.
+adapter = "provider"
+port = "charges"
+provider = "third party: the card processor, API v3 (invented)"
+
+[fixed]
+currency = "EUR"
+
+[uses]                                    # strategy B2, charge at collect (see the report)
+"charges.secure" = ["adapter store: pending charge"]
+"charges.cancel" = ["adapter store"]
+"charges.collect" = ["POST /payments", "webhook payment.cleared", "webhook payment.declined"]
+"notify settled or bounced" = ["webhook payment.cleared", "webhook payment.declined", "webhook payment.clawed_back"]

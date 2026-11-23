@@ -1,0 +1,12 @@
+# The trace of the stock adapter over the legacy stock ledger (provider B): no spec, no published contract. Documentation
+# only; the conformance tests of capability stock-port are the only evidence.
+adapter = "provider"
+port = "stock"
+provider = "legacy: stock ledger (decrement, increment over HTTP)"
+
+[uses]
+"stock.reserve" = ["decrement", "adapter store: reservation record"]
+"stock.free" = ["increment", "adapter store"]
+"stock.take" = ["adapter store"]
+"stock.count" = []                        # nothing the ledger offers can count: see the report
+"notify lapsed" = ["adapter timer", "increment", "adapter store"]

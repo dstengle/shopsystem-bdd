@@ -1,0 +1,19 @@
+adapter = "provider"
+port = "charges"
+provider = "bounded-context/example.org/shop/payments"
+contract = "2.1.0"
+
+[fixed]
+currency = "EUR"
+
+[uses]
+"charges.secure" = ["payments.authorise"]
+"charges.cancel" = ["payments.void"]
+"charges.collect" = ["payments.capture"]
+"notify settled or bounced" = ["event: an authorisation settles", "event: an authorisation is reversed"]
+
+[stands-on]
+"charges-port#r1" = ["charging#r1"]        # idempotent by reference: a published property, not a line (see report)
+"charges-port#r2" = ["charging#r1"]
+"charges-port#r3" = ["charging#r6"]
+"charges-port#r4" = ["charging#r4"]
