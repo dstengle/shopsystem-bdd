@@ -1,0 +1,49 @@
+# The upstream adapter's contract of the port stock: each port operation, in ordering's words, mapped onto inventory's
+# published operations, its parameters filled from ordering's things and its outcomes translated back. An adapter makes
+# no business decision: a fixed value is a constant of the shop, never a choice an order's data could change.
+adapter = "upstream"
+port = "stock"
+upstream = "bounded-context/example.org/shop/inventory"
+contract = "1.4.0"            # the published version it was written against; spec/upstreams/inventory/1.4.0/
+
+[objects]
+reservation = "allocation"     # a reservation is known upstream as the allocation the hold made, by its id
+availability = "product"       # an availability is read off the product query returns
+
+[operations."stock.reserve"]
+calls = "inventory.hold"
+[operations."stock.reserve".parameters]   # inventory's parameter = what ordering gives it
+product = "order.product"
+quantity = "order.quantity"
+reference = "order.number"                # inventory's idempotency key: a retried reserve gives the same allocation
+# warehouse: left out; optional upstream, inventory holds from any warehouse
+[operations."stock.reserve".outcomes]      # inventory's outcome = the port's
+"done → the allocation" = "done → the reservation"
+"refused: product out of stock" = "refused: order out of stock"
+"refused: no quantity" = { unreachable = "orders: an order is kept only with a quantity (placing#r1, placing#r2)" }
+
+[operations."stock.free"]
+calls = "inventory.release"
+[operations."stock.free".parameters]
+allocation = "reservation"
+[operations."stock.free".outcomes]
+"done" = "done"
+"refused: consumed allocation" = { unreachable = "ordering frees a reservation only while the order is held (placing#r6, withdrawing#r1); it takes it only once charged" }
+
+[operations."stock.take"]
+calls = "inventory.consume"
+[operations."stock.take".parameters]
+allocation = "reservation"
+[operations."stock.take".outcomes]
+"done" = "done"
+"refused: lapsed allocation" = "refused: lapsed reservation"
+
+[operations."stock.count"]
+calls = "inventory.query"
+[operations."stock.count".parameters]
+product = "product"
+[operations."stock.count".outcomes]
+"returned → the product" = { returned = "the availability", units = "product.stock" }
+
+[notifications]                            # inventory's event = what the port tells ordering
+"an allocation lapses" = { notifies = "the reservation", state = "lapsed" }

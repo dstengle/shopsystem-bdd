@@ -1,0 +1,44 @@
+# The upstream adapter's contract of the port charges, mapped onto payments' published operations.
+adapter = "upstream"
+port = "charges"
+upstream = "bounded-context/example.org/shop/payments"
+contract = "2.1.0"
+
+[fixed]                                    # constants of the shop, the same for every order
+currency = "EUR"
+
+[objects]
+charge = "authorisation"
+
+[operations."charges.secure"]
+calls = "payments.authorise"
+[operations."charges.secure".parameters]
+card = "order.card"
+amount = "order.total"
+currency = "fixed.currency"
+reference = "order.number"
+[operations."charges.secure".outcomes]
+"done → the authorisation" = "done → the charge"
+"refused: card declined" = "refused: charge declined"
+"refused: amount over limit" = "refused: charge declined"     # two reasons ordering does not tell apart
+
+[operations."charges.cancel"]
+calls = "payments.void"
+[operations."charges.cancel".parameters]
+authorisation = "charge"
+[operations."charges.cancel".outcomes]
+"done" = "done"
+"refused: captured authorisation" = { unreachable = "ordering cancels a charge only while the order is held or charged (placing#r8, placing#r9, withdrawing#r1); it collects only once confirmed (placing#r7)" }
+
+[operations."charges.collect"]
+calls = "payments.capture"
+[operations."charges.collect".parameters]
+authorisation = "charge"
+[operations."charges.collect".outcomes]
+"done" = "done"
+"refused: voided authorisation" = { unreachable = "ordering collects only a charge of a confirmed order, which it never cancels (placing#r7)" }
+
+[notifications]
+"an authorisation settles" = { notifies = "the charge", state = "settled" }
+"an authorisation is reversed" = { notifies = "the charge", state = "bounced" }
+# "a dispute is opened": not mapped; ordering has no line on it (see the projection: ignored)

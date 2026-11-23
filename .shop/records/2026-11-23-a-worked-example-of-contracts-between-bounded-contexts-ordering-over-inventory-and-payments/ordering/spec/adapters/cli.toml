@@ -1,0 +1,45 @@
+# The CLI adapter's contract of the ordering service (a driving adapter): ordering_cli.py at the root.
+adapter = "cli"
+json = "--json"
+
+[programs]
+ordering = "ordering_cli.py"
+
+[outcomes]
+done = { exit = 0 }
+returned = { exit = 0, content = "stdout" }
+refused = { exit = 1, errors = "stderr" }
+broken = { exit = 1, errors = "stderr" }
+
+[cli-only]
+options = ["--root", "--json"]
+
+[operations."ordering.place"]
+command = "ordering place"
+requirements = [
+  "placing#r1: When the shopper places an order with a product and a quantity and a card, the ordering service shall keep the order and reserve stock for the order.",
+  "placing#r2: If the shopper places an order without a quantity, then the ordering service shall refuse the request and name the quantity.",
+]
+[operations."ordering.place".parameters]
+product = { positional = 1, example = "p1" }
+quantity = { option = "--quantity", example = "2" }
+card = { option = "--card", example = "tok_visa_4242" }
+
+[operations."ordering.withdraw"]
+command = "ordering withdraw"
+requirements = [
+  "withdrawing#r1: When the shopper withdraws an order whose status is `held`, the ordering service shall free every reservation for the order, cancel every charge for the order and set the status of the order to `withdrawn`.",
+  "withdrawing#r2: If the shopper withdraws an order whose status is `confirmed`, then the ordering service shall refuse the request and name the order.",
+]
+[operations."ordering.withdraw".parameters]
+order = { positional = 1, example = "o1" }
+
+[operations."ordering.view"]
+command = "ordering view"
+requirements = [
+  "browsing#r1: When the shopper views a product, the ordering service shall count the product and return the availability of the product.",
+]
+[operations."ordering.view".parameters]
+product = { positional = 1, example = "p1" }
+
+[environment]

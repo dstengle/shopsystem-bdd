@@ -1,0 +1,117 @@
+24: shall [x1: agent the shopper (constant), x4: service the ordering service (constant)]
+  when [x2: order, x3: product]
+    request(e1, ordering.place, subject: x1, object: x2)
+    param(e1, product, x3)
+    param(e1, quantity, some)
+    param(e1, card, some)
+  response
+    keep(e2, subject: x4, object: x2)
+    reserve(e3, subject: x4, stock for: x2)
+28: shall [x1: agent the shopper (constant), x3: service the ordering service (constant), x4: request "the request the trigger makes" (indexical), x5: parameter quantity (constant)]
+  if [x2: order]
+    request(e1, ordering.place, subject: x1, object: x2)
+    noparam(e1, quantity)
+  response
+    refuse(e2, subject: x3, object: x4)
+    name(e3, subject: x3, object: x5)
+32: shall [x2: service the stock service (constant), x4: service the ordering service (constant)]
+  while [x1: order]
+    status(x1) = `placed`
+  when [x3: reservation]
+    for(x3, x1)
+    complete(e1, subject: x2, object: x3)
+  response [x5: charge]
+    initiates(e2, subject: x4, status(x1) = `held`)
+    secure(e3, subject: x4, object: x5, for: x1)
+36: shall [x2: service the stock service (constant), x4: service the ordering service (constant), x5: agent the shopper (constant)]
+  while [x1: order]
+    status(x1) = `placed`
+  if [x3: reservation]
+    for(x3, x1)
+    refuse(e1, subject: x2, object: x3)
+  response
+    initiates(e2, subject: x4, status(x1) = `rejected`)
+    notify(e3, subject: x4, object: x5, of: x1)
+40: shall [x2: service the charges service (constant), x4: service the ordering service (constant)]
+  while [x1: order]
+    status(x1) = `held`
+  when [x3: charge]
+    for(x3, x1)
+    complete(e1, subject: x2, object: x3)
+  response
+    initiates(e2, subject: x4, status(x1) = `charged`)
+    every [x5: reservation]
+      for(x5, x1)
+      scope
+        take(e3, subject: x4, object: x5)
+44: shall [x2: service the charges service (constant), x4: service the ordering service (constant), x6: agent the shopper (constant)]
+  while [x1: order]
+    status(x1) = `held`
+  if [x3: charge]
+    for(x3, x1)
+    refuse(e1, subject: x2, object: x3)
+  response
+    every [x5: reservation]
+      for(x5, x1)
+      scope
+        free(e2, subject: x4, object: x5)
+    initiates(e3, subject: x4, status(x1) = `cancelled`)
+    notify(e4, subject: x4, object: x6, of: x1)
+49: shall [x2: service the stock service (constant), x4: service the ordering service (constant)]
+  while [x1: order]
+    status(x1) = `charged`
+  when [x3: reservation]
+    for(x3, x1)
+    complete(e1, subject: x2, object: x3)
+  response
+    initiates(e2, subject: x4, status(x1) = `confirmed`)
+    every [x5: charge]
+      for(x5, x1)
+      scope
+        collect(e3, subject: x4, object: x5)
+53: shall [x2: service the stock service (constant), x4: service the ordering service (constant), x6: agent the shopper (constant)]
+  while [x1: order]
+    status(x1) = `charged`
+  if [x3: reservation]
+    for(x3, x1)
+    refuse(e1, subject: x2, object: x3)
+  response
+    every [x5: charge]
+      for(x5, x1)
+      scope
+        cancel(e2, subject: x4, object: x5)
+    initiates(e3, subject: x4, status(x1) = `expired`)
+    notify(e4, subject: x4, object: x6, of: x1)
+58: shall [x2: service the stock service (constant), x3: service the ordering service (constant), x6: agent the shopper (constant)]
+  while [x1: order]
+    status(x1) = `held`
+  when [x4: reservation]
+    for(x4, x1)
+    state(x4) = `lapsed`
+    notify(e1, subject: x2, object: x3, of: x4)
+  response
+    every [x5: charge]
+      for(x5, x1)
+      scope
+        cancel(e2, subject: x3, object: x5)
+    initiates(e3, subject: x3, status(x1) = `expired`)
+    notify(e4, subject: x3, object: x6, of: x1)
+63: shall [x2: service the charges service (constant), x3: service the ordering service (constant)]
+  while [x1: order]
+    status(x1) = `confirmed`
+  when [x4: charge]
+    for(x4, x1)
+    state(x4) = `settled`
+    notify(e1, subject: x2, object: x3, of: x4)
+  response
+    initiates(e2, subject: x3, status(x1) = `paid`)
+67: shall [x2: service the charges service (constant), x3: service the ordering service (constant), x5: agent the shopper (constant)]
+  while [x1: order]
+    status(x1) = `confirmed`
+  when [x4: charge]
+    for(x4, x1)
+    state(x4) = `bounced`
+    notify(e1, subject: x2, object: x3, of: x4)
+  response
+    initiates(e2, subject: x3, status(x1) = `unpaid`)
+    notify(e3, subject: x3, object: x5, of: x1)

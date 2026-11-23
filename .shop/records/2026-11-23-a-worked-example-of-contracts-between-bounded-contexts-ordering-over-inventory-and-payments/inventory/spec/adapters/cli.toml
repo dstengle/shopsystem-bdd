@@ -1,0 +1,94 @@
+# The CLI adapter's contract of the inventory service: inventory_cli.py at the root.
+adapter = "cli"
+json = "--json"
+
+[programs]
+inventory = "inventory_cli.py"
+
+[outcomes]
+done = { exit = 0 }
+returned = { exit = 0, content = "stdout" }
+refused = { exit = 1, errors = "stderr" }
+broken = { exit = 1, errors = "stderr" }
+
+[cli-only]
+options = ["--root", "--json"]
+
+[operations."inventory.hold"]
+command = "inventory hold"
+requirements = [
+  "holding#r1: When the client holds a product with a quantity and a reference, the inventory service shall keep an allocation on the product.",
+  "holding#r2: When the client holds a product with the reference of an allocation on the product, the inventory service shall return the allocation and change nothing.",
+  "holding#r3: If the client holds a product whose supply is `exhausted`, then the inventory service shall refuse the request and name the product.",
+  "holding#r4: If the client holds a product without a quantity, then the inventory service shall refuse the request and name the quantity.",
+]
+[operations."inventory.hold".parameters]
+product = { positional = 1, example = "p1" }
+quantity = { option = "--quantity", example = "2" }
+reference = { option = "--reference", example = "order-17" }
+warehouse = { option = "--warehouse", example = "central" }
+
+[operations."inventory.release"]
+command = "inventory release"
+requirements = [
+  "holding#r5: When the client releases an allocation, the inventory service shall set the status of the allocation to `released`.",
+  "holding#r6: If the client releases an allocation whose status is `consumed`, then the inventory service shall refuse the request and name the allocation.",
+]
+[operations."inventory.release".parameters]
+allocation = { positional = 1, example = "a1" }
+
+[operations."inventory.consume"]
+command = "inventory consume"
+requirements = [
+  "holding#r7: When the client consumes an allocation, the inventory service shall set the status of the allocation to `consumed`.",
+  "holding#r8: If the client consumes an allocation whose status is `lapsed`, then the inventory service shall refuse the request and name the allocation.",
+]
+[operations."inventory.consume".parameters]
+allocation = { positional = 1, example = "a1" }
+
+[operations."inventory.query"]
+command = "inventory query"
+requirements = [
+  "holding#r10: When the client queries a product, the inventory service shall return the stock of the product.",
+]
+[operations."inventory.query".parameters]
+product = { positional = 1, example = "p1" }
+
+[operations."inventory.lapse"]
+command = "inventory lapse"
+requirements = [
+  "holding#r9: When the clock lapses an allocation whose status is `placed`, the inventory service shall set the status of the allocation to `lapsed` and notify the client of the allocation.",
+]
+[operations."inventory.lapse".parameters]
+allocation = { positional = 1, example = "a1" }
+
+[operations."inventory.restock"]
+command = "inventory restock"
+requirements = [
+  "stockkeeping#r1: When the stock keeper restocks a product with a quantity and a warehouse, the inventory service shall keep the product.",
+]
+[operations."inventory.restock".parameters]
+product = { positional = 1, example = "p1" }
+quantity = { option = "--quantity", example = "10" }
+warehouse = { option = "--warehouse", example = "central" }
+
+[operations."inventory.transfer"]
+command = "inventory transfer"
+requirements = [
+  "stockkeeping#r2: When the stock keeper transfers a product with a quantity and a warehouse, the inventory service shall keep the product.",
+  "stockkeeping#r3: If the stock keeper transfers a product whose supply is `exhausted`, then the inventory service shall refuse the request and name the product.",
+]
+[operations."inventory.transfer".parameters]
+product = { positional = 1, example = "p1" }
+quantity = { option = "--quantity", example = "5" }
+warehouse = { option = "--warehouse", example = "north" }
+
+[operations."inventory.audit"]
+command = "inventory audit"
+requirements = [
+  "stockkeeping#r4: When the stock keeper audits a warehouse, the inventory service shall return every product in the warehouse.",
+]
+[operations."inventory.audit".parameters]
+warehouse = { positional = 1, example = "central" }
+
+[environment]
