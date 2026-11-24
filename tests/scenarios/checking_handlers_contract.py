@@ -118,8 +118,7 @@ def then_does(step):
 
 def then_unchanged(step):
     """`the specification service changes nothing`: no file of the repository written or removed."""
-    if not mine(step) or "contract" not in step.context or step.term not in ("change", "rewrite", "relocate",
-                                                                             "rename"):
+    if not mine(step) or "contract" not in step.context:
         return False
     assert _files(step.repo) == world(step)["before"]
 
@@ -154,5 +153,5 @@ W.local("GivenDoesNot")(given_state)
 W.local("WhenRuns")(runs)
 W.local("ThenPrints")(then_prints)
 W.local("ThenDoes")(then_does)
-W.local("ThenDoesNot")(then_unchanged)
+W.local("ThenChangesNothing")(then_unchanged)
 W.local("ThenExitsErr")(then_fails)
