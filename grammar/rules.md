@@ -1358,12 +1358,12 @@ a requirement uses a word that names no element through the vocabulary its capab
 
 ## v_m8
 
-the domain model breaks its own rules: a relation to an undeclared object, a transition over an undeclared value, two operations of one name in a service, an event raised by no operation
+the domain model breaks its own rules: a relation to an undeclared object, a transition over an undeclared value, two operations of one name in a service, an event raised by no operation, a property that refers to an undeclared parameter, operation or event
 
 - Purpose: The domain model is internally consistent, so the vocabulary, contracts and lines built on it rest on solid ground.
 - Since: 0.38.0
 - Severity: error
-- Implemented in: `scripts/model.lp`, `scripts/domain_model_check.py`
+- Implemented in: `scripts/model.lp`, `scripts/domain_model_check.py`, `scripts/domain_model_props.py`
 - Cited by: no line
 - Fails on:
 

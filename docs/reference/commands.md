@@ -1044,6 +1044,24 @@ annotated spec/adapters/cli.toml
 $ spec annotate --check
 ```
 
+### `spec prepare`
+
+Prints this bounded context's contract at a version, in the contract form (`contract.toml`): `context` and `version`,
+then a table of each object, of each operation (its parameters, outcomes, reasons, the requirements that govern it as
+`spec annotate` gathers them, and its properties) and of each event (the operation that raises it and its
+properties). It writes nothing and exits 0. A property is written on the operation's or the event's model line:
+`idempotent by <parameter>`, `compensated by <operation>`, `followed by <event>`, and an event's `; delivery: <text>`
+and `; when: <text>`; `spec check` fails one that refers to a parameter, an operation or an event the model does not
+declare (`v_m8`).\
+Synopsis: `spec prepare --contract <version>`
+
+```console
+$ spec prepare --contract 1.0.0
+context = "bounded-context/example.org/fixture/domain-model"
+version = "1.0.0"
+...
+```
+
 ### `spec decisions`
 
 Writes `spec/decisions/index.md` from the decision files. Not committed.\
