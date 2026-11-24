@@ -83,8 +83,7 @@ def test_the_judgement_decisions_reach_the_brief():
     # every accepted judgement decision, and none of another tier, whatever their number
     by = {d.rel: d for d in model_decisions.decisions(ROOT)}
     judged = {rel for rel, d in by.items() if d.status == "accepted" and d.tier == "judgement"}
-    assert judged and judged <= set(found), sorted(judged - set(found))
-    assert all(by[rel].tier == "judgement" for rel in found), [rel for rel in found if by[rel].tier != "judgement"]
+    assert set(found) == judged and len(found) == len(set(found)), sorted(set(found) ^ judged)
 
 
 def test_0060_is_superseded_by_measure_a_batch():
