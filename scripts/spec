@@ -25,7 +25,6 @@ from model_report import (  # noqa: F401
 from model_restates import cmd_restates
 
 
-
 def cmd_facts(args):
     from model_facts import Model
     print(Model(args.root).read().asp())
