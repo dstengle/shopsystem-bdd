@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56]
-unbuilt: []
+unbuilt: [r71, r72]
 ---
 
 # Checking
@@ -193,6 +193,12 @@ Restates: design-model-check#r13@0.29.
 
 ### [g70] A port line relied on by a line that does not exist is refused
 - [r70] While a requirement supports a requirement id that no requirement has, if the person validates this specification, then the specification service shall fail the check and name the requirement id.
+
+### [g71] An operation requested only by a response is requested
+- [r71] While a requirement uses `response-request` and the requirement uses an operation and no requirement governs the operation, when the person validates this specification, the specification service shall complete the request.
+
+### [g72] A line triggered on the refusal of a response's request states its reasons
+- [r72] While a requirement uses `response-request` and the requirement uses an operation and another requirement has a trigger that uses a refusal and the operation, when the person validates this specification, the specification service shall complete the request.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

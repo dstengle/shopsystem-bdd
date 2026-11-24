@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: examine; service language: explain
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r36]
 ---
 
 # Consistency
@@ -171,4 +171,7 @@ The requirements examined together: contradictions, what a line adds over the ot
 
 ### [g35] Lines on two terms of one element clash as lines on one thing
 - [r35] While a term means an element and a requirement that uses the term obliges an act and another term means the element and another requirement that uses the term forbids the act, when the person examines this specification, the specification service shall return `L1`.
+
+### [g36] spec logic translates a response that makes a request
+- [r36] While a requirement of a capability uses `response-request`, when the person examines this specification with the capability, the specification service shall return a translation of the requirement.
 

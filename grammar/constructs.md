@@ -1071,7 +1071,7 @@ a request with its parameters, given after "with" and absent after "without", in
 - Since: 0.38.0
 - Form: <actor> <operation verb> <np> with the <parameter> <value> and without a <parameter>
 - Functions: `q_\w+|o_\w+|k_\w+_Request|p_\w+_NP`
-- Cited by: no line
+- Cited by: parsing#r24
 - Context: `grammar/corpus/constructs/request/`
 - Example and its reading:
 

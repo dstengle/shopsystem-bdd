@@ -225,3 +225,18 @@ Feature: Parsing
     When the person previews the requirement r1 for the item i1
     Then the language service refuses this request
     And the language service names the requirement r1
+
+  @g23 @r23
+  Scenario: A response that makes a request with its parameters is parsed
+    Given a requirement r1
+    And the requirement r1 uses `response-request`
+    When the person parses the requirement r1
+    Then the language service completes this request
+
+  @g24 @r24
+  Scenario: The logical form reads a response's request with its parameters
+    Given a requirement r1
+    And the requirement r1 uses `response-request`
+    When the person parses the requirement r1 with the logical form
+    Then the language service returns the logical form l1
+    And the logical form l1 uses `request-params`

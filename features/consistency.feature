@@ -476,3 +476,14 @@ Feature: Consistency
     And the requirement r2 forbids the act a1
     When the person examines this specification
     Then the specification service returns `L1`
+
+  @g36 @r36
+  Scenario: spec logic translates a response that makes a request
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And the requirement r1 uses `response-request`
+    And a translation t1
+    And the requirement r1 has the translation t1
+    When the person examines this specification with the capability c1
+    Then the specification service returns the translation t1

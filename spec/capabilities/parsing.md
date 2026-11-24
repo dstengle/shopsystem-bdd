@@ -7,7 +7,7 @@ area: specification
 specifies: service language: parse
 language: codified-2
 retired: [g4, r4]
-unbuilt: []
+unbuilt: [r23, r24]
 ---
 
 # Parsing
@@ -77,4 +77,10 @@ A line parsed in the controlled language to one meaning or refused with why, its
 
 ### [g22] A requirement outside the language is refused for an item
 - [r22] If the person previews a requirement that does not conform to the language reference for an item, then the language service shall refuse the request and name the requirement.
+
+### [g23] A response that makes a request with its parameters is parsed
+- [r23] When the person parses a requirement that uses `response-request`, the language service shall complete the request.
+
+### [g24] The logical form reads a response's request with its parameters
+- [r24] When the person parses a requirement that uses `response-request` with the logical form, the language service shall return a logical form that uses `request-params`.
 
