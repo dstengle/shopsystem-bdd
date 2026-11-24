@@ -496,3 +496,10 @@ by: a session, from i48
 date: 2026-10-30
 
 - `work retry w238`, failed in implement, restored `claimed` (work-queue r8: the status before `failed`). `work run i48` then took no stage for it and exited 1 printing no `work:` line; no `work` command moves a `claimed` work-item, so the person had it set `ready` by hand. Risk: medium (a run stops and needs a hand edit); likelihood: medium (every failure in implement or review).
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-11-24-entailment-chain-grounding-cost
+about: item/missingmass.io/shopsystem/shopsystem-bdd/b545
+by: batch-81 t1
+date: 2026-11-24
+
+The grounding cost of entailment's request chain (b545, depth 3) against chains off: on the 14 example specs of the records of 2026-11-23 and 2026-11-24 as written no chain is followed and atoms, rules and solve time (about 5 ms each) are unchanged, none of their responses requesting an operation with parameters; on a scratch copy of the client-alias variant whose realisation#r1 holds with a quantity and a reference, queries go from 16 to 17, 2 lines chained, atoms and rules from 910 to 946 (+4%), time from 4 to 6 ms, the chain stopping at realisation#r3 where nothing establishes the allocation of an entry (decision 0118's provider-line stop); the r38 world 1 query, 102 atoms, 2 ms; this repository's own spec (547 lines, 771 queries) nothing chained, the same 34 entailed Thens, 0.48 s before and 0.53 s after. Measured before f1's fix widened the chain to every governing line.
