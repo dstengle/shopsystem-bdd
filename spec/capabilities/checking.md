@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56]
-unbuilt: []
+unbuilt: [r64, r65, r66, r67]
 ---
 
 # Checking
@@ -175,6 +175,18 @@ Restates: design-model-check#r13@0.29.
 
 ### [g63] the check passes an attribute with two senses told apart by kinds
 - [r63] While a term whose part of speech is `attribute` has more than one sense, when the person validates this specification, the specification service shall complete the request.
+
+### [g64] A contract is prepared in the contract form
+- [r64] When the person prepares a contract, the specification service shall return a contract that conforms to the contract form and change nothing.
+
+### [g65] A contract holds the requirements that govern its operations
+- [r65] While a requirement governs an operation, when the person prepares a contract, the specification service shall return a contract that holds the requirement.
+
+### [g66] A contract holds the properties of its operations
+- [r66] While an operation has a property, when the person prepares a contract, the specification service shall return a contract that holds the property.
+
+### [g67] A property that refers to no operation is refused
+- [r67] While a property refers to an operation that does not exist, if the person validates this specification, then the specification service shall fail the check and name the property.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
