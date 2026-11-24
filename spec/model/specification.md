@@ -33,6 +33,7 @@ object universal condition kind of text
 object term
   attributes: part of speech: noun | verb | adjective | attribute | proper noun | artifact; aspect: state | action
   relations: has → subject | object | recipient | frame | sense | noun phrase | value order (many); redefines → pack (many); agrees with → subject (many)
+  relations: means → element (one)
 
 object design-decision kind of file
   attributes: status: proposed | accepted | rejected | superseded; tier: check | requirement | judgement
@@ -263,6 +264,7 @@ service specification
   operation annotate(adapter contract, audit (flag))  outcomes: done → the adapter contract | failed → each stale adapter contract
   operation describe(catalogue entry, purpose, item)
     outcomes: done → the catalogue entry | refused: catalogue entry of no rule or construct
+  operation prepare(contract)  outcomes: returned → the contract
 
 service decisions
   operation enter(design-decision, title, summary, tier, wording, route, supersedes)
@@ -289,6 +291,7 @@ object operation
   relations: holds → requirement (many)
   relations: makes → referent (many)
   relations: has → operation table (one)
+  relations: has → property (many)
 
 object reading rule kind of rule
 
@@ -323,4 +326,14 @@ object design kind of file
   relations: holds → plan (many)
 
 object plan kind of file
+
+object element
+
+object contract kind of artifact
+  relations: holds → operation | property | requirement (many)
+
+object contract form kind of artifact
+
+object property kind of text
+  relations: refers to → operation (many)
 ```

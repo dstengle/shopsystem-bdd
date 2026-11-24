@@ -176,6 +176,18 @@ Restates: design-model-check#r13@0.29.
 ### [g63] the check passes an attribute with two senses told apart by kinds
 - [r63] While a term whose part of speech is `attribute` has more than one sense, when the person validates this specification, the specification service shall complete the request.
 
+### [g64] A contract is prepared in the contract form
+- [r64] When the person prepares a contract, the specification service shall return a contract that conforms to the contract form and change nothing.
+
+### [g65] A contract holds the requirements that govern its operations
+- [r65] While a requirement governs an operation, when the person prepares a contract, the specification service shall return a contract that holds the requirement.
+
+### [g66] A contract holds the properties of its operations
+- [r66] While an operation has a property, when the person prepares a contract, the specification service shall return a contract that holds the property.
+
+### [g67] A property that refers to no operation is refused
+- [r67] While a property refers to an operation that does not exist, if the person validates this specification, then the specification service shall fail the check and name the property.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.

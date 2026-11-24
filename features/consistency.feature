@@ -459,3 +459,20 @@ Feature: Consistency
     And the requirement r2 has the trigger t1
     When the person examines this specification
     Then the specification service returns `L1`
+
+  @g35 @r35
+  Scenario: Lines on two terms of one element clash as lines on one thing
+    Given a term t1
+    And an element e1
+    And the term t1 means the element e1
+    And a requirement r1
+    And the requirement r1 uses the term t1
+    And an act a1
+    And the requirement r1 obliges the act a1
+    And a term t2
+    And the term t2 means the element e1
+    And a requirement r2
+    And the requirement r2 uses the term t2
+    And the requirement r2 forbids the act a1
+    When the person examines this specification
+    Then the specification service returns `L1`

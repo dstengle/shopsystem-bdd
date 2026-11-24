@@ -212,3 +212,10 @@ area: specification
 - **file** (verb, action) → operation records.file design. Forms: files, filed. Frame: <actor> files <design>.
 - **file** (verb, action) → operation records.file plan. Forms: files, filed. Frame: <actor> files <plan>.
 - **file** (verb, action) → operation records.file observation. Forms: files, filed. Frame: <actor> files <observation>.
+- **element** (noun) → object element. One thing the domain model declares, an object, an attribute, a value, a relation, a service, an operation, an event or an actor, which a vocabulary entry names after its arrow. Plural: elements.
+- **mean** (verb, state) → relation term.means. A vocabulary entry names one element of the domain model, so that entries of different layers that name one element are one referent of a line. Forms: means, meant. Frame: <term> means <element>.
+- **contract** (noun) → object contract. What this bounded context publishes at a version in its own words, `contract.toml`: its objects, its operations with their parameters, outcomes and reasons, the requirements that govern each operation, its events, and the properties of its operations and events. Plural: contracts.
+- **the contract form** (proper noun) → object contract form. The form of a contract's `contract.toml`: a table of each object, each operation with its parameters, outcomes, reasons, governing requirements and properties, and each event with its properties.
+- **property** (noun) → object property. What an operation or an event promises beyond its outcomes, written on its model line: `idempotent by <parameter>`, `compensated by <operation>`, `followed by <event>`, or an event's `delivery` and `when`. Plural: properties.
+- **refer** (verb, state) → relation property.refers to. A property names an operation of the domain model, as `compensated by <operation>` does. Forms: refers, referred. Frame: <property> refers to <operation>.
+- **prepare** (verb, action) → operation specification.prepare. Forms: prepares, prepared. Frame: <actor> prepares <contract>.

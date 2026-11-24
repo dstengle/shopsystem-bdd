@@ -191,6 +191,11 @@ contract:
     changed it) and its lines in the catalogue file when it holds the entry
     (model_catalogue_write); an entry of no rule of model.lp or spec lexicon
     --check, or of no construct, is refused, naming it.
+  - prepare --contract <version> prints this bounded context's contract at
+    the version, in the contract form (contract.toml: its objects, its
+    operations with their parameters, outcomes, reasons, governing
+    requirements and properties, its events with their properties), writes
+    nothing and exits 0 (contract_form).
   - restates [--json] [<capability>] exits 0 when every 0.29 id (of the
     capability, or of every one) is restated by a group, dropped, or moved
     (a move into a codified capability must be restated there; one into an

@@ -632,3 +632,24 @@ shall [x2: thing `param-of` (parameter), x6: agent the person (constant), x7: sp
   response
     return(e2, subject: x8, object: x9)
 ```
+
+## r35
+From: b544 r35.
+
+```reading
+While a term means an element and a requirement that uses the term obliges an act and another term means the element and another requirement that uses the term forbids the act, when the person examines this specification, the specification service shall return `L1`.
+shall [x7: agent the person (constant), x8: specification "the specification of this bounded context" (indexical), x9: service the specification service (constant), x10: agent `L1` (constant)]
+  while [x1: term, x2: element, x3: requirement, x4: act, x5: term, x6: requirement]
+    mean(subject: x1, object: x2)
+    use(subject: x3, object: x1)
+    oblige(subject: x3, object: x4)
+    distinct(x5, x1)
+    mean(subject: x5, object: x2)
+    distinct(x6, x3)
+    use(subject: x6, object: x5)
+    forbid(subject: x6, object: x4)
+  when
+    request(e1, specification.examine, subject: x7, object: x8)
+  response
+    return(e2, subject: x9, object: x10)
+```

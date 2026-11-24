@@ -1,9 +1,12 @@
 """The domain model's own rules (the domain contract design, §5.5), read with no line: v_m8, a relation or an
 attribute to an undeclared object, a transition over a value its attribute does not declare, two operations of one
-name in a service, an event raised by no operation, and an object, service or actor declared twice; each as
+name in a service, an event raised by no operation, an object, service or actor declared twice, and a property
+that refers to a parameter, an operation or an event the model does not declare (domain_model_props); each as
 (code, subject, message), which `model check` reports among its violations (model_spec's facts).
 """
 from collections import Counter
+
+import domain_model_props
 
 
 def _declared(model):
@@ -46,4 +49,5 @@ def problems(model):
     """v_m8 of `model`, as (code, subject, message) sorted."""
     twice = [("v_m8", name, "%s: the %s %s is declared again" % (where, kind, name))
              for kind, name, where in model.twice]
-    return sorted(set(list(_objects(model)) + list(_services(model)) + twice))
+    return sorted(set(list(_objects(model)) + list(_services(model)) + twice +
+                       domain_model_props.problems(model)))

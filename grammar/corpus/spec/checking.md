@@ -659,3 +659,65 @@ shall [x3: agent the person (constant), x4: specification "the specification of 
   response
     complete(e2, subject: x5, object: x6)
 ```
+
+## r64
+From: b547 r64.
+
+```reading
+When the person prepares a contract, the specification service shall return a contract that conforms to the contract form and change nothing.
+shall [x1: agent the person (constant), x3: service the specification service (constant), x5: artifact the contract form (constant)]
+  when [x2: contract]
+    request(e1, specification.prepare, subject: x1, object: x2)
+  response [x4: contract]
+    conforms(x4, x5)
+    return(e2, subject: x3, object: x4)
+    not [x6: thing]
+      change(e3, subject: x3, object: x6)
+```
+
+## r65
+From: b547 r65.
+
+```reading
+While a requirement governs an operation, when the person prepares a contract, the specification service shall return a contract that holds the requirement.
+shall [x3: agent the person (constant), x5: service the specification service (constant)]
+  while [x1: requirement, x2: operation]
+    govern(subject: x1, object: x2)
+  when [x4: contract]
+    request(e1, specification.prepare, subject: x3, object: x4)
+  response [x6: contract]
+    in(x1, x6)
+    return(e2, subject: x5, object: x6)
+```
+
+## r66
+From: b547 r66.
+
+```reading
+While an operation has a property, when the person prepares a contract, the specification service shall return a contract that holds the property.
+shall [x3: agent the person (constant), x5: service the specification service (constant)]
+  while [x1: operation, x2: property]
+    of(x2, x1)
+  when [x4: contract]
+    request(e1, specification.prepare, subject: x3, object: x4)
+  response [x6: contract]
+    in(x2, x6)
+    return(e2, subject: x5, object: x6)
+```
+
+## r67
+From: b547 r67.
+
+```reading
+While a property refers to an operation that does not exist, if the person validates this specification, then the specification service shall fail the check and name the property.
+shall [x3: agent the person (constant), x4: specification "the specification of this bounded context" (indexical), x5: service the specification service (constant), x6: check "the check the trigger makes" (indexical)]
+  while [x1: property, x2: operation]
+    not
+      exists(x2)
+    refer#2(subject: x1, to: x2)
+  if
+    request(e1, specification.check, subject: x3, object: x4)
+  response
+    fail(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x1)
+```

@@ -385,3 +385,41 @@ Feature: Checking
     And the term t1 has the sense s2
     When the person validates this specification
     Then the specification service completes this request
+
+  @g64 @r64
+  Scenario: A contract is prepared in the contract form
+    Given a contract c1
+    When the person prepares the contract c1
+    Then the specification service returns the contract c2
+    And the contract c2 conforms to the contract form
+    And the specification service changes nothing
+
+  @g65 @r65
+  Scenario: A contract holds the requirements that govern its operations
+    Given a requirement r1
+    And an operation o1
+    And the requirement r1 governs the operation o1
+    And a contract c1
+    When the person prepares the contract c1
+    Then the specification service returns the contract c2
+    And the contract c2 holds the requirement r1
+
+  @g66 @r66
+  Scenario: A contract holds the properties of its operations
+    Given a property p1
+    And an operation o1
+    And the operation o1 has the property p1
+    And a contract c1
+    When the person prepares the contract c1
+    Then the specification service returns the contract c2
+    And the contract c2 holds the property p1
+
+  @g67 @r67
+  Scenario: A property that refers to no operation is refused
+    Given an operation o1
+    And the operation o1 does not exist
+    And a property p1
+    And the property p1 refers to the operation o1
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the property p1

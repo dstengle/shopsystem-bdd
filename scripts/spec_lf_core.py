@@ -114,8 +114,9 @@ class State:
         return r
 
     def constant(self, kind, value, origin):
-        """The one referent of a constant, parameter or indexical, made on its first mention."""
-        key = (origin, value)
+        """The one referent of a constant, parameter or indexical, made on its first mention; of a constant term
+        naming a model element, the one referent of the element, whichever of its terms names it first (b544)."""
+        key = (origin, self.vocab.elements.get(value, value) if origin == "constant" else value)
         if key not in self.fixed:
             self.fixed[key] = self.ref(kind, origin, value)
         return self.fixed[key]

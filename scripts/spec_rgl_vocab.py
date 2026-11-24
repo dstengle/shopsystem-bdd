@@ -44,6 +44,7 @@ class Vocab:
     words: set = field(default_factory=set)         # every spelling a code literal may not be
     this: dict = field(default_factory=dict)        # kind -> its entry's `This:`, the run's own thing of the kind
     operations: dict = field(default_factory=dict)  # `<service>.<name>` -> its domain_model Operation (spec_rgl_ops)
+    elements: dict = field(default_factory=dict)    # an actor's term -> the model element it names (b544)
 
     def ancestors(self, kind):
         """The kind itself and every kind above it, nearest first."""
@@ -132,6 +133,7 @@ def read(root):
     word = {t.term: t.word for t in lex.terms if t.word}     # a word of two areas: one kind each, spelled the word
     vocab.nouns = {k: (word.get(k, k), plural.get(k) or regular_plural(word.get(k, k))) for k in vocab.kinds}
     vocab.actors = [(t.term, t.supertype if t.supertype in vocab.kinds else "thing") for t in lex.of("actor")]
+    vocab.elements = {t.term: t.element for t in lex.of("actor") if t.element}
     vocab.attributes = [(t, tuple(k for k in t.kinds if k in vocab.kinds)) for t in lex.of("attribute")]
     vocab.rows = list(dict.fromkeys((r.k1, r.word, r.k2) for r in lex.rows
                                     if r.k1 in vocab.kinds and r.k2 in vocab.kinds))

@@ -169,3 +169,6 @@ The requirements examined together: contradictions, what a line adds over the ot
 ### [g34] `spec logic` reads a value in use and a code of the same value as one request
 - [r34] While a requirement uses `param-of` and the requirement obliges an act and another requirement that forbids the act has the trigger of the requirement, when the person examines this specification, the specification service shall return `L1`.
 
+### [g35] Lines on two terms of one element clash as lines on one thing
+- [r35] While a term means an element and a requirement that uses the term obliges an act and another term means the element and another requirement that uses the term forbids the act, when the person examines this specification, the specification service shall return `L1`.
+

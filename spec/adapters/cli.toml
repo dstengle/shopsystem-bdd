@@ -122,6 +122,7 @@ requirements = [
   "checking#r57: While a catalogue entry mentions an item whose status is not `delivered`, if the person validates this specification, then the specification service shall fail the check and name the catalogue entry and the item.",
   "checking#r58: While a catalogue entry mentions no item and the catalogue entry mentions no release, if the person validates this specification, then the specification service shall fail the check and name the catalogue entry.",
   "checking#r63: While a term whose part of speech is `attribute` has more than one sense, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r67: While a property refers to an operation that does not exist, if the person validates this specification, then the specification service shall fail the check and name the property.",
   "decisions#r1: While a design-decision is not `superseded` or `rejected` and the design-decision has no tier, when the person validates this specification, the specification service shall return `w_untiered`.",
   "decisions#r2: While the tier of a design-decision is `check` and no test enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d6`.",
   "decisions#r3: While the tier of a design-decision is `requirement` and no requirement enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d7`.",
@@ -165,6 +166,7 @@ requirements = [
   "consistency#r32: While a requirement uses `not-relative` and a code and the requirement forbids an act and another requirement obliges the act and the requirement uses `rc-whose` and the code, when the person examines this specification, the specification service shall complete the request.",
   "consistency#r33: While the precondition of a requirement of a capability uses `holds-exactly` and `rc-subject`, when the person examines this specification with the capability, the specification service shall return a translation of the requirement.",
   "consistency#r34: While a requirement uses `param-of` and the requirement obliges an act and another requirement that forbids the act has the trigger of the requirement, when the person examines this specification, the specification service shall return `L1`.",
+  "consistency#r35: While a term means an element and a requirement that uses the term obliges an act and another term means the element and another requirement that uses the term forbids the act, when the person examines this specification, the specification service shall return `L1`.",
 ]
 [operations."specification.examine".parameters]
 capability = { positional = 1 }
@@ -1368,3 +1370,13 @@ requirements = [
 [operations."batches.reopen".parameters]
 batch = { positional = 1 }
 "review finding" = { option = "--finding", example = "findings.md" }
+
+[operations."specification.prepare"]
+command = "spec prepare"
+requirements = [
+  "checking#r64: When the person prepares a contract, the specification service shall return a contract that conforms to the contract form and change nothing.",
+  "checking#r65: While a requirement governs an operation, when the person prepares a contract, the specification service shall return a contract that holds the requirement.",
+  "checking#r66: While an operation has a property, when the person prepares a contract, the specification service shall return a contract that holds the property.",
+]
+[operations."specification.prepare".parameters]
+contract = { option = "--contract", example = "contract-1" }
