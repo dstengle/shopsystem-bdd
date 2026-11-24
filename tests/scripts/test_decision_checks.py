@@ -1,6 +1,6 @@
 """The tests the `check` decisions of spec/decisions/ name, and the guard of the sort (workflow simplification plan 6,
 D10, D17): the 300-line limit (0076), the features what `features generate` writes (0006), the live decisions kept
-to their tiers by `model check`, the sort's totals, and the judgement decisions the pull request brief lists."""
+to their tiers by `model check`, what each tier implies, and the judgement decisions the pull request brief lists."""
 
 import collections
 import json
@@ -42,17 +42,26 @@ def test_the_live_decisions_keep_their_tiers():
     assert named == [], named
 
 
-def test_the_sort_holds_its_totals():
+def test_the_sort_holds_what_each_tier_implies():
+    """No total is pinned, so a decision written on main breaks nothing: every decision file is read, each is accepted,
+    superseded or rejected, and each accepted one has a tier and what it implies (D2)."""
     found = model_decisions.decisions(ROOT)
-    assert len(found) == 126, len(found)       # the domain contract's twelve (0098-0109), three superseding; 0110-0114; 0115-0127
-    assert collections.Counter(d.status for d in found) == {"accepted": 65, "superseded": 59, "rejected": 2}
-    tiers = collections.Counter(d.tier for d in found if d.status == "accepted")
-    assert tiers == {"check": 11, "requirement": 13, "judgement": 41}, tiers     # 0110-0112 judgements (b418, b420, b430); 0115-0125 (the contracts design); 0126, 0127
-    # 0113 (check) superseded a check decision and was itself superseded by 0114 (check), so the check tier holds 11
+    files = [p for p in (ROOT / "spec" / "decisions").glob("*.md") if p.name != "index.md"]
+    assert len(found) == len(files) and found, (len(found), len(files))
+    assert {d.status for d in found} <= {"accepted", *model_decisions.HISTORY}, collections.Counter(d.status for d in found)
+    accepted = [d for d in found if d.status == "accepted"]
+    assert {d.tier for d in accepted} == set(model_decisions.TIERS), collections.Counter(d.tier for d in accepted)
+    for d in accepted:
+        if d.tier == "check":
+            assert d.tests and not d.requirements, (d.rel, d.tests, d.requirements)
+        elif d.tier == "requirement":
+            assert d.requirements and not d.tests, (d.rel, d.tests, d.requirements)
+        else:
+            assert not d.tests and not d.requirements, (d.rel, d.tests, d.requirements)
     # `work decision --supersedes` (b179) sets only the status of the decision it replaces, so a decision out of force
     # keeps its tier only when it was superseded so; `model decisions --check` runs none of them.
-    kept = [d.rel for d in found if d.status != "accepted" and d.tier]
-    assert kept and all(d.status == "superseded" for d in found if d.rel in kept), kept
+    kept = [d for d in found if d.status != "accepted" and d.tier]
+    assert kept and all(d.status == "superseded" and not d.runs for d in kept), [d.rel for d in kept]
 
 
 def test_the_judgement_decisions_reach_the_brief():
@@ -71,7 +80,10 @@ def test_the_judgement_decisions_reach_the_brief():
     assert "spec/decisions/0097-while-alpha-a-change-breaks-consumers-cleanly-with-no-compatibility-path.md" in found, found
     assert "spec/decisions/0107-the-specification-has-four-parts.md" in found, found
     assert "spec/decisions/0111-a-request-acts-on-one-thing.md" in found, found
-    assert len(found) == 41, found     # 0110, 0111 and 0112 (b418, b420, b430); 0115-0125 (the contracts design); 0126, 0127
+    # every accepted judgement decision, and none of another tier, whatever their number
+    by = {d.rel: d for d in model_decisions.decisions(ROOT)}
+    judged = {rel for rel, d in by.items() if d.status == "accepted" and d.tier == "judgement"}
+    assert set(found) == judged and len(found) == len(set(found)), sorted(set(found) ^ judged)
 
 
 def test_0060_is_superseded_by_measure_a_batch():
