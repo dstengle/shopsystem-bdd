@@ -1,0 +1,99 @@
+# The published contract of inventory 1.4.0, as ordering obtains it: read-only, never edited here, replaced whole by
+# the next version. Written by inventory from its domain model, its requirement lines (the lines each operation's
+# trigger requests, as `spec annotate` gathers them) and its delivery declarations. In inventory's words, not ordering's.
+context = "bounded-context/example.org/shop/inventory"
+version = "1.4.0"
+published = "2026-11-20"
+
+[objects.product]
+gloss = "A thing kept in stock."
+attributes = { stock = "number", supply = ["available", "exhausted"] }
+
+[objects.warehouse]
+gloss = "A place stock is kept."
+
+[objects.allocation]
+gloss = "A quantity of a product held for a client until it is consumed or released."
+attributes = { quantity = "number", reference = "text", status = ["placed", "consumed", "released", "lapsed"] }
+lifecycle = ["placed → consumed", "placed → released", "placed → lapsed"]
+
+[operations."inventory.hold"]
+by = ["the client"]
+parameters = { product = "product", quantity = "number", reference = "text", warehouse = "warehouse, optional" }
+outcomes = ["done → the allocation", "refused: product out of stock", "refused: no quantity"]
+idempotent = "by reference: a second hold with the reference of an allocation returns that allocation"
+compensated-by = "inventory.release"
+reply = "synchronous, within 2 s"
+requirements = [
+  "holding#r1: When the client holds a product with a quantity and a reference, the inventory service shall keep an allocation on the product.",
+  "holding#r2: When the client holds a product with the reference of an allocation on the product, the inventory service shall return the allocation and change nothing.",
+  "holding#r3: If the client holds a product whose supply is `exhausted`, then the inventory service shall refuse the request and name the product.",
+  "holding#r4: If the client holds a product without a quantity, then the inventory service shall refuse the request and name the quantity.",
+]
+
+[operations."inventory.release"]
+by = ["the client"]
+parameters = { allocation = "allocation" }
+outcomes = ["done", "refused: consumed allocation"]
+idempotent = "yes: releasing a released allocation is done and changes nothing"
+reply = "synchronous, within 2 s"
+requirements = [
+  "holding#r5: When the client releases an allocation, the inventory service shall set the status of the allocation to `released`.",
+  "holding#r6: If the client releases an allocation whose status is `consumed`, then the inventory service shall refuse the request and name the allocation.",
+]
+
+[operations."inventory.consume"]
+by = ["the client"]
+parameters = { allocation = "allocation" }
+outcomes = ["done", "refused: lapsed allocation"]
+idempotent = "yes"
+reply = "synchronous, within 2 s"
+requirements = [
+  "holding#r7: When the client consumes an allocation, the inventory service shall set the status of the allocation to `consumed`.",
+  "holding#r8: If the client consumes an allocation whose status is `lapsed`, then the inventory service shall refuse the request and name the allocation.",
+]
+
+[operations."inventory.query"]
+by = ["the client"]
+parameters = { product = "product" }
+outcomes = ["returned → the product"]
+reply = "synchronous, within 1 s"
+requirements = [
+  "holding#r10: When the client queries a product, the inventory service shall return the stock of the product.",
+]
+
+[operations."inventory.restock"]
+by = ["the stock keeper"]
+parameters = { product = "product", quantity = "number", warehouse = "warehouse" }
+outcomes = ["done"]
+requirements = [
+  "stockkeeping#r1: When the stock keeper restocks a product with a quantity and a warehouse, the inventory service shall keep the product.",
+]
+
+[operations."inventory.transfer"]
+by = ["the stock keeper"]
+parameters = { product = "product", quantity = "number", warehouse = "warehouse" }
+outcomes = ["done", "refused: product out of stock"]
+requirements = [
+  "stockkeeping#r2: When the stock keeper transfers a product with a quantity and a warehouse, the inventory service shall keep the product.",
+  "stockkeeping#r3: If the stock keeper transfers a product whose supply is `exhausted`, then the inventory service shall refuse the request and name the product.",
+]
+
+[operations."inventory.audit"]
+by = ["the stock keeper"]
+parameters = { warehouse = "warehouse" }
+outcomes = ["returned → every product"]
+requirements = [
+  "stockkeeping#r4: When the stock keeper audits a warehouse, the inventory service shall return every product in the warehouse.",
+]
+
+# inventory.lapse is requested by inventory's own clock: not published as an operation, only its event.
+[events."an allocation lapses"]
+raised-by = "inventory.lapse"
+notifies = "the client that holds the allocation"
+carries = "the allocation"
+delivery = "asynchronous, at least once, in no fixed order with other replies"
+when = "15 minutes after inventory.hold, unless the allocation is consumed or released first"
+requirements = [
+  "holding#r9: When the clock lapses an allocation whose status is `placed`, the inventory service shall set the status of the allocation to `lapsed` and notify the client of the allocation.",
+]
