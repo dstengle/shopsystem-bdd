@@ -11,16 +11,18 @@ beside spec_lf_facts, whose walk calls it in a context that imports the request 
   and `param(R, I, P, V)`, `noparam(R, I, P)` of each, I the
   trigger's request. Two triggers are one request when their operation and parameter sets are equal: a parameter
   absent from one line and given in another makes two triggers, as two option sets of a run did.
-- A response's request (response-request, b543): the act of its verb, its operation, by the doer, a `resp` as any act
-  is, and each parameter it says `rparam(R, I, P, V)` or `rnoparam(R, I, P)`, I the act (`act`); no rule joins them
-  yet (L-3 follows the request).
+- A response's request (response-request, b543): a `resp` by its doer, the requester, whose event is the request's
+  key `req(O, Ps)` with its object, as a trigger's is (`keyed`, b545), so that "shall publish ... with the summary
+  `s1`" and "shall not publish ... with the summary `s2`" are two acts, and the entailment check follows the
+  request to the lines on its key (`act`).
 - The responses: the pack's verbs as the outcomes the check knows (`OUTCOMES`: refuse `refused`, return `returned`,
   complete `done`, fail `failed`, notify `notified`, keep `kept`, name `named`), each a `resp`, and a name also
   `names(R, I, X)`; any other verb is the context's (spec_lf_facts_atoms).
 """
 import re
 
-from spec_lf_core import Atom, Ref, const
+import spec_lf_modal
+from spec_lf_core import Ref, const
 
 OUTCOMES = {"refuse": "refused", "return": "returned", "complete": "done", "fail": "failed", "notify": "notified",
             "keep": "kept", "name": "named"}
@@ -82,9 +84,27 @@ def trigger(walk, part):
 
 
 def _request(walk, part, atom, n):
-    e, _, verb, sense, roles = atom.args
-    params = sorted((a.args[1], a.args[2] if a.pred == "param" else None) for a in part.body
-                    if getattr(a, "pred", None) in ("param", "noparam") and a.args[0] == e)
+    params = _params(part.body, atom.args[0])
+    key, subject, obj = keyed(walk, atom, params)
+    walk.emit("trig", "req", key, subject, obj)
+    for p, v in params:
+        if v is None:
+            walk.emit("noparam", n, _slug(p))
+        else:
+            walk.emit("param", n, _slug(p), walk.term(v) if isinstance(v, Ref) else _value(walk, v))
+
+
+def _params(body, e):
+    """[(parameter, value or None)] of request e's `param` and `noparam` atoms in `body`, in name order."""
+    return sorted((a.args[1], a.args[2] if a.pred == "param" else None) for a in body
+                  if getattr(a, "pred", None) in ("param", "noparam") and a.args[0] == e)
+
+
+def keyed(walk, atom, params):
+    """(the key `req(O,Ps)`, the requester's term, the object) of a request atom with its parameters, a trigger's or
+    a response's alike: two requests are one when their keys are, so that a response's request of one code and a
+    line on the request of another are two (batch-80 review 1 f5)."""
+    _, _, verb, sense, roles = atom.args
     subject, kinds, _ = walk.slots(roles)
     things = [(p, v) for p, v in params if isinstance(v, Ref) and v.origin not in ("constant", "parameter")
               or valued(walk, p, v)]
@@ -93,12 +113,7 @@ def _request(walk, part, atom, n):
         obj = "pair(%s,%s)" % (obj, _term(walk, p, t))
     said = ["p(%s,%s)" % (_slug(p), VAL if valued(walk, p, v) else _value(walk, v)) for p, v in params]
     key = "req(%s,(%s))" % (walk.ids.event(verb, sense), ",".join(said) + ("," if len(said) == 1 else ""))
-    walk.emit("trig", "req", key, walk.term(subject), obj)
-    for p, v in params:
-        if v is None:
-            walk.emit("noparam", n, _slug(p))
-        else:
-            walk.emit("param", n, _slug(p), walk.term(v) if isinstance(v, Ref) else _value(walk, v))
+    return key, walk.term(subject), obj
 
 
 def _slug(name):
@@ -111,15 +126,11 @@ def outcome(walk, verb):
 
 
 def act(walk, atom, body, pos):
-    """The facts of a response's request atom (`ASKED`'s first) with its parameters' atoms in `body`; a parameter's
-    atom alone is read with its request."""
+    """The facts of a response's request atom (`ASKED`'s first) with its parameters' atoms in `body`: a `resp` whose
+    event is the request's key, as a trigger's (`keyed`), by its doer, the requester; a parameter's atom alone is read
+    with its request."""
     if atom.pred != "request":
         return
-    e = atom.args[0]
-    walk.act(Atom("event", (e,) + atom.args[2:]), pos)
-    for a in body:
-        if getattr(a, "pred", None) == "noparam" and a.args[0] == e:
-            walk.emit("rnoparam", walk.acts, _slug(a.args[1]))
-        elif getattr(a, "pred", None) == "param" and a.args[0] == e:
-            v = a.args[2]
-            walk.emit("rparam", walk.acts, _slug(a.args[1]), walk.term(v) if isinstance(v, Ref) else _value(walk, v))
+    key, subject, obj = keyed(walk, atom, _params(body, atom.args[0]))
+    walk.acts += 1
+    walk.emit("resp", walk.acts, spec_lf_modal.polarity(walk, pos), key, subject, obj)

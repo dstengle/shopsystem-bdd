@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: examine; service language: explain
 language: codified-2
 retired: []
-unbuilt: [r37, r38, r39]
+unbuilt: [r37, r38]
 ---
 
 # Consistency

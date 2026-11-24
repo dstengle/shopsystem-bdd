@@ -22,6 +22,13 @@ def article(word):
     return ("an " if word[:1] in "aeiou" else "a ") + word
 
 
+def _param(p, v):
+    """A parameter of a request's key in words: `with the summary `s1``, `without a tier`, `with a tier`."""
+    if v.type == clingo.SymbolType.String:
+        return "with the %s %s" % (p, v.string)
+    return {"no": "without a %s", "on": "with the %s"}.get(v.name, "with a %s") % p
+
+
 def local(ident, other):
     """`r12` when the two ids are of one capability, else the whole id."""
     cap, _, rest = ident.rpartition("#")
@@ -82,6 +89,12 @@ class Words:
         if e.name == "for":
             return '%s to %s "%s" for %s' % (who, self.v.events.get(e.arguments[0].name, e.arguments[0].name),
                                             e.arguments[1].string, self.term(rid, x))
+        if e.name == "req":     # a response's request with its parameters, keyed as a trigger's (b545)
+            op, params = e.arguments
+            said = [_param(p.arguments[0].name, p.arguments[1]) for p in params.arguments]
+            obj = self.term(rid, x.arguments[0] if x.name == "pair" else x)
+            return "%s to %s %s%s" % (who, self.v.events.get(op.name, op.name), obj,
+                                       "".join(" " + s for s in said))
         if e.name in QUIET and e.name not in OUTCOME:
             return "%s to %s" % (who, QUIET[e.name])
         obj = "" if x.type == clingo.SymbolType.Function and x.name == "none" else " " + self.term(rid, x)
