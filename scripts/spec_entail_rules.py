@@ -31,7 +31,7 @@ def q(s):
     """A term of the program: a symbol, a compound or a string (a code, b240 phase 21) as it is, anything else
     quoted."""
     if (re.fullmatch(r"[a-z][A-Za-z0-9_]*", s) or re.fullmatch(r'"(?:[^"\\]|\\.)*"', s)
-            or re.fullmatch(r"(value|number|kind|set)\(.*\)", s)):
+            or re.fullmatch(r"(value|number|kind|set|req)\(.*\)", s)):
         return s
     return '"%s"' % s.replace("\\", "\\\\").replace('"', '\\"')
 
@@ -85,9 +85,11 @@ class Premises:
 
     def fixed(self, r):
         """{role: its code} of each role of r naming the request the trigger makes or a parameter (the request pack's
-        kinds, FIXED): one thing in every world, so a premise needs no such role stated to fire."""
+        kinds, FIXED), or the code a trigger's parameter is given (its key holds it, b545): one thing in every world,
+        so a premise needs no such role stated to fire, nor a line its request reaches (spec_entail_chain)."""
         kinds = dict(self.reqs[r]["role"])
-        return {y: q(c) for y, c in self.reqs[r]["named"] if kinds.get(y) in FIXED}
+        given = {a[2] for a in self.reqs[r]["param"]}
+        return {y: q(c) for y, c in self.reqs[r]["named"] if kinds.get(y) in FIXED or y in given}
 
     def every(self, r):
         f = self.reqs[r]
@@ -178,6 +180,10 @@ class Premises:
     # ---- a premise as rules --------------------------------------------------------------------------------------
     def rule(self, M):
         """M as Datalog over a query variable Q: `use(Q,M)` and its antecedent force its responses (tagged M)."""
+        return self.stage(M, self.pairs(M))
+
+    def pairs(self, M):
+        """[(head, body)] of M's rules before its stratum is given (`stage`; spec_entail_chain's `rules`)."""
         f, can = self.reqs[M], self.canon(M)
         if (f["only"] or f["holds"] or f["free"] or f["uall"] or f["ccount"] or f["pcount"] or f["onattr"] or f["onrel"]
                 or f["ccmp"] or f["oonly"] or f["ocount"]):
@@ -232,7 +238,7 @@ class Premises:
         men = lambda txt: {y for y in every if re.search(r"\bV_%s\b" % y, txt)}
         body0 = [b for b in body if not men(b)]
         # an `every` role is read per response, with its own restrictions
-        return self.stage(M, [(h, body0 + [b for b in body if men(b) and men(b) <= men(h)]) for h in heads])
+        return [(h, body0 + [b for b in body if men(b) and men(b) <= men(h)]) for h in heads]
 
     def stage(self, M, rules):
         """M's rules in their stratum, so that no premise rule is recursive: A, the premises on L's own trigger, over

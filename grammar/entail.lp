@@ -6,18 +6,29 @@
 % never a missing fact. Shown: ent(L,I,M), response I of L forced by M; self_ent(L,I), forced by L's own others.
 % The strata: A, the premises on L's own trigger, over the world; B, the untriggered premises and those on a refusal
 % (in a context importing the request pack, any refusal stated or forced; in one importing the CLI pack, the bridge's:
-% an error exit on a run is a refusal of its command, the CLI pack's definition of refuse), over the world and A.
+% an error exit on a run is a refusal of its command, the CLI pack's definition of refuse), over the world and A;
+% C, the chain (b545, decision 0118; scripts/spec_entail_chain.py): a request stated or forced in A or B fires the
+% lines on it (`useC`) at depth 1, and what a line of depth k forces fires the lines on it at depth k+1, up to the depth
+% the rules are written to; `via(Q,M,S)`, the premise S a firing of M came by, kept for the findings.
 #defined a0/4. #defined na0/4. #defined k/3. #defined nk/3. #defined rel/4. #defined nrel/4. #defined feat/2.
 #defined code/3. #defined ev/5. #defined r/6. #defined setv/4. #defined prop/4. #defined lnone/4. #defined hit/2.
 #defined isk/3. #defined rA/6. #defined rB/6. #defined iskA/3. #defined iskB/3. #defined propA/4. #defined propB/4.
 #defined relA/4. #defined relB/4. #defined setvA/4. #defined evB/5. #defined lcnone/3. #defined lrnone/4.
 #defined bridgecmd/2. #defined tq/5. #defined dask/2. #defined use/2. #defined kind/1. #defined sub/2.
 #defined val/3. #defined dalt/2. #defined dlit/5.
+#defined evC/6. #defined rC/7. #defined iskC/3. #defined propC/4. #defined relC/4. #defined setvC/4.
+#defined useC/2. #defined via/3.
 isk2(Q,Z,K) :- isk(Q,Z,K).  isk2(Q,Z,K) :- iskA(Q,Z,K).  rel2(Q,R,X,Y) :- rel(Q,R,X,Y).  rel2(Q,R,X,Y) :- relA(Q,R,X,Y).
 prop2(Q,Z,T,V) :- prop(Q,Z,T,V).  prop2(Q,Z,T,V) :- propA(Q,Z,T,V).
 setv2(Q,Z,T,V) :- setv(Q,Z,T,V).  setv2(Q,Z,T,V) :- setvA(Q,Z,T,V).
 rall(Q,P,E,D,X,M) :- r(Q,P,E,D,X,M).  rall(Q,P,E,D,X,M) :- rA(Q,P,E,D,X,M).  rall(Q,P,E,D,X,M) :- rB(Q,P,E,D,X,M).
 iskall(Q,Z,K) :- isk2(Q,Z,K).  iskall(Q,Z,K) :- iskB(Q,Z,K).
+iskall(Q,Z,K) :- iskC(Q,Z,K).  propall(Q,Z,T,V) :- propC(Q,Z,T,V).  relall(Q,R,X,Y) :- relC(Q,R,X,Y).
+rall(Q,P,E,D,X,M) :- rC(Q,_,P,E,D,X,M).
+evC(Q,0,req(O,Ps),D,X,M) :- r(Q,pos,req(O,Ps),D,X,M).
+evC(Q,0,req(O,Ps),D,X,M) :- rA(Q,pos,req(O,Ps),D,X,M).
+evC(Q,0,req(O,Ps),D,X,M) :- rB(Q,pos,req(O,Ps),D,X,M).
+evC(Q,K,E,D,X,M) :- rC(Q,K,pos,E,D,X,M).
 propall(Q,Z,T,V) :- prop2(Q,Z,T,V).  propall(Q,Z,T,V) :- propB(Q,Z,T,V).
 relall(Q,R,X,Y) :- rel2(Q,R,X,Y).  relall(Q,R,X,Y) :- relB(Q,R,X,Y).
 evB(Q,does,e_refuse,D,C) :- bridgecmd(Q,C), r(Q,pos,exit_error,D,_,_).
@@ -53,4 +64,5 @@ hit(Q,M) :- tq(Q,P,E,D,X), rall(Q,P,E,D,X,M).
 hit(Q,M) :- tq(Q,neg,e_change,D,_), rall(Q,pos,change_nothing,D,none,M).
 ent(L,I,M) :- hit(q(L,I),M), M != self.
 self_ent(L,I) :- hit(q(L,I),self).
-#show ent/3. #show self_ent/2.
+via(L,I,M,S) :- via(q(L,I),M,S).
+#show ent/3. #show self_ent/2. #show via/4.
