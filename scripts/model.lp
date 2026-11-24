@@ -57,6 +57,7 @@
 #defined sets/5.  #defined sets_from_any/4.
 #defined cites_record/2.          % cites_record(I, R): item I's source: names the record R
 #defined new_item/1.              % new_item(I): item I came after the records policy
+#defined held/1.                  % held(X): X is an item or a batch whose file this repository holds (shop_ids)
 % the codified spec (C3, C5-C7, C26, C28)
 #defined member_of/2.             % member_of(Q, G): requirement Q is a statement of group G
 #defined generates/2.             % generates(G, S): scenario S is generated from group G
@@ -188,7 +189,8 @@ v10b(R)    :- node(R, K), record(K), not has_about(R).
 label("v10c", "a record is about something that is not standing").
 % fail v10c: about("r","i"). node("i","initiative").
 % pass v10c: about("r","c"). node("c","capability").
-v10c(R)    :- about(R, A), not is_standing(A).
+% pass v10c: about("r","b3"). held("b3").
+v10c(R)    :- about(R, A), not is_standing(A), not held(A).
 
 label("v11", "a capability without exactly one narrator").
 % fail v11: node("c","capability").
