@@ -91,6 +91,7 @@ class WorkReading:
                     if m:
                         a = self.qualify(scalar(m.group(1)))
                         self.fact("about", current, a)
+                        self.about_held(a)
                         self.want(a, None, self.rel(obs))
         for path in sorted((self.root / RECORDS).rglob("*.md")):
             if path == obs:
@@ -111,9 +112,14 @@ class WorkReading:
             for a in as_list(data.get("about")):
                 a = self.qualify(a)
                 self.fact("about", data["id"], a)
-                if shop_ids.held(self.root, a, self.path):
-                    self.fact("held", a)        # an item or a batch this repository holds (records r3, b49)
+                self.about_held(a)
                 self.want(a, None, self.rel(path))
+
+    def about_held(self, a):
+        """held/1 of an about that is an item or a batch this repository holds (records r3, b49), a record's or an
+        observation's alike (b563)."""
+        if shop_ids.held(self.root, a, self.path):
+            self.fact("held", a)
 
     def read_work(self):
         """cited(O) for each id a frozen initiative or request names in its `source` (D6): no node, part or reference

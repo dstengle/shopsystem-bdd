@@ -117,3 +117,14 @@ def test_a_record_folders_supporting_files_below_its_level_are_no_records(tmp_pa
                                       ("2026-11-24-another/odd.md", "port", "item/ex/prod/ctx/b3")],
                            items=[3])
     assert problems == [".shop/records/2026-11-24-another/odd.md: kind 'port' is not a record kind"]
+
+
+def test_an_observation_about_an_item_held_is_about_something_standing(tmp_path):
+    records = tmp_path / ".shop" / "records"
+    records.mkdir(parents=True)
+    (records / "observations.md").write_text(
+        "# Observations\n\n"
+        "## observation/ex/prod/ctx/2026-11-24-on-an-item\n\nabout: item/ex/prod/ctx/b3\n\nHeld.\n\n"
+        "## observation/ex/prod/ctx/2026-11-24-on-nothing-held\n\nabout: item/ex/prod/ctx/b9\n\nNot held.\n")
+    v10c, _ = _records(tmp_path, [], items=[3])
+    assert v10c == ["observation/ex/prod/ctx/2026-11-24-on-nothing-held"]

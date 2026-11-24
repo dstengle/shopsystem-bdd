@@ -44,10 +44,10 @@ def test_the_live_decisions_keep_their_tiers():
 
 def test_the_sort_holds_its_totals():
     found = model_decisions.decisions(ROOT)
-    assert len(found) == 124, len(found)       # the domain contract's twelve (0098-0109), three superseding; 0110-0114; 0115-0125
-    assert collections.Counter(d.status for d in found) == {"accepted": 63, "superseded": 59, "rejected": 2}
+    assert len(found) == 126, len(found)       # the domain contract's twelve (0098-0109), three superseding; 0110-0114; 0115-0127
+    assert collections.Counter(d.status for d in found) == {"accepted": 65, "superseded": 59, "rejected": 2}
     tiers = collections.Counter(d.tier for d in found if d.status == "accepted")
-    assert tiers == {"check": 11, "requirement": 13, "judgement": 39}, tiers     # 0110-0112 judgements (b418, b420, b430); 0115-0125 (the contracts design)
+    assert tiers == {"check": 11, "requirement": 13, "judgement": 41}, tiers     # 0110-0112 judgements (b418, b420, b430); 0115-0125 (the contracts design); 0126, 0127
     # 0113 (check) superseded a check decision and was itself superseded by 0114 (check), so the check tier holds 11
     # `work decision --supersedes` (b179) sets only the status of the decision it replaces, so a decision out of force
     # keeps its tier only when it was superseded so; `model decisions --check` runs none of them.
@@ -71,7 +71,7 @@ def test_the_judgement_decisions_reach_the_brief():
     assert "spec/decisions/0097-while-alpha-a-change-breaks-consumers-cleanly-with-no-compatibility-path.md" in found, found
     assert "spec/decisions/0107-the-specification-has-four-parts.md" in found, found
     assert "spec/decisions/0111-a-request-acts-on-one-thing.md" in found, found
-    assert len(found) == 39, found     # 0110, 0111 and 0112 (b418, b420, b430); 0115-0125 (the contracts design)
+    assert len(found) == 41, found     # 0110, 0111 and 0112 (b418, b420, b430); 0115-0125 (the contracts design); 0126, 0127
 
 
 def test_0060_is_superseded_by_measure_a_batch():
