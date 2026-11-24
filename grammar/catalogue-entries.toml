@@ -301,7 +301,7 @@ changed = []
 [rules.v_m8]
 purpose = "The domain model is internally consistent, so the vocabulary, contracts and lines built on it rest on solid ground."
 since = "0.38.0"
-changed = []
+changed = ["b547"]
 
 [rules.v_a1]
 purpose = "Every operation is reachable through the CLI contract or marked unexposed, so no behaviour is accidentally left out of the interface."

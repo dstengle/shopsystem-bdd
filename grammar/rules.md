@@ -1362,6 +1362,7 @@ the domain model breaks its own rules: a relation to an undeclared object, a tra
 
 - Purpose: The domain model is internally consistent, so the vocabulary, contracts and lines built on it rest on solid ground.
 - Since: 0.38.0
+- Changed: b547
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/domain_model_check.py`, `scripts/domain_model_props.py`
 - Cited by: no line
