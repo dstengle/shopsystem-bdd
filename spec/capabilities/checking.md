@@ -188,6 +188,12 @@ Restates: design-model-check#r13@0.29.
 ### [g67] A property that refers to no operation is refused
 - [r67] While a property refers to an operation that does not exist, if the person validates this specification, then the specification service shall fail the check and name the property.
 
+### [g69] A port's operation needs no table in the CLI contract
+- [r69] While an area whose kind is `port` holds an operation and no adapter contract holds an operation table of the operation, when the person validates this specification, the specification service shall complete the request.
+
+### [g70] A port line relied on by a line that does not exist is refused
+- [r70] While a requirement supports a requirement id that no requirement has, if the person validates this specification, then the specification service shall fail the check and name the requirement id.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.

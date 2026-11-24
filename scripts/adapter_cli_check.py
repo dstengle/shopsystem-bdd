@@ -1,7 +1,8 @@
 """The CLI contract checked both ways (the domain contract design, §6.1), run by `model check` when the context has
 `spec/adapters/cli.toml` (model_domain) and by its test:
 
-- v_a1: an operation of the domain model with no table of the contract and not listed under `[unexposed]`;
+- v_a1: an operation of the domain model with no table of the contract and not listed under `[unexposed]`; an
+  operation of a driven port (a service of an area of kind `port`) left out, as no command requests it (b548);
 - v_a2: a table naming no operation of the model, or a parameter its operation does not declare;
 - v_a3: a command or an option the contract names that the program's argparse lacks (a command whose program
   `[programs]` does not name, or whose file is missing, among them);
@@ -50,6 +51,12 @@ def _programs(root, contract):
     return out
 
 
+def ported(model):
+    """The operations of each service of an area of kind `port`, as `<service>.<operation>`."""
+    ports = {name for name, area in model.areas.items() if area.kind == "port"}
+    return {"%s.%s" % (s.name, o.name) for s in model.services.values() if s.area in ports for o in s.operations}
+
+
 def problems(root, model=None):
     """(code, subject, why) of every v_a1-v_a4 of the context at `root`; none when it has no CLI contract."""
     contract = adapter_cli.read(root)
@@ -57,7 +64,7 @@ def problems(root, model=None):
         return []
     model = model or domain_model.load(root)
     found, ops = [], {"%s.%s" % (o.service, o.name): o for o in model.operations()}
-    for ident in sorted(set(ops) - set(contract.operations) - set(contract.unexposed)):
+    for ident in sorted(set(ops) - set(contract.operations) - set(contract.unexposed) - ported(model)):
         found.append(("v_a1", ident, "the operation %s has no table in %s and is not unexposed" % (ident, contract.path)))
     for ident, op in contract.operations.items():
         if ident not in ops:

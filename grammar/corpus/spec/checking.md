@@ -721,3 +721,38 @@ shall [x3: agent the person (constant), x4: specification "the specification of 
     fail(e2, subject: x5, object: x6)
     name(e3, subject: x5, object: x1)
 ```
+
+## r69
+From: b548 r69.
+
+```reading
+While an area whose kind is `port` holds an operation and no adapter contract holds an operation table of the operation, when the person validates this specification, the specification service shall complete the request.
+shall [x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x8: request "the request the trigger makes" (indexical)]
+  while [x1: area, x2: operation]
+    kind(x1) = `port`
+    in(x2, x1)
+    not [x3: adapter contract, x4: operation table]
+      of(x4, x2)
+      in(x4, x3)
+  when
+    request(e1, specification.check, subject: x5, object: x6)
+  response
+    complete(e2, subject: x7, object: x8)
+```
+
+## r70
+From: b548 r70.
+
+```reading
+While a requirement supports a requirement id that no requirement has, if the person validates this specification, then the specification service shall fail the check and name the requirement id.
+shall [x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x7: check "the check the trigger makes" (indexical)]
+  while [x1: requirement, x2: requirement id]
+    not [x3: requirement]
+      of(x2, x3)
+    support(subject: x1, object: x2)
+  if
+    request(e1, specification.check, subject: x4, object: x5)
+  response
+    fail(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x2)
+```

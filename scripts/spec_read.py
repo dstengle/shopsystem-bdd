@@ -2,7 +2,8 @@
 
 `capability(path)` reads a capability file whose frontmatter has `language: codified-1` or `codified-2` (CNL 4's
 I19): the groups of its `## Behaviour` (`### [g<n>] <title>`, an optional `Restates:` line, `- [r<n>] <statement>`
-bullets and an optional fenced `given` block, read by spec_read_given), its `## Dropped` bullets and its `retired:`
+bullets, each with an optional `Relied on by: <cap>#r<n>, ...` line after it, a port line's ids of the requirements it
+supports (b548), and an optional fenced `given` block, read by spec_read_given), its `## Dropped` bullets and its `retired:`
 ids. A statement kept out of a group's requirements (no id,
 or an id used before) is in the group's `odd`, beside its problem. `## Terms` is not read here: spec_lexicon is the
 one reader of term entries. `universal(root)` reads `spec/universal.md`, `restated(root)` reads `spec/restated.json`.
@@ -22,7 +23,7 @@ MARKERS = (MARKER, MARKER4)
 
 Capability = namedtuple("Capability", "path name frontmatter groups dropped retired problems")
 Group = namedtuple("Group", "id title restates given requirements line_no odd")   # odd: (line, r<n> or None, text)
-Requirement = namedtuple("Requirement", "id text line_no")
+Requirement = namedtuple("Requirement", "id text line_no supports", defaults=((),))   # supports: `<cap>#r<n>` ids
 Universal = namedtuple("Universal", "id text line_no")
 UniversalFile = namedtuple("UniversalFile", "path frontmatter conditions problems")
 
@@ -31,6 +32,7 @@ GROUP = re.compile(r"^### \[(g[1-9]\d*)\] (\S.*)$")
 REQ = re.compile(r"^- \[(r[1-9]\d*)\] (\S.*)$")
 U = re.compile(r"^- \[(U[1-9]\d*)\] (\S.*)$")
 OLD = re.compile(r"^(?:(?P<cap>[a-z0-9]+(?:-[a-z0-9]+)*)#)?r(?P<n>[1-9]\d*)@0\.29$")
+RELIED = re.compile(r"^(?:(?P<cap>[a-z0-9]+(?:-[a-z0-9]+)*)#)?r(?P<n>[1-9]\d*)$")
 DROPPED = re.compile(r"^- (?:(?P<cap>[a-z0-9]+(?:-[a-z0-9]+)*)#)?r(?P<n>[1-9]\d*)@0\.29: (?P<why>\S.*)$")
 
 
@@ -101,6 +103,8 @@ class Reader(GivenLines):
                 self.heading(n, line)
             elif line.startswith("Restates:"):
                 self.restates(n, line)
+            elif line.startswith("Relied on by:"):
+                self.relied(n, line)
             elif line.strip() == "```given":
                 self.fence = n
             elif line.startswith("- "):
@@ -132,6 +136,21 @@ class Reader(GivenLines):
                 self.group.restates.append((m.group("cap") or self.name, int(m.group("n"))))
             else:
                 self.problem(n, f"Restates: {token!r} is not r<n>@0.29 or <capability>#r<n>@0.29")
+
+    def relied(self, n, line):
+        """`Relied on by: <cap>#r<n>, ...`: the ids the group's last requirement supports."""
+        if self.group is None or not self.group.requirements:
+            self.problem(n, "a Relied on by: line after no requirement")
+            return
+        ids = []
+        for token in (t.strip() for t in line[len("Relied on by:"):].strip().rstrip(".").split(",")):
+            m = RELIED.match(token)
+            if m:
+                ids.append(f"{m.group('cap') or self.name}#r{m.group('n')}")
+            else:
+                self.problem(n, f"Relied on by: {token!r} is not r<n> or <capability>#r<n>")
+        last = self.group.requirements[-1]
+        self.group.requirements[-1] = last._replace(supports=last.supports + tuple(ids))
 
     def requirement(self, n, line):
         m = REQ.match(line)

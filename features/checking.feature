@@ -423,3 +423,23 @@ Feature: Checking
     When the person validates this specification
     Then the specification service fails this check
     And the specification service names the property p1
+
+  @g69 @r69
+  Scenario: A port's operation needs no table in the CLI contract
+    Given an area a1
+    And the kind of the area a1 is `port`
+    And an operation o1
+    And the area a1 holds the operation o1
+    And the operation o1 has no operation table
+    When the person validates this specification
+    Then the specification service completes this request
+
+  @g70 @r70
+  Scenario: A port line relied on by a line that does not exist is refused
+    Given a requirement id r2
+    And no requirement has the requirement id r2
+    And a requirement r1
+    And the requirement r1 supports the requirement id r2
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the requirement id r2
