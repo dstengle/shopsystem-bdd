@@ -17,3 +17,4 @@ acceptance corpus, not a spec of this repository.
 | area | kind | capabilities |
 |---|---|---|
 | decisions | core | |
+| registry | port | |

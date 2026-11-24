@@ -142,5 +142,9 @@ def requests(w, vocab):
             subjects.append(S)
     for S in dict.fromkeys(subjects):
         w.fun(S + "_Request", "%s_Arg -> %s_Req -> Trig" % (S, S), "mkS (mkCl x v)", "x v")
+        for d in vocab.kinds:     # response-request (b543): a doer's act that is a request with its parameters
+            D = spec_rgl.kid(d)
+            if D + "_Act" in w.cats and S in map(spec_rgl.kid, vocab.ancestors(d)):
+                w.fun("%s_ActReq_%s" % (D, S), "Pol -> %s_Req -> %s_Act" % (S, D), "{s = act p v}", "p v")
     for name in parameter_nps(vocab):
         w.fun("p_%s_NP" % spec_rgl.slug(name), "k_parameter_NP0", "actor %s" % spec_rgl.s("the " + name))

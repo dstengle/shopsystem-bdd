@@ -132,6 +132,8 @@ class Walk(Terms):
         for item in body:
             if isinstance(item, Atom) and item.pred in ("event", spec_lf_set.PRED):
                 self.act(item, pos)
+            elif isinstance(item, Atom) and item.pred in spec_lf_facts_request.ASKED:     # response-request (b543)
+                spec_lf_facts_request.act(self, item, body, pos)
             elif isinstance(item, Atom) and item.pred == spec_lf_ordered.PRED:     # an order of the act before it (b275)
                 spec_lf_ordered.facts(self, item, self.acts)
             elif isinstance(item, Atom):
@@ -170,7 +172,8 @@ class Walk(Terms):
     @staticmethod
     def acting(box):
         """True for a box with an event atom in it, at any depth: a negated act, not a negated restriction."""
-        return any(isinstance(i, Atom) and i.pred in ("event", spec_lf_set.PRED) or isinstance(i, Box) and Walk.acting(i)
+        return any(isinstance(i, Atom) and i.pred in ("event", "request", spec_lf_set.PRED)
+                   or isinstance(i, Box) and Walk.acting(i)
                    for i in list(box.body) + ([box.scope] if getattr(box, "scope", None) else []))
 
     @staticmethod

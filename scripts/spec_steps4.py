@@ -217,9 +217,9 @@ class Reader:
         """[(act number or None, Then tree)] of a response's items, numbered as spec_lf_facts numbers its acts."""
         out = []
         for item in boxes.order(body):     # what is said of a thing after the act that brings it in (b268)
-            if isinstance(item, Atom) and item.pred in ("event", spec_lf_set.PRED):
-                out.append((True, self.does(item, pos)))
-            elif isinstance(item, Atom) and item.pred == spec_lf_distinct.PRED:     # two names (b240)
+            if isinstance(item, Atom) and item.pred in ("event", spec_lf_set.PRED, request.PRED):
+                out.append((True, request.then(self, item, body, pos) or self.does(item, pos)))     # b543
+            elif isinstance(item, Atom) and item.pred in (spec_lf_distinct.PRED,) + request.PARAMS:     # b240
                 continue
             elif isinstance(item, Atom) and not boxes.image(self, item):
                 out.append((None, ("SCond", self.cond(item, pos))))

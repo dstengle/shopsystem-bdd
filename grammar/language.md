@@ -1821,6 +1821,27 @@ An operation whose object is its `done →` outcome's and that no parameter name
 it in in the When ("When the person adds a note n1 with a title"), never by a Given, which a test could read as the
 thing put in the store first.
 
+### "shall hold the product with the quantity of the order": a response makes a request
+
+A response's act whose verb names an operation, said with its parameters after "with" and "without" as a trigger's
+request is, is a request too (b543, construct `response-request`; design-decisions 0115 and 0122): the core asks a
+driven port, or any service, for an operation, its doer the requester. Its logical form is a trigger's: `request(e,
+O, subject: D, ...)` with `param` and `noparam` (`request-params`). `spec check` counts it as a request of O (v_m7),
+and a line triggered on the refusal of the thing O is on states O's refusal reasons (v_m4). A response's act of such a
+verb said with no parameter keeps its event atom. What the request then sets off in the service's own lines is not
+followed yet.
+
+```reading
+When a session ends a stage, the work service shall settle a line with the note `n1` and without a verdict.
+shall [x3: service the work service (constant), x5: thing `n1` (parameter)]
+  when [x1: session, x2: stage]
+    request(e1, work.end, subject: x1, object: x2)
+  response [x4: line]
+    request(e2, work.settle, subject: x3, object: x4)
+    param(e2, note, x5)
+    noparam(e2, verdict)
+```
+
 ### "the person lists a checklist", "the person lists the checklists": a request acts on one thing
 
 A request, a verb naming an operation in a trigger, acts on one thing (b420, design-decision 0111): a slot its frame

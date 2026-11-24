@@ -61,6 +61,6 @@ def test_a_parameter_is_named_and_a_value_outside_its_values_is_refused():
                                "request and name the text.")
     # session's call: a parameter's values are the grammar's, so a value it does not declare does not parse
     assert spec_grammar4.parse(FIXTURE, "When the person adds a note with the priority `urgent`" + KEEP).refusal
-    # a request with its parameters is said in a trigger only
-    assert spec_grammar4.parse(FIXTURE, "When the person files a note, the notes service shall add the note with "
-                                        "a text.").refusal
+    # a request with its parameters is said in a response too, its doer the requester (response-request, b543)
+    assert "k_service_ActReq_k_agent" in tree("When the person files a note, the notes service shall add the note "
+                                              "with a text.")
