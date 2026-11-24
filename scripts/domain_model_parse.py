@@ -9,6 +9,7 @@ a parameter its type.
 import re
 from dataclasses import dataclass, field
 
+import domain_model_props
 from shop_refused import Refused
 
 TYPES = ("text", "number", "time", "version")
@@ -83,6 +84,7 @@ class Operation:
     by: tuple = ()          # the actors (or kinds of actor) that may request it, written `by <actor>, ...`; none: any
     parameters: tuple = ()  # resolved by domain_model
     object: str = ""        # the object it acts on (domain_model)
+    properties: tuple = ()  # what it promises beyond its outcomes (domain_model_props)
 
 
 @dataclass
@@ -103,6 +105,7 @@ class Event:
     operation: str
     area: str = ""
     where: str = ""
+    properties: tuple = ()  # its delivery and when (domain_model_props)
 
 
 @dataclass(frozen=True)
@@ -179,12 +182,15 @@ class Reader:
             self.refuse(n, "not an object, a service, an event or an actor: %s" % body)
 
     def event(self, n, rest):
+        rest, props, stray = domain_model_props.event(rest)
+        if stray:
+            self.refuse(n, "an event's property is `delivery: <text>` or `when: <text>`: %s" % stray[0])
         phrase, _, raised = rest.rpartition(":")
         raised = raised.strip()
         if not raised.startswith("raised by ") or "." not in raised:
             self.refuse(n, "an event is `event <phrase>: raised by <service>.<operation>`")
         service, _, op = raised[len("raised by "):].rpartition(".")
-        self.events.append(Event(phrase.strip(), service.strip(), op.strip(), self.area, self.where))
+        self.events.append(Event(phrase.strip(), service.strip(), op.strip(), self.area, self.where, props))
         self.current = None
 
     def member(self, n, body):
@@ -244,6 +250,7 @@ class Reader:
         obj.lifecycles.append(Lifecycle(name, transitions))
 
     def operation(self, n, text):
+        text, props = domain_model_props.operation(text)
         found = re.match(r"^([^(]+)\((.*?)\)\s*(?:by\s+(.*?))?\s*(?:outcomes:(.*))?$", text)
         if not found:
             self.refuse(n, "an operation is `operation <name>(<parameter>, ...)`: %s" % text)
@@ -258,7 +265,8 @@ class Reader:
             name, _, values = p.partition(":")
             raw.append((name.strip(), tuple(v.strip() for v in values.split("|") if v.strip())))
         by = tuple(a.strip() for a in (found.group(3) or "").split(",") if a.strip())
-        op = Operation(self.current.name, found.group(1).strip(), tuple(raw), self.where, flags=tuple(flags), by=by)
+        op = Operation(self.current.name, found.group(1).strip(), tuple(raw), self.where, flags=tuple(flags), by=by,
+                       properties=props)
         self.current.operations.append(op)
         if found.group(4):
             self.outcomes(n, op, found.group(4))

@@ -421,7 +421,7 @@ label("v_m1", "a requirement uses a word that names no element through the vocab
 % fail v_m1: foreign_term("c#r1","finding","finding is a word of analysis, which the area notes does not read").
 % pass v_m1: parsed("c#r1").
 v_m1(Q, W, Why) :- foreign_term(Q, W, Why).
-label("v_m8", "the domain model breaks its own rules: a relation to an undeclared object, a transition over an undeclared value, two operations of one name in a service, an event raised by no operation").
+label("v_m8", "the domain model breaks its own rules: a relation to an undeclared object, a transition over an undeclared value, two operations of one name in a service, an event raised by no operation, a property that refers to an undeclared parameter, operation or event").
 % fail v_m8: model_problem("note.carries","the relation carries of note names tag, which the model does not declare").
 % pass v_m8: typed("ctx").
 v_m8(S, Why)  :- model_problem(S, Why).
