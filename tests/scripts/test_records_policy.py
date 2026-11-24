@@ -66,3 +66,54 @@ def test_this_repositorys_items_cite_no_record_in_their_source():
     import pathlib
     root = pathlib.Path(__file__).resolve().parents[2]
     assert all(not item.source for item in backlog_items.items(root))
+
+
+ABOUT = """---
+id: record/ex/prod/ctx/{name}
+kind: {kind}
+about: {about}
+date: 2026-11-24
+---
+
+# A record
+"""
+
+
+def _records(tmp_path, records, items=()):
+    """The v10c violations and the file problems of a repository holding `records` (path, kind, about) under
+    .shop/records/ and the items numbered `items`."""
+    (tmp_path / "spec").mkdir()
+    (tmp_path / "spec" / "index.md").write_text("---\nid: bounded-context/ex/prod/ctx\nlanguage: codified-2\n"
+                                                "imports: []\n---\n\n# ctx\n")
+    backlog = tmp_path / ".shop" / "backlog"
+    backlog.mkdir(parents=True)
+    for n in items:
+        (backlog / ("b%d.md" % n)).write_text(ITEM.format(n=n, source=""))
+    for rel, kind, about in records:
+        path = tmp_path / ".shop" / "records" / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        name = path.parent.name if path.name in ("design.md",) else path.stem
+        path.write_text(ABOUT.format(name=name, kind=kind, about=about))
+    model = model_facts.Model(tmp_path).read()
+    found, _ = model_check.solve(model)
+    return [args[0] for name, args in found if name == "v10c"], model.problems
+
+
+def test_a_record_about_an_item_or_a_batch_held_is_about_something_standing(tmp_path):
+    (tmp_path / ".shop" / "batches" / "7").mkdir(parents=True)
+    (tmp_path / ".shop" / "batches" / "7" / "plan.md").write_text("---\nid: batch/ex/prod/ctx/batch-7\n---\n")
+    v10c, _ = _records(tmp_path, [("2026-11-24-on-an-item.md", "analysis", "item/ex/prod/ctx/b3"),
+                                  ("2026-11-24-on-a-batch.md", "analysis", "batch/ex/prod/ctx/batch-7"),
+                                  ("2026-11-24-on-nothing-held.md", "analysis", "item/ex/prod/ctx/b9")],
+                       items=[3])
+    assert v10c == ["record/ex/prod/ctx/2026-11-24-on-nothing-held"]
+
+
+def test_a_record_folders_supporting_files_below_its_level_are_no_records(tmp_path):
+    folder = "2026-11-24-an-example"
+    _, problems = _records(tmp_path, [(folder + "/design.md", "design", "item/ex/prod/ctx/b3"),
+                                      (folder + "/ordering/spec/model/stock.md", "port", "item/ex/prod/ctx/b3"),
+                                      ("2026-11-24-another/sub/x.md", "core", "item/ex/prod/ctx/b3"),
+                                      ("2026-11-24-another/odd.md", "port", "item/ex/prod/ctx/b3")],
+                           items=[3])
+    assert problems == [".shop/records/2026-11-24-another/odd.md: kind 'port' is not a record kind"]

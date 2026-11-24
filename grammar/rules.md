@@ -266,8 +266,8 @@ a record is about something that is not standing
 - Passes on:
 
   ```prolog
-  about("r","c").
-  node("c","capability").
+  about("r","b3").
+  held("b3").
   ```
 
 ## v11

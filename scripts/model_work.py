@@ -6,6 +6,7 @@ from pathlib import Path
 
 import model_decisions
 import shop_frozen
+import shop_ids
 from model_parse import as_list, decision_files, frontmatter, scalar
 
 STATUSES = {     # design model v5's lifecycles of what is still read (GF conversion design §7.1: C13, C14)
@@ -20,6 +21,7 @@ RECORD_KINDS = {"observation", "measurement", "review-finding", "decision-argume
 HISTORY = {"design": "record", "analysis": "record"}     # their ids are record/<path>/<name>
 WORK = Path(".shop") / "work"
 RECORDS = Path(".shop") / "records"
+RECORD_FOLDER = re.compile(r"\d{4}-\d{2}-\d{2}-.+")     # a record's folder, .shop/records/<date>-<topic>/
 
 
 class WorkReading:
@@ -93,6 +95,9 @@ class WorkReading:
         for path in sorted((self.root / RECORDS).rglob("*.md")):
             if path == obs:
                 continue
+            parts = path.relative_to(self.root / RECORDS).parts
+            if len(parts) > 2 and RECORD_FOLDER.fullmatch(parts[0]):
+                continue        # a record folder's supporting file below its own level (a worked example's copy)
             data, _ = frontmatter(path.read_text())
             kind = data.get("kind")
             if not data.get("id") or kind is None:
@@ -106,6 +111,8 @@ class WorkReading:
             for a in as_list(data.get("about")):
                 a = self.qualify(a)
                 self.fact("about", data["id"], a)
+                if shop_ids.held(self.root, a, self.path):
+                    self.fact("held", a)        # an item or a batch this repository holds (records r3, b49)
                 self.want(a, None, self.rel(path))
 
     def read_work(self):
