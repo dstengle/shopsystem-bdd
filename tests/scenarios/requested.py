@@ -65,6 +65,7 @@ def capability(node):
 # groups added since the move whose scenarios an old capability's handlers take, as its moved groups' (b309); a
 # group whose own capability has handlers of its own is not listed
 ADDED = {"consistency#g33": "design-model-check", "consistency#g34": "design-model-check",     # b418
+         "consistency#g36": "design-model-check",                                # b543: a response's request
          "drafting#g25": "readiness", "reviews#g6": "batches",   # b354: a term of a new capability; b449
          "reviews#g7": "batches", "reviews#g8": "batches",      # b491: task branches merged in task order
          "drafting#g28": "readiness",                            # b458: the decisions a retired requirement enforces

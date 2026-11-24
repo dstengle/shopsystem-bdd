@@ -41,6 +41,14 @@ def test_a_request_with_a_plural_object_is_found_only_in_a_trigger_and_only_of_a
     assert spec_one_thing.plural(VOCAB, response) is None
 
 
+def test_a_response_request_with_a_plural_object_is_found():
+    params = ["o_note_Params_0"]
+    request = ["k_service_ActReq_k_service", "PPos", ["q_remove_1_1", np("DetEvery"), params]]
+    assert spec_one_thing.plural(VOCAB, request)[0] == "remove"
+    request = ["k_service_ActReq_k_service", "PPos", ["q_remove_1_1", np("DetA"), params]]
+    assert spec_one_thing.plural(VOCAB, request) is None
+
+
 def test_two_readings_by_two_frames_of_one_verb_name_both():
     a, b = trigger("e_list_action_4_1"), trigger(["e_list_action_3_1", np("DetThePl", "k_checklist")])
     assert spec_one_thing.frames(VOCAB, a, b) == ['"agent lists the checklists" (notes.browse)',

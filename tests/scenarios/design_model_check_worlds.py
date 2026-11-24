@@ -33,6 +33,7 @@ VALUE = _sibling("design_model_check_worlds_value.py", "shop_design_model_check_
 FRAMES = _sibling("design_model_check_worlds_frames.py", "shop_design_model_check_worlds_frames")     # b420
 ITEM = _sibling("design_model_check_worlds_item.py", "shop_design_model_check_worlds_item")     # b452
 ELEMENT = _sibling("design_model_check_worlds_element.py", "shop_design_model_check_worlds_element")     # b544
+RESPONSE = _sibling("design_model_check_worlds_response.py", "shop_design_model_check_worlds_response")     # b543
 
 
 class As:
@@ -159,7 +160,7 @@ def nothing(step):
 NONCONFORMING = "When a session ends a stage, `work` shall banana the stage."
 AMBIGUOUS = "every session that follows a stage and the stage"     # the words r1 of "ambiguous" reads two ways
 UNDONE = "While every stage is not `done`, when the person runs `work start`, `work` shall exit successfully."
-TABLE = ELEMENT.ROWS + ITEM.ROWS + CATALOGUE.ROWS + ORDER.ROWS + [
+TABLE = RESPONSE.ROWS + ELEMENT.ROWS + ITEM.ROWS + CATALOGUE.ROWS + ORDER.ROWS + [
     # the base world: nothing violates a rule, and it has facts
     (("no thing violate rule",), nothing, {}),
     (("this bounded context has fact",), nothing, {}),

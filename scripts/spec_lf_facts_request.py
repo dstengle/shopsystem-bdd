@@ -11,16 +11,20 @@ beside spec_lf_facts, whose walk calls it in a context that imports the request 
   and `param(R, I, P, V)`, `noparam(R, I, P)` of each, I the
   trigger's request. Two triggers are one request when their operation and parameter sets are equal: a parameter
   absent from one line and given in another makes two triggers, as two option sets of a run did.
+- A response's request (response-request, b543): the act of its verb, its operation, by the doer, a `resp` as any act
+  is, and each parameter it says `rparam(R, I, P, V)` or `rnoparam(R, I, P)`, I the act (`act`); no rule joins them
+  yet (L-3 follows the request).
 - The responses: the pack's verbs as the outcomes the check knows (`OUTCOMES`: refuse `refused`, return `returned`,
   complete `done`, fail `failed`, notify `notified`, keep `kept`, name `named`), each a `resp`, and a name also
   `names(R, I, X)`; any other verb is the context's (spec_lf_facts_atoms).
 """
 import re
 
-from spec_lf_core import Ref, const
+from spec_lf_core import Atom, Ref, const
 
 OUTCOMES = {"refuse": "refused", "return": "returned", "complete": "done", "fail": "failed", "notify": "notified",
             "keep": "kept", "name": "named"}
+ASKED = ("request", "param", "noparam")     # a response's request and its parameters' atoms (`act`)
 VAL = "val"     # the key's value of a parameter whose value is a referent of its attribute (`valued`)
 # outcomes that say how a request ended, which one response of one request has only one of (check.lp's `outcome`)
 ENDS = ("refused", "returned", "done", "failed")
@@ -104,3 +108,18 @@ def _slug(name):
 def outcome(walk, verb):
     """The check's event of a verb of the request pack in a context that imports it, else None."""
     return OUTCOMES.get(verb) if walk.ids.request else None
+
+
+def act(walk, atom, body, pos):
+    """The facts of a response's request atom (`ASKED`'s first) with its parameters' atoms in `body`; a parameter's
+    atom alone is read with its request."""
+    if atom.pred != "request":
+        return
+    e = atom.args[0]
+    walk.act(Atom("event", (e,) + atom.args[2:]), pos)
+    for a in body:
+        if getattr(a, "pred", None) == "noparam" and a.args[0] == e:
+            walk.emit("rnoparam", walk.acts, _slug(a.args[1]))
+        elif getattr(a, "pred", None) == "param" and a.args[0] == e:
+            v = a.args[2]
+            walk.emit("rparam", walk.acts, _slug(a.args[1]), walk.term(v) if isinstance(v, Ref) else _value(walk, v))

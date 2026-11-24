@@ -837,3 +837,8 @@ changed = []
 purpose = "Lets a condition depend on a moment falling within a recent span of time before the trigger."
 since = "b240"
 changed = []
+
+[constructs.response-request]
+purpose = "Lets a response make a request of an operation with its parameters, so a line can say what the core asks of a port."
+since = "b543"
+changed = []

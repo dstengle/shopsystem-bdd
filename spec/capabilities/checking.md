@@ -194,6 +194,12 @@ Restates: design-model-check#r13@0.29.
 ### [g70] A port line relied on by a line that does not exist is refused
 - [r70] While a requirement supports a requirement id that no requirement has, if the person validates this specification, then the specification service shall fail the check and name the requirement id.
 
+### [g71] An operation requested only by a response is requested
+- [r71] While a requirement uses `response-request` and the requirement uses an operation and no requirement governs the operation, when the person validates this specification, the specification service shall complete the request.
+
+### [g72] A line triggered on the refusal of a response's request states its reasons
+- [r72] While a requirement uses `response-request` and the requirement uses an operation and another requirement has a trigger that uses a refusal and the operation, when the person validates this specification, the specification service shall complete the request.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.

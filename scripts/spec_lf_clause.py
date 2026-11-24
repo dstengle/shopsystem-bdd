@@ -4,7 +4,8 @@ the responses), each condition, trigger and act a clause over a verb phrase, one
 A frame's verb phrase is an `event` atom for an action verb and a `state` atom for a state verb, its roles the
 subject and each kind of the frame by the words before it (`object` when there are none), the frame's fixed words at
 its end a role of their own ("successfully"), its sense the entry's place among the entries of its word; in a trigger,
-a verb naming an operation is a request with the parameters the line says (spec_lf_request); a row's
+a verb naming an operation is a request with the parameters the line says, and so is a response's act of it with its
+parameters (spec_lf_request, response-request); a row's
 "has" and "holds" are `rel` atoms; a verb phrase with a gap is the same atom with the gap's referent in its role. A
 negated clause puts all but its subject under `not`.
 

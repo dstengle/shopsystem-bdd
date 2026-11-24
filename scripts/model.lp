@@ -55,6 +55,7 @@
 #defined actor_kind/2.  #defined op_reason/2.  #defined lifecycle/2.  #defined transition/4.
 #defined requester/3.  #defined req_param/3.  #defined req_value/4.  #defined states_reason/3.
 #defined sets/5.  #defined sets_from_any/4.
+#defined asks/3.  #defined op_object/2.  #defined on_refusal/2.     % a response's request (b543)
 #defined cites_record/2.          % cites_record(I, R): item I's source: names the record R
 #defined new_item/1.              % new_item(I): item I came after the records policy
 #defined held/1.                  % held(X): X is an item or a batch whose file this repository holds (shop_ids)
@@ -490,6 +491,7 @@ label("v_m4", "an operation declares a refusal reason that no line states").
 % fail v_m4: op_reason("notes.add","no text").
 % pass v_m4: op_reason("notes.add","no text"). states_reason("c#r4","notes.add","no text").
 reason_stated(O, R) :- states_reason(_, O, R).
+reason_stated(O, R) :- op_reason(O, R), asks(_, O, _), op_object(O, Obj), on_refusal(_, Obj).
 v_m4(O, R)    :- op_reason(O, R), not reason_stated(O, R).
 label("w_m5", "a lifecycle transition no line causes").
 % fail w_m5: transition("note","status","draft","active").
@@ -507,6 +509,7 @@ label("v_m7", "an operation no line requests").
 % fail v_m7: operation("notes.add").
 % pass v_m7: operation("notes.add"). requester("c#r1","notes.add","the person").
 requested(O)  :- requester(_, O, _).
+requested(O)  :- asks(_, O, _).
 v_m7(O)       :- operation(O), not requested(O).
 
 % ---------------------------------------------------------------- records (the domain contract, §8)

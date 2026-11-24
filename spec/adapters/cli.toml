@@ -55,6 +55,8 @@ requirements = [
   "parsing#r16: If the person parses a requirement whose ambiguous text uses two frames of a verb, then the language service shall refuse the request and name every frame that the ambiguous text uses.",
   "parsing#r17: When the person parses a requirement that uses `param-of`, the language service shall complete the request.",
   "parsing#r18: When the person parses a requirement that uses `param-of` with the logical form, the language service shall return a logical form that holds a value in use.",
+  "parsing#r23: When the person parses a requirement that uses `response-request`, the language service shall complete the request.",
+  "parsing#r24: When the person parses a requirement that uses `response-request` with the logical form, the language service shall return a logical form that uses `request-params`.",
 ]
 [operations."language.parse".parameters]
 text = { positional = 1 }
@@ -125,6 +127,8 @@ requirements = [
   "checking#r67: While a property refers to an operation that does not exist, if the person validates this specification, then the specification service shall fail the check and name the property.",
   "checking#r69: While an area whose kind is `port` holds an operation and no adapter contract holds an operation table of the operation, when the person validates this specification, the specification service shall complete the request.",
   "checking#r70: While a requirement supports a requirement id that no requirement has, if the person validates this specification, then the specification service shall fail the check and name the requirement id.",
+  "checking#r71: While a requirement uses `response-request` and the requirement uses an operation and no requirement governs the operation, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r72: While a requirement uses `response-request` and the requirement uses an operation and another requirement has a trigger that uses a refusal and the operation, when the person validates this specification, the specification service shall complete the request.",
   "decisions#r1: While a design-decision is not `superseded` or `rejected` and the design-decision has no tier, when the person validates this specification, the specification service shall return `w_untiered`.",
   "decisions#r2: While the tier of a design-decision is `check` and no test enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d6`.",
   "decisions#r3: While the tier of a design-decision is `requirement` and no requirement enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d7`.",
@@ -169,6 +173,7 @@ requirements = [
   "consistency#r33: While the precondition of a requirement of a capability uses `holds-exactly` and `rc-subject`, when the person examines this specification with the capability, the specification service shall return a translation of the requirement.",
   "consistency#r34: While a requirement uses `param-of` and the requirement obliges an act and another requirement that forbids the act has the trigger of the requirement, when the person examines this specification, the specification service shall return `L1`.",
   "consistency#r35: While a term means an element and a requirement that uses the term obliges an act and another term means the element and another requirement that uses the term forbids the act, when the person examines this specification, the specification service shall return `L1`.",
+  "consistency#r36: While a requirement of a capability uses `response-request`, when the person examines this specification with the capability, the specification service shall return a translation of the requirement.",
 ]
 [operations."specification.examine".parameters]
 capability = { positional = 1 }

@@ -443,3 +443,28 @@ Feature: Checking
     When the person validates this specification
     Then the specification service fails this check
     And the specification service names the requirement id r2
+
+  @g71 @r71
+  Scenario: An operation requested only by a response is requested
+    Given a requirement r1
+    And the requirement r1 uses `response-request`
+    And an operation o1
+    And the requirement r1 uses the operation o1
+    And no requirement governs the operation o1
+    When the person validates this specification
+    Then the specification service completes this request
+
+  @g72 @r72
+  Scenario: A line triggered on the refusal of a response's request states its reasons
+    Given a requirement r1
+    And the requirement r1 uses `response-request`
+    And an operation o1
+    And the requirement r1 uses the operation o1
+    And a trigger t1
+    And a refusal r3
+    And the trigger t1 uses the refusal r3
+    And the trigger t1 uses the operation o1
+    And a requirement r2
+    And the requirement r2 has the trigger t1
+    When the person validates this specification
+    Then the specification service completes this request

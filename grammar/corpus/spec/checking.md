@@ -756,3 +756,39 @@ shall [x4: agent the person (constant), x5: specification "the specification of 
     fail(e2, subject: x6, object: x7)
     name(e3, subject: x6, object: x2)
 ```
+
+## r71
+From: b543 r71.
+
+```reading
+While a requirement uses `response-request` and the requirement uses an operation and no requirement governs the operation, when the person validates this specification, the specification service shall complete the request.
+shall [x2: thing `response-request` (parameter), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x8: request "the request the trigger makes" (indexical)]
+  while [x1: requirement, x3: operation]
+    use(subject: x1, object: x2)
+    use(subject: x1, object: x3)
+    not [x4: requirement]
+      govern(subject: x4, object: x3)
+  when
+    request(e1, specification.check, subject: x5, object: x6)
+  response
+    complete(e2, subject: x7, object: x8)
+```
+
+## r72
+From: b543 r72.
+
+```reading
+While a requirement uses `response-request` and the requirement uses an operation and another requirement has a trigger that uses a refusal and the operation, when the person validates this specification, the specification service shall complete the request.
+shall [x2: thing `response-request` (parameter), x7: agent the person (constant), x8: specification "the specification of this bounded context" (indexical), x9: service the specification service (constant), x10: request "the request the trigger makes" (indexical)]
+  while [x1: requirement, x3: operation, x4: requirement, x5: trigger, x6: refusal]
+    use(subject: x1, object: x2)
+    use(subject: x1, object: x3)
+    distinct(x4, x1)
+    use(subject: x5, object: x6)
+    use(subject: x5, object: x3)
+    of(x5, x4)
+  when
+    request(e1, specification.check, subject: x7, object: x8)
+  response
+    complete(e2, subject: x9, object: x10)
+```

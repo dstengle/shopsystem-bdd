@@ -6,14 +6,14 @@ is read.
   operation's qualified id), and each parameter the line says `param(e, p, v)` (v a value, a code's referent, a
   thing's referent, `some` of "with a p", `on` of a flag) or `noparam(e, p)` ("without a p", "without the p")
   (`vp`, `frame`, `expand`); a code given as the value of a parameter that is the word of an attribute T is of kind
-  T, as the image "the T of x" is (param-of, b418: `value_kind`); "the p" a response names a constant of the request pack's kind `parameter` (`np`);
-  "the request" is the request the trigger makes, the pack's `This:` (R2's indexical, spec_lf_read's `the`). An act of
-  a response keeps its event atom: a request is said in a trigger only.
+  T, as the image "the T of x" is (param-of, b418: `value_kind`); "the p" a response names a constant of the request
+  pack's kind `parameter` (`np`); "the request" is the request the trigger makes, the pack's `This:` (R2's
+  indexical, spec_lf_read's `the`). A response's act of such a verb with its parameters is a request too, its doer
+  the requester (response-request, b543: `vp`); one with none keeps its event atom.
 - its lines in `model parse --form` (`show`).
 - the steps' reading of a When step's request (`read`: the operation, each parameter given with its value or True,
   each absent), which features_vocab4's `WhenRequests` gives a handler.
-The check's facts of a request are plan 3's: until then spec_lf_facts reads a request as the event of its verb, its
-parameters left out (`as_events`, the bootstrap of the domain contract's branch).
+The check's facts of a request are spec_lf_facts_request's.
 """
 from dataclasses import replace
 
@@ -75,6 +75,8 @@ def vp(st, tree, nps, frame_atom):
     def build(s, refs):
         refs = list(refs)
         atom = frame_atom(st, n, m, [s] + refs[:len(args)])
+        if atom.pred != PRED:     # a response's act with its parameters is a request too (response-request, b543)
+            atom = Atom(PRED, (atom.args[0], st.names.verbs[n].term.operation) + atom.args[1:])
         given, it = [], iter(refs[len(args):])
         for p, role, v in params:
             if role in ("No", "NoFlag"):
@@ -132,9 +134,3 @@ def params(body, e):
     return [(a.args[1], a.args[2] if a.pred == PARAM else None) for a in body
             if isinstance(a, Atom) and a.pred in (PARAM, NOPARAM) and a.args[0] == e]
 
-
-def as_events(part):
-    """The trigger `part` with each request its verb's event and no parameter atom (the bootstrap's facts)."""
-    body = tuple(Atom("event", (a.args[0],) + a.args[2:]) if isinstance(a, Atom) and a.pred == PRED else a
-                 for a in part.body if not (isinstance(a, Atom) and a.pred in (PARAM, NOPARAM)))
-    return replace(part, body=body)
