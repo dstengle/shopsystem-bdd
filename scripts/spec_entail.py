@@ -110,6 +110,7 @@ def programs(facts, bridge=True, chunk=CHUNK):
             if M not in chained:
                 chained[M] = spec_entail_chain.rules(P, M)
             parts += chained[M]
+        parts += spec_entail_chain.cover_facts(P, chain)
         out.append("\n".join(parts + [background]))
     return out, P
 

@@ -1,7 +1,7 @@
 """design-model-check's worlds of a request followed from one line to another's trigger (consistency r37-r39, b545,
 decision 0118), rows design_model_check_worlds' TABLE takes first, in the construct catalogue's request context
 (design_model_check_worlds_value's `line`): the decisions service's request to publish a design-decision with the
-summary `s1`, the lines on that request (they govern the registry's publish) and a line on the person's entering
+summary `s1`, the lines on that request or on a publish of no parameter (they govern the registry's publish) and a line on the person's entering
 that their consequences entail (an L8 through the request, r37; through a consequence of a governing line that
 triggers a third line, r38); and two lines on one trigger, one obliging and one forbidding a publish of another
 summary (no L1, r39)."""
@@ -26,6 +26,7 @@ REQUESTING = ENTERS + "the decisions service shall publish the design-decision w
 KEEPING = PUBLISHES + "the registry shall keep the design-decision."
 NOTIFYING = PUBLISHES + "the registry shall notify the person of the design-decision."
 NAMING = PUBLISHES + "the registry shall name the design-decision."
+NAMING_ANY = "When the decisions service publishes a design-decision, the registry shall name the design-decision."
 ENTAILED = (ENTERS + "the registry shall keep the design-decision, notify the person of the design-decision and name "
             "the design-decision.")
 OTHER = "When the person enters a design-decision with the tier `judgement`, the decisions service shall keep the " \
@@ -45,9 +46,10 @@ def named(lines, names):
 
 
 ROWS = [
-    # r37: r1 requests publish; r2, r4, r5 govern it, each forcing a Then of r3; r6 governs no publish
+    # r37: r1 requests publish with the summary `s1`; r2, r4 govern it on that summary, r5 on no parameter, each
+    # forcing a Then of r3; r6 governs no publish
     (("requirement use `response-request`", "requirement govern operation", "requirement not govern operation"),
-     named([REQUESTING, KEEPING, ENTAILED, NOTIFYING, NAMING, OTHER],
+     named([REQUESTING, KEEPING, ENTAILED, NOTIFYING, NAMING_ANY, OTHER],
            {"r1": 1, "r2": 2, "r3": 3, "r4": 4, "r5": 5, "r6": 6}), {}),
     # r38: r1 governs publish, its consequence (keep) the trigger of r2, whose consequence r4 states; r3 requests
     (("requirement use `response-request`", "requirement govern operation", "trigger use consequence"),
