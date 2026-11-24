@@ -59,21 +59,23 @@ def _operation_named(model, service, name):
     return bool(found and found.operation(op))
 
 
+def _declared(model, service, op, prop):
+    """Whether what `prop` of `service`.`op` refers to is declared: a parameter of op, an operation, an event."""
+    if prop.key == "idempotent by":
+        return prop.value in {name for name, _ in op.raw}
+    if prop.key == "compensated by":
+        return _operation_named(model, service.name, prop.value)
+    return prop.value in {e.phrase for e in model.events}
+
+
+WHAT = {"idempotent by": "a parameter of the operation", "compensated by": "an operation",
+        "followed by": "an event"}
+
+
 def problems(model):
     """v_m8 of each property that refers to what the model does not declare, as (code, subject, message)."""
-    events = {e.phrase for e in model.events}
-    out = []
-    for service in model.services.values():
-        for op in service.operations:
-            params = {name for name, _ in op.raw}
-            for prop in op.properties:
-                missing = {"idempotent by": lambda v: v not in params,
-                           "compensated by": lambda v: not _operation_named(model, service.name, v),
-                           "followed by": lambda v: v not in events}[prop.key](prop.value)
-                if missing:
-                    what = {"idempotent by": "a parameter of %s" % op.name, "compensated by": "an operation",
-                            "followed by": "an event"}[prop.key]
-                    out.append(("v_m8", "%s.%s %s" % (service.name, op.name, prop.text),
-                                "%s: the property %s of %s.%s refers to %s, which is not %s the model declares"
-                                % (op.where, prop.text, service.name, op.name, prop.value, what)))
-    return out
+    return [("v_m8", "%s.%s %s" % (service.name, op.name, prop.text),
+             "%s: the property %s of %s.%s refers to %s, which is not %s the model declares"
+             % (op.where, prop.text, service.name, op.name, prop.value, WHAT[prop.key]))
+            for service in model.services.values() for op in service.operations for prop in op.properties
+            if not _declared(model, service, op, prop)]
