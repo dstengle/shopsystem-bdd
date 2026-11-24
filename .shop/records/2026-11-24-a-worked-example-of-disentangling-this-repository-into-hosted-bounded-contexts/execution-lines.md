@@ -1,0 +1,72 @@
+Totals: W 10, R 29, S 3, E 26 of 68 lines
+
+| line | class | also | text |
+|---|---|---|---|
+| batches#r50 | W | R | While an item in a batch is `in-batch`, when the person merges the proposed change of the batch, the batches service shall set the status of the item to `delivered` and set the status of the batch to ... |
+| batches#r51 | E | - | When the person opens a batch, the batches service shall keep a batch brief and return the batch brief. |
+| batches#r52 | E | - | When the person abandons a batch, the batches service shall keep no review folder of the batch. |
+| batches#r54 | W | R | While an item is `ready` and the item does not meet the readiness bar, when the person opens a batch, the batches service shall set the status of the item to `shaped`. |
+| batches#r55 | W | R | While an item is not `ready` or `delivered` and a dependency on the item exists and another item whose status is `ready` has the dependency, when the person opens a batch, the batches service shall no... |
+| batches#r56 | E | - | While a batch is `building`, when a session resumes the batch, the batches service shall return the batch plan of the batch and not ask a question. |
+| batches#r57 | W | R | While an item in a batch is `in-batch`, when a session parks the item, the batches service shall set the status of the item to `needs-input`, keep a question on the item and not set the status of the ... |
+| batches#r58 | W | - | While a batch is `building`, when the person abandons the batch, the batches service shall set the status of the batch to `abandoned` and set the status of every item in the batch whose status is `in-... |
+| batches#r59 | E | - | When the person merges the proposed change of a batch, the batches service shall keep no review folder of the batch. |
+| batches#r60 | R | S | While an item in a batch is `in-batch` and the workspace of the batch holds a requirement of the item, when a session parks the item, the batches service shall keep a workspace of the batch that does ... |
+| batches#r61 | R | S | While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the batch is `needs-input` and a scenario of the item breaks in the workspace of the task, when ... |
+| batches#r62 | R | S | While an item in a batch is `in-batch` and a task of the item is `running` and another item in the batch is `in-batch` and a scenario of the item succeeds in the workspace of the task, when a session ... |
+| batches#r63 | E | - | While a batch holds an item and the batch has a task, when the person monitors the batch, the batches service shall return the item, the task and the status of the task. |
+| batches#r64 | R | S | While `universal` does not exist and an item is `ready` and the item meets the readiness bar and a universal condition is in the item, when the person opens a batch, the batches service shall keep `un... |
+| batches#r65 | W | R | While an item in a batch is `in-batch` and the item has a request line of a context request and the context request is `accepted`, when the person merges the proposed change of the batch, the batches ... |
+| batches#r66 | R | - | While a task of an item is `running` and the item holds a chore and the chore breaks in the workspace of the task, if a session finishes the task, then the batches service shall refuse the request and... |
+| batches#r67 | R | - | While a task of an item is `running` and the item holds a chore and a kept change in the workspace of the task touches a file that is not in the chore, if a session finishes the task, then the batches... |
+| batches#r68 | R | - | While an item is `ready` and the item holds a chore and the item meets the readiness bar, when the person opens a batch, the batches service shall keep a batch brief that holds the chore. |
+| batches#r70 | R | S | While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the batch is `needs-input` and the item has a requirement that is not in the workspace of the ba... |
+| batches#r71 | R | S | While an item is `ready` and the item meets the readiness bar and a requirement of the item has a logical form, when the person opens a batch, the batches service shall keep the logical form in the co... |
+| batches#r72 | R | S | While an item is `ready` and the item meets the readiness bar and a requirement id is in the item and a requirement in the corpus has the requirement id, when the person opens a batch, the batches ser... |
+| batches#r73 | R | S | While an item is `ready` and the item meets the readiness bar and a requirement of the item uses a rule, when the person opens a batch, the batches service shall keep the catalogue entry of the rule. |
+| batches#r74 | R | S | While an item is `ready` and the item meets the readiness bar and a requirement of the item uses a construct, when the person opens a batch, the batches service shall keep the construct catalogue. |
+| batches#r75 | R | S | While no requirement of an item whose status is `ready` uses a construct and no construct catalogue exists, when the person opens a batch, the batches service shall keep no construct catalogue. |
+| batches#r76 | R | S | While an item is `ready` and the item meets the readiness bar and the item holds a capability, when the person opens a batch, the batches service shall keep the capability that conforms to the capabil... |
+| batches#r77 | R | S | While a task of an item is `running` and the workspace of the task holds a virtual environment and a scenario of the item succeeds in the workspace of the task, when a session finishes the task, the b... |
+| batches#r78 | R | S | While a task of an item is `running` and a scenario breaks in the workspace of the task and the scenario has a capability and the item holds no requirement id that is in the capability and no kept cha... |
+| batches#r79 | R | S | While an item is `ready` and the item meets the readiness bar and the item holds an operation table, when the person opens a batch, the batches service shall keep an adapter contract that holds the op... |
+| batches#r80 | R | S | While an item is `ready` and the item meets the readiness bar and the item holds an operation, when the person opens a batch, the batches service shall keep an adapter contract and keep no operation t... |
+| batches#r81 | R | S | While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement, when the person amends the item, the batches service shall keep a workspace of the batch th... |
+| batches#r83 | R | - | While an item is not `in-batch`, if the person amends the item, then the batches service shall refuse the request and name the item. |
+| batches#r84 | E | - | When the person configures a setting with a setting value, the batches service shall keep a settings file that holds the setting, keep the settings file that conforms to the delivery settings form and... |
+| batches#r85 | E | - | If the person configures a setting that does not conform to the delivery settings form, then the batches service shall refuse the request and name the setting. |
+| batches#r86 | E | - | If the person configures a setting with a setting value that does not conform to the delivery settings form, then the batches service shall refuse the request and name the setting value. |
+| batches#r87 | R | S | While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an operation, when the person opens a batch, the batches service shall keep the model line i... |
+| batches#r89 | W | RS | While an item is `ready` and the item meets the readiness bar and a requirement of the item violates a rule whose severity is `error`, if the person opens a batch, then the batches service shall set t... |
+| batches#r90 | R | S | While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch holds a requirement of the item and the workspace of the task holds the requirement and the it... |
+| batches#r91 | R | S | While an item in a batch is `in-batch` and the item holds a model line that restates an operation and the domain model holds the model line, when a session parks the item, the batches service shall ke... |
+| batches#r92 | R | S | While an item is `ready` and the item meets the readiness bar and the item holds a model line and the model line specifies an operation and the domain model does not hold the operation and the item ho... |
+| batches#r93 | W | R | While an item is `ready` and the item meets the readiness bar and the item exceeds the review limit, when the person opens a batch, the batches service shall not set the status of the item to `in-batc... |
+| batches#r94 | W | R | While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit, when the person o... |
+| batches#r95 | R | S | While an item is `ready` and the item meets the readiness bar and the item holds a term of a pack, when the person opens a batch, the batches service shall keep the pack that has the term and keep the... |
+| batches#r96 | R | - | While an item in a batch is `in-batch` and the item does not meet the readiness bar, if the person amends the item, then the batches service shall refuse the request, name the item and change nothing. |
+| batches#r97 | W | RS | While an item is `ready` and the item meets the readiness bar and a requirement of the item retires no requirement id and a scenario of the item refers to the requirement id of the requirement and the... |
+| batches#r98 | S | - | While a settings file holds a batch rule, when the person opens a batch, the batches service shall keep a batch brief that holds the batch rule. |
+| batches#r99 | S | - | While no settings file holds a batch rule, when the person opens a batch, the batches service shall keep a batch brief that holds no batch rule. |
+| reviews#r1 | R | - | While an item in a batch is `in-batch`, when the person submits the batch, the batches service shall keep a proposed change of the batch that cites the item. |
+| reviews#r2 | R | - | While the status of an item in a batch is `needs-input` and a kept change cites the item, when the person submits the batch, the batches service shall keep a proposed change of the batch that does not... |
+| reviews#r3 | E | - | While a task of a batch is not `done`, if the person submits the batch, then the batches service shall refuse the request and name the task. |
+| reviews#r4 | E | - | While a workspace of a task of a batch holds a kept change that cites no item, if the person submits the batch, then the batches service shall refuse the request and name the kept change. |
+| reviews#r5 | E | - | While a batch is `building` and every task of the batch is `done`, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `... |
+| reviews#r6 | E | - | While a batch is `building` and every task of the batch is `done` and the workspace of the batch holds a virtual environment, when the person submits the batch, the batches service shall keep a propos... |
+| reviews#r7 | E | - | While a batch is `building` and every task of the batch is `done` and an item in the batch is `in-batch` and a kept change that touches a file cites the item and another kept change touches the file a... |
+| reviews#r8 | R | - | While an item in a batch is `in-batch` and a kept change cites the item and another item in the batch is `in-batch` and the kept change conflicts with another kept change that cites the item and the k... |
+| reviews#r9 | E | - | While a batch is `awaiting-merge` and the workspace of the batch holds a base merge, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status... |
+| reviews#r10 | E | - | While a batch is `awaiting-merge` and the workspace of the batch holds no base merge, if the person submits the batch, then the batches service shall refuse the request and name the batch. |
+| reviews#r11 | E | - | While a batch is `awaiting-merge`, when the person reopens the batch with a review finding, the batches service shall keep a review of the batch that holds the review finding and set the status of the... |
+| reviews#r12 | E | - | While a batch is not `awaiting-merge`, if the person reopens the batch with a review finding, then the batches service shall refuse the request and name the batch. |
+| review-guarantees#r1 | E | - | When the batches service submits a batch, `pr-reviewer` shall review the proposed change of the batch. |
+| review-guarantees#r2 | E | - | While the tier of a design-decision is `judgement`, when `pr-reviewer` reviews a proposed change, `pr-reviewer` shall review the design-decision. |
+| review-guarantees#r3 | E | - | `pr-reviewer` shall change only reviews of a proposed change. |
+| review-guarantees#r4 | S | - | While a proposed change of a batch has no review, when `pr-reviewer` reviews the proposed change, `pr-reviewer` shall review every requirement that an item in the batch proposes and every kept change ... |
+| review-guarantees#r5 | E | - | When `pr-reviewer` reviews a proposed change of a batch, `pr-reviewer` shall review only kept changes of the batch. |
+| review-guarantees#r6 | E | - | While the triage of a review finding on the proposed change of a batch is `fix now`, when a session concludes a review of the batch, the reviews service shall set the status of the batch to `building`... |
+| review-guarantees#r7 | E | - | While the triage of a review finding on a proposed change is `fix now`, when `pr-reviewer` reviews the proposed change, `pr-reviewer` shall review every kept change for the review finding. |
+| review-guarantees#r8 | E | - | While a batch has a proposed change and no review finding on the proposed change whose triage is `fix now` exists, when a session concludes a review of the batch, the reviews service shall set the sta... |
+| review-guarantees#r9 | E | - | When `pr-reviewer` reviews a proposed change, `pr-reviewer` shall name the grade of every review finding on the proposed change and the triage of every review finding on the proposed change. |
+| review-guarantees#r10 | E | - | While the workspace of a batch holds a base merge and the proposed change of the batch has a review and no review finding on the proposed change whose triage is `fix now` exists, when `pr-reviewer` re... |

@@ -1,0 +1,16 @@
+--- /home/vscode/shopsystem-bdd/spec/vocabulary/execution.md	2026-11-21 20:41:19.986009264 +0000
++++ spec/vocabulary/execution.md	2026-11-24 22:36:09.840196881 +0000
+@@ -31,7 +31,7 @@
+ - **open** (verb, action) → operation batches.open. Forms: opens, opened. Frame: <actor> opens <batch>.
+ - **resume** (verb, action) → operation batches.resume. Forms: resumes, resumed. Frame: <actor> resumes <batch>.
+ - **finish** (verb, action) → operation batches.finish. Forms: finishes, finished. Frame: <actor> finishes <task>.
+-- **park** (verb, action) → operation batches.park. Forms: parks, parked. Frame: <actor> parks <item>.
++- **park** (verb, action) → operation batches.park. Forms: parks, parked. Frame: <actor> parks <assignment>.
+ - **submit** (verb, action) → operation batches.submit. Forms: submits, submitted. Frame: <actor> submits <batch>.
+ - **merge** (verb, action) → operation batches.merge. Forms: merges, merged. Frame: <actor> merges <proposed change>.
+ - **abandon** (verb, action) → operation batches.abandon. Forms: abandons, abandoned. Frame: <actor> abandons <batch>.
+@@ -53,3 +53,4 @@
+ - **base merge** (noun) → object base merge. A kept change on a batch's branch that merges the branch the batch started from into it, made after the batch's last review. Plural: base merges.
+ - **batch rule** (noun) → object batch rule. A rule of a bounded context's own setup that every agent running a batch follows, kept as one entry of the setting `[batch] rules` of `.shop/delivery.toml` and never in the plugin's code. Plural: batch rules.
+ - **reopen** (verb, action) → operation batches.reopen. A batch that awaits its merge taken back to building with a finding the person wrote on its proposed change, kept as a review. Forms: reopens, reopened. Frame: <actor> reopens <batch>.
++- **assignment** (noun) → object assignment. A piece of work a batch holds as the work supply gave it: execution's view of one ready piece of work, done by one task.

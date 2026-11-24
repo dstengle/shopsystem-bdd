@@ -1,0 +1,13 @@
+--- /home/vscode/shopsystem-bdd/spec/model/tracking.md	2026-11-21 20:29:25.608864554 +0000
++++ spec/model/tracking.md	2026-11-24 22:35:13.282661148 +0000
+@@ -119,6 +119,10 @@
+ object brainstorming session kind of session
+ 
+ service backlog
++  operation allocate(item)  outcomes: done | refused: item not ready, bar check unmet
++  operation discharge(item)  outcomes: done
++  operation restore(item)  outcomes: done
++  operation suspend(item, question)  outcomes: done
+   operation note idea(title, note)  outcomes: done → the item
+   operation shape(item, note)  outcomes: done | refused: item not an idea, no note
+   operation rate(item, value, urgency, size)  outcomes: done

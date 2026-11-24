@@ -1,0 +1,28 @@
+--- /home/vscode/shopsystem-bdd/spec/model/execution.md	2026-11-21 20:41:19.986009264 +0000
++++ spec/model/execution.md	2026-11-24 22:36:09.840196881 +0000
+@@ -29,12 +29,15 @@
+ object batch kind of file
+   attributes: status: building | in-review | awaiting-merge | merged | abandoned
+   lifecycle status: building → in-review; in-review → building; in-review → awaiting-merge; awaiting-merge → merged; in-review → merged; building → abandoned; in-review → abandoned
+-  relations: holds → item (many); has → task | proposed change | review folder | batch plan | kept change | measurement | wall time | session time | token | role | workspace | review (many)
++  relations: holds → item | assignment (many); has → task | proposed change | review folder | batch plan | kept change | measurement | wall time | session time | token | role | workspace | review (many)
+   lifecycle status: awaiting-merge → in-review
+   lifecycle status: awaiting-merge → building
+ 
+ object batch plan kind of file
+ 
++object assignment kind of text
++  relations: has → task (many)
++
+ object task
+   attributes: status: pending | running | done | failed
+   relations: has → workspace (many)
+@@ -56,7 +59,7 @@
+   operation open(batch)  outcomes: done → the batch
+   operation resume(batch)  outcomes: done
+   operation finish(task)  outcomes: done | refused: chore breaking, file outside the chore
+-  operation park(item)  outcomes: done
++  operation park(assignment)  outcomes: done
+   operation submit(batch)  outcomes: done → the proposed change | refused: task not done, kept change citing no item, batch with no base merge
+   operation merge(proposed change)  outcomes: done
+   operation abandon(batch)  outcomes: done
