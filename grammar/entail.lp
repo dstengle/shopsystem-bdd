@@ -8,7 +8,8 @@
 % (in a context importing the request pack, any refusal stated or forced; in one importing the CLI pack, the bridge's:
 % an error exit on a run is a refusal of its command, the CLI pack's definition of refuse), over the world and A;
 % C, the chain (b545, decision 0118; scripts/spec_entail_chain.py): a request stated or forced in A or B fires the
-% lines on it (`useC`) at depth 1, and what a line of depth k forces fires the lines on it at depth k+1, up to the depth
+% lines on a request of its operation (`useC`) at depth 1, each whose key `covers` the request's (each parameter the
+% line names given the same value, a line of fewer parameters or none too), and what a line of depth k forces fires the lines on it at depth k+1, up to the depth
 % the rules are written to; `via(Q,M,S)`, the premise S a firing of M came by, kept for the findings.
 #defined a0/4. #defined na0/4. #defined k/3. #defined nk/3. #defined rel/4. #defined nrel/4. #defined feat/2.
 #defined code/3. #defined ev/5. #defined r/6. #defined setv/4. #defined prop/4. #defined lnone/4. #defined hit/2.
@@ -17,7 +18,7 @@
 #defined bridgecmd/2. #defined tq/5. #defined dask/2. #defined use/2. #defined kind/1. #defined sub/2.
 #defined val/3. #defined dalt/2. #defined dlit/5.
 #defined evC/6. #defined rC/7. #defined iskC/3. #defined propC/4. #defined relC/4. #defined setvC/4.
-#defined useC/2. #defined via/3.
+#defined useC/2. #defined via/3. #defined covers/2.
 isk2(Q,Z,K) :- isk(Q,Z,K).  isk2(Q,Z,K) :- iskA(Q,Z,K).  rel2(Q,R,X,Y) :- rel(Q,R,X,Y).  rel2(Q,R,X,Y) :- relA(Q,R,X,Y).
 prop2(Q,Z,T,V) :- prop(Q,Z,T,V).  prop2(Q,Z,T,V) :- propA(Q,Z,T,V).
 setv2(Q,Z,T,V) :- setv(Q,Z,T,V).  setv2(Q,Z,T,V) :- setvA(Q,Z,T,V).
