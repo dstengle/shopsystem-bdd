@@ -101,6 +101,23 @@ def test_restates_both_forms(tmp_path):
     assert cap.groups[1].restates == [("formulation", 5)]
 
 
+def test_relied_on_by_gives_the_ids_a_requirement_supports(tmp_path):
+    body = BODY.replace("- [r3] `work` shall print the queue.\n",
+                        "- [r3] `work` shall print the queue.\nRelied on by: orders#r4, r2.\n")
+    cap = read(tmp_path, body=body)
+    assert cap.problems == []
+    assert cap.groups[1].requirements[0].supports == ("orders#r4", "work-queue#r2")
+    assert cap.groups[0].requirements[0].supports == ()
+
+
+def test_relied_on_by_after_no_requirement_or_naming_no_id_is_a_problem(tmp_path):
+    body = BODY.replace("Restates: formulation#r5@0.29\n", "Restates: formulation#r5@0.29\nRelied on by: r2.\n")
+    body = body.replace("- [r3] `work` shall print the queue.\n", "- [r3] `work` shall print the queue.\nRelied on by: x.\n")
+    found = read(tmp_path, body=body).problems
+    assert any("Relied on by: line after no requirement" in p for p in found), found
+    assert any("Relied on by: 'x' is not" in p for p in found), found
+
+
 def test_given_block_with_a_docstring_and_a_table(tmp_path):
     given = read(tmp_path).groups[0].given
     assert [line for line, _ in given] == [

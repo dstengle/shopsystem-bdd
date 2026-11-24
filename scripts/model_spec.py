@@ -185,6 +185,11 @@ class SpecReading:
                 self.group_of[qid] = gid
                 self.parsed(qid, q.text)
                 self.domain_line(path, qid, q.text)     # v_m1 (model_domain)
+                for ref in q.supports:      # a port line's `Relied on by:`: each a requirement there is (b548)
+                    found = self.resolve_req(ref, where)
+                    if found:
+                        self.fact("supports", qid, found)
+                        self.want(found, "requirement", where)
                 for word in spec_example.parameters(q.text, self.example_constants()):     # w_example (I18)
                     self.fact("exemplified", qid, word)
             for n, rid, text in g.odd:      # v15a with no id, v15b with an id used before
