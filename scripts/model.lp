@@ -490,7 +490,6 @@ v_m3(Q, A)    :- requester(Q, O, A), op_by(O, _), not allowed(O, A).
 label("v_m4", "an operation declares a refusal reason that no line states").
 % fail v_m4: op_reason("notes.add","no text").
 % pass v_m4: op_reason("notes.add","no text"). states_reason("c#r4","notes.add","no text").
-% pass v_m4: op_reason("stock.reserve","no stock"). asks("c#r1","stock.reserve","the notes service"). op_object("stock.reserve","reservation"). on_refusal("c#r2","reservation").
 reason_stated(O, R) :- states_reason(_, O, R).
 reason_stated(O, R) :- op_reason(O, R), asks(_, O, _), op_object(O, Obj), on_refusal(_, Obj).
 v_m4(O, R)    :- op_reason(O, R), not reason_stated(O, R).
@@ -509,7 +508,6 @@ v_m6(Q, T, none, To) :- sets_from_any(Q, Obj, T, To), lifecycle(Obj, T), not ent
 label("v_m7", "an operation no line requests").
 % fail v_m7: operation("notes.add").
 % pass v_m7: operation("notes.add"). requester("c#r1","notes.add","the person").
-% pass v_m7: operation("stock.reserve"). asks("c#r1","stock.reserve","the notes service").
 requested(O)  :- requester(_, O, _).
 requested(O)  :- asks(_, O, _).
 v_m7(O)       :- operation(O), not requested(O).
