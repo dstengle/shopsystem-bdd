@@ -7,8 +7,8 @@ one word never names one thing, two terms of one element (two layers' proper nou
 kind tree; an attribute's absence its value `absent` (b240). A word with no id raises ValueError naming it.
 """
 import spec_lexicon
-import spec_logic_vocab
 import spec_lf_values
+import spec_logic_vocab
 
 
 class Ids:
