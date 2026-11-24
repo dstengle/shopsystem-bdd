@@ -21,6 +21,7 @@ from collections import defaultdict
 from pathlib import Path
 
 import clingo
+import spec_entail_chain
 import spec_lf_core
 import spec_packs
 from spec_entail_rules import Premises, parse, q
@@ -40,7 +41,8 @@ def _gives(f):
 
 
 def index(P):
-    """{(L, I): [M]}: the premises asked of each response that some other requirement could give, sorted."""
+    """{(L, I): ([M], [C])}: the premises asked of each response that some other requirement could give, and the lines
+    a request of L's or of a premise's reaches (spec_entail_chain, the stratum C), each sorted."""
     by_trig, untrig, refusers = defaultdict(list), [], []
     for r in P.reqs:
         t = P.trig.get(r)
@@ -51,28 +53,32 @@ def index(P):
             if t[:2] in REFUSALS:
                 refusers.append(r)
     gives = {r: _gives(f) for r, f in P.reqs.items()}
-    out = {}
+    reached, out = spec_entail_chain.triggers(P), {}
     for L, f in P.reqs.items():
         lt, base = P.trig.get(L), P.base[L]
         same = [M for M in by_trig[tuple(lt[:2])] if P.base[M] != base] if lt else []
         ran = lt is not None and lt[0] in ("ran", "req")     # a run (the bridge's), a request (refuse primitive)
         counted = {a[0] for a in f["count"]}
         held = {a[0] for a in f["oonly"] + f["ocount"]}
+        sources = [M for M in same + untrig + (refusers if ran else []) if P.base[M] != base]
+        chain = spec_entail_chain.chained(P, L, sources, gives, reached)
+        starts = {M for M in sources if spec_entail_chain.requesting(gives, M)}
         for j, p, e, d, x in f["resp"]:
             if j in counted or x in held:    # a count's Then is never asked: "a K" given does not give "at least n
                 continue                     # Ks" (I15); nor one on a thing that holds only or n Ks (b272)
             cand = [M for M in same + untrig + (refusers if ran else []) if (p, e) in gives[M] and P.base[M] != base]
             own = any(j2 != j and (p2, e2) == (p, e) for j2, p2, e2, _, _ in f["resp"]) or (
                 (p, e) == ("neg", "e_change") and ("pos", "change_nothing") in gives[L])
-            if not cand and not own:
+            by = [M for M in chain if (p, e) in gives[M]]
+            if not cand and not own and not by:
                 continue
-            use = set(cand)
+            use = set(cand) | (starts if by else set())
             if ran:     # the premises a refusal of L's request or an error exit on its run brings in: its refusers,
                 #         and the lines that refuse or exit so
                 use |= {M for M in same if any(a[1:3] in (["pos", "exit_error"], ["pos", "refused"])
                                                for a in P.reqs[M]["resp"])}
                 use |= {M for M in refusers if P.base[M] != base}
-            out[(L, j)] = sorted(use)
+            out[(L, j)] = (sorted(use), chain if by else [])
     return out
 
 
@@ -83,27 +89,35 @@ def programs(facts, bridge=True, chunk=CHUNK):
     idx = index(P)
     domain = [f for f in facts if f.split("(")[0] in ("kind", "sub", "val", "dalt", "dlit")]
     keys, rules, out = sorted(idx), {}, []
+    chained = {}
     background = ENTAIL.read_text()
     for n in range(0, len(keys), chunk):
-        parts, used = list(domain), set()
+        parts, used, chain = list(domain), set(), set()
         for L, I in keys[n:n + chunk]:
-            ms, Q = idx[(L, I)], "q(%s,%s)" % (q(L), I)
+            (ms, cs), Q = idx[(L, I)], "q(%s,%s)" % (q(L), I)
             parts += P.world(L, I, Q, bridge)
             parts += ["use(%s,%s)." % (Q, q(M)) for M in ms]
-            conds = {a[1] for M in ms for a in reqs[M]["ccond"]} & {a[0] for a in dom["dalt"]}
+            parts += ["useC(%s,%s)." % (Q, q(M)) for M in cs]
+            conds = {a[1] for M in ms + cs for a in reqs[M]["ccond"]} & {a[0] for a in dom["dalt"]}
             parts += ["dask(%s,%s)." % (Q, c) for c in sorted(conds)]
             used |= set(ms)
+            chain |= set(cs)
         for M in sorted(used):
             if M not in rules:
                 rules[M] = P.rule(M)
             parts += rules[M]
+        for M in sorted(chain):
+            if M not in chained:
+                chained[M] = spec_entail_chain.rules(P, M)
+            parts += chained[M]
         out.append("\n".join(parts + [background]))
     return out, P
 
 
 def entailed(facts, bridge=True, chunk=CHUNK):
-    """{(L, I): {M}}: each response I of L that other requirements M entail (I a string, as the facts number it)."""
-    found = defaultdict(set)
+    """{(L, I): {M}}: each response I of L that other requirements M entail (I a string, as the facts number it), with
+    the lines of each premise's chain (spec_entail_chain's `premises`)."""
+    found, via = defaultdict(set), defaultdict(set)
     for prog in programs(facts, bridge, chunk)[0]:
         ctl = clingo.Control(["--warn=none", "-t", "1"])
         ctl.add("base", [], prog)
@@ -113,7 +127,11 @@ def entailed(facts, bridge=True, chunk=CHUNK):
                 for s in model.symbols(shown=True):
                     if s.name == "ent":
                         found[(s.arguments[0].string, str(s.arguments[1].number))].add(s.arguments[2].string)
-    return found
+                    elif s.name == "via":
+                        via[(s.arguments[0].string, str(s.arguments[1].number))].add(
+                            (s.arguments[2].string, s.arguments[3].string if s.arguments[3].type ==
+                             clingo.SymbolType.String else str(s.arguments[3])))
+    return defaultdict(set, spec_entail_chain.premises(found, via))
 
 
 def refuse_defined(root):

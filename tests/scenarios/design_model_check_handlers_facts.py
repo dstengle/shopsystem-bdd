@@ -107,9 +107,10 @@ for _template, _verbs in OWN.items():
 @local("GivenDoes")
 @local("GivenDoesNot")
 def shared_state(step):
-    """`has`, `holds` and `violate` of this feature (world_fallbacks' keys), `conform` (codified2_world's) and a row's
-    `on` ("the order o1 is on the term t1", b275)."""
-    if not ours(step) or step.term not in ("has", "holds", "violate", "conform", "on"):
+    """`has`, `holds` and `violate` of this feature (world_fallbacks' keys), `conform` (codified2_world's), a row's
+    `on` ("the order o1 is on the term t1", b275) and `govern` ("the requirement r2 governs the operation o1", b545:
+    other features' handlers' key)."""
+    if not ours(step) or step.term not in ("has", "holds", "violate", "conform", "on", "govern"):
         return False
     state(step)
 
