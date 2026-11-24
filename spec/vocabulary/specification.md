@@ -219,3 +219,7 @@ area: specification
 - **property** (noun) → object property. What an operation or an event promises beyond its outcomes, written on its model line: `idempotent by <parameter>`, `compensated by <operation>`, `followed by <event>`, or an event's `delivery` and `when`. Plural: properties.
 - **refer** (verb, state) → relation property.refers to. A property names an operation of the domain model, as `compensated by <operation>` does. Forms: refers, referred. Frame: <property> refers to <operation>.
 - **prepare** (verb, action) → operation specification.prepare. Forms: prepares, prepared. Frame: <actor> prepares <contract>.
+- **area** (noun) → object area. One part of the domain model, a file `spec/model/<area>.md` with its `kind:`: a core, supporting or generic part of the business, or a driven port, whose operations and words are this bounded context's own. Plural: areas.
+- **kind** (attribute) → attribute area.kind. What an area is, the `kind:` of its model file.
+- **port** (noun) → value area.kind port.
+- **support** (verb, state) → relation requirement.supports. A line of a port contract stands under a core line, which the port line names under its `Relied on by:`. Forms: supports, supported. Frame: <requirement> supports <requirement id>.

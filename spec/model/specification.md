@@ -23,6 +23,7 @@ object requirement kind of text
   relations: has → precondition | trigger | logical form | consequence | parse | compiled grammar | translation | response | act | restriction | upper bound | requirement id (many); omits → requirement (many); allows → act (many); oblige → requirement (many); overrides → requirement (many); adds → consequence (many); permits → act (many); retires → requirement id (many); uses → construct | rule (many)
   relations: governs → operation (many)
   relations: has → ambiguous text | plural object (many)
+  relations: supports → requirement id (many)
 
 object requirement group
   relations: has → requirement | scenario (many)
@@ -336,4 +337,8 @@ object contract form kind of artifact
 
 object property kind of text
   relations: refers to → operation (many)
+
+object area
+  attributes: kind: core | supporting | generic | port
+  relations: holds → operation | capability (many)
 ```
