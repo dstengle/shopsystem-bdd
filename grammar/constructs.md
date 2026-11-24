@@ -1111,6 +1111,28 @@ shall [x1: agent the person (constant), x5: service the decisions service (const
     name(e3, subject: x5, object: x7)
 ```
 
+## response-request
+
+a response's act that is a request of an operation with its parameters, said as a trigger's request is (b543, design-decisions 0115, 0122)
+
+- Purpose: Lets a response make a request of an operation with its parameters, so a line can say what the core asks of a port.
+- Since: b543
+- Form: <doer> shall <operation verb> <np> with the <parameter> <value>
+- Functions: `k_\w+_ActReq_k_\w+`
+- Cited by: checking#r71, checking#r72, consistency#r36, parsing#r23, parsing#r24
+- Context: `grammar/corpus/constructs/request/`
+- Example and its reading:
+
+```construct
+When the person enters a design-decision, the decisions service shall publish the design-decision with the summary `s1`.
+shall [x1: agent the person (constant), x3: service the decisions service (constant), x4: thing `s1` (parameter)]
+  when [x2: design-decision]
+    request(e1, decisions.enter, subject: x1, object: x2)
+  response
+    request(e2, registry.publish, subject: x3, object: x2)
+    param(e2, summary, x4)
+```
+
 ## of-relation
 
 a noun of another by a relation row

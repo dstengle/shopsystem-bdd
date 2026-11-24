@@ -73,7 +73,7 @@ def then(step):
     form l1; the logical form l1 uses the order o1."""
     if not ours(step) or step.event not in ("has", "return", "use"):
         return False
-    if step.event == "has" and not step.nps[0].startswith(("the member", "the order")):     # another's has (b420)
+    if step.event in ("has", "use") and not step.nps[0].startswith(("the member", "the order")):     # another's (b420)
         return False
     done = step.context["result"]
     names = step.context.setdefault("order_names", {})

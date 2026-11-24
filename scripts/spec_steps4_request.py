@@ -8,6 +8,9 @@
   n1"); with parameters `q_<verb>_<n>_<m>` under `<S>_Request`, the given ones after "with" and the absent ones after
   "without", in the order the line says them: "the person adds the note n1 with the text `milk` and without a
   priority", "the person labels the note n1 with the tag t1".
+- Then: a response's request (response-request, b543) in the present, its doer's `<S>_Req_Does` over the same
+  `q_<verb>_<n>_<m>` tree, "the notes service adds the note n1 with a text" (`then`); its parameters' atoms said in
+  it, never a Then of their own.
 - "the p" a response names is the parameter's own noun phrase (`p_<p>_NP`, `np`).
 """
 import re
@@ -19,7 +22,8 @@ import spec_steps4_boxes
 from spec_lf_core import Atom
 
 kid = spec_rgl.kid
-EVENTS = ("event", spec_lf_request.PRED)
+PRED = spec_lf_request.PRED
+EVENTS = ("event", PRED)
 PARAMS = (spec_lf_request.PARAM, spec_lf_request.NOPARAM)
 
 
@@ -45,6 +49,17 @@ def trigger(r, part):
             when.append(("STrig", (kid(subject) + "_Event", s, vp)))
         when[-1] = _fresh(r, when[-1], fresh)
     return givens, when
+
+
+def then(r, atom, body, pos):
+    """The Then of a response's request atom with the parameters `body` says of it, or None of any other act."""
+    if atom.pred != PRED:
+        return None
+    subject, s, vp = r.clause(atom)
+    said = spec_lf_request.params(body, atom.args[0])
+    if not said:
+        return (kid(subject) + "_Does", ("PPos",) if pos else ("PNeg",), s, vp)
+    return (kid(subject) + "_Req_Does", ("PPos",) if pos else ("PNeg",), s, request(r, atom, vp, said))
 
 
 def made(r, event):

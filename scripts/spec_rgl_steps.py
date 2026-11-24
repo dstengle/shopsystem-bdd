@@ -10,7 +10,8 @@ creates a checklist c2", the thing its request makes, b418), and its example dat
 its docstring or table under the step) and `K_HoldsText : K_N -> Name -> Quoted -> Step` ("the file `a` holds
 "3.0.0""). Per relation row whose word is neither `of` nor `in`, its condition `r<n>_<word>_Is : Pol -> K1_Arg ->
 K2_Arg -> Cond` ("the stage s1 is on the worktree w1", b197). Per subject kind S of an action frame: `S_Does : Pol -> S_Arg -> S_V -> Step`, an
-act in the present with its polarity ("`work` does not write a file"). A state, an attribute's value and a trigger are
+act in the present with its polarity ("`work` does not write a file"), and of a request's frame `S_Req_Does : Pol ->
+S_Arg -> S_Req -> Step`, a response's request with its parameters (response-request, b543). A state, an attribute's value and a trigger are
 Base's `Cond` and `Trig`, a step through `SCond` and `STrig`; a request with its parameters (spec_rgl_ops'
 `<S>_Request`, the domain contract design §5.1) is a `Trig` too, so its When needs no fun of its own here. A step's literal is an instance name (`s1`), a code or a quoted string.
 """
@@ -22,6 +23,7 @@ import spec_gf
 import spec_grammar4
 import spec_parse_cache
 import spec_rgl
+import spec_rgl_ops
 import tools_grammar
 
 GRAMMAR = "ContextSteps"
@@ -50,6 +52,10 @@ def modules(vocab):
     for subject in subjects:
         S = spec_rgl.kid(subject)
         w.fun(S + "_Does", "Pol -> %s_Arg -> %s_V -> Step" % (S, S), "{s = (mkS p (mkCl x v)).s}", "p x v")
+    for subject in dict.fromkeys(subject for v in vocab.verbs if v.term.operation in vocab.operations
+                                 and spec_rgl_ops.said(vocab.operations[v.term.operation]) for subject, _ in v.frames):
+        S = spec_rgl.kid(subject)     # a response's request in the present (response-request, b543)
+        w.fun(S + "_Req_Does", "Pol -> %s_Arg -> %s_Req -> Step" % (S, S), "{s = (mkS p (mkCl x v)).s}", "p x v")
     for n, (k1, word, k2) in enumerate(vocab.rows, 1):     # "the stage s1 is on the worktree w1" (b197)
         if word not in ("of", "in"):
             w.fun("r%d_%s_Is" % (n, spec_rgl.slug(word)), "Pol -> %s_Arg -> %s_Arg -> Cond" % (

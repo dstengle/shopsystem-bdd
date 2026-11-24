@@ -6,8 +6,11 @@ parameter with values, `op_by(O, A)` of each actor or kind an operation's `by` l
 actor's `kind of`, `op_reason(O, R)` of each declared `refused:` reason, and `lifecycle(Obj, T)`, `transition(Obj, T,
 From, To)` of each lifecycle. O is an operation's id (`notes.add`), Obj an object's name, T its attribute's.
 
-Of a line Q (`line_facts`): `requester(Q, O, A)` of a request of O by the actor A (a kind's name when a K requests it),
-`req_param(Q, O, P)` of each parameter it names, `req_value(Q, O, P, V)` of each value it gives one; `states_reason(Q,
+Of a line Q (`line_facts`): `requester(Q, O, A)` of its trigger's request of O by the actor A (a kind's name when a K
+requests it: Q governs O), `asks(Q, O, D)` of a response's request of O by its doer D (response-request, b543),
+`req_param(Q, O, P)` of each parameter either names, `req_value(Q, O, P, V)` of each value it gives one; `on_refusal(Q,
+Obj)` of a trigger's refusal of a thing of the object Obj (beside the model's `op_object(O, Obj)`, O's object: a line
+on the refusal of what a response asks O for states O's reasons, v_m4); `states_reason(Q,
 O, R)` of each declared reason of O its refusal states, read by the reason's first noun (session's call, §5.5): a
 named parameter states the reason whose first noun is the parameter, a named thing the reason that names its kind;
 `sets(Q, Obj, T, From, To)` of a set of a lifecycle's attribute from the value its pre-state says, and
@@ -41,6 +44,8 @@ def model_facts(model):
                 out += [("param_value", o, p.name, v) for v in p.values]
         out += [("op_by", o, a) for a in getattr(op, "by", ())]
         out += [("op_reason", o, r) for x in op.outcomes if x.kind == "refused" for r in x.reasons]
+        if op.object:
+            out.append(("op_object", o, op.object))
     for a in model.actors.values():
         if a.kind_of:
             out.append(("actor_kind", a.name, a.kind_of))
@@ -81,17 +86,32 @@ class Lines:
         response = [a for p in form.parts if p.op == "response" for a in _atoms(p.body)]
         reqs = [a for a in _atoms(trigger.body if trigger else ()) if a.pred == "request"]
         for req in reqs:
-            e, o, _, _, roles = req.args
-            who = roles[0][1]
-            out.append(("requester", ident, o, who.value if who.origin == "constant" else self.obj(who.kind) or who.kind))
-            for a in pre:
-                if a.pred in ("param", "noparam") and a.args[0] == e:
-                    out.append(("req_param", ident, o, a.args[1]))
-                    if a.pred == "param" and isinstance(a.args[2], str) and a.args[2].startswith("`"):
-                        out.append(("req_value", ident, o, a.args[1], _bare(a.args[2])))
-            out += self.reasons(ident, o, response)
+            out += self.request(ident, "requester", req, pre)
+            out += self.reasons(ident, req.args[1], response)
+        for req in (a for a in response if a.pred == "request"):     # a response's request (b543)
+            out += self.request(ident, "asks", req, response)
+        out += [("on_refusal", ident, self.obj(x.kind)) for x in self.refused(trigger) if self.obj(x.kind)]
         out += self.sets(ident, pre, response)
         return out
+
+    def request(self, ident, pred, req, said):
+        """`requester` (a trigger's) or `asks` (a response's) of a request atom, and its parameters `said` names."""
+        e, o, _, _, roles = req.args
+        who = roles[0][1]
+        out = [(pred, ident, o, who.value if who.origin == "constant" else self.obj(who.kind) or who.kind)]
+        for a in said:
+            if a.pred in ("param", "noparam") and a.args[0] == e:
+                out.append(("req_param", ident, o, a.args[1]))
+                if a.pred == "param" and isinstance(a.args[2], str) and a.args[2].startswith("`"):
+                    out.append(("req_value", ident, o, a.args[1], _bare(a.args[2])))
+        return out
+
+    @staticmethod
+    def refused(trigger):
+        """The things a trigger's refusal is of: "If the stock service refuses a reservation" (the request pack's
+        refuse), each its object's referent."""
+        return [r[1] for a in (trigger.body if trigger else ()) if isinstance(a, Atom) and a.pred == "event"
+                and a.args[1] == "refuse" for r in a.args[3][1:] if len(r) == 2 and isinstance(r[1], Ref)]
 
     def reasons(self, ident, o, response):
         service, _, name = o.rpartition(".")

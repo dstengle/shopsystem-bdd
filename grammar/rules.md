@@ -1667,8 +1667,10 @@ an operation declares a refusal reason that no line states
 - Passes on:
 
   ```prolog
-  op_reason("notes.add","no text").
-  states_reason("c#r4","notes.add","no text").
+  op_reason("stock.reserve","no stock").
+  asks("c#r1","stock.reserve","the notes service").
+  op_object("stock.reserve","reservation").
+  on_refusal("c#r2","reservation").
   ```
 
 ## w_m5
@@ -1736,8 +1738,8 @@ an operation no line requests
 - Passes on:
 
   ```prolog
-  operation("notes.add").
-  requester("c#r1","notes.add","the person").
+  operation("stock.reserve").
+  asks("c#r1","stock.reserve","the notes service").
   ```
 
 ## v_r1

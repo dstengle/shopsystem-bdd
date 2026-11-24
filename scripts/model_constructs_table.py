@@ -164,6 +164,11 @@ CONSTRUCTS = [
       "<parameter> of <np>", r"o_\w+_Of_t_\w+",
       "If the person enters a design-decision with the title of another design-decision, then the decisions service "
       "shall refuse the request and name the title.", None, "request"),
+    c("response-request", "a response's act that is a request of an operation with its parameters, said as a "
+      "trigger's request is (b543, design-decisions 0115, 0122)", "<doer> shall <operation verb> <np> with the "
+      "<parameter> <value>", r"%s_ActReq_%s" % (K, K),
+      "When the person enters a design-decision, the decisions service shall publish the design-decision with the "
+      "summary `s1`.", None, "request"),
     # relations
     c("of-relation", "a noun of another by a relation row", "<noun> of|in <np>", r"r\d+_\w+_Mod",
       "When a session ends a stage, `work` shall print the worktree of the session."),
