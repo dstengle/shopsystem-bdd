@@ -1,9 +1,9 @@
 """A request acts on one thing (b420, design-decision 0111), and the frames of a verb a reading uses: a tree of grammar
-4 in which a request, a verb naming an operation of the domain model in a trigger, takes a plural object (a noun
-phrase in the plural, or with "every", a count or a number word, or a list joined by "and") in a slot its frame names
-a kind of, is no reading of its line (`plural`); spec_grammar4 drops it, and refuses a line with no other reading naming the object and the verb
-(`refusal`). Of a line that reads two ways, the frames of one verb its two readings differ by (`frames`), which the
-refusal names beside the words.
+4 in which a request (a verb naming an operation of the domain model in a trigger, or a response's act of it with its
+parameters) takes a plural object (a noun phrase in the plural, or with "every", a count or a number word, or a list
+joined by "and") in a slot its frame names a kind of, is no reading of its line (`plural`); spec_grammar4 drops it, and
+refuses a line with no other reading naming the object and the verb (`refusal`). Of a line that reads two ways, the
+frames of one verb its two readings differ by (`frames`), which the refusal names beside the words.
 
 A tree is spec_meaning's nested lists; a verb's frame is its fun `e_<verb>_<aspect>_<n>_<m>` (spec_rgl) or, with its
 parameters, `q_<verb>_<n>_<m>` (spec_rgl_ops), n the verb's entry and m its frame there.
@@ -41,11 +41,12 @@ def several(arg):
 
 def plural(vocab, tree, trigger=False):
     """(the verb's word, the argument's tree) of the first plural object of a request in `tree`, a verb naming an
-    operation in a trigger (`<S>_Event`, `<S>_Request`), else None. A response's act of such a verb is no request
-    (spec_lf_request) and keeps its plurals: "the toolchain service shall install every analysis tool"."""
+    operation in a trigger (`<S>_Event`, `<S>_Request`) or a response's act of it with its parameters (`<D>_ActReq_<S>`),
+    else None. A response's act of such a verb with no parameters is no request (spec_lf_request) and keeps its
+    plurals: "the toolchain service shall install every analysis tool"."""
     if isinstance(tree, str):
         return None
-    trigger = trigger or tree[0].endswith(("_Event", "_Request"))
+    trigger = trigger or (tree[0].endswith(("_Event", "_Request")) or "_ActReq_" in tree[0])
     numbers = _numbers(tree[0]) if trigger else None
     if numbers and vocab.verbs[numbers[0] - 1].term.operation:
         v = vocab.verbs[numbers[0] - 1]
