@@ -175,3 +175,12 @@ The requirements examined together: contradictions, what a line adds over the ot
 ### [g36] spec logic translates a response that makes a request
 - [r36] While a requirement of a capability uses `response-request`, when the person examines this specification with the capability, the specification service shall return a translation of the requirement.
 
+### [g37] spec logic follows a response's request to the line that governs its operation
+- [r37] While a requirement has a trigger and the requirement uses `response-request` and an operation and another requirement that governs the operation has a consequence and a requirement that has the consequence has the trigger, when the person examines this specification, the specification service shall return `L8` and return every requirement that governs the operation.
+
+### [g38] spec logic follows the consequence of a governing line to the line triggered on it
+- [r38] While a requirement governs an operation and the requirement has a consequence and a requirement whose trigger uses the consequence has a consequence and a requirement that uses `response-request` and the operation has a trigger and a requirement that has the consequence has the trigger, when the person examines this specification, the specification service shall return `L8`.
+
+### [g39] spec logic reads a response's request with its parameters
+- [r39] While a requirement has a trigger and the requirement obliges an act and the requirement uses `response-request` and a code and another requirement that has the trigger forbids the act and the requirement does not use the code, when the person examines this specification, the specification service shall complete the request.
+

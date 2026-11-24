@@ -670,3 +670,73 @@ shall [x3: thing `response-request` (parameter), x4: agent the person (constant)
     of(x7, x1)
     return(e2, subject: x6, object: x7)
 ```
+
+## r37
+From: b545 r37.
+
+```reading
+While a requirement has a trigger and the requirement uses `response-request` and an operation and another requirement that governs the operation has a consequence and a requirement that has the consequence has the trigger, when the person examines this specification, the specification service shall return `L8` and return every requirement that governs the operation.
+shall [x3: thing `response-request` (parameter), x8: agent the person (constant), x9: specification "the specification of this bounded context" (indexical), x10: service the specification service (constant), x11: agent `L8` (constant)]
+  while [x1: requirement, x2: trigger, x4: operation, x5: requirement, x6: consequence, x7: requirement]
+    of(x2, x1)
+    use(subject: x1, object: x3)
+    use(subject: x1, object: x4)
+    distinct(x5, x1)
+    govern(subject: x5, object: x4)
+    of(x6, x5)
+    of(x6, x7)
+    of(x2, x7)
+  when
+    request(e1, specification.examine, subject: x8, object: x9)
+  response
+    return(e2, subject: x10, object: x11)
+    every [x12: requirement]
+      govern(subject: x12, object: x4)
+      scope
+        return(e3, subject: x10, object: x12)
+```
+
+## r38
+From: b545 r38.
+
+```reading
+While a requirement governs an operation and the requirement has a consequence and a requirement whose trigger uses the consequence has a consequence and a requirement that uses `response-request` and the operation has a trigger and a requirement that has the consequence has the trigger, when the person examines this specification, the specification service shall return `L8`.
+shall [x8: thing `response-request` (parameter), x11: agent the person (constant), x12: specification "the specification of this bounded context" (indexical), x13: service the specification service (constant), x14: agent `L8` (constant)]
+  while [x1: requirement, x2: operation, x3: consequence, x4: requirement, x5: trigger, x6: consequence, x7: requirement, x9: trigger, x10: requirement]
+    govern(subject: x1, object: x2)
+    of(x3, x1)
+    of(x5, x4)
+    use(subject: x5, object: x3)
+    of(x6, x4)
+    use(subject: x7, object: x8)
+    use(subject: x7, object: x2)
+    of(x9, x7)
+    of(x6, x10)
+    of(x9, x10)
+  when
+    request(e1, specification.examine, subject: x11, object: x12)
+  response
+    return(e2, subject: x13, object: x14)
+```
+
+## r39
+From: b545 r39.
+
+```reading
+While a requirement has a trigger and the requirement obliges an act and the requirement uses `response-request` and a code and another requirement that has the trigger forbids the act and the requirement does not use the code, when the person examines this specification, the specification service shall complete the request.
+shall [x4: thing `response-request` (parameter), x7: agent the person (constant), x8: specification "the specification of this bounded context" (indexical), x9: service the specification service (constant), x10: request "the request the trigger makes" (indexical)]
+  while [x1: requirement, x2: trigger, x3: act, x5: code, x6: requirement]
+    of(x2, x1)
+    oblige(subject: x1, object: x3)
+    use(subject: x1, object: x4)
+    use(subject: x1, object: x5)
+    distinct(x6, x1)
+    of(x2, x6)
+    forbid(subject: x6, object: x3)
+    not
+      use(subject: x6, object: x5)
+  when
+    request(e1, specification.examine, subject: x7, object: x8)
+  response
+    complete(e2, subject: x9, object: x10)
+```

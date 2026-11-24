@@ -487,3 +487,71 @@ Feature: Consistency
     And the requirement r1 has the translation t1
     When the person examines this specification with the capability c1
     Then the specification service returns the translation t1
+
+  @g37 @r37
+  Scenario: spec logic follows a response's request to the line that governs its operation
+    Given a trigger t1
+    And a requirement r1
+    And the requirement r1 has the trigger t1
+    And the requirement r1 uses `response-request`
+    And an operation o1
+    And the requirement r1 uses the operation o1
+    And a requirement r2
+    And the requirement r2 governs the operation o1
+    And a consequence c1
+    And the requirement r2 has the consequence c1
+    And a requirement r3
+    And the requirement r3 has the consequence c1
+    And the requirement r3 has the trigger t1
+    And a requirement r4
+    And the requirement r4 governs the operation o1
+    And a requirement r5
+    And the requirement r5 governs the operation o1
+    And a requirement r6
+    And the requirement r6 does not govern the operation o1
+    When the person examines this specification
+    Then the specification service returns `L8`
+    And the specification service returns the requirement r4
+    And the specification service returns the requirement r5
+    And the specification service does not return the requirement r6
+
+  @g38 @r38
+  Scenario: spec logic follows the consequence of a governing line to the line triggered on it
+    Given a requirement r1
+    And an operation o1
+    And the requirement r1 governs the operation o1
+    And a consequence c1
+    And the requirement r1 has the consequence c1
+    And a trigger t1
+    And a requirement r2
+    And the requirement r2 has the trigger t1
+    And the trigger t1 uses the consequence c1
+    And a consequence c2
+    And the requirement r2 has the consequence c2
+    And a requirement r3
+    And the requirement r3 uses `response-request`
+    And the requirement r3 uses the operation o1
+    And a trigger t2
+    And the requirement r3 has the trigger t2
+    And a requirement r4
+    And the requirement r4 has the consequence c2
+    And the requirement r4 has the trigger t2
+    When the person examines this specification
+    Then the specification service returns `L8`
+
+  @g39 @r39
+  Scenario: spec logic reads a response's request with its parameters
+    Given a trigger t1
+    And a requirement r1
+    And the requirement r1 has the trigger t1
+    And an act a1
+    And the requirement r1 obliges the act a1
+    And the requirement r1 uses `response-request`
+    And a code c1
+    And the requirement r1 uses the code c1
+    And a requirement r2
+    And the requirement r2 has the trigger t1
+    And the requirement r2 forbids the act a1
+    And the requirement r2 does not use the code c1
+    When the person examines this specification
+    Then the specification service completes this request

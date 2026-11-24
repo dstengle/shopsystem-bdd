@@ -18,7 +18,7 @@ import spec_context
 import spec_entail
 import spec_lf_core
 import spec_packs
-from spec_entail_rules import Premises, parse, q
+from spec_entail_rules import FIXED, Premises, parse, q
 from spec_findings import Words
 
 EXC = {"if", "while_if", "where_if"}
@@ -69,7 +69,7 @@ class Explain:
         its kind, else as spec_findings writes it."""
         if x.type == clingo.SymbolType.Function and x.name == "f" and len(x.arguments) >= 2:
             return self.words.term(x.arguments[0].string, x.arguments[1])
-        if x.type == clingo.SymbolType.String and str(x) in self.fixed:     # the request, a parameter
+        if x.type == clingo.SymbolType.String and self.fixed.get(str(x)) in FIXED:     # the request, a parameter
             return "the %s" % (x.string if self.fixed[str(x)] == "k_parameter" else "request")
         if x.type == clingo.SymbolType.Function and x.name == "t" and len(x.arguments) == 1:
             x = x.arguments[0]
