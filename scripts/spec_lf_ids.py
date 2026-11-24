@@ -2,10 +2,12 @@
 verb, attribute and value, and relation row by the ids its logic Vocab (spec_logic_vocab) gives the codified-1 facts,
 so both kinds of file name one word alike; in a context with a domain model, a word naming a model element by the
 element's id qualified by its area (`k_notes__note`, `e_notes__add`: the domain contract design, §5.3), so two areas'
-one word never names one thing, a verb's sense by its own element; an attribute or a row found for a kind or a kind above it in grammar 4's
+one word never names one thing, two terms of one element (two layers' proper nouns of one actor) one thing
+(b544), a verb's sense by its own element; an attribute or a row found for a kind or a kind above it in grammar 4's
 kind tree; an attribute's absence its value `absent` (b240). A word with no id raises ValueError naming it.
 """
 import spec_lexicon
+import spec_logic_vocab
 import spec_lf_values
 
 
@@ -15,6 +17,8 @@ class Ids:
     def __init__(self, vocab, lexicon, parents):
         self.v = vocab
         self.actors = {term: aid for aid, term in vocab.actors.items()}
+        ids = spec_logic_vocab.ids_of(lexicon)     # each term of an actor: two layers' terms of one element one id (b544)
+        self.actors.update({t.term: ids[t.key] for t in lexicon.of("actor")})
         self.events = {term: eid for eid, term in vocab.events.items()}
         self.parents = dict(parents)
         self.rows = list(lexicon.relations())
