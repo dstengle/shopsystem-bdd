@@ -36,7 +36,8 @@ def scaffolded(step):
     assert sorted(kept) == sorted(FILES), kept
     assert old.git("status", "--porcelain").stdout == "", old.git("status", "--porcelain").stdout
     index = M.read(step, "spec/index.md")
-    for line in ("id: bounded-context/%s\n" % CONTEXT, "title: shop\n", "language: codified-2\n", "imports: [request]\n"):
+    for line in ("id: bounded-context/%s\n" % CONTEXT, "title: shop\n", "language: codified-2\n",
+                 "imports: [base, request]\n"):     # the base pack (b609)
         assert line in index, (line, index)
     assert "language: codified-2\n" in M.read(step, "spec/universal.md")
     assert M.read(step, ".shop/plugin-version").strip() == M.ours(step)[1]

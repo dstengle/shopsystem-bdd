@@ -49,6 +49,17 @@ def redefines(term):
     return [n.strip() for n in spec_lexicon._field(term.text, "Redefines").split(",") if n.strip()]
 
 
+def kinds(root):
+    """The kinds the imported packs define (a noun's term), in import order: in a context with a domain model each a
+    declared object for the model (b609), which domain_model reads as `pack_kinds`."""
+    out = []
+    for name in imports(root):
+        path = path_of(root, name)
+        if path is not None:
+            out += [t.term for t in terms(path, path.name) if t.category == "kind" and t.term not in out]
+    return out
+
+
 def missing(root):
     """The imported names no pack is (v_t17)."""
     return [n for n in imports(root) if path_of(root, n) is None]

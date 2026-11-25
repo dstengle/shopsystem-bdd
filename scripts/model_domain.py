@@ -21,6 +21,7 @@ import domain_model
 import domain_model_check
 import model_bound
 import model_domain_lines
+import spec_packs
 import spec_vocabulary
 from backlog_items import RECORDS_POLICY
 from model_parse import as_list, frontmatter
@@ -61,7 +62,8 @@ class DomainReading:
     def read_domain(self):
         if not domain_model.exists(self.root):
             return
-        for code, subject, why in domain_model_check.problems(domain_model.load(self.root)):
+        for code, subject, why in domain_model_check.problems(domain_model.load(self.root),
+                                                                spec_packs.kinds(self.root)):
             self.fact("model_problem", subject, why)
         for name, *args in model_domain_lines.model_facts(domain_model.load(self.root)):     # v_m2-v_m7
             self.fact(name, *args)
