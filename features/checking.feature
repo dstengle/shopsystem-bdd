@@ -806,3 +806,29 @@ Feature: Checking
     Then the specification service refuses this request
     And the specification service names the provider p1
     And the specification service names `no adapter spec has the provider`
+
+  @g104 @r104
+  Scenario: A domain model whose element refers to a term of an imported pack passes the check
+    Given a pack p1
+    And this bounded context imports the pack p1
+    And a term t1
+    And the pack p1 has the term t1
+    And an element e1
+    And the element e1 refers to the term t1
+    When the person validates this specification
+    Then the specification service completes this request
+
+  @g105 @r105
+  Scenario: The base pack shows its terms
+    Given this bounded context imports `base`
+    And a term t1
+    And `base` has the term t1
+    And a term t2
+    And `base` has the term t2
+    And a term t3
+    And `base` does not have the term t3
+    When the person looks up `base`
+    Then the language service returns the term t1
+    And the language service returns the term t2
+    And the language service does not return the term t3
+    And the language service completes this request

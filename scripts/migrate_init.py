@@ -1,6 +1,6 @@
 """`migrate init --id <bounded context id> [--purpose <context purpose>]` (b318): a new bounded context founded in the
 repository it is run in, its context scaffold written and committed in one commit: `spec/index.md` (the id, its last
-part the title, `language: codified-2`, `imports: [request]`, the context purpose, if given, under `## Purpose`, b464),
+part the title, `language: codified-2`, `imports: [base, request]` (the base pack, b609), the context purpose, if given, under `## Purpose`, b464),
 `spec/universal.md` (no condition), `spec/model/`, `spec/vocabulary/`,
 `spec/capabilities/`, `.shop/backlog/`, `.shop/records/README.md` (an empty records index), `.shop/plugin-version`
 (the plugin's release), `.shop/delivery.toml` (every key commented out at its default), `features/` and
@@ -27,7 +27,7 @@ INDEX = """---
 id: {id}
 title: {title}
 language: codified-2
-imports: [request]
+imports: [base, request]
 ---
 
 # {title}

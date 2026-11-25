@@ -290,6 +290,12 @@ Restates: design-model-check#r13@0.29.
 ### [g103] A contract of an available provider in the context id form is obtained only for an adapter spec of the provider
 - [r103] While the id of a provider conforms to the context id form and the provider is `available`, if the person obtains a contract from the provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `no adapter spec has the provider` reason.
 
+### [g104] A domain model whose element refers to a term of an imported pack passes the check
+- [r104] While this bounded context imports a pack and the pack has a term and an element refers to the term, when the person validates this specification, the specification service shall complete the request.
+
+### [g105] The base pack shows its terms
+- [r105] While this bounded context imports the `base` pack, when the person looks up the pack, the language service shall return every term of the pack and complete the request.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.

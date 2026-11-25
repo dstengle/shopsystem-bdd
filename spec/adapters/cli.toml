@@ -91,6 +91,7 @@ command = "spec lexicon"
 cli-only = { options = ["--check"] }
 requirements = [
   "checking#r41: While this bounded context imports a pack, when the person looks up the pack, the language service shall return every term of the pack and complete the request.",
+  "checking#r105: While this bounded context imports the `base` pack, when the person looks up the pack, the language service shall return every term of the pack and complete the request.",
 ]
 
 [operations."specification.check"]
@@ -141,6 +142,7 @@ requirements = [
   "checking#r98: While a port line governs an operation and no core line relies on the port line, if the person validates this specification, then the specification service shall fail the check and name the port line.",
   "checking#r99: While a core line that uses `response-request` uses an operation and a port line that governs the operation supports no requirement id and the port line excludes an operation outcome that no core line handles, when the person validates this specification, the specification service shall complete the request.",
   "checking#r101: While an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition, if the person validates this specification, then the specification service shall fail the check and name the transition.",
+  "checking#r104: While this bounded context imports a pack and the pack has a term and an element refers to the term, when the person validates this specification, the specification service shall complete the request.",
   "decisions#r1: While a design-decision is not `superseded` or `rejected` and the design-decision has no tier, when the person validates this specification, the specification service shall return `w_untiered`.",
   "decisions#r2: While the tier of a design-decision is `check` and no test enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d6`.",
   "decisions#r3: While the tier of a design-decision is `requirement` and no requirement enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d7`.",
@@ -1286,6 +1288,7 @@ requirements = [
   "upgrades#r41: While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id and a context purpose, the upgrades service shall keep an index file that has the context purpose and complete the request.",
   "upgrades#r42: While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository does not conform to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall change the ignore file of this repository, keep the context scaffold and the ignore file of this repository and complete the request.",
   "upgrades#r43: While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository conforms to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold, not change the ignore file and complete the request.",
+  "upgrades#r45: While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id, the upgrades service shall keep a bounded context that imports the `base` pack and complete the request.",
 ]
 [operations."upgrades.found".parameters]
 "context id" = { option = "--id" }

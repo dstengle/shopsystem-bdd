@@ -346,6 +346,7 @@ object design kind of file
 object plan kind of file
 
 object element
+  relations: refers to → term (many)
 
 object contract kind of artifact
   relations: holds → operation | property | requirement (many)
