@@ -9,6 +9,8 @@ import re
 import subprocess
 from pathlib import Path
 
+import backlog_model_elements
+
 OPERATION = re.compile(r"^  operation ([^(]+?)\s*\(")
 
 
@@ -97,7 +99,7 @@ def at_base(path, base, header, op, lines):
 
 def held(path, header, op, lines):
     """The model lines of `path`'s fence in the latest version git holds of it that does not hold the operation `op`
-    of `header` as `lines`; None when git holds no such version (the file untracked, or every version holds it)."""
+    of `header` as `lines` (with `op` None, the element `header` with exactly the members `lines`, b598); None when git holds no such version (the file untracked, or every version holds it)."""
     from backlog_model import _at, _end, _fence
     path = Path(path)
 
@@ -111,6 +113,10 @@ def held(path, header, op, lines):
             continue
         text, start, end = _fence(shown.stdout, path.name)
         body = text[start:end]
+        if op is None:
+            if not backlog_model_elements.same(body, header, lines):
+                return body
+            continue
         at = _at(body, header)
         found = span(body, at, _end(body, at), op) if at is not None else None
         if found is None or body[found[0]:found[1]] != lines:
