@@ -195,8 +195,9 @@ service conversation
 actor the person kind of agent
 
 object model line kind of text
-  relations: restates → operation (one)
+  relations: restates → element (one)
   relations: specifies → operation (one)
+  relations: holds → member line (many)
   relations: moves to → area (one); leaves → area (one)
 
 object retirement list kind of file
@@ -205,6 +206,7 @@ object retirement list kind of file
 object domain model kind of file
   relations: holds → model line | operation (many)
   relations: holds → element (many)
+  relations: holds → member line (many)
 
 object operation-table form kind of artifact
 

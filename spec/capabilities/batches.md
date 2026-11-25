@@ -195,3 +195,12 @@ when the change is merged.
 ### [g118] A batch opened writes a moved term into the area that holds its element
 - [r118] While an item is `ready` and the item meets the readiness bar and the item moves a term that means an element and an area holds the element, when the person opens a batch, the batches service shall keep the area that holds the term.
 
+### [g119] A park of an item that restates an element keeps a member line another item of the batch adds
+- [r119] While an item in a batch holds a model line that holds a member line and another item in the batch holds a model line that restates an element and the element does not hold the member line and the item is `in-batch`, when a session parks the item, the batches service shall keep the member line in the domain model and keep a domain model that does not hold the model line.
+
+### [g120] A model line that restates an event is laid in place of the event
+- [r120] While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an event, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the event.
+
+### [g121] A model line that restates an actor is laid in place of the actor
+- [r121] While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an actor, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the actor.
+

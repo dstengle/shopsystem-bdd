@@ -227,3 +227,9 @@ declined, withdrawn, answered and listed.
 ### [g63] Only an item in a batch is suspended
 - [r63] While an item is not `in-batch`, if a session suspends the item with a question, then the backlog service shall refuse the request and name the item and the `item not in-batch` reason.
 
+### [g64] A shaped item whose only lines are model lines that move is readied
+- [r64] While an item is `shaped` and the item holds a model line that moves to an area and the item holds no requirement and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.
+
+### [g65] A shaped item whose only lines are moved terms is readied
+- [r65] While an item is `shaped` and the item moves a term and the item holds no requirement and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.
+

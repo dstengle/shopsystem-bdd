@@ -1067,3 +1067,22 @@ shall [x1: agent the person (constant), x5: service the drafting service (consta
     refuse(e2, subject: x5, object: x6)
     name(e3, subject: x5, object: x2)
 ```
+
+## r70
+From: b647 r70.
+
+```reading
+While a model line restates an element and the element holds a member line that the model line does not hold, when the person declares the model line in an item, the drafting service shall keep the model line in the item and name the member line.
+shall [x4: agent the person (constant), x6: service the drafting service (constant)]
+  while [x1: model line, x2: element, x3: member line]
+    restate(subject: x1, object: x2)
+    not
+      in(x3, x1)
+    in(x3, x2)
+  when [x5: item]
+    request(e1, drafting.declare, subject: x4, object: x1, in: x5)
+  response
+    in(x1, x5)
+    keep(e2, subject: x6, object: x1)
+    name(e3, subject: x6, object: x3)
+```

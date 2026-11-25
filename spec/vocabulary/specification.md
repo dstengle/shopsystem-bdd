@@ -257,3 +257,6 @@ area: specification
 - **health** (attribute) → attribute bounded context.health. Whether a bounded context the specification service reaches answers a read of its contracts.
 - **sound** (adjective) → value bounded context.health sound. A bounded context that answers a read of its contracts with them or with no such contract.
 - **refer** (verb, state) → relation element.refers to. An element of the domain model names a term as its kind (kind of) or as the target of a relation or an attribute. Forms: refers, referred. Frame: <element> refers to <term>.
+- **member line** (noun) → object member line. A line indented under an element's line in the domain model, an attribute, a relation, a lifecycle or an operation that the element holds.
+- **event** (noun) → object event. An element of the domain model that an operation raises, declared by a line that opens with `event`.
+- **actor** (noun) → object actor. An element of the domain model that requests operations, declared by a line that opens with `actor`.

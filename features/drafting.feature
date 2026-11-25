@@ -678,3 +678,17 @@ Feature: Drafting
     When the person moves the term t1 in the item i1
     Then the drafting service refuses this request
     And the drafting service names the term t1
+
+  @g70 @r70
+  Scenario: A restatement that leaves out a member line of its element names the member line
+    Given a model line m1
+    And an element e1
+    And the model line m1 restates the element e1
+    And a member line m2
+    And the model line m1 does not hold the member line m2
+    And the element e1 holds the member line m2
+    And an item i1
+    When the person declares the model line m1 in the item i1
+    Then the item i1 holds the model line m1
+    And the drafting service keeps the model line m1
+    And the drafting service names the member line m2

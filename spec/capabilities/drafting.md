@@ -244,3 +244,6 @@ capabilities, retirements, rewordings and chores.
 ### [g69] Moving a term that no area holds is refused
 - [r69] If the person moves a term that no area holds in an item, then the drafting service shall refuse the request and name the term.
 
+### [g70] A restatement that leaves out a member line of its element names the member line
+- [r70] While a model line restates an element and the element holds a member line that the model line does not hold, when the person declares the model line in an item, the drafting service shall keep the model line in the item and name the member line.
+

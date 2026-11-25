@@ -347,6 +347,7 @@ object plan kind of file
 
 object element
   relations: refers to → term (many)
+  relations: holds → member line (many)
 
 object contract kind of artifact
   relations: holds → operation | property | requirement (many)
@@ -399,4 +400,10 @@ object lifecycle
   relations: has → transition (many)
 
 object transition
+
+object member line kind of text
+
+object event kind of element
+
+object actor kind of element
 ```

@@ -478,6 +478,8 @@ requirements = [
   "items#r53: While an item is `shaped` and the item holds a universal condition and the item holds no requirement and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.",
   "items#r54: While an item is `shaped` and the item holds no requirement and a universal condition in the item has no translation, if the person readies the item, then the backlog service shall refuse the request and name the universal condition.",
   "items#r55: While an item is `shaped` and a requirement group of a capability has a group title and the item holds another requirement group of the capability that has the group title, if the person readies the item, then the backlog service shall refuse the request and name the group title.",
+  "items#r64: While an item is `shaped` and the item holds a model line that moves to an area and the item holds no requirement and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.",
+  "items#r65: While an item is `shaped` and the item moves a term and the item holds no requirement and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.",
   "shaping-guarantees#r1: When the brainstorming session readies an item, the brainstorming session shall not ask a question.",
 ]
 [operations."backlog.ready".parameters]
@@ -622,6 +624,7 @@ cli-only = { options = ["--into"] }
 requirements = [
   "drafting#r26: While an item holds a capability that does not exist, when the person declares a model line in the item, the drafting service shall keep the model line in the item.",
   "drafting#r41: While a model line restates an operation, when the person declares the model line in an item, the drafting service shall keep the model line in the item.",
+  "drafting#r70: While a model line restates an element and the element holds a member line that the model line does not hold, when the person declares the model line in an item, the drafting service shall keep the model line in the item and name the member line.",
 ]
 [operations."drafting.declare".parameters]
 item = { positional = 1 }
@@ -981,6 +984,8 @@ requirements = [
   "batches#r116: While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an element, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the element.",
   "batches#r117: While an item is `ready` and the item meets the readiness bar and the item holds a model line that moves to an area, when the person opens a batch, the batches service shall keep the area that holds the model line.",
   "batches#r118: While an item is `ready` and the item meets the readiness bar and the item moves a term that means an element and an area holds the element, when the person opens a batch, the batches service shall keep the area that holds the term.",
+  "batches#r120: While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an event, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the event.",
+  "batches#r121: While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an actor, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the actor.",
 ]
 
 [operations."batches.resume"]
@@ -1012,6 +1017,7 @@ requirements = [
   "batches#r60: While an item in a batch is `in-batch` and the workspace of the batch holds a requirement of the item, when a session parks the item, the batches service shall keep a workspace of the batch that does not hold the requirement.",
   "batches#r91: While an item in a batch is `in-batch` and the item holds a model line that restates an operation and the domain model holds the model line, when a session parks the item, the batches service shall keep a domain model that holds the operation.",
   "batches#r111: While an item in a batch is `in-batch`, when a session parks the item, the batches service shall suspend the item with a question and not set the status of the batch to `abandoned`.",
+  "batches#r119: While an item in a batch holds a model line that holds a member line and another item in the batch holds a model line that restates an element and the element does not hold the member line and the item is `in-batch`, when a session parks the item, the batches service shall keep the member line in the domain model and keep a domain model that does not hold the model line.",
 ]
 [operations."batches.park".parameters]
 item = { positional = 2 }
