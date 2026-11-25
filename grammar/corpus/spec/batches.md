@@ -1002,3 +1002,72 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
     in(x3, x5)
     keep(e2, subject: x8, object: x5)
 ```
+
+## r119
+From: b647 r119.
+
+```reading
+While an item in a batch holds a model line that holds a member line and another item in the batch holds a model line that restates an element and the element does not hold the member line and the item is `in-batch`, when a session parks the item, the batches service shall keep the member line in the domain model and keep a domain model that does not hold the model line.
+shall [x9: service the batches service (constant), x10: domain model "the domain model of this bounded context" (indexical)]
+  while [x1: item, x2: batch, x3: model line, x4: member line, x5: item, x6: model line, x7: element]
+    in(x1, x2)
+    in(x4, x3)
+    in(x3, x1)
+    distinct(x5, x1)
+    in(x5, x2)
+    restate(subject: x6, object: x7)
+    in(x6, x5)
+    not
+      in(x4, x7)
+    status(x5) = `in-batch`
+  when [x8: session]
+    request(e1, batches.park, subject: x8, object: x5)
+  response [x11: domain model]
+    in(x4, x10)
+    keep(e2, subject: x9, object: x4)
+    not
+      in(x6, x11)
+    keep(e3, subject: x9, object: x11)
+```
+
+## r120
+From: b647 r120.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an event, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the event.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant), x8: domain model "the domain model of this bounded context" (indexical)]
+  while [x1: item, x3: model line, x4: event]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    restate(subject: x3, object: x4)
+    in(x3, x1)
+  when [x6: batch]
+    request(e1, batches.open, subject: x5, object: x6)
+  response [x9: domain model]
+    in(x3, x8)
+    keep(e2, subject: x7, object: x3)
+    not
+      in(x4, x9)
+    keep(e3, subject: x7, object: x9)
+```
+
+## r121
+From: b647 r121.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an actor, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the actor.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant), x8: domain model "the domain model of this bounded context" (indexical)]
+  while [x1: item, x3: model line, x4: actor]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    restate(subject: x3, object: x4)
+    in(x3, x1)
+  when [x6: batch]
+    request(e1, batches.open, subject: x5, object: x6)
+  response [x9: domain model]
+    in(x3, x8)
+    keep(e2, subject: x7, object: x3)
+    not
+      in(x4, x9)
+    keep(e3, subject: x7, object: x9)
+```

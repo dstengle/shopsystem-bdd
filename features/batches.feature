@@ -741,3 +741,59 @@ Feature: Batches
     When the person opens the batch b1
     Then the area a1 holds the term t1
     And the batches service keeps the area a1
+
+  @g119 @r119
+  Scenario: A park of an item that restates an element keeps a member line another item of the batch adds
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And a member line m2
+    And a model line m1
+    And the model line m1 holds the member line m2
+    And the item i1 holds the model line m1
+    And an item i2
+    And the batch b1 holds the item i2
+    And a model line m3
+    And an element e1
+    And the model line m3 restates the element e1
+    And the item i2 holds the model line m3
+    And the element e1 does not hold the member line m2
+    And the status of the item i2 is `in-batch`
+    And a session s1
+    When the session s1 parks the item i2
+    Then this domain model holds the member line m2
+    And the batches service keeps the member line m2
+    And the batches service keeps the domain model d1
+    And the domain model d1 does not hold the model line m3
+
+  @g120 @r120
+  Scenario: A model line that restates an event is laid in place of the event
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a model line m1
+    And an event e1
+    And the model line m1 restates the event e1
+    And the item i1 holds the model line m1
+    And a batch b1
+    When the person opens the batch b1
+    Then this domain model holds the model line m1
+    And the batches service keeps the model line m1
+    And the batches service keeps the domain model d1
+    And the domain model d1 does not hold the event e1
+
+  @g121 @r121
+  Scenario: A model line that restates an actor is laid in place of the actor
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a model line m1
+    And an actor a1
+    And the model line m1 restates the actor a1
+    And the item i1 holds the model line m1
+    And a batch b1
+    When the person opens the batch b1
+    Then this domain model holds the model line m1
+    And the batches service keeps the model line m1
+    And the batches service keeps the domain model d1
+    And the domain model d1 does not hold the actor a1

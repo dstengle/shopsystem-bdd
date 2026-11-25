@@ -952,3 +952,27 @@ Feature: Items
     Then the backlog service refuses this request
     And the backlog service names the item i1
     And the backlog service names `item not in-batch`
+
+  @g64 @r64
+  Scenario: A shaped item whose only lines are model lines that move is readied
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    And a model line m1
+    And an area a1
+    And the model line m1 moves to the area a1
+    And the item i1 holds the model line m1
+    And the item i1 holds no requirement
+    And the item i1 meets this readiness bar
+    When the person readies the item i1
+    Then the backlog service sets the status of the item i1 to `ready`
+
+  @g65 @r65
+  Scenario: A shaped item whose only lines are moved terms is readied
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    And a term t1
+    And the item i1 moves the term t1
+    And the item i1 holds no requirement
+    And the item i1 meets this readiness bar
+    When the person readies the item i1
+    Then the backlog service sets the status of the item i1 to `ready`

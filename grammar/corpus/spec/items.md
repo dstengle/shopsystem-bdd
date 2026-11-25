@@ -1118,3 +1118,40 @@ shall [x4: service the backlog service (constant), x5: request "the request the 
     name(e3, subject: x4, object: x1)
     name(e4, subject: x4, object: x6)
 ```
+
+## r64
+From: b654 r64.
+
+```reading
+While an item is `shaped` and the item holds a model line that moves to an area and the item holds no requirement and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.
+shall [x5: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x6: agent the person (constant), x7: service the backlog service (constant)]
+  while [x1: item, x2: model line, x3: area]
+    status(x1) = `shaped`
+    move#3(subject: x2, to: x3)
+    in(x2, x1)
+    not [x4: requirement]
+      in(x4, x1)
+    meet(subject: x1, object: x5)
+  when
+    request(e1, backlog.ready, subject: x6, object: x1)
+  response
+    initiates(e2, subject: x7, status(x1) = `ready`)
+```
+
+## r65
+From: b654 r65.
+
+```reading
+While an item is `shaped` and the item moves a term and the item holds no requirement and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.
+shall [x4: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x6: service the backlog service (constant)]
+  while [x1: item, x2: term]
+    status(x1) = `shaped`
+    move#4(subject: x1, object: x2)
+    not [x3: requirement]
+      in(x3, x1)
+    meet(subject: x1, object: x4)
+  when
+    request(e1, backlog.ready, subject: x5, object: x1)
+  response
+    initiates(e2, subject: x6, status(x1) = `ready`)
+```
