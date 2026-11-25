@@ -13,4 +13,4 @@ checks = [
 ]
 
 [batch]
-rules = ["Never chain cp and rm in one shell command, and keep shell variables few.", "Worktrees of older work (.shop/worktrees/* of other or earlier batches, .claude/worktrees/) are never reference material: the reference is the base branch and its own worktree."]
+rules = ["Never chain cp and rm in one shell command, and keep shell variables few.", "Worktrees of older work (.shop/worktrees/* of other or earlier batches, .claude/worktrees/) are never reference material: the reference is the base branch and its own worktree.", "The driver dispatches its task, fix and review subagents in the foreground (all of one step in one message, run_in_background false), so their results come back to it; it never ends its turn while one of its subagents is still running."]
