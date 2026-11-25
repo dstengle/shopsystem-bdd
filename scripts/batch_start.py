@@ -27,6 +27,7 @@ import batch_pick
 import batch_timings
 import features_generate
 import shop_files
+import spec_composition
 import spec_corpus_write
 import spec_read
 import spec_unbuilt
@@ -46,7 +47,7 @@ def cites(items):
 def lay_lines(tree, picked, unwritten=None, command="work batch start"):
     """Every picked item's lines laid into the worktree's `spec/`, their ids appended to `unbuilt:`, the feature of
     each service capability laid written again, and the bookkeeping of the lay (b333): the corpus's blocks
-    (spec_corpus_write), the adapter contracts annotated (b379) and the catalogues (batch_catalogues), a catalogue
+    (spec_corpus_write), spec/index.md's Composition (spec_composition, b606), the adapter contracts annotated (b379) and the catalogues (batch_catalogues), a catalogue
     that cannot be written added to `unwritten`; a refusal said as `command`'s (b486); the paths changed."""
     ids, files = {}, []
     for item in picked:
@@ -59,6 +60,7 @@ def lay_lines(tree, picked, unwritten=None, command="work batch start"):
         path.write_text(spec_unbuilt.with_unbuilt(path.read_text(), listed))
         changed += _generated(tree, capability, command)
     changed += spec_corpus_write.write(tree, picked)
+    changed += spec_composition.write(tree)
     changed += _annotated(tree)
     catalogues, problems = batch_catalogues.write(tree, ["%s#%s" % (c, r) for c, rs in ids.items() for r in rs])
     if unwritten is not None:
@@ -94,7 +96,7 @@ def _generated(tree, capability, command):
 
 def unlay_lines(tree, items, command, base=None):
     """Every item's lines taken out of the worktree's `spec/` and their ids out of `unbuilt:`, and the feature of each
-    service capability changed written again (plan 4 review, B1), the operation tables as the commit `base` (the
+    service capability changed written again (plan 4 review, B1), spec/index.md's Composition again, the operation tables as the commit `base` (the
     batch's base, b479) held them; the paths changed."""
     changed = []
     for item in items:
@@ -104,6 +106,7 @@ def unlay_lines(tree, items, command, base=None):
             path.write_text(spec_unbuilt.without_unbuilt(
                 path.read_text(), [i.split("#")[1] for i in ids if i.split("#")[0] == capability]))
             changed += _generated(tree, capability, command)
+    changed += spec_composition.write(tree)
     return list(dict.fromkeys(changed))
 
 
