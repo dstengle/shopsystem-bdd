@@ -3,7 +3,8 @@ context> [--version V]` reads the upstream's contract kept as published (or the 
 repository, the `github:` of its bullet under `## Upstreams` in spec/index.md (request_gh's `repo_of`), through
 `$SHOPSYSTEM_WORK_GH` (`gh api repos/<r>/contents/.shop/contracts/...`, the raw file), and keeps it, byte for byte, in
 each adapter spec of its provider (b593, checking r91; decision 0136): an adapter spec `adapters/<name>/` whose
-`providers:` name the bounded context (`holders`), as `provider/<id's path>/<version>/contract.toml` under its folder
+`providers:` name the bounded context (`holders`), each at the version it pins the provider at, else the one asked
+or published (b599, checking r100), as `provider/<id's path>/<version>/contract.toml` under its folder
 (`place`: keyed by the whole id, so that two bounded contexts whose ids end alike never share a folder), where its
 provider check (model_adapter's `uncontracted`) reads it, in one commit by `shop_files.committed`: the only writer of
 provider/, nothing kept at the repository root. It keeps no context request and opens no issue. In this order: an id
@@ -121,8 +122,10 @@ def place(context, version):
 
 
 def holders(root, context):
-    """The folders, relative to `root`, of the adapter specs `adapters/<name>/` whose spec/index.md says `kind:
-    adapter` and whose `providers:` name the bounded context `context`, at any version, in name order."""
+    """(folder, version) of each adapter spec `adapters/<name>/` whose spec/index.md says `kind: adapter` and whose
+    `providers:` name the bounded context `context`, its folder relative to `root`, in name order; the version it pins
+    the provider at (`<id>@<version>`, in the version form), else None (b599, checking r100)."""
+    import contract_publish
     import model_adapter
     from model_parse import as_list, frontmatter
     out = []
@@ -131,13 +134,17 @@ def holders(root, context):
         if str(data.get("kind", "")).strip() != model_adapter.KIND:
             continue
         named = (model_adapter.PROVIDER.match(str(given).strip()) for given in as_list(data.get("providers")))
-        if any(m and m.group("id") == context for m in named):
-            out.append(index.parent.parent.relative_to(root))
+        found = next((m for m in named if m and m.group("id") == context), None)
+        if found:
+            pin = found.group("version")
+            pinned = pin if pin and contract_publish.VERSION.fullmatch(pin) else None
+            out.append((index.parent.parent.relative_to(root), pinned))
     return out
 
 
 def obtain(root, context, version=None):
-    """`spec obtain`: the upstream's contract kept under provider/ of each adapter spec of it and committed; an id out
+    """`spec obtain`: the upstream's contract kept under provider/ of each adapter spec of it (at the version it
+    pins, else `version`, else the published one) and committed; an id out
     of the context id form (migrate init's) refused before anything is read, then an upstream GitHub does not serve,
     and only then one no adapter spec has as its provider (checking r88, r89 before r94: review f1)."""
     import shop_files
@@ -150,9 +157,15 @@ def obtain(root, context, version=None):
     if not held:
         raise Refused("the provider {names} is the provider of no adapter spec under %s/: no adapter spec has the "
                       "provider" % ADAPTERS, reason="no adapter spec has the provider", names=["provider:%s" % context])
-    version, text = published(root, context, version, repo)
-    rels = [(folder / place(context, version)).as_posix() for folder in held]
-    changed = [rel for rel in rels if not ((Path(root) / rel).is_file() and (Path(root) / rel).read_bytes() == text)]
+    texts, rels = {}, {}
+    for folder, pin in held:
+        wanted = pin or version
+        if wanted not in texts:
+            texts[wanted] = published(root, context, wanted, repo)
+        at, text = texts[wanted]
+        rels[(folder / place(context, at)).as_posix()] = text
+    changed = [rel for rel, text in rels.items()
+               if not ((Path(root) / rel).is_file() and (Path(root) / rel).read_bytes() == text)]
     for rel in rels:
         if rel not in changed:
             print("kept already %s" % rel)
@@ -162,8 +175,9 @@ def obtain(root, context, version=None):
     def write():
         for rel in changed:
             (Path(root) / rel).parent.mkdir(parents=True, exist_ok=True)
-            (Path(root) / rel).write_bytes(text)
-    shop_files.committed(root, changed, "spec obtain: the contract of %s at %s" % (context, version), write)
+            (Path(root) / rel).write_bytes(rels[rel])
+    versions = ", ".join(sorted({at for at, _ in texts.values()}))
+    shop_files.committed(root, changed, "spec obtain: the contract of %s at %s" % (context, versions), write)
     for rel in changed:
         print("obtained %s" % rel)
     return 0
