@@ -84,7 +84,7 @@ def given_route_kind(step):
 def given_has_route(step):
     """`the design-decision d1 has the route r1`: the decision written again as a judgement decision, clean in every
     other way, whose `verified_by` names the route; the error names it by its id."""
-    if step.term != "has" or step.names[-1] not in step.context.get("routes", {}):
+    if step.term != "has" or not step.names or step.names[-1] not in step.context.get("routes", {}):
         return False
     name, route = tiers().bare(step.names[0]), step.names[1]
     D.decision(step, name, tier="judgement")

@@ -1440,8 +1440,7 @@ requirements = [
   "checking#r77: When the person publishes a contract, the specification service shall keep a contract whose status is `published` and keep every requirement and every term in the contract.",
 ]
 [operations."specification.publish".parameters]
-contract = { option = "--contract", example = "contract-1" }
-version = { option = "--version", example = "version-1" }
+version = { option = "--version", example = "1.2.0" }
 
 [operations."specification.fetch"]
 command = "spec fetch"
@@ -1451,5 +1450,4 @@ requirements = [
   "checking#r80: When a downstream context fetches a contract with the `1.2.0` version, the specification service shall return the contract that has the `1.2.0` version.",
 ]
 [operations."specification.fetch".parameters]
-contract = { option = "--contract", example = "contract-1" }
-version = { option = "--version", example = "version-1" }
+version = { option = "--version", example = "1.2.0" }
