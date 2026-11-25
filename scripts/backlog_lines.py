@@ -76,11 +76,10 @@ def block_of(blocks, capability):
 
 
 def add_line_to(root, item, capability, text, group=None, in_group=None, command="work line"):
-    """Write one requirement into the item's block for `capability`, in the group `in_group` or a new group titled
-    `group` (else the item's title); nothing is committed. Its `<capability>#r<n>`. `command` names the refusals."""
+    """Write one requirement into the item's block for `capability`, in the group `in_group`, else its group titled
+    `group` (else the item's title), opened when it has none (r65); nothing committed. Its `<capability>#r<n>`."""
     takes(item, command)
-    rel = "the item %s" % item.name
-    blocks = read(item, rel)
+    blocks = read(item, "the item %s" % item.name)
     _spec_of(root, capability, blocks)
     text = _text(text, "line", item, command)
     g_next, r_next = next_ids(root, capability, blocks)
@@ -89,9 +88,10 @@ def add_line_to(root, item, capability, text, group=None, in_group=None, command
         target = next((g for g in block.groups if g.id == in_group), None)
         if target is None:
             raise Refused("work line: %s has no group %s in %s" % (label(item), in_group, capability))
-    else:
-        target = Group(g_next, _text(group, "group title", item, command) if group is not None else item.title, [])
-        block.groups.append(target)
+    else:   # the item's group of that title joined, never a second one of it (drafting#r65, b583)
+        title = _text(group, "group title", item, command) if group is not None else item.title
+        target = next((g for g in block.groups if g.title == title), None) or Group(g_next, title, [])
+        block.groups.extend([] if any(g is target for g in block.groups) else [target])
     target.requirements.append((r_next, text))
     item.sections[SECTION] = render(blocks)
     return "%s#%s" % (capability, r_next)
