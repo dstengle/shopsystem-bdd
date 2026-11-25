@@ -83,6 +83,7 @@ ADDED = {"consistency#g33": "design-model-check", "consistency#g34": "design-mod
          "items#g40": "readiness",                                               # b444: a construct uncatalogued
          "items#g41": "readiness",                                               # b477: a model line breaks a rule
          "items#g53": "readiness", "items#g54": "readiness",                     # b516: universal conditions only
+         "items#g55": "readiness",                                               # b581: two groups of one title
          **{"checking#g%d" % n: "design-model-check" for n in range(52, 58)},
          "checking#g63": "design-model-check",                                   # b538: an attribute's senses
          "reviews#g9": "batches", "reviews#g10": "batches",     # b492: a base merge resubmitted; b370: the rule catalogue's checks
