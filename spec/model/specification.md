@@ -28,6 +28,7 @@ object requirement kind of text
   relations: has → ambiguous text | plural object (many)
   relations: supports → requirement id (many)
   relations: has → requester (many)
+  relations: handles → operation outcome (many); excludes → operation outcome (many); relies on → requirement (many)
 
 object requirement group
   relations: has → requirement | scenario (many)
@@ -305,6 +306,7 @@ object operation
   relations: makes → referent (many)
   relations: has → operation table (one)
   relations: has → property (many)
+  relations: has → operation outcome (many)
 
 object reading rule kind of rule
 
@@ -378,4 +380,12 @@ object adapter decision kind of design-decision
 object adapter spec id form kind of artifact
 
 object context id form kind of artifact
+
+object driven port kind of area
+
+object port line kind of requirement
+
+object core line kind of requirement
+
+object operation outcome
 ```

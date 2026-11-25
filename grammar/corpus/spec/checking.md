@@ -1151,3 +1151,98 @@ shall [x1: agent the person (constant), x5: service the specification service (c
     name(e3, subject: x5, object: x3)
     name(e4, subject: x5, object: x7)
 ```
+
+## r95
+From: b549 r95.
+
+```reading
+While a driven port holds an operation and no core line that uses `response-request` uses the operation, if the person validates this specification, then the specification service shall fail the check and name the operation.
+shall [x4: thing `response-request` (parameter), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x8: check "the check the trigger makes" (indexical)]
+  while [x1: driven port, x2: operation]
+    in(x2, x1)
+    not [x3: core line]
+      use(subject: x3, object: x4)
+      use(subject: x3, object: x2)
+  if
+    request(e1, specification.check, subject: x5, object: x6)
+  response
+    fail(e2, subject: x7, object: x8)
+    name(e3, subject: x7, object: x2)
+```
+
+## r96
+From: b549 r96.
+
+```reading
+While a driven port holds an operation that has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, if the person validates this specification, then the specification service shall fail the check and name the operation outcome.
+shall [x6: agent the person (constant), x7: specification "the specification of this bounded context" (indexical), x8: service the specification service (constant), x9: check "the check the trigger makes" (indexical)]
+  while [x1: driven port, x2: operation, x3: operation outcome]
+    of(x3, x2)
+    in(x2, x1)
+    not [x4: core line]
+      handle(subject: x4, object: x3)
+    not [x5: port line]
+      exclude(subject: x5, object: x3)
+  if
+    request(e1, specification.check, subject: x6, object: x7)
+  response
+    fail(e2, subject: x8, object: x9)
+    name(e3, subject: x8, object: x3)
+```
+
+## r97
+From: b549 r97.
+
+```reading
+While a port line that governs an operation supports a requirement id and no core line that has the requirement id uses the operation, if the person validates this specification, then the specification service shall fail the check and name the requirement id.
+shall [x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x8: check "the check the trigger makes" (indexical)]
+  while [x1: port line, x2: operation, x3: requirement id]
+    govern(subject: x1, object: x2)
+    support(subject: x1, object: x3)
+    not [x4: core line]
+      of(x3, x4)
+      use(subject: x4, object: x2)
+  if
+    request(e1, specification.check, subject: x5, object: x6)
+  response
+    fail(e2, subject: x7, object: x8)
+    name(e3, subject: x7, object: x3)
+```
+
+## r98
+From: b549 r98.
+
+```reading
+While a port line governs an operation and no core line relies on the port line, if the person validates this specification, then the specification service shall fail the check and name the port line.
+shall [x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x7: check "the check the trigger makes" (indexical)]
+  while [x1: port line, x2: operation]
+    govern(subject: x1, object: x2)
+    not [x3: core line]
+      rely on(subject: x3, object: x1)
+  if
+    request(e1, specification.check, subject: x4, object: x5)
+  response
+    fail(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x1)
+```
+
+## r99
+From: b549 r99.
+
+```reading
+While a core line that uses `response-request` uses an operation and a port line that governs the operation supports no requirement id and the port line excludes an operation outcome that no core line handles, when the person validates this specification, the specification service shall complete the request.
+shall [x2: thing `response-request` (parameter), x8: agent the person (constant), x9: specification "the specification of this bounded context" (indexical), x10: service the specification service (constant), x11: request "the request the trigger makes" (indexical)]
+  while [x1: core line, x3: operation, x4: port line, x6: operation outcome]
+    use(subject: x1, object: x2)
+    use(subject: x1, object: x3)
+    govern(subject: x4, object: x3)
+    not [x5: requirement id]
+      support(subject: x4, object: x5)
+    not [x7: core line]
+      handle(subject: x7, object: x6)
+    exclude(subject: x4, object: x6)
+  when
+    request(e1, specification.check, subject: x8, object: x9)
+  response
+    complete(e2, subject: x10, object: x11)
+```

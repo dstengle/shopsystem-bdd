@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56]
-unbuilt: []
+unbuilt: [r95, r96, r97, r98, r99]
 ---
 
 # Checking
@@ -265,6 +265,21 @@ Restates: design-model-check#r13@0.29.
 
 ### [g94] A contract is obtained only for an adapter spec of its provider
 - [r94] If the person obtains a contract from a provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `no adapter spec has the provider` reason.
+
+### [g95] A port operation that no core line requests is refused
+- [r95] While a driven port holds an operation and no core line that uses `response-request` uses the operation, if the person validates this specification, then the specification service shall fail the check and name the operation.
+
+### [g96] A port outcome that no core line handles and no port line excludes is refused
+- [r96] While a driven port holds an operation that has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, if the person validates this specification, then the specification service shall fail the check and name the operation outcome.
+
+### [g97] A port line relied on by a core line that does not request its operation is refused
+- [r97] While a port line that governs an operation supports a requirement id and no core line that has the requirement id uses the operation, if the person validates this specification, then the specification service shall fail the check and name the requirement id.
+
+### [g98] A port line that no core line relies on is refused
+- [r98] While a port line governs an operation and no core line relies on the port line, if the person validates this specification, then the specification service shall fail the check and name the port line.
+
+### [g99] A port line that excludes an unhandled outcome needs no citation of its core lines
+- [r99] While a core line that uses `response-request` uses an operation and a port line that governs the operation supports no requirement id and the port line excludes an operation outcome that no core line handles, when the person validates this specification, the specification service shall complete the request.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
