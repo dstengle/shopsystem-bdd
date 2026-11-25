@@ -260,3 +260,39 @@ area: specification
 - **member line** (noun) → object member line. A line indented under an element's line in the domain model, an attribute, a relation, a lifecycle or an operation that the element holds.
 - **event** (noun) → object event. An element of the domain model that an operation raises, declared by a line that opens with `event`.
 - **actor** (noun) → object actor. An element of the domain model that requests operations, declared by a line that opens with `actor`.
+- **universal condition id** (noun) → object universal condition id. The id `U<n>` of a universal condition.
+- **given block** (noun) → object given block. The fenced `given` block of a requirement group, the example data its scenario starts from.
+- **upstream entry** (noun) → object upstream entry. A bullet of the `## Upstreams` of `spec/index.md`: the id of a bounded context and the GitHub repository it is hosted on, if any.
+- **requirement grammar** (noun) → object requirement grammar. The grammar a bounded context's requirements are parsed in, over its glossary and its capabilities' terms.
+- **Behaviour line** (noun) → object Behaviour line. A line of the `## Behaviour` of a capability of the old system.
+- **line id** (noun) → object line id. The `[r<n>]` of a Behaviour line.
+- **context purpose** (noun) → object context purpose. What a bounded context is for, in a sentence or two, given when it is founded and written under the `## Purpose` heading of its index file. Plural: context purposes.
+- **index file** (noun) → object index file. The file `spec/index.md` of a bounded context.
+- **requirement id** (noun) → object requirement id. The id `<capability>#r<n>` of a requirement.
+- **capability** (noun) → object capability. One file under `spec/capabilities/`, with a group and a narrator. Plural: capabilities.
+- **requirement** (noun) → object requirement. One codified statement of a capability, named `<capability>#r<n>`, that parses to one tree in the requirement grammar. Not: behaviour requirement, capability requirement, carry, carries, carried, carrying. Redefines: spec.
+- **requirement group** (noun) → object requirement group. The requirements of a capability that together make one scenario, named `<capability>#g<n>`, with a title.
+- **universal condition** (noun) → object universal condition. A statement of `spec/universal.md`, named `U<n>`, true in every state of every trace and never restated in a requirement.
+- **term** (noun) → object term. One entry of this glossary or of a capability's `## Terms`, with a category.
+- **design-decision** (noun) → object design-decision. One file under `spec/decisions/`.
+- **feature** (noun) → object feature. The generated file `features/<capability>.feature`, one scenario for each requirement group.
+- **scenario** (noun) → object scenario. A Gherkin scenario in `features/<capability>.feature`, generated from one requirement group, passing when the one test that binds it passes. Not: test case.
+- **test** (noun) → object test. One test of the repository's suite, a scenario's or a script's, by its pytest id.
+- **record** (noun) → object record. A file under `.shop/records/` whose frontmatter id has a record kind. Not: log entry.
+- **rule** (noun) → object rule. A relation of `scripts/model.lp`, with its code and its plain label: a violation's or a warning's. Redefines: spec.
+- **logical form** (noun) → object logical form. What a requirement means, as referents, atoms and boxes, printed by `model parse --form`.
+- **id** (noun) → object id. The `id` field of a file's frontmatter.
+- **code** (noun) → object code. A word between backticks that names a thing.
+- **corpus** (noun) → object corpus. The files under `grammar/corpus/spec/` of a bounded context: each requirement of a capability with the logical form it is meant to have. Plural: corpora. This: the corpus of the bounded context the command runs in.
+- **status** (attribute) → attribute design-decision.status. 
+- **requirement** (noun) → value design-decision.tier requirement.
+- **scenario** (noun) → value route.kind scenario.
+- **item** (noun) → value file form.writer item.
+- **release** (attribute) → attribute repository.release. 
+- **file** (verb, action) → operation records.file. Forms: files, filed. Frame: <actor> files <record>.
+- **construct** (noun) → object construct. A sentence structure of the controlled language, named by its code in the construct catalogue. Redefines: spec.
+- **succeed** (verb, state) → relation scenario.succeeds in. A scenario's test passes in a workspace. Forms: succeeds, succeeded. Frame: <scenario> succeeds in <workspace>.
+- **break** (verb, state) → relation scenario.breaks in. A scenario's test, a chore's check or a test fails. Forms: breaks, broken. Frame: <scenario> breaks in <workspace>. Frame: <chore> breaks in <workspace>. Frame: <test> breaks.
+- **assumed description** (noun) → object assumed description. A description of a provider that is no published contract, written by hand with `assumed: true` and evidence only when its scenarios run against the provider (decision 0120). Plural: assumed descriptions.
+- **rename** (verb, state) → relation adapter spec.renames. An adapter spec gives a term of a provider's contract another word in the adapter spec, as `product` becomes `stocked product`. Forms: renames, renamed. Frame: <adapter spec> renames <term>.
+- **clash** (verb, state) → relation term.clashes with. A term of a provider's contract is spelled as another term that the adapter spec reads and names another element. Forms: clashes, clashed. Frame: <term> clashes with <term>.

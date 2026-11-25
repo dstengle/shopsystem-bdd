@@ -296,6 +296,18 @@ Restates: design-model-check#r13@0.29.
 ### [g105] The base pack shows its terms
 - [r105] While this bounded context imports the `base` pack, when the person looks up the pack, the language service shall return every term of the pack and complete the request.
 
+### [g106] A line of an adapter spec reads a term of its provider's contract
+- [r106] While an adapter spec holds a contract and a requirement of the adapter spec uses a term that the contract holds, when the person validates the adapter spec, the specification service shall complete the request.
+
+### [g107] A provider's term that clashes with another term is read under its new word
+- [r107] While an adapter spec holds a contract that holds a term and the term clashes with another term and the adapter spec renames the term, when the person validates the adapter spec, the specification service shall complete the request.
+
+### [g108] A provider's term that clashes with another term and is not renamed is refused
+- [r108] While an adapter spec holds a contract that holds a term and the term clashes with another term and the adapter spec does not rename the term, if the person validates the adapter spec, then the specification service shall fail the check and name the term.
+
+### [g109] An assumed description whose line has no scenario is refused
+- [r109] While an adapter spec holds an assumed description that holds a requirement id that no scenario refers to, if the person validates the adapter spec, then the specification service shall fail the check and name the requirement id.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.

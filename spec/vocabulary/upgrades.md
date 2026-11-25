@@ -16,8 +16,6 @@ area: upgrades
 - **qualifier** (noun) → object qualifier. The words after the id a ledger entry supersedes, as `(in part)`.
 - **ledger number** (noun) → object ledger number. The `<nnnn>` before the name of a ledger entry.
 - **stem** (noun) → object stem. The part of the id of a ledger entry after `decision/`, or the name of a tracked file without its directory and its extension.
-- **Behaviour line** (noun) → object Behaviour line. A line of the `## Behaviour` of a capability of the old system.
-- **line id** (noun) → object line id. The `[r<n>]` of a Behaviour line.
 - **plugin version file** (noun) → object plugin version file. The file `.shop/plugin-version`, one line naming the plugin release a repository is on.
 - **content** (noun) → object content. The text a file holds.
 - **shop directory** (noun) → object shop directory. The directory `.shop/` of a repository.
@@ -65,6 +63,11 @@ area: upgrades
 - **the old scenario conftest form** (proper noun) → object old scenario conftest form. The text of the scenario conftest that founding a bounded context wrote before 0.41.0, which does not load `work_items`.
 - **ignore file** (noun) → object ignore file. The file `.gitignore` of a repository, which founding a bounded context writes naming `.venv/`, `__pycache__/`, `.pytest_cache/` and `.ruff_cache/`, so that the interpreter and the caches are never committed.
 - **the ignore file form** (proper noun) → object ignore file form. An ignore file that names `.venv/`, `__pycache__/`, `.pytest_cache/` and `.ruff_cache/` as git matches its lines, so that a name with or without its leading or trailing slash is the same entry.
-- **context purpose** (noun) → object context purpose. What a bounded context is for, in a sentence or two, given when it is founded and written under the `## Purpose` heading of its index file. Plural: context purposes.
 - **instructions file** (noun) → object instructions file. A file of a repository that runs the plugin's commands for a session or a person: the hooks of `.claude/settings.json`, `CLAUDE.md`, `.shop/delivery.toml` or a page under `docs/`. Plural: instructions files.
 - **old command line** (noun) → object old command line. A line of an instructions file that runs `work`, `spec`, `model`, `measure`, `migrate`, `tools` or `features` by its old name, in place of `shop <name>`. Plural: old command lines.
+- **status** (attribute) → attribute initiative.status. A node's, request's or design-decision's place in its kind's lifecycle, written in its frontmatter by `work`.
+- **release** (attribute) → attribute upgrade step.release. 
+- **status** (attribute) → attribute frozen request.status. 
+- **pin** (verb, state) → relation plugin.pins. The plugin names the one version of an analysis tool that `tools install` installs. Forms: pins, pinned. Frame: <plugin> pins <version>.
+- **plugin** (noun) → object plugin. The shopsystem-bdd plugin, whose tools answer the requests. This: the plugin the request is made with.
+- **release** (attribute) → attribute plugin.release. The release of the plugin the request is made with.

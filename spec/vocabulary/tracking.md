@@ -18,12 +18,8 @@ area: tracking
 - **queued message** (noun) → object queued message. A message of the person that Claude Code gives a session while the session works on a turn, kept in its transcript apart from the person's prompts.
 - **directive** (noun) → object directive. A file under `.shop/directives/` that cites a quote of the person's words which every session follows until the directive is promoted or dropped.
 - **relation row** (noun) → object relation row. A row of the `## Relations` table of a capability: from, word, to and cardinality.
-- **upstream entry** (noun) → object upstream entry. A bullet of the `## Upstreams` of `spec/index.md`: the id of a bounded context and the GitHub repository it is hosted on, if any.
-- **given block** (noun) → object given block. The fenced `given` block of a requirement group, the example data its scenario starts from.
 - **bar check** (noun) → object bar check. One check of the readiness bar.
-- **universal condition id** (noun) → object universal condition id. The id `U<n>` of a universal condition.
 - **resolution** (noun) → object resolution. The requirement id and version of each accepted line, under a request's `## Resolution`.
-- **requirement grammar** (noun) → object requirement grammar. The grammar a bounded context's requirements are parsed in, over its glossary and its capabilities' terms.
 - **field** (noun) → object field. One field of a comment, `<field> <n>: <text>`, of the part of one side: `line` or `answer` of the asker's, `question`, `outcome`, `counter`, `reason`, `into` or `resolution` of the upstream's. Plural: entries.
 - **line reason** (noun) → object line reason. The upstream's reason for the line outcome of a request line, under a request's `## Reasons`.
 - **the relation-row form** (proper noun) → object relation-row form. Four cells `| from | word | to | cardinality |` of a `## Relations` table, whose from and to are kinds of the lexicon.
@@ -154,7 +150,6 @@ area: tracking
 - **reword** (verb, action) → operation drafting.reword term. Forms: rewords, reworded. Frame: <actor> rewords <term> in <item>.
 - **specify** (verb, state) → relation model line.specifies. A model line declares an operation of a service, its parameters, outcomes and reasons, whether or not the domain model declares the operation already. Forms: specifies, specified. Frame: <model line> specifies <operation>.
 - **successor** (noun) → object successor. The item another item is merged into, which takes its place in the backlog. Plural: successors.
-- **the review limit** (proper noun) → object review limit. The number of changed lines a pull request review reads in one batch's change, 1000.
 - **exceed** (verb, state) → relation item.exceeds. The estimate of an item's change, from its size rating, its requirement lines and its model lines, added to the estimates of the items a pick took before it, is more than the review limit, and the pick took one item or more before it. Forms: exceeds, exceeded. Frame: <item> exceeds <review limit>.
 - **write** (verb, action) → operation drafting.write into pack. Forms: writes, wrote, written. Frame: <actor> writes <term> into <pack>.
 - **remove** (verb, action) → operation drafting.take out. Forms: removes, removed. Frame: <actor> removes <universal condition> from <item>. Frame: <actor> removes <upstream entry> from <item>. Frame: <actor> removes <given block> from <item>.
@@ -179,3 +174,22 @@ area: tracking
 - **move** (verb, state) → relation model line.moves to. A model line names an element the domain model declares in another area, which the item's batch takes out of that area's model file and declares, with the entries that mean it, in this area's. Forms: moves, moved. Frame: <model line> moves to <area>.
 - **move** (verb, state) → relation item.moves. An item names a term whose entry its batch takes out of its layer and writes into the layer of the area that holds the element the term means. Forms: moves, moved. Frame: <item> moves <term>.
 - **leave** (verb, state) → relation model line.leaves. A model line names an element that another area's model file declares, which the item's batch takes out of that file. Forms: leaves, left. Frame: <model line> leaves <area>.
+- **context request** (noun) → object context request. The one way work enters a bounded context: lines that its asker (another context, the product level, or the context itself) proposes to its upstream (the context asked).
+- **request line** (noun) → object request line. One proposed statement of a request, with its line outcome.
+- **question** (noun) → object question. An open point on a node or a request line, with its readings and a recommended reading.
+- **session** (noun) → object session. One Claude Code conversation with its own id and transcript: the person's, a stage or a dispatch. This: the session that runs the command. Not: conversation, chat.
+- **item** (noun) → object item. One file of the backlog, `.shop/backlog/b<n>.md`: work this bounded context may do, with its requirement lines, its provenance and its ratings, named by its id `b<n>` and its title.
+- **workspace name** (noun) → object workspace name. The name a git branch or an upstream branch is known by.
+- **readiness bar** (noun) → object readiness bar. The checks `work ready` makes of an item on a copy of `spec/` with its lines laid in: its request lines settled, its lines parsed, no L0 and no L1 of `model logic` naming them, their scenarios written by `features generate`, and the `check` design-decisions its capabilities rest on passing. This: the readiness bar of the plugin that runs the command.
+- **chore** (noun) → object chore. What an item with no requirement line names in their place: the files its work changes and the command whose exit code 0 shows the work done.
+- **observation** (noun) → object observation. An entry of `.shop/records/observations.md`, with its id and its date.
+- **thread** (noun) → object thread. The GitHub issue, on the GitHub repository of a request's upstream, that carries the request's conversation.
+- **entry** (noun) → object entry. One step of a request's conversation, posted on its issue.
+- **channel** (noun) → object channel. The repository on GitHub that the issues of the requests to a bounded context are posted on.
+- **status** (attribute) → attribute context request.status. 
+- **question** (noun) → value request line.line outcome question.
+- **status** (attribute) → attribute item.status. 
+- **status** (attribute) → attribute directive.status. 
+- **status** (attribute) → attribute thread.status. 
+- **the person** (proper noun) → actor the person. The human the bounded context works for.
+- **meet** (verb, state) → relation item.meets. An item satisfies the readiness bar or one of its bar checks. Forms: meets, met. Frame: <item> meets <readiness bar>. Frame: <item> meets <bar check>.

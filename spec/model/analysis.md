@@ -2,7 +2,7 @@
 id: model/missingmass.io/shopsystem/shopsystem-bdd/analysis
 area: analysis
 kind: generic
-imports: [specification]
+imports: [specification, tracking, upgrades]
 ---
 
 # Codebase analysis

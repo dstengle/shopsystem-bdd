@@ -2,7 +2,7 @@
 id: model/missingmass.io/shopsystem/shopsystem-bdd/tracking
 area: tracking
 kind: supporting
-imports: [specification]
+imports: [specification, upgrades, execution]
 ---
 
 # Work tracking
@@ -65,18 +65,10 @@ object directive kind of file
 
 object relation row kind of text
 
-object upstream entry kind of text
-
-object given block kind of text
-
 object readiness bar
   relations: has → bar check (many)
 
 object bar check
-
-object requirement id kind of text
-
-object universal condition id kind of text
 
 object chore kind of text
   relations: holds → file (many)
@@ -92,8 +84,6 @@ object thread
 object entry kind of text
   attributes: side: asker | upstream
   relations: on → context request (many); holds → field | requirement | term | given block (many)
-
-object requirement grammar kind of artifact
 
 object channel
   relations: holds → thread (many)
@@ -211,8 +201,6 @@ object domain model kind of file
 object operation-table form kind of artifact
 
 object successor kind of item
-
-object review limit
 
 object term proposal kind of request line
   relations: concerns → term (many)

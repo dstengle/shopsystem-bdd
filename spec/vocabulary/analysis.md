@@ -65,3 +65,9 @@ area: analysis
 - **base branch** (noun) → object base branch. The branch a repository's work forks from: `main`, or the branch the `base` of `.shop/delivery.toml` names. This: the base branch of the repository the request is made in.
 - **lint** (verb, action) → operation code analysis.lint. Forms: lints, linted. Frame: <actor> lints <repository>.
 - **differ** (verb, state) → relation Python file.differs from. The kept changes of the branch checked out that its base branch does not hold add or alter the Python file. Forms: differs, differed. Frame: <Python file> differs from <base branch>.
+- **Python file** (noun) → object Python file. A tracked file with a `.py` extension or a `python` shebang, tests included.
+- **function** (noun) → object function. A function or method of a Python file.
+- **identifier** (noun) → object identifier. A name a Python file may define: a function, a class or a variable.
+- **feature file** (noun) → object feature file. A `*.feature` file under the directory `--dir` names (default `features`), read line by line.
+- **tag** (noun) → object tag. A Gherkin tag of a scenario or of a feature file, as `@deprecated`.
+- **handler** (noun) → object handler. A function of `tests/scenarios/` that a step runs.
