@@ -468,3 +468,88 @@ Feature: Checking
     And the requirement r2 has the trigger t1
     When the person validates this specification
     Then the specification service completes this request
+
+  @g73 @r73
+  Scenario: A contract published keeps the specification at a version
+    Given a contract c1
+    When the person publishes the contract c1 with `1.2.0`
+    Then the specification service keeps the contract c2
+    And the contract c2 has `1.2.0`
+
+  @g74 @r74
+  Scenario: A later contract supersedes every published one
+    Given a contract c1
+    And a contract c2
+    And the status of the contract c2 is `published`
+    And a contract c3
+    And the status of the contract c3 is `published`
+    And a contract c4
+    And the status of the contract c4 is `superseded`
+    When the person publishes the contract c1 with `1.3.0`
+    Then the specification service sets the status of the contract c2 to `superseded`
+    And the specification service sets the status of the contract c3 to `superseded`
+    And the specification service does not set the status of the contract c4 to `superseded`
+
+  @g75 @r75
+  Scenario: A contract at a version already published is refused
+    Given a contract c1
+    And the contract c1 has `1.2.0`
+    And a contract c2
+    When the person publishes the contract c2 with `1.2.0`
+    Then the specification service refuses this request
+    And the specification service names `1.2.0`
+
+  @g76 @r76
+  Scenario: A contract is refused while a requirement is out of the language
+    Given a requirement r1
+    And the requirement r1 does not conform to the language reference
+    And a contract c1
+    When the person publishes the contract c1
+    Then the specification service refuses this request
+    And the specification service names the requirement r1
+
+  @g77 @r77
+  Scenario: A contract published holds the requirements and the terms
+    Given a contract c1
+    And a requirement r1
+    And a requirement r2
+    And a term t1
+    And the contract c2 holds the term t1
+    And a term t2
+    And the contract c2 holds the term t2
+    And a term t3
+    And the contract c2 does not hold the term t3
+    When the person publishes the contract c1
+    Then the specification service keeps the contract c2
+    And the status of the contract c2 is `published`
+    And the specification service keeps the requirement r1
+    And the specification service keeps the requirement r2
+    And the specification service keeps the term t1
+    And the specification service keeps the term t2
+    And the specification service does not keep the term t3
+
+  @g78 @r78
+  Scenario: A downstream context fetches the published contract without a context request
+    Given a downstream context d1
+    And a contract c1
+    When the downstream context d1 fetches the contract c1
+    Then the status of the contract c1 is `published`
+    And the specification service returns the contract c1
+    And the specification service changes nothing
+
+  @g79 @r79
+  Scenario: A contract fetched at a version never published is refused
+    Given no contract has `2.0.0`
+    And a downstream context d1
+    And a contract c1
+    When the downstream context d1 fetches the contract c1 with `2.0.0`
+    Then the specification service refuses this request
+    And the specification service names `2.0.0`
+
+  @g80 @r80
+  Scenario: A downstream context fetches a contract at a version
+    Given a downstream context d1
+    And a contract c1
+    When the downstream context d1 fetches the contract c1 with `1.2.0`
+    Then the contract c1 has `1.2.0`
+    And the specification service returns the contract c1

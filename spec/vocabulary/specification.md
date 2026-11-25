@@ -225,3 +225,9 @@ area: specification
 - **support** (verb, state) → relation requirement.supports. A line of a port contract stands under a core line, which the port line names under its `Relied on by:`. Forms: supports, supported. Frame: <requirement> supports <requirement id>.
 - **group title** (noun) → object group title. The title of a requirement group, which the scenario generated from the group takes as its scenario title.
 - **requester** (noun) → object requester. The agent that makes a request that a requirement says, in its trigger or as an act of its response, as the person in "When the person enters a design-decision". Plural: requesters.
+- **published** (adjective) → value contract.status published.
+- **superseded** (adjective) → value contract.status superseded.
+- **status** (attribute) → attribute contract.status. Where a contract stands: `published` while it is the latest one of its bounded context, `superseded` once a later one is published.
+- **publish** (verb, action) → operation specification.publish. Forms: publishes, published. Frame: <actor> publishes <contract>.
+- **fetch** (verb, action) → operation specification.fetch. Forms: fetches, fetched. Frame: <actor> fetches <contract>.
+- **downstream context** (noun) → object downstream context. A bounded context that builds on the contract of this bounded context and reaches it through a driven port of its own. Plural: downstream contexts.

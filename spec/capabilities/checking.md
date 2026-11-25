@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56]
-unbuilt: []
+unbuilt: [r73, r74, r75, r76, r77, r78, r79, r80]
 ---
 
 # Checking
@@ -199,6 +199,30 @@ Restates: design-model-check#r13@0.29.
 
 ### [g72] A line triggered on the refusal of a response's request states its reasons
 - [r72] While a requirement uses `response-request` and the requirement uses an operation and another requirement has a trigger that uses a refusal and the operation, when the person validates this specification, the specification service shall complete the request.
+
+### [g73] A contract published keeps the specification at a version
+- [r73] When the person publishes a contract with the `1.2.0` version, the specification service shall keep a contract that has the `1.2.0` version.
+
+### [g74] A later contract supersedes every published one
+- [r74] When the person publishes a contract with the `1.3.0` version, the specification service shall set the status of every contract whose status is `published` to `superseded`.
+
+### [g75] A contract at a version already published is refused
+- [r75] While a contract has the `1.2.0` version, if the person publishes a contract with the `1.2.0` version, then the specification service shall refuse the request and name the version.
+
+### [g76] A contract is refused while a requirement is out of the language
+- [r76] While a requirement does not conform to the language reference, if the person publishes a contract, then the specification service shall refuse the request and name the requirement.
+
+### [g77] A contract published holds the requirements and the terms
+- [r77] When the person publishes a contract, the specification service shall keep a contract whose status is `published` and keep every requirement and every term in the contract.
+
+### [g78] A downstream context fetches the published contract without a context request
+- [r78] When a downstream context fetches a contract, the specification service shall return the contract whose status is `published` and change nothing.
+
+### [g79] A contract fetched at a version never published is refused
+- [r79] While no contract has the `2.0.0` version, if a downstream context fetches a contract with the `2.0.0` version, then the specification service shall refuse the request and name the version.
+
+### [g80] A downstream context fetches a contract at a version
+- [r80] When a downstream context fetches a contract with the `1.2.0` version, the specification service shall return the contract that has the `1.2.0` version.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
