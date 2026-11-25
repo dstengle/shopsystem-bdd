@@ -4,7 +4,9 @@ decision 0118), rows design_model_check_worlds' TABLE takes first, in the constr
 summary `s1`, the lines on that request or on a publish of no parameter (they govern the registry's publish) and a line on the person's entering
 that their consequences entail (an L8 through the request, r37; through a consequence of a governing line that
 triggers a third line, r38); and two lines on one trigger, one obliging and one forbidding a publish of another
-summary (no L1, r39), or a publish of no parameter (an L1, r40, b571)."""
+summary (no L1, r39), or a publish of no parameter (an L1, r40, b571); and on one trigger a counted publish beside a
+forbidden one (an L1, r41), or a publish of a design-decision whose tier is `check` beside a publish of only those
+whose tier is `judgement` (an L1, r42, b579)."""
 import importlib.util
 import sys
 from pathlib import Path
@@ -35,6 +37,10 @@ KEPT = "When the registry keeps a design-decision, the registry shall notify the
 CHAINED = ENTERS + "the registry shall notify the person of the design-decision."
 FORBIDDING = ENTERS + "the decisions service shall not publish the design-decision with the summary `s2`."
 FORBIDDING_ANY = ENTERS + "the decisions service shall not publish the design-decision."
+COUNTING = ENTERS + "the decisions service shall publish at least two design-decisions."
+FORBIDDING_A = ENTERS + "the decisions service shall not publish a design-decision."
+CHECKED = ENTERS + "the decisions service shall publish a design-decision whose tier is `check`."
+ONLY = ENTERS + "the decisions service shall publish only design-decisions whose tier is `judgement`."
 
 
 def named(lines, names):
@@ -61,4 +67,10 @@ ROWS = [
     # r40: r1 obliges a publish of `s1`, r2 forbids a publish of no parameter, on one trigger
     (("requirement use `response-request`", "requirement forbid act", "requirement use no code"),
      named([REQUESTING, FORBIDDING_ANY], {"r1": 1, "r2": 2}), {}),
+    # r41: r1 obliges a publish of at least two design-decisions, r2 forbids a publish, on one trigger
+    (("requirement use `count`", "requirement use operation", "requirement forbid act"),
+     named([COUNTING, FORBIDDING_A], {"r1": 1, "r2": 2}), {}),
+    # r42: r1 obliges a publish of a design-decision outside r2's only, on one trigger
+    (("requirement use `only`", "requirement use operation", "requirement oblige act"),
+     named([CHECKED, ONLY], {"r1": 1, "r2": 2}), {}),
 ]

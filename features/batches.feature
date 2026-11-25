@@ -14,13 +14,6 @@ Feature: Batches
     Then the batches service sets the status of the item i1 to `delivered`
     And the batches service sets the status of the batch b1 to `merged`
 
-  @g51 @r51
-  Scenario: A batch opened keeps and gives its brief
-    Given a batch b1
-    When the person opens the batch b1
-    Then the batches service keeps the batch brief b2
-    And the batches service returns the batch brief b2
-
   @g52 @r52
   Scenario: A batch abandoned keeps no review folder
     Given a batch b1
@@ -95,16 +88,6 @@ Feature: Batches
     And the batches service sets the status of the item i1 to `ready`
     And the batches service sets the status of the item i2 to `ready`
     And the batches service does not set the status of the item i3 to `ready`
-
-  @g59 @r59
-  Scenario: A batch whose change is merged keeps no review folder
-    Given a proposed change p1
-    And a batch b1
-    And the batch b1 has the proposed change p1
-    And a review folder r1
-    And the batch b1 has the review folder r1
-    When the person merges the proposed change p1
-    Then the batches service does not keep the review folder r1
 
   @g60 @r60
   Scenario: An item parked has its lines taken out of the batch's workspace
@@ -660,3 +643,26 @@ Feature: Batches
     When the person opens the batch b1
     Then the batches service keeps the batch brief b2
     And the batch brief b2 holds no batch rule
+
+  @g102 @r102
+  Scenario: Every batch summary states its cost and timing
+    Given a proposed change p1
+    And a batch b1
+    And the batch b1 has the proposed change p1
+    And a batch summary b2
+    And the batch b1 has the batch summary b2
+    And a review folder r1
+    And the batch b1 has the review folder r1
+    When the person merges the proposed change p1
+    Then the batches service does not keep the review folder r1
+    And the batches service returns the batch summary b2
+
+  @g103 @r103
+  Scenario: Every batch summary states its cost and timing
+    Given a batch b1
+    And a batch summary form b2
+    And a batch brief b3
+    When the person opens the batch b1
+    Then the batches service keeps the batch brief b3
+    And the batch brief b3 holds the batch summary form b2
+    And the batches service returns the batch brief b3

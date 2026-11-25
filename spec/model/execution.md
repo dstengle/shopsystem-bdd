@@ -32,6 +32,7 @@ object batch kind of file
   relations: holds → item (many); has → task | proposed change | review folder | batch plan | kept change | measurement | wall time | session time | token | role | workspace | review (many)
   lifecycle status: awaiting-merge → in-review
   lifecycle status: awaiting-merge → building
+  relations: has → batch summary (many)
 
 object batch plan kind of file
 
@@ -45,6 +46,7 @@ object proposed change
 object batch brief kind of file
   relations: holds → chore (many)
   relations: holds → batch rule (many)
+  relations: holds → batch summary form (many)
 
 object review folder kind of file
 
@@ -89,4 +91,8 @@ object delivery settings form kind of artifact
 object base merge kind of kept change
 
 object batch rule kind of text
+
+object batch summary kind of text
+
+object batch summary form kind of text
 ```

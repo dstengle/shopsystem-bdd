@@ -53,3 +53,5 @@ area: execution
 - **base merge** (noun) → object base merge. A kept change on a batch's branch that merges the branch the batch started from into it, made after the batch's last review. Plural: base merges.
 - **batch rule** (noun) → object batch rule. A rule of a bounded context's own setup that every agent running a batch follows, kept as one entry of the setting `[batch] rules` of `.shop/delivery.toml` and never in the plugin's code. Plural: batch rules.
 - **reopen** (verb, action) → operation batches.reopen. A batch that awaits its merge taken back to building with a finding the person wrote on its proposed change, kept as a review. Forms: reopens, reopened. Frame: <actor> reopens <batch>.
+- **batch summary** (noun) → object batch summary. What a batch cost and how long it took: its cost in dollars, its output, new input and cache-read tokens, its wall time, its opening time, its building time, the durations of its test runs and its review time.
+- **batch summary form** (noun) → object batch summary form. The form a batch summary takes, which the batch brief gives the batch's driver to reply with: each figure of a batch summary under its name.

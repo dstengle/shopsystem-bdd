@@ -699,7 +699,7 @@ a number of them, bounded
 - Since: b240
 - Form: at least|at most|exactly|more than|fewer than <number> <nouns>
 - Functions: `DetCount|AtLeast|AtMost|Exactly|MoreThan|FewerThan`
-- Cited by: consistency#r16, scenarios#r8, scenarios#r29
+- Cited by: consistency#r16, consistency#r41, scenarios#r8, scenarios#r29
 - Example and its reading:
 
 ```construct
@@ -878,7 +878,7 @@ nothing but these
 - Since: b240
 - Form: only <np>
 - Functions: `k_\w+_Only`
-- Cited by: consistency#r3, consistency#r15, scenarios#r7, scenarios#r10
+- Cited by: consistency#r3, consistency#r15, consistency#r42, scenarios#r7, scenarios#r10
 - Example and its reading:
 
 ```construct

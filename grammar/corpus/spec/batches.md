@@ -17,19 +17,6 @@ shall [x3: agent the person (constant), x5: service the batches service (constan
     initiates(e3, subject: x5, status(x2) = `merged`)
 ```
 
-## r51
-From: batches#r14, reworded in request words (0.38.0).
-
-```reading
-When the person opens a batch, the batches service shall keep a batch brief and return the batch brief.
-shall [x1: agent the person (constant), x3: service the batches service (constant)]
-  when [x2: batch]
-    request(e1, batches.open, subject: x1, object: x2)
-  response [x4: batch brief]
-    keep(e2, subject: x3, object: x4)
-    return(e3, subject: x3, object: x4)
-```
-
 ## r52
 From: batches#r15, reworded in request words (0.38.0).
 
@@ -136,21 +123,6 @@ shall [x2: agent the person (constant), x3: service the batches service (constan
       status(x4) = `in-batch`
       scope
         initiates(e3, subject: x3, status(x4) = `ready`)
-```
-
-## r59
-From: batches#r31, reworded in request words (0.38.0).
-
-```reading
-When the person merges the proposed change of a batch, the batches service shall keep no review folder of the batch.
-shall [x1: agent the person (constant), x4: service the batches service (constant)]
-  when [x2: batch, x3: proposed change]
-    of(x3, x2)
-    request(e1, batches.merge, subject: x1, object: x3)
-  response
-    not [x5: review folder]
-      of(x5, x2)
-      keep(e2, subject: x4, object: x5)
 ```
 
 ## r60
@@ -893,4 +865,35 @@ shall [x3: agent the person (constant), x5: service the batches service (constan
     not [x7: batch rule]
       in(x7, x6)
     keep(e2, subject: x5, object: x6)
+```
+
+## r102
+Retires: r59. From: b580 r102.
+
+```reading
+When the person merges the proposed change of a batch, the batches service shall keep no review folder of the batch and return the batch summary of the batch.
+shall [x1: agent the person (constant), x4: service the batches service (constant)]
+  when [x2: batch, x3: proposed change]
+    of(x3, x2)
+    request(e1, batches.merge, subject: x1, object: x3)
+  response [x6: batch summary]
+    not [x5: review folder]
+      of(x5, x2)
+      keep(e2, subject: x4, object: x5)
+    of(x6, x2)
+    return(e3, subject: x4, object: x6)
+```
+
+## r103
+Retires: r51. From: b580 r103.
+
+```reading
+When the person opens a batch, the batches service shall keep a batch brief that holds a batch summary form and return the batch brief.
+shall [x1: agent the person (constant), x3: service the batches service (constant)]
+  when [x2: batch]
+    request(e1, batches.open, subject: x1, object: x2)
+  response [x4: batch brief, x5: batch summary form]
+    in(x5, x4)
+    keep(e2, subject: x3, object: x4)
+    return(e3, subject: x3, object: x4)
 ```

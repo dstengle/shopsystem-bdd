@@ -6,7 +6,7 @@ group: service
 area: execution
 specifies: object batch, object task, service batches
 language: codified-2
-retired: [g69, r69, g82, r82, g88, r88, g53, r53]
+retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51]
 unbuilt: []
 ---
 
@@ -21,9 +21,6 @@ when the change is merged.
 ### [g50] Merging a batch's change delivers its items
 - [r50] While an item in a batch is `in-batch`, when the person merges the proposed change of the batch, the batches
   service shall set the status of the item to `delivered` and set the status of the batch to `merged`.
-
-### [g51] A batch opened keeps and gives its brief
-- [r51] When the person opens a batch, the batches service shall keep a batch brief and return the batch brief.
 
 ### [g52] A batch abandoned keeps no review folder
 - [r52] When the person abandons a batch, the batches service shall keep no review folder of the batch.
@@ -48,10 +45,6 @@ when the change is merged.
 ### [g58] A batch abandoned gives its items back as ready
 - [r58] While a batch is `building`, when the person abandons the batch, the batches service shall set the status of the
   batch to `abandoned` and set the status of every item in the batch whose status is `in-batch` to `ready`.
-
-### [g59] A batch whose change is merged keeps no review folder
-- [r59] When the person merges the proposed change of a batch, the batches service shall keep no review folder of the
-  batch.
 
 ### [g60] An item parked has its lines taken out of the batch's workspace
 - [r60] While an item in a batch is `in-batch` and the workspace of the batch holds a requirement of the item, when a
@@ -186,4 +179,10 @@ when the change is merged.
 
 ### [g99] A batch opened with no batch rule keeps a brief that holds none
 - [r99] While no settings file holds a batch rule, when the person opens a batch, the batches service shall keep a batch brief that holds no batch rule.
+
+### [g102] Every batch summary states its cost and timing
+- [r102] When the person merges the proposed change of a batch, the batches service shall keep no review folder of the batch and return the batch summary of the batch.
+
+### [g103] Every batch summary states its cost and timing
+- [r103] When the person opens a batch, the batches service shall keep a batch brief that holds a batch summary form and return the batch brief.
 
