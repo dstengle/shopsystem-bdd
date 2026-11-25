@@ -78,7 +78,8 @@ vocabulary). This spec has no such line yet; this one parses against it:
 A kept change always cites an item.
 ```
 
-`spec logic` does not reason with necessities yet ([Modality](../grammar/language.md#modality-shall-may-always-and-never)).
+`shop spec logic` does not reason with necessities yet
+([Modality](../grammar/language.md#modality-shall-may-always-and-never)).
 
 ### Permission: may
 
@@ -161,7 +162,7 @@ Some words every context needs. They come in packs, which `spec/index.md` import
 
 - [`base`](../grammar/packs/base.md): text, file, version, repository, bounded context: the kinds most contexts name
   and none owns. In a context with a domain model a kind of an imported pack is a declared object, so a relation, an
-  attribute or a parameter may name it. `migrate init` imports it beside `request`.
+  attribute or a parameter may name it. `shop migrate init` imports it beside `request`.
 - [`request`](../grammar/packs/request.md): request, parameter, service, reason, response, check, artifact; refuse,
   name, return, notify, complete, fail, keep, change, conform, start.
 - [`spec`](../grammar/packs/spec.md): requirement, construct, rule; use, violate.
@@ -199,12 +200,12 @@ flowchart BT
   V --> L["the grammar your lines are parsed in"]
 ```
 
-### Finding the words: `spec lexicon`
+### Finding the words: `shop spec lexicon`
 
-`spec lexicon` prints every word you can use, by category. A shortened run in this repository:
+`shop spec lexicon` prints every word you can use, by category. A shortened run in this repository:
 
 ```console
-$ spec lexicon
+$ shop spec lexicon
 actor (45)
   the person
   ...
@@ -346,7 +347,7 @@ A position ("the first item", the top three) and a second key are not said yet.
 ## 4. Do and don't
 
 This is the heart of the page. Each pair is a line writers try first, and the line that says it. Some don'ts are
-refused by `spec parse`. Others parse but break a writing rule; those sit in a plain block, and the sentence above
+refused by `shop spec parse`. Others parse but break a writing rule; those sit in a plain block, and the sentence above
 says why.
 
 ### A state in the trigger: move it to While
@@ -373,7 +374,7 @@ When an item is readied, the backlog service shall set the status of the item to
 ```
 
 ```console
-$ spec parse "When an item is readied, the backlog service shall set the status of the item to \`ready\`."
+$ shop spec parse "When an item is readied, the backlog service shall set the status of the item to \`ready\`."
 refused: the verb ready takes a subject, which a passive leaves out: agent readies item
   parsed up to: When an
   nearest words: item, items, `item`, term, stem
@@ -393,7 +394,7 @@ Where `--json` is given, when the person lists the backlog, the backlog service 
 ```
 
 ```console
-$ spec parse "Where \`--json\` is given, when the person lists the backlog, the backlog service shall return every item."
+$ shop spec parse "Where \`--json\` is given, when the person lists the backlog, the backlog service shall return every item."
 refused: the verb give takes a subject, which a passive leaves out: agent gives directive
   parsed up to: Where `--json` is
   nearest words: given, give, gives, given step, given steps
@@ -416,10 +417,10 @@ This parses, but it says what is already said elsewhere:
 While the status of an item is not `idea`, if the person shapes the item, then the backlog service shall refuse the request, name the status of the item and change nothing.
 ```
 
-Write "refuse the request and name X". The rest follows from universal U17, and `spec explain` shows it:
+Write "refuse the request and name X". The rest follows from universal U17, and `shop spec explain` shows it:
 
 ```console
-$ spec explain items#r15
+$ shop spec explain items#r15
 items#r15  While the status of an item is not `idea`, if the person shapes the item, then the backlog service shall refuse the request and name the item.
 which also means:
   the backlog service shall change nothing (by U17)
@@ -496,7 +497,7 @@ the measurement `m2` holds:
 ```
 ````
 
-(The given block is shortened here.) On an item, a given block goes in with `work line --given`.
+(The given block is shortened here.) On an item, a given block goes in with `shop work line --given`.
 
 ### Two lines, one trigger: join them with and
 
@@ -539,13 +540,13 @@ A compound that is a thing of its own ("pull request", "git branch") is a declar
 
 ## 5. Reading a refusal
 
-`spec parse` refuses in two ways. Either the words stop fitting the grammar at some token, or the line parses and
+`shop spec parse` refuses in two ways. Either the words stop fitting the grammar at some token, or the line parses and
 a reading rule turns it down. Both say where.
 
 **A token that does not fit.** Here *never* wants a state verb, and *keep* is an action:
 
 ```console
-$ spec parse "A session never keeps an item."
+$ shop spec parse "A session never keeps an item."
 does not parse at keeps (token 4 of 7)
   parsed up to: A session never
   nearest words: keeps, keep, kept, takes, steps
@@ -562,7 +563,7 @@ does not parse at keeps (token 4 of 7)
 **A frame.** The words fit, but a noun is of the wrong kind for its verb:
 
 ```console
-$ spec parse "When the person readies a shaped item, the backlog service shall set the status of the item to \`ready\`."
+$ shop spec parse "When the person readies a shaped item, the backlog service shall set the status of the item to \`ready\`."
 does not parse at shaped (token 6 of 21)
   parsed up to: When the person readies a
   nearest words: shaped, shape, `shaped`, shapes, mapped
@@ -594,10 +595,10 @@ The rest of the refusals, one by one, are in [troubleshooting](troubleshooting.m
 ## 6. Reading a line's meaning
 
 A line that parses is not done. A parse says the words fit; the meaning says what they claim. Read it with
-`spec parse --form`:
+`shop spec parse --form`:
 
 ```console
-$ spec parse --form "When the person lists the backlog, the backlog service shall return an item."
+$ shop spec parse --form "When the person lists the backlog, the backlog service shall return an item."
 shall [x1: agent the person (constant), x2: backlog "the backlog of this bounded context" (indexical), x3: service the backlog service (constant)]
   when
     request(e1, backlog.list, subject: x1, object: x2)
@@ -651,11 +652,11 @@ shall [x4: agent the person (constant), x5: backlog "the backlog of this bounded
 That is what its group's title says: it returns an item with its dependency on an item that is not delivered. If
 the form had bound to `x1`, the line would mean something else, and only the form would tell you.
 
-For a line already in a capability, `spec explain` adds what the line also means (through a universal condition, as
+For a line already in a capability, `shop spec explain` adds what the line also means (through a universal condition, as
 under §4) and which lines take precedence over it in some state:
 
 ```console
-$ spec explain items#r1
+$ shop spec explain items#r1
 items#r1  While an item is `shaped` and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.
 taking precedence over it, where its state holds:
   items#r10  While an item is `shaped` and a requirement group in the item violates a rule, if the person readies the item, then the backlog service shall refuse the request and name the requirement group and the rule.

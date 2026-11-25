@@ -1,7 +1,7 @@
 <!--
 Every output on this page is pasted from one real run, on 2026-11-10, of plugin 0.33.0 at commit 7f60e57de (main),
 in a throwaway clone with a local bare remote as origin and tests/scripts/stub_gh.py as $SHOPSYSTEM_WORK_GH.
-Paths into the scratch directory are cut to `...`. In that run `work quote` was given `--transcript` with a
+Paths into the scratch directory are cut to `...`. In that run `shop work quote` was given `--transcript` with a
 two-message transcript of the conversation below, because no live session's hook had kept one; in a session the
 hook does that for you. The merge in stop 8 was made by hand on the bare remote, and $STUB_GH_STATE told the
 stand-in gh that pull request #1 was merged at that commit. Stop 2's outputs and stop 5's scenario are re-run on
@@ -18,7 +18,7 @@ say, what Claude does, every command it runs and what each one printed.
 
 The feature is real, and it lives in this repository's own `backlog` capability:
 
-> `work show` prints the status of an item, not only its title.
+> `shop work show` prints the status of an item, not only its title.
 
 The whole tour ran in a throwaway clone of this repository, with a local bare repository as `origin` and the
 test suite's stand-in for `gh` (`tests/scripts/stub_gh.py`), so the batch, the pull request and the merge are real
@@ -29,31 +29,31 @@ flowchart LR
   S[you say it] --> I[item with lines] --> R[ready] --> B[batch] --> P[pull request] --> M[merged] --> D[delivered]
 ```
 
-Commands are written as `work backlog` for short. On this tour Claude runs them; [how the commands are run](reference/commands.md#how-the-commands-are-run)
-shows how to run one yourself.
+Commands are written as `shop work backlog` for short. On this tour Claude runs them; [how the commands are
+run](reference/commands.md#how-the-commands-are-run) shows how to run one yourself.
 
 ## Stop 1: the idea
 
 **You say:**
 
-> When I run `work show` on an item I only get its title. I'd like it to print the status too, so I can see at a
+> When I run `shop work show` on an item I only get its title. I'd like it to print the status too, so I can see at a
 > glance whether it's ready.
 
 **Claude does:** it writes the idea down as an item, keeps your words, and shapes the item, because you've said
 clearly what you want.
 
 ```console
-$ work idea "work show prints the status of an item"
+$ shop work idea "work show prints the status of an item"
 b250 "work show prints the status of an item" idea
-$ work quote "I'd like it to print the status too"
+$ shop work quote "I'd like it to print the status too"
 quote-24 "I'd like it to print the status too"
-$ work shape b250 --note "quote-24: the person wants the status beside the title"
+$ shop work shape b250 --note "quote-24: the person wants the status beside the title"
 b250 "work show prints the status of an item" shaped
 ```
 
 **What happened.** An *item* is one piece of work in the backlog: the file `.shop/backlog/b250.md`, committed
-and pushed by each command. `work quote` copied your message, with the message around it, into
-`.shop/quotes/24.md`, so the reason for this item is kept in your own words. `work shape` moved the item from
+and pushed by each command. `shop work quote` copied your message, with the message around it, into
+`.shop/quotes/24.md`, so the reason for this item is kept in your own words. `shop work shape` moved the item from
 `idea` to `shaped`: it's understood well enough to write its lines. Nothing has been built, and nothing will be
 until the item is `ready`.
 
@@ -63,7 +63,7 @@ until the item is `ready`.
 the words it may use.
 
 ```console
-$ spec lexicon
+$ shop spec lexicon
 actor (45)
   the person
   ...
@@ -90,14 +90,14 @@ event (138)
 Everything it needs is there: *the person*, *the backlog service*, an *item*, its *title*, its *status*, the verb
 *show*, which names the backlog service's operation `show`, and the request pack's *return*. A line can only use
 words the lexicon has. It says what the person asks of the service and what the service answers; the command
-`work show` is how the CLI asks, and no line names it.
+`shop work show` is how the CLI asks, and no line names it.
 
 ### A first attempt, refused
 
 Thinking of the item in front of you, the first draft says "a shaped item":
 
 ```console
-$ spec parse 'When the person shows a shaped item, the backlog service shall return the status of the item.'
+$ shop spec parse 'When the person shows a shaped item, the backlog service shall return the status of the item.'
 does not parse at shaped (token 6 of 19)
   parsed up to: When the person shows a
   nearest words: shaped, shape, `shaped`, shapes, mapped
@@ -122,7 +122,7 @@ shall [x2: agent the person (constant), x3: service the backlog service (constan
     return(e2, subject: x3, object: x4)
 ```
 
-That parses. The lines under it are its *form*, what `spec parse --form` says the line means. Read in plain
+That parses. The lines under it are its *form*, what `shop spec parse --form` says the line means. Read in plain
 words: *while* there's an item x1 whose status is `shaped`, *when* the person asks the backlog service to show x1,
 the service returns x1's status.
 
@@ -165,7 +165,7 @@ x2's status.
 That's what you asked for.
 
 ```console
-$ work line b250 --into items --retires items#r12 --group 'An item shown gives its title and its status' 'When the person shows an item, the backlog service shall return the title of the item and the status of the item.'
+$ shop work line b250 --into items --retires items#r12 --group 'An item shown gives its title and its status' 'When the person shows an item, the backlog service shall return the title of the item and the status of the item.'
 b250 "work show prints the status of an item": items#r31 retires items#r12
 ```
 
@@ -179,16 +179,16 @@ don'ts this stop ran into.
 **Claude does:** it rates the item, then asks the readiness bar whether it can be built.
 
 ```console
-$ work rate b250 --value medium-value --urgency medium-urgency --size small
+$ shop work rate b250 --value medium-value --urgency medium-urgency --size small
 b250 "work show prints the status of an item" shaped
-$ work ready b250
+$ shop work ready b250
 b250 "work show prints the status of an item" ready
 ```
 
-**What happened.** The rating gives the item its place in the backlog. `work ready` is the readiness bar: on a
-copy of `spec/` with b250's lines laid in, it checked that each line parses, that `spec logic` finds no clash with
-the rest of the spec, and that `features generate` can write the group's scenario with no bracketed placeholder.
-All three held, so the item moved to `ready`. Had one failed, `work ready` would have refused and named the reason.
+**What happened.** The rating gives the item its place in the backlog. `shop work ready` is the readiness bar: on a
+copy of `spec/` with b250's lines laid in, it checked that each line parses, that `shop spec logic` finds no clash with
+the rest of the spec, and that `shop features generate` can write the group's scenario with no bracketed placeholder.
+All three held, so the item moved to `ready`. Had one failed, `shop work ready` would have refused and named the reason.
 
 Claude doesn't ask you to approve the line. The bar is the check, and readying is the decision to build. If you'd
 rather look first, say so; you can read every line in the item file or in the pull request.
@@ -196,7 +196,7 @@ rather look first, say so; you can read every line in the item file or in the pu
 ## Stop 4: the backlog
 
 ```console
-$ work backlog
+$ shop work backlog
 ## needs-input (1)
 ...
 
@@ -210,7 +210,7 @@ $ work backlog
 ...
 ```
 
-**What happened.** Nothing changed: `work backlog` only reads. It prints one table a state, each in rank order
+**What happened.** Nothing changed: `shop work backlog` only reads. It prints one table a state, each in rank order
 by score (value and urgency over size), with what each item waits on. b250 is the only `ready` item, and nothing
 blocks it. When you say "build what's ready", this table is what Claude picks from.
 
@@ -221,13 +221,13 @@ blocks it. When you say "build what's ready", this table is what Claude picks fr
 **Claude does:** it starts a batch.
 
 ```console
-$ work batch start
+$ shop work batch start
 batch-34 building: t1 b250 "work show prints the status of an item"
 batch brief: .../repo/.shop/worktrees/batch-34-driver/brief.md
 ```
 
 **What happened.** A *batch* is ready items built together on one branch and closed by one pull request.
-`work batch start` picked the ready items in rank order (here, one), moved b250 to `in-batch`, and made the branch
+`shop work batch start` picked the ready items in rank order (here, one), moved b250 to `in-batch`, and made the branch
 `batch-34` in its own worktree. On that branch, one commit laid the item's lines into
 `spec/capabilities/items.md`: group g12 and line r12 out, g31 and r31 in, and `r31` added to the capability's
 `unbuilt:` list. The same commit regenerated `features/items.feature`, where r12's scenario gave way to this one:
@@ -242,8 +242,8 @@ batch brief: .../repo/.shop/worktrees/batch-34-driver/brief.md
     And the backlog service returns the status of the item i1
 ```
 
-Nobody wrote this scenario. `features generate` read it off the line's form: a Given for the item the trigger names,
-the When from the request, a Then for each thing the service returns. The tags `@g31 @r31` tie it to its group and line.
+Nobody wrote this scenario. `shop features generate` read it off the line's form: a Given for the item the trigger
+names, the When from the request, a Then for each thing the service returns. The tags `@g31 @r31` tie it to its group and line.
 It's the item's acceptance test.
 
 The last line of the output is the *batch brief*: one file holding the batch, its task, its worktree and branch, the
@@ -252,10 +252,10 @@ rules every subagent follows, and where to stop.
 ## Stop 6: the build
 
 **Claude does:** the session hands the brief to one fresh agent, the batch's *driver*. The driver runs
-`work batch resume`, which gives each task its worktree, then sends one subagent to each task.
+`shop work batch resume`, which gives each task its worktree, then sends one subagent to each task.
 
 ```console
-$ work batch resume batch-34
+$ shop work batch resume batch-34
 batch-34 building: plan .shop/batches/34/plan.md
 t1 b250 "work show prints the status of an item": running in .shop/worktrees/batch-34-t1 on batch-34-b250: build items#r31; then work batch done batch-34 t1, or work batch park batch-34 b250 --question <text>
 ```
@@ -277,9 +277,9 @@ FAILED tests/scenarios/test_items.py::test_an_item_shown_gives_its_title_and_its
 1 failed in 2.13s
 ```
 
-Look at the output in that message: `work show` was already printing `status: idea`. The step's handler didn't know
-how to read `work show`'s fields, only `work backlog`'s table. So the build here is on the test side: the handler
-learns to check a `work show` field, and the grammar's corpus gets r31's reading in place of r12's.
+Look at the output in that message: `shop work show` was already printing `status: idea`. The step's handler didn't know
+how to read `shop work show`'s fields, only `shop work backlog`'s table. So the build here is on the test side: the
+handler learns to check a `shop work show` field, and the grammar's corpus gets r31's reading in place of r12's.
 
 ```python
     elif " of the item " in np and W.runs(step)[-1]["args"][1:2] == ["show"]:
@@ -305,30 +305,30 @@ Item: b250
 Then the driver marks the task done:
 
 ```console
-$ work batch done batch-34 t1
+$ shop work batch done batch-34 t1
 batch-34 t1 b250 "work show prints the status of an item": done
 ```
 
-**What happened.** `work batch done` refuses a task until it's finished. It checked that the worktree is
+**What happened.** `shop work batch done` refuses a task until it's finished. It checked that the worktree is
 clean, that every commit cites `Item: b250`, that nothing under `.shop/` changed, that `r31` is no longer
 `unbuilt:`, and that the whole suite passes in the worktree. A refusal names which one failed and why. A question
-the subagent can't settle doesn't come to you mid-build: the driver parks the item with `work batch park`, the rest
-of the batch carries on, and you answer it later with `work answer`.
+the subagent can't settle doesn't come to you mid-build: the driver parks the item with `shop work batch park`, the rest
+of the batch carries on, and you answer it later with `shop work answer`.
 
 ## Stop 7: the pull request and its review
 
 **Claude does:** the driver merges the tasks into the batch branch, opens the pull request and has it reviewed once.
 
 ```console
-$ work batch review batch-34
+$ shop work batch review batch-34
 next: work batch brief batch-34, the pr-reviewer on it, then work batch reviewed batch-34
 https://github.com/ex/ctx/pull/1
-$ work batch brief batch-34
+$ shop work batch brief batch-34
 .shop/worktrees/batch-34-review-1/brief.md
 ```
 
-`work batch review` merged each task's branch into `batch-34`, ran the tests, pushed, and opened a draft pull
-request. (The URL is the stand-in gh's; on GitHub it's your repository's.) `work batch brief` wrote what the
+`shop work batch review` merged each task's branch into `batch-34`, ran the tests, pushed, and opened a draft pull
+request. (The URL is the stand-in gh's; on GitHub it's your repository's.) `shop work batch brief` wrote what the
 reviewer reads: the batch's own commits and diff, each item's lines, the `tier: judgement` design-decisions, and
 the runs of the repository's checks.
 
@@ -350,11 +350,11 @@ The batch builds b250: r31 replaces r12 and its scenario passes. No finding hold
 ```
 
 ```console
-$ work batch reviewed batch-34
+$ shop work batch reviewed batch-34
 batch-34 review 1: 1 finding -> awaiting-merge; the pull request https://github.com/ex/ctx/pull/1 is ready for the person's merge
 ```
 
-**What happened.** `work batch reviewed` numbered the finding `f1`, recorded the review as
+**What happened.** `shop work batch reviewed` numbered the finding `f1`, recorded the review as
 `.shop/batches/34/review-1.md`, posted it on the pull request, and marked the pull request ready. An observation
 doesn't hold the merge, so the batch went to `awaiting-merge`. A *fix now* finding would have sent it back to
 `building`: the fix goes on the item's branch with `Finding: f1` beside `Item: b250`, and the next review reads only
@@ -367,25 +367,25 @@ the fix. The driver stops here. It never merges.
 **Claude does:** once you say it's merged, it records the merge.
 
 ```console
-$ work batch merged batch-34
+$ shop work batch merged batch-34
 batch-34 merged
-$ work show b250
+$ shop work show b250
 b250 "work show prints the status of an item"
   status: delivered
   provenance: own
   ...
 ```
 
-`work batch merged` asked gh whether the pull request is merged, checked that its merge commit is in `main`, then
+`shop work batch merged` asked gh whether the pull request is merged, checked that its merge commit is in `main`, then
 moved b250 to `delivered` and the batch to `merged`, and removed the batch's worktrees and branches. And there's
 the feature, describing itself: showing b250 now promises its status, and the status is `delivered`.
 
 Then Claude measures the batch:
 
 ```console
-$ measure batch batch-34
+$ shop measure batch batch-34
 .shop/records/measurements/2026-11-10-batch-34.md
-$ measure show .shop/records/measurements/2026-11-10-batch-34.md
+$ shop measure show .shop/records/measurements/2026-11-10-batch-34.md
 totals
 total             | value
 ------------------+---------------------
@@ -410,7 +410,7 @@ readiness_bar | mechanical
 ...
 ```
 
-`measure batch` reads the batch's window from git and its sessions from Claude Code's transcripts. The tour's
+`shop measure batch` reads the batch's window from git and its sessions from Claude Code's transcripts. The tour's
 clone had no sessions to read, so its token and cost rows are all zero. Here is the same table from a real batch of
 this repository, batch-32 (one item, b197, merged as pull request #46):
 

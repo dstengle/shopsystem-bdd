@@ -10,7 +10,7 @@ plugin's tools: the session works out what to run.
 |---|---|---|
 | "Set up this repository for the plugin." | [shaping-items](../skills/shaping-items/SKILL.md) | give the context's id, and a GitHub repository |
 | "I want an app that keeps my notes." | [shaping-items](../skills/shaping-items/SKILL.md), then [building-a-batch](../skills/building-a-batch/SKILL.md) | answer a question or two, merge the pull request |
-| "I'd like `work show` to print the status too." | [shaping-items](../skills/shaping-items/SKILL.md), then [building-a-batch](../skills/building-a-batch/SKILL.md) | merge the pull request |
+| "I'd like `shop work show` to print the status too." | [shaping-items](../skills/shaping-items/SKILL.md), then [building-a-batch](../skills/building-a-batch/SKILL.md) | merge the pull request |
 | "Build what's ready." | [building-a-batch](../skills/building-a-batch/SKILL.md) | merge the pull request |
 | "Check your requests." | [taking-in-a-request](../skills/taking-in-a-request/SKILL.md) | accept a request |
 | "Ask the payments context for refunds." | [raising-a-request](../skills/raising-a-request/SKILL.md) | read the proposed lines |
@@ -18,7 +18,7 @@ plugin's tools: the session works out what to run.
 
 A skill is the set of instructions Claude follows for one kind of work. The links show exactly what Claude is told.
 
-Take the first row. You say you'd like `work show` to print an item's status. Claude makes an item (a piece of work
+Take the first row. You say you'd like `shop work show` to print an item's status. Claude makes an item (a piece of work
 in the backlog) and writes what you asked for as a requirement line, one sentence the plugin can parse:
 
 ```requirement
@@ -57,7 +57,7 @@ to try, each with the figure that would show it worked. You don't need to do any
 
 **To approve the lines.** The readiness bar is the check, and it's stricter than a skim: a line that could mean two
 things, or that clashes with another line, is refused before anyone builds it. Claude tells you afterwards which
-items are ready and what their lines say. You can read them in the backlog (`work show b<n>`) and again in the pull
+items are ready and what their lines say. You can read them in the backlog (`shop work show b<n>`) and again in the pull
 request, and change them there.
 
 **To start a batch.** Readying an item is the decision to build it. When an item is `ready` and no batch is open,
@@ -70,7 +70,7 @@ newer (see below). Those are yours.
 
 Three hooks run as a session starts. Each prints nothing when there's nothing to say.
 
-**A pending upgrade.** `migrate status --hook` speaks only when the repository is behind the plugin:
+**A pending upgrade.** `shop migrate status --hook` speaks only when the repository is behind the plugin:
 
 ```text
 This repository is on plugin version 0.37.0 and the plugin is on 0.38.0. Offer the person the upgrade from 0.37.0 to 0.38.0, which applies:
@@ -103,14 +103,14 @@ Claude then watches the issue and picks the conversation up as soon as the other
 
 ## Why your words are kept
 
-When an item rests on something you said, Claude keeps your exact words with `work quote`. A quote is a small file
+When an item rests on something you said, Claude keeps your exact words with `shop work quote`. A quote is a small file
 under `.shop/quotes/` with your message and the turns around it, committed with everything else. Months later,
 anyone can see why an item exists, in your words rather than a summary of them.
 
 ```console
-$ work quote "I trust you to make some delightful docs."
+$ shop work quote "I trust you to make some delightful docs."
 quote-24 "I trust you to make some delightful docs."
-$ work show quote-20
+$ shop work show quote-20
 quote-20 "Once 4.0 is done, take a new backlog item to make some nice …"
   session: 72e23fa5-6dee-49f3-a1d1-7e79096a0501
   date: 2026-11-10
@@ -136,10 +136,10 @@ That's the quote these docs were written from.
 
 You can redirect Claude any time in plain words. Inside a batch there's a better channel too. When a task can't go
 on without an answer, its item is parked with the question and leaves the batch as `needs-input`; the rest of the
-batch carries on. `work backlog` lists it under its own heading:
+batch carries on. `shop work backlog` lists it under its own heading:
 
 ```console
-$ work backlog
+$ shop work backlog
 ...
 ## needs-input (1)
 
@@ -152,11 +152,11 @@ Tell Claude your answer, or record it yourself. The item goes back to `shaped`, 
 it, and it's shaped and readied again:
 
 ```console
-$ work answer b7 "Reword the gloss as one sentence and give g20 its own trigger; retire readiness#r12; yes, change the three asserts."
+$ shop work answer b7 "Reword the gloss as one sentence and give g20 its own trigger; retire readiness#r12; yes, change the three asserts."
 b7 "Close the generator gaps in spec_steps" shaped
 ```
 
-To stop work you don't want, say so: Claude withdraws an item (`work withdraw`) or abandons a batch
-(`work batch abandon`). [Recipes](recipes.md) has the steps.
+To stop work you don't want, say so: Claude withdraws an item (`shop work withdraw`) or abandons a batch
+(`shop work batch abandon`). [Recipes](recipes.md) has the steps.
 
 Next: [the tour](tour.md) · [recipes](recipes.md) · [concepts](concepts.md)

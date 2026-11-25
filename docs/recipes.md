@@ -12,8 +12,8 @@ Short answers to "how do I ...?", for the developer at the keyboard and the pers
 gives the situation in one line, the steps, and what you see. Most of the time you'll say the words in **You say**
 and Claude runs the commands; they're here so you know what happens, and so you can run them yourself.
 
-Commands are written as `work line`, `spec check` and so on. [How the commands are run](reference/commands.md#how-the-commands-are-run)
-shows how to run them from the plugin's directory. Every command's full contract is its `--help`; the
+Commands are written as `shop work line`, `shop spec check` and so on. [How the commands are
+run](reference/commands.md#how-the-commands-are-run) shows how to run them from the plugin's directory. Every command's full contract is its `--help`; the
 [command reference](reference/commands.md) has the short version.
 
 **The recipes:** [a vocabulary word](#add-a-word-to-the-vocabulary) ·
@@ -42,17 +42,17 @@ and a line that uses them.
 
 <!-- docs: context tests/scripts/fixtures/docs-labels -->
 ```console
-$ work idea "Items carry labels" --note "the person wants to group items by a short word"
+$ shop work idea "Items carry labels" --note "the person wants to group items by a short word"
 b250 "Items carry labels" idea
-$ work shape b250
+$ shop work shape b250
 b250 "Items carry labels" shaped
-$ work line b250 --into items --model "object label"
+$ shop work line b250 --into items --model "object label"
 b250 "Items carry labels": model lines of tracking
-$ work line b250 --into items --relation "item: has → label (many)"
+$ shop work line b250 --into items --relation "item: has → label (many)"
 b250 "Items carry labels": model lines of tracking
-$ work line b250 --into items --term="- **label** (noun) → object label. A short word the person gives an item, to group it with others."
+$ shop work line b250 --into items --term="- **label** (noun) → object label. A short word the person gives an item, to group it with others."
 b250 "Items carry labels": a vocabulary entry of tracking
-$ work line b250 --into items --group "An item shown returns its labels" "While an item has a label, when the person shows the item, the backlog service shall return every label of the item."
+$ shop work line b250 --into items --group "An item shown returns its labels" "While an item has a label, when the person shows the item, the backlog service shall return every label of the item."
 b250 "Items carry labels": items#r31
 ```
 
@@ -63,23 +63,23 @@ relation to `object item`. A vocabulary entry has the form `- **<word>** (<part 
 sentence>.` Leave off the leading `- ` and `work line` tells you so:
 
 ```console
-$ work line b250 --into items --term "**label** (noun) → object label. A short word."
+$ shop work line b250 --into items --term "**label** (noun) → object label. A short word."
 work line: the vocabulary entry **label** (noun) → object label. A short word. is not `- **<word>** (<part of speech>) → <element>. ...`
 ```
 
-`spec parse` in your checkout doesn't know `label` yet: the word lives on the item until a batch lays it into
+`shop spec parse` in your checkout doesn't know `label` yet: the word lives on the item until a batch lays it into
 `spec/`. The [readiness bar](concepts.md#readiness-bar) is where the line is checked, with the item's model lines and
 entries laid in on a copy of `spec/`. Rate the item and ready it:
 
 ```console
-$ work rate b250 --value medium-value --urgency low-urgency --size small
+$ shop work rate b250 --value medium-value --urgency low-urgency --size small
 b250 "Items carry labels" shaped
-$ work ready b250
+$ shop work ready b250
 b250 "Items carry labels" ready
 ```
 
-The first `work ready` after a new word takes longer than the ones after it, because the grammar is rebuilt with the
-word in it and the spec's lines are parsed again in it, several at once; after that the parses are kept, and it answers
+The first `shop work ready` after a new word takes longer than the ones after it, because the grammar is rebuilt with
+the word in it and the spec's lines are parsed again in it, several at once; after that the parses are kept, and it answers
 from them.
 The line has a precondition ("While an item has a label") because the items capability holds a group on the same
 trigger already ("When the person shows an item"); two groups of one capability with the same condition and trigger
@@ -114,9 +114,9 @@ with `may follow:` listing the verbs the person can do. See
 [troubleshooting](troubleshooting.md#the-verb-run-takes-as-its-object-) for reading these.
 
 **A word a pack already has.** The request pack defines `request`, `service`, `reason`, `response`, `check` and a few
-verbs. To give one of them your own meaning, mark your entry `Redefines: request`. Without it, `spec lexicon --check`
-says `v_t16  <word>  <file>: the pack request defines <word> too; mark the entry Redefines: request`; with it,
-`spec lexicon` lists the word as `<word>  [redefines request]`.
+verbs. To give one of them your own meaning, mark your entry `Redefines: request`. Without it, `shop spec lexicon
+--check` says `v_t16  <word>  <file>: the pack request defines <word> too; mark the entry Redefines: request`; with it,
+`shop spec lexicon` lists the word as `<word>  [redefines request]`.
 
 ## One verb for several operations
 
@@ -151,7 +151,7 @@ line keeps the person's verb. A line reads by the frame its words fit, one way e
 
 <!-- docs: context tests/scripts/fixtures/docs-checklists -->
 ```console
-$ spec parse --form "When the person lists a checklist, the checklists service shall return every note in the checklist."
+$ shop spec parse --form "When the person lists a checklist, the checklists service shall return every note in the checklist."
 shall [x1: agent the person (constant), x3: service the checklists service (constant)]
   when [x2: checklist]
     request(e1, checklists.contents, subject: x1, object: x2)
@@ -160,7 +160,7 @@ shall [x1: agent the person (constant), x3: service the checklists service (cons
       in(x4, x2)
       scope
         return(e2, subject: x3, object: x4)
-$ spec parse --form "When the person lists the checklists, the checklists service shall return every checklist."
+$ shop spec parse --form "When the person lists the checklists, the checklists service shall return every checklist."
 shall [x1: agent the person (constant), x2: service the checklists service (constant)]
   when
     request(e1, checklists.list, subject: x1, the checklists)
@@ -168,7 +168,7 @@ shall [x1: agent the person (constant), x2: service the checklists service (cons
     every [x3: checklist]
       scope
         return(e2, subject: x2, object: x3)
-$ spec parse --form "When the person lists the characters of a note, the checklists service shall return every character of the note."
+$ shop spec parse --form "When the person lists the characters of a note, the checklists service shall return every character of the note."
 shall [x1: agent the person (constant), x3: service the checklists service (constant)]
   when [x2: note]
     request(e1, checklists.characters, subject: x1, the characters of: x2)
@@ -177,7 +177,7 @@ shall [x1: agent the person (constant), x3: service the checklists service (cons
       of(x4, x2)
       scope
         return(e2, subject: x3, object: x4)
-$ spec parse --form "When the person shows the length of a note, the checklists service shall return the note."
+$ shop spec parse --form "When the person shows the length of a note, the checklists service shall return the note."
 shall [x1: agent the person (constant), x3: service the checklists service (constant)]
   when [x2: note]
     request(e1, checklists.length, subject: x1, the length of: x2)
@@ -191,9 +191,9 @@ the parse at the verb:
 
 <!-- docs: context tests/scripts/fixtures/docs-checklists -->
 ```console
-$ spec parse "When the person lists every checklist, the checklists service shall return every checklist."
+$ shop spec parse "When the person lists every checklist, the checklists service shall return every checklist."
 refused: a request acts on one thing: "every checklist" is a plural object of list; say one thing, or the collection by its frame's own words
-$ spec parse "When the person lists a note, the checklists service shall return the note."
+$ shop spec parse "When the person lists a note, the checklists service shall return the note."
 refused: the verb list takes as its object checklist or a kind of it: agent lists checklist
   parsed up to: When the person lists a
   nearest words: note, notes, notifies, notified, no
@@ -208,15 +208,15 @@ that read two ways and both frames with their operations; give one of them other
 **When:** a line needs more than words: how two kinds relate, example data for its scenario, a rule true
 everywhere, or another context it depends on.
 
-Each has its own `work line` option, and each is checked for its shape before it's committed. Say what you want;
+Each has its own `shop work line` option, and each is checked for its shape before it's committed. Say what you want;
 Claude picks the option.
 
 ```console
-$ work line b251 --into backlog --given g37 'the label `l1` holds "docs"'
+$ shop work line b251 --into backlog --given g37 'the label `l1` holds "docs"'
 b251 "work backlog shows labels": a given block of backlog#g37
-$ work line b251 --universal "A session shall not merge a proposed change."
+$ shop work line b251 --universal "A session shall not merge a proposed change."
 b251 "work backlog shows labels": universal#U17
-$ work line b251 --upstream "bounded-context/missingmass.io/shopsystem/labels: the labels every context shares, github: missingmass/labels"
+$ shop work line b251 --upstream "bounded-context/missingmass.io/shopsystem/labels: the labels every context shares, github: missingmass/labels"
 b251 "work backlog shows labels": an upstream entry
 ```
 
@@ -225,7 +225,7 @@ b251 "work backlog shows labels": an upstream entry
   K", and a single preposition (`under → tag`) reads "a note under a tag". A relation that does not read is refused:
 
   ```console
-  $ work line b250 --into items --relation "item: has label"
+  $ shop work line b250 --into items --relation "item: has label"
   work line: the relation item: has label is not `<object>: <phrase> → <object> (<cardinality>)`
   ```
 - **`--given <group> '<data>'`** puts example data under one of the item's own groups. Sample values belong
@@ -233,7 +233,7 @@ b251 "work backlog shows labels": an upstream entry
   string, or `the <words> <name> holds:` with a block under it. Anything else is refused:
 
   ```console
-  $ work line b251 --into backlog --given g38 'the item has a label'
+  $ shop work line b251 --into backlog --given g38 'the item has a label'
   work line: the given block the item has a label is malformed: the item has a label is not example data (`the <words> <name> holds:` with data under it, or `the <words> <name> holds` and one code span or quoted string)
   ```
 
@@ -247,7 +247,7 @@ b251 "work backlog shows labels": an upstream entry
 - **`--upstream "<id>: <what it gives>, github: <owner>/<name>"`** adds an entry to `spec/index.md`'s
   `## Upstreams`, so you can raise [requests](concepts.md#request) to it. It takes no `--into` either.
 
-`work show b251` prints them all under `## Requirements`, each in the block it will land in (`### backlog`,
+`shop work show b251` prints them all under `## Requirements`, each in the block it will land in (`### backlog`,
 `### universal`, `### index`).
 
 ## Change a delivered line
@@ -259,11 +259,11 @@ b251 "work backlog shows labels": an upstream entry
 A delivered line is never edited in place. The new wording gets a new id, and the old id is retired:
 
 ```console
-$ work idea "Declining an item keeps it" --note "the decline is kept with the item, as every other move is"
+$ shop work idea "Declining an item keeps it" --note "the decline is kept with the item, as every other move is"
 b252 "Declining an item keeps it" idea
-$ work shape b252
+$ shop work shape b252
 b252 "Declining an item keeps it" shaped
-$ work line b252 --into items --retires items#r19 "While the status of an item is one of \`idea\` or \`shaped\`, when the person declines the item, the backlog service shall set the status of the item to \`refused\` and keep the item."
+$ shop work line b252 --into items --retires items#r19 "While the status of an item is one of \`idea\` or \`shaped\`, when the person declines the item, the backlog service shall set the status of the item to \`refused\` and keep the item."
 b252 "Declining an item keeps it": items#r31 retires items#r19
 ```
 
@@ -273,18 +273,18 @@ The item now holds `retired: [r19]` and the new line as `r31`. When a batch lays
 else, every one of those would silently point at the wrong line
 ([decision 0085](../spec/decisions/0085-requirements-retired-never-edited.md)).
 
-Two items each said `r31` on this page. That's fine: `work batch start` renumbers each item's ids past the
+Two items each said `r31` on this page. That's fine: `shop work batch start` renumbers each item's ids past the
 capability's and the other picked items' when it lays them. `--retires` names a live line, and only that:
 
 ```console
-$ work line b252 --into items --retires items#r1000 "When the person shows an item, the backlog service shall return the title of the item."
+$ shop work line b252 --into items --retires items#r1000 "When the person shows an item, the backlog service shall return the title of the item."
 work line: items#r1000 is nonexistent: items holds no live requirement r1000
 ```
 
 A line retired with nothing in its place takes `--no-line` in place of the new line:
 
 ```console
-$ work line b252 --into items --retires items#r19 --no-line
+$ shop work line b252 --into items --retires items#r19 --no-line
 b252 "Declining an item keeps it": retires items#r19
 ```
 
@@ -304,11 +304,11 @@ the word of an attribute takes it (construct `param-of`):
 - [r5] If the person adds a note with the title of another note, then the notes service shall refuse the request and name the title.
 ```
 
-No example value is needed (a line with one, "with the title `groceries`", is example data, which `spec check` warns
-of). The scenario `features generate` writes gives the other note a made-up title in a Given and the same title to
-the request in the When ("Given a note n2", "And the title of the note n2 is `t1`", "When the person adds a note n1
+No example value is needed (a line with one, "with the title `groceries`", is example data, which `shop spec check`
+warns of). The scenario `shop features generate` writes gives the other note a made-up title in a Given and the same
+title to the request in the When ("Given a note n2", "And the title of the note n2 is `t1`", "When the person adds a note n1
 with the title `t1`"), so the test sets the service's state up and checks its answer, reading no list of notes. And
-`spec logic` reads the line beside one that names a code on the same request ("If the person adds a note with the
+`shop spec logic` reads the line beside one that names a code on the same request ("If the person adds a note with the
 title `t1`, then the notes service shall not refuse the request.") as one request, and finds the clash. See
 [the language reference](../grammar/language.md#with-the-t-of-another-k-a-value-in-use).
 
@@ -316,12 +316,12 @@ title `t1`, then the notes service shall not refuse the request.") as one reques
 
 **When:** the behaviour you want doesn't belong in any capability you have.
 
-A new capability starts on an item, like its lines. `work line --capability` writes it into the item: its name,
+A new capability starts on an item, like its lines. `shop work line --capability` writes it into the item: its name,
 its narrator (who the scenarios are told for), its group (`service`, the default, or `guarantees` with `--group`)
 and its purpose, one line. It refuses a name `spec/capabilities/` holds already.
 
 ```console
-$ work line b260 --capability labels --narrator "a person grouping items" "The person gives items short words, labels, to group them, and reads the backlog by them."
+$ shop work line b260 --capability labels --narrator "a person grouping items" "The person gives items short words, labels, to group them, and reads the backlog by them."
 b260 "Give items labels": a new capability labels
 ```
 
@@ -335,10 +335,10 @@ group: service
 purpose: The person gives items short words, labels, to group them, and reads the backlog by them.
 ```
 
-Then add its model lines, vocabulary entries and lines through the same item with `work line b260 --into labels`, as in the first recipe; they
-take the ids `g1` and `r1` on. `work ready` checks them with the capability laid over a copy of `spec/`. When the
-batch starts, `work batch start` writes `spec/capabilities/labels.md` (its id your context's with `capability/` in
-front and the name at the end, its title, narrator and group, its `area:` and `specifies:`, `language: codified-2`,
+Then add its model lines, vocabulary entries and lines through the same item with `shop work line b260 --into labels`,
+as in the first recipe; they take the ids `g1` and `r1` on. `shop work ready` checks them with the capability laid over
+a copy of `spec/`. When the batch starts, `shop work batch start` writes `spec/capabilities/labels.md` (its id your
+context's with `capability/` in front and the name at the end, its title, narrator and group, its `area:` and `specifies:`, `language: codified-2`,
 `## Purpose`, `## Behaviour`, the item's lines with their ids in `unbuilt:`), its name in its area's row of the
 `| area | kind | capabilities |` table under `spec/index.md`'s `## Composition`, and its feature:
 
@@ -368,15 +368,16 @@ The [capability file reference](reference/capability-file.md) walks through ever
 
 **When:** the work changes no behaviour a scenario could check: a page of the docs, a skill's text, a refactor.
 
-**You say:** "That's a chore: the shaping skill should name `work chore`."
+**You say:** "That's a chore: the shaping skill should name `shop work chore`."
 
 An item with no requirement line holds a chore in their place: the files its work changes and a command whose exit
-code 0 shows it done. `work chore` writes it as the item's `## Chore` and commits the item; run again, it replaces it.
+code 0 shows it done. `shop work chore` writes it as the item's `## Chore` and commits the item; run again, it replaces
+it.
 
 ```console
-$ work chore b350 --file skills/shaping-items/SKILL.md --check "grep -q 'work chore' skills/shaping-items/SKILL.md"
+$ shop work chore b350 --file skills/shaping-items/SKILL.md --check "grep -q 'work chore' skills/shaping-items/SKILL.md"
 b350 "The shaping skill names work chore": the chore of b350 "The shaping skill names work chore" (check: `grep -q 'work chore' skills/shaping-items/SKILL.md`)
-$ work ready b350
+$ shop work ready b350
 b350 "The shaping skill names work chore" ready
 ```
 
@@ -391,20 +392,20 @@ Files:
 Check: `grep -q 'work chore' skills/shaping-items/SKILL.md`
 ```
 
-A chore and requirement lines exclude each other, so `work line` on the item is refused, naming the chore. A path
-under `spec/`, `features/` or `.shop/` is refused too: lines own the first two and `work` the third. In a batch,
-`work batch done` runs the check in the task's worktree after the tests, and refuses the task while it exits
+A chore and requirement lines exclude each other, so `shop work line` on the item is refused, naming the chore. A path
+under `spec/`, `features/` or `.shop/` is refused too: lines own the first two and `shop work` the third. In a batch,
+`shop work batch done` runs the check in the task's worktree after the tests, and refuses the task while it exits
 non-zero or while a commit of the task touches a file the chore does not name.
 
 ## See what a line means
 
 **When:** you're reading a line and want everything it commits a service to, including what comes from elsewhere.
 
-`spec explain` takes a requirement's id and prints the line, then what it also means by the packs' definitions
+`shop spec explain` takes a requirement's id and prints the line, then what it also means by the packs' definitions
 and the universal conditions:
 
 ```console
-$ spec explain items#r15
+$ shop spec explain items#r15
 items#r15  While the status of an item is not `idea`, if the person shapes the item, then the backlog service shall refuse the request and name the item.
 which also means:
   the backlog service shall change nothing (by U17)
@@ -412,23 +413,23 @@ which also means:
 ```
 
 A line with nothing more to it prints only itself. For the logical form of a line that isn't in `spec/` yet, use
-`spec parse --form "<line>"` (see [writing requirements](writing-requirements.md)).
+`shop spec parse --form "<line>"` (see [writing requirements](writing-requirements.md)).
 
 ## Bring an adapter contract up to its lines
 
-**When:** `spec check` names `v_a5` or `v_a6`: an operation of `spec/adapters/cli.toml` misses a line that governs
+**When:** `shop spec check` names `v_a5` or `v_a6`: an operation of `spec/adapters/cli.toml` misses a line that governs
 it, or still lists one that was retired or no longer requests it.
 
 Each operation's `requirements` are generated from the spec. Write them again and look at what changed:
 
 ```console
-$ spec annotate --check
+$ shop spec annotate --check
 spec annotate: spec/adapters/cli.toml is stale: its operations do not hold the requirements that govern them; run `spec annotate`
-$ spec annotate
+$ shop spec annotate
 annotated spec/adapters/cli.toml
 ```
 
-`spec annotate` changes only the `requirements` lists; the commands, options and outcomes are yours, written by
+`shop spec annotate` changes only the `requirements` lists; the commands, options and outcomes are yours, written by
 hand. Run it whenever a line that requests an operation is added, reworded or retired, so the contract always
 shows the operation's business rules beside its command. [Adapter contracts](reference/adapters.md) has the format.
 
@@ -439,9 +440,9 @@ shows the operation's business rules beside its command. [Adapter contracts](ref
 **You say:** "What's ready?" or "b251 needs b250 first."
 
 ```console
-$ work depend b251 --on b250
+$ shop work depend b251 --on b250
 b251 "work backlog shows labels" depends on b250 "Items carry labels"
-$ work backlog
+$ shop work backlog
 ...
 ## ready (1)
 
@@ -455,15 +456,16 @@ $ work backlog
 ```
 
 Each state is a table, ranked by score (value and urgency over size). **Waiting on** says why an item can't move:
-the item it's blocked by, or the question it's waiting for. `work batch start` picks `ready` items in rank order
+the item it's blocked by, or the question it's waiting for. `shop work batch start` picks `ready` items in rank order
 and passes over a blocked one, unless its blocker is picked first. A dependency that closes a loop is refused:
 
 ```console
-$ work depend b250 --on b251
+$ shop work depend b250 --on b251
 work depend: b250 "Items carry labels" on b251 "work backlog shows labels" closes the cycle b250 "Items carry labels" -> b251 "work backlog shows labels" -> b250 "Items carry labels"
 ```
 
-`work depend b251 --drop b250` takes a dependency off. `work backlog --json` prints the same as one JSON object.
+`shop work depend b251 --drop b250` takes a dependency off. `shop work backlog --json` prints the same as one JSON
+object.
 
 ## Park a question mid-batch and answer it
 
@@ -473,24 +475,24 @@ The agent running the batch never stops to ask you. It parks the item with its q
 carries on:
 
 ```console
-$ work batch park batch-34 b250 --question "Should work show print the labels sorted, or in the order they were given?"
+$ shop work batch park batch-34 b250 --question "Should work show print the labels sorted, or in the order they were given?"
 work batch park: t1 b250 "Items carry labels" has uncommitted changes in .shop/worktrees/batch-34-t1: scripts/backlog_view.py; commit them on batch-34-b250 with `Item: b250`, or pass --discard
-$ work batch park batch-34 b250 --discard --question "Should work show print the labels sorted, or in the order they were given?"
+$ shop work batch park batch-34 b250 --discard --question "Should work show print the labels sorted, or in the order they were given?"
 batch-34 b250 "Items carry labels" -> needs-input: Should work show print the labels sorted, or in the order they were given?
 ```
 
-The item's lines come out of the batch branch, and the question is at the top of `work backlog`, under
+The item's lines come out of the batch branch, and the question is at the top of `shop work backlog`, under
 `## needs-input`. The work so far stays on the task's branch (`batch-34-b250`).
 
 **You say:** "In the order they were given."
 
 ```console
-$ work answer b250 "In the order they were given."
+$ shop work answer b250 "In the order they were given."
 b250 "Items carry labels" shaped
 ```
 
 The answer is kept on the item, under `## Answers`, for whoever picks it up next. The item is `shaped` again: it
-goes through `work ready` and into a later batch.
+goes through `shop work ready` and into a later batch.
 
 ## Abandon a batch
 
@@ -499,9 +501,9 @@ goes through `work ready` and into a later batch.
 **You say:** "Abandon batch-35."
 
 ```console
-$ work batch abandon batch-35
+$ shop work batch abandon batch-35
 work batch abandon: t1 b250 "Items carry labels" has uncommitted changes in .shop/worktrees/batch-35-t1: scripts/backlog_view.py; commit them on batch-35-b250 with `Item: b250`, or pass --discard
-$ work batch abandon batch-35 --discard
+$ shop work batch abandon batch-35 --discard
 batch-35 abandoned
 ```
 
@@ -516,23 +518,23 @@ kept on the items' branches.
 **You say:** "That's a bug in what b197 delivered: ..."
 
 ```console
-$ measure defect b197 --says "features generate writes no scenario for a line that says every K under a While clause. Reproduce: such a line, features generate: no scenario for its group."
+$ shop measure defect b197 --says "features generate writes no scenario for a line that says every K under a While clause. Reproduce: such a line, features generate: no scenario for its group."
 .shop/batches/32/defect-1.md
 ```
 
 (The fault above is made up for this page.) The defect goes against the delivered item and the batch that merged it,
-and is committed alone. `measure batch` counts it, as defects per item. It only takes a delivered item of a merged
+and is committed alone. `shop measure batch` counts it, as defects per item. It only takes a delivered item of a merged
 batch:
 
 ```console
-$ measure defect b250 --says "x"
+$ shop measure defect b250 --says "x"
 measure defect: b250 "Items carry labels" is ready in batch-35, which is abandoned; a defect is of a delivered item of a merged batch
 ```
 
 **You say:** "How did batch-32 compare with batch-31?"
 
 ```console
-$ measure compare batch-31 batch-32
+$ shop measure compare batch-31 batch-32
 total              | batch-31                   | batch-32              | ratio
 -------------------+----------------------------+-----------------------+------
 wall time          | 21 minutes 6 seconds       | 18 minutes 41 seconds | 0.89
@@ -546,7 +548,7 @@ changed lines      | 962                        | 796                   | 0.83
 ```
 
 The ratio is the second over the first, so under 1 means the second batch used less. Each side is a batch's newest
-measurement (written by `measure batch`). Read the sizes before the costs: batch-32 had a quarter of the items.
+measurement (written by `shop measure batch`). Read the sizes before the costs: batch-32 had a quarter of the items.
 
 ## Write a design-decision or a record
 
@@ -556,9 +558,9 @@ measurement (written by `measure batch`). Read the sizes before the costs: batch
 **You say:** "Let's decide labels are free words, no fixed list."
 
 ```console
-$ work decision "Labels are free words" --tier judgement
+$ shop work decision "Labels are free words" --tier judgement
 work decision: a design-decision gives --summary, --decision
-$ work decision "Labels are free words" --tier judgement --summary "A label is any short word the person chooses; there is no fixed list." --decision "work keeps a label as the person wrote it and checks it against no list." --context "b250 adds labels to items."
+$ shop work decision "Labels are free words" --tier judgement --summary "A label is any short word the person chooses; there is no fixed list." --decision "work keeps a label as the person wrote it and checks it against no list." --context "b250 adds labels to items."
 spec/decisions/0092-labels-are-free-words.md
 ```
 
@@ -569,7 +571,7 @@ reviewer reads for it).
 A record is a report kept as a file. Write its body in a file first, then:
 
 ```console
-$ work record "Which items would carry labels" --kind analysis --summary "How many delivered items a label would have grouped" --body labels-body.md
+$ shop work record "Which items would carry labels" --kind analysis --summary "How many delivered items a label would have grouped" --body labels-body.md
 .shop/records/2026-11-10-which-items-would-carry-labels.md
 ```
 
@@ -588,17 +590,17 @@ q14 awaiting-asker: Requests go through one shared tool (https://github.com/ex/c
 A request waits on the other side: start `work watch --forward` with the Monitor tool, and run `work sync` when it wakes.
 ```
 
-Claude then starts `work watch --forward` with its Monitor tool, so the watch runs beside the conversation. It
+Claude then starts `shop work watch --forward` with its Monitor tool, so the watch runs beside the conversation. It
 wakes on GitHub's events (through `gh webhook forward`) where you administer the repository, and polls GitHub's
 notifications where you don't. When a comment arrives, it prints one line and ends:
 
 ```console
-$ work watch --every 1 --polls 2
+$ shop work watch --every 1 --polls 2
 q14 https://github.com/ex/ctx/issues/7 comment 3: https://github.com/ex/ctx/issues/7#issuecomment-3 (`work sync` records it)
 ```
 
-(That line is from a plain `work watch` against the stand-in gh; `--forward` prints the same.) Then `work sync`
-records the comment and tells you whose move it is. See [concepts](concepts.md#request) for how a request goes
+(That line is from a plain `shop work watch` against the stand-in gh; `--forward` prints the same.) Then `shop work
+sync` records the comment and tells you whose move it is. See [concepts](concepts.md#request) for how a request goes
 back and forth.
 
 ## Keep the person's words
@@ -608,7 +610,7 @@ back and forth.
 **You say:** "Quote that."
 
 ```console
-$ work quote "I trust you to make some delightful docs."
+$ shop work quote "I trust you to make some delightful docs."
 quote-24 "I trust you to make some delightful docs."
 ```
 
@@ -617,7 +619,7 @@ it's refused: `the person wrote no message with "..." in the session ...; quote 
 The quote keeps the message and the turns around it under `.shop/quotes/`, committed, so any clone can show them:
 
 ```console
-$ work show quote-20
+$ shop work show quote-20
 quote-20 "Once 4.0 is done, take a new backlog item to make some nice …"
   session: 72e23fa5-6dee-49f3-a1d1-7e79096a0501
   date: 2026-11-10
@@ -658,17 +660,17 @@ cache_read = 0.20
 
 | key | what it sets | default |
 |---|---|---|
-| `batch_size` (top level) | how many ready items `work batch start` picks | 4 |
-| `[batch] tests` | what `work batch done` and `review` run | `python3 -m pytest -q -p work_items` |
+| `batch_size` (top level) | how many ready items `shop work batch start` picks | 4 |
+| `[batch] tests` | what `shop work batch done` and `review` run | `python3 -m pytest -q -p work_items` |
 | `[batch] push` | a prefix the batch's agent puts before every `git push` and `gh` call | none |
 | `[batch] worktrees` | where a batch's worktrees go | `.shop/worktrees/` |
 | `[batch] rules` | the batch rules of this context's own setup, each written into the batch brief after the plugin's rules, for every agent that runs a batch | none |
-| `[review] size` | the changed lines over which the reviewer's brief says "over the limit", and past which `work batch start` picks no more items by their estimates | 1000 |
-| `[review] checks` | the commands the reviewer's brief runs, with `{scripts}` and `{forked_from}` filled in | `tools size --limit 300`, `tools check`, `features generate --check`, `features bindings --unbound`, `spec decisions --check` |
+| `[review] size` | the changed lines over which the reviewer's brief says "over the limit", and past which `shop work batch start` picks no more items by their estimates | 1000 |
+| `[review] checks` | the commands the reviewer's brief runs, with `{scripts}` and `{forked_from}` filled in | `shop tools size --limit 300`, `shop tools check`, `shop features generate --check`, `shop features bindings --unbound`, `shop spec decisions --check` |
 | `[prices."<model>"]` | dollars per million tokens: `input`, `output`, `cache_read`, all three | a dated table in `scripts/measure_cost.py` |
 
 `[review] checks` replaces the default list, so copy in the defaults you want to keep. A price is used by
-`measure batch` for a model the table doesn't know, or over the table's own. A malformed file is refused by the
+`shop measure batch` for a model the table doesn't know, or over the table's own. A malformed file is refused by the
 first command that reads it, naming the key.
 
 Next: the [command reference](reference/commands.md) for every option, [concepts](concepts.md) for the words used

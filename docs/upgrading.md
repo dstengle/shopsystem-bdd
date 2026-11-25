@@ -12,8 +12,8 @@ This page takes a repository from an older plugin release to this one. Read [Ver
 
 The plugin's versions are 0.y.z until 1.0 (design-decision 0092, "Versions are 0.y.z until 1.0"):
 
-- **y** goes up for a large or incompatible change: one that needs `migrate upgrade`, or rewording lines, or that
-  removes a command, or changes the scenarios `features generate` writes so that a repository's handlers must
+- **y** goes up for a large or incompatible change: one that needs `shop migrate upgrade`, or rewording lines, or that
+  removes a command, or changes the scenarios `shop features generate` writes so that a repository's handlers must
   change. It counts past .9 to .10 (0.9, 0.10, 0.11).
 - **z** goes up for a non-breaking update: a fix, or something new that changes nothing that works.
 - **1.0.0** is a decision of its own, taken when the plugin is ready for it, not the next step of y.
@@ -37,10 +37,10 @@ The releases made as 1.0.0 to 4.1.0 were renumbered into this series in 0.34.1, 
 | 4.0.0 the controlled language 4 | 0.33.0 |
 | 4.1.0 value kinds | 0.34.0 |
 
-`migrate` reads only the new numbers. A repository whose `.shop/plugin-version` holds an old one reads as above
+`shop migrate` reads only the new numbers. A repository whose `.shop/plugin-version` holds an old one reads as above
 the plugin, and the session is told to update the plugin. Rewrite the file by hand with the table: a repository on
 3.0.1 writes `0.32.1`, one on 4.1.0 writes `0.34.0`. Commit it, then reinstall the plugin once: Claude Code keeps
-installs by version and may not move from 4.1.0 down to 0.34.1. `migrate status` then lists what is pending, if
+installs by version and may not move from 4.1.0 down to 0.34.1. `shop migrate status` then lists what is pending, if
 anything.
 
 ## 0.38.0: the domain contract
@@ -54,13 +54,13 @@ keep the note", never a command, an option, an exit code or a printed layout: th
 imports the `request` pack. `model` is now `spec` (the old name still works for one release, with a notice). The full
 note is [0.38.0 in the changelog](../CHANGELOG.md#0380-the-domain-contract).
 
-### What `migrate upgrade` does
+### What `shop migrate upgrade` does
 
 It scaffolds what is mechanical, in one commit, and names by file and id what a session rewords. Here it is on the
 0.37 copy of the notes example (`tests/scripts/fixtures/upgrade-0.37/notes-cli/`):
 
 ```console
-$ migrate upgrade
+$ shop migrate upgrade
 upgraded to 0.38.0: the domain contract
 the domain contract: spec/capabilities/notes.md r1 requests notes.add(title, tag) through `notes add`: reword it in the request's words, "When the person <verb>s ... with the <parameter> ...", and its response in the service's ("the notes service shall ...")
 the domain contract: spec/capabilities/notes.md r2 requests notes.add(title) through `notes add`: reword it in the request's words, "When the person <verb>s ... with the <parameter> ...", and its response in the service's ("the notes service shall ...")
@@ -82,7 +82,7 @@ What it wrote:
 - **`spec/vocabulary/<context>.md`** and **`shared.md`**: every entry moved, with its `→ element` where the scaffold
   made one; a tool `` `notes` `` became `the notes service`; an operation with no verb got one (`list`, `remove`).
 - **`spec/adapters/cli.toml`**: each operation with the command and the options it was scaffolded from. Name each
-  tool's program under `[programs]`; `spec check` reads its argparse.
+  tool's program under `[programs]`; `shop spec check` reads its argparse.
 - **`imports: [cli]`** became `imports: [request]`; `## Glossary`, `## Terms` and `## Relations` left
   `spec/index.md` and the capabilities, each capability got `area: <context>`, and `spec/moves.json` was written
   empty.
@@ -91,8 +91,8 @@ It rewords no line and gives no new id: rewording is a session's work, as an ite
 
 ### What a session rewords
 
-Each line the step named. Until it is reworded, `spec check` refuses it: it no longer parses (`v_p1`), or a word of it
-names no element (`v_m1`). In the reworded context, the old line is refused:
+Each line the step named. Until it is reworded, `shop spec check` refuses it: it no longer parses (`v_p1`), or a word of
+it names no element (`v_m1`). In the reworded context, the old line is refused:
 
 <!-- docs: context docs/examples/notes-cli -->
 ```refused
@@ -123,9 +123,9 @@ Then tidy the model the scaffold wrote: a noun that is no thing of the domain (a
 type is set (`title (text)`), each operation's outcomes and refusal reasons are written (`refused: no title`). `spec
 check` holds the two to each other: an operation no line requests is `v_m7`, a refusal reason no line states `v_m4`.
 The whole worked result is [`docs/examples/notes-cli/`](examples/notes-cli/README.md); the test of the step checks
-that the reworded copy passes `spec check`, `features generate --check` and `spec logic`.
+that the reworded copy passes `shop spec check`, `shop features generate --check` and `shop spec logic`.
 
-Then run `features generate`: every scenario's When is now a request ("When the person adds a note n1 without a
+Then run `shop features generate`: every scenario's When is now a request ("When the person adds a note n1 without a
 title") and its Thens the response ("Then the notes service refuses this request"). Re-key the step handlers on
 the operations, and drive the program through its adapter.
 
@@ -137,7 +137,7 @@ the operations, and drive the program through its adapter.
   the object.
 - **Records are never cited.** A new item's `source:` naming a record is refused (`v_r1`); an older one is a warning.
 - **Each operation carries its lines.** `spec/adapters/cli.toml` lists under each operation the requirement lines
-  that govern it, refusals included. Once your lines are reworded, run `spec annotate`; `spec check` fails an
+  that govern it, refusals included. Once your lines are reworded, run `shop spec annotate`; `shop spec check` fails an
   operation that misses a governing line or keeps one that no longer governs it (`v_a5`, `v_a6`).
 - **The catalogues are the language's specification.** The plugin's construct catalogue and rule catalogue are part
   of its specification, each entry with its purpose, `Since:` and `Changed:` (an item, or for the oldest entries the release `0.38.0`) and its example as its test; a
@@ -146,14 +146,14 @@ the operations, and drive the program through its adapter.
 
 ## From 0.32 to 0.33
 
-This page's walk-through is for the maintainer of a repository on plugin 0.32. It takes you from `migrate status` to a green suite
-on 0.33, one step at a time. Most of the work is rewording lines, and Claude can do that with you.
+This page's walk-through is for the maintainer of a repository on plugin 0.32. It takes you from `shop migrate status`
+to a green suite on 0.33, one step at a time. Most of the work is rewording lines, and Claude can do that with you.
 
-Here is the whole job in one picture. `migrate upgrade` changes what is mechanical and names, by file and id, every
+Here is the whole job in one picture. `shop migrate upgrade` changes what is mechanical and names, by file and id, every
 line you have to reword:
 
 ```console
-$ migrate upgrade
+$ shop migrate upgrade
 upgraded to 0.33.0: the controlled language 4
 ...
 the controlled language 4: spec/capabilities/buy.md r4 says a negated indefinite in a While clause: refused: the While clause says "does not own a cart", which reads two ways: say "owns no cart" or "a cart that the shopper does not own"
@@ -183,7 +183,7 @@ The full note is [0.33.0 in the changelog](../CHANGELOG.md#0330-released-as-400-
 
 - **One grammar.** Lines are read by grammar 4, built from your glossary. A line has one meaning or is refused.
 - **A new marker.** Spec files say `language: codified-2`. Every tool refuses a `codified-1` file and names
-  `migrate upgrade`.
+  `shop migrate upgrade`.
 - **Verbs say their aspect.** `(verb, action)` goes in a trigger or a response; `(verb, state)` in a While clause.
 - **Packs of words.** `spec/index.md` imports `cli`, `time` or `spec`. A word of yours that a pack also has carries
   `Redefines: <pack>`.
@@ -192,22 +192,22 @@ The full note is [0.33.0 in the changelog](../CHANGELOG.md#0330-released-as-400-
 - **Reading rules.** "the", "no", "every" and "only" mean one thing each. "The till" needs a till said before it.
 - **Example data moves out.** A sample value in a line goes into its group's given block.
 - **New constructs.** Counts, "two", "another", "is one of", "has no", a command's options in the trigger, time.
-- **New checks.** `spec parse --form` shows a line's meaning, `spec explain` what other lines force with it, and
-  `spec logic` gains L8: a Then that other lines already say.
+- **New checks.** `shop spec parse --form` shows a line's meaning, `shop spec explain` what other lines force with it,
+  and `shop spec logic` gains L8: a Then that other lines already say.
 - **Known limits.** Some things the language cannot say yet. They're listed in
   [the language reference](../grammar/language.md).
 
 ## Before you start
 
-Start from a clean checkout of your default branch, with no batch building. `migrate upgrade` commits, and a batch
+Start from a clean checkout of your default branch, with no batch building. `shop migrate upgrade` commits, and a batch
 started on 0.32 lays lines in the old language.
 
 ## Step 1: update the plugin and the grammar tools
 
 ```console
 $ claude plugin update shopsystem-bdd@shopsystem-bdd
-$ tools install
-$ tools probe
+$ shop tools install
+$ shop tools probe
 ...
 grammar:
   gf 3.12.0 (/home/vscode/.local/share/shopsystem-bdd/gf-3.12/bin/gf)
@@ -216,13 +216,13 @@ grammar:
   gf-rgl 20250812 (/home/vscode/.local/share/shopsystem-bdd/gf-rgl-20250812)
 ```
 
-Run `tools install` again even if 0.32 had it working. Grammar 4 is built on GF's resource grammar library, the
+Run `shop tools install` again even if 0.32 had it working. Grammar 4 is built on GF's resource grammar library, the
 `gf-rgl` line, which 0.32 never installed. Grammar 4 is compiled against it.
 
 Then ask what is pending:
 
 ```console
-$ migrate status
+$ shop migrate status
 the repository's plugin version: 0.32.1
 the plugin's version: 0.33.0
 pending upgrade step 0.33.0 "the controlled language 4": write each file's marker codified-2, import the CLI pack and give each verb its aspect where its lines decide it, and name by file and id each line that no longer parses and what else a session rewords
@@ -230,9 +230,9 @@ pending upgrade step 0.33.0 "the controlled language 4": write each file's marke
 
 A new session tells Claude the same thing, and Claude offers you the upgrade. It runs it only when you say yes.
 
-## Step 2: run `migrate upgrade`
+## Step 2: run `shop migrate upgrade`
 
-`migrate upgrade` applies every pending step and commits it all as one commit. It rewords no line. It writes three
+`shop migrate upgrade` applies every pending step and commits it all as one commit. It rewords no line. It writes three
 kinds of change:
 
 - each spec file's marker, `codified-1` to `codified-2`;
@@ -257,7 +257,7 @@ Here is the change it made to the fixture's glossary:
 Everything it cannot decide, it prints. This is the fixture's full report, which also goes into the commit message:
 
 ```console
-$ migrate upgrade
+$ shop migrate upgrade
 upgraded to 0.33.0: the controlled language 4
 the controlled language 4: v_t14 guard, spec/index.md: a state in r7 and an action in r8; write (verb, state) or (verb, action)
 the controlled language 4: spec/capabilities/buy.md r3 says "the" with no antecedent: refused: "the till" has no antecedent: no earlier noun phrase, functional relation or declared indexical gives a till
@@ -280,7 +280,7 @@ Each kind of note, and what to do about it:
 | `v_t14 <verb> ...: a state in ... and an action in ...` | write `(verb, state)` or `(verb, action)` in the glossary |
 | `<line> says "the" with no antecedent` | say the thing with "a" first, or reach it through a relation |
 | `<line> says a negated indefinite in a While clause` | "owns no cart", or "a cart that the shopper does not own" |
-| `<line> no longer parses: does not parse at <word>` | reword the line; `spec parse` shows where it stops |
+| `<line> no longer parses: does not parse at <word>` | reword the line; `shop spec parse` shows where it stops |
 | `<term> is a condition (adjective) ...: <lines>` | replace the adjective with a structure, then reword each line named |
 | `<line> holds example data: <value>` | move the value into the group's given block |
 | `<line> says "exit with an error naming"` | "shall refuse the command and name X" |
@@ -301,15 +301,15 @@ Some lines parse again once the glossary is right. The fixture's r7 did, after `
 parses unchanged and means the same keeps its id.
 
 **Then the lines, as one item.** A line in `spec/` is never edited in place. Each named line gets a new line with a
-new id, and its old id goes to the capability's `retired:`. `work line --retires` does both:
+new id, and its old id goes to the capability's `retired:`. `shop work line --retires` does both:
 
 <!-- docs: context tests/scripts/fixtures/docs-shop -->
 ```console
-$ work idea "Reword buy for grammar 4"
+$ shop work idea "Reword buy for grammar 4"
 b1 "Reword buy for grammar 4" idea
-$ work line b1 --into buy --retires buy#r4 "While a shopper owns no cart, when the shopper picks a cart, the shopper shall watch a till."
+$ shop work line b1 --into buy --retires buy#r4 "While a shopper owns no cart, when the shopper picks a cart, the shopper shall watch a till."
 b1 "Reword buy for grammar 4": buy#r9 retires buy#r4
-$ work line b1 --into buy --in g2 --retires buy#r3 "When a shopper picks a cart, the shopper shall watch a till for the shopper."
+$ shop work line b1 --into buy --in g2 --retires buy#r3 "When a shopper picks a cart, the shopper shall watch a till for the shopper."
 b1 "Reword buy for grammar 4": buy#r10 retires buy#r3
 ```
 
@@ -317,15 +317,15 @@ Put every named line of a capability into the one item. The readiness bar checks
 item's lines laid in, so a line left behind stops it:
 
 ```console
-$ work shape b1 --note "Reword the lines of buy that grammar 4 refuses."
+$ shop work shape b1 --note "Reword the lines of buy that grammar 4 refuses."
 b1 "Reword buy for grammar 4" shaped
-$ work ready b1
+$ shop work ready b1
 work ready: b1 "Reword buy for grammar 4" is not passing:
   buy: buy#r3: refused: "the till" has no antecedent: no earlier noun phrase, functional relation or declared indexical gives a till
 ```
 
-With r2, r3, r5, r6 and r8 reworded too, `work ready b1` passes, and `work batch start` lays the lines into `spec/`.
-The old ids land in `retired:`, the new ones in `unbuilt:` until the batch builds them.
+With r2, r3, r5, r6 and r8 reworded too, `shop work ready b1` passes, and `shop work batch start` lays the lines into
+`spec/`. The old ids land in `retired:`, the new ones in `unbuilt:` until the batch builds them.
 
 Two pairs from this repository's own spec show the most common rewordings, in today's words. A check that fails and
 a request that is refused are two outcomes, each said as one act:
@@ -346,7 +346,7 @@ When the person shapes an item, the backlog service shall set the status of the 
 ```
 
 [Writing requirements](writing-requirements.md) has the full set of pairs, and how to read a refusal. Claude knows
-them too: say "reword the lines `migrate upgrade` named" and the [shaping-items](../skills/shaping-items/SKILL.md)
+them too: say "reword the lines `shop migrate upgrade` named" and the [shaping-items](../skills/shaping-items/SKILL.md)
 skill writes the item with you.
 
 ## Step 4: check, generate, and bind the new steps
@@ -354,22 +354,22 @@ skill writes the item with you.
 In the batch's worktree, where the lines are laid, run the checks:
 
 ```console
-$ spec check
+$ shop spec check
 ...
 warning w_example  a requirement holds example data: a code or quoted string that names no declared constant  (1)
     capability/example.org/acme/shop/buy#r14, apples
 ...
-$ spec logic
+$ shop spec logic
 L8 buy#r1 says nothing other requirements do not: Then 1 by buy#r10 and buy#r11
 ...
-$ features generate
+$ shop features generate
 ```
 
 Read the findings as a list of small jobs. `w_example` is the reworded r2 still holding `apples`: give its group a
-given block with `work line --given` (see [the given block](reference/capability-file.md)). L8 says r1 is now said
+given block with `shop work line --given` (see [the given block](reference/capability-file.md)). L8 says r1 is now said
 by r10 and r11 together, so retire r1 or narrow the new lines.
 
-`features generate` rewrites each feature from grammar 4's reading, so expect new step wording. The reworded r4 is
+`shop features generate` rewrites each feature from grammar 4's reading, so expect new step wording. The reworded r4 is
 now a Given of its own. Here is the scenario of the item's group `g2` with r9 and r10 in it:
 
 <!-- docs: context tests/scripts/fixtures/docs-shop -->
@@ -386,13 +386,13 @@ now a Given of its own. Here is the scenario of the item's group `g2` with r9 an
 ```
 
 If your handlers are registered with the plugin's `handler` (`from vocab import handler`, in `world_*.py` and
-`*_handlers*.py` files under `tests/scenarios`), `features vocab --check` lists each step no handler matches.
+`*_handlers*.py` files under `tests/scenarios`), `shop features vocab --check` lists each step no handler matches.
 Write a handler for each, then run your suite. If you bind steps with plain pytest-bdd, as
 [getting started](getting-started.md) does, `--check` cannot see your steps and reports every one: skip it and
 run your suite, whose missing steps fail by name.
 
 ```console
-$ features vocab --check
+$ shop features vocab --check
 .../features/buy.feature:7: the shopper s1 picks the cart c1 | no handler for WhenHappens pick
 .../features/buy.feature:8: the shopper s1 watches the till t1 | no handler for ThenDoes watch
 ...
@@ -405,28 +405,28 @@ retired line's steps that no scenario reaches any more can go.
 
 ## From 0.33 to 0.34
 
-0.34 changes no line that parses: `migrate upgrade` applies the step 0.34.0 "value kinds", which writes no file and
+0.34 changes no line that parses: `shop migrate upgrade` applies the step 0.34.0 "value kinds", which writes no file and
 names each attribute whose `Values:` declares neither kind and each line that says one of its values the short way
 ("an item is `idea`"), by file and id. Declare each attribute's values in the glossary, `Values (adjective):` for
 those that read after "is" as an adjective (`shaped`, `in-batch`) and `Values (noun):` for the rest (`idea`,
 `needs-input`, a release), then reword each named line whose value is a noun to the full form, "the status of an
-item is `idea`", as an item with `work line --retires`. Until you declare them, `spec check` warns `w_value_kind`
-and every line parses as before.
+item is `idea`", as an item with `shop work line --retires`. Until you declare them, `shop spec check` warns
+`w_value_kind` and every line parses as before.
 
-`features generate` now writes every value step the full way, "the status of the item i1 is `idea`" (and "no item
+`shop features generate` now writes every value step the full way, "the status of the item i1 is `idea`" (and "no item
 whose status is `idea` exists" for "no K"). Regenerate your features; a handler keyed by `GivenK_A` or `ThenK_A`
 keeps its key, and one that read the thing out of the step's text reads `step.subject` instead.
 
 ## From 0.34.0 to 0.34.1
 
 No upgrade step. If `.shop/plugin-version` holds an old number, rewrite it first (see [Versions](#versions)). Then
-run `features generate`: a scenario now has a Given for each thing its When names that no earlier Given brought in.
+run `shop features generate`: a scenario now has a Given for each thing its When names that no earlier Given brought in.
 
 ## From 0.34.1 to 0.35.0
 
 No upgrade step, and no line that parsed before is refused.
-It is a y release because the scenarios `features generate` writes change in ways a consuming repository's step
-handlers must meet. Run `features generate`, then run the suite and update the handlers it fails on:
+It is a y release because the scenarios `shop features generate` writes change in ways a consuming repository's step
+handlers must meet. Run `shop features generate`, then run the suite and update the handlers it fails on:
 
 - **A Then after the act that brings its thing in.** The Thens that restrict a thing a response brings in now come
   after the act that brings it in, not before. A handler that read the thing before that act reads it after.
@@ -460,9 +460,9 @@ handlers must meet. Run `features generate`, then run the suite and update the h
 - **An order's Then.** A `ThenPrints` whose `step.order` is set, a (term, direction) pair, states an order. Its
   handler checks the output's order against the values the Givens set, not strictly, so that members with one value
   pass in either order.
-- **`unread <id>`.** `spec logic` now names each requirement it has no translation of, `unread <id>: ...`, with
+- **`unread <id>`.** `shop spec logic` now names each requirement it has no translation of, `unread <id>: ...`, with
   a count after the findings, where it printed `no findings` before over lines it skipped. Each one it names is a
-  line `spec logic` does not check; reword it if a construct it has a translation of says the same.
+  line `shop spec logic` does not check; reword it if a construct it has a translation of says the same.
 
 Two things are new to write. An attribute entry may say `Type: number.`, `Type: time.` or `Type: text.`: any
 literal of the type is a value of it, and the type orders them, with no `Values:` or `Order:`. And a line may
@@ -474,22 +474,22 @@ an attribute whose entry gives no value order, neither `Order:` nor `Type:`, is 
 
 ## From 0.35.0 to 0.35.1
 
-No upgrade step, and no scenario `features generate` wrote in 0.35.0 changes. On a response's object, of `print` or any other
-act, holds-exactly with a relative clause or a negated value as its restriction and "holds nothing" are now read by
-`spec logic`, and they, "holds no K" and an order on the object of a verb whose frame names the collection's kind
-now get scenarios. `features generate` only warned of the last two in 0.35.0 (`no scenario: ...`) and exited 0, so a
-repository may hold such lines: after the upgrade `features generate --check` finds its features stale until it is
-run. Run `features generate` and write the
-handlers of the new scenarios. `work ready` now refuses an item a requirement of which `spec logic` names
+No upgrade step, and no scenario `shop features generate` wrote in 0.35.0 changes. On a response's object, of `print` or
+any other act, holds-exactly with a relative clause or a negated value as its restriction and "holds nothing" are now read by
+`shop spec logic`, and they, "holds no K" and an order on the object of a verb whose frame names the collection's kind
+now get scenarios. `shop features generate` only warned of the last two in 0.35.0 (`no scenario: ...`) and exited 0, so
+a repository may hold such lines: after the upgrade `shop features generate --check` finds its features stale until it
+is run. Run `shop features generate` and write the
+handlers of the new scenarios. `shop work ready` now refuses an item a requirement of which `shop spec logic` names
 `unread`, naming the requirement.
 
 ## From 0.35.1 to 0.36.0
 
 A y release: no upgrade step, but regenerated features change for lines that read the same, and step
-handlers may need a Given (below). Run `migrate upgrade` once: where 0.35.1 printed `no upgrade step is pending` and left
-`.shop/plugin-version` behind, it now writes the release, commits and pushes it.
+handlers may need a Given (below). Run `shop migrate upgrade` once: where 0.35.1 printed `no upgrade step is pending`
+and left `.shop/plugin-version` behind, it now writes the release, commits and pushes it.
 
-Run `features generate`. A line with "every K is not `v`" in a While clause, or "every K, ordered by ..." after a
+Run `shop features generate`. A line with "every K is not `v`" in a While clause, or "every K, ordered by ..." after a
 verb whose frame names K, no longer crashes or goes without a scenario: write the handlers of their new scenarios.
 "Every K in the Y, ordered by T" after such a verb reads one way, with the order on the Ks (0.35.1 put it on
 the Y). A scenario of
@@ -498,44 +498,46 @@ brings both things in by a Given before the When ("a file f1", "a worktree w1"),
 thing the line names: a repository whose handlers have no Given of those kinds writes one.
 
 An item already `ready` whose group shares another group's condition and trigger (v15n) is refused at its next
-`work ready` or `work batch start`: put the two groups' lines in one group. `work batch merged` resolves only a request
-whose item `work accept` wrote from 0.36.0 on; resolve a request accepted before with `work resolve`.
+`shop work ready` or `shop work batch start`: put the two groups' lines in one group. `shop work batch merged` resolves
+only a request whose item `shop work accept` wrote from 0.36.0 on; resolve a request accepted before with `shop work
+resolve`.
 
-Two commands ask for more. `work shape` on an idea with no shaping note under `## Notes` refuses without `--note`;
-`work backlog` names `--note` beside such an idea. `work offer` with no `--capability` posts no glossary; with one,
-it quotes the capability's requirements and only the terms they mention, so name each capability the asker needs.
+Two commands ask for more. `shop work shape` on an idea with no shaping note under `## Notes` refuses without `--note`;
+`shop work backlog` names `--note` beside such an idea. `shop work offer` with no `--capability` posts no glossary; with
+one, it quotes the capability's requirements and only the terms they mention, so name each capability the asker needs.
 
 ## From 0.36.0 to 0.37.0
 
-A y release: no upgrade step. Run `migrate upgrade` once to record the release.
+A y release: no upgrade step. Run `shop migrate upgrade` once to record the release.
 
-`work ready` and `work batch start` now run every rule of `spec check` on the item's lines laid over a copy of
-`spec/`, and refuse each violation the lay brings that names one of the item's groups or requirements, naming the
+`shop work ready` and `shop work batch start` now run every rule of `shop spec check` on the item's lines laid over a
+copy of `spec/`, and refuse each violation the lay brings that names one of the item's groups or requirements, naming the
 group and the rule (v15k, v15l, v15n and the rest; 0.36.0 ran v15n alone). An item already `ready` may be refused at
-its next `work ready` or `work batch start`: fix the group it names. Where a repository keeps a spec corpus
-(`grammar/corpus/spec/`) or the catalogues `grammar/rules.md` and `grammar/constructs.md`, `work batch start` now
+its next `shop work ready` or `shop work batch start`: fix the group it names. Where a repository keeps a spec corpus
+(`grammar/corpus/spec/`) or the catalogues `grammar/rules.md` and `grammar/constructs.md`, `shop work batch start` now
 writes the laid lines' corpus blocks and regenerates the catalogues itself.
 
-`work line --remove` now reads which id a line retires from the `retires:` pairs `work line --retires` writes into
-the item. An item shaped before 0.37.0 has no such pairs: removing its `--retires` line keeps the retired id under
+`shop work line --remove` now reads which id a line retires from the `retires:` pairs `shop work line --retires` writes
+into the item. An item shaped before 0.37.0 has no such pairs: removing its `--retires` line keeps the retired id under
 `retired:`, which would retire the live line with nothing in its place. After the removal, take that id out of the
 block's `retired:` by hand.
 
-Run `features generate`. A count on a thing a response writes ("write a file that holds at most three notes") gets
+Run `shop features generate`. A count on a thing a response writes ("write a file that holds at most three notes") gets
 a Given of one thing past the bound, and holds-exactly whose restriction reaches a second thing gets a scenario
 where it had none: write the handlers of their new steps.
 
-New to use: `work chore` for an item with no requirement line, `work line --capability` for a new capability in
-place of writing its file, `spec forms --check`, and the directives (`work directive`, `work directives`,
-`work promote`, `work drop`), which a new SessionStart hook shows. A repository's tests pin `pytest==9.1.1` and
-`pytest-bdd==8.1.0` ([Getting started](getting-started.md)).
+New to use: `shop work chore` for an item with no requirement line, `shop work line --capability` for a new capability
+in place of writing its file, `shop spec forms --check`, and the directives (`shop work directive`, `shop work
+directives`, `shop work promote`, `shop work drop`), which a new SessionStart hook shows. A repository's tests pin
+`pytest==9.1.1` and `pytest-bdd==8.1.0` ([Getting started](getting-started.md)).
 
 ## Older than 0.32?
 
-`migrate upgrade` applies every pending step in order, oldest first, in one commit. `migrate status` lists them:
+`shop migrate upgrade` applies every pending step in order, oldest first, in one commit. `shop migrate status` lists
+them:
 
 ```console
-$ migrate status
+$ shop migrate status
 the repository's plugin version: 0.30.0
 the plugin's version: 0.33.0
 pending upgrade step 0.31.0 "the workflow simplified": freeze .shop/work/, move the live requests to .shop/requests/ and write the decisions index
@@ -553,14 +555,14 @@ a verb with no frame can't be given an aspect. See [0.32.0](../CHANGELOG.md#0320
 
 ## On the old system?
 
-A repository from before 0.21, with no `spec/` and `.shop/` layout, moves first with `migrate run`. It makes every
+A repository from before 0.21, with no `spec/` and `.shop/` layout, moves first with `shop migrate run`. It makes every
 mechanical change of the move in one run, or none, and commits nothing:
 
 ```console
-$ migrate run --context <owner/product/context>
+$ shop migrate run --context <owner/product/context>
 ```
 
-Review and commit what it did. Then `migrate upgrade` takes the repository from there through every step to 0.33.
+Review and commit what it did. Then `shop migrate upgrade` takes the repository from there through every step to 0.33.
 
 Next: [writing requirements](writing-requirements.md) for the language you're rewording into,
 [troubleshooting](troubleshooting.md) when a line keeps being refused, or the [changelog](../CHANGELOG.md).

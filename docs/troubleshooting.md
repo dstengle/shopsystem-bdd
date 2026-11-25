@@ -35,13 +35,13 @@ knows that look like yours, and `may follow:` for what it would have taken there
 
 ## A line is refused
 
-You'll meet these from `spec parse`, `work line` and `work ready`. They're all the same check. For the rules
-behind them, see [writing requirements](writing-requirements.md).
+You'll meet these from `shop spec parse`, `shop work line` and `shop work ready`. They're all the same check. For the
+rules behind them, see [writing requirements](writing-requirements.md).
 
 ### "does not parse at …"
 
 The line uses a word, or an order of words, the grammar doesn't have. Check `nearest words:`: a typo or a plural
-shows up there. If your word is missing from the vocabulary, `spec lexicon` lists every word you have. Add the word
+shows up there. If your word is missing from the vocabulary, `shop spec lexicon` lists every word you have. Add the word
 (and the model element it names)
 first (see [recipes](recipes.md)), then write the line.
 
@@ -158,33 +158,33 @@ is something that happens, so it goes in When:
 When the person lists the backlog, the backlog service shall return an item.
 ```
 
-## `work ready` refuses
+## `shop work ready` refuses
 
-`work ready` runs the readiness bar on a copy of `spec/` with the item's lines laid in. It lists every reason at
+`shop work ready` runs the readiness bar on a copy of `spec/` with the item's lines laid in. It lists every reason at
 once, so you can fix them in one go.
 
 ### An L1 clash
 
 ```console
-$ work ready b250
+$ shop work ready b250
 work ready: b250 "The backlog keeps quiet about an item's title" is not passing:
   items#g31: v15n two groups of a capability share features, condition and trigger: with items#g12
   L1 items#r12 and #r31 clash: on "the person shows an item", r12 obliges and r31 forbids the backlog service to return a title
 ```
 
 Your new line (r31) and a delivered one (r12) can't both hold: one says return, the other says don't. If you mean to
-change r12, say so: `work line b250 --into items --retires items#r12 "<the new line>"` puts r12 under
+change r12, say so: `shop work line b250 --into items --retires items#r12 "<the new line>"` puts r12 under
 `retired:` and your line takes its place. If you didn't mean to contradict it, narrow your line with a While.
 
 ### A group with no scenario
 
 ```console
-$ work ready b255
+$ shop work ready b255
 work ready: b255 "probe steps 3" is not passing:
   items: items#r31: refused: no translation of no there
 ```
 
-The line parses, but `features generate` can't write its scenario, so nothing could test it. The bar names the
+The line parses, but `shop features generate` can't write its scenario, so nothing could test it. The bar names the
 line. A group whose lines translate but that no step can say is named as `<capability>#g<n> has no scenario: <why>`.
 Reword it with a construct the step grammar has. The simplest fix is usually to split a negated relative clause
 ("no dependency that another item has") into a While clause of its own.
@@ -192,12 +192,12 @@ Reword it with a construct the step grammar has. The simplest fix is usually to 
 ### An unsettled request line
 
 ```console
-$ work ready b252
+$ shop work ready b252
 work ready: b252 "work show prints the status, asked" is not passing:
   line 1 of request q15 is unanswered, not settled: When the person shows an item, the backlog service shall return the status of the item.
 ```
 
-The item came in from a request, and the request still has a line with no outcome. Give it one with `work outcome`
+The item came in from a request, and the request still has a line with no outcome. Give it one with `shop work outcome`
 (accepted, a counter-proposal, or another outcome), or ask Claude to take in the request. An item doesn't get built
 while its asker is still waiting on an answer.
 
@@ -206,39 +206,39 @@ while its asker is still waiting on an answer.
 These come from the commands the batch's driver runs. You'll usually see them in Claude's report, not your
 terminal.
 
-### `work batch done`: uncommitted changes
+### `shop work batch done`: uncommitted changes
 
 ```console
-$ work batch done batch-34 t1
+$ shop work batch done batch-34 t1
 work batch done: t1 b251 "work show prints the status" has uncommitted changes in .shop/worktrees/batch-34-t1: scripts/backlog_cli.py
 ```
 
 A task is done only when everything in its worktree is committed. Commit the file or throw the change away.
 
-### `work batch done`: a commit cites no item
+### `shop work batch done`: a commit cites no item
 
 ```console
-$ work batch done batch-34 t1
+$ shop work batch done batch-34 t1
 work batch done: t1 b251 "work show prints the status": a commit on batch-34-b251 cites no item (an `Item: b251` line): b5c6deced "work show: print the status"
 ```
 
 Every commit on a task's branch ends with a last paragraph `Item: b251`, so the history says why it was made. Amend
 the commit's message (or reword it during a rebase) to add that line.
 
-### `work batch done`: still in `unbuilt:`
+### `shop work batch done`: still in `unbuilt:`
 
 ```console
-$ work batch done batch-34 t1
+$ shop work batch done batch-34 t1
 work batch done: t1 b251 "work show prints the status": still in unbuilt: items#r31
 ```
 
-`work batch start` put the item's ids into the capability's `unbuilt:`, so their scenarios run as expected
+`shop work batch start` put the item's ids into the capability's `unbuilt:`, so their scenarios run as expected
 failures. The commit that makes a scenario pass takes its id out of `unbuilt:`. Until then, the task isn't built.
 
-### `work batch done`: the tests failed
+### `shop work batch done`: the tests failed
 
 ```console
-$ work batch done batch-34 t1
+$ shop work batch done batch-34 t1
 work batch done: t1 b251 "work show prints the status": the tests `python3 -m pytest -q -p work_items tests/scenarios/test_items.py` failed in .shop/worktrees/batch-34-t1 (exit 1):
 ...
 E       AssertionError: ('the backlog service returns the status of the item i1', 'b1 "Title of i1"\n  status: idea\n ...')
@@ -251,20 +251,20 @@ The last twenty lines of the run come with the refusal. The command is `[batch] 
 (default `python3 -m pytest -q -p work_items`), less the tests the task's change does not reach. Fix the code,
 commit, run `done` again.
 
-### `work batch review`: a branch does not merge
+### `shop work batch review`: a branch does not merge
 
 ```console
-$ work batch review batch-34
+$ shop work batch review batch-34
 work batch review: t1 b251 "work show prints the status": batch-34-b251 does not merge: CONFLICT (content): Merge conflict in README.md into batch-34
 ```
 
 Two branches changed the same lines. `review` puts everything back as it was, so nothing is half-merged. Resolve
 it on the task's branch (rebase it onto `batch-34`, or change the file so it merges), then run `review` again.
 
-### `work batch review`: a fix cites no finding
+### `shop work batch review`: a fix cites no finding
 
 ```console
-$ work batch review batch-34
+$ shop work batch review batch-34
 work batch review: batch-34: f1 b251 "work show prints the status" (fix now) has no commit citing it; fix it on batch-34-b251 with Finding: f1, or park b251
 ```
 
@@ -275,12 +275,12 @@ finding needs a commit that cites it. The opposite case is refused too:
 work batch review: batch-34: 669c007c0 "README: the task edit taken out" on batch-34-b251 cites no open finding (a Finding: f<m> line); the open findings are f1 (b251)
 ```
 
-`work batch resume batch-34` prints where to fix each finding.
+`shop work batch resume batch-34` prints where to fix each finding.
 
 ### "not pushed: <remote>: <reason>"
 
 ```console
-$ work idea "an idea while the remote is away"
+$ shop work idea "an idea while the remote is away"
 not pushed: origin: fatal: '.../gone.git' does not appear to be a git repository
 b257 "an idea while the remote is away" idea
 ```
@@ -292,20 +292,20 @@ own. Fix the remote (network, credentials, a renamed repository) and `git push`.
 ## A file says `codified-1`
 
 ```console
-$ features generate
+$ shop features generate
 features: spec/capabilities/notes.md says `language: codified-1`: run `migrate upgrade`
-$ spec check
+$ shop spec check
 v_p0  a spec file is not codified (no `language: codified-2`, or a capability in `codified-1`): run `migrate upgrade`  (1)
     spec/capabilities/notes.md
 ```
 
-Plugin 0.33 and later read only `codified-2`. Run `migrate status` to see the pending steps and `migrate upgrade` to apply
-them. [Upgrading](upgrading.md) walks through the lines it asks you to reword.
+Plugin 0.33 and later read only `codified-2`. Run `shop migrate status` to see the pending steps and `shop migrate
+upgrade` to apply them. [Upgrading](upgrading.md) walks through the lines it asks you to reword.
 
 ## A line still says "runs" (0.38.0)
 
 ```console
-$ spec check
+$ shop spec check
 v_p1  a requirement does not parse  (4)
     capability/example.org/notes/notes-cli/notes#r1, does not parse at runs (token 4 of 26)
     ...
@@ -314,16 +314,16 @@ v_t21  a context with a domain model imports the retired pack cli: run `migrate 
 ```
 
 Since 0.38.0 a line says a request in the domain's words, not a command: "When the person adds a note with a title",
-not "When the person runs `notes add` with the `--title` option". `migrate upgrade` scaffolds the domain model, the
+not "When the person runs `notes add` with the `--title` option". `shop migrate upgrade` scaffolds the domain model, the
 vocabulary and the CLI contract, imports the request pack in place of `cli`, and names each line to reword by file
 and id; it rewords none. [Upgrading](upgrading.md#0380-the-domain-contract) walks through it.
 
 ## The tools
 
-### `tools probe` says a grammar tool is missing
+### `shop tools probe` says a grammar tool is missing
 
 ```console
-$ tools probe
+$ shop tools probe
 ...
 grammar:
   gf missing: requirements cannot be parsed: `work request` and `spec check` refuse
@@ -332,7 +332,7 @@ grammar:
   gf-rgl missing: the grammar over GF's RGL cannot be compiled
 ```
 
-Run `tools install`. It installs GF 3.12 and the resource grammar library under `~/.local/share/shopsystem-bdd/`,
+Run `shop tools install`. It installs GF 3.12 and the resource grammar library under `~/.local/share/shopsystem-bdd/`,
 and the pinned `pgf` and `clingo` wheels into your project's interpreter. Off Linux x86_64, build GF yourself and
 point `$SHOPSYSTEM_GF` at its `gf`.
 
@@ -347,46 +347,46 @@ your lines, and you'll wait once rather than after every word.
 
 **Why can't I edit a line in `spec/`?** Scenarios, commits, reviews and requests cite a line by its id. If the
 words under `items#r12` changed, every one of those would quietly point at something else. So a changed line
-gets a new id and the old id goes under `retired:`: `work line <item> --into <capability> --retires <cap>#r<n>`.
+gets a new id and the old id goes under `retired:`: `shop work line <item> --into <capability> --retires <cap>#r<n>`.
 
 **Why does every line name who acts?** Every scenario needs a When step, and a When step needs someone doing
 something: the person, a session, a service. "When an item is readied" leaves a test with no one to call.
 
 **Why aren't sample values in lines?** A line says what holds for every item, not one. The example data a scenario
-runs with goes in the group's given block (`work line <item> --into <capability> --given g<n> "<block>"`).
+runs with goes in the group's given block (`shop work line <item> --into <capability> --given g<n> "<block>"`).
 
 **Why one review per batch, not per task?** One reviewer reads the whole pull request, so it sees how the tasks fit
-together, and every task has already passed its tests at `work batch done`. It's also cheaper: in batch-32 the
+together, and every task has already passed its tests at `shop work batch done`. It's also cheaper: in batch-32 the
 review was 0.87 of 8.45 dollars.
 
-**Do I have to use GitHub?** Not for the backlog, the lines, `model` or `features`: those work in any git
+**Do I have to use GitHub?** Not for the backlog, the lines, `shop spec` or `shop features`: those work in any git
 repository, with or without a remote. A batch ends in a pull request and a request is an issue, both through `gh`
 (or whatever `$SHOPSYSTEM_WORK_GH` names).
 
 **What does the plugin keep outside my repository?** The grammar tools in `~/.local/share/shopsystem-bdd/` (or
 `$XDG_DATA_HOME`) and its wheels in your interpreter; compiled grammars and parses in `~/.cache/shopsystem-bdd/`;
-and, in your git directory, the hooks' small state (the session `work quote` reads, what `work watch` printed) and
-the batch lock. Batch worktrees sit in `.shop/worktrees/`, which is ignored.
+and, in your git directory, the hooks' small state (the session `shop work quote` reads, what `shop work watch` printed)
+and the batch lock. Batch worktrees sit in `.shop/worktrees/`, which is ignored.
 
 **Can two sessions work at once?** Yes, with two limits. Batch commands take a lock, so several `done`s land one
 after another. One batch is open at a time:
 
 ```console
-$ work batch start
+$ shop work batch start
 work batch start: batch-34 is building; one batch is open at a time
 ```
 
-And `work` commits nothing from a task's branch, so the backlog only moves on the base branch:
+And `shop work` commits nothing from a task's branch, so the backlog only moves on the base branch:
 
 ```text
 work: batch-34-b251 is the branch of task t1 of batch-34; work commits nothing on a task's branch: run it in the base branch's checkout
 ```
 
-**What does a batch cost, and how do I find out?** Ask Claude "what did that batch cost?", or run `measure batch`
-after the merge, then `measure show` on its record:
+**What does a batch cost, and how do I find out?** Ask Claude "what did that batch cost?", or run `shop measure batch`
+after the merge, then `shop measure show` on its record:
 
 ```console
-$ measure show .shop/records/measurements/2026-11-10-batch-32.md
+$ shop measure show .shop/records/measurements/2026-11-10-batch-32.md
 totals
 total             | value
 ------------------+----------------------
