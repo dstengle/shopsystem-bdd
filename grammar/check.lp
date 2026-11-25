@@ -33,6 +33,13 @@
 % one request of another when its operation O and parameter set Ps are one whole key; `param(R,I,P,V)`,
 % `noparam(R,I,P)` and `names(R,I,X)` (what a refusal names) kept for the findings, joined by no rule
 #defined param/4. #defined noparam/3. #defined names/3.
+% a response's request (b571, spec_lf_facts_request's `asked`): `rqo(R,I,O,X)` its operation O and its object X before
+% its parameters' things, `rqp(R,I,P,V)` each parameter its key names with the key's value, `rqt(R,I,P,T)` each thing a
+% parameter names; a key covers another of its operation when each parameter it names has the same value there
+% (spec_entail_chain's `covers`): a "shall not" of the covering key forbids the covered one (`kcov`, `covd`)
+#defined rqo/4. #defined rqp/4. #defined rqt/4.
+kq(E,O) :- resp(R,I,_,E,_,_), rqo(R,I,O,_).  kqp(E,P,V) :- resp(R,I,_,E,_,_), rqp(R,I,P,V).
+kcov(E1,E2) :- kq(E1,O), kq(E2,O), E1 != E2, #count{ P,V : kqp(E1,P,V), not kqp(E2,P,V) } = 0.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
@@ -72,6 +79,7 @@ dem(R,ev(neg,E)) :- key(R,ev(pos,E)).  dem(R,ev(pos,E)) :- key(R,ev(neg,E)).
 dem(R,at(T,W)) :- key(R,at(T,V)), vals(T,W), V != W.
 dem(R,ev(pos,exit_error)) :- key(R,ev(pos,exit_ok)).  dem(R,nouse) :- key(R,use).
 dem(R,ev(pos,O2)) :- key(R,ev(pos,O1)), oclash(O1,O2).
+dem(R,ev(neg,E1)) :- key(R,ev(pos,E2)), kcov(E1,E2).  dem(R,ev(pos,E2)) :- key(R,ev(neg,E1)), kcov(E1,E2).
 % a permission is forbidden by a "shall not" of its act, and nothing else (L7)
 dem(R,ev(neg,E)) :- key(R,ev(may,E)).  dem(R,ev(may,E)) :- key(R,ev(neg,E)).
 dem(R,ev(pos,E)) :- key(R,ev(pos,change_nothing)), posev(E), not quiet(E), not own(R,E).
@@ -99,6 +107,7 @@ do(R,at(T,W),O) :- keyo(R,at(T,V),O), vals(T,W), V != W.  do(R,nouse,O) :- keyo(
 do(R,ev(neg,E),O) :- keyo(R,ev(may,E),O).  do(R,ev(may,E),O) :- keyo(R,ev(neg,E),O).
 do(R,ev(pos,E),O) :- keyo(R,ev(only,E),O).  do(R,ev(only,E),O) :- keyo(R,ev(pos,E),O).
 do(R,ev(ord,E),O) :- keyo(R,ev(ord,E),O).  do(R,ev(cnt,E),O) :- keyo(R,ev(cnt,E),O).
+do(R,ev(neg,E1),O) :- keyo(R,ev(pos,E2),O), kcov(E1,E2).  do(R,ev(pos,E2),O) :- keyo(R,ev(neg,E1),O), kcov(E1,E2).
 dfree(R,ev(pos,exit_error)) :- key(R,ev(pos,exit_ok)).
 dfree(R,ev(pos,O2)) :- key(R,ev(pos,O1)), oclash(O1,O2).
 dfree(R,ev(pos,E)) :- key(R,ev(pos,change_nothing)), posev(E), not quiet(E), not own(R,E).
@@ -484,6 +493,15 @@ cl(A,B,pos_neg) :- ok(A,B), ra(A,B,pos,E,D1,X), rb(A,B,neg,E,D2,Y), doer(A,B,D1,
 cl(A,B,neg_pos) :- ok(A,B), ra(A,B,neg,E,D1,X), rb(A,B,pos,E,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y),
                       not pag(A,B,X,Y).
 cl(A,B,set) :- ok(A,B), sa(A,B,X,T,V), sb(A,B,Y,T,W), same(A,B,X,Y), V != W.
+% a request forbidden by a "shall not" of a key that covers its own (b571): one doer, one object before the
+% parameters' things, and each thing the covering key's parameters name the same as the covered one's
+eqs(A,B,A,X,B,Y) :- same(A,B,X,Y).  eqs(A,B,B,Y,A,X) :- same(A,B,X,Y).
+covd(A,B,S1,I,S2,J) :- side(A,B,S1), side(A,B,S2), S1 != S2, resp(S1,I,_,E1,_,_), resp(S2,J,_,E2,_,_), kcov(E1,E2),
+                       #count{ P : rqt(S1,I,P,T1), rqt(S2,J,P,T2), not eqs(A,B,S1,T1,S2,T2) } = 0.
+cl(A,B,pos_neg) :- ok(A,B), covd(A,B,B,J,A,I), resp(A,I,pos,_,D1,_), resp(B,J,neg,_,D2,_), rqo(A,I,_,X),
+                      rqo(B,J,_,Y), doer(A,B,D1,D2), same(A,B,X,Y), not gap(A,B,X,Y).
+cl(A,B,neg_pos) :- ok(A,B), covd(A,B,A,I,B,J), resp(A,I,neg,_,D1,_), resp(B,J,pos,_,D2,_), rqo(A,I,_,X),
+                      rqo(B,J,_,Y), doer(A,B,D1,D2), same(A,B,X,Y), not pag(A,B,X,Y).
 cl(A,B,exit) :- ok(A,B), ra(A,B,pos,exit_ok,D1,_), rb(A,B,pos,exit_error,D2,_), doer(A,B,D1,D2).
 cl(A,B,exit) :- ok(A,B), ra(A,B,pos,exit_error,D1,_), rb(A,B,pos,exit_ok,D2,_), doer(A,B,D1,D2).
 cl(A,B,outcome) :- ok(A,B), ra(A,B,pos,O1,D1,_), rb(A,B,pos,O2,D2,_), oclash(O1,O2), doer(A,B,D1,D2).
