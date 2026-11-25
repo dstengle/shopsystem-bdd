@@ -228,7 +228,7 @@ def unlay(into, item, files=None, base=None):
             continue
         path = capability_file(into, block.capability)
         was = path.read_text()
-        text = backlog_serves.unlay(was, block.serves)      # before its groups are cut (b641)
+        text = backlog_serves.unlay(was, block.serves, backlog_serves.at_base(path, base))   # before its groups (b641)
         for chunk in [laid_group(g) for g in block.groups] + block.terms:
             text = _cut(text, chunk)
         if block.relations:
