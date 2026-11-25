@@ -97,6 +97,47 @@ Feature: Stock
     Then the stock service keeps the %s p1
 """
 
+LEDGER = """---
+id: capability/example.org/fixture/domain-model/adapter/stock-inventory/ledger
+title: The stock ledger (assumed)
+narrator: the ledger service
+group: service
+language: codified-2
+assumed: true
+provider: bounded-context/example.org/fixture/ledger
+retired: []
+unbuilt: []
+---
+
+# The stock ledger (assumed)
+
+## Purpose
+
+What the adapter relies on of the stock ledger, in its words, assumed: no published contract.
+
+## Terms
+
+- **the ledger service** (proper noun): the stock ledger. Kind of: service.
+- **line** (noun): a count of one stocked thing in the ledger. Plural: lines.
+- **decrement** (verb, action): Forms: decrements, decremented. Frame: agent decrements line.
+
+## Behaviour
+
+### [g1] A line decremented is kept
+- [r1] When the stock service decrements a line, the ledger service shall keep the line.
+"""
+
+LEDGER_FEATURE = """# generated from spec/capabilities/ledger.md by features generate; do not edit
+Feature: The stock ledger (assumed)
+  Narrator: the ledger service
+
+  @g1%s
+  Scenario: A line decremented is kept
+    Given a line l1
+    When the stock service decrements the line l1
+    Then the ledger service keeps the line l1
+"""
+
 
 def mine(step):
     found = sys.modules["vocab"].vocab4.requested.scenario(step.request.node)
@@ -155,6 +196,9 @@ def build(step):
         word = "stocked product" if w["renamed"] else "product"
         (adapter / "spec" / "capabilities" / "stock.md").write_text(STOCK % (word, word))
         (adapter / "features" / "stock.feature").write_text(STOCK_FEATURE % (word, word, word))
+    if w["assumed"]:
+        (adapter / "spec" / "capabilities" / "ledger.md").write_text(LEDGER)
+        (adapter / "features" / "ledger.feature").write_text(LEDGER_FEATURE % ("" if w["unscenarioed"] else " @r1"))
     says = {"term": "product", "requirement id": "ledger#r1"}
     for name, kind in w["kinds"].items():
         if kind in says:
