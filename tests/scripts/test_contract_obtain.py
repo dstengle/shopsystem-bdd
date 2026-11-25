@@ -79,3 +79,36 @@ def test_an_id_that_would_leave_provider_is_out_of_the_context_id_form(tmp_path,
         contract_obtain.obtain(repo, "bounded-context/example.org/../../outside")
     assert refused.value.reason == "id not in the context id form"
     assert not (repo / "provider").exists()
+
+
+SERVE = '''import json, sys
+from pathlib import Path
+where = next(a for a in sys.argv[1:] if a.startswith("repos/"))
+repo, _, path = where[len("repos/"):].partition("/contents")
+found = Path(%r) / repo / path.strip("/")
+if found.is_dir():
+    sys.stdout.write(json.dumps([{"name": p.name, "type": "dir"} for p in found.iterdir() if p.is_dir()]))
+elif found.is_file():
+    sys.stdout.buffer.write(found.read_bytes())
+else:
+    sys.stderr.write("gh: Not Found (HTTP 404)\\n")
+    sys.exit(1)
+'''
+
+
+def test_a_crlf_contract_is_kept_byte_for_byte(tmp_path, monkeypatch, capsys):
+    """b594: a contract with CRLF line ends kept as the upstream's bytes, and obtained again left as it is."""
+    repo = _context(tmp_path, monkeypatch)
+    repos = tmp_path / "outside" / "gh-repos"
+    crlf = CONTRACT.replace("\n", "\r\n").encode()
+    (repos / "ex" / "inventory" / ".shop" / "contracts" / "1.2.0" / "contract.toml").write_bytes(crlf)
+    serve = tmp_path / "serve_gh.py"
+    serve.write_text(SERVE % str(repos))
+    monkeypatch.setenv("SHOPSYSTEM_WORK_GH", "python3 %s" % serve)
+    assert contract_obtain.obtain(repo, UPSTREAM) == 0
+    assert (repo / KEPT).read_bytes() == crlf
+    assert _git(repo, "status", "--porcelain") == ""
+    head = _git(repo, "rev-parse", "HEAD")
+    assert contract_obtain.obtain(repo, UPSTREAM, "1.2.0") == 0
+    assert _git(repo, "rev-parse", "HEAD") == head
+    assert "kept already %s" % KEPT in capsys.readouterr().out
