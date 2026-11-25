@@ -18,6 +18,7 @@ import backlog_recodify
 import backlog_renumber
 import backlog_retires
 import backlog_section
+import backlog_serves
 import backlog_universal
 import spec_held
 import spec_lexicon
@@ -197,6 +198,7 @@ def lay_onto(into, item, files=None):
             text = backlog_forms.with_lines(text, "Relations", block.relations, backlog_forms.HEADER, "Behaviour")
         if block.groups:
             text = _append(text, "Behaviour", "\n\n".join(laid_group(g) for g in block.groups))
+        text = backlog_serves.lay(text, block.serves)       # the jobs its groups serve (b641)
         path.write_text(text)
     backlog_forms.lay_spec(into, blocks, files)
     backlog_universal.lay(into, blocks, files)
@@ -225,7 +227,8 @@ def unlay(into, item, files=None, base=None):
             backlog_capability.unlay(into, block, files)
             continue
         path = capability_file(into, block.capability)
-        text = was = path.read_text()
+        was = path.read_text()
+        text = backlog_serves.unlay(was, block.serves)      # before its groups are cut (b641)
         for chunk in [laid_group(g) for g in block.groups] + block.terms:
             text = _cut(text, chunk)
         if block.relations:
