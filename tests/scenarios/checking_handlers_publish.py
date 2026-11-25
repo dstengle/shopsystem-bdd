@@ -8,7 +8,8 @@ by default, `published` by default); of a fetch, the contract c1 is kept at the 
 `9.9.9` published beside it) or, with none or one no contract has, at `1.2.0` published (an earlier `1.1.0`
 superseded beside it); the requirements r1, r2 are `notebook#r1`, `notebook#r2`, the terms t1, t2 `note` and `tag`,
 and t3 `parameter`, a word of the request pack, no term of the context's own; a requirement that does not conform to
-the language reference is a line grammar 4 does not read, written as `notebook#r10`. The When runs `spec publish` or
+the language reference is a line grammar 4 does not read, written as `notebook#r10`; a version v1 that does not
+conform to the version form is `../1.2.0` (`MALFORMED`). The When runs `spec publish` or
 `spec fetch` with `--version` the code it names; the Thens read the contract kept or printed back."""
 import shutil
 import sys
@@ -20,10 +21,11 @@ from vocab import handler
 W = sys.modules["shop_work_queue_world"]
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURE = ROOT / "tests" / "scripts" / "fixtures" / "domain-model"
-GROUPS = {"g%d" % n for n in range(73, 81)}
+GROUPS = {"g%d" % n for n in range(73, 81)} | {"g83"}
 KEPT = Path(".shop") / "contracts"
 SAYS = {"requirement": ["notebook#r1", "notebook#r2"], "term": ["note", "tag", "parameter"]}
 NONCONFORMING = "- [r10] When the person adds a note, the notes service shall banana the note.\n"
+MALFORMED = "../1.2.0"    # a version not in the version form: it would name a folder outside .shop/contracts/
 KEEPS = ("write", "commit", "post", "keep", "make", "rewrite", "publish")
 
 
@@ -38,7 +40,7 @@ def world(step):
 
 
 def given_instance(step):
-    if not mine(step) or step.kind not in ("contract", "requirement", "term", "downstream context"):
+    if not mine(step) or step.kind not in ("contract", "requirement", "term", "downstream context", "version"):
         return False
     w = world(step)
     w["kinds"][step.names[0]] = step.kind
@@ -60,7 +62,9 @@ def given_state(step):
     if not mine(step) or step.term not in ("has", "conform", "holds"):
         return False
     w, code = world(step), next((n for n in step.nps if n.startswith("`")), None)
-    if step.term == "conform":
+    if step.term == "conform" and w["kinds"].get(step.names[0]) == "version":
+        step.context.setdefault("says", {})[step.names[0]] = MALFORMED
+    elif step.term == "conform":
         w["nonconforming"] = True
     elif step.term == "has" and step.names:
         w["version"][step.names[0]] = code.strip("`")
@@ -113,7 +117,8 @@ def _files(repo):
 def runs(step):
     if not mine(step) or step.term not in ("`spec publish`", "`spec fetch`"):
         return False
-    version = next((v.strip("`") for o, v in step.options if o == "`--version`" and v), None)
+    says = step.context.get("says", {})
+    version = next((says.get(v.split()[-1], v).strip("`") for o, v in step.options if o == "`--version`" and v), None)
     build(step, step.term == "`spec fetch`", version)
     words = [step.term.strip("`").split()[1]] + (["--version", version] if version else [])
     step.context["result"] = step.run("spec", *words)
