@@ -61,12 +61,15 @@ def _change(step, name):
 
 @four("WhenRuns", "`work batch amend`", *BOTH)
 def amend(step):
-    name = step.names[-1]
+    findings = step.context.get("given", {}).get("review finding", {})
+    name = [n for n in step.names if n not in findings][-1]
     T.prepare(step)
     T.ensure_batch(step)
     if T.status_of(step, name) == "in-batch":
         _change(step, name)
-    T.run_batch(step, "amend", B.ident(name))
+    finding = [f["fid"] for n, f in step.context["given"].get("review finding", {}).items()
+               if n in step.names and "fid" in f]      # the review finding the amend fixes (r125, b600)
+    T.run_batch(step, "amend", B.ident(name), *(["--finding", finding[0]] if finding else []))
 
 
 @four("ThenDoes", "has", *BOTH)

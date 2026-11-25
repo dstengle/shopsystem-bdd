@@ -1039,6 +1039,7 @@ requirements = [
 ]
 [operations."batches.amend".parameters]
 item = { positional = 1 }
+"review finding" = { option = "--finding", example = "f1" }
 
 [operations."batches.submit"]
 command = "work batch review"
