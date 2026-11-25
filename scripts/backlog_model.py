@@ -231,7 +231,9 @@ def _skeleton(into, area):
 
 
 def lay(into, blocks, files):
-    """The item's model blocks laid into `into/spec`, each path changed added to `files`."""
+    """The item's moves (backlog_area_move_lay), then its model blocks, laid into `into/spec`, each path changed added
+    to `files`."""
+    __import__("backlog_area_move_lay").lay(into, blocks, files)
     for block in getattr(blocks, "models", ()):
         if block.lines:
             path, rel = model_path(into, block.area), "spec/model/%s.md" % block.area
@@ -271,3 +273,4 @@ def unlay(into, blocks, files, base=None):
             elif text != path.read_text():
                 path.write_text(text)
             files.append("spec/vocabulary/%s.md" % block.area)
+    __import__("backlog_area_move_unlay").unlay(into, blocks, files, base)

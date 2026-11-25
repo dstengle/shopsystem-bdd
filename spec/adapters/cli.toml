@@ -1494,21 +1494,22 @@ requirements = [
 version = { option = "--version", example = "1.2.0" }
 
 [operations."drafting.move"]
-command = "work move"
+command = "work line"
+cli-only = { options = ["--into"] }
 requirements = [
   "drafting#r66: When the person moves a model line in an item, the drafting service shall keep the model line in the item.",
   "drafting#r67: If the person moves a model line that the domain model does not hold in an item, then the drafting service shall refuse the request and name the model line.",
 ]
 [operations."drafting.move".parameters]
-"model line" = { option = "--model-line", example = "model line-1" }
-item = { option = "--item", example = "item-1" }
+item = { positional = 1 }
+"model line" = { option = "--move-model" }
 
 [operations."drafting.move term"]
-command = "work move term"
+command = "work line"
 requirements = [
   "drafting#r68: When the person moves a term in an item, the drafting service shall keep the term in the item.",
   "drafting#r69: If the person moves a term that no area holds in an item, then the drafting service shall refuse the request and name the term.",
 ]
 [operations."drafting.move term".parameters]
-term = { option = "--term", example = "term-1" }
-item = { option = "--item", example = "item-1" }
+item = { positional = 1 }
+term = { option = "--move-term" }
