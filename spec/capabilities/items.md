@@ -7,7 +7,7 @@ area: tracking
 specifies: object item, service backlog, the readiness policy
 language: codified-2
 retired: [g3, r3, g18, r18, g33, r33]
-unbuilt: []
+unbuilt: [r60, r61, r62, r63]
 ---
 
 # Items
@@ -214,4 +214,16 @@ declined, withdrawn, answered and listed.
 
 ### [g58] An item suspended needs input and keeps its question
 - [r58] While an item is `in-batch`, when a session suspends the item with a question, the backlog service shall set the status of the item to `needs-input` and keep the question on the item.
+
+### [g60] Only a ready item is allocated
+- [r60] While an item is not `ready`, if a session allocates the item, then the backlog service shall refuse the request and name the item and the `item not ready` reason.
+
+### [g61] Only an item in a batch is delivered
+- [r61] While an item is not `in-batch`, if a session delivers the item, then the backlog service shall refuse the request and name the item and the `item not in-batch` reason.
+
+### [g62] Only an item in a batch is restored
+- [r62] While an item is not `in-batch`, if a session restores the item, then the backlog service shall refuse the request and name the item and the `item not in-batch` reason.
+
+### [g63] Only an item in a batch is suspended
+- [r63] While an item is not `in-batch`, if a session suspends the item with a question, then the backlog service shall refuse the request and name the item and the `item not in-batch` reason.
 

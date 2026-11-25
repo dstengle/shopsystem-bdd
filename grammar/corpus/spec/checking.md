@@ -949,3 +949,20 @@ shall [x1: agent the person (constant), x5: service the specification service (c
     refuse(e2, subject: x5, object: x6)
     name(e3, subject: x5, object: x3)
 ```
+
+## r83
+From: b589 r83.
+
+```reading
+If the person publishes a contract with a version that does not conform to the version form, then the specification service shall refuse the request and name the version and the `version not in the version form` reason.
+shall [x1: agent the person (constant), x4: artifact the version form (constant), x5: service the specification service (constant), x6: request "the request the trigger makes" (indexical), x7: reason `version not in the version form` (parameter)]
+  if [x2: contract, x3: version]
+    not
+      conforms(x3, x4)
+    request(e1, specification.publish, subject: x1, object: x2)
+    param(e1, version, x3)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x3)
+    name(e4, subject: x5, object: x7)
+```

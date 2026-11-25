@@ -1401,6 +1401,7 @@ contract = { option = "--contract", example = "contract-1" }
 command = "work allocate"
 requirements = [
   "items#r59: While an item is `ready`, when a session allocates the item, the backlog service shall set the status of the item to `in-batch`.",
+  "items#r60: While an item is not `ready`, if a session allocates the item, then the backlog service shall refuse the request and name the item and the `item not ready` reason.",
 ]
 [operations."backlog.allocate".parameters]
 item = { positional = 1 }
@@ -1409,6 +1410,7 @@ item = { positional = 1 }
 command = "work deliver"
 requirements = [
   "items#r56: While an item is `in-batch`, when a session delivers the item, the backlog service shall set the status of the item to `delivered`.",
+  "items#r61: While an item is not `in-batch`, if a session delivers the item, then the backlog service shall refuse the request and name the item and the `item not in-batch` reason.",
 ]
 [operations."backlog.deliver".parameters]
 item = { positional = 1 }
@@ -1417,6 +1419,7 @@ item = { positional = 1 }
 command = "work restore"
 requirements = [
   "items#r57: While an item is `in-batch`, when a session restores the item, the backlog service shall set the status of the item to `ready`.",
+  "items#r62: While an item is not `in-batch`, if a session restores the item, then the backlog service shall refuse the request and name the item and the `item not in-batch` reason.",
 ]
 [operations."backlog.restore".parameters]
 item = { positional = 1 }
@@ -1425,6 +1428,7 @@ item = { positional = 1 }
 command = "work suspend"
 requirements = [
   "items#r58: While an item is `in-batch`, when a session suspends the item with a question, the backlog service shall set the status of the item to `needs-input` and keep the question on the item.",
+  "items#r63: While an item is not `in-batch`, if a session suspends the item with a question, then the backlog service shall refuse the request and name the item and the `item not in-batch` reason.",
 ]
 [operations."backlog.suspend".parameters]
 item = { positional = 1 }
@@ -1438,6 +1442,7 @@ requirements = [
   "checking#r75: While a contract has the `1.2.0` version, if the person publishes a contract with the `1.2.0` version, then the specification service shall refuse the request and name the version.",
   "checking#r76: While a requirement does not conform to the language reference, if the person publishes a contract, then the specification service shall refuse the request and name the requirement.",
   "checking#r77: When the person publishes a contract, the specification service shall keep a contract whose status is `published` and keep every requirement and every term in the contract.",
+  "checking#r83: If the person publishes a contract with a version that does not conform to the version form, then the specification service shall refuse the request and name the version and the `version not in the version form` reason.",
 ]
 [operations."specification.publish".parameters]
 version = { option = "--version", example = "1.2.0" }

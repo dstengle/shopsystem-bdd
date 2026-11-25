@@ -911,3 +911,44 @@ Feature: Items
     And a session s1
     When the session s1 allocates the item i1
     Then the backlog service sets the status of the item i1 to `in-batch`
+
+  @g60 @r60
+  Scenario: Only a ready item is allocated
+    Given an item i1
+    And the status of the item i1 is not `ready`
+    And a session s1
+    When the session s1 allocates the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the item i1
+    And the backlog service names `item not ready`
+
+  @g61 @r61
+  Scenario: Only an item in a batch is delivered
+    Given an item i1
+    And the status of the item i1 is not `in-batch`
+    And a session s1
+    When the session s1 delivers the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the item i1
+    And the backlog service names `item not in-batch`
+
+  @g62 @r62
+  Scenario: Only an item in a batch is restored
+    Given an item i1
+    And the status of the item i1 is not `in-batch`
+    And a session s1
+    When the session s1 restores the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the item i1
+    And the backlog service names `item not in-batch`
+
+  @g63 @r63
+  Scenario: Only an item in a batch is suspended
+    Given an item i1
+    And the status of the item i1 is not `in-batch`
+    And a session s1
+    And a question q1
+    When the session s1 suspends the item i1 with the question q1
+    Then the backlog service refuses this request
+    And the backlog service names the item i1
+    And the backlog service names `item not in-batch`

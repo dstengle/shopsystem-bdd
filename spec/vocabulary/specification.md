@@ -232,3 +232,4 @@ area: specification
 - **fetch** (verb, action) → operation specification.fetch. Forms: fetches, fetched. Frame: <actor> fetches <contract>.
 - **downstream context** (noun) → object downstream context. A bounded context that builds on the contract of this bounded context and reaches it through a driven port of its own. Plural: downstream contexts.
 - **obtain** (verb, action) → operation specification.obtain. Forms: obtains, obtained. Frame: <actor> obtains <contract> from <bounded context>.
+- **the version form** (proper noun) → object version form. The version of a contract as `spec publish` takes it: a letter or a digit, then letters, digits, dots, pluses and hyphens, as `1.2.0`, so that it names one folder under `.shop/contracts/`.
