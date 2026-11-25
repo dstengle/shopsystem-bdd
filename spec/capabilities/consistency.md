@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: examine; service language: explain
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r43]
 ---
 
 # Consistency
@@ -192,4 +192,7 @@ The requirements examined together: contradictions, what a line adds over the ot
 
 ### [g42] spec logic finds the clash of only over requests of an operation and an obliged request of it outside the restriction
 - [r42] While a requirement has a trigger and the requirement obliges an act and another requirement that has the trigger does not allow the act and the requirement uses `only` and an operation, when the person examines this specification, the specification service shall return `L1`.
+
+### [g43] spec logic follows a response's request to no line of a different requester
+- [r43] While a requirement that has a requester uses `response-request` and an operation and another requirement that has a different requester governs the operation, when the person examines this specification, the specification service shall return `no findings`.
 

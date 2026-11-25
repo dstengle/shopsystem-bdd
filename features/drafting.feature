@@ -628,3 +628,19 @@ Feature: Drafting
     When the person replaces the given block g1 in the item i1
     Then the drafting service refuses this request
     And the drafting service names the given block g1
+
+  @g65 @r65
+  Scenario: A requirement drafted into an item joins its group of the same group title
+    Given a requirement group r1
+    And a capability c1
+    And the capability c1 has the requirement group r1
+    And an item i1
+    And the item i1 holds the requirement group r1
+    And a group title g1
+    And the requirement group r1 has the group title g1
+    And a requirement r2
+    And the capability c1 has the requirement r2
+    And a requirement group r3
+    And the requirement group r3 does not have the group title g1
+    When the person drafts the item i1 with the requirement r2
+    Then the drafting service does not keep the requirement group r3

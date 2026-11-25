@@ -604,3 +604,18 @@ Feature: Consistency
     And the requirement r2 uses the operation o1
     When the person examines this specification
     Then the specification service returns `L1`
+
+  @g43 @r43
+  Scenario: spec logic follows a response's request to no line of a different requester
+    Given a requester r2
+    And a requirement r1
+    And the requirement r1 has the requester r2
+    And the requirement r1 uses `response-request`
+    And an operation o1
+    And the requirement r1 uses the operation o1
+    And a requester r4
+    And a requirement r3
+    And the requirement r3 has the requester r4
+    And the requirement r3 governs the operation o1
+    When the person examines this specification
+    Then the specification service returns `no findings`
