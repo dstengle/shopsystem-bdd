@@ -149,3 +149,39 @@ def test_an_upstream_no_adapter_spec_has_as_its_provider_is_refused(tmp_path, mo
         contract_obtain.obtain(repo, UPSTREAM)
     assert refused.value.reason == "no adapter spec has the provider"
     assert not list(repo.rglob("contract.toml"))
+
+
+def _unheld(repo):
+    """The fixture's one adapter spec naming no bounded context: no adapter spec has the upstream."""
+    index = repo / "adapters" / "stock-inventory" / "spec" / "index.md"
+    index.write_text(index.read_text().replace(UPSTREAM + "@1.2.0", ""))
+
+
+def test_an_upstream_no_adapter_spec_has_is_refused_naming_the_provider(tmp_path, monkeypatch):
+    """b593, checking r94: the refusal names the upstream as the provider, with the line's reason."""
+    repo = _context(tmp_path, monkeypatch)
+    _unheld(repo)
+    with pytest.raises(Refused) as refused:
+        contract_obtain.obtain(repo, UPSTREAM)
+    assert refused.value.reason == "no adapter spec has the provider"
+    assert refused.value.names == ["provider:%s" % UPSTREAM]
+    assert "the provider %s" % UPSTREAM in str(refused.value)
+
+
+def test_an_unreachable_upstream_no_adapter_spec_has_is_unreachable(tmp_path, monkeypatch):
+    """b593 review f1: the reach (checking r89) is checked before the holders, so its reason is kept."""
+    repo = _context(tmp_path, monkeypatch)
+    _unheld(repo)
+    monkeypatch.setenv("STUB_GH_FAIL", "api repos/ex/inventory")
+    with pytest.raises(Refused) as refused:
+        contract_obtain.obtain(repo, UPSTREAM)
+    assert refused.value.reason == "bounded context unreachable"
+
+
+def test_a_malformed_id_no_adapter_spec_has_is_out_of_the_context_id_form(tmp_path, monkeypatch):
+    """b593 review f1: the id form (checking r88) is checked before the holders, so its reason is kept."""
+    repo = _context(tmp_path, monkeypatch)
+    _unheld(repo)
+    with pytest.raises(Refused) as refused:
+        contract_obtain.obtain(repo, "bounded-context/example/inventory")
+    assert refused.value.reason == "id not in the context id form"
