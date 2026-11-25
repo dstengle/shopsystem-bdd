@@ -39,3 +39,24 @@ def test_a_term_with_no_text_is_an_entry():
 
 def test_a_line_that_is_no_term_is_none():
     assert adapter_provider.bullet("no part of speech", OBJECTS, {}) is None
+
+
+def test_two_senses_of_one_word_of_one_contract_are_both_kept(monkeypatch):
+    contract = {"objects": {"batch": {"attributes": ["status: open | done"]}, "task": {"attributes": ["status: run"]}},
+                "terms": ["status (attribute of batch)", "status (attribute of task)"]}
+    monkeypatch.setattr(adapter_provider, "adapter", lambda root: True)
+    monkeypatch.setattr(adapter_provider, "_others", lambda root: [])
+    monkeypatch.setattr(adapter_provider, "contracts", lambda root: [("c.toml", "p", contract)])
+    terms, clashes = adapter_provider._read("root")
+    assert [(t.term, t.category) for t in terms] == [("status", "attribute"), ("status", "attribute")]
+    assert clashes == []
+
+
+def test_a_word_of_an_earlier_contract_clashes_with_a_later_one(monkeypatch):
+    first = {"objects": {}, "terms": ["note (noun): A text."]}
+    second = {"objects": {}, "terms": ["note (noun): A memo."]}
+    monkeypatch.setattr(adapter_provider, "adapter", lambda root: True)
+    monkeypatch.setattr(adapter_provider, "_others", lambda root: [])
+    monkeypatch.setattr(adapter_provider, "contracts", lambda root: [("a", "p1", first), ("b", "p2", second)])
+    terms, clashes = adapter_provider._read("root")
+    assert len(terms) == 1 and clashes == [("note", "p2", "the contract of p1")]

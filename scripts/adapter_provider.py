@@ -8,11 +8,11 @@ the verb spells, any other `<x>` the kind x; an attribute of O its values (adjec
 `[objects."O"]` (`bullet`). The provider's words are never edited (decision 0117): the adapter spec gives a word of
 them another word with `renames: [<word> → <new word>]` in its spec/index.md (`renames`), the term then read under
 the new word in every place the contract names it, its plural the new word's. A provider's term spelled as another
-term the adapter spec reads (an imported pack's, its own, an earlier contract's) and not renamed clashes: it is left
-out of the lexicon and a file problem names it (`clashes`, `problems`). An assumed description, a capability of the
-adapter spec whose frontmatter says `assumed: true`, is evidence only when its scenarios run (decision 0120): each of
-its requirement ids that no scenario of its feature refers to (`@r<n>`) is a file problem naming the id
-(`unscenarioed`)."""
+term the adapter spec reads (an imported pack's, its own, an earlier contract's; never another sense of the word in
+its own contract) and not renamed clashes: it is left out of the lexicon and a file problem names it (`clashes`,
+`problems`). An assumed description, a capability of the adapter spec whose frontmatter says `assumed: true`, is
+evidence only when its scenarios run (decision 0120): each of its requirement ids that no scenario of its feature
+refers to (`@r<n>`) is a file problem naming the id (`unscenarioed`)."""
 import re
 import tomllib
 from pathlib import Path
@@ -117,7 +117,7 @@ def _read(root):
     renamed, taken = renames(root), dict(_others(root))
     terms, clashes = [], []
     for where, provider, contract in contracts(root):
-        objects = contract.get("objects", {})
+        objects, own = contract.get("objects", {}), []
         for line in contract.get("terms", []):
             found = bullet(line, objects, renamed)
             t = spec_lexicon.entry(found, where) if found else None
@@ -126,8 +126,9 @@ def _read(root):
             if t.term in taken:
                 clashes.append((t.term, provider, taken[t.term]))
                 continue
-            taken[t.term] = "the contract of %s" % provider
-            terms.append(t)
+            own.append(t)
+        taken.update((t.term, "the contract of %s" % provider) for t in own)
+        terms += own
     return terms, clashes
 
 
