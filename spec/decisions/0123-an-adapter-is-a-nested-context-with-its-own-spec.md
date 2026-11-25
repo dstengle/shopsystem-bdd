@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/an-adapter-is-a-nested-context-with-its-own-spec
 summary: "Each adapter is adapters/<port>-<provider>/, a context of kind adapter with its own grammar, where the port's, the provider's and technical words meet."
 date: 2026-11-24
-status: accepted
+status: superseded
 tier: judgement
 source: [quote-72, quote-75, quote-77]
 ---
