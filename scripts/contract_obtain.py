@@ -50,6 +50,11 @@ def _unreachable(context, why):
                    reason="bounded context unreachable", names=["bounded context:%s" % context])
 
 
+def _failing(context, why):
+    return Refused("the bounded context {names} fails to answer: bounded context failing (%s)" % why,
+                   reason="bounded context failing", names=["bounded context:%s" % context])
+
+
 def _reach(root, repo, context):
     """Refused unless GitHub serves the repository `repo` of `context`: one missing, private or not answering is a
     bounded context unreachable, never one with no contract."""
@@ -60,14 +65,14 @@ def _reach(root, repo, context):
 
 
 def _api(root, repo, path, context):
-    """The bytes of `path` in `repo` on GitHub, or None when it is not there; another gh failure the bounded context
-    unreachable."""
+    """The bytes of `path` in `repo` on GitHub, or None when it is not there; another gh failure, of a repository
+    `_reach` reached, the bounded context failing (b596, checking r102)."""
     try:
         return _gh(root, "api", "-H", RAW, "repos/%s/contents/%s" % (repo, path))
     except Refused as err:
         if "404" in str(err) or "Not Found" in str(err):
             return None
-        raise _unreachable(context, str(err).strip().splitlines()[-1]) from None
+        raise _failing(context, str(err).strip().splitlines()[-1]) from None
 
 
 def _none(context, version):

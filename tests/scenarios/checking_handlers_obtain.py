@@ -1,10 +1,11 @@
-"""Handlers of checking's obtained contract scenarios (r81, r82, r88-r91, r94; b587, b591, b593), each a `work_queue_world.local`
+"""Handlers of checking's obtained contract scenarios (r81, r82, r88-r91, r94, r102; b587, b591, b593, b596), each a `work_queue_world.local`
 that takes only a step of a scenario of one of its groups (`mine`). The world is the domain-model fixture
 (tests/scripts/fixtures/domain-model/), copied into the repository at the When with each bounded context under
 `## Upstreams` of its index, hosted on GitHub, and committed; the stand-in gh (tests/scripts/stub_gh.py, run as
 `$SHOPSYSTEM_WORK_GH` as requests_world runs it) serves those repositories' files: a contract kept at `1.1.0`
 superseded and one at `1.2.0` published, or, when the bounded context has no contract, none, and, when its
-availability is `unreachable`, no repository at all. The fixture nests the adapter spec `adapters/stock-inventory/`
+availability is `unreachable`, no repository at all; when its health is `failing`, the repository but every read
+of its contents refused (`$STUB_GH_FAIL` of `api -H`, b596). The fixture nests the adapter spec `adapters/stock-inventory/`
 (`ADAPTER`) whose `providers:` name each bounded context obtained from (decision 0136), unless the scenario brings in
 an adapter spec that no Given says has the provider, or a Given says no adapter spec has it (g94).
 
@@ -24,7 +25,7 @@ W = sys.modules["shop_work_queue_world"]
 ROOT = Path(__file__).resolve().parents[2]
 STUB = ROOT / "tests" / "scripts" / "stub_gh.py"
 FIXTURE = ROOT / "tests" / "scripts" / "fixtures" / "domain-model"
-GROUPS = {"g81", "g82", "g88", "g89", "g90", "g91", "g94"}
+GROUPS = {"g81", "g82", "g88", "g89", "g90", "g91", "g94", "g102"}
 UPSTREAM = "bounded-context/example.org/fixture/inventory"
 MALFORMED = "bounded-context/example/inventory"
 OTHERS = ["bounded-context/example.org/other/inventory", "bounded-context/example.org/third/inventory"]
@@ -43,7 +44,7 @@ def mine(step):
 
 def world(step):
     return step.context.setdefault("obtained", {"kinds": {}, "empty": False, "malformed": False,
-                                                "unreachable": False, "has": {}, "kept": {},
+                                                "unreachable": False, "failing": False, "has": {}, "kept": {},
                                                 "provides": False, "unheld": False})
 
 
@@ -73,10 +74,11 @@ def given_state(step):
 
 
 def given_availability(step):
-    """`the availability of the bounded context b1 is `unreachable``."""
-    if not mine(step) or step.attribute != "availability":
+    """`the availability of the bounded context b1 is `unreachable`` and `the health of ... is `failing`` (r102)."""
+    if not mine(step) or step.attribute not in ("availability", "health"):
         return False
-    world(step)["unreachable"] = step.values[0].strip("`") == "unreachable"
+    value = step.values[0].strip("`")
+    world(step)["unreachable" if step.attribute == "availability" else "failing"] = value in ("unreachable", "failing")
 
 
 def outside(step):
@@ -86,8 +88,11 @@ def outside(step):
     return step.context["outside"]
 
 
-def env(step):
-    return dict(os.environ, SHOPSYSTEM_WORK_GH="%s %s" % (shlex.quote(sys.executable), shlex.quote(str(STUB))),
+def env(step, failing=False):
+    """The stand-in gh's environment; `failing`, every read of a repository's contents refused (r102)."""
+    failing = {"STUB_GH_FAIL": "api -H"} if failing else {}
+    return dict(os.environ, **failing,
+                SHOPSYSTEM_WORK_GH="%s %s" % (shlex.quote(sys.executable), shlex.quote(str(STUB))),
                 STUB_GH_CALLS=str(outside(step) / "gh-calls.jsonl"), GH_TOKEN="", GIT_TERMINAL_PROMPT="0")
 
 
@@ -143,7 +148,8 @@ def runs(step):
     if not mine(step) or step.term != "`spec obtain`":
         return False
     build(step)
-    step.context["result"] = step.run("spec", "obtain", obtained_from(step), env=env(step))
+    step.context["result"] = step.run("spec", "obtain", obtained_from(step),
+                                       env=env(step, world(step)["failing"]))
 
 
 def _done(step):
