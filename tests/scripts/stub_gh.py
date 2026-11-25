@@ -25,7 +25,11 @@ to `<u>` as an `issues` event; the forward then stays, as gh's does, until it is
 with no notifications, or, when `$STUB_GH_BASELINE` is set, a 200 bringing all that is pending back (a comment that
 came before the baseline); with one, a 200 bringing all that is pending back, one notification a repository, else a
 304 (exit 1, as gh exits on a status over 299), each with `X-Poll-Interval: 0`. When `$STUB_GH_FAIL` equals the call's first two words (`pr
-create`), the call exits 1 with `stand-in gh: refused` on stderr (and is recorded with `"failed": true`)."""
+create`), the call exits 1 with `stand-in gh: refused` on stderr (and is recorded with `"failed": true`).
+
+A repository's files (`spec obtain`, b587): `api [-H <accept>] repos/<r>/contents/<path>` reads `<path>` under the folder
+`$STUB_GH_REPOS/<r>` (else `gh-repos/<r>` beside the calls): a folder prints its entries as JSON (`name`, `type`), a
+file its text (the raw media type), anything else `gh: Not Found (HTTP 404)` on stderr and exit 1."""
 import json
 import os
 import sys
@@ -136,6 +140,21 @@ def notifications(argv):
     return 0
 
 
+def contents(argv):
+    """`gh api repos/<r>/contents/<path>` over the stand-in's folder of repositories: (what it prints, exit)."""
+    where = next(a for a in argv[1:] if a.startswith("repos/"))
+    repo, _, path = where[len("repos/"):].partition("/contents")
+    base = Path(os.environ.get("STUB_GH_REPOS") or Path(os.environ["STUB_GH_CALLS"]).with_name("gh-repos"))
+    found = base / repo / path.strip("/")
+    if found.is_dir():
+        return json.dumps([{"name": p.name, "type": "dir" if p.is_dir() else "file"}
+                           for p in sorted(found.iterdir())]), 0
+    if found.is_file():
+        return found.read_text(), 0
+    print("gh: Not Found (HTTP 404)", file=sys.stderr)
+    return None, 1
+
+
 def main(argv):
     failed = os.environ.get("STUB_GH_FAIL") == " ".join(argv[:2])
     late = os.environ.get("STUB_GH_LATE") == " ".join(argv[:2])
@@ -149,6 +168,11 @@ def main(argv):
         forward(argv)
     elif argv[:1] == ["api"] and "notifications" in argv:
         return notifications(argv)
+    elif argv[:1] == ["api"] and any(a.startswith("repos/") and "/contents" in a for a in argv):
+        out, code = contents(argv)
+        if out is not None:
+            print(out, end="")
+        return code
     elif argv[:2] == ["repo", "view"]:
         admin = argv[2] not in os.environ.get("STUB_GH_NOT_ADMIN", "").split(",")
         print(json.dumps({"viewerPermission": "ADMIN" if admin else "WRITE"}))

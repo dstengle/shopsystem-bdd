@@ -1459,6 +1459,5 @@ requirements = [
   "checking#r82: If the person obtains a contract from a bounded context that has no contract, then the specification service shall refuse the request and name the bounded context.",
 ]
 [operations."specification.obtain".parameters]
-contract = { option = "--contract", example = "contract-1" }
-"bounded context" = { option = "--bounded-context", example = "bounded context-1" }
-version = { option = "--version", example = "version-1" }
+"bounded context" = { positional = 1, example = "bounded-context/example.org/fixture/inventory" }
+version = { option = "--version", example = "1.2.0" }

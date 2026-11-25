@@ -1136,6 +1136,20 @@ status = "published"
 ...
 ```
 
+### `spec obtain`
+
+Keeps an upstream's contract, the one it keeps as published or with `--version` the one kept at that version, as
+`provider/<upstream>/<version>/contract.toml` (`<upstream>` the last part of its id), byte for byte, in one commit;
+it keeps no context request. The upstream is a bounded context under `## Upstreams` of `spec/index.md`, read off the
+GitHub repository its `github:` names. An upstream with no contract is refused, naming the bounded context. An
+obtained contract is never edited: `spec obtain` is its only writer.\
+Synopsis: `spec obtain <bounded context> [--version <version>]`
+
+```console
+$ spec obtain bounded-context/example.org/fixture/inventory
+obtained provider/inventory/1.2.0/contract.toml
+```
+
 ### `spec decisions`
 
 Writes `spec/decisions/index.md` from the decision files. Not committed.\
