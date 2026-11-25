@@ -3,7 +3,7 @@ of a batch's pull request, written as `brief.md` and `change.diff` in the review
 worktrees directory, with nothing committed.
 
 The first review (the pull request is unreviewed) reads the range `forked_from..head`: every commit of the batch and
-no other, every requirement line of its in-batch items, the `tier: judgement` design-decisions, the rules
+no other, every requirement line of its in-batch items, the `tier: judgement` design-decisions in force, the rules
 (`CLAUDE.md`), the size of the change and the runs of `[review] checks`, each with its command, exit code and output.
 A re-review reads the range from the last review's head: the open findings, each with the commits for it, in place of
 the items (r3 binds the first review only). Each check is also run once a batch at `forked_from`, and its exit code
@@ -46,11 +46,12 @@ TAIL = 40
 
 
 def judgement(root):
-    """(rel, summary) of each `spec/decisions/*.md` whose frontmatter has `tier: judgement` (D6)."""
+    """(rel, summary) of each `spec/decisions/*.md` in force whose frontmatter has `tier: judgement` (D6): its
+    `status:` `accepted`, a superseded or rejected one left out (review-guarantees r11, r12, b597)."""
     found = []
     for path in sorted((Path(root) / "spec" / "decisions").glob("*.md")):
         data, _ = shop_files.frontmatter(shop_files.read(path, root))
-        if data.get("tier") == "judgement":
+        if data.get("tier") == "judgement" and data.get("status") == "accepted":
             found.append((path.relative_to(root).as_posix(), str(data.get("summary") or "").strip()))
     return found
 
