@@ -23,7 +23,7 @@ Then its sections, in order:
 - `## Items` (first review): each item of the batch with its file under `.shop/backlog/` and each of its requirement lines, `<capability>#r<n>: <text>`;
 - `## Earlier findings` (re-review, in place of `## Items`): each finding still open, with its grade, triage, title, item, where, the commits for it and its text;
 - `## Base merges` (re-review of the base merge, in place of `## Earlier findings`): each merge of the base into the batch branch made after the last clean review, with `resolution: <path>`, how it settled a conflict (empty when it settled none);
-- `## Judgement decisions`: each design-decision whose tier is `judgement`, with its summary, or `none`;
+- `## Judgement decisions`: each design-decision in force (`accepted`) whose tier is `judgement`, with its summary, or `none`; a superseded one is not listed and you do not review it;
 - `## Rules`: the repository's `CLAUDE.md`, or `none`;
 - `## Size`: the files and lines the range changes, `.shop/` left out, and the limit;
 - `## Runs`: each check `work` ran in the batch's worktree at `Head:`, with its command, its exit code, the exit code it had at the batch's base (`Exit code: 1 (base: 0)`) and the end of its output;

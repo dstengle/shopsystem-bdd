@@ -27,7 +27,7 @@ def test_r11_r12_the_reviewer_reads_the_items_lines_and_only_the_batchs_commits(
     assert definition(PATH)["tools"] == ["Read", "Glob", "Grep"]
 
 
-@pytest.mark.requirement("review-guarantees#r2")
+@pytest.mark.requirement("review-guarantees#r11")
 def test_r4_the_reviewer_reads_every_judgement_decision():
     has("Read every design-decision the brief's `## Judgement decisions` lists, and check the change against each.")
 

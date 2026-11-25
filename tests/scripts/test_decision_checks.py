@@ -80,10 +80,11 @@ def test_the_judgement_decisions_reach_the_brief():
     assert "spec/decisions/0097-while-alpha-a-change-breaks-consumers-cleanly-with-no-compatibility-path.md" in found, found
     assert "spec/decisions/0107-the-specification-has-four-parts.md" in found, found
     assert "spec/decisions/0111-a-request-acts-on-one-thing.md" in found, found
-    # every judgement decision whatever its status, and none of another tier, whatever their number: a superseded
-    # judgement decision still reaches the brief (review-guarantees#r2 holds while its tier is `judgement`)
+    # every judgement decision in force, and none of another tier or out of force, whatever their number: a
+    # superseded judgement decision does not reach the brief (review-guarantees#r11, r12, b597)
     by = {d.rel: d for d in model_decisions.decisions(ROOT)}
-    judged = {rel for rel, d in by.items() if d.tier == "judgement"}
+    judged = {rel for rel, d in by.items() if d.tier == "judgement" and d.status == "accepted"}
+    assert "spec/decisions/0123-an-adapter-is-a-nested-context-with-its-own-spec.md" not in found, found
     assert set(found) == judged and len(found) == len(set(found)), sorted(set(found) ^ judged)
 
 
