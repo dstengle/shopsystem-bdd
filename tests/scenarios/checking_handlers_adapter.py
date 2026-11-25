@@ -1,10 +1,12 @@
-"""Handlers of checking's adapter spec scenarios (r84-r87, b540), each a `work_queue_world.local` that takes only a step
-of a scenario of one of its groups (`mine`). The world is the domain-model fixture (tests/scripts/fixtures/
+"""Handlers of checking's adapter spec scenarios (r84-r87, b540; r92, r93, b595), each a `work_queue_world.local`
+that takes only a step of a scenario of one of its groups (`mine`). The world is the domain-model fixture (tests/scripts/fixtures/
 domain-model/) as the parent bounded context, with the adapter spec a1 nested in it at `adapters/stock-inventory/`,
 written at the When: its spec/index.md of `kind: adapter`, its id the parent's id followed by `/adapter/stock-inventory`
-(another context's when a Given says it does not conform to the adapter spec id form), `realises:` the parent's
+(another context's when a Given says it does not conform to the adapter spec id form, `/adapter/stock-elsewhere` when
+it does not match the adapter spec), `realises:` the parent's
 `notebook#r1` and the requirement id a Given names (`notebook#r99` when no requirement has it), `providers:` the
-provider p1 `bounded-context/example.org/fixture/inventory` at `1.2.0`, its contract kept as `spec obtain` keeps it
+provider p1 `bounded-context/example.org/fixture/inventory` at `1.2.0` (the pattern `1.*` when a Given says its
+version does not conform to the version form, the contract held), its contract kept as `spec obtain` keeps it
 under `provider/example.org/fixture/inventory/1.2.0/` when a Given says the adapter spec holds it, and each adapter
 decision a file of its `adr/`.
 
@@ -17,13 +19,15 @@ from pathlib import Path
 W = sys.modules["shop_work_queue_world"]
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURE = ROOT / "tests" / "scripts" / "fixtures" / "domain-model"
-GROUPS = {"g84", "g85", "g86", "g87"}
+GROUPS = {"g84", "g85", "g86", "g87", "g92", "g93"}
 PARENT = "bounded-context/example.org/fixture/domain-model"
 OTHER = "bounded-context/example.org/fixture/other"
 NAME = "stock-inventory"
 PROVIDER = "bounded-context/example.org/fixture/inventory"
 VERSION = "1.2.0"
-KINDS = ("id", "adapter spec", "requirement id", "provider", "contract", "adapter decision")
+UNMATCHED = "stock-elsewhere"
+PATTERN = "1.*"
+KINDS = ("id", "adapter spec", "requirement id", "provider", "contract", "adapter decision", "version")
 
 INDEX = """---
 id: %s/adapter/%s
@@ -67,7 +71,8 @@ def mine(step):
 
 def world(step):
     return step.context.setdefault("adapter", {"kinds": {}, "parent": PARENT, "missing": False, "realises": False,
-                                               "provider": False, "held": False, "decision": False})
+                                               "provider": False, "held": False, "decision": False,
+                                               "name": NAME, "version": VERSION})
 
 
 def given_instance(step):
@@ -96,10 +101,19 @@ def given_state(step):
 
 
 def given_unconforming(step):
-    """`the id i1 does not conform to the adapter spec id form`: the id another context's."""
-    if not mine(step) or step.term != "conform":
+    """`the id i1 does not conform to the adapter spec id form`: the id another context's; `the id i1 does not match
+    the adapter spec a1`: the id names another folder than the one that keeps the adapter spec; `the version v1 does
+    not conform to the version form`: the provider's version a pattern, its contract kept at a version it matches as
+    one (r93: so that only the version, not a missing contract, fails the check)."""
+    if not mine(step) or step.term not in ("conform", "match"):
         return False
-    world(step)["parent"] = OTHER
+    w = world(step)
+    if step.term == "match":
+        w["name"] = UNMATCHED
+    elif w["kinds"].get(step.names[0]) == "version":
+        w["version"], w["held"] = PATTERN, True
+    else:
+        w["parent"] = OTHER
 
 
 def build(step):
@@ -111,8 +125,8 @@ def build(step):
     (adapter / "spec").mkdir(parents=True)
     realised = "notebook#r99" if w["missing"] else "notebook#r1"
     realises = ["notebook#r1"] + (["notebook#r99"] if w["realises"] and w["missing"] else [])
-    providers = ["%s@%s" % (PROVIDER, VERSION)] if w["provider"] else []
-    (adapter / "spec" / "index.md").write_text(INDEX % (w["parent"], NAME, ", ".join(realises), ", ".join(providers)))
+    providers = ["%s@%s" % (PROVIDER, w["version"])] if w["provider"] else []
+    (adapter / "spec" / "index.md").write_text(INDEX % (w["parent"], w["name"], ", ".join(realises), ", ".join(providers)))
     if w["held"]:
         kept = adapter / "provider" / "example.org" / "fixture" / "inventory" / VERSION
         kept.mkdir(parents=True)
@@ -121,7 +135,8 @@ def build(step):
     if w["decision"]:
         (adapter / "adr").mkdir()
         (adapter / "adr" / "0001-transport.md").write_text(DECISION)
-    says = {"id": "%s/adapter/%s" % (w["parent"], NAME), "requirement id": realised, "provider": PROVIDER}
+    says = {"id": "%s/adapter/%s" % (w["parent"], w["name"]), "requirement id": realised, "provider": PROVIDER,
+            "version": w["version"]}
     for name, kind in w["kinds"].items():
         if kind in says:
             step.context.setdefault("says", {})[name] = says[kind]

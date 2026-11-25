@@ -1,6 +1,7 @@
-"""contract_obtain: an upstream's contract kept under provider/ (b587, checking r81), obtained again over a contract
-kept there already (review f1): the upstream's bytes written again and committed, the same bytes left as they are; a gh
-failure the bounded context unreachable and an id out of the context id form refused (b591)."""
+"""contract_obtain: an upstream's contract kept under the provider/ of each adapter spec of its provider (b587, checking
+r81; b593, r91), obtained again over a contract kept there already (review f1): the upstream's bytes written again and
+committed, the same bytes left as they are; a gh failure the bounded context unreachable and an id out of the context
+id form refused (b591); an upstream no adapter spec has as its provider refused, nothing kept at the root (b593)."""
 import shutil
 import subprocess
 from pathlib import Path
@@ -12,12 +13,18 @@ from shop_refused import Refused
 
 FIXTURE = Path(__file__).parent / "fixtures" / "domain-model"
 UPSTREAM = "bounded-context/example.org/fixture/inventory"
-KEPT = "provider/example.org/fixture/inventory/1.2.0/contract.toml"
+KEPT = "adapters/stock-inventory/provider/example.org/fixture/inventory/1.2.0/contract.toml"
+ADAPTER = "---\nid: bounded-context/example.org/fixture/domain-model/adapter/%s\nkind: %s\nproviders: [%s]\n---\n"
 CONTRACT = 'context = "%s"\nversion = "1.2.0"\nstatus = "published"\n' % UPSTREAM
 
 
 def _git(repo, *args):
     return subprocess.run(["git", *args], cwd=repo, check=True, capture_output=True, text=True).stdout
+
+
+def _adapter(repo, name, providers, kind="adapter"):
+    (repo / "adapters" / name / "spec").mkdir(parents=True)
+    (repo / "adapters" / name / "spec" / "index.md").write_text(ADAPTER % (name, kind, providers))
 
 
 def _context(tmp_path, monkeypatch):
@@ -29,6 +36,7 @@ def _context(tmp_path, monkeypatch):
     hosted = where / "gh-repos" / "ex" / "inventory" / ".shop" / "contracts" / "1.2.0" / "contract.toml"
     hosted.parent.mkdir(parents=True)
     hosted.write_text(CONTRACT)
+    _adapter(repo, "stock-inventory", UPSTREAM + "@1.2.0")
     _git(repo.parent, "init", "-q", "-b", "main", str(repo))
     _git(repo, "config", "user.name", "t")
     _git(repo, "config", "user.email", "t@example.org")
@@ -112,3 +120,68 @@ def test_a_crlf_contract_is_kept_byte_for_byte(tmp_path, monkeypatch, capsys):
     assert contract_obtain.obtain(repo, UPSTREAM, "1.2.0") == 0
     assert _git(repo, "rev-parse", "HEAD") == head
     assert "kept already %s" % KEPT in capsys.readouterr().out
+
+
+def test_each_adapter_spec_of_the_provider_holds_the_contract(tmp_path, monkeypatch, capsys):
+    """b593, checking r91: every adapter spec whose providers: name the upstream, at any version, holds it, in one
+    commit; one of another provider, or a spec that is no adapter spec, holds nothing, and nothing is kept at the
+    root."""
+    repo = _context(tmp_path, monkeypatch)
+    _adapter(repo, "stock-other", UPSTREAM)
+    _adapter(repo, "unrelated", "bounded-context/example.org/fixture/other")
+    _adapter(repo, "plain", UPSTREAM, kind="bounded context")
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-q", "-m", "adapters")
+    assert contract_obtain.obtain(repo, UPSTREAM) == 0
+    other = KEPT.replace("stock-inventory", "stock-other")
+    assert {KEPT, other} <= set(_git(repo, "show", "--name-only", "--format=", "HEAD").split())
+    assert (repo / other).read_text() == CONTRACT
+    assert not list((repo / "adapters" / "unrelated").rglob("contract.toml"))
+    assert not list((repo / "adapters" / "plain").rglob("contract.toml"))
+    assert not (repo / "provider").exists()
+
+
+def test_an_upstream_no_adapter_spec_has_as_its_provider_is_refused(tmp_path, monkeypatch):
+    repo = _context(tmp_path, monkeypatch)
+    index = repo / "adapters" / "stock-inventory" / "spec" / "index.md"
+    index.write_text(index.read_text().replace(UPSTREAM + "@1.2.0", ""))
+    with pytest.raises(Refused) as refused:
+        contract_obtain.obtain(repo, UPSTREAM)
+    assert refused.value.reason == "no adapter spec has the provider"
+    assert not list(repo.rglob("contract.toml"))
+
+
+def _unheld(repo):
+    """The fixture's one adapter spec naming no bounded context: no adapter spec has the upstream."""
+    index = repo / "adapters" / "stock-inventory" / "spec" / "index.md"
+    index.write_text(index.read_text().replace(UPSTREAM + "@1.2.0", ""))
+
+
+def test_an_upstream_no_adapter_spec_has_is_refused_naming_the_provider(tmp_path, monkeypatch):
+    """b593, checking r94: the refusal names the upstream as the provider, with the line's reason."""
+    repo = _context(tmp_path, monkeypatch)
+    _unheld(repo)
+    with pytest.raises(Refused) as refused:
+        contract_obtain.obtain(repo, UPSTREAM)
+    assert refused.value.reason == "no adapter spec has the provider"
+    assert refused.value.names == ["provider:%s" % UPSTREAM]
+    assert "the provider %s" % UPSTREAM in str(refused.value)
+
+
+def test_an_unreachable_upstream_no_adapter_spec_has_is_unreachable(tmp_path, monkeypatch):
+    """b593 review f1: the reach (checking r89) is checked before the holders, so its reason is kept."""
+    repo = _context(tmp_path, monkeypatch)
+    _unheld(repo)
+    monkeypatch.setenv("STUB_GH_FAIL", "api repos/ex/inventory")
+    with pytest.raises(Refused) as refused:
+        contract_obtain.obtain(repo, UPSTREAM)
+    assert refused.value.reason == "bounded context unreachable"
+
+
+def test_a_malformed_id_no_adapter_spec_has_is_out_of_the_context_id_form(tmp_path, monkeypatch):
+    """b593 review f1: the id form (checking r88) is checked before the holders, so its reason is kept."""
+    repo = _context(tmp_path, monkeypatch)
+    _unheld(repo)
+    with pytest.raises(Refused) as refused:
+        contract_obtain.obtain(repo, "bounded-context/example/inventory")
+    assert refused.value.reason == "id not in the context id form"

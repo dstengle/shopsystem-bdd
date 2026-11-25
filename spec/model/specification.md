@@ -124,6 +124,7 @@ object section kind of text
   attributes: heading: Purpose | Terms | Relations | Behaviour | Context | Decision | Consequences
 
 object id kind of text
+  relations: matches → adapter spec (one)
 
 object precondition kind of text
   relations: has → comparison (many); holds → count (many)
@@ -370,6 +371,7 @@ object adapter spec kind of specification
   relations: has → id (one); realises → requirement id (many); has → provider (many); holds → adapter decision | contract (many)
 
 object provider kind of bounded context
+  relations: has → version (one)
 
 object adapter decision kind of design-decision
 

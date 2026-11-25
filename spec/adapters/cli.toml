@@ -133,6 +133,8 @@ requirements = [
   "checking#r85: While an adapter spec realises a requirement id that no requirement has, if the person validates the adapter spec, then the specification service shall fail the check and name the requirement id.",
   "checking#r86: While a provider of an adapter spec has no contract that the adapter spec holds, if the person validates the adapter spec, then the specification service shall fail the check and name the provider.",
   "checking#r87: While an adapter spec holds an adapter decision and the adapter spec holds a contract of a provider of the adapter spec, when the person validates the adapter spec, the specification service shall complete the request.",
+  "checking#r92: While the id of an adapter spec does not match the adapter spec, if the person validates the adapter spec, then the specification service shall fail the check and name the id.",
+  "checking#r93: While a provider of an adapter spec has a version that does not conform to the version form, if the person validates the adapter spec, then the specification service shall fail the check and name the version.",
   "decisions#r1: While a design-decision is not `superseded` or `rejected` and the design-decision has no tier, when the person validates this specification, the specification service shall return `w_untiered`.",
   "decisions#r2: While the tier of a design-decision is `check` and no test enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d6`.",
   "decisions#r3: While the tier of a design-decision is `requirement` and no requirement enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d7`.",
@@ -1469,6 +1471,8 @@ requirements = [
   "checking#r88: If the person obtains a contract from a bounded context whose id does not conform to the context id form, then the specification service shall refuse the request and name the id and the `id not in the context id form` reason.",
   "checking#r89: If the person obtains a contract from a bounded context whose availability is `unreachable`, then the specification service shall refuse the request and name the bounded context and the `bounded context unreachable` reason.",
   "checking#r90: While a bounded context has a contract, when the person obtains a contract from another bounded context, the specification service shall keep the contract and change no contract of a bounded context.",
+  "checking#r91: While an adapter spec has a provider, when the person obtains a contract from the provider, the specification service shall keep the contract that the adapter spec holds.",
+  "checking#r94: If the person obtains a contract from a provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `no adapter spec has the provider` reason.",
 ]
 [operations."specification.obtain".parameters]
 "bounded context" = { positional = 1, example = "bounded-context/example.org/fixture/inventory" }

@@ -1085,3 +1085,69 @@ shall [x3: agent the person (constant), x6: service the specification service (c
       of(x7, x8)
       change(e3, subject: x6, object: x7)
 ```
+
+## r91
+From: b593 r91.
+
+```reading
+While an adapter spec has a provider, when the person obtains a contract from the provider, the specification service shall keep the contract that the adapter spec holds.
+shall [x3: agent the person (constant), x5: service the specification service (constant)]
+  while [x1: adapter spec, x2: provider]
+    of(x2, x1)
+  when [x4: contract]
+    request(e1, specification.obtain, subject: x3, object: x4, from: x2)
+  response
+    in(x4, x1)
+    keep(e2, subject: x5, object: x4)
+```
+
+## r92
+From: b595 r92.
+
+```reading
+While the id of an adapter spec does not match the adapter spec, if the person validates the adapter spec, then the specification service shall fail the check and name the id.
+shall [x3: agent the person (constant), x4: service the specification service (constant), x5: check "the check the trigger makes" (indexical)]
+  while [x1: adapter spec, x2: id]
+    of(x2, x1)
+    not
+      match(subject: x2, object: x1)
+  if
+    request(e1, specification.check, subject: x3, object: x1)
+  response
+    fail(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r93
+From: b595 r93.
+
+```reading
+While a provider of an adapter spec has a version that does not conform to the version form, if the person validates the adapter spec, then the specification service shall fail the check and name the version.
+shall [x4: artifact the version form (constant), x5: agent the person (constant), x6: service the specification service (constant), x7: check "the check the trigger makes" (indexical)]
+  while [x1: provider, x2: adapter spec, x3: version]
+    of(x1, x2)
+    not
+      conforms(x3, x4)
+    of(x3, x1)
+  if
+    request(e1, specification.check, subject: x5, object: x2)
+  response
+    fail(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x3)
+```
+
+## r94
+From: b593 r94.
+
+```reading
+If the person obtains a contract from a provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `no adapter spec has the provider` reason.
+shall [x1: agent the person (constant), x5: service the specification service (constant), x6: request "the request the trigger makes" (indexical), x7: reason `no adapter spec has the provider` (parameter)]
+  if [x2: contract, x3: provider]
+    not [x4: adapter spec]
+      of(x3, x4)
+    request(e1, specification.obtain, subject: x1, object: x2, from: x3)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x3)
+    name(e4, subject: x5, object: x7)
+```

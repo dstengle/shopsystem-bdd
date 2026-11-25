@@ -242,3 +242,4 @@ area: specification
 - **availability** (attribute) → attribute bounded context.availability. Whether the specification service reaches a bounded context to obtain its contract.
 - **available** (adjective) → value bounded context.availability available.
 - **unreachable** (adjective) → value bounded context.availability unreachable.
+- **match** (verb, state) → relation id.matches. The id of an adapter spec ends with `/adapter/<name>`, the name of the folder `adapters/<name>/` that keeps the adapter spec. Forms: matches, matched. Frame: <id> matches <adapter spec>.
