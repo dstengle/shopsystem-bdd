@@ -1338,3 +1338,76 @@ shall [x1: bounded context "the bounded context whose repository the command run
         return(e2, subject: x4, object: x5)
     complete(e3, subject: x4, object: x6)
 ```
+
+## r106
+From: b550 r106.
+
+```reading
+While an adapter spec holds a contract and a requirement of the adapter spec uses a term that the contract holds, when the person validates the adapter spec, the specification service shall complete the request.
+shall [x5: agent the person (constant), x6: service the specification service (constant), x7: request "the request the trigger makes" (indexical)]
+  while [x1: adapter spec, x2: contract, x3: requirement, x4: term]
+    in(x2, x1)
+    of(x3, x1)
+    in(x4, x2)
+    use(subject: x3, object: x4)
+  when
+    request(e1, specification.check, subject: x5, object: x1)
+  response
+    complete(e2, subject: x6, object: x7)
+```
+
+## r107
+From: b550 r107.
+
+```reading
+While an adapter spec holds a contract that holds a term and the term clashes with another term and the adapter spec renames the term, when the person validates the adapter spec, the specification service shall complete the request.
+shall [x5: agent the person (constant), x6: service the specification service (constant), x7: request "the request the trigger makes" (indexical)]
+  while [x1: adapter spec, x2: contract, x3: term, x4: term]
+    in(x3, x2)
+    in(x2, x1)
+    distinct(x4, x3)
+    clash(subject: x3, with: x4)
+    rename(subject: x1, object: x4)
+  when
+    request(e1, specification.check, subject: x5, object: x1)
+  response
+    complete(e2, subject: x6, object: x7)
+```
+
+## r108
+From: b550 r108.
+
+```reading
+While an adapter spec holds a contract that holds a term and the term clashes with another term and the adapter spec does not rename the term, if the person validates the adapter spec, then the specification service shall fail the check and name the term.
+shall [x5: agent the person (constant), x6: service the specification service (constant), x7: check "the check the trigger makes" (indexical)]
+  while [x1: adapter spec, x2: contract, x3: term, x4: term]
+    in(x3, x2)
+    in(x2, x1)
+    distinct(x4, x3)
+    clash(subject: x3, with: x4)
+    not
+      rename(subject: x1, object: x4)
+  if
+    request(e1, specification.check, subject: x5, object: x1)
+  response
+    fail(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x4)
+```
+
+## r109
+From: b550 r109.
+
+```reading
+While an adapter spec holds an assumed description that holds a requirement id that no scenario refers to, if the person validates the adapter spec, then the specification service shall fail the check and name the requirement id.
+shall [x5: agent the person (constant), x6: service the specification service (constant), x7: check "the check the trigger makes" (indexical)]
+  while [x1: adapter spec, x2: assumed description, x3: requirement id]
+    not [x4: scenario]
+      refer(subject: x4, to: x3)
+    in(x3, x2)
+    in(x2, x1)
+  if
+    request(e1, specification.check, subject: x5, object: x1)
+  response
+    fail(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x3)
+```

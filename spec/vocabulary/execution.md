@@ -56,3 +56,16 @@ area: execution
 - **batch summary** (noun) → object batch summary. What a batch cost and how long it took: its cost in dollars, its output, new input and cache-read tokens, its wall time, its opening time, its building time, the durations of its test runs and its review time.
 - **batch summary form** (noun) → object batch summary form. The form a batch summary takes, which the batch brief gives the batch's driver to reply with: each figure of a batch summary under its name.
 - **restate** (verb, state) → relation model line.restates. A model line declares an element that the domain model declares already, under the same name, with the members the element is to have in place of its own. Forms: restates, restated. Frame: <model line> restates <element>.
+- **the review limit** (proper noun) → object review limit. The number of changed lines a pull request review reads in one batch's change, 1000.
+- **review finding** (noun) → object review finding. One graded finding of a review.
+- **workspace** (noun) → object workspace. A working tree `work batch start` makes for one task of a batch, in which the dispatch that builds the task works.
+- **kept change** (noun) → object kept change. One git commit on a branch, with its message and its change. This: the commit the command makes.
+- **batch** (noun) → object batch. Ready items built together on one branch and closed by its pull request, named `batch-<n>`, kept as the directory `.shop/batches/<n>/`. Plural: batches.
+- **task** (noun) → object task. One unit of a batch plan, built in its own worktree.
+- **proposed change** (noun) → object proposed change. The GitHub pull request of a batch's branch.
+- **`pr-reviewer`** (proper noun) → object pr-reviewer. The agent that reviews a batch's pull request.
+- **status** (attribute) → attribute batch.status. 
+- **status** (attribute) → attribute task.status. 
+- **observation** (noun) → value review finding.triage observation.
+- **shared workspace** (noun) → object shared workspace. The workspace a workspace is shared to, in the shared store.
+- **cite** (verb, state) → relation kept change.cites. A thing names another as what it stands on. Forms: cites, cited. Frame: <kept change> cites <item>. Frame: <proposed change> cites <item>. Frame: <quote> cites <message>. Frame: <thing> cites <observation>.

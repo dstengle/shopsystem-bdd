@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56, g94, r94]
-unbuilt: []
+unbuilt: [r106, r107, r108, r109]
 ---
 
 # Checking
@@ -295,6 +295,18 @@ Restates: design-model-check#r13@0.29.
 
 ### [g105] The base pack shows its terms
 - [r105] While this bounded context imports the `base` pack, when the person looks up the pack, the language service shall return every term of the pack and complete the request.
+
+### [g106] A line of an adapter spec reads a term of its provider's contract
+- [r106] While an adapter spec holds a contract and a requirement of the adapter spec uses a term that the contract holds, when the person validates the adapter spec, the specification service shall complete the request.
+
+### [g107] A provider's term that clashes with another term is read under its new word
+- [r107] While an adapter spec holds a contract that holds a term and the term clashes with another term and the adapter spec renames the term, when the person validates the adapter spec, the specification service shall complete the request.
+
+### [g108] A provider's term that clashes with another term and is not renamed is refused
+- [r108] While an adapter spec holds a contract that holds a term and the term clashes with another term and the adapter spec does not rename the term, if the person validates the adapter spec, then the specification service shall fail the check and name the term.
+
+### [g109] An assumed description whose line has no scenario is refused
+- [r109] While an adapter spec holds an assumed description that holds a requirement id that no scenario refers to, if the person validates the adapter spec, then the specification service shall fail the check and name the requirement id.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

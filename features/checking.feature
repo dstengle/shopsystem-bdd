@@ -832,3 +832,55 @@ Feature: Checking
     And the language service returns the term t2
     And the language service does not return the term t3
     And the language service completes this request
+
+  @g106 @r106
+  Scenario: A line of an adapter spec reads a term of its provider's contract
+    Given a contract c1
+    And an adapter spec a1
+    And the adapter spec a1 holds the contract c1
+    And a requirement r1
+    And the adapter spec a1 has the requirement r1
+    And a term t1
+    And the contract c1 holds the term t1
+    And the requirement r1 uses the term t1
+    When the person validates the adapter spec a1
+    Then the specification service completes this request
+
+  @g107 @r107
+  Scenario: A provider's term that clashes with another term is read under its new word
+    Given a term t1
+    And a contract c1
+    And the contract c1 holds the term t1
+    And an adapter spec a1
+    And the adapter spec a1 holds the contract c1
+    And a term t2
+    And the term t1 clashes with the term t2
+    And the adapter spec a1 renames the term t2
+    When the person validates the adapter spec a1
+    Then the specification service completes this request
+
+  @g108 @r108
+  Scenario: A provider's term that clashes with another term and is not renamed is refused
+    Given a term t1
+    And a contract c1
+    And the contract c1 holds the term t1
+    And an adapter spec a1
+    And the adapter spec a1 holds the contract c1
+    And a term t2
+    And the term t1 clashes with the term t2
+    And the adapter spec a1 does not rename the term t2
+    When the person validates the adapter spec a1
+    Then the specification service fails this check
+    And the specification service names the term t2
+
+  @g109 @r109
+  Scenario: An assumed description whose line has no scenario is refused
+    Given a requirement id r1
+    And no scenario refers to the requirement id r1
+    And an assumed description a2
+    And the assumed description a2 holds the requirement id r1
+    And an adapter spec a1
+    And the adapter spec a1 holds the assumed description a2
+    When the person validates the adapter spec a1
+    Then the specification service fails this check
+    And the specification service names the requirement id r1

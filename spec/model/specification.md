@@ -2,7 +2,7 @@
 id: model/missingmass.io/shopsystem/shopsystem-bdd/specification
 area: specification
 kind: core
-imports: []
+imports: [tracking, upgrades, execution, analysis]
 ---
 
 # The specification
@@ -42,6 +42,7 @@ object term
   attributes: part of speech: noun | verb | adjective | attribute | proper noun | artifact; aspect: state | action
   relations: has → subject | object | recipient | frame | sense | noun phrase | value order (many); redefines → pack (many); agrees with → subject (many)
   relations: means → element (one)
+  relations: clashes with → term (many)
 
 object design-decision kind of file
   attributes: status: proposed | accepted | rejected | superseded; tier: check | requirement | judgement
@@ -378,6 +379,7 @@ object version form kind of artifact
 
 object adapter spec kind of specification
   relations: has → id (one); realises → requirement id (many); has → provider (many); holds → adapter decision | contract (many)
+  relations: has → requirement (many); renames → term (many); holds → assumed description (many)
 
 object provider kind of bounded context
   relations: has → version (one)
@@ -406,4 +408,28 @@ object member line kind of text
 object event kind of element
 
 object actor kind of element
+
+object requirement id kind of text
+
+object universal condition id kind of text
+
+object given block kind of text
+
+object upstream entry kind of text
+
+object requirement grammar kind of artifact
+
+object index file kind of file
+  relations: has → context purpose (one)
+  relations: holds → capability (many)
+
+object Behaviour line kind of text
+  relations: has → line id (many)
+
+object line id kind of text
+
+object context purpose kind of text
+
+object assumed description kind of artifact
+  relations: has → provider (one); holds → requirement id | term (many)
 ```

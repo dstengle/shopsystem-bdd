@@ -2,7 +2,7 @@
 id: model/missingmass.io/shopsystem/shopsystem-bdd/upgrades
 area: upgrades
 kind: generic
-imports: [specification, tracking]
+imports: [specification, tracking, execution, analysis]
 ---
 
 # Upgrades
@@ -36,11 +36,6 @@ object ledger number kind of text
 
 object stem kind of text
 
-object Behaviour line kind of text
-  relations: has → line id (many)
-
-object line id kind of text
-
 object plugin version file kind of file
   relations: holds → version (many); has → content (many)
 
@@ -63,10 +58,6 @@ object frozen notice kind of file
 
 object frozen request kind of file
   attributes: status: open | awaiting-asker | awaiting-upstream | accepted | delivered | refused | withdrawn; asker: internal
-
-object index file kind of file
-  relations: has → context purpose (one)
-  relations: holds → capability (many)
 
 object plugin
   attributes: release: 0.34.1 < 0.99.0
@@ -101,8 +92,6 @@ object old scenario conftest form kind of artifact
 object ignore file kind of tracked file
 
 object ignore file form kind of artifact
-
-object context purpose kind of text
 
 object instructions file kind of tracked file
   relations: holds → old command line (many)

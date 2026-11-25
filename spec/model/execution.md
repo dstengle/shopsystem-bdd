@@ -2,7 +2,7 @@
 id: model/missingmass.io/shopsystem/shopsystem-bdd/execution
 area: execution
 kind: supporting
-imports: [tracking, specification]
+imports: [tracking, specification, upgrades]
 ---
 
 # Work execution
@@ -95,4 +95,6 @@ object batch rule kind of text
 object batch summary kind of text
 
 object batch summary form kind of text
+
+object review limit
 ```
