@@ -7,7 +7,7 @@ area: execution
 specifies: object batch, object task, service batches
 language: codified-2
 retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51]
-unbuilt: [r102, r103]
+unbuilt: [r102]
 ---
 
 # Batches
