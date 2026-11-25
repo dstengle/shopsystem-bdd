@@ -50,9 +50,9 @@
 #defined foreign_term/3.          % foreign_term(Q, W, Why): Q uses W, a word of no vocabulary layer its area reads
 #defined adapter_problem/3.       % adapter_problem(Code, S, Why): the CLI contract breaks Code at S (adapter_cli_check)
 #defined contract_op/2.  #defined op_holds/3.   % an adapter contract C holds the operation O, which holds the requirement Q (adapter_annotate)
-% the lines against the model (model_domain_lines; v_m2-v_m7)
+% the lines against the model (model_domain_lines; v_m2-v_m7, v_m9)
 #defined operation/1.  #defined op_param/2.  #defined valued/2.  #defined param_value/3.  #defined op_by/2.
-#defined actor_kind/2.  #defined op_reason/2.  #defined lifecycle/2.  #defined transition/4.
+#defined actor_kind/2.  #defined op_reason/2.  #defined lifecycle/2.  #defined transition/4.  #defined op_area/2.  #defined obj_area/2.
 #defined requester/3.  #defined req_param/3.  #defined req_value/4.  #defined states_reason/3.
 #defined sets/5.  #defined sets_from_any/4.
 #defined asks/3.  #defined op_object/2.  #defined on_refusal/2.     % a response's request (b543)
@@ -510,6 +510,11 @@ label("v_m6", "a line sets a status by a transition its lifecycle does not allow
 entered(Obj, T, To) :- transition(Obj, T, _, To).
 v_m6(Q, T, F, To) :- sets(Q, Obj, T, F, To), lifecycle(Obj, T), F != To, not transition(Obj, T, F, To).
 v_m6(Q, T, none, To) :- sets_from_any(Q, Obj, T, To), lifecycle(Obj, T), not entered(Obj, T, To).
+label("v_m9", "a lifecycle transition an operation of another area performs").
+% fail v_m9: transition("item","status","ready","in-batch"). obj_area("item","tracking"). sets("c#r1","item","status","ready","in-batch"). requester("c#r1","batches.start","the person"). op_area("batches.start","execution").
+% pass v_m9: transition("item","status","ready","in-batch"). obj_area("item","tracking"). sets("c#r1","item","status","ready","in-batch"). requester("c#r1","items.allocate","the person"). op_area("items.allocate","tracking").
+v_m9(Obj, T, F, To) :- transition(Obj, T, F, To), obj_area(Obj, A), sets(Q, Obj, T, F, To), requester(Q, O, _), op_area(O, B), A != B.
+v_m9(Obj, T, F, To) :- transition(Obj, T, F, To), obj_area(Obj, A), sets_from_any(Q, Obj, T, To), requester(Q, O, _), op_area(O, B), A != B.
 label("v_m7", "an operation no line requests").
 % fail v_m7: operation("notes.add").
 % pass v_m7: operation("notes.add"). requester("c#r1","notes.add","the person").
@@ -623,7 +628,7 @@ w_example(Q, L)    :- exemplified(Q, L).
 #show v17/1. #show v18d/1.
 #show v_t1/3. #show v_t2/1. #show v_t3/1. #show v_t4/1. #show v_t5/1. #show v_t6/2. #show v_t11/1. #show v_t12/1. #show v_t13/2. #show v_t14/1. #show v_t15/1.
 #show v_t16/2. #show v_t17/2. #show v_t18/2. #show v_t19/2. #show v_t20/2. #show v_t21/2.
-#show v_m1/3. #show v_m2/2. #show v_m3/2. #show v_m4/2. #show w_m5/4. #show v_m6/4. #show v_m7/1. #show v_pb1/1. #show v_pb2/1. #show v_pb3/2. #show v_pb4/1. #show v_m8/2. #show v_a1/2. #show v_a2/2. #show v_a3/2. #show v_a4/2. #show v_a5/2. #show v_a6/2. #show v_c1/2. #show v_c2/1. #show v_c3/1. #show v_c4/2. #show v_r1/2. #show w_r1/2.
+#show v_m1/3. #show v_m2/2. #show v_m3/2. #show v_m4/2. #show w_m5/4. #show v_m6/4. #show v_m7/1. #show v_m9/4. #show v_pb1/1. #show v_pb2/1. #show v_pb3/2. #show v_pb4/1. #show v_m8/2. #show v_a1/2. #show v_a2/2. #show v_a3/2. #show v_a4/2. #show v_a5/2. #show v_a6/2. #show v_c1/2. #show v_c2/1. #show v_c3/1. #show v_c4/2. #show v_r1/2. #show w_r1/2.
 #show v_p0/1. #show v_p1/2. #show v_p2/1. #show v_p3/2.
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
 #show w_many_requests/1. #show w_untiered/1. #show w_unrouted/1. #show w_example/2. #show w_value_kind/1.

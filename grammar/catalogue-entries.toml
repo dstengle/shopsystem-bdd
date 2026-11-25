@@ -862,3 +862,8 @@ changed = []
 purpose = "Every port line stands on a core line, cited or computed, so the port holds nothing the core does not rely on (decisions 0116, 0126)."
 since = "b549"
 changed = []
+
+[rules.v_m9]
+purpose = "A lifecycle's transitions are performed only by operations of the area that declares its object, so one area owns each object's lifecycle."
+since = "b610"
+changed = []

@@ -4,7 +4,8 @@ model.lp's v_m2-v_m7 read, from a parsed line's logical form (spec_lf) and from 
 Of the model (`model_facts`): `operation(O)`, `op_param(O, P)`, `valued(O, P)` and `param_value(O, P, V)` of a
 parameter with values, `op_by(O, A)` of each actor or kind an operation's `by` list allows, `actor_kind(A, K)` of an
 actor's `kind of`, `op_reason(O, R)` of each declared `refused:` reason, and `lifecycle(Obj, T)`, `transition(Obj, T,
-From, To)` of each lifecycle. O is an operation's id (`notes.add`), Obj an object's name, T its attribute's.
+From, To)` of each lifecycle, and `op_area(O, A)`, `obj_area(Obj, A)` of the area each operation's service and each
+object is declared in (v_m9, b610). O is an operation's id (`notes.add`), Obj an object's name, T its attribute's.
 
 Of a line Q (`line_facts`): `requester(Q, O, A)` of its trigger's request of O by the actor A (a kind's name when a K
 requests it: Q governs O), `asks(Q, O, D)` of a response's request of O by its doer D (response-request, b543),
@@ -34,6 +35,8 @@ def first_noun(reason):
 
 def model_facts(model):
     out = []
+    for s in model.services.values():
+        out += [("op_area", "%s.%s" % (s.name, op.name), s.area) for op in s.operations]
     for op in model.operations():
         o = "%s.%s" % (op.service, op.name)
         out.append(("operation", o))
@@ -50,6 +53,7 @@ def model_facts(model):
         if a.kind_of:
             out.append(("actor_kind", a.name, a.kind_of))
     for obj in model.objects.values():
+        out.append(("obj_area", obj.name, obj.area))
         for lc in obj.lifecycles:
             out.append(("lifecycle", obj.name, lc.attribute))
             out += [("transition", obj.name, lc.attribute, a, b) for a, b in lc.transitions]

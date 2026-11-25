@@ -106,6 +106,7 @@ actor      = "actor" name [ "kind of" name ] ;
 | `w_m5` | a lifecycle transition no line causes (a warning) |
 | `v_m6` | a line sets a status by a transition the lifecycle does not allow |
 | `v_m7` | an operation no line requests |
+| `v_m9` | a lifecycle transition an operation of another area performs (a line requesting it sets the status) |
 | `v_m8` | the model's own: a relation to an undeclared object, a transition over an undeclared value, two operations of one name in a service, an event raised by no operation |
 
 `spec rules` prints every rule with its label; [`grammar/rules.md`](../../grammar/rules.md) has each with the
