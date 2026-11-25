@@ -231,3 +231,4 @@ area: specification
 - **publish** (verb, action) → operation specification.publish. Forms: publishes, published. Frame: <actor> publishes <contract>.
 - **fetch** (verb, action) → operation specification.fetch. Forms: fetches, fetched. Frame: <actor> fetches <contract>.
 - **downstream context** (noun) → object downstream context. A bounded context that builds on the contract of this bounded context and reaches it through a driven port of its own. Plural: downstream contexts.
+- **obtain** (verb, action) → operation specification.obtain. Forms: obtains, obtained. Frame: <actor> obtains <contract> from <bounded context>.

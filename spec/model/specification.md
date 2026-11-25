@@ -14,6 +14,7 @@ The bounded context's specification: its domain model, vocabulary, requirements 
 ```model
 object bounded context
   relations: has → job | fact | index file | requirement grammar | channel (many); holds → upstream entry | term (many)
+  relations: has → contract (many)
 
 object capability kind of file
   attributes: group: service | guarantees | model | operations; language: codified-1 | codified-2
@@ -272,6 +273,8 @@ service specification
     outcomes: done → the contract | refused: version already published, requirement not in the language
   operation fetch(contract, version) by downstream context
     outcomes: returned → the contract | refused: version not published
+  operation obtain(contract, bounded context, version) by the person
+    outcomes: done → the contract | refused: bounded context with no contract
 
 service decisions
   operation enter(design-decision, title, summary, tier, wording, route, supersedes)

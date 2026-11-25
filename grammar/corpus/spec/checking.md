@@ -920,3 +920,32 @@ shall [x3: version `1.2.0` (parameter), x4: service the specification service (c
     of(x3, x2)
     return(e2, subject: x4, object: x2)
 ```
+
+## r81
+From: b587 r81.
+
+```reading
+When the person obtains a contract from a bounded context, the specification service shall keep the contract and keep no context request.
+shall [x1: agent the person (constant), x4: service the specification service (constant)]
+  when [x2: contract, x3: bounded context]
+    request(e1, specification.obtain, subject: x1, object: x2, from: x3)
+  response
+    keep(e2, subject: x4, object: x2)
+    not [x5: context request]
+      keep(e3, subject: x4, object: x5)
+```
+
+## r82
+From: b587 r82.
+
+```reading
+If the person obtains a contract from a bounded context that has no contract, then the specification service shall refuse the request and name the bounded context.
+shall [x1: agent the person (constant), x5: service the specification service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x2: contract, x3: bounded context]
+    not [x4: contract]
+      of(x4, x3)
+    request(e1, specification.obtain, subject: x1, object: x2, from: x3)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x3)
+```

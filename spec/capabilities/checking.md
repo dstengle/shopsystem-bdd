@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56]
-unbuilt: []
+unbuilt: [r81, r82]
 ---
 
 # Checking
@@ -223,6 +223,12 @@ Restates: design-model-check#r13@0.29.
 
 ### [g80] A downstream context fetches a contract at a version
 - [r80] When a downstream context fetches a contract with the `1.2.0` version, the specification service shall return the contract that has the `1.2.0` version.
+
+### [g81] A contract obtained from an upstream is kept
+- [r81] When the person obtains a contract from a bounded context, the specification service shall keep the contract and keep no context request.
+
+### [g82] A contract is not obtained from a bounded context that has no contract
+- [r82] If the person obtains a contract from a bounded context that has no contract, then the specification service shall refuse the request and name the bounded context.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
