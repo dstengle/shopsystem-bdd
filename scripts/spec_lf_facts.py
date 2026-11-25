@@ -186,6 +186,8 @@ class Walk(Terms):
         if atom.pred == spec_lf_set.PRED:     # setting an attribute (b216): `set` and its `resp`
             return spec_lf_set.facts(self, atom, spec_lf_modal.polarity(self, pos))
         e, d, x = self.event(atom)
+        if spec_lf_facts_request.operated(self, e):     # an operation's act with no parameters: a request (b571)
+            return spec_lf_facts_request.asked(self, pos, "req(%s,())" % e, d, x, e, x)
         self.acts += 1
         self.emit("resp", self.acts, spec_lf_modal.polarity(self, pos), e, d, x)
         if e == "named" and pos:     # the request pack's name: what a response names (spec_lf_facts_request)

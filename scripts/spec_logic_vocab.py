@@ -65,10 +65,13 @@ class Vocab:
         self.by_term = by_term
         self.events = {ids[t.key]: t.term for t in lexicon.of("event")}
         self.senses = {}     # (verb, sense) -> its id: two senses of one verb that name two model elements
+        self.operations = set()     # the ids of the senses that name an operation (b571: a response's act a request)
         for t in lexicon.of("event"):
             sense = 1 + sum(1 for k in self.senses if k[0] == t.term)
             self.senses[(t.term, sense)] = qualified("event", t.element) if t.element else ids[t.key]
             self.events[self.senses[(t.term, sense)]] = t.term
+            if t.operation:
+                self.operations.add(self.senses[(t.term, sense)])
         self.actors = {ids[t.key]: t.term for t in lexicon.of("actor")}
         self.actor_kinds = {ids[t.key]: by_term[t.supertype] for t in lexicon.of("actor") if t.supertype in by_term}
         self.resources = {ids[t.key]: t for t in lexicon.of("resource")}

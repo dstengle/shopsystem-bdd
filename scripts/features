@@ -77,6 +77,7 @@ def cmd_generate(args):
     """`features generate`: write, check or preview the features of codified service capabilities (§13.4)."""
     import features_generate
     import features_vocab4
+    import spec_held
     import spec_read
     root = args.root
     caps = os.path.join(root, "spec", "capabilities")
@@ -104,8 +105,9 @@ def cmd_generate(args):
             return 2
         # A service capability whose every line is retired (no group, ids in `retired:`) has no feature file
         # (plan 9, D4): None.
-        texts = {os.path.basename(path)[:-3]: None if retired(path) else features_generate.generate(root, path)
-                 for path in paths}
+        with spec_held.held(root):     # the spec's inputs statted, its lexicon read and each line parsed once (b571)
+            texts = {os.path.basename(path)[:-3]: None if retired(path) else features_generate.generate(root, path)
+                     for path in paths}
     except (features_generate.GenerateError, features_vocab4.StepError) as err:
         sys.stderr.write("features: %s\n" % err)
         return 1
