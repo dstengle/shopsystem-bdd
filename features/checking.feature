@@ -659,3 +659,35 @@ Feature: Checking
     When the person obtains the contract c2 from the bounded context b2
     Then the specification service keeps the contract c2
     And the specification service does not change the contract c3
+
+  @g91 @r91
+  Scenario: An obtained contract is held by the adapter spec of its provider
+    Given a provider p1
+    And an adapter spec a1
+    And the adapter spec a1 has the provider p1
+    And a contract c1
+    When the person obtains the contract c1 from the provider p1
+    Then the adapter spec a1 holds the contract c1
+    And the specification service keeps the contract c1
+
+  @g92 @r92
+  Scenario: An adapter spec whose id does not match its own name is refused
+    Given an id i1
+    And an adapter spec a1
+    And the adapter spec a1 has the id i1
+    And the id i1 does not match the adapter spec a1
+    When the person validates the adapter spec a1
+    Then the specification service fails this check
+    And the specification service names the id i1
+
+  @g93 @r93
+  Scenario: A provider's version that is not a version is refused
+    Given a provider p1
+    And an adapter spec a1
+    And the adapter spec a1 has the provider p1
+    And a version v1
+    And the version v1 does not conform to the version form
+    And the provider p1 has the version v1
+    When the person validates the adapter spec a1
+    Then the specification service fails this check
+    And the specification service names the version v1

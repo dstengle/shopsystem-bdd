@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56]
-unbuilt: []
+unbuilt: [r91, r92, r93]
 ---
 
 # Checking
@@ -253,6 +253,15 @@ Restates: design-model-check#r13@0.29.
 
 ### [g90] A contract obtained keeps every other bounded context's contract as it was
 - [r90] While a bounded context has a contract, when the person obtains a contract from another bounded context, the specification service shall keep the contract and change no contract of a bounded context.
+
+### [g91] An obtained contract is held by the adapter spec of its provider
+- [r91] While an adapter spec has a provider, when the person obtains a contract from the provider, the specification service shall keep the contract that the adapter spec holds.
+
+### [g92] An adapter spec whose id does not match its own name is refused
+- [r92] While the id of an adapter spec does not match the adapter spec, if the person validates the adapter spec, then the specification service shall fail the check and name the id.
+
+### [g93] A provider's version that is not a version is refused
+- [r93] While a provider of an adapter spec has a version that does not conform to the version form, if the person validates the adapter spec, then the specification service shall fail the check and name the version.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
