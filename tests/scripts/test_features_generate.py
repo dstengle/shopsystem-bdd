@@ -4,7 +4,6 @@ codified-2, a codified-1, an uncodified and a broken capability."""
 import os
 import pathlib
 import re
-import resource
 import shutil
 import subprocess
 import sys
@@ -12,6 +11,8 @@ import sys
 import pytest
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import cpu_budget
 import toolchain
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
@@ -238,21 +239,16 @@ def test_generation_imports_no_solver():
 
 
 def test_check_on_the_live_repo_is_fast_and_clean():
-    """Every live service capability is read off its requirements' facts without a crash, in under 5 s of the
-    command's own CPU time with the parse cache warm (a run over 5 s is taken again, once, since it may have warmed
-    the cache; CPU time, not the wall clock, so a full suite's parallel load does not count against it, b420); the
-    checked-in features may differ until layer 4 regenerates them."""
+    """Every live service capability is read off its requirements' facts without a crash, within 5 s of the
+    command's own CPU time on a quiet machine with the parse cache warm (a run over it is taken again, once, since it
+    may have warmed the cache); CPU time measured against cpu_budget's reference workload run beside it, so the full
+    suite's parallel load, which inflates both alike, does not count against it (b420, b574); the checked-in
+    features may differ until layer 4 regenerates them."""
     toolchain.require()
-    for _ in range(2):
-        before = resource.getrusage(resource.RUSAGE_CHILDREN)
-        done = features(REPO, "generate", "--check")
-        after = resource.getrusage(resource.RUSAGE_CHILDREN)
-        took = (after.ru_utime - before.ru_utime) + (after.ru_stime - before.ru_stime)
-        if took < 5:
-            break
+    done, used = cpu_budget.holds(lambda: features(REPO, "generate", "--check"), 5)
     assert done.returncode in (0, 1), done.stdout + done.stderr
     assert "Traceback" not in done.stderr
-    assert took < 5, "features generate --check took %.1f s" % took
+    assert used.within(cpu_budget.limit(5)), "features generate --check " + used.said(5)
 
 
 def test_byte_stable(tmp_path):
