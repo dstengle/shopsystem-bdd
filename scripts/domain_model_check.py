@@ -1,5 +1,5 @@
 """The domain model's own rules (the domain contract design, §5.5), read with no line: v_m8, a relation or an
-attribute to an undeclared object, a transition over a value its attribute does not declare, two operations of one
+attribute to an undeclared object (a kind of an imported pack declared, b609), a transition over a value its attribute does not declare, two operations of one
 name in a service, an event raised by no operation, an object, service or actor declared twice, and a property
 that refers to a parameter, an operation or an event the model does not declare (domain_model_props); each as
 (code, subject, message), which `model check` reports among its violations (model_spec's facts).
@@ -9,12 +9,14 @@ from collections import Counter
 import domain_model_props
 
 
-def _declared(model):
-    return set(model.objects) | set(model.actors) | set(model.services)
+def _declared(model, kinds=()):
+    """What a relation or an attribute may name: the model's objects, actors and services, and `kinds`, the kinds of
+    the packs the index imports (b609)."""
+    return set(model.objects) | set(model.actors) | set(model.services) | set(kinds)
 
 
-def _objects(model):
-    known = _declared(model)
+def _objects(model, kinds=()):
+    known = _declared(model, kinds)
     for obj in model.objects.values():
         for rel in obj.relations:
             for t in (t for t in rel.targets if t not in known):
@@ -45,9 +47,10 @@ def _services(model):
                    "model" % (event.where, event.phrase, event.service, event.operation))
 
 
-def problems(model):
-    """v_m8 of `model`, as (code, subject, message) sorted."""
+def problems(model, kinds=()):
+    """v_m8 of `model`, as (code, subject, message) sorted; `kinds` the imported packs' kinds (spec_packs' `kinds`),
+    declared objects for the model."""
     twice = [("v_m8", name, "%s: the %s %s is declared again" % (where, kind, name))
              for kind, name, where in model.twice]
-    return sorted(set(list(_objects(model)) + list(_services(model)) + twice +
+    return sorted(set(list(_objects(model, kinds)) + list(_services(model)) + twice +
                        domain_model_props.problems(model)))

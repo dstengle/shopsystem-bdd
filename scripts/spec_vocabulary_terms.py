@@ -14,7 +14,7 @@ spec_relations' rows.
   the relation's object, `<to>` each of its targets, `<actor>` or `<agent>` the kind `agent`, `<x>` the kind of the
   object or of the parameter `x`; with no frame, `<from> <verb> <to>` or `<actor> <verb> <object>`; a verb naming an
   operation keeps it (`operation`), which grammar 4 generates the request with its parameters from (spec_rgl_ops).
-- A relation `has → K` is the row `K | of | O`, `holds → K` the row `K | in | O`, and one whose phrase is a single
+- A relation `has → K` (K an object's kind, or a kind of a pack the index imports, b609) is the row `K | of | O`, `holds → K` the row `K | in | O`, and one whose phrase is a single
   preposition the row `O | <phrase> | K` (session's call); any other phrase is a state verb's, named in the vocabulary.
 """
 import re
@@ -189,4 +189,6 @@ def lexicon(root):
     keys.update({name: name for name in model.actors})
     services = ("service",) if "request" in spec_packs.imports(root) else ()
     terms += _actors(model, found, kinds, services) + _attributes(model, found, kinds) + _verbs(model, found, keys)
-    return spec_lexicon.Lexicon(terms, rows(model, kinds))
+    held = {k: k for k in spec_packs.kinds(root)}     # a relation to an imported pack's kind a row too (b609)
+    held.update(kinds)
+    return spec_lexicon.Lexicon(terms, rows(model, held))

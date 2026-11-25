@@ -159,6 +159,9 @@ A few things do a lot of work:
 Some words every context needs. They come in packs, which `spec/index.md` imports in its frontmatter (`imports:
 [request, spec]` in this repository):
 
+- [`base`](../grammar/packs/base.md): text, file, version, repository, bounded context: the kinds most contexts name
+  and none owns. In a context with a domain model a kind of an imported pack is a declared object, so a relation, an
+  attribute or a parameter may name it. `migrate init` imports it beside `request`.
 - [`request`](../grammar/packs/request.md): request, parameter, service, reason, response, check, artifact; refuse,
   name, return, notify, complete, fail, keep, change, conform, start.
 - [`spec`](../grammar/packs/spec.md): requirement, construct, rule; use, violate.
@@ -698,7 +701,7 @@ rest in the capability's `## Implementation, may change`, and tell whoever owns 
   each with tested lines.
 - [`grammar/constructs.md`](../grammar/constructs.md): the catalogue of constructs by code, each with an example
   and its reading.
-- The packs: [`request`](../grammar/packs/request.md), [`spec`](../grammar/packs/spec.md), [`time`](../grammar/packs/time.md).
+- The packs: [`base`](../grammar/packs/base.md), [`request`](../grammar/packs/request.md), [`spec`](../grammar/packs/spec.md), [`time`](../grammar/packs/time.md).
 - [The domain model](reference/domain-model.md): the model and its vocabulary, where every word comes from.
 - [The capability file](reference/capability-file.md): where groups, lines and given blocks go.
 - [Troubleshooting](troubleshooting.md#a-line-is-refused): every refusal, what it means, what to do.
