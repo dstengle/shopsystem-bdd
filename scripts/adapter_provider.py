@@ -79,7 +79,7 @@ def bullet(line, objects, renamed):
     if word in renamed and plural:
         new = _plural(word, renamed[word], plural.group(1))
         text = text.replace(plural.group(0), "Plural: %s." % new if new else "")
-    return "- **%s** (%s): %s" % (name(word), pos, " ".join(text.split()))
+    return ("- **%s** (%s): %s" % (name(word), pos, " ".join(text.split()))).rstrip()
 
 
 def _frame(frame, objects, name):
