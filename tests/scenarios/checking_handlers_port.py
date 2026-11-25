@@ -3,7 +3,9 @@ of a scenario of one of its groups (`mine`). The world is the domain-model fixtu
 the notes service, its CLI contract and the notebook capability's lines) with a driven port beside it, written at the
 When: the area `stock` of kind `port` (`spec/model/stock.md`), whose service holds the operation `stock.reserve`, which
 the CLI contract has no table of; its words (`spec/vocabulary/stock.md`); and its port contract `stock-port`, whose one
-line requests the operation, so that v_m7 counts it, with its scenario as `features generate` writes it.
+line requests the operation, so that v_m7 counts it; and the notebook's core lines that bound the port (b549): r10,
+whose response asks the stock service to reserve a note with a quantity, and r11, triggered on its completion of a reservation, which
+the port line's `Relied on by:` names. The features are written by `features generate`.
 
 The Givens keep what they say (`world`): the area a1 is `stock`, the operation o1 `stock.reserve`, the requirement r1
 `stock-port#r1`; a requirement id no requirement has is `notebook#r99`, which r1 then supports under its
@@ -33,8 +35,11 @@ imports: [notes]
 The stock the notes service reaches through a driven port.
 
 ```model
+object reservation kind of request
+  relations: for → note (one)
+
 service stock
-  operation reserve(note)  outcomes: done
+  operation reserve(note, quantity)  outcomes: done → the reservation
 ```
 """
 
@@ -47,6 +52,7 @@ area: stock
 
 ## Terms
 
+- **reservation** (noun) → object reservation. Stock set aside for a note.
 - **reserve** (verb, action) → operation stock.reserve. Forms: reserves, reserved. Frame: <actor> reserves <note>.
 - **the stock service** (proper noun) → service stock.
 """
@@ -74,15 +80,12 @@ What the notes service needs of the stock it reaches.
 - [r1] When the notes service reserves a note, the stock service shall complete the request.
 %s"""
 
-FEATURE = """# generated from spec/capabilities/stock-port.md by features generate; do not edit
-Feature: Stock port
-  Narrator: the notes service
+CORE = """
+### [g10] A person who starts has a note reserved
+- [r10] When the person starts, the notes service shall reserve a note with the quantity `2`.
 
-  @g1 @r1
-  Scenario: A note reserved is reserved
-    Given a note n1
-    When the notes service reserves the note n1
-    Then the stock service completes this request
+### [g11] A reservation completed is kept
+- [r11] When the stock service completes a reservation, the notes service shall keep the reservation.
 """
 
 
@@ -129,15 +132,21 @@ def build(step):
     spec = repo / "spec"
     (spec / "model" / "stock.md").write_text(MODEL % w["kind"])
     (spec / "vocabulary" / "stock.md").write_text(VOCABULARY)
-    (spec / "capabilities" / "stock-port.md").write_text(PORT % ("Relied on by: %s.\n" % MISSING
-                                                                 if w["supports"] else ""))
-    (repo / "features" / "stock-port.feature").write_text(FEATURE)
+    (spec / "capabilities" / "stock-port.md").write_text(PORT % ("Relied on by: %s.\n" % (
+        MISSING if w["supports"] else "notebook#r10")))
+    notes = spec / "model" / "notes.md"
+    assert "imports: []\n" in notes.read_text(), notes.read_text()
+    notes.write_text(notes.read_text().replace("imports: []\n", "imports: [stock]\n"))
+    notebook = spec / "capabilities" / "notebook.md"
+    notebook.write_text(notebook.read_text() + CORE)
     index = spec / "index.md"
     row = "| notes | core | notebook |\n"
     assert row in index.read_text(), index.read_text()
     index.write_text(index.read_text().replace(row, row + "| stock | %s | stock-port |\n" % w["kind"]))
     for name, kind in w["kinds"].items():
         step.context.setdefault("says", {})[name] = SAYS[kind]
+    generated = step.run("features", "generate")
+    assert generated.returncode == 0, generated.stdout + generated.stderr
 
 
 def runs(step):

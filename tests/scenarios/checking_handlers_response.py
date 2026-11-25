@@ -5,7 +5,9 @@ driven port beside it, written at the When: the area `stock` of kind `port`, who
 trigger requests (no requirement governs it) and the CLI contract has no table of; the notes area importing it; and
 r1, a notebook line whose response asks the stock service to reserve a note with a quantity (`response-request`). In
 r72's group the operation declares the refusal reason `no stock`, and r2, a notebook line triggered on the stock
-service's refusal of a reservation, the thing the operation makes. The features are written by `features generate`.
+service's refusal of a reservation, the thing the operation makes; and r12, a notebook line triggered on the stock
+service's completion of a reservation, so that no outcome of the port's operation is unhandled (v_b2, b549). The
+features are written by `features generate`.
 
 The Givens say only what the world is; the When runs `spec check`; the Then reads its exit: v_m7 counts r1's request
 of `stock.reserve`, and v_m4 counts r2 as stating its reason."""
@@ -59,6 +61,11 @@ ASKING = """
 - [r10] When the person starts, the notes service shall reserve a note with the quantity `2`.
 """
 
+HANDLED = """
+### [g12] A reservation completed is kept
+- [r12] When the stock service completes a reservation, the notes service shall keep the reservation.
+"""
+
 REFUSED = """
 ### [g11] A reservation refused is kept
 - [r11] If the stock service refuses a reservation, then the notes service shall keep the reservation.
@@ -98,7 +105,7 @@ def build(step):
     assert "imports: []\n" in notes.read_text(), notes.read_text()
     notes.write_text(notes.read_text().replace("imports: []\n", "imports: [stock]\n"))
     notebook = spec / "capabilities" / "notebook.md"
-    notebook.write_text(notebook.read_text() + ASKING + (REFUSED if refused else ""))
+    notebook.write_text(notebook.read_text() + ASKING + HANDLED + (REFUSED if refused else ""))
     index = spec / "index.md"
     row = "| notes | core | notebook |\n"
     assert row in index.read_text(), index.read_text()
