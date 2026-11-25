@@ -701,3 +701,63 @@ Feature: Checking
     Then the specification service refuses this request
     And the specification service names the provider p1
     And the specification service names `no adapter spec has the provider`
+
+  @g95 @r95
+  Scenario: A port operation that no core line requests is refused
+    Given an operation o1
+    And a driven port d1
+    And the driven port d1 holds the operation o1
+    And no core line uses `response-request`
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the operation o1
+
+  @g96 @r96
+  Scenario: A port outcome that no core line handles and no port line excludes is refused
+    Given an operation outcome o2
+    And an operation o1
+    And the operation o1 has the operation outcome o2
+    And a driven port d1
+    And the driven port d1 holds the operation o1
+    And no core line handles the operation outcome o2
+    And no port line excludes the operation outcome o2
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the operation outcome o2
+
+  @g97 @r97
+  Scenario: A port line relied on by a core line that does not request its operation is refused
+    Given a port line p1
+    And an operation o1
+    And the port line p1 governs the operation o1
+    And a requirement id r1
+    And the port line p1 supports the requirement id r1
+    And no core line has the requirement id r1
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the requirement id r1
+
+  @g98 @r98
+  Scenario: A port line that no core line relies on is refused
+    Given a port line p1
+    And an operation o1
+    And the port line p1 governs the operation o1
+    And no core line relies on the port line p1
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the port line p1
+
+  @g99 @r99
+  Scenario: A port line that excludes an unhandled outcome needs no citation of its core lines
+    Given a core line c1
+    And the core line c1 uses `response-request`
+    And an operation o1
+    And the core line c1 uses the operation o1
+    And a port line p1
+    And the port line p1 governs the operation o1
+    And the port line p1 supports no requirement id
+    And an operation outcome o2
+    And no core line handles the operation outcome o2
+    And the port line p1 excludes the operation outcome o2
+    When the person validates this specification
+    Then the specification service completes this request

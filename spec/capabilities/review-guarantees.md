@@ -6,7 +6,7 @@ group: guarantees
 area: execution
 specifies: guarantees of a review
 language: codified-2
-retired: []
+retired: [g2, r2]
 unbuilt: []
 ---
 
@@ -19,10 +19,6 @@ What `pr-reviewer` reads and writes in reviewing a batch's change, and where its
 
 ### [g1] A batch submitted is reviewed
 - [r1] When the batches service submits a batch, `pr-reviewer` shall review the proposed change of the batch.
-
-### [g2] A review reads every judgement decision
-- [r2] While the tier of a design-decision is `judgement`, when `pr-reviewer` reviews a proposed change, `pr-reviewer`
-  shall review the design-decision.
 
 ### [g3] A review changes nothing but reviews
 - [r3] `pr-reviewer` shall change only reviews of a proposed change.
@@ -54,4 +50,10 @@ What `pr-reviewer` reads and writes in reviewing a batch's change, and where its
 
 ### [g10] A review after a base merge reads only the base merge
 - [r10] While the workspace of a batch holds a base merge and the proposed change of the batch has a review and no review finding on the proposed change whose triage is `fix now` exists, when `pr-reviewer` reviews the proposed change, `pr-reviewer` shall review only the base merge.
+
+### [g11] A review reads every judgement decision in force
+- [r11] While the tier of a design-decision is `judgement` and the design-decision is `accepted`, when `pr-reviewer` reviews a proposed change, `pr-reviewer` shall review the design-decision.
+
+### [g12] A review leaves out a superseded decision
+- [r12] While a design-decision is `superseded`, when `pr-reviewer` reviews a proposed change, `pr-reviewer` shall not review the design-decision.
 

@@ -5,7 +5,8 @@ vocabulary's problems (spec_vocabulary) as `elementless(T, Why)` (v_t18), `unres
 `named_twice(T, Why)` (v_t20) and `retired_import(C, P)` (v_t21), and `foreign_term(Q, W, Why)` (v_m1) of each word a
 parsed requirement of a capability with an `area:` uses (a kind, a verb, an attribute or an actor of its logical form)
 whose entries are all in vocabulary layers its area does not read; the facts of model_domain_lines of the model and of
-each parsed requirement (v_m2-v_m7); `adapter_problem(Code, S, Why)` of adapter_cli_check's v_a1-v_a4,
+each parsed requirement (v_m2-v_m7); the bound check's facts of model_bound (v_pb1-v_pb4);
+`adapter_problem(Code, S, Why)` of adapter_cli_check's v_a1-v_a4,
 `contract_op(C, O)` and `op_holds(C, O, Q)` of what each operation of an adapter contract holds (adapter_annotate;
 v_a5, v_a6 against `requester`). In any context: `cites_record(I, R)` of each
 `record/...` or `.shop/records/` path an item's `source:` names, with `new_item(I)` for an item numbered from
@@ -18,6 +19,7 @@ import adapter_cli
 import adapter_cli_check
 import domain_model
 import domain_model_check
+import model_bound
 import model_domain_lines
 import spec_vocabulary
 from backlog_items import RECORDS_POLICY
@@ -62,6 +64,8 @@ class DomainReading:
         for code, subject, why in domain_model_check.problems(domain_model.load(self.root)):
             self.fact("model_problem", subject, why)
         for name, *args in model_domain_lines.model_facts(domain_model.load(self.root)):     # v_m2-v_m7
+            self.fact(name, *args)
+        for name, *args in model_bound.model_facts(domain_model.load(self.root)):     # the bound check (v_pb1-v_pb4)
             self.fact(name, *args)
         for code, term, why in spec_vocabulary.problems(self.root):
             if code == "v_t21":
@@ -110,6 +114,9 @@ class DomainReading:
         for name, *args in self._lines.facts(ident, form):
             self.fact(name, *args)
         area = frontmatter(path.read_text())[0].get("area")
+        port = str(area) in model_bound.ported(domain_model.load(self.root)) if area else False
+        for name, *args in model_bound.line_facts(self._lines, ident, form, port):     # v_pb1-v_pb4
+            self.fact(name, *args)
         if not area:
             return
         readable, layer_of = set(spec_vocabulary.layers_of(self.root, str(area))), self._layer_of()

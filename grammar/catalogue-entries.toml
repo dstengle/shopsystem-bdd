@@ -366,7 +366,7 @@ changed = []
 [rules.v_m4]
 purpose = "Every refusal an operation declares is specified by a line, so no refusal goes untested or undocumented."
 since = "0.38.0"
-changed = []
+changed = ["b549"]
 
 [rules.w_m5]
 purpose = "Each lifecycle transition is caused by some line, so the model holds no step nothing can ever take."
@@ -841,4 +841,24 @@ changed = []
 [constructs.response-request]
 purpose = "Lets a response make a request of an operation with its parameters, so a line can say what the core asks of a port."
 since = "b543"
+changed = []
+
+[rules.v_pb1]
+purpose = "A driven port holds only what the core uses: an operation no core line requests has no place in it (decision 0116)."
+since = "b549"
+changed = []
+
+[rules.v_pb2]
+purpose = "Every outcome the upstream may give reaches a core line or is excluded by a port line, so none goes unhandled (decisions 0116, 0127)."
+since = "b549"
+changed = []
+
+[rules.v_pb3]
+purpose = "A port line's Relied on by names only core lines that request its operation, so the citation stays true (decision 0126)."
+since = "b549"
+changed = []
+
+[rules.v_pb4]
+purpose = "Every port line stands on a core line, cited or computed, so the port holds nothing the core does not rely on (decisions 0116, 0126)."
+since = "b549"
 changed = []

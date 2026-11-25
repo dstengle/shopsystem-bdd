@@ -13,20 +13,6 @@ shall [x1: service the batches service (constant), x3: dispatch `pr-reviewer` (c
     review(e2, subject: x3, object: x4)
 ```
 
-## r2
-From: pr-review#r17, reworded in request words (0.38.0).
-
-```reading
-While the tier of a design-decision is `judgement`, when `pr-reviewer` reviews a proposed change, `pr-reviewer` shall review the design-decision.
-shall [x2: dispatch `pr-reviewer` (constant)]
-  while [x1: design-decision]
-    tier(x1) = `judgement`
-  when [x3: proposed change]
-    request(e1, reviews.review, subject: x2, object: x3)
-  response
-    review(e2, subject: x2, object: x1)
-```
-
 ## r3
 From: pr-review#r10, reworded in request words (0.38.0).
 
@@ -176,4 +162,34 @@ shall [x7: dispatch `pr-reviewer` (constant)]
     only
       scope
         review(e2, subject: x7, object: x3)
+```
+
+## r11
+Retires: r2. From: b597 r11.
+
+```reading
+While the tier of a design-decision is `judgement` and the design-decision is `accepted`, when `pr-reviewer` reviews a proposed change, `pr-reviewer` shall review the design-decision.
+shall [x2: dispatch `pr-reviewer` (constant)]
+  while [x1: design-decision]
+    tier(x1) = `judgement`
+    status(x1) = `accepted`
+  when [x3: proposed change]
+    request(e1, reviews.review, subject: x2, object: x3)
+  response
+    review(e2, subject: x2, object: x1)
+```
+
+## r12
+From: b597 r12.
+
+```reading
+While a design-decision is `superseded`, when `pr-reviewer` reviews a proposed change, `pr-reviewer` shall not review the design-decision.
+shall [x2: dispatch `pr-reviewer` (constant)]
+  while [x1: design-decision]
+    status(x1) = `superseded`
+  when [x3: proposed change]
+    request(e1, reviews.review, subject: x2, object: x3)
+  response
+    not
+      review(e2, subject: x2, object: x1)
 ```

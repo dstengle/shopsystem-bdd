@@ -1651,10 +1651,11 @@ a requester the operation's actors do not include
 
 ## v_m4
 
-an operation declares a refusal reason that no line states
+an operation declares a refusal reason that no line states and no port line excludes
 
 - Purpose: Every refusal an operation declares is specified by a line, so no refusal goes untested or undocumented.
 - Since: 0.38.0
+- Changed: b549
 - Severity: error
 - Implemented in: `scripts/model.lp`
 - Cited by: no line
@@ -1667,8 +1668,11 @@ an operation declares a refusal reason that no line states
 - Passes on:
 
   ```prolog
-  op_reason("notes.add","no text").
-  states_reason("c#r4","notes.add","no text").
+  op_reason("stock.reserve","no stock").
+  outcome("stock.reserve","stock.reserve refused: no stock","refused").
+  outcome_reason("stock.reserve refused: no stock","no stock").
+  denies("p#r1","stock.reserve","refused").
+  port_line("p#r1").
   ```
 
 ## w_m5
@@ -1738,6 +1742,107 @@ an operation no line requests
   ```prolog
   operation("notes.add").
   requester("c#r1","notes.add","the person").
+  ```
+
+## v_pb1
+
+a driven port holds an operation that no core line requests in its response
+
+- Purpose: A driven port holds only what the core uses: an operation no core line requests has no place in it (decision 0116).
+- Since: b549
+- Severity: error
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  port_op("stock.reserve").
+  ```
+
+- Passes on:
+
+  ```prolog
+  port_op("stock.reserve").
+  asks("c#r1","stock.reserve","the notes service").
+  core_line("c#r1").
+  ```
+
+## v_pb2
+
+an outcome of a driven port's operation that no core line handles and no port line excludes
+
+- Purpose: Every outcome the upstream may give reaches a core line or is excluded by a port line, so none goes unhandled (decisions 0116, 0127).
+- Since: b549
+- Severity: error
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  port_op("stock.reserve").
+  outcome("stock.reserve","stock.reserve done","done").
+  ```
+
+- Passes on:
+
+  ```prolog
+  port_op("stock.reserve").
+  outcome("stock.reserve","stock.reserve done","done").
+  op_object("stock.reserve","reservation").
+  on_outcome("c#r2","done","reservation").
+  core_line("c#r2").
+  ```
+
+## v_pb3
+
+a port line's `Relied on by:` names a requirement that is no core line requesting the operation the port line governs
+
+- Purpose: A port line's Relied on by names only core lines that request its operation, so the citation stays true (decision 0126).
+- Since: b549
+- Severity: error
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  requester("p#r1","stock.reserve","the notes service").
+  port_line("p#r1").
+  supports("p#r1","c#r2").
+  ```
+
+- Passes on:
+
+  ```prolog
+  requester("p#r1","stock.reserve","the notes service").
+  port_line("p#r1").
+  supports("p#r1","c#r2").
+  asks("c#r2","stock.reserve","the notes service").
+  core_line("c#r2").
+  ```
+
+## v_pb4
+
+a port line that no core line relies on: its `Relied on by:` names no core line, and it excludes no outcome that no core line handles of an operation a core line requests
+
+- Purpose: Every port line stands on a core line, cited or computed, so the port holds nothing the core does not rely on (decisions 0116, 0126).
+- Since: b549
+- Severity: error
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  requester("p#r1","stock.reserve","the notes service").
+  port_line("p#r1").
+  ```
+
+- Passes on:
+
+  ```prolog
+  requester("p#r1","stock.reserve","the notes service").
+  port_line("p#r1").
+  supports("p#r1","c#r2").
+  core_line("c#r2").
   ```
 
 ## v_r1
