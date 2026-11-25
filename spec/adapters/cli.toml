@@ -1401,7 +1401,7 @@ requirements = [
   "items#r59: While an item is `ready`, when a session allocates the item, the backlog service shall set the status of the item to `in-batch`.",
 ]
 [operations."backlog.allocate".parameters]
-item = { option = "--item", example = "item-1" }
+item = { positional = 1 }
 
 [operations."backlog.deliver"]
 command = "work deliver"
@@ -1409,7 +1409,7 @@ requirements = [
   "items#r56: While an item is `in-batch`, when a session delivers the item, the backlog service shall set the status of the item to `delivered`.",
 ]
 [operations."backlog.deliver".parameters]
-item = { option = "--item", example = "item-1" }
+item = { positional = 1 }
 
 [operations."backlog.restore"]
 command = "work restore"
@@ -1417,7 +1417,7 @@ requirements = [
   "items#r57: While an item is `in-batch`, when a session restores the item, the backlog service shall set the status of the item to `ready`.",
 ]
 [operations."backlog.restore".parameters]
-item = { option = "--item", example = "item-1" }
+item = { positional = 1 }
 
 [operations."backlog.suspend"]
 command = "work suspend"
@@ -1425,5 +1425,5 @@ requirements = [
   "items#r58: While an item is `in-batch`, when a session suspends the item with a question, the backlog service shall set the status of the item to `needs-input` and keep the question on the item.",
 ]
 [operations."backlog.suspend".parameters]
-item = { option = "--item", example = "item-1" }
-question = { option = "--question", example = "question-1" }
+item = { positional = 1 }
+question = { option = "--question", example = "Which reading holds?" }
