@@ -555,3 +555,20 @@ Feature: Consistency
     And the requirement r2 does not use the code c1
     When the person examines this specification
     Then the specification service completes this request
+
+  @g40 @r40
+  Scenario: spec logic finds the clash of a response's request with its parameters and a forbidden request of the operation with none
+    Given a trigger t1
+    And a requirement r1
+    And the requirement r1 has the trigger t1
+    And an act a1
+    And the requirement r1 obliges the act a1
+    And the requirement r1 uses `response-request`
+    And a code c1
+    And the requirement r1 uses the code c1
+    And a requirement r2
+    And the requirement r2 has the trigger t1
+    And the requirement r2 forbids the act a1
+    And the requirement r2 uses no code
+    When the person examines this specification
+    Then the specification service returns `L1`

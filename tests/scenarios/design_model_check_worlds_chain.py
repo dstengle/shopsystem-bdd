@@ -4,7 +4,7 @@ decision 0118), rows design_model_check_worlds' TABLE takes first, in the constr
 summary `s1`, the lines on that request or on a publish of no parameter (they govern the registry's publish) and a line on the person's entering
 that their consequences entail (an L8 through the request, r37; through a consequence of a governing line that
 triggers a third line, r38); and two lines on one trigger, one obliging and one forbidding a publish of another
-summary (no L1, r39)."""
+summary (no L1, r39), or a publish of no parameter (an L1, r40, b571)."""
 import importlib.util
 import sys
 from pathlib import Path
@@ -34,6 +34,7 @@ OTHER = "When the person enters a design-decision with the tier `judgement`, the
 KEPT = "When the registry keeps a design-decision, the registry shall notify the person of the design-decision."
 CHAINED = ENTERS + "the registry shall notify the person of the design-decision."
 FORBIDDING = ENTERS + "the decisions service shall not publish the design-decision with the summary `s2`."
+FORBIDDING_ANY = ENTERS + "the decisions service shall not publish the design-decision."
 
 
 def named(lines, names):
@@ -57,4 +58,7 @@ ROWS = [
     # r39: r1 obliges a publish of `s1`, r2 forbids one of `s2`, on one trigger
     (("requirement use `response-request`", "requirement forbid act", "requirement not use code"),
      named([REQUESTING, FORBIDDING], {"r1": 1, "r2": 2}), {}),
+    # r40: r1 obliges a publish of `s1`, r2 forbids a publish of no parameter, on one trigger
+    (("requirement use `response-request`", "requirement forbid act", "requirement use no code"),
+     named([REQUESTING, FORBIDDING_ANY], {"r1": 1, "r2": 2}), {}),
 ]
