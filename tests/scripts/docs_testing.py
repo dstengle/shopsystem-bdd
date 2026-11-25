@@ -109,7 +109,8 @@ def subcommands(p):
 
 
 def leaves(tool):
-    """Every runnable command path of a tool, as words: `work backlog`, `work batch start` ..."""
+    """Every runnable command path of a tool as shop's subcommand, as words: `shop work backlog`, `shop work batch
+    start` ..."""
     out = []
 
     def walk(p, words):
@@ -118,7 +119,7 @@ def leaves(tool):
             out.append(" ".join(words))
         for name, child in subs.items():
             walk(child, words + [name])
-    walk(parser(tool), [tool])
+    walk(parser(tool), ["shop", tool])
     return out
 
 
@@ -132,9 +133,10 @@ def console_commands():
             if line.strip().startswith("$ ")]
 
 
-def tool_words(command):
-    """(tool, words after it) when a console command runs one of the plugin's tools (bare, or `python3
-    .../scripts/<tool>`, after any VAR=value), else None. Words stop at a pipe, a redirect or a `;`."""
+def _run_words(command):
+    """(whether shop runs it, its words from the tool on) of a console command that runs one of the plugin's tools:
+    bare (`work backlog`), `python3 .../scripts/<tool>`, `shop <tool>` or `python3 .../scripts/shop <tool>`, after any
+    VAR=value; None of any other. Words stop at a pipe, a redirect or a `;`."""
     try:
         words = shlex.split(command, comments=True)
     except ValueError:
@@ -143,17 +145,34 @@ def tool_words(command):
         words = words[1:]
     if words and re.fullmatch(r"python3?", words[0]):
         words = words[1:]
-        if not words or not words[0].replace("\\", "/").rsplit("/", 1)[-1] in TOOLS \
-                or "scripts/" not in words[0].replace("\\", "/") and "/" in words[0]:
+        last = words[0].replace("\\", "/").rsplit("/", 1)[-1] if words else ""
+        if last not in TOOLS + ("shop",) or "scripts/" not in words[0].replace("\\", "/") and "/" in words[0]:
             return None
-        words[0] = words[0].replace("\\", "/").rsplit("/", 1)[-1]
+        words[0] = last
+    shop = bool(words) and words[0] == "shop"
+    if shop:
+        words = words[1:]
     if not words or words[0] not in TOOLS:
         return None
     for i, w in enumerate(words):
         if w in SHELL_STOPS:
             words = words[:i]
             break
-    return words[0], words[1:]
+    return shop, words
+
+
+def tool_words(command):
+    """(tool, words after it) when a console command runs one of the plugin's tools, through shop or not
+    (`_run_words`), else None."""
+    run = _run_words(command)
+    return (run[1][0], run[1][1:]) if run else None
+
+
+def through_shop(command):
+    """Whether a console command that runs one of the plugin's tools runs it as shop's subcommand (decision 0132):
+    `shop work backlog`, never `work backlog`. None of a command that runs no tool of the plugin."""
+    run = _run_words(command)
+    return run[0] if run else None
 
 
 def command_problem(tool, words):
