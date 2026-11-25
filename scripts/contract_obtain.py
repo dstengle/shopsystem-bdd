@@ -11,8 +11,8 @@ provider/, nothing kept at the repository root. It keeps no context request and 
 out of the context id form (migrate init's `FORM`) is refused naming the id and `id not in the context id form`
 (r88); a repository GitHub does not serve (`gh api repos/<r>`: missing, private or not answering, `reached`) naming
 the bounded context and `bounded context unreachable` (r89); a bounded context no adapter spec has as its provider
-naming the provider and `no adapter spec has the provider` (b593, r94); an upstream with no contract kept, or
-none at V, naming the bounded context; a contract kept already at that place is left as it is when the same, and
+naming the provider and `no adapter spec has the provider` (b593, r103: only of an available provider in the
+context id form, b601); an upstream with no contract kept, or none at V, naming the bounded context; a contract kept already at that place is left as it is when the same, and
 written again with the upstream's bytes, committed, when another (review f1)."""
 import json
 import os
@@ -151,7 +151,7 @@ def obtain(root, context, version=None):
     """`spec obtain`: the upstream's contract kept under provider/ of each adapter spec of it (at the version it
     pins, else `version`, else the published one) and committed; an id out
     of the context id form (migrate init's) refused before anything is read, then an upstream GitHub does not serve,
-    and only then one no adapter spec has as its provider (checking r88, r89 before r94: review f1)."""
+    and only then one no adapter spec has as its provider (checking r88, r89 before r103: review f1, b601)."""
     import shop_files
     from migrate_init import FORM
     if not FORM.fullmatch(context):
