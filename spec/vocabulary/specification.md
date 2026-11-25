@@ -223,3 +223,4 @@ area: specification
 - **kind** (attribute) → attribute area.kind. What an area is, the `kind:` of its model file.
 - **port** (noun) → value area.kind port.
 - **support** (verb, state) → relation requirement.supports. A line of a port contract stands under a core line, which the port line names under its `Relied on by:`. Forms: supports, supported. Frame: <requirement> supports <requirement id>.
+- **group title** (noun) → object group title. The title of a requirement group, which the scenario generated from the group takes as its scenario title.

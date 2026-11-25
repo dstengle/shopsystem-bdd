@@ -462,6 +462,7 @@ requirements = [
   "items#r41: While an item is `shaped` and a model line in the item violates a rule, if the person readies the item, then the backlog service shall refuse the request and name the model line and the rule.",
   "items#r53: While an item is `shaped` and the item holds a universal condition and the item holds no requirement and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.",
   "items#r54: While an item is `shaped` and the item holds no requirement and a universal condition in the item has no translation, if the person readies the item, then the backlog service shall refuse the request and name the universal condition.",
+  "items#r55: While an item is `shaped` and a requirement group of a capability has a group title and the item holds another requirement group of the capability that has the group title, if the person readies the item, then the backlog service shall refuse the request and name the group title.",
   "shaping-guarantees#r1: When the brainstorming session readies an item, the brainstorming session shall not ask a question.",
 ]
 [operations."backlog.ready".parameters]
@@ -957,7 +958,7 @@ requirements = [
   "batches#r97: While an item is `ready` and the item meets the readiness bar and a requirement of the item retires no requirement id and a scenario of the item refers to the requirement id of the requirement and the scenario succeeds in a workspace of a batch, if the person opens the batch, then the batches service shall set the status of the item to `shaped` and name the scenario.",
   "batches#r98: While a settings file holds a batch rule, when the person opens a batch, the batches service shall keep a batch brief that holds the batch rule.",
   "batches#r99: While no settings file holds a batch rule, when the person opens a batch, the batches service shall keep a batch brief that holds no batch rule.",
-  "batches#r103: When the person opens a batch, the batches service shall keep a batch brief that holds a batch summary form and return the batch brief.",
+  "batches#r104: When the person opens a batch, the batches service shall keep a batch brief that holds a batch summary form and return the batch brief.",
 ]
 
 [operations."batches.resume"]
