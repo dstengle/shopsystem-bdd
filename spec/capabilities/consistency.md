@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: examine; service language: explain
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r40]
 ---
 
 # Consistency
@@ -183,4 +183,7 @@ The requirements examined together: contradictions, what a line adds over the ot
 
 ### [g39] spec logic reads a response's request with its parameters
 - [r39] While a requirement has a trigger and the requirement obliges an act and the requirement uses `response-request` and a code and another requirement that has the trigger forbids the act and the requirement does not use the code, when the person examines this specification, the specification service shall complete the request.
+
+### [g40] spec logic finds the clash of a response's request with its parameters and a forbidden request of the operation with none
+- [r40] While a requirement has a trigger and the requirement obliges an act and the requirement uses `response-request` and a code and another requirement that has the trigger forbids the act and the requirement uses no code, when the person examines this specification, the specification service shall return `L1`.
 
