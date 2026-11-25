@@ -4,6 +4,8 @@ import pathlib
 import subprocess
 import sys
 
+import pytest
+
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import cpu_budget
 
@@ -12,6 +14,15 @@ REFERENCE = [sys.executable, "-c", cpu_budget.WORKLOAD]
 
 def test_a_budget_in_quiet_seconds_is_a_ratio_to_the_reference():
     assert cpu_budget.limit(5.0) == 5.0 / cpu_budget.QUIET
+
+
+@pytest.mark.budget
+def test_the_quiet_reference_time_holds():
+    """QUIET, calibrated once (b574), still is the reference's CPU time here (b584): the least of five runs, the one
+    load inflates least, within a loose band of it, so a machine or interpreter that changed is caught. Load only
+    inflates CPU time (every core busy makes it about 2.2 times QUIET), so the band reaches further above."""
+    least = min(cpu_budget.reference() for _ in range(5))
+    assert 0.5 * cpu_budget.QUIET < least < 3 * cpu_budget.QUIET, (least, cpu_budget.QUIET)
 
 
 def test_the_reference_is_cpu_bound_and_measured_in_a_child():
