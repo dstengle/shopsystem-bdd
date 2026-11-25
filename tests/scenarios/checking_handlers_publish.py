@@ -15,6 +15,8 @@ import sys
 import tomllib
 from pathlib import Path
 
+from vocab import handler
+
 W = sys.modules["shop_work_queue_world"]
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURE = ROOT / "tests" / "scripts" / "fixtures" / "domain-model"
@@ -238,6 +240,13 @@ W.local("GivenDoesNot")(given_state)
 W.local("WhenRuns")(runs)
 W.local("ThenDoes")(then_does)
 W.local("ThenDoesNot")(then_does)
-W.local("ThenK_A")(then_status)
+W.local("ThenK_A", "contract")(then_status)
+
+
+@handler("ThenK_A", "contract")
+def untaken(step):
+    """The registry's key of a contract's status Then, which `features vocab --check` reads: what is left when the
+    local above takes no step."""
+    raise AssertionError("no handler of this scenario's feature took the step: %s" % step.text)
 W.local("ThenPrints")(then_returns)
 W.local("ThenChangesNothing")(then_unchanged)
