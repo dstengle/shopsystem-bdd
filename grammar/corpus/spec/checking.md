@@ -1135,3 +1135,19 @@ shall [x4: artifact the version form (constant), x5: agent the person (constant)
     fail(e2, subject: x6, object: x7)
     name(e3, subject: x6, object: x3)
 ```
+
+## r94
+From: b593 r94.
+
+```reading
+If the person obtains a contract from a provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `no adapter spec has the provider` reason.
+shall [x1: agent the person (constant), x5: service the specification service (constant), x6: request "the request the trigger makes" (indexical), x7: reason `no adapter spec has the provider` (parameter)]
+  if [x2: contract, x3: provider]
+    not [x4: adapter spec]
+      of(x3, x4)
+    request(e1, specification.obtain, subject: x1, object: x2, from: x3)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x3)
+    name(e4, subject: x5, object: x7)
+```

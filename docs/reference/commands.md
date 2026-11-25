@@ -1138,20 +1138,23 @@ status = "published"
 
 ### `spec obtain`
 
-Keeps an upstream's contract, the one it keeps as published or with `--version` the one kept at that version, as
-`provider/<id's path>/<version>/contract.toml` (its id after `bounded-context/`, so two upstreams whose ids end
-alike keep their own), byte for byte, in one commit; it keeps no context request and changes no other contract. The
+Keeps an upstream's contract, the one it keeps as published or with `--version` the one kept at that version, in
+each adapter spec `adapters/<name>/` whose `providers:` name it, as `provider/<id's path>/<version>/contract.toml`
+under the adapter spec's folder (its id after `bounded-context/`, so two upstreams whose ids end alike keep their
+own), where the adapter spec's provider check reads it, byte for byte, in one commit; nothing is kept at the
+repository root, and it keeps no context request and changes no other contract. The
 upstream is a bounded context under `## Upstreams` of `spec/index.md`, read off the GitHub repository its `github:`
 names. An id out of the context id form `bounded-context/<domain>/<path>` is refused, naming the id and
 `id not in the context id form`; a repository GitHub does not serve (missing, private or not answering), naming the
-bounded context and `bounded context unreachable`; an upstream with no contract, naming the bounded context.
+bounded context and `bounded context unreachable`; an upstream with no contract, naming the bounded context; an
+upstream no adapter spec has as its provider, naming the bounded context and `no adapter spec has the provider`.
 `spec obtain` is the only writer of `provider/`: obtained again, a contract kept there is written again with the
 upstream's bytes, or left as it is when they are the same.\
 Synopsis: `spec obtain <bounded context> [--version <version>]`
 
 ```console
 $ spec obtain bounded-context/example.org/fixture/inventory
-obtained provider/example.org/fixture/inventory/1.2.0/contract.toml
+obtained adapters/stock-inventory/provider/example.org/fixture/inventory/1.2.0/contract.toml
 ```
 
 ### `spec decisions`

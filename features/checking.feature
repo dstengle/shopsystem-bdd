@@ -691,3 +691,13 @@ Feature: Checking
     When the person validates the adapter spec a1
     Then the specification service fails this check
     And the specification service names the version v1
+
+  @g94 @r94
+  Scenario: A contract is obtained only for an adapter spec of its provider
+    Given a provider p1
+    And no adapter spec has the provider p1
+    And a contract c1
+    When the person obtains the contract c1 from the provider p1
+    Then the specification service refuses this request
+    And the specification service names the provider p1
+    And the specification service names `no adapter spec has the provider`
