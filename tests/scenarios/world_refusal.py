@@ -2,6 +2,8 @@
 generated as two Thens, "`work` refuses `work decision`" and "`work` names the `--tier` option". A tool refuses a
 command when it exits with an error on it (the pack's definition); what it names is in its output or its error: a
 code without its backticks, an instance by what a Given said it is named by (`says`), else by its name."""
+import re
+
 from vocab import handler
 
 
@@ -27,7 +29,7 @@ def names(step):
     done, says = result(step), step.context.get("says", {})
     words = [q.strip('"') for q in step.quoted]
     for np in step.nps:
-        words += [bare(w) for w in np.split() if w.startswith("`")]
+        words += [bare(w) for w in re.findall(r"`[^`]+`", np)]
         words += [says.get(w, w) for w in np.split() if w in step.names]
     assert words, step.text
     for word in words:

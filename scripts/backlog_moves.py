@@ -57,23 +57,23 @@ def either(words):
     return words[0] if len(words) == 1 else "%s or %s" % (", ".join(words[:-1]), words[-1])
 
 
-def moved(item, command, change=None):
+def moved(item, command, change=None, reason=None):
     """Move `item` by its command's row in memory and let `change` write into it, a status the row lacks refused,
-    naming it (r3); the status it had."""
+    naming it (r3) and the operation's declared `reason` when it has one (items r60-r63); the status it had."""
     row = TRANSITIONS[command]
     if item.status not in row:
-        raise Refused("%s: %s is %s; %s takes an item that is %s" % (command, label(item), item.status, command,
-                                                                    either(row)))
+        said = "%s: %s is %s; %s takes an item that is %s" % (command, label(item), item.status, command, either(row))
+        raise Refused(said + (": %s" % reason if reason else ""), reason=reason, names=["item:%s" % item.name])
     before, item.status = item.status, row[item.status]
     if change is not None:
         change(item)
     return before
 
 
-def move(root, name, command, change=None):
+def move(root, name, command, change=None, reason=None):
     """Move the item `name` by its command's row (`moved`) and commit it."""
     item = find(root, name)
-    before = moved(item, command, change)
+    before = moved(item, command, change, reason)
     commit(root, item, "%s: %s %s -> %s" % (command, label(item), before, item.status))
     return item
 
@@ -112,7 +112,7 @@ def withdraw(root, name, reason):
 def reopen(root, name):
     """`ready` -> `shaped` (items#r31), so that its lines can change before `work ready` again; an item that is not
     `ready` refused, naming it (items#r32)."""
-    return move(root, name, "work reopen")
+    return move(root, name, "work reopen", reason="item not ready")
 
 
 def answer(root, name, text):
