@@ -20,7 +20,8 @@ def args_of(command):
     verb = command.split()[1]
     return [verb, "b1"] + {"refuse": ["out of scope"], "answer": ["The first"],
                            "shape": ["--note", "Parse every line."],
-                           "withdraw": ["--reason", "Nobody wants it."]}.get(verb, [])
+                           "withdraw": ["--reason", "Nobody wants it."],
+                           "suspend": ["--question", "Which reading holds?"]}.get(verb, [])
 
 
 # `work ready` moves only an item that passes the bar: test_readiness_bar.py's test_ready_readies_a_passing_item.
