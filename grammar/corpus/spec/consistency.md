@@ -762,3 +762,44 @@ shall [x4: thing `response-request` (parameter), x8: agent the person (constant)
   response
     return(e2, subject: x10, object: x11)
 ```
+
+## r41
+From: b579 r41.
+
+```reading
+While a requirement has a trigger and the requirement obliges an act and the requirement uses `count` and an operation and another requirement that has the trigger forbids the act, when the person examines this specification, the specification service shall return `L1`.
+shall [x4: thing `count` (constant), x7: agent the person (constant), x8: specification "the specification of this bounded context" (indexical), x9: service the specification service (constant), x10: agent `L1` (constant)]
+  while [x1: requirement, x2: trigger, x3: act, x5: operation, x6: requirement]
+    of(x2, x1)
+    oblige(subject: x1, object: x3)
+    use(subject: x1, object: x4)
+    use(subject: x1, object: x5)
+    distinct(x6, x1)
+    of(x2, x6)
+    forbid(subject: x6, object: x3)
+  when
+    request(e1, specification.examine, subject: x7, object: x8)
+  response
+    return(e2, subject: x9, object: x10)
+```
+
+## r42
+From: b579 r42.
+
+```reading
+While a requirement has a trigger and the requirement obliges an act and another requirement that has the trigger does not allow the act and the requirement uses `only` and an operation, when the person examines this specification, the specification service shall return `L1`.
+shall [x5: thing `only` (constant), x7: agent the person (constant), x8: specification "the specification of this bounded context" (indexical), x9: service the specification service (constant), x10: agent `L1` (constant)]
+  while [x1: requirement, x2: trigger, x3: act, x4: requirement, x6: operation]
+    of(x2, x1)
+    oblige(subject: x1, object: x3)
+    distinct(x4, x1)
+    of(x2, x4)
+    not
+      allow(subject: x4, object: x3)
+    use(subject: x4, object: x5)
+    use(subject: x4, object: x6)
+  when
+    request(e1, specification.examine, subject: x7, object: x8)
+  response
+    return(e2, subject: x9, object: x10)
+```

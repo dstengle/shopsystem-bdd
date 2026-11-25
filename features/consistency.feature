@@ -572,3 +572,35 @@ Feature: Consistency
     And the requirement r2 uses no code
     When the person examines this specification
     Then the specification service returns `L1`
+
+  @g41 @r41
+  Scenario: spec logic finds the clash of a counted request of an operation and a forbidden request of it
+    Given a trigger t1
+    And a requirement r1
+    And the requirement r1 has the trigger t1
+    And an act a1
+    And the requirement r1 obliges the act a1
+    And the requirement r1 uses `count`
+    And an operation o1
+    And the requirement r1 uses the operation o1
+    And a requirement r2
+    And the requirement r2 has the trigger t1
+    And the requirement r2 forbids the act a1
+    When the person examines this specification
+    Then the specification service returns `L1`
+
+  @g42 @r42
+  Scenario: spec logic finds the clash of only over requests of an operation and an obliged request of it outside the restriction
+    Given a trigger t1
+    And a requirement r1
+    And the requirement r1 has the trigger t1
+    And an act a1
+    And the requirement r1 obliges the act a1
+    And a requirement r2
+    And the requirement r2 has the trigger t1
+    And the requirement r2 does not allow the act a1
+    And the requirement r2 uses `only`
+    And an operation o1
+    And the requirement r2 uses the operation o1
+    When the person examines this specification
+    Then the specification service returns `L1`
