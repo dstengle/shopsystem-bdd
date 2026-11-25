@@ -163,6 +163,8 @@ def merged(args):
     print("%s merged" % batch.name)
     for line in requests:
         print(line)
+    import batch_summary
+    print("\n".join(batch_summary.merged(args.root, batch.name)))
     return 0
 
 
