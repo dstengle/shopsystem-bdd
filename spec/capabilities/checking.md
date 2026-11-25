@@ -233,6 +233,18 @@ Restates: design-model-check#r13@0.29.
 ### [g83] A contract at a version that is not a version is refused
 - [r83] If the person publishes a contract with a version that does not conform to the version form, then the specification service shall refuse the request and name the version and the `version not in the version form` reason.
 
+### [g87] An adapter spec with its adapter decisions and its providers' contracts is valid
+- [r87] While an adapter spec holds an adapter decision and the adapter spec holds a contract of a provider of the adapter spec, when the person validates the adapter spec, the specification service shall complete the request.
+
+### [g84] An adapter spec whose id is out of the adapter spec id form is refused
+- [r84] While the id of an adapter spec does not conform to the adapter spec id form, if the person validates the adapter spec, then the specification service shall fail the check and name the id.
+
+### [g85] An adapter spec that realises a line that does not exist is refused
+- [r85] While an adapter spec realises a requirement id that no requirement has, if the person validates the adapter spec, then the specification service shall fail the check and name the requirement id.
+
+### [g86] An adapter spec that holds no contract of its provider is refused
+- [r86] While a provider of an adapter spec has no contract that the adapter spec holds, if the person validates the adapter spec, then the specification service shall fail the check and name the provider.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.
