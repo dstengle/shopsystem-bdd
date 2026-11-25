@@ -966,3 +966,72 @@ shall [x1: agent the person (constant), x4: artifact the version form (constant)
     name(e3, subject: x5, object: x3)
     name(e4, subject: x5, object: x7)
 ```
+
+## r84
+From: b540 r84.
+
+```reading
+While the id of an adapter spec does not conform to the adapter spec id form, if the person validates the adapter spec, then the specification service shall fail the check and name the id.
+shall [x3: artifact the adapter spec id form (constant), x4: agent the person (constant), x5: service the specification service (constant), x6: check "the check the trigger makes" (indexical)]
+  while [x1: adapter spec, x2: id]
+    of(x2, x1)
+    not
+      conforms(x2, x3)
+  if
+    request(e1, specification.check, subject: x4, object: x1)
+  response
+    fail(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x2)
+```
+
+## r85
+From: b540 r85.
+
+```reading
+While an adapter spec realises a requirement id that no requirement has, if the person validates the adapter spec, then the specification service shall fail the check and name the requirement id.
+shall [x4: agent the person (constant), x5: service the specification service (constant), x6: check "the check the trigger makes" (indexical)]
+  while [x1: adapter spec, x2: requirement id]
+    not [x3: requirement]
+      of(x2, x3)
+    realise(subject: x1, object: x2)
+  if
+    request(e1, specification.check, subject: x4, object: x1)
+  response
+    fail(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x2)
+```
+
+## r86
+From: b540 r86.
+
+```reading
+While a provider of an adapter spec has no contract that the adapter spec holds, if the person validates the adapter spec, then the specification service shall fail the check and name the provider.
+shall [x4: agent the person (constant), x5: service the specification service (constant), x6: check "the check the trigger makes" (indexical)]
+  while [x1: provider, x2: adapter spec]
+    of(x1, x2)
+    not [x3: contract]
+      in(x3, x2)
+      of(x3, x1)
+  if
+    request(e1, specification.check, subject: x4, object: x2)
+  response
+    fail(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x1)
+```
+
+## r87
+From: b540 r87.
+
+```reading
+While an adapter spec holds an adapter decision and the adapter spec holds a contract of a provider of the adapter spec, when the person validates the adapter spec, the specification service shall complete the request.
+shall [x5: agent the person (constant), x6: service the specification service (constant), x7: request "the request the trigger makes" (indexical)]
+  while [x1: adapter spec, x2: adapter decision, x3: contract, x4: provider]
+    in(x2, x1)
+    of(x4, x1)
+    of(x3, x4)
+    in(x3, x1)
+  when
+    request(e1, specification.check, subject: x5, object: x1)
+  response
+    complete(e2, subject: x6, object: x7)
+```

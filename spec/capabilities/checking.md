@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56]
-unbuilt: []
+unbuilt: [r87, r84, r85, r86]
 ---
 
 # Checking
@@ -232,6 +232,18 @@ Restates: design-model-check#r13@0.29.
 
 ### [g83] A contract at a version that is not a version is refused
 - [r83] If the person publishes a contract with a version that does not conform to the version form, then the specification service shall refuse the request and name the version and the `version not in the version form` reason.
+
+### [g87] An adapter spec with its adapter decisions and its providers' contracts is valid
+- [r87] While an adapter spec holds an adapter decision and the adapter spec holds a contract of a provider of the adapter spec, when the person validates the adapter spec, the specification service shall complete the request.
+
+### [g84] An adapter spec whose id is out of the adapter spec id form is refused
+- [r84] While the id of an adapter spec does not conform to the adapter spec id form, if the person validates the adapter spec, then the specification service shall fail the check and name the id.
+
+### [g85] An adapter spec that realises a line that does not exist is refused
+- [r85] While an adapter spec realises a requirement id that no requirement has, if the person validates the adapter spec, then the specification service shall fail the check and name the requirement id.
+
+### [g86] An adapter spec that holds no contract of its provider is refused
+- [r86] While a provider of an adapter spec has no contract that the adapter spec holds, if the person validates the adapter spec, then the specification service shall fail the check and name the provider.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

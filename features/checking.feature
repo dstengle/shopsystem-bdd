@@ -580,3 +580,46 @@ Feature: Checking
     Then the specification service refuses this request
     And the specification service names the version v1
     And the specification service names `version not in the version form`
+
+  @g84 @r84
+  Scenario: An adapter spec whose id is out of the adapter spec id form is refused
+    Given an id i1
+    And an adapter spec a1
+    And the adapter spec a1 has the id i1
+    And the id i1 does not conform to the adapter spec id form
+    When the person validates the adapter spec a1
+    Then the specification service fails this check
+    And the specification service names the id i1
+
+  @g85 @r85
+  Scenario: An adapter spec that realises a line that does not exist is refused
+    Given a requirement id r1
+    And no requirement has the requirement id r1
+    And an adapter spec a1
+    And the adapter spec a1 realises the requirement id r1
+    When the person validates the adapter spec a1
+    Then the specification service fails this check
+    And the specification service names the requirement id r1
+
+  @g86 @r86
+  Scenario: An adapter spec that holds no contract of its provider is refused
+    Given a provider p1
+    And an adapter spec a1
+    And the adapter spec a1 has the provider p1
+    And the adapter spec a1 holds no contract
+    When the person validates the adapter spec a1
+    Then the specification service fails this check
+    And the specification service names the provider p1
+
+  @g87 @r87
+  Scenario: An adapter spec with its adapter decisions and its providers' contracts is valid
+    Given an adapter decision a2
+    And an adapter spec a1
+    And the adapter spec a1 holds the adapter decision a2
+    And a provider p1
+    And the adapter spec a1 has the provider p1
+    And a contract c1
+    And the provider p1 has the contract c1
+    And the adapter spec a1 holds the contract c1
+    When the person validates the adapter spec a1
+    Then the specification service completes this request

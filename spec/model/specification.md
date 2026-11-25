@@ -363,4 +363,13 @@ object downstream context kind of agent
 event contract published: raised by specification.publish
 
 object version form kind of artifact
+
+object adapter spec kind of specification
+  relations: has → id (one); realises → requirement id (many); has → provider (many); holds → adapter decision | contract (many)
+
+object provider kind of bounded context
+
+object adapter decision kind of design-decision
+
+object adapter spec id form kind of artifact
 ```
