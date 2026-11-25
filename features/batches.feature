@@ -660,3 +660,38 @@ Feature: Batches
     And the batches service restores the item i1
     And the batches service restores the item i2
     And the batches service does not restore the item i3
+
+  @g113 @r113
+  Scenario: A batch opened keeps the index file in the index form
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service keeps the index file i2
+    And the index file i2 conforms to the index form
+
+  @g114 @r114
+  Scenario: A batch opened leaves a capability with no requirement out of the index file
+    Given a capability c1
+    And the capability c1 has no requirement
+    And an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service keeps the index file i2
+    And the index file i2 does not hold the capability c1
+
+  @g115 @r115
+  Scenario: A batch opened names a capability with a requirement in the index file
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service keeps the index file i2
+    And the index file i2 holds the capability c1

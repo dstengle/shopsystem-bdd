@@ -1246,3 +1246,42 @@ shall [x2: thing `response-request` (parameter), x8: agent the person (constant)
   response
     complete(e2, subject: x10, object: x11)
 ```
+
+## r100
+From: b599 r100.
+
+```reading
+While an adapter spec has a provider and the provider has the `1.2.0` version and the provider has a contract that has the `1.3.0` version, when the person obtains a contract from the provider, the specification service shall keep a contract that has the `1.2.0` version and keep the adapter spec that holds the contract.
+shall [x3: version `1.2.0` (parameter), x5: version `1.3.0` (parameter), x6: agent the person (constant), x8: service the specification service (constant)]
+  while [x1: adapter spec, x2: provider, x4: contract]
+    of(x2, x1)
+    of(x3, x2)
+    of(x5, x4)
+    of(x4, x2)
+  when [x7: contract]
+    request(e1, specification.obtain, subject: x6, object: x7, from: x2)
+  response [x9: contract]
+    of(x3, x9)
+    keep(e2, subject: x8, object: x9)
+    in(x9, x1)
+    keep(e3, subject: x8, object: x1)
+```
+
+## r101
+From: b610 r101.
+
+```reading
+While an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition, if the person validates this specification, then the specification service shall fail the check and name the transition.
+shall [x6: agent the person (constant), x7: specification "the specification of this bounded context" (indexical), x8: service the specification service (constant), x9: check "the check the trigger makes" (indexical)]
+  while [x1: area, x2: lifecycle, x3: transition, x4: area, x5: operation]
+    in(x2, x1)
+    of(x3, x2)
+    distinct(x4, x1)
+    perform(subject: x5, object: x3)
+    in(x5, x4)
+  if
+    request(e1, specification.check, subject: x6, object: x7)
+  response
+    fail(e2, subject: x8, object: x9)
+    name(e3, subject: x8, object: x3)
+```

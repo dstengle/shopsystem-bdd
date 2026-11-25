@@ -140,6 +140,7 @@ requirements = [
   "checking#r97: While a port line that governs an operation supports a requirement id and no core line that has the requirement id uses the operation, if the person validates this specification, then the specification service shall fail the check and name the requirement id.",
   "checking#r98: While a port line governs an operation and no core line relies on the port line, if the person validates this specification, then the specification service shall fail the check and name the port line.",
   "checking#r99: While a core line that uses `response-request` uses an operation and a port line that governs the operation supports no requirement id and the port line excludes an operation outcome that no core line handles, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r101: While an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition, if the person validates this specification, then the specification service shall fail the check and name the transition.",
   "decisions#r1: While a design-decision is not `superseded` or `rejected` and the design-decision has no tier, when the person validates this specification, the specification service shall return `w_untiered`.",
   "decisions#r2: While the tier of a design-decision is `check` and no test enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d6`.",
   "decisions#r3: While the tier of a design-decision is `requirement` and no requirement enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d7`.",
@@ -972,6 +973,9 @@ requirements = [
   "batches#r108: While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit, when the person opens a batch, the batches service shall allocate the item, keep a batch that holds the item and keep a batch plan of the batch.",
   "batches#r109: While an item is `ready` and the item meets the readiness bar and a requirement of the item retires no requirement id and a scenario of the item refers to the requirement id of the requirement and the scenario succeeds in a workspace of a batch, if the person opens the batch, then the batches service shall reopen the item and name the scenario.",
   "batches#r110: While an item is not `ready` or `delivered` and a dependency on the item exists and another item whose status is `ready` has the dependency, when the person opens a batch, the batches service shall not allocate the item.",
+  "batches#r113: While an item is `ready` and the item meets the readiness bar, when the person opens a batch, the batches service shall keep an index file that conforms to the index form.",
+  "batches#r114: While a capability has no requirement and an item is `ready` and the item meets the readiness bar, when the person opens a batch, the batches service shall keep an index file that does not hold the capability.",
+  "batches#r115: While a capability has a requirement and an item is `ready` and the item meets the readiness bar, when the person opens a batch, the batches service shall keep an index file that holds the capability.",
 ]
 
 [operations."batches.resume"]
@@ -1478,6 +1482,7 @@ requirements = [
   "checking#r90: While a bounded context has a contract, when the person obtains a contract from another bounded context, the specification service shall keep the contract and change no contract of a bounded context.",
   "checking#r91: While an adapter spec has a provider, when the person obtains a contract from the provider, the specification service shall keep the contract that the adapter spec holds.",
   "checking#r94: If the person obtains a contract from a provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `no adapter spec has the provider` reason.",
+  "checking#r100: While an adapter spec has a provider and the provider has the `1.2.0` version and the provider has a contract that has the `1.3.0` version, when the person obtains a contract from the provider, the specification service shall keep a contract that has the `1.2.0` version and keep the adapter spec that holds the contract.",
 ]
 [operations."specification.obtain".parameters]
 "bounded context" = { positional = 1, example = "bounded-context/example.org/fixture/inventory" }

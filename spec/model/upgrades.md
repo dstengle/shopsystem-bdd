@@ -66,6 +66,7 @@ object frozen request kind of file
 
 object index file kind of file
   relations: has → context purpose (one)
+  relations: holds → capability (many)
 
 object plugin
   attributes: release: 0.34.1 < 0.99.0

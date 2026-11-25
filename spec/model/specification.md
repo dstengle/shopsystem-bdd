@@ -307,6 +307,7 @@ object operation
   relations: has → operation table (one)
   relations: has → property (many)
   relations: has → operation outcome (many)
+  relations: performs → transition (many)
 
 object reading rule kind of rule
 
@@ -358,6 +359,7 @@ object property kind of text
 object area
   attributes: kind: core | supporting | generic | port
   relations: holds → operation | capability (many)
+  relations: holds → lifecycle (many)
 
 object group title kind of text
 
@@ -388,4 +390,9 @@ object port line kind of requirement
 object core line kind of requirement
 
 object operation outcome
+
+object lifecycle
+  relations: has → transition (many)
+
+object transition
 ```
