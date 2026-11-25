@@ -7,6 +7,9 @@
 with no contract kept, or none at V, is refused naming the bounded context; a contract kept already at that place is
 left as it is when the same, and written again with the upstream's bytes, committed, when another (review f1)."""
 import json
+import os
+import shlex
+import subprocess
 from pathlib import Path
 
 from shop_refused import Refused
@@ -18,11 +21,25 @@ RAW = "Accept: application/vnd.github.raw"
 COMMAND = "spec obtain"
 
 
-def _api(root, repo, path):
-    """The text of `path` in `repo` on GitHub, or None when it is not there; another gh failure refused."""
+def _gh(root, *args):
+    """gh's output as bytes, its line ends as gh wrote them (b594); a gh that fails refused as batch_gh's `gh`."""
     import batch_gh
+    argv = shlex.split(os.environ.get(batch_gh.GH) or "gh")
     try:
-        return batch_gh.gh(root, "api", "-H", RAW, "repos/%s/contents/%s" % (repo, path), command=COMMAND)
+        done = subprocess.run([*argv, *args], cwd=root, capture_output=True)
+    except OSError as err:
+        raise Refused("%s: gh %s failed: %s" % (COMMAND, " ".join(args[:2]), err)) from None
+    if done.returncode != 0:
+        said = done.stderr.decode(errors="replace").strip() or done.stdout.decode(errors="replace").strip()
+        raise Refused("%s: gh %s failed: %s" % (COMMAND, " ".join(args[:2]),
+                                               (said or "exit %d" % done.returncode).splitlines()[0]))
+    return done.stdout
+
+
+def _api(root, repo, path):
+    """The bytes of `path` in `repo` on GitHub, or None when it is not there; another gh failure refused."""
+    try:
+        return _gh(root, "api", "-H", RAW, "repos/%s/contents/%s" % (repo, path))
     except Refused as err:
         if "404" in str(err) or "Not Found" in str(err):
             return None
@@ -36,7 +53,7 @@ def _none(context, version):
 
 
 def published(root, context, version=None):
-    """(version, text) of the contract `context` keeps as published, or at `version`; refused when it has none."""
+    """(version, bytes) of the contract `context` keeps as published, or at `version`; refused when it has none."""
     import contract_publish
     import request_gh
     repo = request_gh.repo_of(root, context, COMMAND)
@@ -55,7 +72,8 @@ def published(root, context, version=None):
         if entry.get("type") != "dir":
             continue
         text = _api(root, repo, "%s/%s/%s" % (KEPT, entry["name"], FILE))
-        status = contract_publish.STATUS.search(text or "")
+        lines = (text or b"").decode("utf-8", errors="replace").splitlines()
+        status = contract_publish.STATUS.search("\n".join(lines))
         if status and status.group(1) == "published":
             found = (entry["name"], text)
     if found is None:
@@ -72,13 +90,13 @@ def obtain(root, context, version=None):
     version, text = published(root, context, version)
     rel = (PROVIDER / context.rstrip("/").rsplit("/", 1)[-1] / version / FILE).as_posix()
     target = Path(root) / rel
-    if target.is_file() and target.read_text(encoding="utf-8") == text:
+    if target.is_file() and target.read_bytes() == text:
         print("kept already %s" % rel)
         return 0
 
     def write():
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(text, encoding="utf-8")
+        target.write_bytes(text)
     shop_files.committed(root, [rel], "spec obtain: the contract of %s at %s" % (context, version), write)
     print("obtained %s" % rel)
     return 0
