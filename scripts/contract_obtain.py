@@ -6,10 +6,11 @@ each adapter spec of its provider (b593, checking r91; decision 0136): an adapte
 `providers:` name the bounded context (`holders`), as `provider/<id's path>/<version>/contract.toml` under its folder
 (`place`: keyed by the whole id, so that two bounded contexts whose ids end alike never share a folder), where its
 provider check (model_adapter's `uncontracted`) reads it, in one commit by `shop_files.committed`: the only writer of
-provider/, nothing kept at the repository root. A bounded context no adapter spec has as its provider is refused
-naming it and `no adapter spec has the provider`. It keeps no context request and opens no issue. An id out of the context id form (migrate init's `FORM`) is refused naming the
-id and `id not in the context id form`; a repository GitHub does not serve (`gh api repos/<r>`: missing, private or
-not answering) naming the bounded context and `bounded context unreachable`; an upstream with no contract kept, or
+provider/, nothing kept at the repository root. It keeps no context request and opens no issue. In this order: an id
+out of the context id form (migrate init's `FORM`) is refused naming the id and `id not in the context id form`
+(r88); a repository GitHub does not serve (`gh api repos/<r>`: missing, private or not answering, `reached`) naming
+the bounded context and `bounded context unreachable` (r89); a bounded context no adapter spec has as its provider
+naming the provider and `no adapter spec has the provider` (b593, r94); an upstream with no contract kept, or
 none at V, naming the bounded context; a contract kept already at that place is left as it is when the same, and
 written again with the upstream's bytes, committed, when another (review f1)."""
 import json
@@ -74,12 +75,19 @@ def _none(context, version):
                    names=["bounded context:%s" % context])
 
 
-def published(root, context, version=None):
-    """(version, bytes) of the contract `context` keeps as published, or at `version`; refused when it has none."""
-    import contract_publish
+def reached(root, context):
+    """The GitHub repository of `context`, refused as unreachable unless GitHub serves it (checking r89)."""
     import request_gh
     repo = request_gh.repo_of(root, context, COMMAND)
     _reach(root, repo, context)
+    return repo
+
+
+def published(root, context, version=None, repo=None):
+    """(version, bytes) of the contract `context` keeps as published, or at `version`; refused when it has none.
+    `repo`, its repository `reached` gave, else reached here."""
+    import contract_publish
+    repo = repo or reached(root, context)
     if version:
         text = _api(root, repo, "%s/%s/%s" % (KEPT, version, FILE), context)
         if text is None:
@@ -129,19 +137,20 @@ def holders(root, context):
 
 
 def obtain(root, context, version=None):
-    """`spec obtain`: the upstream's contract kept under provider/ and committed; an id out of the context id form
-    (migrate init's) refused before anything is read."""
+    """`spec obtain`: the upstream's contract kept under provider/ of each adapter spec of it and committed; an id out
+    of the context id form (migrate init's) refused before anything is read, then an upstream GitHub does not serve,
+    and only then one no adapter spec has as its provider (checking r88, r89 before r94: review f1)."""
     import shop_files
     from migrate_init import FORM
     if not FORM.fullmatch(context):
         raise Refused("the id {names} is refused: id not in the context id form bounded-context/<domain>/<path>",
                       reason="id not in the context id form", names=["id:%s" % context])
+    repo = reached(root, context)
     held = holders(root, context)
     if not held:
-        raise Refused("the bounded context {names} is the provider of no adapter spec under %s/: no adapter spec has "
-                      "the provider" % ADAPTERS, reason="no adapter spec has the provider",
-                      names=["bounded context:%s" % context])
-    version, text = published(root, context, version)
+        raise Refused("the provider {names} is the provider of no adapter spec under %s/: no adapter spec has the "
+                      "provider" % ADAPTERS, reason="no adapter spec has the provider", names=["provider:%s" % context])
+    version, text = published(root, context, version, repo)
     rels = [(folder / place(context, version)).as_posix() for folder in held]
     changed = [rel for rel in rels if not ((Path(root) / rel).is_file() and (Path(root) / rel).read_bytes() == text)]
     for rel in rels:
