@@ -1472,6 +1472,7 @@ requirements = [
   "checking#r89: If the person obtains a contract from a bounded context whose availability is `unreachable`, then the specification service shall refuse the request and name the bounded context and the `bounded context unreachable` reason.",
   "checking#r90: While a bounded context has a contract, when the person obtains a contract from another bounded context, the specification service shall keep the contract and change no contract of a bounded context.",
   "checking#r91: While an adapter spec has a provider, when the person obtains a contract from the provider, the specification service shall keep the contract that the adapter spec holds.",
+  "checking#r94: If the person obtains a contract from a provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `no adapter spec has the provider` reason.",
 ]
 [operations."specification.obtain".parameters]
 "bounded context" = { positional = 1, example = "bounded-context/example.org/fixture/inventory" }
