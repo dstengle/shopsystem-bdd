@@ -14,7 +14,7 @@ pull_request: https://github.com/dstengle/shopsystem-bdd/pull/118
 
 | task | item | status | branch |
 |---|---|---|---|
-| t1 | b593 | running | batch-95-b593 |
+| t1 | b593 | done | batch-95-b593 |
 | t2 | b595 | done | batch-95-b595 |
 
 ## Plan
