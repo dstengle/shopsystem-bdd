@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56]
-unbuilt: []
+unbuilt: [r102]
 ---
 
 # Checking
@@ -286,6 +286,9 @@ Restates: design-model-check#r13@0.29.
 
 ### [g101] A lifecycle transition that no operation of its own area performs fails the check
 - [r101] While an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition, if the person validates this specification, then the specification service shall fail the check and name the transition.
+
+### [g102] A bounded context that fails to answer is not reported as unreachable
+- [r102] If the person obtains a contract from a bounded context whose health is `failing`, then the specification service shall refuse the request and name the bounded context and the `bounded context failing` reason.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

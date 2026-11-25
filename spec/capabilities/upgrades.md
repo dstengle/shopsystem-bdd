@@ -7,7 +7,7 @@ area: upgrades
 specifies: service upgrades
 language: codified-2
 retired: [g31, r31, g38, r38, g40, r40, g39, r39]
-unbuilt: []
+unbuilt: [r44]
 ---
 
 # Upgrades
@@ -727,4 +727,7 @@ the tracked file `.gitignore` holds:
   .pytest_cache/
   .ruff_cache/
 ```
+
+### [g44] An upgrade rewrites an old command line of an instructions file
+- [r44] While the release of this repository is before the release of the plugin and an instructions file of this repository holds an old command line, when the person upgrades this repository, the upgrades service shall change the old command line and keep the instructions file.
 

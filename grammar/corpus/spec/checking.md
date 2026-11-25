@@ -1285,3 +1285,18 @@ shall [x6: agent the person (constant), x7: specification "the specification of 
     fail(e2, subject: x8, object: x9)
     name(e3, subject: x8, object: x3)
 ```
+
+## r102
+From: b596 r102.
+
+```reading
+If the person obtains a contract from a bounded context whose health is `failing`, then the specification service shall refuse the request and name the bounded context and the `bounded context failing` reason.
+shall [x1: agent the person (constant), x4: service the specification service (constant), x5: request "the request the trigger makes" (indexical), x6: reason `bounded context failing` (parameter)]
+  if [x2: contract, x3: bounded context]
+    health(x3) = `failing`
+    request(e1, specification.obtain, subject: x1, object: x2, from: x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x3)
+    name(e4, subject: x4, object: x6)
+```

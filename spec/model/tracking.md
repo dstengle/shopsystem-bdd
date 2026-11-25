@@ -200,6 +200,7 @@ object retirement list kind of file
 
 object domain model kind of file
   relations: holds → model line | operation (many)
+  relations: holds → element (many)
 
 object operation-table form kind of artifact
 

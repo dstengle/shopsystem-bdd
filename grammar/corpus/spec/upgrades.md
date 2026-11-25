@@ -756,3 +756,20 @@ shall [x1: bounded context "the bounded context whose repository the command run
       change(e3, subject: x9, object: x5)
     complete(e4, subject: x9, object: x11)
 ```
+
+## r44
+From: b632 r44.
+
+```reading
+While the release of this repository is before the release of the plugin and an instructions file of this repository holds an old command line, when the person upgrades this repository, the upgrades service shall change the old command line and keep the instructions file.
+shall [x1: repository "the repository the request is made in" (indexical), x2: plugin "the plugin the request is made with" (indexical), x5: agent the person (constant), x6: service the upgrades service (constant)]
+  while [x3: instructions file, x4: old command line]
+    cmp(release(x1), before, release(x2))
+    of(x3, x1)
+    in(x4, x3)
+  when
+    request(e1, upgrades.upgrade, subject: x5, object: x1)
+  response
+    change(e2, subject: x6, object: x4)
+    keep(e3, subject: x6, object: x3)
+```

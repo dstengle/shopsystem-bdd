@@ -46,79 +46,14 @@ capabilities below, grouped by area, and the decisions (`spec/decisions/`); the 
 `spec/adapters/cli.toml`. The capabilities of 0.37.0 and before are retired and kept as records of their ids, each
 with a `## Moved` table naming each id's new one (`spec/moves.json`).
 
-### specification (core)
-
-| capability | narrator | group |
+| area | kind | capabilities |
 |---|---|---|
-| `decisions` | the person | service |
-| `checking` | the person | service |
-| `reading` | the person | service |
-| `consistency` | the person | service |
-| `records` | the person | service |
-| `scenarios` | the person | service |
-
-### tracking (supporting)
-
-| capability | narrator | group |
-|---|---|---|
-| `items` | the person | service |
-| `drafting` | the person | service |
-| `context-requests` | the person | service |
-| `request-watch` | a session | service |
-| `quotes` | a session | service |
-| `directives` | a session | service |
-| `shaping-guarantees` | the brainstorming session | guarantees |
-
-### execution (supporting)
-
-| capability | narrator | group |
-|---|---|---|
-| `batches` | the person | service |
-| `reviews` | the person | service |
-| `review-guarantees` | the session that started a review | guarantees |
-
-### measurement (generic)
-
-| capability | narrator | group |
-|---|---|---|
-| `measurement` | the person | service |
-| `trials` | the session that started a trial | guarantees |
-
-### analysis (generic)
-
-| capability | narrator | group |
-|---|---|---|
-| `toolchain` | the person | service |
-| `code-analysis` | the person | service |
-| `feature-reading` | the person | service |
-
-### upgrades (generic)
-
-| capability | narrator | group |
-|---|---|---|
-| `upgrades` | the person | service |
-
-### Retired in 0.38.0
-
-Every line moved with a new id: `analysis-tools`, `backlog`, `batch-measurement`, `batches-0-37`, `brainstorming`, `conversation`, `decision-tiers`, `design-model-check`, `feature-file-tools`, `intake`, `migration-tools`, `pr-review`, `readiness`, `requests`, `telemetry`, `trials-0-37`.
-
-### Retired in 0.31.0
-
-| capability | narrator | group |
-|---|---|---|
-| `spec-integration` | the person at the gate | guarantees |
-| `formulation` | the person who approved the lines | guarantees |
-| `spec-migration` | the person migrating a repository onto spec/ | guarantees |
-| `spec-consistency` | the person keeping a spec | guarantees |
-| `delivery` | the person delivering an initiative | guarantees |
-| `code-research` | the script `work run`, which started the researcher | guarantees |
-| `planning` | the script `work run`, which started the planner | guarantees |
-| `red-green` | the script `work run`, which started the implementer | guarantees |
-| `review` | the script `work run`, closing a work-item or an initiative | guarantees |
-| `role-boundaries` | the person using the workflow | guarantees |
-| `supervision` | the person who started `work run` | service |
-| `work-queue` | a person, session or script reading work-items or writing their transitions | service |
-| `parsing` | the person | service |
+| specification | core | decisions, checking, consistency, records, scenarios, parsing |
+| tracking | supporting | items, drafting, context-requests, request-watch, quotes, directives, shaping-guarantees |
+| execution | supporting | batches, reviews, review-guarantees |
+| measurement | generic | measurement, trials |
+| analysis | generic | toolchain, code-analysis, feature-reading |
+| upgrades | generic | upgrades |
 
 ## Testing
 
