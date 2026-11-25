@@ -239,7 +239,7 @@ def _read(root):
         found = spec_vocabulary_terms.lexicon(root)
         found.imports = tuple(spec_packs.imports(root))
         return found
-    import adapter_provider     # an adapter spec's providers' words, before its own (b550)
+    import adapter_provider  # an adapter spec's providers' words, before its own (b550)
     terms = adapter_provider.terms(root) + own(root)
     return Lexicon(terms, spec_relations.read(root), tuple(spec_packs.imports(root)))
 
