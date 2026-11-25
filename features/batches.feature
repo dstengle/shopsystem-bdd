@@ -812,3 +812,17 @@ Feature: Batches
     Then the requirement group r2 serves the job j1
     And the batches service keeps the capability c1
     And the capability c1 has the requirement group r2
+
+  @g125 @r125
+  Scenario: An item amended with a review finding keeps a change for the finding, which its review accepts
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a review r1
+    And the batch b1 has the review r1
+    And a review finding r2
+    And the review r1 holds the review finding r2
+    When the person amends the item i1 with the review finding r2
+    Then the batches service keeps the kept change k1
+    And the kept change k1 is for the review finding r2

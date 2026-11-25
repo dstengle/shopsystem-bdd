@@ -1090,3 +1090,22 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
     of(x9, x8)
     keep(e2, subject: x7, object: x8)
 ```
+
+## r125
+From: b600 r125.
+
+```reading
+While an item in a batch is `in-batch` and a review of the batch holds a review finding, when the person amends the item with the review finding, the batches service shall keep a kept change for the review finding.
+shall [x5: agent the person (constant), x6: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: review, x4: review finding]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    of(x3, x2)
+    in(x4, x3)
+  when
+    request(e1, batches.amend, subject: x5, object: x1)
+    param(e1, review finding, x4)
+  response [x7: kept change]
+    for(x7, x4)
+    keep(e2, subject: x6, object: x7)
+```

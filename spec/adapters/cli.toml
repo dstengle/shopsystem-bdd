@@ -1035,6 +1035,7 @@ requirements = [
   "batches#r83: While an item is not `in-batch`, if the person amends the item, then the batches service shall refuse the request and name the item.",
   "batches#r90: While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch holds a requirement of the item and the workspace of the task holds the requirement and the item does not hold the requirement, when the person amends the item, the batches service shall keep a workspace of the batch that does not hold the requirement and keep a workspace of the task that does not hold the requirement.",
   "batches#r96: While an item in a batch is `in-batch` and the item does not meet the readiness bar, if the person amends the item, then the batches service shall refuse the request, name the item and change nothing.",
+  "batches#r125: While an item in a batch is `in-batch` and a review of the batch holds a review finding, when the person amends the item with the review finding, the batches service shall keep a kept change for the review finding.",
 ]
 [operations."batches.amend".parameters]
 item = { positional = 1 }
@@ -1053,6 +1054,7 @@ requirements = [
   "reviews#r8: While an item in a batch is `in-batch` and a kept change cites the item and another item in the batch is `in-batch` and the kept change conflicts with another kept change that cites the item and the kept change touches a file, if the person submits the batch, then the batches service shall refuse the request and name the file, the item and every item in the batch that a kept change that conflicts with the kept change cites.",
   "reviews#r9: While a batch is `awaiting-merge` and the workspace of the batch holds a base merge, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.",
   "reviews#r10: While a batch is `awaiting-merge` and the workspace of the batch holds no base merge, if the person submits the batch, then the batches service shall refuse the request and name the batch.",
+  "reviews#r13: While an item in a batch is `in-batch` and every task of the batch is `done` and the workspace of the batch holds an amendment that cites the item and a scenario of the item succeeds in the workspace of a task of the item, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.",
 ]
 [operations."batches.submit".parameters]
 batch = { positional = 1 }

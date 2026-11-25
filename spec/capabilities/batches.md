@@ -7,7 +7,7 @@ area: execution
 specifies: object batch, object task, service batches
 language: codified-2
 retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97]
-unbuilt: []
+unbuilt: [r125]
 ---
 
 # Batches
@@ -206,4 +206,7 @@ when the change is merged.
 
 ### [g124] A batch opened keeps the job a requirement group of an item serves
 - [r124] While an item is `ready` and the item meets the readiness bar and the item holds a requirement group that serves a job, when the person opens a batch, the batches service shall keep a capability that has a requirement group that serves the job.
+
+### [g125] An item amended with a review finding keeps a change for the finding, which its review accepts
+- [r125] While an item in a batch is `in-batch` and a review of the batch holds a review finding, when the person amends the item with the review finding, the batches service shall keep a kept change for the review finding.
 
