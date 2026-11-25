@@ -169,7 +169,7 @@ def _unheld(repo):
 
 
 def test_an_upstream_no_adapter_spec_has_is_refused_naming_the_provider(tmp_path, monkeypatch):
-    """b593, checking r94: the refusal names the upstream as the provider, with the line's reason."""
+    """b593, checking r103: the refusal names the upstream as the provider, with the line's reason."""
     repo = _context(tmp_path, monkeypatch)
     _unheld(repo)
     with pytest.raises(Refused) as refused:
