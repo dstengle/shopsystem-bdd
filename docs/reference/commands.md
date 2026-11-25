@@ -1469,7 +1469,7 @@ $ measure defect b250 --says "work show prints the status under the notes when t
 ### `migrate init`
 
 Founds a new bounded context in the repository it is run in: writes its scaffold and commits it in one commit.
-`spec/index.md` (the id given, its last part the title, `language: codified-2`, `imports: [request]`, and the
+`spec/index.md` (the id given, its last part the title, `language: codified-2`, `imports: [base, request]`, and the
 `--purpose` given, if any, under its `## Purpose`), `spec/universal.md` (no condition), `spec/model/`, `spec/vocabulary/`, `spec/capabilities/`, `.shop/backlog/`,
 `.shop/records/README.md` (an empty records index), `.shop/plugin-version` (the plugin's release),
 `.shop/delivery.toml` (every key commented out at its default), `features/` and `tests/scenarios/conftest.py`, each
