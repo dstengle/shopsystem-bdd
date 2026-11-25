@@ -54,13 +54,16 @@ def _done(step):
 
 
 def resolved(step, name):
-    """The context request `name` resolved by the run: `delivered`, its `## Resolution`, empty before the run, holding
-    each line the item recorded as its requirement id and the merge commit gh gave, and the resolve comment posted
-    on its issue, closed."""
+    """The context request `name` resolved by the run: `delivered` and in the asker's turn, its `## Resolution`, empty
+    before the run, holding each line the item recorded as its requirement id and the merge commit gh gave, the request
+    file among the files of the commits the run made, and the resolve comment posted on its issue, closed."""
     _done(step)
     path = _path(step, name)
     assert W.field(path, "status") == "delivered", (step.text, W.field(path, "status"))
+    assert W.field(path, "turn") == "asker", (step.text, W.field(path, "turn"))
     rel = path.relative_to(step.repo).as_posix()
+    changed = W.git(step.repo, "log", "--format=", "--name-only", "%s..HEAD" % step.context["head"]).split()
+    assert rel in changed, (step.text, rel, changed)
     had = request_text.entries(W.git(step.repo, "show", "%s:%s" % (step.context["head"], rel)), "Resolution")
     oid = next(iter(json.loads((T.outside(step) / "gh-state.json").read_text()).values()))["mergeCommit"]["oid"]
     item = next(n for n, f in step.context["given"]["item"].items() if f.get("batch"))
