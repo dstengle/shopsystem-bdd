@@ -27,6 +27,7 @@ object requirement kind of text
 
 object requirement group
   relations: has → requirement | scenario (many)
+  relations: has → group title (one)
 
 object universal condition kind of text
   relations: has → universal condition id | translation (many); entails → step (many)
@@ -341,4 +342,6 @@ object property kind of text
 object area
   attributes: kind: core | supporting | generic | port
   relations: holds → operation | capability (many)
+
+object group title kind of text
 ```

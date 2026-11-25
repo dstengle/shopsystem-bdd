@@ -18,7 +18,7 @@ def test_an_amended_item_is_laid_again_renumbered_and_its_built_lines_kept(start
     resumed(started)
     build(started, "t1", "b1", ["r5"])
     assert work(started, "batch", "done", "batch-1", "t1").returncode == 0
-    drafted = work(started, "line", "b1", "--into", "work-queue", THIRD)
+    drafted = work(started, "line", "b1", "--into", "work-queue", "--group", "Abandon again", THIRD)
     assert drafted.returncode == 0, drafted.stderr
     assert "work-queue#r6" in drafted.stdout          # r6 is b2's on the batch branch
     done = work(started, "batch", "amend", "b1")
@@ -56,7 +56,7 @@ def test_a_failed_amend_puts_back_the_bases_commit_with_the_branches(started):  
     resumed(started)
     build(started, "t1", "b1", ["r5"])
     assert work(started, "batch", "done", "batch-1", "t1").returncode == 0
-    assert work(started, "line", "b1", "--into", "work-queue", THIRD).returncode == 0
+    assert work(started, "line", "b1", "--into", "work-queue", "--group", "Abandon again", THIRD).returncode == 0
     files = [batch_plan.rel_of("batch-1"), backlog_items.rel_of("b1")]
     was = [(started / rel).read_text() for rel in files]
     heads = [git(started, "rev-parse", b).strip() for b in ("batch-1", "batch-1-b1")]

@@ -969,3 +969,24 @@ shall [x5: agent the person (constant), x6: service the backlog service (constan
     refuse(e2, subject: x6, object: x7)
     name(e3, subject: x6, object: x3)
 ```
+
+## r55
+From: b581 r55.
+
+```reading
+While an item is `shaped` and a requirement group of a capability has a group title and the item holds another requirement group of the capability that has the group title, if the person readies the item, then the backlog service shall refuse the request and name the group title.
+shall [x6: agent the person (constant), x7: service the backlog service (constant), x8: request "the request the trigger makes" (indexical)]
+  while [x1: item, x2: requirement group, x3: capability, x4: group title, x5: requirement group]
+    status(x1) = `shaped`
+    of(x2, x3)
+    of(x4, x2)
+    distinct(x5, x2)
+    of(x5, x3)
+    of(x4, x5)
+    in(x5, x1)
+  if
+    request(e1, backlog.ready, subject: x6, object: x1)
+  response
+    refuse(e2, subject: x7, object: x8)
+    name(e3, subject: x7, object: x4)
+```

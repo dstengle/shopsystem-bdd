@@ -1,6 +1,6 @@
-"""The batch summary (batches r102, r103, b580): what a batch cost, in dollars and in output, new input and cache-read
+"""The batch summary (batches r102, r104, b580): what a batch cost, in dollars and in output, new input and cache-read
 tokens, and how long it took (its wall time, its opening, its building, each test run and its review), each figure
-under its name. `form` is the batch summary form the batch brief gives the batch's driver to reply with (r103); `of`
+under its name. `form` is the batch summary form the batch brief gives the batch's driver to reply with (r104); `of`
 the batch summary of measure batch's figures (measure_batch's `figures_of`), which `work batch merged` returns (r102).
 
 The building time runs from the batch's opening (its plan's first commit) to its first review (`-> in-review`), the

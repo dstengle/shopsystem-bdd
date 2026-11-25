@@ -884,8 +884,8 @@ shall [x1: agent the person (constant), x4: service the batches service (constan
     return(e3, subject: x4, object: x6)
 ```
 
-## r103
-Retires: r51. From: b580 r103.
+## r104
+Retires: r103. From: b581 r104.
 
 ```reading
 When the person opens a batch, the batches service shall keep a batch brief that holds a batch summary form and return the batch brief.

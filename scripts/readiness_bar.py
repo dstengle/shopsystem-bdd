@@ -4,7 +4,8 @@ request line of the item is settled and its requirement lines are well-formed: t
 not have (readiness r15), they bring no violation of a `model.lp` rule of `model check` that
 names a group or a requirement of theirs (v15k, v15l, v15n alike: b77, b333) or an element of its model lines (v_m4,
 b477), `model logic` finds no L0 and no L1 naming them and reads each of them (r41), and
-`features generate` writes a scenario for each of their groups that has a step; every stage after the lexicon's runs
+`features generate` writes a scenario for each of their groups that has a step, and no group of theirs shares its
+group title with another of its capability (readiness_titles, b581); every stage after the lexicon's runs
 whatever the stages before it found, so one run names every failing line (b305). The lines are checked on a copy of `spec/` under the temporary directory
 with the item's lines laid in, removed afterwards whatever happens; `spec/` itself is never written. The copy is held
 (spec_held) so its inputs are statted once a state and each line parsed once; the result before the lay is kept on
@@ -24,6 +25,7 @@ import backlog_lines
 import features_generate
 import model_decisions
 import readiness_before
+import readiness_titles
 import request_moves
 import request_text
 import spec_catalogued
@@ -229,7 +231,8 @@ def _laid(copy, item, blocks, mine):
     spec_prefetch.prefetch(copy, spec_prefetch.texts(copy))     # the lay's misses side by side, after the lexicon
     unparsed = _parses(copy, blocks)       # every stage after it runs whatever it finds, each line named once (b305)
     reasons, warnings = _logic(copy, mine, [uid for uid, _ in blocks.universal], unparsed)
-    return (doubled + list(unparsed.values()) + _broken(copy, blocks, before_lay) + reasons
+    titled = readiness_titles.shared(copy, blocks)        # two groups of one title collect one scenario (b581)
+    return (doubled + titled + list(unparsed.values()) + _broken(copy, blocks, before_lay) + reasons
             + _scenarios(copy, blocks, unparsed), warnings)
 
 

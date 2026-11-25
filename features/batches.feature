@@ -657,8 +657,8 @@ Feature: Batches
     Then the batches service does not keep the review folder r1
     And the batches service returns the batch summary b2
 
-  @g103 @r103
-  Scenario: Every batch summary states its cost and timing
+  @g104 @r104
+  Scenario: Every batch brief holds the batch summary form
     Given a batch b1
     And a batch summary form b2
     And a batch brief b3

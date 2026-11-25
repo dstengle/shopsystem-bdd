@@ -1,4 +1,4 @@
-"""Handlers of batches' batch summary (r102, r103, b580), each in world_four's chain: the Then that the batch brief the
+"""Handlers of batches' batch summary (r102, r104, b580), each in world_four's chain: the Then that the batch brief the
 run wrote holds the batch summary form, its section naming each figure of a batch summary (`FIGURES`, the vocabulary
 entry's own words, not batch_summary's table)."""
 import re

@@ -859,3 +859,20 @@ Feature: Items
     When the person readies the item i1
     Then the backlog service refuses this request
     And the backlog service names the universal condition u1
+
+  @g55 @r55
+  Scenario: An item whose requirement group shares a group title with another of its capability is not readied
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    And a requirement group r1
+    And a capability c1
+    And the capability c1 has the requirement group r1
+    And a group title g1
+    And the requirement group r1 has the group title g1
+    And a requirement group r2
+    And the capability c1 has the requirement group r2
+    And the requirement group r2 has the group title g1
+    And the item i1 holds the requirement group r2
+    When the person readies the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the group title g1

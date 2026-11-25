@@ -200,3 +200,6 @@ declined, withdrawn, answered and listed.
 ### [g54] An item whose only lines are universal conditions is checked, naming a universal condition that has no translation
 - [r54] While an item is `shaped` and the item holds no requirement and a universal condition in the item has no translation, if the person readies the item, then the backlog service shall refuse the request and name the universal condition.
 
+### [g55] An item whose requirement group shares a group title with another of its capability is not readied
+- [r55] While an item is `shaped` and a requirement group of a capability has a group title and the item holds another requirement group of the capability that has the group title, if the person readies the item, then the backlog service shall refuse the request and name the group title.
+

@@ -6,7 +6,7 @@ group: service
 area: execution
 specifies: object batch, object task, service batches
 language: codified-2
-retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51]
+retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103]
 unbuilt: []
 ---
 
@@ -183,6 +183,6 @@ when the change is merged.
 ### [g102] Every batch summary states its cost and timing
 - [r102] When the person merges the proposed change of a batch, the batches service shall keep no review folder of the batch and return the batch summary of the batch.
 
-### [g103] Every batch summary states its cost and timing
-- [r103] When the person opens a batch, the batches service shall keep a batch brief that holds a batch summary form and return the batch brief.
+### [g104] Every batch brief holds the batch summary form
+- [r104] When the person opens a batch, the batches service shall keep a batch brief that holds a batch summary form and return the batch brief.
 
