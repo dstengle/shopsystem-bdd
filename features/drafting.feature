@@ -702,3 +702,14 @@ Feature: Drafting
     Then the requirement group r1 serves the job j1
     And the item i1 holds the requirement group r1
     And the drafting service keeps the item i1
+
+  @g72 @r72
+  Scenario: A new capability drafted with an area is kept in that area
+    Given an item i1
+    And a capability c1
+    And an area a1
+    When the person drafts the item i1 with the capability c1 and the area a1
+    Then the item i1 holds the capability c1
+    And the drafting service keeps the capability c1
+    And the area a1 holds the capability c1
+    And the drafting service keeps the area a1

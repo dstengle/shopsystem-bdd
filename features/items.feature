@@ -976,3 +976,28 @@ Feature: Items
     And the item i1 meets this readiness bar
     When the person readies the item i1
     Then the backlog service sets the status of the item i1 to `ready`
+
+  @g66 @r66
+  Scenario: A shaped item whose ids a capability holds is readied
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    And the item i1 meets this readiness bar
+    And a requirement id r1
+    And the item i1 holds the requirement id r1
+    And a capability c1
+    And the capability c1 holds the requirement id r1
+    When the person readies the item i1
+    Then the backlog service sets the status of the item i1 to `ready`
+
+  @g67 @r67
+  Scenario: A ready item whose ids a capability holds is readied again
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a requirement id r1
+    And the item i1 holds the requirement id r1
+    And a capability c1
+    And the capability c1 holds the requirement id r1
+    When the person readies the item i1
+    Then the backlog service completes this request
+    And the backlog service keeps the item i1

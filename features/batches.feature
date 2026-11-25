@@ -826,3 +826,72 @@ Feature: Batches
     When the person amends the item i1 with the review finding r2
     Then the batches service keeps the kept change k1
     And the kept change k1 is for the review finding r2
+
+  @g126 @r126
+  Scenario: An item's operation table kept when its ids are renumbered
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And an operation table o1
+    And the item i1 holds the operation table o1
+    And a requirement id r1
+    And the item i1 holds the requirement id r1
+    And a capability c1
+    And the capability c1 holds the requirement id r1
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service keeps the adapter contract a1
+    And the adapter contract a1 holds the operation table o1
+
+  @g127 @r127
+  Scenario: An item's moved term kept when its ids are renumbered
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a term t1
+    And an element e1
+    And the term t1 means the element e1
+    And the item i1 moves the term t1
+    And an area a1
+    And the area a1 holds the element e1
+    And a requirement id r1
+    And the item i1 holds the requirement id r1
+    And a capability c1
+    And the capability c1 holds the requirement id r1
+    And a batch b1
+    When the person opens the batch b1
+    Then the area a1 holds the term t1
+    And the batches service keeps the area a1
+
+  @g128 @r128
+  Scenario: An item's term of a pack kept when its ids are renumbered
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a term t1
+    And a pack p1
+    And the pack p1 has the term t1
+    And the item i1 holds the term t1
+    And a requirement id r1
+    And the item i1 holds the requirement id r1
+    And a capability c1
+    And the capability c1 holds the requirement id r1
+    And a batch b1
+    When the person opens the batch b1
+    Then the pack p1 has the term t1
+    And the batches service keeps the pack p1
+
+  @g129 @r129
+  Scenario: A new capability laid with its area is kept in that area
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a capability c1
+    And the item i1 holds the capability c1
+    And an area a1
+    And the area a1 holds the capability c1
+    And the item i1 holds the area a1
+    And a batch b1
+    When the person opens the batch b1
+    Then the area a1 holds the capability c1
+    And the batches service keeps the capability c1

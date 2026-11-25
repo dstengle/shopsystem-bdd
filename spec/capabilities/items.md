@@ -7,7 +7,7 @@ area: tracking
 specifies: object item, service backlog, the readiness policy
 language: codified-2
 retired: [g3, r3, g18, r18, g33, r33]
-unbuilt: []
+unbuilt: [r66, r67]
 ---
 
 # Items
@@ -232,4 +232,10 @@ declined, withdrawn, answered and listed.
 
 ### [g65] A shaped item whose only lines are moved terms is readied
 - [r65] While an item is `shaped` and the item moves a term and the item holds no requirement and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.
+
+### [g66] A shaped item whose ids a capability holds is readied
+- [r66] While an item is `shaped` and the item meets the readiness bar and a capability holds a requirement id that the item holds, when the person readies the item, the backlog service shall set the status of the item to `ready`.
+
+### [g67] A ready item whose ids a capability holds is readied again
+- [r67] While an item is `ready` and the item meets the readiness bar and a capability holds a requirement id that the item holds, when the person readies the item, the backlog service shall complete the request and keep the item.
 
