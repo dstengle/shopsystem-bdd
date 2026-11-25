@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/an-obtained-contract-is-kept-in-the-adapter-spec-of-its-provider-under-the-provider-s-whole-id
 summary: "spec obtain keeps a provider's contract inside the adapter spec that names the provider, at provider/<the provider's id after bounded-context/>/<version>/contract.toml, never at the repository root nor keyed by the id's last word."
 date: 2026-11-25
-status: accepted
+status: superseded
 tier: judgement
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/an-adapter-is-a-nested-context-with-its-own-spec-checked]
 source: [item/missingmass.io/shopsystem/shopsystem-bdd/b593]
