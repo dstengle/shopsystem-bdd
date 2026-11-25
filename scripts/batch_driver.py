@@ -8,14 +8,15 @@ work_items`), and, for a context's first batch (a laid capability with no test m
 `spec/adapters/cli.toml`), how its first task makes the step bindings, the program and the adapter contract (b389), the
 command prefix every push and gh call takes when `[batch] push` of `.shop/delivery.toml` gives one, the rules every
 subagent is given (the plugin's own, then each batch rule of `[batch] rules`, the context's own setup, which the
-plugin's code never keeps: b75), where the agent stops and what it replies. The session that started the batch dispatches
-the agent with the brief's path as its whole prompt."""
+plugin's code never keeps: b75), where the agent stops and what it replies, with the batch summary in the batch
+summary form (batch_summary, b580). The session that started the batch dispatches the agent with the brief's path as its whole prompt."""
 from pathlib import Path
 
 import backlog_chore
 import backlog_items
 import backlog_lines
 import batch_plan
+import batch_summary
 from batch_git import SCRIPTS, delivery, trees_dir
 from shop_files import Refused
 
@@ -158,7 +159,11 @@ def text(root, batch, picked, unwritten=()):
              "never to the person."), "",
             "## What you reply", "",
             ("The pull request's URL, each item delivered in it and each item parked with its question, in a few "
-             "lines; or, if the batch was abandoned, that and why.")]
+             "lines; or, if the batch was abandoned, that and why. Then the batch summary, in the batch summary form "
+             "below (b580): each figure as far as the batch has run, its cost and tokens summed from what your "
+             "subagents and your own session report, its times from the batch's commits and the test runs `work "
+             "batch done` and `review` timed; a figure you cannot read written `%s`." % batch_summary.UNKNOWN), "",
+            "### The batch summary form", "", *batch_summary.form()]
     return "\n".join(out) + "\n"
 
 
