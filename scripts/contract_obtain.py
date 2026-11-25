@@ -1,10 +1,13 @@
 """A contract obtained from an upstream (b587, checking r81, r82, r88-r90; b591; decision 0117): `spec obtain <bounded
 context> [--version V]` reads the upstream's contract kept as published (or the one kept at V) off its GitHub
 repository, the `github:` of its bullet under `## Upstreams` in spec/index.md (request_gh's `repo_of`), through
-`$SHOPSYSTEM_WORK_GH` (`gh api repos/<r>/contents/.shop/contracts/...`, the raw file), and keeps it, byte for byte, as
-`provider/<id's path>/<version>/contract.toml` (`place`: keyed by the whole id, so that two bounded contexts whose
-ids end alike never share a folder) in one commit by `shop_files.committed`: the only writer of provider/. It keeps
-no context request and opens no issue. An id out of the context id form (migrate init's `FORM`) is refused naming the
+`$SHOPSYSTEM_WORK_GH` (`gh api repos/<r>/contents/.shop/contracts/...`, the raw file), and keeps it, byte for byte, in
+each adapter spec of its provider (b593, checking r91; decision 0136): an adapter spec `adapters/<name>/` whose
+`providers:` name the bounded context (`holders`), as `provider/<id's path>/<version>/contract.toml` under its folder
+(`place`: keyed by the whole id, so that two bounded contexts whose ids end alike never share a folder), where its
+provider check (model_adapter's `uncontracted`) reads it, in one commit by `shop_files.committed`: the only writer of
+provider/, nothing kept at the repository root. A bounded context no adapter spec has as its provider is refused
+naming it and `no adapter spec has the provider`. It keeps no context request and opens no issue. An id out of the context id form (migrate init's `FORM`) is refused naming the
 id and `id not in the context id form`; a repository GitHub does not serve (`gh api repos/<r>`: missing, private or
 not answering) naming the bounded context and `bounded context unreachable`; an upstream with no contract kept, or
 none at V, naming the bounded context; a contract kept already at that place is left as it is when the same, and
@@ -18,6 +21,7 @@ from pathlib import Path
 from shop_refused import Refused
 
 PROVIDER = Path("provider")
+ADAPTERS = "adapters"
 KEPT = ".shop/contracts"
 FILE = "contract.toml"
 RAW = "Accept: application/vnd.github.raw"
@@ -101,10 +105,27 @@ def published(root, context, version=None):
 
 
 def place(context, version):
-    """Where a contract of the bounded context `context` at `version` is kept: provider/ keyed by the whole id, the
+    """Where a contract of the bounded context `context` at `version` is kept in an adapter spec's folder: provider/
+    keyed by the whole id, the
     id's path after `bounded-context/` (two bounded contexts whose ids end alike each keep their own), then the
     version; `version` may be a glob."""
     return PROVIDER.joinpath(*context.split("/")[1:], version, FILE)
+
+
+def holders(root, context):
+    """The folders, relative to `root`, of the adapter specs `adapters/<name>/` whose spec/index.md says `kind:
+    adapter` and whose `providers:` name the bounded context `context`, at any version, in name order."""
+    import model_adapter
+    from model_parse import as_list, frontmatter
+    out = []
+    for index in sorted(Path(root).glob("%s/*/spec/index.md" % ADAPTERS)):
+        data = frontmatter(index.read_text())[0]
+        if str(data.get("kind", "")).strip() != model_adapter.KIND:
+            continue
+        named = (model_adapter.PROVIDER.match(str(given).strip()) for given in as_list(data.get("providers")))
+        if any(m and m.group("id") == context for m in named):
+            out.append(index.parent.parent.relative_to(root))
+    return out
 
 
 def obtain(root, context, version=None):
@@ -115,16 +136,25 @@ def obtain(root, context, version=None):
     if not FORM.fullmatch(context):
         raise Refused("the id {names} is refused: id not in the context id form bounded-context/<domain>/<path>",
                       reason="id not in the context id form", names=["id:%s" % context])
+    held = holders(root, context)
+    if not held:
+        raise Refused("the bounded context {names} is the provider of no adapter spec under %s/: no adapter spec has "
+                      "the provider" % ADAPTERS, reason="no adapter spec has the provider",
+                      names=["bounded context:%s" % context])
     version, text = published(root, context, version)
-    rel = place(context, version).as_posix()
-    target = Path(root) / rel
-    if target.is_file() and target.read_bytes() == text:
-        print("kept already %s" % rel)
+    rels = [(folder / place(context, version)).as_posix() for folder in held]
+    changed = [rel for rel in rels if not ((Path(root) / rel).is_file() and (Path(root) / rel).read_bytes() == text)]
+    for rel in rels:
+        if rel not in changed:
+            print("kept already %s" % rel)
+    if not changed:
         return 0
 
     def write():
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(text)
-    shop_files.committed(root, [rel], "spec obtain: the contract of %s at %s" % (context, version), write)
-    print("obtained %s" % rel)
+        for rel in changed:
+            (Path(root) / rel).parent.mkdir(parents=True, exist_ok=True)
+            (Path(root) / rel).write_bytes(text)
+    shop_files.committed(root, changed, "spec obtain: the contract of %s at %s" % (context, version), write)
+    for rel in changed:
+        print("obtained %s" % rel)
     return 0
