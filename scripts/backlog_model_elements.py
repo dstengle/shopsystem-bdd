@@ -19,10 +19,49 @@ def restate(body, at, end, header, members):
 
 
 def same(body, header, members):
-    """Whether `body` (model lines) declares the element `header` with exactly `members`."""
+    """Whether `body` (model lines) declares the element `header` with exactly `members` (an event or an actor: as
+    its line `header`)."""
     from backlog_model import _at, _end
     at = _at(body, header)
+    if at is not None and lone(header):
+        return body[at] == header
     return at is not None and body[at + 1:_end(body, at)] == list(members)
+
+
+def lone(line):
+    """Whether a model line declares an event or an actor, an element of one line and no members (b647)."""
+    return line.startswith(("event ", "actor "))
+
+
+def key(line):
+    """What names an event's or an actor's line: its kind and phrase (the text before the last `:` and any
+    property after `;`) or its name (the text before ` kind of `)."""
+    word, _, rest = line.partition(" ")
+    if word == "event":
+        return word, rest.partition(";")[0].rpartition(":")[0].strip()
+    return word, rest.partition(" kind of ")[0].strip()
+
+
+def lone_at(body, header):
+    """The index of the event or the actor of `header`'s phrase or name in `body`, or None (batches r120, r121)."""
+    return next((n for n, line in enumerate(body) if lone(line) and key(line) == key(header)), None)
+
+
+def unrestate_lone(body, at, header, held):
+    """The event's or the actor's line at `at` of `body`, laid as `header`, put back as `held(header, None, [])`
+    (the model lines before the lay) declares it, or taken out with the blank line before it when no version
+    declares it; False, `body` left alone, when `header` is no event or actor line or `body` does not hold it so."""
+    if not lone(header) or body[at] != header:
+        return False
+    before = held(header, None, []) if held else None
+    old = lone_at(before, header) if before is not None else None
+    if old is not None:
+        body[at] = before[old]
+        return True
+    del body[at]
+    if at > 0 and not body[at - 1].strip() and (at == len(body) or not body[at].strip()):
+        del body[at - 1]
+    return True
 
 
 def unrestate(body, at, header, members, held):
