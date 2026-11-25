@@ -80,6 +80,17 @@ def test_a_gh_failure_on_the_repository_is_the_bounded_context_unreachable(tmp_p
     assert not (repo / "provider").exists()
 
 
+def test_a_gh_failure_reading_a_reached_repository_is_the_bounded_context_failing(tmp_path, monkeypatch):
+    """A repository reached whose contents' read is refused is failing, never unreachable (b596, checking r102)."""
+    repo = _context(tmp_path, monkeypatch)
+    monkeypatch.setenv("STUB_GH_FAIL", "api -H")
+    with pytest.raises(Refused) as refused:
+        contract_obtain.obtain(repo, UPSTREAM)
+    assert refused.value.reason == "bounded context failing"
+    assert refused.value.names == ["bounded context:%s" % UPSTREAM]
+    assert not (repo / "provider").exists()
+
+
 def test_an_id_that_would_leave_provider_is_out_of_the_context_id_form(tmp_path, monkeypatch):
     """An id whose path climbs out of provider/ is refused before anything is read (b591, checking r88)."""
     repo = _context(tmp_path, monkeypatch)

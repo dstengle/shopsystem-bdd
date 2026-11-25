@@ -253,3 +253,6 @@ area: specification
 - **lifecycle** (noun) → object lifecycle. The transitions an attribute of an object of the domain model may take, its `lifecycle <attribute>:` line. Plural: lifecycles.
 - **transition** (noun) → object transition. One step of a lifecycle, from one value of its attribute to another, `<from> → <to>`. Plural: transitions.
 - **perform** (verb, state) → relation operation.performs. A line whose trigger requests the operation sets the attribute of the operation's object from the transition's first value to its second. Forms: performs, performed. Frame: <operation> performs <transition>.
+- **failing** (adjective) → value bounded context.health failing. A bounded context the specification service reaches whose answer to a read of its contracts is a refusal or a failure other than no such contract.
+- **health** (attribute) → attribute bounded context.health. Whether a bounded context the specification service reaches answers a read of its contracts.
+- **sound** (adjective) → value bounded context.health sound. A bounded context that answers a read of its contracts with them or with no such contract.

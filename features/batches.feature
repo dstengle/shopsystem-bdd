@@ -695,3 +695,19 @@ Feature: Batches
     When the person opens the batch b1
     Then the batches service keeps the index file i2
     And the index file i2 holds the capability c1
+
+  @g116 @r116
+  Scenario: A model line that restates an element is laid in place of it
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a model line m1
+    And an element e1
+    And the model line m1 restates the element e1
+    And the item i1 holds the model line m1
+    And a batch b1
+    When the person opens the batch b1
+    Then this domain model holds the model line m1
+    And the batches service keeps the model line m1
+    And the batches service keeps the domain model d1
+    And the domain model d1 does not hold the element e1

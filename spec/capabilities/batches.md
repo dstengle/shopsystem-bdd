@@ -186,3 +186,6 @@ when the change is merged.
 ### [g115] A batch opened names a capability with a requirement in the index file
 - [r115] While a capability has a requirement and an item is `ready` and the item meets the readiness bar, when the person opens a batch, the batches service shall keep an index file that holds the capability.
 
+### [g116] A model line that restates an element is laid in place of it
+- [r116] While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an element, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the element.
+

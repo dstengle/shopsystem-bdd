@@ -103,4 +103,9 @@ object ignore file kind of tracked file
 object ignore file form kind of artifact
 
 object context purpose kind of text
+
+object instructions file kind of tracked file
+  relations: holds → old command line (many)
+
+object old command line kind of text
 ```

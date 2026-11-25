@@ -17,6 +17,7 @@ object bounded context
   relations: has → contract (many)
   relations: has → id (one)
   attributes: availability: available | unreachable
+  attributes: health: sound | failing
 
 object capability kind of file
   attributes: group: service | guarantees | model | operations; language: codified-1 | codified-2
@@ -225,6 +226,7 @@ object repository
   relations: has → context scaffold (one)
   relations: has → scenario conftest (one)
   relations: has → ignore file (one)
+  relations: has → instructions file (many)
 
 object construct
   relations: has → catalogue entry (many)
@@ -278,7 +280,7 @@ service specification
   operation fetch(contract, version) by downstream context
     outcomes: returned → the contract | refused: version not published
   operation obtain(contract, bounded context, version) by the person
-    outcomes: done → the contract | refused: bounded context with no contract, id not in the context id form, bounded context unreachable
+    outcomes: done → the contract | refused: bounded context with no contract, id not in the context id form, bounded context unreachable, bounded context failing
 
 service decisions
   operation enter(design-decision, title, summary, tier, wording, route, supersedes)
@@ -349,7 +351,7 @@ object contract kind of artifact
   relations: holds → operation | property | requirement (many)
   attributes: status: published | superseded
   lifecycle status: published → superseded
-  relations: has → version (one); holds → term | design-decision (many)
+  relations: has → version (one); holds → term (many)
 
 object contract form kind of artifact
 

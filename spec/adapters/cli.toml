@@ -976,6 +976,7 @@ requirements = [
   "batches#r113: While an item is `ready` and the item meets the readiness bar, when the person opens a batch, the batches service shall keep an index file that conforms to the index form.",
   "batches#r114: While a capability has no requirement and an item is `ready` and the item meets the readiness bar, when the person opens a batch, the batches service shall keep an index file that does not hold the capability.",
   "batches#r115: While a capability has a requirement and an item is `ready` and the item meets the readiness bar, when the person opens a batch, the batches service shall keep an index file that holds the capability.",
+  "batches#r116: While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an element, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the element.",
 ]
 
 [operations."batches.resume"]
@@ -1247,6 +1248,7 @@ requirements = [
   "upgrades#r30: While the release of this repository is `0.34.0` and the release of the plugin is `0.34.1`, when the person upgrades this repository, the upgrades service shall return `no upgrade step is pending`, change the plugin version file of this repository and keep the plugin version file.",
   "upgrades#r36: While the release of this repository is before the release of the plugin and the scenario conftest of this repository conforms to the old scenario conftest form, when the person upgrades this repository, the upgrades service shall change the scenario conftest of this repository and keep the scenario conftest.",
   "upgrades#r37: While the release of this repository is before the release of the plugin and the scenario conftest of this repository does not conform to the old scenario conftest form and the scenario conftest of this repository does not conform to the scenario conftest form, when the person upgrades this repository, the upgrades service shall return the scenario conftest and not change the scenario conftest.",
+  "upgrades#r44: While the release of this repository is before the release of the plugin and an instructions file of this repository holds an old command line, when the person upgrades this repository, the upgrades service shall change the old command line and keep the instructions file.",
 ]
 
 [operations."upgrades.relocate"]
@@ -1483,6 +1485,7 @@ requirements = [
   "checking#r91: While an adapter spec has a provider, when the person obtains a contract from the provider, the specification service shall keep the contract that the adapter spec holds.",
   "checking#r94: If the person obtains a contract from a provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `no adapter spec has the provider` reason.",
   "checking#r100: While an adapter spec has a provider and the provider has the `1.2.0` version and the provider has a contract that has the `1.3.0` version, when the person obtains a contract from the provider, the specification service shall keep a contract that has the `1.2.0` version and keep the adapter spec that holds the contract.",
+  "checking#r102: If the person obtains a contract from a bounded context whose health is `failing`, then the specification service shall refuse the request and name the bounded context and the `bounded context failing` reason.",
 ]
 [operations."specification.obtain".parameters]
 "bounded context" = { positional = 1, example = "bounded-context/example.org/fixture/inventory" }

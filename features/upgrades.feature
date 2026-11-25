@@ -1120,3 +1120,15 @@ Feature: Upgrades
     And this repository has the context scaffold c2
     And the upgrades service does not change the ignore file i1
     And the upgrades service completes this request
+
+  @g44 @r44
+  Scenario: An upgrade rewrites an old command line of an instructions file
+    Given the release of this repository is `0.23.1`
+    And the release of this plugin is `0.34.1`
+    And an instructions file i1
+    And this repository has the instructions file i1
+    And an old command line o1
+    And the instructions file i1 holds the old command line o1
+    When the person upgrades this repository
+    Then the upgrades service changes the old command line o1
+    And the upgrades service keeps the instructions file i1

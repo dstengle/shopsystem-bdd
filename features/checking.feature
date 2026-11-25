@@ -792,3 +792,13 @@ Feature: Checking
     When the person validates this specification
     Then the specification service fails this check
     And the specification service names the transition t1
+
+  @g102 @r102
+  Scenario: A bounded context that fails to answer is not reported as unreachable
+    Given a bounded context b1
+    And the health of the bounded context b1 is `failing`
+    And a contract c1
+    When the person obtains the contract c1 from the bounded context b1
+    Then the specification service refuses this request
+    And the specification service names the bounded context b1
+    And the specification service names `bounded context failing`

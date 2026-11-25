@@ -287,6 +287,9 @@ Restates: design-model-check#r13@0.29.
 ### [g101] A lifecycle transition that no operation of its own area performs fails the check
 - [r101] While an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition, if the person validates this specification, then the specification service shall fail the check and name the transition.
 
+### [g102] A bounded context that fails to answer is not reported as unreachable
+- [r102] If the person obtains a contract from a bounded context whose health is `failing`, then the specification service shall refuse the request and name the bounded context and the `bounded context failing` reason.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.
