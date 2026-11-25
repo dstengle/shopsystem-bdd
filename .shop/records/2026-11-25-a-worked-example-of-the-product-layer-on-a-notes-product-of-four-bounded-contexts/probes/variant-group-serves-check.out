@@ -1,0 +1,5 @@
+warning w_example  a requirement holds example data: a code or quoted string that names no declared constant  (3)
+    capability/example.org/notes/notebook/notes#r6, 100
+    capability/example.org/notes/notebook/tags#r1, work
+    capability/example.org/notes/notebook/transfer#r3, 100
+0 violations, 3 warnings, 0 unresolved references, 0 file problems

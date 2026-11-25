@@ -1,0 +1,208 @@
+context = "bounded-context/example.org/notes/notebook"
+version = "1.0.0"
+requirements = [
+  "access#r1: When a client opens a note to a reader, the notes service shall keep a note that has the reader.",
+  "access#r2: If a client opens a note whose status is `removed` to a reader, then the notes service shall refuse the request and name the note.",
+  "access#r3: While a note has a reader, when a client closes the note to the reader, the notes service shall complete the request.",
+  "allowance#r1: When a client enlarges an allowance, the notes service shall keep the allowance.",
+  "allowance#r2: When a client reduces an allowance, the notes service shall keep the allowance.",
+  "notes#r1: When the person adds a note with a title and a tag, the notes service shall keep the note under the tag.",
+  "notes#r2: If the person adds a note without a title, then the notes service shall refuse the request and name the title.",
+  "notes#r3: When the person lists the notes, the notes service shall return every note.",
+  "notes#r4: When the person removes a note, the notes service shall set the status of the note to `removed`.",
+  "notes#r5: When the person lists the notes with a tag, the notes service shall return every note under the tag.",
+  "notes#r6: While the number of notes is at least `100`, if the person adds a note, then the notes service shall refuse the request and name an allowance.",
+  "tags#r1: When the person renames a tag with the spelling `work`, the notes service shall keep the tag.",
+  "transfer#r1: When a client exports the notes, the notes service shall return a bundle that holds every note whose status is `kept`.",
+  "transfer#r2: When a client imports a bundle, the notes service shall keep every note that the bundle holds.",
+  "transfer#r3: While the number of notes is at least `100`, if a client imports a bundle, then the notes service shall refuse the request and name an allowance.",
+]
+terms = [
+  "note (noun): One short text the person keeps, with a title.",
+  "tag (noun): A word the person files a note under.",
+  "reader (noun): Someone other than the person whom a note is open to.",
+  "allowance (noun): How many notes the person may keep.",
+  "bundle (noun): Every kept note taken together, as one thing to hand over or take in.",
+  "the notes service (proper noun): What answers the person's and the clients' requests about notes.",
+  "the person (proper noun): The human who keeps the notes.",
+  "a client (proper noun): Another context of the product that asks the notes service for something.",
+  "title (attribute of note): The one line that names a note.",
+  "spelling (attribute of tag): The word a tag is written as.",
+  "size (attribute of allowance): The number of notes an allowance permits.",
+  "status (attribute of note): Whether a note is kept or removed.",
+  "add (verb, action): Forms: adds, added. Frame: <actor> adds <note>.",
+  "list (verb, action): Forms: lists, listed. Frame: <actor> lists the notes.",
+  "remove (verb, action): Forms: removes, removed. Frame: <actor> removes <note>.",
+  "rename (verb, action): Forms: renames, renamed. Frame: <actor> renames <tag>.",
+  "open (verb, action): Forms: opens, opened. Frame: <actor> opens <note> to <reader>.",
+  "close (verb, action): Forms: closes, closed. Frame: <actor> closes <note> to <reader>.",
+  "enlarge (verb, action): Forms: enlarges, enlarged. Frame: <actor> enlarges <allowance>.",
+  "reduce (verb, action): Forms: reduces, reduced. Frame: <actor> reduces <allowance>.",
+  "export (verb, action): Forms: exports, exported. Frame: <actor> exports the notes.",
+  "import (verb, action): Forms: imports, imported. Frame: <actor> imports <bundle>.",
+]
+
+[objects."allowance"]
+area = "notes-cli"
+attributes = [
+  "size (number)",
+]
+
+[objects."bundle"]
+area = "notes-cli"
+relations = [
+  "holds → note (many)",
+]
+
+[objects."note"]
+area = "notes-cli"
+attributes = [
+  "title (text)",
+  "status: kept | removed",
+]
+lifecycles = [
+  "status: kept → removed",
+]
+relations = [
+  "under → tag (many)",
+  "has → reader (many)",
+]
+
+[objects."reader"]
+area = "notes-cli"
+
+[objects."tag"]
+area = "notes-cli"
+attributes = [
+  "spelling (text)",
+]
+
+[operations."notes.add"]
+parameters = [
+  "title (text)",
+  "tag (object: tag)",
+]
+outcomes = [
+  "done → the note",
+  "refused",
+  "refused",
+]
+reasons = [
+  "no title",
+  "allowance used up",
+]
+requirements = [
+  "notes#r1: When the person adds a note with a title and a tag, the notes service shall keep the note under the tag.",
+  "notes#r2: If the person adds a note without a title, then the notes service shall refuse the request and name the title.",
+  "notes#r6: While the number of notes is at least `100`, if the person adds a note, then the notes service shall refuse the request and name an allowance.",
+]
+
+[operations."notes.list"]
+parameters = [
+  "tag (object: tag)",
+]
+outcomes = [
+  "returned → every note",
+]
+requirements = [
+  "notes#r3: When the person lists the notes, the notes service shall return every note.",
+  "notes#r5: When the person lists the notes with a tag, the notes service shall return every note under the tag.",
+]
+
+[operations."notes.remove"]
+parameters = [
+  "note (object: note)",
+]
+outcomes = [
+  "done",
+]
+requirements = [
+  "notes#r4: When the person removes a note, the notes service shall set the status of the note to `removed`.",
+]
+
+[operations."notes.rename"]
+parameters = [
+  "tag (object: tag)",
+  "spelling (text)",
+]
+outcomes = [
+  "done",
+]
+requirements = [
+  "tags#r1: When the person renames a tag with the spelling `work`, the notes service shall keep the tag.",
+]
+
+[operations."notes.open"]
+parameters = [
+  "note (object: note)",
+  "reader (object: reader)",
+]
+outcomes = [
+  "done",
+  "refused",
+]
+reasons = [
+  "removed note",
+]
+requirements = [
+  "access#r1: When a client opens a note to a reader, the notes service shall keep a note that has the reader.",
+  "access#r2: If a client opens a note whose status is `removed` to a reader, then the notes service shall refuse the request and name the note.",
+]
+
+[operations."notes.close"]
+parameters = [
+  "note (object: note)",
+  "reader (object: reader)",
+]
+outcomes = [
+  "done",
+]
+requirements = [
+  "access#r3: While a note has a reader, when a client closes the note to the reader, the notes service shall complete the request.",
+]
+
+[operations."notes.enlarge"]
+parameters = [
+  "allowance (object: allowance)",
+]
+outcomes = [
+  "done",
+]
+requirements = [
+  "allowance#r1: When a client enlarges an allowance, the notes service shall keep the allowance.",
+]
+
+[operations."notes.reduce"]
+parameters = [
+  "allowance (object: allowance)",
+]
+outcomes = [
+  "done",
+]
+requirements = [
+  "allowance#r2: When a client reduces an allowance, the notes service shall keep the allowance.",
+]
+
+[operations."notes.export"]
+outcomes = [
+  "returned → the bundle",
+]
+requirements = [
+  "transfer#r1: When a client exports the notes, the notes service shall return a bundle that holds every note whose status is `kept`.",
+]
+
+[operations."notes.import"]
+parameters = [
+  "bundle (object: bundle)",
+]
+outcomes = [
+  "done",
+  "refused",
+]
+reasons = [
+  "allowance used up",
+]
+requirements = [
+  "transfer#r2: When a client imports a bundle, the notes service shall keep every note that the bundle holds.",
+  "transfer#r3: While the number of notes is at least `100`, if a client imports a bundle, then the notes service shall refuse the request and name an allowance.",
+]

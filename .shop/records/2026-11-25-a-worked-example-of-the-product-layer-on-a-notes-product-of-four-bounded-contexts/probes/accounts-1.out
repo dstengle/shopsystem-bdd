@@ -1,0 +1,22 @@
+OK   When the person subscribes to a plan, the accounts service shall charge a subscription that has the plan.
+OK   When the person subscribes to a plan, the accounts service shall keep a subscription that has the plan.
+FAIL When the payments service completes the request, the accounts service shall entitle the subscription.
+     | refused: "the subscription" has no antecedent: no earlier noun phrase, functional relation or declared indexical gives a subscription
+     |   tree: When NoPre (k_service_Event (k_service_One (k_service_Simple a_the_payments_service_3)) (e_complete_action_5_1 (k_request_One (k_request_Simple (k_request_Det DetThe (k_request_UseN k_request_n)))))) (OneResp (k_service_Shall a_the_accounts_service_1 (k_service_OneAct (k_service_Act_k_agent PPos (e_entitle_action_12_1 (k_subscription_One (k_subscription_Simple (k_subscription_Det DetThe (k_subscription_UseN k_subscription_n)))))))))
+     |   reading rule: R2 of the language reference, grammar/language.md
+FAIL When the payments service completes the charge of a subscription, the accounts service shall entitle the subscription.
+     | refused: the verb complete takes as its object request or a kind of it: service completes request
+     |   parsed up to: When the payments service completes the
+     |   nearest words: charge, charges, charged, change, `charged`
+     |   may follow: request
+OK   While a subscription is `charged`, when the payments service completes the request, the accounts service shall entitle the subscription.
+OK   While a subscription is `charged`, if the notebook service refuses the request, then the accounts service shall refund the subscription.
+OK   While a subscription is `charged`, if the notebook service refuses the request, then the accounts service shall refund the subscription and set the status of the subscription to `refunded`.
+OK   While a subscription is `charged`, when the notebook service completes the request, the accounts service shall set the status of the subscription to `active`.
+OK   While a subscription is `requested`, when the payments service completes the request, the accounts service shall set the status of the subscription to `charged` and entitle the subscription.
+OK   While a subscription is `requested`, if the payments service refuses the request, then the accounts service shall refuse the request and name the subscription.
+OK   When the accounts service charges a subscription, the payments service shall complete the request.
+OK   If the accounts service charges a subscription, then the payments service shall refuse the request.
+OK   When the accounts service refunds a subscription, the payments service shall complete the request.
+OK   When the accounts service entitles a subscription, the notebook service shall complete the request.
+OK   When the accounts service unentitles a subscription, the notebook service shall complete the request.

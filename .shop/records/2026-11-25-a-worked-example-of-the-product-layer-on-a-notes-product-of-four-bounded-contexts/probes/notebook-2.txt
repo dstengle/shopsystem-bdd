@@ -1,0 +1,10 @@
+While the number of notes is at least `100`, if the person adds a note, then the notes service shall refuse the request and name an allowance.
+While the number of notes is at least the size of an allowance, if the person adds a note, then the notes service shall refuse the request.
+While the number of notes is more than the size of an allowance, if the person adds a note, then the notes service shall refuse the request.
+While an allowance is used up, if the person adds a note, then the notes service shall refuse the request and name the allowance.
+When a client exports the notes, the notes service shall return a bundle that holds every note whose status is `kept`.
+When the person renames a tag with the spelling `work`, the notes service shall set the spelling of the tag to `work`.
+When a client opens a note to a reader, the notes service shall keep the reader and the note.
+While a note is open to a reader, when a client closes the note to the reader, the notes service shall complete the request.
+If a client imports a bundle while the number of notes is at least `100`, then the notes service shall refuse the request and name an allowance.
+While the number of notes is at least `100`, if a client imports a bundle, then the notes service shall refuse the request and name an allowance.

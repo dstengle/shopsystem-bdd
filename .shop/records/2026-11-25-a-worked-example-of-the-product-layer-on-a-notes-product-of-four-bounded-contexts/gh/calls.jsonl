@@ -1,0 +1,8 @@
+{"argv": ["api", "repos/ex/notes-notebook"]}
+{"argv": ["api", "-H", "Accept: application/vnd.github.raw", "repos/ex/notes-notebook/contents/.shop/contracts/1.0.0/contract.toml"]}
+{"argv": ["api", "repos/ex/notes-notebook"]}
+{"argv": ["api", "-H", "Accept: application/vnd.github.raw", "repos/ex/notes-notebook/contents/.shop/contracts"]}
+{"argv": ["api", "-H", "Accept: application/vnd.github.raw", "repos/ex/notes-notebook/contents/.shop/contracts/1.0.0/contract.toml"]}
+{"argv": ["api", "repos/ex/notes-notebook"]}
+{"argv": ["api", "-H", "Accept: application/vnd.github.raw", "repos/ex/notes-notebook/contents/.shop/contracts"]}
+{"argv": ["api", "-H", "Accept: application/vnd.github.raw", "repos/ex/notes-notebook/contents/.shop/contracts/1.0.0/contract.toml"]}

@@ -1,0 +1,194 @@
+node("bounded-context/example.org/notes/accounts", "bounded-context").
+typed("bounded-context/example.org/notes/accounts").
+node("term/example.org/notes/accounts/plan", "term").
+term_of("term/example.org/notes/accounts/plan", "bounded-context/example.org/notes/accounts").
+glossary_entry("term/example.org/notes/accounts/plan", 1, "plan").
+category("term/example.org/notes/accounts/plan", "kind").
+linearises("term/example.org/notes/accounts/plan", "kind plan ()").
+node("term/example.org/notes/accounts/subscription", "term").
+term_of("term/example.org/notes/accounts/subscription", "bounded-context/example.org/notes/accounts").
+glossary_entry("term/example.org/notes/accounts/subscription", 2, "subscription").
+category("term/example.org/notes/accounts/subscription", "kind").
+linearises("term/example.org/notes/accounts/subscription", "kind subscription ()").
+node("term/example.org/notes/accounts/the-accounts-service", "term").
+term_of("term/example.org/notes/accounts/the-accounts-service", "bounded-context/example.org/notes/accounts").
+glossary_entry("term/example.org/notes/accounts/the-accounts-service", 3, "the accounts service").
+category("term/example.org/notes/accounts/the-accounts-service", "actor").
+linearises("term/example.org/notes/accounts/the-accounts-service", "actor the accounts service ()").
+node("term/example.org/notes/accounts/the-notebook-service", "term").
+term_of("term/example.org/notes/accounts/the-notebook-service", "bounded-context/example.org/notes/accounts").
+glossary_entry("term/example.org/notes/accounts/the-notebook-service", 4, "the notebook service").
+category("term/example.org/notes/accounts/the-notebook-service", "actor").
+linearises("term/example.org/notes/accounts/the-notebook-service", "actor the notebook service ()").
+node("term/example.org/notes/accounts/the-payments-service", "term").
+term_of("term/example.org/notes/accounts/the-payments-service", "bounded-context/example.org/notes/accounts").
+glossary_entry("term/example.org/notes/accounts/the-payments-service", 5, "the payments service").
+category("term/example.org/notes/accounts/the-payments-service", "actor").
+linearises("term/example.org/notes/accounts/the-payments-service", "actor the payments service ()").
+node("term/example.org/notes/accounts/the-person", "term").
+term_of("term/example.org/notes/accounts/the-person", "bounded-context/example.org/notes/accounts").
+glossary_entry("term/example.org/notes/accounts/the-person", 6, "the person").
+category("term/example.org/notes/accounts/the-person", "actor").
+linearises("term/example.org/notes/accounts/the-person", "actor the person ()").
+node("term/example.org/notes/accounts/status", "term").
+term_of("term/example.org/notes/accounts/status", "bounded-context/example.org/notes/accounts").
+glossary_entry("term/example.org/notes/accounts/status", 7, "status").
+category("term/example.org/notes/accounts/status", "attribute").
+linearises("term/example.org/notes/accounts/status", "attribute status (subscription)").
+node("term/example.org/notes/accounts/requested-of-subscription", "term").
+term_of("term/example.org/notes/accounts/requested-of-subscription", "bounded-context/example.org/notes/accounts").
+category("term/example.org/notes/accounts/requested-of-subscription", "value").
+value_of("term/example.org/notes/accounts/requested-of-subscription", "term/example.org/notes/accounts/subscription", "term/example.org/notes/accounts/status").
+node("term/example.org/notes/accounts/charged-of-subscription", "term").
+term_of("term/example.org/notes/accounts/charged-of-subscription", "bounded-context/example.org/notes/accounts").
+category("term/example.org/notes/accounts/charged-of-subscription", "value").
+value_of("term/example.org/notes/accounts/charged-of-subscription", "term/example.org/notes/accounts/subscription", "term/example.org/notes/accounts/status").
+node("term/example.org/notes/accounts/active-of-subscription", "term").
+term_of("term/example.org/notes/accounts/active-of-subscription", "bounded-context/example.org/notes/accounts").
+category("term/example.org/notes/accounts/active-of-subscription", "value").
+value_of("term/example.org/notes/accounts/active-of-subscription", "term/example.org/notes/accounts/subscription", "term/example.org/notes/accounts/status").
+node("term/example.org/notes/accounts/refunded-of-subscription", "term").
+term_of("term/example.org/notes/accounts/refunded-of-subscription", "bounded-context/example.org/notes/accounts").
+category("term/example.org/notes/accounts/refunded-of-subscription", "value").
+value_of("term/example.org/notes/accounts/refunded-of-subscription", "term/example.org/notes/accounts/subscription", "term/example.org/notes/accounts/status").
+node("term/example.org/notes/accounts/subscribe", "term").
+term_of("term/example.org/notes/accounts/subscribe", "bounded-context/example.org/notes/accounts").
+glossary_entry("term/example.org/notes/accounts/subscribe", 8, "subscribe").
+category("term/example.org/notes/accounts/subscribe", "event").
+linearises("term/example.org/notes/accounts/subscribe", "event subscribe ()").
+node("term/example.org/notes/accounts/entitle", "term").
+term_of("term/example.org/notes/accounts/entitle", "bounded-context/example.org/notes/accounts").
+glossary_entry("term/example.org/notes/accounts/entitle", 9, "entitle").
+category("term/example.org/notes/accounts/entitle", "event").
+linearises("term/example.org/notes/accounts/entitle", "event entitle ()").
+node("term/example.org/notes/accounts/charge", "term").
+term_of("term/example.org/notes/accounts/charge", "bounded-context/example.org/notes/accounts").
+glossary_entry("term/example.org/notes/accounts/charge", 10, "charge").
+category("term/example.org/notes/accounts/charge", "event").
+linearises("term/example.org/notes/accounts/charge", "event charge ()").
+node("term/example.org/notes/accounts/refund", "term").
+term_of("term/example.org/notes/accounts/refund", "bounded-context/example.org/notes/accounts").
+glossary_entry("term/example.org/notes/accounts/refund", 11, "refund").
+category("term/example.org/notes/accounts/refund", "event").
+linearises("term/example.org/notes/accounts/refund", "event refund ()").
+operation("accounts.subscribe").
+op_param("accounts.subscribe", "plan").
+op_object("accounts.subscribe", "subscription").
+operation("notebook.entitle").
+op_param("notebook.entitle", "subscription").
+op_reason("notebook.entitle", "no allowance").
+op_object("notebook.entitle", "subscription").
+operation("payments.charge").
+op_param("payments.charge", "subscription").
+op_reason("payments.charge", "card declined").
+op_object("payments.charge", "subscription").
+operation("payments.refund").
+op_param("payments.refund", "subscription").
+op_object("payments.refund", "subscription").
+actor_kind("the person", "agent").
+lifecycle("subscription", "status").
+transition("subscription", "status", "requested", "charged").
+transition("subscription", "status", "charged", "active").
+transition("subscription", "status", "charged", "refunded").
+node("capability/example.org/notes/accounts/notebook-port", "capability").
+in("capability/example.org/notes/accounts/notebook-port", "bounded-context/example.org/notes/accounts").
+narrator("capability/example.org/notes/accounts/notebook-port", "the accounts service").
+group("capability/example.org/notes/accounts/notebook-port", "service").
+codified("capability/example.org/notes/accounts/notebook-port").
+node("capability/example.org/notes/accounts/notebook-port#g1", "requirement-group").
+group_id("capability/example.org/notes/accounts/notebook-port#g1", "capability/example.org/notes/accounts/notebook-port", 1).
+in("capability/example.org/notes/accounts/notebook-port#g1", "capability/example.org/notes/accounts/notebook-port").
+node("capability/example.org/notes/accounts/notebook-port#r1", "requirement").
+req_id("capability/example.org/notes/accounts/notebook-port#r1", "capability/example.org/notes/accounts/notebook-port", 1).
+member_of("capability/example.org/notes/accounts/notebook-port#r1", "capability/example.org/notes/accounts/notebook-port#g1").
+pre("capability/example.org/notes/accounts/notebook-port#r1", "NoPre | k_agent_Event (k_agent_One (k_service_Up_k_agent a_the_accounts_service_1)) (e_entitle_action_12_1 (k_subscription_One (k_subscription_Simple (k_subscription_Det DetA (k_subscription_UseN k_subscription_n)))))").
+parsed("capability/example.org/notes/accounts/notebook-port#r1").
+requester("capability/example.org/notes/accounts/notebook-port#r1", "notebook.entitle", "the accounts service").
+node("capability/example.org/notes/accounts/payments-port", "capability").
+in("capability/example.org/notes/accounts/payments-port", "bounded-context/example.org/notes/accounts").
+narrator("capability/example.org/notes/accounts/payments-port", "the accounts service").
+group("capability/example.org/notes/accounts/payments-port", "service").
+codified("capability/example.org/notes/accounts/payments-port").
+node("capability/example.org/notes/accounts/payments-port#g1", "requirement-group").
+group_id("capability/example.org/notes/accounts/payments-port#g1", "capability/example.org/notes/accounts/payments-port", 1).
+in("capability/example.org/notes/accounts/payments-port#g1", "capability/example.org/notes/accounts/payments-port").
+node("capability/example.org/notes/accounts/payments-port#r1", "requirement").
+req_id("capability/example.org/notes/accounts/payments-port#r1", "capability/example.org/notes/accounts/payments-port", 1).
+member_of("capability/example.org/notes/accounts/payments-port#r1", "capability/example.org/notes/accounts/payments-port#g1").
+pre("capability/example.org/notes/accounts/payments-port#r1", "NoPre | k_agent_Event (k_agent_One (k_service_Up_k_agent a_the_accounts_service_1)) (e_charge_action_13_1 (k_subscription_One (k_subscription_Simple (k_subscription_Det DetA (k_subscription_UseN k_subscription_n)))))").
+parsed("capability/example.org/notes/accounts/payments-port#r1").
+requester("capability/example.org/notes/accounts/payments-port#r1", "payments.charge", "the accounts service").
+node("capability/example.org/notes/accounts/payments-port#g2", "requirement-group").
+group_id("capability/example.org/notes/accounts/payments-port#g2", "capability/example.org/notes/accounts/payments-port", 2).
+in("capability/example.org/notes/accounts/payments-port#g2", "capability/example.org/notes/accounts/payments-port").
+node("capability/example.org/notes/accounts/payments-port#r2", "requirement").
+req_id("capability/example.org/notes/accounts/payments-port#r2", "capability/example.org/notes/accounts/payments-port", 2).
+member_of("capability/example.org/notes/accounts/payments-port#r2", "capability/example.org/notes/accounts/payments-port#g2").
+pre("capability/example.org/notes/accounts/payments-port#r2", "NoPre | k_agent_Event (k_agent_One (k_service_Up_k_agent a_the_accounts_service_1)) (e_refund_action_14_1 (k_subscription_One (k_subscription_Simple (k_subscription_Det DetA (k_subscription_UseN k_subscription_n)))))").
+parsed("capability/example.org/notes/accounts/payments-port#r2").
+requester("capability/example.org/notes/accounts/payments-port#r2", "payments.refund", "the accounts service").
+node("capability/example.org/notes/accounts/plans", "capability").
+in("capability/example.org/notes/accounts/plans", "bounded-context/example.org/notes/accounts").
+narrator("capability/example.org/notes/accounts/plans", "the person").
+group("capability/example.org/notes/accounts/plans", "service").
+codified("capability/example.org/notes/accounts/plans").
+node("capability/example.org/notes/accounts/plans#g1", "requirement-group").
+group_id("capability/example.org/notes/accounts/plans#g1", "capability/example.org/notes/accounts/plans", 1).
+in("capability/example.org/notes/accounts/plans#g1", "capability/example.org/notes/accounts/plans").
+node("capability/example.org/notes/accounts/plans#r1", "requirement").
+req_id("capability/example.org/notes/accounts/plans#r1", "capability/example.org/notes/accounts/plans", 1).
+member_of("capability/example.org/notes/accounts/plans#r1", "capability/example.org/notes/accounts/plans#g1").
+pre("capability/example.org/notes/accounts/plans#r1", "NoPre | k_agent_Event (k_agent_One (k_agent_Simple a_the_person_4)) (e_subscribe_action_11_1 (k_plan_One (k_plan_Simple (k_plan_Det DetA (k_plan_UseN k_plan_n)))))").
+parsed("capability/example.org/notes/accounts/plans#r1").
+requester("capability/example.org/notes/accounts/plans#r1", "accounts.subscribe", "the person").
+node("capability/example.org/notes/accounts/plans#g2", "requirement-group").
+group_id("capability/example.org/notes/accounts/plans#g2", "capability/example.org/notes/accounts/plans", 2).
+in("capability/example.org/notes/accounts/plans#g2", "capability/example.org/notes/accounts/plans").
+node("capability/example.org/notes/accounts/plans#r2", "requirement").
+req_id("capability/example.org/notes/accounts/plans#r2", "capability/example.org/notes/accounts/plans", 2).
+member_of("capability/example.org/notes/accounts/plans#r2", "capability/example.org/notes/accounts/plans#g2").
+pre("capability/example.org/notes/accounts/plans#r2", "While (OneCond (t_status_2_k_subscription_Is PPos (k_subscription_Simple (k_subscription_Det DetA (k_subscription_UseN k_subscription_n))) t_status_2_v_requested)) | k_service_Event (k_service_One (k_service_Simple a_the_payments_service_3)) (e_complete_action_5_1 (k_request_One (k_request_Simple (k_request_Det DetThe (k_request_UseN k_request_n)))))").
+parsed("capability/example.org/notes/accounts/plans#r2").
+sets("capability/example.org/notes/accounts/plans#r2", "subscription", "status", "requested", "charged").
+node("capability/example.org/notes/accounts/plans#g3", "requirement-group").
+group_id("capability/example.org/notes/accounts/plans#g3", "capability/example.org/notes/accounts/plans", 3).
+in("capability/example.org/notes/accounts/plans#g3", "capability/example.org/notes/accounts/plans").
+node("capability/example.org/notes/accounts/plans#r3", "requirement").
+req_id("capability/example.org/notes/accounts/plans#r3", "capability/example.org/notes/accounts/plans", 3).
+member_of("capability/example.org/notes/accounts/plans#r3", "capability/example.org/notes/accounts/plans#g3").
+pre("capability/example.org/notes/accounts/plans#r3", "While (OneCond (t_status_2_k_subscription_Is PPos (k_subscription_Simple (k_subscription_Det DetA (k_subscription_UseN k_subscription_n))) t_status_2_v_requested)) | k_service_Event (k_service_One (k_service_Simple a_the_payments_service_3)) (e_refuse_action_1_1 (k_request_One (k_request_Simple (k_request_Det DetThe (k_request_UseN k_request_n)))))").
+parsed("capability/example.org/notes/accounts/plans#r3").
+node("capability/example.org/notes/accounts/plans#g4", "requirement-group").
+group_id("capability/example.org/notes/accounts/plans#g4", "capability/example.org/notes/accounts/plans", 4).
+in("capability/example.org/notes/accounts/plans#g4", "capability/example.org/notes/accounts/plans").
+node("capability/example.org/notes/accounts/plans#r4", "requirement").
+req_id("capability/example.org/notes/accounts/plans#r4", "capability/example.org/notes/accounts/plans", 4).
+member_of("capability/example.org/notes/accounts/plans#r4", "capability/example.org/notes/accounts/plans#g4").
+pre("capability/example.org/notes/accounts/plans#r4", "While (OneCond (t_status_2_k_subscription_Is PPos (k_subscription_Simple (k_subscription_Det DetA (k_subscription_UseN k_subscription_n))) t_status_2_v_charged)) | k_service_Event (k_service_One (k_service_Simple a_the_notebook_service_2)) (e_complete_action_5_1 (k_request_One (k_request_Simple (k_request_Det DetThe (k_request_UseN k_request_n)))))").
+parsed("capability/example.org/notes/accounts/plans#r4").
+sets("capability/example.org/notes/accounts/plans#r4", "subscription", "status", "charged", "active").
+node("capability/example.org/notes/accounts/plans#g5", "requirement-group").
+group_id("capability/example.org/notes/accounts/plans#g5", "capability/example.org/notes/accounts/plans", 5).
+in("capability/example.org/notes/accounts/plans#g5", "capability/example.org/notes/accounts/plans").
+node("capability/example.org/notes/accounts/plans#r5", "requirement").
+req_id("capability/example.org/notes/accounts/plans#r5", "capability/example.org/notes/accounts/plans", 5).
+member_of("capability/example.org/notes/accounts/plans#r5", "capability/example.org/notes/accounts/plans#g5").
+pre("capability/example.org/notes/accounts/plans#r5", "While (OneCond (t_status_2_k_subscription_Is PPos (k_subscription_Simple (k_subscription_Det DetA (k_subscription_UseN k_subscription_n))) t_status_2_v_charged)) | k_service_Event (k_service_One (k_service_Simple a_the_notebook_service_2)) (e_refuse_action_1_1 (k_request_One (k_request_Simple (k_request_Det DetThe (k_request_UseN k_request_n)))))").
+parsed("capability/example.org/notes/accounts/plans#r5").
+sets("capability/example.org/notes/accounts/plans#r5", "subscription", "status", "charged", "refunded").
+node("features/notebook-port.feature:A subscription entitled completes", "scenario").
+generates("capability/example.org/notes/accounts/notebook-port#g1", "features/notebook-port.feature:A subscription entitled completes").
+node("features/payments-port.feature:A subscription charged completes", "scenario").
+generates("capability/example.org/notes/accounts/payments-port#g1", "features/payments-port.feature:A subscription charged completes").
+node("features/payments-port.feature:A subscription refunded completes", "scenario").
+generates("capability/example.org/notes/accounts/payments-port#g2", "features/payments-port.feature:A subscription refunded completes").
+node("features/plans.feature:Subscribing to a plan charges a subscription", "scenario").
+generates("capability/example.org/notes/accounts/plans#g1", "features/plans.feature:Subscribing to a plan charges a subscription").
+node("features/plans.feature:A charge completed makes the subscription charged and entitles it", "scenario").
+generates("capability/example.org/notes/accounts/plans#g2", "features/plans.feature:A charge completed makes the subscription charged and entitles it").
+node("features/plans.feature:A charge refused is told to the person", "scenario").
+generates("capability/example.org/notes/accounts/plans#g3", "features/plans.feature:A charge refused is told to the person").
+node("features/plans.feature:An entitlement completed makes the subscription active", "scenario").
+generates("capability/example.org/notes/accounts/plans#g4", "features/plans.feature:An entitlement completed makes the subscription active").
+node("features/plans.feature:An entitlement refused refunds the charge", "scenario").
+generates("capability/example.org/notes/accounts/plans#g5", "features/plans.feature:An entitlement refused refunds the charge").

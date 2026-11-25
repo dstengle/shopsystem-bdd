@@ -1,0 +1,20 @@
+v_a5  an operation of an adapter contract does not hold a requirement that governs it: run spec annotate  (2)
+    notes.add, capability/example.org/notes/notebook/notes#r6
+    notes.list, capability/example.org/notes/notebook/notes#r5
+v_s3  a group has no scenario  (11)
+    capability/example.org/notes/notebook/access#g1
+    capability/example.org/notes/notebook/access#g2
+    capability/example.org/notes/notebook/access#g3
+    capability/example.org/notes/notebook/allowance#g1
+    capability/example.org/notes/notebook/allowance#g2
+    capability/example.org/notes/notebook/notes#g5
+    capability/example.org/notes/notebook/notes#g6
+    capability/example.org/notes/notebook/tags#g1
+    capability/example.org/notes/notebook/transfer#g1
+    capability/example.org/notes/notebook/transfer#g2
+    ... and 1 more
+warning w_example  a requirement holds example data: a code or quoted string that names no declared constant  (3)
+    capability/example.org/notes/notebook/notes#r6, 100
+    capability/example.org/notes/notebook/tags#r1, work
+    capability/example.org/notes/notebook/transfer#r3, 100
+13 violations, 3 warnings, 0 unresolved references, 0 file problems

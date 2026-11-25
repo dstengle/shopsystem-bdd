@@ -1,0 +1,3 @@
+When a client opens a note to a reader, the notes service shall keep the note readable by the reader.
+While a note is readable by a reader, when a client closes the note to the reader, the notes service shall complete the request.
+When a client closes a note to a reader, the notes service shall keep the note.

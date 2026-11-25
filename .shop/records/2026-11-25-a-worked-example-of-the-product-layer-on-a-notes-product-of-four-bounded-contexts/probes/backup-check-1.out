@@ -1,0 +1,4 @@
+warning w_m5  a lifecycle transition no line causes  (2)
+    snapshot, status, taken, lost
+    snapshot, status, taken, stored
+0 violations, 2 warnings, 0 unresolved references, 0 file problems

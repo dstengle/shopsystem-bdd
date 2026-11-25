@@ -1,0 +1,6 @@
+v_m4  an operation declares a refusal reason that no line states  (2)
+    notebook.entitle, no allowance
+    payments.charge, card declined
+v_m8  the domain model breaks its own rules: a relation to an undeclared object, a transition over an undeclared value, two operations of one name in a service, an event raised by no operation, a property that refers to an undeclared parameter, operation or event  (1)
+    notebook.entitle compensated by unentitle, spec/model/notebook.md:16: the property compensated by unentitle of notebook.entitle refers to unentitle, which is not an operation the model declares
+3 violations, 0 warnings, 0 unresolved references, 0 file problems

@@ -1,0 +1,23 @@
+== notebook
+    capability/example.org/notes/notebook/tags#r1, work
+    capability/example.org/notes/notebook/transfer#r3, 100
+0 violations, 3 warnings, 0 unresolved references, 0 file problems
+no findings
+== sharing
+0 violations, 0 warnings, 0 unresolved references, 0 file problems
+no findings
+  adapter notebook: 0 violations, 0 warnings, 0 unresolved references, 0 file problems
+== backup
+    snapshot, status, taken, lost
+    snapshot, status, taken, stored
+0 violations, 2 warnings, 0 unresolved references, 0 file problems
+no findings
+  adapter notebook: 0 violations, 0 warnings, 0 unresolved references, 0 file problems
+  adapter storage: 0 violations, 0 warnings, 0 unresolved references, 0 file problems
+== accounts
+    notebook.entitle, no allowance
+    payments.charge, card declined
+2 violations, 0 warnings, 0 unresolved references, 0 file problems
+no findings
+  adapter notebook: 0 violations, 0 warnings, 0 unresolved references, 0 file problems
+  adapter payments: 0 violations, 0 warnings, 0 unresolved references, 0 file problems

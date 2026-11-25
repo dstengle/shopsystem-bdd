@@ -1,0 +1,24 @@
+item                             .shop/backlog/b<n>.md                                                  work idea
+item's requirement line          .shop/backlog/b<n>.md ## Requirements                                  work line
+item's chore                     .shop/backlog/b<n>.md ## Chore                                         work chore
+item's term bullet               .shop/backlog/b<n>.md ## Requirements                                  work line --term
+batch plan                       .shop/batches/<n>/plan.md                                              work batch start
+review record                    .shop/batches/<n>/review-<k>.md                                        work batch reviewed
+defect                           .shop/batches/<n>/defect-<k>.md                                        measure defect
+batch measurement                .shop/records/measurements/<date>-<batch>.md                           measure batch
+request                          .shop/requests/q<n>.md                                                 work request
+quote                            .shop/quotes/<n>.md                                                    work quote
+directive                        .shop/directives/<n>.md                                                work directive
+record                           .shop/records/<date>-<slug>.md                                         work record
+records index row                .shop/records/README.md                                                work record
+records index                    .shop/records/README.md                                                migrate init
+plugin version                   .shop/plugin-version                                                   migrate upgrade
+item's model lines               .shop/backlog/b<n>.md ## Requirements ### <area> model                 work line --model
+adapter contract                 spec/adapters/<port>.toml                                              work line --expose
+adapter contract's requirements  spec/adapters/<port>.toml, each operation's requirements               spec annotate
+observation                      .shop/records/observations.md ## <id>                                  work observe
+delivery settings                .shop/delivery.toml                                                    work settings set
+design record folder             .shop/records/<date>-<topic>/design.md                                 work record --design
+plan record folder               .shop/records/<date>-<topic>/plan-<k>.md                               work record --plan
+published contract               .shop/contracts/<version>/contract.toml                                spec publish
+obtained contract                adapters/<name>/provider/<upstream's id path>/<version>/contract.toml  spec obtain

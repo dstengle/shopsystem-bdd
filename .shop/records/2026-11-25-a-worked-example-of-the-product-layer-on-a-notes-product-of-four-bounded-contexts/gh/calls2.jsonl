@@ -1,0 +1,2 @@
+{"argv": ["api", "repos/ex/notes-shop"]}
+{"argv": ["api", "-H", "Accept: application/vnd.github.raw", "repos/ex/notes-shop/contents/.shop/contracts"]}

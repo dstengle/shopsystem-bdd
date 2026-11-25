@@ -1,0 +1,34 @@
+OK   While the number of notes is at least `100`, if the person adds a note, then the notes service shall refuse the request and name an allowance.
+FAIL While the number of notes is at least the size of an allowance, if the person adds a note, then the notes service shall refuse the request.
+     | does not parse at the (token 9 of 30)
+     |   parsed up to: While the number of notes is at least
+     |   nearest words: (none)
+     |   may follow: (none)
+FAIL While the number of notes is more than the size of an allowance, if the person adds a note, then the notes service shall refuse the request.
+     | does not parse at the (token 9 of 30)
+     |   parsed up to: While the number of notes is more than
+     |   nearest words: (none)
+     |   may follow: (none)
+FAIL While an allowance is used up, if the person adds a note, then the notes service shall refuse the request and name the allowance.
+     | does not parse at used (token 5 of 27)
+     |   parsed up to: While an allowance is
+     |   nearest words: `refused`, refuse, listed, closed
+     |   may follow: (none)
+OK   When a client exports the notes, the notes service shall return a bundle that holds every note whose status is `kept`.
+FAIL When the person renames a tag with the spelling `work`, the notes service shall set the spelling of the tag to `work`.
+     | does not parse at `work` (token 23 of 24)
+     |   parsed up to: When the person renames a tag with the spelling `work`, the notes service shall set the spelling of the tag to
+     |   nearest words: (none)
+     |   may follow: (none)
+OK   When a client opens a note to a reader, the notes service shall keep the reader and the note.
+FAIL While a note is open to a reader, when a client closes the note to the reader, the notes service shall complete the request.
+     | refused: the verb open is an action, and a While clause takes a state
+     |   parsed up to: While a note is
+     |   nearest words: open, opens, opened, open to
+     |   may follow: (none)
+FAIL If a client imports a bundle while the number of notes is at least `100`, then the notes service shall refuse the request and name an allowance.
+     | does not parse at while (token 7 of 29)
+     |   parsed up to: If a client imports a bundle
+     |   nearest words: title
+     |   may follow: bundle, conform
+OK   While the number of notes is at least `100`, if a client imports a bundle, then the notes service shall refuse the request and name an allowance.

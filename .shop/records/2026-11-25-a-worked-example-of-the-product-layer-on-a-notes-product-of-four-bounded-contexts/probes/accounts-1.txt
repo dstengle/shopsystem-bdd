@@ -1,0 +1,15 @@
+When the person subscribes to a plan, the accounts service shall charge a subscription that has the plan.
+When the person subscribes to a plan, the accounts service shall keep a subscription that has the plan.
+When the payments service completes the request, the accounts service shall entitle the subscription.
+When the payments service completes the charge of a subscription, the accounts service shall entitle the subscription.
+While a subscription is `charged`, when the payments service completes the request, the accounts service shall entitle the subscription.
+While a subscription is `charged`, if the notebook service refuses the request, then the accounts service shall refund the subscription.
+While a subscription is `charged`, if the notebook service refuses the request, then the accounts service shall refund the subscription and set the status of the subscription to `refunded`.
+While a subscription is `charged`, when the notebook service completes the request, the accounts service shall set the status of the subscription to `active`.
+While a subscription is `requested`, when the payments service completes the request, the accounts service shall set the status of the subscription to `charged` and entitle the subscription.
+While a subscription is `requested`, if the payments service refuses the request, then the accounts service shall refuse the request and name the subscription.
+When the accounts service charges a subscription, the payments service shall complete the request.
+If the accounts service charges a subscription, then the payments service shall refuse the request.
+When the accounts service refunds a subscription, the payments service shall complete the request.
+When the accounts service entitles a subscription, the notebook service shall complete the request.
+When the accounts service unentitles a subscription, the notebook service shall complete the request.

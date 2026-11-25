@@ -1,0 +1,13 @@
+p7 j2: names s5 (search), which no context its trace reaches addresses (reached: ['notebook'])
+p4 j3: invitations's narrator is 'the owner'; the actor 'the colleague' is called 'the colleague' in sharing
+p5 notebook:access serves no job (reached by a trace)
+p5 notebook:allowance serves no job (reached by a trace)
+p5 notebook:tags serves no job (reached by nothing)
+p5 notebook:transfer serves no job (reached by a trace)
+p5 sharing:notebook-port serves no job (a port capability)
+p5 backup:notebook-port serves no job (a port capability)
+p5 backup:storage-port serves no job (a port capability)
+p5 accounts:notebook-port serves no job (a port capability)
+p5 accounts:payments-port serves no job (a port capability)
+p6 s5 (search, core) is addressed by no bounded context
+12 findings

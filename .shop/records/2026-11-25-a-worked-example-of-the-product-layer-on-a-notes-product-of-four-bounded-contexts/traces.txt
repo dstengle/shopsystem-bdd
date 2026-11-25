@@ -1,0 +1,86 @@
+== j1 Jot a thought down: notebook, served by ['notes']
+   coordination: local (no port request)
+   notebook:notes#r1  When the person adds a note with a title and a tag, the notes service shall keep the note under the tag.
+   notebook:notes#r2  If the person adds a note without a title, then the notes service shall refuse the request and name the title.
+   notebook:notes#r3  When the person lists the notes, the notes service shall return every note.
+   notebook:notes#r4  When the person removes a note, the notes service shall set the status of the note to `removed`.
+   notebook:notes#r5  When the person lists the notes with a tag, the notes service shall return every note under the tag.
+   notebook:notes#r6  While the number of notes is at least `100`, if the person adds a note, then the notes service shall refuse the request and name an allowance.
+== j2 Pick a topic up again: notebook, served by ['notes']
+   coordination: local (no port request)
+   notebook:notes#r1  When the person adds a note with a title and a tag, the notes service shall keep the note under the tag.
+   notebook:notes#r2  If the person adds a note without a title, then the notes service shall refuse the request and name the title.
+   notebook:notes#r3  When the person lists the notes, the notes service shall return every note.
+   notebook:notes#r4  When the person removes a note, the notes service shall set the status of the note to `removed`.
+   notebook:notes#r5  When the person lists the notes with a tag, the notes service shall return every note under the tag.
+   notebook:notes#r6  While the number of notes is at least `100`, if the person adds a note, then the notes service shall refuse the request and name an allowance.
+== j3 Let a colleague read a note: sharing, served by ['invitations']
+   coordination: port request (notebook.hide, notebook.show; no line waits on a reply)
+   sharing:invitations#r1  When the owner shares a note with an address, the sharing service shall keep an invitation that has the note.
+   sharing:invitations#r2  If the owner shares a note without an address, then the sharing service shall refuse the request and name the address.
+   sharing:invitations#r9  When the colleague accepts an invitation, the sharing service shall set the status of the invitation to `accepted` and show the note of the invitation.
+     -> port request notebook.show (changes)
+        port line sharing:notebook-port#r1  When the sharing service shows a note, the notebook service shall complete the request.
+        adapter notebook -> provider bounded-context/example.org/notes/notebook@1.0.0 op notes.open; contract held
+        notebook:access#r1  When a client opens a note to a reader, the notes service shall keep a note that has the reader.
+        notebook:access#r2  If a client opens a note whose status is `removed` to a reader, then the notes service shall refuse the request and name the note.
+   sharing:invitations#r5  If the colleague accepts an invitation whose status is `withdrawn`, then the sharing service shall refuse the request and name the invitation.
+   sharing:invitations#r6  When the colleague declines an invitation, the sharing service shall set the status of the invitation to `declined`.
+   sharing:invitations#r7  When the owner withdraws an invitation, the sharing service shall set the status of the invitation to `withdrawn`.
+   sharing:invitations#r8  While an invitation is `accepted`, when the owner withdraws the invitation, the sharing service shall hide the note of the invitation.
+     -> port request notebook.hide (changes)
+        port line sharing:notebook-port#r2  When the sharing service hides a note, the notebook service shall complete the request.
+        adapter notebook -> provider bounded-context/example.org/notes/notebook@1.0.0 op notes.close; contract held
+        notebook:access#r3  While a note has a reader, when a client closes the note to the reader, the notes service shall complete the request.
+== j4 Keep the notes safe: backup, served by ['backups']
+   coordination: long-running process (2 port requests, 2 line(s) on a reply)
+   backup:backups#r1  When the person saves the notes, the backup service shall export the notes and keep a snapshot.
+     -> port request notebook.export (reads)
+        port line backup:notebook-port#r1  When the backup service exports the notes, the notebook service shall return a bundle.
+        adapter notebook -> provider bounded-context/example.org/notes/notebook@1.0.0 op notes.export; contract held
+        notebook:transfer#r1  When a client exports the notes, the notes service shall return a bundle that holds every note whose status is `kept`.
+   backup:backups#r2  [on notebook return]  When the notebook service returns a bundle, the backup service shall store a snapshot that has the bundle.
+     -> port request storage.store (changes)
+        port line backup:storage-port#r1  When the backup service stores a snapshot, the storage service shall complete the request.
+        adapter storage -> provider bounded-context/example.net/vault/storage@2.0.0 op objects.put; contract held
+        (provider outside the shop: trace stops)
+   backup:backups#r3  [on storage refuse]  If the storage service refuses the request, then the backup service shall keep the request.
+== j5 Get more room: accounts, served by ['plans']
+   coordination: saga (2 state-changing forward requests ['notebook.entitle', 'payments.charge']; compensated: ['payments.charge'] by declaration, ['payments.refund'] requested on a refusal)
+   accounts:plans#r1  When the person subscribes to a plan, the accounts service shall charge a subscription that has the plan.
+     -> port request payments.charge (changes; idempotent by subscription; compensated by refund)
+        port line accounts:payments-port#r1  When the accounts service charges a subscription, the payments service shall complete the request.
+        adapter payments -> provider bounded-context/example.net/payco/payments@1.0.0 op charges.create; contract held
+        (provider outside the shop: trace stops)
+   accounts:plans#r2  [on payments complete]  While a subscription is `requested`, when the payments service completes the request, the accounts service shall set the status of the subscription to `charged` and entitle the subscription.
+     -> port request notebook.entitle (changes)
+        port line accounts:notebook-port#r1  When the accounts service entitles a subscription, the notebook service shall complete the request.
+        adapter notebook -> provider bounded-context/example.org/notes/notebook@1.0.0 op notes.enlarge; contract held
+        notebook:allowance#r1  When a client enlarges an allowance, the notes service shall keep the allowance.
+   accounts:plans#r3  [on payments refuse]  While a subscription is `requested`, if the payments service refuses the request, then the accounts service shall notify the person of the subscription.
+   accounts:plans#r4  [on notebook complete]  While a subscription is `charged`, when the notebook service completes the request, the accounts service shall set the status of the subscription to `active`.
+   accounts:plans#r5  [on notebook refuse]  While a subscription is `charged`, if the notebook service refuses the request, then the accounts service shall refund the subscription and set the status of the subscription to `refunded`.
+     -> port request payments.refund (changes)
+        port line accounts:payments-port#r2  When the accounts service refunds a subscription, the payments service shall complete the request.
+        adapter payments -> provider bounded-context/example.net/payco/payments@1.0.0 op refunds.create; contract held
+        (provider outside the shop: trace stops)
+== j6 Carry on on a new device: backup, served by ['restores']
+   coordination: long-running process (2 port requests, 1 line(s) on a reply)
+   backup:restores#r1  When the person restores a snapshot, the backup service shall fetch the snapshot.
+     -> port request storage.fetch (reads)
+        port line backup:storage-port#r2  When the backup service fetches a snapshot, the storage service shall return the snapshot.
+        adapter storage -> provider bounded-context/example.net/vault/storage@2.0.0 op objects.get; contract held
+        (provider outside the shop: trace stops)
+   backup:restores#r2  [on storage return]  When the storage service returns a snapshot, the backup service shall import the bundle of the snapshot.
+     -> port request notebook.import (changes)
+        port line backup:notebook-port#r2  When the backup service imports a bundle, the notebook service shall complete the request.
+        adapter notebook -> provider bounded-context/example.org/notes/notebook@1.0.0 op notes.import; contract held
+        notebook:transfer#r2  When a client imports a bundle, the notes service shall keep every note that the bundle holds.
+        notebook:transfer#r3  While the number of notes is at least `100`, if a client imports a bundle, then the notes service shall refuse the request and name an allowance.
+   backup:restores#r3  If the person restores a snapshot whose status is `lost`, then the backup service shall refuse the request and name the snapshot.
+== derived relations (downstream -> upstream)
+   bounded-context/example.org/notes/accounts -> bounded-context/example.net/payco/payments
+   bounded-context/example.org/notes/accounts -> bounded-context/example.org/notes/notebook
+   bounded-context/example.org/notes/backup -> bounded-context/example.net/vault/storage
+   bounded-context/example.org/notes/backup -> bounded-context/example.org/notes/notebook
+   bounded-context/example.org/notes/sharing -> bounded-context/example.org/notes/notebook

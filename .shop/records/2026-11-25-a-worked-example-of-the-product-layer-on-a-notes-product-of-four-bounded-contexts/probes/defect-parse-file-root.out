@@ -1,0 +1,24 @@
+Traceback (most recent call last):
+  File "/home/vscode/shopsystem-bdd/scripts/spec", line 126, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/vscode/shopsystem-bdd/scripts/spec", line 122, in main
+    return respond("spec", handler, args, checks=args.cmd in ("check", "logic"))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vscode/shopsystem-bdd/scripts/adapter_cli_respond.py", line 107, in respond
+    result = handler(args)
+             ^^^^^^^^^^^^^
+  File "/home/vscode/shopsystem-bdd/scripts/model_report.py", line 94, in cmd_parse
+    lines = _statements(Path(args.file)) if args.file else [(None, args.line)]
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vscode/shopsystem-bdd/scripts/model_report.py", line 58, in _statements
+    return [(n, line) for n, line in enumerate(path.read_text().splitlines(), 1)
+                                               ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/pathlib.py", line 1058, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/pathlib.py", line 1044, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'spec/capabilities/plans.md'
+exit 1

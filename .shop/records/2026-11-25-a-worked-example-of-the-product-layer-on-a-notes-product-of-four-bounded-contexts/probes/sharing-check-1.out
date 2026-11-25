@@ -1,0 +1,11 @@
+v15k  the statements of a group differ in trigger or condition  (1)
+    capability/example.org/notes/sharing/invitations#g6
+v15l  a group has more than one statement  (2)
+    capability/example.org/notes/sharing/invitations#g3
+    capability/example.org/notes/sharing/invitations#g6
+v_m1  a requirement uses a word that names no element through the vocabulary its capability's area reads  (2)
+    capability/example.org/notes/sharing/notebook-port#r1, the sharing service, the sharing service is a word of sharing, which the area notebook does not read
+    capability/example.org/notes/sharing/notebook-port#r2, the sharing service, the sharing service is a word of sharing, which the area notebook does not read
+v_m4  an operation declares a refusal reason that no line states  (1)
+    notebook.show, removed note
+6 violations, 0 warnings, 0 unresolved references, 0 file problems

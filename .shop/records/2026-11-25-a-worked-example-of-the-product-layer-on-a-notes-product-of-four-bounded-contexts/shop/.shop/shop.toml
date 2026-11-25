@@ -1,0 +1,10 @@
+# The shop: the unit work is managed and executed in (decision 0129). A compact shop holds the product layer beside
+# the bounded contexts it hosts; each context's id is under the product, never under the shop.
+id = "shop/example.org/notes/main"
+product = "product"                       # the folder of the product layer this shop holds
+
+[contexts]                                # each hosted bounded context and the folder that holds its spec
+"bounded-context/example.org/notes/notebook" = "contexts/notebook"
+"bounded-context/example.org/notes/sharing" = "contexts/sharing"
+"bounded-context/example.org/notes/backup" = "contexts/backup"
+"bounded-context/example.org/notes/accounts" = "contexts/accounts"

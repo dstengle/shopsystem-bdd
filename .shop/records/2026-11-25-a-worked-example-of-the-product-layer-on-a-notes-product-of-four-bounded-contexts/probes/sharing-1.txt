@@ -1,0 +1,13 @@
+When the owner shares a note with an address, the sharing service shall keep an invitation that has the note.
+If the owner shares a note without an address, then the sharing service shall refuse the request and name the address.
+When the colleague accepts an invitation, the sharing service shall set the status of the invitation to `accepted`.
+When the colleague accepts an invitation, the sharing service shall show the note of the invitation.
+If the colleague accepts an invitation whose status is `withdrawn`, then the sharing service shall refuse the request and name the invitation.
+If the notebook service refuses a note, then the sharing service shall set the status of the invitation to `declined`.
+If the notebook service refuses the request, then the sharing service shall set the status of the invitation to `declined`.
+If the notebook service refuses a note of an invitation, then the sharing service shall set the status of the invitation to `declined`.
+When the colleague declines an invitation, the sharing service shall set the status of the invitation to `declined`.
+When the owner withdraws an invitation, the sharing service shall set the status of the invitation to `withdrawn`.
+While an invitation is `accepted`, when the owner withdraws the invitation, the sharing service shall hide the note of the invitation.
+When the sharing service shows a note, the notebook service shall complete the request.
+When the sharing service hides a note, the notebook service shall complete the request.

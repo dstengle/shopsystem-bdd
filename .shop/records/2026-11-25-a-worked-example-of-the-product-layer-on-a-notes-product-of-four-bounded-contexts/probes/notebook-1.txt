@@ -1,0 +1,15 @@
+When the person lists the notes with a tag, the notes service shall return every note under the tag.
+If the person adds a note, then the notes service shall refuse the request and name the allowance.
+When the person renames a tag with a spelling, the notes service shall set the spelling of the tag to the spelling.
+When the person renames a tag with the spelling `work`, the notes service shall keep the tag.
+When a client opens a note to a reader, the notes service shall keep the reader.
+When a client opens a note to a reader, the notes service shall keep the note open to the reader.
+If a client opens a note whose status is `removed` to a reader, then the notes service shall refuse the request and name the note.
+When a client closes a note to a reader, the notes service shall complete the request.
+When a client enlarges an allowance, the notes service shall keep the allowance.
+When a client reduces an allowance, the notes service shall keep the allowance.
+When a client exports the notes, the notes service shall return a bundle that holds every kept note.
+When a client exports the notes, the notes service shall return a bundle.
+When a client imports a bundle, the notes service shall keep every note in the bundle.
+When a client imports a bundle, the notes service shall keep every note that the bundle holds.
+While the number of notes is at least the size of the allowance, if the person adds a note, then the notes service shall refuse the request and name the allowance.

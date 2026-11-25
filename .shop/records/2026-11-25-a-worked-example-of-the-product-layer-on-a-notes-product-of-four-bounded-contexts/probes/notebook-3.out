@@ -1,0 +1,11 @@
+FAIL When a client opens a note to a reader, the notes service shall keep the note readable by the reader.
+     | refused: the verb readable by is a state, and a response takes an action
+     |   parsed up to: When a client opens a note to a reader, the notes service shall keep the note
+     |   nearest words: readable by, is readable by, reader, are readable by, readers
+     |   may follow: status, title
+FAIL While a note is readable by a reader, when a client closes the note to the reader, the notes service shall complete the request.
+     | does not parse at readable (token 5 of 27)
+     |   parsed up to: While a note is
+     |   nearest words: readable by, is readable by, reader, are readable by, readers
+     |   may follow: (none)
+OK   When a client closes a note to a reader, the notes service shall keep the note.

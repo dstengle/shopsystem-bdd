@@ -1,0 +1,34 @@
+OK   When the person lists the notes with a tag, the notes service shall return every note under the tag.
+FAIL If the person adds a note, then the notes service shall refuse the request and name the allowance.
+     | refused: "the allowance" has no antecedent: no earlier noun phrase, functional relation or declared indexical gives an allowance
+     |   tree: If NoPre (k_agent_Event (k_agent_One (k_agent_Simple a_the_person_2)) (e_add_action_11_1 (k_note_One (k_note_Simple (k_note_Det DetA (k_note_UseN k_note_n)))))) (OneResp (k_service_Shall a_the_notes_service_1 (k_service_AndAct (k_service_Act_k_service PPos (e_refuse_action_1_1 (k_request_One (k_request_Simple (k_request_Det DetThe (k_request_UseN k_request_n)))))) (k_service_OneAct (k_service_Act_k_agent PPos (e_name_action_2_1 (k_thing_One (k_allowance_Up_k_thing (k_allowance_Det DetThe (k_allowance_UseN k_allowance_n))))))))))
+     |   reading rule: R2 of the language reference, grammar/language.md
+FAIL When the person renames a tag with a spelling, the notes service shall set the spelling of the tag to the spelling.
+     | does not parse at the (token 22 of 24)
+     |   parsed up to: When the person renames a tag with a spelling, the notes service shall set the spelling of the tag to
+     |   nearest words: (none)
+     |   may follow: (none)
+OK   When the person renames a tag with the spelling `work`, the notes service shall keep the tag.
+OK   When a client opens a note to a reader, the notes service shall keep the reader.
+FAIL When a client opens a note to a reader, the notes service shall keep the note open to the reader.
+     | refused: the verb open to is a state, and a response takes an action
+     |   parsed up to: When a client opens a note to a reader, the notes service shall keep the note
+     |   nearest words: open, opens, opened, open to
+     |   may follow: status, title
+OK   If a client opens a note whose status is `removed` to a reader, then the notes service shall refuse the request and name the note.
+OK   When a client closes a note to a reader, the notes service shall complete the request.
+OK   When a client enlarges an allowance, the notes service shall keep the allowance.
+OK   When a client reduces an allowance, the notes service shall keep the allowance.
+FAIL When a client exports the notes, the notes service shall return a bundle that holds every kept note.
+     | does not parse at kept (token 18 of 20)
+     |   parsed up to: When a client exports the notes, the notes service shall return a bundle that holds every
+     |   nearest words: kept, `kept`, keep, keeps, export
+     |   may follow: note
+OK   When a client exports the notes, the notes service shall return a bundle.
+OK   When a client imports a bundle, the notes service shall keep every note in the bundle.
+OK   When a client imports a bundle, the notes service shall keep every note that the bundle holds.
+FAIL While the number of notes is at least the size of the allowance, if the person adds a note, then the notes service shall refuse the request and name the allowance.
+     | does not parse at the (token 9 of 34)
+     |   parsed up to: While the number of notes is at least
+     |   nearest words: (none)
+     |   may follow: (none)

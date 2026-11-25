@@ -1,0 +1,14 @@
+# Written by hand: the vault storage provider is a third party with no shop and no published contract in the
+# contract form; this is the product's reading of its object API, kept where spec obtain would have kept it.
+context = "bounded-context/example.net/vault/storage"
+version = "2.0.0"
+requirements = []
+terms = ["object (noun): bytes kept under a key.", "bucket (noun): where objects are kept."]
+
+[operations."objects.put"]
+parameters = { key = "text", body = "text" }
+outcomes = ["done", "refused"]
+
+[operations."objects.get"]
+parameters = { key = "text" }
+outcomes = ["returned", "refused"]

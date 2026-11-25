@@ -1,0 +1,13 @@
+# Written by hand: payco is a third party with no published contract in the contract form.
+context = "bounded-context/example.net/payco/payments"
+version = "1.0.0"
+requirements = []
+terms = []
+
+[operations."charges.create"]
+parameters = ["amount", "customer", "idempotency key"]
+outcomes = ["done", "refused"]
+
+[operations."refunds.create"]
+parameters = ["charge"]
+outcomes = ["done"]

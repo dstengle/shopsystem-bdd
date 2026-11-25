@@ -1,0 +1,16 @@
+# Proposed, not a form the plugin has: each port operation of an adapter spec and the provider operation it is
+# realised by, which today is only prose in the adapter's adr/. Read by job_trace.py to cross into the provider.
+["bounded-context/example.org/notes/sharing/adapter/notebook"]
+"notebook.show" = "notes.open"
+"notebook.hide" = "notes.close"
+["bounded-context/example.org/notes/backup/adapter/notebook"]
+"notebook.export" = "notes.export"
+"notebook.import" = "notes.import"
+["bounded-context/example.org/notes/backup/adapter/storage"]
+"storage.store" = "objects.put"
+"storage.fetch" = "objects.get"
+["bounded-context/example.org/notes/accounts/adapter/notebook"]
+"notebook.entitle" = "notes.enlarge"
+["bounded-context/example.org/notes/accounts/adapter/payments"]
+"payments.charge" = "charges.create"
+"payments.refund" = "refunds.create"

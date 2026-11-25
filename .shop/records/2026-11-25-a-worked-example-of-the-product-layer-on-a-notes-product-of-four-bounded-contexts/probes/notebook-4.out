@@ -1,0 +1,7 @@
+FAIL When a client opens a note to a reader, the notes service shall keep the note with the reader.
+     | does not parse at with (token 18 of 21)
+     |   parsed up to: When a client opens a note to a reader, the notes service shall keep the note
+     |   nearest words: (none)
+     |   may follow: reader, status, title
+OK   While a note has a reader, when a client closes the note to the reader, the notes service shall complete the request.
+OK   When a client opens a note to a reader, the notes service shall keep a note that has the reader.

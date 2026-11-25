@@ -1,0 +1,24 @@
+OK   When the owner shares a note with an address, the sharing service shall keep an invitation that has the note.
+OK   If the owner shares a note without an address, then the sharing service shall refuse the request and name the address.
+OK   When the colleague accepts an invitation, the sharing service shall set the status of the invitation to `accepted`.
+OK   When the colleague accepts an invitation, the sharing service shall show the note of the invitation.
+OK   If the colleague accepts an invitation whose status is `withdrawn`, then the sharing service shall refuse the request and name the invitation.
+FAIL If the notebook service refuses a note, then the sharing service shall set the status of the invitation to `declined`.
+     | refused: the verb refuse takes as its object request or a kind of it: service refuses request
+     |   parsed up to: If the notebook service refuses a
+     |   nearest words: note, notes, notifies, notified, no
+     |   may follow: request
+FAIL If the notebook service refuses the request, then the sharing service shall set the status of the invitation to `declined`.
+     | refused: "the invitation" has no antecedent: no earlier noun phrase, functional relation or declared indexical gives an invitation
+     |   tree: If NoPre (k_service_Event (k_service_One (k_service_Simple a_the_notebook_service_1)) (e_refuse_action_1_1 (k_request_One (k_request_Simple (k_request_Det DetThe (k_request_UseN k_request_n)))))) (OneResp (k_service_Shall a_the_sharing_service_4 (k_service_OneAct (k_service_Act_k_agent PPos (t_status_3_Set (t_status_3_Of_k_invitation (k_invitation_Simple (k_invitation_Det DetThe (k_invitation_UseN k_invitation_n)))) t_status_3_v_declined)))))
+     |   reading rule: R2 of the language reference, grammar/language.md
+FAIL If the notebook service refuses a note of an invitation, then the sharing service shall set the status of the invitation to `declined`.
+     | refused: the verb refuse takes as its object request or a kind of it: service refuses request
+     |   parsed up to: If the notebook service refuses a
+     |   nearest words: note, notes, notifies, notified, no
+     |   may follow: request
+OK   When the colleague declines an invitation, the sharing service shall set the status of the invitation to `declined`.
+OK   When the owner withdraws an invitation, the sharing service shall set the status of the invitation to `withdrawn`.
+OK   While an invitation is `accepted`, when the owner withdraws the invitation, the sharing service shall hide the note of the invitation.
+OK   When the sharing service shows a note, the notebook service shall complete the request.
+OK   When the sharing service hides a note, the notebook service shall complete the request.

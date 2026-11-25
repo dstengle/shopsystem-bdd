@@ -1,0 +1,2 @@
+file: spec/index.md: the provider bounded-context/example.org/notes/notebook has no contract the adapter spec holds under provider/example.org/notes/notebook/1.0.0/
+0 violations, 0 warnings, 0 unresolved references, 1 file problems

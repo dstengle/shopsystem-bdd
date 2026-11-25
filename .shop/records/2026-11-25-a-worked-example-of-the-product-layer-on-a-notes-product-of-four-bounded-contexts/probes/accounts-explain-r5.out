@@ -1,0 +1,1 @@
+plans#r5  While a subscription is `charged`, if the notebook service refuses the request, then the accounts service shall refund the subscription and set the status of the subscription to `refunded`.
