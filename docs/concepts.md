@@ -1,7 +1,7 @@
 <!--
 Examples on this page are files of this repository at plugin 0.33.0 (commit 7f60e57de, 2026-11-10), quoted as they
-are, with cuts marked `...`. The outputs of `work ready`, `work request` and `spec lexicon` on the example context
-were pasted from one run that day, in a throwaway copy of docs/examples/notes-cli/ with the stand-in gh
+are, with cuts marked `...`. The outputs of `shop work ready`, `shop work request` and `shop spec lexicon` on the
+example context were pasted from one run that day, in a throwaway copy of docs/examples/notes-cli/ with the stand-in gh
 (tests/scripts/stub_gh.py) as $SHOPSYSTEM_WORK_GH.
 -->
 
@@ -12,7 +12,7 @@ each, in an order where each builds on the last. Every section says the same fiv
 
 - **what it is**, in one sentence;
 - **where it lives**, as a path;
-- **what writes it**, as `spec forms` names it;
+- **what writes it**, as `shop spec forms` names it;
 - **an example**, always a real file or a real run;
 - **where to read more**.
 
@@ -74,7 +74,8 @@ The domain model is the shape of a context, with no rules in it: the objects, th
 relations between them, the services with the operations an actor may request, the events and the actors.
 
 - **Lives in:** `spec/model/<area>.md`, one file per area of the context, in a ` ```model ` block.
-- **Written by:** `work line --model` and `work line --relation`, on an item, laid into `spec/model/` by a batch.
+- **Written by:** `shop work line --model` and `shop work line --relation`, on an item, laid into `spec/model/` by a
+  batch.
 
 From this repository's [`spec/model/tracking.md`](../spec/model/tracking.md):
 
@@ -84,7 +85,7 @@ service backlog
   operation show(item)  outcomes: returned → the item
 ```
 
-Every rule about these (what `shape` does, when it refuses) is a requirement line; `spec check` holds each line to
+Every rule about these (what `shape` does, when it refuses) is a requirement line; `shop spec check` holds each line to
 what the model declares, and the model to its lines (an operation with no line, a refusal reason no line states).
 Read more: [The domain model](reference/domain-model.md).
 
@@ -94,13 +95,13 @@ A service is what answers requests in one area; an operation is one thing an act
 parameters and the kinds of outcome it has.
 
 - **Lives in:** the domain model, as `service <name>` and its `operation <name>(<parameters>)` lines.
-- **Written by:** `work line --model`, on an item.
+- **Written by:** `shop work line --model`, on an item.
 
 `operation shape(item, note)  outcomes: done | refused: item not an idea, no note` says that `shape` takes an item
 and a note, and either completes or refuses the request for one of two reasons. Every operation answers with the
 same response, whatever the interface: its outcome (`done`, `returned`, `refused`, `passed` or `failed`), its
 content, the errors that name the business references a refusal is about (`parameter:note`, `item:b12`), and
-notices. A requirement line says which outcome comes when; `spec check` fails a refusal reason no line states, and
+notices. A requirement line says which outcome comes when; `shop spec check` fails a refusal reason no line states, and
 an operation no line requests.
 Read more: [The response](reference/adapters.md#the-response).
 
@@ -111,7 +112,7 @@ ready-made set of words you import.
 
 - **Lives in:** `spec/vocabulary/<area>.md` and `shared.md`. Packs are in the plugin's `grammar/packs/` (`request`,
   `spec`, `time`).
-- **Written by:** `work line --term`, on an item, laid into `spec/vocabulary/` by a batch.
+- **Written by:** `shop work line --term`, on an item, laid into `spec/vocabulary/` by a batch.
 
 Each entry says its part of speech and, after the arrow, the element it names:
 
@@ -123,11 +124,11 @@ Each entry says its part of speech and, after the arrow, the element it names:
 
 A verb that names an operation is how a line says a request: "the person shapes the item" asks the backlog service
 for `shape`. Every context imports the `request` pack, the words of a request and its response: *request*,
-*service*, *refuse*, *name*, *return*, *keep*, *complete*. `spec lexicon` prints every word a context has, and
+*service*, *refuse*, *name*, *return*, *keep*, *complete*. `shop spec lexicon` prints every word a context has, and
 where each came from. Here's the small example context of [getting started](getting-started.md):
 
 ```console
-$ spec --root docs/examples/notes-cli lexicon
+$ shop spec --root docs/examples/notes-cli lexicon
 actor (2)
   the notes service
   the person
@@ -155,10 +156,10 @@ parameter's option, and how each outcome shows (exit 0, exit 1 with the reasons 
 under `--json`).
 
 - **Lives in:** `spec/adapters/<port>.toml`; this repository's is [`spec/adapters/cli.toml`](../spec/adapters/cli.toml).
-- **Written by:** hand, for the mapping (a plugin item gives it its commands); `spec annotate` for each operation's
+- **Written by:** hand, for the mapping (a plugin item gives it its commands); `shop spec annotate` for each operation's
   `requirements`.
 
-No requirement line names a command, an option or an exit code; `spec check` holds the contract and the programs'
+No requirement line names a command, an option or an exit code; `shop spec check` holds the contract and the programs'
 argparse to each other. Each operation's table also lists, generated, the requirement lines that **govern** it (a
 line governs an operation when its trigger requests it), its refusals among them, so whoever works on the command
 reads its business rules where they use it:
@@ -172,8 +173,8 @@ requirements = [
 ]
 ```
 
-`spec annotate` writes those lists; `spec check` fails an operation that misses a line that governs it (`v_a5`) or
-holds one that no longer does (`v_a6`), so they never fall behind the spec. Read more:
+`shop spec annotate` writes those lists; `shop spec check` fails an operation that misses a line that governs it
+(`v_a5`) or holds one that no longer does (`v_a6`), so they never fall behind the spec. Read more:
 [Adapter contracts](reference/adapters.md).
 
 ### Capability
@@ -181,8 +182,8 @@ holds one that no longer does (`v_a6`), so they never fall behind the spec. Read
 A capability is one area of behaviour, kept as one file of requirement lines.
 
 - **Lives in:** `spec/capabilities/<name>.md`.
-- **Written by:** `work line --capability` on an item to start one, and `work batch start`, which writes the file
-  and its lines.
+- **Written by:** `shop work line --capability` on an item to start one, and `shop work batch start`, which writes the
+  file and its lines.
 
 The frontmatter of [`spec/capabilities/items.md`](../spec/capabilities/items.md):
 
@@ -222,36 +223,36 @@ shall [x2: agent the person (constant), x3: service the backlog service (constan
 ```
 
 Read it in three parts. **While** is the state the item is in. **When** is the request someone makes. **Shall** is
-what the service must do in answer. The indented block under it is what `spec parse --form` prints: the line's meaning, the
-part the checks and the generator read.
+what the service must do in answer. The indented block under it is what `shop spec parse --form` prints: the line's
+meaning, the part the checks and the generator read.
 
 - **Lives in:** a capability's `## Behaviour`, as `- [r<n>] <line>`; before that, in an item's `## Requirements`.
-- **Written by:** `work line` into an item; `work batch start` moves it into `spec/`. You never edit a line in
-  place: a changed line gets a new id, and `work line --retires <capability>#r<n>` retires the old one.
+- **Written by:** `shop work line` into an item; `shop work batch start` moves it into `spec/`. You never edit a line in
+  place: a changed line gets a new id, and `shop work line --retires <capability>#r<n>` retires the old one.
 
-This line is `items#r14`. Try one yourself with `spec parse "<line>"`.
+This line is `items#r14`. Try one yourself with `shop spec parse "<line>"`.
 Read more: [Writing requirements](writing-requirements.md) and the language reference,
 [`grammar/language.md`](../grammar/language.md).
 
 ### Construct catalogue and rule catalogue
 
 The construct catalogue lists every construct of the language a line may use; the rule catalogue lists every rule
-`spec check` holds a context to. Both are part of the plugin's own specification: its requirements say only the
+`shop spec check` holds a context to. Both are part of the plugin's own specification: its requirements say only the
 language and checking services' general behaviour (a line parsed to one meaning or refused naming why; a violation of
 an error rule fails the check naming the rule), and each catalogue entry, with its example, says one construct or
 rule.
 
 - **Live in:** the plugin's [`grammar/constructs.md`](../grammar/constructs.md) and
   [`grammar/rules.md`](../grammar/rules.md).
-- **Written by:** `spec constructs --write` and `spec rules --write`, from the grammar's definition; `work batch start`
-  writes them again when a batch's lines cite one of their codes.
+- **Written by:** `shop spec constructs --write` and `shop spec rules --write`, from the grammar's definition; `shop
+  work batch start` writes them again when a batch's lines cite one of their codes.
 
 Each entry gives its code, a label, a short purpose (what the construct or rule is for), `Since:`, the item that
 brought it (or, for an entry older than the backlog, the release that first held it, `0.38.0`), and `Changed:`, the
 items that changed it since, then its example: a construct's example is
 parsed to one tree that uses it and read back word for word, a rule's fact sets are one it fails on and one it passes
 on. The example is the entry's test. A line that uses a construct the construct catalogue has no entry of is refused
-naming the construct, so the language a context writes in is exactly the catalogue's; `spec check` fails a line
+naming the construct, so the language a context writes in is exactly the catalogue's; `shop spec check` fails a line
 that names a rule the rule catalogue has no entry of (`v_c1`), and an entry with no purpose (`v_c2`), naming neither
 an item nor a release (`v_c3`), or naming an item not delivered (`v_c4`). A line names a construct or a
 rule by its code, as in "a requirement that uses `order-by`".
@@ -262,7 +263,7 @@ Read more: [The catalogues](reference/design-model.md#the-catalogues-are-specifi
 A group is one or more lines that together make one scenario, under a title a person can read.
 
 - **Lives in:** a capability's `## Behaviour`, as a `### [g<n>] <title>` heading.
-- **Written by:** `work line --group "<title>"` opens one in an item; `--in g<n>` adds a line to it.
+- **Written by:** `shop work line --group "<title>"` opens one in an item; `--in g<n>` adds a line to it.
 
 ```markdown
 ### [g14] An idea shaped becomes shaped
@@ -277,7 +278,7 @@ Read more: [Behaviour: groups of lines](reference/capability-file.md#behaviour-g
 A given block is a group's example data: the sample values its scenario starts from, kept out of the line itself.
 
 - **Lives in:** under its group, in a fenced `given` block.
-- **Written by:** `work line --given g<n> "<block>"`.
+- **Written by:** `shop work line --given g<n> "<block>"`.
 
 From [`spec/capabilities/measurement.md`](../spec/capabilities/measurement.md), group g6:
 
@@ -300,14 +301,14 @@ Read more: [A given block](reference/capability-file.md#a-given-block-example-da
 A universal condition is a line that is true everywhere, so no capability needs to say it again.
 
 - **Lives in:** `spec/universal.md`, as `- [U<n>] <line>`.
-- **Written by:** `work line --universal`.
+- **Written by:** `shop work line --universal`.
 
 ```requirement
 If a service refuses a request, then the service shall name a reason and change nothing.
 ```
 
 That's U17. Because it holds for every service, a line elsewhere says "the backlog service shall refuse the request
-and name the item" and stops there: U17 supplies the rest. `spec logic` adds every universal condition to each
+and name the item" and stops there: U17 supplies the rest. `shop spec logic` adds every universal condition to each
 check it runs. Read more: [`spec/universal.md`: true everywhere](reference/capability-file.md#specuniversalmd-true-everywhere).
 
 ### Scenario and feature file
@@ -315,7 +316,7 @@ check it runs. Read more: [`spec/universal.md`: true everywhere](reference/capab
 A scenario is a group turned into Gherkin; a feature file holds a capability's scenarios.
 
 - **Lives in:** `features/<capability>.feature`, one scenario a group, tagged with its group and line ids.
-- **Written by:** `features generate`. The first line of the file says "do not edit", and it means it.
+- **Written by:** `shop features generate`. The first line of the file says "do not edit", and it means it.
 
 Here's g14 from above, as [`features/items.feature`](../features/items.feature) has it:
 
@@ -339,7 +340,7 @@ and [Getting started](getting-started.md).
 An item is one piece of work this context may do, from a raw idea to its delivery.
 
 - **Lives in:** `.shop/backlog/b<n>.md`, named `b<n>` and its title.
-- **Written by:** `work idea`; its lines by `work line`.
+- **Written by:** `shop work idea`; its lines by `shop work line`.
 
 A delivered one, [`b55`](../.shop/backlog/b55.md), abridged:
 
@@ -393,7 +394,7 @@ stateDiagram-v2
 
 In words: an idea is **shaped** once it has a purpose and lines, **ready** once it passes the readiness bar, and
 **in-batch** once a batch picks it. A merged batch makes it **delivered**. A batch that can't finish it without an
-answer **parks** it as `needs-input`; `work answer` sends it back to `shaped`. (Mermaid can't draw hyphens in state
+answer **parks** it as `needs-input`; `shop work answer` sends it back to `shaped`. (Mermaid can't draw hyphens in state
 names, so the diagram writes `in_batch` and `needs_input`.)
 Read more: [the commands for items](reference/commands.md#items).
 
@@ -402,14 +403,14 @@ Read more: [the commands for items](reference/commands.md#items).
 The backlog is every item of a context, printed in rank order with what blocks each one.
 
 - **Lives in:** `.shop/backlog/`, nothing more: it's the items themselves.
-- **Written by:** the item commands; `work rate` sets the three ratings, `work depend` a dependency.
+- **Written by:** the item commands; `shop work rate` sets the three ratings, `shop work depend` a dependency.
 
 The score is (value + urgency) / size, counting low or small as 1, medium as 2 and high or large as 3. So a
 high-value, medium-urgency, small item scores (3 + 2) / 1 = 5.00. Within each state, higher scores rank first.
 An item that depends on one that isn't `delivered` says so in the last column:
 
 ```console
-$ work backlog
+$ shop work backlog
 ...
 ## shaped (29)
 
@@ -424,22 +425,23 @@ $ work backlog
 | 9 | b151 | This repository's glossary in 4.0 (plan) | own | high-value | high-urgency | medium | 3.00 | blocked by b145 "One refusal path (plan)" (withdrawn) |
 ```
 
-Read more: [`work backlog`](reference/commands.md#work-backlog) and [`work depend`](reference/commands.md#work-depend).
+Read more: [`shop work backlog`](reference/commands.md#shop-work-backlog) and [`shop work
+depend`](reference/commands.md#shop-work-depend).
 
 ### Readiness bar
 
 The readiness bar is the check an item must pass before it can be built.
 
-- **Lives in:** nowhere; it runs when you call `work ready`, on a temporary copy of `spec/` with the item's lines
+- **Lives in:** nowhere; it runs when you call `shop work ready`, on a temporary copy of `spec/` with the item's lines
   laid in.
-- **Checks:** every line parses; `spec logic` finds no clash with the rest of the spec; `features generate` writes
-  each group's scenario with no unworded step; every request line behind the item is settled.
+- **Checks:** every line parses; `shop spec logic` finds no clash with the rest of the spec; `shop features generate`
+  writes each group's scenario with no unworded step; every request line behind the item is settled.
 
 Here it catches a new line that contradicts one already in the example context (`notes#r4` says `notes remove`
 deletes the note):
 
 ```console
-$ work ready b2
+$ shop work ready b2
 work ready: b2 "notes remove keeps the note" is not passing:
   L1 notes#r4 and #r5 clash: on "the person runs `notes remove` on a note", r4 obliges and r5 forbids `notes` to delete a note
 ```
@@ -447,7 +449,7 @@ work ready: b2 "notes remove keeps the note" is not passing:
 Nothing is committed and the item stays `shaped`. Readying is the decision to build, so Claude doesn't ask you to
 approve lines: the bar is the check. Read more:
 [The readiness bar, on a copy of `spec/`](how-it-works.md#the-readiness-bar-on-a-copy-of-spec) and
-[`work ready`](reference/commands.md#work-ready).
+[`shop work ready`](reference/commands.md#shop-work-ready).
 
 ### Batch
 
@@ -455,7 +457,7 @@ A batch is a set of ready items built together on one branch and closed by one p
 sprint, but it ends when the work merges, not on a date).
 
 - **Lives in:** `.shop/batches/<n>/plan.md`, the batch plan; its branch is `batch-<n>`.
-- **Written by:** `work batch start`.
+- **Written by:** `shop work batch start`.
 
 [`.shop/batches/32/plan.md`](../.shop/batches/32/plan.md):
 
@@ -484,7 +486,7 @@ Three words come with a batch:
 - A **task** is one item's share of the batch, built on its own branch `batch-<n>-b<j>`.
 - A **worktree** is the separate checkout a task is built in, `.shop/worktrees/batch-<n>-t<k>`, so tasks never
   step on each other.
-- The **driver** is the one fresh agent that runs the whole batch. `work batch start` writes its brief to
+- The **driver** is the one fresh agent that runs the whole batch. `shop work batch start` writes its brief to
   `.shop/worktrees/batch-<n>-driver/brief.md` (never committed); item b55 above is the line that asks for it.
 
 A batch's states, with the fix loop on the left:
@@ -501,12 +503,12 @@ stateDiagram-v2
   in_review --> abandoned: work batch abandon
 ```
 
-`work batch review` merges the tasks into `batch-<n>`, runs the tests, pushes and opens a draft pull request. If
-the review finds something to fix now, the batch goes back to `building`: `work batch resume` gives each finding's
-task its worktree back, the fix commits cite the finding, and `work batch review` runs again. A clean review leaves
+`shop work batch review` merges the tasks into `batch-<n>`, runs the tests, pushes and opens a draft pull request. If
+the review finds something to fix now, the batch goes back to `building`: `shop work batch resume` gives each finding's
+task its worktree back, the fix commits cite the finding, and `shop work batch review` runs again. A clean review leaves
 it `awaiting-merge`, and the merge is yours.
 Read more: [A batch: one branch, a worktree per task](how-it-works.md#a-batch-one-branch-a-worktree-per-task) and
-[`work batch start`](reference/commands.md#work-batch-start).
+[`shop work batch start`](reference/commands.md#shop-work-batch-start).
 
 ### Pull request review and finding
 
@@ -514,7 +516,7 @@ A pull request review is one reading of a whole batch's change against its lines
 finding is one thing it found.
 
 - **Lives in:** `.shop/batches/<n>/review-<k>.md`, also posted as a comment on the pull request.
-- **Written by:** `work batch reviewed`, from the findings the `pr-reviewer` agent replied with.
+- **Written by:** `shop work batch reviewed`, from the findings the `pr-reviewer` agent replied with.
 
 Each finding has a **grade** (`Critical`, `Important`, `Minor`) and a **triage** (`fix now`, `observation`,
 `drop`). From [`.shop/batches/32/review-1.md`](../.shop/batches/32/review-1.md):
@@ -549,12 +551,12 @@ for something, in its own words, and the two sides settle lines.
 
 - **Lives in:** `.shop/requests/q<n>.md` in each side's repository, and as one GitHub issue on the upstream's
   repository.
-- **Written by:** `work request`; every later step by its own command, each posted as a comment on the issue.
+- **Written by:** `shop work request`; every later step by its own command, each posted as a comment on the issue.
 
 A request just raised, from a run in a copy of the example context:
 
 ```console
-$ work request --from bounded-context/example.org/notes/notes-cli --source observation/tag-filter --ask "Let notes list print only the notes under one tag" "notes list filtered by tag"
+$ shop work request --from bounded-context/example.org/notes/notes-cli --source observation/tag-filter --ask "Let notes list print only the notes under one tag" "notes list filtered by tag"
 q1 https://github.com/ex/notes-cli/issues/1
 ```
 
@@ -603,7 +605,8 @@ A record is a dated report kept for good: an analysis, a design, a plan, a measu
 nothing of the live system stands on it.
 
 - **Lives in:** `.shop/records/<date>-<slug>.md`, with a row in `.shop/records/README.md`.
-- **Written by:** `work record`. A design's or a plan's folder, `.shop/records/<date>-<topic>/`, is written by hand.
+- **Written by:** `shop work record`. A design's or a plan's folder, `.shop/records/<date>-<topic>/`, is written by
+  hand.
 
 The row of the design this page was written from:
 
@@ -612,24 +615,24 @@ The row of the design this page was written from:
 ```
 
 The records policy: a record is kept and indexed, never cited. An item's provenance (its `source:`) cites the
-person's quoted words, a request or a decision, never a record; `spec check` fails a new item that cites one
+person's quoted words, a request or a decision, never a record; `shop spec check` fails a new item that cites one
 (`v_r1`) and notes an older one (`w_r1`). When a choice must rest on what a record concluded, the conclusion is
 restated as a decision, and the item cites the decision.
-Read more: [`work record`](reference/commands.md#work-record), and the decision "Records are kept, never cited"
-(`spec/decisions/0106-records-are-kept-never-cited.md`).
+Read more: [`shop work record`](reference/commands.md#shop-work-record), and the decision "Records are kept, never
+cited" (`spec/decisions/0106-records-are-kept-never-cited.md`).
 
 ### Decision
 
 A decision is one design choice, with why it was made and how it is held to.
 
 - **Lives in:** `spec/decisions/<nnnn>-<slug>.md`, with an index in `spec/decisions/index.md`.
-- **Written by:** `work decision`; the index by `spec decisions`.
+- **Written by:** `shop work decision`; the index by `shop spec decisions`.
 
 Its **tier** says how the decision is kept:
 
 | tier | held by |
 |---|---|
-| `check` | the tests in `enforced_by`, which `spec decisions --check` runs |
+| `check` | the tests in `enforced_by`, which `shop spec decisions --check` runs |
 | `requirement` | the requirement lines in `enforced_by` |
 | `judgement` | a reviewer's reading: the batch brief hands every `judgement` decision to the `pr-reviewer` |
 
@@ -656,7 +659,7 @@ A quote is your words, kept exactly as you wrote them, with the messages around 
 actually said.
 
 - **Lives in:** `.shop/quotes/<n>.md`, named `quote-<n>`.
-- **Written by:** `work quote`. A hook remembers your session, so Claude only passes the words.
+- **Written by:** `shop work quote`. A hook remembers your session, so Claude only passes the words.
 
 The quote this documentation began from, [`.shop/quotes/20.md`](../.shop/quotes/20.md):
 
@@ -677,7 +680,8 @@ date: 2026-11-10
 ...
 ```
 
-`work show quote-20` prints it back. Read more: [Why your words are kept](talking-with-claude.md#why-your-words-are-kept).
+`shop work show quote-20` prints it back. Read more: [Why your words are
+kept](talking-with-claude.md#why-your-words-are-kept).
 
 ### Measurement and defect
 
@@ -685,7 +689,7 @@ A measurement is what a merged batch cost, in time and tokens; a defect is a fau
 pinned to the item that delivered it.
 
 - **Live in:** `.shop/records/measurements/<date>-<batch>.md`; `.shop/batches/<n>/defect-<k>.md`.
-- **Written by:** `measure batch`; `measure defect`.
+- **Written by:** `shop measure batch`; `shop measure defect`.
 
 From [the measurement of batch-32](../.shop/records/measurements/2026-11-10-batch-32.md):
 
@@ -717,8 +721,8 @@ date: 2026-11-07
 features generate writes no scenario for a negated response with a recipient ('`feed` shall not return the video to the caller'), ...
 ```
 
-`measure show` prints a measurement, and `measure compare` sets two side by side.
-Read more: [the measure commands](reference/commands.md#measure-what-a-batch-cost).
+`shop measure show` prints a measurement, and `shop measure compare` sets two side by side.
+Read more: [the measure commands](reference/commands.md#shop-measure-what-a-batch-cost).
 
 ## Next
 

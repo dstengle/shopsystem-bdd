@@ -187,3 +187,29 @@ Feature: Reviews
     When the person reopens the batch b1 with the review finding r1
     Then the batches service refuses this request
     And the batches service names the batch b1
+
+  @g13 @r13
+  Scenario: A batch whose amended line its task built is submitted with the line built
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a task t2
+    And the batch b1 has the task t2
+    And the status of the task t2 is `done`
+    And a workspace w1
+    And the batch b1 has the workspace w1
+    And an amendment a1
+    And the amendment a1 cites the item i1
+    And the workspace w1 holds the amendment a1
+    And a scenario s1
+    And the item i1 has the scenario s1
+    And a task t1
+    And the item i1 has the task t1
+    And a workspace w2
+    And the task t1 has the workspace w2
+    And the scenario s1 succeeds in the workspace w2
+    When the person submits the batch b1
+    Then the batches service keeps the proposed change p1
+    And the batch b1 has the proposed change p1
+    And the batches service sets the status of the batch b1 to `in-review`

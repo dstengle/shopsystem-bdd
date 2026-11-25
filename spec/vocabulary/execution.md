@@ -69,3 +69,4 @@ area: execution
 - **observation** (noun) → value review finding.triage observation.
 - **shared workspace** (noun) → object shared workspace. The workspace a workspace is shared to, in the shared store.
 - **cite** (verb, state) → relation kept change.cites. A thing names another as what it stands on. Forms: cites, cited. Frame: <kept change> cites <item>. Frame: <proposed change> cites <item>. Frame: <quote> cites <message>. Frame: <thing> cites <observation>.
+- **amendment** (noun) → object amendment. A kept change that work batch amend makes on the workspace of a batch or of its task, laying an amended item's requirements again. Plural: amendments.

@@ -63,7 +63,7 @@ service batches
   operation merge(proposed change)  outcomes: done
   operation abandon(batch)  outcomes: done
   operation monitor(batch)  outcomes: returned → the batch
-  operation amend(item)  outcomes: done | refused: item not in batch
+  operation amend(item, review finding)  outcomes: done | refused: item not in batch
   operation configure(setting, setting value)
     outcomes: done → the settings file | refused: setting outside the delivery settings form, setting value outside the delivery settings form
   operation reopen(batch, review finding)  outcomes: done → the review | refused: batch not awaiting merge
@@ -97,4 +97,6 @@ object batch summary kind of text
 object batch summary form kind of text
 
 object review limit
+
+object amendment kind of kept change
 ```

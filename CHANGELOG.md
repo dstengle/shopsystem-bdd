@@ -5,7 +5,7 @@ when the release shipped, so older sections use the words of their day: a comman
 been renamed or retired since.
 
 - Upgrading? The steps, and the old and new numbers of the releases renumbered in 0.34.1, are in
-  [Upgrading](docs/upgrading.md); `migrate upgrade` applies every pending step in order.
+  [Upgrading](docs/upgrading.md); `shop migrate upgrade` applies every pending step in order.
 - New here? Start at the [README](README.md).
 
 | Line | Releases |
@@ -177,7 +177,7 @@ been renamed or retired since.
 - **A new bounded context in one command** (b318): `migrate init --id <bounded context id>` writes and commits the
   context scaffold (`spec/index.md` in `language: codified-2` importing `request`, `spec/universal.md`, `spec/model/`,
   `spec/vocabulary/`, `spec/capabilities/`, `.shop/`, `features/` and `tests/scenarios/conftest.py`), refused where
-  an index file or a shop directory exists. [migrate init](docs/reference/commands.md#migrate-init).
+  an index file or a shop directory exists. [migrate init](docs/reference/commands.md#shop-migrate-init).
 - **holds-exactly in a precondition** (b309) is read by `spec logic` and `features generate`, whose scenario brings
   in a thing outside the restriction that the collection does not hold.
 - **An order on a collection orders its members** (b334): "print a worktree that holds a file, ordered by version,

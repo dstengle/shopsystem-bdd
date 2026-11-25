@@ -8,7 +8,7 @@ This page is the reference of the first two. The example context
 
 The model says what there is and what can be asked: objects, their attributes and lifecycles, relations, services
 with their operations, events and actors. It holds **no rules**. Every rule (what an operation does, when it
-refuses, what follows) is a requirement line, and `spec check` holds each line to what the model declares. The
+refuses, what follows) is a requirement line, and `shop spec check` holds each line to what the model declares. The
 vocabulary gives each element of the model its word, so a line can say it.
 
 ## `spec/model/<area>.md`
@@ -95,7 +95,7 @@ actor      = "actor" name [ "kind of" name ] ;
   (`v_m4`).
 - **An event** is something that happened, raised by an operation; **an actor** is someone who makes requests.
 
-### What `spec check` holds the model to
+### What `shop spec check` holds the model to
 
 | code | what it catches |
 |---|---|
@@ -109,7 +109,7 @@ actor      = "actor" name [ "kind of" name ] ;
 | `v_m9` | a lifecycle transition an operation of another area performs (a line requesting it sets the status) |
 | `v_m8` | the model's own: a relation to an undeclared object, a transition over an undeclared value, two operations of one name in a service, an event raised by no operation |
 
-`spec rules` prints every rule with its label; [`grammar/rules.md`](../../grammar/rules.md) has each with the
+`shop spec rules` prints every rule with its label; [`grammar/rules.md`](../../grammar/rules.md) has each with the
 examples it fails and passes.
 
 ## `spec/vocabulary/<area>.md` and `shared.md`
@@ -149,7 +149,7 @@ reads.
 | `v_t18` | an entry names no element (no `→`) |
 | `v_t19` | an entry names an element the model does not declare |
 | `v_t20` | two entries of one layer name one element, and neither is a form of the other |
-| `v_t21` | `spec/index.md` imports the retired CLI pack: import `request` and run `migrate upgrade` |
+| `v_t21` | `spec/index.md` imports the retired CLI pack: import `request` and run `shop migrate upgrade` |
 
 ## The request pack
 

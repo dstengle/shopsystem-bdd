@@ -352,8 +352,8 @@ def sets_status(world, n, value):
 
 While the lines are laid and the code is not written, the batch keeps their ids in the capability's `unbuilt:` list,
 and the plugin's pytest plugin runs those scenarios as strict expected failures. The `tests/scenarios/conftest.py`
-that `migrate init` wrote loads that plugin, so plain pytest in the project folder runs them, with each `@g` and `@r`
-tag a registered mark:
+that `shop migrate init` wrote loads that plugin, so plain pytest in the project folder runs them, with each `@g` and
+`@r` tag a registered mark:
 
 ```console
 $ .venv/bin/python -m pytest -q tests

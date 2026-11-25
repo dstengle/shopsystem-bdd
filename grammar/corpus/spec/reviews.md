@@ -248,3 +248,31 @@ shall [x2: agent the person (constant), x4: service the batches service (constan
     refuse(e2, subject: x4, object: x5)
     name(e3, subject: x4, object: x1)
 ```
+
+## r13
+From: b600 r13.
+
+```reading
+While an item in a batch is `in-batch` and every task of the batch is `done` and the workspace of the batch holds an amendment that cites the item and a scenario of the item succeeds in the workspace of a task of the item, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.
+shall [x9: agent the person (constant), x10: service the batches service (constant)]
+  while [x1: item, x2: batch, x4: workspace, x5: amendment, x6: scenario, x7: task, x8: workspace]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    every [x3: task]
+      of(x3, x2)
+      scope
+        status(x3) = `done`
+    of(x4, x2)
+    cite(subject: x5, object: x1)
+    in(x5, x4)
+    of(x6, x1)
+    of(x7, x1)
+    of(x8, x7)
+    succeed(subject: x6, in: x8)
+  when
+    request(e1, batches.submit, subject: x9, object: x2)
+  response [x11: proposed change]
+    of(x11, x2)
+    keep(e2, subject: x10, object: x11)
+    initiates(e3, subject: x10, status(x2) = `in-review`)
+```

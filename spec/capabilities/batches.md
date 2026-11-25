@@ -207,3 +207,6 @@ when the change is merged.
 ### [g124] A batch opened keeps the job a requirement group of an item serves
 - [r124] While an item is `ready` and the item meets the readiness bar and the item holds a requirement group that serves a job, when the person opens a batch, the batches service shall keep a capability that has a requirement group that serves the job.
 
+### [g125] An item amended with a review finding keeps a change for the finding, which its review accepts
+- [r125] While an item in a batch is `in-batch` and a review of the batch holds a review finding, when the person amends the item with the review finding, the batches service shall keep a kept change for the review finding.
+
