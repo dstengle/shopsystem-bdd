@@ -1,19 +1,19 @@
-# What `spec check` holds
+# What `shop spec check` holds
 
-This page is for the developer who has just met a code like `v_s1` or `w_example` from `spec check` and wants to
+This page is for the developer who has just met a code like `v_s1` or `w_example` from `shop spec check` and wants to
 know what it guards and what to do about it. It shows the things a bounded context keeps, how they point at each
-other, and every rule `spec check` holds them to.
+other, and every rule `shop spec check` holds them to.
 
-`spec rules` is the authority. The tables below are its output, word for word, grouped by what each rule guards;
+`shop spec rules` is the authority. The tables below are its output, word for word, grouped by what each rule guards;
 where this page and the command differ, the command wins. The full catalogue, with a fact set each rule fires on and
-one it passes, is [`grammar/rules.md`](../../grammar/rules.md), which `spec rules --write` generates.
+one it passes, is [`grammar/rules.md`](../../grammar/rules.md), which `shop spec rules --write` generates.
 
 ## A first look
 
 Say you add a scenario to `features/items.feature` by hand, with no `@g<n>` tag, and run the check:
 
 ```console
-$ spec check --limit 1
+$ shop spec check --limit 1
 v_s1  a scenario names no group  (1)
     features/items.feature:An empty backlog listed returns nothing
 warning w_example  a requirement holds example data: a code or quoted string that names no declared constant  (41)
@@ -27,25 +27,26 @@ warning w_uncited_obs  an observation no initiative cites  (16)
 
 Each block is one rule: its code, its label, how many things break it, then those things by id. `v_s1` says every
 scenario must come from a group of requirement lines. The fix is to write the line (with Claude, as an item) and let
-`features generate` write its scenario. A hand-written scenario has no line behind it, so nothing would keep it true.
+`shop features generate` write its scenario. A hand-written scenario has no line behind it, so nothing would keep it
+true.
 
 A few things to know about the output:
 
-- **`v_` codes are violations.** Any one of them makes `spec check` exit 1.
+- **`v_` codes are violations.** Any one of them makes `shop spec check` exit 1.
 - **`w_` codes are warnings.** They are printed, but the exit code stays 0. This repository lives with 57 of them.
 - **Unresolved references** are ids that name nothing, such as a `rests_on:` naming a decision that does not exist.
   Each one also exits 1.
-- **File problems** are files `spec` cannot read: a missing id, a status outside its lifecycle, a block it cannot
+- **File problems** are files `shop spec` cannot read: a missing id, a status outside its lifecycle, a block it cannot
   parse. Each one exits 1 too.
 - `--limit` sets how many rows each rule shows; `--json` gives the same report as one object.
 
 ## What a context keeps
 
-`spec` reads your files into a graph, and the rules are statements about that graph. `spec facts` prints it, one
+`spec` reads your files into a graph, and the rules are statements about that graph. `shop spec facts` prints it, one
 fact a line. Here is one group of `spec/capabilities/items.md`, as it prints it (cut to the lines that matter):
 
 ```console
-$ spec facts
+$ shop spec facts
 ...
 node("capability/missingmass.io/shopsystem/shopsystem-bdd/items#g12", "requirement-group").
 in("capability/missingmass.io/shopsystem/shopsystem-bdd/items#g12", "capability/missingmass.io/shopsystem/shopsystem-bdd/items").
@@ -57,7 +58,7 @@ generates("capability/missingmass.io/shopsystem/shopsystem-bdd/items#g12", "feat
 ```
 
 Read it as: group g12 is in the items capability, requirement r12 is a member of it, r12 parses, and g12 generates
-one scenario. The kinds of node `spec facts` gives, and where each lives:
+one scenario. The kinds of node `shop spec facts` gives, and where each lives:
 
 | kind | where it lives |
 |---|---|
@@ -75,10 +76,10 @@ one scenario. The kinds of node `spec facts` gives, and where each lives:
 The first eight are **standing**: they are what the context is. A record is not standing; it is written about
 something standing, and its `about:` must name one.
 
-Items, batches and quotes (`.shop/backlog/`, `.shop/batches/`, `.shop/quotes/`) are not in the graph. `work` checks
+Items, batches and quotes (`.shop/backlog/`, `.shop/batches/`, `.shop/quotes/`) are not in the graph. `shop work` checks
 those files itself each time it reads one, and refuses a malformed one, naming the file and the field.
 
-The edges, as `spec facts` gives them:
+The edges, as `shop spec facts` gives them:
 
 ```mermaid
 flowchart BT
@@ -99,23 +100,23 @@ flowchart BT
 In words: a capability is in the bounded context, and so is each term. A group is in a capability; each requirement
 is a member of one group, and each group generates one scenario. A capability rests on decisions. A decision may
 supersede another, be enforced by requirements, and rest on universal conditions. A record is about the context, a
-capability or a decision. A request names the context it is asked of as its upstream. (`spec facts` names the
+capability or a decision. A request names the context it is asked of as its upstream. (`shop spec facts` names the
 decision edges `enforced_req` and `decision_rests_on`.)
 
 ## The rules
 
-Each table gives the code and label as `spec rules` prints them, then what to do when the rule fires. Run
-`spec rules` to see the list for your release.
+Each table gives the code and label as `shop spec rules` prints them, then what to do when the rule fires. Run
+`shop spec rules` to see the list for your release.
 
 ### Ids
 
-Ids are never reused, so a scenario's `@r<n>` tag always means one line. Let `work line` hand out ids; never number
+Ids are never reused, so a scenario's `@r<n>` tag always means one line. Let `shop work line` hand out ids; never number
 a line by hand.
 
-| code | `spec rules` says | when it fires |
+| code | `shop spec rules` says | when it fires |
 |---|---|---|
-| `v15a` | a requirement has no id | Give the line its `[r<n>]`. A line added through `work line` gets one. |
-| `v15b` | two requirements share an id | Give one of them the next free id with `work line`. |
+| `v15a` | a requirement has no id | Give the line its `[r<n>]`. A line added through `shop work line` gets one. |
+| `v15b` | two requirements share an id | Give one of them the next free id with `shop work line`. |
 | `v15c` | a retired id is used again | The id is in the capability's `retired:`. Take a new one. |
 | `v15d` | a requirement id outside its capability | Move the line into a group of the capability its id names. |
 | `v15g` | a group has no id, or shares one | Give the group its own `[g<n>]`. |
@@ -123,33 +124,33 @@ a line by hand.
 | `v15i` | an id is used again: retired, or added though live | A retired `g<n>` is back; take a new group id. |
 | `v15j` | a group restates an id 0.29 did not have | Fix its `Restates:`; the 0.29 ids are in `spec/restated.json`. |
 
-To change a delivered line, retire it: `work line <item> --retires backlog#r38 "<new line>"` gives the new line a
+To change a delivered line, retire it: `shop work line <item> --retires backlog#r38 "<new line>"` gives the new line a
 new id and puts the old one under `retired:`.
 
 ### Groups and scenarios
 
 A group is one requirement line and the one scenario generated from it.
 
-| code | `spec rules` says | when it fires |
+| code | `shop spec rules` says | when it fires |
 |---|---|---|
 | `v15k` | the statements of a group differ in trigger or condition | Split the group: one trigger and condition a group. |
 | `v15l` | a group has more than one statement | Join them into one line, `shall A and B`, or split the group. |
 | `v15m` | a given line is not example data | Write it as `the <words> <name> holds` with one code span, or `holds:` with a table or docstring under it. |
 | `v15n` | two groups of a capability share features, condition and trigger | Join the two lines into one: `shall A and B`. |
-| `v_s1` | a scenario names no group | Delete the hand-written scenario; write a line and run `features generate`. |
-| `v_s2` | a scenario is generated from more than one group | Run `features generate` to write the feature again. |
-| `v_s3` | a group has no scenario | Run `features generate`. If the group still has none, its line holds a construct the step words cannot say yet; reword it. |
+| `v_s1` | a scenario names no group | Delete the hand-written scenario; write a line and run `shop features generate`. |
+| `v_s2` | a scenario is generated from more than one group | Run `shop features generate` to write the feature again. |
+| `v_s3` | a group has no scenario | Run `shop features generate`. If the group still has none, its line holds a construct the step words cannot say yet; reword it. |
 | `v_s4` | a requirement of a codified capability is in no group, or in two | Put each `- [r<n>]` under exactly one `### [g<n>]`. |
 
 ### The parse
 
 Every line of the spec is parsed in the context's grammar. A line that does not parse cannot become a scenario.
 
-| code | `spec rules` says | when it fires |
+| code | `shop spec rules` says | when it fires |
 |---|---|---|
-| `v_p0` | a spec file is not codified (no `language: codified-2`, or a capability in `codified-1`): run `migrate upgrade` | Run `migrate upgrade`, then reword what it reports. See [upgrading](../upgrading.md). |
-| `v_p1` | a requirement does not parse | Run `spec parse "<line>"`: it shows where the parse stopped and the words that may follow. Reword the line under a new id. |
-| `v_p2` | a requirement parses to more than one tree | The line can be read two ways. Reword it until `spec parse` prints one tree. |
+| `v_p0` | a spec file is not codified (no `language: codified-2`, or a capability in `codified-1`): run `shop migrate upgrade` | Run `shop migrate upgrade`, then reword what it reports. See [upgrading](../upgrading.md). |
+| `v_p1` | a requirement does not parse | Run `shop spec parse "<line>"`: it shows where the parse stopped and the words that may follow. Reword the line under a new id. |
+| `v_p2` | a requirement parses to more than one tree | The line can be read two ways. Reword it until `shop spec parse` prints one tree. |
 | `v_p3` | a line of a group's given block does not parse in the step grammar | Reword the given line in the vocabulary's words. |
 
 [Writing requirements](../writing-requirements.md) has the common refusals and their fixes.
@@ -157,10 +158,10 @@ Every line of the spec is parsed in the context's grammar. A line that does not 
 ### The vocabulary
 
 The vocabulary is the lexicon every line is parsed with, so its entries are checked before any line is.
-`spec lexicon --check` checks the vocabulary alone, before any line: it prints v_t4-v_t15, among them v_t7-v_t10, which
-`spec rules` does not list (they are in [`grammar/rules.md`](../../grammar/rules.md)).
+`shop spec lexicon --check` checks the vocabulary alone, before any line: it prints v_t4-v_t15, among them v_t7-v_t10,
+which `shop spec rules` does not list (they are in [`grammar/rules.md`](../../grammar/rules.md)).
 
-| code | `spec rules` says | when it fires |
+| code | `shop spec rules` says | when it fires |
 |---|---|---|
 | `v_t1` | a word the glossary avoids | A line or scenario uses a word listed after a term's `Not:`. Use the term. |
 | `v_t2` | a term has two entries, other than the senses of one verb or of one attribute word | Merge the two entries into one; an attribute word said of two kinds keeps an entry for each. |
@@ -178,13 +179,13 @@ The vocabulary is the lexicon every line is parsed with, so its entries are chec
 | `v_t18` | a vocabulary entry names no element of the domain model | Write `→ <element>` after the part of speech. |
 | `v_t19` | a vocabulary entry names an element the domain model does not declare | Declare the element in `spec/model/<area>.md`, or name one that is declared. |
 | `v_t20` | two entries of one vocabulary layer name one element, and neither is a form of the other | Keep one entry and list the other spelling under `Forms:`. |
-| `v_t21` | a context with a domain model imports the retired pack cli: run `migrate upgrade` | Import `request` in place of `cli`; see [upgrading](../upgrading.md#0380-the-domain-contract). |
+| `v_t21` | a context with a domain model imports the retired pack cli: run `shop migrate upgrade` | Import `request` in place of `cli`; see [upgrading](../upgrading.md#0380-the-domain-contract). |
 
 ### The domain model
 
 The model is checked on its own, and every line against it ([the domain model](domain-model.md)).
 
-| code | `spec rules` says | when it fires |
+| code | `shop spec rules` says | when it fires |
 |---|---|---|
 | `v_m1` | a requirement uses a word that names no element through the vocabulary its capability's area reads | Use a word of the area's layers, or add the element and its entry. A line still in 0.37's words (a command, an option) is refused here or at its parse. |
 | `v_m2` | a request names a parameter its operation does not declare, or a value outside the parameter's values | Declare the parameter in the operation, or use one of its values. |
@@ -198,22 +199,22 @@ The model is checked on its own, and every line against it ([the domain model](d
 
 ### Adapter contracts
 
-| code | `spec rules` says | when it fires |
+| code | `shop spec rules` says | when it fires |
 |---|---|---|
 | `v_a1` | an operation of the domain model has no table in the CLI contract and is not unexposed | Add its table to `spec/adapters/cli.toml`, or list it under `[unexposed]`. |
 | `v_a2` | the CLI contract names an operation the model does not declare, or a parameter its operation does not declare | Fix the table's name, or declare the operation or parameter. |
 | `v_a3` | the CLI contract names a command or an option the program's argparse lacks | Fix the contract, or add the command or option to the program. |
 | `v_a4` | a command or an option of the program's argparse is named by no table of the CLI contract and is not cli-only | Name it in an operation's table, or list it under `[cli-only]`. |
-| `v_a5` | an operation of an adapter contract does not hold a requirement that governs it: run spec annotate | A line whose trigger requests the operation is missing from its `requirements`. Run `spec annotate`. |
-| `v_a6` | an operation of an adapter contract holds a requirement that does not govern it: run spec annotate | A listed line was retired, or its trigger no longer requests the operation. Run `spec annotate`. |
+| `v_a5` | an operation of an adapter contract does not hold a requirement that governs it: run spec annotate | A line whose trigger requests the operation is missing from its `requirements`. Run `shop spec annotate`. |
+| `v_a6` | an operation of an adapter contract holds a requirement that does not govern it: run spec annotate | A listed line was retired, or its trigger no longer requests the operation. Run `shop spec annotate`. |
 
 See [adapter contracts](adapters.md).
 
 ### Decisions
 
-| code | `spec rules` says | when it fires |
+| code | `shop spec rules` says | when it fires |
 |---|---|---|
-| `v12a` | a decision has no summary | Add `summary:`. `work decision` refuses to write one without it. |
+| `v12a` | a decision has no summary | Add `summary:`. `shop work decision` refuses to write one without it. |
 | `v12b` | a supersedes cycle | Two decisions supersede each other, directly or around a loop. Break the loop. |
 | `v13` | a revisit signal no one reads | Point `revisit_signal:` at a measurement record, or `requests`. |
 | `v_d6` | a check decision names no test | Add the pytest node id that checks it to `enforced_by:`. |
@@ -223,17 +224,17 @@ See [adapter contracts](adapters.md).
 | `w_untiered` | a decision in force gives no tier | Add `tier:` (`check`, `requirement` or `judgement`). |
 | `w_unrouted` | a universal condition no decision routes | Write a decision that rests on the `U<n>` with a `verified_by:` route. |
 
-`spec decisions --check` runs the tests each check decision names.
+`shop spec decisions --check` runs the tests each check decision names.
 
 ### Records and requests
 
-| code | `spec rules` says | when it fires |
+| code | `shop spec rules` says | when it fires |
 |---|---|---|
 | `v10a` | a source that is not an origin | A `source:` must name an observation, a measurement or a review finding. |
-| `v10b` | a record is about nothing | Add `about:`. `work record` writes it (default: the bounded context). |
+| `v10b` | a record is about nothing | Add `about:`. `shop work record` writes it (default: the bounded context). |
 | `v10c` | a record is about something that is not standing | Point `about:` at the context, a capability or a decision. |
 | `v3` | a request's resolution names something that is not a requirement of the spec | Name requirement ids (`<capability>#r<n>`) in the resolution, never scenarios. |
-| `v17` | a request that is part of no job-thread, cites no origin and is raised for no request | Give the request the origin it came from. Requests written by `work request` have one. |
+| `v17` | a request that is part of no job-thread, cites no origin and is raised for no request | Give the request the origin it came from. Requests written by `shop work request` have one. |
 | `v18d` | an id of a kind kept in .shop/work/ with another context's path, other than the request a request is raised for | Remove the reference to another context's frozen work. |
 | `v_d4` | a delivered request has an accepted line its resolution does not name | Name, in the resolution, the requirement each accepted line became. |
 | `w_many_requests` | more than five open requests to one upstream | A hint to settle some before raising more. |
@@ -243,9 +244,9 @@ See [adapter contracts](adapters.md).
 
 ### Example data in a line
 
-| code | `spec rules` says | when it fires |
+| code | `shop spec rules` says | when it fires |
 |---|---|---|
-| `w_example` | a requirement holds example data: a code or quoted string that names no declared constant | Move the sample value into the group's given block (`work line --given`), or make it a term if it is a real constant. |
+| `w_example` | a requirement holds example data: a code or quoted string that names no declared constant | Move the sample value into the group's given block (`shop work line --given`), or make it a term if it is a real constant. |
 
 A line says what is true for every value; the given block holds the value a scenario runs with.
 
@@ -254,7 +255,7 @@ A line says what is true for every value; the given block holds the value a scen
 Plugin 0.30 kept jobs, seams, job-threads and pinned dependencies between contexts. These rules still guard those
 edges. A 0.33 repository writes none of them, so in practice only the parts on today's kinds can fire.
 
-| code | `spec rules` says | when it fires |
+| code | `shop spec rules` says | when it fires |
 |---|---|---|
 | `v2` | a standing edge touches something that is not standing | An `in`, `member_of`, `generates`, `rests_on` or `supersedes` names a record or another non-standing node. Point it at a standing one. |
 | `v4` | a depends_on that no using gives | 0.30 only. |
@@ -293,7 +294,7 @@ shall [x3: agent the person (constant), x4: specification "the specification of 
 
 One line holds for every error rule; a warning's line says the rule is named and the request completes. What a single
 rule catches is its catalogue entry, and the entry's examples are its test. Here is `v_t2`'s entry in
-`grammar/rules.md`, as `spec rules --write` writes it:
+`grammar/rules.md`, as `shop spec rules --write` writes it:
 
 ```markdown
 ## v_t2
@@ -326,21 +327,21 @@ Each entry, of either catalogue, carries:
 
 The purpose, `Since:` and `Changed:` of every entry are kept in
 [`grammar/catalogue-entries.toml`](../../grammar/catalogue-entries.toml), one table an entry (`[rules.v_t2]`,
-`purpose`, `since`, `changed`); `spec rules --write` and `spec constructs --write` write them into the catalogues,
-and `--check` says whether each catalogue is current. A batch that adds or changes a rule or a construct adds its item
+`purpose`, `since`, `changed`); `shop spec rules --write` and `shop spec constructs --write` write them into the
+catalogues, and `--check` says whether each catalogue is current. A batch that adds or changes a rule or a construct adds its item
 there.
 
-`spec check` holds the catalogues to these rules:
+`shop spec check` holds the catalogues to these rules:
 
-| code | `spec rules` says | when it fires |
+| code | `shop spec rules` says | when it fires |
 |---|---|---|
 | `v_c1` | a requirement names a rule the rule catalogue has no entry of | Fix the code the line names, or add the rule. |
 | `v_c2` | a catalogue entry has no purpose | Give the entry its `purpose` in `grammar/catalogue-entries.toml` and write the catalogue again. |
 | `v_c3` | a catalogue entry mentions no item and no release: no Since: or Changed: names an item or a section of CHANGELOG.md | Name the item that brought it in `since`. |
 | `v_c4` | a catalogue entry mentions an item that is not delivered | Name the delivered item that brought or changed it. |
 
-And `spec parse` refuses a line that uses a construct the construct catalogue has no entry of, naming the construct.
-A change to the language is a change to the grammar and its catalogue entry, not a new requirement line.
+And `shop spec parse` refuses a line that uses a construct the construct catalogue has no entry of, naming the
+construct. A change to the language is a change to the grammar and its catalogue entry, not a new requirement line.
 
 ## Where this came from
 

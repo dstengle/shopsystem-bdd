@@ -7,8 +7,8 @@ tool that keeps short notes. It is not the plugin, so you see the requirement la
 words.
 
 It's written for the developer setting up a first repository. [Getting started](../../getting-started.md) shows
-them as the session writes them. The docs test runs `spec check` and `features generate --check` on it, so what you read here
-stays true.
+them as the session writes them. The docs test runs `shop spec check` and `shop features generate --check` on it, so
+what you read here stays true.
 
 ## The whole idea in one line
 
@@ -59,7 +59,7 @@ The spec files and the program are written by hand; the feature file, and each o
 `cli.toml`, are written by commands.
 
 The folder holds three of a specification's four parts: the domain model, the vocabulary and the requirements. The
-fourth, the decisions (`spec/decisions/`, each written by `work decision`), records the choices behind them; this
+fourth, the decisions (`spec/decisions/`, each written by `shop work decision`), records the choices behind them; this
 example has made none worth keeping yet. [Concepts](../../concepts.md#the-spec) has all four.
 
 ## `spec/index.md`: the context
@@ -278,12 +278,12 @@ note = { positional = 1, example = "1" }
 
 The adapter's contract maps each operation to the command that requests it and each parameter to its option or
 argument, and says how each outcome shows: exit 0 for done and returned, exit 1 with the reasons on stderr for a
-refusal. `spec check` reads `notes.py`'s argparse and checks the two both ways: every operation has a command, every
-command and option is named (v_a1-v_a4).
+refusal. `shop spec check` reads `notes.py`'s argparse and checks the two both ways: every operation has a command,
+every command and option is named (v_a1-v_a4).
 
 Each operation's `requirements` are the lines that govern it, the lines whose trigger requests it, refusals
-included: whoever changes `notes add` reads its business rules right there. They are generated: `spec annotate`
-writes them, and `spec check` fails an operation that misses a governing line or keeps one that no longer governs
+included: whoever changes `notes add` reads its business rules right there. They are generated: `shop spec annotate`
+writes them, and `shop spec check` fails an operation that misses a governing line or keeps one that no longer governs
 it (v_a5, v_a6). The format is in [Adapter contracts](../../reference/adapters.md).
 
 ## `features/notes.feature`: what the plugin generated
@@ -335,33 +335,34 @@ Binding these steps to code with pytest-bdd is in [Getting started](../../gettin
 
 ## Run the checks yourself
 
-From the plugin's repository, point the tools at this folder with `--root`. (The docs write commands by the tool's
-name; getting started shows how to run them from the installed plugin.)
+From the plugin's repository, point the tools at this folder with `--root`. (The docs write commands as `shop`'s;
+[how the commands are run](../../reference/commands.md#how-the-commands-are-run) shows how to run `shop` from the
+installed plugin.)
 
 ```console
-$ spec --root docs/examples/notes-cli check
+$ shop spec --root docs/examples/notes-cli check
 0 violations, 0 warnings, 0 unresolved references, 0 file problems
-$ spec --root docs/examples/notes-cli logic
+$ shop spec --root docs/examples/notes-cli logic
 no findings
-$ spec --root docs/examples/notes-cli lexicon --check
+$ shop spec --root docs/examples/notes-cli lexicon --check
 9 terms, 0 problems
-$ features generate --root docs/examples/notes-cli --check
-$ spec --root docs/examples/notes-cli annotate --check
+$ shop features generate --root docs/examples/notes-cli --check
+$ shop spec --root docs/examples/notes-cli annotate --check
 ```
 
-`features generate --check` and `spec annotate --check` print nothing and exit 0 when the feature file and the
+`shop features generate --check` and `shop spec annotate --check` print nothing and exit 0 when the feature file and the
 contract match the spec. Run it without
 `--check` and it writes the file:
 
 ```console
-$ features generate --root docs/examples/notes-cli
+$ shop features generate --root docs/examples/notes-cli
 wrote features/notes.feature
 ```
 
-`spec lexicon` lists every word a line may use, the pack's marked as such:
+`shop spec lexicon` lists every word a line may use, the pack's marked as such:
 
 ```console
-$ spec --root docs/examples/notes-cli lexicon
+$ shop spec --root docs/examples/notes-cli lexicon
 actor (2)
   the notes service
   the person
@@ -397,10 +398,10 @@ event (13)
 
 ## What a line means
 
-`spec parse --form` prints what the plugin reads a line as. Here is the refusal line, g2:
+`shop spec parse --form` prints what the plugin reads a line as. Here is the refusal line, g2:
 
 ```console
-$ spec --root docs/examples/notes-cli parse --form "If the person adds a note without a title, then the notes service shall refuse the request and name the title."
+$ shop spec --root docs/examples/notes-cli parse --form "If the person adds a note without a title, then the notes service shall refuse the request and name the title."
 shall [x1: agent the person (constant), x3: service the notes service (constant), x4: request "the request the trigger makes" (indexical), x5: parameter title (constant)]
   if [x2: note]
     request(e1, notes.add, subject: x1, object: x2)
@@ -422,7 +423,7 @@ These lines parse in this context's grammar, not in the plugin's own: always pas
 A counter-example. This line is **refused**:
 
 ```console
-$ spec --root docs/examples/notes-cli parse "When the person removes the note, the notes service shall set the status of the note to \`removed\`."
+$ shop spec --root docs/examples/notes-cli parse "When the person removes the note, the notes service shall set the status of the note to \`removed\`."
 refused: "the note" has no antecedent: no earlier noun phrase, functional relation or declared indexical gives a note
   tree: ...
 ```
@@ -440,15 +441,15 @@ There are more pairs like this in [Writing requirements](../../writing-requireme
 
 The aim was the smallest context that passes every check. Three things were added for that, and nothing else:
 
-- **The feature file.** Without it, `spec check` reports `v_s3  a group has no scenario` for each group.
-  `features generate` writes it.
-- **A line for every operation.** `spec check` reports `v_m7  an operation no line requests` for an operation of the
-  model that no line asks for, and `v_m4` for a refusal reason no line states (`no title` is g2's).
-- **`notes.py`.** The adapter's contract names a program, and `spec check` reads its argparse: a command or an
+- **The feature file.** Without it, `shop spec check` reports `v_s3  a group has no scenario` for each group.
+  `shop features generate` writes it.
+- **A line for every operation.** `shop spec check` reports `v_m7  an operation no line requests` for an operation of
+  the model that no line asks for, and `v_m4` for a refusal reason no line states (`no title` is g2's).
+- **`notes.py`.** The adapter's contract names a program, and `shop spec check` reads its argparse: a command or an
   option the contract names that the program lacks is `v_a3`, one the program has that the contract does not name
   is `v_a4`.
 
-`spec check` asked for no decisions, records or backlog. A context can start with only a spec; the `.shop/` folder
+`shop spec check` asked for no decisions, records or backlog. A context can start with only a spec; the `.shop/` folder
 comes when you start working with Claude.
 
 ## Next

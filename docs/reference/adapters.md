@@ -21,7 +21,7 @@ Every operation answers with one shape, whatever the port:
 people, and as one JSON object under `--json`:
 
 ```console
-$ work show b12 --json
+$ shop work show b12 --json
 {
   "outcome": "returned",
   "content": {
@@ -87,7 +87,7 @@ note = { positional = 1, example = "1" }
 - **`[operations."<service>.<operation>"]`** gives the `command` that requests the operation, or a `hook` (a Claude
   Code hook that drives it, such as `SessionStart`) with its `command`.
 - **`requirements`** under an operation's table lists, generated, the requirements that govern it: each line whose
-  trigger requests the operation, its refusals among them, as `"<capability>#r<n>: <line>"`. `spec annotate` writes
+  trigger requests the operation, its refusals among them, as `"<capability>#r<n>: <line>"`. `shop spec annotate` writes
   them; never edit them by hand.
 - **`[operations."...".parameters]`** maps each parameter, by its business name, to an `option` or a `positional`
   place; `repeat = true` for an option given more than once, `flag = true` for a boolean one, and `example`, the value
@@ -102,8 +102,8 @@ message on stderr, `item:b12` as `b12`; the JSON envelope keeps the references.
 
 ### Checked both ways
 
-`spec check` reads the contract and each program's argparse (caught as its `main()` is about to parse) and holds the
-two to each other:
+`shop spec check` reads the contract and each program's argparse (caught as its `main()` is about to parse) and holds
+the two to each other:
 
 | code | what it catches |
 |---|---|
@@ -111,8 +111,8 @@ two to each other:
 | `v_a2` | a table naming no operation of the model, or a parameter its operation does not declare |
 | `v_a3` | a command or an option the contract names that the program's argparse lacks |
 | `v_a4` | a subcommand or an option of the argparse that no table names and that is not CLI-only |
-| `v_a5` | an operation that does not hold a requirement that governs it (`spec annotate` writes it) |
-| `v_a6` | an operation that holds a requirement that no longer governs it (`spec annotate` takes it out) |
+| `v_a5` | an operation that does not hold a requirement that governs it (`shop spec annotate` writes it) |
+| `v_a6` | an operation that holds a requirement that no longer governs it (`shop spec annotate` takes it out) |
 
 ## The scenarios' driver
 

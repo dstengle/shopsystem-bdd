@@ -9,7 +9,7 @@ at a time, and says which of them a command writes for you and which you write b
 
 Every example is this repository's own spec, in `language: codified-2`. Files that still say `codified-1` are
 refused since plugin 0.33, and a context with no domain model since 0.38; [upgrading](../upgrading.md) shows how
-`migrate upgrade` moves them over.
+`shop migrate upgrade` moves them over.
 
 ## The layout at a glance
 
@@ -33,7 +33,7 @@ The specification has four parts: the **domain model**, the **vocabulary**, the 
 and the universal conditions) and the **decisions**; the adapter contracts sit beside them. The model and the
 vocabulary have their own reference, [the domain model](domain-model.md); the adapter contracts theirs,
 [adapter contracts](adapters.md). A **capability** is one file under `spec/capabilities/`: the rules about one service
-or one object's lifecycle, told as groups of lines. Its **feature** is the Gherkin file `features generate` writes
+or one object's lifecycle, told as groups of lines. Its **feature** is the Gherkin file `shop features generate` writes
 from it. You never edit a feature by hand.
 
 ## A capability file, section by section
@@ -112,11 +112,11 @@ shall [x2: agent the person (constant), x3: service the backlog service (constan
 
 "The person shapes the item" is a request of the operation `backlog.shape`, which `spec/model/tracking.md` declares
 with its outcomes (`done | refused: item not an idea, no note`). g15's line states the refusal `item not an idea`; a
-refusal reason no line states is a violation (`v_m4`). `spec explain` prints what else a line means, here from the
+refusal reason no line states is a violation (`v_m4`). `shop spec explain` prints what else a line means, here from the
 universal condition U17:
 
 ```console
-$ spec explain items#r15
+$ shop spec explain items#r15
 items#r15  While the status of an item is not `idea`, if the person shapes the item, then the backlog service shall refuse the request and name the item.
 which also means:
   the backlog service shall change nothing (by U17)
@@ -150,7 +150,7 @@ the measurement `m2` holds:
 
 Each line of the block is a step of the step grammar: `the <kind> <name> holds:` with data under it, or `the <kind>
 <name> holds` and one code span or quoted string. `Restates:` names the 0.29 ids the group stands for. Add a block
-with `work line --given`.
+with `shop work line --given`.
 
 ## `spec/index.md`: the bounded context
 
@@ -205,12 +205,12 @@ retired: [U1, U2, U3, U6, U9, U10, U11, U4, U5, U7, U8, U12, U13, U14, U15, U16]
 - [U19] While a session has a workspace, the session shall change only files in the workspace.
 ```
 
-`spec logic` adds each one to the background of every check, and `spec explain` names it where it applies (the
-"by U17" above). Add one with `work line --universal`.
+`shop spec logic` adds each one to the background of every check, and `shop spec explain` names it where it applies (the
+"by U17" above). Add one with `shop work line --universal`.
 
 ## A decision file
 
-A design-decision is one file under `spec/decisions/`, named `<nnnn>-<slug>.md`. `work decision` writes it whole
+A design-decision is one file under `spec/decisions/`, named `<nnnn>-<slug>.md`. `shop work decision` writes it whole
 and regenerates `spec/decisions/index.md`; don't write one by hand. Here's `0104-the-response-envelope.md`, abridged:
 
 ```markdown
@@ -230,7 +230,7 @@ supersedes: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/u8-is-chec
 ...
 ```
 
-`tier:` is one of `check` (tests named in `enforced_by:` hold it, and `spec decisions --check` runs them),
+`tier:` is one of `check` (tests named in `enforced_by:` hold it, and `shop spec decisions --check` runs them),
 `requirement` (requirement lines hold it) or `judgement` (a reviewer holds it). The `## Decision` section is
 standing; the rest of the file is record. A mechanism (the CLI, git, GitHub issues, pull requests, the files) is a
 decision, never a requirement line. A capability's `rests_on:` points at these ids.
@@ -298,12 +298,12 @@ excludes (g6 of `measurement.md`):
     And the measurement service does not return a round trip
 ```
 
-The output is byte-stable: generate twice and you get the same file. `features generate --check` prints nothing and
+The output is byte-stable: generate twice and you get the same file. `shop features generate --check` prints nothing and
 exits 0 when every feature is current:
 
 ```console
-$ features generate --check items
-$ features generate items
+$ shop features generate --check items
+$ shop features generate items
 wrote features/items.feature
 ```
 
@@ -317,15 +317,15 @@ Here is the whole path in a scratch clone of this repository. Say you want showi
 well as its title. That changes `items#r12`, so the new line retires it:
 
 ```console
-$ work idea 'Showing an item gives its status too' --note 'the person wants to see where an item stands beside its title'
+$ shop work idea 'Showing an item gives its status too' --note 'the person wants to see where an item stands beside its title'
 b250 "Showing an item gives its status too" idea
-$ work shape b250
+$ shop work shape b250
 b250 "Showing an item gives its status too" shaped
-$ work line b250 --into items --retires 'items#r12' --group 'An item shown gives its title and status' 'When the person shows an item, the backlog service shall return the title of the item and the status of the item.'
+$ shop work line b250 --into items --retires 'items#r12' --group 'An item shown gives its title and status' 'When the person shows an item, the backlog service shall return the title of the item and the status of the item.'
 b250 "Showing an item gives its status too": items#r31 retires items#r12
 ```
 
-`work line` gave the line the next free ids of the capability, and the item now holds a block for `items`:
+`shop work line` gave the line the next free ids of the capability, and the item now holds a block for `items`:
 
 ```markdown
 ## Requirements
@@ -340,13 +340,13 @@ retires: [r31 r12]
 ```
 
 Meanwhile a second item, b251, also took a line for `items`. It was written before b250 reached `spec/`, so it got
-the same ids. That's fine: `work batch start` renumbers each item's ids past the capability's and the other picked
+the same ids. That's fine: `shop work batch start` renumbers each item's ids past the capability's and the other picked
 items' when it lays them:
 
 ```console
-$ work line b251 --into items --group 'An item shown gives its provenance' 'When the person shows an item, the backlog service shall return the provenance of the item.'
+$ shop work line b251 --into items --group 'An item shown gives its provenance' 'When the person shows an item, the backlog service shall return the provenance of the item.'
 b251 "Showing an item gives its provenance": items#r31
-$ work batch start
+$ shop work batch start
 batch-34 building: t1 b250 "Showing an item gives its status too", t2 b251 "Showing an item gives its provenance"
 b251 "Showing an item gives its provenance" renumbered: items#g31 -> items#g32, items#r31 -> items#r32
 ```
@@ -361,12 +361,12 @@ On the new branch `batch-34`, one commit did four things:
 
 ## Who writes which file
 
-`spec forms` prints every file form a context keeps, its path, and the command that writes it. Where it says "no
-command yet", it names the plugin's item that will give the form one; `spec forms --check` fails on any form left
+`shop spec forms` prints every file form a context keeps, its path, and the command that writes it. Where it says "no
+command yet", it names the plugin's item that will give the form one; `shop spec forms --check` fails on any form left
 to be written by hand. This is its output at 0.38.0, verbatim:
 
 ```console
-$ spec forms
+$ shop spec forms
 item                      .shop/backlog/b<n>.md                                   work idea
 item's requirement line   .shop/backlog/b<n>.md ## Requirements                   work line
 item's chore              .shop/backlog/b<n>.md ## Chore                          work chore
@@ -402,14 +402,14 @@ design record folder      .shop/records/<date>-<topic>/design.md                
 plan record folder        .shop/records/<date>-<topic>/plan-<k>.md                plugin item b44 (no command yet)
 ```
 
-In short: a new capability is written on an item by `work line --capability` and reaches `spec/` through
-`work batch start`, as do lines, model lines and vocabulary entries (`work line --model`, `--relation`, `--term`),
-given blocks, universal conditions and upstreams, each by its `work line` option. A whole model area, a vocabulary
-entry outside an item and an adapter contract wait on plugin items b354, b13 and b355, and the prose sections
-(Implementation, Not yet) are edited by hand. After a hand edit, run `spec check` and `spec lexicon --check` to catch
-a malformed entry.
+In short: a new capability is written on an item by `shop work line --capability` and reaches `spec/` through
+`shop work batch start`, as do lines, model lines and vocabulary entries (`shop work line --model`, `--relation`,
+`--term`), given blocks, universal conditions and upstreams, each by its `shop work line` option. A whole model area, a
+vocabulary entry outside an item and an adapter contract wait on plugin items b354, b13 and b355, and the prose sections
+(Implementation, Not yet) are edited by hand. After a hand edit, run `shop spec check` and `shop spec lexicon --check`
+to catch a malformed entry.
 
 Next: [writing requirements](../writing-requirements.md) for the language of a line,
-[the commands](commands.md) for every option of `work line` and `features generate`,
+[the commands](commands.md) for every option of `shop work line` and `shop features generate`,
 [the domain model](domain-model.md) for the model and its words, or [the design model](design-model.md) for the rules
-`spec check` holds these files to.
+`shop spec check` holds these files to.

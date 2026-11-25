@@ -2,7 +2,7 @@
 
 <!-- Outputs on this page are from plugin 0.33.0 at commit 7f60e57de, 2026-11-10: the read-only commands run in this
 repository, the ones that write (work idea, line, ready, batch start, pytest) in a throwaway clone with no remote.
-The grammar's layers, the parse, the form, the facts, `spec explain` and the readiness bar's L1 are from plugin
+The grammar's layers, the parse, the form, the facts, `shop spec explain` and the readiness bar's L1 are from plugin
 0.38.0, 2026-11-19, the last in a clone with no remote (its b363 written here as b250). -->
 
 This page is for the curious developer: what happens between a sentence in a capability file and a green test, and
@@ -29,7 +29,7 @@ shall [x2: agent the person (constant), x3: service the backlog service (constan
     initiates(e2, subject: x3, status(x1) = `shaped`)
 ```
 
-And here is the scenario `features generate` wrote from it, in `features/items.feature`:
+And here is the scenario `shop features generate` wrote from it, in `features/items.feature`:
 
 ```gherkin
   @g14 @r14
@@ -71,7 +71,7 @@ The **base grammar** (`grammar/Base.gf`, under 40 lines) knows only the shape of
 conditions, a When or If trigger, and `shall` responses. It knows no nouns and no verbs. The English surface
 (agreement, "does not", relative clauses, "a" and "an") comes from the
 [Grammatical Framework](https://www.grammaticalframework.org/)'s resource grammar library, the RGL, which
-`tools install` pins.
+`shop tools install` pins.
 
 The **packs** and the **vocabulary** supply the words, and the **domain model** decides what each may combine with.
 This is the vocabulary's `shape`, from `spec/vocabulary/tracking.md`, and the operation it names, from
@@ -88,7 +88,7 @@ and a verb that names an operation gets its parameters too (`scripts/spec_rgl_op
 item with a note" fits, and a noun of the wrong kind in a slot does not parse at all. The
 [request pack](../grammar/packs/request.md) gives the words of the response (*refuse*, *name*, *return*, *keep*).
 An action verb can only be a trigger or a response; a state verb can only be a condition. A word a higher layer
-takes over from a pack needs `Redefines: <pack>` on its entry, or `spec check` refuses it.
+takes over from a pack needs `Redefines: <pack>` on its entry, or `shop spec check` refuses it.
 
 The compiled grammar is cached under `~/.cache/shopsystem-bdd/pgf/`, keyed by the hash of every source. So the
 first parse after a vocabulary change is slow while GF compiles, and every one after that is fast. Parses are cached
@@ -96,7 +96,7 @@ too, beside it.
 
 ### 2. The parse and its guards
 
-`spec parse` asks GF for every tree of the line. Then two rules decide:
+`shop spec parse` asks GF for every tree of the line. Then two rules decide:
 
 - **One meaning, or refused.** Several trees are fine if they all mean the same thing; the first is kept. Trees
   that mean different things are refused, naming the words that read two ways.
@@ -113,7 +113,7 @@ When the person lists the backlog, the backlog service shall return the status o
 ```
 
 ```console
-$ spec parse "When the person lists the backlog, the backlog service shall return the status of the item."
+$ shop spec parse "When the person lists the backlog, the backlog service shall return the status of the item."
 refused: "the item" has no antecedent: no earlier noun phrase, functional relation or declared indexical gives an item
   tree: When NoPre (k_agent_Event (k_agent_One (k_agent_Simple a_the_person_13)) ...
 ```
@@ -124,7 +124,7 @@ refused: "the item" has no antecedent: no earlier noun phrase, functional relati
 
 A tree is grammar; it is not yet meaning. `scripts/spec_lf.py` turns each tree into a **logical form**: referents
 (`x1: item`), atoms (`status(x1) = 'idea'`, `request(e1, backlog.shape, ...)`) and boxes (`while`, `when`, `response`). That is what
-`spec parse --form` prints, and it is the only thing the later steps read.
+`shop spec parse --form` prints, and it is the only thing the later steps read.
 
 Twelve **reading rules**, R1 to R12, fix what the small words mean. A few you will notice:
 
@@ -158,7 +158,7 @@ Each name is the model element's, qualified by its area (`t_tracking__item__stat
 use one word for two things, and their facts never join. The trigger is the request, its operation and its
 parameters (`req(e_backlog__shape,())`, here none).
 
-`spec logic` puts the facts of every line in the context, and of `spec/universal.md`, together with one fixed
+`shop spec logic` puts the facts of every line in the context, and of `spec/universal.md`, together with one fixed
 program, [`grammar/check.lp`](../grammar/check.lp), and runs **one** solve, with a 20-second limit. Pairs of lines
 that could fire on the same trigger in the same state are unified there, so a clash between capabilities is found
 as readily as one inside a file. The findings:
@@ -175,11 +175,11 @@ as readily as one inside a file. The findings:
 | L7 | a "shall not" forbids what a "may" permits | warning |
 | L8 | every Then of a line is already entailed by other lines | warning |
 
-L8 comes from a second program, `grammar/entail.lp`. It is also what `spec explain` uses to show what a line means
+L8 comes from a second program, `grammar/entail.lp`. It is also what `shop spec explain` uses to show what a line means
 once the universal conditions and the packs' definitions are taken into account:
 
 ```console
-$ spec explain items#r15
+$ shop spec explain items#r15
 items#r15  While the status of an item is not `idea`, if the person shapes the item, then the backlog service shall refuse the request and name the item.
 which also means:
   the backlog service shall change nothing (by U17)
@@ -188,19 +188,19 @@ which also means:
 
 ### 5. Steps, in a grammar of their own
 
-`features generate` reads the same logical form a second time, for Gherkin. Givens come from the While part and
+`shop features generate` reads the same logical form a second time, for Gherkin. Givens come from the While part and
 from what the trigger says of its referents, the When from the trigger, and the Thens from the response. Referents
 become named instances in order of first mention: `x1: item` becomes "the item i1". A Given brings in each instance
 before a Given or the When names it ("an item i1"), so the steps can be bound from the feature file alone.
 
 Every step is written in **step grammar 4** (`grammar/Steps4.gf`, extended per context like the base grammar). So a
-step is never free text: `features vocab` can read each one back into a template and a term, which is how a step is
+step is never free text: `shop features vocab` can read each one back into a template and a term, which is how a step is
 matched to its handler. A Then that a universal condition already entails is left out, with an `# entailed: U17`
 comment in its place, so the check after every scenario is not tested twice. A When is a request; its step
 definition makes it through an adapter's driver ([adapter contracts](reference/adapters.md)), and the Thens read the
 response.
 
-The output is byte-stable. `features generate --check` fails when a feature file is not what the spec generates,
+The output is byte-stable. `shop features generate --check` fails when a feature file is not what the spec generates,
 so a hand edit or a stale file shows up in the suite.
 
 ### 6. pytest-bdd and `work_items`
@@ -225,17 +225,18 @@ XFAIL tests/scenarios/test_items.py::test_an_item_shown_gives_its_status - unbui
 ### The readiness bar, on a copy of `spec/`
 
 An item becomes `ready` only by passing a mechanical check, so the questions come before the build, not during it.
-`work ready` copies `spec/` (and the construct catalogue `grammar/constructs.md`, when the context keeps one) to a
+`shop work ready` copies `spec/` (and the construct catalogue `grammar/constructs.md`, when the context keeps one) to a
 temporary directory, lays the item's lines into the copy, and runs the pipeline above over it: every line parses
-(and uses no construct the catalogue has no entry of), the lexicon gains no problem, `spec logic` finds no L0 and no L1 naming the
-item's lines, and `features generate` writes a scenario for each group. Your real `spec/` is never written.
+(and uses no construct the catalogue has no entry of), the lexicon gains no problem, `shop spec logic` finds no L0 and
+no L1 naming the item's lines, and `shop features generate` writes a scenario for each group. Your real `spec/` is never
+written.
 
 Here is an item whose line contradicts a delivered one:
 
 ```console
-$ work line b250 --into items --group "An item shown keeps quiet about its title" "When the person shows an item, the backlog service shall not return the title of the item."
+$ shop work line b250 --into items --group "An item shown keeps quiet about its title" "When the person shows an item, the backlog service shall not return the title of the item."
 b250 "The backlog keeps quiet about an item's title": items#r31
-$ work ready b250
+$ shop work ready b250
 work ready: b250 "The backlog keeps quiet about an item's title" is not passing:
   items#g31: v15n two groups of a capability share features, condition and trigger: with items#g12
   L1 items#r12 and #r31 clash: on "the person shows an item", r12 obliges and r31 forbids the backlog service to return a title
@@ -247,21 +248,21 @@ it. See [concepts](concepts.md) for the item's states.
 
 ### A batch: one branch, a worktree per task
 
-`work batch start` picks the ready, unblocked items in rank order and lays them on a new branch `batch-<n>`, in its
+`shop work batch start` picks the ready, unblocked items in rank order and lays them on a new branch `batch-<n>`, in its
 own worktree under `.shop/worktrees/`. One commit puts every item's lines into `spec/`, adds their ids to each
 capability's `unbuilt:`, and regenerates the features. The base branch gets the batch's `plan.md` and the items
 moved to `in-batch`. The checkout you work in is never switched.
 
 ```console
-$ work batch start
+$ shop work batch start
 batch-34 building: t1 b251 "work show prints the status of an item, too"
 batch brief: .../repo/.shop/worktrees/batch-34-driver/brief.md
 ```
 
 Each item is a task on its own branch `batch-<n>-b<j>`, in its own worktree, so tasks run in parallel without
 touching one another. A task's commits end with `Item: b<j>`, and the commit that makes a scenario pass takes its
-id out of `unbuilt:`. `work batch done` checks all of that and runs the suite before it marks the task done.
-`work batch review` merges the task branches into the batch branch with `--no-ff`, settling the one conflict git
+id out of `unbuilt:`. `shop work batch done` checks all of that and runs the suite before it marks the task done.
+`shop work batch review` merges the task branches into the batch branch with `--no-ff`, settling the one conflict git
 cannot (two items' `unbuilt:` lines in one capability).
 
 This is batch-32 of this repository, which built item b197 and was merged as pull request #46:
@@ -290,7 +291,7 @@ The full story is goal 5 of [the workflow simplified](../.shop/records/2026-11-0
 
 ### The driver and its subagents
 
-A batch is run by one fresh agent, the **driver**. `work batch start` writes its brief to
+A batch is run by one fresh agent, the **driver**. `shop work batch start` writes its brief to
 `.shop/worktrees/batch-<n>-driver/brief.md` (never committed), and the session that started the batch dispatches
 the driver with that brief as its whole prompt. The brief names each task's worktree, branch, item, requirement ids
 and acceptance tests, and the rules every subagent is given, among them:
@@ -301,20 +302,20 @@ and acceptance tests, and the rules every subagent is given, among them:
 - Take each id out of its capability's `unbuilt:` in the same commit that makes its scenario pass.
 ```
 
-The driver gives each running task a subagent, all at once, and calls `work batch done` or `work batch park` as
-each returns. A question it cannot settle is parked on its item as `needs-input`, never put to you, and the rest
+The driver gives each running task a subagent, all at once, and calls `shop work batch done` or `shop work batch park`
+as each returns. A question it cannot settle is parked on its item as `needs-input`, never put to you, and the rest
 of the batch carries on. It stops at `awaiting-merge`: merging is yours. The steps it follows are the
 [building-a-batch skill](../skills/building-a-batch/SKILL.md).
 
 ### One review, at the pull request
 
-There is no review per task. `work batch review` pushes the batch branch and opens a draft pull request.
-`work batch brief` writes what the reviewer reads: the batch's own commits and no others, the items' requirement
+There is no review per task. `shop work batch review` pushes the batch branch and opens a draft pull request.
+`shop work batch brief` writes what the reviewer reads: the batch's own commits and no others, the items' requirement
 lines, the `tier: judgement` decisions, `CLAUDE.md`'s rules, the size of the change, and the runs of the
 `[review] checks` of `.shop/delivery.toml`. A fresh [`pr-reviewer`](../agents/pr-reviewer.md) agent reads it and
 writes graded findings.
 
-`work batch reviewed` records them as `.shop/batches/<n>/review-<k>.md` and posts that on the pull request. A clean
+`shop work batch reviewed` records them as `.shop/batches/<n>/review-<k>.md` and posts that on the pull request. A clean
 review marks the pull request ready and the batch `awaiting-merge`. A review with a finding to fix sends the batch
 back to `building`: the fix is a commit on the item's branch with a `Finding: f<m>` trailer, and the re-review reads
 only the commits since the last one. Goal 6 of
@@ -325,8 +326,8 @@ end catches more, for less, than a review after every task.
 
 When one bounded context needs something of another, the request travels as an issue on the upstream's GitHub
 repository (its `github:` under `## Upstreams` in `spec/index.md`). Each step (ask, offer, fits, turn, accept,
-resolve) is a comment that `work` posts. Only one fenced block of fields in it is read; the text under it is for the
-people browsing GitHub. This is the body of an ask, as `work request` renders it:
+resolve) is a comment that `shop work` posts. Only one fenced block of fields in it is read; the text under it is for
+the people browsing GitHub. This is the body of an ask, as `shop work request` renders it:
 
 ```text
 ~~~shop-request
@@ -344,8 +345,8 @@ A request between bounded contexts, kept by shopsystem-bdd's `work`: each step i
 ```
 
 Each side keeps a record, `.shop/requests/q<n>.md`, and commits it before posting, so a failed post never leaves
-GitHub ahead of the repository. `work sync` takes in the comments a record does not hold yet, and
-`work watch --forward` wakes on GitHub's events while you work. A block that does not parse is shown, never acted
+GitHub ahead of the repository. `shop work sync` takes in the comments a record does not hold yet, and
+`shop work watch --forward` wakes on GitHub's events while you work. A block that does not parse is shown, never acted
 on. Lines the asker proposes are parsed in the **upstream's** grammar, so they are checked in the words of the
 context that will build them.
 

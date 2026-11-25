@@ -1,8 +1,8 @@
 """The docs' commands run (the user docs' design, §9, item 4, beyond test_docs.py's reading of argparse): each command
-path a ```console block of the docs shows of a plugin tool (`work batch start`, `model parse` ...) is run as its own
-process with `--help`, and exits 0 printing that path's usage. test_docs.py reads the tools' argparse in this process;
-this test runs the tools as a person does, so a tool that fails to start, or a subcommand whose help fails, is caught.
-The docs' requirement lines and links are test_docs.py's."""
+path a ```console block of the docs shows of a plugin tool (`shop work batch start`, `shop spec parse` ...) is run as
+its own process through shop with `--help`, and exits 0 printing that path's usage. test_docs.py reads the tools'
+argparse in this process; this test runs the tools as a person does, so a tool that fails to start, or a subcommand
+whose help fails, is caught. The docs' requirement lines and links are test_docs.py's."""
 import concurrent.futures
 import pathlib
 import subprocess
@@ -38,7 +38,8 @@ def shown_paths():
 
 
 def help_of(path):
-    return subprocess.run([sys.executable, str(REPO / "scripts" / path[0]), *path[1:], "--help"], cwd=REPO,
+    """`shop <path> --help` run as a process, as the docs show the command (decision 0132)."""
+    return subprocess.run([sys.executable, str(REPO / "scripts" / "shop"), *path, "--help"], cwd=REPO,
                           capture_output=True, text=True, timeout=300)
 
 

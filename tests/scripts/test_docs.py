@@ -26,6 +26,7 @@ from docs_testing import (
     link_problem,
     links,
     pages,
+    through_shop,
     tool_words,
 )
 from test_spec_lf_read import reading
@@ -88,6 +89,23 @@ def test_the_console_check_knows_a_wrong_command_from_a_right_one():
     assert "no option --nope" in command_problem("work", ["backlog", "--nope"])
     assert tool_words("python3 ~/.claude/plugins/x/scripts/spec check") == ("spec", ["check"])
     assert tool_words("git status") is None
+
+
+def test_each_console_command_of_a_plugin_tool_runs_it_through_shop():
+    """The docs say shop's commands (decision 0132): a `$ ` line runs a plugin tool as `shop <tool> ...`, never the
+    tool by its own name."""
+    bare = ["%s: $ %s" % (where, command) for where, command in console_commands() if through_shop(command) is False]
+    assert bare == [], "\n".join(bare)
+
+
+def test_a_shop_command_is_read_as_its_tool():
+    assert tool_words("shop work batch start") == ("work", ["batch", "start"])
+    assert tool_words('python3 "$SHOP/scripts/shop" spec --root x check') == ("spec", ["--root", "x", "check"])
+    assert through_shop("shop work backlog") is True
+    assert through_shop("work backlog") is False
+    assert through_shop("python3 ~/.claude/plugins/x/scripts/spec check") is False
+    assert through_shop("shop frobnicate") is None
+    assert through_shop("git status") is None
 
 
 def test_every_subcommand_has_its_subsection_in_the_commands_reference():

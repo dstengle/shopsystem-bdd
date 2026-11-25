@@ -29,18 +29,18 @@ And here is the scenario the plugin wrote from it, in `features/items.feature`:
 ```
 
 "The person shapes the item" is a request: the person asks the backlog service for its operation `shape`. The line
-says nothing of the command that asks it (`work shape`), which belongs to the CLI adapter, so the same line would hold
-behind any other interface. It says "the status of an item" because `idea` is a noun: the vocabulary names each
+says nothing of the command that asks it (`shop work shape`), which belongs to the CLI adapter, so the same line would
+hold behind any other interface. It says "the status of an item" because `idea` is a noun: the vocabulary names each
 value an adjective or a noun (`- **idea** (noun) → value item.status idea.` in `spec/vocabulary/tracking.md`), and an
 adjective may also be said the short way, "an item is `shaped`", a noun only the full way. The scenario always names
 the attribute, so whoever binds its steps never has to look it up.
 
 What happened in between:
 
-- `spec parse` read the line to exactly one meaning, built from the words of the context's vocabulary, each naming
+- `shop spec parse` read the line to exactly one meaning, built from the words of the context's vocabulary, each naming
   an element of its [domain model](docs/reference/domain-model.md).
-- `spec logic` checked it against every other line, looking for two lines that clash.
-- `features generate` wrote the scenario from that meaning: the While clause became Givens, the when clause a
+- `shop spec logic` checked it against every other line, looking for two lines that clash.
+- `shop features generate` wrote the scenario from that meaning: the While clause became Givens, the when clause a
   When (the request), the shall clause a Then (the response). Nobody wrote the feature file by hand.
 - A developer bound the steps once in pytest-bdd, and the scenario now runs in the suite.
 
@@ -64,9 +64,9 @@ interface.
 
 **Adapters and their contracts.** The CLI is one adapter; an HTTP service in front of the same model would be
 another. Each adapter contract maps the operations to its interface and, under each operation, lists the requirement
-lines that govern it, its refusals among them, so the business rules sit where the interface is used. `spec annotate`
-writes those lists from the spec, and `spec check` fails a contract that has fallen behind the lines, or that names
-a command or an option the program does not have.
+lines that govern it, its refusals among them, so the business rules sit where the interface is used. `shop spec
+annotate` writes those lists from the spec, and `shop spec check` fails a contract that has fallen behind the lines, or
+that names a command or an option the program does not have.
 
 **The plugin's own language.** The grammar every context's lines are parsed in is the plugin's, no part of a
 context. Its construct catalogue (`grammar/constructs.md`) and rule catalogue (`grammar/rules.md`) are part of this
