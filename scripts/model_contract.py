@@ -209,7 +209,8 @@ contract:
     contract kept as published (or the one at the version), read off its
     GitHub repository (its `github:` under ## Upstreams), as
     adapters/<name>/provider/<upstream's id path>/<version>/contract.toml
-    in each adapter spec whose providers: name it, in one commit, keeping no
+    in each adapter spec whose providers: name it (at the version it pins
+    the provider at, when it pins one), in one commit, keeping no
     context request; an upstream with no contract, or that no adapter spec
     has as its provider, is refused, naming it (contract_obtain).
   - restates [--json] [<capability>] exits 0 when every 0.29 id (of the
