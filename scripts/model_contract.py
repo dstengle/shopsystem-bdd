@@ -205,6 +205,12 @@ contract:
   - fetch [--version <version>] prints the contract kept as published, or the
     one kept at the version, writing nothing; a version no contract is kept
     at is refused, naming it (contract_publish).
+  - obtain <bounded context> [--version <version>] keeps the upstream's
+    contract kept as published (or the one at the version), read off its
+    GitHub repository (its `github:` under ## Upstreams), as
+    provider/<upstream>/<version>/contract.toml in one commit, keeping no
+    context request; an upstream with no contract is refused, naming it
+    (contract_obtain).
   - restates [--json] [<capability>] exits 0 when every 0.29 id (of the
     capability, or of every one) is restated by a group, dropped, or moved
     (a move into a codified capability must be restated there; one into an

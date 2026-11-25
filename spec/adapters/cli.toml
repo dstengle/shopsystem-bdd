@@ -1451,3 +1451,13 @@ requirements = [
 ]
 [operations."specification.fetch".parameters]
 version = { option = "--version", example = "1.2.0" }
+
+[operations."specification.obtain"]
+command = "spec obtain"
+requirements = [
+  "checking#r81: When the person obtains a contract from a bounded context, the specification service shall keep the contract and keep no context request.",
+  "checking#r82: If the person obtains a contract from a bounded context that has no contract, then the specification service shall refuse the request and name the bounded context.",
+]
+[operations."specification.obtain".parameters]
+"bounded context" = { positional = 1, example = "bounded-context/example.org/fixture/inventory" }
+version = { option = "--version", example = "1.2.0" }

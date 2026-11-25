@@ -553,3 +553,20 @@ Feature: Checking
     When the downstream context d1 fetches the contract c1 with `1.2.0`
     Then the contract c1 has `1.2.0`
     And the specification service returns the contract c1
+
+  @g81 @r81
+  Scenario: A contract obtained from an upstream is kept
+    Given a contract c1
+    And a bounded context b1
+    When the person obtains the contract c1 from the bounded context b1
+    Then the specification service keeps the contract c1
+    And the specification service does not keep a context request
+
+  @g82 @r82
+  Scenario: A contract is not obtained from a bounded context that has no contract
+    Given a bounded context b1
+    And the bounded context b1 has no contract
+    And a contract c1
+    When the person obtains the contract c1 from the bounded context b1
+    Then the specification service refuses this request
+    And the specification service names the bounded context b1

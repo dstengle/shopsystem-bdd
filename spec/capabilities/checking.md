@@ -224,6 +224,12 @@ Restates: design-model-check#r13@0.29.
 ### [g80] A downstream context fetches a contract at a version
 - [r80] When a downstream context fetches a contract with the `1.2.0` version, the specification service shall return the contract that has the `1.2.0` version.
 
+### [g81] A contract obtained from an upstream is kept
+- [r81] When the person obtains a contract from a bounded context, the specification service shall keep the contract and keep no context request.
+
+### [g82] A contract is not obtained from a bounded context that has no contract
+- [r82] If the person obtains a contract from a bounded context that has no contract, then the specification service shall refuse the request and name the bounded context.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.
