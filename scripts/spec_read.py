@@ -1,7 +1,8 @@
 """The codified spec files read (design model v5; the GF conversion's design §8.3, §8.4, §10.2, §13.4).
 
 `capability(path)` reads a capability file whose frontmatter has `language: codified-1` or `codified-2` (CNL 4's
-I19): the groups of its `## Behaviour` (`### [g<n>] <title>`, an optional `Restates:` line, `- [r<n>] <statement>`
+I19): the groups of its `## Behaviour` (`### [g<n>] <title>`, an optional `serves: <job>, ...` line, the jobs the group
+serves (decision 0140, b641), an optional `Restates:` line, `- [r<n>] <statement>`
 bullets, each with an optional `Relied on by: <cap>#r<n>, ...` line after it, a port line's ids of the requirements it
 supports (b548), and an optional fenced `given` block, read by spec_read_given), its `## Dropped` bullets and its `retired:`
 ids. A statement kept out of a group's requirements (no id,
@@ -22,7 +23,8 @@ MARKER4 = "codified-2"      # a file in the new language, read through grammar 4
 MARKERS = (MARKER, MARKER4)
 
 Capability = namedtuple("Capability", "path name frontmatter groups dropped retired problems")
-Group = namedtuple("Group", "id title restates given requirements line_no odd")   # odd: (line, r<n> or None, text)
+Group = namedtuple("Group", "id title restates given requirements line_no odd serves", defaults=((),))
+# odd: (line, r<n> or None, text); serves: the jobs a `serves:` line names (b641)
 Requirement = namedtuple("Requirement", "id text line_no supports", defaults=((),))   # supports: `<cap>#r<n>` ids
 Universal = namedtuple("Universal", "id text line_no")
 UniversalFile = namedtuple("UniversalFile", "path frontmatter conditions problems")
@@ -33,6 +35,8 @@ REQ = re.compile(r"^- \[(r[1-9]\d*)\] (\S.*)$")
 U = re.compile(r"^- \[(U[1-9]\d*)\] (\S.*)$")
 OLD = re.compile(r"^(?:(?P<cap>[a-z0-9]+(?:-[a-z0-9]+)*)#)?r(?P<n>[1-9]\d*)@0\.29$")
 RELIED = re.compile(r"^(?:(?P<cap>[a-z0-9]+(?:-[a-z0-9]+)*)#)?r(?P<n>[1-9]\d*)$")
+JOB = re.compile(r"^(?:job/\S+/)?[a-z0-9]+(?:-[a-z0-9]+)*$")     # a job's name, or its id (decision 0140)
+SERVES = "serves:"
 DROPPED = re.compile(r"^- (?:(?P<cap>[a-z0-9]+(?:-[a-z0-9]+)*)#)?r(?P<n>[1-9]\d*)@0\.29: (?P<why>\S.*)$")
 
 
@@ -103,6 +107,8 @@ class Reader(GivenLines):
                 self.heading(n, line)
             elif line.startswith("Restates:"):
                 self.restates(n, line)
+            elif line.startswith(SERVES):
+                self.serves(n, line)
             elif line.startswith("Relied on by:"):
                 self.relied(n, line)
             elif line.strip() == "```given":
@@ -122,7 +128,7 @@ class Reader(GivenLines):
         if not m:
             self.problem(n, "a group heading is not '### [g<n>] <title>'")
         else:
-            self.group = Group(m.group(1), m.group(2).strip(), [], [], [], n, [])
+            self.group = Group(m.group(1), m.group(2).strip(), [], [], [], n, [], [])
             if self.fresh(m.group(1), n):           # a second g<n> is read for its problems, and kept out
                 self.groups.append(self.group)
 
@@ -136,6 +142,17 @@ class Reader(GivenLines):
                 self.group.restates.append((m.group("cap") or self.name, int(m.group("n"))))
             else:
                 self.problem(n, f"Restates: {token!r} is not r<n>@0.29 or <capability>#r<n>@0.29")
+
+    def serves(self, n, line):
+        """`serves: <job>, ...` (b641): the jobs the group serves, each a job's name or id."""
+        if self.group is None:
+            self.problem(n, "a serves: line outside a group")
+            return
+        jobs = jobs_of(line)
+        for job in jobs:
+            if not JOB.match(job):
+                self.problem(n, f"serves: {job!r} is not a job's name or id")
+        self.group.serves.extend(j for j in jobs if JOB.match(j))
 
     def relied(self, n, line):
         """`Relied on by: <cap>#r<n>, ...`: the ids the group's last requirement supports."""
@@ -163,6 +180,11 @@ class Reader(GivenLines):
             self.group.requirements.append(Requirement(m.group(1), m.group(2).strip(), n))
         else:
             self.group.odd.append((n, m.group(1), m.group(2).strip()))     # an id used a second time (v15b)
+
+
+def jobs_of(line):
+    """The jobs of a `serves:` line, in its order."""
+    return [t.strip() for t in line[len(SERVES):].strip().rstrip(".").split(",") if t.strip()]
 
 
 def dropped(name, lines):
