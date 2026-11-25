@@ -1304,3 +1304,37 @@ shall [x3: artifact the context id form (constant), x4: agent the person (consta
     name(e3, subject: x7, object: x1)
     name(e4, subject: x7, object: x9)
 ```
+
+## r104
+From: b609 r104.
+
+```reading
+While this bounded context imports a pack and the pack has a term and an element refers to the term, when the person validates this specification, the specification service shall complete the request.
+shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x8: request "the request the trigger makes" (indexical)]
+  while [x2: pack, x3: term, x4: element]
+    import(subject: x1, object: x2)
+    of(x3, x2)
+    refer#3(subject: x4, to: x3)
+  when
+    request(e1, specification.check, subject: x5, object: x6)
+  response
+    complete(e2, subject: x7, object: x8)
+```
+
+## r105
+From: b609 r105.
+
+```reading
+While this bounded context imports the `base` pack, when the person looks up the pack, the language service shall return every term of the pack and complete the request.
+shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x2: pack `base` (parameter), x3: agent the person (constant), x4: service the language service (constant), x6: request "the request the trigger makes" (indexical)]
+  while
+    import(subject: x1, object: x2)
+  when
+    request(e1, language.look up, subject: x3, object: x2)
+  response
+    every [x5: term]
+      of(x5, x2)
+      scope
+        return(e2, subject: x4, object: x5)
+    complete(e3, subject: x4, object: x6)
+```

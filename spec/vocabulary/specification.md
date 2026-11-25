@@ -256,3 +256,4 @@ area: specification
 - **failing** (adjective) → value bounded context.health failing. A bounded context the specification service reaches whose answer to a read of its contracts is a refusal or a failure other than no such contract.
 - **health** (attribute) → attribute bounded context.health. Whether a bounded context the specification service reaches answers a read of its contracts.
 - **sound** (adjective) → value bounded context.health sound. A bounded context that answers a read of its contracts with them or with no such contract.
+- **refer** (verb, state) → relation element.refers to. An element of the domain model names a term as its kind (kind of) or as the target of a relation or an attribute. Forms: refers, referred. Frame: <element> refers to <term>.

@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56, g94, r94]
-unbuilt: []
+unbuilt: [r104, r105]
 ---
 
 # Checking
@@ -289,6 +289,12 @@ Restates: design-model-check#r13@0.29.
 
 ### [g103] A contract of an available provider in the context id form is obtained only for an adapter spec of the provider
 - [r103] While the id of a provider conforms to the context id form and the provider is `available`, if the person obtains a contract from the provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `no adapter spec has the provider` reason.
+
+### [g104] A domain model whose element refers to a term of an imported pack passes the check
+- [r104] While this bounded context imports a pack and the pack has a term and an element refers to the term, when the person validates this specification, the specification service shall complete the request.
+
+### [g105] The base pack shows its terms
+- [r105] While this bounded context imports the `base` pack, when the person looks up the pack, the language service shall return every term of the pack and complete the request.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

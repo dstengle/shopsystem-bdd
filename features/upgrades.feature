@@ -1132,3 +1132,13 @@ Feature: Upgrades
     When the person upgrades this repository
     Then the upgrades service changes the old command line o1
     And the upgrades service keeps the instructions file i1
+
+  @g45 @r45
+  Scenario: A bounded context founded imports the base pack
+    Given this bounded context has no index file
+    And this repository has no shop directory
+    And a context id c1
+    When the person founds this bounded context with the context id c1
+    Then the upgrades service keeps the bounded context b1
+    And the bounded context b1 imports `base`
+    And the upgrades service completes this request
