@@ -1,11 +1,13 @@
 """The warming of a base's state (b588): what the next `work batch start` reads of the base, made ahead of it, so that
 opening a batch after a merge that changed the vocabulary does not wait on it. `work batch merged` starts it
 (`start`): this file run by a fresh interpreter in a session of its own, its output dropped, never waited on, and a
-start that fails or a warming that fails nothing more than a batch opened cold. The warming (`warm`) is the readiness
+start that fails or a warming that fails nothing more than a batch opened cold, and nothing started while
+`$SHOPSYSTEM_NO_WARM` is set (b592: the tests set it, so a test that merges leaves no warming loading the others). The warming (`warm`) is the readiness
 bar's before state of a copy of the base (readiness_before, as readiness_bar's `well_formed` copies `spec/` and the
 construct catalogue for the first item it checks), whose computing compiles grammar 4 and parses every line of the
 base into spec_parse_cache side by side (spec_prefetch); a state already kept is read, not computed again."""
 import contextlib
+import os
 import shutil
 import subprocess
 import sys
@@ -44,7 +46,9 @@ def warm(root):
 
 
 def start(root):
-    """The warming of `root` started detached; its process, or None when it could not be started."""
+    """The warming of `root` started detached; its process, or None when it could not be started or is switched off."""
+    if os.environ.get("SHOPSYSTEM_NO_WARM"):
+        return None
     try:
         return subprocess.Popen([sys.executable, str(Path(__file__).resolve()), str(root)], cwd=tempfile.gettempdir(),
                                 stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,

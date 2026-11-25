@@ -23,6 +23,12 @@ from test_batch_review import both_done  # noqa: F401  (the fixture)
 from test_batch_tasks import started  # noqa: F401  (the fixture)
 
 
+@pytest.fixture(autouse=True)
+def warming(monkeypatch):
+    """The warming switched on again, which the conftest switches off for every other test (b592)."""
+    monkeypatch.delenv("SHOPSYSTEM_NO_WARM", raising=False)
+
+
 def _counted(monkeypatch):
     calls, real = [], readiness_bar.check
     monkeypatch.setattr(readiness_bar, "check", lambda *a, **k: calls.append(a[1].name) or real(*a, **k))
