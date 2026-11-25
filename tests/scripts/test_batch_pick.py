@@ -131,14 +131,32 @@ def test_the_first_item_is_picked_whatever_its_estimate(repo):
 
 
 def test_an_item_over_the_review_limit_that_fails_the_bar_goes_back_to_shaped(repo):
-    """f1: the bar is checked before the review limit, so an item that no longer passes alone is returned `shaped`
-    whatever its estimate (batches r54)."""
+    """f1: an item within the review limit that no longer passes alone is returned `shaped` (batches r54); one past
+    the limit is left out before the bar is checked (b640), so the limit here holds both."""
     ready_item(repo, "b1", "First", ABANDON, value="high-value", urgency="high-urgency", size="large")
     ready_item(repo, "b2", "Frobnicate", FROBNICATE, size="large")
-    (repo / ".shop" / "delivery.toml").write_text("[review]\nsize = 1\n")
+    (repo / ".shop" / "delivery.toml").write_text("[review]\nsize = 100000\n")
     git(repo, "add", "-A")
     git(repo, "commit", "-q", "-m", "limit")
     found = batch_pick.pick(repo)
     assert names(found.picked) == ["b1"] and not found.left_out, (found.returned, found.left_out)
     (back, _), = found.returned
     assert back.name == "b2" and back.status == "shaped"
+
+
+def test_an_item_past_the_review_limit_is_left_out_unchecked(repo, monkeypatch):
+    """b640: the review limit is checked before the readiness bar, so an item past it is left out `ready` with no run
+    of the bar (each run about 20 s of the opening, cold); the items within it are checked as before."""
+    import readiness_bar
+    checked, check = [], readiness_bar.check
+    monkeypatch.setattr(readiness_bar, "check", lambda root, item, *rest: checked.append(item.name) or check(root, item, *rest))
+    ready_item(repo, "b1", "First", ABANDON, value="high-value", urgency="high-urgency", size="large")
+    ready_item(repo, "b2", "Big", SECOND, value="medium-value", urgency="medium-urgency", size="large")
+    (repo / ".shop" / "delivery.toml").write_text("[review]\nsize = 1\n")
+    git(repo, "add", "-A")
+    git(repo, "commit", "-q", "-m", "limit")
+    found = batch_pick.pick(repo)
+    assert names(found.picked) == ["b1"] and not found.returned, (found.returned, found.left_out)
+    (left, reasons), = found.left_out
+    assert left.name == "b2" and left.status == "ready" and "exceeds the review limit" in reasons[0]
+    assert checked == ["b1"], checked
