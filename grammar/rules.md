@@ -2024,7 +2024,8 @@ a capability serves no job
   ```prolog
   node("c","capability").
   node("j","job").
-  serves("c","j").
+  group_id("g","c",1).
+  serves("g","j").
   ```
 
 ## w_unserved_job

@@ -4,7 +4,8 @@ The section holds one `### <capability>` block for each capability the item's pi
 file's own syntax one heading level down: an optional `language: codified-2` line first, the marker the item switches
 the capability's file to (`work line --recodify`, backlog_recodify), an optional `retired: [r<n>, ...]` line next, the live requirements of the
 capability the item's lines replace (`work line --retires`, backlog_retires), then an optional `retires: [r<n> r<m>, ...]`
-line, which of the item's lines retires which of those ids (b323; an id `--no-line` retired is in no pair), then optional term bullets, then relation rows (`| from | word | to |
+line, which of the item's lines retires which of those ids (b323; an id `--no-line` retired is in no pair), then an
+optional `serves: [g<n> <job>, ...]` line, the jobs the item dedicates groups of the capability to (b641), then optional term bullets, then relation rows (`| from | word | to |
 cardinality |`), then `#### [g<n>] <title>` groups of `- [r<n>] <statement>` bullets, one line each, a group's fenced
 `given` block after its lines. After the capability blocks, a `### universal` block of `- [U<n>] <statement>`
 conditions (after an optional `language: codified-2` line and an optional `retired: [U<n>, ...]` line, spec/universal.md
@@ -27,14 +28,22 @@ from backlog_model import CLOSE as MODEL_CLOSE
 from backlog_model import FENCE as MODEL_FENCE
 from backlog_model import HEAD as MODEL_HEAD
 from backlog_model import ModelBlock
+from backlog_section_render import (  # noqa: F401
+    CLOSE,
+    FENCE,
+    INDEX,
+    NEW_FIELDS,
+    UNIVERSAL,
+    ids,
+    laid_group,
+    render,
+)
 
 SECTION = "Requirements"
-UNIVERSAL, INDEX = "universal", "index"
 TAKES = ("idea", "shaped", "in-batch")     # an in-batch item's lines are laid again by `work batch amend` (b460)
 Group = namedtuple("Group", "id title requirements given", defaults=((),))
-Block = namedtuple("Block", "capability terms groups relations retired language new retires",
-                   defaults=((), (), None, None, ()))
-NEW_FIELDS = ("narrator", "group", "purpose")      # a new capability's block (`work line --capability`, b317)
+Block = namedtuple("Block", "capability terms groups relations retired language new retires serves",
+                   defaults=((), (), None, None, (), ()))     # serves: (g<n>, job) pairs (backlog_serves, b641)
 
 CAP = re.compile(r"^### ([a-z0-9]+(?:-[a-z0-9]+)*)$")
 GROUP = re.compile(r"^#### \[(g[1-9]\d*)\] (\S.*)$")
@@ -43,9 +52,9 @@ U = re.compile(r"^- \[(U[1-9]\d*)\] (\S.*)$")
 RETIRED = re.compile(r"^retired: \[(r[1-9]\d*(?:, r[1-9]\d*)*)\]$")
 RETIRES = re.compile(r"^retires: \[(r[1-9]\d* r[1-9]\d*(?:, r[1-9]\d* r[1-9]\d*)*)\]$")
 U_RETIRED = re.compile(r"^retired: \[(U[1-9]\d*(?:, U[1-9]\d*)*)\]$")
+SERVES = re.compile(r"^serves: \[(g[1-9]\d* \S+(?:, g[1-9]\d* \S+)*)\]$")
 LANGUAGE = re.compile(r"^language: (codified-2)$")
 NEW = re.compile(r"^(%s): (\S.*)$" % "|".join(NEW_FIELDS))
-FENCE, CLOSE = "```given", "```"
 
 
 class Blocks(list):
@@ -193,6 +202,11 @@ class _Reader:
                     or blocks[-1].groups:
                 self.refuse("a `retires:` line that is not right after a `retired:` line: %s" % line)
             blocks[-1] = blocks[-1]._replace(retires=tuple(tuple(p.split(" ")) for p in m.group(1).split(", ")))
+        elif (m := SERVES.match(line)):
+            if not blocks or blocks[-1].terms or blocks[-1].relations or blocks[-1].groups or blocks[-1].serves:
+                self.refuse("a `serves:` line that is not before the terms, relation rows and groups of a "
+                            "`### <capability>` block: %s" % line)
+            blocks[-1] = blocks[-1]._replace(serves=tuple(tuple(p.split(" ")) for p in m.group(1).split(", ")))
         elif (m := GROUP.match(line)):
             if not blocks:
                 self.refuse("the group %s comes before any `### <capability>` heading" % m.group(1))
@@ -235,46 +249,6 @@ def read(item, rel):
     if any(b.new and len(b.new) != len(NEW_FIELDS) for b in reader.blocks):
         reader.refuse("a new capability's block without each of %s" % ", ".join(NEW_FIELDS))
     return reader.blocks
-
-
-def laid_group(group, level="###"):
-    """A group's text as in a capability file (`level` its heading): its lines, then its given block."""
-    text = "%s [%s] %s" % (level, group.id, group.title) + "".join("\n- [%s] %s" % r for r in group.requirements)
-    return text + ("\n\n%s\n%s\n%s" % (FENCE, "\n".join(group.given), CLOSE) if group.given else "")
-
-
-def render(blocks):
-    """The section's text, byte-stable: `read` of it gives `blocks` back."""
-    out = []
-    for block in blocks:
-        parts = ["### %s" % block.capability] + (["language: %s" % block.language] if block.language else [])
-        parts += ["\n".join("%s: %s" % f for f in zip(NEW_FIELDS, block.new))] if block.new else []
-        retires = "\nretires: [%s]" % ", ".join("%s %s" % p for p in block.retires) if block.retires else ""
-        parts += (["retired: [%s]%s" % (", ".join(block.retired), retires)] if block.retired else [])
-        parts += ["\n".join(block.terms)] if block.terms else []
-        parts += ["\n".join(block.relations)] if block.relations else []
-        out.append("\n\n".join(parts + [laid_group(g, "####") for g in block.groups]))
-    for model in getattr(blocks, "models", ()):
-        parts = ["### %s model" % model.area] + (["%s\n%s\n%s" % (MODEL_FENCE, "\n".join(model.lines), MODEL_CLOSE)]
-                                                 if model.lines else [])
-        out.append("\n\n".join(parts + (["\n".join(model.terms)] if model.terms else [])))
-    out += [backlog_adapter.render(a) for a in getattr(blocks, "adapters", ())]
-    out += [backlog_pack.render(a) for a in getattr(blocks, "packs", ())]
-    out += [backlog_area_move.render(blocks.moves)] if getattr(blocks, "moves", None) else []
-    language, retired = getattr(blocks, "universal_language", None), getattr(blocks, "universal_retired", ())
-    if getattr(blocks, "universal", None) or language or retired:
-        parts = ["### %s" % UNIVERSAL] + (["language: %s" % language] if language else [])
-        parts += ["retired: [%s]" % ", ".join(retired)] if retired else []
-        parts += ["\n".join("- [%s] %s" % u for u in blocks.universal)] if blocks.universal else []
-        out.append("\n\n".join(parts))
-    if getattr(blocks, "upstreams", None):
-        out.append("### %s\n\n" % INDEX + "\n".join("- %s" % b for b in blocks.upstreams))
-    return "\n\n".join(out)
-
-
-def ids(blocks):
-    """`<capability>#r<n>` of each requirement, in file order."""
-    return ["%s#%s" % (b.capability, r) for b in blocks for g in b.groups for r, _ in g.requirements]
 
 
 def capability_file(root, capability):
