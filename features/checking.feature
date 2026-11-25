@@ -623,3 +623,39 @@ Feature: Checking
     And the adapter spec a1 holds the contract c1
     When the person validates the adapter spec a1
     Then the specification service completes this request
+
+  @g88 @r88
+  Scenario: A contract is not obtained by an id out of the context id form
+    Given an id i1
+    And a bounded context b1
+    And the bounded context b1 has the id i1
+    And the id i1 does not conform to the context id form
+    And a contract c1
+    When the person obtains the contract c1 from the bounded context b1
+    Then the specification service refuses this request
+    And the specification service names the id i1
+    And the specification service names `id not in the context id form`
+
+  @g89 @r89
+  Scenario: A bounded context that cannot be reached is not reported as having no contract
+    Given a bounded context b1
+    And the availability of the bounded context b1 is `unreachable`
+    And a contract c1
+    When the person obtains the contract c1 from the bounded context b1
+    Then the specification service refuses this request
+    And the specification service names the bounded context b1
+    And the specification service names `bounded context unreachable`
+
+  @g90 @r90
+  Scenario: A contract obtained keeps every other bounded context's contract as it was
+    Given a contract c1
+    And a bounded context b1
+    And the bounded context b1 has the contract c1
+    And a contract c2
+    And a bounded context b2
+    And a contract c3
+    And a bounded context b3
+    And the bounded context b3 has the contract c3
+    When the person obtains the contract c2 from the bounded context b2
+    Then the specification service keeps the contract c2
+    And the specification service does not change the contract c3

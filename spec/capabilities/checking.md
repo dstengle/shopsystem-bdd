@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56]
-unbuilt: []
+unbuilt: [r88, r89, r90]
 ---
 
 # Checking
@@ -244,6 +244,15 @@ Restates: design-model-check#r13@0.29.
 
 ### [g86] An adapter spec that holds no contract of its provider is refused
 - [r86] While a provider of an adapter spec has no contract that the adapter spec holds, if the person validates the adapter spec, then the specification service shall fail the check and name the provider.
+
+### [g88] A contract is not obtained by an id out of the context id form
+- [r88] If the person obtains a contract from a bounded context whose id does not conform to the context id form, then the specification service shall refuse the request and name the id and the `id not in the context id form` reason.
+
+### [g89] A bounded context that cannot be reached is not reported as having no contract
+- [r89] If the person obtains a contract from a bounded context whose availability is `unreachable`, then the specification service shall refuse the request and name the bounded context and the `bounded context unreachable` reason.
+
+### [g90] A contract obtained keeps every other bounded context's contract as it was
+- [r90] While a bounded context has a contract, when the person obtains a contract from another bounded context, the specification service shall keep the contract and change no contract of a bounded context.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

@@ -238,3 +238,7 @@ area: specification
 - **adapter decision** (noun) → object adapter decision. A design-decision of an adapter spec on a mechanism it uses, such as a transport, a retry, a store, a timer or polling (decision 0124). Plural: adapter decisions.
 - **realise** (verb, state) → relation adapter spec.realises. An adapter spec names under its `realises:` the requirement id of a line of its parent's driven port that it fulfils. Forms: realises, realised. Frame: <adapter spec> realises <requirement id>.
 - **the adapter spec id form** (proper noun) → object adapter spec id form. The id of an adapter spec: the id of its parent bounded context followed by `/adapter/<name>` (decision 0123).
+- **the context id form** (proper noun) → object context id form. `bounded-context/<domain>/<path>`, the whole id a bounded context is obtained from and its contract kept under.
+- **availability** (attribute) → attribute bounded context.availability. Whether the specification service reaches a bounded context to obtain its contract.
+- **available** (adjective) → value bounded context.availability available.
+- **unreachable** (adjective) → value bounded context.availability unreachable.
