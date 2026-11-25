@@ -35,3 +35,19 @@ def test_left_out_names_the_members_a_restatement_cuts():
     chunk = [("object note", ["  attributes: text (text)"])]
     assert backlog_model_elements.left_out(body, chunk) == ["relations: carries → tag (many)"]
     assert backlog_model_elements.left_out(body, [("object note", ["  lifecycle status: a → b"])]) == []
+
+
+NOTE = ["object note", "  attributes: text (text)", "  relations: carries → tag (many)"]
+RESTATE = ["object note", "  attributes: text (text); priority: low", "  relations: carries → tag (many)"]
+ADD = ["object note", "  relations: pins → tag (many)"]
+
+
+def test_a_park_of_the_restatement_keeps_a_member_another_item_added():
+    laid = backlog_model.merged(backlog_model.merged(NOTE, RESTATE), ADD)
+    assert laid == RESTATE + ADD[1:]
+    assert backlog_model.unmerged(laid, RESTATE, lambda header, op, lines: NOTE) == NOTE + ADD[1:]
+
+
+def test_a_park_of_the_adder_keeps_the_restatement():
+    laid = backlog_model.merged(backlog_model.merged(NOTE, RESTATE), ADD)
+    assert backlog_model.unmerged(laid, ADD, lambda header, op, lines: NOTE) == RESTATE
