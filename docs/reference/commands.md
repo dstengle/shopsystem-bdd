@@ -1141,8 +1141,9 @@ status = "published"
 Keeps an upstream's contract, the one it keeps as published or with `--version` the one kept at that version, as
 `provider/<upstream>/<version>/contract.toml` (`<upstream>` the last part of its id), byte for byte, in one commit;
 it keeps no context request. The upstream is a bounded context under `## Upstreams` of `spec/index.md`, read off the
-GitHub repository its `github:` names. An upstream with no contract is refused, naming the bounded context. An
-obtained contract is never edited: `spec obtain` is its only writer.\
+GitHub repository its `github:` names. An upstream with no contract is refused, naming the bounded context.
+`spec obtain` is the only writer of `provider/`: obtained again, a contract kept there is written again with the
+upstream's bytes, or left as it is when they are the same.\
 Synopsis: `spec obtain <bounded context> [--version <version>]`
 
 ```console
