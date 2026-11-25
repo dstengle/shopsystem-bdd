@@ -57,7 +57,8 @@ def publish(root, version=None):
     contracts = kept(root)
     version = version or _next(contracts)
     if not VERSION.fullmatch(version):
-        raise Refused("the version {names} is not a version", reason="version not a version",
+        raise Refused("the version {names} is refused: version not in the version form",
+                      reason="version not in the version form",
                       names=["version:%s" % version])
     if version in contracts:
         raise Refused("a contract is kept at the version {names} already", reason="version already published",
