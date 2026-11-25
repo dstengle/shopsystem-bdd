@@ -196,6 +196,15 @@ contract:
     operations with their parameters, outcomes, reasons, governing
     requirements and properties, its events with their properties), writes
     nothing and exits 0 (contract_form).
+  - publish [--version <version>] keeps this bounded context's contract at
+    the version (the latest kept version's last number one more by default,
+    else 1.0.0) as .shop/contracts/<version>/contract.toml, published, and
+    sets every contract published before it superseded, in one commit; a
+    version kept already, or a requirement that does not conform to the
+    language reference, is refused, naming it (contract_publish).
+  - fetch [--version <version>] prints the contract kept as published, or the
+    one kept at the version, writing nothing; a version no contract is kept
+    at is refused, naming it (contract_publish).
   - restates [--json] [<capability>] exits 0 when every 0.29 id (of the
     capability, or of every one) is restated by a group, dropped, or moved
     (a move into a codified capability must be restated there; one into an

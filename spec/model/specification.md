@@ -268,6 +268,10 @@ service specification
   operation describe(catalogue entry, purpose, item)
     outcomes: done → the catalogue entry | refused: catalogue entry of no rule or construct
   operation prepare(contract)  outcomes: returned → the contract
+  operation publish(contract, version) by the person
+    outcomes: done → the contract | refused: version already published, requirement not in the language
+  operation fetch(contract, version) by downstream context
+    outcomes: returned → the contract | refused: version not published
 
 service decisions
   operation enter(design-decision, title, summary, tier, wording, route, supersedes)
@@ -334,6 +338,9 @@ object element
 
 object contract kind of artifact
   relations: holds → operation | property | requirement (many)
+  attributes: status: published | superseded
+  lifecycle status: published → superseded
+  relations: has → version (one); holds → term | design-decision (many)
 
 object contract form kind of artifact
 
@@ -347,4 +354,8 @@ object area
 object group title kind of text
 
 object requester
+
+object downstream context kind of agent
+
+event contract published: raised by specification.publish
 ```

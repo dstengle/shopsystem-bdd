@@ -1,8 +1,10 @@
 """The contract form (b547, checking r64-r66; the contracts design's C-1, decision 0117): what a bounded context
 publishes at a version in its own words, `contract.toml`, prepared by `spec prepare --contract <version>` from its
-domain model and requirements and printed, nothing written.
+domain model and requirements and printed, nothing written; `spec publish` keeps it (contract_publish, b348).
 
-The form: `context` (the id of `spec/index.md`) and `version` at the top; a table `[objects."<object>"]` of each
+The form: `context` (the id of `spec/index.md`) and `version` at the top, a kept contract's `status` (`published` or
+`superseded`), `requirements`, every requirement of the context as `<capability>#r<n>: <line>`, and `terms`, every
+term of its own (no pack's) as `<term> (<part of speech>): <text>` (b348); a table `[objects."<object>"]` of each
 object (`area`, `kind_of`, `attributes`, `lifecycles`, `relations`, each written as the model block writes it); a
 table `[operations."<service>.<operation>"]` of each operation (`parameters`, each `<name> (<type>)`; `outcomes`, each
 `<kind> → <phrase>`; `reasons`, its refusal's; `requirements`, the requirements that govern it as `spec annotate`
@@ -15,6 +17,7 @@ import tomllib
 from pathlib import Path
 
 TOP = {"context": str, "version": str}
+OPTIONAL = {"status": str, "requirements": list, "terms": list}
 TABLES = {"objects": {"area": str, "kind_of": str, "attributes": list, "lifecycles": list, "relations": list},
           "operations": {"parameters": list, "outcomes": list, "reasons": list, "requirements": list,
                          "properties": list},
@@ -76,6 +79,12 @@ def _event(event):
         ("properties", [p.text for p in event.properties])])
 
 
+def _terms(root):
+    import spec_lexicon
+    return ["%s (%s): %s" % (t.term, t.label or t.category, t.text) if t.text else "%s (%s)" % (t.term, t.label or
+            t.category) for t in spec_lexicon.read(root).terms]
+
+
 def render(root, version):
     """The contract of the context at `root` at `version`, in the contract form."""
     import adapter_annotate
@@ -85,6 +94,8 @@ def render(root, version):
     head, _ = frontmatter((Path(root) / "spec" / "index.md").read_text(encoding="utf-8"))
     governs = adapter_annotate.governing(root)
     out = ["context = %s" % _string(str(head.get("id", ""))), "version = %s" % _string(version)]
+    lines = ["%s: %s" % (i, " ".join(t.split())) for i, t in adapter_annotate.requirement_lines(root)]
+    out += _table("", [("requirements", lines), ("terms", _terms(root))])[2:]     # top-level keys, no header
     for name in sorted(model.objects):
         out += _object(model.objects[name])
     for name in sorted(model.services):
@@ -111,7 +122,7 @@ def problems(text):
     except tomllib.TOMLDecodeError as e:
         return ["the contract does not read as TOML: %s" % e]
     out = ["the contract has no %s" % key for key in TOP if not isinstance(data.get(key), str)]
-    out += list(_typed("the contract", {k: v for k, v in data.items() if k not in TABLES}, TOP))
+    out += list(_typed("the contract", {k: v for k, v in data.items() if k not in TABLES}, {**TOP, **OPTIONAL}))
     for section, keys in TABLES.items():
         found = data.get(section, {})
         if not isinstance(found, dict):

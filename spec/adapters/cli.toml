@@ -1429,3 +1429,25 @@ requirements = [
 [operations."backlog.suspend".parameters]
 item = { positional = 1 }
 question = { option = "--question", example = "Which reading holds?" }
+
+[operations."specification.publish"]
+command = "spec publish"
+requirements = [
+  "checking#r73: When the person publishes a contract with the `1.2.0` version, the specification service shall keep a contract that has the `1.2.0` version.",
+  "checking#r74: When the person publishes a contract with the `1.3.0` version, the specification service shall set the status of every contract whose status is `published` to `superseded`.",
+  "checking#r75: While a contract has the `1.2.0` version, if the person publishes a contract with the `1.2.0` version, then the specification service shall refuse the request and name the version.",
+  "checking#r76: While a requirement does not conform to the language reference, if the person publishes a contract, then the specification service shall refuse the request and name the requirement.",
+  "checking#r77: When the person publishes a contract, the specification service shall keep a contract whose status is `published` and keep every requirement and every term in the contract.",
+]
+[operations."specification.publish".parameters]
+version = { option = "--version", example = "1.2.0" }
+
+[operations."specification.fetch"]
+command = "spec fetch"
+requirements = [
+  "checking#r78: When a downstream context fetches a contract, the specification service shall return the contract whose status is `published` and change nothing.",
+  "checking#r79: While no contract has the `2.0.0` version, if a downstream context fetches a contract with the `2.0.0` version, then the specification service shall refuse the request and name the version.",
+  "checking#r80: When a downstream context fetches a contract with the `1.2.0` version, the specification service shall return the contract that has the `1.2.0` version.",
+]
+[operations."specification.fetch".parameters]
+version = { option = "--version", example = "1.2.0" }

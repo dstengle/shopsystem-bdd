@@ -792,3 +792,131 @@ shall [x2: thing `response-request` (parameter), x7: agent the person (constant)
   response
     complete(e2, subject: x9, object: x10)
 ```
+
+## r73
+From: b348 r73.
+
+```reading
+When the person publishes a contract with the `1.2.0` version, the specification service shall keep a contract that has the `1.2.0` version.
+shall [x1: agent the person (constant), x3: version `1.2.0` (parameter), x4: service the specification service (constant)]
+  when [x2: contract]
+    request(e1, specification.publish, subject: x1, object: x2)
+    param(e1, version, x3)
+  response [x5: contract]
+    of(x3, x5)
+    keep(e2, subject: x4, object: x5)
+```
+
+## r74
+From: b348 r74.
+
+```reading
+When the person publishes a contract with the `1.3.0` version, the specification service shall set the status of every contract whose status is `published` to `superseded`.
+shall [x1: agent the person (constant), x3: version `1.3.0` (parameter), x4: service the specification service (constant)]
+  when [x2: contract]
+    request(e1, specification.publish, subject: x1, object: x2)
+    param(e1, version, x3)
+  response
+    every [x5: contract]
+      status(x5) = `published`
+      scope
+        initiates(e2, subject: x4, status(x5) = `superseded`)
+```
+
+## r75
+From: b348 r75.
+
+```reading
+While a contract has the `1.2.0` version, if the person publishes a contract with the `1.2.0` version, then the specification service shall refuse the request and name the version.
+shall [x2: version `1.2.0` (parameter), x3: agent the person (constant), x5: service the specification service (constant), x6: request "the request the trigger makes" (indexical)]
+  while [x1: contract]
+    of(x2, x1)
+  if [x4: contract]
+    request(e1, specification.publish, subject: x3, object: x4)
+    param(e1, version, x2)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x2)
+```
+
+## r76
+From: b348 r76.
+
+```reading
+While a requirement does not conform to the language reference, if the person publishes a contract, then the specification service shall refuse the request and name the requirement.
+shall [x2: artifact the language reference (constant), x3: agent the person (constant), x5: service the specification service (constant), x6: request "the request the trigger makes" (indexical)]
+  while [x1: requirement]
+    not
+      conforms(x1, x2)
+  if [x4: contract]
+    request(e1, specification.publish, subject: x3, object: x4)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x1)
+```
+
+## r77
+From: b348 r77.
+
+```reading
+When the person publishes a contract, the specification service shall keep a contract whose status is `published` and keep every requirement and every term in the contract.
+shall [x1: agent the person (constant), x3: service the specification service (constant)]
+  when [x2: contract]
+    request(e1, specification.publish, subject: x1, object: x2)
+  response [x4: contract]
+    status(x4) = `published`
+    keep(e2, subject: x3, object: x4)
+    every [x5: requirement]
+      scope
+        keep(e3, subject: x3, object: x5)
+    every [x6: term]
+      in(x6, x4)
+      scope
+        keep(e4, subject: x3, object: x6)
+```
+
+## r78
+From: b348 r78.
+
+```reading
+When a downstream context fetches a contract, the specification service shall return the contract whose status is `published` and change nothing.
+shall [x3: service the specification service (constant)]
+  when [x1: downstream context, x2: contract]
+    request(e1, specification.fetch, subject: x1, object: x2)
+  response
+    status(x2) = `published`
+    return(e2, subject: x3, object: x2)
+    not [x4: thing]
+      change(e3, subject: x3, object: x4)
+```
+
+## r79
+From: b348 r79.
+
+```reading
+While no contract has the `2.0.0` version, if a downstream context fetches a contract with the `2.0.0` version, then the specification service shall refuse the request and name the version.
+shall [x2: version `2.0.0` (parameter), x5: service the specification service (constant), x6: request "the request the trigger makes" (indexical)]
+  while
+    not [x1: contract]
+      of(x2, x1)
+  if [x3: downstream context, x4: contract]
+    request(e1, specification.fetch, subject: x3, object: x4)
+    param(e1, version, x2)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x2)
+```
+
+## r80
+From: b348 r80.
+
+```reading
+When a downstream context fetches a contract with the `1.2.0` version, the specification service shall return the contract that has the `1.2.0` version.
+shall [x3: version `1.2.0` (parameter), x4: service the specification service (constant)]
+  when [x1: downstream context, x2: contract]
+    request(e1, specification.fetch, subject: x1, object: x2)
+    param(e1, version, x3)
+  response
+    of(x3, x2)
+    return(e2, subject: x4, object: x2)
+```

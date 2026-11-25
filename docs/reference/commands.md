@@ -1107,6 +1107,35 @@ version = "1.0.0"
 ...
 ```
 
+### `spec publish`
+
+Keeps this bounded context's contract at a version as `.shop/contracts/<version>/contract.toml`, in the contract
+form with `status = "published"`, and sets every contract kept as published before it `superseded`, in one commit.
+The contract holds what `spec prepare` prints, every requirement of the context and every term of its own. With no
+`--version` it is kept at the latest kept version's last number one more, else at `1.0.0`. A version a contract is
+kept at already is refused, naming the version, and so is a context with a requirement that does not conform to the
+language reference, naming the requirement.\
+Synopsis: `spec publish [--version <version>]`
+
+```console
+$ spec publish --version 1.2.0
+published .shop/contracts/1.2.0/contract.toml
+```
+
+### `spec fetch`
+
+Prints the contract kept as published, or with `--version` the one kept at that version, as a downstream context
+reads it; it writes nothing. A version no contract is kept at is refused, naming the version.\
+Synopsis: `spec fetch [--version <version>]`
+
+```console
+$ spec fetch --version 1.2.0
+context = "bounded-context/example.org/fixture/domain-model"
+version = "1.2.0"
+status = "published"
+...
+```
+
 ### `spec decisions`
 
 Writes `spec/decisions/index.md` from the decision files. Not committed.\
