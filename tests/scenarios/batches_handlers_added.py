@@ -19,11 +19,10 @@ OLD = ("  attributes: text (text); priority: low | high",
 NEW = "  attributes: text (text); priority: low | high | urgent"
 RESTATED = (NEW,) + OLD[1:]
 NOTEBOOK = "### notebook\n\n#### [g%d] %s\n- [r%d] %s\n\n### notes model\n\n```model\n%s\n```"
-LINES = {"restates": NOTEBOOK % (10, "An active note archived is kept", 10, "While a note is `active`, when the person "
-                                 "archives the note, the notes service shall keep the note.",
-                                 "\n".join((HEADER,) + RESTATED)),
-         "adds": NOTEBOOK % (11, "A draft note filed is kept", 11, "While a note is `draft`, when the person files the "
-                             "note, the notes service shall keep the note.", "\n".join((HEADER, MEMBER)))}
+ARCHIVED = "While a note is `active`, when the person archives the note, the notes service shall keep the note."
+FILED = "While a note is `draft`, when the person files the note, the notes service shall keep the note."
+LINES = {"restates": NOTEBOOK % (10, "An active note archived is kept", 10, ARCHIVED, "\n".join((HEADER,) + RESTATED)),
+         "adds": NOTEBOOK % (11, "A draft note filed is kept", 11, FILED, f"{HEADER}\n{MEMBER}")}
 
 
 @four("GivenK", "member line", *BOTH)
