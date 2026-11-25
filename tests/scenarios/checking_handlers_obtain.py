@@ -1,4 +1,4 @@
-"""Handlers of checking's obtained contract scenarios (r81, r82, r88-r91, r94, r102; b587, b591, b593, b596), each a `work_queue_world.local`
+"""Handlers of checking's obtained contract scenarios (r81, r82, r88-r91, r102, r103; b587, b591, b593, b596, b601), each a `work_queue_world.local`
 that takes only a step of a scenario of one of its groups (`mine`). The world is the domain-model fixture
 (tests/scripts/fixtures/domain-model/), copied into the repository at the When with each bounded context under
 `## Upstreams` of its index, hosted on GitHub, and committed; the stand-in gh (tests/scripts/stub_gh.py, run as
@@ -7,7 +7,7 @@ superseded and one at `1.2.0` published, or, when the bounded context has no con
 availability is `unreachable`, no repository at all; when its health is `failing`, the repository but every read
 of its contents refused (`$STUB_GH_FAIL` of `api -H`, b596). The fixture nests the adapter spec `adapters/stock-inventory/`
 (`ADAPTER`) whose `providers:` name each bounded context obtained from (decision 0136), unless the scenario brings in
-an adapter spec that no Given says has the provider, or a Given says no adapter spec has it (g94).
+an adapter spec that no Given says has the provider, or a Given says no adapter spec has it (g103).
 
 The bounded context the When obtains from is `bounded-context/example.org/fixture/inventory` (`UPSTREAM`), or, when
 its id does not conform to the context id form, `bounded-context/example/inventory` (`MALFORMED`: a domain with no
@@ -25,7 +25,7 @@ W = sys.modules["shop_work_queue_world"]
 ROOT = Path(__file__).resolve().parents[2]
 STUB = ROOT / "tests" / "scripts" / "stub_gh.py"
 FIXTURE = ROOT / "tests" / "scripts" / "fixtures" / "domain-model"
-GROUPS = {"g81", "g82", "g88", "g89", "g90", "g91", "g94", "g102"}
+GROUPS = {"g81", "g82", "g88", "g89", "g90", "g91", "g102", "g103"}
 UPSTREAM = "bounded-context/example.org/fixture/inventory"
 MALFORMED = "bounded-context/example/inventory"
 OTHERS = ["bounded-context/example.org/other/inventory", "bounded-context/example.org/third/inventory"]
@@ -56,15 +56,16 @@ def given_instance(step):
 
 def given_state(step):
     """`the bounded context b1 has no contract`, `... has the contract c1`, `... has the id i1` and `the id i1 does
-    not conform to the context id form`; `the adapter spec a1 has the provider p1` and `no adapter spec has the
-    provider p1` (r94: the nested adapter spec names no bounded context)."""
+    not conform to the context id form` (`... conforms to ...`, r103: the id kept in the form); `the adapter spec a1
+    has the provider p1` and `no adapter spec has the provider p1` (r103: the nested adapter spec names no bounded
+    context)."""
     if not mine(step) or step.term not in ("has", "conform"):
         return False
     w = world(step)
     if step.text.startswith("no adapter spec"):
         w["unheld"] = True
     elif step.term == "conform":
-        w["malformed"] = True
+        w["malformed"] = w["malformed"] or step.template.endswith("Not")
     elif any(n.startswith("no contract") for n in step.nps):
         w["empty"] = True
     elif w["kinds"].get(step.names[-1]) == "provider":
@@ -207,7 +208,7 @@ def then_refuses(step):
 
 def then_names(step):
     """`the specification service names the bounded context b1` and `... names the id i1`: its id; `... names the
-    provider p1` (r94): its id as the provider's; `... names `bounded context unreachable``: the reason."""
+    provider p1` (r103): its id as the provider's; `... names `bounded context unreachable``: the reason."""
     if not mine(step) or "obtained" not in step.context or step.term != "name":
         return False
     done = step.context["result"]

@@ -6,7 +6,7 @@ group: service
 area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
-retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56]
+retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56, g94, r94]
 unbuilt: []
 ---
 
@@ -263,9 +263,6 @@ Restates: design-model-check#r13@0.29.
 ### [g91] An obtained contract is held by the adapter spec of its provider
 - [r91] While an adapter spec has a provider, when the person obtains a contract from the provider, the specification service shall keep the contract that the adapter spec holds.
 
-### [g94] A contract is obtained only for an adapter spec of its provider
-- [r94] If the person obtains a contract from a provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `no adapter spec has the provider` reason.
-
 ### [g95] A port operation that no core line requests is refused
 - [r95] While a driven port holds an operation and no core line that uses `response-request` uses the operation, if the person validates this specification, then the specification service shall fail the check and name the operation.
 
@@ -289,6 +286,9 @@ Restates: design-model-check#r13@0.29.
 
 ### [g102] A bounded context that fails to answer is not reported as unreachable
 - [r102] If the person obtains a contract from a bounded context whose health is `failing`, then the specification service shall refuse the request and name the bounded context and the `bounded context failing` reason.
+
+### [g103] A contract of an available provider in the context id form is obtained only for an adapter spec of the provider
+- [r103] While the id of a provider conforms to the context id form and the provider is `available`, if the person obtains a contract from the provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `no adapter spec has the provider` reason.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

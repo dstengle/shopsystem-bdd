@@ -189,3 +189,9 @@ when the change is merged.
 ### [g116] A model line that restates an element is laid in place of it
 - [r116] While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an element, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the element.
 
+### [g117] A batch opened declares a moved model line in the area it moves to
+- [r117] While an item is `ready` and the item meets the readiness bar and the item holds a model line that moves to an area, when the person opens a batch, the batches service shall keep the area that holds the model line.
+
+### [g118] A batch opened writes a moved term into the area that holds its element
+- [r118] While an item is `ready` and the item meets the readiness bar and the item moves a term that means an element and an area holds the element, when the person opens a batch, the batches service shall keep the area that holds the term.
+

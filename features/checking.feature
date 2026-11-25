@@ -692,16 +692,6 @@ Feature: Checking
     Then the specification service fails this check
     And the specification service names the version v1
 
-  @g94 @r94
-  Scenario: A contract is obtained only for an adapter spec of its provider
-    Given a provider p1
-    And no adapter spec has the provider p1
-    And a contract c1
-    When the person obtains the contract c1 from the provider p1
-    Then the specification service refuses this request
-    And the specification service names the provider p1
-    And the specification service names `no adapter spec has the provider`
-
   @g95 @r95
   Scenario: A port operation that no core line requests is refused
     Given an operation o1
@@ -802,3 +792,17 @@ Feature: Checking
     Then the specification service refuses this request
     And the specification service names the bounded context b1
     And the specification service names `bounded context failing`
+
+  @g103 @r103
+  Scenario: A contract of an available provider in the context id form is obtained only for an adapter spec of the provider
+    Given an id i1
+    And a provider p1
+    And the provider p1 has the id i1
+    And the id i1 conforms to the context id form
+    And the availability of the provider p1 is `available`
+    And no adapter spec has the provider p1
+    And a contract c1
+    When the person obtains the contract c1 from the provider p1
+    Then the specification service refuses this request
+    And the specification service names the provider p1
+    And the specification service names `no adapter spec has the provider`

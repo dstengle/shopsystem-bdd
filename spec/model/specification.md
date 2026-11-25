@@ -362,6 +362,7 @@ object area
   attributes: kind: core | supporting | generic | port
   relations: holds → operation | capability (many)
   relations: holds → lifecycle (many)
+  relations: holds → model line | term | element (many)
 
 object group title kind of text
 

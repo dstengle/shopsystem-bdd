@@ -711,3 +711,33 @@ Feature: Batches
     And the batches service keeps the model line m1
     And the batches service keeps the domain model d1
     And the domain model d1 does not hold the element e1
+
+  @g117 @r117
+  Scenario: A batch opened declares a moved model line in the area it moves to
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a model line m1
+    And an area a1
+    And the model line m1 moves to the area a1
+    And the item i1 holds the model line m1
+    And a batch b1
+    When the person opens the batch b1
+    Then the area a1 holds the model line m1
+    And the batches service keeps the area a1
+
+  @g118 @r118
+  Scenario: A batch opened writes a moved term into the area that holds its element
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a term t1
+    And an element e1
+    And the term t1 means the element e1
+    And the item i1 moves the term t1
+    And an area a1
+    And the area a1 holds the element e1
+    And a batch b1
+    When the person opens the batch b1
+    Then the area a1 holds the term t1
+    And the batches service keeps the area a1

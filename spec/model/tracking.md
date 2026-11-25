@@ -36,6 +36,7 @@ object item kind of file
   relations: holds → operation table | operation (many)
   relations: exceeds → review limit (many)
   relations: derives from → item (one)
+  relations: moves → term (many)
 
 object backlog
 
@@ -160,6 +161,8 @@ service drafting
   operation write into pack(term, pack, item)  outcomes: done | refused: term in the pack
   operation take out(item, universal condition, upstream entry, given block)  outcomes: done | refused: universal condition not in the item, upstream entry not in the item, given block not in the item
   operation replace(item, universal condition, upstream entry, given block)  outcomes: done | refused: universal condition not in the item, upstream entry not in the item, given block not in the item
+  operation move(model line, item)  outcomes: done | refused: model line not in the domain model
+  operation move term(term, item)  outcomes: done | refused: term not in the vocabulary
 
 service context requests
   operation raise(context request, origin, thread, text, bounded context)
@@ -194,6 +197,7 @@ actor the person kind of agent
 object model line kind of text
   relations: restates → operation (one)
   relations: specifies → operation (one)
+  relations: moves to → area (one); leaves → area (one)
 
 object retirement list kind of file
   relations: holds → requirement id | requirement (many)

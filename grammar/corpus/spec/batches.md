@@ -965,3 +965,40 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
       in(x4, x9)
     keep(e3, subject: x7, object: x9)
 ```
+
+## r117
+From: b607 r117.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds a model line that moves to an area, when the person opens a batch, the batches service shall keep the area that holds the model line.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant)]
+  while [x1: item, x3: model line, x4: area]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    move#3(subject: x3, to: x4)
+    in(x3, x1)
+  when [x6: batch]
+    request(e1, batches.open, subject: x5, object: x6)
+  response
+    in(x3, x4)
+    keep(e2, subject: x7, object: x4)
+```
+
+## r118
+From: b607 r118.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item moves a term that means an element and an area holds the element, when the person opens a batch, the batches service shall keep the area that holds the term.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x6: agent the person (constant), x8: service the batches service (constant)]
+  while [x1: item, x3: term, x4: element, x5: area]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    mean(subject: x3, object: x4)
+    move#4(subject: x1, object: x3)
+    in(x4, x5)
+  when [x7: batch]
+    request(e1, batches.open, subject: x6, object: x7)
+  response
+    in(x3, x5)
+    keep(e2, subject: x8, object: x5)
+```
