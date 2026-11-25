@@ -70,6 +70,7 @@ FORMS = [
     Form("design record folder", ".shop/records/<date>-<topic>/design.md", "work record --design"),
     Form("plan record folder", ".shop/records/<date>-<topic>/plan-<k>.md", "work record --plan"),
     Form("published contract", ".shop/contracts/<version>/contract.toml", "spec publish"),
+    Form("obtained contract", "provider/<upstream>/<version>/contract.toml", "spec obtain"),
 ]
 
 

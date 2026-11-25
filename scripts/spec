@@ -100,6 +100,9 @@ def main(argv=None):
     u.add_argument("--version", help="the version it is kept at (the latest kept one's last number one more by default)")
     g = sub.add_parser("fetch", help="print the contract kept as published, or the one kept at a version, writing nothing")
     g.add_argument("--version", help="the version of the contract (the published one by default)")
+    o = sub.add_parser("obtain", help="keep an upstream's published contract, or the one at a version, under provider/")
+    o.add_argument("context", metavar="BOUNDED_CONTEXT", help="the upstream's bounded-context id under ## Upstreams")
+    o.add_argument("--version", help="the version of the contract (the published one by default)")
     args = prepare(ap).parse_args(argv)
     if args.cmd == "parse" and (args.line is None) == (args.file is None):
         ap.error("parse takes a line or --file, not both")
@@ -114,6 +117,7 @@ def main(argv=None):
                "prepare": lambda x: __import__("contract_form").prepare(x.root, x.contract),
                "publish": lambda x: __import__("contract_publish").publish(x.root, x.version),
                "fetch": lambda x: __import__("contract_publish").fetch(x.root, x.version),
+               "obtain": lambda x: __import__("contract_obtain").obtain(x.root, x.context, x.version),
                "constructs": cmd_constructs, "catalogue": lambda x: __import__("model_catalogue_write").cmd(x)}[args.cmd]
     return respond("spec", handler, args, checks=args.cmd in ("check", "logic"))
 
