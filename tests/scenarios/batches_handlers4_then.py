@@ -31,8 +31,6 @@ def writes(step):
         return _first().writes_batch(step)
     if k == "batch plan":
         return _first().writes_plan(step)
-    if k == "question":
-        return _more().writes_question(step)
     if k == "`universal`":
         assert universal(step), (step.text, step.context["result"].stdout)
         return None
@@ -72,22 +70,6 @@ def sets_language(step):
         return False
     wanted = step.text.rsplit(" to ", 1)[1].strip("`")
     assert re.search(r"(?m)^language: %s$" % re.escape(wanted), universal(step)), (step.text, universal(step))
-
-
-@four("ThenDoes", "on", *BOTH)
-def question_on(step):
-    """The run wrote the question into the item's file, and the item is `needs-input`."""
-    (k1, question), (k2, item) = parts(step)
-    if (k1, k2) != ("question", "item") or not step.context.get("given"):
-        return False
-    done = step.context["result"]
-    assert done.returncode == 0, done.stderr
-    text = "\n## Question\n\n%s\n" % _more().QUESTION
-    hits = [B.name_of(step.context, rel) for rel in filter(B.is_item_file, B.changed(step))
-            if text in (step.repo / rel).read_text()]
-    assert hits == [item], (step.text, hits)
-    assert W.field(B.item_file(step, item), "status") == "needs-input", step.text
-    step.context.setdefault("questions_written", {})[question] = item
 
 
 @four("ThenDoes", "remove", *BOTH)

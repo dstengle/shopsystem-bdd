@@ -12,6 +12,7 @@ import copy
 from collections import namedtuple
 
 import backlog_items
+import backlog_lifecycle
 import backlog_lines
 import backlog_moves
 import backlog_view
@@ -64,8 +65,7 @@ def pick(root, size=None):
             done.add(item.name)
             reasons = _alone(root, item)
             if reasons:
-                item.status = "shaped"
-                backlog_moves.add_note(item, "returned by work batch start: %s" % "; ".join(reasons))
+                backlog_lifecycle.reopen(item, "returned by work batch start: %s" % "; ".join(reasons))
                 returned.append((item, reasons))
                 continue
             if batch_estimate.exceeds(spent, item, len(picked), review_limit):

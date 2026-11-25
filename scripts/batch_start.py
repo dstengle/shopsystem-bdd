@@ -18,8 +18,8 @@ from pathlib import Path
 
 import adapter_annotate
 import backlog_items
+import backlog_lifecycle
 import backlog_lines
-import backlog_moves
 import batch_catalogues
 import batch_driver
 import batch_laid
@@ -165,7 +165,7 @@ def _build(root, base, picked, returned):
                       forked_from=forked, branch=name, pull_request=None,
                       tasks=[Task("t%d" % k, i.name, "pending", "%s-%s" % (name, i.name)) for k, i in enumerate(picked, 1)])
         for item in picked:
-            item.status = "in-batch"
+            backlog_lifecycle.allocate(item)
         commit(root, batch, picked + [i for i, _ in returned], "work batch start: %s %s" % (name, labels(picked)))
     except BaseException:
         remove_tree(root, tree)
@@ -204,8 +204,7 @@ def start(root):
             except _Broken as err:          # laid again without the items whose lines broke a rule (b478)
                 broken = err.args[0]
             for item, reasons in broken:
-                item.status = "shaped"
-                backlog_moves.add_note(item, "returned by work batch start: %s" % "; ".join(reasons))
+                backlog_lifecycle.reopen(item, "returned by work batch start: %s" % "; ".join(reasons))
             gone = {i.name for i, _ in broken}
             pick = pick._replace(picked=[i for i in pick.picked if i.name not in gone],
                                  returned=pick.returned + broken)
