@@ -351,10 +351,6 @@ object contract kind of artifact
   relations: holds → operation | property | requirement (many)
   attributes: status: published | superseded
   lifecycle status: published → superseded
-  relations: has → version (one); holds → term | design-decision (many)
-  relations: holds → operation | property | requirement (many)
-  attributes: status: published | superseded
-  lifecycle status: published → superseded
   relations: has → version (one); holds → term (many)
 
 object contract form kind of artifact

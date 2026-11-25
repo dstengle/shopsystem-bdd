@@ -15,6 +15,7 @@ from collections import namedtuple
 from pathlib import Path
 
 import backlog_model_area
+import backlog_model_elements
 import backlog_model_ops
 import shop_files
 from backlog_items import Refused, commit, find, label, one_line
@@ -62,12 +63,14 @@ def _at(body, header):
 
 
 def merged(body, lines):
-    """`body` (model lines) with `lines` merged in: each element's members after the element's own, else the element
-    appended after a blank line (before any blank lines the body ends with)."""
+    """`body` (model lines) with `lines` merged in: an object that restates its element in place of it
+    (backlog_model_elements), each other element's members after the element's own, else the element appended after a blank line (before any blank lines the body ends with)."""
     body = list(body)
     for header, members in chunks(lines):
         at = _at(body, header)
-        if at is not None:
+        if at is not None and backlog_model_elements.restates(header, members, body, at, _end(body, at)):
+            backlog_model_elements.restate(body, at, _end(body, at), header, members)
+        elif at is not None:
             members, end = backlog_model_ops.restate(body, at, _end(body, at), members)
             body[end:end] = members
         else:
@@ -79,14 +82,15 @@ def merged(body, lines):
 
 
 def unmerged(body, lines, held=None):
-    """The reverse of `merged`: each operation a chunk restated put back as `held(header, operation, lines)` gives
+    """The reverse of `merged`: an object a chunk restated put back as `held(header, None, members)` gives it
+    (backlog_model_elements), each operation a chunk restated put back as `held(header, operation, lines)` gives
     the model lines before the lay (backlog_model_ops, b463; taken out when it gives None), the chunk's other members
     taken off its element's end, and an element left with no member taken out whole with the blank line before it
     (the chunk made it)."""
     body = list(body)
     for header, members in reversed(chunks(lines)):
         at = _at(body, header)
-        if at is None:
+        if at is None or backlog_model_elements.unrestate(body, at, header, members, held):
             continue
         ops, members = backlog_model_ops.restated(members, body, at, _end(body, at))
         end = _end(body, at)

@@ -506,7 +506,7 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
   while [x1: item, x3: model line, x4: operation]
     status(x1) = `ready`
     meet(subject: x1, object: x2)
-    restate(subject: x3, object: x4)
+    restate#2(subject: x3, object: x4)
     in(x3, x1)
   when [x6: batch]
     request(e1, batches.open, subject: x5, object: x6)
@@ -558,7 +558,7 @@ shall [x5: domain model "the domain model of this bounded context" (indexical), 
   while [x1: item, x2: batch, x3: model line, x4: operation]
     in(x1, x2)
     status(x1) = `in-batch`
-    restate(subject: x3, object: x4)
+    restate#2(subject: x3, object: x4)
     in(x3, x1)
     in(x3, x5)
   when [x6: session]
