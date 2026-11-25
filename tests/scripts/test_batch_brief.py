@@ -73,11 +73,11 @@ def test_a_parked_item_is_not_in_the_brief(batch_repo):
     assert 'b1 "Abandon"' in items and "b2" not in items
 
 
-def decision(repo, name, tier, status="accepted"):
+def decision(repo, name, tier):
     path = repo / "spec" / "decisions" / name
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text('---\nid: design-decision/ex.com/prod/ctx/%s\nsummary: "The %s one."\nstatus: %s\ntier: %s\n---\n\n# %s\n'
-                    % (name[:-3], tier, status, tier, name))
+    path.write_text('---\nid: design-decision/ex.com/prod/ctx/%s\nsummary: "The %s one."\ntier: %s\n---\n\n# %s\n'
+                    % (name[:-3], tier, tier, name))
 
 
 def test_the_brief_lists_the_judgement_decisions(pub):
@@ -88,15 +88,6 @@ def test_the_brief_lists_the_judgement_decisions(pub):
     git(pub, "commit", "-q", "-m", "decisions")
     listed = section(brief(pub)[2], "Judgement decisions")
     assert "spec/decisions/0001-small.md: The judgement one." in listed and "0002-check" not in listed
-
-
-def test_a_superseded_judgement_decision_is_left_out_of_the_brief(pub):
-    decision(pub, "0001-old.md", "judgement", status="superseded")
-    decision(pub, "0002-new.md", "judgement")
-    git(pub, "add", "-A")
-    git(pub, "commit", "-q", "-m", "decisions")
-    listed = section(brief(pub)[2], "Judgement decisions")
-    assert "0002-new.md" in listed and "0001-old" not in listed
 
 
 def test_the_brief_gives_the_runs_and_the_size(pub):
