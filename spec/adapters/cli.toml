@@ -1530,11 +1530,11 @@ item = { positional = 1 }
 term = { option = "--move-term" }
 
 [operations."drafting.dedicate"]
-command = "work dedicate"
+command = "work line"
 requirements = [
   "drafting#r71: When the person dedicates a requirement group to a job with an item, the drafting service shall keep the item that holds the requirement group that serves the job.",
 ]
 [operations."drafting.dedicate".parameters]
-"requirement group" = { option = "--requirement-group", example = "requirement group-1" }
-job = { option = "--job", example = "job-1" }
-item = { option = "--item", example = "item-1" }
+item = { positional = 1 }
+"requirement group" = { option = "--serves" }
+job = { option = "--serves" }

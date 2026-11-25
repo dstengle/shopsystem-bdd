@@ -69,9 +69,8 @@ def add_parsers(sub):
                    "takes the place of, keeping its id and group")
     p.add_argument("--remove", metavar="CAP#rN|CAP", help="the item's own line `<capability>#r<n>` taken out of "
                    "it, its group too when it was the last line; or a bare <capability>: its whole block and model lines")
-    p.add_argument("--term", action="append", help="a term bullet for the capability's ## Terms (or, with a "
-                   "domain model, a vocabulary entry for its area), in place of a line; given more than once, all in "
-                   "one commit")
+    p.add_argument("--term", action="append", help="a term bullet for the capability's ## Terms (with a domain "
+                   "model, a vocabulary entry for its area), in place of a line; given again, all in one commit")
     p.add_argument("--recodify", metavar="CAP", help="the codified capability the item switches to the new language: "
                    "`language: codified-2` written into its block (`universal`: spec/universal.md)")
     p.add_argument("--relation", help="a row `| from | word | to | cardinality |` for the capability's ## Relations; "
@@ -83,7 +82,7 @@ def add_parsers(sub):
     p.add_argument("--capability", help="a capability new to the context, written as a block of the item with "
                    "--narrator, --group (service or guarantees, default service) and its purpose as the text")
     p.add_argument("--narrator", help="with --capability: who the new capability's lines speak for")
-    for module in ("backlog_adapter", "backlog_area_move", "backlog_model_edit", "backlog_pack", "backlog_piece_edit"):
+    for module in ("backlog_adapter", "backlog_pack") + EDITS:
         __import__(module).add_arguments(p)
     p.add_argument("--upstream", help="an upstream entry `bounded-context/<path>: ..., github: <owner>/<name>` for "
                    "spec/index.md's ## Upstreams, with no --into")
@@ -136,6 +135,7 @@ def cmd_depend(args):
 
 
 PIECES = ("text", "term", "relation", "given", "universal", "upstream", "recodify", "model")
+EDITS = ("backlog_area_move", "backlog_model_edit", "backlog_piece_edit", "backlog_serves")  # their own `work line`s
 
 
 def _change_shape(args):
@@ -202,7 +202,7 @@ def cmd_line(args):
         return __import__("backlog_adapter").cmd(args)
     if args.pack is not None:
         return __import__("backlog_pack").cmd(args)
-    for module in ("backlog_area_move", "backlog_model_edit", "backlog_piece_edit"):
+    for module in EDITS:
         if __import__(module).given(args):
             return __import__(module).cmd(args)
     if args.retirement_list is not None:
