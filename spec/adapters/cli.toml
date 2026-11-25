@@ -977,6 +977,8 @@ requirements = [
   "batches#r114: While a capability has no requirement and an item is `ready` and the item meets the readiness bar, when the person opens a batch, the batches service shall keep an index file that does not hold the capability.",
   "batches#r115: While a capability has a requirement and an item is `ready` and the item meets the readiness bar, when the person opens a batch, the batches service shall keep an index file that holds the capability.",
   "batches#r116: While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an element, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the element.",
+  "batches#r117: While an item is `ready` and the item meets the readiness bar and the item holds a model line that moves to an area, when the person opens a batch, the batches service shall keep the area that holds the model line.",
+  "batches#r118: While an item is `ready` and the item meets the readiness bar and the item moves a term that means an element and an area holds the element, when the person opens a batch, the batches service shall keep the area that holds the term.",
 ]
 
 [operations."batches.resume"]
@@ -1483,10 +1485,30 @@ requirements = [
   "checking#r89: If the person obtains a contract from a bounded context whose availability is `unreachable`, then the specification service shall refuse the request and name the bounded context and the `bounded context unreachable` reason.",
   "checking#r90: While a bounded context has a contract, when the person obtains a contract from another bounded context, the specification service shall keep the contract and change no contract of a bounded context.",
   "checking#r91: While an adapter spec has a provider, when the person obtains a contract from the provider, the specification service shall keep the contract that the adapter spec holds.",
-  "checking#r94: If the person obtains a contract from a provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `no adapter spec has the provider` reason.",
   "checking#r100: While an adapter spec has a provider and the provider has the `1.2.0` version and the provider has a contract that has the `1.3.0` version, when the person obtains a contract from the provider, the specification service shall keep a contract that has the `1.2.0` version and keep the adapter spec that holds the contract.",
   "checking#r102: If the person obtains a contract from a bounded context whose health is `failing`, then the specification service shall refuse the request and name the bounded context and the `bounded context failing` reason.",
+  "checking#r103: While the id of a provider conforms to the context id form and the provider is `available`, if the person obtains a contract from the provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `no adapter spec has the provider` reason.",
 ]
 [operations."specification.obtain".parameters]
 "bounded context" = { positional = 1, example = "bounded-context/example.org/fixture/inventory" }
 version = { option = "--version", example = "1.2.0" }
+
+[operations."drafting.move"]
+command = "work move"
+requirements = [
+  "drafting#r66: When the person moves a model line in an item, the drafting service shall keep the model line in the item.",
+  "drafting#r67: If the person moves a model line that the domain model does not hold in an item, then the drafting service shall refuse the request and name the model line.",
+]
+[operations."drafting.move".parameters]
+"model line" = { option = "--model-line", example = "model line-1" }
+item = { option = "--item", example = "item-1" }
+
+[operations."drafting.move term"]
+command = "work move term"
+requirements = [
+  "drafting#r68: When the person moves a term in an item, the drafting service shall keep the term in the item.",
+  "drafting#r69: If the person moves a term that no area holds in an item, then the drafting service shall refuse the request and name the term.",
+]
+[operations."drafting.move term".parameters]
+term = { option = "--term", example = "term-1" }
+item = { option = "--item", example = "item-1" }

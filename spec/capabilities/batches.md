@@ -7,7 +7,7 @@ area: execution
 specifies: object batch, object task, service batches
 language: codified-2
 retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97]
-unbuilt: []
+unbuilt: [r117, r118]
 ---
 
 # Batches
@@ -188,4 +188,10 @@ when the change is merged.
 
 ### [g116] A model line that restates an element is laid in place of it
 - [r116] While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an element, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the element.
+
+### [g117] A batch opened declares a moved model line in the area it moves to
+- [r117] While an item is `ready` and the item meets the readiness bar and the item holds a model line that moves to an area, when the person opens a batch, the batches service shall keep the area that holds the model line.
+
+### [g118] A batch opened writes a moved term into the area that holds its element
+- [r118] While an item is `ready` and the item meets the readiness bar and the item moves a term that means an element and an area holds the element, when the person opens a batch, the batches service shall keep the area that holds the term.
 

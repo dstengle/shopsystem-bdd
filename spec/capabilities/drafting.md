@@ -7,7 +7,7 @@ area: tracking
 specifies: service drafting
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r66, r67, r68, r69]
 ---
 
 # Drafting
@@ -231,4 +231,16 @@ capabilities, retirements, rewordings and chores.
 
 ### [g65] A requirement drafted into an item joins its group of the same group title
 - [r65] While an item holds a requirement group of a capability and the requirement group has a group title, when the person drafts the item with a requirement of the capability, the drafting service shall keep only one requirement group that has the group title.
+
+### [g66] A model line moved in an item is kept
+- [r66] When the person moves a model line in an item, the drafting service shall keep the model line in the item.
+
+### [g67] Moving a model line that the domain model does not hold is refused
+- [r67] If the person moves a model line that the domain model does not hold in an item, then the drafting service shall refuse the request and name the model line.
+
+### [g68] A term moved in an item is kept
+- [r68] When the person moves a term in an item, the drafting service shall keep the term in the item.
+
+### [g69] Moving a term that no area holds is refused
+- [r69] If the person moves a term that no area holds in an item, then the drafting service shall refuse the request and name the term.
 

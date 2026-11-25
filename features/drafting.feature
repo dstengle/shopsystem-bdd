@@ -644,3 +644,37 @@ Feature: Drafting
     And the requirement group r3 does not have the group title g1
     When the person drafts the item i1 with the requirement r2
     Then the drafting service does not keep the requirement group r3
+
+  @g66 @r66
+  Scenario: A model line moved in an item is kept
+    Given a model line m1
+    And an item i1
+    When the person moves the model line m1 in the item i1
+    Then the item i1 holds the model line m1
+    And the drafting service keeps the model line m1
+
+  @g67 @r67
+  Scenario: Moving a model line that the domain model does not hold is refused
+    Given a model line m1
+    And this domain model does not hold the model line m1
+    And an item i1
+    When the person moves the model line m1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the model line m1
+
+  @g68 @r68
+  Scenario: A term moved in an item is kept
+    Given a term t1
+    And an item i1
+    When the person moves the term t1 in the item i1
+    Then the item i1 holds the term t1
+    And the drafting service keeps the term t1
+
+  @g69 @r69
+  Scenario: Moving a term that no area holds is refused
+    Given a term t1
+    And no area holds the term t1
+    And an item i1
+    When the person moves the term t1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the term t1

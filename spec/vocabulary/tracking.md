@@ -174,3 +174,8 @@ area: tracking
 - **deliver** (verb, action) → operation backlog.deliver. Forms: delivers, delivered. Frame: <actor> delivers <item>.
 - **restore** (verb, action) → operation backlog.restore. Forms: restores, restored. Frame: <actor> restores <item>.
 - **suspend** (verb, action) → operation backlog.suspend. Forms: suspends, suspended. Frame: <actor> suspends <item>.
+- **move** (verb, action) → operation drafting.move. Forms: moves, moved. Frame: <actor> moves <model line> in <item>.
+- **move** (verb, action) → operation drafting.move term. Forms: moves, moved. Frame: <actor> moves <term> in <item>.
+- **move** (verb, state) → relation model line.moves to. A model line names an element the domain model declares in another area, which the item's batch takes out of that area's model file and declares, with the entries that mean it, in this area's. Forms: moves, moved. Frame: <model line> moves to <area>.
+- **move** (verb, state) → relation item.moves. An item names a term whose entry its batch takes out of its layer and writes into the layer of the area that holds the element the term means. Forms: moves, moved. Frame: <item> moves <term>.
+- **leave** (verb, state) → relation model line.leaves. A model line names an element that another area's model file declares, which the item's batch takes out of that file. Forms: leaves, left. Frame: <model line> leaves <area>.
