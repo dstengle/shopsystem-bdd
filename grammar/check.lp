@@ -51,6 +51,8 @@ term(R,X) :- uses(R,X,_).      term(R,X) :- uses(R,_,X).      term(R,X) :- nouse
 term(R,X) :- crel(R,_,X,_,_).  term(R,X) :- crel(R,_,_,X,_).  term(R,X) :- orel(R,_,_,X).
 term(R,X) :- holds(R,X,_).     term(R,X) :- holds(R,_,X).     term(R,X) :- free(R,X).
 term(R,X) :- uscope(R,_,_,X,_). term(R,X) :- urel(R,_,_,X).    term(R,X) :- count(R,_,_,X,_,_,_).  term(R,none) :- rnone(R,_,_,none).
+% only's doer and object (b579): an actor that only acts is a doer the other side's can be one with
+term(R,X) :- only(R,_,_,X,_).   term(R,X) :- only(R,_,_,_,X).
 % kinds: a sub-kind is its kind (sub(K,K2): K is a kind of K2, transitively); two kinds are compatible when one is
 subeq(K,K) :- role(_,_,K).  subeq(K,K) :- none(_,K,_,_).  subeq(K,K) :- cnone(_,K,_).  subeq(K,K) :- uex(_,_,_,K).
 subeq(K,K) :- urex(_,_,_,_,K).  subeq(K,K) :- nbnone(_,_,_,_,_,K).

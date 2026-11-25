@@ -204,7 +204,7 @@ class Walk(Terms):
                 raise ValueError("no translation of only over that")
             e, d, x = self.event(item)
             self.acts += 1
-            self.emit("only", self.acts, e, d, x)
+            self.emit("only", self.acts, self.keyed(e, x), d, x)
 
     def count(self, box, own):
         """"D shall V at least n Ks": each act on the counted K a `count`, and a `resp` when the count admits no fewer
@@ -219,9 +219,18 @@ class Walk(Terms):
             if x != box.refs[0].name:
                 raise ValueError("no translation of a count of other than an object")
             self.acts += 1
+            k = self.keyed(e, x)
             if least(box.count):
-                self.emit("resp", self.acts, spec_lf_modal.polarity(self, True), e, d, x)
-            self.emit("count", self.acts, e, d, x, spec_lf_quant.BOUNDS[box.count[0]], box.count[1])
+                self.emit("resp", self.acts, spec_lf_modal.polarity(self, True), k, d, x)
+            self.emit("count", self.acts, k, d, x, spec_lf_quant.BOUNDS[box.count[0]], box.count[1])
+
+    def keyed(self, e, x):
+        """The event of act number `self.acts` on x: of a verb naming an operation the request `req(O,())` with its
+        `rqo`, as `act` keys it (b571, b579), so a counted or only act clashes with a request of its operation."""
+        if not spec_lf_facts_request.operated(self, e):
+            return e
+        self.emit("rqo", self.acts, e, x)
+        return "req(%s,())" % e
 
 
 def translate(ids, ident, form):
