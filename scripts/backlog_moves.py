@@ -16,14 +16,19 @@ from backlog_items import (
 )
 
 # The moves of an item's status that a command makes, before -> after: the glossary's transitions of `status` of item
-# by `work shape`, `work refuse`, `work withdraw`, `work answer`, `work ready` and `work reopen`.
+# by `work shape`, `work refuse`, `work withdraw`, `work answer`, `work ready` and `work reopen`, and tracking's
+# operations execution requests (backlog_lifecycle, b578).
 TRANSITIONS = {"work shape": {"idea": "shaped"},
                "work refuse": {"idea": "refused", "shaped": "refused"},
                "work withdraw": {"idea": "withdrawn", "shaped": "withdrawn", "ready": "withdrawn",
                                  "needs-input": "withdrawn"},
                "work answer": {"needs-input": "shaped"},
                "work ready": {"shaped": "ready"},
-               "work reopen": {"ready": "shaped"}}
+               "work reopen": {"ready": "shaped"},
+               "work allocate": {"ready": "in-batch"},
+               "work deliver": {"in-batch": "delivered"},
+               "work restore": {"in-batch": "ready"},
+               "work suspend": {"in-batch": "needs-input"}}
 
 
 def text_line(text, what):
@@ -52,10 +57,9 @@ def either(words):
     return words[0] if len(words) == 1 else "%s or %s" % (", ".join(words[:-1]), words[-1])
 
 
-def move(root, name, command, change=None):
-    """Move the item `name` by its command's row, let `change` write into it, and commit it; a status the row lacks is
-    refused, naming it (r3)."""
-    item = find(root, name)
+def moved(item, command, change=None):
+    """Move `item` by its command's row in memory and let `change` write into it, a status the row lacks refused,
+    naming it (r3); the status it had."""
     row = TRANSITIONS[command]
     if item.status not in row:
         raise Refused("%s: %s is %s; %s takes an item that is %s" % (command, label(item), item.status, command,
@@ -63,6 +67,13 @@ def move(root, name, command, change=None):
     before, item.status = item.status, row[item.status]
     if change is not None:
         change(item)
+    return before
+
+
+def move(root, name, command, change=None):
+    """Move the item `name` by its command's row (`moved`) and commit it."""
+    item = find(root, name)
+    before = moved(item, command, change)
     commit(root, item, "%s: %s %s -> %s" % (command, label(item), before, item.status))
     return item
 

@@ -1,7 +1,8 @@
 """`work batch merged` and `work batch abandon` (capability batches r9, r10; workflow simplification plan 4, D13,
 D14): a batch closed, in one commit on the base branch.
 
-The person merges the pull request; `merged` records it once gh says it is `MERGED` and its merge commit is in the
+Each item's status is changed by tracking's operations (backlog_lifecycle: deliver, restore; decision 0133,
+b578), the items committed with the plan. The person merges the pull request; `merged` records it once gh says it is `MERGED` and its merge commit is in the
 base's history (else `git pull` first): every `in-batch` item `delivered`, the batch `merged`, its worktrees removed
 and the merged item branches deleted. `abandon` closes the pull request when there is one, returns every `in-batch`
 item to `ready` and removes the worktrees; the branches are kept. It refuses while a task worktree has uncommitted
@@ -19,6 +20,7 @@ import shutil
 import subprocess
 
 import backlog_items
+import backlog_lifecycle
 import batch_gh
 import batch_plan
 import request_moves
@@ -91,7 +93,7 @@ def merged(root, name):
                 command, oid[:7], batch.pull_request, batch.base, command))
         items = _items(root, batch, "in-batch")
         for item in items:
-            item.status = "delivered"
+            backlog_lifecycle.deliver(item)
         batch.status = "merged"
         batch_plan.commit(root, batch, items, "%s: %s -> merged; %s delivered" % (
             command, batch.name, ", ".join(map(backlog_items.label, items))))
@@ -114,7 +116,7 @@ def abandon(root, name, discard=False):
             batch_gh.close(root, batch.pull_request, command)
         items = _items(root, batch, "in-batch")
         for item in items:
-            item.status = "ready"
+            backlog_lifecycle.restore(item)
         batch.status = "abandoned"
         batch_plan.commit(root, batch, items, "%s: %s -> abandoned; %s -> ready" % (
             command, batch.name, ", ".join(map(backlog_items.label, items))))

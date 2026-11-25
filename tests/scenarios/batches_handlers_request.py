@@ -1,8 +1,7 @@
 """The request a delivered item was taken in from, in features/batches.feature (r40, b6): the world's request q9
-(readiness_world's) made `accepted`, its line accepted and on its issue, and the Thens of what `work batch merged` did
-to it: its status and side, its resolution (each recorded line's requirement id and the merge commit), the resolve
-comment posted, the issue closed and the request committed. Each is in world_four's chain of the batches' scenarios
-and returns False for a step that is not about the request."""
+(readiness_world's) made `accepted`, its line accepted and on its issue, and `resolved`, what `work batch merged`
+did to it when it resolves it (r105, b578): its status, its resolution (each recorded line's requirement id and the
+merge commit), the resolve comment posted and the issue closed, which batches_handlers_tracking's Then reads."""
 import json
 import sys
 
@@ -54,37 +53,13 @@ def _done(step):
     assert done.returncode == 0, (step.text, done.stdout, done.stderr)
 
 
-def _request(step):
-    """The path of the scenario's request whose status a Given set."""
-    name = next(n for n, (kind, _) in step.context["nodes"].items() if kind == "request" and n != R.REQUEST)
-    return _path(step, name)
-
-
-def _issue(step):
-    return W.field(_request(step), "issue")
-
-
-@four("ThenDoes", "set", "batches")
-def sets(step):
-    """The status (`status:`) or the side (`turn:`) of the request is the value."""
-    np = step.nps[0]
-    key = "status" if np.startswith("the status of the request ") else "turn" if np.startswith(
-        "the side of the request ") else None
-    if key is None:
-        return False
+def resolved(step, name):
+    """The context request `name` resolved by the run: `delivered`, its `## Resolution`, empty before the run, holding
+    each line the item recorded as its requirement id and the merge commit gh gave, and the resolve comment posted
+    on its issue, closed."""
     _done(step)
-    got = W.field(_path(step, step.names[0]), key)
-    assert got == step.values[0].strip("`"), (step.text, got)
-
-
-@four("ThenDoes", "write", "batches")
-def writes_resolution(step):
-    """The request's `## Resolution`, empty before the run, holds each line the item recorded, as its requirement id
-    and the merge commit gh gave."""
-    if parts(step)[1][0] != "resolution":
-        return False
-    _done(step)
-    path = _request(step)
+    path = _path(step, name)
+    assert W.field(path, "status") == "delivered", (step.text, W.field(path, "status"))
     rel = path.relative_to(step.repo).as_posix()
     had = request_text.entries(W.git(step.repo, "show", "%s:%s" % (step.context["head"], rel)), "Resolution")
     oid = next(iter(json.loads((T.outside(step) / "gh-state.json").read_text()).values()))["mergeCommit"]["oid"]
@@ -93,38 +68,6 @@ def writes_resolution(step):
     wanted = ["%d. %s %s" % (n, ident, oid) for ident, n in recorded.items()]
     got = request_text.entries(path.read_text(), "Resolution")
     assert not had and wanted and got == wanted, (step.text, had, got, wanted)
-
-
-@four("ThenDoes", "post", "batches")
-def posts(step):
-    """A comment of the step `resolve` on the request's issue."""
-    if parts(step)[1][0] != "comment":
-        return False
-    _done(step)
-    comments = Q.issues(step)[_issue(step)]["comments"]
-    assert any("step: resolve" in c["body"] for c in comments), (step.text, comments)
-
-
-@four("ThenDoes", "close", "batches")
-def closes(step):
-    if parts(step)[1][0] != "issue":
-        return False
-    _done(step)
-    assert Q.issues(step)[_issue(step)]["state"] == "CLOSED", (step.text, Q.issues(step))
-    step.context.setdefault("closed", {})[step.names[0]] = _issue(step)
-
-
-@four("ThenDoes", "has", "batches")
-def has_issue(step):
-    """The request has the issue the run closed."""
-    if [k for k, _ in parts(step)] != ["request", "issue"]:
-        return False
-    assert step.context.get("closed", {}).get(step.names[1]) == _issue(step), (step.text, step.context.get("closed"))
-
-
-@four("ThenDoes", "commit", "batches")
-def commits(step):
-    if parts(step)[1][0] != "request":
-        return False
-    _done(step)
-    B.in_commits(step, _request(step).relative_to(step.repo).as_posix())
+    issue = Q.issues(step)[W.field(path, "issue")]
+    assert any("step: resolve" in c["body"] for c in issue["comments"]), (step.text, issue["comments"])
+    assert issue["state"] == "CLOSED", (step.text, issue)

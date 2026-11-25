@@ -937,8 +937,6 @@ quote = { positional = 1 }
 [operations."batches.open"]
 command = "work batch start"
 requirements = [
-  "batches#r54: While an item is `ready` and the item does not meet the readiness bar, when the person opens a batch, the batches service shall set the status of the item to `shaped`.",
-  "batches#r55: While an item is not `ready` or `delivered` and a dependency on the item exists and another item whose status is `ready` has the dependency, when the person opens a batch, the batches service shall not set the status of the item to `in-batch`.",
   "batches#r64: While `universal` does not exist and an item is `ready` and the item meets the readiness bar and a universal condition is in the item, when the person opens a batch, the batches service shall keep `universal` and set the language of `universal` to `codified-2`.",
   "batches#r68: While an item is `ready` and the item holds a chore and the item meets the readiness bar, when the person opens a batch, the batches service shall keep a batch brief that holds the chore.",
   "batches#r71: While an item is `ready` and the item meets the readiness bar and a requirement of the item has a logical form, when the person opens a batch, the batches service shall keep the logical form in the corpus.",
@@ -950,15 +948,17 @@ requirements = [
   "batches#r79: While an item is `ready` and the item meets the readiness bar and the item holds an operation table, when the person opens a batch, the batches service shall keep an adapter contract that holds the operation table.",
   "batches#r80: While an item is `ready` and the item meets the readiness bar and the item holds an operation, when the person opens a batch, the batches service shall keep an adapter contract and keep no operation table of the operation.",
   "batches#r87: While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an operation, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the operation.",
-  "batches#r89: While an item is `ready` and the item meets the readiness bar and a requirement of the item violates a rule whose severity is `error`, if the person opens a batch, then the batches service shall set the status of the item to `shaped` and name the rule.",
   "batches#r92: While an item is `ready` and the item meets the readiness bar and the item holds a model line and the model line specifies an operation and the domain model does not hold the operation and the item holds no operation table of the operation, when the person opens a batch, the batches service shall keep an adapter contract that holds an operation table of the operation.",
-  "batches#r93: While an item is `ready` and the item meets the readiness bar and the item exceeds the review limit, when the person opens a batch, the batches service shall not set the status of the item to `in-batch`.",
-  "batches#r94: While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit, when the person opens a batch, the batches service shall set the status of the item to `in-batch`, keep a batch that holds the item and keep a batch plan of the batch.",
   "batches#r95: While an item is `ready` and the item meets the readiness bar and the item holds a term of a pack, when the person opens a batch, the batches service shall keep the pack that has the term and keep the pack that this bounded context imports.",
-  "batches#r97: While an item is `ready` and the item meets the readiness bar and a requirement of the item retires no requirement id and a scenario of the item refers to the requirement id of the requirement and the scenario succeeds in a workspace of a batch, if the person opens the batch, then the batches service shall set the status of the item to `shaped` and name the scenario.",
   "batches#r98: While a settings file holds a batch rule, when the person opens a batch, the batches service shall keep a batch brief that holds the batch rule.",
   "batches#r99: While no settings file holds a batch rule, when the person opens a batch, the batches service shall keep a batch brief that holds no batch rule.",
+  "batches#r101: While an item is `ready` and the item does not meet the readiness bar, when the person opens a batch, the batches service shall reopen the item.",
   "batches#r104: When the person opens a batch, the batches service shall keep a batch brief that holds a batch summary form and return the batch brief.",
+  "batches#r106: While an item is `ready` and the item meets the readiness bar and a requirement of the item violates a rule whose severity is `error`, if the person opens a batch, then the batches service shall reopen the item and name the rule.",
+  "batches#r107: While an item is `ready` and the item meets the readiness bar and the item exceeds the review limit, when the person opens a batch, the batches service shall not allocate the item.",
+  "batches#r108: While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit, when the person opens a batch, the batches service shall allocate the item, keep a batch that holds the item and keep a batch plan of the batch.",
+  "batches#r109: While an item is `ready` and the item meets the readiness bar and a requirement of the item retires no requirement id and a scenario of the item refers to the requirement id of the requirement and the scenario succeeds in a workspace of a batch, if the person opens the batch, then the batches service shall reopen the item and name the scenario.",
+  "batches#r110: While an item is not `ready` or `delivered` and a dependency on the item exists and another item whose status is `ready` has the dependency, when the person opens a batch, the batches service shall not allocate the item.",
 ]
 
 [operations."batches.resume"]
@@ -987,9 +987,9 @@ task = { positional = 2 }
 command = "work batch park"
 cli-only = { options = ["--discard", "--question"] }
 requirements = [
-  "batches#r57: While an item in a batch is `in-batch`, when a session parks the item, the batches service shall set the status of the item to `needs-input`, keep a question on the item and not set the status of the batch to `abandoned`.",
   "batches#r60: While an item in a batch is `in-batch` and the workspace of the batch holds a requirement of the item, when a session parks the item, the batches service shall keep a workspace of the batch that does not hold the requirement.",
   "batches#r91: While an item in a batch is `in-batch` and the item holds a model line that restates an operation and the domain model holds the model line, when a session parks the item, the batches service shall keep a domain model that holds the operation.",
+  "batches#r111: While an item in a batch is `in-batch`, when a session parks the item, the batches service shall suspend the item with a question and not set the status of the batch to `abandoned`.",
 ]
 [operations."batches.park".parameters]
 item = { positional = 2 }
@@ -1026,9 +1026,9 @@ batch = { positional = 1 }
 [operations."batches.merge"]
 command = "work batch merged"
 requirements = [
-  "batches#r50: While an item in a batch is `in-batch`, when the person merges the proposed change of the batch, the batches service shall set the status of the item to `delivered` and set the status of the batch to `merged`.",
-  "batches#r65: While an item in a batch is `in-batch` and the item has a request line of a context request and the context request is `accepted`, when the person merges the proposed change of the batch, the batches service shall set the status of the context request to `delivered`, keep a resolution, set the side of the context request to `asker` and keep an entry on the context request.",
+  "batches#r100: While an item in a batch is `in-batch`, when the person merges the proposed change of the batch, the batches service shall deliver the item and set the status of the batch to `merged`.",
   "batches#r102: When the person merges the proposed change of a batch, the batches service shall keep no review folder of the batch and return the batch summary of the batch.",
+  "batches#r105: While an item in a batch is `in-batch` and the item has a request line of a context request and the context request is `accepted`, when the person merges the proposed change of the batch, the batches service shall resolve the context request.",
 ]
 
 [operations."batches.abandon"]
@@ -1036,7 +1036,7 @@ command = "work batch abandon"
 cli-only = { options = ["--discard"] }
 requirements = [
   "batches#r52: When the person abandons a batch, the batches service shall keep no review folder of the batch.",
-  "batches#r58: While a batch is `building`, when the person abandons the batch, the batches service shall set the status of the batch to `abandoned` and set the status of every item in the batch whose status is `in-batch` to `ready`.",
+  "batches#r112: While a batch is `building`, when the person abandons the batch, the batches service shall set the status of the batch to `abandoned` and restore every item in the batch whose status is `in-batch`.",
 ]
 [operations."batches.abandon".parameters]
 batch = { positional = 1 }
@@ -1394,3 +1394,36 @@ requirements = [
 ]
 [operations."specification.prepare".parameters]
 contract = { option = "--contract", example = "contract-1" }
+
+[operations."backlog.allocate"]
+command = "work allocate"
+requirements = [
+  "items#r59: While an item is `ready`, when a session allocates the item, the backlog service shall set the status of the item to `in-batch`.",
+]
+[operations."backlog.allocate".parameters]
+item = { positional = 1 }
+
+[operations."backlog.deliver"]
+command = "work deliver"
+requirements = [
+  "items#r56: While an item is `in-batch`, when a session delivers the item, the backlog service shall set the status of the item to `delivered`.",
+]
+[operations."backlog.deliver".parameters]
+item = { positional = 1 }
+
+[operations."backlog.restore"]
+command = "work restore"
+requirements = [
+  "items#r57: While an item is `in-batch`, when a session restores the item, the backlog service shall set the status of the item to `ready`.",
+]
+[operations."backlog.restore".parameters]
+item = { positional = 1 }
+
+[operations."backlog.suspend"]
+command = "work suspend"
+requirements = [
+  "items#r58: While an item is `in-batch`, when a session suspends the item with a question, the backlog service shall set the status of the item to `needs-input` and keep the question on the item.",
+]
+[operations."backlog.suspend".parameters]
+item = { positional = 1 }
+question = { option = "--question", example = "Which reading holds?" }

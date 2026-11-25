@@ -990,3 +990,62 @@ shall [x6: agent the person (constant), x7: service the backlog service (constan
     refuse(e2, subject: x7, object: x8)
     name(e3, subject: x7, object: x4)
 ```
+
+## r56
+From: b578 r56.
+
+```reading
+While an item is `in-batch`, when a session delivers the item, the backlog service shall set the status of the item to `delivered`.
+shall [x3: service the backlog service (constant)]
+  while [x1: item]
+    status(x1) = `in-batch`
+  when [x2: session]
+    request(e1, backlog.deliver, subject: x2, object: x1)
+  response
+    initiates(e2, subject: x3, status(x1) = `delivered`)
+```
+
+## r57
+From: b578 r57.
+
+```reading
+While an item is `in-batch`, when a session restores the item, the backlog service shall set the status of the item to `ready`.
+shall [x3: service the backlog service (constant)]
+  while [x1: item]
+    status(x1) = `in-batch`
+  when [x2: session]
+    request(e1, backlog.restore, subject: x2, object: x1)
+  response
+    initiates(e2, subject: x3, status(x1) = `ready`)
+```
+
+## r58
+From: b578 r58.
+
+```reading
+While an item is `in-batch`, when a session suspends the item with a question, the backlog service shall set the status of the item to `needs-input` and keep the question on the item.
+shall [x4: service the backlog service (constant)]
+  while [x1: item]
+    status(x1) = `in-batch`
+  when [x2: session, x3: question]
+    request(e1, backlog.suspend, subject: x2, object: x1)
+    param(e1, question, x3)
+  response
+    initiates(e2, subject: x4, status(x1) = `needs-input`)
+    on(x3, x1)
+    keep(e3, subject: x4, object: x3)
+```
+
+## r59
+From: b578 r59.
+
+```reading
+While an item is `ready`, when a session allocates the item, the backlog service shall set the status of the item to `in-batch`.
+shall [x3: service the backlog service (constant)]
+  while [x1: item]
+    status(x1) = `ready`
+  when [x2: session]
+    request(e1, backlog.allocate, subject: x2, object: x1)
+  response
+    initiates(e2, subject: x3, status(x1) = `in-batch`)
+```

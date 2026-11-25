@@ -44,28 +44,6 @@ def batch_parks(step):
     T.run_batch(step, "park", T.batch_name(step, batch), B.ident(item), "--question", QUESTION)
 
 
-@local("ThenDoes", "question")
-def writes_question(step):
-    """The last run gave an item's file a `## Question`; the question is that item's."""
-    if step.term != "write" or not step.context.get("given"):
-        return False
-    done = step.context["result"]
-    assert done.returncode == 0, done.stderr
-    hits = [B.name_of(step.context, rel) for rel in filter(B.is_item_file, B.changed(step))
-            if "\n## Question\n\n%s\n" % QUESTION in (step.repo / rel).read_text()]
-    assert hits, (step.text, B.changed(step))
-    step.context.setdefault("questions_written", {})[step.names[0]] = hits[0]
-
-
-@local("ThenR", "question")
-def question_on_item(step):
-    question, item = step.names
-    if step.term != "on" or question not in step.context.get("questions_written", {}):
-        return False
-    assert step.context["questions_written"][question] == item, (step.text, step.context["questions_written"])
-    assert W.field(B.item_file(step, item), "status") == "needs-input", step.text
-
-
 @handler("WhenRuns", "`work batch review`")
 def batch_review(step):
     T.prepare(step)

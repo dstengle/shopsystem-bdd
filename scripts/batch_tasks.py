@@ -17,6 +17,7 @@ from pathlib import Path
 
 import backlog_chore
 import backlog_items
+import backlog_lifecycle
 import backlog_lines
 import backlog_moves
 import batch_fix
@@ -268,9 +269,8 @@ def park(root, name, item_name, question, discard=False):
                 backlog_items.label(item), item.status))
         if not discard:
             refuse_loose(root, batch, [task], "work batch park")
-        item.status = "needs-input"
-        item.sections["Question"] = question
-        backlog_moves.add_note(item, "parked from %s; its work is on branch %s" % (batch.name, task.branch))
+        backlog_lifecycle.suspend(item, question, "parked from %s; its work is on branch %s" % (batch.name,
+                                                                                               task.branch))
         task.status = "pending"
         remove_tree(root, tree_of(root, batch, task))
         before = batch_parked.take_out(root, batch, [item], "work batch park")     # at once (r17)

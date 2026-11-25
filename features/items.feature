@@ -876,3 +876,38 @@ Feature: Items
     When the person readies the item i1
     Then the backlog service refuses this request
     And the backlog service names the group title g1
+
+  @g56 @r56
+  Scenario: An item delivered is delivered
+    Given an item i1
+    And the status of the item i1 is `in-batch`
+    And a session s1
+    When the session s1 delivers the item i1
+    Then the backlog service sets the status of the item i1 to `delivered`
+
+  @g57 @r57
+  Scenario: An item restored is ready again
+    Given an item i1
+    And the status of the item i1 is `in-batch`
+    And a session s1
+    When the session s1 restores the item i1
+    Then the backlog service sets the status of the item i1 to `ready`
+
+  @g58 @r58
+  Scenario: An item suspended needs input and keeps its question
+    Given an item i1
+    And the status of the item i1 is `in-batch`
+    And a session s1
+    And a question q1
+    When the session s1 suspends the item i1 with the question q1
+    Then the backlog service sets the status of the item i1 to `needs-input`
+    And the question q1 is on the item i1
+    And the backlog service keeps the question q1
+
+  @g59 @r59
+  Scenario: An item allocated to a batch is in-batch
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And a session s1
+    When the session s1 allocates the item i1
+    Then the backlog service sets the status of the item i1 to `in-batch`
