@@ -5,8 +5,8 @@ written at the When: its spec/index.md of `kind: adapter`, its id the parent's i
 (another context's when a Given says it does not conform to the adapter spec id form), `realises:` the parent's
 `notebook#r1` and the requirement id a Given names (`notebook#r99` when no requirement has it), `providers:` the
 provider p1 `bounded-context/example.org/fixture/inventory` at `1.2.0`, its contract kept as `spec obtain` keeps it
-under `provider/inventory/1.2.0/` when a Given says the adapter spec holds it, and each adapter decision a file of
-its `adr/`.
+under `provider/example.org/fixture/inventory/1.2.0/` when a Given says the adapter spec holds it, and each adapter
+decision a file of its `adr/`.
 
 The When runs `spec check` on the adapter spec (`--root adapters/stock-inventory`); the Thens read its exit and what
 its output names each instance by."""
@@ -114,7 +114,7 @@ def build(step):
     providers = ["%s@%s" % (PROVIDER, VERSION)] if w["provider"] else []
     (adapter / "spec" / "index.md").write_text(INDEX % (w["parent"], NAME, ", ".join(realises), ", ".join(providers)))
     if w["held"]:
-        kept = adapter / "provider" / "inventory" / VERSION
+        kept = adapter / "provider" / "example.org" / "fixture" / "inventory" / VERSION
         kept.mkdir(parents=True)
         (kept / "contract.toml").write_text('context = "%s"\nversion = "%s"\nstatus = "published"\n'
                                             % (PROVIDER, VERSION))

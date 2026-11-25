@@ -3,6 +3,7 @@ generated features, the marks registered from the spec, the handlers imported by
 `*_handlers*.py`) and the U11/U8 checks after each generated scenario, all from `vocab.py`. Frozen after layer 2 of
 the GF conversion: a capability adds handlers in `<capability>_handlers*.py`, never here."""
 import json
+import os
 import pathlib
 import subprocess
 import sys
@@ -15,6 +16,10 @@ from . import vocab
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "scripts"
 HERE = pathlib.Path(__file__).resolve().parent
+
+# b592: no warming of a base (batch_warm) started by a test that runs `work batch merged`; test_batch_opening
+# switches it on again for its own test
+os.environ["SHOPSYSTEM_NO_WARM"] = "1"
 
 
 @pytest.fixture

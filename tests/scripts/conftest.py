@@ -16,6 +16,10 @@ import toolchain
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
 
+# b592: no warming of a base (batch_warm) started by a test that runs `work batch merged`; test_batch_opening
+# switches it on again for its own test
+os.environ["SHOPSYSTEM_NO_WARM"] = "1"
+
 # The tests against GitHub run only when they are given a repository to write to (requests r27-r41).
 collect_ignore = [] if os.environ.get("SHOPSYSTEM_TEST_GITHUB_REPO") else ["test_request_github.py"]
 

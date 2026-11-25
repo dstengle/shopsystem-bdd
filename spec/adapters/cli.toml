@@ -1466,6 +1466,9 @@ command = "spec obtain"
 requirements = [
   "checking#r81: When the person obtains a contract from a bounded context, the specification service shall keep the contract and keep no context request.",
   "checking#r82: If the person obtains a contract from a bounded context that has no contract, then the specification service shall refuse the request and name the bounded context.",
+  "checking#r88: If the person obtains a contract from a bounded context whose id does not conform to the context id form, then the specification service shall refuse the request and name the id and the `id not in the context id form` reason.",
+  "checking#r89: If the person obtains a contract from a bounded context whose availability is `unreachable`, then the specification service shall refuse the request and name the bounded context and the `bounded context unreachable` reason.",
+  "checking#r90: While a bounded context has a contract, when the person obtains a contract from another bounded context, the specification service shall keep the contract and change no contract of a bounded context.",
 ]
 [operations."specification.obtain".parameters]
 "bounded context" = { positional = 1, example = "bounded-context/example.org/fixture/inventory" }

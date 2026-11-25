@@ -1035,3 +1035,53 @@ shall [x5: agent the person (constant), x6: service the specification service (c
   response
     complete(e2, subject: x6, object: x7)
 ```
+
+## r88
+From: b591 r88.
+
+```reading
+If the person obtains a contract from a bounded context whose id does not conform to the context id form, then the specification service shall refuse the request and name the id and the `id not in the context id form` reason.
+shall [x1: agent the person (constant), x5: artifact the context id form (constant), x6: service the specification service (constant), x7: request "the request the trigger makes" (indexical), x8: reason `id not in the context id form` (parameter)]
+  if [x2: contract, x3: bounded context, x4: id]
+    of(x4, x3)
+    not
+      conforms(x4, x5)
+    request(e1, specification.obtain, subject: x1, object: x2, from: x3)
+  response
+    refuse(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x4)
+    name(e4, subject: x6, object: x8)
+```
+
+## r89
+From: b591 r89.
+
+```reading
+If the person obtains a contract from a bounded context whose availability is `unreachable`, then the specification service shall refuse the request and name the bounded context and the `bounded context unreachable` reason.
+shall [x1: agent the person (constant), x4: service the specification service (constant), x5: request "the request the trigger makes" (indexical), x6: reason `bounded context unreachable` (parameter)]
+  if [x2: contract, x3: bounded context]
+    availability(x3) = `unreachable`
+    request(e1, specification.obtain, subject: x1, object: x2, from: x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x3)
+    name(e4, subject: x4, object: x6)
+```
+
+## r90
+From: b591 r90.
+
+```reading
+While a bounded context has a contract, when the person obtains a contract from another bounded context, the specification service shall keep the contract and change no contract of a bounded context.
+shall [x3: agent the person (constant), x6: service the specification service (constant)]
+  while [x1: bounded context, x2: contract]
+    of(x2, x1)
+  when [x4: contract, x5: bounded context]
+    distinct(x5, x1)
+    request(e1, specification.obtain, subject: x3, object: x4, from: x5)
+  response
+    keep(e2, subject: x6, object: x4)
+    not [x7: contract, x8: bounded context]
+      of(x7, x8)
+      change(e3, subject: x6, object: x7)
+```
