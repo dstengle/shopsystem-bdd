@@ -1,14 +1,18 @@
 """An adapter spec in `spec check` (b540, checking r84-r87; decisions 0123, 0124, 0117): a spec whose spec/index.md
 says `kind: adapter`, kept nested in its bounded context's spec at `adapters/<name>/`, so that its parent is the spec
 two folders up. Its id conforms to the adapter spec id form, the parent's id followed by `/adapter/<name>` (`path`:
-the id's path after `bounded-context/`, else a file problem naming the id); each id under its `realises:` is a live
-requirement `<capability>#r<n>` of the parent's spec (`unrealised`); each provider under its `providers:`
+the id's path after `bounded-context/`, else a file problem naming the id), its `<name>` the folder that keeps it
+(b595, checking r92, else a file problem naming the id); each id under its `realises:` is a live requirement
+`<capability>#r<n>` of the parent's spec (`unrealised`); each provider under its `providers:`
 (`<bounded context id>[@<version>]`) has its contract held, `provider/<id's path>/<version>/contract.toml` where
-`spec obtain` keeps it (contract_obtain's `place`), any version when none is named (`uncontracted`). Its
-`adr/`, the adapter decisions, and `provider/` are accepted as they are; nothing here reads them further."""
+`spec obtain` keeps it (contract_obtain's `place`), any version when none is named, a version that does not conform
+to the version form (contract_publish's `VERSION`) a file problem naming it, never matched as a pattern (b595,
+checking r93) (`uncontracted`). Its `adr/`, the adapter decisions, and `provider/` are accepted as they are; nothing
+here reads them further."""
 import re
 
 import contract_obtain
+import contract_publish
 import spec_read
 from model_parse import as_list, frontmatter
 
@@ -44,6 +48,10 @@ def path(root, data, ident, problems):
         problems.append(f"spec/index.md: id {ident!r} does not conform to the adapter spec id form "
                         f"{parent or 'bounded-context/<owner>/<product>/<context name>'}/adapter/<name>")
         return None
+    if not ident.endswith("/adapter/" + root.name):
+        problems.append(f"spec/index.md: id {ident!r} does not match the adapter spec: it names no folder "
+                        f"adapters/{ident.rpartition('/')[2]}/, the adapter spec is kept at adapters/{root.name}/")
+        return None
     problems.extend(unrealised(root, as_list(data.get("realises"))) + uncontracted(root, as_list(data.get("providers"))))
     return ident.partition("/")[2]
 
@@ -71,6 +79,10 @@ def uncontracted(root, providers):
         m = PROVIDER.match(str(given).strip())
         if not m:
             out.append(f"spec/index.md: the provider {given!r} is not <bounded context id>[@<version>]")
+            continue
+        if m.group("version") and not contract_publish.VERSION.fullmatch(m.group("version")):
+            out.append(f"spec/index.md: the provider {m.group('id')} has the version {m.group('version')!r}, which "
+                       "does not conform to the version form")
             continue
         kept = contract_obtain.place(m.group("id"), m.group("version") or "*")
         if not any(root.glob(kept.as_posix())):
