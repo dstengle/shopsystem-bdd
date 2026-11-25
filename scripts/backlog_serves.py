@@ -3,12 +3,15 @@
 <item> --into <capability> [--group <title>] <line> --serves <job>`, the group the line goes into; each the pair
 (g<n>, job) under the `serves: [g<n> <job>, ...]` line of the item's block of the capability (backlog_section),
 one commit of the item. Laid by `lay` into the group's `serves: <job>, ...` line under its heading in the capability
-file (spec_read reads it, `spec check` its serves fact) and taken out again by `unlay`; the pairs of the item's own
-groups carried to their new ids by `renumbered` (backlog_renumber)."""
+file (spec_read reads it, `spec check` its serves fact) and taken out again by `unlay`, a job the file at the batch's
+base serves left on (`at_base`); a pair a live group serves already, or another open item holds, refused; the pairs
+of the item's own groups carried to their new ids by `renumbered` (backlog_renumber)."""
 import re
+import subprocess
+from pathlib import Path
 
 import spec_read
-from backlog_items import Refused, commit, find, label
+from backlog_items import Refused, commit, find, items, label
 
 GROUP = re.compile(r"^(?P<cap>[a-z0-9]+(?:-[a-z0-9]+)*)#(?P<g>g[1-9]\d*)$")
 
@@ -39,17 +42,38 @@ def _groups(root, capability, block):
     return own | {g.id for g in spec_read.capability(capability_file(root, capability)).groups}
 
 
+def _holder(root, item, capability, gid, job):
+    """Another open item whose block of the capability holds the pair (gid, job), or None."""
+    from backlog_retract import GONE
+    from backlog_section import read
+    for other in items(root):
+        if other.name != item.name and other.status not in GONE and any(
+                b.capability == capability and (gid, job) in b.serves for b in read(other, "the item %s" % other.name)):
+            return other
+    return None
+
+
 def dedicate(root, item, capability, gid, job):
     """The pair (gid, job) under the item's block of the capability; nothing committed. Refused, naming the group,
-    when neither the capability nor the item holds it."""
+    when neither the capability nor the item holds it; and, naming the group and the job, when the capability's live
+    group serves the job already or another open item holds the pair, so that the unlay takes off only what this
+    item's lay put on."""
     from backlog_lines import block_of
-    from backlog_section import SECTION, read, render, takes
+    from backlog_section import SECTION, capability_file, read, render, takes
     takes(item)
     blocks = read(item, "the item %s" % item.name)
     found = next((b for b in blocks if b.capability == capability), None)
     if gid not in _groups(root, capability, found):
         raise Refused("work line: there is no requirement group %s#%s in the capability or in %s"
                       % (capability, gid, label(item)))
+    own = {g.id for g in found.groups} if found is not None else set()
+    if gid not in own and any(g.id == gid and job in g.serves
+                              for g in spec_read.capability(capability_file(root, capability)).groups):
+        raise Refused("work line: the requirement group %s#%s serves the job %s already" % (capability, gid, job))
+    other = _holder(root, item, capability, gid, job)
+    if other is not None:
+        raise Refused("work line: %s dedicates the requirement group %s#%s to the job %s already"
+                      % (label(other), capability, gid, job))
     block = block_of(blocks, capability)
     if (gid, job) not in block.serves:
         blocks[blocks.index(block)] = block._replace(serves=tuple(block.serves) + ((gid, job),))
@@ -110,9 +134,30 @@ def lay(text, serves):
     return text
 
 
-def unlay(text, serves):
-    """The reverse of `lay`: each pair's job off its group's `serves:` line, the line out when it names no job."""
+def _served(text, gid):
+    """The jobs the `serves:` line under the group's heading in `text` names; none when it has no such line."""
+    found = re.search(r"(?m)^### \[%s\] .*\n(%s.*)$" % (gid, re.escape(spec_read.SERVES)), text)
+    return spec_read.jobs_of(found.group(1)) if found else []
+
+
+def at_base(path, base):
+    """The text of the capability file `path` at the commit `base` (the batch's base), or None when there is none."""
+    path = Path(path)
+    if base is None:
+        return None
+
+    def git(*args):
+        return subprocess.run(["git", "-C", str(path.parent), *args], capture_output=True, text=True)
+    shown = git("show", "%s:%s%s" % (base, git("rev-parse", "--show-prefix").stdout.strip(), path.name))
+    return shown.stdout if shown.returncode == 0 else None
+
+
+def unlay(text, serves, held=None):
+    """The reverse of `lay`: each pair's job off its group's `serves:` line, the line out when it names no job; a job
+    the group serves in `held` (the file at the batch's base) left on, as the lay did not put it there."""
     for gid, job in serves:
+        if held is not None and job in _served(held, gid):
+            continue
         found = re.search(r"(?m)^### \[%s\] .*$" % gid, text)
         if found is None:
             continue
