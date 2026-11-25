@@ -193,6 +193,7 @@ The model is checked on its own, and every line against it ([the domain model](d
 | `w_m5` | a lifecycle transition no line causes | A hint: write the line that sets the status, or drop the transition. |
 | `v_m6` | a line sets a status by a transition its lifecycle does not allow | Add the transition to the lifecycle, or fix the line's precondition. |
 | `v_m7` | an operation no line requests | Write a line whose trigger requests it, or drop the operation. |
+| `v_m9` | a lifecycle transition an operation of another area performs | Have the line request an operation of the area that declares the object, or move the operation there. |
 | `v_m8` | the domain model breaks its own rules: a relation to an undeclared object, a transition over an undeclared value, two operations of one name in a service, an event raised by no operation | Fix the model block the message names. |
 
 ### Adapter contracts

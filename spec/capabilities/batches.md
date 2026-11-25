@@ -177,3 +177,12 @@ when the change is merged.
 ### [g109] A ready item whose new line's scenario passes on the lay is reopened
 - [r109] While an item is `ready` and the item meets the readiness bar and a requirement of the item retires no requirement id and a scenario of the item refers to the requirement id of the requirement and the scenario succeeds in a workspace of a batch, if the person opens the batch, then the batches service shall reopen the item and name the scenario.
 
+### [g113] A batch opened keeps the index file in the index form
+- [r113] While an item is `ready` and the item meets the readiness bar, when the person opens a batch, the batches service shall keep an index file that conforms to the index form.
+
+### [g114] A batch opened leaves a capability with no requirement out of the index file
+- [r114] While a capability has no requirement and an item is `ready` and the item meets the readiness bar, when the person opens a batch, the batches service shall keep an index file that does not hold the capability.
+
+### [g115] A batch opened names a capability with a requirement in the index file
+- [r115] While a capability has a requirement and an item is `ready` and the item meets the readiness bar, when the person opens a batch, the batches service shall keep an index file that holds the capability.
+

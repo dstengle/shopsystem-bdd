@@ -761,3 +761,34 @@ Feature: Checking
     And the port line p1 excludes the operation outcome o2
     When the person validates this specification
     Then the specification service completes this request
+
+  @g100 @r100
+  Scenario: An obtained contract is kept at the version its adapter spec pins, not a later one
+    Given a provider p1
+    And an adapter spec a1
+    And the adapter spec a1 has the provider p1
+    And the provider p1 has `1.2.0`
+    And a contract c1
+    And the contract c1 has `1.3.0`
+    And the provider p1 has the contract c1
+    And a contract c2
+    When the person obtains the contract c2 from the provider p1
+    Then the specification service keeps the contract c3
+    And the contract c3 has `1.2.0`
+    And the adapter spec a1 holds the contract c3
+    And the specification service keeps the adapter spec a1
+
+  @g101 @r101
+  Scenario: A lifecycle transition that no operation of its own area performs fails the check
+    Given a lifecycle l1
+    And an area a1
+    And the area a1 holds the lifecycle l1
+    And a transition t1
+    And the lifecycle l1 has the transition t1
+    And an operation o1
+    And the operation o1 performs the transition t1
+    And an area a2
+    And the area a2 holds the operation o1
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the transition t1

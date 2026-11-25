@@ -892,3 +892,55 @@ shall [x2: agent the person (constant), x3: service the batches service (constan
       scope
         restore(e3, subject: x3, object: x4)
 ```
+
+## r113
+From: b606 r113.
+
+```reading
+While an item is `ready` and the item meets the readiness bar, when the person opens a batch, the batches service shall keep an index file that conforms to the index form.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x3: agent the person (constant), x5: service the batches service (constant), x7: artifact the index form (constant)]
+  while [x1: item]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+  when [x4: batch]
+    request(e1, batches.open, subject: x3, object: x4)
+  response [x6: index file]
+    conforms(x6, x7)
+    keep(e2, subject: x5, object: x6)
+```
+
+## r114
+From: b606 r114.
+
+```reading
+While a capability has no requirement and an item is `ready` and the item meets the readiness bar, when the person opens a batch, the batches service shall keep an index file that does not hold the capability.
+shall [x4: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant)]
+  while [x1: capability, x3: item]
+    not [x2: requirement]
+      of(x2, x1)
+    status(x3) = `ready`
+    meet(subject: x3, object: x4)
+  when [x6: batch]
+    request(e1, batches.open, subject: x5, object: x6)
+  response [x8: index file]
+    not
+      in(x1, x8)
+    keep(e2, subject: x7, object: x8)
+```
+
+## r115
+From: b606 r115.
+
+```reading
+While a capability has a requirement and an item is `ready` and the item meets the readiness bar, when the person opens a batch, the batches service shall keep an index file that holds the capability.
+shall [x4: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant)]
+  while [x1: capability, x2: requirement, x3: item]
+    of(x2, x1)
+    status(x3) = `ready`
+    meet(subject: x3, object: x4)
+  when [x6: batch]
+    request(e1, batches.open, subject: x5, object: x6)
+  response [x8: index file]
+    in(x1, x8)
+    keep(e2, subject: x7, object: x8)
+```

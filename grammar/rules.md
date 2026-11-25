@@ -1722,6 +1722,35 @@ a line sets a status by a transition its lifecycle does not allow
   sets("c#r1","note","status","draft","active").
   ```
 
+## v_m9
+
+a lifecycle transition an operation of another area performs
+
+- Purpose: A lifecycle's transitions are performed only by operations of the area that declares its object, so one area owns each object's lifecycle.
+- Since: b610
+- Severity: error
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  transition("item","status","ready","in-batch").
+  obj_area("item","tracking").
+  sets("c#r1","item","status","ready","in-batch").
+  requester("c#r1","batches.start","the person").
+  op_area("batches.start","execution").
+  ```
+
+- Passes on:
+
+  ```prolog
+  transition("item","status","ready","in-batch").
+  obj_area("item","tracking").
+  sets("c#r1","item","status","ready","in-batch").
+  requester("c#r1","items.allocate","the person").
+  op_area("items.allocate","tracking").
+  ```
+
 ## v_m7
 
 an operation no line requests

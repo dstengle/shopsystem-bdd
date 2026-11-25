@@ -281,6 +281,12 @@ Restates: design-model-check#r13@0.29.
 ### [g99] A port line that excludes an unhandled outcome needs no citation of its core lines
 - [r99] While a core line that uses `response-request` uses an operation and a port line that governs the operation supports no requirement id and the port line excludes an operation outcome that no core line handles, when the person validates this specification, the specification service shall complete the request.
 
+### [g100] An obtained contract is kept at the version its adapter spec pins, not a later one
+- [r100] While an adapter spec has a provider and the provider has the `1.2.0` version and the provider has a contract that has the `1.3.0` version, when the person obtains a contract from the provider, the specification service shall keep a contract that has the `1.2.0` version and keep the adapter spec that holds the contract.
+
+### [g101] A lifecycle transition that no operation of its own area performs fails the check
+- [r101] While an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition, if the person validates this specification, then the specification service shall fail the check and name the transition.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.
