@@ -5,7 +5,7 @@
 `provider/<upstream>/<version>/contract.toml` (`<upstream>` the last part of its id) in one commit by
 `shop_files.committed`: the only writer of provider/. It keeps no context request and opens no issue. An upstream
 with no contract kept, or none at V, is refused naming the bounded context; a contract kept already at that place is
-left as it is when the same, and refused naming its path when another."""
+left as it is when the same, and written again with the upstream's bytes, committed, when another (review f1)."""
 import json
 from pathlib import Path
 
@@ -72,12 +72,9 @@ def obtain(root, context, version=None):
     version, text = published(root, context, version)
     rel = (PROVIDER / context.rstrip("/").rsplit("/", 1)[-1] / version / FILE).as_posix()
     target = Path(root) / rel
-    if target.is_file():
-        if target.read_text(encoding="utf-8") == text:
-            print("kept already %s" % rel)
-            return 0
-        raise Refused("{names} is kept already as another contract: an obtained contract is never edited",
-                      reason="contract already obtained", names=["contract:%s" % rel])
+    if target.is_file() and target.read_text(encoding="utf-8") == text:
+        print("kept already %s" % rel)
+        return 0
 
     def write():
         target.parent.mkdir(parents=True, exist_ok=True)
