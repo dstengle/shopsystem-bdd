@@ -263,6 +263,51 @@ $ work reopen b250
 b250 "work show prints the status of an item" shaped
 ```
 
+#### `work allocate`
+
+Tracking's operation that gives a `ready` item to a batch's work: the item `in-batch`. `work batch start` requests it
+of each item it picks; by hand it mends an item a batch command left behind. Each of tracking's operations is one
+commit of the item, and an item in another status is refused, named.\
+Synopsis: `work allocate name`
+
+```console
+$ work allocate b252
+b252 "work show prints the batch of an item" in-batch
+```
+
+#### `work deliver`
+
+Tracking's operation that moves an `in-batch` item to `delivered`: its change is in the product. `work batch merged`
+requests it of each item of the batch.\
+Synopsis: `work deliver name`
+
+```console
+$ work deliver b252
+b252 "work show prints the batch of an item" delivered
+```
+
+#### `work restore`
+
+Tracking's operation that moves an `in-batch` item back to `ready`, to wait for a batch. `work batch abandon` requests
+it of each item of the batch.\
+Synopsis: `work restore name`
+
+```console
+$ work restore b252
+b252 "work show prints the batch of an item" ready
+```
+
+#### `work suspend`
+
+Tracking's operation that moves an `in-batch` item to `needs-input`, its question under `## Question`; `work answer`
+answers it. `work batch park` requests it.\
+Synopsis: `work suspend name --question QUESTION`
+
+```console
+$ work suspend b252 --question "Which reading holds?"
+b252 "work show prints the batch of an item" needs-input
+```
+
 #### `work refuse`
 
 Moves an item that is `idea` or `shaped` to `refused`, with the reason.\
