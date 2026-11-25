@@ -247,3 +247,6 @@ capabilities, retirements, rewordings and chores.
 ### [g70] A restatement that leaves out a member line of its element names the member line
 - [r70] While a model line restates an element and the element holds a member line that the model line does not hold, when the person declares the model line in an item, the drafting service shall keep the model line in the item and name the member line.
 
+### [g71] A requirement group dedicated to a job serves the job in the item
+- [r71] When the person dedicates a requirement group to a job with an item, the drafting service shall keep the item that holds the requirement group that serves the job.
+

@@ -193,3 +193,4 @@ area: tracking
 - **status** (attribute) → attribute thread.status. 
 - **the person** (proper noun) → actor the person. The human the bounded context works for.
 - **meet** (verb, state) → relation item.meets. An item satisfies the readiness bar or one of its bar checks. Forms: meets, met. Frame: <item> meets <readiness bar>. Frame: <item> meets <bar check>.
+- **dedicate** (verb, action) → operation drafting.dedicate. Forms: dedicates, dedicated. Frame: <actor> dedicates <requirement group> to <job>.

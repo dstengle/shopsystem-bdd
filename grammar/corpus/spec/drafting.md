@@ -1086,3 +1086,18 @@ shall [x4: agent the person (constant), x6: service the drafting service (consta
     keep(e2, subject: x6, object: x1)
     name(e3, subject: x6, object: x3)
 ```
+
+## r71
+From: b641 r71.
+
+```reading
+When the person dedicates a requirement group to a job with an item, the drafting service shall keep the item that holds the requirement group that serves the job.
+shall [x1: agent the person (constant), x5: service the drafting service (constant)]
+  when [x2: requirement group, x3: job, x4: item]
+    request(e1, drafting.dedicate, subject: x1, object: x2, to: x3)
+    param(e1, item, x4)
+  response
+    serve(subject: x2, object: x3)
+    in(x2, x4)
+    keep(e2, subject: x5, object: x4)
+```

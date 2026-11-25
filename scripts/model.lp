@@ -582,8 +582,10 @@ v_p3(G, L)   :- given_unparsed(G, L).
 % ---------------------------------------------------------------- warnings
 label("w_unserved_cap", "a capability serves no job").
 % fail w_unserved_cap: node("c","capability"). node("j","job").
-% pass w_unserved_cap: node("c","capability"). node("j","job"). serves("c","j").
-w_unserved_cap(C)  :- node(C, "capability"), not serves(C, _), node(_, "job").
+% pass w_unserved_cap: node("c","capability"). node("j","job"). group_id("g","c",1). serves("g","j").
+cap_serves(C)      :- serves(C, _), node(C, "capability").
+cap_serves(C)      :- serves(G, _), group_id(G, C, _).     % a requirement group serves a job (decision 0140, b641)
+w_unserved_cap(C)  :- node(C, "capability"), not cap_serves(C), node(_, "job").
 label("w_unserved_job", "a job nothing serves").
 % fail w_unserved_job: node("j","job").
 % pass w_unserved_job: node("j","job"). serves("c","j").

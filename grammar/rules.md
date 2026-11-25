@@ -2011,7 +2011,7 @@ a capability serves no job
 - Since: b123
 - Severity: warning
 - Implemented in: `scripts/model.lp`
-- Cited by: no line
+- Cited by: checking#r110
 - Fails on:
 
   ```prolog
@@ -2024,7 +2024,8 @@ a capability serves no job
   ```prolog
   node("c","capability").
   node("j","job").
-  serves("c","j").
+  group_id("g","c",1).
+  serves("g","j").
   ```
 
 ## w_unserved_job

@@ -34,6 +34,7 @@ object requirement kind of text
 object requirement group
   relations: has → requirement | scenario (many)
   relations: has → group title (one)
+  relations: serves → job (many)
 
 object universal condition kind of text
   relations: has → universal condition id | translation (many); entails → step (many)

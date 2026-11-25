@@ -170,6 +170,10 @@ class SpecReading:
             self.fact("group_id", gid, cap, int(g.id[1:]))
             self.fact("in", gid, cap)
             self.groups[gid] = g
+            for job in g.serves:    # decision 0140 (b641): a job a group serves is one this context has
+                job = self.qualify(job, "job")
+                self.node(job, "job")
+                self.fact("serves", gid, job)
             for name, n in g.restates:
                 old = f"{name}#r{n}@0.29"
                 self.fact("restates", gid, old)

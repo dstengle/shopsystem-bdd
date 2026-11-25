@@ -308,6 +308,9 @@ Restates: design-model-check#r13@0.29.
 ### [g109] An assumed description whose line has no scenario is refused
 - [r109] While an adapter spec holds an assumed description that holds a requirement id that no scenario refers to, if the person validates the adapter spec, then the specification service shall fail the check and name the requirement id.
 
+### [g110] A capability whose requirement group serves a job is not unserved
+- [r110] While this bounded context has a job and a requirement group of a capability serves the job, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.

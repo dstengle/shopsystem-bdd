@@ -1411,3 +1411,21 @@ shall [x5: agent the person (constant), x6: service the specification service (c
     fail(e2, subject: x6, object: x7)
     name(e3, subject: x6, object: x3)
 ```
+
+## r110
+From: b641 r110.
+
+```reading
+While this bounded context has a job and a requirement group of a capability serves the job, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.
+shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x9: rule `w_unserved_cap` (parameter)]
+  while [x2: job, x3: requirement group, x4: capability]
+    of(x2, x1)
+    of(x3, x4)
+    serve(subject: x3, object: x2)
+  when
+    request(e1, specification.check, subject: x5, object: x6)
+  response
+    not [x8: capability]
+      violate(subject: x8, object: x9)
+      return(e2, subject: x7, object: x8)
+```

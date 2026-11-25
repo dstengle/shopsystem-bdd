@@ -153,6 +153,7 @@ service drafting
   operation replace(item, universal condition, upstream entry, given block)  outcomes: done | refused: universal condition not in the item, upstream entry not in the item, given block not in the item
   operation move(model line, item)  outcomes: done | refused: model line not in the domain model
   operation move term(term, item)  outcomes: done | refused: term not in the vocabulary
+  operation dedicate(requirement group, job, item)  outcomes: done
 
 service context requests
   operation raise(context request, origin, thread, text, bounded context)

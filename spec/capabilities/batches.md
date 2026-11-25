@@ -204,3 +204,6 @@ when the change is merged.
 ### [g121] A model line that restates an actor is laid in place of the actor
 - [r121] While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an actor, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the actor.
 
+### [g124] A batch opened keeps the job a requirement group of an item serves
+- [r124] While an item is `ready` and the item meets the readiness bar and the item holds a requirement group that serves a job, when the person opens a batch, the batches service shall keep a capability that has a requirement group that serves the job.
+
