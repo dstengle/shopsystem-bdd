@@ -13,12 +13,13 @@ switched and the conditions the item's replace: backlog_universal) and a `### in
 block, in a context with a domain model, a `### <area> model` block for each area the item adds to: a ` ```model `
 fence of model lines, then vocabulary entries (backlog_model, the domain contract), then a `### <port> adapter` block
 of withheld operations and operation tables (backlog_adapter, b355), then a `### <name> pack` block of term entries
-of a context's own pack (backlog_pack, b472)."""
+of a context's own pack (backlog_pack, b472), then a `### moves` block (backlog_area_move, b607)."""
 import re
 from collections import namedtuple
 from pathlib import Path
 
 import backlog_adapter
+import backlog_area_move
 import backlog_pack
 import spec_read
 from backlog_items import Refused, label
@@ -53,10 +54,10 @@ class Blocks(list):
     marker (`universal_language`) and the U ids its conditions replace (`universal_retired`)."""
 
     def __init__(self, blocks=(), universal=(), upstreams=(), universal_language=None, universal_retired=(),
-                 models=(), adapters=(), packs=()):
+                 models=(), adapters=(), packs=(), moves=()):
         super().__init__(blocks)
         self.universal, self.upstreams, self.models = list(universal), list(upstreams), list(models)
-        self.adapters, self.packs = list(adapters), list(packs)
+        self.adapters, self.packs, self.moves = list(adapters), list(packs), list(moves)
         self.universal_language, self.universal_retired = universal_language, tuple(universal_retired)
 
 
@@ -65,6 +66,7 @@ class _Reader:
         self.rel, self.blocks, self.mode, self.fence, self.mfence = rel, Blocks(), None, None, None
         self.adapter = backlog_adapter.Lines(self.blocks.adapters, self.refuse)
         self.pack = backlog_pack.Lines(self.blocks.packs, self.refuse)
+        self.moves = backlog_area_move.Lines(self.blocks.moves, self.refuse)
 
     def refuse(self, what):
         raise Refused("%s: %s: %s" % (self.rel, SECTION, what))
@@ -78,20 +80,25 @@ class _Reader:
             return self.adapter.line(line)
         if not line.strip():
             return None
+        if line == backlog_area_move.HEAD or (self.mode == "moves" and not line.startswith("### ")):
+            if self.mode in (UNIVERSAL, INDEX, "moves") and line == backlog_area_move.HEAD:
+                self.refuse("the moves block is there twice, or after the universal or index block")
+            self.mode = "moves"
+            return self.moves.line(line)
         if (m := backlog_pack.HEAD.match(line)) or (self.mode == "pack" and not line.startswith("### ")):
-            if m and self.mode in (UNIVERSAL, INDEX):
+            if m and self.mode in (UNIVERSAL, INDEX, "moves"):
                 self.refuse("the pack block of %s is after the universal or index block" % m.group(1))
             self.mode = "pack"
             return self.pack.head(m.group(1)) if m else self.pack.line(line)
         if (m := backlog_adapter.HEAD.match(line)):
-            if self.mode in (UNIVERSAL, INDEX, "pack"):
+            if self.mode in (UNIVERSAL, INDEX, "pack", "moves"):
                 self.refuse("the adapter block of %s is after the universal or index block" % m.group(1))
             self.mode = "adapter"
             return self.adapter.head(m.group(1))
         if self.mode == "adapter" and not line.startswith("### "):
             return self.adapter.line(line)
         if (m := MODEL_HEAD.match(line)):
-            if self.mode in (UNIVERSAL, INDEX, "adapter", "pack") or any(b.area == m.group(1) for b in self.blocks.models):
+            if self.mode in (UNIVERSAL, INDEX, "adapter", "pack", "moves") or any(b.area == m.group(1) for b in self.blocks.models):
                 self.refuse("the model block of %s is there twice, or after the universal or index block" % m.group(1))
             self.mode = "model"
             return self.blocks.models.append(ModelBlock(m.group(1)))
@@ -167,7 +174,7 @@ class _Reader:
     def capability_line(self, line):
         blocks = self.blocks
         if (m := CAP.match(line)):
-            if any(b.capability == m.group(1) for b in blocks) or self.mode in ("model", "adapter", "pack"):
+            if any(b.capability == m.group(1) for b in blocks) or self.mode in ("model", "adapter", "pack", "moves"):
                 self.refuse("the capability %s has two blocks, or comes after a model block" % m.group(1))
             blocks.append(Block(m.group(1), [], []))
         elif (m := LANGUAGE.match(line)):
@@ -253,6 +260,7 @@ def render(blocks):
         out.append("\n\n".join(parts + (["\n".join(model.terms)] if model.terms else [])))
     out += [backlog_adapter.render(a) for a in getattr(blocks, "adapters", ())]
     out += [backlog_pack.render(a) for a in getattr(blocks, "packs", ())]
+    out += [backlog_area_move.render(blocks.moves)] if getattr(blocks, "moves", None) else []
     language, retired = getattr(blocks, "universal_language", None), getattr(blocks, "universal_retired", ())
     if getattr(blocks, "universal", None) or language or retired:
         parts = ["### %s" % UNIVERSAL] + (["language: %s" % language] if language else [])
