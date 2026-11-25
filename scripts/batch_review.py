@@ -95,6 +95,7 @@ def _merge(root, tree, batch, task, item, mine):
     try:
         batch_merge.merge(tree, task.branch, "%s: %s\n\nItem: %s" % (batch.name, backlog_items.label(item), item.name),
                           backlog_items.label(item), others)
+        batch_merge.built(tree, task.branch, item_ids(root, item))     # a line its task built after an amend (b600)
     except Refused as refused:
         raise Refused("%s: %s: %s into %s" % (COMMAND, task_label(root, task), refused, batch.branch)) from None
 

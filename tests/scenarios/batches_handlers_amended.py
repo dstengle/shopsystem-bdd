@@ -1,0 +1,107 @@
+"""A batch submitted after an amendment its task built (reviews r13, b600), over batches_world's batch: once the
+batch is made (T.AFTER_BATCH), the item the amendment cites is given a new line (`AMENDED`, a group of its own) on
+main, and `work batch amend`'s lay (batch_amend's `relay`) is made of it on `batch-<n>` and on the item's task branch,
+each one commit citing the item with its `Laid:` line; the task branch then builds it (its ids out of `unbuilt:`).
+The scenario of the amended line that succeeds in the task's workspace is the one `[batch] tests` runs at the
+review, in the batch's worktree, strict: the review passes only when the merge leaves the built line out of
+`unbuilt:` on the batch branch."""
+import sys
+
+import backlog_items
+import batch_amend
+
+W, B, T, F = (sys.modules[n] for n in ("shop_work_queue_world", "shop_backlog_world", "shop_batches_world",
+                                       "shop_world_four"))
+four, parts = F.four, F.parts
+BOTH = ("backlog", "batches")
+
+
+def first(template, term):
+    """`four`, the handler put first in its key's chain, before batches_handlers4's of a commit that cites."""
+    def mark(fn):
+        four(template, term, *BOTH)(fn)
+        chain = F.CHAINS[(template, term)]
+        chain.insert(0, chain.pop())
+        return fn
+    return mark
+
+
+TITLE = "The amended line of %s"
+
+
+def _parked():
+    return next(m for m in list(sys.modules.values())
+                if getattr(m, "__file__", None) and m.__file__.endswith("/batches_handlers_parked.py"))
+
+
+@four("GivenK", "amendment", *BOTH)
+def given_amendment(step):
+    """The amendment, made once the batch is."""
+
+
+@first("GivenDoes", "cite")
+def amendment_cites(step):
+    """`the amendment a1 cites the item i1`: the item it lays again."""
+    (k1, n1), (k2, n2) = parts(step)
+    if (k1, k2) != ("amendment", "item"):
+        return False
+    step.context.setdefault("amendments", {})[n1] = n2
+
+
+@four("GivenDoes", "holds", *BOTH)
+def holds_amendment(step):
+    """`the worktree w1 holds the amendment a1`: the batch's workspace, the batch branch the amend lays it on."""
+    (k1, _), (k2, _) = parts(step)
+    if (k1, k2) != ("worktree", "amendment"):
+        return False
+
+
+def _relaid(step, branch, old, new, item, laid, build=False):
+    """The amend's lay of `new` in place of `old` on `branch`, one commit citing the item; with `build`, a second
+    commit taking the item's ids out of `unbuilt:`, as its task builds them."""
+    tree = T.outside(step) / ("amend-%s" % branch)
+    T.git(step, "worktree", "add", "-q", str(tree), branch)
+    changed, _ = batch_amend.relay(tree, old, new)
+    T.git(step, "add", "-A", "--", *changed, cwd=tree)
+    T.git(step, "commit", "-q", "-m", "%s: amended\n\nLaid: %s\nItem: %s" % (branch, laid, item), cwd=tree)
+    if build:
+        T.built(tree, new)
+        T.git(step, "add", "-A", cwd=tree)
+        T.git(step, "commit", "-q", "-m", "build the amended line of %s\n\nItem: %s" % (item, item), cwd=tree)
+    T.git(step, "worktree", "remove", "--force", str(tree))
+
+
+def amended(step, name):
+    """The batch's amendment (T.AFTER_BATCH): each item an amendment cites given a new line on main, laid on the
+    batch branch and its task branch, built there."""
+    for item in dict.fromkeys(step.context.get("amendments", {}).values()):
+        if T.given(step, "item", item).get("batch") != name:
+            continue
+        b = B.ident(item)
+        old = backlog_items.find(step.repo, b)
+        fields = step.context["item_fields"][item]
+        lines = fields["sections"]["Requirements"] + "\n\n#### [g80] %s\n- [r80] %s" % (TITLE % item, T.R().PASSING)
+        B.write_item(step, item, sections=dict(fields["sections"], Requirements=lines))
+        T.git(step, "add", "-A")
+        T.git(step, "commit", "-q", "-m", "work line: %s amended" % b)
+        laid = T.git(step, "rev-parse", "HEAD").strip()
+        new = backlog_items.find(step.repo, b)
+        n = T.batch_name(step, name)
+        _relaid(step, n, old, new, b, laid)
+        _relaid(step, "%s-%s" % (n, b), old, new, b, laid, build=True)
+
+
+T.AFTER_BATCH.append(amended)
+
+
+@four("WhenRuns", "`work batch review`", *BOTH)
+def review_runs_amended(step):
+    """Under `work batch review` of an amended batch: `[batch] tests` the amended line's scenario, run in the batch's
+    worktree; the review itself is batches_handlers_more's."""
+    amended_items = list(dict.fromkeys(step.context.get("amendments", {}).values()))
+    if not amended_items or "prepared" in step.context:
+        return False
+    feature = step.repo / ".shop" / "worktrees" / "batch-1" / "features" / "work-queue.feature"
+    step.context["delivery"] = _parked().bound_tests(step, feature, TITLE % amended_items[0])
+    return False
+

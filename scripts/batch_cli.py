@@ -26,8 +26,10 @@ def add_parsers(sub):
     s.add_argument("item")
     s.add_argument("--question", required=True)
     s.add_argument("--discard", action="store_true", help="discard the uncommitted changes of the item's worktree")
-    cmds.add_parser("amend", help="lay an in-batch item's lines again on its batch's branch and its task's branch, "
-                                  "after work line changed them").add_argument("item")
+    s = cmds.add_parser("amend", help="lay an in-batch item's lines again on its batch's branch and its task's "
+                                      "branch, after work line changed them")
+    s.add_argument("item")
+    s.add_argument("--finding", help="the open review finding f<m> the amendment fixes, cited by its commits")
     cmds.add_parser("merged", help="record the merge of a batch's pull request: its in-batch items delivered"
                     ).add_argument("batch")
     s = cmds.add_parser("abandon", help="abandon a batch: its pull request closed, its in-batch items ready again")
@@ -123,7 +125,7 @@ def park(args):
 
 def amend(args):
     import batch_amend
-    print(batch_amend.said(args.root, *batch_amend.amend(args.root, args.item)))
+    print(batch_amend.said(args.root, *batch_amend.amend(args.root, args.item, args.finding)))
     return 0
 
 
