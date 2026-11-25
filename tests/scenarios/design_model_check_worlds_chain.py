@@ -6,7 +6,8 @@ that their consequences entail (an L8 through the request, r37; through a conseq
 triggers a third line, r38); and two lines on one trigger, one obliging and one forbidding a publish of another
 summary (no L1, r39), or a publish of no parameter (an L1, r40, b571); and on one trigger a counted publish beside a
 forbidden one (an L1, r41), or a publish of a design-decision whose tier is `check` beside a publish of only those
-whose tier is `judgement` (an L1, r42, b579)."""
+whose tier is `judgement` (an L1, r42, b579); and a line on a publish by the person, another requester than the
+decisions service r1 makes its request by, whose consequence a third line states (no premise of it, no L8, r43, b569)."""
 import importlib.util
 import sys
 from pathlib import Path
@@ -40,6 +41,9 @@ FORBIDDING_ANY = ENTERS + "the decisions service shall not publish the design-de
 COUNTING = ENTERS + "the decisions service shall publish at least two design-decisions."
 FORBIDDING_A = ENTERS + "the decisions service shall not publish a design-decision."
 CHECKED = ENTERS + "the decisions service shall publish a design-decision whose tier is `check`."
+KEEP = ENTERS + "the registry shall keep the design-decision."
+OTHER_REQUESTER = "When the person publishes a design-decision with the summary `s1`, the registry shall keep the " \
+                  "design-decision."
 ONLY = ENTERS + "the decisions service shall publish only design-decisions whose tier is `judgement`."
 
 
@@ -73,4 +77,8 @@ ROWS = [
     # r42: r1 obliges a publish of a design-decision outside r2's only, on one trigger
     (("requirement use `only`", "requirement use operation", "requirement oblige act"),
      named([CHECKED, ONLY], {"r1": 1, "r2": 2}), {}),
+    # r43: r1 requests publish of `s1` by the decisions service; r3 governs it as the person's request, forcing a Then
+    # of the line on the person's entering if it fired
+    (("requirement use `response-request`", "requirement govern operation", "requirement has requester"),
+     named([REQUESTING, KEEP, OTHER_REQUESTER], {"r1": 1, "r3": 3}), {}),
 ]
