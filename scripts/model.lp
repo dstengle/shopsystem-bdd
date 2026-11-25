@@ -56,6 +56,9 @@
 #defined requester/3.  #defined req_param/3.  #defined req_value/4.  #defined states_reason/3.
 #defined sets/5.  #defined sets_from_any/4.
 #defined asks/3.  #defined op_object/2.  #defined on_refusal/2.     % a response's request (b543)
+% the bound check (model_bound; v_pb1-v_pb4, b549)
+#defined port_op/1.  #defined outcome/3.  #defined outcome_reason/2.  #defined port_line/1.  #defined core_line/1.
+#defined on_outcome/3.  #defined denies/3.  #defined supports/2.
 #defined cites_record/2.          % cites_record(I, R): item I's source: names the record R
 #defined new_item/1.              % new_item(I): item I came after the records policy
 #defined held/1.                  % held(X): X is an item or a batch whose file this repository holds (shop_ids)
@@ -487,11 +490,13 @@ label("v_m3", "a requester the operation's actors do not include").
 allowed(O, A) :- requester(_, O, A), op_by(O, A).
 allowed(O, A) :- requester(_, O, A), op_by(O, K), actor_kind(A, K).
 v_m3(Q, A)    :- requester(Q, O, A), op_by(O, _), not allowed(O, A).
-label("v_m4", "an operation declares a refusal reason that no line states").
+label("v_m4", "an operation declares a refusal reason that no line states and no port line excludes").
 % fail v_m4: op_reason("notes.add","no text").
 % pass v_m4: op_reason("notes.add","no text"). states_reason("c#r4","notes.add","no text").
+% pass v_m4: op_reason("stock.reserve","no stock"). outcome("stock.reserve","stock.reserve refused: no stock","refused"). outcome_reason("stock.reserve refused: no stock","no stock"). denies("p#r1","stock.reserve","refused"). port_line("p#r1").
 reason_stated(O, R) :- states_reason(_, O, R).
 reason_stated(O, R) :- op_reason(O, R), asks(_, O, _), op_object(O, Obj), on_refusal(_, Obj).
+reason_stated(O, R) :- op_reason(O, R), outcome(O, X, "refused"), outcome_reason(X, R), excluded(X).   % b549
 v_m4(O, R)    :- op_reason(O, R), not reason_stated(O, R).
 label("w_m5", "a lifecycle transition no line causes").
 % fail w_m5: transition("note","status","draft","active").
@@ -511,6 +516,33 @@ label("v_m7", "an operation no line requests").
 requested(O)  :- requester(_, O, _).
 requested(O)  :- asks(_, O, _).
 v_m7(O)       :- operation(O), not requested(O).
+
+% ---------------------------------------------------------------- the bound check (b549; decisions 0116, 0126, 0127)
+% scripts/model_bound.py: a driven port's operations and every operation's outcomes, a line a port line or a core
+% line, the outcome kinds a line's trigger is on and those its response says the service never gives.
+core_asks(O)  :- asks(Q, O, _), core_line(Q).
+governs(P, O) :- requester(P, O, _), port_line(P).
+handled(X)    :- outcome(O, X, K), on_outcome(Q, K, Obj), core_line(Q), op_object(O, Obj).
+excluded(X)   :- outcome(O, X, K), denies(P, O, K), port_line(P).
+label("v_pb1", "a driven port holds an operation that no core line requests in its response").
+% fail v_pb1: port_op("stock.reserve").
+% pass v_pb1: port_op("stock.reserve"). asks("c#r1","stock.reserve","the notes service"). core_line("c#r1").
+v_pb1(O)       :- port_op(O), not core_asks(O).
+label("v_pb2", "an outcome of a driven port's operation that no core line handles and no port line excludes").
+% fail v_pb2: port_op("stock.reserve"). outcome("stock.reserve","stock.reserve done","done").
+% pass v_pb2: port_op("stock.reserve"). outcome("stock.reserve","stock.reserve done","done"). op_object("stock.reserve","reservation"). on_outcome("c#r2","done","reservation"). core_line("c#r2").
+v_pb2(X)       :- port_op(O), outcome(O, X, _), not handled(X), not excluded(X).
+label("v_pb3", "a port line's `Relied on by:` names a requirement that is no core line requesting the operation the port line governs").
+% fail v_pb3: requester("p#r1","stock.reserve","the notes service"). port_line("p#r1"). supports("p#r1","c#r2").
+% pass v_pb3: requester("p#r1","stock.reserve","the notes service"). port_line("p#r1"). supports("p#r1","c#r2"). asks("c#r2","stock.reserve","the notes service"). core_line("c#r2").
+asked_by(Q, O) :- asks(Q, O, _), core_line(Q).
+v_pb3(P, Q)    :- governs(P, O), supports(P, Q), not asked_by(Q, O).
+label("v_pb4", "a port line that no core line relies on: its `Relied on by:` names no core line, and it excludes no outcome that no core line handles of an operation a core line requests").
+% fail v_pb4: requester("p#r1","stock.reserve","the notes service"). port_line("p#r1").
+% pass v_pb4: requester("p#r1","stock.reserve","the notes service"). port_line("p#r1"). supports("p#r1","c#r2"). core_line("c#r2").
+relied(P)     :- port_line(P), supports(P, Q), core_line(Q).
+relied(P)     :- governs(P, O), core_asks(O), denies(P, O, K), outcome(O, X, K), not handled(X).
+v_pb4(P)       :- governs(P, _), not relied(P).
 
 % ---------------------------------------------------------------- records (the domain contract, §8)
 label("v_r1", "an item cites a record in its `source:`: an item's provenance cites quotes, requests and decisions, never a record").
@@ -591,7 +623,7 @@ w_example(Q, L)    :- exemplified(Q, L).
 #show v17/1. #show v18d/1.
 #show v_t1/3. #show v_t2/1. #show v_t3/1. #show v_t4/1. #show v_t5/1. #show v_t6/2. #show v_t11/1. #show v_t12/1. #show v_t13/2. #show v_t14/1. #show v_t15/1.
 #show v_t16/2. #show v_t17/2. #show v_t18/2. #show v_t19/2. #show v_t20/2. #show v_t21/2.
-#show v_m1/3. #show v_m2/2. #show v_m3/2. #show v_m4/2. #show w_m5/4. #show v_m6/4. #show v_m7/1. #show v_m8/2. #show v_a1/2. #show v_a2/2. #show v_a3/2. #show v_a4/2. #show v_a5/2. #show v_a6/2. #show v_c1/2. #show v_c2/1. #show v_c3/1. #show v_c4/2. #show v_r1/2. #show w_r1/2.
+#show v_m1/3. #show v_m2/2. #show v_m3/2. #show v_m4/2. #show w_m5/4. #show v_m6/4. #show v_m7/1. #show v_pb1/1. #show v_pb2/1. #show v_pb3/2. #show v_pb4/1. #show v_m8/2. #show v_a1/2. #show v_a2/2. #show v_a3/2. #show v_a4/2. #show v_a5/2. #show v_a6/2. #show v_c1/2. #show v_c2/1. #show v_c3/1. #show v_c4/2. #show v_r1/2. #show w_r1/2.
 #show v_p0/1. #show v_p1/2. #show v_p2/1. #show v_p3/2.
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
 #show w_many_requests/1. #show w_untiered/1. #show w_unrouted/1. #show w_example/2. #show w_value_kind/1.
