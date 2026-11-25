@@ -14,7 +14,11 @@ findings the review's record already holds (r15, r16).
 line the item recorded (`request_lines`) as its requirement id at the batch's merge commit, `delivered` in the asker's
 turn, posted on its issue and the issue closed (request_moves.resolve). A request that is not `accepted`, an item that
 records no line, or a resolve that is refused (its record put back by request_post) leaves the item delivered and is
-named in what `merged` prints, for a later `work resolve`."""
+named in what `merged` prints, for a later `work resolve`.
+
+Once the batch is merged, `merged` starts the warming of the base's state (batch_warm, b588): detached, never waited
+on and never failing the merge, so that the next `work batch start` finds grammar 4 compiled, the base's lines parsed
+and the readiness bar's before state kept."""
 import re
 import shutil
 import subprocess
@@ -23,6 +27,7 @@ import backlog_items
 import backlog_lifecycle
 import batch_gh
 import batch_plan
+import batch_warm
 import request_moves
 import shop_files
 from batch_git import locked, remove_tree, trees_path
@@ -101,6 +106,7 @@ def merged(root, name):
         for task in batch.tasks:
             if task.item in {i.name for i in items}:
                 subprocess.run(["git", "branch", "-q", "-d", task.branch], cwd=root, capture_output=True)
+    batch_warm.start(root)       # the base's state warmed for the next batch, never waited on (b588)
     return batch, _resolve(root, items, oid)
 
 
