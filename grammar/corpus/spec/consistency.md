@@ -803,3 +803,23 @@ shall [x5: thing `only` (constant), x7: agent the person (constant), x8: specifi
   response
     return(e2, subject: x9, object: x10)
 ```
+
+## r43
+From: b569 r43.
+
+```reading
+While a requirement that has a requester uses `response-request` and an operation and another requirement that has a different requester governs the operation, when the person examines this specification, the specification service shall return `no findings`.
+shall [x3: thing `response-request` (parameter), x7: agent the person (constant), x8: specification "the specification of this bounded context" (indexical), x9: service the specification service (constant), x10: text `no findings` (constant)]
+  while [x1: requirement, x2: requester, x4: operation, x5: requirement, x6: requester]
+    of(x2, x1)
+    use(subject: x1, object: x3)
+    use(subject: x1, object: x4)
+    distinct(x5, x1)
+    distinct(x6, x2)
+    of(x6, x5)
+    govern(subject: x5, object: x4)
+  when
+    request(e1, specification.examine, subject: x7, object: x8)
+  response
+    return(e2, subject: x9, object: x10)
+```

@@ -229,3 +229,6 @@ capabilities, retirements, rewordings and chores.
 ### [g64] Replacing a given block that the item does not hold is refused
 - [r64] If the person replaces a given block in an item that does not hold the given block, then the drafting service shall refuse the request and name the given block.
 
+### [g65] A requirement drafted into an item joins its group of the same group title
+- [r65] While an item holds a requirement group of a capability and the requirement group has a group title, when the person drafts the item with a requirement of the capability, the drafting service shall keep only one requirement group that has the group title.
+

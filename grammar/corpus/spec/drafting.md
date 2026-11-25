@@ -990,3 +990,24 @@ shall [x1: agent the person (constant), x4: service the drafting service (consta
     refuse(e2, subject: x4, object: x5)
     name(e3, subject: x4, object: x2)
 ```
+
+## r65
+From: b583 r65.
+
+```reading
+While an item holds a requirement group of a capability and the requirement group has a group title, when the person drafts the item with a requirement of the capability, the drafting service shall keep only one requirement group that has the group title.
+shall [x5: agent the person (constant), x7: service the drafting service (constant)]
+  while [x1: item, x2: requirement group, x3: capability, x4: group title]
+    of(x2, x3)
+    in(x2, x1)
+    of(x4, x2)
+  when [x6: requirement]
+    of(x6, x3)
+    request(e1, drafting.draft, subject: x5, object: x1)
+    param(e1, requirement, x6)
+  response
+    only [x8: requirement group]
+      of(x4, x8)
+      scope
+        keep(e2, subject: x7, object: x8)
+```

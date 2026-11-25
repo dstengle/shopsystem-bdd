@@ -180,6 +180,7 @@ requirements = [
   "consistency#r40: While a requirement has a trigger and the requirement obliges an act and the requirement uses `response-request` and a code and another requirement that has the trigger forbids the act and the requirement uses no code, when the person examines this specification, the specification service shall return `L1`.",
   "consistency#r41: While a requirement has a trigger and the requirement obliges an act and the requirement uses `count` and an operation and another requirement that has the trigger forbids the act, when the person examines this specification, the specification service shall return `L1`.",
   "consistency#r42: While a requirement has a trigger and the requirement obliges an act and another requirement that has the trigger does not allow the act and the requirement uses `only` and an operation, when the person examines this specification, the specification service shall return `L1`.",
+  "consistency#r43: While a requirement that has a requester uses `response-request` and an operation and another requirement that has a different requester governs the operation, when the person examines this specification, the specification service shall return `no findings`.",
 ]
 [operations."specification.examine".parameters]
 capability = { positional = 1 }
@@ -569,6 +570,7 @@ requirements = [
   "drafting#r36: While an item holds a capability that does not exist, if the person drafts another item with the capability, then the drafting service shall refuse the request and name another item that holds the capability.",
   "drafting#r37: While a batch holds an item and the item holds a capability that does not exist, if the person drafts another item with a requirement of the capability, then the drafting service shall refuse the request and name the batch and another item that holds the capability.",
   "drafting#r39: While an item is `in-batch`, when the person drafts the item with a requirement, the drafting service shall keep the requirement in the item.",
+  "drafting#r65: While an item holds a requirement group of a capability and the requirement group has a group title, when the person drafts the item with a requirement of the capability, the drafting service shall keep only one requirement group that has the group title.",
 ]
 [operations."drafting.draft".parameters]
 item = { positional = 1 }

@@ -24,6 +24,7 @@ object requirement kind of text
   relations: governs → operation (many)
   relations: has → ambiguous text | plural object (many)
   relations: supports → requirement id (many)
+  relations: has → requester (many)
 
 object requirement group
   relations: has → requirement | scenario (many)
@@ -344,4 +345,6 @@ object area
   relations: holds → operation | capability (many)
 
 object group title kind of text
+
+object requester
 ```
