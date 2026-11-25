@@ -46,11 +46,12 @@ TAIL = 40
 
 
 def judgement(root):
-    """(rel, summary) of each `spec/decisions/*.md` whose frontmatter has `tier: judgement` (D6)."""
+    """(rel, summary) of each `spec/decisions/*.md` in force (`status: accepted`) whose frontmatter has
+    `tier: judgement` (D6); a superseded judgement is followed no more."""
     found = []
     for path in sorted((Path(root) / "spec" / "decisions").glob("*.md")):
         data, _ = shop_files.frontmatter(shop_files.read(path, root))
-        if data.get("tier") == "judgement":
+        if data.get("tier") == "judgement" and data.get("status") == "accepted":
             found.append((path.relative_to(root).as_posix(), str(data.get("summary") or "").strip()))
     return found
 
