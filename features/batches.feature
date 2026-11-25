@@ -797,3 +797,18 @@ Feature: Batches
     And the batches service keeps the model line m1
     And the batches service keeps the domain model d1
     And the domain model d1 does not hold the actor a1
+
+  @g124 @r124
+  Scenario: A batch opened keeps the job a requirement group of an item serves
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a requirement group r1
+    And a job j1
+    And the requirement group r1 serves the job j1
+    And the item i1 holds the requirement group r1
+    And a batch b1
+    When the person opens the batch b1
+    Then the requirement group r2 serves the job j1
+    And the batches service keeps the capability c1
+    And the capability c1 has the requirement group r2

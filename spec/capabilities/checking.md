@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56, g94, r94]
-unbuilt: []
+unbuilt: [r110]
 ---
 
 # Checking
@@ -307,6 +307,9 @@ Restates: design-model-check#r13@0.29.
 
 ### [g109] An assumed description whose line has no scenario is refused
 - [r109] While an adapter spec holds an assumed description that holds a requirement id that no scenario refers to, if the person validates the adapter spec, then the specification service shall fail the check and name the requirement id.
+
+### [g110] A capability whose requirement group serves a job is not unserved
+- [r110] While this bounded context has a job and a requirement group of a capability serves the job, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

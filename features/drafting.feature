@@ -692,3 +692,13 @@ Feature: Drafting
     Then the item i1 holds the model line m1
     And the drafting service keeps the model line m1
     And the drafting service names the member line m2
+
+  @g71 @r71
+  Scenario: A requirement group dedicated to a job serves the job in the item
+    Given a requirement group r1
+    And a job j1
+    And an item i1
+    When the person dedicates the requirement group r1 to the job j1 with the item i1
+    Then the requirement group r1 serves the job j1
+    And the item i1 holds the requirement group r1
+    And the drafting service keeps the item i1

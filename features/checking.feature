@@ -884,3 +884,16 @@ Feature: Checking
     When the person validates the adapter spec a1
     Then the specification service fails this check
     And the specification service names the requirement id r1
+
+  @g110 @r110
+  Scenario: A capability whose requirement group serves a job is not unserved
+    Given a job j1
+    And this bounded context has the job j1
+    And a requirement group r1
+    And a capability c1
+    And the capability c1 has the requirement group r1
+    And the requirement group r1 serves the job j1
+    And a capability c2
+    And the capability c2 violates `w_unserved_cap`
+    When the person validates this specification
+    Then the specification service does not return the capability c2

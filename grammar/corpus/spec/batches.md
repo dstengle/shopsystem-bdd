@@ -1071,3 +1071,22 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
       in(x4, x9)
     keep(e3, subject: x7, object: x9)
 ```
+
+## r124
+From: b641 r124.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds a requirement group that serves a job, when the person opens a batch, the batches service shall keep a capability that has a requirement group that serves the job.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant)]
+  while [x1: item, x3: requirement group, x4: job]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    serve(subject: x3, object: x4)
+    in(x3, x1)
+  when [x6: batch]
+    request(e1, batches.open, subject: x5, object: x6)
+  response [x8: capability, x9: requirement group]
+    serve(subject: x9, object: x4)
+    of(x9, x8)
+    keep(e2, subject: x7, object: x8)
+```

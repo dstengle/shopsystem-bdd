@@ -147,6 +147,7 @@ requirements = [
   "checking#r107: While an adapter spec holds a contract that holds a term and the term clashes with another term and the adapter spec renames the term, when the person validates the adapter spec, the specification service shall complete the request.",
   "checking#r108: While an adapter spec holds a contract that holds a term and the term clashes with another term and the adapter spec does not rename the term, if the person validates the adapter spec, then the specification service shall fail the check and name the term.",
   "checking#r109: While an adapter spec holds an assumed description that holds a requirement id that no scenario refers to, if the person validates the adapter spec, then the specification service shall fail the check and name the requirement id.",
+  "checking#r110: While this bounded context has a job and a requirement group of a capability serves the job, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.",
   "decisions#r1: While a design-decision is not `superseded` or `rejected` and the design-decision has no tier, when the person validates this specification, the specification service shall return `w_untiered`.",
   "decisions#r2: While the tier of a design-decision is `check` and no test enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d6`.",
   "decisions#r3: While the tier of a design-decision is `requirement` and no requirement enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d7`.",
@@ -990,6 +991,7 @@ requirements = [
   "batches#r118: While an item is `ready` and the item meets the readiness bar and the item moves a term that means an element and an area holds the element, when the person opens a batch, the batches service shall keep the area that holds the term.",
   "batches#r120: While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an event, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the event.",
   "batches#r121: While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an actor, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the actor.",
+  "batches#r124: While an item is `ready` and the item meets the readiness bar and the item holds a requirement group that serves a job, when the person opens a batch, the batches service shall keep a capability that has a requirement group that serves the job.",
 ]
 
 [operations."batches.resume"]
@@ -1526,3 +1528,13 @@ requirements = [
 [operations."drafting.move term".parameters]
 item = { positional = 1 }
 term = { option = "--move-term" }
+
+[operations."drafting.dedicate"]
+command = "work dedicate"
+requirements = [
+  "drafting#r71: When the person dedicates a requirement group to a job with an item, the drafting service shall keep the item that holds the requirement group that serves the job.",
+]
+[operations."drafting.dedicate".parameters]
+"requirement group" = { option = "--requirement-group", example = "requirement group-1" }
+job = { option = "--job", example = "job-1" }
+item = { option = "--item", example = "item-1" }
