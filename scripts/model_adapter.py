@@ -3,12 +3,12 @@ says `kind: adapter`, kept nested in its bounded context's spec at `adapters/<na
 two folders up. Its id conforms to the adapter spec id form, the parent's id followed by `/adapter/<name>` (`path`:
 the id's path after `bounded-context/`, else a file problem naming the id); each id under its `realises:` is a live
 requirement `<capability>#r<n>` of the parent's spec (`unrealised`); each provider under its `providers:`
-(`<bounded context id>[@<version>]`) has its contract held, `provider/<upstream>/<version>/contract.toml` as
-`spec obtain` keeps it, `<upstream>` the last part of its id, any version when none is named (`uncontracted`). Its
+(`<bounded context id>[@<version>]`) has its contract held, `provider/<id's path>/<version>/contract.toml` where
+`spec obtain` keeps it (contract_obtain's `place`), any version when none is named (`uncontracted`). Its
 `adr/`, the adapter decisions, and `provider/` are accepted as they are; nothing here reads them further."""
 import re
-from pathlib import Path
 
+import contract_obtain
 import spec_read
 from model_parse import as_list, frontmatter
 
@@ -72,7 +72,8 @@ def uncontracted(root, providers):
         if not m:
             out.append(f"spec/index.md: the provider {given!r} is not <bounded context id>[@<version>]")
             continue
-        kept = Path("provider", m.group("id").rsplit("/", 1)[1], m.group("version") or "*")
-        if not any(root.glob(str(kept / "contract.toml"))):
-            out.append(f"spec/index.md: the provider {m.group('id')} has no contract the adapter spec holds under {kept}/")
+        kept = contract_obtain.place(m.group("id"), m.group("version") or "*")
+        if not any(root.glob(kept.as_posix())):
+            out.append(f"spec/index.md: the provider {m.group('id')} has no contract the adapter spec holds under "
+                       f"{kept.parent.as_posix()}/")
     return out
