@@ -79,7 +79,7 @@ def parser(tool):
     if hasattr(module, "parser") and tool == "measure":
         return module.parser()
 
-    def caught(self, *args, **kwargs):
+    def caught(self, *_args, **_kwargs):
         raise _Caught(self)
     with _patched(argparse.ArgumentParser, "parse_args", caught), \
             _patched(argparse.ArgumentParser, "parse_known_args", caught), _patched(sys, "argv", [tool]):
