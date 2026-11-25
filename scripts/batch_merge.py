@@ -7,12 +7,18 @@ Every item's ids are in its capability's `unbuilt:` on the batch branch, and eac
 of one capability so change the same line of the same file, which git cannot merge; that conflict alone is settled
 here: when a conflicted file merges cleanly with its `unbuilt:` line set aside, the line is written with the base's
 ids still unbuilt on both sides, then each id either side added (plan 4 review, M6). Any other conflict aborts the merge and is refused, naming each file left unsettled, the item merged and every other item whose
-branch conflicts with its branch in that file (`clashing`)."""
+branch conflicts with its branch in that file (`clashing`).
+
+An id of the item that its branch holds as a line and has taken out of `unbuilt:` is built: once merged it is out of
+the batch branch's `unbuilt:` too (`built`, reviews r13, b600). An amend lays a line on the batch branch and on the
+task's branch in two commits, neither an ancestor of the other, so git keeps the batch branch's `unbuilt:` entry of
+a line the task then built."""
 import re
 import subprocess
 import tempfile
 from pathlib import Path
 
+import spec_unbuilt
 from batch_git import git
 from shop_files import Refused
 
@@ -108,3 +114,31 @@ def merge(tree, branch, message, item=None, others=()):
         "%s conflicts between %s and %s" % (path, item or branch, ", ".join(
             [label for label, other in others if clashing(tree, branch, other, path)]) or "the batch's branch")
         for path in left)))
+
+
+def built(tree, branch, ids):
+    """Each of `ids` (`<capability>#r<n>`, the merged item's) that `branch` holds as a line and lists no more as
+    unbuilt taken out of the worktree's `unbuilt:`, in the merge commit just made; the paths changed."""
+    second = subprocess.run(["git", "rev-parse", "-q", "--verify", "HEAD^2"], cwd=tree, capture_output=True, text=True)
+    if second.stdout.strip() != git(tree, "rev-parse", branch).stdout.strip():
+        return []           # no merge commit of the branch made: it was merged before
+    caps = {}
+    for ident in ids:
+        cap, _, rid = ident.partition("#")
+        caps.setdefault(cap, []).append(rid)
+    changed = []
+    for cap, rids in caps.items():
+        rel = "spec/capabilities/%s.md" % cap
+        path = Path(tree) / rel
+        done = subprocess.run(["git", "show", "%s:%s" % (branch, rel)], cwd=tree, capture_output=True, text=True)
+        if not path.is_file() or done.returncode != 0:
+            continue
+        text, theirs = path.read_text(), done.stdout
+        gone = [r for r in rids if r in (_ids(text) or []) and r not in (_ids(theirs) or []) and "[%s]" % r in theirs]
+        if gone:
+            path.write_text(spec_unbuilt.without_unbuilt(text, gone))
+            changed.append(rel)
+    if changed:
+        git(tree, "add", "--", *changed)
+        git(tree, "commit", "-q", "--amend", "--no-edit")
+    return changed
