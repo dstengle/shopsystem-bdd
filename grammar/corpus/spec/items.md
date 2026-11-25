@@ -1049,3 +1049,72 @@ shall [x3: service the backlog service (constant)]
   response
     initiates(e2, subject: x3, status(x1) = `in-batch`)
 ```
+
+## r60
+From: b585 r60.
+
+```reading
+While an item is not `ready`, if a session allocates the item, then the backlog service shall refuse the request and name the item and the `item not ready` reason.
+shall [x3: service the backlog service (constant), x4: request "the request the trigger makes" (indexical), x5: reason `item not ready` (parameter)]
+  while [x1: item]
+    not
+      status(x1) = `ready`
+  if [x2: session]
+    request(e1, backlog.allocate, subject: x2, object: x1)
+  response
+    refuse(e2, subject: x3, object: x4)
+    name(e3, subject: x3, object: x1)
+    name(e4, subject: x3, object: x5)
+```
+
+## r61
+From: b585 r61.
+
+```reading
+While an item is not `in-batch`, if a session delivers the item, then the backlog service shall refuse the request and name the item and the `item not in-batch` reason.
+shall [x3: service the backlog service (constant), x4: request "the request the trigger makes" (indexical), x5: reason `item not in-batch` (parameter)]
+  while [x1: item]
+    not
+      status(x1) = `in-batch`
+  if [x2: session]
+    request(e1, backlog.deliver, subject: x2, object: x1)
+  response
+    refuse(e2, subject: x3, object: x4)
+    name(e3, subject: x3, object: x1)
+    name(e4, subject: x3, object: x5)
+```
+
+## r62
+From: b585 r62.
+
+```reading
+While an item is not `in-batch`, if a session restores the item, then the backlog service shall refuse the request and name the item and the `item not in-batch` reason.
+shall [x3: service the backlog service (constant), x4: request "the request the trigger makes" (indexical), x5: reason `item not in-batch` (parameter)]
+  while [x1: item]
+    not
+      status(x1) = `in-batch`
+  if [x2: session]
+    request(e1, backlog.restore, subject: x2, object: x1)
+  response
+    refuse(e2, subject: x3, object: x4)
+    name(e3, subject: x3, object: x1)
+    name(e4, subject: x3, object: x5)
+```
+
+## r63
+From: b585 r63.
+
+```reading
+While an item is not `in-batch`, if a session suspends the item with a question, then the backlog service shall refuse the request and name the item and the `item not in-batch` reason.
+shall [x4: service the backlog service (constant), x5: request "the request the trigger makes" (indexical), x6: reason `item not in-batch` (parameter)]
+  while [x1: item]
+    not
+      status(x1) = `in-batch`
+  if [x2: session, x3: question]
+    request(e1, backlog.suspend, subject: x2, object: x1)
+    param(e1, question, x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x1)
+    name(e4, subject: x4, object: x6)
+```

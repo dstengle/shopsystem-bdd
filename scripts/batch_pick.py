@@ -1,6 +1,7 @@
 """The pick of `work batch start` (capability batches r1-r3; workflow simplification plan 4, D7, D8): the `ready` items
 in rank order, up to `batch_size` of `.shop/delivery.toml` (default 4), each checked again by the readiness bar,
-alone and then laid over the items picked before it, its ids renumbered past its capability's and theirs.
+alone and then laid over the items picked before it, its ids renumbered past its capability's and theirs; the first
+item taken, laid over no item, checked once (b588).
 
 An item is blocked unless each item it depends on is `delivered` or picked earlier in this pick; the pick goes over
 the table again until a pass picks nothing more, so a dependency ranked lower is still picked first. An item that no
@@ -38,11 +39,12 @@ def _blocked(item, by_name, picked):
 
 
 def _alone(root, item):
-    """The bar's reasons for the item alone, its ids moved past the spec's only (a copy is checked, so an item whose
-    ids a delivered batch took is not returned for them)."""
-    alone = copy.deepcopy(item)
-    backlog_lines.renumber(root, alone, {})
-    return readiness_bar.check(root, alone)[0]
+    """(the bar's reasons for the item alone, the copy checked, its renumbered pairs, the ids it took): its ids moved
+    past the spec's only (a copy is checked, so an item whose ids a delivered batch took is not returned for them).
+    With nothing picked before it, this is the check laid over the picked too, and the pick takes the copy (b588)."""
+    alone, taken = copy.deepcopy(item), {}
+    pairs = backlog_lines.renumber(root, alone, taken)
+    return readiness_bar.check(root, alone)[0], alone, pairs, taken
 
 
 def pick(root, size=None):
@@ -63,7 +65,7 @@ def pick(root, size=None):
             if item.name in done or _blocked(item, by_name, picked):
                 continue
             done.add(item.name)
-            reasons = _alone(root, item)
+            reasons, alone, alone_pairs, alone_taken = _alone(root, item)
             if reasons:
                 backlog_lifecycle.reopen(item, "returned by work batch start: %s" % "; ".join(reasons))
                 returned.append((item, reasons))
@@ -71,9 +73,12 @@ def pick(root, size=None):
             if batch_estimate.exceeds(spent, item, len(picked), review_limit):
                 left_out.append((item, [batch_estimate.reason(spent, item, review_limit)]))
                 continue
-            trial, trial_taken = copy.deepcopy(item), copy.deepcopy(taken)
-            pairs = backlog_lines.renumber(root, trial, trial_taken)
-            reasons = readiness_bar.check(root, trial, picked)[0]
+            if picked:
+                trial, trial_taken = copy.deepcopy(item), copy.deepcopy(taken)
+                pairs = backlog_lines.renumber(root, trial, trial_taken)
+                reasons = readiness_bar.check(root, trial, picked)[0]
+            else:           # laid over no item: the check alone, done once (b588)
+                trial, trial_taken, pairs = alone, alone_taken, alone_pairs
             if reasons:
                 left_out.append((item, reasons))
                 continue

@@ -570,3 +570,13 @@ Feature: Checking
     When the person obtains the contract c1 from the bounded context b1
     Then the specification service refuses this request
     And the specification service names the bounded context b1
+
+  @g83 @r83
+  Scenario: A contract at a version that is not a version is refused
+    Given a version v1
+    And the version v1 does not conform to the version form
+    And a contract c1
+    When the person publishes the contract c1 with the version v1
+    Then the specification service refuses this request
+    And the specification service names the version v1
+    And the specification service names `version not in the version form`

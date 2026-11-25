@@ -270,7 +270,7 @@ service specification
     outcomes: done → the catalogue entry | refused: catalogue entry of no rule or construct
   operation prepare(contract)  outcomes: returned → the contract
   operation publish(contract, version) by the person
-    outcomes: done → the contract | refused: version already published, requirement not in the language
+    outcomes: done → the contract | refused: version already published, version not in the version form, requirement not in the language
   operation fetch(contract, version) by downstream context
     outcomes: returned → the contract | refused: version not published
   operation obtain(contract, bounded context, version) by the person
@@ -361,4 +361,6 @@ object requester
 object downstream context kind of agent
 
 event contract published: raised by specification.publish
+
+object version form kind of artifact
 ```

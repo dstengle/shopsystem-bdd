@@ -135,10 +135,10 @@ service backlog
   operation merge(item, successor, reason)  outcomes: done | refused: item closed, successor closed, successor that is the item
   operation retitle(item, title)  outcomes: done | refused: item not open
   operation split(item, requirement)  outcomes: done → the item | refused: item not an idea or shaped, requirement not in the item
-  operation allocate(item)  outcomes: done
-  operation deliver(item)  outcomes: done
-  operation restore(item)  outcomes: done
-  operation suspend(item, question)  outcomes: done
+  operation allocate(item)  outcomes: done | refused: item not ready
+  operation deliver(item)  outcomes: done | refused: item not in-batch
+  operation restore(item)  outcomes: done | refused: item not in-batch
+  operation suspend(item, question)  outcomes: done | refused: item not in-batch
 
 service drafting
   operation draft(item, relation row, universal condition, universal condition id, upstream entry, given block, requirement id, requirement, capability)

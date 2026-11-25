@@ -230,6 +230,9 @@ Restates: design-model-check#r13@0.29.
 ### [g82] A contract is not obtained from a bounded context that has no contract
 - [r82] If the person obtains a contract from a bounded context that has no contract, then the specification service shall refuse the request and name the bounded context.
 
+### [g83] A contract at a version that is not a version is refused
+- [r83] If the person publishes a contract with a version that does not conform to the version form, then the specification service shall refuse the request and name the version and the `version not in the version form` reason.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.
