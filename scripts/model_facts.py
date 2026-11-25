@@ -5,6 +5,7 @@ import datetime
 import re
 from pathlib import Path
 
+import model_adapter
 import shop_ids
 import spec_read
 from model_catalogue import CatalogueReading
@@ -18,8 +19,7 @@ REF = re.compile(r"^(?P<cap>[\w.-]+(?:/[\w.-]+)*)#r(?P<n>\d+)(?P<old>@0\.29)?$")
 KINDS = {"bounded-context", "capability", "design-decision", "requirement", "requirement-group", "scenario", "term",
          "universal-condition", "job-thread", "observation", "measurement", "review-finding", "decision-argument",
          "initiative-archive", "job", "context-seam", "product-vision", "request"} | FROZEN_KINDS
-NAME = r"[a-z0-9]+(?:-[a-z0-9]+)*"
-CONTEXT_PATH =rf"{NAME}(?:\.{NAME})*/{NAME}/{NAME}"     # <owner>/<product>/<context name>; the owner may be a domain
+NAME, CONTEXT_PATH = model_adapter.NAME, model_adapter.CONTEXT_PATH
 NOT_PROSE = re.compile(r'`[^`]*`|"[^"]*"|(?<!\w)@[\w-]+')
 OLD_LAYOUT = ("spec/decisions.md", "decisions/", "work/", "records/")    # what scripts/migrate moves (r61)
 
@@ -162,11 +162,10 @@ class Model(SpecReading, WorkReading, RequestReading, DomainReading, CatalogueRe
         if not ident:
             self.problems.append("spec/index.md has no frontmatter id naming the bounded-context")
             return
-        m = re.fullmatch(rf"bounded-context/({CONTEXT_PATH})", str(ident))
-        if not m:
-            self.problems.append(f"spec/index.md: id {ident!r} is not bounded-context/<owner>/<product>/<context name>")
+        found = model_adapter.path(self.root, data, ident, self.problems)     # an adapter spec's id form (b540)
+        if not found:
             return
-        self.context, self.path = m.group(0), m.group(1)
+        self.context, self.path = str(ident), found
         self.node(self.context, "bounded-context")
         if spec_read.codified(path):
             self.read_lexicon()         # the typed glossary (§10.1)
