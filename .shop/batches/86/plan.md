@@ -16,7 +16,7 @@ pull_request:
 |---|---|---|---|
 | t1 | b574 | done | batch-86-b574 |
 | t2 | b579 | done | batch-86-b579 |
-| t3 | b580 | running | batch-86-b580 |
+| t3 | b580 | done | batch-86-b580 |
 
 ## Plan
 
