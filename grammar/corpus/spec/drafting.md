@@ -647,7 +647,7 @@ From: b463 r41.
 While a model line restates an operation, when the person declares the model line in an item, the drafting service shall keep the model line in the item.
 shall [x3: agent the person (constant), x5: service the drafting service (constant)]
   while [x1: model line, x2: operation]
-    restate(subject: x1, object: x2)
+    restate#2(subject: x1, object: x2)
   when [x4: item]
     request(e1, drafting.declare, subject: x3, object: x1, in: x4)
   response
