@@ -29,7 +29,7 @@ def contracts(root):
     return [adapter_cli.PATH] if adapter_cli.exists(root) else []
 
 
-def _lines(root):
+def requirement_lines(root):
     """(id, line) of every requirement of a codified capability, by capability name and number (as `spec check` reads them)."""
     import spec_read
     out = []
@@ -52,7 +52,7 @@ def governing(root):
     import spec_lf
     lines = model_domain_lines.Lines(domain_model.load(root), spec_lexicon.read(root))
     vocab, out = None, {}
-    for ident, text in _lines(root):
+    for ident, text in requirement_lines(root):
         parsed = spec_language.parse(root, text)
         if parsed.tree is None:
             continue

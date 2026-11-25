@@ -96,6 +96,10 @@ def main(argv=None):
     __import__("model_catalogue_write").add_parser(sub)
     q = sub.add_parser("prepare", help="print this bounded context's contract in the contract form, writing nothing")
     q.add_argument("--contract", required=True, metavar="VERSION", help="the version the contract is prepared at")
+    u = sub.add_parser("publish", help="keep this bounded context's contract at a version as published, superseding the earlier ones")
+    u.add_argument("--version", help="the version it is kept at (the latest kept one's last number one more by default)")
+    g = sub.add_parser("fetch", help="print the contract kept as published, or the one kept at a version, writing nothing")
+    g.add_argument("--version", help="the version of the contract (the published one by default)")
     args = prepare(ap).parse_args(argv)
     if args.cmd == "parse" and (args.line is None) == (args.file is None):
         ap.error("parse takes a line or --file, not both")
@@ -108,6 +112,8 @@ def main(argv=None):
                "forms": cmd_forms, "explain": cmd_explain,
                "annotate": lambda x: __import__("adapter_annotate").annotate(x.root, x.check, x.contract),
                "prepare": lambda x: __import__("contract_form").prepare(x.root, x.contract),
+               "publish": lambda x: __import__("contract_publish").publish(x.root, x.version),
+               "fetch": lambda x: __import__("contract_publish").fetch(x.root, x.version),
                "constructs": cmd_constructs, "catalogue": lambda x: __import__("model_catalogue_write").cmd(x)}[args.cmd]
     return respond("spec", handler, args, checks=args.cmd in ("check", "logic"))
 
