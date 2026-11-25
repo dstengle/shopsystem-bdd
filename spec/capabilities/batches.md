@@ -6,8 +6,8 @@ group: service
 area: execution
 specifies: object batch, object task, service batches
 language: codified-2
-retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103]
-unbuilt: []
+retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97]
+unbuilt: [r100, r101, r110, r111, r112, r105, r106, r107, r108, r109]
 ---
 
 # Batches
@@ -18,33 +18,12 @@ when the change is merged.
 
 ## Behaviour
 
-### [g50] Merging a batch's change delivers its items
-- [r50] While an item in a batch is `in-batch`, when the person merges the proposed change of the batch, the batches
-  service shall set the status of the item to `delivered` and set the status of the batch to `merged`.
-
 ### [g52] A batch abandoned keeps no review folder
 - [r52] When the person abandons a batch, the batches service shall keep no review folder of the batch.
-
-### [g54] A ready item that no longer meets the bar goes back to shaped
-- [r54] While an item is `ready` and the item does not meet the readiness bar, when the person opens a batch, the
-  batches service shall set the status of the item to `shaped`.
-
-### [g55] An item a ready item depends on and that is not ready stays out of the batch
-- [r55] While an item is not `ready` or `delivered` and a dependency on the item exists and another item whose status is
-  `ready` has the dependency, when the person opens a batch, the batches service shall not set the status of the item to
-  `in-batch`.
 
 ### [g56] A batch resumed gives its plan and asks nothing
 - [r56] While a batch is `building`, when a session resumes the batch, the batches service shall return the batch plan
   of the batch and not ask a question.
-
-### [g57] An item parked needs input and the batch goes on
-- [r57] While an item in a batch is `in-batch`, when a session parks the item, the batches service shall set the status
-  of the item to `needs-input`, keep a question on the item and not set the status of the batch to `abandoned`.
-
-### [g58] A batch abandoned gives its items back as ready
-- [r58] While a batch is `building`, when the person abandons the batch, the batches service shall set the status of the
-  batch to `abandoned` and set the status of every item in the batch whose status is `in-batch` to `ready`.
 
 ### [g60] An item parked has its lines taken out of the batch's workspace
 - [r60] While an item in a batch is `in-batch` and the workspace of the batch holds a requirement of the item, when a
@@ -68,12 +47,6 @@ when the change is merged.
 - [r64] While `universal` does not exist and an item is `ready` and the item meets the readiness bar and a universal
   condition is in the item, when the person opens a batch, the batches service shall keep `universal` and set the
   language of `universal` to `codified-2`.
-
-### [g65] Merging a batch's change resolves the accepted context request of its item
-- [r65] While an item in a batch is `in-batch` and the item has a request line of a context request and the context
-  request is `accepted`, when the person merges the proposed change of the batch, the batches service shall set the
-  status of the context request to `delivered`, keep a resolution, set the side of the context request to `asker` and
-  keep an entry on the context request.
 
 ### [g66] A task whose chore breaks is not finished
 - [r66] While a task of an item is `running` and the item holds a chore and the chore breaks in the workspace of the
@@ -147,9 +120,6 @@ when the change is merged.
 ### [g87] A batch opened lays a model line in place of the operation it restates
 - [r87] While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an operation, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the operation.
 
-### [g89] A ready item whose lines laid violate a rule goes back to shaped
-- [r89] While an item is `ready` and the item meets the readiness bar and a requirement of the item violates a rule whose severity is `error`, if the person opens a batch, then the batches service shall set the status of the item to `shaped` and name the rule.
-
 ### [g90] A line removed from an in-batch item leaves its task's workspace too, not only the batch's
 - [r90] While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch holds a requirement of the item and the workspace of the task holds the requirement and the item does not hold the requirement, when the person amends the item, the batches service shall keep a workspace of the batch that does not hold the requirement and keep a workspace of the task that does not hold the requirement.
 
@@ -159,20 +129,11 @@ when the change is merged.
 ### [g92] A batch opened writes the operation table of an operation an item adds with none given
 - [r92] While an item is `ready` and the item meets the readiness bar and the item holds a model line and the model line specifies an operation and the domain model does not hold the operation and the item holds no operation table of the operation, when the person opens a batch, the batches service shall keep an adapter contract that holds an operation table of the operation.
 
-### [g93] A ready item whose change would take the batch past the review limit stays out of the batch
-- [r93] While an item is `ready` and the item meets the readiness bar and the item exceeds the review limit, when the person opens a batch, the batches service shall not set the status of the item to `in-batch`.
-
-### [g94] work batch start splits a batch whose items' change would pass the reviewer's 1000-line limit
-- [r94] While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit, when the person opens a batch, the batches service shall set the status of the item to `in-batch`, keep a batch that holds the item and keep a batch plan of the batch.
-
 ### [g95] A batch opened keeps each term of a pack in the pack, and the pack imported
 - [r95] While an item is `ready` and the item meets the readiness bar and the item holds a term of a pack, when the person opens a batch, the batches service shall keep the pack that has the term and keep the pack that this bounded context imports.
 
 ### [g96] An in-batch item amended that does not meet the readiness bar is refused and nothing changes
 - [r96] While an item in a batch is `in-batch` and the item does not meet the readiness bar, if the person amends the item, then the batches service shall refuse the request, name the item and change nothing.
-
-### [g97] A ready item whose new line's scenario passes on the lay goes back to shaped
-- [r97] While an item is `ready` and the item meets the readiness bar and a requirement of the item retires no requirement id and a scenario of the item refers to the requirement id of the requirement and the scenario succeeds in a workspace of a batch, if the person opens the batch, then the batches service shall set the status of the item to `shaped` and name the scenario.
 
 ### [g98] A batch opened keeps a brief that holds each batch rule of the settings file
 - [r98] While a settings file holds a batch rule, when the person opens a batch, the batches service shall keep a batch brief that holds the batch rule.
@@ -185,4 +146,34 @@ when the change is merged.
 
 ### [g104] Every batch brief holds the batch summary form
 - [r104] When the person opens a batch, the batches service shall keep a batch brief that holds a batch summary form and return the batch brief.
+
+### [g100] Merging a batch's change delivers its items
+- [r100] While an item in a batch is `in-batch`, when the person merges the proposed change of the batch, the batches service shall deliver the item and set the status of the batch to `merged`.
+
+### [g101] A ready item that no longer meets the bar is reopened
+- [r101] While an item is `ready` and the item does not meet the readiness bar, when the person opens a batch, the batches service shall reopen the item.
+
+### [g110] An item a ready item depends on and that is not ready is not allocated
+- [r110] While an item is not `ready` or `delivered` and a dependency on the item exists and another item whose status is `ready` has the dependency, when the person opens a batch, the batches service shall not allocate the item.
+
+### [g111] An item parked is suspended and the batch goes on
+- [r111] While an item in a batch is `in-batch`, when a session parks the item, the batches service shall suspend the item with a question and not set the status of the batch to `abandoned`.
+
+### [g112] A batch abandoned restores its items
+- [r112] While a batch is `building`, when the person abandons the batch, the batches service shall set the status of the batch to `abandoned` and restore every item in the batch whose status is `in-batch`.
+
+### [g105] Merging a batch's change resolves the accepted context request of its item
+- [r105] While an item in a batch is `in-batch` and the item has a request line of a context request and the context request is `accepted`, when the person merges the proposed change of the batch, the batches service shall resolve the context request.
+
+### [g106] A ready item whose lines laid violate a rule is reopened
+- [r106] While an item is `ready` and the item meets the readiness bar and a requirement of the item violates a rule whose severity is `error`, if the person opens a batch, then the batches service shall reopen the item and name the rule.
+
+### [g107] A ready item whose change would take the batch past the review limit is not allocated
+- [r107] While an item is `ready` and the item meets the readiness bar and the item exceeds the review limit, when the person opens a batch, the batches service shall not allocate the item.
+
+### [g108] A batch opened allocates each ready item within the review limit
+- [r108] While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit, when the person opens a batch, the batches service shall allocate the item, keep a batch that holds the item and keep a batch plan of the batch.
+
+### [g109] A ready item whose new line's scenario passes on the lay is reopened
+- [r109] While an item is `ready` and the item meets the readiness bar and a requirement of the item retires no requirement id and a scenario of the item refers to the requirement id of the requirement and the scenario succeeds in a workspace of a batch, if the person opens the batch, then the batches service shall reopen the item and name the scenario.
 

@@ -7,7 +7,7 @@ area: tracking
 specifies: object item, service backlog, the readiness policy
 language: codified-2
 retired: [g3, r3, g18, r18, g33, r33]
-unbuilt: []
+unbuilt: [r59, r56, r57, r58]
 ---
 
 # Items
@@ -202,4 +202,16 @@ declined, withdrawn, answered and listed.
 
 ### [g55] An item whose requirement group shares a group title with another of its capability is not readied
 - [r55] While an item is `shaped` and a requirement group of a capability has a group title and the item holds another requirement group of the capability that has the group title, if the person readies the item, then the backlog service shall refuse the request and name the group title.
+
+### [g59] An item allocated to a batch is in-batch
+- [r59] While an item is `ready`, when a session allocates the item, the backlog service shall set the status of the item to `in-batch`.
+
+### [g56] An item delivered is delivered
+- [r56] While an item is `in-batch`, when a session delivers the item, the backlog service shall set the status of the item to `delivered`.
+
+### [g57] An item restored is ready again
+- [r57] While an item is `in-batch`, when a session restores the item, the backlog service shall set the status of the item to `ready`.
+
+### [g58] An item suspended needs input and keeps its question
+- [r58] While an item is `in-batch`, when a session suspends the item with a question, the backlog service shall set the status of the item to `needs-input` and keep the question on the item.
 

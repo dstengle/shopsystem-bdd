@@ -2,18 +2,6 @@
 Feature: Batches
   Narrator: the person
 
-  @g50 @r50
-  Scenario: Merging a batch's change delivers its items
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a proposed change p1
-    And the batch b1 has the proposed change p1
-    When the person merges the proposed change p1
-    Then the batches service sets the status of the item i1 to `delivered`
-    And the batches service sets the status of the batch b1 to `merged`
-
   @g52 @r52
   Scenario: A batch abandoned keeps no review folder
     Given a batch b1
@@ -21,30 +9,6 @@ Feature: Batches
     And the batch b1 has the review folder r1
     When the person abandons the batch b1
     Then the batches service does not keep the review folder r1
-
-  @g54 @r54
-  Scenario: A ready item that no longer meets the bar goes back to shaped
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 does not meet this readiness bar
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service sets the status of the item i1 to `shaped`
-
-  @g55 @r55
-  Scenario: An item a ready item depends on and that is not ready stays out of the batch
-    Given an item i1
-    And the status of the item i1 is not `ready`
-    And the status of the item i1 is not `delivered`
-    And a dependency d1
-    And the dependency d1 is on the item i1
-    And the dependency d1 exists
-    And an item i2
-    And the status of the item i2 is `ready`
-    And the item i2 has the dependency d1
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service does not set the status of the item i2 to `in-batch`
 
   @g56 @r56
   Scenario: A batch resumed gives its plan and asks nothing
@@ -56,38 +20,6 @@ Feature: Batches
     When the session s1 resumes the batch b1
     Then the batches service returns the batch plan b2
     And the batches service does not ask a question
-
-  @g57 @r57
-  Scenario: An item parked needs input and the batch goes on
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a session s1
-    When the session s1 parks the item i1
-    Then the batches service sets the status of the item i1 to `needs-input`
-    And the batches service keeps the question q1
-    And the question q1 is on the item i1
-    And the batches service does not set the status of the batch b1 to `abandoned`
-
-  @g58 @r58
-  Scenario: A batch abandoned gives its items back as ready
-    Given a batch b1
-    And the status of the batch b1 is `building`
-    And an item i1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And an item i2
-    And the batch b1 holds the item i2
-    And the status of the item i2 is `in-batch`
-    And an item i3
-    And the batch b1 holds the item i3
-    And the status of the item i3 is `shaped`
-    When the person abandons the batch b1
-    Then the batches service sets the status of the batch b1 to `abandoned`
-    And the batches service sets the status of the item i1 to `ready`
-    And the batches service sets the status of the item i2 to `ready`
-    And the batches service does not set the status of the item i3 to `ready`
 
   @g60 @r60
   Scenario: An item parked has its lines taken out of the batch's workspace
@@ -172,26 +104,6 @@ Feature: Batches
     When the person opens the batch b1
     Then the batches service keeps `universal`
     And the batches service sets the language of `universal` to `codified-2`
-
-  @g65 @r65
-  Scenario: Merging a batch's change resolves the accepted context request of its item
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a request line r1
-    And a context request c1
-    And the context request c1 has the request line r1
-    And the item i1 has the request line r1
-    And the status of the context request c1 is `accepted`
-    And a proposed change p1
-    And the batch b1 has the proposed change p1
-    When the person merges the proposed change p1
-    Then the batches service sets the status of the context request c1 to `delivered`
-    And the batches service keeps the resolution r2
-    And the batches service sets the side of the context request c1 to `asker`
-    And the batches service keeps the entry e1
-    And the entry e1 is on the context request c1
 
   @g66 @r66
   Scenario: A task whose chore breaks is not finished
@@ -476,21 +388,6 @@ Feature: Batches
     And the batches service keeps the domain model d1
     And the domain model d1 does not hold the operation o1
 
-  @g89 @r89
-  Scenario: A ready item whose lines laid violate a rule goes back to shaped
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a requirement r1
-    And the item i1 has the requirement r1
-    And a rule r2
-    And the severity of the rule r2 is `error`
-    And the requirement r1 violates the rule r2
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service sets the status of the item i1 to `shaped`
-    And the batches service names the rule r2
-
   @g90 @r90
   Scenario: A line removed from an in-batch item leaves its task's workspace too, not only the batch's
     Given an item i1
@@ -552,31 +449,6 @@ Feature: Batches
     And the batches service keeps the adapter contract a1
     And the adapter contract a1 holds the operation table o2
 
-  @g93 @r93
-  Scenario: A ready item whose change would take the batch past the review limit stays out of the batch
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And the item i1 exceeds the review limit
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service does not set the status of the item i1 to `in-batch`
-
-  @g94 @r94
-  Scenario: work batch start splits a batch whose items' change would pass the reviewer's 1000-line limit
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And the item i1 has no dependency
-    And the item i1 does not exceed the review limit
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service sets the status of the item i1 to `in-batch`
-    And the batches service keeps the batch b2
-    And the batch b2 holds the item i1
-    And the batches service keeps the batch plan b3
-    And the batch b2 has the batch plan b3
-
   @g95 @r95
   Scenario: A batch opened keeps each term of a pack in the pack, and the pack imported
     Given an item i1
@@ -604,27 +476,6 @@ Feature: Batches
     And the batches service names the item i1
     # entailed: U17
 
-  @g97 @r97
-  Scenario: A ready item whose new line's scenario passes on the lay goes back to shaped
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a requirement r1
-    And the item i1 has the requirement r1
-    And the requirement r1 retires no requirement id
-    And a scenario s1
-    And the item i1 has the scenario s1
-    And a requirement id r2
-    And the requirement r1 has the requirement id r2
-    And the scenario s1 refers to the requirement id r2
-    And a workspace w1
-    And a batch b1
-    And the batch b1 has the workspace w1
-    And the scenario s1 succeeds in the workspace w1
-    When the person opens the batch b1
-    Then the batches service sets the status of the item i1 to `shaped`
-    And the batches service names the scenario s1
-
   @g98 @r98
   Scenario: A batch opened keeps a brief that holds each batch rule of the settings file
     Given a batch rule b1
@@ -643,6 +494,27 @@ Feature: Batches
     When the person opens the batch b1
     Then the batches service keeps the batch brief b2
     And the batch brief b2 holds no batch rule
+
+  @g100 @r100
+  Scenario: Merging a batch's change delivers its items
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a proposed change p1
+    And the batch b1 has the proposed change p1
+    When the person merges the proposed change p1
+    Then the batches service delivers the item i1
+    And the batches service sets the status of the batch b1 to `merged`
+
+  @g101 @r101
+  Scenario: A ready item that no longer meets the bar is reopened
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 does not meet this readiness bar
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service reopens the item i1
 
   @g102 @r102
   Scenario: Every batch summary states its cost and timing
@@ -666,3 +538,125 @@ Feature: Batches
     Then the batches service keeps the batch brief b3
     And the batch brief b3 holds the batch summary form b2
     And the batches service returns the batch brief b3
+
+  @g105 @r105
+  Scenario: Merging a batch's change resolves the accepted context request of its item
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a request line r1
+    And a context request c1
+    And the context request c1 has the request line r1
+    And the item i1 has the request line r1
+    And the status of the context request c1 is `accepted`
+    And a proposed change p1
+    And the batch b1 has the proposed change p1
+    When the person merges the proposed change p1
+    Then the batches service resolves the context request c1
+
+  @g106 @r106
+  Scenario: A ready item whose lines laid violate a rule is reopened
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a requirement r1
+    And the item i1 has the requirement r1
+    And a rule r2
+    And the severity of the rule r2 is `error`
+    And the requirement r1 violates the rule r2
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service reopens the item i1
+    And the batches service names the rule r2
+
+  @g107 @r107
+  Scenario: A ready item whose change would take the batch past the review limit is not allocated
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And the item i1 exceeds the review limit
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service does not allocate the item i1
+
+  @g108 @r108
+  Scenario: A batch opened allocates each ready item within the review limit
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And the item i1 has no dependency
+    And the item i1 does not exceed the review limit
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service allocates the item i1
+    And the batches service keeps the batch b2
+    And the batch b2 holds the item i1
+    And the batches service keeps the batch plan b3
+    And the batch b2 has the batch plan b3
+
+  @g109 @r109
+  Scenario: A ready item whose new line's scenario passes on the lay is reopened
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a requirement r1
+    And the item i1 has the requirement r1
+    And the requirement r1 retires no requirement id
+    And a scenario s1
+    And the item i1 has the scenario s1
+    And a requirement id r2
+    And the requirement r1 has the requirement id r2
+    And the scenario s1 refers to the requirement id r2
+    And a workspace w1
+    And a batch b1
+    And the batch b1 has the workspace w1
+    And the scenario s1 succeeds in the workspace w1
+    When the person opens the batch b1
+    Then the batches service reopens the item i1
+    And the batches service names the scenario s1
+
+  @g110 @r110
+  Scenario: An item a ready item depends on and that is not ready is not allocated
+    Given an item i1
+    And the status of the item i1 is not `ready`
+    And the status of the item i1 is not `delivered`
+    And a dependency d1
+    And the dependency d1 is on the item i1
+    And the dependency d1 exists
+    And an item i2
+    And the status of the item i2 is `ready`
+    And the item i2 has the dependency d1
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service does not allocate the item i2
+
+  @g111 @r111
+  Scenario: An item parked is suspended and the batch goes on
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a session s1
+    When the session s1 parks the item i1
+    Then the batches service suspends the item i1 with the question q1
+    And the batches service does not set the status of the batch b1 to `abandoned`
+
+  @g112 @r112
+  Scenario: A batch abandoned restores its items
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    And an item i1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And an item i2
+    And the batch b1 holds the item i2
+    And the status of the item i2 is `in-batch`
+    And an item i3
+    And the batch b1 holds the item i3
+    And the status of the item i3 is `shaped`
+    When the person abandons the batch b1
+    Then the batches service sets the status of the batch b1 to `abandoned`
+    And the batches service restores the item i1
+    And the batches service restores the item i2
+    And the batches service does not restore the item i3

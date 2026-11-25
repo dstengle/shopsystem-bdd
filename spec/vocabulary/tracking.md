@@ -170,3 +170,7 @@ area: tracking
 - **suggest** (verb, action) → operation context requests.suggest. Forms: suggests, suggested. Frame: <actor> suggests <term proposal>. Frame: <actor> suggests <term proposal> for <context request>.
 - **the vocabulary-entry form** (proper noun) → object vocabulary-entry form. A bullet `- **<word>** (<part of speech>) → <model element>. <definition>`, with the model lines that declare the element when the upstream has none.
 - **concern** (verb, state) → relation term proposal.concerns. A term proposal is about a term: the term it adds, or the term whose entry it changes. Forms: concerns, concerned. Frame: <term proposal> concerns <term>.
+- **allocate** (verb, action) → operation backlog.allocate. Forms: allocates, allocated. Frame: <actor> allocates <item>.
+- **deliver** (verb, action) → operation backlog.deliver. Forms: delivers, delivered. Frame: <actor> delivers <item>.
+- **restore** (verb, action) → operation backlog.restore. Forms: restores, restored. Frame: <actor> restores <item>.
+- **suspend** (verb, action) → operation backlog.suspend. Forms: suspends, suspended. Frame: <actor> suspends <item>.
