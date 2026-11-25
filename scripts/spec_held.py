@@ -1,9 +1,10 @@
 """Grammar 4's inputs and their state (b430): the files the vocabulary and the packs read (`inputs`: `spec/index.md`,
-`spec/packs/`, of a context with a domain model `spec/model/` and `spec/vocabulary/`, else the capability files, the
-plugin's packs and the base grammar's files), their (path, mtime_ns, size) and whether `spec/model/` is a folder
-(`state`). Outside a held scope every call stats them again; while a root is held (`held`, as the readiness bar holds
-its copy) they are statted once, until a writer of the root says it changed (`invalidate`, as a lay and an unlay do),
-and what is kept for that state (`memo`: a line's parse) lives exactly as long."""
+`spec/packs/`, of a context with a domain model `spec/model/` and `spec/vocabulary/`, else the capability files, an
+adapter spec's providers' contracts (`provider/`), the plugin's packs and the base grammar's files), their
+(path, mtime_ns, size) and whether `spec/model/` is a folder (`state`). Outside a held scope every call stats them
+again; while a root is held (`held`, as the readiness bar holds its copy) they are statted once, until a writer of the
+root says it changed (`invalidate`, as a lay and an unlay do), and what is kept for that
+state (`memo`: a line's parse) lives exactly as long."""
 import contextlib
 import functools
 import os
@@ -29,7 +30,8 @@ def inputs(root):
     modelled = os.path.isdir(os.path.join(spec, "model"))
     own = (_md(os.path.join(spec, "model")) + _md(os.path.join(spec, "vocabulary")) if modelled
            else _md(os.path.join(spec, "capabilities")))
-    return ([os.path.join(spec, "index.md")] + _md(os.path.join(spec, "packs")) + own + _md(str(PACKS))
+    provided = sorted(str(p) for p in Path(root).glob("provider/**/contract.toml"))     # an adapter spec's (b550)
+    return ([os.path.join(spec, "index.md")] + _md(os.path.join(spec, "packs")) + own + provided + _md(str(PACKS))
             + [str(GRAMMARS / name) for name in BASE])
 
 

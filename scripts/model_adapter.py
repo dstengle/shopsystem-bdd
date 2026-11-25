@@ -7,10 +7,11 @@ the id's path after `bounded-context/`, else a file problem naming the id), its 
 (`<bounded context id>[@<version>]`) has its contract held, `provider/<id's path>/<version>/contract.toml` where
 `spec obtain` keeps it (contract_obtain's `place`), any version when none is named, a version that does not conform
 to the version form (contract_publish's `VERSION`) a file problem naming it, never matched as a pattern (b595,
-checking r93) (`uncontracted`). Its `adr/`, the adapter decisions, and `provider/` are accepted as they are; nothing
-here reads them further."""
+checking r93) (`uncontracted`); adapter_provider's problems of its providers' words and assumed descriptions
+(b550). Its `adr/`, the adapter decisions, is accepted as it is; nothing here reads it further."""
 import re
 
+import adapter_provider
 import contract_obtain
 import contract_publish
 import spec_read
@@ -52,7 +53,8 @@ def path(root, data, ident, problems):
         problems.append(f"spec/index.md: id {ident!r} does not match the adapter spec: it names no folder "
                         f"adapters/{ident.rpartition('/')[2]}/, the adapter spec is kept at adapters/{root.name}/")
         return None
-    problems.extend(unrealised(root, as_list(data.get("realises"))) + uncontracted(root, as_list(data.get("providers"))))
+    problems.extend(unrealised(root, as_list(data.get("realises"))) + uncontracted(root, as_list(data.get("providers")))
+                    + adapter_provider.problems(root))
     return ident.partition("/")[2]
 
 
