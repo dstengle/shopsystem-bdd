@@ -188,10 +188,21 @@ def add(root, name, capability, model=None, relation=None, term=None):
             lines = [x.rstrip() for x in model.replace("\r\n", "\n").split("\n") if x.strip()]
         _checked(root, area, lines, blocks)
         blocks.models[at] = block._replace(lines=tuple(merged(block.lines, lines)))
-        said = "model lines of %s" % area
+        said = "model lines of %s" % area + _left_out(root, area, block.lines, lines)
     item.sections[SECTION] = render(blocks)
     commit(root, item, "work line: %s %s" % (label(item), said))
     return item, said
+
+
+def _left_out(root, area, held, lines):
+    """What `add` says of the member lines an object the lines restate leaves out (drafting r70, b647): each named,
+    the area's model as the item's block lays it the body; nothing when none is left out."""
+    path = model_path(root, area)
+    if not path.is_file():
+        return ""
+    text, start, end = _fence(path.read_text(), "spec/model/%s.md" % area)
+    cut = backlog_model_elements.left_out(merged(text[start:end], held), chunks(lines))
+    return "".join("; the restatement leaves out the member line `%s`" % line for line in cut)
 
 
 def _terms(lines):

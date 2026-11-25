@@ -39,3 +39,15 @@ def unrestate(body, at, header, members, held):
         return False
     body[at:end] = before[old:_end(before, old)]
     return True
+
+
+def left_out(body, chunks):
+    """The member lines of each element of `body` (model lines) that one of `chunks` ([(header, members)]) restates
+    and does not hold, stripped, in the element's order (drafting r70, b647): the lay would cut them."""
+    from backlog_model import _at, _end
+    out = []
+    for header, members in chunks:
+        at = _at(body, header)
+        if at is not None and restates(header, members, body, at, _end(body, at)):
+            out += [line.strip() for line in body[at + 1:_end(body, at)] if line not in members and line.strip()]
+    return out
