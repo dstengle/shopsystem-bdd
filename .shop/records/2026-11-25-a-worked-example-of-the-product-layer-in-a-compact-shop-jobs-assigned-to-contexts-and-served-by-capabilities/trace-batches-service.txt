@@ -1,0 +1,150 @@
+# trace of batches (area execution, context work-management, narrator the person)
+batches#r52  trigger=batches.abandon
+batches#r56  trigger=batches.resume
+  -> NOT context requests.ask [event of an operation's verb, no parameters] owner=context-requests area=tracking ctx=work-management
+  reads question(tracking), session(tracking)
+batches#r60  trigger=batches.park
+  reads item(tracking), requirement(specification), session(tracking)
+batches#r61  trigger=batches.finish
+  reads item(tracking), scenario(specification), session(tracking)
+batches#r62  trigger=batches.finish
+  reads item(tracking), scenario(specification), session(tracking)
+batches#r63  trigger=batches.monitor
+  reads item(tracking)
+batches#r64  trigger=batches.open
+  sets language(capability)=codified-2  <- capability is specification's
+  reads item(tracking), readiness bar(tracking), universal condition(specification)
+batches#r66  trigger=batches.finish
+  reads chore(tracking), item(tracking), session(tracking)
+batches#r67  trigger=batches.finish
+  reads chore(tracking), file(specification), item(tracking), session(tracking)
+batches#r68  trigger=batches.open
+  reads chore(tracking), item(tracking), readiness bar(tracking)
+batches#r70  trigger=batches.finish
+  reads item(tracking), requirement(specification), scenario(specification), session(tracking)
+batches#r71  trigger=batches.open
+  reads corpus(specification), item(tracking), logical form(specification), readiness bar(tracking), requirement(specification)
+batches#r72  trigger=batches.open
+  reads corpus(specification), item(tracking), readiness bar(tracking), requirement(specification), requirement id(tracking)
+batches#r73  trigger=batches.open
+  reads catalogue entry(specification), item(tracking), readiness bar(tracking), requirement(specification), rule(specification)
+batches#r74  trigger=batches.open
+  reads construct(specification), construct catalogue(specification), item(tracking), readiness bar(tracking), requirement(specification)
+batches#r75  trigger=batches.open
+  reads construct(specification), construct catalogue(specification), item(tracking), requirement(specification)
+batches#r76  trigger=batches.open
+  reads capability(specification), index file(upgrades), item(tracking), readiness bar(tracking)
+batches#r77  trigger=batches.finish
+  reads item(tracking), scenario(specification), session(tracking)
+batches#r78  trigger=batches.finish
+  reads capability(specification), feature(specification), item(tracking), requirement id(tracking), scenario(specification), session(tracking)
+batches#r79  trigger=batches.open
+  reads adapter contract(specification), item(tracking), operation table(specification), readiness bar(tracking)
+batches#r80  trigger=batches.open
+  reads adapter contract(specification), item(tracking), operation(specification), operation table(specification), readiness bar(tracking)
+batches#r81  trigger=batches.amend
+  reads item(tracking), requirement(specification)
+batches#r83  trigger=batches.amend
+  reads item(tracking)
+batches#r84  trigger=batches.configure
+batches#r85  trigger=batches.configure
+batches#r86  trigger=batches.configure
+batches#r87  trigger=batches.open
+  reads domain model(tracking), item(tracking), model line(tracking), operation(specification), readiness bar(tracking)
+batches#r90  trigger=batches.amend
+  reads item(tracking), requirement(specification)
+batches#r91  trigger=batches.park
+  reads domain model(tracking), item(tracking), model line(tracking), operation(specification), session(tracking)
+batches#r92  trigger=batches.open
+  reads adapter contract(specification), domain model(tracking), item(tracking), model line(tracking), operation(specification), operation table(specification), readiness bar(tracking)
+batches#r95  trigger=batches.open
+  reads bounded context(specification), item(tracking), pack(specification), readiness bar(tracking), term(specification)
+batches#r96  trigger=batches.amend
+  reads item(tracking), readiness bar(tracking)
+batches#r98  trigger=batches.open
+batches#r99  trigger=batches.open
+batches#r102  trigger=batches.merge
+batches#r104  trigger=batches.open
+batches#r100  trigger=batches.merge
+  -> backlog.deliver [event of an operation's verb, no parameters] owner=items area=tracking ctx=work-management
+  reads item(tracking)
+batches#r101  trigger=batches.open
+  -> backlog.reopen [event of an operation's verb, no parameters] owner=items area=tracking ctx=work-management
+  reads item(tracking), readiness bar(tracking)
+batches#r110  trigger=batches.open
+  -> NOT backlog.allocate [event of an operation's verb, no parameters] owner=items area=tracking ctx=work-management
+  reads dependency(tracking), item(tracking)
+batches#r111  trigger=batches.park
+  -> backlog.suspend [request atom] owner=items area=tracking ctx=work-management
+  reads item(tracking), question(tracking), session(tracking)
+batches#r112  trigger=batches.abandon
+  -> backlog.restore [event of an operation's verb, no parameters] owner=items area=tracking ctx=work-management
+  reads item(tracking)
+batches#r105  trigger=batches.merge
+  -> context requests.resolve [event of an operation's verb, no parameters] owner=context-requests area=tracking ctx=work-management
+  reads context request(tracking), item(tracking), request line(tracking)
+batches#r106  trigger=batches.open
+  -> backlog.reopen [event of an operation's verb, no parameters] owner=items area=tracking ctx=work-management
+  reads item(tracking), readiness bar(tracking), requirement(specification), rule(specification)
+batches#r107  trigger=batches.open
+  -> NOT backlog.allocate [event of an operation's verb, no parameters] owner=items area=tracking ctx=work-management
+  reads item(tracking), readiness bar(tracking)
+batches#r108  trigger=batches.open
+  -> backlog.allocate [event of an operation's verb, no parameters] owner=items area=tracking ctx=work-management
+  reads dependency(tracking), item(tracking), readiness bar(tracking)
+batches#r109  trigger=batches.open
+  -> backlog.reopen [event of an operation's verb, no parameters] owner=items area=tracking ctx=work-management
+  reads item(tracking), readiness bar(tracking), requirement(specification), requirement id(tracking), scenario(specification)
+review-guarantees#r1  trigger=batches.submit
+  -> reviews.review [event of an operation's verb, no parameters] owner=None area=? ctx=?
+reviews#r1  trigger=batches.submit
+  reads item(tracking)
+reviews#r2  trigger=batches.submit
+  reads item(tracking)
+reviews#r3  trigger=batches.submit
+reviews#r4  trigger=batches.submit
+  reads item(tracking)
+reviews#r5  trigger=batches.submit
+reviews#r6  trigger=batches.submit
+reviews#r7  trigger=batches.submit
+  reads file(specification), item(tracking)
+reviews#r8  trigger=batches.submit
+  reads file(specification), item(tracking)
+reviews#r9  trigger=batches.submit
+reviews#r10  trigger=batches.submit
+reviews#r11  trigger=batches.reopen
+reviews#r12  trigger=batches.reopen
+--- depth 1: lines governing the operations reached
+  items#r59  trigger=backlog.allocate
+  items#r60  trigger=backlog.allocate
+  items#r56  trigger=backlog.deliver
+  items#r61  trigger=backlog.deliver
+  items#r31  trigger=backlog.reopen
+  items#r32  trigger=backlog.reopen
+  items#r57  trigger=backlog.restore
+  items#r62  trigger=backlog.restore
+  items#r58  trigger=backlog.suspend
+  items#r63  trigger=backlog.suspend
+  context-requests#r13  trigger=context requests.resolve
+  context-requests#r51  trigger=context requests.resolve
+  context-requests#r55  trigger=context requests.resolve
+  review-guarantees#r2  trigger=reviews.review
+    -> reviews.review [event of an operation's verb, no parameters] owner=None area=? ctx=?
+    reads design-decision(specification)
+  review-guarantees#r4  trigger=reviews.review
+    -> reviews.review [event of an operation's verb, no parameters] owner=None area=? ctx=?
+    -> reviews.review [event of an operation's verb, no parameters] owner=None area=? ctx=?
+    reads item(tracking), requirement(specification)
+  review-guarantees#r5  trigger=reviews.review
+    -> reviews.review [event of an operation's verb, no parameters] owner=None area=? ctx=?
+  review-guarantees#r7  trigger=reviews.review
+    -> reviews.review [event of an operation's verb, no parameters] owner=None area=? ctx=?
+  review-guarantees#r9  trigger=reviews.review
+  review-guarantees#r10  trigger=reviews.review
+    -> reviews.review [event of an operation's verb, no parameters] owner=None area=? ctx=?
+
+## summary
+capabilities in the trace: batches, context-requests, items, review-guarantees, reviews
+contexts in the trace: work-management
+operations reached: backlog.allocate (1), backlog.deliver (1), backlog.reopen (3), backlog.restore (1), backlog.suspend (1), context requests.resolve (1), reviews.review (6)
+lines with no reading: none

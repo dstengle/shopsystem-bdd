@@ -1,0 +1,84 @@
+# trace of checking (area specification, context specification, narrator the person)
+checking#r1  trigger=specification.consult
+checking#r2  trigger=specification.inventory
+checking#r3  trigger=specification.check
+checking#r18  trigger=specification.check
+checking#r19  trigger=specification.check
+  reads requirement id(tracking)
+checking#r20  trigger=specification.check
+checking#r21  trigger=specification.check
+checking#r22  trigger=specification.check
+checking#r23  trigger=specification.check
+checking#r24  trigger=specification.check
+checking#r26  trigger=specification.check
+checking#r27  trigger=specification.check
+checking#r28  trigger=specification.check
+checking#r29  trigger=specification.translate
+checking#r30  trigger=specification.check
+checking#r32  trigger=specification.check
+checking#r33  trigger=specification.check
+checking#r35  trigger=specification.renew
+checking#r36  trigger=specification.renew
+checking#r38  trigger=specification.check
+checking#r39  trigger=specification.check
+checking#r41  trigger=language.look up
+checking#r44  trigger=specification.check
+checking#r46  trigger=specification.check
+checking#r47  trigger=specification.inventory
+checking#r48  trigger=specification.annotate
+checking#r49  trigger=specification.check
+checking#r50  trigger=specification.check
+checking#r51  trigger=specification.annotate
+checking#r52  trigger=specification.check
+checking#r53  trigger=specification.check
+checking#r54  trigger=specification.check
+checking#r55  trigger=specification.check
+checking#r57  trigger=specification.check
+  reads item(tracking)
+checking#r58  trigger=specification.check
+  reads item(tracking)
+checking#r59  trigger=specification.describe
+checking#r60  trigger=specification.describe
+  reads item(tracking)
+checking#r61  trigger=specification.describe
+checking#r62  trigger=specification.describe
+checking#r63  trigger=specification.check
+checking#r64  trigger=specification.prepare
+checking#r65  trigger=specification.prepare
+checking#r66  trigger=specification.prepare
+checking#r67  trigger=specification.check
+checking#r69  trigger=specification.check
+checking#r70  trigger=specification.check
+  reads requirement id(tracking)
+checking#r71  trigger=specification.check
+checking#r72  trigger=specification.check
+checking#r73  trigger=specification.publish
+checking#r74  trigger=specification.publish
+checking#r75  trigger=specification.publish
+checking#r76  trigger=specification.publish
+checking#r77  trigger=specification.publish
+checking#r78  trigger=specification.fetch
+checking#r79  trigger=specification.fetch
+checking#r80  trigger=specification.fetch
+checking#r81  trigger=specification.obtain
+  reads context request(tracking)
+checking#r82  trigger=specification.obtain
+checking#r83  trigger=specification.publish
+checking#r87  trigger=specification.check
+checking#r84  trigger=specification.check
+checking#r85  trigger=specification.check
+  reads requirement id(tracking)
+checking#r86  trigger=specification.check
+checking#r88  trigger=specification.obtain
+checking#r89  trigger=specification.obtain
+checking#r90  trigger=specification.obtain
+checking#r92  trigger=specification.check
+checking#r93  trigger=specification.check
+checking#r91  trigger=specification.obtain
+checking#r94  trigger=specification.obtain
+
+## summary
+capabilities in the trace: checking
+contexts in the trace: specification
+operations reached: 
+lines with no reading: none

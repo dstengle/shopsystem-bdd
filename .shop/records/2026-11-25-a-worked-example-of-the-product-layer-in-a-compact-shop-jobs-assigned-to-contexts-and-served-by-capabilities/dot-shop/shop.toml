@@ -1,0 +1,7 @@
+# .shop/shop.toml: what this shop is and what it hosts (decision 0129). Proposed form "shop".
+id = "shop/missingmass.io/shopsystem-bdd"
+product = "product/"          # the product layer this compact shop holds; absent when the product has its own shop
+
+[[hosts]]                     # each hosted context and its spec root; one flat spec/ for now (decision 0131)
+context = "bounded-context/missingmass.io/shopsystem/shopsystem-bdd"
+spec = "spec/"

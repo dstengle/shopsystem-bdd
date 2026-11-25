@@ -1,0 +1,7 @@
+# The `serves:` lines this worked example proposes, one per serving capability (none exists in spec/ today).
+items j1
+batches j2
+context-requests j3
+checking j4
+upgrades j5
+measurement j6

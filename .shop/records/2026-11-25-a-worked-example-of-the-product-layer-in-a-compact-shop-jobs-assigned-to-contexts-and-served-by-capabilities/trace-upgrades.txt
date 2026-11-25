@@ -1,0 +1,85 @@
+# trace of upgrades (area upgrades, context upgrades, narrator the person)
+upgrades#r1  trigger=upgrades.relocate
+  reads bounded context(specification), file(specification), repository(specification)
+upgrades#r2  trigger=upgrades.relocate
+  reads bounded context(specification), decisions index(specification), design-decision(specification), repository(specification)
+upgrades#r3  trigger=upgrades.relocate
+  reads bounded context(specification), design-decision(specification)
+upgrades#r4  trigger=upgrades.relocate
+  reads bounded context(specification), design-decision(specification)
+upgrades#r5  trigger=upgrades.relocate
+  reads bounded context(specification)
+upgrades#r6  trigger=upgrades.relocate
+  reads bounded context(specification), capability(specification)
+upgrades#r7  trigger=upgrades.relocate
+  reads bounded context(specification)
+upgrades#r8  trigger=upgrades.relocate
+  reads bounded context(specification), repository(specification)
+upgrades#r9  trigger=upgrades.upgrade
+  reads repository(specification)
+upgrades#r10  trigger=upgrades.query
+  reads release(specification), repository(specification)
+upgrades#r11  trigger=upgrades.query
+  reads repository(specification)
+upgrades#r12  trigger=upgrades.query
+  reads repository(specification), version(specification)
+upgrades#r13  trigger=upgrades.upgrade
+  reads repository(specification)
+upgrades#r14  trigger=upgrades.upgrade
+  reads repository(specification)
+upgrades#r15  trigger=upgrades.upgrade
+  reads capability(specification), repository(specification)
+upgrades#r16  trigger=upgrades.upgrade
+  reads feature(specification), repository(specification), requirement(specification), scenario(specification), tag(analysis)
+upgrades#r17  trigger=-
+  reads release(specification), repository(specification), session(tracking)
+upgrades#r18  trigger=-
+  reads repository(specification), session(tracking)
+upgrades#r19  trigger=-
+  reads repository(specification), session(tracking), version(specification)
+upgrades#r20  trigger=upgrades.upgrade
+  reads decisions index(specification), repository(specification)
+upgrades#r21  trigger=upgrades.upgrade
+  reads repository(specification)
+upgrades#r22  trigger=upgrades.upgrade
+  reads repository(specification)
+upgrades#r23  trigger=upgrades.upgrade
+  reads repository(specification)
+upgrades#r24  trigger=upgrades.upgrade
+  reads bounded context(specification), repository(specification), rule(specification), term(specification)
+upgrades#r25  trigger=upgrades.upgrade
+  reads bounded context(specification), capability(specification), repository(specification)
+upgrades#r26  trigger=upgrades.upgrade
+  reads repository(specification), rule(specification), term(specification)
+upgrades#r27  trigger=upgrades.upgrade
+  reads file(specification), repository(specification)
+upgrades#r28  trigger=-
+  reads repository(specification), session(tracking)
+upgrades#r29  trigger=-
+  reads repository(specification), session(tracking)
+upgrades#r30  trigger=upgrades.upgrade
+  reads repository(specification)
+upgrades#r32  trigger=upgrades.found
+  reads bounded context(specification)
+upgrades#r33  trigger=upgrades.found
+  reads bounded context(specification)
+upgrades#r34  trigger=upgrades.found
+  reads bounded context(specification), file(specification)
+upgrades#r35  trigger=upgrades.found
+  reads bounded context(specification), file(specification), repository(specification)
+upgrades#r36  trigger=upgrades.upgrade
+  reads repository(specification)
+upgrades#r37  trigger=upgrades.upgrade
+  reads repository(specification)
+upgrades#r41  trigger=upgrades.found
+  reads bounded context(specification), repository(specification)
+upgrades#r43  trigger=upgrades.found
+  reads bounded context(specification), repository(specification)
+upgrades#r42  trigger=upgrades.found
+  reads bounded context(specification), repository(specification)
+
+## summary
+capabilities in the trace: upgrades
+contexts in the trace: upgrades
+operations reached: 
+lines with no reading: none

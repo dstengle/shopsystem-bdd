@@ -1,0 +1,23 @@
+# trace of measurement (area measurement, context work-management, narrator the person)
+measurement#r2  trigger=measurement.measure
+  reads batch(execution), number(specification), proposed change(execution), review finding(execution)
+measurement#r3  trigger=measurement.report
+  reads batch(execution), item(tracking)
+measurement#r5  trigger=measurement.view
+  reads number(specification)
+measurement#r6  trigger=measurement.view
+measurement#r7  trigger=measurement.view
+  reads number(specification)
+measurement#r9  trigger=measurement.compare
+  reads number(specification)
+measurement#r10  trigger=measurement.compare
+  reads batch(execution)
+measurement#r11  trigger=measurement.compare
+measurement#r12  trigger=measurement.measure
+  reads batch(execution)
+
+## summary
+capabilities in the trace: measurement
+contexts in the trace: work-management
+operations reached: 
+lines with no reading: none

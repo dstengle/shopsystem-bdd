@@ -1,0 +1,84 @@
+# trace of items (area tracking, context work-management, narrator the person)
+items#r1  trigger=backlog.ready
+items#r2  trigger=backlog.ready
+items#r4  trigger=backlog.ready
+  -> NOT context requests.ask [event of an operation's verb, no parameters] owner=context-requests area=tracking ctx=work-management
+items#r5  trigger=backlog.ready
+  reads rule(specification), term(specification)
+items#r6  trigger=backlog.ready
+  reads requirement(specification), translation(specification)
+items#r7  trigger=backlog.ready
+  reads translation(specification), universal condition(specification)
+items#r8  trigger=backlog.ready
+  reads parse(specification), requirement(specification), translation(specification)
+items#r9  trigger=backlog.ready
+  reads requirement(specification)
+items#r10  trigger=backlog.ready
+  reads requirement group(specification), rule(specification)
+items#r11  trigger=backlog.link
+items#r12  trigger=backlog.show
+items#r13  trigger=backlog.note idea
+items#r14  trigger=backlog.shape
+items#r15  trigger=backlog.shape
+items#r16  trigger=backlog.rate
+items#r17  trigger=backlog.list
+items#r19  trigger=backlog.decline
+items#r20  trigger=backlog.answer
+items#r21  trigger=backlog.list
+items#r22  trigger=backlog.note idea
+items#r23  trigger=backlog.note idea
+items#r24  trigger=backlog.note idea
+  reads repository(specification), task(execution), workspace(execution)
+items#r25  trigger=backlog.note idea
+  reads repository(specification), shared workspace(execution), workspace(execution)
+items#r26  trigger=backlog.list
+items#r27  trigger=backlog.shape
+items#r28  trigger=backlog.list
+items#r29  trigger=-
+  reads batch(execution)
+items#r30  trigger=backlog.ready
+items#r31  trigger=backlog.reopen
+items#r32  trigger=backlog.reopen
+items#r38  trigger=backlog.annotate
+items#r39  trigger=backlog.annotate
+items#r34  trigger=backlog.merge
+items#r35  trigger=backlog.ready
+items#r36  trigger=backlog.ready
+items#r37  trigger=backlog.ready
+items#r40  trigger=backlog.ready
+  reads catalogue entry(specification), construct(specification), requirement(specification)
+items#r41  trigger=backlog.ready
+  reads rule(specification)
+items#r42  trigger=backlog.withdraw
+items#r44  trigger=backlog.merge
+items#r45  trigger=backlog.merge
+items#r43  trigger=backlog.merge
+items#r46  trigger=backlog.merge
+items#r47  trigger=backlog.annotate
+items#r48  trigger=backlog.retitle
+items#r49  trigger=backlog.retitle
+items#r50  trigger=backlog.split
+  reads requirement(specification)
+items#r51  trigger=backlog.split
+  reads requirement(specification)
+items#r52  trigger=backlog.split
+items#r53  trigger=backlog.ready
+  reads requirement(specification), universal condition(specification)
+items#r54  trigger=backlog.ready
+  reads requirement(specification), translation(specification), universal condition(specification)
+items#r55  trigger=backlog.ready
+  reads capability(specification), group title(specification), requirement group(specification)
+items#r59  trigger=backlog.allocate
+items#r56  trigger=backlog.deliver
+items#r57  trigger=backlog.restore
+items#r58  trigger=backlog.suspend
+items#r60  trigger=backlog.allocate
+items#r61  trigger=backlog.deliver
+items#r62  trigger=backlog.restore
+items#r63  trigger=backlog.suspend
+
+## summary
+capabilities in the trace: items
+contexts in the trace: work-management
+operations reached: 
+lines with no reading: none

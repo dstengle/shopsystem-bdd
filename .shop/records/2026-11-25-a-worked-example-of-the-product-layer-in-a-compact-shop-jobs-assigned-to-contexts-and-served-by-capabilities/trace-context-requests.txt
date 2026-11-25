@@ -1,0 +1,85 @@
+# trace of context-requests (area tracking, context work-management, narrator the person)
+context-requests#r1  trigger=context requests.settle
+context-requests#r2  trigger=context requests.settle
+context-requests#r3  trigger=context requests.settle
+context-requests#r4  trigger=context requests.raise
+context-requests#r5  trigger=context requests.raise
+context-requests#r6  trigger=context requests.raise
+  reads bounded context(specification)
+context-requests#r7  trigger=context requests.raise
+  reads bounded context(specification), text(specification)
+context-requests#r8  trigger=context requests.settle
+context-requests#r9  trigger=context requests.settle
+context-requests#r10  trigger=context requests.settle
+  reads bounded context(specification)
+context-requests#r11  trigger=context requests.ask
+context-requests#r12  trigger=context requests.reply
+  reads bounded context(specification)
+context-requests#r13  trigger=context requests.resolve
+context-requests#r14  trigger=context requests.survey
+  reads bounded context(specification)
+context-requests#r15  trigger=context requests.inspect
+context-requests#r16  trigger=context requests.raise
+context-requests#r17  trigger=context requests.raise
+  reads bounded context(specification)
+context-requests#r18  trigger=context requests.offer
+context-requests#r20  trigger=context requests.propose
+context-requests#r21  trigger=context requests.catch up
+context-requests#r22  trigger=context requests.pass turn
+context-requests#r23  trigger=context requests.pass turn
+context-requests#r24  trigger=context requests.pass turn
+context-requests#r25  trigger=context requests.pass turn
+context-requests#r26  trigger=context requests.settle
+  reads bounded context(specification)
+context-requests#r27  trigger=context requests.accept
+context-requests#r28  trigger=context requests.accept
+context-requests#r30  trigger=context requests.raise
+  reads repository(specification)
+context-requests#r31  trigger=context requests.pass turn
+  reads repository(specification)
+context-requests#r32  trigger=context requests.serve
+  reads repository(specification)
+context-requests#r33  trigger=context requests.reply
+  reads bounded context(specification)
+context-requests#r34  trigger=context requests.pass turn
+  reads bounded context(specification)
+context-requests#r35  trigger=context requests.pass turn
+  reads bounded context(specification)
+context-requests#r36  trigger=context requests.pass turn
+  reads bounded context(specification)
+context-requests#r37  trigger=context requests.catch up
+context-requests#r38  trigger=context requests.catch up
+context-requests#r39  trigger=context requests.raise
+  reads bounded context(specification)
+context-requests#r40  trigger=context requests.catch up
+context-requests#r41  trigger=context requests.inspect
+context-requests#r42  trigger=context requests.offer
+context-requests#r43  trigger=context requests.propose
+context-requests#r44  trigger=context requests.reply
+context-requests#r45  trigger=context requests.pass turn
+context-requests#r46  trigger=context requests.raise
+  reads bounded context(specification)
+context-requests#r47  trigger=context requests.offer
+  reads capability(specification), requirement(specification)
+context-requests#r48  trigger=context requests.offer
+  reads capability(specification), requirement(specification), term(specification)
+context-requests#r49  trigger=context requests.offer
+  reads capability(specification)
+context-requests#r50  trigger=context requests.offer
+  reads bounded context(specification), capability(specification), requirement(specification), term(specification)
+context-requests#r51  trigger=context requests.resolve
+context-requests#r52  trigger=context requests.serve
+context-requests#r54  trigger=context requests.serve
+context-requests#r55  trigger=context requests.resolve
+context-requests#r56  trigger=context requests.pass turn
+context-requests#r57  trigger=context requests.suggest
+context-requests#r58  trigger=context requests.accept
+  reads term(specification)
+context-requests#r59  trigger=context requests.suggest
+context-requests#r60  trigger=context requests.suggest
+
+## summary
+capabilities in the trace: context-requests
+contexts in the trace: work-management
+operations reached: 
+lines with no reading: none
