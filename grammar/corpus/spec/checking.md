@@ -2178,3 +2178,20 @@ shall [x4: agent the person (constant), x5: specification "the specification of 
     fail(e2, subject: x6, object: x7)
     name(e3, subject: x6, object: x2)
 ```
+
+## r157
+From: b825 r157.
+
+```reading
+While a term means an element that the term does not fit, if the person validates this specification, then the specification service shall fail the check and name the term.
+shall [x3: agent the person (constant), x4: specification "the specification of this bounded context" (indexical), x5: service the specification service (constant), x6: check "the check the trigger makes" (indexical)]
+  while [x1: term, x2: element]
+    not
+      fit(subject: x1, object: x2)
+    mean(subject: x1, object: x2)
+  if
+    request(e1, specification.check, subject: x3, object: x4)
+  response
+    fail(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x1)
+```

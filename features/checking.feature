@@ -1390,3 +1390,13 @@ Feature: Checking
     When the person validates this specification
     Then the specification service fails this check
     And the specification service names the frame f1
+
+  @g157 @r157
+  Scenario: A term whose part of speech does not fit the element it means fails the check
+    Given a term t1
+    And an element e1
+    And the term t1 does not fit the element e1
+    And the term t1 means the element e1
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the term t1

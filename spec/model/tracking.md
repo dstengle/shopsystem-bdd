@@ -137,7 +137,7 @@ service drafting
   operation draft(item, relation row, universal condition, universal condition id, upstream entry, given block, requirement id, requirement, capability, area)
     outcomes: done → the item | refused: relation row not in form, upstream entry not in form, given block not example data, requirement id of no requirement, universal condition id of no condition, chore in the item, capability that exists
   operation recodify(capability, item)  outcomes: done
-  operation reword(requirement)  outcomes: done | refused: requirement of a capability
+  operation reword(requirement, text)  outcomes: done | refused: requirement of a capability
   operation remove(requirement)  outcomes: done | refused: requirement of a capability
   operation assign(chore, item)  outcomes: done | refused: requirement in the item
   operation write(term, item)  outcomes: done | refused: term violating a rule

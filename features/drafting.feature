@@ -112,16 +112,6 @@ Feature: Drafting
     Then the drafting service refuses this request
     And the drafting service names the universal condition id u1
 
-  @g14 @r14
-  Scenario: Rewording a requirement of an item keeps the new requirement
-    Given a requirement r1
-    And an item i1
-    And the item i1 holds the requirement r1
-    And a requirement r2
-    When the person rewords the requirement r1
-    Then the drafting service keeps the requirement r2
-    And the item i1 holds the requirement r2
-
   @g15 @r15
   Scenario: Rewording a requirement of a capability is refused
     Given a requirement r1
@@ -486,15 +476,6 @@ Feature: Drafting
     When the person removes the term t1 from the item i1
     Then the drafting service refuses this request
     And the drafting service names the term t1
-
-  @g49 @r49
-  Scenario: Rewording a term of an item keeps the new term
-    Given a term t1
-    And an item i1
-    And a term t2
-    When the person rewords the term t1 in the item i1
-    Then the drafting service keeps the term t2
-    And the item i1 holds the term t2
 
   @g50 @r50
   Scenario: Rewording a term that an item does not hold is refused
@@ -1186,3 +1167,66 @@ Feature: Drafting
     And the drafting service names the rule r1
     And the drafting service names the rule r2
     And the drafting service does not name the rule r3
+
+  @g103 @r103
+  Scenario: A term written into an item is returned
+    Given a term t1
+    And an item i1
+    When the person writes the term t1 into the item i1
+    Then the drafting service returns the term t1
+
+  @g105 @r105
+  Scenario: A reworded term is kept, returned and the request completed
+    Given a term t1
+    And an item i1
+    And a term t2
+    When the person rewords the term t1 in the item i1
+    Then the drafting service keeps the term t2
+    And the item i1 holds the term t2
+    And the drafting service returns the term t2
+    And the drafting service completes this request
+
+  @g106 @r106
+  Scenario: A reworded requirement is kept and returned with its id
+    Given a requirement r1
+    And an item i1
+    And the item i1 holds the requirement r1
+    And a requirement r2
+    And a requirement id r3
+    When the person rewords the requirement r1
+    Then the drafting service keeps the requirement r2
+    And the item i1 holds the requirement r2
+    And the drafting service returns the requirement id r3
+    And the requirement r2 has the requirement id r3
+    And the drafting service returns the requirement r2
+
+  @g107 @r107
+  Scenario: Rewording a requirement to the text the item holds changes nothing
+    Given a requirement r1
+    And an item i1
+    And the item i1 holds the requirement r1
+    When the person rewords the requirement r1 with the requirement r1
+    Then the drafting service changes nothing
+    And the drafting service names the requirement r1
+
+  @g108 @r108
+  Scenario: A term whose part of speech does not fit the element it means is refused
+    Given a term t1
+    And an element e1
+    And the term t1 does not fit the element e1
+    And the term t1 means the element e1
+    And an item i1
+    When the person writes the term t1 into the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the term t1
+
+  @g109 @r109
+  Scenario: Rewording a term into one whose part of speech does not fit the element it means is refused
+    Given a term t1
+    And an element e1
+    And the term t1 does not fit the element e1
+    And the term t1 means the element e1
+    And an item i1
+    When the person rewords the term t1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the term t1

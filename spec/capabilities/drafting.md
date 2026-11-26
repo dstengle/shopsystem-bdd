@@ -6,7 +6,7 @@ group: service
 area: tracking
 specifies: service drafting
 language: codified-2
-retired: [g99, r99, g100, r100]
+retired: [g99, r99, g100, r100, g49, r49, g14, r14]
 unbuilt: []
 ---
 
@@ -66,10 +66,6 @@ capabilities, retirements, rewordings and chores.
 ### [g13] Retiring a universal condition id that no universal condition has is refused
 - [r13] If the person drafts an item with a universal condition id that no universal condition has, then the drafting
   service shall refuse the request and name the universal condition id.
-
-### [g14] Rewording a requirement of an item keeps the new requirement
-- [r14] When the person rewords a requirement in an item, the drafting service shall keep a different requirement in the
-  item.
 
 ### [g15] Rewording a requirement of a capability is refused
 - [r15] If the person rewords a requirement of a capability, then the drafting service shall refuse the request and name
@@ -180,9 +176,6 @@ capabilities, retirements, rewordings and chores.
 
 ### [g48] Removing a term that an item does not hold is refused
 - [r48] If the person removes a term from an item that does not hold the term, then the drafting service shall refuse the request and name the term.
-
-### [g49] Rewording a term of an item keeps the new term
-- [r49] When the person rewords a term in an item, the drafting service shall keep a different term in the item.
 
 ### [g50] Rewording a term that an item does not hold is refused
 - [r50] If the person rewords a term in an item that does not hold the term, then the drafting service shall refuse the request and name the term.
@@ -336,4 +329,22 @@ capabilities, retirements, rewordings and chores.
 
 ### [g102] Rewording a term into one that breaks a lexicon rule is refused naming each rule
 - [r102] While a term violates `v_t4`, `v_t7`, `v_t11`, `v_t13`, `v_t14` or `v_t19`, if the person rewords the term in an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.
+
+### [g108] A term whose part of speech does not fit the element it means is refused
+- [r108] While a term means an element that the term does not fit, if the person writes the term into an item, then the drafting service shall refuse the request and name the term.
+
+### [g109] Rewording a term into one whose part of speech does not fit the element it means is refused
+- [r109] While a term means an element that the term does not fit, if the person rewords the term in an item, then the drafting service shall refuse the request and name the term.
+
+### [g107] Rewording a requirement to the text the item holds changes nothing
+- [r107] While an item holds a requirement, if the person rewords the requirement in the item with the same text, then the drafting service shall change nothing and name the requirement.
+
+### [g103] A term written into an item is returned
+- [r103] When the person writes a term into an item, the drafting service shall return the term.
+
+### [g105] A reworded term is kept, returned and the request completed
+- [r105] When the person rewords a term in an item, the drafting service shall keep a different term in the item, return the term and complete the request.
+
+### [g106] A reworded requirement is kept and returned with its id
+- [r106] When the person rewords a requirement in an item, the drafting service shall keep a different requirement in the item and return the requirement id of the requirement and the requirement.
 

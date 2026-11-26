@@ -92,7 +92,12 @@ actor      = "actor" name [ "kind of" name ] ;
   reminder"); any other is text. `by` names the actors that may request it (any, when absent).
 - **An outcome** is `done` (a change), `returned` (content), `passed` or `failed` (a check), `notifies` (an event
   told, unasked), or `refused` with its reasons, each a short business phrase. Every reason must be stated by a line
-  (`v_m4`).
+  (`v_m4`). A line states a reason when its response refuses the request and names something: naming a parameter
+  states the reason whose first noun (the first word past `no`, `not`, an article and the like) is that parameter,
+  and naming a thing states each reason that holds its kind's word. So `refused: no title` is stated by "... then
+  the notes service shall refuse the request and name the title" (the example below), and a reason such as
+  `no such note` by a line that names the note; a reason such as `not requested` names no parameter or kind, so no
+  line can state it: word each reason after what a refusing line will name.
 - **An event** is something that happened, raised by an operation; **an actor** is someone who makes requests.
 
 ### What `shop spec check` holds the model to

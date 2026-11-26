@@ -345,3 +345,4 @@ area: specification
 - **the product id form** (proper noun) → object product id form. A dotted domain, then a path, as `example.org/notes`, the id a product is declared with.
 - **the product actor form** (proper noun) → object product actor form. `the` and a noun, as `the writer`, the name a product actor is declared by.
 - **the subdomain id form** (proper noun) → object subdomain id form. Lower-case words joined by hyphens, as `note-keeping`, the id a subdomain is declared with.
+- **fit** (verb, state) → relation term.fits. The part of speech of a term is one that an element of its kind takes: a noun an object or a value, a proper noun a service or an actor, an adjective a value, an attribute an attribute, a verb of action an operation and a verb of state a relation. Forms: fits, fitted. Frame: <term> fits <element>.

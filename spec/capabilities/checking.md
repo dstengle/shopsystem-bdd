@@ -440,6 +440,9 @@ Restates: design-model-check#r13@0.29.
 ### [g156] the check refuses a frame that names no slot, naming the frame
 - [r156] While a term has a frame that takes no noun phrase, if the person validates this specification, then the specification service shall fail the check and name the frame.
 
+### [g157] A term whose part of speech does not fit the element it means fails the check
+- [r157] While a term means an element that the term does not fit, if the person validates this specification, then the specification service shall fail the check and name the term.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.

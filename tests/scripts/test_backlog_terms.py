@@ -26,16 +26,17 @@ def test_two_terms_in_one_run_are_one_commit(ready_repo):
     before = commits(ready_repo)
     done = work(ready_repo, "line", "b1", "--into", "work-queue", "--term", FROB, "--term", TWIDDLE)
     assert done.returncode == 0, done.stderr
-    assert done.stdout == 'b1 "Fix the parser": 2 terms of work-queue\n'
+    assert done.stdout == 'b1 "Fix the parser": 2 terms of work-queue:\n  %s\n  %s\n' % (FROB, TWIDDLE)
     assert commits(ready_repo) == before + 1
     item = backlog_items.find(ready_repo, "b1")
     assert backlog_lines.read(item, "b1.md")[0].terms == [FROB, TWIDDLE]
 
 
-def test_one_term_is_said_as_before(ready_repo):
+def test_one_term_is_said_with_the_term(ready_repo):
+    """drafting r103 (b829): the term written returned on the line that says it was written."""
     write_item(ready_repo, "b1", status="shaped")
     done = work(ready_repo, "line", "b1", "--into", "work-queue", "--term", FROB)
-    assert done.stdout == 'b1 "Fix the parser": a term of work-queue\n', done.stderr
+    assert done.stdout == 'b1 "Fix the parser": a term of work-queue: %s\n' % FROB, done.stderr
 
 
 def test_a_bad_term_among_several_writes_none(ready_repo):
@@ -62,7 +63,7 @@ def test_two_vocabulary_entries_in_one_run_are_one_commit(modelled):
     before = commits(modelled)
     done = work(modelled, "line", "b1", "--into", "notebook", "--term", PIN, "--term", SHELF)
     assert done.returncode == 0, done.stderr
-    assert done.stdout == 'b1 "Fix the parser": 2 vocabulary entries of notes\n'
+    assert done.stdout == 'b1 "Fix the parser": 2 vocabulary entries of notes:\n  %s\n  %s\n' % (PIN, SHELF)
     assert commits(modelled) == before + 1
     blocks = backlog_section.read(backlog_items.find(modelled, "b1"), "b1")
     assert blocks.models[0].terms == (PIN, SHELF)

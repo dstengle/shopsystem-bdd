@@ -73,9 +73,6 @@ def written(step):
     held, line = _requirements(step), step.context["line"]
     if "recodified" in line:
         _block(held, line["recodified"])
-    elif line.get("changed") == "--reword":
-        capability, rid = line["ident"].split("#")
-        assert re.search(r"(?m)^- \[%s\] %s$" % (rid, re.escape(line["written"])), _block(held, capability)), held
     elif line.get("no_line"):
         _bare(step, held)
     elif "retiring" in line:

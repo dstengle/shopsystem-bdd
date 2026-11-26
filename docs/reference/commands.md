@@ -132,7 +132,9 @@ Synopsis: `shop work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retir
 - `--retirement-list <file>`: a retirement list, one pair a line, `<cap>#r<n> <line>`: each line retires its live
   requirement as `--retires` does, all in one commit. An id no requirement has refuses the whole list, naming it,
   and the item is left as it was.
-- `--reword <cap>#r<n>`: the line takes the place of one of the item's own lines, keeping its id and group.
+- `--reword <cap>#r<n>`: the line takes the place of one of the item's own lines, keeping its id and group, and is
+  printed after its id (`<cap>#r<n> reworded: <line>`); a line the item holds with that text already is left as it
+  is, nothing committed, and printed `<cap>#r<n> unchanged: <line>`.
   `--remove <cap>#r<n>` takes one of them out, its group with it when it was the last line, and the id its
   `retires:` pair names; an id no pair names stays. Either refuses an id that is no line of the item, a live requirement's among them.
   `--remove <cap>` with no `#r<n>` takes the item's whole block of the capability out, a new capability's
@@ -141,7 +143,8 @@ Synopsis: `shop work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retir
   lines with its members; given with indented member lines, only those members go. `--reword-model "<header>"
   "<lines>"` puts the model lines given (checked as `--model`'s) in place of the element and its members.
   `--remove-term <term>` takes one of the item's terms out, and `--reword-term <term> "<entry>"` puts the entry,
-  its bullet as `--term` takes it, in its place; a term is named by its word, by `<word> → <element>` when two
+  its bullet as `--term` takes it, in its place, printing `term <term> reworded: <entry>` (`unchanged`, nothing
+  committed, when the item holds that entry already); a term is named by its word, by `<word> → <element>` when two
   entries share the word, or by its whole bullet. A model block left empty goes. Each refuses a model line or a term
   the item does not hold, naming it, and `--into <capability>` picks the area of a model line two areas hold, or of a
   term, as `--term` takes it, the capability's area or its own block.
@@ -151,8 +154,9 @@ Synopsis: `shop work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retir
   `--universal`'s, `--upstream`'s and `--given`'s are) in its place, a universal condition keeping its id. Each
   refuses a piece the item does not hold, naming it.
 - `--term "<bullet>"`: a vocabulary entry (`- **<word>** (<part of speech>) → <element>. ...`) for the vocabulary of
-  the capability's area, in place of a line. Give `--term` more than once to write several entries in one commit;
-  one that does not read refuses them all.
+  the capability's area, in place of a line, printed after what was written (`a vocabulary entry of <area>: <entry>`).
+  Give `--term` more than once to write several entries in one commit, each printed on a line of its own; one that
+  does not read refuses them all.
 - `--pack <name> --term "<bullet>"`: a term entry of the context's own pack `spec/packs/<name>.md`, kept in the
   item's `### <name> pack` block; `shop work batch start` appends it to the pack's `## Glossary`, makes the pack when it
   is missing and adds its name to `spec/index.md`'s `imports:`. A term the pack has already is refused, naming the
