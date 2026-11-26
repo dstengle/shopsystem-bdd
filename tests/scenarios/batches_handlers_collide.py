@@ -1,20 +1,20 @@
-"""An item whose ids collide with its capability's, so that `work batch start`'s pick renumbers them (batches r126-r128,
-b660): over the worlds of batches_handlers_adapter (an operation table), batches_handlers_move (a moved term) and
-batches_handlers_pack (a term of a pack), the item's group and requirement ids made `g1` and `r1`, which its capability
-in `spec/` holds already (work-queue's of readiness_world's codified spec, notebook's of the domain-model fixture); an
-item that holds no group given readiness_world's passing line under those ids. Loaded before batches_handlers_corpus,
-whose handler of "the item holds the requirement id" would take these steps."""
+"""An item whose ids collide with its capability's, so that `work batch start`'s pick renumbers them (batches r126,
+r127, b660): over the worlds of batches_handlers_adapter (an operation table) and batches_handlers_move (a moved term),
+the item's group and requirement ids made `g1` and `r1`, which its capability in `spec/` holds already (work-queue's
+of readiness_world's codified spec, notebook's of the domain-model fixture); an item that holds no group given
+readiness_world's passing line under those ids. Loaded before batches_handlers_corpus, whose handler
+of "the item holds the requirement id" would take these steps."""
 import re
 import sys
 
 B, F = sys.modules["shop_backlog_world"], sys.modules["shop_world_four"]
 four, parts = F.four, F.parts
 BOTH = ("backlog", "batches")
-TAGS = {"r126", "r127", "r128"}
+TAGS = {"r126", "r127"}
 
 
 def mine(step):
-    """True when the step is of batches' scenarios of r126-r128."""
+    """True when the step is of batches' scenarios of r126 and r127."""
     found = sys.modules["vocab"].vocab4.requested.scenario(step.request.node)
     return found is not None and bool(TAGS & set(found.tags))
 
