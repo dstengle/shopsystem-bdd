@@ -68,6 +68,7 @@ FORMS = [
     Form("observation", ".shop/records/observations.md ## <id>", "work observe"),
     Form("delivery settings", ".shop/delivery.toml", "work settings set"),
     Form("kept bounded contexts", ".shop/contexts.toml", "work context keep"),
+    Form("product file", ".shop/product/product.toml", "spec product"),
     Form("design record folder", ".shop/records/<date>-<topic>/design.md", "work record --design"),
     Form("plan record folder", ".shop/records/<date>-<topic>/plan-<k>.md", "work record --plan"),
     Form("published contract", ".shop/contracts/<version>/contract.toml", "spec publish"),
