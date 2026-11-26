@@ -91,8 +91,9 @@ def plural(step):
 
 def framed(step):
     """lodging's world with lodge's two frames of two prepositions, "with" <keeper> first (b751); of one preposition,
-    "on" <agent>, when the scenario brings in one preposition only (b756)."""
-    if len(step.context.get("kinds", {}).get("preposition", ())) == 1:
+    "on" <agent>, in consistency's g47, whose frames share their preposition (b756), picked by its group (b761)."""
+    found = sys.modules["vocab"].vocab4.requested.scenario(step.request.node)
+    if found is not None and Path(found.feature.filename).stem == "consistency" and "g47" in found.tags:
         lodging(step, SHARED, "the registry")
     else:
         lodging(step, FRAMED)
