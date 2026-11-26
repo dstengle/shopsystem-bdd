@@ -58,7 +58,7 @@
 #defined asks/3.  #defined op_object/2.  #defined on_refusal/2.     % a response's request (b543)
 % the bound check (model_bound; v_pb1-v_pb4, b549)
 #defined port_op/1.  #defined outcome/3.  #defined outcome_reason/2.  #defined port_line/1.  #defined core_line/1.
-#defined on_outcome/3.  #defined denies/3.  #defined supports/2.
+#defined on_outcome/3.  #defined denies/3.  #defined supports/2.  #defined on_reply/3.
 % the product check (model_product, b643): the product file's jobs, actors, subdomains and contexts, and each job's trace
 #defined pjob/1.  #defined pjob_actor/2.  #defined pneeds/2.  #defined held_by/2.  #defined here/1.  #defined psub/1.
 #defined psub_serves/2.  #defined addresses/2.  #defined plays/2.  #defined triggers_as/2.  #defined served_here/1.
@@ -501,6 +501,7 @@ label("v_m4", "an operation declares a refusal reason that no line states and no
 reason_stated(O, R) :- states_reason(_, O, R).
 reason_stated(O, R) :- op_reason(O, R), asks(_, O, _), op_object(O, Obj), on_refusal(_, Obj).
 reason_stated(O, R) :- op_reason(O, R), outcome(O, X, "refused"), outcome_reason(X, R), excluded(X).   % b549
+reason_stated(O, R) :- op_reason(O, R), on_reply(Q, "refused", O), core_line(Q).   % a refusal of O's request (b724)
 v_m4(O, R)    :- op_reason(O, R), not reason_stated(O, R).
 label("w_m5", "a lifecycle transition no line causes").
 % fail w_m5: transition("note","status","draft","active").
@@ -532,6 +533,7 @@ v_m7(O)       :- operation(O), not requested(O).
 core_asks(O)  :- asks(Q, O, _), core_line(Q).
 governs(P, O) :- requester(P, O, _), port_line(P).
 handled(X)    :- outcome(O, X, K), on_outcome(Q, K, Obj), core_line(Q), op_object(O, Obj).
+handled(X)    :- outcome(O, X, K), on_reply(Q, K, O), core_line(Q).     % a reply to O's request (reply-trigger, b724)
 excluded(X)   :- outcome(O, X, K), denies(P, O, K), port_line(P).
 label("v_pb1", "a driven port holds an operation that no core line requests in its response").
 % fail v_pb1: port_op("stock.reserve").

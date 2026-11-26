@@ -37,8 +37,42 @@ ENDS = ("refused", "returned", "done", "failed")
 
 
 def requests(part):
-    """The request atoms of a trigger part (spec_lf_request's), in order."""
-    return [a for a in part.body if getattr(a, "pred", None) == "request"]
+    """The request atoms of a trigger part (spec_lf_request's) a trigger makes, in order; a replied one is not."""
+    return [a for a in part.body if getattr(a, "pred", None) == "request" and not replied(a)]
+
+
+def replied(atom):
+    """True of the request a reply is on (reply-trigger, b626: spec_lf_request's `replied`), whose event is a
+    referent of kind request, not the trigger's event."""
+    return getattr(atom, "pred", None) == "request" and isinstance(atom.args[0], Ref)
+
+
+def replies(part):
+    """The replied request atoms of a trigger part, in order."""
+    return [a for a in part.body if replied(a)]
+
+
+def reply(walk, part):
+    """The facts of a trigger on a reply (reply-trigger, b724): "When the stock service completes the request to
+    reserve a note" is `trig(R, reply(K), req(O,()), D, X)`, K the outcome the request pack's verb says (complete
+    `done`, refuse `refused` ...), O the replied request's operation, D the service that replies and X the replied
+    request's object; its parameters are not said, so two lines on one reply of one operation's request on things of
+    one kind are one trigger, and clash as decision 0121 says. Each other atom is the pre-state's."""
+    found = replies(part)
+    if len(found) != 1:
+        raise ValueError("no translation of a trigger on %d replies" % len(found))
+    ref, verb, sense, roles = found[0].args[0], found[0].args[2], found[0].args[3], found[0].args[4]
+    events = [a for a in part.body if getattr(a, "pred", None) == "event"
+              and any(len(r) == 2 and r[1] == ref for r in a.args[3][1:])]
+    kind = outcome(walk, events[0].args[1]) if len(events) == 1 else None
+    if kind not in ENDS:
+        raise ValueError("no translation of a reply that is no outcome of the request")
+    kinds = [r[1] for r in roles if len(r) == 2]
+    key = "req(%s,())" % walk.ids.event(verb, sense)
+    walk.emit("trig", "reply(%s)" % kind, key, walk.term(events[0].args[3][0][1]), walk.obj(kinds))
+    for item in part.body:
+        if item not in found and item not in events:
+            walk.literal(item)
 
 
 def attribute(walk, p):

@@ -823,3 +823,20 @@ shall [x3: thing `response-request` (parameter), x7: agent the person (constant)
   response
     return(e2, subject: x9, object: x10)
 ```
+
+## r44
+From: b724 r44.
+
+```reading
+While a requirement of a capability uses `reply-trigger`, when the person examines this specification with the capability, the specification service shall return a translation of the requirement.
+shall [x3: thing `reply-trigger` (parameter), x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant)]
+  while [x1: requirement, x2: capability]
+    of(x1, x2)
+    use(subject: x1, object: x3)
+  when
+    request(e1, specification.examine, subject: x4, object: x5)
+    param(e1, capability, x2)
+  response [x7: translation]
+    of(x7, x1)
+    return(e2, subject: x6, object: x7)
+```

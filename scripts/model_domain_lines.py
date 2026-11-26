@@ -107,7 +107,8 @@ class Lines:
         pre = [a for p in form.parts if p.op in ("while", "where", "when", "if") for a in p.body
                if isinstance(a, Atom)]     # what the pre-state says, not what a box in it says
         response = [a for p in form.parts if p.op == "response" for a in _atoms(p.body)]
-        reqs = [a for a in _atoms(trigger.body if trigger else ()) if a.pred == "request"]
+        reqs = [a for a in _atoms(trigger.body if trigger else ()) if a.pred == "request"
+                and not isinstance(a.args[0], Ref)]     # a request a reply is on is no request the line makes
         for req in reqs:
             out += self.request(ident, "requester", req, pre)
             out += self.reasons(ident, req.args[1], response)

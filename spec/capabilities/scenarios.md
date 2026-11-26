@@ -268,3 +268,6 @@ the capability `shelf` holds:
 ### [g43] generation introduces the thing a response names by a While part's owner
 - [r43] While a requirement of a requirement group of a capability uses `of-relation` and `while`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step and no when step introduce.
 
+### [g44] generation introduces the thing a reply trigger's request is on
+- [r44] While a requirement of a requirement group of a capability uses `reply-trigger`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step and no when step introduce.
+

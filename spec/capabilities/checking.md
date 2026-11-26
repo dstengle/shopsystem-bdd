@@ -353,6 +353,9 @@ Restates: design-model-check#r13@0.29.
 ### [g124] A product not of the product form is named by the check, which completes
 - [r124] While this product does not conform to the product form, when the person validates this specification, the specification service shall name this product and complete the request.
 
+### [g125] A port outcome a reply trigger is on is handled
+- [r125] While a driven port holds an operation that has an operation outcome and a core line that uses `reply-trigger` handles the operation outcome, when the person validates this specification, the specification service shall complete the request.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.

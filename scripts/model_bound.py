@@ -9,11 +9,14 @@ refused: no stock`: a refusal one outcome a reason) and K its kind (done, return
 Of a line Q (`line_facts`): `port_line(Q)` when its capability's area is a driven port, else `core_line(Q)`;
 `on_outcome(Q, K, Obj)` of each outcome kind K its trigger is on, the request pack's verb of a thing of the object Obj
 ("When the stock service completes a reservation": done and returned, model_domain_lines' `obj` of the reservation);
+`on_reply(Q, K, O)` of each outcome kind K its trigger's reply is, to the request of O it names ("When the stock
+service completes the request to reserve a note": reply-trigger, b724);
 `denies(Q, O, K)` of each outcome kind K its response says the service never gives to the request of O its trigger
 makes ("... shall not refuse the request": refused). model.lp joins them on the model's `op_object(O, Obj)`: a core
-line on an outcome handles it, a port line that denies it excludes it.
+line on an outcome handles it, a core line on a reply of the outcome's kind to the request of its operation handles it
+(a refusal each refusal reason), a port line that denies it excludes it.
 """
-from spec_lf_core import Atom, Box
+from spec_lf_core import Atom, Box, Ref
 
 VERBS = {"complete": ("done", "returned"), "return": ("returned",), "refuse": ("refused",), "fail": ("failed",)}
 KINDS = ("done", "returned", "passed", "failed", "refused")
@@ -55,6 +58,12 @@ def _negated(items, under=False):
                 yield from _negated(x.scope.body, inner)
 
 
+def _replied(atom, ref):
+    """True of the request atom a reply's object `ref` is (spec_lf_request's `replied`: its first argument the
+    referent)."""
+    return atom.pred == "request" and atom.args[0] == ref
+
+
 def line_facts(lines, ident, form, port):
     """The facts of one parsed line: `lines` model_domain_lines' Lines (its `obj`), `port` whether its capability's
     area is a driven port."""
@@ -68,7 +77,9 @@ def line_facts(lines, ident, form, port):
             obj = lines.obj(getattr(ref, "kind", None)) if label != "subject" else None
             if obj:
                 out += [("on_outcome", ident, k, obj) for k in VERBS[a.args[1]]]
-    requested = [a.args[1] for a in said if a.pred == "request"]
+        for role in a.args[3][1:]:     # a reply to the request of O (reply-trigger, b724)
+            out += [("on_reply", ident, k, r.args[1]) for r in said if _replied(r, role[-1]) for k in VERBS[a.args[1]]]
+    requested = [a.args[1] for a in said if a.pred == "request" and not isinstance(a.args[0], Ref)]
     response = [a for p in form.parts if p.op == "response" for a in _negated(p.body)]
     for a, negated in response:
         if negated and a.pred == "event" and a.args[1] in VERBS:

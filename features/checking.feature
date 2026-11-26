@@ -1055,3 +1055,16 @@ Feature: Checking
     When the person validates this specification
     Then the specification service names this product
     And the specification service completes this request
+
+  @g125 @r125
+  Scenario: A port outcome a reply trigger is on is handled
+    Given an operation outcome o2
+    And an operation o1
+    And the operation o1 has the operation outcome o2
+    And a driven port d1
+    And the driven port d1 holds the operation o1
+    And a core line c1
+    And the core line c1 uses `reply-trigger`
+    And the core line c1 handles the operation outcome o2
+    When the person validates this specification
+    Then the specification service completes this request

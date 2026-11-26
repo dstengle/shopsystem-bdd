@@ -1681,3 +1681,20 @@ shall [x1: product "the product this bounded context belongs to" (indexical), x2
     name(e2, subject: x5, object: x1)
     complete(e3, subject: x5, object: x6)
 ```
+
+## r125
+From: b724 r125.
+
+```reading
+While a driven port holds an operation that has an operation outcome and a core line that uses `reply-trigger` handles the operation outcome, when the person validates this specification, the specification service shall complete the request.
+shall [x5: thing `reply-trigger` (parameter), x6: agent the person (constant), x7: specification "the specification of this bounded context" (indexical), x8: service the specification service (constant), x9: request "the request the trigger makes" (indexical)]
+  while [x1: driven port, x2: operation, x3: operation outcome, x4: core line]
+    of(x3, x2)
+    in(x2, x1)
+    use(subject: x4, object: x5)
+    handle(subject: x4, object: x3)
+  when
+    request(e1, specification.check, subject: x6, object: x7)
+  response
+    complete(e2, subject: x8, object: x9)
+```
