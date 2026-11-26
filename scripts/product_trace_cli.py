@@ -1,8 +1,8 @@
 """`spec trace <job>` (b644, product r26-r30): the product service's trace requested on the command line, over
 product_trace: each requirement of the job's trace by its id with why it is in the trace and its text, then each
 adapter spec by its id with why, printed as text, the whole trace the content of a `returned` response (the envelope
-under `--json`). A job no requirement group serves is refused naming it."""
-import product_trace
+under `--json`). A job no requirement group serves is refused naming it. product_trace, which reads clingo, is
+imported by the command alone, so that `spec` builds its parser without clingo."""
 from domain_envelope import Response
 
 
@@ -14,6 +14,7 @@ def text(found):
 
 
 def cmd_trace(args):
+    import product_trace
     found = product_trace.trace(args.root, args.job)
     if not args.json:
         print(text(found), end="")
