@@ -68,7 +68,8 @@ def prepare(parser):
 
 def spelling(parser, names=None):
     """A business reference's CLI spelling by `parser`: a parameter as its option (by the argparse dest, through
-    `names`, {parameter: dest}, where the two differ), a positional as its name; any other reference its own name."""
+    `names`, {parameter: dest}, where the two differ), a positional as its metavar, else its dest (b807); any other
+    reference its own name."""
     names = names or {}
 
     def spell(ref):
@@ -78,7 +79,7 @@ def spelling(parser, names=None):
         dest = names.get(name, name.replace(" ", "_").replace("-", "_"))
         for action in parser._actions:
             if action.dest == dest:
-                return action.option_strings[0] if action.option_strings else dest
+                return action.option_strings[0] if action.option_strings else action.metavar or dest
         return name
     return spell
 
