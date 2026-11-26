@@ -135,7 +135,7 @@ def cmd_depend(args):
 
 
 PIECES = ("text", "term", "relation", "given", "universal", "upstream", "recodify", "model")
-EDITS = ("backlog_area_move", "backlog_model_edit", "backlog_piece_edit", "backlog_serves")  # their own `work line`s
+EDITS = ("backlog_area_move", "backlog_import", "backlog_model_edit", "backlog_piece_edit", "backlog_retire", "backlog_serves")  # their own `work line`s
 
 
 def _change_shape(args):
