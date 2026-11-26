@@ -7,7 +7,7 @@ area: specification
 specifies: service product
 language: codified-2
 retired: [g18, r18]
-unbuilt: []
+unbuilt: [r36]
 ---
 
 # Product
@@ -121,4 +121,7 @@ the job statement `j2` holds "When a change is wanted, reviewed and agreed, the 
 
 ### [g35] A trace follows each provider operation an adapter spec uses
 - [r35] While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and an adapter spec realises the requirement id of the port line and the operation uses another operation and the adapter spec holds a contract that holds a requirement that governs the operation, when the person traces the job, the product service shall return the requirement.
+
+### [g36] A trace keeps a provider's requirement whose id is a local requirement's
+- [r36] While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and an adapter spec realises the requirement id of the port line and the operation uses another operation and the adapter spec holds a contract that holds a different requirement that governs the operation and the requirement has the requirement id, when the person traces the job, the product service shall return the requirement.
 

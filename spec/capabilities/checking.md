@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56, g94, r94, g91, r91, g100, r100]
-unbuilt: []
+unbuilt: [r141]
 ---
 
 # Checking
@@ -394,6 +394,9 @@ Restates: design-model-check#r13@0.29.
 
 ### [g140] A registration the contract registry refuses names the adapter spec and changes nothing
 - [r140] When the contract registry service refuses the request to register a contract for an adapter spec, the specification service shall name the adapter spec and change nothing.
+
+### [g141] Obtaining from a bounded context whose upstream entry holds no shared store is refused as unreachable
+- [r141] While an upstream entry identifies a bounded context and the upstream entry holds no shared store, if the person obtains a contract from the bounded context, then the specification service shall refuse the request and name the bounded context and the `bounded context unreachable` reason.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

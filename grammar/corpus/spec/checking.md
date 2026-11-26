@@ -1905,3 +1905,20 @@ shall [x1: service the contract registry service (constant), x5: service the spe
       change(e3, subject: x5, object: x6)
 ```
 
+## r141
+From: b739 r141.
+
+```reading
+While an upstream entry identifies a bounded context and the upstream entry holds no shared store, if the person obtains a contract from the bounded context, then the specification service shall refuse the request and name the bounded context and the `bounded context unreachable` reason.
+shall [x4: agent the person (constant), x6: service the specification service (constant), x7: request "the request the trigger makes" (indexical), x8: reason `bounded context unreachable` (parameter)]
+  while [x1: upstream entry, x2: bounded context]
+    identify(subject: x1, object: x2)
+    not [x3: shared store]
+      in(x3, x1)
+  if [x5: contract]
+    request(e1, specification.obtain, subject: x4, object: x5, from: x2)
+  response
+    refuse(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x2)
+    name(e4, subject: x6, object: x8)
+```

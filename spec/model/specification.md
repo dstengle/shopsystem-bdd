@@ -427,6 +427,7 @@ object universal condition id kind of text
 object given block kind of text
 
 object upstream entry kind of text
+  relations: holds → shared store (one)
 
 object requirement grammar kind of artifact
 
