@@ -5,7 +5,7 @@ of its block's `retired:`, read off the block's `retires:` pairs (b323), never g
 `--no-line` retires one) is kept. Each commits only the item. A live requirement of a capability is no line of an item:
 `--reword` refuses it, naming its id, as it does any id the item holds no line of (requirements-retired-never-edited);
 `--remove` of an id that is no line of the item but one its block retires reinstates it (b760, drafting r89, r90:
-`_unretiring`), and refuses any other, naming it, as a requirement id not retired by the item."""
+`_unretiring`; the item's own line that retired it kept, its pair out, b768), and refuses any other, naming it, as a requirement id not retired by the item."""
 import re
 
 from backlog_items import Refused, commit, find, label, one_line
@@ -86,14 +86,13 @@ def _written(item, blocks, b):
 
 def _unretiring(item, blocks, capability, rid):
     """`work line --remove <cap>#r<n>` of an id that is no line of the item: reinstated (drafting.reinstate
-    requirement, b760) when the item's block of the capability retires it, the id out of `retired:` and, of a pair
-    naming it with no line of the item's, out of `retires:`, the item's section written; None. Refused, naming the
-    id, when no block retires it."""
+    requirement, b760) when the item's block of the capability retires it, the id out of `retired:` and every pair
+    naming it out of `retires:`, an item's own line of such a pair kept, retiring nothing (drafting r91, b768); the
+    item's section written; None. Refused, naming the id, when no block retires it."""
     for b, block in enumerate(blocks):
         if block.capability == capability and rid in block.retired:
-            lines = {r for group in block.groups for r, _ in group.requirements}
             blocks[b] = block._replace(retired=tuple(r for r in block.retired if r != rid),
-                                       retires=tuple(p for p in block.retires if p[1] != rid or p[0] in lines))
+                                       retires=tuple(p for p in block.retires if p[1] != rid))
             _written(item, blocks, b)
             return
     ident = "%s#%s" % (capability, rid)
