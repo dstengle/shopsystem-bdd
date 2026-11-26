@@ -31,16 +31,16 @@ def assign(product, job, context):
 def map_actor(product, actor, context, called, here=None):
     """The product with the product actor `actor` among the actors of the bounded context `context`, called `called`
     there; refused naming the id when it is not of the context id form, the product actor when the product does not
-    hold it, and the actor when `context` is this bounded context, `here` (its id, the actors its domain model holds),
+    hold it (before the actor, b813), and the actor when `context` is this bounded context, `here` (its id, the actors its domain model holds),
     and its domain model does not hold it."""
     conformed(context, "parameter:bounded context")
+    if actor not in product.get("actors", []):
+        raise Refused("{names} %r is no actor of the product" % actor, reason="product actor outside the product",
+                      names=["parameter:product actor"])
     if here and context == here[0] and called not in here[1]:
         raise Refused("{names} %r is no actor of the domain model of %s; it holds %s" % (
             called, context, ", ".join(repr(a) for a in sorted(here[1])) or "no actor"),
             reason="actor outside the domain model", names=["parameter:actor"])
-    if actor not in product.get("actors", []):
-        raise Refused("{names} %r is no actor of the product" % actor, reason="product actor outside the product",
-                      names=["parameter:product actor"])
     held = product.get("contexts", {})
     entry = held.get(context, {})
     return {**product, "contexts": {**held, context: {**entry, "actors": {**entry.get("actors", {}), actor: called}}}}
