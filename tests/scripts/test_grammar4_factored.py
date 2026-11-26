@@ -2,11 +2,9 @@
 it may follow (`O_RS`), and attached to the noun of each kind under it (`K_RelCN_O`), in place of a fun per gap and
 kind. A refactor with no change of meaning: every live line of this repository and of docs/examples/notes-cli/ reads
 to the logical form it read to before, kept in tests/scripts/fixtures/grammar4-factored/forms.json, which `write`
-made from the grammar before the factoring. A form is read with its verbs' sense numbers dropped (`take#3(` as
-`take(`, b715): a sense's number comes from the order of the layers, so a sense an item adds renumbers the others."""
+made from the grammar before the factoring."""
 import json
 import pathlib
-import re
 import sys
 
 import spec_grammar4
@@ -20,12 +18,6 @@ import toolchain
 REPO = pathlib.Path(__file__).resolve().parents[2]
 ROOTS = {"repository": REPO, "notes-cli": REPO / "docs" / "examples" / "notes-cli"}
 FIXTURE = REPO / "tests" / "scripts" / "fixtures" / "grammar4-factored" / "forms.json"
-SENSE = re.compile(r"#\d+\(")
-
-
-def unsensed(form):
-    """`form` with each verb's sense number dropped."""
-    return SENSE.sub("(", form)
 
 
 def lines(root):
@@ -47,7 +39,7 @@ def reading(root, line):
         return "refused: %s" % parsed.refusal
     vocab = spec_grammar4.load(root)[0]
     why = spec_lf_read.refusal(vocab, parsed.tree)
-    return "refused: %s" % why if why else unsensed(spec_lf.show(spec_lf.form(vocab, parsed.tree)))
+    return "refused: %s" % why if why else spec_lf.show(spec_lf.form(vocab, parsed.tree))
 
 
 def forms():
@@ -68,7 +60,7 @@ def test_every_live_line_reads_to_the_form_it_read_to_before_the_factoring():
     changed = ["%s %s: %s\n  was: %s\n  now: %s" % (name, rid, line["line"], line["form"],
                                                    now[name].get(rid, {}).get("form"))
                for name, ids in kept.items() for rid, line in ids.items()
-               if now[name].get(rid, {}).get("line") == line["line"] and now[name][rid]["form"] != unsensed(line["form"])]
+               if now[name].get(rid, {}).get("line") == line["line"] and now[name][rid]["form"] != line["form"]]
     assert changed == []
 
 
