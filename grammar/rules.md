@@ -1131,7 +1131,7 @@ a verb's Frame: does not read as its subject, the verb and the kinds it takes
 - Since: b106
 - Changed: b123
 - Severity: error
-- Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`, `scripts/upgrades/migrate_upgrade_frames.py`
+- Implemented in: `scripts/model.lp`, `scripts/backlog_term_rules.py`, `scripts/spec_frames.py`, `scripts/upgrades/migrate_upgrade_frames.py`
 - Cited by: checking#r151, drafting#r101, drafting#r102
 - Fails on:
 
@@ -1152,7 +1152,7 @@ a verb's entry says neither state nor action
 - Purpose: Each verb says whether it names a state or an action, so triggers, conditions and responses use it correctly.
 - Since: b131
 - Severity: error
-- Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`
+- Implemented in: `scripts/model.lp`, `scripts/backlog_term_rules.py`, `scripts/spec_frames.py`
 - Cited by: drafting#r101, drafting#r102
 - Fails on:
 
