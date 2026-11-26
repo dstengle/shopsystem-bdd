@@ -100,3 +100,14 @@ def test_an_import_resolves_through_an_area_folder(tmp_path):
                      ("a", "b", "tests/b_test.py -> src/a_one.py")]
     files = set(spec_coupling_imports.tracked(root))
     assert spec_coupling_imports.folders(spec_coupling_imports.groups(root), files) == ["src", "tests"]
+
+
+def test_a_name_of_one_stem_in_two_area_folders_is_a_same_stem_clash(tmp_path):
+    """b785: `import store` from b names `a/store.py` and `c/store.py` alike past b's folder and the root, so it is
+    ambiguous and couples nothing; a name one area folder holds still couples."""
+    import spec_coupling_imports
+    root = _repo(tmp_path, {
+        "a/store.py": "", "c/store.py": "", "c/shelf_c.py": "",
+        "b/shelf.py": "import store\nimport shelf_c\n",
+    }, '[a]\nmodules = ["a/*.py"]\n\n[b]\nmodules = ["b/*.py"]\n\n[c]\nmodules = ["c/*.py"]\n')
+    assert sorted(spec_coupling_imports.imports(root)) == [("c", "b", "b/shelf.py -> c/shelf_c.py")]

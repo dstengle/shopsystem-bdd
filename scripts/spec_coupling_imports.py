@@ -4,7 +4,7 @@ folders; a file two tables match the first table's, a file none matches no area'
 file (a `.py` file or one with a `python` shebang) of one area whose import or from-import statement, read by ast,
 names a tracked Python file of another area (a bare name a file of the importer's folder, else a dotted name resolved
 under the root, else under each folder that holds an area's file, a package's by the folder above its packages, as the
-path a program or a test runs with: `folders`, `imported`, b772), the coupling of the imported file's area by the importer's holding `<importer> ->
+path a program or a test runs with, a name two of them hold naming none: `folders`, `imported`, b772, b785), the coupling of the imported file's area by the importer's holding `<importer> ->
 <imported>` (`imports`)."""
 import ast
 import re
@@ -93,17 +93,26 @@ def folders(declared, files):
 
 def imported(importer, level, module, files, extra=()):
     """The tracked Python file `module` names from `importer`, else None; an absolute name looked up in the
-    importer's folder, the root, then each of `extra` (`folders`)."""
+    importer's folder, the root, then `extra` (`folders`): a name that names a file under two or more of `extra`
+    is ambiguous and names none of them (b785), so no coupling that may not be there is reported."""
     folder = PurePosixPath(importer).parent
     for _ in range(max(level - 1, 0)):
         folder = folder.parent
     parts = module.split(".")
-    bases = [folder] if level else [folder, PurePosixPath("."), *map(PurePosixPath, extra)]
-    for base in bases:
-        for candidate in (base.joinpath(*parts[:-1], parts[-1] + ".py"), base.joinpath(*parts, "__init__.py")):
-            name = str(candidate)
-            if name in files:
-                return name
+    if level:
+        return _under(folder, parts, files)
+    found = _under(folder, parts, files) or _under(PurePosixPath("."), parts, files)
+    if found:
+        return found
+    named = [n for n in (_under(PurePosixPath(base), parts, files) for base in extra) if n]
+    return named[0] if len(named) == 1 else None
+
+
+def _under(base, parts, files):
+    """The tracked file the dotted `parts` name under `base`, a module's before a package's, else None."""
+    for candidate in (base.joinpath(*parts[:-1], parts[-1] + ".py"), base.joinpath(*parts, "__init__.py")):
+        if str(candidate) in files:
+            return str(candidate)
     return None
 
 
