@@ -1141,7 +1141,7 @@ a trigger on a service's reply to a request of an operation, said with the reque
 - Since: b626
 - Form: <service> completes|returns|refuses the request to <operation verb> <np>
 - Functions: `rq_\w+`
-- Cited by: checking#r125, consistency#r44, parsing#r25, parsing#r26, scenarios#r44
+- Cited by: checking#r125, consistency#r44, parsing#r25, parsing#r26, parsing#r27, scenarios#r44
 - Context: `grammar/corpus/constructs/request/`
 - Example and its reading:
 
@@ -1151,6 +1151,28 @@ shall [x1: service the registry (constant), x4: service the decisions service (c
   when [x2: request, x3: design-decision]
     request(x2, registry.publish, object: x3)
     complete(e1, subject: x1, object: x2)
+  response
+    keep(e2, subject: x4, object: x3)
+```
+
+## reply-failure
+
+a trigger on a service's failure of a request of an operation, the request pack's fail said of the request as complete, return and refuse are (b727)
+
+- Purpose: Lets a trigger be a service's failure of a request the core made, as its other replies are, so a compensation on a failed reply can be written.
+- Since: b727
+- Form: <service> fails the request to <operation verb> <np>
+- Functions: `rq_\w+`
+- Cited by: parsing#r29, parsing#r28
+- Context: `grammar/corpus/constructs/request/`
+- Example and its reading:
+
+```construct
+When the registry fails the request to publish a design-decision, the decisions service shall keep the design-decision.
+shall [x1: service the registry (constant), x4: service the decisions service (constant)]
+  when [x2: request, x3: design-decision]
+    request(x2, registry.publish, object: x3)
+    fail(e1, subject: x1, object: x2)
   response
     keep(e2, subject: x4, object: x3)
 ```

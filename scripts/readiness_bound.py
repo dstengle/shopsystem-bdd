@@ -3,7 +3,11 @@ and v_pb2 an outcome of one (`<service>.<operation> <kind>`), never a group or a
 and `work batch start`'s check of an item's violations reads them apart: one is the item's when its operation is one
 the item's model lines declare (`declared`, readiness_bar's `model_elements`) or one of its lines requests, in its
 trigger or its response (`requester`, `asks`: a port line governs it, a core line asks it) (`operations`), each
-named with its operation or its outcome and the rule (`reasons`)."""
+named with its operation or its outcome and the rule (`reasons`); `work batch start` counts only those its lay adds
+to the base's (`before`, b725), as the readiness bar counts only those an item's lay adds."""
+import shutil
+import tempfile
+from pathlib import Path
 
 BOUND = ("v_pb1", "v_pb2")
 
@@ -33,3 +37,25 @@ def reasons(found, ops, labels):
             what = "the operation" if name == "v_pb1" else "the operation outcome"
             out.append("%s %s: %s %s" % (what, args[0], name, labels.get(name, "")))
     return out
+
+
+def before(tree):
+    """The bound check's violations of the spec at `tree` before a lay, as (code, args) of strings: the readiness bar's
+    result of a copy of that spec kept on disk (readiness_before), which its check of the batch's first item kept, else
+    `model.lp` solved on the tree (b725)."""
+    import readiness_before
+    import spec_catalogued
+    copy = Path(tempfile.mkdtemp(prefix="bound-"))
+    try:
+        shutil.copytree(Path(tree) / "spec", copy / "spec")
+        spec_catalogued.copy(tree, copy)
+        kept = readiness_before.get(copy, readiness_before.key(copy))
+    finally:
+        shutil.rmtree(copy, ignore_errors=True)
+    if kept is not None:
+        found = kept[1]
+    else:
+        from model_check import solve
+        from model_facts import Model
+        found = {(name, tuple(str(a) for a in args)) for name, args in solve(Model(tree).read())[0]}
+    return {(name, args) for name, args in found if name in BOUND}

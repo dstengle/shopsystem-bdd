@@ -127,17 +127,19 @@ class _Broken(Exception):
     """The lay broke a rule: (item, reasons) of each picked item whose requirement violates one."""
 
 
-def violating(tree, picked):
+def violating(tree, picked, before=frozenset()):
     """(item, reasons) of each picked item a requirement of which violates a `model.lp` rule of severity error (a code
     `v...`; `w_...` is a warning) on the laid worktree, each reason naming the requirement and the rule (b478), or of
     the bound check's (v_pb1, v_pb2) whose operation its model lines declare or its lines request, naming the operation
-    or the outcome and the rule (readiness_bound, b721)."""
+    or the outcome and the rule (readiness_bound, b721), of those only the ones not in `before`, the worktree's before
+    the lay (b725)."""
     from model_check import solve
     from model_facts import Model
     from readiness_bar import model_elements
     model = Model(tree).read()
     relations, labels = solve(model)
-    bound = {(name, tuple(args)) for name, args in relations if name in readiness_bound.BOUND}
+    bound = {(name, tuple(str(a) for a in args)) for name, args in relations
+             if name in readiness_bound.BOUND} - set(before)
     found = []
     for item in picked:
         blocks = backlog_lines.read(item, backlog_items.rel_of(item.name))
@@ -165,8 +167,9 @@ def _build(root, base, picked, returned):
     try:
         add_tree(root, tree, name, forked)
         unwritten = []
+        before = readiness_bound.before(tree)       # the base's unhandled outcomes are no picked item's (b725)
         changed = lay_lines(tree, picked, unwritten)
-        broken = violating(tree, picked) or batch_laid.passing(root, tree, picked)
+        broken = violating(tree, picked, before) or batch_laid.passing(root, tree, picked)
         if broken:
             raise _Broken(broken)
         if changed:                 # a pick of chore items only lays no line (b316): the commit is still made

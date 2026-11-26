@@ -257,3 +257,30 @@ Feature: Parsing
     When the person parses the requirement r1 with the logical form
     Then the language service returns the logical form l1
     And the logical form l1 holds the replied request r2
+
+  @g27 @r27
+  Scenario: A reply trigger on a request of a plural object is refused
+    Given a requirement r1
+    And the requirement r1 uses `reply-trigger`
+    And a plural object p1
+    And the requirement r1 has the plural object p1
+    When the person parses the requirement r1
+    Then the language service refuses this request
+    And the language service names the requirement r1
+
+  @g28 @r28
+  Scenario: The logical form keeps the request a failure is on
+    Given a requirement r1
+    And the requirement r1 uses `reply-failure`
+    And a replied request r2
+    And a logical form l1
+    When the person parses the requirement r1 with the logical form
+    Then the language service returns the logical form l1
+    And the logical form l1 holds the replied request r2
+
+  @g29 @r29
+  Scenario: A trigger on a failed request about its object is parsed
+    Given a requirement r1
+    And the requirement r1 uses `reply-failure`
+    When the person parses the requirement r1
+    Then the language service completes this request

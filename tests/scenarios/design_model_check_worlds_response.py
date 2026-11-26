@@ -3,7 +3,8 @@ design_model_check_worlds' TABLE takes first: the construct catalogue's request 
 (grammar/corpus/constructs/request/: the decisions core and the registry port beside it), r1 a line whose response
 asks the registry to publish the design-decision with a summary, which parsing's scenarios parse (and read in the
 logical form) and consistency's translate with `spec logic`; and r1 a trigger on the registry's reply to the request
-to publish the design-decision (b626, `reply-trigger`)."""
+to publish the design-decision (b626, `reply-trigger`), or to publish every design-decision, a plural object no
+reading gives a request (b726), and on its failure of that request (b727, `reply-failure`)."""
 import importlib.util
 import sys
 from pathlib import Path
@@ -22,6 +23,11 @@ REQUESTING = ("When the person enters a design-decision, the decisions service s
               "with the summary `s1`.")
 REPLYING = ("When the registry completes the request to publish a design-decision, the decisions service shall keep "
             "the design-decision.")
+FAILING = ("When the registry fails the request to publish a design-decision, the decisions service shall keep the "
+           "design-decision.")
+
+PLURAL = ("When the registry completes the request to publish every design-decision, the decisions service shall keep "
+          "a design-decision.")
 
 
 def requesting(step, text=REQUESTING):
@@ -36,7 +42,20 @@ def replying(step):
     requesting(step, REPLYING)
 
 
+def failing(step):
+    """The request context with r1 a trigger on the registry's failure of the request to publish (b727), written here,
+    not read off the catalogue."""
+    requesting(step, FAILING)
+
+
+def plural(step):
+    """The request context with r1 a trigger on the reply to a request of a plural object (b726)."""
+    requesting(step, PLURAL)
+
+
 ROWS = [
+    (("requirement use `reply-failure`",), failing, {}),
+    (("requirement use `reply-trigger`", "requirement has plural object"), plural, {}),
     (("requirement use `reply-trigger`",), replying, {}),
     (("requirement use `response-request`",), requesting, {}),
 ]

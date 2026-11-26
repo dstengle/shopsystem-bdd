@@ -387,3 +387,47 @@ shall [x1: agent the person (constant), x3: thing `reply-trigger` (parameter), x
     in(x6, x5)
     return(e2, subject: x4, object: x5)
 ```
+
+## r27
+From: b726 r27.
+
+```reading
+While a requirement uses `reply-trigger` and the requirement has a plural object, if the person parses the requirement, then the language service shall refuse the request and name the requirement.
+shall [x2: thing `reply-trigger` (parameter), x4: agent the person (constant), x5: service the language service (constant), x6: request "the request the trigger makes" (indexical)]
+  while [x1: requirement, x3: plural object]
+    use(subject: x1, object: x2)
+    of(x3, x1)
+  if
+    request(e1, language.parse, subject: x4, object: x1)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x1)
+```
+
+## r28
+From: b727 r28.
+
+```reading
+When the person parses a requirement that uses `reply-failure` with the logical form, the language service shall return a logical form that holds a replied request.
+shall [x1: agent the person (constant), x3: thing `reply-failure` (parameter), x4: service the language service (constant)]
+  when [x2: requirement]
+    use(subject: x2, object: x3)
+    request(e1, language.parse, subject: x1, object: x2)
+    param(e1, logical form, on)
+  response [x5: logical form, x6: replied request]
+    in(x6, x5)
+    return(e2, subject: x4, object: x5)
+```
+
+## r29
+From: b727 r29.
+
+```reading
+When the person parses a requirement that uses `reply-failure`, the language service shall complete the request.
+shall [x1: agent the person (constant), x3: thing `reply-failure` (parameter), x4: service the language service (constant), x5: request "the request the trigger makes" (indexical)]
+  when [x2: requirement]
+    use(subject: x2, object: x3)
+    request(e1, language.parse, subject: x1, object: x2)
+  response
+    complete(e2, subject: x4, object: x5)
+```

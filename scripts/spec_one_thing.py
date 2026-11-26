@@ -6,11 +6,14 @@ refuses a line with no other reading naming the object and the verb (`refusal`).
 frames of one verb its two readings differ by (`frames`), which the refusal names beside the words.
 
 A tree is spec_meaning's nested lists; a verb's frame is its fun `e_<verb>_<aspect>_<n>_<m>` (spec_rgl) or, with its
-parameters, `q_<verb>_<n>_<m>` (spec_rgl_ops), n the verb's entry and m its frame there.
+parameters, `q_<verb>_<n>_<m>` (spec_rgl_ops), n the verb's entry and m its frame there; "the request to V <np>" a
+reply is on, `rq_<verb>_<n>_<m>` (spec_rgl_ops' `replied`, b626), is a request wherever it stands, its arguments after
+the request's noun (b726).
 """
 import re
 
 FRAME = re.compile(r"^(?:e_\w+_(?:action|state)|q_\w+)_(\d+)_(\d+)$")
+REPLIED = re.compile(r"^rq_\w+_(\d+)_(\d+)$")
 PLURAL_DETS = {"DetPl", "DetThePl", "DetEvery", "DetCount", "DetTwo"}
 
 
@@ -41,17 +44,21 @@ def several(arg):
 
 def plural(vocab, tree, trigger=False):
     """(the verb's word, the argument's tree) of the first plural object of a request in `tree`, a verb naming an
-    operation in a trigger (`<S>_Event`, `<S>_Request`) or a response's act of it with its parameters (`<D>_ActReq_<S>`),
-    else None. A response's act of such a verb with no parameters is no request (spec_lf_request) and keeps its
+    operation in a trigger (`<S>_Event`, `<S>_Request`), a response's act of it with its parameters (`<D>_ActReq_<S>`)
+    or the request a reply is on (`rq_`, b726), else None. A response's act of such a verb with no parameters is no request (spec_lf_request) and keeps its
     plurals: "the toolchain service shall install every analysis tool"."""
     if isinstance(tree, str):
         return None
     trigger = trigger or (tree[0].endswith(("_Event", "_Request")) or "_ActReq_" in tree[0])
     numbers = _numbers(tree[0]) if trigger else None
+    replied = REPLIED.match(tree[0])
+    if replied:
+        numbers = (int(replied.group(1)), int(replied.group(2)))
     if numbers and vocab.verbs[numbers[0] - 1].term.operation:
         v = vocab.verbs[numbers[0] - 1]
         slots = [k for _, k in v.frames[numbers[1] - 1][1] if k]
-        for arg in tree[1:1 + len(slots)]:
+        first = 2 if replied else 1     # an rq_ fun's first argument the request's noun
+        for arg in tree[first:first + len(slots)]:
             if several(arg):
                 return v.term.term, arg
     for arg in tree[1:]:

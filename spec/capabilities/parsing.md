@@ -90,3 +90,12 @@ A line parsed in the controlled language to one meaning or refused with why, its
 ### [g26] The logical form keeps the request a reply is on
 - [r26] When the person parses a requirement that uses `reply-trigger` with the logical form, the language service shall return a logical form that holds a replied request.
 
+### [g27] A reply trigger on a request of a plural object is refused
+- [r27] While a requirement uses `reply-trigger` and the requirement has a plural object, if the person parses the requirement, then the language service shall refuse the request and name the requirement.
+
+### [g29] A trigger on a failed request about its object is parsed
+- [r29] When the person parses a requirement that uses `reply-failure`, the language service shall complete the request.
+
+### [g28] The logical form keeps the request a failure is on
+- [r28] When the person parses a requirement that uses `reply-failure` with the logical form, the language service shall return a logical form that holds a replied request.
+

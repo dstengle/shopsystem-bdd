@@ -6,7 +6,7 @@ group: service
 area: execution
 specifies: object batch, object task, service batches
 language: codified-2
-retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146, g152, r152, g149, r149, g154, r154]
+retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146, g152, r152, g149, r149, g154, r154, g160, r160]
 unbuilt: []
 ---
 
@@ -276,9 +276,6 @@ when the change is merged.
 ### [g159] A batch with running tasks none of which is built asks the driver to build every running task with its brief
 - [r159] While a batch is `building` and two tasks of items in the batch are `running` and no task of the batch is `failed` and no workspace of a task of the batch holds a kept change that cites an item in the batch, when the driver polls the batch, the batches service shall return a batch step whose instruction is `build task`, every task of the batch whose status is `running` and the batch brief of the batch.
 
-### [g160] A ready item whose port outcome no line handles is reopened at the batch's opening
-- [r160] While an item is `ready` and the item holds a port line that governs an operation and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, if the person opens a batch, then the batches service shall reopen the item and name the operation outcome.
-
 ### [g163] A batch whose failure has a fix is polled for its submit
 - [r163] While a batch is `building` and every task of the batch is `done` and a scenario breaks in the workspace of the batch and a fix exists, when the driver polls the batch, the batches service shall return a batch step whose instruction is `submit batch`.
 
@@ -293,4 +290,10 @@ when the change is merged.
 
 ### [g165] A building batch whose every item is parked is polled for its abandonment
 - [r165] While a batch is `building` and the status of every item in the batch is `needs-input`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `abandon batch`.
+
+### [g166] A ready item whose operation's outcome the base leaves unhandled is opened in the batch
+- [r166] While an item is `ready` and the item meets the readiness bar and the item holds a port line that governs an operation and another port line that governs the operation is not in the item and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, when the person opens a batch, the batches service shall set the status of the item to `in-batch`.
+
+### [g167] work batch start counts only the outcome violations an item adds, as the readiness bar does
+- [r167] While an item is `ready` and the item holds a port line that governs an operation and every port line that governs the operation is in the item and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, if the person opens a batch, then the batches service shall reopen the item and name the operation outcome.
 
