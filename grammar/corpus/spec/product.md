@@ -1067,3 +1067,102 @@ shall [x6: agent the person (constant), x7: service the product service (constan
     refuse(e2, subject: x7, object: x8)
     name(e3, subject: x7, object: x1)
 ```
+
+## r69
+From: b824 r69.
+
+```reading
+If the person maps a product actor that is in the product with a bounded context that is not in the product and an actor, then the product service shall refuse the request and name the bounded context.
+shall [x1: agent the person (constant), x3: product "the product this bounded context belongs to" (indexical), x6: service the product service (constant), x7: request "the request the trigger makes" (indexical)]
+  if [x2: product actor, x4: bounded context, x5: actor]
+    in(x2, x3)
+    not
+      in(x4, x3)
+    request(e1, product.map, subject: x1, object: x2)
+    param(e1, bounded context, x4)
+    param(e1, actor, x5)
+  response
+    refuse(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x4)
+```
+
+## r70
+From: b827 r70.
+
+```reading
+While this product has an id, if the person declares a product with an id that this product does not have, then the product service shall refuse the request and name the id.
+shall [x1: product "the product this bounded context belongs to" (indexical), x3: agent the person (constant), x6: service the product service (constant), x7: request "the request the trigger makes" (indexical)]
+  while [x2: id]
+    of(x2, x1)
+  if [x4: product, x5: id]
+    not
+      of(x5, x1)
+    request(e1, product.declare, subject: x3, object: x4)
+    param(e1, id, x5)
+  response
+    refuse(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x5)
+```
+
+## r71
+From: b827 r71.
+
+```reading
+If the person declares a product with an id that does not conform to the product id form, then the product service shall refuse the request and name the id.
+shall [x1: agent the person (constant), x4: artifact the product id form (constant), x5: service the product service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x2: product, x3: id]
+    not
+      conforms(x3, x4)
+    request(e1, product.declare, subject: x1, object: x2)
+    param(e1, id, x3)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x3)
+```
+
+## r72
+From: b827 r72.
+
+```reading
+If the person declares a product actor that does not conform to the product actor form, then the product service shall refuse the request and name the product actor.
+shall [x1: agent the person (constant), x3: artifact the product actor form (constant), x4: service the product service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: product actor]
+    not
+      conforms(x2, x3)
+    request(e1, product.declare actor, subject: x1, object: x2)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r73
+From: b827 r73.
+
+```reading
+If the person declares a subdomain with an id that does not conform to the subdomain id form, then the product service shall refuse the request and name the id.
+shall [x1: agent the person (constant), x4: artifact the subdomain id form (constant), x5: service the product service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x2: subdomain, x3: id]
+    not
+      conforms(x3, x4)
+    request(e1, product.declare subdomain, subject: x1, object: x2)
+    param(e1, id, x3)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x3)
+```
+
+## r74
+From: b827 r74.
+
+```reading
+While this product has no id, if the person declares a product actor, then the product service shall refuse the request and name this product.
+shall [x1: product "the product this bounded context belongs to" (indexical), x3: agent the person (constant), x5: service the product service (constant), x6: request "the request the trigger makes" (indexical)]
+  while
+    not [x2: id]
+      of(x2, x1)
+  if [x4: product actor]
+    request(e1, product.declare actor, subject: x3, object: x4)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x1)
+```

@@ -342,3 +342,6 @@ area: specification
 - **drop** (verb, action) → operation product.drop actor. The person takes a product actor out of the product. Forms: drops, dropped. Frame: <actor> drops <product actor>.
 - **drop** (verb, action) → operation product.drop subdomain. The person takes a subdomain out of the product's domain map. Forms: drops, dropped. Frame: <actor> drops <subdomain>.
 - **drop** (verb, action) → operation product.drop context. The person takes a bounded context out of the product's domain map. Forms: drops, dropped. Frame: <actor> drops <bounded context>.
+- **the product id form** (proper noun) → object product id form. A dotted domain, then a path, as `example.org/notes`, the id a product is declared with.
+- **the product actor form** (proper noun) → object product actor form. `the` and a noun, as `the writer`, the name a product actor is declared by.
+- **the subdomain id form** (proper noun) → object subdomain id form. Lower-case words joined by hyphens, as `note-keeping`, the id a subdomain is declared with.

@@ -145,6 +145,8 @@ def runs(step):
         w["ids"] = {kinds["job"]: value(w, kinds["id"])}
     w["when actor"] = kinds.get("product actor")
     w["before"] = held(w, step.term == "`spec job`")
+    if step.term == "`spec actor`":
+        w["before"]["id"] = "example.org/notes"     # an actor is declared once the product has an id (r74, b827)
     if step.term == "`spec job`":
         statement = kinds.get("job statement")
         w["statement"] = value(w, statement) if statement else FORMED % mentioned(w, kinds["job"])
@@ -159,7 +161,7 @@ def runs(step):
     text = scripts("product_store").render(w["before"]) + "".join(detail(name) for name in w["details"])
     if w.get("unformed product"):
         text = text.replace("actors = ", 'jobs = ["j1"]\nactors = ', 1)
-    if w["before"]["actors"] or w["before"]["jobs"] or w["details"] or w.get("unformed product"):
+    if any((w["before"]["actors"], w["before"]["jobs"], w["details"], w.get("unformed product"), w["before"].get("id"))):
         (repo / REL).parent.mkdir(parents=True, exist_ok=True)
         (repo / REL).write_text(text)
     step.context["head"] = W.init(repo)

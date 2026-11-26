@@ -5,7 +5,10 @@ store the caller gives (product_store's). `declare` keeps the product's id and p
 `declare_job` a job, a job declared again in place of the one of its id (its other keys kept, b673). A job is refused, naming the business
 reference, when it has no product actor or one the product does not hold (checked first, b813), its statement is not of the job statement form (`conforms`, its form only), the product actor its
 statement mentions is not the product's or not one of the job's actors (b798), an actor of it is not the product's, a need of it is no job the product holds, or a need depends on the job, directly or through the jobs
-it needs (`depends`), so that needs never close a cycle."""
+it needs (`depends`), so that needs never close a cycle. The product is refused, naming the id, when its id is not of
+the product id form (`IDENT`: a dotted domain, then a path, as `example.org/notes`) or it has an id and is declared
+with another (b827, r70, r71); an actor when the product has no id yet, naming the product file (r74), or when it is
+not of the product actor form (`ACTOR`: `the` and a noun, as `the writer`), naming it (r72)."""
 import re
 
 from plumbing.shop_refused import Refused
@@ -16,6 +19,10 @@ from plumbing.shop_refused import Refused
 FORM = re.compile(r"When (?P<situation>\S(?:(?:(?!, so they can ).)*\S)?), (?P<actor>\S[^,]*?) wants "
                   r"(?P<motivation>\S.*?), so they can (?P<outcome>\S.*)\.")
 SAID = "When <situation>, <actor> wants <motivation>, so they can <outcome>."
+# the product id form: a dotted domain, then a path, as the context id form (migrate init's FORM) has them (b827)
+IDENT = re.compile(r"[a-z0-9-]+(\.[a-z0-9-]+)+(/[A-Za-z0-9][A-Za-z0-9._-]*)+")
+# the product actor form: `the` and a noun of one word or more, as `the writer` (b827)
+ACTOR = re.compile(r"the( [A-Za-z0-9][A-Za-z0-9-]*)+")
 
 
 def empty():
@@ -41,12 +48,27 @@ def depends(jobs, need, job):
 
 
 def declare(product, ident, purpose):
-    """The product with its id and purpose; its actors and jobs kept."""
+    """The product with its id and purpose, its actors and jobs kept; refused naming the id when it is not of the
+    product id form or the product has another (r70, r71)."""
+    if not IDENT.fullmatch(ident):
+        raise Refused("{names} %s is not of the product id form: a dotted domain, then a path, as example.org/notes"
+                      % ident, reason="id not in the product id form", names=["parameter:id"])
+    if product.get("id") and product["id"] != ident:
+        raise Refused("{names} %s is not the product's id %s: a product keeps the id it was declared with" % (
+            ident, product["id"]), reason="id other than the product's id", names=["parameter:id"])
     return {**product, "id": ident, "purpose": purpose}
 
 
 def declare_actor(product, actor):
-    """The product with the actor among its actors (kept once)."""
+    """The product with the actor among its actors (kept once); refused naming the product file while the product has
+    no id (r74), and naming the actor when it is not of the product actor form (r72)."""
+    if not product.get("id"):
+        from product_store import REL
+        raise Refused("{names} holds a product with no id: declare it first with spec product <id>",
+                      reason="product with no id", names=["file:%s" % REL])
+    if not ACTOR.fullmatch(actor):
+        raise Refused("{names} %r is not of the product actor form: the and a noun, as 'the writer'" % actor,
+                      reason="product actor not in the product actor form", names=["parameter:product actor"])
     actors = product["actors"] if actor in product["actors"] else product["actors"] + [actor]
     return {**product, "actors": actors}
 

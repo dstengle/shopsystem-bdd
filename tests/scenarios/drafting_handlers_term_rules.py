@@ -1,7 +1,7 @@
 """drafting's term that breaks a lexicon rule refused when written or reworded into an item, naming the term and every
-rule it breaks (r99, r100, b810). Each a `local` handler that takes a step of those scenarios (`mine`) and returns
-False on any other. The rule the While part names (`v_t4`, `v_t7`, `v_t11`, `v_t19`) picks the world and the term
-(`CASES`): readiness_world's codified spec with a capability term of work-queue, or, of `v_t19`, the domain-model
+rule it breaks (r101, r102, b810, b826). Each a `local` handler that takes a step of those scenarios (`mine`) and returns
+False on any other. The rule the While part names (`v_t4`, `v_t7`, `v_t11`, `v_t13`, `v_t14`, `v_t19`) picks the
+world and the term (`CASES`): readiness_world's codified spec with a capability term of work-queue, or, of `v_t19`, the domain-model
 fixture's spec with a vocabulary entry of notes; each term breaks that rule and one other (the rules r1 and r2 the
 Givens say it violates) and not a third (r3). The When writes the term with `work line <item> --into <cap> --term`, or
 rewords a term the item holds (`GOOD`, written first) into it with `--reword-term`; the Thens read the refusal (an
@@ -13,27 +13,29 @@ from pathlib import Path
 
 W, B, R = (sys.modules[n] for n in ("shop_work_queue_world", "shop_backlog_world", "shop_readiness_world"))
 local = W.local
-TAGS = {"r99", "r100"}
+TAGS = {"r101", "r102"}
 FIXTURE = Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "domain-model" / "spec"
 SHELFMARK = "- **shelfmark** (thing): a mark on a shelf. It names a place."
 STAMP = "- **stamp** (verb, action): to mark a work-item. It is quick."
+UNASPECTED = "- **stamp** (verb): to mark a work-item. Frame: agent stamps grobble."     # v_t13 and v_t14 alone
 NOVEL = "- **novel** (noun) → object novel. A long book. It tells a story."
 # the rule the While part names: (the world, the term, the other rule it breaks, a rule it does not break)
 CASES = {"v_t4": ("plain", SHELFMARK, "v_t7", "v_t11"), "v_t7": ("plain", SHELFMARK, "v_t4", "v_t11"),
-         "v_t11": ("plain", STAMP, "v_t7", "v_t4"), "v_t19": ("domain", NOVEL, "v_t7", "v_t4")}
+         "v_t11": ("plain", STAMP, "v_t7", "v_t4"), "v_t13": ("plain", UNASPECTED, "v_t14", "v_t7"),
+         "v_t14": ("plain", UNASPECTED, "v_t13", "v_t7"), "v_t19": ("domain", NOVEL, "v_t7", "v_t4")}
 GOOD = {"plain": ("work-queue", "shelfnote", "- **shelfnote** (noun): a note kept on a shelf."),
         "domain": ("notebook", "jotting", "- **jotting** (noun) → object note.")}
 
 
 def _tags(step):
-    """The scenario's tags among r99 and r100 (the When is re-keyed by the CLI contract: its text no longer says
+    """The scenario's tags among r101 and r102 (the When is re-keyed by the CLI contract: its text no longer says
     whether it writes or rewords)."""
     found = sys.modules["vocab"].vocab4.requested.scenario(step.request.node)
     return TAGS & set(found.tags) if found is not None else set()
 
 
 def mine(step):
-    """True when the step is of drafting's scenarios of r99 and r100."""
+    """True when the step is of drafting's scenarios of r101 and r102."""
     return sys.modules["vocab"].origin(step.request.node) == "drafting" and bool(_tags(step))
 
 
@@ -91,7 +93,7 @@ def write(step):
         shutil.copytree(FIXTURE, step.repo / "spec", dirs_exist_ok=True)
     B.write_item(step, item, status="shaped")
     world["word"] = _word(bullet)
-    if _tags(step) == {"r100"}:
+    if _tags(step) == {"r102"}:
         B.run_work(step, "line", B.ident(item), "--into", capability, "--term", good, **R.NO_INPUT)
         assert step.context["result"].returncode == 0, step.context["result"].stderr
         args = ["--reword-term", good_word, bullet]

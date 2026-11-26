@@ -696,3 +696,59 @@ Feature: Product
     When the person traces the job j1 without an item
     Then the product service refuses this request
     And the product service names the item i1
+
+  @g69 @r69
+  Scenario: A product actor is not mapped in a bounded context the product does not hold
+    Given a product actor p1
+    And this product holds the product actor p1
+    And a bounded context b1
+    And this product does not hold the bounded context b1
+    And an actor a1
+    When the person maps the product actor p1 with the bounded context b1 and the actor a1
+    Then the product service refuses this request
+    And the product service names the bounded context b1
+
+  @g70 @r70
+  Scenario: A product declared again with another id is refused
+    Given an id i1
+    And this product has the id i1
+    And an id i2
+    And this product does not have the id i2
+    And a product p1
+    When the person declares the product p1 with the id i2
+    Then the product service refuses this request
+    And the product service names the id i2
+
+  @g71 @r71
+  Scenario: A product whose id is out of the product id form is refused
+    Given an id i1
+    And the id i1 does not conform to the product id form
+    And a product p1
+    When the person declares the product p1 with the id i1
+    Then the product service refuses this request
+    And the product service names the id i1
+
+  @g72 @r72
+  Scenario: A product actor out of the product actor form is refused
+    Given a product actor p1
+    And the product actor p1 does not conform to the product actor form
+    When the person declares the product actor p1
+    Then the product service refuses this request
+    And the product service names the product actor p1
+
+  @g73 @r73
+  Scenario: A subdomain whose id is out of the subdomain id form is refused
+    Given an id i1
+    And the id i1 does not conform to the subdomain id form
+    And a subdomain s1
+    When the person declares the subdomain s1 with the id i1
+    Then the product service refuses this request
+    And the product service names the id i1
+
+  @g74 @r74
+  Scenario: A product actor is not declared before the product has an id
+    Given this product has no id
+    And a product actor p1
+    When the person declares the product actor p1
+    Then the product service refuses this request
+    And the product service names this product

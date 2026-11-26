@@ -130,18 +130,19 @@ def frames(term, names):
 
 def misread(term, names, shown=False):
     """Why a verb's `Frame:` (the first of its frames that does not read) does not read, naming the word it could not
-    read and what it expected there, and, `shown`, the frame as its entry writes it (b796); None when each reads or
+    read and what it expected there, and, `shown`, the frame as its entry writes it (b796), each up to the end of its
+    sentence (b826); None when each reads or
     the entry gives no `Frame:` (v_t11). A word the frame could not read that is no one word is given no nearest
     names, and what fixed words after the verb may be in their place. A frame that takes no noun phrase (no slot in
     angle brackets naming a kind, an actor or a parameter, spec_vocabulary_terms' `slotless`, b811) does not read."""
     if term.slotless:
-        return 'the Frame: "%s." takes no noun phrase: %s' % (term.slotless[0], SLOTS)
+        return 'the Frame: "%s." takes no noun phrase: %s' % (_sentence(term.slotless[0]), SLOTS)
     said = term.frames or (term.frame,)
     at, why = next(((i, w) for i, w in enumerate(read(term, names, f)[1] for f in said) if w), (None, None))
     if why is None:
         return None
-    word, role = why
-    head = 'the Frame: "%s." ' % (term.written or said)[at] if shown else "the Frame: "
+    word, role = _sentence(why[0]), why[1]
+    head = 'the Frame: "%s." ' % _sentence((term.written or said)[at]) if shown else "the Frame: "
     if role.startswith("verb"):
         return '%sdoes not read at "%s": it expects its subject, then the %s' % (head, word, role)
     if " " in word:
@@ -150,6 +151,11 @@ def misread(term, names, shown=False):
     near = difflib.get_close_matches(word, sorted(names), 3)
     return '%sdoes not read at "%s": the verb\'s %s is a kind or an actor of the glossary%s' % (
         head, word, role, " (nearest: %s)" % ", ".join(near) if near else "")
+
+
+def _sentence(text):
+    """A frame's text up to the end of its first sentence: the gloss after a `Frame:` is no part of it (b826)."""
+    return re.split(r"\.\s", text, maxsplit=1)[0]
 
 
 def names(lexicon, outer=frozenset()):

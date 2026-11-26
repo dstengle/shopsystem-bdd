@@ -1230,8 +1230,9 @@ obtained adapters/stock-inventory/provider/example.org/fixture/inventory/1.2.0/c
 ### `shop spec product`
 
 Declares the product this bounded context belongs to, its id and its purpose, kept in the product file
-`.shop/product/product.toml` of the shop with its actors and jobs, in one commit. Declared again, the id and the
-purpose are replaced and the actors and jobs kept.\
+`.shop/product/product.toml` of the shop with its actors and jobs, in one commit. Declared again with its own id, the
+purpose is replaced and the actors and jobs kept. An id not of the product id form, a dotted domain then a path (as
+`example.org/notes`), is refused naming the id, and so is an id other than the one the product was declared with.\
 Synopsis: `shop spec product <id> --purpose <text>`
 
 ```console
@@ -1241,7 +1242,9 @@ declared the product missingmass.io/shopsystem
 
 ### `shop spec actor`
 
-Declares an actor of the product, one it serves, kept among the product's actors in the product file, in one commit.\
+Declares an actor of the product, one it serves, kept among the product's actors in the product file, in one commit.
+While the product has no id (no `shop spec product` yet) it is refused naming the product file; an actor not of the
+product actor form, `the` and a noun (as `the writer`), is refused naming the actor.\
 Synopsis: `shop spec actor <actor>`
 
 ```console
@@ -1269,7 +1272,8 @@ declared the job j1
 ### `shop spec subdomain`
 
 Declares a subdomain of the product's domain map with its id, its subdomain type and the jobs it serves, kept in the
-product file in one commit; a subdomain declared again replaces the one of its id. A type other than `core`,
+product file in one commit; a subdomain declared again replaces the one of its id. An id not of the subdomain id
+form, lower-case words joined by hyphens (as `note-keeping`), is refused naming the id. A type other than `core`,
 `supporting` or `generic` is refused naming `--type`, and a job that is no job of the product naming `--serves`.\
 Synopsis: `shop spec subdomain <id> --type <type> [--serves <job> ...]`
 
@@ -1367,9 +1371,10 @@ assigned the job j1 to the bounded context bounded-context/missingmass.io/shopsy
 ### `shop spec plays`
 
 Maps a product actor to the actor a bounded context's model calls it by, kept among the bounded context's actors in
-the product file, in one commit. A product actor the product does not hold is refused naming it before the actor is checked, a bounded context
-whose id is not of the context id form naming the id, and, in this bounded context, an actor its domain model does
-not declare naming `--as`.\
+the product file, in one commit. A product actor the product does not hold is refused naming it before the actor is
+checked, a bounded context whose id is not of the context id form naming the id, one the product does not declare
+(`shop spec context` declares it) naming the bounded context, and, in this bounded context, an actor its domain model
+does not declare naming `--as`.\
 Synopsis: `shop spec plays <product actor> --in <bounded context> --as <actor>`
 
 ```console
