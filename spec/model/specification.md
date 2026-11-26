@@ -48,6 +48,7 @@ object term
   relations: clashes with → term (many)
   relations: spells → element (many)
   relations: has → word (one)
+  relations: fits → element (many)
 
 object design-decision kind of file
   attributes: status: proposed | accepted | rejected | superseded; tier: check | requirement | judgement

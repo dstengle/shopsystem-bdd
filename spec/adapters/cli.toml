@@ -576,6 +576,8 @@ requirements = [
   "drafting#r25: While an item holds a capability that does not exist, when the person writes a term into the item, the drafting service shall keep the term in the item.",
   "drafting#r94: While a term violates `v_t6`, when the person writes the term into an item, the drafting service shall keep the term in the item, name `v_t6` and complete the request.",
   "drafting#r101: While a term violates `v_t4`, `v_t7`, `v_t11`, `v_t13`, `v_t14` or `v_t19`, if the person writes the term into an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.",
+  "drafting#r103: When the person writes a term into an item, the drafting service shall return the term.",
+  "drafting#r108: While a term means an element that the term does not fit, if the person writes the term into an item, then the drafting service shall refuse the request and name the term.",
 ]
 [operations."drafting.write".parameters]
 item = { positional = 1 }
@@ -606,9 +608,10 @@ item = { positional = 1 }
 [operations."drafting.reword"]
 command = "work line"
 requirements = [
-  "drafting#r14: When the person rewords a requirement in an item, the drafting service shall keep a different requirement in the item.",
   "drafting#r15: If the person rewords a requirement of a capability, then the drafting service shall refuse the request and name the requirement.",
   "drafting#r38: While an item is `in-batch`, when the person rewords a requirement in the item, the drafting service shall keep a different requirement in the item.",
+  "drafting#r106: When the person rewords a requirement in an item, the drafting service shall keep a different requirement in the item and return the requirement id of the requirement and the requirement.",
+  "drafting#r107: While an item holds a requirement, if the person rewords the requirement in the item, then the drafting service shall change nothing and name the requirement.",
 ]
 [operations."drafting.reword".parameters]
 requirement = { option = "--reword" }
@@ -1856,6 +1859,7 @@ requirements = [
   "checking#r154: While an item holds a requirement that governs an operation, when the person validates this specification with the item, the specification service shall return no operation that violates `v_a5`.",
   "checking#r155: While an item holds a requirement that violates a rule whose severity is `error`, if the person validates this specification with the item, then the specification service shall fail the check and name the rule.",
   "checking#r156: While a term has a frame that takes no noun phrase, if the person validates this specification, then the specification service shall fail the check and name the frame.",
+  "checking#r157: While a term means an element that the term does not fit, if the person validates this specification, then the specification service shall fail the check and name the term.",
   "decisions#r1: While a design-decision is not `superseded` or `rejected` and the design-decision has no tier, when the person validates this specification, the specification service shall return `w_untiered`.",
   "decisions#r2: While the tier of a design-decision is `check` and no test enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d6`.",
   "decisions#r3: While the tier of a design-decision is `requirement` and no requirement enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d7`.",
@@ -1892,10 +1896,11 @@ item = { option = "--item" }
 [operations."drafting.reword term"]
 command = "work line"
 requirements = [
-  "drafting#r49: When the person rewords a term in an item, the drafting service shall keep a different term in the item.",
   "drafting#r50: If the person rewords a term in an item that does not hold the term, then the drafting service shall refuse the request and name the term.",
   "drafting#r95: When the person rewords a term in an item with a capability, the drafting service shall keep a different term in the item.",
   "drafting#r102: While a term violates `v_t4`, `v_t7`, `v_t11`, `v_t13`, `v_t14` or `v_t19`, if the person rewords the term in an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.",
+  "drafting#r105: When the person rewords a term in an item, the drafting service shall keep a different term in the item, return the term and complete the request.",
+  "drafting#r109: While a term means an element that the term does not fit, if the person rewords the term in an item, then the drafting service shall refuse the request and name the term.",
 ]
 [operations."drafting.reword term".parameters]
 item = { positional = 1 }

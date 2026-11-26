@@ -192,21 +192,6 @@ shall [x1: agent the person (constant), x5: service the drafting service (consta
     name(e3, subject: x5, object: x3)
 ```
 
-## r14
-From: readiness#r42, reworded in request words (0.38.0).
-
-```reading
-When the person rewords a requirement in an item, the drafting service shall keep a different requirement in the item.
-shall [x1: agent the person (constant), x4: service the drafting service (constant)]
-  when [x2: requirement, x3: item]
-    in(x2, x3)
-    request(e1, drafting.reword, subject: x1, object: x2)
-  response [x5: requirement]
-    distinct(x5, x2)
-    in(x5, x3)
-    keep(e2, subject: x4, object: x5)
-```
-
 ## r15
 From: readiness#r44, reworded in request words (0.38.0).
 
@@ -756,20 +741,6 @@ shall [x1: agent the person (constant), x4: service the drafting service (consta
   response
     refuse(e2, subject: x4, object: x5)
     name(e3, subject: x4, object: x2)
-```
-
-## r49
-From: b367 r49.
-
-```reading
-When the person rewords a term in an item, the drafting service shall keep a different term in the item.
-shall [x1: agent the person (constant), x4: service the drafting service (constant)]
-  when [x2: term, x3: item]
-    request(e1, drafting.reword term, subject: x1, object: x2, in: x3)
-  response [x5: term]
-    distinct(x5, x2)
-    in(x5, x3)
-    keep(e2, subject: x4, object: x5)
 ```
 
 ## r50
@@ -1585,4 +1556,101 @@ shall [x2: rule `v_t4` (parameter), x3: rule `v_t7` (parameter), x4: rule `v_t11
       violate(subject: x1, object: x12)
       scope
         name(e4, subject: x10, object: x12)
+```
+
+## r103
+From: b829 r103.
+
+```reading
+When the person writes a term into an item, the drafting service shall return the term.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: term, x3: item]
+    request(e1, drafting.write, subject: x1, object: x2, into: x3)
+  response
+    return(e2, subject: x4, object: x2)
+```
+
+## r105
+Retires: r49. From: b829 r105.
+
+```reading
+When the person rewords a term in an item, the drafting service shall keep a different term in the item, return the term and complete the request.
+shall [x1: agent the person (constant), x4: service the drafting service (constant), x6: request "the request the trigger makes" (indexical)]
+  when [x2: term, x3: item]
+    request(e1, drafting.reword term, subject: x1, object: x2, in: x3)
+  response [x5: term]
+    distinct(x5, x2)
+    in(x5, x3)
+    keep(e2, subject: x4, object: x5)
+    return(e3, subject: x4, object: x5)
+    complete(e4, subject: x4, object: x6)
+```
+
+## r106
+Retires: r14. From: b829 r106.
+
+```reading
+When the person rewords a requirement in an item, the drafting service shall keep a different requirement in the item and return the requirement id of the requirement and the requirement.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: requirement, x3: item]
+    in(x2, x3)
+    request(e1, drafting.reword, subject: x1, object: x2)
+  response [x5: requirement, x6: requirement id]
+    distinct(x5, x2)
+    in(x5, x3)
+    keep(e2, subject: x4, object: x5)
+    of(x6, x5)
+    return(e3, subject: x4, object: x6)
+    return(e4, subject: x4, object: x5)
+```
+
+## r107
+From: b829 r107.
+
+```reading
+While an item holds a requirement, if the person rewords the requirement in the item, then the drafting service shall change nothing and name the requirement.
+shall [x3: agent the person (constant), x4: service the drafting service (constant)]
+  while [x1: item, x2: requirement]
+    in(x2, x1)
+  if
+    in(x2, x1)
+    request(e1, drafting.reword, subject: x3, object: x2)
+  response
+    not [x5: thing]
+      change(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r108
+From: b825 r108.
+
+```reading
+While a term means an element that the term does not fit, if the person writes the term into an item, then the drafting service shall refuse the request and name the term.
+shall [x3: agent the person (constant), x5: service the drafting service (constant), x6: request "the request the trigger makes" (indexical)]
+  while [x1: term, x2: element]
+    not
+      fit(subject: x1, object: x2)
+    mean(subject: x1, object: x2)
+  if [x4: item]
+    request(e1, drafting.write, subject: x3, object: x1, into: x4)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x1)
+```
+
+## r109
+From: b825 r109.
+
+```reading
+While a term means an element that the term does not fit, if the person rewords the term in an item, then the drafting service shall refuse the request and name the term.
+shall [x3: agent the person (constant), x5: service the drafting service (constant), x6: request "the request the trigger makes" (indexical)]
+  while [x1: term, x2: element]
+    not
+      fit(subject: x1, object: x2)
+    mean(subject: x1, object: x2)
+  if [x4: item]
+    request(e1, drafting.reword term, subject: x3, object: x1, in: x4)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x1)
 ```
