@@ -87,7 +87,7 @@ From: requests#r61, reworded in request words (0.38.0).
 
 ```reading
 While this bounded context holds an upstream entry, if the person raises a context request with an origin and a thread, then the context requests service shall refuse the request and name the origin.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x3: agent the person (constant), x6: service the context requests service (constant), x7: request "the request the trigger makes" (indexical), x8: parameter origin (constant)]
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x3: agent the person (constant), x6: service the context requests service (constant), x7: request "the request the trigger makes" (indexical), x8: parameter origin (constant)]
   while [x2: upstream entry]
     in(x2, x1)
   if [x4: context request, x5: thread]
@@ -104,7 +104,7 @@ From: requests#r62, reworded in request words (0.38.0).
 
 ```reading
 If the person raises a context request with a text that does not identify this bounded context, then the context requests service shall refuse the request and name the text.
-shall [x1: agent the person (constant), x4: bounded context "the bounded context whose repository the command runs in" (indexical), x5: service the context requests service (constant), x6: request "the request the trigger makes" (indexical)]
+shall [x1: agent the person (constant), x4: bounded context "the bounded context the request is made in" (indexical), x5: service the context requests service (constant), x6: request "the request the trigger makes" (indexical)]
   if [x2: context request, x3: text]
     not
       identify(subject: x3, object: x4)
@@ -153,7 +153,7 @@ From: requests#r65, reworded in request words (0.38.0).
 
 ```reading
 While a context request is `open` and the context request does not address this bounded context, if the person settles a request line in the context request, then the context requests service shall refuse the request and name the context request.
-shall [x2: bounded context "the bounded context whose repository the command runs in" (indexical), x3: agent the person (constant), x5: service the context requests service (constant), x6: request "the request the trigger makes" (indexical)]
+shall [x2: bounded context "the bounded context the request is made in" (indexical), x3: agent the person (constant), x5: service the context requests service (constant), x6: request "the request the trigger makes" (indexical)]
   while [x1: context request]
     status(x1) = `open`
     not
@@ -186,7 +186,7 @@ From: requests#r67, reworded in request words (0.38.0).
 
 ```reading
 While a context request is `awaiting-asker` and the context request originates from this bounded context, when the person replies to the context request, the context requests service shall keep an answer.
-shall [x2: bounded context "the bounded context whose repository the command runs in" (indexical), x3: agent the person (constant), x4: service the context requests service (constant)]
+shall [x2: bounded context "the bounded context the request is made in" (indexical), x3: agent the person (constant), x4: service the context requests service (constant)]
   while [x1: context request]
     status(x1) = `awaiting-asker`
     originate(subject: x1, from: x2)
@@ -217,7 +217,7 @@ From: requests#r69, reworded in request words (0.38.0).
 
 ```reading
 When the person surveys this bounded context, the context requests service shall return every context request, the status of every context request and every observation that no context request cites.
-shall [x1: agent the person (constant), x2: bounded context "the bounded context whose repository the command runs in" (indexical), x3: service the context requests service (constant)]
+shall [x1: agent the person (constant), x2: bounded context "the bounded context the request is made in" (indexical), x3: service the context requests service (constant)]
   when
     request(e1, context requests.survey, subject: x1, object: x2)
   response
@@ -433,7 +433,7 @@ From: requests#r82, reworded in request words (0.38.0).
 
 ```reading
 While a request line does not conform to the requirement grammar of this bounded context, if a session settles the request line with the line outcome `accepted`, then the context requests service shall refuse the request and name the request line.
-shall [x2: bounded context "the bounded context whose repository the command runs in" (indexical), x5: service the context requests service (constant), x6: request "the request the trigger makes" (indexical)]
+shall [x2: bounded context "the bounded context the request is made in" (indexical), x5: service the context requests service (constant), x6: request "the request the trigger makes" (indexical)]
   while [x1: request line, x3: requirement grammar]
     of(x3, x2)
     not
@@ -558,7 +558,7 @@ From: requests#r91, reworded in request words (0.38.0).
 
 ```reading
 While a context request addresses this bounded context and the context request does not originate from this bounded context, if the person replies to the context request, then the context requests service shall refuse the request and name the context request.
-shall [x2: bounded context "the bounded context whose repository the command runs in" (indexical), x3: agent the person (constant), x4: service the context requests service (constant), x5: request "the request the trigger makes" (indexical)]
+shall [x2: bounded context "the bounded context the request is made in" (indexical), x3: agent the person (constant), x4: service the context requests service (constant), x5: request "the request the trigger makes" (indexical)]
   while [x1: context request]
     address#2(subject: x1, object: x2)
     not
@@ -575,7 +575,7 @@ From: requests#r92, reworded in request words (0.38.0).
 
 ```reading
 While a context request addresses this bounded context and the context request does not originate from this bounded context and the context request is `awaiting-asker`, if the person passes the turn of the context request, then the context requests service shall refuse the request and name the context request.
-shall [x2: bounded context "the bounded context whose repository the command runs in" (indexical), x3: agent the person (constant), x5: service the context requests service (constant), x6: request "the request the trigger makes" (indexical)]
+shall [x2: bounded context "the bounded context the request is made in" (indexical), x3: agent the person (constant), x5: service the context requests service (constant), x6: request "the request the trigger makes" (indexical)]
   while [x1: context request]
     address#2(subject: x1, object: x2)
     not
@@ -594,7 +594,7 @@ From: requests#r93, reworded in request words (0.38.0).
 
 ```reading
 While a context request originates from this bounded context and the context request does not address this bounded context and the context request is `open`, if the person passes the turn of the context request, then the context requests service shall refuse the request and name the context request.
-shall [x2: bounded context "the bounded context whose repository the command runs in" (indexical), x3: agent the person (constant), x5: service the context requests service (constant), x6: request "the request the trigger makes" (indexical)]
+shall [x2: bounded context "the bounded context the request is made in" (indexical), x3: agent the person (constant), x5: service the context requests service (constant), x6: request "the request the trigger makes" (indexical)]
   while [x1: context request]
     originate(subject: x1, from: x2)
     not
@@ -613,7 +613,7 @@ From: requests#r94, reworded in request words (0.38.0).
 
 ```reading
 While a context request originates from this bounded context and the context request does not address this bounded context and the context request is `awaiting-upstream`, if the person passes the turn of the context request, then the context requests service shall refuse the request and name the context request.
-shall [x2: bounded context "the bounded context whose repository the command runs in" (indexical), x3: agent the person (constant), x5: service the context requests service (constant), x6: request "the request the trigger makes" (indexical)]
+shall [x2: bounded context "the bounded context the request is made in" (indexical), x3: agent the person (constant), x5: service the context requests service (constant), x6: request "the request the trigger makes" (indexical)]
   while [x1: context request]
     originate(subject: x1, from: x2)
     not
@@ -682,7 +682,7 @@ From: requests#r102, reworded in request words (0.38.0).
 
 ```reading
 While this bounded context holds an upstream entry, if the person raises a context request for a context request with an origin, then the context requests service shall refuse the request and name the origin.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x3: agent the person (constant), x6: service the context requests service (constant), x7: request "the request the trigger makes" (indexical), x8: parameter origin (constant)]
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x3: agent the person (constant), x6: service the context requests service (constant), x7: request "the request the trigger makes" (indexical), x8: parameter origin (constant)]
   while [x2: upstream entry]
     in(x2, x1)
   if [x4: context request, x5: context request]
@@ -793,7 +793,7 @@ From: requests#r111, reworded in request words (0.38.0).
 
 ```reading
 When the person raises a context request without a text, the context requests service shall keep a context request that originates from this bounded context.
-shall [x1: agent the person (constant), x3: service the context requests service (constant), x5: bounded context "the bounded context whose repository the command runs in" (indexical)]
+shall [x1: agent the person (constant), x3: service the context requests service (constant), x5: bounded context "the bounded context the request is made in" (indexical)]
   when [x2: context request]
     request(e1, context requests.raise, subject: x1, object: x2)
     noparam(e1, text)
@@ -858,7 +858,7 @@ From: requests#r115, reworded in request words (0.38.0).
 
 ```reading
 While a term is in the bounded context and a capability has no requirement that mentions the term, when a session offers on a context request with the capability, the context requests service shall keep an entry that does not hold the term.
-shall [x2: bounded context "the bounded context whose repository the command runs in" (indexical), x7: service the context requests service (constant)]
+shall [x2: bounded context "the bounded context the request is made in" (indexical), x7: service the context requests service (constant)]
   while [x1: term, x3: capability]
     in(x1, x2)
     not [x4: requirement]

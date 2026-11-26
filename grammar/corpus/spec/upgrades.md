@@ -445,7 +445,7 @@ From: migration-tools#r75, reworded in request words (0.38.0).
 
 ```reading
 While the release of this repository is after `0.30.0` and before `0.32.0`, when the person upgrades this repository, the upgrades service shall change the index file of this bounded context and return every upgrade step whose release is `0.32.0` and every term that violates `v_t11`.
-shall [x1: repository "the repository the request is made in" (indexical), x2: agent the person (constant), x3: service the upgrades service (constant), x4: bounded context "the bounded context whose repository the command runs in" (indexical), x8: rule `v_t11` (parameter)]
+shall [x1: repository "the repository the request is made in" (indexical), x2: agent the person (constant), x3: service the upgrades service (constant), x4: bounded context "the bounded context the request is made in" (indexical), x8: rule `v_t11` (parameter)]
   while
     cmp(release(x1)) after `0.30.0`
     cmp(release(x1)) before `0.32.0`
@@ -469,7 +469,7 @@ From: migration-tools#r76, reworded in request words (0.38.0).
 
 ```reading
 While the release of this repository is after `0.32.0` and before `0.33.0`, when the person upgrades this repository, the upgrades service shall change the index file of this bounded context and every capability and return every upgrade step whose release is `0.33.0`.
-shall [x1: repository "the repository the request is made in" (indexical), x2: agent the person (constant), x3: service the upgrades service (constant), x4: bounded context "the bounded context whose repository the command runs in" (indexical)]
+shall [x1: repository "the repository the request is made in" (indexical), x2: agent the person (constant), x3: service the upgrades service (constant), x4: bounded context "the bounded context the request is made in" (indexical)]
   while
     cmp(release(x1)) after `0.32.0`
     cmp(release(x1)) before `0.33.0`
@@ -588,7 +588,7 @@ From: b318 r32.
 
 ```reading
 If the person founds this bounded context without a context id, then the upgrades service shall refuse the request and name this bounded context.
-shall [x1: agent the person (constant), x2: bounded context "the bounded context whose repository the command runs in" (indexical), x3: service the upgrades service (constant), x4: request "the request the trigger makes" (indexical)]
+shall [x1: agent the person (constant), x2: bounded context "the bounded context the request is made in" (indexical), x3: service the upgrades service (constant), x4: request "the request the trigger makes" (indexical)]
   if
     request(e1, upgrades.found, subject: x1, object: x2)
     noparam(e1, context id)
@@ -602,7 +602,7 @@ From: b318 r33.
 
 ```reading
 If the person founds this bounded context with a context id that does not conform to the bounded context id form, then the upgrades service shall refuse the request and name the context id.
-shall [x1: agent the person (constant), x2: bounded context "the bounded context whose repository the command runs in" (indexical), x4: artifact the bounded context id form (constant), x5: service the upgrades service (constant), x6: request "the request the trigger makes" (indexical)]
+shall [x1: agent the person (constant), x2: bounded context "the bounded context the request is made in" (indexical), x4: artifact the bounded context id form (constant), x5: service the upgrades service (constant), x6: request "the request the trigger makes" (indexical)]
   if [x3: context id]
     not
       conforms(x3, x4)
@@ -618,7 +618,7 @@ From: b318 r34.
 
 ```reading
 While this bounded context has an index file, if the person founds this bounded context with a context id, then the upgrades service shall refuse the request, name the index file and change no file.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x3: agent the person (constant), x5: service the upgrades service (constant), x6: request "the request the trigger makes" (indexical)]
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x3: agent the person (constant), x5: service the upgrades service (constant), x6: request "the request the trigger makes" (indexical)]
   while [x2: index file]
     of(x2, x1)
   if [x4: context id]
@@ -636,7 +636,7 @@ From: b318 r35.
 
 ```reading
 While this repository has a shop directory, if the person founds this bounded context with a context id, then the upgrades service shall refuse the request, name the shop directory and change no file.
-shall [x1: repository "the repository the request is made in" (indexical), x3: agent the person (constant), x4: bounded context "the bounded context whose repository the command runs in" (indexical), x6: service the upgrades service (constant), x7: request "the request the trigger makes" (indexical)]
+shall [x1: repository "the repository the request is made in" (indexical), x3: agent the person (constant), x4: bounded context "the bounded context the request is made in" (indexical), x6: service the upgrades service (constant), x7: request "the request the trigger makes" (indexical)]
   while [x2: shop directory]
     of(x2, x1)
   if [x5: context id]
@@ -692,7 +692,7 @@ From: b464 r41.
 
 ```reading
 While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id and a context purpose, the upgrades service shall keep an index file that has the context purpose and complete the request.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x3: repository "the repository the request is made in" (indexical), x5: agent the person (constant), x8: service the upgrades service (constant), x10: request "the request the trigger makes" (indexical)]
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x3: repository "the repository the request is made in" (indexical), x5: agent the person (constant), x8: service the upgrades service (constant), x10: request "the request the trigger makes" (indexical)]
   while
     not [x2: index file]
       of(x2, x1)
@@ -713,7 +713,7 @@ Retires: r39. From: b487 r42.
 
 ```reading
 While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository does not conform to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall change the ignore file of this repository, keep the context scaffold and the ignore file of this repository and complete the request.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x3: repository "the repository the request is made in" (indexical), x6: artifact the ignore file form (constant), x7: agent the person (constant), x9: service the upgrades service (constant), x11: request "the request the trigger makes" (indexical)]
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x3: repository "the repository the request is made in" (indexical), x6: artifact the ignore file form (constant), x7: agent the person (constant), x9: service the upgrades service (constant), x11: request "the request the trigger makes" (indexical)]
   while [x5: ignore file]
     not [x2: index file]
       of(x2, x1)
@@ -738,7 +738,7 @@ Retires: r40. From: b487 r43.
 
 ```reading
 While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository conforms to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold, not change the ignore file and complete the request.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x3: repository "the repository the request is made in" (indexical), x6: artifact the ignore file form (constant), x7: agent the person (constant), x9: service the upgrades service (constant), x11: request "the request the trigger makes" (indexical)]
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x3: repository "the repository the request is made in" (indexical), x6: artifact the ignore file form (constant), x7: agent the person (constant), x9: service the upgrades service (constant), x11: request "the request the trigger makes" (indexical)]
   while [x5: ignore file]
     not [x2: index file]
       of(x2, x1)
@@ -779,7 +779,7 @@ From: b609 r45.
 
 ```reading
 While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id, the upgrades service shall keep a bounded context that imports the `base` pack and complete the request.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x3: repository "the repository the request is made in" (indexical), x5: agent the person (constant), x7: service the upgrades service (constant), x9: pack `base` (parameter), x10: request "the request the trigger makes" (indexical)]
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x3: repository "the repository the request is made in" (indexical), x5: agent the person (constant), x7: service the upgrades service (constant), x9: pack `base` (parameter), x10: request "the request the trigger makes" (indexical)]
   while
     not [x2: index file]
       of(x2, x1)

@@ -2,7 +2,7 @@
 id: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
 title: shopsystem-bdd
 language: codified-2
-imports: [request, spec]
+imports: [request, spec, base]
 ---
 
 # shopsystem-bdd

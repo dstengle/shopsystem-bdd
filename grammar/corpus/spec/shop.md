@@ -69,7 +69,7 @@ From: b576 r5.
 
 ```reading
 While no bounded context is in the shop, when the person lists the shop, the shop service shall return this bounded context.
-shall [x2: shop "the shop the request is made in" (indexical), x3: agent the person (constant), x4: service the shop service (constant), x5: bounded context "the bounded context whose repository the command runs in" (indexical)]
+shall [x2: shop "the shop the request is made in" (indexical), x3: agent the person (constant), x4: service the shop service (constant), x5: bounded context "the bounded context the request is made in" (indexical)]
   while
     not [x1: bounded context]
       in(x1, x2)

@@ -71,7 +71,7 @@ def test_the_spec_pack_holds_the_words_for_talking_about_specs():
 
 
 def test_this_repository_imports_the_spec_pack_and_marks_its_own_words():
-    assert spec_packs.imports(REPO) == ["request", "spec"]
+    assert spec_packs.imports(REPO) == ["request", "spec", "base"]
     assert spec_packs.problems(REPO) == []
 
 
@@ -90,3 +90,32 @@ def test_a_line_names_a_construct_by_its_code_in_a_context_importing_the_spec_pa
                 "requirement.")
     for line in (uses, violates):
         assert spec_grammar4.parse(tmp_path, line).tree, spec_grammar4.parse(tmp_path, line).refusal
+
+
+def test_a_verb_spelled_as_a_packs_noun_neither_redefines_nor_hides_it(tmp_path):
+    """b618: the context's verb "file" stands beside the base pack's noun "file", unmarked; its noun "widget" still
+    takes the place of the pack's."""
+    import spec_rgl_vocab
+    root = context(tmp_path, "p1", "- **file** (verb, action): an agent files a thing. Frame: agent files thing.\n"
+                   "- **widget** (noun): mine. Redefines: p1.\n",
+                   p1="- **file** (noun): a file.\n- **widget** (noun): theirs.\n")
+    assert spec_packs.unmarked(root) == {}
+    terms = [(t.term, t.category, t.text) for t in spec_rgl_vocab.lexicon(root).terms]
+    assert ("file", "kind", "a file.") in terms and ("file", "event") in [t[:2] for t in terms]
+    assert [t for t in terms if t[0] == "widget"] == [("widget", "kind", "mine. Redefines: p1.")]
+
+
+def test_a_packs_kind_a_model_object_kinds_of_another_is_under_it(tmp_path):
+    """b618: the model's `object file kind of text`, which no noun of the vocabulary names, puts the base pack's kind
+    `file` under its kind `text`, so that a frame of text takes a file."""
+    import shutil
+
+    import spec_rgl_vocab
+    shutil.copytree(FIXTURES / "domain-model", tmp_path / "c")
+    root = tmp_path / "c"
+    index = root / "spec" / "index.md"
+    index.write_text(index.read_text().replace("imports: [request]", "imports: [request, base]"))
+    notes = root / "spec" / "model" / "notes.md"
+    notes.write_text(notes.read_text().replace("object tag\n", "object file kind of text\n\nobject text\n\nobject tag\n"))
+    kinds = spec_rgl_vocab.read(root).kinds
+    assert (kinds["file"], kinds["text"], kinds["version"]) == ("text", "thing", "thing")

@@ -5,7 +5,7 @@ From: requests#r86, reworded in request words (0.38.0).
 
 ```reading
 While an entry on a context request conforms to the entry form and the context request does not hold the entry, when a session watches this bounded context, the context requests service shall notify the session of the entry, complete the request and not keep the entry.
-shall [x3: artifact the entry form (constant), x5: bounded context "the bounded context whose repository the command runs in" (indexical), x6: service the context requests service (constant), x7: request "the request the trigger makes" (indexical)]
+shall [x3: artifact the entry form (constant), x5: bounded context "the bounded context the request is made in" (indexical), x6: service the context requests service (constant), x7: request "the request the trigger makes" (indexical)]
   while [x1: entry, x2: context request]
     on(x1, x2)
     conforms(x1, x3)
@@ -25,7 +25,7 @@ From: requests#r87, reworded in request words (0.38.0).
 
 ```reading
 While a thread on the channel of this bounded context is `open` and the thread conforms to the entry form and no context request has the thread, when a session watches this bounded context, the context requests service shall notify the session of the thread and complete the request.
-shall [x2: bounded context "the bounded context whose repository the command runs in" (indexical), x4: artifact the entry form (constant), x7: service the context requests service (constant), x8: request "the request the trigger makes" (indexical)]
+shall [x2: bounded context "the bounded context the request is made in" (indexical), x4: artifact the entry form (constant), x7: service the context requests service (constant), x8: request "the request the trigger makes" (indexical)]
   while [x1: thread, x3: channel]
     of(x3, x2)
     on(x1, x3)
@@ -45,7 +45,7 @@ From: requests#r97, reworded in request words (0.38.0).
 
 ```reading
 While a context request originates from this bounded context and the context request does not address this bounded context and the context request is `awaiting-upstream`, when a session starts, the context requests service shall notify the session of the context request.
-shall [x2: bounded context "the bounded context whose repository the command runs in" (indexical), x4: service the context requests service (constant)]
+shall [x2: bounded context "the bounded context the request is made in" (indexical), x4: service the context requests service (constant)]
   while [x1: context request]
     originate(subject: x1, from: x2)
     not
@@ -62,7 +62,7 @@ From: requests#r98, reworded in request words (0.38.0).
 
 ```reading
 While a context request addresses this bounded context and the context request does not originate from this bounded context and the context request is `awaiting-asker`, when a session starts, the context requests service shall notify the session of the context request.
-shall [x2: bounded context "the bounded context whose repository the command runs in" (indexical), x4: service the context requests service (constant)]
+shall [x2: bounded context "the bounded context the request is made in" (indexical), x4: service the context requests service (constant)]
   while [x1: context request]
     address#2(subject: x1, object: x2)
     not
@@ -79,7 +79,7 @@ From: requests#r99, reworded in request words (0.38.0).
 
 ```reading
 While no context request that originates from this bounded context is `awaiting-upstream` and no context request that addresses this bounded context is `awaiting-asker`, when a session starts, the context requests service shall not notify the session of a context request.
-shall [x2: bounded context "the bounded context whose repository the command runs in" (indexical), x5: service the context requests service (constant)]
+shall [x2: bounded context "the bounded context the request is made in" (indexical), x5: service the context requests service (constant)]
   while
     not [x1: context request]
       originate(subject: x1, from: x2)

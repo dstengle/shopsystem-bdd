@@ -67,8 +67,6 @@ object fact
 object file kind of text
   relations: holds → finding (many)
 
-object version kind of text
-
 object text
   relations: forbids → act (many); contains → text (many); precedes → act (many); follows → act (many); introduces → instance (many); mentions → text (many); identifies → bounded context (many)
   relations: denotes → node | item | batch (many)

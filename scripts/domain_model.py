@@ -2,8 +2,9 @@
 state of its files (`load`) into a `Model`: its areas (frontmatter `id`, `area`, `kind`, `imports`), objects,
 services with their operations, events and actors, each block read by domain_model_parse. An operation acts on an
 object (the one its first done or returned outcome names, else its first parameter naming an object), and each
-parameter is typed: a flag when written `<name> (flag)`, by the values a parameter lists, else as an object when it names one or a relation of the
-operation's object, else by the attribute of that object it names, else text. `resolve` finds an element by its
+parameter is typed: a flag when written `<name> (flag)`, by the values a parameter lists, else as an object when it
+names one (or a kind of an imported pack that an object's relation, attribute or `kind of` names, b618) or a relation
+of the operation's object, else by the attribute of that object it names, else text. `resolve` finds an element by its
 qualified id (`object design-decision`, `attribute design-decision.tier`, `value design-decision.status accepted`,
 `relation design-decision.supersedes`, `service decisions`, `operation decisions.enter`, `actor the person`,
 `event <phrase>`), which spec_vocabulary's entries name. A context with no `spec/model/` has an empty Model.
@@ -41,6 +42,7 @@ class Model:
     events: list = field(default_factory=list)
     actors: dict = field(default_factory=dict)
     twice: list = field(default_factory=list)     # (kind, name, where) of an object, service or actor declared again
+    asked: bool = False     # whether a parameter was looked up among the imported packs' kinds (b618)
 
     def operations(self):
         return [op for s in self.services.values() for op in s.operations]
@@ -116,13 +118,13 @@ def _object_of(model, op):
     return next((name for name, _ in op.raw if name in model.objects), "")
 
 
-def _parameter(model, obj, name, values, flags=()):
+def _parameter(model, obj, name, values, flags=(), packed=()):
     if name in flags:
         return Parameter(name, "flag")
     if values:
         return Parameter(name, "values", values)
     alternatives = tuple(a.strip() for a in name.split("|"))
-    if all(a in model.objects for a in alternatives):
+    if all(a in model.objects or a in packed for a in alternatives):
         return Parameter(name, "object", targets=alternatives)
     rel = obj.relation(name) if obj else None
     if rel:
@@ -135,11 +137,20 @@ def _parameter(model, obj, name, values, flags=()):
     return Parameter(name, attr.type if attr else "text")
 
 
-def _resolve(model):
+def _named(model):
+    """What the model's objects name: each relation's and object attribute's targets and each `kind of`."""
+    out = set()
+    for obj in model.objects.values():
+        out |= {t for rel in obj.relations for t in rel.targets} | {obj.kind_of}
+        out |= {t for a in obj.attributes if a.type == "object" for t in a.targets}
+    return out
+
+
+def _resolve(model, packed=()):
     for op in model.operations():
         op.object = _object_of(model, op)
         obj = model.objects.get(op.object)
-        op.parameters = tuple(_parameter(model, obj, name, values, op.flags) for name, values in op.raw)
+        op.parameters = tuple(_parameter(model, obj, name, values, op.flags, packed) for name, values in op.raw)
 
 
 def read(root):
@@ -159,13 +170,21 @@ def read(root):
                     model.twice.append((kind, item.name, item.where))
                 store.setdefault(item.name, item)
         model.events += reader.events
-    _resolve(model)
+    names = {a.strip() for op in model.operations() for name, _ in op.raw for a in name.split("|")}
+    wanted = names & _named(model) - set(model.objects)
+    if wanted:      # only then the index read, so that a model of none stats no more (b430)
+        import spec_packs  # here: spec_packs reads the lexicon, which reads this module
+        model.asked, wanted = True, wanted & set(spec_packs.kinds(root))
+    _resolve(model, wanted)
     return model
 
 
-def _stamp(root):
+def _stamp(root, index=False):
+    """The state of the model's files, and with `index` of `spec/index.md`, whose imports a model that asked reads."""
     out = []
-    for p in sorted((Path(root) / "spec" / "model").glob("*.md")):
+    for p in ([Path(root) / "spec" / "index.md"] if index else []) + sorted((Path(root) / "spec" / "model").glob("*.md")):
+        if not p.is_file():
+            continue
         st = p.stat()
         out.append((p.name, st.st_mtime_ns, st.st_size))
     return tuple(out)
@@ -181,9 +200,9 @@ def load(root):
 def _load(root):
     key, stamp = str(Path(root).resolve()), _stamp(root)
     hit = _CACHE.get(key)
-    if hit and hit[0] == stamp:
+    if hit and hit[0] == stamp and (not hit[1].asked or hit[2] == _stamp(root, True)):
         return hit[1]
     model = read(root)
-    _CACHE[key] = (stamp, model)
+    _CACHE[key] = (stamp, model, _stamp(root, True) if model.asked else None)
     return model
 

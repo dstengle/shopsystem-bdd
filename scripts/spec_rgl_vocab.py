@@ -2,7 +2,7 @@
 in one tree, its actors, attributes and values, and each verb's frames read into pieces.
 
 The layers are spec_packs' (each imported pack, the glossary of `spec/index.md`, each capability's `## Terms`); a word
-the context defines takes the place of every pack's entries of it (`Redefines:`, v_t16), a later pack's of an earlier
+the context defines takes the place of every pack's entries of it in the same sense (`Redefines:`, v_t16), a later pack's of an earlier
 one's, while the glossary's and the capabilities' entries stand side by side, as the old lexicon reads them (b151).
 The base grammar's own kinds are `thing`, the root, and `agent`, a kind of thing (the CLI pack's frames name both); a
 kind or an actor with no `Kind of:` is a kind of thing.
@@ -13,6 +13,7 @@ a run of fixed words and the kind after them, or fixed words alone at the end: `
 "naming"), thing)]. A frame that does not read so is left out (v_t13 names it). In a context with a domain model, its
 operations by their qualified id (`operations`), which a verb names (spec_rgl_ops).
 """
+import dataclasses
 import re
 from dataclasses import dataclass, field
 
@@ -57,13 +58,26 @@ class Vocab:
 
 def lexicon(root):
     """The context's terms over every layer: every entry of the glossary and of each capability side by side, and of
-    the packs' entries of a word only the last pack's, none when the context defines the word itself."""
+    the packs' entries of a word only the last pack's, none when the context defines the word itself in the same sense
+    (spec_packs' `sense`: a verb beside a pack's noun of its spelling, b618)."""
     layered = spec_packs.layers(root)
-    own = {t.term for layer, t in layered if not layer.startswith("pack ")}
-    last = {t.term: layer for layer, t in layered if layer.startswith("pack ")}
-    terms = [t for layer, t in layered
-             if not layer.startswith("pack ") or (t.term not in own and last[t.term] == layer)]
+    own = {spec_packs.sense(t) for layer, t in layered if not layer.startswith("pack ")}
+    last = {spec_packs.sense(t): layer for layer, t in layered if layer.startswith("pack ")}
+    terms = [t for layer, t in layered if not layer.startswith("pack ")
+             or (spec_packs.sense(t) not in own and last[spec_packs.sense(t)] == layer)]
+    if domain_model.exists(root):
+        terms = _kinds_of(terms, domain_model.load(root).objects)
     return spec_lexicon.Lexicon(terms, spec_relations.read(root), tuple(spec_packs.imports(root)))
+
+
+def _kinds_of(terms, objects):
+    """A pack's kind of no `Kind of:` under the kind its model object is a kind of (b618: `object file kind of text`
+    puts the base pack's `file` under `text`), as spec_vocabulary_terms reads a noun naming an object."""
+    out = []
+    for t in terms:
+        up = objects[t.term].kind_of if t.category == "kind" and not t.supertype and t.term in objects else ""
+        out.append(dataclasses.replace(t, supertype=up) if up else t)
+    return out
 
 
 def outer(root):
