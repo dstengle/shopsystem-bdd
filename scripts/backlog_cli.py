@@ -260,7 +260,7 @@ def cmd_line(args):
     else:
         item, said = backlog_forms.add_upstream(args.root, args.name, args.upstream), "an upstream entry"
     print("%s: %s" % (backlog_items.label(item), said))
-    return 0
+    return backlog_lines.warn_terms(args.root, item, args.term if piece == "term" else ())   # b801
 
 
 def cmd_ready(args):
