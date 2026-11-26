@@ -175,11 +175,11 @@
    "line": "While this bounded context has no job, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`."
   },
   "checking#r27": {
-   "form": "shall [x1: interpreter \"the interpreter the request is answered with\" (indexical), x2: agent `clingo` (constant), x4: agent the person (constant), x5: specification \"the specification of this bounded context\" (indexical), x6: service the specification service (constant), x7: thing `0 violations` (parameter)]\n  while [x3: interpreter]\n    not\n      import(subject: x1, object: x2)\n    distinct(x3, x1)\n    import(subject: x3, object: x2)\n  when\n    request(e1, specification.check, subject: x4, object: x5)\n  response\n    return(e2, subject: x6, object: x7)",
+   "form": "shall [x1: interpreter \"the interpreter the request is answered with\" (indexical), x2: agent `clingo` (constant), x4: agent the person (constant), x5: specification \"the specification of this bounded context\" (indexical), x6: service the specification service (constant), x7: thing `0 violations` (parameter)]\n  while [x3: interpreter]\n    not\n      import#2(subject: x1, object: x2)\n    distinct(x3, x1)\n    import#2(subject: x3, object: x2)\n  when\n    request(e1, specification.check, subject: x4, object: x5)\n  response\n    return(e2, subject: x6, object: x7)",
    "line": "While this interpreter does not import `clingo` and another interpreter imports `clingo`, when the person validates this specification, the specification service shall return `0 violations`."
   },
   "checking#r28": {
-   "form": "shall [x2: agent `clingo` (constant), x3: agent the person (constant), x4: specification \"the specification of this bounded context\" (indexical), x5: service the specification service (constant), x6: check \"the check the trigger makes\" (indexical), x7: interpreter \"the interpreter the request is answered with\" (indexical)]\n  while\n    not [x1: interpreter]\n      import(subject: x1, object: x2)\n  if\n    request(e1, specification.check, subject: x3, object: x4)\n  response\n    fail(e2, subject: x5, object: x6)\n    name(e3, subject: x5, object: x7)",
+   "form": "shall [x2: agent `clingo` (constant), x3: agent the person (constant), x4: specification \"the specification of this bounded context\" (indexical), x5: service the specification service (constant), x6: check \"the check the trigger makes\" (indexical), x7: interpreter \"the interpreter the request is answered with\" (indexical)]\n  while\n    not [x1: interpreter]\n      import#2(subject: x1, object: x2)\n  if\n    request(e1, specification.check, subject: x3, object: x4)\n  response\n    fail(e2, subject: x5, object: x6)\n    name(e3, subject: x5, object: x7)",
    "line": "While no interpreter imports `clingo`, if the person validates this specification, then the specification service shall fail the check and name this interpreter."
   },
   "checking#r29": {
@@ -219,7 +219,7 @@
    "line": "While a term has more than one sense, when the person validates this specification, the specification service shall complete the request."
   },
   "checking#r41": {
-   "form": "shall [x1: bounded context \"the bounded context the request is made in\" (indexical), x3: agent the person (constant), x4: service the language service (constant), x6: request \"the request the trigger makes\" (indexical)]\n  while [x2: pack]\n    import(subject: x1, object: x2)\n  when\n    request(e1, language.look up, subject: x3, object: x2)\n  response\n    every [x5: term]\n      of(x5, x2)\n      scope\n        return(e2, subject: x4, object: x5)\n    complete(e3, subject: x4, object: x6)",
+   "form": "shall [x1: bounded context \"the bounded context the request is made in\" (indexical), x3: agent the person (constant), x4: service the language service (constant), x6: request \"the request the trigger makes\" (indexical)]\n  while [x2: pack]\n    import#2(subject: x1, object: x2)\n  when\n    request(e1, language.look up, subject: x3, object: x2)\n  response\n    every [x5: term]\n      of(x5, x2)\n      scope\n        return(e2, subject: x4, object: x5)\n    complete(e3, subject: x4, object: x6)",
    "line": "While this bounded context imports a pack, when the person looks up the pack, the language service shall return every term of the pack and complete the request."
   },
   "checking#r44": {
