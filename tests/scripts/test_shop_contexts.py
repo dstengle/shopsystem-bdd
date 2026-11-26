@@ -23,6 +23,7 @@ def test_an_id_the_product_id_covers_out_of_the_context_id_form_is_kept(tmp_path
     _git(repo, "commit", "-q", "-m", "fixture")
     ident = "bounded-context/example.org/home/A B"
     assert shop_contexts.keep(repo, ident) == 0
+    assert capsys.readouterr().out == "kept %s\n" % ident
     kept = tomllib.loads((repo / shop_contexts.REL).read_text())["contexts"]
     assert kept == [ident]
     assert _git(repo, "status", "--porcelain") == ""
