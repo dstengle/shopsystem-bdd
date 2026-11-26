@@ -1723,32 +1723,6 @@ shall [x3: agent the driver (constant), x4: service the batches service (constan
     return(e2, subject: x4, object: x5)
 ```
 
-## r166
-From: b725 r166.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item holds a port line that governs an operation and another port line that governs the operation is not in the item and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, when the person opens a batch, the batches service shall set the status of the item to `in-batch`.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x9: agent the person (constant), x11: service the batches service (constant)]
-  while [x1: item, x3: port line, x4: operation, x5: port line, x6: operation outcome]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    govern(subject: x3, object: x4)
-    in(x3, x1)
-    distinct(x5, x3)
-    govern(subject: x5, object: x4)
-    not
-      in(x5, x1)
-    of(x6, x4)
-    not [x7: core line]
-      handle(subject: x7, object: x6)
-    not [x8: port line]
-      exclude(subject: x8, object: x6)
-  when [x10: batch]
-    request(e1, batches.open, subject: x9, object: x10)
-  response
-    initiates(e2, subject: x11, status(x1) = `in-batch`)
-```
-
 ## r167
 Retires: r160. From: b725 r167.
 
@@ -1773,4 +1747,37 @@ shall [x8: agent the person (constant), x10: service the batches service (consta
   response
     reopen#2(e2, subject: x10, object: x1)
     name(e3, subject: x10, object: x5)
+```
+
+## r168
+Retires: r166. From: b730 r168.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit and the item holds a port line that governs an operation and another port line that governs the operation is not in the item and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, when the person opens a batch, the batches service shall allocate the item.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the review limit (constant), x12: agent the person (constant), x14: service the batches service (constant)]
+  while [x1: item, x6: port line, x7: operation, x8: port line, x9: operation outcome]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    not [x3: dependency, x4: item]
+      not
+        status(x4) = `delivered`
+      on(x3, x4)
+      of(x3, x1)
+    not
+      exceed#2(subject: x1, object: x5)
+    govern(subject: x6, object: x7)
+    in(x6, x1)
+    distinct(x8, x6)
+    govern(subject: x8, object: x7)
+    not
+      in(x8, x1)
+    of(x9, x7)
+    not [x10: core line]
+      handle(subject: x10, object: x9)
+    not [x11: port line]
+      exclude(subject: x11, object: x9)
+  when [x13: batch]
+    request(e1, batches.open, subject: x12, object: x13)
+  response
+    allocate(e2, subject: x14, object: x1)
 ```

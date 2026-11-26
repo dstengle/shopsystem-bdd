@@ -49,7 +49,7 @@ class Reader:
     def __init__(self, vocab, choices=()):
         self.vocab, self.names, self.counts, self.shared, self.known = vocab, {}, {}, {}, set()
         self.brought = []       # the Givens of the response's boxes: each K brought in, its restrictor
-        self.dets, self.images = {}, {}     # a referent said "no K"; an image's "the T of x" (spec_steps4_boxes)
+        self.dets, self.images, self.cns = {}, {}, {}     # "no K", "the T of x", a K's own noun (b716)
         self.numbers, self.counted = {}, {}     # a printed number's `number` box (b240); a counted K's (b273)
         self.arguments = {}     # an option's referent: its argument (spec_lf_option, b240)
         self.choices, self.taken, self.options = list(choices), [], []      # the case of each `or` box
@@ -113,8 +113,8 @@ class Reader:
         if not a and ref.origin in ("constant", "parameter") and ref.value not in self.actors:
             return (S + "_Code", ("CodeLit", ref.value))
         det = a if isinstance(a, str) else "DetA"
-        k, tree = (ref.kind, (kid(ref.kind) + "_Det", (det,), (kid(ref.kind) + "_UseN", (kid(ref.kind) + "_n",)))) \
-            if a else self.np0(ref)
+        k, tree = (ref.kind, (kid(ref.kind) + "_Det", (det,), self.cns.get(ref) or (kid(ref.kind) + "_UseN", (
+            kid(ref.kind) + "_n",)))) if a else self.np0(ref)
         if slot not in self.vocab.ancestors(k):
             raise TraceError("no step of a %s in a slot of %s" % (k, slot))
         return (S + "_Simple", tree) if k == slot else ("%s_Up_%s" % (kid(k), S), tree)

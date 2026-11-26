@@ -676,7 +676,7 @@ there is none
 - Since: b240
 - Form: no <noun>
 - Functions: `DetNo`
-- Cited by: consistency#r28, scenarios#r23
+- Cited by: consistency#r28, scenarios#r23, scenarios#r45
 - Example and its reading:
 
 ```construct
@@ -1185,7 +1185,7 @@ a noun of another by a relation row
 - Since: b240
 - Form: <noun> of|in <np>
 - Functions: `r\d+_\w+_Mod`
-- Cited by: consistency#r30, scenarios#r28, scenarios#r30, scenarios#r41, scenarios#r42, scenarios#r43
+- Cited by: consistency#r30, scenarios#r28, scenarios#r30, scenarios#r41, scenarios#r42, scenarios#r43, scenarios#r45
 - Example and its reading:
 
 ```construct

@@ -802,3 +802,23 @@ shall [x4: thing `reply-trigger` (parameter), x5: agent the person (constant), x
       mention(subject: x8, object: x9)
       keep(e2, subject: x7, object: x8)
 ```
+
+## r45
+From: b716 r45.
+
+```reading
+While a requirement of a requirement group of a capability uses `no-noun`, `of-relation` and a code, when the person generates the feature of the capability, the scenarios service shall keep a given step that uses the code.
+shall [x4: thing `no-noun` (parameter), x5: thing `of-relation` (parameter), x7: agent the person (constant), x9: service the scenarios service (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability, x6: code]
+    of(x2, x3)
+    of(x1, x2)
+    use(subject: x1, object: x4)
+    use(subject: x1, object: x5)
+    use(subject: x1, object: x6)
+  when [x8: feature]
+    of(x8, x3)
+    request(e1, scenarios.generate, subject: x7, object: x8)
+  response [x10: given step]
+    use(subject: x10, object: x6)
+    keep(e2, subject: x9, object: x10)
+```

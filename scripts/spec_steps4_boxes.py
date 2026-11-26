@@ -65,7 +65,8 @@ def given(r, box, pos):
 
 
 def no(r, box):
-    """"no K that P": one atom said of "no K"; of a box of more than one (b238, b240 phase 12), its link to a thing
+    """"no K that P": one atom said of "no K"; of a box of more than one, the box said whole (spec_steps4_none, b716:
+    "no task of the batch b1 whose status is `failed` exists"), else (b238, b240 phase 12) its link to a thing
     outside it ("the item i1 has no dependency"), else a value of its K ("no line is `accepted`"), which makes the
     box's state hold, unless another Given says the link of that thing."""
     atoms = [i for i in box.body if isinstance(i, Atom) and i.pred != "event"]
@@ -73,6 +74,10 @@ def no(r, box):
         r.dets[box.refs[0]] = "DetNo"
         return r.introduce(atoms[0]) + [("SCond", spec_lf_member.given(r, atoms[0], ("PPos",)))]
     if len(atoms) != len(box.body) or len(atoms) != 1:
+        import spec_steps4_none  # here: it imports this module
+        whole = spec_steps4_none.whole(r, box)     # said whole, its restriction kept (b716)
+        if whole is not None:
+            return whole
         atoms, refs = link(r, box)
     else:
         refs = box.refs
@@ -88,7 +93,7 @@ def none_whose(r, x, T, pol, value):
     """The Cond tree of a value said of "no K": "no item whose status is `idea` exists", the full form (b257), since
     "the status of no item" does not read."""
     K = kid(x.kind)
-    cn = spec_rgl_rel.whose_value(r.vocab, x.kind, T, ("PPos",), (K + "_UseN", (K + "_n",)), value)
+    cn = spec_rgl_rel.whose_value(r.vocab, x.kind, T, ("PPos",), r.cns.get(x) or (K + "_UseN", (K + "_n",)), value)
     np = (K + "_Det", ("DetNo",), cn)
     return ("k_thing_Holds", pol, ("k_thing_One", ("%s_Up_k_thing" % K, np) if x.kind != "thing" else
                                    ("k_thing_Simple", np)), ("Exists_St",))

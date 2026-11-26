@@ -6,7 +6,7 @@ notebook's core line requesting it, no core line on its completion, so the outco
 handles. The Then of the outcome named reads `work batch start`'s output for its name in the bound check. r167, which
 retires r160, keeps its world. r166 (b725): BLOCK laid on the base spec before the item, so the base already leaves
 the outcome unhandled, and the item holding only a second port line of `stock-port` that governs `stock.reserve`
-(SECOND)."""
+(SECOND). r168 (b730), which retires r166, keeps its world."""
 import shutil
 import sys
 from pathlib import Path
@@ -24,9 +24,10 @@ TERMS = ("holds", "hold", "governs", "govern", "has", "have", "handles", "handle
 
 
 def mine(step):
-    """True when the step is of batches' scenario of r160, or of r167, which retires it in its world."""
+    """True when the step is of batches' scenario of r160 or r166, or of r167 or r168, which retire them in their
+    worlds."""
     found = sys.modules["vocab"].vocab4.requested.scenario(step.request.node)
-    return found is not None and bool({"r160", "r166", "r167"} & set(found.tags))
+    return found is not None and bool({"r160", "r166", "r167", "r168"} & set(found.tags))
 
 
 def _tags(step):
@@ -75,11 +76,11 @@ def held(step):
         return False
     (k1, n1), (k2, _) = parts(step)[:2]
     if (k1, k2) == ("item", "port line"):
-        B.write_item(step, n1, sections={"Requirements": SECOND if "r166" in _tags(step) else _block()})
+        B.write_item(step, n1, sections={"Requirements": SECOND if {"r166", "r168"} & _tags(step) else _block()})
 
 
 def _based(step):
-    """`the item i1 does not hold the port line p2` (r166): BLOCK laid on the base spec as `work batch start` lays an
+    """`the item i1 does not hold the port line p2` (r166, r168): BLOCK laid on the base spec as `work batch start` lays an
     item, so it is committed on main before the item."""
     if not mine(step):
         return False

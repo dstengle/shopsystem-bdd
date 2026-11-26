@@ -123,6 +123,16 @@ def item_value(step):
     value(step)
 
 
+@local("GivenK_A", "section")
+def section_value(step):
+    """`no section of the capability c1 whose heading is `Behaviour` exists` (b716): "capability has no section", in
+    this feature's scenarios only."""
+    owner = re.match(r"no section of the (.+) \w+ whose ", step.text)
+    if not ours(step) or not owner:
+        return False
+    remember(step, "%s has no section" % owner.group(1))
+
+
 @handler("GivenK_A", "capability")
 @handler("GivenK_A", "rule")
 @handler("GivenK_A", "term")

@@ -12,7 +12,8 @@ before the command (`prepare`) and read by its Thens:
   holding or capping line, and the Then its feature must hold (`uses`);
 - a capability whose requirement uses `param-of` or governs an operation that makes a referent (b418):
   feature_file_tools_request's;
-- a capability whose requirement uses a construct (b274): its catalogue example (feature_file_tools_uses);
+- a capability whose requirement uses a construct (b274): its catalogue example (feature_file_tools_uses), of
+  `no-noun`, `of-relation` and a code a no box of two atoms (b716);
 - else the capability of the example data, run on by no name.
 
 `has` (`the requirement group r3 has the scenario s1`: every group of the capability has its scenario in the feature;
@@ -105,6 +106,8 @@ def prepare(step):
         w["entailed"] = tuple(re.compile(p, re.MULTILINE) for p in C2.GENERATED["declining"])
     elif "conform" in verbs:
         w["groups"] = constructs(step.repo)
+    elif USES.unlinked(step, w, NAME, PATH):     # a no box of two atoms (b716)
+        w["groups"] = 1
     elif COL.kind(w, W.kind):     # every, only, counts and two (b273)
         w["lines"] = COL.kind(w, W.kind)
         capability(step.repo, COL.groups(w["lines"]))

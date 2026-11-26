@@ -271,3 +271,6 @@ the capability `shelf` holds:
 ### [g44] generation introduces the thing a reply trigger's request is on
 - [r44] While a requirement of a requirement group of a capability uses `reply-trigger`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step and no when step introduce.
 
+### [g45] generation says the value a no box restricts its things by
+- [r45] While a requirement of a requirement group of a capability uses `no-noun`, `of-relation` and a code, when the person generates the feature of the capability, the scenarios service shall keep a given step that uses the code.
+
