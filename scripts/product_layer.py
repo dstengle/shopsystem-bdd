@@ -11,8 +11,9 @@ import re
 from plumbing.shop_refused import Refused
 
 # the job statement form: When <situation>, <actor> wants <motivation>, so they can <outcome>. The situation may hold
-# commas (b674): the statement splits at the last ", <actor> wants" before ", so they can", an actor of no comma.
-FORM = re.compile(r"When (?P<situation>\S(?:(?!, so they can ).)*\S), (?P<actor>\S[^,]*?) wants "
+# commas (b674): the statement splits at the last ", <actor> wants" before ", so they can", an actor of no comma; a
+# situation of one character is one too (b798).
+FORM = re.compile(r"When (?P<situation>\S(?:(?:(?!, so they can ).)*\S)?), (?P<actor>\S[^,]*?) wants "
                   r"(?P<motivation>\S.*?), so they can (?P<outcome>\S.*)\.")
 SAID = "When <situation>, <actor> wants <motivation>, so they can <outcome>."
 
