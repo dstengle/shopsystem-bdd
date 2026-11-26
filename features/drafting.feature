@@ -847,3 +847,33 @@ Feature: Drafting
     When the person drafts the item i1 with the requirement r1
     Then the drafting service refuses this request
     And the drafting service names the requirement id r2
+
+  @g88 @r88
+  Scenario: A port line drafted with the core lines it supports keeps the requirement id it retires
+    Given a requirement r1
+    And a requirement id r2
+    And the requirement r1 supports the requirement id r2
+    And an item i1
+    And a requirement id r3
+    When the person drafts the item i1 with the requirement r1 and the requirement id r3
+    Then the item i1 holds the requirement r1
+    And the drafting service keeps the requirement r1
+    And the item i1 holds the requirement id r3
+    And the drafting service keeps the requirement id r3
+
+  @g89 @r89
+  Scenario: Reinstating a requirement id that the item does not retire is refused
+    Given a requirement id r1
+    And an item i1
+    And the item i1 does not hold the requirement id r1
+    When the person reinstates the requirement id r1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the requirement id r1
+
+  @g90 @r90
+  Scenario: A requirement id reinstated in an item is no longer retired by it
+    Given a requirement id r1
+    And an item i1
+    When the person reinstates the requirement id r1 in the item i1
+    Then the drafting service keeps the item i2
+    And the item i2 does not hold the requirement id r1

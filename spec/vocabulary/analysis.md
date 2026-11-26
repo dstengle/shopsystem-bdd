@@ -71,3 +71,4 @@ area: analysis
 - **feature file** (noun) → object feature file. A `*.feature` file under the directory `--dir` names (default `features`), read line by line.
 - **tag** (noun) → object tag. A Gherkin tag of a scenario or of a feature file, as `@deprecated`.
 - **handler** (noun) → object handler. A function of `tests/scenarios/` that a step runs.
+- **import** (verb, state) → relation Python file.imports. A Python file names another tracked Python file in an import statement, so that running the one loads the other. Forms: imports, imported. Frame: <Python file> imports <Python file>.

@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56, g94, r94, g91, r91, g100, r100]
-unbuilt: []
+unbuilt: [r147]
 ---
 
 # Checking
@@ -412,6 +412,9 @@ Restates: design-model-check#r13@0.29.
 
 ### [g146] the coupling report names the requirements that use another area's words
 - [r146] While an area holds a capability and the capability has a requirement that uses a term and another area holds the term, when the person reports on the shop, the specification service shall return a coupling of the area that holds the requirement.
+
+### [g147] the coupling report names the Python files of one area that import another area's
+- [r147] While an area holds a Python file and the Python file imports a Python file that another area holds, when the person reports on the shop, the specification service shall return a coupling of the area and name the Python file.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

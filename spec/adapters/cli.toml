@@ -637,6 +637,7 @@ requirements = [
   "drafting#r85: When the person drafts an item with a capability and a driven port, the drafting service shall keep the capability in the item and keep the driven port that holds the capability in the item.",
   "drafting#r86: When the person drafts an item with a requirement that supports a requirement id, the drafting service shall keep the requirement in the item.",
   "drafting#r87: If the person drafts an item with a requirement that supports a requirement id that no requirement has, then the drafting service shall refuse the request and name the requirement id.",
+  "drafting#r88: While a requirement supports a requirement id, when the person drafts an item with the requirement and a different requirement id, the drafting service shall keep the requirement in the item and keep the requirement id in the item.",
 ]
 [operations."drafting.draft".parameters]
 item = { positional = 1 }
@@ -1789,4 +1790,15 @@ requirements = [
   "checking#r144: While an area holds a term that has a word and another area holds a term that has the word, when the person reports on the shop, the specification service shall return a coupling of the area that holds the word.",
   "checking#r145: While an area holds an element that refers to a term and the term means an element that another area holds, when the person reports on the shop, the specification service shall return a coupling of the area and name the element.",
   "checking#r146: While an area holds a capability and the capability has a requirement that uses a term and another area holds the term, when the person reports on the shop, the specification service shall return a coupling of the area that holds the requirement.",
+  "checking#r147: While an area holds a Python file and the Python file imports a Python file that another area holds, when the person reports on the shop, the specification service shall return a coupling of the area and name the Python file.",
 ]
+
+[operations."drafting.reinstate requirement"]
+command = "work line"
+requirements = [
+  "drafting#r89: If the person reinstates a requirement id in an item that does not hold the requirement id, then the drafting service shall refuse the request and name the requirement id.",
+  "drafting#r90: When the person reinstates a requirement id in an item, the drafting service shall keep an item that does not hold the requirement id.",
+]
+[operations."drafting.reinstate requirement".parameters]
+item = { positional = 1 }
+"requirement id" = { option = "--remove" }

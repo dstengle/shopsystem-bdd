@@ -7,7 +7,7 @@ area: tracking
 specifies: service drafting
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r88, r90, r89]
 ---
 
 # Drafting
@@ -297,4 +297,13 @@ capabilities, retirements, rewordings and chores.
 
 ### [g87] A port line drafted as supporting a requirement id no requirement has is refused
 - [r87] If the person drafts an item with a requirement that supports a requirement id that no requirement has, then the drafting service shall refuse the request and name the requirement id.
+
+### [g88] A port line drafted with the core lines it supports keeps the requirement id it retires
+- [r88] While a requirement supports a requirement id, when the person drafts an item with the requirement and a different requirement id, the drafting service shall keep the requirement in the item and keep the requirement id in the item.
+
+### [g90] A requirement id reinstated in an item is no longer retired by it
+- [r90] When the person reinstates a requirement id in an item, the drafting service shall keep an item that does not hold the requirement id.
+
+### [g89] Reinstating a requirement id that the item does not retire is refused
+- [r89] If the person reinstates a requirement id in an item that does not hold the requirement id, then the drafting service shall refuse the request and name the requirement id.
 

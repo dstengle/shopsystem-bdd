@@ -162,6 +162,7 @@ service drafting
   operation reinstate model line(model line, item)  outcomes: done | refused: model line not retired by the item
   operation reinstate term(term, item)  outcomes: done | refused: term not retired by the item
   operation remove import(pack, item)  outcomes: done | refused: pack not imported by the item
+  operation reinstate requirement(requirement id, item)  outcomes: done | refused: requirement id not retired by the item
 
 service context requests
   operation raise(context request, origin, thread, text, bounded context)

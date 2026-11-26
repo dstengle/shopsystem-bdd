@@ -28,6 +28,7 @@ object coverage map kind of file
 object Python file kind of file
   relations: has → function (many); holds → test (many); defines → identifier (many); exceeds → size limit (many)
   relations: differs from → base branch (one)
+  relations: imports → Python file (many)
 
 object function kind of identifier
 

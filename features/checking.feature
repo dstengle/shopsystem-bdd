@@ -1271,3 +1271,18 @@ Feature: Checking
     When the person reports on this shop
     Then the specification service returns the coupling c2
     And the coupling c2 holds the requirement r1
+
+  @g147 @r147
+  Scenario: the coupling report names the Python files of one area that import another area's
+    Given a Python file p1
+    And an area a1
+    And the area a1 holds the Python file p1
+    And a Python file p2
+    And an area a2
+    And the area a2 holds the Python file p2
+    And the Python file p1 imports the Python file p2
+    And a coupling c1
+    And the area a2 has the coupling c1
+    When the person reports on this shop
+    Then the specification service returns the coupling c1
+    And the specification service names the Python file p2
