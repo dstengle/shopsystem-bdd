@@ -92,7 +92,7 @@ reach for when you need them.
 - [`grammar/language.md`](../grammar/language.md): the language's reference, every rule with its readings.
 - [`grammar/constructs.md`](../grammar/constructs.md): the construct catalogue, each construct a line may use, generated.
 - [`grammar/rules.md`](../grammar/rules.md): the rule catalogue, each rule `shop spec check` holds, generated.
-- [`grammar/packs/`](../grammar/packs/): the word packs a context imports (`request`, `spec`, `time`; `cli` retired in 0.38.0).
+- [`grammar/packs/`](../grammar/packs/): the word packs a context imports (`base`, `request`, `spec`, `time`; `cli` retired in 0.38.0).
 
 **History**, kept as it was:
 
