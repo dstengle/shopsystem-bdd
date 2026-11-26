@@ -1,9 +1,9 @@
-"""items#r73's and batches#r169's world (b731): an item whose core line performs another area's lifecycle transition.
-The domain-model fixture's model, vocabulary and notebook (items: its whole spec; batches: beside readiness_world's
-codified spec, as batches_handlers_outcome's world), with a second area `desk` (DESK) whose service's `stamp` the notes
+"""items#r73's world (b731) and laying#r20's (laying_handlers_reached, b758): an item whose core line performs another
+area's lifecycle transition. The domain-model fixture's model, vocabulary and notebook (items: its whole spec; laying:
+beside readiness_world's codified spec, as batches_handlers_outcome's world), with a second area `desk` (DESK) whose service's `stamp` the notes
 area imports; the area `notes` holds the lifecycle `note.status` and its transition `draft → active`; the item holds
 notebook's core line requesting `desk.stamp` and setting the status of the note to `active` (BLOCK), so the lay brings
-v_m9 of the transition. What `work ready` and `work batch start` name the core line by is its requirement's id."""
+v_m9 of the transition. What `work ready` and laying's check name the core line by is its requirement's id."""
 import importlib.util
 import shutil
 import sys
@@ -21,7 +21,6 @@ def shared(name, file):
 
 W = shared("shop_work_queue_world", "work_queue_world.py")
 B = shared("shop_backlog_world", "backlog_world.py")
-F = shared("shop_world_four", "world_four.py")
 FIXTURE = Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "domain-model" / "spec"
 LINE = "notebook#r10"
 BLOCK = """### notebook
@@ -62,18 +61,16 @@ TERMS = ("holds", "hold", "has", "have", "performs", "perform", "uses", "use")
 
 
 def _tag(step):
-    """"items" or "batches" when the step is of items' scenario of r73 or batches' of r169, else None."""
+    """"items" when the step is of items' scenario of r73, else None."""
     requested = sys.modules["vocab"].vocab4.requested
     found = requested.scenario(step.request.node)
     if found is None:
         return None
-    capability = requested.capability(step.request.node)
-    return capability if (capability, True) in (("items", "r73" in found.tags), ("batches", "r169" in found.tags)) \
-        else None
+    return "items" if requested.capability(step.request.node) == "items" and "r73" in found.tags else None
 
 
 def _spec(step, tag):
-    """The world's spec, once: the fixture's (beside readiness_world's codified spec in batches) and DESK."""
+    """The world's spec, once: the fixture's (beside readiness_world's codified spec, of any other tag) and DESK."""
     if step.context.get("lifecycle_spec"):
         return
     spec = step.repo / "spec"
@@ -118,18 +115,3 @@ def given_held(step):
 
 W.local("GivenK")(given_named)
 W.local("GivenDoes")(given_held)
-for _kind in KINDS:
-    F.four("GivenK", _kind, "backlog", "batches")(given_named)
-for _term in TERMS:
-    F.four("GivenDoes", _term, "backlog", "batches")(given_held)
-
-
-@F.four("ThenDoes", "name", "backlog", "batches")
-def names_line(step):
-    """The batches service names the core line c1: `work batch start` printed its requirement's id."""
-    if _tag(step) != "batches" or F.parts(step)[1][0] != "core line":
-        return False
-    done = step.context["result"]
-    assert done.returncode == 0, (step.text, done.stdout, done.stderr)
-    assert LINE in done.stdout, (step.text, done.stdout)
-    return None

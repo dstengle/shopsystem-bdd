@@ -2,10 +2,11 @@
 generator (`scripts/features` and `scripts/features_generate.py`: the repository is the plugin, and a batch's
 workspace may hold a newer generator than the checkout a command runs in) has its features written by that tree's
 `scripts/features generate --root <tree>`, run with this interpreter in a process of its own; any other tree (a
-consumer's, whose generator is the plugin's own) by features_generate in this process. Read by batch_start's lay and
-unlay and by batch_reached, so `work batch start`, `park` and `amend` all write with the tree's generator. A run that
-outlasts its time limit (`$SHOPSYSTEM_GENERATE_TIMEOUT` seconds, default 600) or cannot be started is a GenerateError
-naming the feature generator, which those commands refuse with (b749, batches r175, r176)."""
+consumer's, whose generator is the plugin's own) by features_generate in this process. Read by laying_inprocess's
+prepare and lift and by batch_reached, so `work batch start`, `park` and `amend` all write with the tree's
+generator. A run that outlasts its time limit (`$SHOPSYSTEM_GENERATE_TIMEOUT` seconds, default 600) or cannot be
+started is a GenerateError naming the feature generator, which those commands refuse with (b749, batches r175,
+r176)."""
 import contextlib
 import io
 import os

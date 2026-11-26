@@ -7,7 +7,8 @@ violates `v_c1` (`VIOLATED`). The workspace w1 is a worktree of the repository b
 (`workspace`). The When lays the item there, or lifts it once its lay is committed there (r2), or checks it once it
 is laid there (r3, r4), and keeps the laying service's reply, a domain_envelope Response. The
 Thens read the reply and the workspace: its capability file holding the line or not, its feature holding a scenario
-tagged with the requirement's id."""
+tagged with the requirement's id. The prepare of a workspace for a batch and a check after it are
+laying_handlers_prepare's and laying_handlers_reached's (b758)."""
 import sys
 from pathlib import Path
 
@@ -165,5 +166,5 @@ def untaken(step):
 
 
 for key in (("WhenRequests", "laying.lay"), ("WhenRequests", "laying.lift"), ("WhenRequests", "laying.check"),
-            ("ThenDoes", "refer")):
+            ("WhenRequests", "laying.prepare"), ("ThenDoes", "refer"), ("ThenDoes", "generate")):
     handler(*key)(untaken)
