@@ -205,7 +205,7 @@ def reword_term(root, name, term, entry, into=None):
 
 def cmd(args):
     """`work line` with one of this module's options: one of them, the text only of a reword, `--into` narrowing
-    where the model line or term is; what was done, printed."""
+    where the model line or term is; what was done, printed, and of a term reworded the warnings `--term` prints."""
     flags = [k for k in FLAGS if getattr(args, k, None) is not None]
     from backlog_cli import PIECES
     others = [k for k in PIECES[1:] + ("retires", "reword", "remove", "group", "in_group")
@@ -226,6 +226,7 @@ def cmd(args):
     else:
         item, entry, changed = reword_term(args.root, args.name, value, args.text, args.into)
         print(__import__("backlog_said").term_reworded(item, value.strip(), entry, changed))
-        return 0
+        import backlog_lines        # the warnings --term prints (b848, drafting r112)
+        return backlog_lines.warn_terms(args.root, item, [entry]) if changed else 0
     print("%s: %s" % (label(item), said % value.strip().split("\n")[0]))
     return 0

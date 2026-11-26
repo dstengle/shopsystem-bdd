@@ -8,7 +8,9 @@ The When runs `spec check --item b1`; the Then reads the rows under `w_unserved_
 scenario and whose r10 governs `notes.list`, which the context's contract does not hold, so the lay alone would bring
 v_s3 and v_a5: the Thens read that no v_s3 row names the group and no v_a5 row the requirement. Of r155 the item's r10
 sets a retired note's status to `active`, a transition the lifecycle does not allow (v_m6, of severity error): the
-Thens read the check's exit 1 and the v_m6 row naming the requirement."""
+Thens read the check's exit 1 and the v_m6 row naming the requirement. Of r160 (b848) the same item holding in its
+model block the term `the note`, a proper noun of the person that reads as the kind note (v_t6, of severity error):
+the Thens read the check's exit 1 and the v_t6 row naming the term, which `spec check` without the item has not."""
 import shutil
 import sys
 from pathlib import Path
@@ -16,7 +18,7 @@ from pathlib import Path
 W = sys.modules["shop_work_queue_world"]
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURE = ROOT / "tests" / "scripts" / "fixtures" / "domain-model"
-GROUPS = {"g152", "g153", "g154", "g155"}
+GROUPS = {"g152", "g153", "g154", "g155", "g160"}
 CONTEXT, JOB, RULE = "example.org/fixture/domain-model", "keep-notes", "w_unserved_job"
 PRODUCT = """id = "example.org/fixture"
 purpose = "Notes kept."
@@ -60,6 +62,8 @@ serves: [g10 %(job)s]
 VIOLATING = ("#### [g10] A retired note archived becomes active\n- [r10] While a note is `retired`, when the person "
              "archives the note, the notes service shall set the status of the note to `active`.\n")
 GROUP, REQUIREMENT = "notebook#g10", "notebook#r10"
+TERM, LEXICAL = "the note", "v_t6"
+TERMED = "\n### notes model\n\n- **%s** (proper noun) → actor the person. The person who keeps notes.\n" % TERM
 
 
 def tags(step):
@@ -72,7 +76,10 @@ def mine(step):
 
 
 def item(step):
-    """The item's text: of r155 its group the violating one, else the group serving the job."""
+    """The item's text: of r155 its group the violating one, of r160 the group serving the job and the term, else the
+    group serving the job."""
+    if "g160" in tags(step):
+        return ITEM + TERMED
     if "g155" not in tags(step):
         return ITEM
     head, _, _ = ITEM.partition("serves:")
@@ -142,18 +149,24 @@ def then_lay_only(step):
 
 
 def then_fails(step):
-    """`the specification service fails this check` (r155): `spec check --item` exits 1."""
-    if "g155" not in tags(step) or "result" not in step.context:
+    """`the specification service fails this check` (r155, r160): `spec check --item` exits 1."""
+    if not {"g155", "g160"} & tags(step) or "result" not in step.context:
         return False
     done = step.context["result"]
     assert done.returncode == 1 and "Traceback" not in done.stderr, done.stdout + done.stderr
 
 
 def then_names(step):
-    """`the specification service names the rule r2` (r155): a row of `v_m6` names the item's requirement."""
-    if "g155" not in tags(step) or "result" not in step.context or step.term != "name":
+    """`the specification service names the rule r2` (r155): a row of `v_m6` names the item's requirement; `... names
+    the term t1` and `... the rule r1` (r160): a row of `v_t6` names the term, and none without the item."""
+    if not {"g155", "g160"} & tags(step) or "result" not in step.context or step.term != "name":
         return False
     done = step.context["result"]
+    if "g160" in tags(step):
+        without = step.context["without item"]
+        assert not any(TERM in row for row in rows(without.stdout, LEXICAL)), without.stdout + without.stderr
+        assert any(TERM in row for row in rows(done.stdout, LEXICAL)), done.stdout + done.stderr
+        return None
     assert any(REQUIREMENT in row for row in rows(done.stdout, "v_m6")), done.stdout + done.stderr
 
 
