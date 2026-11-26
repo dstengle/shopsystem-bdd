@@ -8,7 +8,9 @@ it, at the shop's top or one or two folders under it: `hosted`, b622), else the 
 (contract_registry_github); with no version the published contract (the one of the highest version), a version
 never deposited refused naming it, `version not deposited`. A contract registered for an adapter spec (b735,
 contract-registry r4) is kept in the adapter spec's folder as `provider/<id's path>/<version>/contract.toml` (`place`,
-b593), committed, the same bytes kept there already left as they are; `held` reads back what a folder holds there."""
+b593), committed, the same bytes kept there already left as they are; `held` reads back what a folder holds there;
+`deregister` (b743, contract-registry r5) takes the file its register wrote out again, committed, the folders it
+leaves empty with it (pushed commits are never rewritten: history keeps both, the files are as before)."""
 import re
 from pathlib import Path
 
@@ -62,6 +64,27 @@ def register(root, contract, adapter_spec, provider, version):
         target.write_bytes(contract)
     shop_files.committed(root, [rel], "spec obtain: the contract of %s at %s for %s" % (provider, version,
                                                                                      adapter_spec), write)
+    return contract_registry.completed({"kept": rel, "changed": True})
+
+
+def deregister(root, contract, adapter_spec, provider, version):
+    """The contract of `provider` at `version` taken out of the adapter spec's folder `adapter_spec` (relative to
+    `root`), committed, the folders under the adapter spec it leaves empty removed; the reply completed, {"kept": its
+    path, "changed": whether it was there}. `contract` is the one registered, which the file held."""
+    import shop_files
+    rel = (Path(adapter_spec) / place(provider, version)).as_posix()
+    target = Path(root) / rel
+    if not target.is_file():
+        return contract_registry.completed({"kept": rel, "changed": False})
+
+    def write():
+        target.unlink()
+        folder, top = target.parent, Path(root) / adapter_spec
+        while folder != top and folder.is_dir() and not any(folder.iterdir()):
+            folder.rmdir()
+            folder = folder.parent
+    shop_files.committed(root, [rel], "spec obtain: the contract of %s at %s deregistered for %s" % (
+        provider, version, adapter_spec), write)
     return contract_registry.completed({"kept": rel, "changed": True})
 
 
