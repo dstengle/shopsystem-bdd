@@ -25,7 +25,7 @@ def test_the_order():
     assert picked(batch("building", "failed"), [FINDING]) == ("fix finding", None, "f1")
     assert picked(batch("building", "pending", "running", "failed")) == ("park item", "t3", None)
     assert picked(batch("building", "pending", "running")) == ("finish task", "t2", None)
-    assert picked(batch("building", "done", "pending")) == ("build task", "t2", None)
+    assert picked(batch("building", "done", "pending")) == ("prepare task", "t2", None)
     assert picked(batch("building", "done", "done")) == ("submit batch", None, None)
 
 

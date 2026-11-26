@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 import batch_driver
+from batch_next import INSTRUCTIONS
 
 W, B, T, F = (sys.modules[n] for n in ("shop_work_queue_world", "shop_backlog_world", "shop_batches_world",
                                        "shop_world_four"))
@@ -89,8 +90,7 @@ def returns(step):
     content = _step(step)
     kind, name = parts(step)[-1]
     if kind == "batch step":
-        assert content["instruction"] in ("build task", "finish task", "submit batch", "review change",
-                                          "fix finding", "park item", "stop"), (step.text, content)
+        assert content["instruction"] in INSTRUCTIONS, (step.text, content)
         step.context.setdefault("batch_steps", {})[name] = content
     elif kind == "task":
         assert content["task"] and content["task"]["task"] == T.task_id(step, name), (step.text, content)

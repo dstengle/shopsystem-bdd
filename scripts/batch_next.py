@@ -1,14 +1,17 @@
-"""`work batch next <batch>` (b683, batches r135-r141): the batches service's poll, the next step of a batch said to
-its driver (whatever runs the batch: an agent from the batch brief, a script, a headless runner), so that any driver
-loops on it and reports each step's result through the batch's other operations.
+"""`work batch next <batch>` (b683, b692, batches r141, r143-r148): the batches service's poll, the next step of a
+batch said to its driver (whatever runs the batch: an agent from the batch brief, a script, a headless runner), so
+that any driver loops on it and reports each step's result through the batch's other operations.
 
-A batch step is its instruction and what it is about: `build task` (a pending task, with the batch brief), `finish
-task` (a running task), `submit batch`, `review change` (the next review's folder), `fix finding` (an open `fix now`
-finding no commit cites yet), `park item` (a failed task) or `stop`. One step is picked, the first that applies in
-this order: stop, review change, fix finding, park item, finish task, build task, submit batch (`pick`). Only the
-tasks of an item still `in-batch` count; a building batch with none of them stops. Each step names the command its
-result is reported through (`report`). The step is printed as lines, and is the content of a `returned` response
-(the envelope under `--json`)."""
+A batch step is its instruction and what it is about: `prepare task` (a pending task, reported through `work batch
+resume`, which makes its worktree), `build task` (a running task whose branch holds no commit citing its item since
+the batch's lines commit, with the batch brief), `finish task` (a running task whose branch holds one), `submit
+batch`, `review change` (the next review's folder and the findings file in it, `findings.md`, where the reviewer's
+reply is saved for `work batch reviewed`), `fix finding` (an open `fix now` finding no commit cites yet), `park item`
+(a failed task) or `stop`. One step is picked, the first that applies in this order: stop, review change, fix
+finding, park item, finish or build task (running), prepare task (pending), submit batch (`pick`). Only the tasks of
+an item still `in-batch` count; a building batch with none of them stops. Each step names the command its result is
+reported through (`report`). The step is printed as lines, and is the content of a `returned` response (the envelope
+under `--json`)."""
 import backlog_items
 import batch_driver
 import batch_findings
@@ -17,7 +20,7 @@ import batch_plan
 from domain_envelope import Response
 from shop_files import Refused
 
-INSTRUCTIONS = ("build task", "finish task", "submit batch", "review change", "fix finding", "park item", "stop")
+INSTRUCTIONS = ("prepare task", "build task", "finish task", "submit batch", "review change", "fix finding", "park item", "stop")
 
 
 def _in_batch(root, task):
@@ -42,7 +45,7 @@ def pick(batch, tasks, unfixed):
         return "review change", None, None
     if unfixed:
         return "fix finding", None, unfixed[0]
-    for status, instruction in (("failed", "park item"), ("running", "finish task"), ("pending", "build task")):
+    for status, instruction in (("failed", "park item"), ("running", "finish task"), ("pending", "prepare task")):
         task = next((t for t in tasks if t.status == status), None)
         if task is not None:
             return instruction, task, None
@@ -52,7 +55,7 @@ def pick(batch, tasks, unfixed):
 def report(batch, instruction, task, finding):
     """The command the step's result is reported through, or None for `stop`."""
     name = batch.name
-    return {"build task": "shop work batch resume %s" % name,
+    return {"prepare task": "shop work batch resume %s" % name,
             "finish task": "shop work batch done %s %s" % (name, task.task if task else ""),
             "park item": "shop work batch park %s %s --question <question>" % (name, task.item if task else ""),
             "submit batch": "shop work batch review %s" % name,
