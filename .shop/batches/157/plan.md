@@ -16,7 +16,7 @@ pull_request: https://github.com/dstengle/shopsystem-bdd/pull/180
 |---|---|---|---|
 | t1 | b808 | done | batch-157-b808 |
 | t2 | b809 | done | batch-157-b809 |
-| t3 | b813 | done | batch-157-b813 |
+| t3 | b813 | running | batch-157-b813 |
 | t4 | b807 | done | batch-157-b807 |
 
 ## Plan
