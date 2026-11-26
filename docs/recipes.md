@@ -51,7 +51,7 @@ b250 "Items carry labels": model lines of tracking
 $ shop work line b250 --into items --relation "item: has → label (many)"
 b250 "Items carry labels": model lines of tracking
 $ shop work line b250 --into items --term="- **label** (noun) → object label. A short word the person gives an item, to group it with others."
-b250 "Items carry labels": a vocabulary entry of tracking
+b250 "Items carry labels": a vocabulary entry of tracking: - **label** (noun) → object label. A short word the person gives an item, to group it with others.
 $ shop work line b250 --into items --group "An item shown returns its labels" "While an item has a label, when the person shows the item, the backlog service shall return every label of the item."
 b250 "Items carry labels": items#r31 While an item has a label, when the person shows the item, the backlog service shall return every label of the item.
 ```

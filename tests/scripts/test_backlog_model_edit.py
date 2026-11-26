@@ -53,7 +53,12 @@ def test_a_term_by_its_word_and_element_and_its_block_goes_when_empty(modelled):
     assert _models(modelled)[0].terms == (REMOVE,)
     done = work(modelled, "line", "b1", "--reword-term", "remove", "--", DROP)
     assert done.returncode == 0, done.stderr
+    assert done.stdout.endswith(": term remove reworded: %s\n" % DROP), done.stdout      # drafting r105
     assert _models(modelled)[0].terms == (DROP,)
+    head = git(modelled, "rev-parse", "HEAD")
+    done = work(modelled, "line", "b1", "--reword-term", "remove", "--", DROP)    # its own text (b829)
+    assert done.returncode == 0 and done.stdout.endswith(": term remove unchanged: %s\n" % DROP), done.stderr
+    assert git(modelled, "rev-parse", "HEAD") == head
     for args in (("--remove-term", "remove"), ("--remove-model", "object folder"), ("--remove-model", "object shelf")):
         assert work(modelled, "line", "b1", *args).returncode == 0, args
     assert _models(modelled) == []

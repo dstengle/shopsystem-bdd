@@ -73,8 +73,7 @@ def _changed(step, item, line, options):
         ident = R.LIVE
     step.context.setdefault("says", {})[name] = ident
     line.update(changed=flag, ident=ident, old=R.PASSING)
-    if flag == "--reword":
-        line["written"] = R.LINE
+    if flag == "--reword":      # a capability's live requirement, refused (r15); an item's own is drafting's r106
         return ["--reword", ident, R.LINE]
     return ["--remove", ident]
 

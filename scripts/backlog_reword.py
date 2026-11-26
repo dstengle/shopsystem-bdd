@@ -34,17 +34,21 @@ def _found(item, ident, flag, lineless=None):
 
 
 def reword(root, name, ident, text):
-    """`work line --reword <cap>#r<n> <line>`: the item's line of that id given the text `text`, committed."""
+    """`work line --reword <cap>#r<n> <line>`: the item's line of that id given the text `text`, committed; the item
+    and whether it changed: a line the item holds with that text already is left as it is, nothing committed
+    (drafting r107, b829)."""
     item = find(root, name)
     blocks, b, g, rid = _found(item, ident, "--reword")
     text = one_line(text, "line")
     if text.startswith("#"):
         raise Refused("work line: %s: the line starts with #, which would read as a heading" % label(item))
     group = blocks[b].groups[g]
+    if dict(group.requirements)[rid] == text:
+        return item, False
     group.requirements[:] = [(r, text if r == rid else old) for r, old in group.requirements]
     item.sections[SECTION] = render(blocks)
     commit(root, item, "work line: %s rewords %s" % (label(item), ident))
-    return item
+    return item, True
 
 
 def remove(root, name, ident):

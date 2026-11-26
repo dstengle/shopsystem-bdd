@@ -21,9 +21,20 @@ def test_reword_keeps_the_id_and_group_and_commits_the_item(ready_repo):
     assert work(ready_repo, "line", "b1", "--into", "work-queue", LINE).returncode == 0
     done = work(ready_repo, "line", "b1", "--reword", "work-queue#r5", OTHER)
     assert done.returncode == 0, done.stderr
-    assert done.stdout == 'b1 "Fix the parser": work-queue#r5 reworded\n'
+    assert done.stdout == 'b1 "Fix the parser": work-queue#r5 reworded: %s\n' % OTHER     # drafting r106
     assert blocks(ready_repo) == [Block("work-queue", [], [Group("g4", "Fix the parser", [("r5", OTHER)])])]
     assert git(ready_repo, "show", "--name-only", "--format=", "HEAD").split() == [".shop/backlog/b1.md"]
+
+
+def test_a_reword_to_the_text_the_item_holds_changes_nothing(ready_repo):
+    """drafting r107 (b829): completed, nothing committed, the requirement named with its text."""
+    write_item(ready_repo, "b1", status="shaped")
+    assert work(ready_repo, "line", "b1", "--into", "work-queue", LINE).returncode == 0
+    head = git(ready_repo, "rev-parse", "HEAD")
+    done = work(ready_repo, "line", "b1", "--reword", "work-queue#r5", LINE)
+    assert done.returncode == 0, done.stderr
+    assert done.stdout == 'b1 "Fix the parser": work-queue#r5 unchanged: %s\n' % LINE
+    assert git(ready_repo, "rev-parse", "HEAD") == head
 
 
 def test_remove_takes_the_line_its_group_and_the_id_it_retires(ready_repo):

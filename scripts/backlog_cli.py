@@ -152,8 +152,8 @@ def _changed(args):
     if args.reword is not None:
         if args.text is None:
             raise backlog_items.Refused("work line: --reword %s takes the requirement line" % args.reword)
-        item = backlog_reword.reword(args.root, args.name, args.reword, args.text)
-        print("%s: %s reworded" % (backlog_items.label(item), args.reword))
+        item, changed = backlog_reword.reword(args.root, args.name, args.reword, args.text)
+        print(__import__("backlog_said").reworded(item, args.reword, args.text, changed))
     else:
         if args.text is not None:
             raise backlog_items.Refused("work line: --remove %s takes no requirement line" % args.remove)
@@ -259,7 +259,7 @@ def cmd_line(args):
         said = "a given block of %s#%s" % (args.into, args.given[0])
     else:
         item, said = backlog_forms.add_upstream(args.root, args.name, args.upstream), "an upstream entry"
-    print("%s: %s" % (backlog_items.label(item), said))
+    print(__import__("backlog_said").terms(item, said, args.term if piece == "term" else ()))
     return backlog_lines.warn_terms(args.root, item, args.term if piece == "term" else ())   # b801
 
 
