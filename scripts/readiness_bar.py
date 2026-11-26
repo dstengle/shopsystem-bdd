@@ -226,7 +226,8 @@ def _laid(copy, item, blocks, mine):
     reasons = ["%s.md: %s" % (b.capability, p) for b in blocks
                for p in spec_read.capability(backlog_lines.capability_file(copy, b.capability)).problems]
     reasons += ["universal.md: %s" % p for p in spec_read.read_universal(copy).problems] if blocks.universal else []
-    reasons += ["the lexicon: %s %s: %s" % found for found in spec_lexicon.problems(spec_lexicon.read(copy), outer)
+    laid = spec_rgl_vocab.outer(copy)          # the kinds of a pack the item imports (b694)
+    reasons += ["the lexicon: %s %s: %s" % found for found in spec_lexicon.problems(spec_lexicon.read(copy), laid)
                 if found not in before]                                                             # r15
     if reasons:                  # a broken lexicon breaks grammar 4's compile: no stage after it runs
         return doubled + reasons, []
