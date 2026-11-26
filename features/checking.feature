@@ -1055,3 +1055,26 @@ Feature: Checking
     When the person validates this specification
     Then the specification service names this product
     And the specification service completes this request
+
+  @g125 @r125
+  Scenario: A contract fetched is retrieved from the contract registry at its version
+    Given a downstream context d1
+    And a contract c1
+    And a version v1
+    When the downstream context d1 fetches the contract c1 with the version v1
+    Then the specification service retrieves the contract c1 with the version v1
+
+  @g126 @r126
+  Scenario: A contract obtained is retrieved from the contract registry for its bounded context and version
+    Given a contract c1
+    And a bounded context b1
+    And a version v1
+    When the person obtains the contract c1 from the bounded context b1 with the version v1
+    Then the specification service retrieves the contract c1 with the bounded context b1 and the version v1
+
+  @g127 @r127
+  Scenario: A contract published is deposited in the contract registry at its version
+    Given a contract c1
+    And a version v1
+    When the person publishes the contract c1 with the version v1
+    Then the specification service deposits the contract c1 with the version v1

@@ -1681,3 +1681,46 @@ shall [x1: product "the product this bounded context belongs to" (indexical), x2
     name(e2, subject: x5, object: x1)
     complete(e3, subject: x5, object: x6)
 ```
+
+## r125
+From: b636 r125.
+
+```reading
+When a downstream context fetches a contract with a version, the specification service shall retrieve the contract with the version.
+shall [x4: service the specification service (constant)]
+  when [x1: downstream context, x2: contract, x3: version]
+    request(e1, specification.fetch, subject: x1, object: x2)
+    param(e1, version, x3)
+  response
+    request(e2, contract registry.retrieve, subject: x4, object: x2)
+    param(e2, version, x3)
+```
+
+## r126
+From: b636 r126.
+
+```reading
+When the person obtains a contract from a bounded context with a version, the specification service shall retrieve the contract with the bounded context and the version.
+shall [x1: agent the person (constant), x5: service the specification service (constant)]
+  when [x2: contract, x3: bounded context, x4: version]
+    request(e1, specification.obtain, subject: x1, object: x2, from: x3)
+    param(e1, version, x4)
+  response
+    request(e2, contract registry.retrieve, subject: x5, object: x2)
+    param(e2, bounded context, x3)
+    param(e2, version, x4)
+```
+
+## r127
+From: b636 r127.
+
+```reading
+When the person publishes a contract with a version, the specification service shall deposit the contract with the version.
+shall [x1: agent the person (constant), x4: service the specification service (constant)]
+  when [x2: contract, x3: version]
+    request(e1, specification.publish, subject: x1, object: x2)
+    param(e1, version, x3)
+  response
+    request(e2, contract registry.deposit, subject: x4, object: x2)
+    param(e2, version, x3)
+```

@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56, g94, r94]
-unbuilt: []
+unbuilt: [r127, r125, r126]
 ---
 
 # Checking
@@ -352,6 +352,15 @@ Restates: design-model-check#r13@0.29.
 
 ### [g124] A product not of the product form is named by the check, which completes
 - [r124] While this product does not conform to the product form, when the person validates this specification, the specification service shall name this product and complete the request.
+
+### [g127] A contract published is deposited in the contract registry at its version
+- [r127] When the person publishes a contract with a version, the specification service shall deposit the contract with the version.
+
+### [g125] A contract fetched is retrieved from the contract registry at its version
+- [r125] When a downstream context fetches a contract with a version, the specification service shall retrieve the contract with the version.
+
+### [g126] A contract obtained is retrieved from the contract registry for its bounded context and version
+- [r126] When the person obtains a contract from a bounded context with a version, the specification service shall retrieve the contract with the bounded context and the version.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

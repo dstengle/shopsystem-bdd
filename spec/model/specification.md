@@ -2,7 +2,7 @@
 id: model/missingmass.io/shopsystem/shopsystem-bdd/specification
 area: specification
 kind: core
-imports: [tracking, upgrades, execution, analysis]
+imports: [tracking, upgrades, execution, analysis, registry]
 ---
 
 # The specification
