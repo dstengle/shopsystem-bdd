@@ -27,6 +27,7 @@ import record_write
 import request_cli
 import request_moves
 import request_view
+import shop_contexts
 import shop_files
 from adapter_cli_respond import prepare, respond
 
@@ -142,6 +143,7 @@ def main(argv=None):
     conversation_cli.add_parsers(sub)
     decision_write.add_parser(sub)
     delivery_settings.add_parser(sub)
+    shop_contexts.add_parser(sub)
     record_write.add_parser(sub)
     observation_write.add_parser(sub)
     request_cli.add_parsers(sub)
@@ -151,7 +153,8 @@ def main(argv=None):
                "resolve": cmd_resolve, **backlog_cli.COMMANDS, **backlog_lifecycle.COMMANDS, **batch_cli.COMMANDS,
                **conversation_cli.COMMANDS, **request_cli.COMMANDS, **decision_write.COMMANDS,
                **record_write.COMMANDS, **observation_write.COMMANDS, **backlog_chore.COMMANDS,
-               **backlog_note.COMMANDS, **backlog_split.COMMANDS, **delivery_settings.COMMANDS}[args.cmd]
+               **backlog_note.COMMANDS, **backlog_split.COMMANDS, **delivery_settings.COMMANDS,
+               **shop_contexts.COMMANDS}[args.cmd]
     return respond("work", handler, args, names=getattr(handler, "parameters", None))
 
 
