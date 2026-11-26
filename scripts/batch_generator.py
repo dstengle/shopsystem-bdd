@@ -3,7 +3,9 @@ generator (`scripts/features` and `scripts/features_generate.py`: the repository
 workspace may hold a newer generator than the checkout a command runs in) has its features written by that tree's
 `scripts/features generate --root <tree>`, run with this interpreter in a process of its own; any other tree (a
 consumer's, whose generator is the plugin's own) by features_generate in this process. Read by batch_start's lay and
-unlay and by batch_reached, so `work batch start`, `park` and `amend` all write with the tree's generator."""
+unlay and by batch_reached, so `work batch start`, `park` and `amend` all write with the tree's generator. A run that
+outlasts its time limit (`$SHOPSYSTEM_GENERATE_TIMEOUT` seconds, default 600) or cannot be started is a GenerateError
+naming the feature generator, which those commands refuse with (b749, batches r175, r176)."""
 import contextlib
 import io
 import os
@@ -17,6 +19,14 @@ import features_generate
 TIMEOUT = 600
 
 
+def _timeout():
+    """The time limit of a run of the tree's generator, in seconds."""
+    try:
+        return float(os.environ.get("SHOPSYSTEM_GENERATE_TIMEOUT", TIMEOUT))
+    except ValueError:
+        return TIMEOUT
+
+
 def _program(tree):
     """The tree's own `scripts/features`, or None when it holds no generator of its own."""
     scripts = Path(tree) / "scripts"
@@ -25,10 +35,19 @@ def _program(tree):
 
 
 def _run(program, *args):
-    """The tree's `features` run with this interpreter, its own scripts first on its path (none inherited)."""
+    """The tree's `features` run with this interpreter, its own scripts first on its path (none inherited); a run
+    that outlasts its time limit or cannot start a GenerateError naming the feature generator and why."""
     env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
-    return subprocess.run([sys.executable, str(program), *args], capture_output=True, text=True, env=env,
-                          timeout=TIMEOUT, stdin=subprocess.DEVNULL)
+    limit = _timeout()
+    try:
+        return subprocess.run([sys.executable, str(program), *args], capture_output=True, text=True, env=env,
+                              timeout=limit, stdin=subprocess.DEVNULL)
+    except subprocess.TimeoutExpired:
+        raise features_generate.GenerateError("the feature generator %s timed out after %g s" % (program, limit)) \
+            from None
+    except OSError as err:
+        raise features_generate.GenerateError("the feature generator %s could not start: %s" % (program, err)) \
+            from None
 
 
 def generate(tree, path):
@@ -46,12 +65,16 @@ def generate(tree, path):
 
 def generate_all(tree, paths):
     """{path: its feature, or None when the generator refuses it or writes none} of each capability file of `paths`:
-    one run of the tree's own generator for them all, each by itself when that run fails."""
+    one run of the tree's own generator for them all, each by itself when that run fails (b749: times out or cannot
+    start among them)."""
     program = _program(tree)
     if program is not None and paths:
         with tempfile.TemporaryDirectory() as out:
-            done = _run(program, "--dir", out, "generate", "--root", str(tree), *[Path(p).stem for p in paths])
-            if done.returncode == 0:
+            try:
+                done = _run(program, "--dir", out, "generate", "--root", str(tree), *[Path(p).stem for p in paths])
+            except features_generate.GenerateError:
+                done = None
+            if done is not None and done.returncode == 0:
                 return {p: _read(Path(out) / ("%s.feature" % Path(p).stem)) for p in paths}
     found = {}
     for path in paths:
