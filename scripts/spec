@@ -95,6 +95,7 @@ def main(argv=None):
     a.add_argument("--check", action="store_true", help="exit 1 naming each stale adapter contract, writing nothing")
     __import__("model_catalogue_write").add_parser(sub)
     __import__("product_cli").add_parsers(sub)
+    __import__("product_trace_cli").add_parser(sub)
     q = sub.add_parser("prepare", help="print this bounded context's contract in the contract form, writing nothing")
     q.add_argument("--contract", required=True, metavar="VERSION", help="the version the contract is prepared at")
     u = sub.add_parser("publish", help="keep this bounded context's contract at a version as published, superseding the earlier ones")
@@ -120,7 +121,7 @@ def main(argv=None):
                "fetch": lambda x: __import__("contract_publish").fetch(x.root, x.version),
                "obtain": lambda x: __import__("contract_obtain").obtain(x.root, x.context, x.version),
                "constructs": cmd_constructs, "catalogue": lambda x: __import__("model_catalogue_write").cmd(x),
-               **__import__("product_cli").COMMANDS}[args.cmd]
+               **__import__("product_cli").COMMANDS, **__import__("product_trace_cli").COMMANDS}[args.cmd]
     return respond("spec", handler, args, checks=args.cmd in ("check", "logic"))
 
 
