@@ -28,6 +28,14 @@ def passing_on_lay(step):
 T.BEFORE_START.append(passing_on_lay)
 
 
+@four("GivenDoes", "has", *BOTH)
+def has_id(step):
+    """`the requirement r1 has the requirement id r2`, of the item whose scenario passes: the id the lay gives its
+    line, which its scenario is tagged with."""
+    if [k for k, _ in parts(step)] != ["requirement", "requirement id"] or "scenario_of" not in step.context:
+        return False
+
+
 @four("ThenDoes", "name", *BOTH)
 def names_scenario(step):
     (_, _), (k, name) = parts(step)
