@@ -1,5 +1,6 @@
-"""batch_next's pick (b683): one step, the first that applies in the order stop, review change, fix finding, park
-item, finish or build task (a running task, built or not), prepare task, submit batch; and the step's lines."""
+"""batch_next's pick (b683, b702): one step, the first that applies in the order stop, review change, fix finding, park
+item, finish task (a built running task), build task (every running task), prepare task (every pending task), submit
+batch; and the step's lines, one `task:` line a task."""
 import batch_next
 from batch_findings import Finding
 from batch_plan import Batch, Task
@@ -14,8 +15,8 @@ FINDING = Finding("f1", "Important", "fix now", "a finding", "b1", "src/b1.txt",
 
 
 def picked(b, unfixed=(), built=()):
-    instruction, task, finding = batch_next.pick(b, b.tasks, list(unfixed), set(built))
-    return instruction, task.task if task else None, finding.fid if finding else None
+    instruction, tasks, finding = batch_next.pick(b, b.tasks, list(unfixed), set(built))
+    return instruction, tasks[0].task if tasks else None, finding.fid if finding else None
 
 
 def test_the_order():
@@ -32,15 +33,15 @@ def test_the_order():
 
 def test_a_refused_submit_asks_for_its_task():
     b = batch("building", "done", "done")
-    assert batch_next.pick(b, b.tasks, [], set(), b.tasks[1])[:2] == ("fix task", b.tasks[1])
-    assert batch_next.report(b, "fix task", b.tasks[1], None) == (
+    assert batch_next.pick(b, b.tasks, [], set(), b.tasks[1])[:2] == ("fix task", [b.tasks[1]])
+    assert batch_next.report(b, "fix task", [b.tasks[1]], None) == (
         "a commit on batch-1-b2 citing Item: b2, then shop work batch review batch-1")
 
 
 def test_a_refused_submit_of_no_item_asks_to_look_at_the_failure():
     b = batch("building", "done", "done")
-    assert batch_next.pick(b, b.tasks, [], set(), None, True) == ("look at failure", None, None)
-    assert batch_next.report(b, "look at failure", None, None).endswith("then shop work batch review batch-1")
+    assert batch_next.pick(b, b.tasks, [], set(), None, True) == ("look at failure", [], None)
+    assert batch_next.report(b, "look at failure", [], None).endswith("then shop work batch review batch-1")
 
 
 def test_a_batch_with_no_task_in_it_stops():
@@ -49,10 +50,10 @@ def test_a_batch_with_no_task_in_it_stops():
 
 def test_the_lines():
     b = batch("building", "running")
-    instruction, task, finding = batch_next.pick(b, b.tasks, [], {"t1"})
+    instruction, tasks, finding = batch_next.pick(b, b.tasks, [], {"t1"})
     step = {"batch": "batch-1", "status": "building", "instruction": instruction,
-            "task": batch_next._task(task), "batch brief": None, "review folder": None, "findings file": None, "review finding": None,
-            "report": batch_next.report(b, instruction, task, finding)}
+            "task": batch_next._task(tasks[0]), "batch brief": None, "review folder": None, "findings file": None, "review finding": None,
+            "report": batch_next.report(b, instruction, tasks, finding)}
     assert batch_next.text(step) == ("batch-1 building: finish task\ntask: t1 b1 (running), branch batch-1-b1\n"
                                      "report: shop work batch done batch-1 t1\n")
 
@@ -60,5 +61,27 @@ def test_the_lines():
 def test_a_review_names_its_findings_file():
     step = {"batch": "batch-1", "status": "in-review", "instruction": "review change", "task": None,
             "batch brief": None, "review folder": "/w/batch-1-review-1", "findings file": "/w/batch-1-review-1/findings.md",
-            "review finding": None, "report": batch_next.report(batch("in-review"), "review change", None, None)}
+            "review finding": None, "report": batch_next.report(batch("in-review"), "review change", [], None)}
     assert "findings file: /w/batch-1-review-1/findings.md\n" in batch_next.text(step)
+
+
+def test_every_task_that_takes_the_step():
+    """Build task and prepare task name every task that takes the step; finish task one built task, first (b702)."""
+    b = batch("building", "running", "pending", "running", "pending")
+    assert [t.task for t in batch_next.pick(b, b.tasks, [])[1]] == ["t1", "t3"]
+    assert batch_next.pick(b, b.tasks, [], {"t3"})[:2] == ("finish task", [b.tasks[2]])
+    b = batch("building", "pending", "done", "pending")
+    assert batch_next.pick(b, b.tasks, [])[:2] == ("prepare task", [b.tasks[0], b.tasks[2]])
+
+
+def test_each_task_its_line_and_report():
+    b = batch("building", "running", "running")
+    instruction, tasks, _ = batch_next.pick(b, b.tasks, [])
+    step = {"batch": "batch-1", "status": "building", "instruction": instruction, "task": batch_next._task(tasks[0]),
+            "tasks": [batch_next._task(t) for t in tasks], "batch brief": "/w/brief.md", "review folder": None,
+            "findings file": None, "review finding": None, "report": batch_next.report(b, instruction, tasks, None)}
+    assert batch_next.text(step) == (
+        "batch-1 building: build task\ntask: t1 b1 (running), branch batch-1-b1\n"
+        "task: t2 b2 (running), branch batch-1-b2\nbatch brief: /w/brief.md\n"
+        "report: a commit on batch-1-b1 citing Item: b1, then shop work batch done batch-1 t1; "
+        "a commit on batch-1-b2 citing Item: b2, then shop work batch done batch-1 t2\n")

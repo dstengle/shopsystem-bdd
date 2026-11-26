@@ -32,6 +32,7 @@ CAP = "spec/capabilities/work-queue.md"
 AFTER_BATCH = []        # what handler modules do once a batch is made, each called with (step, its name) (b324)
 BEFORE_RUN = []         # what handler modules do just before `work batch <command>` runs, called with step (b449)
 BEFORE_START = []       # what handler modules do before `work batch start`'s world is prepared, called with step (b488)
+BEFORE_BATCH = []       # what handler modules do once every task has its item, before the batches are made (b702)
 
 
 def W():
@@ -152,6 +153,8 @@ def ensure_batch(step, resume=False):
     for name, found in step.context["given"]["item"].items():
         if not any(t["item"] == name for t in tasks.values()):
             tasks["_%s" % name] = {"batch": found["batch"], "item": name, "status": "pending" if resume else "done"}
+    for before in BEFORE_BATCH:
+        before(step)
     for name in step.context["given"]["batch"]:
         make_batch(step, name)
 
