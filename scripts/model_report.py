@@ -39,7 +39,7 @@ def cmd_decisions(args):
     if args.check:
         current = target.read_text() if target.exists() else ""
         stale = current != text
-        print("spec/decisions/index.md is not what `model decisions` writes: run it" if stale
+        print("spec/decisions/index.md is not what `shop spec decisions` writes: run it" if stale
               else "spec/decisions/index.md is current")
         lines, held = model_decisions.report(model_decisions.check_tests(args.root))   # decision-tiers r4, r5
         print("\n".join(lines))
@@ -89,7 +89,7 @@ def cmd_parse(args):
     import spec_language
     import spec_lf_read
     if not spec_grammar4.marked(args.root):
-        print("model parse reads grammar 4: spec/index.md does not say `language: codified-2`; run `migrate upgrade`")
+        print("model parse reads grammar 4: spec/index.md does not say `language: codified-2`; run `shop migrate upgrade`")
         return 2
     lines = _statements(Path(args.file)) if args.file else [(None, args.line)]
     refused, named = 0, _requirements(Path(args.file)) if args.file else {}

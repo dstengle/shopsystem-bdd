@@ -113,8 +113,8 @@ def session_text(root):
     if not steps:
         return ""
     return ("This repository is on plugin version %s and the plugin is on %s. Offer the person the upgrade from %s to %s, "
-            "which applies:\n%s\nRun `migrate upgrade` (python3 %s upgrade) only on the person's yes.\n"
-            % (here, there, here, there, "\n".join("  " + step_line(s) for s in steps), SCRIPTS / "migrate"))
+            "which applies:\n%s\nRun `shop migrate upgrade` (python3 %s migrate upgrade) only on the person's yes.\n"
+            % (here, there, here, there, "\n".join("  " + step_line(s) for s in steps), SCRIPTS / "shop"))
 
 
 def apply(root, changes):

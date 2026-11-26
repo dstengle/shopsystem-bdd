@@ -4,7 +4,7 @@ id: each line that runs a command, with the operation and the parameters the sca
 print, exit or `--json` (a response is the envelope's outcome and content now); each `Kind of: tool` entry (now a
 service); each verb and adjective the scaffold names no element of; each line naming git's or GitHub's acts (their
 words are the store's and the issue host's adapters'); each relation row between kinds that are no objects; and the
-programs `spec/adapters/cli.toml` must name. Until a line is reworded, `spec check` refuses it (v_m1, v_p) and
+programs `spec/adapters/cli.toml` must name. Until a line is reworded, `shop spec check` refuses it (v_m1, v_p) and
 refuses `imports: [cli]` (v_t21)."""
 import re
 
@@ -80,5 +80,5 @@ def programs(built):
 def notes(lexicon, said, built):
     return (requests(built) + responses(said) + tools(lexicon, built) + unmapped(built) + mechanisms(said)
             + rows(built) + programs(built)
-            + [_note("until each line above is reworded, `spec check` refuses it (v_p, v_m1): the CLI pack's words "
+            + [_note("until each line above is reworded, `shop spec check` refuses it (v_p, v_m1): the CLI pack's words "
                      "(run, option, print, exit) are no longer read")])

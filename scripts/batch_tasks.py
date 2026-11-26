@@ -173,7 +173,7 @@ def resume_said(root, batch, out):
         item = backlog_items.find(root, task.item)
         label = "%s %s" % (task.task, backlog_items.label(item))
         if tree is not None:
-            said.append("%s: running in %s on %s: build %s; then work batch done %s %s, or work batch park %s %s "
+            said.append("%s: running in %s on %s: build %s; then shop work batch done %s %s, or shop work batch park %s %s "
                         "--question <text>" % (label, tree, task.branch, "; ".join(backlog_chore.said(item)[1:]) or
                                                ", ".join(item_ids(root, item)), batch.name,
                                                task.task, batch.name, item.name))
@@ -192,7 +192,7 @@ def checked(root, batch, task):
         raise Refused("%s: %s is %s; %s takes a task that is running" % (command, label, task.status, command))
     tree = tree_of(root, batch, task)
     if not is_tree(tree, task.branch):
-        raise Refused("%s: %s has no worktree at %s; run work batch resume %s" % (command, label, tree, batch.name))
+        raise Refused("%s: %s has no worktree at %s; run shop work batch resume %s" % (command, label, tree, batch.name))
     loose = uncommitted(tree)
     if loose:
         raise Refused("%s: %s has uncommitted changes in %s: %s" % (command, label, tree, ", ".join(loose)))

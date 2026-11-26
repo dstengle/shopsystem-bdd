@@ -45,7 +45,7 @@ def _refusals(root, ident, text):
         raise Refused("work accept: %s has no accepted line" % said)
     for number, _, into in accepted:
         if not into:
-            raise Refused("work accept: line %d of request %s names no capability it goes into: run `work outcome %s "
+            raise Refused("work accept: line %d of request %s names no capability it goes into: run `shop work outcome %s "
                           "%d accepted --into <capability>`" % (number, ident, ident, number))
     return accepted
 

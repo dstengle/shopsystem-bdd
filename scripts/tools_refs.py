@@ -16,7 +16,7 @@ def cmd_refs(args):
     try:
         import jedi
     except ImportError:
-        raise Refused("jedi is missing from %s: tools install" % sys.executable)
+        raise Refused("jedi is missing from %s: shop tools install" % sys.executable)
     root = os.path.abspath(".")
     # a package under src/ installed for development is found by an import hook jedi cannot follow
     project = jedi.Project(root, added_sys_path=[path for path in (root, os.path.join(root, "src")) if os.path.isdir(path)])

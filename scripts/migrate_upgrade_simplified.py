@@ -61,7 +61,7 @@ def initiatives(root, notes):
             continue
         match = re.match(r"i\d+", path.parent.name)
         ident = str(data.get("id", "")).rsplit("/", 1)[-1] or (match.group(0) if match else path.parent.name)
-        notes.append('open initiative %s "%s" is frozen: shape what is still wanted as an item (work idea)'
+        notes.append('open initiative %s "%s" is frozen: shape what is still wanted as an item (shop work idea)'
                      % (ident, title(data, body)))
     for path in sorted((root / WORK).glob("*/*.md"), key=lambda p: (number_of(p.parent.name), p.name)):
         data, _ = frontmatter(path.read_text())

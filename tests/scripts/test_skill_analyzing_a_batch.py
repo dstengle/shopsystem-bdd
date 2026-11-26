@@ -19,7 +19,7 @@ def test_a_candidate_that_changes_a_knob_is_a_decision():
 
 def test_an_initiative_measurement_is_still_read():
     """Plan 9: `measure initiative` is retired; an initiative's measurement is still shown and compared."""
-    assert "`measure show` and `measure compare` still read it" in SKILL.read_text()
+    assert "`shop measure show` and `shop measure compare` still read it" in SKILL.read_text()
 
 
 def test_it_reads_the_measurement_building_a_batch_wrote():

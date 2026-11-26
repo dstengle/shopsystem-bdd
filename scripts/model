@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
-"""`model`, renamed `spec` in plugin 0.38.0 (the domain contract), kept one release: a notice on stderr, then `spec`."""
+"""`model`, renamed `spec` in plugin 0.38.0 (the domain contract), kept one release: a notice on stderr, then `spec`
+with no notice of its own (adapter_cli_respond's notice)."""
 import os
 import sys
 
+import adapter_cli_respond
+
 sys.stderr.write("model: renamed `spec`; `model` goes in the next release\n")
 sys.stderr.flush()
-os.execv(sys.executable, [sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "spec"), *sys.argv[1:]])
+os.execve(sys.executable, [sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "spec"), *sys.argv[1:]],
+          adapter_cli_respond.marked())

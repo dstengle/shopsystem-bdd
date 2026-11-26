@@ -66,8 +66,8 @@ def offer_text(root, capabilities, note):
     terms = mentioned(root, lines)
     if terms:
         parts.append("Terms they use:\n\n" + "\n".join(terms))
-    parts.append("Does any of this serve the request? If one serves it, say so with `work fits`; if not, propose "
-                 "lines in these terms with `work propose`.")
+    parts.append("Does any of this serve the request? If one serves it, say so with `shop work fits`; if not, propose "
+                 "lines in these terms with `shop work propose`.")
     return "\n\n".join(parts)
 
 

@@ -102,4 +102,4 @@ def test_0060_is_superseded_by_measure_a_batch():
 
 def test_the_review_runs_the_check_decisions():
     """Plan 6, D14: every pull request brief gives `model decisions --check`'s exit at the head and at the base."""
-    assert "python3 {scripts}/model decisions --check" in batch_brief.CHECKS
+    assert "python3 {scripts}/shop spec decisions --check" in batch_brief.CHECKS

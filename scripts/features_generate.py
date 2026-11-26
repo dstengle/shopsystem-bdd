@@ -95,7 +95,7 @@ def uncodified(root, paths):
         shown = shown.relative_to(Path(root).resolve()).as_posix() if shown.is_relative_to(Path(root).resolve()) \
             else Path(path).name
         if spec_read.codified(path, (spec_read.MARKER,)):
-            return "%s says `language: codified-1`: run `migrate upgrade`" % shown
+            return "%s says `language: codified-1`: run `shop migrate upgrade`" % shown
         if not spec_read.codified(path, FOUR):
-            return "%s is not codified: run `migrate upgrade`" % shown
+            return "%s is not codified: run `shop migrate upgrade`" % shown
     return None

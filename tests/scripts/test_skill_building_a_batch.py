@@ -44,7 +44,7 @@ def step(word):
 def test_the_subagent_gets_a_brief_of_its_own():
     """Plan 4 review, S4: no `work run` brief or result file; `work batch done` runs the whole suite."""
     text = step("Dispatch")
-    assert "no brief or result file" in text and "`work batch done` runs the whole suite" in text, text
+    assert "no brief or result file" in text and "`shop work batch done` runs the whole suite" in text, text
     assert "red first" in text and "never edit" in text and "one scenario at a time" in text, text
     assert "tests/scenarios/test_<cap>.py" in text and "@r<n>" in text, text
 
@@ -107,7 +107,7 @@ def test_the_review_loop_asks_nothing():
 def test_each_refusal_of_the_review_loop_has_its_way_through():
     """Plan 5 review, S3, M3, and the rulings' Q1 and Q3."""
     text = process(SKILL)[review_step()]
-    for said in ("A refused `reviewed`", "run `work batch brief` again", "a fresh `pr-reviewer`",
+    for said in ("A refused `reviewed`", "run `shop work batch brief` again", "a fresh `pr-reviewer`",
                  "never edit the findings file",                          # S3: a malformed findings file
                  "byte for byte at the brief's `Findings file:` path",    # plan 7 B1: the reply saved
                  "Saving is not editing",

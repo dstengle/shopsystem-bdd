@@ -65,8 +65,8 @@ def test_resume_makes_worktrees_and_runs_pending_tasks(started):
     assert git(started, "show", "--name-only", "--format=", "HEAD").split() == [".shop/batches/1/plan.md"]
     out = done.stdout.splitlines()
     assert out[0] == "batch-1 building: plan .shop/batches/1/plan.md"
-    assert out[1] == ('t1 b1 "Abandon": running in %s on batch-1-b1: build work-queue#r5; then work batch done '
-                      'batch-1 t1, or work batch park batch-1 b1 --question <text>' % tree(started, "t1"))
+    assert out[1] == ('t1 b1 "Abandon": running in %s on batch-1-b1: build work-queue#r5; then shop work batch done '
+                      'batch-1 t1, or shop work batch park batch-1 b1 --question <text>' % tree(started, "t1"))
     before = state(started)
     again = resumed(started)
     assert state(started) == before and again.stdout == done.stdout

@@ -190,7 +190,7 @@ class GrammarTest(unittest.TestCase):
         lines = done.stdout.splitlines()
         block = lines[lines.index("grammar:") + 1:]
         self.assertEqual([line.split()[0] for line in block], ["gf", "pgf", "clingo", "gf-rgl"])
-        self.assertIn("  gf missing: requirements cannot be parsed: `work request` and `model check` refuse", block)
+        self.assertIn("  gf missing: requirements cannot be parsed: `shop work request` and `shop spec check` refuse", block)
         self.assertEqual(done.returncode, 1)
 
     def test_probe_json_says_null_for_a_missing_gf(self):

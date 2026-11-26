@@ -160,5 +160,5 @@ def catalogue(root, write=False):
     if path.is_file() and path.read_text() == text:
         print("%s is current" % CATALOGUE)
         return 0
-    print("stale: the rule catalogue %s is not what `model rules --write` would write" % CATALOGUE)
+    print("stale: the rule catalogue %s is not what `shop spec rules --write` would write" % CATALOGUE)
     return 1
