@@ -1222,6 +1222,31 @@ $ shop spec job j1 --actor "the developer" --statement "When a change is wanted,
 declared the job j1
 ```
 
+### `shop spec subdomain`
+
+Declares a subdomain of the product's domain map with its id, its subdomain type and the jobs it serves, kept in the
+product file in one commit; a subdomain declared again replaces the one of its id. A type other than `core`,
+`supporting` or `generic` is refused naming `--type`, and a job that is no job of the product naming `--serves`.\
+Synopsis: `shop spec subdomain <id> --type <type> [--serves <job> ...]`
+
+```console
+$ shop spec subdomain specification --type core --serves j1
+declared the subdomain specification
+```
+
+### `shop spec context`
+
+Declares a bounded context of the product's domain map with its id, the subdomains it addresses and the shop that
+keeps it, kept in the product file in one commit; with no `--shop` it is a third-party provider. An id that does not
+lie under the product's id is refused naming the id, and a subdomain that is no subdomain of the product naming
+`--addresses`.\
+Synopsis: `shop spec context <id> [--addresses <subdomain> ...] [--shop <shop>]`
+
+```console
+$ shop spec context missingmass.io/shopsystem/shopsystem-bdd --addresses specification --shop missingmass.io/shopsystem/shop
+declared the bounded context missingmass.io/shopsystem/shopsystem-bdd kept by missingmass.io/shopsystem/shop
+```
+
 ### `shop spec decisions`
 
 Writes `spec/decisions/index.md` from the decision files. Not committed.\
