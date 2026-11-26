@@ -1242,7 +1242,9 @@ declared the product actor the developer
 Declares a job to be done of the product with its id, its actors, its job statement and the jobs it needs first,
 kept in the product file in one commit; a job declared again replaces the one of its id. The job statement is checked
 for the job statement form only, `When <situation>, <actor> wants <motivation>, so they can <outcome>.`; a statement
-of another form is refused naming `--statement`, an actor the product does not hold naming `--actor`, a need that is
+of another form is refused naming `--statement`, a statement whose actor the product does not hold naming the actor
+and `--actor`, a statement whose actor is not one of the job's `--actor`s naming `--statement`, an actor the product
+does not hold naming `--actor`, a need that is
 no job of the product naming `--needs`, and a need that depends on the job, directly or through the jobs it needs, so
 that the needs would close a cycle, naming `--needs`.\
 Synopsis: `shop spec job <id> --statement <text> [--actor <actor> ...] [--needs <job> ...]`
@@ -1347,7 +1349,9 @@ assigned the job j1 to the bounded context bounded-context/missingmass.io/shopsy
 ### `shop spec plays`
 
 Maps a product actor to the actor a bounded context's model calls it by, kept among the bounded context's actors in
-the product file, in one commit. A product actor the product does not hold is refused naming it.\
+the product file, in one commit. A product actor the product does not hold is refused naming it, a bounded context
+whose id is not of the context id form naming the id, and, in this bounded context, an actor its domain model does
+not declare naming `--as`.\
 Synopsis: `shop spec plays <product actor> --in <bounded context> --as <actor>`
 
 ```console

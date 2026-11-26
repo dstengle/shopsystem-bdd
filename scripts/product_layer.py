@@ -3,8 +3,8 @@ actors and its jobs to be done, each job with its id, its actors, its job statem
 is a dict `{"id", "purpose", "actors": [...], "jobs": {id: {"actors", "statement", "needs"}}}`, read and kept by the
 store the caller gives (product_store's). `declare` keeps the product's id and purpose, `declare_actor` an actor,
 `declare_job` a job, a job declared again in place of the one of its id (its other keys kept, b673). A job is refused, naming the business
-reference, when its statement is not of the job statement form (`conforms`, its form only), an actor of it is not
-the product's, a need of it is no job the product holds, or a need depends on the job, directly or through the jobs
+reference, when its statement is not of the job statement form (`conforms`, its form only), the product actor its
+statement mentions is not the product's or not one of the job's actors (b798), an actor of it is not the product's, a need of it is no job the product holds, or a need depends on the job, directly or through the jobs
 it needs (`depends`), so that needs never close a cycle."""
 import re
 
@@ -56,6 +56,14 @@ def declare_job(product, ident, actors, statement, needs):
     if not conforms(statement):
         raise Refused("{names} %r is not of the job statement form %s" % (statement, SAID),
                       reason="job statement not in the job statement form", names=["parameter:job statement"])
+    said = FORM.fullmatch(statement.strip())["actor"]
+    if said not in product["actors"]:
+        raise Refused("the job statement mentions %r, no actor of the product: declare it with spec actor, then give it "
+                      "as {names}" % said, reason="product actor outside the product", names=["parameter:product actor"])
+    if actors and said not in actors:
+        raise Refused("{names} %r mentions the product actor %r, not the job's %s" % (
+            statement.strip(), said, ", ".join(repr(a) for a in actors)),
+            reason="job statement mentioning another product actor", names=["parameter:job statement"])
     for actor in actors:
         if actor not in product["actors"]:
             raise Refused("{names} %r is no actor of the product" % actor, reason="product actor outside the product",
