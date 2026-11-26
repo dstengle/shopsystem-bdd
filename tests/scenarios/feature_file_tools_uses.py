@@ -98,8 +98,10 @@ def construct(w):
 
 
 def unthinged(w):
-    """True when a Given says no frame takes `thing` and the requirement uses a verb (b298)."""
-    return (any(v == "take" and a == ("no", "frame") and o == "`thing`" for v, a, o, _ in w["facts"])
+    """True when a Given says no frame (of the verb) takes `thing` and the requirement uses a verb (b298)."""
+    return (any(v == "take" and isinstance(a, tuple) and a[0] == "no"
+                and (a[1] == "frame" or a[1].startswith("frame of the verb")) and o == "`thing`"
+                for v, a, o, _ in w["facts"])
             and any(v == "use" and w["kinds"].get(o) == "verb" for v, _, o, _ in w["facts"]))
 
 
