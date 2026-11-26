@@ -68,10 +68,10 @@ class WorkReading:
         self.read_routes(d, data, where)
 
     def retired_history(self, data, q):
-        """Whether `q`, a requirement id a decision's `enforced_by` names, is history: the decision is no longer in
-        force (superseded or rejected) and its capability's `retired:` lists the id (b735); an accepted decision's
-        retired id stays a reference that names nothing."""
-        if str(data.get("status", "")).strip() not in model_decisions.HISTORY:
+        """Whether `q`, a requirement id a decision's `enforced_by` names, is history: the decision is superseded and
+        its capability's `retired:` lists the id (b735, decisions r26); an accepted or a rejected decision's retired
+        id stays a reference that names nothing."""
+        if str(data.get("status", "")).strip() != "superseded":
             return False
         cap, _, n = q.partition("#r")
         return n.isdigit() and (cap, int(n)) in self.retired

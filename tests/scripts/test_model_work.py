@@ -1,6 +1,6 @@
 """model_work's reading of spec/decisions/ (b735): a requirement id a decision's `enforced_by` names that its
-capability's `retired:` lists is history on a decision no longer in force (superseded or rejected), and a reference
-that names nothing on an accepted one; a live id resolves on either."""
+capability's `retired:` lists is history on a superseded decision (decisions r26), and a reference that names nothing
+on an accepted or a rejected one."""
 import sys
 import textwrap
 from pathlib import Path
@@ -68,11 +68,11 @@ def dangling(tmp_path, status):
     return [d for d in model.dangling if "thing#r1" in d]
 
 
-@pytest.mark.parametrize("status", ["superseded", "rejected"])
-def test_a_decision_no_longer_in_force_may_name_a_retired_requirement(tmp_path, status):
-    assert dangling(tmp_path, status) == []
+def test_a_superseded_decision_may_name_a_retired_requirement(tmp_path):
+    assert dangling(tmp_path, "superseded") == []
 
 
-def test_an_accepted_decision_naming_a_retired_requirement_is_unresolved(tmp_path):
-    assert dangling(tmp_path, "accepted") == [
+@pytest.mark.parametrize("status", ["accepted", "rejected"])
+def test_a_decision_not_superseded_naming_a_retired_requirement_is_unresolved(tmp_path, status):
+    assert dangling(tmp_path, status) == [
         f"spec/decisions/0001-kept.md: capability/{PATH}/thing#r1 is not a requirement in this repository"]
