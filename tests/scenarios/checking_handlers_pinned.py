@@ -1,11 +1,11 @@
-"""Handlers of checking's contract obtained at the version its adapter spec pins (r100, b599), each a
-`work_queue_world.local` that takes only a step of a scenario of g100 (`mine`), over checking_handlers_obtain's world
+"""Handlers of checking's contract obtained at the version its adapter spec pins (r138, b735; b599), each a
+`work_queue_world.local` that takes only a step of a scenario of g138 (`mine`), over checking_handlers_obtain's world
 (the domain-model fixture, the stand-in gh, the bounded context `UPSTREAM` obtained from). The provider's version a
 Given names is the version the nested adapter spec pins it at (`providers: [<id>@<version>]`); the contract the
 provider has is hosted at the version a Given names, published, beside one at the pinned version, superseded. The When
-runs `spec obtain` with the provider's id and no version; the Thens read back the contract kept under the adapter
-spec's provider/ at the pinned version in the run's commit, none kept at the published one, and the adapter spec, its
-index as it was, holding the contract its provider check reads."""
+runs `spec obtain` with the provider's id and no version, the registry checking_handlers_registry's stand-in recording
+each request and answering as the shop-folder adapter does; the Then reads back the register it recorded, of the
+contract at the pinned version for the adapter spec with the provider, and none at the published one."""
 import shutil
 import sys
 from pathlib import Path
@@ -13,7 +13,7 @@ from pathlib import Path
 W = sys.modules["shop_work_queue_world"]
 O = next(m for m in list(sys.modules.values()) if (getattr(m, "__file__", None) or "").endswith(
     "/checking_handlers_obtain.py"))     # loaded before this module: the glob is sorted
-GROUPS = {"g100"}
+GROUPS = {"g138"}
 
 
 def mine(step):
@@ -53,10 +53,9 @@ def pinned(step):
     return world(step)["versions"][_of(step, "provider")]
 
 
-def kept(step):
-    """Where an adapter spec keeps the provider's contract at a version."""
-    import contract_obtain
-    return lambda version: (Path(O.ADAPTER) / contract_obtain.place(O.UPSTREAM, version)).as_posix()
+def _registry():
+    return next(m for m in list(sys.modules.values()) if (getattr(m, "__file__", None) or "").endswith(
+        "/checking_handlers_registry.py"))
 
 
 def build(step):
@@ -86,51 +85,21 @@ def runs(step):
     if not mine(step) or step.term != "`spec obtain`":
         return False
     build(step)
-    step.context["result"] = step.run("spec", "obtain", O.UPSTREAM, env=O.env(step))
-
-
-def _done(step):
-    done = step.context["result"]
-    assert done.returncode == 0, done.stdout + done.stderr
-    return done
-
-
-def _contract(step, name):
-    """The contract the run kept, the one the Thens name: the upstream's at the pinned version, in its commit, and
-    none kept at the published version."""
-    assert world(step)["kinds"].get(name, "contract") == "contract", name
-    rel, pin = kept(step)(pinned(step)), pinned(step)
-    assert (step.repo / rel).is_file(), [p.as_posix() for p in (step.repo / O.ADAPTER).rglob("contract.toml")]
-    assert (step.repo / rel).read_text() == O.CONTRACT % (O.UPSTREAM, pin, "superseded"), rel
-    assert rel in W.committed(step.repo), W.committed(step.repo)
-    later = kept(step)(world(step)["versions"][_of(step, "contract")])
-    assert not (step.repo / later).exists(), later
-    return rel
+    world(step)["calls"] = str(O.outside(step) / "registry-calls.jsonl")
+    step.context["result"] = step.run("spec", "obtain", O.UPSTREAM, env=_registry().stand_in(step, world(step)["calls"]))
 
 
 def then_does(step):
-    """`... keeps the contract c3`, `the contract c3 has `1.2.0``, `the adapter spec a1 holds the contract c3` and
-    `... keeps the adapter spec a1`: its index as it was, its provider check reading the contract it holds."""
-    if not mine(step) or "pinned" not in step.context or "result" not in step.context:
+    """`the specification service registers the contract c2 for the adapter spec a1 with the provider p1 and the
+    `1.2.0` version`: the register recorded at the version the step names, the adapter spec's pin."""
+    if not mine(step) or "pinned" not in step.context or step.term != "register":
         return False
-    _done(step)
-    if step.term in O.KEEPS and world(step)["kinds"].get(step.names[0]) == "adapter spec":
-        import model_adapter
-        folder = step.repo / O.ADAPTER
-        assert (folder / "spec" / "index.md").read_text() == world(step)["index"]
-        assert model_adapter.uncontracted(folder, ["%s@%s" % (O.UPSTREAM, pinned(step))]) == []
-    elif step.term in O.KEEPS:
-        _contract(step, step.names[0])
-    elif step.term == "has":
-        code = next(n.strip("`") for n in step.nps if n.startswith("`"))
-        assert code == pinned(step), (code, pinned(step))
-        _contract(step, step.names[0])
-    elif step.term == "holds":
-        assert world(step)["kinds"].get(step.names[0]) == "adapter spec", step.names
-        assert _contract(step, step.names[-1]).startswith(O.ADAPTER + "/provider/")
-    else:
-        return False
-    return None
+    import json
+    path = Path(world(step)["calls"])
+    made = [json.loads(line) for line in path.read_text().splitlines()] if path.is_file() else []
+    code = next(n.split("`")[1] for n in step.nps if "`" in n)
+    assert code == pinned(step), (code, pinned(step))
+    _registry().registered(step, made, world(step)["kinds"], code)
 
 
 W.local("GivenK")(given_instance)

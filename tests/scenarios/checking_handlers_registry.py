@@ -80,15 +80,15 @@ def runs(step):
     step.context["result"] = step.run("spec", *words, *version, env=env)
 
 
-def registered(step, made, version=None):
+def registered(step, made, kinds, version=None):
     """`the specification service registers the contract c1 for the adapter spec a1 with the provider p1 [and the
-    `1.2.0` version]`: the command done and, among the requests the stand-in recorded (`made`), one register of the
+    `1.2.0` version]`: the command done, the step naming an adapter spec among the scenario's `kinds`, and, among the
+    requests the stand-in recorded (`made`), one register of the
     upstream's contract for checking_handlers_obtain's adapter spec with its upstream as the provider, at `version`
     when the step names one, and none at another version."""
     obtain, done = _module("checking_handlers_obtain.py"), step.context["result"]
     assert done.returncode == 0, done.stdout + done.stderr
-    kinds = [world(step)["kinds"].get(n) for n in step.names] if "registry" in step.context else []
-    assert "adapter spec" in kinds or not kinds, step.names
+    assert "adapter spec" in [kinds.get(n) for n in step.names], (step.names, kinds)
     asked = [c for c in made if c["operation"] == "register"]
     assert [(c["adapter spec"], c["provider"]) for c in asked] == [(obtain.ADAPTER, obtain.UPSTREAM)], made
     if version is not None:
@@ -102,7 +102,7 @@ def then_requests(step):
     if not mine(step) or "registry" not in step.context or step.term not in ("deposit", "retrieve", "register"):
         return False
     if step.term == "register":
-        return registered(step, calls(step))
+        return registered(step, calls(step), world(step)["kinds"])
     w, done = world(step), step.context["result"]
     assert done.returncode == 0, done.stdout + done.stderr
     context = w["upstream"] if "bounded context" in [w["kinds"].get(n) for n in step.names] else None
