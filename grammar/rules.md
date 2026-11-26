@@ -1780,7 +1780,7 @@ a driven port holds an operation that no core line requests in its response
 - Purpose: A driven port holds only what the core uses: an operation no core line requests has no place in it (decision 0116).
 - Since: b549
 - Severity: error
-- Implemented in: `scripts/model.lp`
+- Implemented in: `scripts/model.lp`, `scripts/readiness_bound.py`
 - Cited by: no line
 - Fails on:
 
@@ -1803,7 +1803,7 @@ an outcome of a driven port's operation that no core line handles and no port li
 - Purpose: Every outcome the upstream may give reaches a core line or is excluded by a port line, so none goes unhandled (decisions 0116, 0127).
 - Since: b549
 - Severity: error
-- Implemented in: `scripts/model.lp`
+- Implemented in: `scripts/model.lp`, `scripts/readiness_bound.py`
 - Cited by: items#r72
 - Fails on:
 

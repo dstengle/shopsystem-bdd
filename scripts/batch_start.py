@@ -27,6 +27,7 @@ import batch_pick
 import batch_reached
 import batch_timings
 import features_generate
+import readiness_bound
 import shop_files
 import spec_composition
 import spec_corpus_write
@@ -128,14 +129,21 @@ class _Broken(Exception):
 
 def violating(tree, picked):
     """(item, reasons) of each picked item a requirement of which violates a `model.lp` rule of severity error (a code
-    `v...`; `w_...` is a warning) on the laid worktree, each reason naming the requirement and the rule (b478)."""
+    `v...`; `w_...` is a warning) on the laid worktree, each reason naming the requirement and the rule (b478), or of
+    the bound check's (v_pb1, v_pb2) whose operation its model lines declare or its lines request, naming the operation
+    or the outcome and the rule (readiness_bound, b721)."""
     from model_check import solve
     from model_facts import Model
-    relations, labels = solve(Model(tree).read())
+    from readiness_bar import model_elements
+    model = Model(tree).read()
+    relations, labels = solve(model)
+    bound = {(name, tuple(args)) for name, args in relations if name in readiness_bound.BOUND}
     found = []
     for item in picked:
-        mine = set(backlog_lines.ids(backlog_lines.read(item, backlog_items.rel_of(item.name))))
-        reasons = []
+        blocks = backlog_lines.read(item, backlog_items.rel_of(item.name))
+        mine = set(backlog_lines.ids(blocks))
+        ops = readiness_bound.operations(model_elements(blocks), model.facts, mine)
+        reasons = readiness_bound.reasons(bound, ops, labels)
         for name, args in relations:
             short = [str(a).rsplit("/", 1)[-1] for a in args]
             for k, node in enumerate(short):
