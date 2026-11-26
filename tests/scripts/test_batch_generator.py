@@ -57,7 +57,7 @@ def test_a_generator_past_its_time_limit_is_a_generate_error_naming_it(tmp_path,
 
 
 def test_a_generator_that_cannot_start_is_a_generate_error_naming_it(tmp_path, monkeypatch):
-    def fail(*args, **kwargs):
+    def fail(*_args, **_kwargs):
         raise OSError("no interpreter")
     monkeypatch.setattr(batch_generator.subprocess, "run", fail)
     with pytest.raises(features_generate.GenerateError, match="feature generator .* could not start: no interpreter"):
