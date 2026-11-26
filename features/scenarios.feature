@@ -741,3 +741,20 @@ Feature: Scenarios
     And the step s1 mentions the instance i1
     When the person generates the feature f1
     Then the scenarios service does not keep the step s1
+
+  @g45 @r45
+  Scenario: generation says the value a no box restricts its things by
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And the requirement r1 uses `no-noun`
+    And the requirement r1 uses `of-relation`
+    And a code c2
+    And the requirement r1 uses the code c2
+    And a feature f1
+    And the capability c1 has the feature f1
+    When the person generates the feature f1
+    Then the scenarios service keeps the given step g1
+    And the given step g1 uses the code c2
