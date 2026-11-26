@@ -50,7 +50,7 @@ with a `## Moved` table naming each id's new one (`spec/moves.json`).
 |---|---|---|
 | specification | core | decisions, checking, consistency, records, scenarios, parsing |
 | tracking | supporting | items, drafting, context-requests, request-watch, quotes, directives, shaping-guarantees |
-| execution | supporting | batches, reviews, review-guarantees |
+| execution | supporting | batches, reviews, review-guarantees, shop |
 | measurement | generic | measurement, trials |
 | analysis | generic | toolchain, code-analysis, feature-reading |
 | upgrades | generic | upgrades |

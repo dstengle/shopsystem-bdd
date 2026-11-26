@@ -70,3 +70,9 @@ area: execution
 - **shared workspace** (noun) → object shared workspace. The workspace a workspace is shared to, in the shared store.
 - **cite** (verb, state) → relation kept change.cites. A thing names another as what it stands on. Forms: cites, cited. Frame: <kept change> cites <item>. Frame: <proposed change> cites <item>. Frame: <quote> cites <message>. Frame: <thing> cites <observation>.
 - **amendment** (noun) → object amendment. A kept change that work batch amend makes on the workspace of a batch or of its task, laying an amended item's requirements again. Plural: amendments.
+- **the shop service** (proper noun) → service shop.
+- **entrust** (verb, action) → operation shop.keep. The person gives a bounded context to the shop to keep under its id, beside the bounded contexts the shop keeps already. Forms: entrusts, entrusted. Frame: <actor> entrusts <bounded context>.
+- **list** (verb, action) → operation shop.list. The person asks which bounded contexts a shop keeps. Forms: lists, listed. Frame: <actor> lists <shop>.
+- **shop** (noun) → object shop. The unit one product's work is managed and executed in, which keeps bounded contexts, each under its id. Plural: shops. This: the shop the request is made in.
+- **product id** (noun) → object product id. The id of the product a shop belongs to, the part of the id of this bounded context before its last part, as `missingmass.io/shopsystem`. Plural: product ids.
+- **cover** (verb, state) → relation product id.covers. An id lies under a product id: the path of the id opens with the product id. Forms: covers, covered. Frame: <product id> covers <id>.

@@ -980,10 +980,8 @@ requirements = [
   "batches#r95: While an item is `ready` and the item meets the readiness bar and the item holds a term of a pack, when the person opens a batch, the batches service shall keep the pack that has the term and keep the pack that this bounded context imports.",
   "batches#r98: While a settings file holds a batch rule, when the person opens a batch, the batches service shall keep a batch brief that holds the batch rule.",
   "batches#r99: While no settings file holds a batch rule, when the person opens a batch, the batches service shall keep a batch brief that holds no batch rule.",
-  "batches#r101: While an item is `ready` and the item does not meet the readiness bar, when the person opens a batch, the batches service shall reopen the item.",
   "batches#r104: When the person opens a batch, the batches service shall keep a batch brief that holds a batch summary form and return the batch brief.",
   "batches#r106: While an item is `ready` and the item meets the readiness bar and a requirement of the item violates a rule whose severity is `error`, if the person opens a batch, then the batches service shall reopen the item and name the rule.",
-  "batches#r107: While an item is `ready` and the item meets the readiness bar and the item exceeds the review limit, when the person opens a batch, the batches service shall not allocate the item.",
   "batches#r108: While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit, when the person opens a batch, the batches service shall allocate the item, keep a batch that holds the item and keep a batch plan of the batch.",
   "batches#r109: While an item is `ready` and the item meets the readiness bar and a requirement of the item retires no requirement id and a scenario of the item refers to the requirement id of the requirement and the scenario succeeds in a workspace of a batch, if the person opens the batch, then the batches service shall reopen the item and name the scenario.",
   "batches#r110: While an item is not `ready` or `delivered` and a dependency on the item exists and another item whose status is `ready` has the dependency, when the person opens a batch, the batches service shall not allocate the item.",
@@ -1000,6 +998,8 @@ requirements = [
   "batches#r127: While an item is `ready` and the item meets the readiness bar and the item moves a term that means an element and an area holds the element and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep the area that holds the term.",
   "batches#r128: While an item is `ready` and the item meets the readiness bar and the item holds a term of a pack and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep the pack that has the term.",
   "batches#r129: While an item is `ready` and the item meets the readiness bar and the item holds a capability and the item holds an area that holds the capability, when the person opens a batch, the batches service shall keep the capability that the area holds.",
+  "batches#r130: While an item is `ready` and the item does not meet the readiness bar and the item does not exceed the review limit, when the person opens a batch, the batches service shall reopen the item.",
+  "batches#r131: While an item is `ready` and the item exceeds the review limit, when the person opens a batch, the batches service shall not allocate the item.",
 ]
 
 [operations."batches.resume"]
@@ -1549,3 +1549,20 @@ requirements = [
 item = { positional = 1 }
 "requirement group" = { option = "--serves" }
 job = { option = "--serves" }
+
+[operations."shop.keep"]
+command = "work context keep"
+requirements = [
+  "shop#r1: When the person entrusts a bounded context with an id, the shop service shall keep the bounded context in the shop and complete the request.",
+  "shop#r2: If the person entrusts a bounded context with an id that the product id of the shop does not cover, then the shop service shall refuse the request and name the id.",
+  "shop#r3: While a bounded context that has an id is in the shop, if the person entrusts a bounded context with the id, then the shop service shall refuse the request and name the id.",
+]
+[operations."shop.keep".parameters]
+id = { positional = 1, example = "bounded-context/missingmass.io/shopsystem/language" }
+
+[operations."shop.list"]
+command = "work context list"
+requirements = [
+  "shop#r4: When the person lists the shop, the shop service shall return every bounded context that is in the shop.",
+  "shop#r5: While no bounded context is in the shop, when the person lists the shop, the shop service shall return this bounded context.",
+]
