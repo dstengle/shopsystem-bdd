@@ -33,6 +33,7 @@ object batch kind of file
   lifecycle status: awaiting-merge → in-review
   lifecycle status: awaiting-merge → building
   relations: has → batch summary (many)
+  relations: has → batch brief (one)
 
 object batch plan kind of file
 
@@ -67,6 +68,7 @@ service batches
   operation configure(setting, setting value)
     outcomes: done → the settings file | refused: setting outside the delivery settings form, setting value outside the delivery settings form
   operation reopen(batch, review finding)  outcomes: done → the review | refused: batch not awaiting merge
+  operation poll(batch)  outcomes: returned → the batch step
 
 service reviews
   operation review(change)  outcomes: done → the review
@@ -109,4 +111,10 @@ object shop
 
 object product id kind of text
   relations: covers → id (many)
+
+object batch step
+  attributes: instruction: build task | finish task | submit batch | review change | fix finding | park item | stop
+  relations: holds → task | batch brief | review folder | review finding (many)
+
+actor the driver kind of agent
 ```
