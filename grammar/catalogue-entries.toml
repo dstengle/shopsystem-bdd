@@ -907,3 +907,8 @@ changed = []
 purpose = "Lets a trigger be a service's reply to a request the core made, said with that request's object, so a compensation or a lifecycle waiting on a reply can be written."
 since = "b626"
 changed = []
+
+[constructs.reply-failure]
+purpose = "Lets a trigger be a service's failure of a request the core made, as its other replies are, so a compensation on a failed reply can be written."
+since = "b727"
+changed = []

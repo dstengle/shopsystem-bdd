@@ -174,6 +174,11 @@ CONSTRUCTS = [
       "<service> completes|returns|refuses the request to <operation verb> <np>", r"rq_\w+",
       "When the registry completes the request to publish a design-decision, the decisions service shall keep the "
       "design-decision.", None, "request"),
+    c("reply-failure", "a trigger on a service's failure of a request of an operation, the request pack's fail said of "
+      "the request as complete, return and refuse are (b727)",
+      "<service> fails the request to <operation verb> <np>", r"rq_\w+",
+      "When the registry fails the request to publish a design-decision, the decisions service shall keep the "
+      "design-decision.", r"e_fail_action_\d+_\d+ (?:\(k_request_\w+ )+\(rq_", "request"),
     # relations
     c("of-relation", "a noun of another by a relation row", "<noun> of|in <np>", r"r\d+_\w+_Mod",
       "When a session ends a stage, `work` shall print the worktree of the session."),

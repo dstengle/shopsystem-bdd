@@ -23,7 +23,7 @@ the tier." Each word of this pack is the request machinery's, not a model elemen
 - **return** (verb, action): a service gives a thing as the content of its response. Frame: service returns thing.
 - **notify** (verb, action): a service tells an actor of a thing, unasked. Forms: notifies, notified. Frame: service notifies agent of thing.
 - **complete** (verb, action): a service ends a request with the outcome `done` or `returned`. Frame: service completes request.
-- **fail** (verb, action): a service ends a check with the outcome `failed`. Frame: service fails check.
+- **fail** (verb, action): a service ends a check, or a request it could not carry out, with the outcome `failed`. Frame: service fails check. Frame: service fails request.
 - **keep** (verb, action): a service records a thing durably in the store. Forms: keeps, kept. Frame: service keeps thing.
 - **change** (verb, action): an agent makes a thing other than it was, or with "nothing" leaves every thing as it was. Frame: agent changes thing.
 - **conform** (verb, state): a thing meets what an artifact sets out. Frame: thing conforms to artifact.

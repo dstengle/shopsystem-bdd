@@ -21,8 +21,9 @@ service (spec_vocabulary_terms' `operation`), the request with its parameters, g
   response names: "refuse the request and name the text". None whose name is a kind's noun or an actor.
 
 - reply-trigger (b626): per frame of each verb naming an operation, "the request to <verb> <np>" over the frame's
-  arguments (`rq_<verb>_<n>_<m>`), a `k_request_NP0` the request pack's complete, return and refuse take, so a trigger
-  is a service's reply to a request; its parameters are not said in it (`replied`).
+  arguments (`rq_<verb>_<n>_<m>`), a `k_request_NP0` the request pack's complete, return, refuse and fail take (fail by
+  its frame "service fails request", reply-failure, b727), so a trigger is a service's reply to a request; its
+  parameters are not said in it (`replied`).
 
 `funs(vocab)` gives each generated fun's (operation, parameter, role), which the logical form (spec_lf_request) and the
 steps (spec_steps4_request) read the trees by.

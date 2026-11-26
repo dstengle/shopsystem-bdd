@@ -1874,6 +1874,19 @@ shall [x1: service the work service (constant)]
       initiates(e2, subject: x1, status(x3) = `done`)
 ```
 
+The request pack's fail is said of the request too (b727, construct `reply-failure`): fail has the frame "service
+fails request" beside "service fails check", so a failed reply is a trigger as the others are.
+
+```reading
+When the work service fails the request to settle a line, the work service shall keep the line.
+shall [x1: service the work service (constant)]
+  when [x2: request, x3: line]
+    request(x2, work.settle, object: x3)
+    fail(e1, subject: x1, object: x2)
+  response
+    keep(e2, subject: x1, object: x3)
+```
+
 `spec logic` reads a reply as the trigger `trig(R, reply(K), req(O,()), D, X)` (b724), K the outcome the reply's
 verb says, D the service that replies and X the replied request's object, so two lines on one reply clash (decision
 0121); `spec check`'s bound check counts a core line on a reply of an outcome's kind to the request of a port's
