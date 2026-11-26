@@ -22,6 +22,7 @@ object review finding kind of text
 
 object workspace
   relations: holds → file | repository | kept change | requirement (many); has → workspace name | shared workspace (many)
+  relations: has → feature generator (one)
 
 object kept change
   relations: for → review finding (many); touches → file (many); cites → item (many)
@@ -120,4 +121,9 @@ object shop
   relations: holds → bounded context (many); has → product (one)
 
 object fix kind of kept change
+
+object feature generator kind of file
+  relations: has → feature (many)
+
+object corpus form kind of artifact
 ```

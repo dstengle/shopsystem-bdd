@@ -840,3 +840,23 @@ shall [x3: thing `reply-trigger` (parameter), x4: agent the person (constant), x
     of(x7, x1)
     return(e2, subject: x6, object: x7)
 ```
+
+## r45
+From: b742 r45.
+
+```reading
+While a requirement has a trigger and the requirement has a consequence and another requirement that has the trigger uses `response-request` and `oblique-role`, when the person explains the requirement, the language service shall return the requirement and the consequence.
+shall [x5: thing `response-request` (parameter), x6: thing `oblique-role` (parameter), x7: agent the person (constant), x8: service the language service (constant)]
+  while [x1: requirement, x2: trigger, x3: consequence, x4: requirement]
+    of(x2, x1)
+    of(x3, x1)
+    distinct(x4, x1)
+    of(x2, x4)
+    use(subject: x4, object: x5)
+    use(subject: x4, object: x6)
+  when
+    request(e1, language.explain, subject: x7, object: x4)
+  response
+    return(e2, subject: x8, object: x4)
+    return(e3, subject: x8, object: x3)
+```

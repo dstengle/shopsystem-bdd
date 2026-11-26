@@ -91,3 +91,5 @@ area: execution
 - **look at failure** (noun) → value batch step.instruction look at failure. A batch step that asks the driver to look at the scenarios that broke a submit when they are of no task's item, with no task to fix named.
 - **fix** (noun) → object fix. A kept change on the branch of a task of a building batch, made after the batch's last submit that a scenario broke, which the next submit tests. Plural: fixes.
 - **abandon batch** (noun) → value batch step.instruction abandon batch. A batch step that asks the driver to abandon a batch that is still building when every item it held is parked, so no item is left to build.
+- **feature generator** (noun) → object feature generator. The plugin's code that writes a capability's feature from its requirement groups, as a workspace holds it: a batch's workspace may hold a newer one than the checkout a command runs in.
+- **the corpus form** (proper noun) → object corpus form. A corpus file's layout: its heading, then one block a requirement in id order, each block separated from the next by one blank line and the last ending the file with no blank line after it.

@@ -7,7 +7,7 @@ area: execution
 specifies: object batch, object task, service batches
 language: codified-2
 retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146, g152, r152, g149, r149, g154, r154, g160, r160, g166, r166]
-unbuilt: []
+unbuilt: [r170, r171, r172, r173, r174]
 ---
 
 # Batches
@@ -299,4 +299,19 @@ when the change is merged.
 
 ### [g169] An item whose line performs another area's lifecycle transition is reopened at the opening
 - [r169] While an item is `ready` and an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition and the item holds a core line that uses the operation, if the person opens a batch, then the batches service shall reopen the item and name the core line and `v_m9`.
+
+### [g170] An in-batch item amended has its features written by the generator its batch's workspace holds
+- [r170] While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement and the workspace of the batch has a feature generator, when the person amends the item, the batches service shall keep a workspace of the batch that holds a feature of the feature generator.
+
+### [g171] An in-batch item amended with no review finding given keeps a change for the review finding its batch holds open
+- [r171] While an item in a batch is `in-batch` and a review of the batch holds a review finding, when the person amends the item, the batches service shall keep a kept change for the review finding.
+
+### [g172] An in-batch item amended keeps a corpus that conforms to the corpus form
+- [r172] While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement and this corpus holds the requirement, when the person amends the item, the batches service shall keep a corpus that conforms to the corpus form and keep a workspace of the batch that holds the corpus.
+
+### [g173] A batch opened supersedes each accepted decision a laid line's retirement leaves unenforced
+- [r173] While an item is `ready` and the item meets the readiness bar and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `accepted`, when the person opens a batch, the batches service shall set the status of the design-decision to `superseded`, keep a design-decision that supersedes the design-decision and name the design-decision.
+
+### [g174] A parked item's superseding decision leaves the batch and the decision it superseded is accepted again
+- [r174] While an item in a batch is `in-batch` and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded`, when the person parks the item, the batches service shall set the status of the design-decision to `accepted` and keep no design-decision that supersedes the design-decision.
 
