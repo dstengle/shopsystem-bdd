@@ -3,7 +3,10 @@ readiness_world's codified spec, the domain-model fixture's model, vocabulary, C
 importing the request pack), as batches_handlers_port's world; the item holds readiness_handlers_outcome's BLOCK, the
 driven port `stock-port` whose port line governs `stock.reserve` and excludes its refusal, its model line, and
 notebook's core line requesting it, no core line on its completion, so the outcome `stock.reserve done` no line
-handles. The Then of the outcome named reads `work batch start`'s output for its name in the bound check."""
+handles. The Then of the outcome named reads `work batch start`'s output for its name in the bound check. r167, which
+retires r160, keeps its world. r166 (b725): BLOCK laid on the base spec before the item, so the base already leaves
+the outcome unhandled, and the item holding only a second port line of `stock-port` that governs `stock.reserve`
+(SECOND)."""
 import shutil
 import sys
 from pathlib import Path
@@ -13,13 +16,21 @@ four, parts = F.four, F.parts
 BOTH = ("backlog", "batches")
 FIXTURE = Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "domain-model" / "spec"
 OUTCOME = "stock.reserve done"
+SECOND = """### stock-port
+
+#### [g2] A note reserved with a quantity is reserved
+- [r2] When the notes service reserves a note with the quantity `3`, the stock service shall not refuse the request."""
 TERMS = ("holds", "hold", "governs", "govern", "has", "have", "handles", "handle", "excludes", "exclude")
 
 
 def mine(step):
-    """True when the step is of batches' scenario of r160."""
+    """True when the step is of batches' scenario of r160, or of r167, which retires it in its world."""
     found = sys.modules["vocab"].vocab4.requested.scenario(step.request.node)
-    return found is not None and "r160" in found.tags
+    return found is not None and bool({"r160", "r166", "r167"} & set(found.tags))
+
+
+def _tags(step):
+    return set(sys.modules["vocab"].vocab4.requested.scenario(step.request.node).tags)
 
 
 def _block():
@@ -64,7 +75,30 @@ def held(step):
         return False
     (k1, n1), (k2, _) = parts(step)[:2]
     if (k1, k2) == ("item", "port line"):
-        B.write_item(step, n1, sections={"Requirements": _block()})
+        B.write_item(step, n1, sections={"Requirements": SECOND if "r166" in _tags(step) else _block()})
+
+
+def _based(step):
+    """`the item i1 does not hold the port line p2` (r166): BLOCK laid on the base spec as `work batch start` lays an
+    item, so it is committed on main before the item."""
+    if not mine(step):
+        return False
+    (k1, _), (k2, _) = parts(step)[:2]
+    if (k1, k2) != ("item", "port line") or step.context.get("based"):
+        return None
+    import backlog_items
+    import backlog_lines
+    _spec(step)
+    rel = "base-b999.md"
+    text = ("---\nid: item/ex.com/prod/ctx/b999\nkind: item\nstatus: ready\nprovenance: own\n"
+            "depends_on: []\n---\n\n# The base's port line\n\n## Requirements\n\n%s\n" % _block())
+    backlog_lines.lay_onto(step.repo, backlog_items.parse(text, rel))
+    step.context["based"] = True
+    return None
+
+
+four("GivenDoesNot", "hold", *BOTH)(_based)
+four("GivenDoesNot", "holds", *BOTH)(_based)
 
 
 for _term in TERMS:
