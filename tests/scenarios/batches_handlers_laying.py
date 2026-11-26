@@ -18,7 +18,7 @@ import batch_git
 W, B, T, F = (sys.modules[n] for n in ("shop_work_queue_world", "shop_backlog_world", "shop_batches_world",
                                        "shop_world_four"))
 four, parts = F.four, F.parts
-GROUPS = {"g179", "g180", "g181", "g182", "g183", "g184"}
+GROUPS = {"g179", "g180", "g181", "g182", "g183", "g184", "g188", "g189"}
 STAND_IN = Path(__file__).resolve().parent / "stand_in_laying.py"
 REPLIES = {"complete": "complete", "fail": "fail"}
 
@@ -66,6 +66,7 @@ T.BEFORE_RUN.append(stand_in)
 
 
 @first("GivenDoes", "lay")
+@first("GivenDoes", "prepare")
 @first("GivenDoes", "lift")
 @first("GivenDoes", "check")
 def given_request(step):
@@ -123,17 +124,30 @@ def _asked(step, operation):
 
 
 @first("ThenDoes", "lay")
+@first("ThenDoes", "prepare")
 @first("ThenDoes", "lift")
 @first("ThenDoes", "check")
 def then_requests(step):
     """`the batches service lays (lifts, checks) the item i1 in (from) the workspace w1`: the stand-in recorded the
-    request of the item in the batch's workspace; a check after the lay it completed (r180)."""
+    request of the item in the batch's workspace, a check after the lay or the prepare it completed (r180, r189);
+    `prepares the workspace w1 for the batch b1`: a prepare of the batch's workspace for the batch, holding the item,
+    after the lay it completed (r188)."""
     if not mine(step) or "result" not in step.context:
         return False
-    assert _asked(step, step.term), (step.text, calls(step), step.context["result"].stderr)
-    if step.term == "check":
-        laid = [k for k, c in enumerate(calls(step)) if c["operation"] == "completed" and c.get("of") == "lay"]
-        assert laid and _asked(step, "check")[-1] > laid[0], calls(step)
+    found, request = calls(step), world(step).get("request")
+    asked = _prepared(step) if step.term == "prepare" else _asked(step, step.term)
+    assert asked, (step.text, found, step.context["result"].stderr)
+    if step.term in ("check", "prepare"):
+        of = "lay" if step.term == "prepare" else request
+        done = [k for k, c in enumerate(found) if c["operation"] == "completed" and c.get("of") == of]
+        assert done and asked[-1] > done[0], found
+
+
+def _prepared(step):
+    """The prepares of the batch's workspace for the batch b1 holding the item i1 the stand-in recorded."""
+    return [k for k, c in enumerate(calls(step)) if c["operation"] == "prepare"
+            and c.get("batch") == T.batch_name(step, "b1") and B.ident("i1") in c.get("items", [])
+            and str((step.repo / c["workspace"]).resolve()) == _workspace(step)]
 
 
 @first("ThenDoes", "has")
