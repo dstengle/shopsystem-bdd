@@ -1,6 +1,7 @@
 """`work line --capability` (b317): a capability new to the context written in an item, as a block of its
 `## Requirements` (`### <name>`, then its `narrator:`, `group:` and `purpose:`; backlog_section reads and writes it),
-refused when `spec/capabilities/<name>.md` exists; with `--area`, its `area:` line after them (b645). Laid over a spec (`lay`), the block writes the capability file in
+refused when `spec/capabilities/<name>.md` exists; with `--area`, its `area:` line after them (b645), and with `--port`
+`kind: port` after that, the area a driven port (b701). Laid over a spec (`lay`), the block writes the capability file in
 0.38's form (its id under the context's, its title, narrator, group, `area:` and `specifies:`, `language: codified-2`,
 `retired: []`, `## Purpose`, `## Behaviour`, no empty section) and names it in its area's row of the one table
 `| area | kind | capabilities |` under `spec/index.md`'s `## Composition` (b391; old tables `| capability | narrator |
@@ -51,15 +52,19 @@ def check(root, item, capability, group):
         raise Refused("%s: the group %s is neither %s" % (COMMAND, group, " nor ".join(GROUPS)))
 
 
-def add(root, name, capability, narrator, group, purpose, area=None):
+def add(root, name, capability, narrator, group, purpose, area=None, port=False):
     """The new capability's block written into the item `name` and committed, with its `area:` line when the person
-    names the area (b645: an area of spec/model/ or a new one); the item."""
+    names the area (b645: an area of spec/model/ or a new one), and `kind: port` when that area is a driven port
+    (b701: a new area, or one of spec/model/ of that kind); the item."""
     item = find(root, name)
     takes(item, COMMAND)
     check(root, item, capability, group)
     if area is not None and (not CAP.match("### %s" % area) or area in (UNIVERSAL, INDEX)):
         raise Refused("%s: %s is no area name: lowercase words joined by -" % (COMMAND, area))
-    new = (one_line(narrator, "narrator"), group, one_line(purpose, "purpose")) + ((area,) if area else ())
+    if port:
+        _port(root, area)
+    new = (one_line(narrator, "narrator"), group, one_line(purpose, "purpose")) + ((area,) if area else ()) \
+        + (("port",) if port else ())
     blocks = read(item, "the item %s" % item.name)
     blocks.append(Block(capability, [], [], new=new))
     item.sections[SECTION] = render(blocks)
@@ -67,10 +72,21 @@ def add(root, name, capability, narrator, group, purpose, area=None):
     return item
 
 
+def _port(root, area):
+    """Refused unless the driven port is named as an area that is new or of kind port in spec/model/."""
+    if area is None:
+        raise Refused("%s: --port takes --area, the driven port the new capability is placed in" % COMMAND)
+    kind = _field(Path(root) / "spec" / "model" / ("%s.md" % area), "kind")
+    if kind not in (None, "port"):
+        raise Refused("%s: the area %s is of kind %s, no driven port: spec/model/%s.md" % (COMMAND, area, kind, area))
+
+
 def add_arguments(p):
-    """`work line`'s option of a new capability's area (b645)."""
+    """`work line`'s options of a new capability's area (b645) and of that area a driven port (b701)."""
     p.add_argument("--area", help="with --capability: the area the new capability is placed in, an area of "
                    "spec/model/ or a new one (default: the capability's own name)")
+    p.add_argument("--port", action="store_true", help="with --capability and --area: the area is a driven port "
+                   "(an area of kind port)")
 
 
 def cmd(args):
@@ -82,7 +98,7 @@ def cmd(args):
         raise Refused("%s: takes --narrator and the capability's purpose, with --group service or guarantees "
                       "(default service), and no other piece" % COMMAND)
     item = add(args.root, args.name, args.capability, args.narrator, args.group or "service", args.text,
-               getattr(args, "area", None))
+               getattr(args, "area", None), getattr(args, "port", False))
     print("%s: a new capability %s" % (label(item), args.capability))
     return 0
 
@@ -91,6 +107,11 @@ def area(block):
     """The area of the model the capability's lines are read in: the block's own when it names one, else the
     capability's name."""
     return dict(zip(NEW_FIELDS, block.new)).get("area") or block.capability
+
+
+def kind(block):
+    """The kind of the capability's area the block makes: `port` of a driven port (b701), else core."""
+    return dict(zip(NEW_FIELDS, block.new)).get("kind") or "core"
 
 
 def specifies(block):
@@ -223,7 +244,7 @@ def _without(body, block, root):
 
 
 def _row(block):
-    return "| %s | core | %s |" % (area(block), block.capability)
+    return "| %s | %s | %s |" % (area(block), kind(block), block.capability)
 
 
 def lay(into, block, files):

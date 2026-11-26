@@ -78,6 +78,7 @@ area: execution
 - **cover** (verb, state) → relation product id.covers. An id lies under a product id: the path of the id opens with the product id. Forms: covers, covered. Frame: <product id> covers <id>.
 - **the driver** (proper noun) → actor the driver. Whatever runs a batch by asking the batches service for its next step and reporting each step's result back: an agent, a script or a runner.
 - **poll** (verb, action) → operation batches.poll. The driver asks the batches service for the next step of a batch. Forms: polls, polled. Frame: <actor> polls <batch>.
+- **findings file** (noun) → object findings file. The file `findings.md` in a review folder where the reviewer's reply is saved, which `work batch reviewed` reads. Plural: findings files.
 - **batch step** (noun) → object batch step. What a batch needs done next, as the batches service says it to the driver: its instruction and the task, brief, review folder, findings file or finding it is about.
 - **instruction** (attribute) → attribute batch step.instruction. What a batch step asks the driver to do.
 - **prepare task** (noun) → value batch step.instruction prepare task.
@@ -86,6 +87,6 @@ area: execution
 - **submit batch** (noun) → value batch step.instruction submit batch.
 - **review change** (noun) → value batch step.instruction review change.
 - **fix finding** (noun) → value batch step.instruction fix finding.
+- **fix task** (noun) → value batch step.instruction fix task.
 - **park item** (noun) → value batch step.instruction park item.
 - **stop** (noun) → value batch step.instruction stop.
-- **findings file** (noun) → object findings file. The file `findings.md` in a review folder where the reviewer's reply is saved, which `work batch reviewed` reads. Plural: findings files.

@@ -815,3 +815,14 @@ Feature: Drafting
     When the person removes the pack p1 from the item i1
     Then the drafting service refuses this request
     And the drafting service names the pack p1
+
+  @g85 @r85
+  Scenario: A capability drafted with a driven port keeps the port in the item
+    Given an item i1
+    And a capability c1
+    And a driven port d1
+    When the person drafts the item i1 with the capability c1 and the driven port d1
+    Then the item i1 holds the capability c1
+    And the drafting service keeps the capability c1
+    And the driven port d1 holds the capability c1
+    And the drafting service keeps the driven port d1

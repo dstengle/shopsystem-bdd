@@ -609,6 +609,10 @@ label("v_need_cycle", "a job's needs close a cycle").
 needs_tc(J, N)     :- pneeds(J, N).
 needs_tc(J, M)     :- needs_tc(J, N), pneeds(N, M).
 v_need_cycle(J, N) :- pneeds(J, N), needs_tc(N, J).
+label("w_unformed_product", "a product file not of the product form").
+% fail w_unformed_product: unformed_product(".shop/product/product.toml","product not in the product form").
+% pass w_unformed_product: pjob("j").
+w_unformed_product(F, Why) :- unformed_product(F, Why).
 label("w_unheld_job", "a job of the product that no bounded context holds").
 % fail w_unheld_job: pjob("j").
 % pass w_unheld_job: pjob("j"). held_by("j","b").
@@ -671,7 +675,7 @@ w_example(Q, L)    :- exemplified(Q, L).
 #show v_t16/2. #show v_t17/2. #show v_t18/2. #show v_t19/2. #show v_t20/2. #show v_t21/2.
 #show v_m1/3. #show v_m2/2. #show v_m3/2. #show v_m4/2. #show w_m5/4. #show v_m6/4. #show v_m7/1. #show v_m9/4. #show v_pb1/1. #show v_pb2/1. #show v_pb3/2. #show v_pb4/1. #show v_m8/2. #show v_a1/2. #show v_a2/2. #show v_a3/2. #show v_a4/2. #show v_a5/2. #show v_a6/2. #show v_c1/2. #show v_c2/1. #show v_c3/1. #show v_c4/2. #show v_r1/2. #show w_r1/2.
 #show v_p0/1. #show v_p1/2. #show v_p2/1. #show v_p3/2.
-#show v_job_elsewhere/2. #show v_need_cycle/2. #show w_unheld_job/1. #show w_untriggered_actor/2.
+#show v_job_elsewhere/2. #show v_need_cycle/2. #show w_unheld_job/1. #show w_unformed_product/2. #show w_untriggered_actor/2.
 #show w_unaddressed_sub/1. #show w_unreached_sub/2.
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
 #show w_many_requests/1. #show w_untiered/1. #show w_unrouted/1. #show w_example/2. #show w_value_kind/1.

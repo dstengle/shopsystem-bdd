@@ -258,3 +258,12 @@ when the change is merged.
 ### [g148] A batch with a finding to fix now that no kept change is for asks the driver to fix the finding
 - [r148] While a batch is `building` and a review of the batch holds a review finding whose triage is `fix now` and no kept change for the review finding exists, when the driver polls the batch, the batches service shall return a batch step whose instruction is `fix finding` and the review finding.
 
+### [g149] A batch whose submit a scenario of an item broke asks the driver to fix the item's task
+- [r149] While a batch is `building` and a task of an item in the batch is `done` and every task of the batch is `done` and a scenario of the item breaks in the workspace of the batch, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `fix task` and the task.
+
+### [g150] A running task whose only kept change citing its item is an amendment asks the driver to build it
+- [r150] While a batch is `building` and a task of an item in the batch is `running` and the item is `in-batch` and the workspace of the task holds an amendment that cites the item and the workspace of the task holds exactly one kept change that cites the item and no task of the batch is `failed`, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `build task`, the task and the batch brief of the batch.
+
+### [g151] A new capability laid with its driven port is kept in an area of kind port
+- [r151] While an item is `ready` and the item meets the readiness bar and the item holds a capability and the item holds a driven port that holds the capability, when the person opens a batch, the batches service shall keep the driven port that holds the capability.
+

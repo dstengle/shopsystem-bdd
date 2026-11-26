@@ -30,12 +30,16 @@ def declared(blocks):
     return list(dict.fromkeys(out))
 
 
-def _held(into):
-    """The operations of the domain model at `into`, by `<service>.<operation>`."""
+def _held(into, unported=False):
+    """The operations of the domain model at `into`, by `<service>.<operation>`; with `unported`, those of no driven
+    port."""
+    import adapter_cli_check
     import domain_model
     if not (Path(into) / "spec" / "model").is_dir():
         return {}
-    return {"%s.%s" % (o.service, o.name): o for o in domain_model.read(into).operations()}
+    model = domain_model.read(into)
+    ported = adapter_cli_check.ported(model) if unported else set()
+    return {i: o for o in model.operations() if (i := "%s.%s" % (o.service, o.name)) not in ported}
 
 
 def _given(blocks):
@@ -56,7 +60,7 @@ def lay(into, blocks, files):
     if not new or not path.is_file():
         return
     text = was = path.read_text(encoding="utf-8")
-    held = _held(into)
+    held = _held(into, unported=True)
     for ident in new:
         if ident in held and not adapter_tables.table(text, ident) and ident not in adapter_tables.unexposed(text):
             text = adapter_tables.with_table(text, adapter_tables.of(held[ident], text))

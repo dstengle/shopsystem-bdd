@@ -11,8 +11,8 @@ from backlog_model import CLOSE as MODEL_CLOSE
 from backlog_model import FENCE as MODEL_FENCE
 
 UNIVERSAL, INDEX = "universal", "index"
-NEW_FIELDS = ("narrator", "group", "purpose", "area")  # a new capability's block (`work line --capability`, b317;
-REQUIRED = 3                                           # its `area:` optional, b645)
+NEW_FIELDS = ("narrator", "group", "purpose", "area", "kind")  # a new capability's block (`work line --capability`,
+REQUIRED = 3                       # b317; its `area:` optional, b645, and after it `kind: port` of a driven port, b701)
 FENCE, CLOSE = "```given", "```"
 # the blocks of bullets after the pack blocks, in their order: (the Blocks attribute, its module's HEAD, Lines, render)
 LISTS = (("moves", backlog_area_move), ("imports", backlog_import), ("retirements", backlog_retire))

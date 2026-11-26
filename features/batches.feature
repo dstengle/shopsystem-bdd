@@ -1069,3 +1069,67 @@ Feature: Batches
     Then the batches service returns the batch step b2
     And the instruction of the batch step b2 is `fix finding`
     And the batches service returns the review finding r2
+
+  @g149 @r149
+  Scenario: A batch whose submit a scenario of an item broke asks the driver to fix the item's task
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    And an item i1
+    And the batch b1 holds the item i1
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `done`
+    And a task t2
+    And the batch b1 has the task t2
+    And the status of the task t2 is `done`
+    And a scenario s1
+    And the item i1 has the scenario s1
+    And a workspace w1
+    And the batch b1 has the workspace w1
+    And the scenario s1 breaks in the workspace w1
+    When the driver polls the batch b1
+    Then the batches service returns the batch step b2
+    And the instruction of the batch step b2 is `fix task`
+    And the batches service returns the task t1
+
+  @g150 @r150
+  Scenario: A running task whose only kept change citing its item is an amendment asks the driver to build it
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    And an item i1
+    And the batch b1 holds the item i1
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And the status of the item i1 is `in-batch`
+    And a workspace w1
+    And the task t1 has the workspace w1
+    And an amendment a1
+    And the amendment a1 cites the item i1
+    And the workspace w1 holds the amendment a1
+    And a kept change k1
+    And the kept change k1 cites the item i1
+    And the workspace w1 holds the kept change k1
+    And the batch b1 has no task
+    And a batch brief b2
+    And the batch b1 has the batch brief b2
+    When the driver polls the batch b1
+    Then the batches service returns the batch step b3
+    And the instruction of the batch step b3 is `build task`
+    And the batches service returns the task t1
+    And the batches service returns the batch brief b2
+
+  @g151 @r151
+  Scenario: A new capability laid with its driven port is kept in an area of kind port
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a capability c1
+    And the item i1 holds the capability c1
+    And a driven port d1
+    And the driven port d1 holds the capability c1
+    And the item i1 holds the driven port d1
+    And a batch b1
+    When the person opens the batch b1
+    Then the driven port d1 holds the capability c1
+    And the batches service keeps the driven port d1

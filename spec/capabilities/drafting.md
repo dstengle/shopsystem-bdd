@@ -289,3 +289,6 @@ capabilities, retirements, rewordings and chores.
 ### [g84] Removing a pack that the item does not import is refused
 - [r84] If the person removes a pack from an item that does not import the pack, then the drafting service shall refuse the request and name the pack.
 
+### [g85] A capability drafted with a driven port keeps the port in the item
+- [r85] When the person drafts an item with a capability and a driven port, the drafting service shall keep the capability in the item and keep the driven port that holds the capability in the item.
+

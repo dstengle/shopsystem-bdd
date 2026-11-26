@@ -14,6 +14,7 @@ import backlog_adapter_ops
 import backlog_capability
 import backlog_forms
 import backlog_model
+import backlog_port
 import backlog_recodify
 import backlog_renumber
 import backlog_retires
@@ -203,6 +204,7 @@ def lay_onto(into, item, files=None):
     backlog_forms.lay_spec(into, blocks, files)
     backlog_universal.lay(into, blocks, files)
     backlog_adapter_ops.lay(into, blocks, files)        # the model lines, the adapter blocks, a new operation's table
+    backlog_port.lay(into, blocks, files)               # a driven port the item makes, its imports (b701)
     return [b.capability for b in blocks]
 
 
@@ -243,6 +245,7 @@ def unlay(into, item, files=None, base=None):
     backlog_forms.unlay_spec(into, blocks, files)
     backlog_universal.unlay(into, blocks, files)
     backlog_model.unlay(into, blocks, files, base)
+    backlog_port.unlay(into, blocks, files, base)
     backlog_adapter_ops.unlay(into, blocks, files, base)
     return changed
 

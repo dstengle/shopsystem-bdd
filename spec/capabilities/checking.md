@@ -350,6 +350,9 @@ Restates: design-model-check#r13@0.29.
 ### [g122] A guarantees capability contributes to the jobs whose lines it constrains
 - [r122] While this bounded context has a job and a requirement group serves the job and the group of a capability is `guarantees`, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.
 
+### [g124] A product not of the product form is named by the check, which completes
+- [r124] While this product does not conform to the product form, when the person validates this specification, the specification service shall name this product and complete the request.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.
