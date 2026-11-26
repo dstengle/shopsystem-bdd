@@ -177,7 +177,8 @@ Feature: Product
     And a subdomain s1
     And a shop s2
     When the person declares the bounded context b1 with the id i1 and the subdomain s1 and the shop s2
-    Then this product holds the bounded context b1
+    Then the shop s2 has the product p1
+    And the product p1 holds the bounded context b1
     And the product service keeps the bounded context b1
     And the product service completes this request
 
