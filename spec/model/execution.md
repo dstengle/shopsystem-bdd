@@ -14,6 +14,7 @@ Work being done: batches of ready items, their tasks and workspaces, the change 
 ```model
 object review kind of text
   relations: holds → review finding (many)
+  relations: holds → reply (one)
 
 object review finding kind of text
   attributes: grade: Critical | Important | Minor; triage: fix now | observation | drop
@@ -104,14 +105,8 @@ object review limit
 object amendment kind of kept change
 
 service shop
-  operation keep(bounded context, id)  outcomes: done → the bounded context | refused: id outside the product id, id kept already
+  operation keep(bounded context, id)  outcomes: done → the bounded context | refused: id outside the product, id kept already
   operation list(shop)  outcomes: returned → every bounded context
-
-object shop
-  relations: holds → bounded context (many); has → product id (one)
-
-object product id kind of text
-  relations: covers → id (many)
 
 actor the driver kind of agent
 
@@ -120,4 +115,7 @@ object findings file kind of file
 object batch step
   attributes: instruction: prepare task | build task | finish task | submit batch | review change | fix finding | fix task | park item | stop
   relations: holds → task | batch brief | review folder | findings file | review finding (many)
+
+object shop
+  relations: holds → bounded context (many); has → product (one)
 ```

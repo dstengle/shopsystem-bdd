@@ -134,7 +134,7 @@ def text(root, batch, picked, unwritten=()):
            "## The skill", "",
            "Follow the skill `%s` from step 3 (Resume) to step 7's `-> awaiting-merge`: `shop work batch resume %s`, one "
            "subagent for each running task, all at once, `shop work batch done` or `park` as each returns, `shop work batch "
-           "review`, then `shop work batch brief`, a fresh `shopsystem-bdd:pr-reviewer` and `shop work batch reviewed`, and the "
+           "review`, then `shop work batch brief`, a fresh `shopsystem-bdd:pr-reviewer` and `shop work batch reviewed --reply <its transcript>`, and the "
            "fix loop until the review is clean." % (SKILL, batch.name), "",
            "## Tasks", ""]
     out += _tasks(root, batch, picked)

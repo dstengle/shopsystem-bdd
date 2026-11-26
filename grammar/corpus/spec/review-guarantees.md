@@ -193,3 +193,19 @@ shall [x2: dispatch `pr-reviewer` (constant)]
     not
       review(e2, subject: x2, object: x1)
 ```
+
+## r13
+From: b697 r13.
+
+```reading
+When a session concludes a review of a batch, the reviews service shall keep a review of the batch that holds the reply of `pr-reviewer`.
+shall [x4: service the reviews service (constant), x6: dispatch `pr-reviewer` (constant)]
+  when [x1: session, x2: review, x3: batch]
+    of(x2, x3)
+    request(e1, reviews.conclude, subject: x1, object: x2)
+  response [x5: review, x7: reply]
+    of(x5, x3)
+    of(x7, x6)
+    in(x7, x5)
+    keep(e2, subject: x4, object: x5)
+```

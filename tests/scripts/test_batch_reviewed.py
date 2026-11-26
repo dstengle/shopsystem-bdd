@@ -1,6 +1,7 @@
 """`work batch reviewed` (workflow simplification plan 5, Task 3, D10, D12, D13, D15): the findings file recorded
 under `.shop/batches/<n>/`, posted on the pull request, and the batch set `building` by a fix-now finding or
-`awaiting-merge` by a clean review, whose pull request is marked ready for the person's merge."""
+`awaiting-merge` by a clean review, whose pull request is marked ready for the person's merge; the reply read from the
+pr-reviewer dispatch's transcript, so the review keeps it as given though the relayed findings file is escaped (b697)."""
 import json
 import subprocess
 import sys
@@ -8,6 +9,7 @@ import sys
 import backlog_items
 import batch_findings
 import batch_plan
+import measure_batch_read
 import pytest
 from backlog_testing import SCRIPTS, git, state, work
 from batch_testing import commit_on, gh_calls
@@ -157,3 +159,65 @@ def test_status_shows_the_reviews(briefed):
     data = json.loads(ok(work(briefed, "batch", "status", "batch-1", "--json")).stdout)["content"]["batch"]
     assert data["reviews"] == [{"review": 1, "result": "fix-now", "findings": ["f1", "f2"]}]
     assert data["open"] == ["f1"]
+
+
+REPLY = FIX_NOW_B1.replace("abandon leaves the initiative started", "abandon leaves <b>started</b> & open")
+ESCAPED = REPLY.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+@pytest.fixture
+def relayed(briefed, tmp_path, monkeypatch):
+    """The briefed batch with a store of its own and the findings file a driver saved of the relayed reply: `<` `>`
+    `&` escaped (b697)."""
+    monkeypatch.setenv("CLAUDE_CONFIG_DIR", str(tmp_path / "store"))
+    (scratch(briefed) / "findings.md").write_text(ESCAPED)
+    return briefed
+
+
+def dispatch(repo, agent, prompt, reply, kind="shopsystem-bdd:pr-reviewer", session="s-1"):
+    """A subagent's transcript and meta file in the store's project directory of `repo`: its prompt and its reply."""
+    where = measure_batch_read.project_dir(repo) / session / "subagents"
+    where.mkdir(parents=True, exist_ok=True)
+    rows = [{"type": "user", "agentId": agent, "sessionId": session, "timestamp": "2026-11-05T10:00:00Z",
+             "message": {"role": "user", "content": prompt}},
+            {"type": "assistant", "agentId": agent, "sessionId": session, "timestamp": "2026-11-05T10:05:00Z",
+             "message": {"role": "assistant", "id": "m-%s" % agent, "content": [{"type": "text", "text": reply}],
+                         "usage": {"output_tokens": 9}}}]
+    path = where / ("agent-%s.jsonl" % agent)
+    path.write_text("".join(json.dumps(row) + "\n" for row in rows))
+    (where / ("agent-%s.meta.json" % agent)).write_text(json.dumps({"agentType": kind}))
+    return path
+
+
+def kept_title(repo):
+    rel = batch_findings.rel_of("batch-1", 1)
+    return batch_findings.parse((repo / rel).read_text(), rel).findings[0].title
+
+
+@pytest.mark.requirement("review-guarantees#r13")
+def test_the_review_keeps_the_reply_of_the_dispatch_that_names_the_brief(relayed):
+    brief = str((scratch(relayed) / "brief.md").resolve())
+    dispatch(relayed, "a1", brief, REPLY)
+    dispatch(relayed, "a2", "/elsewhere/batch-9-review-1/brief.md", FIX_NOW_B1)
+    dispatch(relayed, "a3", brief, FIX_NOW_B1, kind="general-purpose")
+    ok(work(relayed, "batch", "reviewed", "batch-1"))
+    assert kept_title(relayed) == "abandon leaves <b>started</b> & open"
+
+
+@pytest.mark.requirement("review-guarantees#r13")
+def test_the_review_keeps_the_reply_of_the_transcript_named(relayed, tmp_path):
+    path = dispatch(relayed, "a1", "a brief somewhere", REPLY, session="other")
+    ok(work(relayed, "batch", "reviewed", "batch-1", "--reply", str(path)))
+    assert kept_title(relayed) == "abandon leaves <b>started</b> & open"
+
+
+def test_with_no_transcript_the_findings_file_is_read(relayed):
+    ok(work(relayed, "batch", "reviewed", "batch-1"))
+    assert kept_title(relayed) == "abandon leaves &lt;b&gt;started&lt;/b&gt; &amp; open"
+
+
+def test_a_transcript_named_with_no_reply_is_refused(relayed, tmp_path):
+    path = tmp_path / "empty.jsonl"
+    path.write_text(json.dumps({"type": "user", "message": {"role": "user", "content": "x"}}) + "\n")
+    done = work(relayed, "batch", "reviewed", "batch-1", "--reply", str(path))
+    assert done.returncode == 1 and str(path) in done.stderr, done.stderr

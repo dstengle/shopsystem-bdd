@@ -15,23 +15,6 @@ shall [x1: agent the person (constant), x4: service the shop service (constant),
     complete(e3, subject: x4, object: x6)
 ```
 
-## r2
-From: b576 r2.
-
-```reading
-If the person entrusts a bounded context with an id that the product id of the shop does not cover, then the shop service shall refuse the request and name the id.
-shall [x1: agent the person (constant), x4: shop "the shop the request is made in" (indexical), x6: service the shop service (constant), x7: request "the request the trigger makes" (indexical)]
-  if [x2: bounded context, x3: id, x5: product id]
-    of(x5, x4)
-    not
-      cover(subject: x5, object: x3)
-    request(e1, shop.keep, subject: x1, object: x2)
-    param(e1, id, x3)
-  response
-    refuse(e2, subject: x6, object: x7)
-    name(e3, subject: x6, object: x3)
-```
-
 ## r3
 From: b576 r3.
 
@@ -77,4 +60,24 @@ shall [x2: shop "the shop the request is made in" (indexical), x3: agent the per
     request(e1, shop.list, subject: x3, object: x2)
   response
     return(e2, subject: x4, object: x5)
+```
+
+## r6
+Retires: r2. From: b666 r6.
+
+```reading
+While the product of the shop has an id, if the person entrusts a bounded context with another id that the id does not cover, then the shop service shall refuse the request and name the id.
+shall [x1: shop "the shop the request is made in" (indexical), x4: agent the person (constant), x7: service the shop service (constant), x8: request "the request the trigger makes" (indexical)]
+  while [x2: product, x3: id]
+    of(x2, x1)
+    of(x3, x2)
+  if [x5: bounded context, x6: id]
+    distinct(x6, x3)
+    not
+      cover(subject: x3, object: x6)
+    request(e1, shop.keep, subject: x4, object: x5)
+    param(e1, id, x6)
+  response
+    refuse(e2, subject: x7, object: x8)
+    name(e3, subject: x7, object: x6)
 ```

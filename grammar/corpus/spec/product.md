@@ -285,13 +285,14 @@ From: b642 r18.
 
 ```reading
 When the person declares a bounded context with an id and a subdomain and a shop, the product service shall keep the bounded context in the product and complete the request.
-shall [x1: agent the person (constant), x6: service the product service (constant), x7: product "the product this bounded context belongs to" (indexical), x8: request "the request the trigger makes" (indexical)]
+shall [x1: agent the person (constant), x6: service the product service (constant), x8: request "the request the trigger makes" (indexical)]
   when [x2: bounded context, x3: id, x4: subdomain, x5: shop]
     request(e1, product.declare context, subject: x1, object: x2)
     param(e1, id, x3)
     param(e1, subdomain, x4)
     param(e1, shop, x5)
-  response
+  response [x7: product]
+    of(x7, x5)
     in(x2, x7)
     keep(e2, subject: x6, object: x2)
     complete(e3, subject: x6, object: x8)
@@ -323,7 +324,7 @@ shall [x1: agent the person (constant), x4: product "the product this bounded co
   if [x2: bounded context, x3: id, x5: id]
     of(x5, x4)
     not
-      cover#2(subject: x5, object: x3)
+      cover(subject: x5, object: x3)
     request(e1, product.declare context, subject: x1, object: x2)
     param(e1, id, x3)
   response

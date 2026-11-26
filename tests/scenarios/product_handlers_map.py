@@ -8,7 +8,8 @@ subdomain type `core`, `central` when a Given says it does not conform to the su
 id `example.org/<i>`, `other.org/<i>` when a Given says the product's id does not cover it; a subdomain's id `<i>`;
 a shop `example.org/shop-<s>`; a subdomain known by its id when the When gives one. The Thens read the subdomain
 (with its type and jobs) or the bounded context (with its subdomains and its shop, none for a provider) back from
-the kept product file, and what a refusal names with its option."""
+the kept product file, the shop that keeps it having the product (its id the product's id covers, b666), and what a
+refusal names with its option."""
 import hashlib
 import sys
 from pathlib import Path
@@ -95,12 +96,23 @@ def holds(step, w, name):
     return product.get("contexts", {}).get(w["key"]) == want
 
 
+def shop_has(step):
+    """The shop s2 has the product p1 (the product the run kept, p1 named by no Given): the kept product file gives
+    the bounded context the shop s2's id, which the product's id covers."""
+    w = P.world(step)
+    product, shop = P.kept(step), value(w, step.names[0])
+    assert product.get("contexts", {}).get(w["key"], {}).get("shop") == shop, product
+    assert P.scripts("product_map").covers(product.get("id"), shop), product
+
+
 def then(step):
-    """This product holds x; `spec` writes x (one commit of the product file, x in it); `spec` names x (its value, and
+    """The shop s2 has the product p1 (`shop_has`); this product holds x; `spec` writes x (one commit of the product file, x in it); `spec` names x (its value, and
     the option it is given by; the product's id, which the context's id lies outside)."""
-    if not P.mine(step) or "when" not in P.world(step) or step.term not in ("holds", "write", "name"):
+    if not P.mine(step) or "when" not in P.world(step) or step.term not in ("holds", "write", "name", "has"):
         return False
     w, done = P.world(step), step.context["result"]
+    if step.term == "has" and w["kinds"].get(step.names[0]) == "shop":
+        return shop_has(step)
     said, name = done.stdout + done.stderr, step.names[-1] if step.names else None
     if w["kinds"].get(name) not in ("subdomain", "bounded context", "subdomain type", "job", "id"):
         return False

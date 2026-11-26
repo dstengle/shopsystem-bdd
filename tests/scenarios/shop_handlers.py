@@ -1,6 +1,7 @@
-"""Handlers of features/shop.feature (shop r1-r5, b576), each a `work_queue_world.local` that takes only a step of a
+"""Handlers of features/shop.feature (shop r1, r3-r6, b576, b666), each a `work_queue_world.local` that takes only a step of a
 scenario of the shop's feature (`mine`). The scenario's repository is a bounded context whose spec/index.md id is
-`bounded-context/example.org/home/home`, so the shop's product id is `example.org/home` (`PRODUCT`). An id i1 is
+`bounded-context/example.org/home/home`, so the shop's product id is `example.org/home` (`PRODUCT`), unless the product of the shop has an id, written
+into the product file as `example.org/notes` (`OTHER`), which does not cover an id under `PRODUCT`. An id i1 is
 `bounded-context/example.org/home/i1`, or, once a Given says the product id does not cover it,
 `bounded-context/elsewhere.org/away/i1`; a bounded context is known by the id a Given or the When gives it, else
 `bounded-context/example.org/home/<name>`. The bounded contexts the shop holds by the Givens are written into
@@ -16,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[2]
 PRODUCT = "example.org/home"
 THIS = "bounded-context/%s/home" % PRODUCT
 REL = ".shop/contexts.toml"
+OTHER = "example.org/notes"
 INDEX = "---\nid: %s\nkind: bounded-context\nlanguage: codified-2\n---\n\n# home\n" % THIS
 
 
@@ -45,28 +47,31 @@ def given_instance(step):
         w["contexts"].setdefault(step.names[0], None)
     elif step.kind == "id":
         w["ids"][step.names[0]] = True
-    elif step.kind != "product id":
+    elif step.kind not in ("product id", "product"):
         return False
 
 
 def given_does(step):
-    """`this shop has the product id p1` (the repository's own), `the bounded context b1 has the id i1`, `this shop
+    """`the product p1 has the id i1` (the product file's), `the bounded context b1 has the id i1`, `this shop
     holds the bounded context b1`, `this shop holds no bounded context`."""
     if not mine(step) or step.term not in ("has", "holds"):
         return False
     w = world(step)
     if step.term == "has" and step.subject.startswith("the bounded context"):
         w["contexts"][step.names[0]] = step.names[1]
+    elif step.term == "has" and step.subject.startswith("the product "):
+        w["product"] = step.names[-1]
     elif step.term == "holds" and step.names:
         w["held"].append(step.names[0])
 
 
 def given_not(step):
-    """`the product id p1 does not cover the id i1`; `this shop does not hold the bounded context b3`."""
+    """`the id i1 does not cover the id i2` (outside every product id, unless i1 is the product's); `this shop does not hold the bounded context b3`."""
     if not mine(step) or step.term not in ("cover", "holds", "hold"):
         return False
-    if step.term == "cover":
-        world(step)["outside"].add(step.names[-1])
+    w = world(step)
+    if step.term == "cover" and step.names[0] != w.get("product"):
+        w["outside"].add(step.names[-1])
 
 
 def git(repo, *args):
@@ -79,6 +84,10 @@ def runs(step):
     w, repo = world(step), step.repo
     (repo / "spec").mkdir(parents=True, exist_ok=True)
     (repo / "spec" / "index.md").write_text(INDEX)
+    if w.get("product"):
+        (repo / ".shop" / "product").mkdir(parents=True, exist_ok=True)
+        product = {"id": OTHER, "purpose": "notes", "actors": [], "jobs": {}}
+        (repo / ".shop" / "product" / "product.toml").write_text(scripts("product_store").render(product))
     if w["held"]:
         (repo / ".shop").mkdir(exist_ok=True)
         (repo / REL).write_text(scripts("shop_contexts").render([id_of(w, n) for n in w["held"]]))

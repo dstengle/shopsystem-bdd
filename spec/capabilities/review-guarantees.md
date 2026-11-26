@@ -57,3 +57,6 @@ What `pr-reviewer` reads and writes in reviewing a batch's change, and where its
 ### [g12] A review leaves out a superseded decision
 - [r12] While a design-decision is `superseded`, when `pr-reviewer` reviews a proposed change, `pr-reviewer` shall not review the design-decision.
 
+### [g13] A review concluded keeps the reply of pr-reviewer as it gave it
+- [r13] When a session concludes a review of a batch, the reviews service shall keep a review of the batch that holds the reply of `pr-reviewer`.
+
