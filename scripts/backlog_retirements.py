@@ -40,7 +40,7 @@ def pairs(path):
 def apply(root, name, path):
     """Every pair of the list written into the item `name`: its line the next id of its capability, the old id
     under the block's `retired:` and the pair under its `retires:`; one commit. Each id checked before anything is
-    written. The item and the pairs of new and old ids."""
+    written. The item and, of each pair, the new id, the old id and the line."""
     item = find(root, name)
     listed = pairs(path)
     for ident, _ in listed:
@@ -50,9 +50,9 @@ def apply(root, name, path):
         capability, rid = backlog_retires.check(root, item, ident)
         new = backlog_lines.add_line_to(root, item, capability, text)
         backlog_retires.with_retired(item, capability, rid, new.split("#")[1])
-        done.append((new, ident))
+        done.append((new, ident, text))
     commit(root, item, "work line: %s retirement list: %s" % (
-        label(item), ", ".join("%s retires %s" % pair for pair in done)))
+        label(item), ", ".join("%s retires %s" % pair[:2] for pair in done)))
     return item, done
 
 
@@ -65,8 +65,8 @@ def cmd(args):
         raise Refused("work line: --retirement-list takes no requirement line or other option")
     item, done = apply(args.root, args.name, args.retirement_list)
     import decision_amend
-    for new, old in done:
-        print("%s: %s retires %s" % (label(item), new, old))
+    for new, old, text in done:
+        print(backlog_lines.added(item, new, text, old))
         for line in decision_amend.enforcing(args.root, old):
             print(line)
     return 0

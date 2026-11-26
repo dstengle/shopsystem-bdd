@@ -28,7 +28,7 @@ def test_line_writes_the_next_ids_and_commits_only_the_item(ready_repo):
     write_item(ready_repo, "b1", status="shaped")
     done = work(ready_repo, "line", "b1", "--into", "work-queue", ABANDON)
     assert done.returncode == 0, done.stderr
-    assert done.stdout == 'b1 "Fix the parser": work-queue#r5\n'
+    assert done.stdout == 'b1 "Fix the parser": work-queue#r5 %s\n' % ABANDON
     assert blocks(ready_repo) == [Block("work-queue", [], [Group("g4", "Fix the parser", [("r5", ABANDON)])])]
     assert git(ready_repo, "show", "--name-only", "--format=", "HEAD").split() == [".shop/backlog/b1.md"]
     assert git(ready_repo, "log", "-1", "--format=%s").strip() == 'work line: b1 "Fix the parser" work-queue#r5'
@@ -38,9 +38,9 @@ def test_a_second_line_in_the_group_takes_the_next_requirement_id(ready_repo):
     write_item(ready_repo, "b1", status="idea")
     assert work(ready_repo, "line", "b1", "--into", "work-queue", ABANDON).returncode == 0
     done = work(ready_repo, "line", "b1", "--into", "work-queue", "--in", "g4", DONE)
-    assert done.returncode == 0 and done.stdout.endswith("work-queue#r6\n"), done.stderr
+    assert done.returncode == 0 and done.stdout.endswith("work-queue#r6 %s\n" % DONE), done.stderr
     done = work(ready_repo, "line", "b1", "--into", "work-queue", "--group", "Another", FROBNICATE)
-    assert done.returncode == 0 and done.stdout.endswith("work-queue#r7\n"), done.stderr
+    assert done.returncode == 0 and done.stdout.endswith("work-queue#r7 %s\n" % FROBNICATE), done.stderr
     assert blocks(ready_repo) == [Block("work-queue", [], [
         Group("g4", "Fix the parser", [("r5", ABANDON), ("r6", DONE)]), Group("g5", "Another", [("r7", FROBNICATE)])])]
     assert backlog_lines.ids(blocks(ready_repo)) == ["work-queue#r5", "work-queue#r6", "work-queue#r7"]
@@ -57,7 +57,7 @@ def test_ids_skip_the_retired(ready_repo):
     write_item(ready_repo, "b1", status="shaped")
     done = work(ready_repo, "line", "b1", "--into", "work-queue", ABANDON)
     assert done.returncode == 0, done.stderr
-    assert done.stdout.endswith("work-queue#r10\n")
+    assert done.stdout.endswith("work-queue#r10 %s\n" % ABANDON)
 
 
 def test_line_refuses_a_capability_that_is_not_codified(ready_repo):

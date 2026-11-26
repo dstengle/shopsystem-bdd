@@ -66,7 +66,8 @@ def test_retires_writes_the_line_and_the_old_id_and_commits(ready_repo):
     write_item(ready_repo, "b1", status="shaped")
     done = work(ready_repo, "line", "b1", "--retires", "work-queue#r1", LINE)
     assert done.returncode == 0, done.stderr
-    assert done.stdout == 'b1 "Fix the parser": work-queue#r5 retires work-queue#r1\n'
+    assert done.stdout == 'b1 "Fix the parser": work-queue#r5 %s\nb1 "Fix the parser": work-queue#r5 retires ' \
+        'work-queue#r1\n' % LINE
     assert blocks(ready_repo) == [Block("work-queue", [], [Group("g4", "Fix the parser", [("r5", LINE)])], (),
                                         ("r1",), retires=(("r5", "r1"),))]
     assert git(ready_repo, "show", "--name-only", "--format=", "HEAD").split() == [".shop/backlog/b1.md"]

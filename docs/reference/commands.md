@@ -61,7 +61,7 @@ b250 "work show prints the status of an item" idea
 $ shop work shape b250
 b250 "work show prints the status of an item" shaped
 $ shop work line b250 --into items --group "An item shown gives its status" 'While an item is `shaped`, when the person shows the item, the backlog service shall return the status of the item.'
-b250 "work show prints the status of an item": items#r31
+b250 "work show prints the status of an item": items#r31 While an item is `shaped`, when the person shows the item, the backlog service shall return the status of the item.
 $ shop work ready b250
 b250 "work show prints the status of an item" ready
 ```
@@ -189,7 +189,7 @@ The line gets the next free id of its capability (`items#r31`). It goes into `sp
 
 ```console
 $ shop work line b250 --into items --group "An item shown gives its status" 'While an item is `shaped`, when the person shows the item, the backlog service shall return the status of the item.'
-b250 "work show prints the status of an item": items#r31
+b250 "work show prints the status of an item": items#r31 While an item is `shaped`, when the person shows the item, the backlog service shall return the status of the item.
 ```
 
 How to write a good line is in [Writing requirements](../writing-requirements.md); the file format is in

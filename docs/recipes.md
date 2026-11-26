@@ -53,7 +53,7 @@ b250 "Items carry labels": model lines of tracking
 $ shop work line b250 --into items --term="- **label** (noun) → object label. A short word the person gives an item, to group it with others."
 b250 "Items carry labels": a vocabulary entry of tracking
 $ shop work line b250 --into items --group "An item shown returns its labels" "While an item has a label, when the person shows the item, the backlog service shall return every label of the item."
-b250 "Items carry labels": items#r31
+b250 "Items carry labels": items#r31 While an item has a label, when the person shows the item, the backlog service shall return every label of the item.
 ```
 
 `--into` names the capability; the model lines and the entry go to its `area:` (here `tracking`), into
@@ -265,6 +265,7 @@ b252 "Declining an item keeps it" idea
 $ shop work shape b252
 b252 "Declining an item keeps it" shaped
 $ shop work line b252 --into items --retires items#r19 "While the status of an item is one of \`idea\` or \`shaped\`, when the person declines the item, the backlog service shall set the status of the item to \`refused\` and keep the item."
+b252 "Declining an item keeps it": items#r31 While the status of an item is one of `idea` or `shaped`, when the person declines the item, the backlog service shall set the status of the item to `refused` and keep the item.
 b252 "Declining an item keeps it": items#r31 retires items#r19
 ```
 

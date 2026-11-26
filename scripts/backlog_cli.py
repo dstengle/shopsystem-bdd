@@ -231,7 +231,7 @@ def cmd_line(args):
             raise backlog_items.Refused("work line: --retires takes a requirement line, not --%s" % piece)
         item, ident = backlog_lines.retire(args.root, args.name, args.retires, args.text, args.into, args.group,
                                            args.in_group)
-        print("%s: %s retires %s" % (backlog_items.label(item), ident, args.retires))
+        print(backlog_lines.added(item, ident, args.text, args.retires))
         _enforcing(args)
         return 0
     if (args.into is None) != (piece in ("universal", "upstream")):
@@ -239,7 +239,7 @@ def cmd_line(args):
             "--" + piece if piece != "text" else "a requirement line", "takes no" if args.into else "takes"))
     if piece == "text":
         item, ident = backlog_lines.add_line(args.root, args.name, args.into, args.text, args.group, args.in_group)
-        print("%s: %s" % (backlog_items.label(item), ident))
+        print(backlog_lines.added(item, ident, args.text))
         return 0
     if piece == "universal":
         item, ident = backlog_forms.add_universal(args.root, args.name, args.universal)

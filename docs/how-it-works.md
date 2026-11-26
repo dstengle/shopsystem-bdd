@@ -235,7 +235,7 @@ Here is an item whose line contradicts a delivered one:
 
 ```console
 $ shop work line b250 --into items --group "An item shown keeps quiet about its title" "When the person shows an item, the backlog service shall not return the title of the item."
-b250 "The backlog keeps quiet about an item's title": items#r31
+b250 "The backlog keeps quiet about an item's title": items#r31 When the person shows an item, the backlog service shall not return the title of the item.
 $ shop work ready b250
 work ready: b250 "The backlog keeps quiet about an item's title" is not passing:
   items#g31: v15n two groups of a capability share features, condition and trigger: with items#g12
