@@ -16,7 +16,7 @@ nothing: the base's commit is made once both worktrees are relaid, and a failure
 its own with the branches reset; a refusal is said as `work batch amend`'s. With `--finding f<m>` (batches r125,
 b600), an amend that fixes an open review finding of the batch cites it (`Finding: f<m>`) in each commit, so that
 `work batch review`'s fix loop (batch_fix) takes the commit as the finding's; a finding the batch holds no open one of
-is refused naming it."""
+is refused naming it. With none given, each commit cites every open finding of the amended item (r171, b740)."""
 import re
 import shutil
 from pathlib import Path
@@ -134,18 +134,22 @@ def _bar(root, tree, item):
             reason="item not ready", names=["item:%s" % item.name])
 
 
-def _commit(tree, batch, item, changed, laid, finding=None):
-    """The amendment's commit, citing the item and, of an amend that fixes one, the review finding (b600)."""
+def _commit(tree, batch, item, changed, laid, findings=()):
+    """The amendment's commit, citing the item and each review finding it is for (b600, b740)."""
     if changed:
         git(tree, "add", "-A", "--", *changed)
     git(tree, "commit", "-q", "--allow-empty", "-m", "%s: the requirement lines of %s amended\n\n%s%s\nItem: %s%s" % (
-        batch.name, backlog_items.label(item), LAID, laid, item.name, "\nFinding: %s" % finding if finding else ""))
+        batch.name, backlog_items.label(item), LAID, laid, item.name, "".join("\nFinding: %s" % f for f in findings)))
 
 
-def _finding(root, batch, finding):
-    """The open review finding of the batch an amend fixes; refused naming it when the batch has no such one."""
-    if finding is None or finding in {f.fid for f in batch_findings.open_findings(root, batch.name)}:
-        return finding
+def _finding(root, batch, item, finding):
+    """The open review findings of the batch an amend is for: the one given, refused naming it when the batch has no
+    such open one; with none given, each open finding of the amended item (batches r171, b740)."""
+    held = batch_findings.open_findings(root, batch.name)
+    if finding is None:
+        return [f.fid for f in held if f.item == item.name]
+    if finding in {f.fid for f in held}:
+        return [finding]
     raise Refused("%s: %s has no open review finding %s" % (COMMAND, batch.name, finding),
                   reason="review finding not open", names=["review finding:%s" % finding])
 
@@ -181,7 +185,7 @@ def amend(root, name, finding=None):
     fresh = not trees_path(root).exists()
     with locked(root):
         item, batch, task = _checked(root, name)
-        finding = _finding(root, batch, finding)
+        findings = _finding(root, batch, item, finding)
         old = batch_parked.as_laid(root, batch, [item])[0]
         base = batch_parked.base_of(root, batch)
         heads, made, laid_on, undo = {}, [], [], None
@@ -199,7 +203,7 @@ def amend(root, name, finding=None):
                 undo = _based(root, batch, item)
             laid = git(root, "rev-parse", "HEAD").stdout.strip()
             for where, branch, paths in trees:
-                _commit(where, batch, item, paths, laid, finding)
+                _commit(where, batch, item, paths, laid, findings)
                 laid_on.append(branch)
         except BaseException:
             for branch, (where, head) in heads.items():

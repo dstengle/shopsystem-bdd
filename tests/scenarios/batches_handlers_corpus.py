@@ -60,7 +60,8 @@ def has_given(step):
 @four("GivenDoes", "holds", *BOTH)
 def holds_given(step):
     """The item holds the requirement id: it retires `work-queue#r4` beside a passing line; this corpus holds the
-    requirement (its block written by `has_given`)."""
+    requirement: the repository keeps a corpus, which the lay writes the requirement's block into as its last (r172),
+    or whose block `has_given` writes."""
     (k1, n1), (k2, _) = parts(step)
     if (k1, k2) == ("item", "requirement id"):
         R = sys.modules["shop_readiness_world"]
@@ -69,6 +70,8 @@ def holds_given(step):
                                          % (RETIRED, R.PASSING)})
     elif step.subject != "this corpus":
         return False
+    elif not (step.repo / CORPUS).is_file():
+        corpus(step)
 
 
 @four("GivenDoes", "use", *BOTH)
@@ -153,3 +156,33 @@ def removes(step):
         return False
     text, changed, _ = _laid(step, CORPUS)
     assert changed and "## %s\n" % step.context["corpus_ids"][name] not in text, (step.text, text)
+
+
+def _amended_corpus(step):
+    """The corpus on the batch's branch after `work batch amend` (r172, b740), or None under another command."""
+    done = step.context.get("result")
+    if done is None or "amend" not in done.args or not (step.repo / CORPUS).is_file():
+        return None
+    assert done.returncode == 0, (step.text, done.stdout, done.stderr)
+    return T.git(step, "show", "%s:%s" % (T.batch_name(step, next(iter(step.context["given"]["batch"]))), CORPUS))
+
+
+@four("ThenDoes", "conform", *BOTH)
+def corpus_conforms(step):
+    """`the corpus c1 conforms to the corpus form`: the batch branch's corpus ends its last block with no blank line
+    after it, the file ending in one newline."""
+    text = _amended_corpus(step) if (parts(step)[0][0], step.nps[0]) == ("corpus", "the corpus form") else None
+    if text is None:
+        return False
+    assert text == text.rstrip("\n") + "\n", (step.text, text[-200:])
+
+
+@four("ThenDoes", "holds", *BOTH)
+def workspace_holds_corpus(step):
+    """`the workspace w1 holds the corpus c1`: the batch's branch holds the corpus, with the amended item's line."""
+    (k1, _), (k2, _) = parts(step)
+    text = _amended_corpus(step) if (k1, k2) == ("worktree", "corpus") else None
+    if text is None:
+        return False
+    _, line = _line(step, next(iter(step.context["proposed"].values())))
+    assert "\n%s\n" % line in text, (step.text, line, text)

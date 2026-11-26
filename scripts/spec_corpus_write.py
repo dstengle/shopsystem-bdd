@@ -42,10 +42,12 @@ def _number(ident):
 
 def with_block(text, ident, chunk):
     """`text` with `chunk` as the block of `ident`: in place of the one there, else before the first block of a
-    higher id, else at the end."""
+    higher id, else at the end; the file ending in one newline, with no blank line after its last block (b740)."""
     for found in BLOCK.finditer(text):
         if found.group(1) == ident:
-            return text[:found.start()] + chunk + text[found.end():]
+            rest = text[found.end():]
+            return text[:found.start()] + chunk + rest if rest.strip() else (
+                text[:found.start()] + chunk).rstrip("\n") + "\n"
         if _number(found.group(1)) > _number(ident):
             return text[:found.start()] + chunk + text[found.start():]
     return text.rstrip("\n") + "\n\n" + chunk.rstrip("\n") + "\n"
