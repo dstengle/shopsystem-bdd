@@ -185,10 +185,12 @@ def lexicon(root):
     """The spec_lexicon.Lexicon of a context with a domain model."""
     model, found = domain_model.load(root), spec_vocabulary.entries(root)
     kinds, terms = _kinds(found, model)
+    packed = spec_packs.kinds(root)
+    kinds.update({n: n for n in model.objects if n in packed and n not in kinds})   # a pack's noun its kind (b688)
     keys = dict(kinds)
     keys.update({name: name for name in model.actors})
     services = ("service",) if "request" in spec_packs.imports(root) else ()
     terms += _actors(model, found, kinds, services) + _attributes(model, found, kinds) + _verbs(model, found, keys)
-    held = {k: k for k in spec_packs.kinds(root)}     # a relation to an imported pack's kind a row too (b609)
+    held = {k: k for k in packed}     # a relation to an imported pack's kind a row too (b609)
     held.update(kinds)
     return spec_lexicon.Lexicon(terms, rows(model, held))

@@ -11,6 +11,7 @@ from pathlib import Path
 
 W = sys.modules["shop_work_queue_world"]
 B = sys.modules["shop_backlog_world"]
+four = sys.modules["shop_world_four"].four
 local = W.local
 TAGS = {"r79", "r80", "r81", "r82", "r83", "r84"}
 FIXTURE = Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "domain-model" / "spec"
@@ -119,7 +120,6 @@ def done(step):
     return None
 
 
-@local("ThenDoesNot")
 def not_held(step):
     """the item i2 does not retire the model line m1 (the term t1), does not import the pack p1: its line out of the
     item as committed, the others kept."""
@@ -130,3 +130,7 @@ def not_held(step):
     assert LINES[name] not in text, (step.text, text)
     assert all(LINES[n] in text for n in LINES if n != name), (step.text, text)
     return None
+
+
+for _verb in ("retire", "retires", "import", "imports"):     # a chain of the key, which `features vocab` finds
+    four("ThenDoesNot", _verb, "drafting")(not_held)
