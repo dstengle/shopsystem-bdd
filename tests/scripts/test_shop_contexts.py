@@ -4,7 +4,10 @@ r6 applying only while the product of the shop has an id: b666, review f1)."""
 import subprocess
 import tomllib
 
+import product_store
+import pytest
 import shop_contexts
+from shop_refused import Refused
 
 INDEX = "---\nid: bounded-context/example.org/home/home\nkind: bounded-context\nlanguage: codified-2\n---\n\n# home\n"
 
@@ -48,3 +51,15 @@ def test_an_id_the_product_id_covers_out_of_the_context_id_form_is_kept(tmp_path
     kept = tomllib.loads((repo / shop_contexts.REL).read_text())["contexts"]
     assert kept == [ident]
     assert _git(repo, "status", "--porcelain") == ""
+
+
+def test_an_id_the_product_does_not_cover_is_refused_with_the_declared_reason(tmp_path):
+    repo = _repo(tmp_path)
+    (repo / ".shop" / "product").mkdir(parents=True)
+    product = {"id": "example.org/notes", "purpose": "notes", "actors": [], "jobs": {}}
+    (repo / product_store.REL).write_text(product_store.render(product))
+    ident = "bounded-context/example.org/home/away"
+    with pytest.raises(Refused) as refused:
+        shop_contexts.keep(repo, ident)
+    assert refused.value.reason == "id outside the product"
+    assert "example.org/notes" in str(refused.value) and "product id" not in str(refused.value)

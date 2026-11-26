@@ -54,8 +54,8 @@ def keep(root, ident):
     names = ["id:%s" % ident]
     product = product_id(root)
     if product and not covers(product, ident):
-        raise Refused("{names} is outside the product id %s of this shop" % product,
-                      reason="id outside the product id", names=names)
+        raise Refused("{names} lies outside the product %s of this shop" % product,
+                      reason="id outside the product", names=names)
     ids = kept(root)
     if ident in ids:
         raise Refused("{names} is kept already in this shop", reason="id kept already", names=names)
