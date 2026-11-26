@@ -454,3 +454,58 @@ Feature: Product
     When the person assigns the job j1 to the bounded context b1
     Then the product service refuses this request
     And the product service names the bounded context b1
+
+  @g40 @r40
+  Scenario: A product actor is not mapped to an actor the domain model does not hold
+    Given an actor a1
+    And this domain model does not hold the actor a1
+    And a product actor p1
+    When the person maps the product actor p1 with this bounded context and the actor a1
+    Then the product service refuses this request
+    And the product service names the actor a1
+
+  @g41 @r41
+  Scenario: A product actor is not mapped in a bounded context whose id is out of the context id form
+    Given an id i1
+    And a bounded context b1
+    And the bounded context b1 has the id i1
+    And the id i1 does not conform to the context id form
+    And a product actor p1
+    And an actor a1
+    When the person maps the product actor p1 with the bounded context b1 and the actor a1
+    Then the product service refuses this request
+    And the product service names the id i1
+
+  @g42 @r42
+  Scenario: A job whose statement mentions an actor the product does not hold is refused
+    Given a product actor p1
+    And this product does not hold the product actor p1
+    And a job statement j2
+    And the job statement j2 mentions the product actor p1
+    And a job j1
+    When the person declares the job j1 with the job statement j2
+    Then the product service refuses this request
+    And the product service names the product actor p1
+
+  @g43 @r43
+  Scenario: A job whose statement mentions another actor than the job's is refused
+    Given a job statement j2
+    And a product actor p2
+    And the job statement j2 mentions the product actor p2
+    And a job j1
+    And a product actor p1
+    When the person declares the job j1 with the product actor p1 and the job statement j2
+    Then the product service refuses this request
+    And the product service names the job statement j2
+
+  @g44 @r44
+  Scenario: A job whose statement's situation is one word is declared
+    Given the job statement `j2` holds "When x, the developer wants y, so they can z."
+    And a job statement j2
+    And the job statement j2 conforms to the job statement form
+    And a job j1
+    And a product actor p1
+    When the person declares the job j1 with the product actor p1 and the job statement j2
+    Then this product holds the job j1
+    And the product service keeps the job j1
+    And the product service completes this request

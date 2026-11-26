@@ -914,3 +914,14 @@ Feature: Drafting
     And the drafting service names the requirement r2
     And the drafting service names the requirement group r1
     And the drafting service names the job j1
+
+  @g94 @r94
+  Scenario: A term that violates v_t6 is kept and the rule named
+    Given a term t1
+    And the term t1 violates `v_t6`
+    And an item i1
+    When the person writes the term t1 into the item i1
+    Then the item i1 holds the term t1
+    And the drafting service keeps the term t1
+    And the drafting service names `v_t6`
+    And the drafting service completes this request

@@ -658,3 +658,89 @@ shall [x1: agent the person (constant), x4: product "the product this bounded co
     refuse(e2, subject: x5, object: x6)
     name(e3, subject: x5, object: x3)
 ```
+
+## r40
+From: b798 r40.
+
+```reading
+If the person maps a product actor with this bounded context and an actor that the domain model does not hold, then the product service shall refuse the request and name the actor.
+shall [x1: agent the person (constant), x3: bounded context "the bounded context the request is made in" (indexical), x5: domain model "the domain model of this bounded context" (indexical), x6: service the product service (constant), x7: request "the request the trigger makes" (indexical)]
+  if [x2: product actor, x4: actor]
+    not
+      in(x4, x5)
+    request(e1, product.map, subject: x1, object: x2)
+    param(e1, bounded context, x3)
+    param(e1, actor, x4)
+  response
+    refuse(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x4)
+```
+
+## r41
+From: b798 r41.
+
+```reading
+If the person maps a product actor with a bounded context whose id does not conform to the context id form and an actor, then the product service shall refuse the request and name the id.
+shall [x1: agent the person (constant), x5: artifact the context id form (constant), x7: service the product service (constant), x8: request "the request the trigger makes" (indexical)]
+  if [x2: product actor, x3: bounded context, x4: id, x6: actor]
+    of(x4, x3)
+    not
+      conforms(x4, x5)
+    request(e1, product.map, subject: x1, object: x2)
+    param(e1, bounded context, x3)
+    param(e1, actor, x6)
+  response
+    refuse(e2, subject: x7, object: x8)
+    name(e3, subject: x7, object: x4)
+```
+
+## r42
+From: b798 r42.
+
+```reading
+If the person declares a job with a job statement that mentions a product actor that is not in the product, then the product service shall refuse the request and name the product actor.
+shall [x1: agent the person (constant), x5: product "the product this bounded context belongs to" (indexical), x6: service the product service (constant), x7: request "the request the trigger makes" (indexical)]
+  if [x2: job, x3: job statement, x4: product actor]
+    not
+      in(x4, x5)
+    mention(subject: x3, object: x4)
+    request(e1, product.declare job, subject: x1, object: x2)
+    param(e1, job statement, x3)
+  response
+    refuse(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x4)
+```
+
+## r43
+From: b798 r43.
+
+```reading
+If the person declares a job with a product actor and a job statement that mentions a different product actor, then the product service shall refuse the request and name the job statement.
+shall [x1: agent the person (constant), x6: service the product service (constant), x7: request "the request the trigger makes" (indexical)]
+  if [x2: job, x3: product actor, x4: job statement, x5: product actor]
+    distinct(x5, x3)
+    mention(subject: x4, object: x5)
+    request(e1, product.declare job, subject: x1, object: x2)
+    param(e1, product actor, x3)
+    param(e1, job statement, x4)
+  response
+    refuse(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x4)
+```
+
+## r44
+From: b798 r44.
+
+```reading
+When the person declares a job with a product actor and a job statement that conforms to the job statement form, the product service shall keep the job in the product and complete the request.
+shall [x1: agent the person (constant), x5: artifact the job statement form (constant), x6: service the product service (constant), x7: product "the product this bounded context belongs to" (indexical), x8: request "the request the trigger makes" (indexical)]
+  when [x2: job, x3: product actor, x4: job statement]
+    conforms(x4, x5)
+    request(e1, product.declare job, subject: x1, object: x2)
+    param(e1, product actor, x3)
+    param(e1, job statement, x4)
+  response
+    in(x2, x7)
+    keep(e2, subject: x6, object: x2)
+    complete(e3, subject: x6, object: x8)
+```

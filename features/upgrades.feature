@@ -1142,3 +1142,15 @@ Feature: Upgrades
     Then the upgrades service keeps the bounded context b1
     And the bounded context b1 imports `base`
     And the upgrades service completes this request
+
+  @g46 @r46
+  Scenario: A bounded context founded on a branch other than the base branch names the branch
+    Given this branch differs from this base branch
+    And this bounded context has no index file
+    And this repository has no shop directory
+    And a context id c1
+    When the person founds this bounded context with the context id c1
+    Then the upgrades service keeps the context scaffold c2
+    And this repository has the context scaffold c2
+    And the upgrades service names this branch
+    And the upgrades service completes this request

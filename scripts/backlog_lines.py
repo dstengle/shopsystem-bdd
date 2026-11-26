@@ -8,6 +8,8 @@ blocks, universal conditions and upstream entries, are backlog_forms'). The line
 merges; `spec/` itself is never written here."""
 import re
 import shutil
+import sys
+import tempfile
 from pathlib import Path
 
 import backlog_adapter_ops
@@ -257,3 +259,30 @@ def lay(root, item, into, others=()):
     for other in others:
         lay_onto(into, other)
     return lay_onto(into, item)
+
+
+def _v_t6(root):
+    import spec_rgl_vocab
+    return {p for p in spec_lexicon.problems(spec_lexicon.read(root), spec_rgl_vocab.outer(root)) if p[0] == "v_t6"}
+
+
+def warn_terms(root, item, bullets):
+    """`work line --term`'s warning (b801, drafting r94): each v_t6 problem the item's lay onto a temporary copy of
+    `spec/` brings that names a word of `bullets`, printed on stderr as `work line: warning: v_t6: <message>`; the
+    term kept and the write completed, a lay or a read of the copy that is refused or fails on a file no warning
+    (any other error raised). 0, the write's exit."""
+    words = {m.group(1).strip() for m in (re.match(r"\s*-\s*\*\*(.+?)\*\*", b) for b in bullets or ()) if m}
+    copy, found = Path(tempfile.mkdtemp(prefix="term-warn-")), set()
+    try:
+        shutil.copytree(Path(root) / "spec", copy / "spec")
+        with spec_held.held(copy):
+            before = _v_t6(copy)
+            lay_onto(copy, item)
+            found = _v_t6(copy) - before
+    except (Refused, OSError):  # a lay or a read that fails warns of nothing: the readiness bar checks it whole
+        found = set()
+    finally:
+        shutil.rmtree(copy, ignore_errors=True)
+    for code, _, message in sorted(f for f in found if f[1] in words):
+        print("work line: warning: %s: %s" % (code, message), file=sys.stderr)
+    return 0

@@ -1063,8 +1063,8 @@ two terms are written the same
 - Purpose: Distinct terms read differently, so a line's words always identify which term is meant.
 - Since: b123
 - Severity: error
-- Implemented in: `scripts/model.lp`, `scripts/spec_lexicon_problems.py`
-- Cited by: no line
+- Implemented in: `scripts/model.lp`, `scripts/backlog_lines.py`, `scripts/spec_lexicon_problems.py`
+- Cited by: drafting#r94
 - Fails on:
 
   ```prolog

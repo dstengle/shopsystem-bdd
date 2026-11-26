@@ -6,9 +6,12 @@ part the title, `language: codified-2`, `imports: [base, request]` (the base pac
 (the plugin's release), `.shop/delivery.toml` (every key commented out at its default), `features/` and
 `tests/scenarios/conftest.py`, each empty directory with a `.gitkeep`, and the ignore file `.gitignore` naming the
 interpreter and the caches (b454; an existing one given the names it lacks, a name matched as git matches a line, its
-leading or trailing slash no other entry, and left out of the commit when it lacks none, b470). A repository with an index file or a shop
+leading or trailing slash no other entry, and left out of the commit when it lacks none, b470). Founded on a branch other than the
+base branch `main`, it says so on stderr naming the branch, and still founds (b802). A repository with an index file or a shop
 directory is refused, never merged into; an existing `features/` or conftest is left as it is."""
 import re
+import subprocess
+import sys
 from pathlib import Path
 
 from plumbing import shop_files
@@ -23,6 +26,7 @@ KEEP = ("spec/model/.gitkeep", "spec/vocabulary/.gitkeep", "spec/capabilities/.g
 CONFTEST = "tests/scenarios/conftest.py"
 IGNORE = ".gitignore"
 IGNORED = (".venv/", "__pycache__/", ".pytest_cache/", ".ruff_cache/")
+BASE = "main"       # the base branch: `.shop/delivery.toml`'s default, which the founding writes commented out
 
 INDEX = """---
 id: {id}
@@ -179,6 +183,17 @@ def check(root, ident):
                       reason="shop directory present", names=["file:.shop"])
 
 
+def branch_warning(root):
+    """The warning of a founding on a branch other than the base branch (b802), naming the branch; None on the base
+    branch or a detached HEAD."""
+    done = subprocess.run(["git", "symbolic-ref", "--short", "-q", "HEAD"], cwd=root, capture_output=True, text=True)
+    branch = done.stdout.strip()
+    if done.returncode != 0 or not branch or branch == BASE:
+        return None
+    return ("warning: this bounded context is founded on the branch %s, not the base branch %s; its batches fork "
+            "from %s: rename it with git branch -M %s, or set base in .shop/delivery.toml" % (branch, BASE, BASE, BASE))
+
+
 def run(args):
     root = top_level(Path.cwd())
     if root is None:
@@ -212,4 +227,7 @@ def run(args):
         raise
     for rel in sorted(files):
         print("wrote %s" % rel)
+    warning = branch_warning(root)
+    if warning:
+        print(warning, file=sys.stderr)
     return 0

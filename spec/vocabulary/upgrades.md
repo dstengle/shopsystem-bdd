@@ -71,3 +71,5 @@ area: upgrades
 - **pin** (verb, state) → relation plugin.pins. The plugin names the one version of an analysis tool that `tools install` installs. Forms: pins, pinned. Frame: <plugin> pins <version>.
 - **plugin** (noun) → object plugin. The shopsystem-bdd plugin, whose tools answer the requests. This: the plugin the request is made with.
 - **release** (attribute) → attribute plugin.release. The release of the plugin the request is made with.
+- **branch** (noun) → object branch. The git branch checked out in a repository. This: the branch checked out in the repository the request is made in.
+- **differ** (verb, state) → relation branch.differs from. A branch is another branch than the base branch of its repository. Forms: differs, differed. Frame: <branch> differs from <base branch>.

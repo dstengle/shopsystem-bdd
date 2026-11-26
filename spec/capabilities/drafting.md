@@ -316,3 +316,6 @@ capabilities, retirements, rewordings and chores.
 ### [g93] A requirement drafted for a job is named with the job
 - [r93] When the person dedicates a requirement group to a job with an item and a requirement, the drafting service shall keep the requirement in the item and name the requirement, the requirement group and the job.
 
+### [g94] A term that violates v_t6 is kept and the rule named
+- [r94] While a term violates `v_t6`, when the person writes the term into an item, the drafting service shall keep the term in the item, name `v_t6` and complete the request.
+

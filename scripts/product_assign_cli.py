@@ -2,6 +2,8 @@
 (b675, product r22-r25): the product service's operations assign and map requested on the command line, product_assign's
 over the product product_store keeps, committed, and what is kept printed. A refusal names the parameter, which the CLI
 adapter spells as its option or positional (the dests are the parameters' names)."""
+from pathlib import Path
+
 import product_assign
 import product_store
 
@@ -15,11 +17,20 @@ def cmd_assign(args):
 
 def cmd_plays(args):
     product = product_assign.map_actor(product_store.read(args.root), args.product_actor, args.bounded_context,
-                                       args.actor)
+                                       args.actor, here(args.root))
     product_store.kept(args.root, product, "spec plays: %s in %s" % (args.product_actor, args.bounded_context))
     print("mapped the product actor %s to %s in the bounded context %s" % (args.product_actor, args.actor,
                                                                            args.bounded_context))
     return 0
+
+
+def here(root):
+    """This bounded context's id and the actors its domain model holds, or None when spec/index.md names none."""
+    import domain_model
+    from plumbing import shop_files
+    if not (Path(root) / "spec" / "index.md").is_file():
+        return None
+    return "bounded-context/" + shop_files.context_path(root), set(domain_model.load(root).actors)
 
 
 def add_parsers(sub):

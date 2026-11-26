@@ -734,3 +734,6 @@ the tracked file `.gitignore` holds:
 ### [g45] A bounded context founded imports the base pack
 - [r45] While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id, the upgrades service shall keep a bounded context that imports the `base` pack and complete the request.
 
+### [g46] A bounded context founded on a branch other than the base branch names the branch
+- [r46] While the branch differs from the base branch and this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold of this repository, name the branch and complete the request.
+
