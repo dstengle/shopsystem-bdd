@@ -938,3 +938,113 @@ Feature: Checking
     And the element e2 refers to the term t1
     When the person validates this specification
     Then the specification service completes this request
+
+  @g114 @r114
+  Scenario: A job of the product that no bounded context holds is named
+    Given a job j1
+    And this product holds the job j1
+    And no bounded context holds the job j1
+    When the person validates this specification
+    Then the specification service names the job j1
+    And the specification service completes this request
+
+  @g115 @r115
+  Scenario: A job assigned here that no requirement group serves is named
+    Given a job j1
+    And this bounded context holds the job j1
+    And no requirement group serves the job j1
+    When the person validates this specification
+    Then the specification service names the job j1
+    And the specification service completes this request
+
+  @g116 @r116
+  Scenario: A product actor of a job whose actor here triggers no line of the job's trace is named
+    Given a job j1
+    And this bounded context holds the job j1
+    And a product actor p1
+    And the job j1 has the product actor p1
+    And an agent a1
+    And the agent a1 plays the product actor p1
+    And the job j1 reaches no requirement
+    When the person validates this specification
+    Then the specification service names the product actor p1
+    And the specification service completes this request
+
+  @g117 @r117
+  Scenario: A job whose needs close a cycle fails the check
+    Given a job j1
+    And this product holds the job j1
+    And a need n1
+    And the need n1 depends on the job j1
+    And the job j1 needs the need n1
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the need n1
+
+  @g118 @r118
+  Scenario: A subdomain that no bounded context addresses is named
+    Given a subdomain s1
+    And this product holds the subdomain s1
+    And no bounded context addresses the subdomain s1
+    When the person validates this specification
+    Then the specification service names the subdomain s1
+    And the specification service completes this request
+
+  @g119 @r119
+  Scenario: A subdomain of a job that the job's trace reaches no bounded context of is named
+    Given a job j1
+    And this bounded context holds the job j1
+    And a subdomain s1
+    And the subdomain s1 serves the job j1
+    And no bounded context addresses the subdomain s1
+    When the person validates this specification
+    Then the specification service names the subdomain s1
+    And the specification service completes this request
+
+  @g120 @r120
+  Scenario: A capability a job's trace reaches contributes to the job
+    Given a job j1
+    And this bounded context has the job j1
+    And a capability c1
+    And the job j1 reaches the capability c1
+    And a capability c2
+    And the capability c2 violates `w_unserved_cap`
+    When the person validates this specification
+    Then the specification service does not return the capability c2
+
+  @g121 @r121
+  Scenario: A capability that has a port line contributes to the jobs it serves through the port
+    Given a job j1
+    And this bounded context has the job j1
+    And a port line p1
+    And a capability c1
+    And the capability c1 has the port line p1
+    And a capability c2
+    And the capability c2 violates `w_unserved_cap`
+    When the person validates this specification
+    Then the specification service does not return the capability c2
+
+  @g122 @r122
+  Scenario: A guarantees capability contributes to the jobs whose lines it constrains
+    Given a job j1
+    And this bounded context has the job j1
+    And a requirement group r1
+    And the requirement group r1 serves the job j1
+    And a capability c1
+    And the group of the capability c1 is `guarantees`
+    And a capability c2
+    And the capability c2 violates `w_unserved_cap`
+    When the person validates this specification
+    Then the specification service does not return the capability c2
+
+  @g123 @r123
+  Scenario: A job served here that the product assigns to another bounded context fails the check
+    Given a requirement group r1
+    And a job j1
+    And the requirement group r1 serves the job j1
+    And this bounded context has the job j1
+    And a bounded context b1
+    And the bounded context b1 holds the job j1
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the job j1

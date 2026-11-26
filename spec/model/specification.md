@@ -123,6 +123,7 @@ object preposition
 object job
   relations: has → id (one); has → job statement (one); has → product actor (many); needs → job (many); depends on → job (many)
   attributes: coordination: port request | long-running process | saga
+  relations: reaches → requirement | capability | bounded context (many)
 
 object index entry kind of text
 
@@ -415,6 +416,7 @@ object member line kind of text
 object event kind of element
 
 object actor kind of element
+  relations: triggers → requirement (many); plays → product actor (many)
 
 object requirement id kind of text
 

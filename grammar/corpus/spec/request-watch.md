@@ -49,7 +49,7 @@ shall [x2: bounded context "the bounded context whose repository the command run
   while [x1: context request]
     originate(subject: x1, from: x2)
     not
-      address(subject: x1, object: x2)
+      address#2(subject: x1, object: x2)
     status(x1) = `awaiting-upstream`
   when [x3: session]
     start(e1, subject: x3)
@@ -64,7 +64,7 @@ From: requests#r98, reworded in request words (0.38.0).
 While a context request addresses this bounded context and the context request does not originate from this bounded context and the context request is `awaiting-asker`, when a session starts, the context requests service shall notify the session of the context request.
 shall [x2: bounded context "the bounded context whose repository the command runs in" (indexical), x4: service the context requests service (constant)]
   while [x1: context request]
-    address(subject: x1, object: x2)
+    address#2(subject: x1, object: x2)
     not
       originate(subject: x1, from: x2)
     status(x1) = `awaiting-asker`
@@ -85,7 +85,7 @@ shall [x2: bounded context "the bounded context whose repository the command run
       originate(subject: x1, from: x2)
       status(x1) = `awaiting-upstream`
     not [x3: context request]
-      address(subject: x3, object: x2)
+      address#2(subject: x3, object: x2)
       status(x3) = `awaiting-asker`
   when [x4: session]
     start(e1, subject: x4)

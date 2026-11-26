@@ -1488,3 +1488,180 @@ shall [x1: bounded context "the bounded context whose repository the command run
   response
     complete(e2, subject: x9, object: x10)
 ```
+
+## r114
+From: b643 r114.
+
+```reading
+While this product holds a job and no bounded context holds the job, when the person validates this specification, the specification service shall name the job and complete the request.
+shall [x1: product "the product this bounded context belongs to" (indexical), x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x7: request "the request the trigger makes" (indexical)]
+  while [x2: job]
+    in(x2, x1)
+    not [x3: bounded context]
+      in(x2, x3)
+  when
+    request(e1, specification.check, subject: x4, object: x5)
+  response
+    name(e2, subject: x6, object: x2)
+    complete(e3, subject: x6, object: x7)
+```
+
+## r115
+From: b643 r115.
+
+```reading
+While this bounded context holds a job and no requirement group serves the job, when the person validates this specification, the specification service shall name the job and complete the request.
+shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x7: request "the request the trigger makes" (indexical)]
+  while [x2: job]
+    in(x2, x1)
+    not [x3: requirement group]
+      serve(subject: x3, object: x2)
+  when
+    request(e1, specification.check, subject: x4, object: x5)
+  response
+    name(e2, subject: x6, object: x2)
+    complete(e3, subject: x6, object: x7)
+```
+
+## r116
+From: b643 r116.
+
+```reading
+While this bounded context holds a job and an agent plays a product actor of the job and the agent triggers no requirement that the job reaches, when the person validates this specification, the specification service shall name the product actor and complete the request.
+shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x6: agent the person (constant), x7: specification "the specification of this bounded context" (indexical), x8: service the specification service (constant), x9: request "the request the trigger makes" (indexical)]
+  while [x2: job, x3: agent, x4: product actor]
+    in(x2, x1)
+    of(x4, x2)
+    play(subject: x3, object: x4)
+    not [x5: requirement]
+      reach(subject: x2, object: x5)
+      trigger(subject: x3, object: x5)
+  when
+    request(e1, specification.check, subject: x6, object: x7)
+  response
+    name(e2, subject: x8, object: x4)
+    complete(e3, subject: x8, object: x9)
+```
+
+## r117
+From: b643 r117.
+
+```reading
+While this product holds a job and the job needs a need that depends on the job, if the person validates this specification, then the specification service shall fail the check and name the need.
+shall [x1: product "the product this bounded context belongs to" (indexical), x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x7: check "the check the trigger makes" (indexical)]
+  while [x2: job, x3: need]
+    in(x2, x1)
+    depend on(subject: x3, object: x2)
+    need(subject: x2, object: x3)
+  if
+    request(e1, specification.check, subject: x4, object: x5)
+  response
+    fail(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x3)
+```
+
+## r118
+From: b643 r118.
+
+```reading
+While this product holds a subdomain and no bounded context addresses the subdomain, when the person validates this specification, the specification service shall name the subdomain and complete the request.
+shall [x1: product "the product this bounded context belongs to" (indexical), x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x7: request "the request the trigger makes" (indexical)]
+  while [x2: subdomain]
+    in(x2, x1)
+    not [x3: bounded context]
+      address(subject: x3, object: x2)
+  when
+    request(e1, specification.check, subject: x4, object: x5)
+  response
+    name(e2, subject: x6, object: x2)
+    complete(e3, subject: x6, object: x7)
+```
+
+## r119
+From: b643 r119.
+
+```reading
+While this bounded context holds a job and a subdomain serves the job and the job reaches no bounded context that addresses the subdomain, when the person validates this specification, the specification service shall name the subdomain and complete the request.
+shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x8: request "the request the trigger makes" (indexical)]
+  while [x2: job, x3: subdomain]
+    in(x2, x1)
+    serve#2(subject: x3, object: x2)
+    not [x4: bounded context]
+      address(subject: x4, object: x3)
+      reach(subject: x2, object: x4)
+  when
+    request(e1, specification.check, subject: x5, object: x6)
+  response
+    name(e2, subject: x7, object: x3)
+    complete(e3, subject: x7, object: x8)
+```
+
+## r120
+From: b643 r120.
+
+```reading
+While this bounded context has a job and the job reaches a capability, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.
+shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x8: rule `w_unserved_cap` (parameter)]
+  while [x2: job, x3: capability]
+    of(x2, x1)
+    reach(subject: x2, object: x3)
+  when
+    request(e1, specification.check, subject: x4, object: x5)
+  response
+    not [x7: capability]
+      violate(subject: x7, object: x8)
+      return(e2, subject: x6, object: x7)
+```
+
+## r121
+From: b643 r121.
+
+```reading
+While this bounded context has a job and a capability has a port line, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.
+shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x9: rule `w_unserved_cap` (parameter)]
+  while [x2: job, x3: capability, x4: port line]
+    of(x2, x1)
+    of(x4, x3)
+  when
+    request(e1, specification.check, subject: x5, object: x6)
+  response
+    not [x8: capability]
+      violate(subject: x8, object: x9)
+      return(e2, subject: x7, object: x8)
+```
+
+## r122
+From: b643 r122.
+
+```reading
+While this bounded context has a job and a requirement group serves the job and the group of a capability is `guarantees`, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.
+shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x9: rule `w_unserved_cap` (parameter)]
+  while [x2: job, x3: requirement group, x4: capability]
+    of(x2, x1)
+    serve(subject: x3, object: x2)
+    group(x4) = `guarantees`
+  when
+    request(e1, specification.check, subject: x5, object: x6)
+  response
+    not [x8: capability]
+      violate(subject: x8, object: x9)
+      return(e2, subject: x7, object: x8)
+```
+
+## r123
+From: b643 r123.
+
+```reading
+While a requirement group serves a job and this bounded context has the job and another bounded context holds the job, if the person validates this specification, then the specification service shall fail the check and name the job.
+shall [x3: bounded context "the bounded context whose repository the command runs in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x8: check "the check the trigger makes" (indexical)]
+  while [x1: requirement group, x2: job, x4: bounded context]
+    serve(subject: x1, object: x2)
+    of(x2, x3)
+    distinct(x4, x3)
+    in(x2, x4)
+  if
+    request(e1, specification.check, subject: x5, object: x6)
+  response
+    fail(e2, subject: x7, object: x8)
+    name(e3, subject: x7, object: x2)
+```

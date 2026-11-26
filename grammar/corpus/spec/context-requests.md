@@ -157,7 +157,7 @@ shall [x2: bounded context "the bounded context whose repository the command run
   while [x1: context request]
     status(x1) = `open`
     not
-      address(subject: x1, object: x2)
+      address#2(subject: x1, object: x2)
   if [x4: request line]
     in(x4, x1)
     request(e1, context requests.settle, subject: x3, object: x4)
@@ -560,7 +560,7 @@ From: requests#r91, reworded in request words (0.38.0).
 While a context request addresses this bounded context and the context request does not originate from this bounded context, if the person replies to the context request, then the context requests service shall refuse the request and name the context request.
 shall [x2: bounded context "the bounded context whose repository the command runs in" (indexical), x3: agent the person (constant), x4: service the context requests service (constant), x5: request "the request the trigger makes" (indexical)]
   while [x1: context request]
-    address(subject: x1, object: x2)
+    address#2(subject: x1, object: x2)
     not
       originate(subject: x1, from: x2)
   if
@@ -577,7 +577,7 @@ From: requests#r92, reworded in request words (0.38.0).
 While a context request addresses this bounded context and the context request does not originate from this bounded context and the context request is `awaiting-asker`, if the person passes the turn of the context request, then the context requests service shall refuse the request and name the context request.
 shall [x2: bounded context "the bounded context whose repository the command runs in" (indexical), x3: agent the person (constant), x5: service the context requests service (constant), x6: request "the request the trigger makes" (indexical)]
   while [x1: context request]
-    address(subject: x1, object: x2)
+    address#2(subject: x1, object: x2)
     not
       originate(subject: x1, from: x2)
     status(x1) = `awaiting-asker`
@@ -598,7 +598,7 @@ shall [x2: bounded context "the bounded context whose repository the command run
   while [x1: context request]
     originate(subject: x1, from: x2)
     not
-      address(subject: x1, object: x2)
+      address#2(subject: x1, object: x2)
     status(x1) = `open`
   if [x4: turn]
     of(x4, x1)
@@ -617,7 +617,7 @@ shall [x2: bounded context "the bounded context whose repository the command run
   while [x1: context request]
     originate(subject: x1, from: x2)
     not
-      address(subject: x1, object: x2)
+      address#2(subject: x1, object: x2)
     status(x1) = `awaiting-upstream`
   if [x4: turn]
     of(x4, x1)
