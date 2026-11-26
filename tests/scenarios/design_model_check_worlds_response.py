@@ -7,7 +7,7 @@ to publish the design-decision (b626, `reply-trigger`), or to publish every desi
 reading gives a request (b726), and on its failure of that request (b727, `reply-failure`); and two lines on one
 trigger whose responses ask the registry to lodge the design-decision on a shelf with its keeper (`oblique-role`, a
 thing parameter), the second with a summary too, which `spec explain` of the second reads the first's request in
-(b742)."""
+(b742), and of lodge's two frames of two prepositions the one the line used (b751)."""
 import importlib.util
 import sys
 from pathlib import Path
@@ -40,9 +40,11 @@ SHELVED = ("\n- **shelf** (noun) → object shelf. Plural: shelves.\n"
 LODGE = "  operation lodge(design-decision, shelf, keeper, summary)  outcomes: done\n"
 LODGED = ("\n- **lodge** (verb, action) → operation registry.lodge. Forms: lodges, lodged. Frame: <actor> lodges "
           "<design-decision> on <shelf>.\n")
+# lodge's first frame of another preposition before b742's (b751): explain says the one the line used, "on"
+FRAMED = LODGED.replace("Frame: ", "Frame: <actor> lodges <design-decision> with <keeper>. Frame: ")
 
 
-def lodging(step):
+def lodging(step, lodged=LODGED):
     """The request context with a shelf, its keeper and the registry's lodge (b742): thing's r1 lodges the
     design-decision on the shelf with the keeper, r2 with the summary `s1` too; r2 the requirement explained."""
     VALUE.line(LODGING + ".", LODGING + " and the summary `s1`.")(step)
@@ -51,7 +53,7 @@ def lodging(step):
         text = (spec / path).read_text()
         at = text.rindex(end)
         (spec / path).write_text(text[:at] + more + text[at:])
-    for path, more in (("vocabulary/decisions.md", SHELVED), ("vocabulary/registry.md", LODGED)):
+    for path, more in (("vocabulary/decisions.md", SHELVED), ("vocabulary/registry.md", lodged)):
         (spec / path).write_text((spec / path).read_text().rstrip("\n") + more)
     step.context.setdefault("ids", {})["r2"] = "thing#r2"
     H.says(step, "r1", "thing#r1")
@@ -81,7 +83,14 @@ def plural(step):
     requesting(step, PLURAL)
 
 
+def framed(step):
+    """lodging's world with lodge's two frames of two prepositions, "with" <keeper> first (b751)."""
+    lodging(step, FRAMED)
+
+
 ROWS = [
+    (("requirement has trigger", "requirement has consequence", "requirement use `response-request`",
+      "requirement use `oblique-role`", "term has frame", "frame has preposition"), framed, {}),
     (("requirement has trigger", "requirement has consequence", "requirement use `response-request`",
       "requirement use `oblique-role`"), lodging, {}),
     (("requirement use `reply-failure`",), failing, {}),
