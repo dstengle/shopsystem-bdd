@@ -24,7 +24,7 @@ W = sys.modules["shop_work_queue_world"]
 GROUPS = {"g128", "g129", "g130", "g134", "g139", "g140"}
 VERSION = "1.2.0"
 REPLIES = {"complete": "`spec publish`", "return": "`spec fetch`", "refuse": "`spec obtain`"}
-KEEPS = ("write", "commit", "post", "keep", "make", "rewrite", "publish")
+requested = sys.modules["vocab"].vocab4.requested     # KEEPS: the spellings of keep
 
 
 def _module(name):
@@ -99,7 +99,7 @@ def _done(step):
 def then_keeps(step):
     """`the specification service keeps the contract c1`: done once the stand-in completed the deposit, the contract
     committed at the version as the published one, and the command saying it kept it."""
-    if not mine(step) or "replies" not in step.context or step.term not in KEEPS:
+    if not mine(step) or "replies" not in step.context or step.term not in requested.KEEPS:
         return False
     done, rel = _done(step), ".shop/contracts/%s/contract.toml" % VERSION
     if world(step).get("request") == "register":

@@ -6,8 +6,9 @@ of the capability, or a kept change of the task (a commit on its branch since th
 capability's feature `features/<capability>.feature` or the test itself. A test of `tests/scripts/` is reached when
 the change touches it, or touches a module it names: a file of `scripts/` or a helper of `tests/scripts/` whose stem
 the test's text holds as a word, a module of a package also after its package's dotted name (`plumbing.shop_files`,
-b771) (a helper that names a touched module counting as touched), or whose stem's first part opens the test's name (`batch_tasks.py` reaches `test_batch_*.py`). Every other test is run. A change to a
-`conftest.py` or `pytest.ini` reaches every test.
+b771) (a helper that names a touched module counting as touched), or whose stem's first part opens the test's name (`batch_tasks.py` reaches `test_batch_*.py`). `tests/scripts/test_bound.py`, the one script test that reads every
+feature's step bindings (`features vocab --check`), is reached by any change under `features/` or `tests/scenarios/`
+(b782). Every other test is run. A change to a `conftest.py` or `pytest.ini` reaches every test.
 
 The tests not reached are given to the pytest plugin `work_items` as `$SHOPSYSTEM_UNREACHED`, one path a line
 relative to where the tests run, which it leaves out of collection whatever `[batch] tests` names (`work_items`)."""
@@ -16,6 +17,8 @@ from pathlib import Path
 
 ENV = "SHOPSYSTEM_UNREACHED"
 EVERYTHING = ("conftest.py", "pytest.ini")
+BOUND = "tests/scripts/test_bound.py"
+BINDINGS = ("features/", "tests/scenarios/")
 
 
 def touched(git, tree, since, branch):
@@ -54,12 +57,13 @@ def _script_tests(tree, changed):
              if p.startswith("scripts/") or (p.startswith("tests/scripts/") and p.count("/") == 2)}
     helpers = [p for p in sorted(here.glob("*.py")) if not p.name.startswith("test_")]
     stems |= {("", p.stem) for p in helpers if any(_names(p.read_text(), s) for s in stems)}
+    bound = any(p.startswith(BINDINGS) for p in changed)
     found = []
     for test in sorted(here.glob("test_*.py")):
         rel = test.relative_to(tree).as_posix()
         text = test.read_text()
-        reached = rel in changed or any(_names(text, s) or test.stem.startswith("test_%s" % s[1].split("_")[0])
-                                        for s in stems)
+        reached = rel in changed or (bound and rel == BOUND) or any(
+            _names(text, s) or test.stem.startswith("test_%s" % s[1].split("_")[0]) for s in stems)
         if not reached:
             found.append(rel)
     return found

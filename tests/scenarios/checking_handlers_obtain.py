@@ -33,7 +33,7 @@ PARENT = "bounded-context/example.org/fixture/domain-model"
 ADAPTER = "adapters/stock-inventory"
 KEPT = ADAPTER + "/provider/example.org/fixture/inventory/1.2.0/contract.toml"
 INDEX = "---\nid: %s/adapter/stock-inventory\nkind: adapter\nproviders: [%s]\n---\n\n# stock over inventory\n"
-KEEPS = ("write", "commit", "post", "keep", "make", "rewrite", "publish")    # requested.py's spellings of keep
+requested = sys.modules["vocab"].vocab4.requested     # KEEPS: the spellings of keep
 CONTRACT = 'context = "%s"\nversion = "%s"\nstatus = "%s"\n'
 
 
@@ -166,7 +166,7 @@ def _done(step):
 def then_keeps(step):
     """`the specification service keeps the contract c1`: the upstream's published contract, byte for byte, under
     provider/ in the run's commit; `... does not keep a context request`: no request written, no issue opened."""
-    if not mine(step) or "obtained" not in step.context or step.term not in KEEPS:
+    if not mine(step) or "obtained" not in step.context or step.term not in requested.KEEPS:
         return False
     _done(step)
     if step.template.endswith("Not"):
