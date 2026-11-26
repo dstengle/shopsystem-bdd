@@ -5,8 +5,8 @@ the batch's own name (`<git common dir>/shopsystem-bdd/rerun/batch-<n>`), never 
 them. While they are kept, they are the scenarios that break in the batch's workspace, and the batch poll gives the
 step `fix task` with the task of the item whose change broke them (`task_of`): the first task one of whose item's
 scenarios (a scenario of `features/<capability>.feature` on the batch's branch tagged with one of its requirement
-ids) a failed id names, else the first whose reached tests (batch_reach) hold a failed id's file, else the first
-task."""
+ids) a failed id names, else the first whose reached tests (batch_reach) hold a failed id's file, else none: the
+poll then says `look at failure` with the failed tests and no task (b703, batches r154)."""
 import re
 
 import backlog_items
@@ -74,7 +74,7 @@ def _reached(root, batch, task, ids, path):
 
 
 def task_of(root, batch, tasks):
-    """The task of `tasks` to fix for the batch's kept failed run, or None when none is kept."""
+    """The task of `tasks` to fix for the batch's kept failed run, or None when none is kept or none's item broke it."""
     kept = [(i.partition("::")[0], i.partition("::")[2].split("[")[0]) for i in failed(root, batch)]
     if not kept or not tasks:
         return None
@@ -85,4 +85,4 @@ def task_of(root, batch, tasks):
     for task in tasks:
         if any(_reached(root, batch, task, ids[task.task], path) for path, _ in kept):
             return task
-    return tasks[0]
+    return None

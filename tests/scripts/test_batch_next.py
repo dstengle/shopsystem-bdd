@@ -38,6 +38,12 @@ def test_a_refused_submit_asks_for_its_task():
         "a commit on batch-1-b2 citing Item: b2, then shop work batch review batch-1")
 
 
+def test_a_refused_submit_of_no_item_asks_to_look_at_the_failure():
+    b = batch("building", "done", "done")
+    assert batch_next.pick(b, b.tasks, [], set(), None, True) == ("look at failure", [], None)
+    assert batch_next.report(b, "look at failure", [], None).endswith("then shop work batch review batch-1")
+
+
 def test_a_batch_with_no_task_in_it_stops():
     assert picked(batch("building")) == ("stop", None, None)
 
