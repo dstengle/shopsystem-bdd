@@ -1573,6 +1573,8 @@ requirements = [
 command = "spec product"
 requirements = [
   "product#r1: When the person declares a product with an id and a purpose, the product service shall keep the product and complete the request.",
+  "product#r8: While this product holds a product detail, when the person declares a product with an id and a purpose, the product service shall keep the product detail in the product and complete the request.",
+  "product#r11: While this product does not conform to the product form, if the person declares a product with an id and a purpose, then the product service shall refuse the request and name this product.",
 ]
 [operations."product.declare".parameters]
 id = { positional = 1, example = "missingmass.io/shopsystem" }
@@ -1582,6 +1584,8 @@ purpose = { option = "--purpose", example = "Specify, build and run bounded cont
 command = "spec actor"
 requirements = [
   "product#r2: When the person declares a product actor, the product service shall keep the product actor in the product and complete the request.",
+  "product#r9: While this product holds a product detail, when the person declares a product actor, the product service shall keep the product detail in the product and complete the request.",
+  "product#r12: While this product does not conform to the product form, if the person declares a product actor, then the product service shall refuse the request and name this product.",
 ]
 [operations."product.declare actor".parameters]
 "product actor" = { positional = 1, example = "the developer" }
@@ -1594,6 +1598,9 @@ requirements = [
   "product#r5: If the person declares a job with a product actor that is not in the product, then the product service shall refuse the request and name the product actor.",
   "product#r6: If the person declares a job with a need that is not in the product, then the product service shall refuse the request and name the need.",
   "product#r7: If the person declares a job with a need that depends on the job, then the product service shall refuse the request and name the need.",
+  "product#r10: While this product holds a product detail, when the person declares a job with an id and a product actor and a job statement, the product service shall keep the product detail in the product and complete the request.",
+  "product#r13: While this product does not conform to the product form, if the person declares a job with an id and a product actor and a job statement, then the product service shall refuse the request and name this product.",
+  "product#r14: When the person declares a job with a job statement that conforms to the job statement form, the product service shall keep the job in the product and complete the request.",
 ]
 [operations."product.declare job".parameters]
 id = { positional = 1, example = "j1" }

@@ -65,3 +65,78 @@ Feature: Product
     When the person declares the job j1 with the need n1
     Then the product service refuses this request
     And the product service names the need n1
+
+  @g8 @r8
+  Scenario: A product declared again keeps the product's details
+    Given a product detail p1
+    And this product holds the product detail p1
+    And a product p2
+    And an id i1
+    And a purpose p3
+    When the person declares the product p2 with the id i1 and the purpose p3
+    Then the product p2 holds the product detail p1
+    And the product service keeps the product detail p1
+    And the product service completes this request
+
+  @g9 @r9
+  Scenario: A product actor declared keeps the product's details
+    Given a product detail p1
+    And this product holds the product detail p1
+    And a product actor p2
+    When the person declares the product actor p2
+    Then this product holds the product detail p1
+    And the product service keeps the product detail p1
+    And the product service completes this request
+
+  @g10 @r10
+  Scenario: A job declared keeps the product's details
+    Given a product detail p1
+    And this product holds the product detail p1
+    And a job j1
+    And an id i1
+    And a product actor p2
+    And a job statement j2
+    When the person declares the job j1 with the id i1 and the product actor p2 and the job statement j2
+    Then this product holds the product detail p1
+    And the product service keeps the product detail p1
+    And the product service completes this request
+
+  @g11 @r11
+  Scenario: A product not of the product form is not declared again
+    Given this product does not conform to the product form
+    And a product p1
+    And an id i1
+    And a purpose p2
+    When the person declares the product p1 with the id i1 and the purpose p2
+    Then the product service refuses this request
+    And the product service names this product
+
+  @g12 @r12
+  Scenario: No product actor is declared in a product not of the product form
+    Given this product does not conform to the product form
+    And a product actor p1
+    When the person declares the product actor p1
+    Then the product service refuses this request
+    And the product service names this product
+
+  @g13 @r13
+  Scenario: No job is declared in a product not of the product form
+    Given this product does not conform to the product form
+    And a job j1
+    And an id i1
+    And a product actor p1
+    And a job statement j2
+    When the person declares the job j1 with the id i1 and the product actor p1 and the job statement j2
+    Then the product service refuses this request
+    And the product service names this product
+
+  @g14 @r14
+  Scenario: A job whose statement's situation holds a comma is declared
+    Given the job statement `j2` holds "When a change is wanted, reviewed and agreed, the developer wants it specified, so they can build it."
+    And a job statement j2
+    And the job statement j2 conforms to the job statement form
+    And a job j1
+    When the person declares the job j1 with the job statement j2
+    Then this product holds the job j1
+    And the product service keeps the job j1
+    And the product service completes this request
