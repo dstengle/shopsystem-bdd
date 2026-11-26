@@ -556,6 +556,7 @@ requirements = [
   "drafting#r86: When the person drafts an item with a requirement that supports a requirement id, the drafting service shall keep the requirement in the item.",
   "drafting#r87: If the person drafts an item with a requirement that supports a requirement id that no requirement has, then the drafting service shall refuse the request and name the requirement id.",
   "drafting#r88: While a requirement supports a requirement id, when the person drafts an item with the requirement and a different requirement id, the drafting service shall keep the requirement in the item and keep the requirement id in the item.",
+  "drafting#r98: When the person drafts an item with a requirement, the drafting service shall return the requirement id of the requirement and the requirement.",
 ]
 [operations."drafting.draft".parameters]
 item = { positional = 1 }
@@ -574,6 +575,7 @@ command = "work line"
 requirements = [
   "drafting#r25: While an item holds a capability that does not exist, when the person writes a term into the item, the drafting service shall keep the term in the item.",
   "drafting#r94: While a term violates `v_t6`, when the person writes the term into an item, the drafting service shall keep the term in the item, name `v_t6` and complete the request.",
+  "drafting#r99: While a term violates `v_t4`, `v_t7`, `v_t11` or `v_t19`, if the person writes the term into an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.",
 ]
 [operations."drafting.write".parameters]
 item = { positional = 1 }
@@ -1875,6 +1877,7 @@ requirements = [
   "product#r35: While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and an adapter spec realises the requirement id of the port line and the operation uses another operation and the adapter spec holds a contract that holds a requirement that governs the operation, when the person traces the job, the product service shall return the requirement.",
   "product#r36: While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and an adapter spec realises the requirement id of the port line and the operation uses another operation and the adapter spec holds a contract that holds a different requirement that governs the operation and the requirement has the requirement id, when the person traces the job, the product service shall return the requirement.",
   "product#r58: While an item holds a requirement group and the requirement group serves a job and the requirement group has a requirement, when the person traces the job with the item, the product service shall return the requirement.",
+  "product#r68: While an item holds a requirement group that serves a job and no capability has a requirement group that serves the job, if the person traces the job without an item, then the product service shall refuse the request and name the item.",
 ]
 [operations."product.trace".parameters]
 job = { positional = 1, example = "j1" }
@@ -1886,6 +1889,7 @@ requirements = [
   "drafting#r49: When the person rewords a term in an item, the drafting service shall keep a different term in the item.",
   "drafting#r50: If the person rewords a term in an item that does not hold the term, then the drafting service shall refuse the request and name the term.",
   "drafting#r95: When the person rewords a term in an item with a capability, the drafting service shall keep a different term in the item.",
+  "drafting#r100: While a term violates `v_t4`, `v_t7`, `v_t11` or `v_t19`, if the person rewords the term in an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.",
 ]
 [operations."drafting.reword term".parameters]
 item = { positional = 1 }

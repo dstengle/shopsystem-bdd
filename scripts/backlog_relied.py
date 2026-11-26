@@ -108,6 +108,8 @@ def cmd(args):
     said = "%s#%s relied on by %s%s" % (capability, rid, ", ".join(args.relied_on_by),
                                        ", retires %s" % retires if retires else "")
     commit(args.root, item, "work line: %s %s" % (label(item), said))
+    if args.text is not None:   # the line it added, with its text (drafting r98)
+        print("%s: %s#%s %s" % (label(item), capability, rid, args.text))
     print("%s: %s" % (label(item), said))
     if retires:
         import decision_amend

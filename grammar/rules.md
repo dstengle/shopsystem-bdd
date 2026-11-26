@@ -1013,8 +1013,8 @@ a term of a typed glossary does not name its part of speech
 - Since: b83
 - Changed: b123
 - Severity: error
-- Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`, `scripts/spec_lexicon_problems.py`, `scripts/spec_relations.py`
-- Cited by: no line
+- Implemented in: `scripts/model.lp`, `scripts/backlog_term_rules.py`, `scripts/spec_frames.py`, `scripts/spec_lexicon_problems.py`, `scripts/spec_relations.py`
+- Cited by: drafting#r99, drafting#r100
 - Fails on:
 
   ```prolog
@@ -1087,8 +1087,8 @@ a verb's entry gives no frame: the kinds of its subject and object, or that it t
 - Since: b82
 - Changed: b123
 - Severity: error
-- Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`, `scripts/upgrades/migrate_upgrade_frames.py`
-- Cited by: no line
+- Implemented in: `scripts/model.lp`, `scripts/backlog_term_rules.py`, `scripts/spec_frames.py`, `scripts/upgrades/migrate_upgrade_frames.py`
+- Cited by: drafting#r99, drafting#r100
 - Fails on:
 
   ```prolog
@@ -1279,8 +1279,8 @@ a vocabulary entry names an element the domain model does not declare
 - Purpose: Vocabulary refers only to declared model elements, so a word never names something that does not exist.
 - Since: 0.38.0
 - Severity: error
-- Implemented in: `scripts/model.lp`, `scripts/model_domain.py`, `scripts/spec_vocabulary.py`
-- Cited by: no line
+- Implemented in: `scripts/model.lp`, `scripts/backlog_term_rules.py`, `scripts/model_domain.py`, `scripts/spec_vocabulary.py`
+- Cited by: drafting#r99, drafting#r100
 - Fails on:
 
   ```prolog
@@ -2386,8 +2386,8 @@ a term's gloss is more than one sentence
 - Purpose: A term's gloss is short and precise, so its meaning can be taken in at once and quoted.
 - Since: b123
 - Severity: error
-- Implemented in: `scripts/spec_lexicon_problems.py`
-- Cited by: no line
+- Implemented in: `scripts/backlog_term_rules.py`, `scripts/spec_lexicon_problems.py`
+- Cited by: drafting#r99, drafting#r100
 - Fails on:
 
   ```markdown

@@ -19,7 +19,8 @@ they pick is written: the domain-model fixture (tests/scripts/fixtures/domain-mo
   the need and shelf's g1 serving the job (so that the job is served, but not by the line returned: r29);
 - no group serving the job: nothing serves it (r30);
 - a group an item holds that serves the job: the item b1 (i1) holding a group of notebook of its own whose line
-  lists the notes, serving the job, which no live group serves, traced with `--item b1` (r58, b797).
+  lists the notes, serving the job, which no live group serves, traced with `--item b1` (r58, b797), or traced
+  without an item, the refusal naming the item by its file's id `b1` (r68, b814).
 
 The When runs `spec trace` on the job; the Thens read the requirement's id or the adapter spec's id in its output,
 and of a refusal its exit and the job it names."""
@@ -39,7 +40,7 @@ def _module(name):
 P = _module("product_handlers.py")
 W = sys.modules["shop_work_queue_world"]
 FIXTURE = ROOT / "tests" / "scripts" / "fixtures" / "domain-model"
-GROUPS = {"g26", "g27", "g28", "g29", "g30", "g35", "g36", "g58"}
+GROUPS = {"g26", "g27", "g28", "g29", "g30", "g35", "g36", "g58", "g68"}
 PARENT = "bounded-context/example.org/fixture/domain-model"
 ADAPTER = "%s/adapter/stock-ledger" % PARENT
 TERMS = ("serve", "has", "use", "govern", "realise", "need", "hold")
@@ -216,8 +217,10 @@ def build(step, job):
     elif "item" in kinds:     # r58: the item b1 holds the group that serves the job
         (repo / ".shop" / "backlog").mkdir(parents=True, exist_ok=True)
         (repo / ".shop" / "backlog" / "b1.md").write_text(ITEM % (job, LISTS))
-        says = {by_term["has"][-1]: "notebook#r10"}
-        step.context["item"] = ["--item", "b1"]
+        item = by_kind["item"]
+        says = {by_term["has"][-1]: "notebook#r10"} if "has" in by_term else {item: "b1"}
+        if not step.context.get("unitemed"):
+            step.context["item"] = ["--item", "b1"]
     elif P.world(step).get("unserved"):
         says = {}
     else:
@@ -235,6 +238,7 @@ def runs(step):
     if not mine(step) or step.term != "`spec trace`":
         return False
     job = next(n for n in step.names if P.world(step)["kinds"].get(n) == "job")
+    step.context["unitemed"] = "`--item`" in (step.without or ())   # r68: traced without an item
     step.context["says"] = build(step, job)
     step.context["head"] = W.init(step.repo)
     step.context["result"] = step.run("spec", "trace", job, *step.context.get("item", []))
@@ -262,7 +266,7 @@ def then_does(step):
     told = done.stdout + done.stderr
     assert done.returncode == 1 and "Traceback" not in told and "usage:" not in told, told
     if step.term == "name":
-        assert step.names[-1] in done.stderr, told
+        assert step.context["says"].get(step.names[-1], step.names[-1]) in done.stderr, told
     assert P.git(step.repo, "rev-parse", "HEAD").strip() == step.context["head"]
 
 

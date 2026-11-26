@@ -684,3 +684,15 @@ Feature: Product
     When the person drops the bounded context b1
     Then the product service refuses this request
     And the product service names the bounded context b1
+
+  @g68 @r68
+  Scenario: A job only an item's groups serve is traced with the item
+    Given a requirement group r1
+    And a job j1
+    And the requirement group r1 serves the job j1
+    And an item i1
+    And the item i1 holds the requirement group r1
+    And no capability has a requirement group that serves the job j1
+    When the person traces the job j1 without an item
+    Then the product service refuses this request
+    And the product service names the item i1
