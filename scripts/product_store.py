@@ -1,6 +1,8 @@
 """Where the product layer is kept (b602; decision 0102): the product file `.shop/product/product.toml` of the shop,
-written and committed only by `spec product`, `spec actor` and `spec job` (`kept`). Its form: `id` and `purpose`,
-`actors = [...]`, and a table `[jobs."<id>"]` of each job with its `actors`, `statement` and `needs` (`render`,
+written and committed only by `spec product`, `spec actor`, `spec job`, `spec subdomain` and `spec context` (`kept`).
+Its form: `id` and `purpose`, `actors = [...]`, a table `[jobs."<id>"]` of each job with its `actors`, `statement`
+and `needs`, and the domain map (b642): a table `[subdomains."<id>"]` of each subdomain with its `type` and `serves`,
+and `[contexts."<id>"]` of each bounded context with its `addresses` and `shop`, none for a provider (`render`,
 `read`); a product detail, any other key or table of the file, kept whole by `read` and written back by `render` after
 the parts of the form (b673, product r8-r10); a file that does not read refused naming it, and one whose parts are not
 of their types (its jobs no table of jobs, its actors no list of texts) refused as product not in the product form,
@@ -15,7 +17,12 @@ from shop_refused import Refused
 from toml_edit import literal, name
 
 REL = ".shop/product/product.toml"
-HEADER = "# The product this bounded context belongs to; written by `spec product`, `spec actor` and `spec job`.\n"
+HEADER = ("# The product this bounded context belongs to; written by `spec product`, `actor`, `job`, `subdomain` and "
+          "`context`.\n")
+FORM = ("id", "purpose", "actors", "jobs", "subdomains", "contexts")
+# each table of tables of the form: its fields in order, and those that are lists of texts
+TABLES = {"jobs": (("actors", "statement", "needs"), ("actors", "needs")),
+          "subdomains": (("type", "serves"), ("serves",)), "contexts": (("addresses", "shop"), ("addresses",))}
 
 
 def _literal(value):
@@ -41,13 +48,17 @@ def _table(path, data, known=()):
 def render(product):
     """The product file's text of a product (an id or a purpose it lacks left out), every other key of it, a product
     detail, written back after the parts of the product form it sits beside."""
-    rest = {k: v for k, v in product.items() if k not in ("id", "purpose", "actors", "jobs")}
+    rest = {k: v for k, v in product.items() if k not in FORM}
     head = {k: product.get(k) for k in ("id", "purpose") if product.get(k)}
     head["actors"] = product.get("actors", [])
     lines = [HEADER] + _table((), {**head, **{k: v for k, v in rest.items() if not isinstance(v, dict)}})
     for ident, job in product.get("jobs", {}).items():
         job = {"actors": [], "statement": "", "needs": [], **job}
         lines += ["\n[jobs.%s]\n" % literal(ident)] + _table(("jobs", ident), job, ("actors", "statement", "needs"))
+    for part in ("subdomains", "contexts"):
+        for ident, entry in product.get(part, {}).items():
+            lines += ["\n[%s.%s]\n" % (part, literal(ident))] + _table((part, ident), entry,
+                                                                            [f for f in TABLES[part][0] if f in entry])
     return "".join(lines + _table((), {k: v for k, v in rest.items() if isinstance(v, dict)}))
 
 
@@ -58,14 +69,14 @@ def _formed(data):
             return "its %s is no text" % key
     if not _texts(data.get("actors", [])):
         return "its actors are no list of texts"
-    if not isinstance(data.get("jobs", {}), dict):
-        return "its jobs are no table of jobs"
-    for ident, job in data.get("jobs", {}).items():
-        if not isinstance(job, dict):
-            return "its job %s is no table" % ident
-        if not (_texts(job.get("actors", [])) and _texts(job.get("needs", []))
-                and isinstance(job.get("statement", ""), str)):
-            return "its job %s's actors, statement or needs are not of their types" % ident
+    for part, (fields, lists) in TABLES.items():
+        if not isinstance(data.get(part, {}), dict):
+            return "its %s are no table of %s" % (part, part)
+        for ident, entry in data.get(part, {}).items():
+            if not isinstance(entry, dict):
+                return "its %s %s is no table" % (part, ident)
+            if not all(_texts(entry.get(f, [])) if f in lists else isinstance(entry.get(f, ""), str) for f in fields):
+                return "its %s %s's %s are not of their types" % (part, ident, ", ".join(fields))
     return None
 
 
