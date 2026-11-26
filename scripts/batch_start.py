@@ -11,8 +11,6 @@ Before the lay is committed, `spec check`'s rules run on the worktree once (b478
 violates a rule of severity error there, which the readiness bar's copy of `spec/` alone could not find, goes back to
 `shaped` naming the rule, and the batch is laid again without it; so does an item one of whose requirements, retiring
 none, has a scenario that already passes on the lay, naming the scenario (batch_laid, b488)."""
-import contextlib
-import io
 import time
 from pathlib import Path
 
@@ -22,6 +20,7 @@ import backlog_lifecycle
 import backlog_lines
 import batch_catalogues
 import batch_driver
+import batch_generator
 import batch_laid
 import batch_pick
 import batch_reached
@@ -87,8 +86,7 @@ def _generated(tree, capability, command):
     if spec_read.capability(path).frontmatter.get("group") == "guarantees":
         return changed
     try:
-        with contextlib.redirect_stderr(io.StringIO()):     # the groups it skips are the bar's to name
-            text = features_generate.generate(tree, path)
+        text = batch_generator.generate(tree, path)     # the tree's own generator, where it holds one (b740)
     except features_generate.GenerateError as err:
         raise Refused("%s: features generate of %s failed: %s" % (command, capability, err)) from None
     feature = Path(tree) / "features" / ("%s.feature" % capability)
