@@ -504,6 +504,7 @@ requirements = [
   "items#r68: While an item is `shaped` and the item imports a pack and the item holds no requirement and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.",
   "items#r69: While an item is `shaped` and the item retires a term and the item holds no requirement and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.",
   "items#r70: While an item is `shaped` and the item imports a pack and the pack has a term and an element refers to the term and the term spells another element and the item retires another term that means the element and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.",
+  "items#r71: While an item is `shaped` and the item holds a port line and the item holds a core line and the port line supports the requirement id of the core line, when the person readies the item, the backlog service shall set the status of the item to `ready`.",
   "shaping-guarantees#r1: When the brainstorming session readies an item, the brainstorming session shall not ask a question.",
 ]
 [operations."backlog.ready".parameters]
@@ -588,7 +589,7 @@ requirements = [
 
 [operations."drafting.draft"]
 command = "work line"
-cli-only = { options = ["--group", "--in", "--into", "--model", "--narrator", "--no-line", "--port", "--term"] }
+cli-only = { options = ["--group", "--in", "--into", "--model", "--narrator", "--no-line", "--port", "--relied-on-by", "--term"] }
 requirements = [
   "drafting#r1: When the person drafts an item with a relation row, the drafting service shall keep the relation row in the item.",
   "drafting#r2: If the person drafts an item with a relation row that does not conform to the relation-row form, then the drafting service shall refuse the request and name the relation row.",
@@ -613,6 +614,8 @@ requirements = [
   "drafting#r65: While an item holds a requirement group of a capability and the requirement group has a group title, when the person drafts the item with a requirement of the capability, the drafting service shall keep only one requirement group that has the group title.",
   "drafting#r72: When the person drafts an item with a capability and an area, the drafting service shall keep the capability in the item and keep the area that holds the capability in the item.",
   "drafting#r85: When the person drafts an item with a capability and a driven port, the drafting service shall keep the capability in the item and keep the driven port that holds the capability in the item.",
+  "drafting#r86: When the person drafts an item with a requirement that supports a requirement id, the drafting service shall keep the requirement in the item.",
+  "drafting#r87: If the person drafts an item with a requirement that supports a requirement id that no requirement has, then the drafting service shall refuse the request and name the requirement id.",
 ]
 [operations."drafting.draft".parameters]
 item = { positional = 1 }
@@ -1087,6 +1090,7 @@ requirements = [
   "reviews#r9: While a batch is `awaiting-merge` and the workspace of the batch holds a base merge, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.",
   "reviews#r10: While a batch is `awaiting-merge` and the workspace of the batch holds no base merge, if the person submits the batch, then the batches service shall refuse the request and name the batch.",
   "reviews#r13: While an item in a batch is `in-batch` and every task of the batch is `done` and the workspace of the batch holds an amendment that cites the item and a scenario of the item succeeds in the workspace of a task of the item, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.",
+  "reviews#r14: While a batch is `building` and every task of the batch is `done` and a review of the batch exists and an item in the batch is `in-batch` and a scenario of the item succeeds in the workspace of the batch and the workspace of a task of the item holds a kept change that cites the item, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.",
 ]
 [operations."batches.submit".parameters]
 batch = { positional = 1 }
@@ -1127,14 +1131,6 @@ requirements = [
 [operations."batches.configure".parameters]
 setting = { positional = 1, example = "batch_size" }
 "setting value" = { positional = 2, example = "7" }
-
-[operations."reviews.conclude"]
-command = "work batch reviewed"
-requirements = [
-  "review-guarantees#r6: While the triage of a review finding on the proposed change of a batch is `fix now`, when a session concludes a review of the batch, the reviews service shall set the status of the batch to `building`.",
-  "review-guarantees#r8: While a batch has a proposed change and no review finding on the proposed change whose triage is `fix now` exists, when a session concludes a review of the batch, the reviews service shall set the status of the batch to `awaiting-merge`.",
-  "review-guarantees#r13: When a session concludes a review of a batch, the reviews service shall keep a review of the batch that holds the reply of `pr-reviewer`.",
-]
 
 [operations."measurement.measure"]
 command = "measure batch"
@@ -1729,12 +1725,13 @@ requirements = [
   "batches#r141: While a batch is `building` and every task of the batch is `done`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `submit batch`.",
   "batches#r143: While a batch is `building` and a task of an item in the batch is `failed` and the item is `in-batch`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `park item` and the task.",
   "batches#r144: While a batch is `building` and a task of an item in the batch is `running` and the item is `in-batch` and the workspace of the task holds a kept change that cites the item and no task of the batch is `failed`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `finish task` and the task.",
-  "batches#r145: While a batch is `building` and a task of an item in the batch is `running` and the item is `in-batch` and the workspace of the task holds no kept change that cites the item and no task of the batch is `failed`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `build task`, the task and the batch brief of the batch.",
-  "batches#r146: While a batch is `building` and a task of an item in the batch is `pending` and the item is `in-batch` and no task of the batch is `failed` and no task of the batch is `running`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `prepare task` and the task.",
   "batches#r147: While a batch is `in-review`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `review change`, a review folder of the batch and a findings file in the review folder.",
   "batches#r148: While a batch is `building` and a review of the batch holds a review finding whose triage is `fix now` and no kept change for the review finding exists, when the driver polls the batch, the batches service shall return a batch step whose instruction is `fix finding` and the review finding.",
   "batches#r149: While a batch is `building` and a task of an item in the batch is `done` and every task of the batch is `done` and a scenario of the item breaks in the workspace of the batch, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `fix task` and the task.",
   "batches#r150: While a batch is `building` and a task of an item in the batch is `running` and the item is `in-batch` and the workspace of the task holds an amendment that cites the item and the workspace of the task holds exactly one kept change that cites the item and no task of the batch is `failed`, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `build task`, the task and the batch brief of the batch.",
+  "batches#r152: While a batch is `building` and two tasks of items in the batch are `running` and no task of the batch is `failed`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `build task`, every task of the batch whose status is `running` and the batch brief of the batch.",
+  "batches#r153: While a batch is `building` and two tasks of items in the batch are `pending` and no task of the batch is `failed` and no task of the batch is `running`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `prepare task` and every task of the batch whose status is `pending`.",
+  "batches#r154: While a batch is `building` and every task of the batch is `done` and a scenario breaks in the workspace of the batch and no scenario of an item in the batch breaks in the workspace of the batch, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `look at failure` and the scenario.",
 ]
 [operations."batches.poll".parameters]
 batch = { positional = 1, example = "batch-1" }
@@ -1768,3 +1765,12 @@ requirements = [
 [operations."drafting.remove import".parameters]
 item = { positional = 1 }
 pack = { option = "--remove-import" }
+
+[operations."reviews.conclude"]
+command = "work batch reviewed"
+cli-only = { options = ["--reply"] }
+requirements = [
+  "review-guarantees#r6: While the triage of a review finding on the proposed change of a batch is `fix now`, when a session concludes a review of the batch, the reviews service shall set the status of the batch to `building`.",
+  "review-guarantees#r8: While a batch has a proposed change and no review finding on the proposed change whose triage is `fix now` exists, when a session concludes a review of the batch, the reviews service shall set the status of the batch to `awaiting-merge`.",
+  "review-guarantees#r13: When a session concludes a review of a batch, the reviews service shall keep a review of the batch that holds the reply of `pr-reviewer`.",
+]

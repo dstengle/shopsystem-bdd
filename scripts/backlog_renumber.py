@@ -1,10 +1,11 @@
 """An item's ids renumbered past its capabilities', `spec/universal.md`'s and the items' picked before it (plan 4, D8),
 split out of backlog_lines, which gives `renumber` to its callers: each group, requirement and universal condition id
 that collides the next free in file order, the `retires:` pairs and the `serves:` pairs of the item's own groups
-(backlog_serves, b641) and its `request_lines` (b6) carried to the new ids."""
+(backlog_serves, b641), the ids of its `Relied on by:` lines (backlog_relied, b705) and its `request_lines` (b6) carried to the new ids."""
 import re
 
 import backlog_forms
+import backlog_relied
 import backlog_serves
 from backlog_section import SECTION, Blocks, Group, read, render
 
@@ -46,8 +47,10 @@ def renumber(root, item, taken):
         groups = []
         for g in block.groups:
             gid = _fresh(g.id, block.capability, used, seen, pairs)
-            groups.append(Group(gid, g.title, [(_fresh(r, block.capability, used, seen, pairs), text)
-                                               for r, text in g.requirements], g.given))
+            fresh = [(r, _fresh(r, block.capability, used, seen, pairs), text) for r, text in g.requirements]
+            keys = {r: n for r, n, _ in fresh}
+            groups.append(Group(gid, g.title, [(n, text) for _, n, text in fresh], g.given,
+                                tuple((keys.get(r, r), ids) for r, ids in g.relied)))
         moved = {o.split("#")[1]: n.split("#")[1] for o, n in pairs if o.startswith(block.capability + "#r")}
         out.append(block._replace(groups=groups, retires=tuple((moved.get(r, r), old) for r, old in block.retires),
                                   serves=backlog_serves.renumbered(block, pairs)))
@@ -59,6 +62,7 @@ def renumber(root, item, taken):
         out.universal = [(_fresh(u, "universal", used, seen, pairs), text) for u, text in blocks.universal]
         taken.setdefault("universal", set()).update(u for u, _ in out.universal)
     if pairs:
+        out[:] = [b._replace(groups=backlog_relied.renumbered(b.groups, pairs)) for b in out]    # b705
         item.sections[SECTION] = render(out)
         moved = dict(pairs)
         item.request_lines = {moved.get(i, i): n for i, n in item.request_lines.items()}

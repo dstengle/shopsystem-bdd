@@ -6,6 +6,7 @@ brief, review folder or review finding it returns. A scenario of an item that br
 every task is done (r149, b696) is a submit the whole suite refused: `work batch review` run before the poll with
 `[batch] tests` that fail naming the item's scenario test, as pytest's short summary names it."""
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -89,8 +90,39 @@ def refused_submit(step, batch):
     assert done.returncode != 0 and "FAILED" in done.stderr, (done.stdout, done.stderr)
 
 
+RANK = {"failed": 0, "running": 1, "pending": 2}
+PARKED = "i91"
+
+
+def polled_world(step):
+    """Under a poll (b702): the item of a running task no kept change cites is unbuilt (a Given of a kept change citing
+    it builds it), and a task the scenario says the service does not return, of a status whose step comes before the
+    step its Thens expect, is the task of a parked item, which the poll does not count, so that the line's precondition
+    (no task of the batch is that status) holds of the batch's in-batch items."""
+    if not step.context.get("polling"):
+        return
+    text = " ".join(W.scenario_texts(step))
+    tasks, items = step.context["given"]["task"], step.context["given"]["item"]
+    for name, found in items.items():
+        cited = re.search(r"\bthe kept change [a-z]+\d+ cites the item %s\b" % name, text)
+        if not cited and any(t["item"] == name and t["status"] == "running" for t in tasks.values()):
+            found["unbuilt"] = True
+    wanted = re.search(r"instruction of the batch step [a-z]+\d+ is `(\w+) task`", text)
+    rank = {"park": 0, "build": 1, "finish": 1, "prepare": 2}.get(wanted.group(1) if wanted else None)
+    for name in re.findall(r"\bdoes not return the task ([a-z]+\d+)\b", text):
+        found = tasks.get(name)
+        if found and rank is not None and RANK.get(found["status"], 3) < rank:
+            B.write_item(step, PARKED, title="an item parked in the batch", status="needs-input")
+            items.setdefault(PARKED, {"batch": found["batch"]})
+            found["item"] = PARKED
+
+
+T.BEFORE_BATCH.append(polled_world)
+
+
 @four("WhenRuns", "`work batch next`", *BOTH)
 def batch_next(step):
+    step.context["polling"] = True
     failing = step.context.get("failing")
     if failing:
         step.context["delivery"] = failing_suite(step, failing)
@@ -117,7 +149,7 @@ def _fid(step, name):
 @first("ThenPrints", "`work`")
 def returns(step):
     """`the batches service returns the batch step b2` (a batch step the content is), `... the task t1` (the plan's
-    task), `... the batch brief b2` (its path), `... the review folder r1` (its path), `... the findings file f1` (its
+    task, one of the step's `tasks`), `... the batch brief b2` (its path), `... the review folder r1` (its path), `... the findings file f1` (its
     path, `findings.md` in the review folder returned), `... the review finding r2`."""
     if "polled" not in step.context:
         return False
@@ -127,7 +159,7 @@ def returns(step):
         assert content["instruction"] in INSTRUCTIONS, (step.text, content)
         step.context.setdefault("batch_steps", {})[name] = content
     elif kind == "task":
-        assert content["task"] and content["task"]["task"] == T.task_id(step, name), (step.text, content)
+        assert T.task_id(step, name) in [t["task"] for t in content["tasks"]], (step.text, content)
     elif kind == "batch brief":
         assert content["batch brief"] == step.context["briefs"][name], (step.text, content)
     elif kind == "review folder":
@@ -142,6 +174,18 @@ def returns(step):
             step.text, content)
     else:
         return False
+
+
+@first("ThenPrintsNot", "`work`")
+def returns_not(step):
+    """`the batches service does not return the task t5`: none of the step's `tasks` is the plan's task (b702)."""
+    if "polled" not in step.context:
+        return False
+    kind, name = parts(step)[-1]
+    if kind != "task":
+        return False
+    content = _step(step)
+    assert T.task_id(step, name) not in [t["task"] for t in content["tasks"]], (step.text, content)
 
 
 @four("ThenK_A", "batch step", *BOTH)

@@ -1,5 +1,5 @@
 """batch_broken (b696, batches r149): the task a batch's refused submit is to be fixed by, the task whose item's
-scenario a failed test of the kept whole-suite run is, else one whose reached tests hold it, else the first."""
+scenario a failed test of the kept whole-suite run is, else one whose reached tests hold it, else none (b703)."""
 import batch_broken
 from batch_plan import Batch, Task
 
@@ -47,6 +47,6 @@ def test_else_a_task_whose_change_reaches_the_test(monkeypatch):
     assert picked(monkeypatch, ["tests/scripts/test_x.py::test_y"], reached=reached) == "t2"
 
 
-def test_else_the_first_task_and_none_with_nothing_kept(monkeypatch):
-    assert picked(monkeypatch, ["tests/scripts/test_x.py::test_y"]) == "t1"
+def test_else_none_and_none_with_nothing_kept(monkeypatch):
+    assert picked(monkeypatch, ["tests/scripts/test_x.py::test_y"]) is None
     assert picked(monkeypatch, []) is None

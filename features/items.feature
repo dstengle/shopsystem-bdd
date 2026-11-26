@@ -1042,3 +1042,17 @@ Feature: Items
     And the item i1 meets this readiness bar
     When the person readies the item i1
     Then the backlog service sets the status of the item i1 to `ready`
+
+  @g71 @r71
+  Scenario: An item whose port line supports one of its core lines is readied
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    And a port line p1
+    And the item i1 holds the port line p1
+    And a core line c1
+    And the item i1 holds the core line c1
+    And a requirement id r1
+    And the core line c1 has the requirement id r1
+    And the port line p1 supports the requirement id r1
+    When the person readies the item i1
+    Then the backlog service sets the status of the item i1 to `ready`

@@ -292,3 +292,9 @@ capabilities, retirements, rewordings and chores.
 ### [g85] A capability drafted with a driven port keeps the port in the item
 - [r85] When the person drafts an item with a capability and a driven port, the drafting service shall keep the capability in the item and keep the driven port that holds the capability in the item.
 
+### [g86] A port line drafted with the core lines it supports is kept in the item
+- [r86] When the person drafts an item with a requirement that supports a requirement id, the drafting service shall keep the requirement in the item.
+
+### [g87] A port line drafted as supporting a requirement id no requirement has is refused
+- [r87] If the person drafts an item with a requirement that supports a requirement id that no requirement has, then the drafting service shall refuse the request and name the requirement id.
+

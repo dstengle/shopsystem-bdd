@@ -53,11 +53,11 @@ def recorded(step, name):
     plan = step.repo / T.plan_rel(step, name)
     findings = [batch_findings.Finding(fid=f["fid"], grade="Important", triage="fix now", title="the finding %s" % r,
                                        item=item, where="src/%s.txt" % item, body="What the review found.")
-                for r, f in step.context["given"]["review finding"].items() if f.get("review") in reviews]
+                for r, f in step.context["given"].get("review finding", {}).items() if f.get("review") in reviews]
     review = batch_findings.Review(
         number=1, batch=n, ident="review/%s/%s/review-1" % (shop_files.context_path(step.repo), n),
-        pull_request=T.URL % 1, head=head, range="%s..%s" % (W.field(plan, "forked_from"), head), result="fix-now",
-        verdict="A fix is due.", findings=findings)
+        pull_request=T.URL % 1, head=head, range="%s..%s" % (W.field(plan, "forked_from"), head), result="fix-now" if findings else "clean",
+        verdict="A fix is due." if findings else "Nothing to fix.", findings=findings)
     (step.repo / batch_findings.rel_of(n, 1)).write_text(batch_findings.render(review))
     T.git(step, "add", "-A")
     T.git(step, "commit", "-q", "-m", "%s: review 1 -> building" % n)

@@ -213,3 +213,33 @@ Feature: Reviews
     Then the batches service keeps the proposed change p1
     And the batch b1 has the proposed change p1
     And the batches service sets the status of the batch b1 to `in-review`
+
+  @g14 @r14
+  Scenario: A fix after a review of a scenario its item's change broke is accepted on submit
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    And a task t2
+    And the batch b1 has the task t2
+    And the status of the task t2 is `done`
+    And a review r1
+    And the batch b1 has the review r1
+    And the review r1 exists
+    And an item i1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a scenario s1
+    And the item i1 has the scenario s1
+    And a workspace w1
+    And the batch b1 has the workspace w1
+    And the scenario s1 succeeds in the workspace w1
+    And a task t1
+    And the item i1 has the task t1
+    And a workspace w2
+    And the task t1 has the workspace w2
+    And a kept change k1
+    And the kept change k1 cites the item i1
+    And the workspace w2 holds the kept change k1
+    When the person submits the batch b1
+    Then the batches service keeps the proposed change p1
+    And the batch b1 has the proposed change p1
+    And the batches service sets the status of the batch b1 to `in-review`
