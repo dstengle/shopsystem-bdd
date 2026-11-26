@@ -39,6 +39,9 @@ def main(argv=None):
                 print("%d %s %s" % (n, note["title"], " ".join("#" + t for t in note["tags"])))
         return 0
     else:
+        if notes[args.note - 1]["status"] == "removed":
+            print("notes remove: note %d is removed already" % args.note, file=sys.stderr)
+            return 1
         notes[args.note - 1]["status"] = "removed"
     save(args.root, notes)
     return 0

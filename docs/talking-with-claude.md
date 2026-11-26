@@ -11,6 +11,7 @@ plugin's tools: the session works out what to run.
 | "Set up this repository for the plugin." | [shaping-items](../skills/shaping-items/SKILL.md) | give the context's id, and a GitHub repository |
 | "I want an app that keeps my notes." | [shaping-items](../skills/shaping-items/SKILL.md), then [building-a-batch](../skills/building-a-batch/SKILL.md) | answer a question or two, merge the pull request |
 | "I'd like `shop work show` to print the status too." | [shaping-items](../skills/shaping-items/SKILL.md), then [building-a-batch](../skills/building-a-batch/SKILL.md) | merge the pull request |
+| "It's for a writer, who wants to note a thought down and find it later." | [shaping-items](../skills/shaping-items/SKILL.md) ([your product and its jobs](#your-product-and-its-jobs)) | say who it's for and what they want done |
 | "Build what's ready." | [building-a-batch](../skills/building-a-batch/SKILL.md) | merge the pull request |
 | "Check your requests." | [taking-in-a-request](../skills/taking-in-a-request/SKILL.md) | accept a request |
 | "Ask the payments context for refunds." | [raising-a-request](../skills/raising-a-request/SKILL.md) | read the proposed lines |
@@ -65,6 +66,210 @@ Claude starts one. Nothing waits on you between the start of a batch and its rev
 
 What it will ask: to merge a pull request, to accept a request, and to upgrade the repository when the plugin is
 newer (see below). Those are yours.
+
+## Your product and its jobs
+
+A bounded context is built for a product: the people it serves and the jobs they want done. You say that in your own
+words, once, and whenever it changes. Claude keeps it in the shop's product file, `.shop/product/product.toml`, and
+from then on can tell you which requirements do each job. This section walks it through on the notes tool, as
+[`docs/examples/notes-cli/`](examples/notes-cli/README.md) keeps it: that folder holds the product file and the
+capability these steps end with, and every output below is pasted from a real run on a copy of it.
+
+### What you say: who it's for and what they want done
+
+```text
+The notes tool is for a writer. When a thought comes up, they want to note it down so they can find it later.
+When they sit down to write, they want to see every note they kept. And they clear out the notes they're done with.
+```
+
+Claude names the product and its one actor, then writes each thing the writer wants done as a **job**, its statement
+in the one form `When <situation>, <actor> wants <motivation>, so they can <outcome>.`. Finding notes and clearing
+them out make no sense before notes are kept, so those two jobs **need** `keep-notes`:
+
+```console
+$ shop spec product example.org/notes --purpose "Keep a writer's passing thoughts at hand."
+declared the product example.org/notes
+$ shop spec actor "the writer"
+declared the product actor the writer
+$ shop spec job keep-notes --actor "the writer" --statement "When a thought comes up, the writer wants to note it down, so they can find it later."
+declared the job keep-notes
+$ shop spec job find-notes --actor "the writer" --statement "When the writer sits down to write, the writer wants to see every note they kept, so they can pick one up." --needs keep-notes
+declared the job find-notes
+$ shop spec job clear-notes --actor "the writer" --statement "When a note is done with, the writer wants to remove it, so they can keep the list short." --needs keep-notes
+declared the job clear-notes
+```
+
+Then the product's domain map: one core subdomain for the three jobs (each job given with its own `--serves`), this
+bounded context addressing it under the id `shop migrate init` gave it, each job assigned to it, and the writer
+mapped to the actor this context's model already calls "the person":
+
+```console
+$ shop spec subdomain note-keeping --type core --serves keep-notes --serves find-notes --serves clear-notes
+declared the subdomain note-keeping
+$ shop spec context bounded-context/example.org/notes/notes-cli --addresses note-keeping --shop example.org/notes/shop
+declared the bounded context bounded-context/example.org/notes/notes-cli kept by example.org/notes/shop
+$ shop spec assign keep-notes --to bounded-context/example.org/notes/notes-cli
+assigned the job keep-notes to the bounded context bounded-context/example.org/notes/notes-cli
+$ shop spec assign find-notes --to bounded-context/example.org/notes/notes-cli
+assigned the job find-notes to the bounded context bounded-context/example.org/notes/notes-cli
+$ shop spec assign clear-notes --to bounded-context/example.org/notes/notes-cli
+assigned the job clear-notes to the bounded context bounded-context/example.org/notes/notes-cli
+$ shop spec plays "the writer" --in bounded-context/example.org/notes/notes-cli --as "the person"
+mapped the product actor the writer to the person in the bounded context bounded-context/example.org/notes/notes-cli
+```
+
+Each command is one commit of the product file. If what you said leaves a gap (a job's situation, say, or who does
+it), Claude asks before it declares the job.
+
+A few things the session takes care of, which you may meet if you run the steps yourself:
+
+- **The ids have fixed forms.** The product's id is a dotted domain and a path (`example.org/notes`); a bounded
+  context's is `bounded-context/<domain>/<path>`, exactly as `shop migrate init` was given it. Any other form is
+  refused.
+- **`spec plays` needs the actor in the domain model.** The notes context's model has "the person" already. In a new
+  context the actor arrives with the first batch, so the mapping waits until that batch is merged; until then the
+  command is refused, saying the model holds no such actor.
+- **Nothing is edited by hand.** A declaration made wrongly is taken back with `shop spec unassign` or
+  `shop spec drop job`, `drop actor`, `drop subdomain` or `drop context`, each refused while something still refers to
+  what it drops; then it is declared again.
+
+### What you see: what nothing does yet
+
+Claude runs the check and tells you what it says. With the product declared and no group dedicated to a job, every
+job is unserved:
+
+```console
+$ shop spec check
+warning w_unreached_sub  a subdomain of a job held here whose trace reaches no bounded context that addresses it  (3)
+    clear-notes, note-keeping
+    find-notes, note-keeping
+    keep-notes, note-keeping
+warning w_unserved_cap  a capability serves no job  (1)
+    capability/example.org/notes/notes-cli/notes
+warning w_unserved_job  a job nothing serves  (3)
+    job/example.org/notes/notes-cli/clear-notes
+    job/example.org/notes/notes-cli/find-notes
+    job/example.org/notes/notes-cli/keep-notes
+warning w_untriggered_actor  a product actor of a job held here whose actor here triggers no line of the job's trace  (3)
+    clear-notes, the writer
+    find-notes, the writer
+    keep-notes, the writer
+0 violations, 10 warnings, 0 unresolved references, 0 file problems
+```
+
+These are warnings, not errors: they say what is still to do, and they all go once each job has the groups that do
+it.
+
+### What Claude does: each group to the job it does
+
+Claude dedicates each existing group to its job on an item, by the group's id. If you add behaviour at the same time,
+the new line's group gets its job too:
+
+```text
+And a note that's already removed can't be removed again.
+```
+
+<!-- docs: context docs/examples/notes-cli -->
+```console
+$ shop work idea "The notes serve the writer's jobs"
+b1 "The notes serve the writer's jobs" idea
+$ shop work line b1 --serves notes#g1 keep-notes
+b1 "The notes serve the writer's jobs": notes#g1 serves keep-notes
+$ shop work line b1 --serves notes#g2 keep-notes
+b1 "The notes serve the writer's jobs": notes#g2 serves keep-notes
+$ shop work line b1 --serves notes#g3 find-notes
+b1 "The notes serve the writer's jobs": notes#g3 serves find-notes
+$ shop work line b1 --serves notes#g4 clear-notes
+b1 "The notes serve the writer's jobs": notes#g4 serves clear-notes
+$ shop work line b1 --into notes --group "A removed note is not removed again" 'If the person removes a note whose status is `removed`, then the notes service shall refuse the request.' --serves clear-notes
+b1 "The notes serve the writer's jobs": notes#r5 If the person removes a note whose status is `removed`, then the notes service shall refuse the request.
+b1 "The notes serve the writer's jobs": notes#g5 serves clear-notes
+```
+
+`--serves <job>` comes **after** the line's text. Written before it, it takes the line for one more group and the
+command is refused, blaming the job:
+
+<!-- docs: context docs/examples/notes-cli -->
+```console
+$ shop work line b1 --into notes --group "A removed note is not removed again" --serves clear-notes 'If the person removes a note whose status is `removed`, then the notes service shall refuse the request.'
+work line: --serves: 'clear-notes' is not a requirement group <capability>#g<n>
+```
+
+A job the product does not hold is refused too, so a typo in a job's id can't slip through (`--serves: the product
+holds no job ...`).
+
+An item whose only lines are `--serves` pairs is not ready on its own yet: `shop work ready` refuses it with "it has
+no requirement line: give it one with `shop work line`". The pairs go out with the next line you ask for, as r5 does
+here.
+
+### What you see: the trace, before the batch
+
+The pairs are on the item, not yet in `spec/`, so a plain `shop spec trace` says nothing serves the job and points at
+the item. With `--item`, the session reads the trace with the item laid in on a copy, and checks it the same way;
+nothing in `spec/` changes:
+
+<!-- docs: context docs/examples/notes-cli -->
+```console
+$ shop spec trace keep-notes
+spec: job keep-notes is served by no requirement group; the item b1 holds one that serves it: trace it with --item b1
+$ shop spec check --item b1
+0 violations, 0 warnings, 0 unresolved references, 0 file problems
+$ shop spec trace clear-notes --item b1
+the trace of the job clear-notes:
+  notes#r4 (served by notes#g4): When the person removes a note, the notes service shall set the status of the note to `removed`.
+  notes#r5 (served by notes#g5): If the person removes a note whose status is `removed`, then the notes service shall refuse the request.
+  notes#r1 (needed job keep-notes: served by notes#g1): When the person adds a note with a title and a tag, the notes service shall keep the note under the tag.
+  notes#r2 (needed job keep-notes: served by notes#g2): If the person adds a note without a title, then the notes service shall refuse the request and name the title.
+```
+
+Ten warnings down to none: every job is served, every actor's job is triggered by a line, and the capability does a
+job. A job's trace holds the lines of the groups that serve it, then those of each job it needs, each with why it's
+there.
+
+### The outcome: each job traced to its requirements
+
+Claude readies the item and starts its batch, and you merge its pull request as for any other item:
+
+```console
+$ shop work ready b1
+b1 "The notes serve the writer's jobs" ready
+$ shop work batch start
+batch-1 building: t1 b1 "The notes serve the writer's jobs"
+```
+
+The batch writes each pair as its group's `serves:` line in the capability file, and r5 with its scenario:
+
+<!-- docs: context docs/examples/notes-cli -->
+```markdown
+### [g4] Removing a note sets its status to removed
+serves: clear-notes
+- [r4] When the person removes a note, the notes service shall set the status of the note to `removed`.
+
+### [g5] A removed note is not removed again
+serves: clear-notes
+- [r5] If the person removes a note whose status is `removed`, then the notes service shall refuse the request.
+```
+
+Once it's merged, ask "what does finding notes rest on?" and the session answers from the trace, with no `--item`.
+On the example as it's kept:
+
+<!-- docs: context docs/examples/notes-cli -->
+```console
+$ shop spec --root docs/examples/notes-cli trace keep-notes
+the trace of the job keep-notes:
+  notes#r1 (served by notes#g1): When the person adds a note with a title and a tag, the notes service shall keep the note under the tag.
+  notes#r2 (served by notes#g2): If the person adds a note without a title, then the notes service shall refuse the request and name the title.
+$ shop spec --root docs/examples/notes-cli trace find-notes
+the trace of the job find-notes:
+  notes#r3 (served by notes#g3): When the person lists the notes, the notes service shall return every note.
+  notes#r1 (needed job keep-notes: served by notes#g1): When the person adds a note with a title and a tag, the notes service shall keep the note under the tag.
+  notes#r2 (needed job keep-notes: served by notes#g2): If the person adds a note without a title, then the notes service shall refuse the request and name the title.
+```
+
+The trace is never written down: it is derived from the `serves:` lines and the jobs' needs each time, so it can't
+drift from the spec. When a line changes or a group's job does, the next trace says so.
+[Concepts](concepts.md#product-job-and-trace) has the product's words, and
+[the commands](reference/commands.md#shop-spec-product) every option.
 
 ## What you see when a session starts
 

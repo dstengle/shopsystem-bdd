@@ -352,28 +352,26 @@ A **job** has an id, its actors and a job statement of one form, `When <situatio
 they can <outcome>.`, and may need other jobs first. A **subdomain** is a part of the product's domain (`core`,
 `supporting` or `generic`) that serves jobs; a **bounded context** of the product's domain map addresses subdomains,
 is named by its id in the one context id form, `bounded-context/<domain>/<path>`, and holds the jobs assigned to it.
-A product actor **plays** an actor of a bounded context's model ("the developer" is "the person" here). A run in a
-copy of the example context:
+A product actor **plays** an actor of a bounded context's model ("the writer" is "the person" in the notes example).
+The notes example keeps its product (its product file, and each group's job in its capability), so its trace runs as
+it is:
 
 <!-- docs: context docs/examples/notes-cli -->
 ```console
-$ shop spec job keep-notes --actor "the writer" --statement "When a thought comes up, the writer wants to note it down, so they can find it later."
-declared the job keep-notes
-$ shop work line b1 --serves notes#g1 keep-notes
-b1 "The notes serve keeping notes": notes#g1 serves keep-notes
-$ shop spec trace keep-notes
+$ shop spec --root docs/examples/notes-cli trace keep-notes
 the trace of the job keep-notes:
   notes#r1 (served by notes#g1): When the person adds a note with a title and a tag, the notes service shall keep the note under the tag.
+  notes#r2 (served by notes#g2): If the person adds a note without a title, then the notes service shall refuse the request and name the title.
 ```
 
-The trace above is read once a batch has laid b1; before that, `shop spec trace keep-notes --item b1` reads it with
-the item's pairs laid in, as `shop spec check --item b1` checks it. The trace follows the requests its lines make to
+A job's groups are dedicated to it on an item; until a batch lays the item, `shop spec trace <job> --item b<n>` reads
+the trace with the item's pairs laid in, as `shop spec check --item b<n>` checks it. The trace follows the requests its lines make to
 the lines they reach, the adapter specs that realise its port lines and the jobs it needs, and says the job's
 coordination when it requests a driven port's operations. `shop spec check` warns of a job no group serves, a
 capability that serves no job and a product actor that triggers no line of its job's trace.
 Read more: [the product commands](reference/commands.md#shop-spec-product),
 [the `serves:` line](reference/capability-file.md#behaviour-groups-of-lines) and
-[Getting started](getting-started.md#8-say-what-the-product-is-for).
+[Talking with Claude](talking-with-claude.md#your-product-and-its-jobs), which walks the conversation.
 
 ## The work
 
