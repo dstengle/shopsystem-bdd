@@ -108,6 +108,21 @@ def test_a_parameter_naming_an_object_is_that_object(tmp_path):
     assert [(p.type, p.targets) for p in op.parameters] == [("object", ("design-decision",)), ("text", ())]
 
 
+def test_a_parameter_naming_an_imported_packs_kind_the_model_refers_to_is_that_kind(tmp_path):
+    """b618: with `imports: [request, base]` the parameter `version`, which no object declares but a relation of the
+    model names, is the base pack's kind, as an object's is; `reason`, the request pack's kind no element of the model
+    names, stays text."""
+    (tmp_path / "spec").mkdir()
+    (tmp_path / "spec" / "index.md").write_text("---\nid: bounded-context/x\nimports: [request, base]\n---\n# x\n")
+    text = DECISIONS.replace("  operation index()", "  operation publish(design-decision, version, reason)\n"
+                                                    "  operation index()")
+    text = text.replace("object test, requirement, route", "object test, requirement\n\nobject route\n"
+                        "  relations: has → version (one)")
+    op = _area(tmp_path, text).services["decisions"].operation("publish")
+    assert [(p.type, p.targets) for p in op.parameters] == [
+        ("object", ("design-decision",)), ("object", ("version",)), ("text", ())]
+
+
 def test_a_flag_parameter_is_written_with_flag(tmp_path):
     text = DECISIONS.replace("  operation index()", "  operation withdraw(design-decision, discard (flag))\n"
                                                     "  operation index()")
