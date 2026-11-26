@@ -1661,7 +1661,7 @@ requirements = [
 ]
 [operations."product.assign".parameters]
 job = { positional = 1, example = "j1" }
-"bounded context" = { option = "--to", example = "missingmass.io/shopsystem/shopsystem-bdd" }
+"bounded context" = { option = "--to", example = "bounded-context/missingmass.io/shopsystem/shopsystem-bdd" }
 
 [operations."product.map"]
 command = "spec plays"
@@ -1671,7 +1671,7 @@ requirements = [
 ]
 [operations."product.map".parameters]
 "product actor" = { positional = 1, example = "the developer" }
-"bounded context" = { option = "--in", example = "missingmass.io/shopsystem/shopsystem-bdd" }
+"bounded context" = { option = "--in", example = "bounded-context/missingmass.io/shopsystem/shopsystem-bdd" }
 actor = { option = "--as", example = "the person" }
 
 [operations."product.trace"]

@@ -1333,13 +1333,15 @@ has no coupling.
 ### `shop spec assign`
 
 Assigns a job of the product to the one bounded context whose capabilities serve it, kept among the bounded
-context's jobs in the product file, in one commit. A job is assigned once: a job a bounded context holds already is
+context's jobs in the product file, in one commit. The bounded context is named by its id in the context id form,
+`bounded-context/<domain>/<path>`, and is one the product holds (`shop spec context` declares it): an id of another
+form is refused naming the id, and a bounded context the product does not hold naming it. A job is assigned once: a job a bounded context holds already is
 refused naming the job.\
 Synopsis: `shop spec assign <job> --to <bounded context>`
 
 ```console
-$ shop spec assign j1 --to missingmass.io/shopsystem/shopsystem-bdd
-assigned the job j1 to the bounded context missingmass.io/shopsystem/shopsystem-bdd
+$ shop spec assign j1 --to bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+assigned the job j1 to the bounded context bounded-context/missingmass.io/shopsystem/shopsystem-bdd
 ```
 
 ### `shop spec plays`
@@ -1349,8 +1351,8 @@ the product file, in one commit. A product actor the product does not hold is re
 Synopsis: `shop spec plays <product actor> --in <bounded context> --as <actor>`
 
 ```console
-$ shop spec plays "the developer" --in missingmass.io/shopsystem/shopsystem-bdd --as "the person"
-mapped the product actor the developer to the person in the bounded context missingmass.io/shopsystem/shopsystem-bdd
+$ shop spec plays "the developer" --in bounded-context/missingmass.io/shopsystem/shopsystem-bdd --as "the person"
+mapped the product actor the developer to the person in the bounded context bounded-context/missingmass.io/shopsystem/shopsystem-bdd
 ```
 
 ### `shop spec decisions`
