@@ -815,3 +815,32 @@ shall [x1: branch "the branch checked out in the repository the request is made 
     name(e3, subject: x9, object: x1)
     complete(e4, subject: x9, object: x11)
 ```
+
+## r47
+From: b851 r47.
+
+```reading
+While the release of this repository is after `0.34.0` and before `0.45.0` and the release of this repository is before the release of the plugin, when the person upgrades this repository, the upgrades service shall change the index file of this bounded context and return every term that violates `v_t13`, every term that violates `v_t22` and every transition that violates `v_m9`.
+shall [x1: repository "the repository the request is made in" (indexical), x2: plugin "the plugin the request is made with" (indexical), x3: agent the person (constant), x4: service the upgrades service (constant), x5: bounded context "the bounded context the request is made in" (indexical), x8: rule `v_t13` (parameter), x10: rule `v_t22` (parameter), x12: rule `v_m9` (parameter)]
+  while
+    cmp(release(x1)) after `0.34.0`
+    cmp(release(x1)) before `0.45.0`
+    cmp(release(x1), before, release(x2))
+  when
+    request(e1, upgrades.upgrade, subject: x3, object: x1)
+  response [x6: index file]
+    of(x6, x5)
+    change(e2, subject: x4, object: x6)
+    every [x7: term]
+      violate(subject: x7, object: x8)
+      scope
+        return(e3, subject: x4, object: x7)
+    every [x9: term]
+      violate(subject: x9, object: x10)
+      scope
+        return(e4, subject: x4, object: x9)
+    every [x11: transition]
+      violate(subject: x11, object: x12)
+      scope
+        return(e5, subject: x4, object: x11)
+```

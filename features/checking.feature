@@ -1447,3 +1447,24 @@ Feature: Checking
     When the person validates this specification
     Then the specification service names the product actor p1
     And the specification service completes this request
+
+  @g162 @r162
+  Scenario: the check passes a term that redefines a verb of the request pack and tells its senses apart
+    Given a term t1
+    And the term t1 redefines `request`
+    And the term t1 does not violate `v_t15`
+    And a term t2
+    And the term t2 violates `v_t6`
+    When the person validates this specification
+    Then the specification service does not return the term t2
+    And the specification service completes this request
+
+  @g163 @r163
+  Scenario: the check fails a term that redefines a verb of the request pack and does not tell its senses apart, naming the term and the pack
+    Given a term t1
+    And the term t1 redefines `request`
+    And the term t1 violates `v_t15`
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the term t1
+    And the specification service names `request`

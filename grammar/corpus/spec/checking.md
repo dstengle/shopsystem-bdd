@@ -2273,3 +2273,39 @@ shall [x1: bounded context "the bounded context the request is made in" (indexic
     name(e2, subject: x7, object: x3)
     complete(e3, subject: x7, object: x8)
 ```
+
+## r162
+From: b847 r162.
+
+```reading
+While a term redefines the `request` pack and the term does not violate `v_t15`, when the person validates this specification, the specification service shall return no term that violates `v_t6` and complete the request.
+shall [x2: pack `request` (constant), x3: rule `v_t15` (parameter), x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x8: rule `v_t6` (parameter), x9: request "the request the trigger makes" (indexical)]
+  while [x1: term]
+    redefine(subject: x1, object: x2)
+    not
+      violate(subject: x1, object: x3)
+  when
+    request(e1, specification.check, subject: x4, object: x5)
+  response
+    not [x7: term]
+      violate(subject: x7, object: x8)
+      return(e2, subject: x6, object: x7)
+    complete(e3, subject: x6, object: x9)
+```
+
+## r163
+From: b847 r163.
+
+```reading
+While a term redefines the `request` pack and the term violates `v_t15`, if the person validates this specification, then the specification service shall fail the check and name the term and the pack.
+shall [x2: pack `request` (constant), x3: rule `v_t15` (parameter), x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x7: check "the check the trigger makes" (indexical)]
+  while [x1: term]
+    redefine(subject: x1, object: x2)
+    violate(subject: x1, object: x3)
+  if
+    request(e1, specification.check, subject: x4, object: x5)
+  response
+    fail(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x1)
+    name(e4, subject: x6, object: x2)
+```

@@ -350,3 +350,4 @@ area: specification
 - **end** (verb, state) → relation frame.ends. A frame is among the last sentences of its term's entry, so that no text but another frame follows it there. Forms: ends, ended. Frame: <frame> ends <term>.
 - **refer** (verb, state) → relation slot.refers to. A slot of a frame names a term or a parameter between its angle brackets. Forms: refers, referred. Frame: <slot> refers to <term>. Frame: <slot> refers to <parameter>.
 - **specify** (verb, state) → relation capability.specifies. A capability is about the service whose operations its requirements request, as its frontmatter's specifies: names it. Forms: specifies, specified. Frame: <capability> specifies <service>.
+- **0.45.0** (noun) → value repository.release 0.45.0.

@@ -284,3 +284,33 @@ Feature: Parsing
     And the requirement r1 uses `reply-failure`
     When the person parses the requirement r1
     Then the language service completes this request
+
+  @g30 @r30
+  Scenario: A requirement that uses a term that redefines the request pack is read by the term
+    Given a term t1
+    And the term t1 redefines `request`
+    And a requirement r1
+    And the requirement r1 uses the term t1
+    And a logical form l1
+    And the requirement r1 has the logical form l1
+    And a logical form l2
+    And the requirement r1 has the logical form l2
+    When the person parses the requirement r1
+    Then the language service returns one logical form of the requirement r1
+    And the language service completes this request
+
+  @g31 @r31
+  Scenario: A requirement that uses a term of the request pack is read by the pack's term beside a term that redefines it
+    Given a term t1
+    And the term t1 redefines `request`
+    And a term t2
+    And `request` has the term t2
+    And a requirement r1
+    And the requirement r1 uses the term t2
+    And a logical form l1
+    And the requirement r1 has the logical form l1
+    And a logical form l2
+    And the requirement r1 has the logical form l2
+    When the person parses the requirement r1
+    Then the language service returns one logical form of the requirement r1
+    And the language service completes this request

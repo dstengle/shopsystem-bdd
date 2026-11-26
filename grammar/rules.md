@@ -1064,7 +1064,7 @@ two terms are written the same
 - Since: b123
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/backlog_lines.py`, `scripts/spec_lexicon_problems.py`
-- Cited by: drafting#r94, drafting#r112
+- Cited by: checking#r162, drafting#r94, drafting#r112
 - Fails on:
 
   ```prolog
@@ -1132,7 +1132,7 @@ a verb's Frame: does not read as its subject, the verb and the kinds it takes
 - Changed: b123
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/backlog_term_rules.py`, `scripts/spec_frames.py`, `scripts/upgrades/migrate_upgrade_frames.py`
-- Cited by: checking#r151, drafting#r101, drafting#r102
+- Cited by: checking#r151, drafting#r101, drafting#r102, upgrades#r47
 - Fails on:
 
   ```prolog
@@ -1174,7 +1174,7 @@ two entries of one verb take, in every slot, the same kind or one kind under the
 - Since: b131
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`
-- Cited by: no line
+- Cited by: checking#r162, checking#r163
 - Fails on:
 
   ```prolog
@@ -1343,7 +1343,7 @@ a vocabulary entry's part of speech does not fit the element it names
 - Since: b825
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/backlog_term_rules.py`, `scripts/model_domain.py`, `scripts/spec_vocabulary.py`
-- Cited by: no line
+- Cited by: upgrades#r47
 - Fails on:
 
   ```prolog
@@ -1751,7 +1751,7 @@ a lifecycle transition an operation of another area performs
 - Since: b610
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/readiness_bound.py`
-- Cited by: items#r73, laying#r20
+- Cited by: items#r73, laying#r20, upgrades#r47
 - Fails on:
 
   ```prolog
