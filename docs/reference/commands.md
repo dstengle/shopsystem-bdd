@@ -492,11 +492,14 @@ reviews: 1, last clean
 #### `shop work batch next`
 
 Prints the next step of a batch for whatever drives it (an agent, a script, a runner): an instruction and what it is
-about. The instruction is one of `build task` (a pending task, with the batch brief), `finish task` (a running
-task), `submit batch`, `review change` (the next review's folder), `fix finding` (an open `fix now` finding that no
-commit cites yet), `park item` (a failed task) or `stop`. The first one that applies is picked, in this order: stop,
-review change, fix finding, park item, finish task, build task, submit batch. The last line names the command that
-reports the step's result. With `--json` the step is the envelope's `content`. Writes nothing.\
+about. The instruction is one of `prepare task` (a pending task, reported through `shop work batch resume`, which
+makes its worktree), `build task` (a running task whose branch holds no commit citing its item since the batch's
+lines commit, with the batch brief), `finish task` (a running task whose branch holds one), `submit batch`, `review
+change` (the next review's folder and the findings file `findings.md` in it, where the reviewer's reply is saved for
+`shop work batch reviewed`), `fix finding` (an open `fix now` finding that no commit cites yet), `park item` (a failed
+task) or `stop`. Only the tasks of items still `in-batch` count. The first one that applies is picked, in this order:
+stop, review change, fix finding, park item, finish or build task, prepare task, submit batch. The last line names the
+command that reports the step's result. With `--json` the step is the envelope's `content`. Writes nothing.\
 Synopsis: `shop work batch next [--json] batch`
 
 ```console
