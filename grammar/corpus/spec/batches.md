@@ -1993,9 +1993,9 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
 From: b750 r178.
 
 ```reading
-While an item in a batch is `in-batch` and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded` and a requirement that enforces the design-decision has a requirement id and another item in the batch holds another requirement and the requirement retires the requirement id, when the person parks the item, the batches service shall keep a design-decision that the requirement enforces.
-shall [x11: agent the person (constant), x12: service the batches service (constant)]
-  while [x1: item, x2: batch, x3: requirement, x4: requirement, x5: design-decision, x6: requirement id, x7: requirement, x8: requirement id, x9: item, x10: requirement]
+While an item in a batch is `in-batch` and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded` and a requirement that enforces the design-decision has a requirement id and another requirement retires the requirement id, when the person parks the item, the batches service shall keep a design-decision that the requirement enforces.
+shall [x10: agent the person (constant), x11: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: requirement, x4: requirement, x5: design-decision, x6: requirement id, x7: requirement, x8: requirement id, x9: requirement]
     in(x1, x2)
     status(x1) = `in-batch`
     in(x3, x1)
@@ -2005,14 +2005,11 @@ shall [x11: agent the person (constant), x12: service the batches service (const
     retire(subject: x3, object: x6)
     enforce(subject: x7, object: x5)
     of(x8, x7)
-    distinct(x9, x1)
-    in(x9, x2)
-    distinct(x10, x7)
-    in(x10, x9)
-    retire(subject: x10, object: x8)
+    distinct(x9, x7)
+    retire(subject: x9, object: x8)
   when
-    request(e1, batches.park, subject: x11, object: x9)
-  response [x13: design-decision]
-    enforce(subject: x10, object: x13)
-    keep(e2, subject: x12, object: x13)
+    request(e1, batches.park, subject: x10, object: x1)
+  response [x12: design-decision]
+    enforce(subject: x9, object: x12)
+    keep(e2, subject: x11, object: x12)
 ```

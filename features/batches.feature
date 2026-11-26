@@ -1549,11 +1549,8 @@ Feature: Batches
     And the requirement r4 enforces the design-decision d1
     And a requirement id r5
     And the requirement r4 has the requirement id r5
-    And an item i2
-    And the batch b1 holds the item i2
     And a requirement r6
-    And the item i2 holds the requirement r6
     And the requirement r6 retires the requirement id r5
-    When the person parks the item i2
+    When the person parks the item i1
     Then the batches service keeps the design-decision d2
     And the requirement r6 enforces the design-decision d2
