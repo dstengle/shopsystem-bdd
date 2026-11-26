@@ -7,7 +7,8 @@ and `grammar/` copied, every other entry of the context's top folder linked, so 
 file are read as they are. Of `spec check --item`, the violations the lay alone brings left out (`lay_only`, b808,
 checking r153-r155): v_s3 of a group the item lays, whose scenarios only a batch's lay writes, and v_a5 of a
 requirement it lays, which only a batch's lay annotates in the adapter contract, as the readiness bar leaves them out;
-every other violation of the item's reported."""
+every other violation of the item's reported, and each lexicon problem the lay brings that the specification without
+it has not, as the readiness bar's lexicon stage finds them (`lexicon`, b848, checking r160)."""
 
 import shutil
 import tempfile
@@ -53,13 +54,24 @@ def _beside(root, copy):
 
 
 def rooted(args, run):
-    """`run(args)`, or with `args.item` given, `run` of args whose root is the whole context with the item laid."""
+    """`run(args)`, or with `args.item` given, `run` of args whose root is the whole context with the item laid, its
+    `lexicon` the lexicon problems the lay brings."""
     if not getattr(args, "item", None):
         return run(args)
     import argparse
     left_out = lay_only(backlog_items.find(args.root, args.item))
     with laid(args.root, args.item, whole=True) as copy:
-        return run(argparse.Namespace(**{**vars(args), "root": str(copy), "item": None, "lay_only": left_out}))
+        return run(argparse.Namespace(**{**vars(args), "root": str(copy), "item": None, "lay_only": left_out,
+                                         "lexicon": lexicon(args.root, copy)}))
+
+
+def lexicon(root, copy):
+    """The lexicon problems `(code, term, message)` of `copy` (the item laid) that `root`'s has not, each read with
+    the kinds of the packs its spec imports, as the readiness bar's lexicon stage reads them."""
+    import spec_lexicon
+    import spec_rgl_vocab
+    before = set(spec_lexicon.problems(spec_lexicon.read(root), spec_rgl_vocab.outer(root)))
+    return [p for p in spec_lexicon.problems(spec_lexicon.read(copy), spec_rgl_vocab.outer(copy)) if p not in before]
 
 
 def lay_only(item):
