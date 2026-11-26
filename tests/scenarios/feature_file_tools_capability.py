@@ -116,6 +116,7 @@ def prepare(step):
         w["groups"] = 1
     elif COL.kind(w, W.kind):     # every, only, counts and two (b273)
         w["lines"] = COL.kind(w, W.kind)
+        COL.bind(w, W.kind)     # b732
         capability(step.repo, COL.groups(w["lines"]))
         w["groups"] = len(COL.LINES[w["lines"]])
     elif REQ.prepare(step, w, W.kind, NAME, PATH):     # a request's parameters, an operation that makes (b418)
@@ -171,6 +172,13 @@ def collections(step, w, what):
     done = step.context["result"]
     assert done.returncode == 0, done.stderr
     COL.check(w["lines"], (step.repo / "features" / ("%s.feature" % NAME)).read_text(), what)
+
+
+def unused(step, w):
+    """`the counter-example c3 does not use the code c2`: no step of the counter-example's member holds the code
+    (b732)."""
+    assert result_ok(step) and w.get("lines"), step.text
+    COL.unused((step.repo / "features" / ("%s.feature" % NAME)).read_text(), W.value(w, step.names[-1]))
 
 
 def uses(step, w):

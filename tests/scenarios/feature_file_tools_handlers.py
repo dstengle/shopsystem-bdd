@@ -197,6 +197,13 @@ def then_does_not(step):
     (ORDER.writes_not if ORDER.mine(w, step) else GEN.writes_not)(step, w)
 
 
+@W.own("ThenDoesNot", "use", registry=False)
+def then_uses_not(step):
+    """`the counter-example c3 does not use the code c2` (b732)."""
+    result(step)
+    GEN.unused(step, W.world(step))
+
+
 def unoverstated(step):
     """`features does not write the file f1` (requests' handler of ThenDoesNot write, when a capability condition of
     the codified-2 world kept what its feature must hold and must not under `generated`): `features generate` wrote
