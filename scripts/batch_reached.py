@@ -4,9 +4,11 @@ vocabulary, the packs, the index) or `spec/universal.md`, every service capabili
 `features generate` now writes it differently, and every block of the spec corpus whose form `spec parse --form` now
 prints differently given that form, its heading, trace and line kept. A capability the lay laid lines of is
 laying_inprocess's prepare's own to generate; a feature that is not there, or that `features generate` refuses, is left
-as it is. `prepared`: of a workspace whose items are laid uncommitted, the change told by git since its HEAD (b758).
+as it is. `prepared`: of a workspace whose items are laid uncommitted, the change told by git since its HEAD (b758);
+`reached`: that change touches one of spec_held's `inputs` under the workspace (the plugin's packs and base grammar
+among them when the workspace is the plugin's own repository, b763) or `spec/universal.md`.
 """
-import hashlib
+import os
 import re
 import subprocess
 from pathlib import Path
@@ -16,15 +18,6 @@ import spec_held
 import spec_read
 
 READING = re.compile(r"(?ms)^(## [rU][1-9]\d*[ \t]*\n.*?```reading\n)([^\n]*)\n(.*?)\n```")
-
-
-def digest(tree):
-    """The digest of what grammar 4 and the entailed Thens read at `tree`, to tell whether a lay changed it."""
-    sha = hashlib.sha256()
-    for path in spec_held.inputs(tree) + [str(Path(tree) / "spec" / "universal.md")]:
-        p = Path(path)
-        sha.update(path.encode() + b"\0" + (p.read_bytes() if p.is_file() else b"-") + b"\0")
-    return sha.hexdigest()
 
 
 def features(tree, laid):
@@ -66,14 +59,27 @@ def corpus(tree):
     return changed
 
 
+def inputs(tree):
+    """The paths, relative to `tree`, of grammar 4's inputs (spec_held's) under it and `spec/universal.md`, with the
+    folder under `spec/` of each, so that a file a lay takes out is told too; the plugin's packs and grammar outside
+    `tree` no lay changes."""
+    top = os.path.realpath(str(tree))
+    out = []
+    for path in spec_held.inputs(tree) + [os.path.join(str(tree), "spec", "universal.md")]:
+        rel = os.path.relpath(os.path.realpath(path), top)
+        if rel == os.pardir or rel.startswith(os.pardir + os.sep):
+            continue
+        folder = os.path.dirname(rel)
+        for each in [rel] + ([folder] if folder.startswith("spec" + os.sep) else []):
+            if each not in out:
+                out.append(each)
+    return out
+
+
 def reached(tree):
-    """Whether the workspace's change since its HEAD (uncommitted, untracked among it) touches what `digest` reads."""
-    spec = ["spec/index.md", "spec/universal.md", "spec/packs", "spec/model", "spec/vocabulary"]
-    if not (Path(tree) / "spec" / "model").is_dir():
-        spec.append("spec/capabilities")
-    done = subprocess.run(["git", "status", "--porcelain", "-z", "--untracked-files=all", "--", *spec,
-                           ":(glob)provider/**/contract.toml"], cwd=str(tree), capture_output=True, text=True,
-                          check=True)
+    """Whether the workspace's change since its HEAD (uncommitted, untracked among it) touches one of `inputs`."""
+    done = subprocess.run(["git", "status", "--porcelain", "-z", "--untracked-files=all", "--", *inputs(tree)],
+                          cwd=str(tree), capture_output=True, text=True, check=True)
     return bool(done.stdout.strip("\0").strip())
 
 
@@ -81,15 +87,6 @@ def prepared(tree, laid):
     """The features and corpus blocks the workspace's laid items reached written again when its change since its HEAD
     touches grammar 4's inputs (`reached`); the paths changed."""
     if not reached(tree):
-        return []
-    with spec_held.held(tree):
-        return features(tree, laid) + corpus(tree)
-
-
-def regenerated(tree, before, laid):
-    """The features and corpus blocks the lay reached written again when the digest of `tree` is no longer `before`;
-    the paths changed."""
-    if digest(tree) == before:
         return []
     with spec_held.held(tree):
         return features(tree, laid) + corpus(tree)
