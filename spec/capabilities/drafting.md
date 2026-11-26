@@ -7,7 +7,7 @@ area: tracking
 specifies: service drafting
 language: codified-2
 retired: [g99, r99, g100, r100, g49, r49, g14, r14]
-unbuilt: [r108, r109]
+unbuilt: [r108, r109, r107]
 ---
 
 # Drafting
@@ -330,8 +330,14 @@ capabilities, retirements, rewordings and chores.
 ### [g102] Rewording a term into one that breaks a lexicon rule is refused naming each rule
 - [r102] While a term violates `v_t4`, `v_t7`, `v_t11`, `v_t13`, `v_t14` or `v_t19`, if the person rewords the term in an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.
 
+### [g108] A term whose part of speech does not fit the element it means is refused
+- [r108] While a term means an element that the term does not fit, if the person writes the term into an item, then the drafting service shall refuse the request and name the term.
+
+### [g109] Rewording a term into one whose part of speech does not fit the element it means is refused
+- [r109] While a term means an element that the term does not fit, if the person rewords the term in an item, then the drafting service shall refuse the request and name the term.
+
 ### [g107] Rewording a requirement to the text the item holds changes nothing
-- [r107] While an item holds a requirement, if the person rewords the requirement in the item, then the drafting service shall change nothing and name the requirement.
+- [r107] While an item holds a requirement, if the person rewords the requirement in the item with the same text, then the drafting service shall change nothing and name the requirement.
 
 ### [g103] A term written into an item is returned
 - [r103] When the person writes a term into an item, the drafting service shall return the term.
@@ -341,10 +347,4 @@ capabilities, retirements, rewordings and chores.
 
 ### [g106] A reworded requirement is kept and returned with its id
 - [r106] When the person rewords a requirement in an item, the drafting service shall keep a different requirement in the item and return the requirement id of the requirement and the requirement.
-
-### [g108] A term whose part of speech does not fit the element it means is refused
-- [r108] While a term means an element that the term does not fit, if the person writes the term into an item, then the drafting service shall refuse the request and name the term.
-
-### [g109] Rewording a term into one whose part of speech does not fit the element it means is refused
-- [r109] While a term means an element that the term does not fit, if the person rewords the term in an item, then the drafting service shall refuse the request and name the term.
 

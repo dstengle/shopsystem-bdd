@@ -1608,13 +1608,14 @@ shall [x1: agent the person (constant), x4: service the drafting service (consta
 From: b829 r107.
 
 ```reading
-While an item holds a requirement, if the person rewords the requirement in the item, then the drafting service shall change nothing and name the requirement.
+While an item holds a requirement, if the person rewords the requirement in the item with the same text, then the drafting service shall change nothing and name the requirement.
 shall [x3: agent the person (constant), x4: service the drafting service (constant)]
   while [x1: item, x2: requirement]
     in(x2, x1)
   if
     in(x2, x1)
     request(e1, drafting.reword, subject: x3, object: x2)
+    param(e1, text, x2)
   response
     not [x5: thing]
       change(e2, subject: x4, object: x5)
