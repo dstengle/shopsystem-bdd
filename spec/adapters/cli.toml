@@ -578,6 +578,8 @@ requirements = [
   "drafting#r101: While a term violates `v_t4`, `v_t7`, `v_t11`, `v_t13`, `v_t14` or `v_t19`, if the person writes the term into an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.",
   "drafting#r103: When the person writes a term into an item, the drafting service shall return the term.",
   "drafting#r108: While a term means an element that the term does not fit, if the person writes the term into an item, then the drafting service shall refuse the request and name the term.",
+  "drafting#r110: While a term has a frame that does not end the term, if the person writes the term into an item, then the drafting service shall refuse the request and name the frame.",
+  "drafting#r111: While a frame of a term has a slot and the slot refers to no term whose part of speech is `noun` and the slot refers to no term whose part of speech is `proper noun` and the slot refers to no parameter, if the person writes the term into an item, then the drafting service shall refuse the request and name the slot.",
 ]
 [operations."drafting.write".parameters]
 item = { positional = 1 }
@@ -1849,6 +1851,8 @@ requirements = [
   "checking#r155: While an item holds a requirement that violates a rule whose severity is `error`, if the person validates this specification with the item, then the specification service shall fail the check and name the rule.",
   "checking#r156: While a term has a frame that takes no noun phrase, if the person validates this specification, then the specification service shall fail the check and name the frame.",
   "checking#r157: While a term means an element that the term does not fit, if the person validates this specification, then the specification service shall fail the check and name the term.",
+  "checking#r158: While a term has a frame that does not end the term, if the person validates this specification, then the specification service shall fail the check and name the frame.",
+  "checking#r159: While a frame of a term has a slot and the slot refers to no term whose part of speech is `noun` and the slot refers to no term whose part of speech is `proper noun` and the slot refers to no parameter, if the person validates this specification, then the specification service shall fail the check and name the slot.",
   "decisions#r1: While a design-decision is not `superseded` or `rejected` and the design-decision has no tier, when the person validates this specification, the specification service shall return `w_untiered`.",
   "decisions#r2: While the tier of a design-decision is `check` and no test enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d6`.",
   "decisions#r3: While the tier of a design-decision is `requirement` and no requirement enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d7`.",

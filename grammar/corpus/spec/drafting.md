@@ -1655,3 +1655,44 @@ shall [x3: agent the person (constant), x5: service the drafting service (consta
     refuse(e2, subject: x5, object: x6)
     name(e3, subject: x5, object: x1)
 ```
+
+## r110
+From: b840 r110.
+
+```reading
+While a term has a frame that does not end the term, if the person writes the term into an item, then the drafting service shall refuse the request and name the frame.
+shall [x3: agent the person (constant), x5: service the drafting service (constant), x6: request "the request the trigger makes" (indexical)]
+  while [x1: term, x2: frame]
+    not
+      end(subject: x2, object: x1)
+    of(x2, x1)
+  if [x4: item]
+    request(e1, drafting.write, subject: x3, object: x1, into: x4)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x2)
+```
+
+## r111
+From: b840 r111.
+
+```reading
+While a frame of a term has a slot and the slot refers to no term whose part of speech is `noun` and the slot refers to no term whose part of speech is `proper noun` and the slot refers to no parameter, if the person writes the term into an item, then the drafting service shall refuse the request and name the slot.
+shall [x7: agent the person (constant), x9: service the drafting service (constant), x10: request "the request the trigger makes" (indexical)]
+  while [x1: frame, x2: term, x3: slot]
+    of(x1, x2)
+    of(x3, x1)
+    not [x4: term]
+      part of speech(x4) = `noun`
+      refer#4(subject: x3, to: x4)
+    not [x5: term]
+      part of speech(x5) = `proper noun`
+      refer#4(subject: x3, to: x5)
+    not [x6: parameter]
+      refer#4(subject: x3, to: x6)
+  if [x8: item]
+    request(e1, drafting.write, subject: x7, object: x2, into: x8)
+  response
+    refuse(e2, subject: x9, object: x10)
+    name(e3, subject: x9, object: x3)
+```

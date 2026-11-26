@@ -1400,3 +1400,26 @@ Feature: Checking
     When the person validates this specification
     Then the specification service fails this check
     And the specification service names the term t1
+
+  @g158 @r158
+  Scenario: the check fails on a frame that text other than a frame follows in its entry, naming the frame
+    Given a frame f1
+    And a term t1
+    And the frame f1 does not end the term t1
+    And the term t1 has the frame f1
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the frame f1
+
+  @g159 @r159
+  Scenario: the check fails on a slot of a frame that names no kind, no actor and no parameter, naming the slot
+    Given a frame f1
+    And a term t1
+    And the term t1 has the frame f1
+    And a slot s1
+    And the frame f1 has the slot s1
+    And the slot s1 refers to no term
+    And the slot s1 refers to no parameter
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the slot s1

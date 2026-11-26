@@ -114,6 +114,7 @@ object verb kind of term
 object frame kind of text
   relations: has → preposition (many); takes → noun phrase (many)
   relations: has → fixed phrase (many)
+  relations: has → slot (many); ends → term (one)
 
 object subject
 
@@ -510,4 +511,7 @@ object product id form kind of artifact
 object product actor form kind of artifact
 
 object subdomain id form kind of artifact
+
+object slot kind of text
+  relations: refers to → term | parameter (many)
 ```

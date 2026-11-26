@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56, g94, r94, g91, r91, g100, r100, g144, r144]
-unbuilt: []
+unbuilt: [r158, r159]
 ---
 
 # Checking
@@ -442,6 +442,12 @@ Restates: design-model-check#r13@0.29.
 
 ### [g157] A term whose part of speech does not fit the element it means fails the check
 - [r157] While a term means an element that the term does not fit, if the person validates this specification, then the specification service shall fail the check and name the term.
+
+### [g158] the check fails on a frame that text other than a frame follows in its entry, naming the frame
+- [r158] While a term has a frame that does not end the term, if the person validates this specification, then the specification service shall fail the check and name the frame.
+
+### [g159] the check fails on a slot of a frame that names no kind, no actor and no parameter, naming the slot
+- [r159] While a frame of a term has a slot and the slot refers to no term whose part of speech is `noun` and the slot refers to no term whose part of speech is `proper noun` and the slot refers to no parameter, if the person validates this specification, then the specification service shall fail the check and name the slot.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
