@@ -101,8 +101,9 @@ def report(batch, instruction, task, finding):
             "submit batch": "shop work batch review %s" % name,
             "fix task": "a commit on %s citing Item: %s, then shop work batch review %s" % (
                 task.branch if task else "", task.item if task else "", name),
-            "review change": "shop work batch brief %s, the reply saved as the findings file, then shop work batch "
-                             "reviewed %s" % (name, name),
+            "review change": "shop work batch brief %s, a fresh pr-reviewer on it, then shop work batch reviewed "
+                             "%s --reply <its transcript> (the findings file read only when no transcript is found)"
+                             % (name, name),
             "fix finding": "a commit on %s citing Finding: %s, then shop work batch review %s" % (
                 next((t.branch for t in batch.tasks if finding and t.item == finding.item), ""), finding.fid if finding else "", name),
             }.get(instruction)
