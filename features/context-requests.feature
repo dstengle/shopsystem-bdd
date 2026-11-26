@@ -636,10 +636,10 @@ Feature: Context requests
   Scenario: An offer of a capability holds no term its requirements do not mention
     Given a term t1
     And this bounded context holds the term t1
-    And no requirement mentions the term t1
+    And a capability c1
+    And no requirement of the capability c1 mentions the term t1
     And a session s1
     And a context request c2
-    And a capability c1
     When the session s1 offers on the context request c2 with the capability c1
     Then the context requests service keeps the entry e1
     And the entry e1 does not hold the term t1

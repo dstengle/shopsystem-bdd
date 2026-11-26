@@ -56,6 +56,14 @@ def none_cites(step):
     T.given(step, "item", name)["unbuilt"] = True
 
 
+@first("GivenDoes", "holds")
+def none_built(step):
+    """`no workspace of a task of the batch b1 holds a kept change that cites an item in the batch b1` (b716): what
+    `polled_world` makes of an item no kept change cites, its running task's branch holding no commit citing it."""
+    if not re.match(r"no (workspace|worktree) of a task of the batch [a-z]+\d+ holds a ", step.text):
+        return False
+
+
 @four("GivenK_A", "review finding", *BOTH)
 def given_triage(step):
     """`the triage of the review finding r2 is `fix now``: batches_handlers_finding records each as `fix now`."""

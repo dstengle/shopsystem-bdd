@@ -10,7 +10,10 @@ the feature's Then states the order and its Givens give at least three members d
 nor its reverse, so that world_order's check of the Then fails on the members printed as given (`counter`). A
 requirement that uses `order-by` and a verb while no frame takes `thing` (b298) is the example said with the verb
 "return", whose one frame names the collection's kind (`agent returns worktree to agent`), added to the context; one
-that uses `order-by-every` and `of-relation` (b328) the example said after "every file in the worktree"."""
+that uses `order-by-every` and `of-relation` (b328) the example said after "every file in the worktree". One that
+uses `no-noun`, `of-relation` and a code (b716) is a no box of more than one atom, "no task of the batch is
+`failed`", in codified2_world's context with a task of a batch (`unlinked`), and "the given step g1 uses the code c2"
+holds when a Given of its feature holds the code (`given_code`)."""
 import re
 import sys
 from pathlib import Path
@@ -45,6 +48,45 @@ ORDERED_GIVE = ("When the person runs `work start`, `work` shall give every file
 # b328: the order-by-every example after every K in a collection, a modifier by the row file | in | worktree
 ORDERED_IN = ("When the person runs `work start` on a worktree, `work` shall print every file in the worktree, "
               "ordered by version, in ascending order.")
+
+
+# b716: a no box of two atoms, its restriction a code, in codified2_world's context with tasks of a batch
+NO_BOX = ("While a batch is `building` and no task of the batch is `failed`, when the person ends the batch, `work` "
+          "shall exit successfully.")
+NO_TERMS = ("- **task** (noun): a piece of a batch.\n- **batch** (noun): the work built together.\n"
+            "- **phase** (attribute of batch): Values (adjective): `building`, `merged`.\n"
+            "- **status** (attribute of task): Values (adjective): `failed`, `passed`.\n")
+
+
+def unlinked(step, w, name, path):
+    """The capability `name` whose r1 is NO_BOX, the code `failed` each code a Given names; True when written."""
+    used = {o.strip("`") for v, _, o, pos in w["facts"] if v == "use" and pos and isinstance(o, str)}
+    codes = [o for v, _, o, pos in w["facts"] if v == "use" and pos and isinstance(o, str) and not o.startswith("`")
+             and w["kinds"].get(o) in (None, "code")]     # "the requirement r1 uses the code c2"
+    if not {"no-noun", "of-relation"} <= used or not codes:
+        return False
+    world = sys.modules.get("shop_codified2_world")
+    if world is None:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("shop_codified2_world", Path(__file__).with_name("codified2_world.py"))
+        sys.modules["shop_codified2_world"] = world = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(world)
+    world.context(step.repo, path, [NO_BOX], name)
+    index = step.repo / "spec" / "index.md"
+    text = index.read_text().replace("|\n\n## Glossary", "|\n| task | of | batch |  |\n\n## Glossary", 1)
+    index.write_text(text.replace("Frame: agent ends stage.", "Frame: agent ends stage. Frame: agent ends batch.")
+                     + NO_TERMS)
+    w["values"].update({c: "`failed`" for c in codes})
+    return True
+
+
+def given_code(step, w, name):
+    """Assert that a Given of the feature of `name` holds the code the Then names."""
+    code = w["values"][step.names[-1]]
+    text = (step.repo / "features" / ("%s.feature" % name)).read_text()
+    givens = [s for block in re.findall(r"^    Given (.*?)^    When ", text, re.DOTALL | re.MULTILINE)
+              for s in block.split("\n") if code in s]
+    assert givens, "no given step holds %s:\n%s" % (code, text)
 
 
 def construct(w):

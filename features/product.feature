@@ -310,8 +310,8 @@ Feature: Product
     And the requirement r2 uses the operation o1
     And a port line p1
     And the port line p1 governs the operation o1
-    And the operation o1 has no property
-    And the operation o1 has no operation outcome
+    And no property of the operation o1 refers to an operation
+    And no requirement handles an operation outcome of the operation o1
     When the person traces the job j1
     Then the coordination of the job j1 is `port request`
     And the product service returns the job j1

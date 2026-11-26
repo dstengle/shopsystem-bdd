@@ -65,6 +65,8 @@ def given_task(step):
 
 @handler("GivenK_A", "task")
 def given_task_is(step):
+    if step.text.startswith("no "):     # "no task of the batch b1 whose status is `failed` exists" (b716): none given
+        return
     status = bare(step.values[0])
     if " is not " in step.text:
         status = next(s for s in TASK_STATUSES if s != status)

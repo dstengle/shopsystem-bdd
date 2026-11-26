@@ -286,8 +286,8 @@ Feature: Batches
     And the scenario s1 breaks in the workspace w1
     And a capability c1
     And the scenario s1 has the capability c1
-    And the capability c1 holds no requirement id
-    And the workspace w1 holds no kept change
+    And the item i1 holds no requirement id in the capability c1
+    And no kept change in the workspace w1 touches a feature of the capability c1
     And a session s2
     When the session s2 finishes the task t1
     Then the batches service sets the status of the task t1 to `done`
@@ -440,7 +440,7 @@ Feature: Batches
     And an operation o1
     And the model line m1 specifies the operation o1
     And this domain model does not hold the operation o1
-    And the operation o1 has no operation table
+    And the item i1 holds no operation table of the operation o1
     And a batch b1
     And an operation table o2
     And an adapter contract a1
@@ -998,7 +998,7 @@ Feature: Batches
     And a kept change k1
     And the kept change k1 cites the item i1
     And the workspace w1 holds the kept change k1
-    And the batch b1 has no task
+    And no task of the batch b1 whose status is `failed` exists
     When the driver polls the batch b1
     Then the batches service returns the batch step b2
     And the instruction of the batch step b2 is `finish task`
@@ -1050,7 +1050,7 @@ Feature: Batches
     And a kept change k1
     And the kept change k1 cites the item i1
     And the workspace w1 holds the kept change k1
-    And the batch b1 has no task
+    And no task of the batch b1 whose status is `failed` exists
     And a batch brief b2
     And the batch b1 has the batch brief b2
     When the driver polls the batch b1
@@ -1086,7 +1086,8 @@ Feature: Batches
     And a task t2
     And the item i1 has the task t2
     And the status of the task t2 is `pending`
-    And the batch b1 has no task
+    And no task of the batch b1 whose status is `failed` exists
+    And no task of the batch b1 whose status is `running` exists
     And a task t3
     And the batch b1 has the task t3
     And the status of the task t3 is `pending`
@@ -1132,7 +1133,7 @@ Feature: Batches
     And the item i1 has the task t1
     And the status of the task t1 is `running`
     And the kind of `registry` is `port`
-    And `registry` holds no capability
+    And the item i1 holds no capability in `registry`
     And `registry` imports `tracking`
     When the person amends the item i1
     Then the batches service keeps `registry`
@@ -1150,7 +1151,7 @@ Feature: Batches
     And a capability c1
     And the capability c1 has the requirement r1
     And the requirement r1 governs the operation o1
-    And the capability c1 holds no requirement id
+    And the item i1 holds no requirement id in the capability c1
     And a batch b1
     When the person opens the batch b1
     Then the batches service generates the feature f1
@@ -1194,7 +1195,8 @@ Feature: Batches
     And a task t2
     And the item i1 has the task t2
     And the status of the task t2 is `running`
-    And the batch b1 has no task
+    And no task of the batch b1 whose status is `failed` exists
+    And no workspace of a task of the batch b1 holds a kept change that cites an item in the batch b1
     And a batch brief b2
     And the batch b1 has the batch brief b2
     And a task t3
@@ -1248,7 +1250,7 @@ Feature: Batches
     And the batch b1 has the workspace w1
     And a scenario s1
     And the scenario s1 breaks in the workspace w1
-    And the batch b1 holds no item
+    And no scenario of an item in the batch b1 breaks in the workspace w1
     And no fix exists
     When the driver polls the batch b1
     Then the batches service returns the batch step b2
@@ -1285,7 +1287,7 @@ Feature: Batches
     And a capability c1
     And the capability c1 has the requirement r1
     And the requirement r1 uses the verb v1
-    And the capability c1 holds no requirement id
+    And the item i1 holds no requirement id in the capability c1
     And a batch b1
     When the person opens the batch b1
     Then this corpus holds the requirement r1

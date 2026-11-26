@@ -58,7 +58,7 @@ Feature: Checking
   @g21 @r21
   Scenario: A capability with no Behaviour section
     Given a capability c1
-    And the capability c1 has no section
+    And no section of the capability c1 whose heading is `Behaviour` exists
     When the person validates this specification
     Then the specification service fails this check
     And the specification service names the capability c1
@@ -430,7 +430,7 @@ Feature: Checking
     And the kind of the area a1 is `port`
     And an operation o1
     And the area a1 holds the operation o1
-    And the operation o1 has no operation table
+    And no adapter contract holds an operation table of the operation o1
     When the person validates this specification
     Then the specification service completes this request
 
@@ -606,7 +606,7 @@ Feature: Checking
     Given a provider p1
     And an adapter spec a1
     And the adapter spec a1 has the provider p1
-    And the adapter spec a1 holds no contract
+    And the provider p1 has no contract in the adapter spec a1
     When the person validates the adapter spec a1
     Then the specification service fails this check
     And the specification service names the provider p1

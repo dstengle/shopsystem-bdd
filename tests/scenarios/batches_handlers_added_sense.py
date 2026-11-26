@@ -59,8 +59,8 @@ def holds(step):
     if _mine(step, "item", "verb"):
         B.write_item(step, parts(step)[0][1], sections={"Requirements": "### review\n\n%s\n\n%s"
                                                         % (NEWER, R.block("Title", R.PASSING))})
-    elif not (step.context.get("sensed") and parts(step)[0][0] == "capability"
-              and step.text.endswith(" holds no requirement id")):
+    elif not (step.context.get("sensed") and parts(step)[0][0] in ("capability", "item")
+              and " holds no requirement id" in step.text):     # "the item i1 ... in the capability c1" (b716)
         return False
 
 

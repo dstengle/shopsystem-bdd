@@ -429,8 +429,8 @@ Feature: Scenarios
     And a requirement r1
     And the requirement group r2 has the requirement r1
     And the requirement r1 uses `order-by`
-    And no frame takes `thing`
     And a verb v1
+    And no frame of the verb v1 takes `thing`
     And the requirement r1 uses the verb v1
     And a feature f1
     And the capability c1 has the feature f1
@@ -484,8 +484,8 @@ Feature: Scenarios
     And a requirement r1
     And the requirement group r2 has the requirement r1
     And the requirement r1 uses `order-by-every`
-    And no frame takes `thing`
     And a verb v1
+    And no frame of the verb v1 takes `thing`
     And the requirement r1 uses the verb v1
     And a feature f1
     And the capability c1 has the feature f1
