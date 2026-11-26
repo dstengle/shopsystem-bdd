@@ -140,10 +140,11 @@ Synopsis: `shop work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retir
 - `--remove-model "<header>"`: the item's own element (`object label`, `service notes`) taken out of its model
   lines with its members; given with indented member lines, only those members go. `--reword-model "<header>"
   "<lines>"` puts the model lines given (checked as `--model`'s) in place of the element and its members.
-  `--remove-term <term>` takes one of the item's terms out, and `--reword-term <term> -- "<entry>"` puts the entry
-  in its place (`--` before an entry that opens with `-`); a term is named by its word, by `<word> → <element>` when
-  two entries share the word, or by its whole bullet. A model block left empty goes. Each refuses a model line or a
-  term the item does not hold, naming it, and `--into <capability>` picks the area of a model line two areas hold.
+  `--remove-term <term>` takes one of the item's terms out, and `--reword-term <term> "<entry>"` puts the entry,
+  its bullet as `--term` takes it, in its place; a term is named by its word, by `<word> → <element>` when two
+  entries share the word, or by its whole bullet. A model block left empty goes. Each refuses a model line or a term
+  the item does not hold, naming it, and `--into <capability>` picks the area of a model line two areas hold, or of a
+  term, as `--term` takes it, the capability's area or its own block.
 - `--remove-universal U<n>`, `--remove-upstream <bounded-context id>`, `--remove-given <cap>#g<n>`: the item's own
   universal condition, upstream entry or given block of its group taken out. `--replace-universal U<n> "<statement>"`,
   `--replace-upstream <id> "<entry>"` and `--replace-given <cap>#g<n> "<block>"` put the one given (checked as
