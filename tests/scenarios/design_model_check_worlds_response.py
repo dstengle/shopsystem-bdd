@@ -7,7 +7,8 @@ to publish the design-decision (b626, `reply-trigger`), or to publish every desi
 reading gives a request (b726), and on its failure of that request (b727, `reply-failure`); and two lines on one
 trigger whose responses ask the registry to lodge the design-decision on a shelf with its keeper (`oblique-role`, a
 thing parameter), the second with a summary too, which `spec explain` of the second reads the first's request in
-(b742), and of lodge's two frames of two prepositions the one the line used (b751)."""
+(b742), and of lodge's two frames of two prepositions the one the line used (b751), or the one preposition its two
+frames share when neither takes the kinds of the request (b756: the registry, an actor, on <agent>)."""
 import importlib.util
 import sys
 from pathlib import Path
@@ -42,12 +43,17 @@ LODGED = ("\n- **lodge** (verb, action) → operation registry.lodge. Forms: lod
           "<design-decision> on <shelf>.\n")
 # lodge's first frame of another preposition before b742's (b751): explain says the one the line used, "on"
 FRAMED = LODGED.replace("Frame: ", "Frame: <actor> lodges <design-decision> with <keeper>. Frame: ")
+# lodge's two frames of one preposition before an agent, the registry in its place, whose kind no frame reads (b756)
+SHARED = LODGED.replace("<design-decision> on <shelf>.", "<design-decision> on <agent>. Frame: <actor> lodges <keeper> "
+                        "on <agent>.")
 
 
-def lodging(step, lodged=LODGED):
+def lodging(step, lodged=LODGED, on="the shelf"):
     """The request context with a shelf, its keeper and the registry's lodge (b742): thing's r1 lodges the
-    design-decision on the shelf with the keeper, r2 with the summary `s1` too; r2 the requirement explained."""
-    VALUE.line(LODGING + ".", LODGING + " and the summary `s1`.")(step)
+    design-decision on the shelf (or `on`) with the keeper, r2 with the summary `s1` too; r2 the requirement
+    explained."""
+    text = LODGING.replace("on the shelf", "on " + on)
+    VALUE.line(text + ".", text + " and the summary `s1`.")(step)
     spec = step.repo / "spec"
     for path, end, more in (("model/decisions.md", "\nactor the person", SHELF), ("model/registry.md", "```\n", LODGE)):
         text = (spec / path).read_text()
@@ -57,7 +63,7 @@ def lodging(step, lodged=LODGED):
         (spec / path).write_text((spec / path).read_text().rstrip("\n") + more)
     step.context.setdefault("ids", {})["r2"] = "thing#r2"
     H.says(step, "r1", "thing#r1")
-    H.says(step, "c1", "shall lodge a design-decision on a shelf with a keeper (by")
+    H.says(step, "c1", "shall lodge a design-decision on %s with a keeper (by" % on.replace("the shelf", "a shelf"))
 
 
 def requesting(step, text=REQUESTING):
@@ -84,8 +90,12 @@ def plural(step):
 
 
 def framed(step):
-    """lodging's world with lodge's two frames of two prepositions, "with" <keeper> first (b751)."""
-    lodging(step, FRAMED)
+    """lodging's world with lodge's two frames of two prepositions, "with" <keeper> first (b751); of one preposition,
+    "on" <agent>, when the scenario brings in one preposition only (b756)."""
+    if len(step.context.get("kinds", {}).get("preposition", ())) == 1:
+        lodging(step, SHARED, "the registry")
+    else:
+        lodging(step, FRAMED)
 
 
 ROWS = [
