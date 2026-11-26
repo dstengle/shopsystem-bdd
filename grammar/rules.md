@@ -1804,7 +1804,7 @@ an outcome of a driven port's operation that no core line handles and no port li
 - Since: b549
 - Severity: error
 - Implemented in: `scripts/model.lp`
-- Cited by: no line
+- Cited by: items#r72
 - Fails on:
 
   ```prolog
