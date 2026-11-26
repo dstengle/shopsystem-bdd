@@ -217,3 +217,12 @@ when the change is merged.
 ### [g185] An amended item is lifted from the workspaces of its batch and task and laid there again
 - [r185] While an item in a batch is `in-batch` and a task of the item is `running`, when the person amends the item, the batches service shall lift the item from the workspace of the batch, lift the item from the workspace of the task, lay the item in the workspace of the batch and lay the item in the workspace of the task.
 
+### [g190] An item picked whose requirement id a capability holds keeps its pack term once renumbered
+- [r190] While an item is `ready` and the item meets the readiness bar and the item holds a term of a pack and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep the pack that has the term.
+
+### [g191] An item picked whose requirement id a capability holds keeps its operation table once renumbered
+- [r191] While an item is `ready` and the item meets the readiness bar and the item holds an operation table and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep an adapter contract that holds the operation table.
+
+### [g192] An item picked whose requirement id a capability holds keeps the term it moves once renumbered
+- [r192] While an item is `ready` and the item meets the readiness bar and the item moves a term that means an element and an area holds the element and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep the area that holds the term.
+
