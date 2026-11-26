@@ -10,7 +10,7 @@ and its capability `shelving`, whose line says the notes word "note" (r146); whe
 files.
 
 The Givens keep what they say (`world`): each scenario's area a2 is notes, the area each coupling is of, and a1 is
-binder; the word w1 is `jotting` in r149's group and `high` in r148's, the homonym h1 `high`, the element e2 `object note`, the requirement r1 `shelving#r1`, and the Python file p2 `src/notes_store.py`, named by the coupling returned as imported by
+binder, in r149's group read off what each area holds (`area`: the term's is binder, the element's notes); the word w1 is `jotting` in r149's group and `high` in r148's, the homonym h1 `high`, the element e2 `object note`, the requirement r1 `shelving#r1`, and the Python file p2 `src/notes_store.py`, named by the coupling returned as imported by
 `src/binder_shelf.py`. The When runs `spec
 coupling --json`; the Thens read the couplings of the envelope's content."""
 import json
@@ -25,6 +25,7 @@ GROUPS = {"g145", "g146", "g147", "g148", "g149"}
 SAYS = {"word": "high", "homonym": "high", "element": "object note", "requirement": "shelving#r1"}
 BORROWED = "- **jotting** (noun) → object note. A note as a binder holds it. Plural: jottings.\n"
 AREAS = {"a1": "binder", "a2": "notes"}
+HELD_IN = {"term": "binder", "element": "notes"}
 IMPORT = "src/binder_shelf.py -> src/notes_store.py"
 MODULES = """[notes]
 modules = ["src/notes_*.py"]
@@ -111,7 +112,17 @@ def borrowing(step):
 
 
 def world(step):
-    return step.context.setdefault("coupling", {"kinds": {}, "of": {}})
+    return step.context.setdefault("coupling", {"kinds": {}, "of": {}, "holds": {}})
+
+
+def area(step, name):
+    """The area `name` is: in r149's group the one whose files hold what the Givens say it holds (the term t1 is
+    binder's borrowed entry, the element e1 notes' object note), so a1 and a2 follow the Givens; else AREAS's."""
+    if not borrowing(step):
+        return AREAS[name]
+    held = {HELD_IN[world(step)["kinds"][t]] for t in world(step)["holds"].get(name, ())}
+    assert len(held) == 1, (name, world(step))
+    return held.pop()
 
 
 def given_instance(step):
@@ -127,8 +138,10 @@ def given_state(step):
     if not mine(step) or step.term not in ("has", "holds", "refer", "mean", "use", "import"):
         return False
     w = world(step)
+    if step.term == "holds" and w["kinds"].get(step.names[0]) == "area":
+        w["holds"].setdefault(step.names[0], []).append(step.names[1])
     if step.term == "has" and w["kinds"].get(step.names[1]) == "coupling":
-        w["of"][step.names[1]] = AREAS[step.names[0]]
+        w["of"][step.names[1]] = step.names[0]
 
 
 def build(step):
@@ -177,9 +190,9 @@ def couplings(step):
 
 def coupling(step, name):
     """The coupling of the area the Givens say `name` is of, by the other area."""
-    area = world(step)["of"][name]
-    other = next(a for a in AREAS.values() if a != area)
-    found = [c for c in couplings(step) if c["area"] == area and c["by"] == other]
+    of = world(step)["of"][name]
+    other = next(a for a in AREAS if a != of)
+    found = [c for c in couplings(step) if c["area"] == area(step, of) and c["by"] == area(step, other)]
     assert len(found) == 1, couplings(step)
     return found[0]
 
