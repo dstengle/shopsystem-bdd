@@ -107,6 +107,11 @@ contract:
     active virtualenv's bin/, /usr/local/bin/python3 and /usr/bin/python3
     whose `-c "import clingo"` succeeds; when none does, it says so with the
     command that installs clingo and each interpreter it tried, and exits 2.
+  - check --item b<n> and trace <job> --item b<n> read the whole context as
+    it reads once the item b<n>'s lines are laid, as parse --item does, on a
+    copy of spec/ and grammar/ beside the context's other files, so a group
+    the item dedicates to a job serves it there (spec_preview); an item with
+    no file is refused, naming it.
   - A decision's tier is check, requirement or judgement; enforced_by lists
     pytest node ids (<path>.py[::<name>...]) for a check decision and
     requirement ids (an entry with #) for a requirement decision, and a

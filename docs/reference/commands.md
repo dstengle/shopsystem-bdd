@@ -120,7 +120,7 @@ b250 "work show prints the status of an item" shaped
 Writes a requirement line into an item's `## Requirements`, under the capability it goes into, and commits it. It
 takes an item that is `idea`, `shaped` or `in-batch`; an in-batch item's changed lines reach its batch with
 [`shop work batch amend`](#shop-work-batch-amend).\
-Synopsis: `shop work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN|CAP] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--expose TABLES] [--withhold SERVICE.OPERATION] [--remove-model MODEL] [--reword-model HEADER] [--remove-term TERM] [--reword-term TERM] [--pack NAME] [--remove-universal U<n>] [--replace-universal U<n>] [--remove-upstream ID] [--replace-upstream ID] [--remove-given CAP#g<n>] [--replace-given CAP#g<n>] [--upstream UPSTREAM] name [text]`
+Synopsis: `shop work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN|CAP] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--expose TABLES] [--withhold SERVICE.OPERATION] [--remove-model MODEL] [--reword-model HEADER] [--remove-term TERM] [--reword-term TERM] [--pack NAME] [--remove-universal U<n>] [--replace-universal U<n>] [--remove-upstream ID] [--replace-upstream ID] [--remove-given CAP#g<n>] [--replace-given CAP#g<n>] [--serves CAP#gN JOB] [--upstream UPSTREAM] name [text]`
 
 - `--into <capability>`: the codified capability the line goes into.
 - `--group "<title>"`: open a new group with this title (default: the item's title). `--in g<n>` joins one of the
@@ -140,10 +140,11 @@ Synopsis: `shop work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retir
 - `--remove-model "<header>"`: the item's own element (`object label`, `service notes`) taken out of its model
   lines with its members; given with indented member lines, only those members go. `--reword-model "<header>"
   "<lines>"` puts the model lines given (checked as `--model`'s) in place of the element and its members.
-  `--remove-term <term>` takes one of the item's terms out, and `--reword-term <term> -- "<entry>"` puts the entry
-  in its place (`--` before an entry that opens with `-`); a term is named by its word, by `<word> → <element>` when
-  two entries share the word, or by its whole bullet. A model block left empty goes. Each refuses a model line or a
-  term the item does not hold, naming it, and `--into <capability>` picks the area of a model line two areas hold.
+  `--remove-term <term>` takes one of the item's terms out, and `--reword-term <term> "<entry>"` puts the entry,
+  its bullet as `--term` takes it, in its place; a term is named by its word, by `<word> → <element>` when two
+  entries share the word, or by its whole bullet. A model block left empty goes. Each refuses a model line or a term
+  the item does not hold, naming it, and `--into <capability>` picks the area of a model line two areas hold, or of a
+  term, as `--term` takes it, the capability's area or its own block.
 - `--remove-universal U<n>`, `--remove-upstream <bounded-context id>`, `--remove-given <cap>#g<n>`: the item's own
   universal condition, upstream entry or given block of its group taken out. `--replace-universal U<n> "<statement>"`,
   `--replace-upstream <id> "<entry>"` and `--replace-given <cap>#g<n> "<block>"` put the one given (checked as
@@ -167,6 +168,12 @@ Synopsis: `shop work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retir
   it is in. `--into <name>` of a capability no file and no block of the item holds names the item that holds it
   and its batch, in place of suggesting `--capability`. Lines and terms go into it with `--into <name>`; `shop work
   batch start` writes its file (with `area:` and `specifies:`) and names it in its area's row under `## Composition` of `spec/index.md`.
+- `--serves <cap>#g<n> <job>`: dedicate a requirement group (a live one, or one of the item's own) to a job of the
+  product (`shop spec job` declares it), kept as the pair under the item's block of the capability; `shop work
+  batch start` writes it as the group's `serves: <job>` line. Beside a requirement line, `--serves <job>` alone
+  dedicates the group the line goes into, and the line added is printed before the pair. A job the product does not
+  hold is refused naming it, and so is a pair the group serves already or another open item holds.
+  [`shop spec trace`](#shop-spec-trace) shows what serves a job.
 - `--expose '<tables>'`: the tables of one operation for the CLI adapter contract, `[operations."<service>.<operation>"]`
   with its `command` and its `[operations."<service>.<operation>".parameters]`, kept in the item's `### cli adapter`
   block in place of that operation's own; refused when the domain model, with the item's model lines, has no such
@@ -1064,9 +1071,12 @@ which also means:
 
 Solves the facts of the repository against the design model's rules and prints every violation (`v_...`), then
 warnings (`w_...`), unresolved references and file problems. Exits 1 on any violation.\
-Synopsis: `shop spec check [--json] [--limit LIMIT]`
+Synopsis: `shop spec check [--json] [--limit LIMIT] [--item b<n>]`
 
 - `--limit`: rows shown for each rule (the rest are counted).
+- `--item b<n>`: check the specification as it reads once the item's lines, terms, model lines and `serves:` pairs
+  are laid into it, on a copy, as `shop spec parse --item` reads a line; nothing in `spec/` changes. A job the item's
+  groups serve is then no `w_unserved_job`, before any batch lays them.
 
 ```console
 $ shop spec check
@@ -1288,7 +1298,12 @@ Prints a job's trace, writing nothing: the requirements of the requirement group
 covers, followed up to three hops), each adapter spec whose `realises:` names a port line in the trace, and the
 traces of the jobs it needs (its needs in the product file), each requirement and adapter spec once with why it is
 in the trace. A job no requirement group serves is refused naming it.\
-Synopsis: `shop spec trace <job>`
+Synopsis: `shop spec trace [--json] [--item b<n>] <job>`
+
+- `--item b<n>`: trace the job as the specification reads once the item's lines and `serves:` pairs are laid into
+  it, on a copy, as `shop spec parse --item` does; nothing in `spec/` changes. Without it a group the item dedicates
+  to the job (`shop work line --serves`) is in no trace until a batch lays the item, and a job only such groups serve
+  is refused.
 
 ```console
 $ shop spec trace j1 --json
@@ -1306,8 +1321,9 @@ The trace also says the job's coordination (decision 0134), derived from its lin
 declared: `saga` when it requests two operations of a driven port or more that have a `compensated by` property,
 `long-running process` when a requirement on the outcome of a port operation it requests uses an operation that
 performs a lifecycle transition, `port request` when it requests a port operation whose outcomes no requirement
-handles. It is printed as `coordination: <kind>` after the first line, and is the content's `coordination` (null
-when the trace requests no port operation).
+handles. It is printed as the line `coordination: <kind>` under the trace's heading, and is the content's
+`coordination`; a trace that requests no port operation has no coordination, prints no such line, and its content's
+`coordination` is null.
 
 ### `shop spec coupling`
 

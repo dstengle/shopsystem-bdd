@@ -102,90 +102,6 @@ requirements = [
   "checking#r105: While this bounded context imports the `base` pack, when the person looks up the pack, the language service shall return every term of the pack and complete the request.",
 ]
 
-[operations."specification.check"]
-command = "spec check"
-cli-only = { options = ["--limit"] }
-requirements = [
-  "checking#r3: While nothing violates a rule, when the person validates this specification, the specification service shall return `0 violations` and complete the request.",
-  "checking#r18: While a request does not conform to the request form, if the person validates this specification, then the specification service shall fail the check and name the request.",
-  "checking#r19: While a scenario refers to a requirement id that the capability of the scenario does not hold, if the person validates this specification, then the specification service shall fail the check and name the scenario.",
-  "checking#r20: While a capability does not conform to the capability id form, if the person validates this specification, then the specification service shall fail the check and name the capability.",
-  "checking#r21: While a capability has no section whose heading is `Behaviour`, if the person validates this specification, then the specification service shall fail the check and name the capability.",
-  "checking#r22: While a feature does not conform to the feature form, if the person validates this specification, then the specification service shall fail the check and name the feature.",
-  "checking#r23: While a term does not conform to the entry form, if the person validates this specification, then the specification service shall fail the check and name the term.",
-  "checking#r24: While this bounded context does not conform to the final layout, if the person validates this specification, then the specification service shall fail the check and name `scripts/migrate`.",
-  "checking#r26: While this bounded context has no job, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.",
-  "checking#r27: While this interpreter does not import `clingo` and another interpreter imports `clingo`, when the person validates this specification, the specification service shall return `0 violations`.",
-  "checking#r28: While no interpreter imports `clingo`, if the person validates this specification, then the specification service shall fail the check and name this interpreter.",
-  "checking#r30: While a verb has no frame, if the person validates this specification, then the specification service shall fail the check and name the verb.",
-  "checking#r32: While a term has no part of speech, if the person validates this specification, then the specification service shall fail the check and name the term.",
-  "checking#r33: While a frame of a term has a preposition, when the person validates this specification, the specification service shall complete the request.",
-  "checking#r38: While a term has more than one frame, when the person validates this specification, the specification service shall complete the request.",
-  "checking#r39: While a term has more than one sense, when the person validates this specification, the specification service shall complete the request.",
-  "checking#r44: While a term redefines a pack, when the person validates this specification, the specification service shall complete the request.",
-  "checking#r46: If the person validates this specification with a capability whose language is `codified-1`, then the specification service shall refuse the request and name the capability.",
-  "checking#r49: While a requirement governs an operation that an adapter contract holds and the operation does not hold the requirement, if the person validates this specification, then the specification service shall fail the check and name the operation and the requirement.",
-  "checking#r50: While an adapter contract holds an operation and the operation holds a requirement and the requirement does not govern the operation, if the person validates this specification, then the specification service shall fail the check and name the operation and the requirement.",
-  "checking#r52: While a capability violates a rule whose severity is `error`, if the person validates this specification, then the specification service shall fail the check and name the rule.",
-  "checking#r53: While a capability violates a rule whose severity is `warning` and nothing violates a rule whose severity is `error`, when the person validates this specification, the specification service shall name the rule and complete the request.",
-  "checking#r54: While a requirement uses a rule that has no catalogue entry, if the person validates this specification, then the specification service shall fail the check and name the rule.",
-  "checking#r55: While a catalogue entry has no purpose, if the person validates this specification, then the specification service shall fail the check and name the catalogue entry.",
-  "checking#r57: While a catalogue entry mentions an item whose status is not `delivered`, if the person validates this specification, then the specification service shall fail the check and name the catalogue entry and the item.",
-  "checking#r58: While a catalogue entry mentions no item and the catalogue entry mentions no release, if the person validates this specification, then the specification service shall fail the check and name the catalogue entry.",
-  "checking#r63: While a term whose part of speech is `attribute` has more than one sense, when the person validates this specification, the specification service shall complete the request.",
-  "checking#r67: While a property refers to an operation that does not exist, if the person validates this specification, then the specification service shall fail the check and name the property.",
-  "checking#r69: While an area whose kind is `port` holds an operation and no adapter contract holds an operation table of the operation, when the person validates this specification, the specification service shall complete the request.",
-  "checking#r70: While a requirement supports a requirement id that no requirement has, if the person validates this specification, then the specification service shall fail the check and name the requirement id.",
-  "checking#r71: While a requirement uses `response-request` and the requirement uses an operation and no requirement governs the operation, when the person validates this specification, the specification service shall complete the request.",
-  "checking#r72: While a requirement uses `response-request` and the requirement uses an operation and another requirement has a trigger that uses a refusal and the operation, when the person validates this specification, the specification service shall complete the request.",
-  "checking#r84: While the id of an adapter spec does not conform to the adapter spec id form, if the person validates the adapter spec, then the specification service shall fail the check and name the id.",
-  "checking#r85: While an adapter spec realises a requirement id that no requirement has, if the person validates the adapter spec, then the specification service shall fail the check and name the requirement id.",
-  "checking#r86: While a provider of an adapter spec has no contract that the adapter spec holds, if the person validates the adapter spec, then the specification service shall fail the check and name the provider.",
-  "checking#r87: While an adapter spec holds an adapter decision and the adapter spec holds a contract of a provider of the adapter spec, when the person validates the adapter spec, the specification service shall complete the request.",
-  "checking#r92: While the id of an adapter spec does not match the adapter spec, if the person validates the adapter spec, then the specification service shall fail the check and name the id.",
-  "checking#r93: While a provider of an adapter spec has a version that does not conform to the version form, if the person validates the adapter spec, then the specification service shall fail the check and name the version.",
-  "checking#r95: While a driven port holds an operation and no core line that uses `response-request` uses the operation, if the person validates this specification, then the specification service shall fail the check and name the operation.",
-  "checking#r96: While a driven port holds an operation that has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, if the person validates this specification, then the specification service shall fail the check and name the operation outcome.",
-  "checking#r97: While a port line that governs an operation supports a requirement id and no core line that has the requirement id uses the operation, if the person validates this specification, then the specification service shall fail the check and name the requirement id.",
-  "checking#r98: While a port line governs an operation and no core line relies on the port line, if the person validates this specification, then the specification service shall fail the check and name the port line.",
-  "checking#r99: While a core line that uses `response-request` uses an operation and a port line that governs the operation supports no requirement id and the port line excludes an operation outcome that no core line handles, when the person validates this specification, the specification service shall complete the request.",
-  "checking#r101: While an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition, if the person validates this specification, then the specification service shall fail the check and name the transition.",
-  "checking#r104: While this bounded context imports a pack and the pack has a term and an element refers to the term, when the person validates this specification, the specification service shall complete the request.",
-  "checking#r106: While an adapter spec holds a contract and a requirement of the adapter spec uses a term that the contract holds, when the person validates the adapter spec, the specification service shall complete the request.",
-  "checking#r107: While an adapter spec holds a contract that holds a term and the term clashes with another term and the adapter spec renames the term, when the person validates the adapter spec, the specification service shall complete the request.",
-  "checking#r108: While an adapter spec holds a contract that holds a term and the term clashes with another term and the adapter spec does not rename the term, if the person validates the adapter spec, then the specification service shall fail the check and name the term.",
-  "checking#r109: While an adapter spec holds an assumed description that holds a requirement id that no scenario refers to, if the person validates the adapter spec, then the specification service shall fail the check and name the requirement id.",
-  "checking#r110: While this bounded context has a job and a requirement group of a capability serves the job, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.",
-  "checking#r111: While a requirement has a response that uses an operation and no parameter and no requirement governs the operation, when the person validates this specification, the specification service shall complete the request.",
-  "checking#r112: While a lifecycle has a transition and a requirement that forbids an act uses `set-attribute` and the transition and no operation performs the transition, when the person validates this specification, the specification service shall name the transition and complete the request.",
-  "checking#r113: While this bounded context imports a pack and the pack has a term and the term spells an element and no term means the element and another element refers to the term, when the person validates this specification, the specification service shall complete the request.",
-  "checking#r114: While this product holds a job and no bounded context holds the job, when the person validates this specification, the specification service shall name the job and complete the request.",
-  "checking#r115: While this bounded context holds a job and no requirement group serves the job, when the person validates this specification, the specification service shall name the job and complete the request.",
-  "checking#r116: While this bounded context holds a job and an agent plays a product actor of the job and the agent triggers no requirement that the job reaches, when the person validates this specification, the specification service shall name the product actor and complete the request.",
-  "checking#r117: While this product holds a job and the job needs a need that depends on the job, if the person validates this specification, then the specification service shall fail the check and name the need.",
-  "checking#r118: While this product holds a subdomain and no bounded context addresses the subdomain, when the person validates this specification, the specification service shall name the subdomain and complete the request.",
-  "checking#r119: While this bounded context holds a job and a subdomain serves the job and the job reaches no bounded context that addresses the subdomain, when the person validates this specification, the specification service shall name the subdomain and complete the request.",
-  "checking#r120: While this bounded context has a job and the job reaches a capability, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.",
-  "checking#r121: While this bounded context has a job and a capability has a port line, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.",
-  "checking#r122: While this bounded context has a job and a requirement group serves the job and the group of a capability is `guarantees`, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.",
-  "checking#r123: While a requirement group serves a job and this bounded context has the job and another bounded context holds the job, if the person validates this specification, then the specification service shall fail the check and name the job.",
-  "checking#r124: While this product does not conform to the product form, when the person validates this specification, the specification service shall name this product and complete the request.",
-  "checking#r125: While a driven port holds an operation that has an operation outcome and a core line that uses `reply-trigger` handles the operation outcome, when the person validates this specification, the specification service shall complete the request.",
-  "checking#r135: While an adapter spec realises the requirement id of a port line that governs an operation and the operation uses another operation and the adapter spec holds no contract that holds the operation, if the person validates the adapter spec, then the specification service shall fail the check and name the operation.",
-  "checking#r136: While an adapter spec realises the requirement id of a port line that governs an operation and the operation uses no operation, if the person validates the adapter spec, then the specification service shall fail the check and name the operation.",
-  "checking#r150: While a frame of a term has a fixed phrase and the frame takes a noun phrase, when the person validates this specification, the specification service shall complete the request.",
-  "checking#r151: While a term has a frame that violates `v_t13`, if the person validates this specification, then the specification service shall fail the check and name the frame.",
-  "decisions#r1: While a design-decision is not `superseded` or `rejected` and the design-decision has no tier, when the person validates this specification, the specification service shall return `w_untiered`.",
-  "decisions#r2: While the tier of a design-decision is `check` and no test enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d6`.",
-  "decisions#r3: While the tier of a design-decision is `requirement` and no requirement enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d7`.",
-  "decisions#r6: While a design-decision whose status is `accepted` supersedes a design-decision whose status is `accepted`, if the person validates this specification, then the specification service shall fail the check and name `v_d8`.",
-  "decisions#r12: When the person validates this specification, the specification service shall return every universal condition that no design-decision verifies.",
-  "decisions#r13: While the kind of a route of a design-decision is not `scenario`, `check`, `judgement` or `monitor`, if the person validates this specification, then the specification service shall fail the check and name the design-decision.",
-  "decisions#r17: While a design-decision has no id, if the person validates this specification, then the specification service shall fail the check and name the design-decision.",
-  "decisions#r20: While a design-decision has no section whose heading is `Decision`, if the person validates this specification, then the specification service shall fail the check and name the design-decision.",
-  "decisions#r26: While a requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded`, when the person validates this specification, the specification service shall complete the request.",
-]
-
 [operations."specification.examine"]
 command = "spec logic"
 requirements = [
@@ -746,16 +662,6 @@ requirements = [
 [operations."drafting.remove term".parameters]
 item = { positional = 1 }
 term = { option = "--remove-term" }
-
-[operations."drafting.reword term"]
-command = "work line"
-requirements = [
-  "drafting#r49: When the person rewords a term in an item, the drafting service shall keep a different term in the item.",
-  "drafting#r50: If the person rewords a term in an item that does not hold the term, then the drafting service shall refuse the request and name the term.",
-]
-[operations."drafting.reword term".parameters]
-item = { positional = 1 }
-term = { option = "--reword-term" }
 
 [operations."drafting.apply"]
 command = "work line"
@@ -1681,23 +1587,6 @@ requirements = [
 "bounded context" = { option = "--in", example = "bounded-context/missingmass.io/shopsystem/shopsystem-bdd" }
 actor = { option = "--as", example = "the person" }
 
-[operations."product.trace"]
-command = "spec trace"
-requirements = [
-  "product#r26: While a requirement group serves a job and the requirement group has a requirement, when the person traces the job, the product service shall return the requirement.",
-  "product#r27: While a requirement group serves a job and a requirement of the requirement group uses an operation and a different requirement governs the operation, when the person traces the job, the product service shall return the requirement.",
-  "product#r28: While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and an adapter spec realises the requirement id of the port line, when the person traces the job, the product service shall return the adapter spec.",
-  "product#r29: While a requirement group serves a need and the requirement group has a requirement, when the person traces a job that needs the need, the product service shall return the requirement.",
-  "product#r30: If the person traces a job that no requirement group serves, then the product service shall refuse the request and name the job.",
-  "product#r31: While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and the operation has no property that refers to an operation and no requirement handles an operation outcome of the operation, when the person traces the job, the product service shall return the job whose coordination is `port request`.",
-  "product#r32: While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and a requirement that handles an operation outcome of the operation uses an operation that performs a transition, when the person traces the job, the product service shall return the job whose coordination is `long-running process`.",
-  "product#r33: While a requirement group serves a job and a requirement of the requirement group uses two operations in a driven port that have a property that refers to an operation, when the person traces the job, the product service shall return the job whose coordination is `saga`.",
-  "product#r35: While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and an adapter spec realises the requirement id of the port line and the operation uses another operation and the adapter spec holds a contract that holds a requirement that governs the operation, when the person traces the job, the product service shall return the requirement.",
-  "product#r36: While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and an adapter spec realises the requirement id of the port line and the operation uses another operation and the adapter spec holds a contract that holds a different requirement that governs the operation and the requirement has the requirement id, when the person traces the job, the product service shall return the requirement.",
-]
-[operations."product.trace".parameters]
-job = { positional = 1, example = "j1" }
-
 [operations."drafting.import pack"]
 command = "work line"
 requirements = [
@@ -1872,3 +1761,121 @@ requirements = [
 ]
 [operations."product.drop context".parameters]
 "bounded context" = { positional = 1, example = "bounded-context/missingmass.io/shopsystem/shopsystem-bdd" }
+
+[operations."specification.check"]
+command = "spec check"
+cli-only = { options = ["--limit"] }
+requirements = [
+  "checking#r3: While nothing violates a rule, when the person validates this specification, the specification service shall return `0 violations` and complete the request.",
+  "checking#r18: While a request does not conform to the request form, if the person validates this specification, then the specification service shall fail the check and name the request.",
+  "checking#r19: While a scenario refers to a requirement id that the capability of the scenario does not hold, if the person validates this specification, then the specification service shall fail the check and name the scenario.",
+  "checking#r20: While a capability does not conform to the capability id form, if the person validates this specification, then the specification service shall fail the check and name the capability.",
+  "checking#r21: While a capability has no section whose heading is `Behaviour`, if the person validates this specification, then the specification service shall fail the check and name the capability.",
+  "checking#r22: While a feature does not conform to the feature form, if the person validates this specification, then the specification service shall fail the check and name the feature.",
+  "checking#r23: While a term does not conform to the entry form, if the person validates this specification, then the specification service shall fail the check and name the term.",
+  "checking#r24: While this bounded context does not conform to the final layout, if the person validates this specification, then the specification service shall fail the check and name `scripts/migrate`.",
+  "checking#r26: While this bounded context has no job, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.",
+  "checking#r27: While this interpreter does not import `clingo` and another interpreter imports `clingo`, when the person validates this specification, the specification service shall return `0 violations`.",
+  "checking#r28: While no interpreter imports `clingo`, if the person validates this specification, then the specification service shall fail the check and name this interpreter.",
+  "checking#r30: While a verb has no frame, if the person validates this specification, then the specification service shall fail the check and name the verb.",
+  "checking#r32: While a term has no part of speech, if the person validates this specification, then the specification service shall fail the check and name the term.",
+  "checking#r33: While a frame of a term has a preposition, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r38: While a term has more than one frame, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r39: While a term has more than one sense, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r44: While a term redefines a pack, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r46: If the person validates this specification with a capability whose language is `codified-1`, then the specification service shall refuse the request and name the capability.",
+  "checking#r49: While a requirement governs an operation that an adapter contract holds and the operation does not hold the requirement, if the person validates this specification, then the specification service shall fail the check and name the operation and the requirement.",
+  "checking#r50: While an adapter contract holds an operation and the operation holds a requirement and the requirement does not govern the operation, if the person validates this specification, then the specification service shall fail the check and name the operation and the requirement.",
+  "checking#r52: While a capability violates a rule whose severity is `error`, if the person validates this specification, then the specification service shall fail the check and name the rule.",
+  "checking#r53: While a capability violates a rule whose severity is `warning` and nothing violates a rule whose severity is `error`, when the person validates this specification, the specification service shall name the rule and complete the request.",
+  "checking#r54: While a requirement uses a rule that has no catalogue entry, if the person validates this specification, then the specification service shall fail the check and name the rule.",
+  "checking#r55: While a catalogue entry has no purpose, if the person validates this specification, then the specification service shall fail the check and name the catalogue entry.",
+  "checking#r57: While a catalogue entry mentions an item whose status is not `delivered`, if the person validates this specification, then the specification service shall fail the check and name the catalogue entry and the item.",
+  "checking#r58: While a catalogue entry mentions no item and the catalogue entry mentions no release, if the person validates this specification, then the specification service shall fail the check and name the catalogue entry.",
+  "checking#r63: While a term whose part of speech is `attribute` has more than one sense, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r67: While a property refers to an operation that does not exist, if the person validates this specification, then the specification service shall fail the check and name the property.",
+  "checking#r69: While an area whose kind is `port` holds an operation and no adapter contract holds an operation table of the operation, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r70: While a requirement supports a requirement id that no requirement has, if the person validates this specification, then the specification service shall fail the check and name the requirement id.",
+  "checking#r71: While a requirement uses `response-request` and the requirement uses an operation and no requirement governs the operation, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r72: While a requirement uses `response-request` and the requirement uses an operation and another requirement has a trigger that uses a refusal and the operation, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r84: While the id of an adapter spec does not conform to the adapter spec id form, if the person validates the adapter spec, then the specification service shall fail the check and name the id.",
+  "checking#r85: While an adapter spec realises a requirement id that no requirement has, if the person validates the adapter spec, then the specification service shall fail the check and name the requirement id.",
+  "checking#r86: While a provider of an adapter spec has no contract that the adapter spec holds, if the person validates the adapter spec, then the specification service shall fail the check and name the provider.",
+  "checking#r87: While an adapter spec holds an adapter decision and the adapter spec holds a contract of a provider of the adapter spec, when the person validates the adapter spec, the specification service shall complete the request.",
+  "checking#r92: While the id of an adapter spec does not match the adapter spec, if the person validates the adapter spec, then the specification service shall fail the check and name the id.",
+  "checking#r93: While a provider of an adapter spec has a version that does not conform to the version form, if the person validates the adapter spec, then the specification service shall fail the check and name the version.",
+  "checking#r95: While a driven port holds an operation and no core line that uses `response-request` uses the operation, if the person validates this specification, then the specification service shall fail the check and name the operation.",
+  "checking#r96: While a driven port holds an operation that has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, if the person validates this specification, then the specification service shall fail the check and name the operation outcome.",
+  "checking#r97: While a port line that governs an operation supports a requirement id and no core line that has the requirement id uses the operation, if the person validates this specification, then the specification service shall fail the check and name the requirement id.",
+  "checking#r98: While a port line governs an operation and no core line relies on the port line, if the person validates this specification, then the specification service shall fail the check and name the port line.",
+  "checking#r99: While a core line that uses `response-request` uses an operation and a port line that governs the operation supports no requirement id and the port line excludes an operation outcome that no core line handles, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r101: While an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition, if the person validates this specification, then the specification service shall fail the check and name the transition.",
+  "checking#r104: While this bounded context imports a pack and the pack has a term and an element refers to the term, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r106: While an adapter spec holds a contract and a requirement of the adapter spec uses a term that the contract holds, when the person validates the adapter spec, the specification service shall complete the request.",
+  "checking#r107: While an adapter spec holds a contract that holds a term and the term clashes with another term and the adapter spec renames the term, when the person validates the adapter spec, the specification service shall complete the request.",
+  "checking#r108: While an adapter spec holds a contract that holds a term and the term clashes with another term and the adapter spec does not rename the term, if the person validates the adapter spec, then the specification service shall fail the check and name the term.",
+  "checking#r109: While an adapter spec holds an assumed description that holds a requirement id that no scenario refers to, if the person validates the adapter spec, then the specification service shall fail the check and name the requirement id.",
+  "checking#r110: While this bounded context has a job and a requirement group of a capability serves the job, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.",
+  "checking#r111: While a requirement has a response that uses an operation and no parameter and no requirement governs the operation, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r112: While a lifecycle has a transition and a requirement that forbids an act uses `set-attribute` and the transition and no operation performs the transition, when the person validates this specification, the specification service shall name the transition and complete the request.",
+  "checking#r113: While this bounded context imports a pack and the pack has a term and the term spells an element and no term means the element and another element refers to the term, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r114: While this product holds a job and no bounded context holds the job, when the person validates this specification, the specification service shall name the job and complete the request.",
+  "checking#r115: While this bounded context holds a job and no requirement group serves the job, when the person validates this specification, the specification service shall name the job and complete the request.",
+  "checking#r116: While this bounded context holds a job and an agent plays a product actor of the job and the agent triggers no requirement that the job reaches, when the person validates this specification, the specification service shall name the product actor and complete the request.",
+  "checking#r117: While this product holds a job and the job needs a need that depends on the job, if the person validates this specification, then the specification service shall fail the check and name the need.",
+  "checking#r118: While this product holds a subdomain and no bounded context addresses the subdomain, when the person validates this specification, the specification service shall name the subdomain and complete the request.",
+  "checking#r119: While this bounded context holds a job and a subdomain serves the job and the job reaches no bounded context that addresses the subdomain, when the person validates this specification, the specification service shall name the subdomain and complete the request.",
+  "checking#r120: While this bounded context has a job and the job reaches a capability, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.",
+  "checking#r121: While this bounded context has a job and a capability has a port line, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.",
+  "checking#r122: While this bounded context has a job and a requirement group serves the job and the group of a capability is `guarantees`, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.",
+  "checking#r123: While a requirement group serves a job and this bounded context has the job and another bounded context holds the job, if the person validates this specification, then the specification service shall fail the check and name the job.",
+  "checking#r124: While this product does not conform to the product form, when the person validates this specification, the specification service shall name this product and complete the request.",
+  "checking#r125: While a driven port holds an operation that has an operation outcome and a core line that uses `reply-trigger` handles the operation outcome, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r135: While an adapter spec realises the requirement id of a port line that governs an operation and the operation uses another operation and the adapter spec holds no contract that holds the operation, if the person validates the adapter spec, then the specification service shall fail the check and name the operation.",
+  "checking#r136: While an adapter spec realises the requirement id of a port line that governs an operation and the operation uses no operation, if the person validates the adapter spec, then the specification service shall fail the check and name the operation.",
+  "checking#r150: While a frame of a term has a fixed phrase and the frame takes a noun phrase, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r151: While a term has a frame that violates `v_t13`, if the person validates this specification, then the specification service shall fail the check and name the frame.",
+  "checking#r152: While this bounded context holds a job and an item holds a requirement group that serves the job, when the person validates this specification with the item, the specification service shall return no job that violates `w_unserved_job`.",
+  "decisions#r1: While a design-decision is not `superseded` or `rejected` and the design-decision has no tier, when the person validates this specification, the specification service shall return `w_untiered`.",
+  "decisions#r2: While the tier of a design-decision is `check` and no test enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d6`.",
+  "decisions#r3: While the tier of a design-decision is `requirement` and no requirement enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d7`.",
+  "decisions#r6: While a design-decision whose status is `accepted` supersedes a design-decision whose status is `accepted`, if the person validates this specification, then the specification service shall fail the check and name `v_d8`.",
+  "decisions#r12: When the person validates this specification, the specification service shall return every universal condition that no design-decision verifies.",
+  "decisions#r13: While the kind of a route of a design-decision is not `scenario`, `check`, `judgement` or `monitor`, if the person validates this specification, then the specification service shall fail the check and name the design-decision.",
+  "decisions#r17: While a design-decision has no id, if the person validates this specification, then the specification service shall fail the check and name the design-decision.",
+  "decisions#r20: While a design-decision has no section whose heading is `Decision`, if the person validates this specification, then the specification service shall fail the check and name the design-decision.",
+  "decisions#r26: While a requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded`, when the person validates this specification, the specification service shall complete the request.",
+]
+[operations."specification.check".parameters]
+item = { option = "--item" }
+
+[operations."product.trace"]
+command = "spec trace"
+requirements = [
+  "product#r26: While a requirement group serves a job and the requirement group has a requirement, when the person traces the job, the product service shall return the requirement.",
+  "product#r27: While a requirement group serves a job and a requirement of the requirement group uses an operation and a different requirement governs the operation, when the person traces the job, the product service shall return the requirement.",
+  "product#r28: While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and an adapter spec realises the requirement id of the port line, when the person traces the job, the product service shall return the adapter spec.",
+  "product#r29: While a requirement group serves a need and the requirement group has a requirement, when the person traces a job that needs the need, the product service shall return the requirement.",
+  "product#r30: If the person traces a job that no requirement group serves, then the product service shall refuse the request and name the job.",
+  "product#r31: While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and the operation has no property that refers to an operation and no requirement handles an operation outcome of the operation, when the person traces the job, the product service shall return the job whose coordination is `port request`.",
+  "product#r32: While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and a requirement that handles an operation outcome of the operation uses an operation that performs a transition, when the person traces the job, the product service shall return the job whose coordination is `long-running process`.",
+  "product#r33: While a requirement group serves a job and a requirement of the requirement group uses two operations in a driven port that have a property that refers to an operation, when the person traces the job, the product service shall return the job whose coordination is `saga`.",
+  "product#r35: While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and an adapter spec realises the requirement id of the port line and the operation uses another operation and the adapter spec holds a contract that holds a requirement that governs the operation, when the person traces the job, the product service shall return the requirement.",
+  "product#r36: While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and an adapter spec realises the requirement id of the port line and the operation uses another operation and the adapter spec holds a contract that holds a different requirement that governs the operation and the requirement has the requirement id, when the person traces the job, the product service shall return the requirement.",
+  "product#r58: While an item holds a requirement group and the requirement group serves a job and the requirement group has a requirement, when the person traces the job with the item, the product service shall return the requirement.",
+]
+[operations."product.trace".parameters]
+job = { positional = 1, example = "j1" }
+item = { option = "--item" }
+
+[operations."drafting.reword term"]
+command = "work line"
+requirements = [
+  "drafting#r49: When the person rewords a term in an item, the drafting service shall keep a different term in the item.",
+  "drafting#r50: If the person rewords a term in an item that does not hold the term, then the drafting service shall refuse the request and name the term.",
+  "drafting#r95: When the person rewords a term in an item with a capability, the drafting service shall keep a different term in the item.",
+]
+[operations."drafting.reword term".parameters]
+item = { positional = 1 }
+term = { option = "--reword-term" }
+capability = { option = "--into" }

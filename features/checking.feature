@@ -1333,3 +1333,16 @@ Feature: Checking
     When the person validates this specification
     Then the specification service fails this check
     And the specification service names the frame f1
+
+  @g152 @r152
+  Scenario: A job an item's requirement group serves is not unserved in a check for the item
+    Given a job j1
+    And this bounded context holds the job j1
+    And a requirement group r1
+    And the requirement group r1 serves the job j1
+    And an item i1
+    And the item i1 holds the requirement group r1
+    And a job j2
+    And the job j2 violates `w_unserved_job`
+    When the person validates this specification with the item i1
+    Then the specification service does not return the job j2

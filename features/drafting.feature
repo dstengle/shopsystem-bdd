@@ -925,3 +925,13 @@ Feature: Drafting
     And the drafting service keeps the term t1
     And the drafting service names `v_t6`
     And the drafting service completes this request
+
+  @g95 @r95
+  Scenario: Rewording a term of an item in a capability keeps the new term
+    Given a term t1
+    And an item i1
+    And a capability c1
+    And a term t2
+    When the person rewords the term t1 in the item i1 with the capability c1
+    Then the drafting service keeps the term t2
+    And the item i1 holds the term t2

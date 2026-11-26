@@ -33,7 +33,7 @@ def cmd_facts(args):
 
 def cmd_check(args):
     from model_check import check, needing_clingo
-    return needing_clingo("check", lambda: check(args))
+    return needing_clingo("check", lambda: __import__("spec_preview").rooted(args, check))
 
 
 def cmd_explain(args):
@@ -54,7 +54,7 @@ def cmd_constructs(args):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog="spec", description=__doc__, epilog=CONTRACT,
+    ap = argparse.ArgumentParser(prog="shop spec", description=__doc__, epilog=CONTRACT,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--root", default=".")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -69,6 +69,7 @@ def main(argv=None):
     c = sub.add_parser("check", help="solve the facts against model.lp and report")
     c.add_argument("--json", action="store_true")
     c.add_argument("--limit", type=int, default=10, help="rows shown per relation")
+    c.add_argument("--item", metavar="b<n>", help="check the specification with the lines item b<n> holds laid")
     d = sub.add_parser("decisions", help="write spec/decisions/index.md from spec/decisions/")
     d.add_argument("--check", action="store_true")
     p = sub.add_parser("parse", help="parse a line in grammar 4: its tree, or its refusal with a hint")

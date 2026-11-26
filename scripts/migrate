@@ -62,7 +62,7 @@ def cmd_run(args):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog="migrate", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(prog="shop migrate", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("run", help="make every mechanical change, or none")
     r.add_argument("--context", required=True, help="<owner/product/context>")

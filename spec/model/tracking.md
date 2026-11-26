@@ -149,7 +149,7 @@ service drafting
   operation remove model line(model line, item)  outcomes: done | refused: model line not in the item
   operation reword model line(model line, item)  outcomes: done | refused: model line not in the item
   operation remove term(term, item)  outcomes: done | refused: term not in the item
-  operation reword term(term, item)  outcomes: done | refused: term not in the item
+  operation reword term(term, item, capability)  outcomes: done | refused: term not in the item
   operation write into pack(term, pack, item)  outcomes: done | refused: term in the pack
   operation take out(item, universal condition, upstream entry, given block)  outcomes: done | refused: universal condition not in the item, upstream entry not in the item, given block not in the item
   operation replace(item, universal condition, upstream entry, given block)  outcomes: done | refused: universal condition not in the item, upstream entry not in the item, given block not in the item

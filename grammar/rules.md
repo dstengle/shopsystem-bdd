@@ -2038,7 +2038,7 @@ a job nothing serves
 - Changed: b643
 - Severity: warning
 - Implemented in: `scripts/model.lp`
-- Cited by: no line
+- Cited by: checking#r152
 - Fails on:
 
   ```prolog

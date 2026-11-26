@@ -17,7 +17,9 @@ they pick is written: the domain-model fixture (tests/scripts/fixtures/domain-mo
   its provider and its id, `example.org/fixture/ledger:stock-port#r1`, with the ledger's text (r36, b738);
 - a group that serves a need of the job: the product file holding the job and its need `n1`, notebook's g1 serving
   the need and shelf's g1 serving the job (so that the job is served, but not by the line returned: r29);
-- no group serving the job: nothing serves it (r30).
+- no group serving the job: nothing serves it (r30);
+- a group an item holds that serves the job: the item b1 (i1) holding a group of notebook of its own whose line
+  lists the notes, serving the job, which no live group serves, traced with `--item b1` (r58, b797).
 
 The When runs `spec trace` on the job; the Thens read the requirement's id or the adapter spec's id in its output,
 and of a refusal its exit and the job it names."""
@@ -37,7 +39,7 @@ def _module(name):
 P = _module("product_handlers.py")
 W = sys.modules["shop_work_queue_world"]
 FIXTURE = ROOT / "tests" / "scripts" / "fixtures" / "domain-model"
-GROUPS = {"g26", "g27", "g28", "g29", "g30", "g35", "g36"}
+GROUPS = {"g26", "g27", "g28", "g29", "g30", "g35", "g36", "g58"}
 PARENT = "bounded-context/example.org/fixture/domain-model"
 ADAPTER = "%s/adapter/stock-ledger" % PARENT
 TERMS = ("serve", "has", "use", "govern", "realise", "need", "hold")
@@ -84,6 +86,33 @@ imports: [request]
 The adapter that realises the notes service's needs of the stock.
 """
 
+
+ITEM = """---
+id: item/example.org/fixture/domain-model/b1
+kind: item
+status: ready
+provenance: own
+value: high-value
+urgency: medium-urgency
+size: small
+depends_on: []
+---
+
+# Notes listed
+
+## Notes
+
+Notes listed.
+
+## Requirements
+
+### notebook
+
+serves: [g10 %s]
+
+#### [g10] The notes listed are kept for the job
+- [r10] %s
+"""
 
 LEDGER = "bounded-context/example.org/fixture/ledger"
 LEDGER_REQ = "ledger#r1"
@@ -184,6 +213,11 @@ def build(step, job):
         (repo / P.REL).parent.mkdir(parents=True, exist_ok=True)
         (repo / P.REL).write_text(P.scripts("product_store").render(product))
         says = {by_kind["requirement"]: "notebook#r1"}
+    elif "item" in kinds:     # r58: the item b1 holds the group that serves the job
+        (repo / ".shop" / "backlog").mkdir(parents=True, exist_ok=True)
+        (repo / ".shop" / "backlog" / "b1.md").write_text(ITEM % (job, LISTS))
+        says = {by_term["has"][-1]: "notebook#r10"}
+        step.context["item"] = ["--item", "b1"]
     elif P.world(step).get("unserved"):
         says = {}
     else:
@@ -203,7 +237,7 @@ def runs(step):
     job = next(n for n in step.names if P.world(step)["kinds"].get(n) == "job")
     step.context["says"] = build(step, job)
     step.context["head"] = W.init(step.repo)
-    step.context["result"] = step.run("spec", "trace", job)
+    step.context["result"] = step.run("spec", "trace", job, *step.context.get("item", []))
 
 
 def then_returns(step):

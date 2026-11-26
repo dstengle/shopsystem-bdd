@@ -1,4 +1,4 @@
-"""drafting's model lines and terms taken back out of an item or reworded (drafting r43-r50, b367), in a context with
+"""drafting's model lines and terms taken back out of an item or reworded (drafting r43-r50, b367; r95, b800), in a context with
 a domain model (tests/scripts/fixtures/domain-model/'s spec, the area notes). Each a `local` handler that takes a step
 of those scenarios (`mine`) and returns False on any other: the item, written at the When, holds a `### notes model`
 block of two elements (`object folder`, the model line m1, and `object shelf`) and their two entries (folder's the
@@ -24,7 +24,7 @@ def shared(name, file):
 W = shared("shop_work_queue_world", "work_queue_world.py")
 B = shared("shop_backlog_world", "backlog_world.py")
 local = W.local
-TAGS = {"r43", "r44", "r45", "r46", "r47", "r48", "r49", "r50"}
+TAGS = {"r43", "r44", "r45", "r46", "r47", "r48", "r49", "r50", "r95"}
 FIXTURE = Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "domain-model" / "spec"
 M1, OTHER = "object folder\n  attributes: name (text)", "object shelf\n  attributes: label (text)"
 M2 = "object folder\n  attributes: title (text)"
@@ -78,7 +78,8 @@ def given_absent(step):
 @local("WhenRuns")
 def change(step):
     """`work line <item> --remove-model <m1>`, `--reword-model <m1's header> <m2>`, `--remove-term folder` or
-    `--reword-term folder -- <t2>` (an entry opens with "-") (the request re-keyed by the CLI contract)."""
+    `--reword-term folder <t2>` (an entry opening with "- ", no `--` before it, b800), with `--into notebook` when the
+    request names the capability (the request re-keyed by the CLI contract)."""
     options = {code.strip("`") for code, _ in getattr(step, "options", ()) or ()}
     flag = next((f for f in OPTIONS if f in options), None)
     if not mine(step) or flag is None:
@@ -89,8 +90,9 @@ def change(step):
     B.write_item(step, item, status="shaped", sections={"Requirements": _block(world)})
     world["before"] = (step.repo / step.context["items"][item]).read_text()
     args = {"--remove-model": [M1.split("\n")[0]], "--reword-model": [M1.split("\n")[0], M2],
-            "--remove-term": ["folder"], "--reword-term": ["folder", "--", T2]}[flag]
-    B.run_work(step, "line", B.ident(item), flag, *args)
+            "--remove-term": ["folder"], "--reword-term": ["folder", T2]}[flag]
+    into = ["--into", "notebook"] if "--into" in options else []
+    B.run_work(step, "line", B.ident(item), flag, *args, *into)
     return None
 
 

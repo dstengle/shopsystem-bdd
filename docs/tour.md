@@ -174,6 +174,16 @@ next free id of the capability, `r31`, in a new group `g31`, with `retired: [r12
 changes when a batch lays the line, in stop 5. [Writing requirements](writing-requirements.md) has the do's and
 don'ts this stop ran into.
 
+### The job it serves
+
+This tour's clone keeps no product file, so the line serves no declared job. In a shop that has declared its product
+(`shop spec product`, `shop spec actor`, and each job with `shop spec job <id> --actor <actor> --statement <text>`),
+Claude would also dedicate the new group to the job it does, on the same item:
+`shop work line b250 --serves items#g31 <job>`, a pair the batch writes as the group's `serves: <job>` line. A job the
+product does not hold is refused. `shop spec trace <job>` then lists every requirement that does the job; until the
+batch lays b250, `shop spec trace <job> --item b250` reads it with the item laid in, as `shop spec check --item b250`
+checks it. [Getting started](getting-started.md#8-say-what-the-product-is-for) walks through the whole product.
+
 ## Stop 3: rate and ready
 
 **Claude does:** it rates the item, then asks the readiness bar whether it can be built.

@@ -938,3 +938,20 @@ shall [x3: agent the person (constant), x4: service the product service (constan
     refuse(e2, subject: x4, object: x5)
     name(e3, subject: x4, object: x1)
 ```
+
+## r58
+From: b797 r58.
+
+```reading
+While an item holds a requirement group and the requirement group serves a job and the requirement group has a requirement, when the person traces the job with the item, the product service shall return the requirement.
+shall [x5: agent the person (constant), x6: service the product service (constant)]
+  while [x1: item, x2: requirement group, x3: job, x4: requirement]
+    in(x2, x1)
+    serve(subject: x2, object: x3)
+    of(x4, x2)
+  when
+    request(e1, product.trace, subject: x5, object: x3)
+    param(e1, item, x1)
+  response
+    return(e2, subject: x6, object: x4)
+```

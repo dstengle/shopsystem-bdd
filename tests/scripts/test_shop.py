@@ -18,7 +18,7 @@ def run(*args, cwd=None):
 def test_shop_answers_a_command_as_the_command_does(command):
     shop, direct = run(str(SCRIPTS / "shop"), command, "--help"), run(str(SCRIPTS / command), "--help")
     assert (shop.stdout, shop.stderr, shop.returncode) == (direct.stdout, direct.stderr, direct.returncode)
-    assert shop.returncode == 0 and shop.stdout.startswith(f"usage: {command}"), shop.stdout
+    assert shop.returncode == 0 and shop.stdout.startswith(f"usage: shop {command}"), shop.stdout
 
 
 def test_shop_keeps_a_refusal_and_its_exit():
@@ -29,7 +29,7 @@ def test_shop_keeps_a_refusal_and_its_exit():
 
 def test_shop_runs_from_another_directory(tmp_path):
     done = run(str(SCRIPTS / "shop"), "tools", "--help", cwd=tmp_path)
-    assert done.returncode == 0 and done.stdout.startswith("usage: tools"), done.stderr
+    assert done.returncode == 0 and done.stdout.startswith("usage: shop tools"), done.stderr
 
 
 def test_shop_help_lists_every_command():
