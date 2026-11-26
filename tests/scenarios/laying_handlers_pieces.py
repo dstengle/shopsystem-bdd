@@ -6,8 +6,9 @@ universal condition, spec/universal.md taken out (g22); a capability new to the 
 PASSING line (g23), its block saying `area: tracking` (g8); the PASSING line's group serving the job `start-work`
 (g7); the driven port `stock` the item makes, beside the domain-model fixture (g24); a term of the context's own pack
 `household` (g25), under ids `g1` and `r1` that work-queue holds already (g26); an import of the plugin's pack `time`
-(g27). The When commits the world, makes the workspace w1 a worktree of it and lays the item there; the Thens read
-the reply's changed paths and the workspace's files."""
+(g27); the capability `shelf` in the fixture's area `notes`, whose model declares the service `notes` (g49). The
+When commits the world, makes the workspace w1 a worktree of it and lays the item there; the Thens read the reply's
+changed paths and the workspace's files."""
 import re
 import shutil
 import sys
@@ -19,6 +20,7 @@ R, W, world = L.R, L.W, L.world
 B, parts = sys.modules["shop_backlog_world"], sys.modules["shop_world_four"].parts
 FIXTURE = Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "domain-model" / "spec"
 JOB, AREA, PACK, PLUGIN_PACK, PORT, PORTED = "start-work", "tracking", "household", "time", "stock", "stock-port"
+SERVICE = "notes"      # the fixture's area, and the service its model declares (g49)
 UNIVERSAL, INDEX, SHELF = "spec/universal.md", "spec/index.md", "spec/capabilities/shelf.md"
 TERM = "- **pantry** (noun): a cupboard food is kept in."
 NEW = ("### shelf\n\nnarrator: a person shelving things\ngroup: service\npurpose: Things kept on a shelf, each found "
@@ -94,6 +96,13 @@ def _ported(step):
     return PORT_BLOCK
 
 
+def _specified(step):
+    """The capability `shelf` new to the spec in the area `notes` of the domain-model fixture, whose model declares
+    the service `notes`."""
+    _ported(step)
+    return _new(step, "\narea: %s" % SERVICE)
+
+
 def _colliding(step):
     """The pack's block under the ids `g1` and `r1`, which work-queue holds already."""
     text = re.sub(r"(?m)^#### \[g\d+\]", "#### [g1]", _passing(step), count=1)
@@ -110,6 +119,7 @@ WORLDS.update({
     "g25": lambda step: _passing(step) + "\n\n### %s pack\n\n%s" % (PACK, TERM),
     "g26": _colliding,
     "g27": lambda step: _passing(step) + "\n\n### imports\n\n- pack `%s`" % PLUGIN_PACK,
+    "g49": _specified,
 })
 
 
@@ -183,7 +193,7 @@ def _keeps(step, tag):
     """`the laying service keeps X`: the file the lay changed of each group's X."""
     if tag == "g22":
         kept(step, UNIVERSAL)
-    elif tag in ("g23", "g8"):
+    elif tag in ("g23", "g8", "g49"):
         kept(step, SHELF)
     elif tag == "g7":
         _group(step)
@@ -228,6 +238,10 @@ def then(step):
         assert re.search(r"(?m)^area: %s$" % PORT, kept(step, "spec/capabilities/%s.md" % PORTED)), step.text
         assert _row(kept(step, INDEX), PORT) == [[PORT, "port", PORTED]], kept(step, INDEX)
         assert re.search(r"(?m)^kind: port$", kept(step, "spec/model/%s.md" % PORT)), step.text
+    elif term == "has" and kinds == ["area", "service"]:
+        assert re.search(r"(?m)^service %s$" % SERVICE, (world(step)["tree"] / "spec/model/notes.md").read_text())
+    elif term in ("specify", "specifies"):
+        assert re.search(r"(?m)^specifies: service %s$" % SERVICE, kept(step, SHELF)), kept(step, SHELF)
     elif term == "has" and kinds == ["pack", "term"]:
         text = kept(step, "spec/packs/%s.md" % PACK)
         assert "## Glossary" in text and text.index("## Glossary") < text.index(TERM), text

@@ -114,10 +114,26 @@ def kind(block):
     return dict(zip(NEW_FIELDS, block.new)).get("kind") or "core"
 
 
-def specifies(block):
-    """What the capability is about: the service of its name, or the guarantees of its name."""
+def specifies(block, root=None):
+    """What the capability is about: the service its area's model declares (`_service`, b850), or its guarantees."""
     fields = dict(zip(NEW_FIELDS, block.new))
-    return ("service %s" if fields["group"] == "service" else "the %s guarantees") % block.capability
+    if fields["group"] != "service":
+        return "the %s guarantees" % block.capability
+    return "service %s" % _service(root, area(block), block.capability)
+
+
+def _service(root, name, capability):
+    """The service the model at `root` declares in the area `name`, the one named `capability` of several, else the
+    first; with none `capability`."""
+    import domain_model
+    if root is None or not domain_model.exists(root):
+        return capability
+    try:
+        services = domain_model.load(root).services
+    except Refused:     # a model that does not read is spec check's to name, not the lay's
+        return capability
+    held = [s for s, found in services.items() if found.area == name]
+    return capability if capability in held or not held else held[0]
 
 
 def text(root, block):
@@ -128,7 +144,7 @@ def text(root, block):
     title = block.capability.replace("-", " ").capitalize()
     return ("---\nid: capability/%s/%s\ntitle: %s\nnarrator: %s\ngroup: %s\narea: %s\nspecifies: %s\n"
             "language: codified-2\nretired: []\n---\n\n# %s\n\n## Purpose\n%s\n\n## Behaviour\n"
-            % (path, block.capability, title, fields["narrator"], fields["group"], area(block), specifies(block),
+            % (path, block.capability, title, fields["narrator"], fields["group"], area(block), specifies(block, root),
                title, fields["purpose"]))
 
 
