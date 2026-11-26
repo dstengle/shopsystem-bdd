@@ -1199,7 +1199,7 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
   while [x1: item, x3: pack]
     status(x1) = `ready`
     meet(subject: x1, object: x2)
-    import#3(subject: x1, object: x3)
+    import#4(subject: x1, object: x3)
   when [x5: batch]
     request(e1, batches.open, subject: x4, object: x5)
   response

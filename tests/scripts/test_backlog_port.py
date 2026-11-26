@@ -40,3 +40,23 @@ def test_an_existing_port_area_comes_back_byte_for_byte(tmp_path):
     assert stock.read_text() == STOCK
     assert (tmp_path / "spec" / "model" / "notes.md").read_text() == NOTES
     assert "spec/model/stock.md" in files
+
+
+OTHER = ("---\narea: stock\nlanguage: codified-2\nretired: []\n---\n\n# Stock other\n\n## Behaviour\n\n### [g1] A note "
+         "released\n- [r1] When the notes service releases a note, the stock service shall not refuse the request.\n")
+
+
+def test_an_import_another_line_of_the_port_says_is_kept_without_a_base(tmp_path):
+    """b704: per item, never reset to the base: an import a line left in the port says stays, and with no base the
+    unlay takes out an import only this item's lines said."""
+    blocks = _repo(tmp_path)
+    stock = tmp_path / "spec" / "model" / "stock.md"
+    backlog_port.lay(tmp_path, blocks, [])
+    other = tmp_path / "spec" / "capabilities" / "stock-other.md"
+    other.parent.mkdir(parents=True, exist_ok=True)
+    other.write_text(OTHER)
+    backlog_port.unlay(tmp_path, blocks, [])
+    assert "imports: [notes]\n" in stock.read_text(), stock.read_text()
+    other.unlink()
+    backlog_port.unlay(tmp_path, blocks, [])
+    assert stock.read_text() == STOCK
