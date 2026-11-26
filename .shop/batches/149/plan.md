@@ -17,7 +17,7 @@ pull_request:
 | t1 | b767 | done | batch-149-b767 |
 | t2 | b771 | done | batch-149-b771 |
 | t3 | b772 | done | batch-149-b772 |
-| t4 | b761 | running | batch-149-b761 |
+| t4 | b761 | done | batch-149-b761 |
 | t5 | b768 | done | batch-149-b768 |
 | t6 | b769 | done | batch-149-b769 |
 
