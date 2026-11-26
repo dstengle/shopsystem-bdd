@@ -35,9 +35,19 @@ def test_the_blocks_are_kept_and_read_back(modelled):  # noqa: F811
 
 def test_a_second_import_or_retirement_is_refused(modelled):  # noqa: F811
     _given(modelled)
-    for args in (["--import", "time"], ["--import", "request"], ["--retire-term", "low"]):
+    for args in (["--import", "time"], ["--retire-term", "low"]):
         done = work(modelled, "line", "b1", *args)
         assert done.returncode == 1 and "usage:" not in done.stderr, (args, done.stderr)
+
+
+def test_the_import_of_a_pack_the_index_imports_is_kept(modelled):  # noqa: F811
+    """drafting r73: `request`, which spec/index.md imports already, kept in the item and laid once."""
+    _given(modelled)
+    done = work(modelled, "line", "b1", "--import", "request")
+    assert done.returncode == 0, done.stderr
+    assert backlog_section.read(_item(modelled), "b1").imports == ["time", "request"]
+    backlog_lines.lay_onto(modelled, _item(modelled), [])
+    assert "imports: [request, time]" in (modelled / "spec/index.md").read_text()
 
 
 @pytest.mark.parametrize("at_base", [True, False])
