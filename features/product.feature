@@ -622,3 +622,15 @@ Feature: Product
     When the person drops the product actor p1
     Then the product service refuses this request
     And the product service names the job j1
+
+  @g58 @r58
+  Scenario: A job's trace for an item holds the requirements of the item's groups that serve it
+    Given a requirement group r1
+    And an item i1
+    And the item i1 holds the requirement group r1
+    And a job j1
+    And the requirement group r1 serves the job j1
+    And a requirement r2
+    And the requirement group r1 has the requirement r2
+    When the person traces the job j1 with the item i1
+    Then the product service returns the requirement r2

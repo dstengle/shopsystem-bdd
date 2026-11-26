@@ -7,7 +7,7 @@ area: specification
 specifies: service product
 language: codified-2
 retired: [g18, r18]
-unbuilt: []
+unbuilt: [r58]
 ---
 
 # Product
@@ -191,4 +191,7 @@ the job statement `j2` holds "When x, the developer wants y, so they can z."
 
 ### [g49] A bounded context that holds a job is not dropped
 - [r49] While a bounded context holds a job, if the person drops the bounded context, then the product service shall refuse the request and name the job.
+
+### [g58] A job's trace for an item holds the requirements of the item's groups that serve it
+- [r58] While an item holds a requirement group and the requirement group serves a job and the requirement group has a requirement, when the person traces the job with the item, the product service shall return the requirement.
 

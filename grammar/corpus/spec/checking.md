@@ -2089,3 +2089,22 @@ shall [x3: rule `v_t13` (parameter), x4: agent the person (constant), x5: specif
     fail(e2, subject: x6, object: x7)
     name(e3, subject: x6, object: x2)
 ```
+
+## r152
+From: b797 r152.
+
+```reading
+While this bounded context holds a job and an item holds a requirement group that serves the job, when the person validates this specification with the item, the specification service shall return no job that violates `w_unserved_job`.
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x9: rule `w_unserved_job` (parameter)]
+  while [x2: job, x3: item, x4: requirement group]
+    in(x2, x1)
+    serve(subject: x4, object: x2)
+    in(x4, x3)
+  when
+    request(e1, specification.check, subject: x5, object: x6)
+    param(e1, item, x3)
+  response
+    not [x8: job]
+      violate(subject: x8, object: x9)
+      return(e2, subject: x7, object: x8)
+```

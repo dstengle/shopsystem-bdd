@@ -1457,3 +1457,18 @@ shall [x2: rule `v_t6` (parameter), x3: agent the person (constant), x5: service
     name(e3, subject: x5, object: x2)
     complete(e4, subject: x5, object: x6)
 ```
+
+## r95
+From: b800 r95.
+
+```reading
+When the person rewords a term in an item with a capability, the drafting service shall keep a different term in the item.
+shall [x1: agent the person (constant), x5: service the drafting service (constant)]
+  when [x2: term, x3: item, x4: capability]
+    request(e1, drafting.reword term, subject: x1, object: x2, in: x3)
+    param(e1, capability, x4)
+  response [x6: term]
+    distinct(x6, x2)
+    in(x6, x3)
+    keep(e2, subject: x5, object: x6)
+```

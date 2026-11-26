@@ -7,7 +7,7 @@ area: tracking
 specifies: service drafting
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r95]
 ---
 
 # Drafting
@@ -318,4 +318,7 @@ capabilities, retirements, rewordings and chores.
 
 ### [g94] A term that violates v_t6 is kept and the rule named
 - [r94] While a term violates `v_t6`, when the person writes the term into an item, the drafting service shall keep the term in the item, name `v_t6` and complete the request.
+
+### [g95] Rewording a term of an item in a capability keeps the new term
+- [r95] When the person rewords a term in an item with a capability, the drafting service shall keep a different term in the item.
 
