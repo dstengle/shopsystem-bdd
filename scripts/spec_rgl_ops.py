@@ -20,6 +20,10 @@ service (spec_vocabulary_terms' `operation`), the request with its parameters, g
 - Per parameter name of no object, "the p" a noun phrase of the request pack's kind `parameter` (`p_<p>_NP`), which a
   response names: "refuse the request and name the text". None whose name is a kind's noun or an actor.
 
+- reply-trigger (b626): per frame of each verb naming an operation, "the request to <verb> <np>" over the frame's
+  arguments (`rq_<verb>_<n>_<m>`), a `k_request_NP0` the request pack's complete, return and refuse take, so a trigger
+  is a service's reply to a request; its parameters are not said in it (`replied`).
+
 `funs(vocab)` gives each generated fun's (operation, parameter, role), which the logical form (spec_lf_request) and the
 steps (spec_steps4_request) read the trees by.
 """
@@ -121,8 +125,26 @@ def _params(w, op_id, op, vocab):
             w.fun(P + "_Is", "Code -> %s_P" % O, "{s = %s ++ c.s}" % the, "c")
 
 
+def replied(w, vocab):
+    """reply-trigger (b626): per frame of each verb naming an operation, the request a reply is on, "the request to
+    publish the design-decision", a noun phrase of the request pack's kind `request` over the frame's arguments
+    (`rq_<verb>_<n>_<m> : k_request_N -> <the frame's arguments> -> k_request_NP0`); its parameters are not said."""
+    if "request" not in vocab.kinds:
+        return
+    for n, v in enumerate(vocab.verbs, 1):
+        if vocab.operations.get(v.term.operation) is None:
+            continue
+        for m, (_, pieces) in enumerate(v.frames, 1):
+            args, lin = spec_rgl.frame_lin(spec_rgl.verb(v.term), pieces)
+            typ = " -> ".join(["k_request_N"] + ["%s_Arg" % spec_rgl.kid(k) for k in args] + ["k_request_NP0"])
+            names = " ".join(["n"] + ["x%d" % (i + 1) for i in range(len(args))])
+            w.fun("rq_%s_%d_%d" % (spec_rgl.slug(v.term.term), n, m), typ,
+                  "mkNP the_Det (mkCN (mkCN n) (mkSC (%s)))" % lin, names)
+
+
 def requests(w, vocab):
     """The requests with their parameters of every verb naming an operation, and the parameters' noun phrases."""
+    replied(w, vocab)
     subjects = []
     for n, v in enumerate(vocab.verbs, 1):
         op = vocab.operations.get(v.term.operation)

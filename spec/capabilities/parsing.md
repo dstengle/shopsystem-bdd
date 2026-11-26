@@ -7,7 +7,7 @@ area: specification
 specifies: service language: parse
 language: codified-2
 retired: [g4, r4]
-unbuilt: [r25, r26]
+unbuilt: [r26]
 ---
 
 # Parsing

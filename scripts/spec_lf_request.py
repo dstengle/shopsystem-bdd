@@ -10,6 +10,8 @@ is read.
   pack's kind `parameter` (`np`); "the request" is the request the trigger makes, the pack's `This:` (R2's
   indexical, spec_lf_read's `the`). A response's act of such a verb with its parameters is a request too, its doer
   the requester (response-request, b543: `vp`); one with none keeps its event atom.
+- "the request to V <np>" (reply-trigger, b626) a referent r of kind request restricted by `request(r, O, object:
+  x)`, which the reply's act (complete, return, refuse) is on; its parameters are not said (`replied`).
 - its lines in `model parse --form` (`show`).
 - the steps' reading of a When step's request (`read`: the operation, each parameter given with its value or True,
   each absent), which features_vocab4's `WhenRequests` gives a handler.
@@ -18,7 +20,7 @@ The check's facts of a request are spec_lf_facts_request's.
 from dataclasses import replace
 
 import spec_rgl_ops
-from spec_lf_core import Atom, Box
+from spec_lf_core import NP, Atom, Box
 
 PRED, PARAM, NOPARAM = "request", "param", "noparam"
 SOME, ON = "some", "on"
@@ -111,6 +113,32 @@ def expand(conds):
     return out
 
 
+def replied(st, tree, nps):
+    """reply-trigger (b626): the request a reply is on, "the request to publish the design-decision"
+    (`rq_<verb>_<n>_<m>`), a referent r of kind request restricted by `request(r, O, object: x)`, its frame's
+    arguments but the subject read as their noun phrases are (R2 binds "the design-decision"); None of any other fun."""
+    name = nps.fun(tree)
+    if not name.startswith("rq_"):
+        return None
+    n, m = (int(x) for x in name.rsplit("_", 2)[1:])
+    v = st.names.verbs[n]
+    sense = sum(1 for k, w in st.names.verbs.items() if k <= n and w.term.term == v.term.term)
+    ref = st.ref("request")
+    st.open.append(ref)
+    try:
+        args = [nps.np(st, x) for x in nps.args(tree)[1:]]
+    finally:
+        st.open.pop()
+
+    def build(refs):
+        roles, it = [], iter(refs)
+        for words, kind in v.frames[m - 1][1]:
+            roles.append((" ".join(words) or "object", next(it)) if kind is not None else (" ".join(words),))
+        return Atom(PRED, (ref, v.term.operation, v.term.term, sense, tuple(roles)))
+    refs, conds = st.apply(args, build)
+    return NP(ref, "a", conds, refs)
+
+
 def np(st, name):
     """The constant "the p" names (`p_<p>_NP`), or None of any other fun."""
     if not name.startswith("p_"):
@@ -122,7 +150,7 @@ def np(st, name):
 def show(atom, term):
     if atom.pred == PRED:
         e, op, _, _, roles = atom.args
-        return "%s(%s)" % (PRED, ", ".join([e, op] + [term(r) for r in roles]))
+        return "%s(%s)" % (PRED, ", ".join([term(e), op] + [term(r) for r in roles]))
     if atom.pred == PARAM:
         e, p, v = atom.args
         return "%s(%s, %s, %s)" % (PARAM, e, p, term(v))

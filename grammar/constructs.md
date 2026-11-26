@@ -1133,6 +1133,28 @@ shall [x1: agent the person (constant), x3: service the decisions service (const
     param(e2, summary, x4)
 ```
 
+## reply-trigger
+
+a trigger on a service's reply to a request of an operation, said with the request it is on and the object of that request (b626, design-decisions 0121, 0127, 0134)
+
+- Purpose: Lets a trigger be a service's reply to a request the core made, said with that request's object, so a compensation or a lifecycle waiting on a reply can be written.
+- Since: b626
+- Form: <service> completes|returns|refuses the request to <operation verb> <np>
+- Functions: `rq_\w+`
+- Cited by: parsing#r25, parsing#r26
+- Context: `grammar/corpus/constructs/request/`
+- Example and its reading:
+
+```construct
+When the registry completes the request to publish a design-decision, the decisions service shall keep the design-decision.
+shall [x1: service the registry (constant), x4: service the decisions service (constant)]
+  when [x2: request, x3: design-decision]
+    request(x2, registry.publish, object: x3)
+    complete(e1, subject: x1, object: x2)
+  response
+    keep(e2, subject: x4, object: x3)
+```
+
 ## of-relation
 
 a noun of another by a relation row

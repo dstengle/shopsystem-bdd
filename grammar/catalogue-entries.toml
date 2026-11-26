@@ -902,3 +902,8 @@ changed = []
 purpose = "A product file that does not read as the product form is named among the findings, so it stops no check of the context."
 since = "b695"
 changed = []
+
+[constructs.reply-trigger]
+purpose = "Lets a trigger be a service's reply to a request the core made, said with that request's object, so a compensation or a lifecycle waiting on a reply can be written."
+since = "b626"
+changed = []

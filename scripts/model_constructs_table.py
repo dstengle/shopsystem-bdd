@@ -169,6 +169,11 @@ CONSTRUCTS = [
       "<parameter> <value>", r"%s_ActReq_%s" % (K, K),
       "When the person enters a design-decision, the decisions service shall publish the design-decision with the "
       "summary `s1`.", None, "request"),
+    c("reply-trigger", "a trigger on a service's reply to a request of an operation, said with the request it is on and "
+      "the object of that request (b626, design-decisions 0121, 0127, 0134)",
+      "<service> completes|returns|refuses the request to <operation verb> <np>", r"rq_\w+",
+      "When the registry completes the request to publish a design-decision, the decisions service shall keep the "
+      "design-decision.", None, "request"),
     # relations
     c("of-relation", "a noun of another by a relation row", "<noun> of|in <np>", r"r\d+_\w+_Mod",
       "When a session ends a stage, `work` shall print the worktree of the session."),

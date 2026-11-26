@@ -1842,6 +1842,40 @@ shall [x3: service the work service (constant), x5: thing `n1` (parameter)]
     noparam(e2, verdict)
 ```
 
+### "completes the request to settle a line": a trigger on a reply
+
+A trigger may be a service's reply to a request (b626, construct `reply-trigger`; design-decisions 0121, 0127 and
+0134): the request pack's complete, return or refuse said of "the request to <operation verb> <np>", the request of
+the operation the verb names on the thing its frame's object gives, so a compensation or a lifecycle waiting on a
+reply can be written ("If the registry refuses the request to publish a design-decision, then ..."). It is generated
+for every frame of a verb naming an operation, over the frame's arguments; the request's parameters are not said in
+it. Its logical form is a referent r of kind `request` with `request(r, O, object: x)`, the reply's act on r; "the
+request" after it in the line is r. Its noun phrases are read as any are: R2 binds "the K" in it to an earlier K, so
+the first mention of the request's object is "a K".
+
+```reading
+When the work service completes the request to settle a line, the work service shall keep the line.
+shall [x1: service the work service (constant)]
+  when [x2: request, x3: line]
+    request(x2, work.settle, object: x3)
+    complete(e1, subject: x1, object: x2)
+  response
+    keep(e2, subject: x1, object: x3)
+```
+
+```reading
+If the work service refuses the request to end a stage, then the work service shall not set the status of the stage to `done`.
+shall [x1: service the work service (constant)]
+  if [x2: request, x3: stage]
+    request(x2, work.end, object: x3)
+    refuse(e1, subject: x1, object: x2)
+  response
+    not
+      initiates(e2, subject: x1, status(x3) = `done`)
+```
+
+The check's reading of a reply (`spec logic`'s facts, `features generate`) is not built yet.
+
 ### "the person lists a checklist", "the person lists the checklists": a request acts on one thing
 
 A request, a verb naming an operation in a trigger, acts on one thing (b420, design-decision 0111): a slot its frame
