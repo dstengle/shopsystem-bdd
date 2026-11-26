@@ -832,3 +832,24 @@ shall [x11: service the batches service (constant), x12: service the laying serv
       support(subject: x13, object: x10)
     keep(e2, subject: x12, object: x13)
 ```
+
+## r48
+From: b830 r48.
+
+```reading
+While an item holds the `watering` area and the item holds the `plots` area and the `plots` area holds a term and the `watering` area holds a capability and a requirement of the capability uses the term, when the batches service lays the item in a workspace, the laying service shall keep the `watering` area and keep an area that imports the `plots` area.
+shall [x2: area `watering` (parameter), x3: area `plots` (parameter), x7: service the batches service (constant), x9: service the laying service (constant)]
+  while [x1: item, x4: term, x5: capability, x6: requirement]
+    in(x2, x1)
+    in(x3, x1)
+    in(x4, x3)
+    in(x5, x2)
+    of(x6, x5)
+    use(subject: x6, object: x4)
+  when [x8: workspace]
+    request(e1, laying.lay, subject: x7, object: x1, in: x8)
+  response [x10: area]
+    keep(e2, subject: x9, object: x2)
+    import#3(subject: x10, object: x3)
+    keep(e3, subject: x9, object: x10)
+```

@@ -7,7 +7,7 @@ area: laying
 specifies: service laying
 language: codified-2
 retired: [g1, r1, g42, r42]
-unbuilt: []
+unbuilt: [r48]
 ---
 
 # Laying
@@ -195,4 +195,8 @@ Relied on by: batches#r182, batches#r185
 ### [g47] A lift that puts back a group leaves out the Relied on by of a line another requirement in the workspace retires
 - [r47] While an item holds a requirement that retires the requirement id of a requirement of a requirement group and a workspace holds another requirement that retires the requirement id of another requirement of the requirement group and the requirement supports a requirement id, when the batches service lifts the item from the workspace, the laying service shall keep a requirement of the requirement group that does not support the requirement id.
 Relied on by: batches#r182
+
+### [g48] An item laid that makes two areas imports into one the other whose term its requirement uses
+- [r48] While an item holds the `watering` area and the item holds the `plots` area and the `plots` area holds a term and the `watering` area holds a capability and a requirement of the capability uses the term, when the batches service lays the item in a workspace, the laying service shall keep the `watering` area and keep an area that imports the `plots` area.
+Relied on by: batches#r179
 
