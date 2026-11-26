@@ -31,4 +31,4 @@ modules = ["scripts/measure", "scripts/measure_*.py"]
 modules = ["scripts/tools", "scripts/tools_*.py"]
 
 [upgrades]
-modules = ["scripts/migrate", "scripts/migrate*.py"]
+modules = ["scripts/migrate", "scripts/upgrades/**"]
