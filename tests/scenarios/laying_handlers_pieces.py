@@ -256,5 +256,5 @@ for _template in ("GivenK", "GivenK_A", "GivenDoes", "GivenDoesNot"):
 W.local("WhenRequests")(requests)
 for _template in ("ThenDoes", "ThenDoesNot"):
     W.local(_template)(then)
-for _key in (("ThenDoes", "serve"), ("ThenDoes", "import")):      # the keys `features vocab --check` reads
+for _key in (("ThenDoes", "serve"), ("ThenDoes", "import"), ("ThenDoes", "specify")):   # `features vocab --check`
     sys.modules["vocab"].handler(*_key)(L.untaken)
