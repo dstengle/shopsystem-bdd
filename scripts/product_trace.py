@@ -8,6 +8,7 @@ each requirement and adapter spec once with why it is in the trace. A job no gro
 Provider operations an adapter spec uses are not followed: the trace stops at the adapter spec."""
 from pathlib import Path
 
+import product_coordination
 import product_store
 import spec_context
 import spec_entail_chain
@@ -113,7 +114,8 @@ def trace(root, job):
             reqs.setdefault(rid, (rid, text, "needed job %s: %s" % (need, why)))
         for ident, why in found[1] if found else ():
             specs.setdefault(ident, (ident, "needed job %s: %s" % (need, why)))
-    return {"job": job, "requirements": [{"id": i, "text": t, "why": w} for i, t, w in reqs.values()],
+    return {"job": job, "coordination": product_coordination.coordination(root, ctx, list(reqs)),
+            "requirements": [{"id": i, "text": t, "why": w} for i, t, w in reqs.values()],
             "adapter specs": [{"id": i, "why": w} for i, w in specs.values()]}
 
 

@@ -8,6 +8,7 @@ from domain_envelope import Response
 
 def text(found):
     lines = ["the trace of the job %s:" % found["job"]]
+    lines += ["  coordination: %s" % found["coordination"]] if found.get("coordination") else []
     lines += ["  %s (%s): %s" % (r["id"], r["why"], r["text"]) for r in found["requirements"]]
     lines += ["  adapter spec %s (%s)" % (a["id"], a["why"]) for a in found["adapter specs"]]
     return "\n".join(lines) + "\n"
