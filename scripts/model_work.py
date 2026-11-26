@@ -63,8 +63,18 @@ class WorkReading:
             self.fact("enforced_test", d, t)
         for q in filter(None, (self.resolve_req(ref, where) for ref in reqs)):
             self.fact("enforced_req", d, q)
-            self.want(q, "requirement", where)
+            if not self.retired_history(data, q):
+                self.want(q, "requirement", where)
         self.read_routes(d, data, where)
+
+    def retired_history(self, data, q):
+        """Whether `q`, a requirement id a decision's `enforced_by` names, is history: the decision is no longer in
+        force (superseded or rejected) and its capability's `retired:` lists the id (b735); an accepted decision's
+        retired id stays a reference that names nothing."""
+        if str(data.get("status", "")).strip() not in model_decisions.HISTORY:
+            return False
+        cap, _, n = q.partition("#r")
+        return n.isdigit() and (cap, int(n)) in self.retired
 
     def read_routes(self, d, data, where):
         """route/2, a decision's `verified_by` (v_d9 names one outside the four), and decision_rests_on/2, each id it rests on;
