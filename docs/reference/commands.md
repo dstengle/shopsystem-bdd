@@ -641,6 +641,29 @@ $ shop work settings set review.size 1500
 .shop/delivery.toml: review.size = 1500
 ```
 
+#### `shop work context keep`
+
+Keeps a bounded context in this shop under its context id, in `.shop/contexts.toml`, and commits it. The shop's
+product id is the id of this bounded context less `bounded-context/` and its last part; an id not in the context id
+form, one outside the product id, or one the shop keeps already is refused, naming it.\
+Synopsis: `shop work context keep id`
+
+```console
+$ shop work context keep bounded-context/missingmass.io/shopsystem/language
+kept bounded-context/missingmass.io/shopsystem/language
+```
+
+#### `shop work context list`
+
+Prints the id of each bounded context this shop keeps, one a line; while it keeps none, this bounded context's id
+alone.\
+Synopsis: `shop work context list`
+
+```console
+$ shop work context list
+bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+```
+
 ### Requests
 
 A request is one bounded context asking another (its upstream, or itself) for behaviour, carried on a GitHub issue.
