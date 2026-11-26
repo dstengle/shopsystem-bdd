@@ -2,7 +2,7 @@
 from contract_obtain): the upstream's contracts kept as `.shop/contracts/<version>/contract.toml` in the GitHub
 repository its `github:` under `## Upstreams` in spec/index.md names (request_gh's `repo_of`), read through
 `$SHOPSYSTEM_WORK_GH` (`gh api repos/<r>/contents/...`, the raw file, byte for byte). A repository GitHub does not
-serve (missing, private or not answering) is refused naming the bounded context and `bounded context unreachable`
+serve (missing, private or not answering), or an upstream entry naming none (b739, checking r141), is refused naming the bounded context and `bounded context unreachable`
 (`reached`, checking r89), and one no upstream entry identifies, before any gh call, naming it and `bounded context
 not an upstream` (`listed`, b736, checking r132); another gh failure reading a reached repository naming it and `bounded context failing`
 (r102); no contract kept, or none at the version, the reply refused as contract_registry's `version not deposited`, naming the
@@ -71,9 +71,15 @@ def listed(root, context):
 def reached(root, context):
     """The GitHub repository of `context`, refused as unreachable unless GitHub serves it (checking r89): one missing,
     private or not answering is a bounded context unreachable, never one with no contract; one no upstream entry
-    identifies refused as not an upstream first (`listed`, r132)."""
+    identifies refused as not an upstream first (`listed`, r132), and one whose upstream entry holds no shared store
+    (names no `github:`) unreachable before any gh call (b739, checking r141)."""
+    import re
+
     import request_gh
     listed(root, context)
+    bullet = request_gh.bullets(root).get(context)
+    if bullet is not None and not re.search(r"\bgithub: *%s" % request_gh.REPO, bullet):
+        raise _unreachable(context, "its upstream entry names no repository")
     repo = request_gh.repo_of(root, context, COMMAND)
     try:
         _gh(root, "api", "repos/%s" % repo)
