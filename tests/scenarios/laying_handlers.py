@@ -5,7 +5,7 @@ holding readiness_world's PASSING line as `work-queue#r5`, or, when a Given says
 batches_handlers_broken's line citing `v_zz`, which no entry of the kept rule catalogue has, so the laid workspace
 violates `v_c1` (`VIOLATED`). The workspace w1 is a worktree of the repository beside it on a branch of its own
 (`workspace`). The When lays the item there, or lifts it once its lay is committed there (r2), or checks it once it
-is laid there (r3, r4), and keeps the laying service's reply, a domain_envelope Response, or what it raised. The
+is laid there (r3, r4), and keeps the laying service's reply, a domain_envelope Response. The
 Thens read the reply and the workspace: its capability file holding the line or not, its feature holding a scenario
 tagged with the requirement's id."""
 import sys
@@ -88,25 +88,21 @@ def requests(step):
         return False
     w = world(step)
     tree, item = build(step)
-    try:
-        import laying
-        if step.term.endswith(".lift") or w.get("laid"):
-            laid = laying.lay(item, tree)
-            W.git(tree, "add", "-A")
-            W.git(tree, "commit", "-q", "-m", "laid\n\nItem: b1")
-            w["laid_reply"] = laid
-        elif step.term.endswith(".check"):
-            w["laid_reply"] = laying.lay(item, tree)
-        operation = step.term.rsplit(".", 1)[-1]
-        w["response"] = getattr(laying, operation)(item, tree)
-    except Exception as err:        # the Then names it: no reply came back
-        w["raised"] = repr(err)
+    import laying
+    if step.term.endswith(".lift") or w.get("laid"):
+        laid = laying.lay(item, tree)
+        W.git(tree, "add", "-A")
+        W.git(tree, "commit", "-q", "-m", "laid\n\nItem: b1")
+        w["laid_reply"] = laid
+    elif step.term.endswith(".check"):
+        w["laid_reply"] = laying.lay(item, tree)
+    w["response"] = getattr(laying, step.term.rsplit(".", 1)[-1])(item, tree)
 
 
 def _response(step, outcome):
     w = world(step)
     found = w.get("response")
-    assert found is not None and found.outcome == outcome, (found, w.get("raised"))
+    assert found is not None and found.outcome == outcome, found
     return found
 
 
@@ -168,5 +164,6 @@ def untaken(step):
     raise AssertionError("no handler of this scenario's feature took the step: %s" % step.text)
 
 
-for key in (("WhenRequests", "laying.lay"), ("WhenRequests", "laying.lift"), ("WhenRequests", "laying.check")):
+for key in (("WhenRequests", "laying.lay"), ("WhenRequests", "laying.lift"), ("WhenRequests", "laying.check"),
+            ("ThenDoes", "refer")):
     handler(*key)(untaken)

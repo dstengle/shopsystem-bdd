@@ -76,11 +76,11 @@ def test_an_amend_takes_the_item_out_against_the_batchs_base(started, monkeypatc
     a model line the base held is put back as it held it."""
     import batch_amend
     import batch_parked
-    import batch_start
+    import laying_inprocess
     resumed(started)
     assert work(started, "line", "b1", "--into", "work-queue", "--group", "Abandon again", THIRD).returncode == 0
-    bases, unlay = [], batch_start.unlay_lines
-    monkeypatch.setattr(batch_start, "unlay_lines",
+    bases, unlay = [], laying_inprocess.unlay_lines
+    monkeypatch.setattr(laying_inprocess, "unlay_lines",
                         lambda tree, items, command, base=None: bases.append(base) or unlay(tree, items, command, base))
     batch_amend.amend(started, "b1")
     base = batch_parked.base_of(started, batch_plan.find(started, "batch-1"))

@@ -106,8 +106,7 @@ def _take_out_parked(root, tree, batch):
     """One commit on the batch branch taking every parked item's lines out of `spec/`, citing them; none when they are
     out already. Each is taken out as it was laid, not as it now reads (b324)."""
     parked = batch_parked.parked(root, batch)
-    changed = batch_start.unlay_lines(tree, batch_parked.as_laid(root, batch, parked), COMMAND,
-                                     batch_parked.base_of(root, batch))
+    changed = batch_parked.lifted(root, batch, parked, tree, COMMAND)
     if changed and git(tree, "status", "--porcelain", "--", *changed).stdout.strip():
         git(tree, "add", "--", *changed)
         git(tree, "commit", "-q", "-m", "%s: the requirement lines of %s taken out\n%s" % (
