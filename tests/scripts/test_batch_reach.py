@@ -68,3 +68,19 @@ def test_the_plugin_leaves_unreached_tests_out(tmp_path):
     assert done.returncode == 0, done.stdout + done.stderr
     env.pop(batch_reach.ENV)
     assert subprocess.run(run + ["."], cwd=tmp_path, env=env, capture_output=True, text=True).returncode == 1
+
+
+def test_a_module_of_a_package_is_reached_through_a_package(tmp_path):
+    repo(tmp_path)
+    tests = {"tests/scripts/test_dotted.py": "from plumbing.shop_files import git\n",
+             "tests/scripts/test_from.py": "from plumbing import shop_files\n",
+             "tests/scripts/test_attr.py": "x = other.shop_files\n"}
+    for rel, text in tests.items():
+        (tmp_path / rel).write_text(text)
+    batch_git.git(tmp_path, "add", "-A")
+    batch_git.git(tmp_path, "-c", "user.name=t", "-c", "user.email=t@e", "commit", "-q", "-m", "tests")
+    since = batch_git.git(tmp_path, "rev-parse", "HEAD").stdout.strip()
+    head = change(tmp_path, "scripts/plumbing/shop_files.py")
+    left = batch_reach.unreached(batch_git.git, tmp_path, since, head, [])
+    assert not {"tests/scripts/test_dotted.py", "tests/scripts/test_from.py"} & set(left)
+    assert "tests/scripts/test_attr.py" in left

@@ -14,6 +14,7 @@ refused (lines own spec/ and features/, `work` owns .shop/). A chore and require
 batch done` runs the check in the task's worktree and refuses a commit of the task that touches a path the chore does
 not name (`run`, `outside`)."""
 import posixpath
+import shlex
 import subprocess
 from typing import NamedTuple
 
@@ -113,8 +114,16 @@ def outside(chore, paths):
 
 
 def run(chore, tree):
-    """The chore's check run in `tree` by the shell: (exit code, its output's last lines)."""
-    done = subprocess.run(chore.check, shell=True, cwd=tree, capture_output=True, text=True)
+    """The chore's check run in `tree` by the shell in the environment a task's tests run in (b771): the plugin's
+    scripts on PYTHONPATH, its leading `python3` (or `python`) the `.venv/bin/python` of `tree` when it holds one
+    (batch_tasks' `run_tests`): (exit code, its output's last lines)."""
+    from batch_git import scripts_env
+    from batch_tasks import interpreter
+    check, python = chore.check, interpreter(tree)
+    word = check.split(None, 1)[0] if check.strip() else ""
+    if python and word in ("python3", "python"):
+        check = shlex.quote(str(python)) + check.lstrip()[len(word):]
+    done = subprocess.run(check, shell=True, cwd=tree, capture_output=True, text=True, env=scripts_env())
     return done.returncode, "\n".join((done.stdout + done.stderr).splitlines()[-20:])
 
 
