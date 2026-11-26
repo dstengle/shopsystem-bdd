@@ -1,14 +1,17 @@
-"""`work context keep <id>` and `work context list` (b576, shop r1-r5): the bounded contexts a shop keeps, each by its
+"""`work context keep <id>` and `work context list` (b576, shop r1, r3-r6): the bounded contexts a shop keeps, each by its
 context id, kept in `.shop/contexts.toml` (`contexts = [...]`, one id a line, in the order kept), which only `work
-context keep` writes and commits. The shop's product id is the product path of this bounded context's id
-(spec/index.md's id less `bounded-context/` and its last part, `missingmass.io/shopsystem`: `product_id`), and it
-covers an id `bounded-context/<product id>/<name>` (`covers`). An id the product id does not cover and one kept
+context keep` writes and commits. The shop's product id is the id of its product, read off the product file
+(product_store, b666), else, while no product file is kept, the product path of this bounded context's id (spec/index.md's
+id less `bounded-context/` and its last part, `missingmass.io/shopsystem`: `product_id`); it covers an id
+`bounded-context/<product id>/<name>` (product_map's `covers`). An id the product id does not cover and one kept
 already are refused naming the id (`keep`). The listing prints each id kept, or, while the shop keeps none, this
 bounded context's id alone (`listed`)."""
 import tomllib
 from pathlib import Path
 
+import product_store
 import shop_files
+from product_map import covers
 from shop_files import Refused
 
 REL = ".shop/contexts.toml"
@@ -21,12 +24,11 @@ def this_id(root):
 
 
 def product_id(root):
-    """The product id of the shop: this bounded context's id less `bounded-context/` and its last part."""
+    """The product id of the shop: its product's id when a product file is kept, else this bounded context's id less
+    `bounded-context/` and its last part."""
+    if (Path(root) / product_store.REL).is_file():
+        return product_store.read(root).get("id") or ""
     return shop_files.context_path(root).rpartition("/")[0]
-
-
-def covers(product, ident):
-    return ident.startswith("bounded-context/%s/" % product) and len(ident) > len("bounded-context/%s/" % product)
 
 
 def kept(root):
