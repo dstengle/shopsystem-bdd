@@ -55,3 +55,13 @@ def test_model_prints_its_own_notice_and_not_specs():
     done = run(str(SCRIPTS / "model"), "--help")
     assert done.returncode == 0 and done.stdout.startswith("usage: spec")
     assert done.stderr == "model: renamed `spec`; `model` goes in the next release\n", done.stderr
+
+
+@pytest.mark.parametrize("words,count", [(("tools",), 1), (("shop", "tools"), 0)])
+def test_tools_run_again_under_the_project_interpreter_prints_the_notice_once(tmp_path, words, count):
+    (tmp_path / "a.py").write_text("def found():\n    pass\n\n\nfound()\n")
+    (tmp_path / "py").mkdir()
+    (tmp_path / "py" / "python").symlink_to(sys.executable)   # another path than sys.executable: `under` runs again
+    done = run(str(SCRIPTS / words[0]), *words[1:], "refs", "found", "--python", "py/python", cwd=tmp_path)
+    assert done.returncode == 0 and "a.py:5" in done.stdout, done.stderr
+    assert done.stderr.count(notice("tools")) == count, done.stderr
