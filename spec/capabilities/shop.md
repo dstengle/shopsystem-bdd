@@ -7,7 +7,7 @@ area: execution
 specifies: service shop
 language: codified-2
 retired: [g2, r2]
-unbuilt: [r6]
+unbuilt: []
 ---
 
 # Shop
