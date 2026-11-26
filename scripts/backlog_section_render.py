@@ -9,7 +9,8 @@ from backlog_model import CLOSE as MODEL_CLOSE
 from backlog_model import FENCE as MODEL_FENCE
 
 UNIVERSAL, INDEX = "universal", "index"
-NEW_FIELDS = ("narrator", "group", "purpose")      # a new capability's block (`work line --capability`, b317)
+NEW_FIELDS = ("narrator", "group", "purpose", "area")  # a new capability's block (`work line --capability`, b317;
+REQUIRED = 3                                           # its `area:` optional, b645)
 FENCE, CLOSE = "```given", "```"
 
 

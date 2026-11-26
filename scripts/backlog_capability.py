@@ -1,6 +1,6 @@
 """`work line --capability` (b317): a capability new to the context written in an item, as a block of its
 `## Requirements` (`### <name>`, then its `narrator:`, `group:` and `purpose:`; backlog_section reads and writes it),
-refused when `spec/capabilities/<name>.md` exists. Laid over a spec (`lay`), the block writes the capability file in
+refused when `spec/capabilities/<name>.md` exists; with `--area`, its `area:` line after them (b645). Laid over a spec (`lay`), the block writes the capability file in
 0.38's form (its id under the context's, its title, narrator, group, `area:` and `specifies:`, `language: codified-2`,
 `retired: []`, `## Purpose`, `## Behaviour`, no empty section) and names it in its area's row of the one table
 `| area | kind | capabilities |` under `spec/index.md`'s `## Composition` (b391; old tables `| capability | narrator |
@@ -51,12 +51,15 @@ def check(root, item, capability, group):
         raise Refused("%s: the group %s is neither %s" % (COMMAND, group, " nor ".join(GROUPS)))
 
 
-def add(root, name, capability, narrator, group, purpose):
-    """The new capability's block written into the item `name` and committed; the item."""
+def add(root, name, capability, narrator, group, purpose, area=None):
+    """The new capability's block written into the item `name` and committed, with its `area:` line when the person
+    names the area (b645: an area of spec/model/ or a new one); the item."""
     item = find(root, name)
     takes(item, COMMAND)
     check(root, item, capability, group)
-    new = (one_line(narrator, "narrator"), group, one_line(purpose, "purpose"))
+    if area is not None and (not CAP.match("### %s" % area) or area in (UNIVERSAL, INDEX)):
+        raise Refused("%s: %s is no area name: lowercase words joined by -" % (COMMAND, area))
+    new = (one_line(narrator, "narrator"), group, one_line(purpose, "purpose")) + ((area,) if area else ())
     blocks = read(item, "the item %s" % item.name)
     blocks.append(Block(capability, [], [], new=new))
     item.sections[SECTION] = render(blocks)
@@ -64,14 +67,22 @@ def add(root, name, capability, narrator, group, purpose):
     return item
 
 
+def add_arguments(p):
+    """`work line`'s option of a new capability's area (b645)."""
+    p.add_argument("--area", help="with --capability: the area the new capability is placed in, an area of "
+                   "spec/model/ or a new one (default: the capability's own name)")
+
+
 def cmd(args):
-    """`work line <item> --capability <name> --narrator <who> [--group service|guarantees] <purpose>`."""
+    """`work line <item> --capability <name> --narrator <who> [--group service|guarantees] [--area <area>]
+    <purpose>`."""
     others = [k for k in ("into", "in_group", "retires", "reword", "remove", "term", "relation", "given", "universal",
                           "upstream", "recodify") if getattr(args, k) is not None] + (["no_line"] if args.no_line else [])
     if args.narrator is None or args.text is None or others:
         raise Refused("%s: takes --narrator and the capability's purpose, with --group service or guarantees "
                       "(default service), and no other piece" % COMMAND)
-    item = add(args.root, args.name, args.capability, args.narrator, args.group or "service", args.text)
+    item = add(args.root, args.name, args.capability, args.narrator, args.group or "service", args.text,
+               getattr(args, "area", None))
     print("%s: a new capability %s" % (label(item), args.capability))
     return 0
 
