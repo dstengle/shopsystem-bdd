@@ -489,6 +489,23 @@ reviews: 1, last clean
   t1 b250 "work show prints the status of an item": done, branch batch-34-b250
 ```
 
+#### `shop work batch next`
+
+Prints the next step of a batch for whatever drives it (an agent, a script, a runner): an instruction and what it is
+about. The instruction is one of `build task` (a pending task, with the batch brief), `finish task` (a running
+task), `submit batch`, `review change` (the next review's folder), `fix finding` (an open `fix now` finding that no
+commit cites yet), `park item` (a failed task) or `stop`. The first one that applies is picked, in this order: stop,
+review change, fix finding, park item, finish task, build task, submit batch. The last line names the command that
+reports the step's result. With `--json` the step is the envelope's `content`. Writes nothing.\
+Synopsis: `shop work batch next [--json] batch`
+
+```console
+$ shop work batch next batch-34
+batch-34 building: finish task
+task: t1 b250 (running), branch batch-34-b250
+report: shop work batch done batch-34 t1
+```
+
 #### `shop work batch resume`
 
 Gives each pending task its worktree, `batch-<n>-t<k>` on the branch `batch-<n>-b<j>`, and prints what each running

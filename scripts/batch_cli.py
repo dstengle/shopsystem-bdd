@@ -41,6 +41,8 @@ def add_parsers(sub):
                     ).add_argument("batch")
     cmds.add_parser("brief", help="write the brief of the next review of a batch's pull request, for pr-reviewer"
                     ).add_argument("batch")
+    cmds.add_parser("next", help="the next step of a batch for its driver: its instruction and the task, brief, "
+                                 "review folder or finding it is about").add_argument("batch")
     s = cmds.add_parser("reopen", help="take a batch awaiting its merge back to building with the person's findings "
                                        "file, kept as a review")
     s.add_argument("batch")
@@ -177,9 +179,14 @@ def abandon(args):
     return 0
 
 
+def next_step(args):
+    import batch_next
+    return batch_next.cmd_next(args)
+
+
 def cmd_batch(args):
     return {"start": start, "status": status, "resume": resume, "done": done, "park": park, "amend": amend,
-            "review": review, "brief": brief, "reviewed": reviewed, "reopen": reopen,
+            "review": review, "brief": brief, "reviewed": reviewed, "reopen": reopen, "next": next_step,
             "merged": merged, "abandon": abandon}[args.batch_cmd](args)
 
 
