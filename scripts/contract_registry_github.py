@@ -3,7 +3,8 @@ from contract_obtain): the upstream's contracts kept as `.shop/contracts/<versio
 repository its `github:` under `## Upstreams` in spec/index.md names (request_gh's `repo_of`), read through
 `$SHOPSYSTEM_WORK_GH` (`gh api repos/<r>/contents/...`, the raw file, byte for byte). A repository GitHub does not
 serve (missing, private or not answering) is refused naming the bounded context and `bounded context unreachable`
-(`reached`, checking r89); another gh failure reading a reached repository naming it and `bounded context failing`
+(`reached`, checking r89), and one no upstream entry identifies, before any gh call, naming it and `bounded context
+not an upstream` (`listed`, b736, checking r132); another gh failure reading a reached repository naming it and `bounded context failing`
 (r102); no contract kept, or none at the version, the reply refused as contract_registry's `version not deposited`, naming the
 version asked (`published`)."""
 import json
@@ -56,10 +57,23 @@ def _api(root, repo, path, context):
         raise _failing(context, str(err).strip().splitlines()[-1]) from None
 
 
+def listed(root, context):
+    """Refused, naming the bounded context `context`, unless it is this bounded context or an upstream entry under
+    `## Upstreams` of spec/index.md identifies it (checking r132)."""
+    import request_gh
+    import shop_files
+    if context != "bounded-context/" + shop_files.context_path(root) and context not in request_gh.bullets(root):
+        raise Refused("no upstream entry under ## Upstreams in spec/index.md identifies the bounded context {names}: "
+                      "bounded context not an upstream", reason="bounded context not an upstream",
+                      names=["bounded context:%s" % context])
+
+
 def reached(root, context):
     """The GitHub repository of `context`, refused as unreachable unless GitHub serves it (checking r89): one missing,
-    private or not answering is a bounded context unreachable, never one with no contract."""
+    private or not answering is a bounded context unreachable, never one with no contract; one no upstream entry
+    identifies refused as not an upstream first (`listed`, r132)."""
     import request_gh
+    listed(root, context)
     repo = request_gh.repo_of(root, context, COMMAND)
     try:
         _gh(root, "api", "repos/%s" % repo)

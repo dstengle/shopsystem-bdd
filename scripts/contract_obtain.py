@@ -7,8 +7,9 @@ checking r100), where the registry's adapter places it (contract_registry_folder
 check, model_adapter's `uncontracted`, reads), in one commit by `shop_files.committed`: the only writer of provider/,
 nothing kept at the repository root. It keeps no context request and opens no issue. In this order: an id out of the
 context id form (migrate init's `FORM`) is refused naming the id and `id not in the context id form` (r88); an
-upstream the registry cannot reach naming the bounded context and `bounded context unreachable` (r89); a bounded
-context no adapter spec has as its provider naming the provider and `no adapter spec has the provider` (b593, r103:
+upstream no upstream entry identifies, outside the shop, naming the bounded context and `bounded context not an
+upstream` (r132); an upstream the registry cannot reach naming the bounded context and `bounded context unreachable`
+(r89), and one failing `bounded context failing` (r102, r133); a bounded context no adapter spec has as its provider naming the provider and `no adapter spec has the provider` (b593, r103:
 only of an available provider in the context id form, b601); an upstream with no contract deposited, or none at V,
 naming the bounded context and the version (r130); a contract kept already at that place is left as it is when the same, and written again
 with the upstream's bytes, committed, when another (review f1)."""
@@ -40,13 +41,10 @@ def retrieved(root, context, version):
 
 
 def _reach(root, context):
-    """Refused only when the registry cannot reach `context` (r89 before r103, b601): a retrieve's other refusals let
-    the caller's refusal stand."""
-    try:
-        contract_registry.retrieve(root, context, None)
-    except Refused as err:
-        if err.reason == "bounded context unreachable":
-            raise
+    """Refused when the registry cannot read `context`: no upstream entry identifies it (r132), it cannot be reached
+    (r89) or it fails (r133), each before r103 (b601, b736); a retrieve's reply, `version not deposited` among them,
+    lets the caller's refusal stand."""
+    contract_registry.retrieve(root, context, None)
 
 
 def holders(root, context):
@@ -73,8 +71,8 @@ def holders(root, context):
 def obtain(root, context, version=None):
     """`spec obtain`: the upstream's contract kept under provider/ of each adapter spec of it (at the version it
     pins, else `version`, else the published one) and committed; an id out
-    of the context id form (migrate init's) refused before anything is read, then an upstream GitHub does not serve,
-    and only then one no adapter spec has as its provider (checking r88, r89 before r103: review f1, b601)."""
+    of the context id form (migrate init's) refused before anything is read, then an upstream no upstream entry
+    identifies, one GitHub does not serve or one failing (r132, r89, r133), and only then one no adapter spec has as its provider (checking r88, r89 before r103: review f1, b601)."""
     import shop_files
     from migrate_init import FORM
     if not FORM.fullmatch(context):
