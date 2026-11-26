@@ -6,7 +6,8 @@ caller gives (product_store's). A job is assigned once: one a bounded context ho
 job; a bounded context whose id is not of the context id form (product_map's `conformed`, b793) is refused naming the
 id, and one the product does not hold naming the bounded context; a job the product does not declare is refused
 naming the job (b809); a product actor the product does not hold is refused naming it,
-and so is a mapping in a bounded context whose id is not of the context id form, naming the id, or in this bounded
+and so is a mapping in a bounded context whose id is not of the context id form, naming the id, in one the product
+does not hold, naming the bounded context (b824), or in this bounded
 context to an actor its domain model does not hold, naming the actor (b798)."""
 from plumbing.shop_refused import Refused
 from product_map import conformed
@@ -35,16 +36,20 @@ def assign(product, job, context):
 def map_actor(product, actor, context, called, here=None):
     """The product with the product actor `actor` among the actors of the bounded context `context`, called `called`
     there; refused naming the id when it is not of the context id form, the product actor when the product does not
-    hold it (before the actor, b813), and the actor when `context` is this bounded context, `here` (its id, the actors its domain model holds),
-    and its domain model does not hold it."""
+    hold it (before the actor, b813), the bounded context when the product does not hold it (b824), and the actor
+    when `context` is this bounded context, `here` (its id, the actors its domain model holds), and its domain model
+    does not hold it."""
     conformed(context, "parameter:bounded context")
     if actor not in product.get("actors", []):
         raise Refused("{names} %r is no actor of the product" % actor, reason="product actor outside the product",
                       names=["parameter:product actor"])
+    held = product.get("contexts", {})
+    if context not in held:
+        raise Refused("{names} %s is no bounded context of the product" % context,
+                      reason="bounded context outside the product", names=["parameter:bounded context"])
     if here and context == here[0] and called not in here[1]:
         raise Refused("{names} %r is no actor of the domain model of %s; it holds %s" % (
             called, context, ", ".join(repr(a) for a in sorted(here[1])) or "no actor"),
             reason="actor outside the domain model", names=["parameter:actor"])
-    held = product.get("contexts", {})
     entry = held.get(context, {})
     return {**product, "contexts": {**held, context: {**entry, "actors": {**entry.get("actors", {}), actor: called}}}}
