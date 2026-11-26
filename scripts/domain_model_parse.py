@@ -10,7 +10,7 @@ import re
 from dataclasses import dataclass, field
 
 import domain_model_props
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 TYPES = ("text", "number", "time", "version")
 CARDS = ("one", "many", "one, optional")

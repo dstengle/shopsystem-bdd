@@ -152,7 +152,7 @@ def said(item):
 
 def touched(root, since, branch, item_name):
     """The paths each commit on `branch` after `since` that cites the item `item_name` touches, merges left out."""
-    import shop_files
+    from plumbing import shop_files
     out = shop_files.git(root, "log", "--no-merges", "--format=%x1e%(trailers:key=Item,valueonly,separator=%x2c)%x00",
                          "--name-only", "%s..%s" % (since, branch))
     paths = []

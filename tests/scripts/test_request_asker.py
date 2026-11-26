@@ -14,8 +14,8 @@ sys.path.insert(0, str(SCRIPTS))
 sys.path.insert(0, str(ROOT / "tests"))
 sys.path.insert(0, str(ROOT / "tests" / "scripts"))
 import request_moves
-import shop_files
 import toolchain
+from plumbing import shop_files
 from request_testing import hosted
 
 CONTEXT = "ex.com/prod/ctx"

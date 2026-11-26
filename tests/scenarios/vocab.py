@@ -24,8 +24,8 @@ import pytest
 SCRIPTS = Path(__file__).resolve().parents[2] / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.append(str(SCRIPTS))
-import shop_files
 import store_git
+from plumbing import shop_files
 
 if __name__ in sys.modules:   # a loader by path puts the module in sys.modules first, as importlib's recipe does
     sys.modules.setdefault("vocab", sys.modules[__name__])

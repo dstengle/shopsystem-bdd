@@ -12,7 +12,7 @@ registry refuses the retrieval, names the version and changes nothing (r130)."""
 import re
 
 import contract_registry
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 VERSION = re.compile(r"[0-9A-Za-z][0-9A-Za-z.+-]*")
 
@@ -91,7 +91,7 @@ def fetch(root, version=None):
             raise Refused("no contract is published", reason="version not published")
         raise Refused("no contract is kept at the version {names}", reason="version not published",
                       names=["version:%s" % named])
-    from domain_envelope import Response
+    from plumbing.domain_envelope import Response
     text = reply.content[1].decode("utf-8")
     print(text, end="")
     return Response("returned", text)

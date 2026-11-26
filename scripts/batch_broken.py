@@ -19,7 +19,7 @@ import batch_reach
 import batch_rerun
 import batch_tasks
 from batch_git import git
-from shop_files import Refused
+from plumbing.shop_files import Refused
 
 
 def failed(root, batch):

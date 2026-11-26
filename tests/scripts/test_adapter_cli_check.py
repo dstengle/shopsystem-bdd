@@ -7,7 +7,7 @@ import adapter_annotate
 import adapter_cli
 import adapter_cli_check
 import pytest
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 FIXTURE = pathlib.Path(__file__).parent / "fixtures" / "domain-model"
 SCRIPTS = str(FIXTURE.parents[3] / "scripts")

@@ -4,7 +4,7 @@ import os
 import subprocess
 import sys
 
-import shop_refused
+from plumbing import shop_refused
 
 # name, pip package, what it is for, what the workflow does without it
 TOOLS = (

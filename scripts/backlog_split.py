@@ -5,10 +5,10 @@ import re
 from dataclasses import replace
 from pathlib import Path
 
-import shop_files
 from backlog_items import Refused, find, label, next_name, one_line, rel_of, render
 from backlog_section import SECTION, read, takes
 from backlog_section import render as render_section
+from plumbing import shop_files
 
 CLOSED = ("delivered", "refused", "withdrawn")
 SPLITS = ("idea", "shaped")

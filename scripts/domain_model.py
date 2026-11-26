@@ -17,7 +17,7 @@ from pathlib import Path
 import domain_model_parse
 from domain_model_parse import Parameter
 from model_parse import frontmatter
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 Element = namedtuple("Element", "kind id area")
 KINDS = ("object", "attribute", "value", "relation", "lifecycle", "service", "operation", "actor", "event")

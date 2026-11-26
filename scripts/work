@@ -28,8 +28,8 @@ import request_cli
 import request_moves
 import request_view
 import shop_contexts
-import shop_files
 from adapter_cli_respond import prepare, respond
+from plumbing import shop_files
 
 
 def cmd_withdraw(args):

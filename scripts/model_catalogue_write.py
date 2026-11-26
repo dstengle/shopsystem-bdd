@@ -11,10 +11,10 @@ import re
 import tomllib
 from pathlib import Path
 
-import toml_edit
 from model_catalogue import entries
 from model_catalogue_entries import said
-from shop_files import LINE_BREAKS, Refused
+from plumbing import toml_edit
+from plumbing.shop_files import LINE_BREAKS, Refused
 
 DATA = "grammar/catalogue-entries.toml"
 FILES = {"rules": "grammar/rules.md", "constructs": "grammar/constructs.md"}

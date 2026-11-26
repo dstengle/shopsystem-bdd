@@ -18,8 +18,8 @@ import migrate_upgrade_frames
 import migrate_upgrade_ids
 import migrate_upgrade_simplified
 import migrate_upgrade_values
-import shop_files
-from migrate_write import check_moves, git, top_level, uncommitted
+from plumbing import shop_files
+from plumbing.migrate_write import check_moves, git, top_level, uncommitted
 
 SCRIPTS = Path(__file__).resolve().parent
 VERSION_FILE = ".shop/plugin-version"

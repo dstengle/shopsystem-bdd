@@ -22,7 +22,6 @@ import batch_base_merge
 import batch_findings
 import batch_fix
 import batch_plan
-import shop_files
 from batch_git import (
     SCRIPTS,
     current_branch,
@@ -35,7 +34,8 @@ from batch_git import (
     tree_for,
     trees_dir,
 )
-from shop_files import Refused
+from plumbing import shop_files
+from plumbing.shop_files import Refused
 
 COMMAND = "work batch brief"
 SIZE = 1000

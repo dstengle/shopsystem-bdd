@@ -6,8 +6,8 @@ text (`reply`); the transcript is the one `--reply` names, else the newest pr-re
 import json
 
 from measure_batch_read import project_dir
-from shop_files import Refused
-from transcripts import json_rows
+from plumbing.shop_files import Refused
+from plumbing.transcripts import json_rows
 
 AGENT = "pr-reviewer"
 

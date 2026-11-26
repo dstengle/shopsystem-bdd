@@ -1,37 +1,46 @@
-"""`spec coupling` (b612, checking r144-r146): the specification service's report of the coupling between the areas
+"""`spec coupling` (b612, checking r145-r149): the specification service's report of the coupling between the areas
 of the context's domain model (`spec/model/`), each area a context the disentangling (decisions 0129-0133) will make.
-A coupling is of the area depended on, by another area, and holds what couples them: each word both areas' vocabulary
-layers define, of the area of the word's later entry in file order (r144, `words`); each element of the area that an
+A coupling is of the area depended on, by another area, and holds what couples them: each word the other area's
+vocabulary layer borrows, an entry of it meaning an element of the area's model (r149, b762, `words`); each element of the area that an
 element of the other's model refers to by its word (a relation's or an object attribute's target, a `kind of`, an
 operation's object or a parameter naming an object, the operation an event is raised by), named by its kind and id
 (r145, `elements`); each requirement of a capability of the other area whose logical form uses a term only the area's
 layer holds (r146, `requirements`). The couplings most first (`couplings`), the content of a `returned` response
 printed as text (`text`) or as the envelope under `--json`; each tracked Python file of the other area that imports
 one of the area's, the module groups declared in `.shop/modules.toml` (r147, b744, decision 0151: spec_coupling_imports,
-`imports`, each `<importer> -> <imported>`)."""
+`imports`, each `<importer> -> <imported>`). A word two areas' layers each define for an element of their own is a
+homonym, no reliance: held apart under `homonyms`, of the area of the word's later entry in file order (r148), and
+left out of the figures that rank the couplings, so a coupling of homonyms only is listed with none of them."""
 import re
 from collections import defaultdict
 from pathlib import Path
 
-from domain_envelope import Response
+from plumbing.domain_envelope import Response
 
 KINDS = ("words", "elements", "requirements", "imports")
+HELD = KINDS + ("homonyms",)
 
 
 def _coupling(found, area, by):
-    return found.setdefault((area, by), {"area": area, "by": by, **{k: set() for k in KINDS}})
+    return found.setdefault((area, by), {"area": area, "by": by, **{k: set() for k in HELD}})
 
 
 def _words(root, found):
-    """r144: a word two areas' layers define, of each two of them the coupling of the area of its later entry by
-    the earlier's."""
+    """r149: a word of an area's layer meaning an element another area's model holds, the coupling of that area by
+    the word's; r148: a word two areas' layers each define for an element of their own, of each two of them a
+    homonym of the coupling of the area of its later entry by the earlier's."""
     import spec_vocabulary
     earlier = defaultdict(list)
     for e in spec_vocabulary.entries(root):
-        if e.layer == spec_vocabulary.SHARED or e.layer in earlier[e.term]:
+        if e.layer == spec_vocabulary.SHARED or not e.element or not e.element.area:
+            continue
+        if e.element.area != e.layer:
+            _coupling(found, e.element.area, e.layer)["words"].add(e.term)
+            continue
+        if e.layer in earlier[e.term]:
             continue
         for held in earlier[e.term]:
-            _coupling(found, e.layer, held)["words"].add(e.term)
+            _coupling(found, e.layer, held)["homonyms"].add(e.term)
         earlier[e.term].append(e.layer)
 
 
@@ -110,7 +119,7 @@ def _natural(name):
 
 def couplings(root):
     """Every coupling between the areas of the context at `root`, most first: each with its area, the area `by` that
-    depends on it, and its sorted words, elements and requirements."""
+    depends on it, and its sorted words, elements, requirements, imports and homonyms (no figure of the ranking)."""
     import domain_model
     found = {}
     if domain_model.exists(root):
@@ -118,7 +127,7 @@ def couplings(root):
         _elements(root, found)
         _requirements(root, found)
         _imports(root, found)
-    out = [{**c, **{k: sorted(c[k], key=_natural) for k in KINDS}} for c in found.values()]
+    out = [{**c, **{k: sorted(c[k], key=_natural) for k in HELD}} for c in found.values()]
     return sorted(out, key=lambda c: (-sum(len(c[k]) for k in KINDS), c["area"], c["by"]))
 
 
@@ -130,7 +139,7 @@ def text(found):
         counts = ", ".join("%d %s" % (len(c[k]), k[:-1] if len(c[k]) == 1 else k)
                            for k in KINDS)
         lines.append("%s by %s: %s" % (c["area"], c["by"], counts))
-        lines += ["  %s: %s" % (k[:-1], ", ".join(c[k])) for k in KINDS if c[k]]
+        lines += ["  %s: %s" % (k[:-1], ", ".join(c[k])) for k in HELD if c[k]]
     return "\n".join(lines) + "\n"
 
 

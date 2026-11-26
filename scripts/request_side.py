@@ -2,8 +2,8 @@
 upstream's repository (this one) and asked by another bounded context, or sent, kept in its asker's (this one) and
 answered by another. An internal request, and a record kept from before requests named their upstream, is neither,
 and either side's commands run on it. Each side passes only its own turn, and only the asker replies."""
+from plumbing.shop_files import Refused
 from request_text import field
-from shop_files import Refused
 
 
 def _own(root):

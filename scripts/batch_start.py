@@ -24,10 +24,10 @@ import batch_pick
 import batch_timings
 import decision_successor
 import laying
-import shop_files
 from batch_git import add_tree, current_branch, git, locked, remove_tree, trees_dir
 from batch_plan import Batch, Task, commit, next_name, open_batch
-from shop_files import Refused
+from plumbing import shop_files
+from plumbing.shop_files import Refused
 
 
 def labels(items):

@@ -33,8 +33,8 @@ import batch_git
 import batch_merge
 import batch_plan
 import batch_tasks
-from domain_envelope import Response
-from shop_files import Refused
+from plumbing.domain_envelope import Response
+from plumbing.shop_files import Refused
 
 INSTRUCTIONS = ("prepare task", "build task", "finish task", "submit batch", "review change", "fix finding", "fix task",
                 "look at failure", "park item", "abandon batch", "stop")

@@ -10,8 +10,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import adapter_cli
-import domain_envelope
 import store_git
+from plumbing import domain_envelope
 
 
 @dataclass

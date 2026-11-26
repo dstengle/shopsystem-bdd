@@ -14,13 +14,12 @@ from pathlib import Path
 import backlog_items
 import batch_brief
 import batch_findings
-import batch_gh
 import batch_plan
 import review_reply
-import shop_files
 from batch_findings import Review
 from batch_git import current_branch, git, locked
-from shop_files import Refused
+from plumbing import batch_gh, shop_files
+from plumbing.shop_files import Refused
 
 COMMAND = "work batch reviewed"
 

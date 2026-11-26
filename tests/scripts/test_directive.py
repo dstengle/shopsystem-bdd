@@ -12,7 +12,7 @@ import pytest
 import transcript_testing as T
 from backlog_testing import SCRIPTS, git, work
 from conversation_read import Message
-from shop_files import Refused
+from plumbing.shop_files import Refused
 
 
 def quote(repo, n=1, words="Merge and release while I am away."):

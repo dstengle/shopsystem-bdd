@@ -12,7 +12,7 @@ import transcript_testing as T
 from backlog_testing import git, work
 from conversation_read import Message
 from measure_batch_read import project_dir
-from shop_files import Refused
+from plumbing.shop_files import Refused
 
 
 @pytest.fixture

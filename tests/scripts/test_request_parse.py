@@ -13,8 +13,8 @@ SCRIPTS = ROOT / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 sys.path.insert(0, str(ROOT / "tests"))
 import request_lines
-import shop_files
 import toolchain
+from plumbing import shop_files
 
 GLOSSARY = ROOT / "tests" / "scripts" / "fixtures" / "glossary" / "spec" / "index.md"
 FOUR = GLOSSARY.read_text().replace("language: codified-1\n", "language: codified-2\nimports: [cli]\n")

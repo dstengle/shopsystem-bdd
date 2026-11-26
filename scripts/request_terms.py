@@ -14,7 +14,7 @@ import re
 from pathlib import Path
 
 from backlog_items import one_line
-from shop_files import Refused
+from plumbing.shop_files import Refused
 
 FORM = "`- **<word>** (<part of speech>) → <model element>. <definition>`"
 START = "- **"

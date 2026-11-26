@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 
 import adapter_cli
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 KEY = "requirements"
 HEADER = re.compile(r'^\[operations\."(?P<op>[^"]+)"\]\s*$')

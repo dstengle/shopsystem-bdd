@@ -4,7 +4,7 @@ import subprocess
 import sys
 
 from backlog_testing import SCRIPTS, git, state, work
-from shop_files import frontmatter
+from plumbing.shop_files import frontmatter
 
 README = ("# Records\n\nIntro.\n\n| path | record | kind |\n|---|---|---|\n| `old.md` | an old one | analysis |\n\n"
           "A footnote.\n")

@@ -7,7 +7,7 @@ import tomllib
 import product_store
 import pytest
 import shop_contexts
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 INDEX = "---\nid: bounded-context/example.org/home/home\nkind: bounded-context\nlanguage: codified-2\n---\n\n# home\n"
 

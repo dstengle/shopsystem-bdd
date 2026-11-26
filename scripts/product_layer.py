@@ -8,7 +8,7 @@ the product's, a need of it is no job the product holds, or a need depends on th
 it needs (`depends`), so that needs never close a cycle."""
 import re
 
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 # the job statement form: When <situation>, <actor> wants <motivation>, so they can <outcome>. The situation may hold
 # commas (b674): the statement splits at the last ", <actor> wants" before ", so they can", an actor of no comma.

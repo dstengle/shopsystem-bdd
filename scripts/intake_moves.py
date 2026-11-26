@@ -9,9 +9,9 @@ import backlog_lines
 import request_lines
 import request_moves
 import request_post
-import shop_files
 from backlog_items import Refused
 from backlog_moves import text_line
+from plumbing import shop_files
 from request_text import COUNTERS, entries, field, numbered, turned, with_entries
 
 OUTCOMES = ("accepted", "rewritten", "refused", "question", "withdrawn")    # the glossary's `line outcome`

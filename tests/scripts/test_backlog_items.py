@@ -4,8 +4,8 @@ import json
 
 import backlog_items
 import pytest
-import shop_files
 from backlog_testing import git, state, work, write_item
+from plumbing import shop_files
 
 
 def test_idea_writes_b1_and_commits_only_it(backlog_repo):

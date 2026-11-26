@@ -10,9 +10,9 @@ import re
 from pathlib import Path
 
 import decision_amend
-import shop_files
 from model_decisions import ROUTES
 from model_parse import DECISIONS, decision_files
+from plumbing import shop_files
 
 TIERS = ("check", "requirement", "judgement")
 HELP = ("write a design-decision, spec/decisions/<nnnn>-<slug>.md, with its frontmatter (id, summary, date, status "
@@ -213,7 +213,7 @@ PARAMETERS = {"wording": "decision", "routes": "verified_by", "author": "by", "e
 
 def decision(args):
     """`work decision`: the request decisions.enter, its parameters read off the command line by business name."""
-    from domain_envelope import Response
+    from plumbing.domain_envelope import Response
     if args.amend is not None:
         return amend(args)
     if args.title is None:
@@ -229,7 +229,7 @@ def decision(args):
 
 def amend(args):
     """`work decision --amend`: the request decisions.amend, its enforcers and foundations off the command line."""
-    from domain_envelope import Response
+    from plumbing.domain_envelope import Response
     rel = decision_amend.amend(args.root, args.amend, args.enforced_by, args.rests_on)
     print(rel)
     return Response("done", {"path": rel})

@@ -30,12 +30,11 @@ import sys
 import threading
 import time
 
-import batch_gh
 import request_gh
 import request_moves
 import request_sync
 import request_watch
-import shop_files
+from plumbing import batch_gh, shop_files
 from request_text import field
 
 COMMAND = "work watch"

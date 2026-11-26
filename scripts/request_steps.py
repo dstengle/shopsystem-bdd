@@ -12,12 +12,12 @@ import re
 import backlog_lines
 import request_moves
 import request_post
-import shop_files
 import spec_packs
 import spec_read
 from backlog_items import one_line
+from plumbing import shop_files
+from plumbing.shop_files import Refused
 from request_text import entries, field, with_entries, with_field
-from shop_files import Refused
 
 LIMIT = 60000       # GitHub's limit on a comment is 65536 characters
 

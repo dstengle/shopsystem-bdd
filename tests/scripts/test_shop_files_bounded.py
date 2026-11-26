@@ -5,7 +5,7 @@ import signal
 import sys
 import time
 
-import shop_files
+from plumbing import shop_files
 
 # The command forks a child in a session of its own that keeps stdout and stderr, writes its pid and sleeps; the
 # command itself sleeps too, so `bounded`'s timeout kills its group but not the child.

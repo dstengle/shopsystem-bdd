@@ -5,7 +5,7 @@ import subprocess
 import batch_merge
 import pytest
 from backlog_testing import git
-from shop_files import Refused
+from plumbing.shop_files import Refused
 
 HEAD = "---\nid: x\nunbuilt: [%s]\n---\n\n# X\n\nbody\n"
 

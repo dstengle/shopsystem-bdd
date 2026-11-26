@@ -22,7 +22,7 @@ import request_gh
 import request_moves
 import request_post
 import request_steps
-import shop_files
+from plumbing import shop_files
 from request_text import (
     REQUESTS,
     entries,

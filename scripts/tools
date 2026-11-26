@@ -5,13 +5,13 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import shop_refused
-from adapter_cli_respond import marked, prepare, respond
 import tools_check
 import tools_env
 import tools_map
 import tools_refs
 import tools_size
+from adapter_cli_respond import marked, prepare, respond
+from plumbing import shop_refused
 
 CONTRACT = """\
 contract:

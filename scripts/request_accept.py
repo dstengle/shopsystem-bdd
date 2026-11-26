@@ -12,10 +12,10 @@ import intake_moves
 import request_moves
 import request_post
 import request_terms
-import shop_files
 from backlog_items import Item, label, next_name, one_line, rel_of, render
+from plumbing import shop_files
+from plumbing.shop_files import Refused
 from request_text import SETTLED, countered, entries, field, with_field
-from shop_files import Refused
 
 TAKES = ("open", "awaiting-upstream")      # the upstream's turn
 

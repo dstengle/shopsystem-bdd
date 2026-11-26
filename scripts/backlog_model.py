@@ -17,8 +17,8 @@ from pathlib import Path
 import backlog_model_area
 import backlog_model_elements
 import backlog_model_ops
-import shop_files
 from backlog_items import Refused, commit, find, label, one_line
+from plumbing import shop_files
 
 HEAD = re.compile(r"^### ([a-z0-9]+(?:-[a-z0-9]+)*) model$")
 FENCE, CLOSE = "```model", "```"

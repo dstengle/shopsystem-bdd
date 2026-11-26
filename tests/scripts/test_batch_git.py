@@ -4,12 +4,12 @@ import json
 import subprocess
 import sys
 
-import batch_gh
 import batch_git
 import pytest
 from backlog_testing import git
 from batch_testing import gh_calls
-from shop_files import Refused
+from plumbing import batch_gh
+from plumbing.shop_files import Refused
 
 
 def test_delivery_reads_the_toml(batch_repo, batch_outside):

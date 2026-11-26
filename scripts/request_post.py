@@ -14,9 +14,9 @@ from typing import NamedTuple
 
 import request_form
 import request_gh
-import shop_files
+from plumbing import shop_files
+from plumbing.shop_files import Refused
 from request_text import COUNTERS, entries, field, with_entries
-from shop_files import Refused
 
 ASKER_PART = ("Lines", "Answers")
 UPSTREAM_PART = ("Outcomes", "Questions", COUNTERS, "Reasons", "Into", "Resolution")

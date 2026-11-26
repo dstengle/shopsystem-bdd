@@ -25,14 +25,13 @@ import subprocess
 
 import backlog_items
 import backlog_lifecycle
-import batch_gh
 import batch_plan
 import batch_warm
 import request_moves
-import shop_files
 from batch_git import locked, remove_tree, trees_path
 from batch_tasks import refuse_loose
-from shop_files import Refused
+from plumbing import batch_gh, shop_files
+from plumbing.shop_files import Refused
 
 
 def _items(root, batch, status):

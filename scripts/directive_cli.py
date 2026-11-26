@@ -9,8 +9,8 @@ from pathlib import Path
 import conversation_quote
 import directive
 from backlog_view import cell
-from shop_files import Refused
-from transcripts import Refused as ReadRefused
+from plumbing.shop_files import Refused
+from plumbing.transcripts import Refused as ReadRefused
 
 is_directive = directive.is_directive
 

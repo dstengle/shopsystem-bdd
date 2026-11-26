@@ -19,8 +19,8 @@ from pathlib import Path
 import backlog_items
 import backlog_lines
 import decision_write
-import shop_files
 from model_parse import DECISIONS, as_list, decision_files, frontmatter
+from plumbing import shop_files
 
 LAY = "the lay of "
 PARAGRAPH = re.compile(r"^(?P<gone>\S+), which this decision's predecessor \S+ named under enforced_by, is retired by "

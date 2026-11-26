@@ -8,7 +8,7 @@ from types import SimpleNamespace
 import batch_rerun
 import batch_tasks
 import pytest
-from shop_files import Refused
+from plumbing.shop_files import Refused
 
 CONFTEST = pathlib.Path(__file__).resolve().parent / "conftest.py"
 

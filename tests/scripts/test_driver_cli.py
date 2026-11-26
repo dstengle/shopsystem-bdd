@@ -35,7 +35,7 @@ def test_argv_of_a_positional_and_a_repeat(contract):
 
 
 def test_a_parameter_the_operation_lacks_is_refused(contract):
-    from shop_refused import Refused
+    from plumbing.shop_refused import Refused
     with pytest.raises(Refused, match="no parameter colour"):
         adapter_cli.argv(contract, "notes.add", {"colour": "red"})
 

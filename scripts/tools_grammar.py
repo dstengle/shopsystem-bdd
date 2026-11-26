@@ -11,7 +11,7 @@ import sys
 import tarfile
 import tempfile
 
-import shop_refused
+from plumbing import shop_refused
 
 GF_VERSION = "3.12"
 GF_URL = ("https://github.com/GrammaticalFramework/gf-core/releases/download/release-3.12/"

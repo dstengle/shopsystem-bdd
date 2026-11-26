@@ -6,7 +6,7 @@ import os
 import shlex
 import subprocess
 
-from shop_files import Refused
+from plumbing.shop_files import Refused
 
 GH = "SHOPSYSTEM_WORK_GH"
 
