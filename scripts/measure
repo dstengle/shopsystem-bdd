@@ -71,7 +71,7 @@ COMMANDS = {"batch": batch, "defect": defect, "show": show, "compare": compare}
 
 
 def parser():
-    top = argparse.ArgumentParser(prog="measure", description=__doc__, epilog=CONTRACT,
+    top = argparse.ArgumentParser(prog="shop measure", description=__doc__, epilog=CONTRACT,
                                   formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = top.add_subparsers(dest="command", required=True)
     many = sub.add_parser("batch", help="write a batch's measurement")

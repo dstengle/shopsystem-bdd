@@ -91,7 +91,7 @@ def cmd_resolve(args):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog="work", description=__doc__)
+    ap = argparse.ArgumentParser(prog="shop work", description=__doc__)
     ap.add_argument("--root", default=".", help="the repository (default: the current directory)")
     sub = ap.add_subparsers(dest="cmd", required=True)
     li = sub.add_parser("list", help="each request with its status, and each observation no source cites")

@@ -54,7 +54,7 @@ def cmd_constructs(args):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog="spec", description=__doc__, epilog=CONTRACT,
+    ap = argparse.ArgumentParser(prog="shop spec", description=__doc__, epilog=CONTRACT,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--root", default=".")
     sub = ap.add_subparsers(dest="cmd", required=True)

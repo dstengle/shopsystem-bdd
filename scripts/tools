@@ -99,7 +99,7 @@ def under(python, argv):
 
 
 def main():
-    parser = argparse.ArgumentParser(prog="tools", description=__doc__, epilog=CONTRACT,
+    parser = argparse.ArgumentParser(prog="shop tools", description=__doc__, epilog=CONTRACT,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--python")
     sub = parser.add_subparsers(dest="command", required=True)
