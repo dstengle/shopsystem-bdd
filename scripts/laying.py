@@ -11,7 +11,9 @@ reason, each naming the rule `rule:<code>` and the requirement `requirement:<cap
 the operations' outcomes (a feature generator that does not answer) is raised as shop_refused's Refused. The adapter wired
 in is the in-process one (laying_inprocess; decision 0125); `$SHOPSYSTEM_LAYING` names the file of another adapter run
 in its place, a stand-in the tests swap in (`adapter`). `command` is the command a refusal is said as and `base` the
-commit the batch was laid on, which a lift puts the operation tables back as."""
+commit the batch was laid on, which a lift puts the operation tables back as; a lift takes the item as the commit `laid`
+holds it (its file there, read by the port itself; default `base`, the item as given when neither holds it: b769) and
+its reply names each requirement it took out with its line (`lifted`)."""
 import importlib.util
 import os
 
@@ -45,9 +47,38 @@ def prepare(workspace, batch, items, command=COMMAND):
     return adapter().prepare(workspace, batch, items, command)
 
 
-def lift(item, workspace, command=COMMAND, base=None):
-    """The laying service's reply to a lift of the item from the workspace: done, {"changed": paths}."""
-    return adapter().lift(item, workspace, command, base)
+def lift(item, workspace, command=COMMAND, base=None, laid=None):
+    """The laying service's reply to a lift of the item, as the commit `laid` (default `base`) holds it, from the
+    workspace, the operation tables put back as `base` holds them: done, {"changed": paths, "lifted": {<cap>#r<n>:
+    its line} of the item as lifted}."""
+    version = as_laid(item, workspace, laid or base)
+    reply = adapter().lift(version, workspace, command, base)
+    if reply.outcome == "done":
+        reply.content.setdefault("lifted", lines(version))
+    return reply
+
+
+def as_laid(item, workspace, commit):
+    """The item as the commit holds it (its file there, read in the workspace); the item as given with no commit, or
+    when the commit holds no file of it."""
+    import backlog_items
+    from batch_git import GitFailed, git
+    if not commit:
+        return item
+    rel = backlog_items.rel_of(item.name)
+    try:
+        return backlog_items.parse(git(workspace, "show", "%s:%s" % (commit, rel)).stdout, rel)
+    except GitFailed:
+        return item
+
+
+def lines(item):
+    """{<cap>#r<n>: its line} of the item's requirement lines."""
+    import backlog_items
+    import backlog_lines
+    return {"%s#%s" % (block.capability, r): text
+            for block in backlog_lines.read(item, backlog_items.rel_of(item.name))
+            for g in block.groups for r, text in g.requirements}
 
 
 def check(item, workspace):
