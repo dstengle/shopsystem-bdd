@@ -606,6 +606,7 @@ requirement = { positional = 2 }
 "requirement id" = { option = "--retires" }
 "universal condition id" = { option = "--retires" }
 capability = { option = "--capability" }
+area = { option = "--area" }
 
 [operations."drafting.write"]
 command = "work line"
