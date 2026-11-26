@@ -7,7 +7,7 @@ area: specification
 specifies: service product
 language: codified-2
 retired: [g18, r18, g14, r14, g43, r43, g40, r40]
-unbuilt: []
+unbuilt: [r68]
 ---
 
 # Product
@@ -210,5 +210,5 @@ the job statement `j2` holds "When x, the developer wants y, so they can z."
 - [r63] If the person drops a bounded context whose id does not conform to the context id form, then the product service shall refuse the request and name the id.
 
 ### [g68] A job only an item's groups serve is traced with the item
-- [r68] While an item holds a requirement group that serves a job and no capability has the requirement group, if the person traces the job without an item, then the product service shall refuse the request and name the item.
+- [r68] While an item holds a requirement group that serves a job and no capability has a requirement group that serves the job, if the person traces the job without an item, then the product service shall refuse the request and name the item.
 

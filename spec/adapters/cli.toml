@@ -1877,7 +1877,7 @@ requirements = [
   "product#r35: While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and an adapter spec realises the requirement id of the port line and the operation uses another operation and the adapter spec holds a contract that holds a requirement that governs the operation, when the person traces the job, the product service shall return the requirement.",
   "product#r36: While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and an adapter spec realises the requirement id of the port line and the operation uses another operation and the adapter spec holds a contract that holds a different requirement that governs the operation and the requirement has the requirement id, when the person traces the job, the product service shall return the requirement.",
   "product#r58: While an item holds a requirement group and the requirement group serves a job and the requirement group has a requirement, when the person traces the job with the item, the product service shall return the requirement.",
-  "product#r68: While an item holds a requirement group that serves a job and no capability has the requirement group, if the person traces the job without an item, then the product service shall refuse the request and name the item.",
+  "product#r68: While an item holds a requirement group that serves a job and no capability has a requirement group that serves the job, if the person traces the job without an item, then the product service shall refuse the request and name the item.",
 ]
 [operations."product.trace".parameters]
 job = { positional = 1, example = "j1" }
