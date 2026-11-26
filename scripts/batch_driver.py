@@ -2,14 +2,15 @@
 the one fresh agent that runs the batch from `work batch resume` to `awaiting-merge`, at
 `.shop/worktrees/batch-<n>-driver/brief.md` beside the review folders, never committed.
 
-It names the batch and its base checkout, each task with its worktree, branch, item and requirement ids, the skill
-the agent follows (building-a-batch), each task's acceptance tests run with the plugin's pytest plugin (`-p
-work_items`), and, for a context's first batch (a laid capability with no test module, or a domain model with no
-`spec/adapters/cli.toml`), how its first task makes the step bindings, the program and the adapter contract (b389), the
-command prefix every push and gh call takes when `[batch] push` of `.shop/delivery.toml` gives one, the rules every
-subagent is given (the plugin's own, then each batch rule of `[batch] rules`, the context's own setup, which the
-plugin's code never keeps: b75), where the agent stops and what it replies, with the batch summary in the batch
-summary form (batch_summary, b580). The session that started the batch dispatches the agent with the brief's path as its whole prompt."""
+It names the batch and its base checkout, each task with its worktree, branch, item and requirement ids, the skill the
+agent follows (building-a-batch) by its poll loop on `work batch next` and what each step it names asks (b787), each
+task's acceptance tests run with the plugin's pytest plugin (`-p work_items`), and, for a context's first batch (a laid
+capability with no test module, or a domain model with no `spec/adapters/cli.toml`), how its first task makes the step
+bindings, the program and the adapter contract (b389), the command prefix every push and gh call takes when `[batch]
+push` of `.shop/delivery.toml` gives one, the rules every subagent is given (the plugin's own, then each batch rule of
+`[batch] rules`, the context's own setup, which the plugin's code never keeps: b75), where the agent stops and what it
+replies, with the batch summary in the batch summary form (batch_summary, b580). The session that started the batch
+dispatches the agent with the brief's path as its whole prompt."""
 from pathlib import Path
 
 import backlog_chore
@@ -89,6 +90,26 @@ def _module(cap):
     return "tests/scenarios/test_%s.py" % cap.replace("-", "_")
 
 
+LOOP = (
+    ("prepare task", "`shop work batch resume`, which gives each pending task its worktree."),
+    ("build task", ("one subagent for every task in its `tasks` list at once, each in its task's worktree, with its "
+                    "task below and the rules every subagent is given.")),
+    ("finish task", "`shop work batch done` of its task; a refusal goes back to the task's subagent."),
+    ("fix task", ("the task's subagent fixes its branch (the conflict or the failed tests named), then `shop work batch "
+                  "review`.")),
+    ("look at failure", ("the failed tests looked at and fixed on the batch's branch or a task's, then `shop work batch "
+                         "review`.")),
+    ("submit batch", "`shop work batch review`, which merges, tests, pushes and opens the draft pull request."),
+    ("review change", ("`shop work batch brief`, a fresh `shopsystem-bdd:pr-reviewer` given the brief's path alone, its "
+                       "reply saved byte for byte at the findings file it names.")),
+    ("fix finding", ("one subagent in the finding's task's worktree, each commit citing `Item:` and `Finding:`, then "
+                     "`shop work batch review`.")),
+    ("park item", "`shop work batch park` of the item with its subagent's question."),
+    ("abandon batch", "`shop work batch abandon`: every item is `needs-input`."),
+    ("stop", "the batch is `awaiting-merge` (or no longer building): reply as `## What you reply` says."),
+)
+
+
 FRESH = (
     ("A context's first batch builds what its tests run against, and nothing of it is laid by `shop work batch start`. "
      "The first task whose item needs a piece makes it; a later task that needs it too merges that task's branch "
@@ -132,11 +153,15 @@ def text(root, batch, picked, unwritten=(), superseded=()):
                root, batch.base),
            "- Batch branch: %s, its worktree %s" % (batch.branch, trees_dir(root) / batch.name),
            "- Scripts: %s" % SCRIPTS, "",
-           "## The skill", "",
-           "Follow the skill `%s` from step 3 (Resume) to step 7's `-> awaiting-merge`: `shop work batch resume %s`, one "
-           "subagent for each running task, all at once, `shop work batch done` or `park` as each returns, `shop work batch "
-           "review`, then `shop work batch brief`, a fresh `shopsystem-bdd:pr-reviewer` and `shop work batch reviewed --reply <its transcript>`, and the "
-           "fix loop until the review is clean." % (SKILL, batch.name), "",
+           "## The loop", "",
+           "Follow the skill `%s`, steps 3 to 7, by its poll: run `shop work batch next %s --json` from the base "
+           "checkout, do the step its `instruction` names, report it through the command its content gives, and ask "
+           "again, until it says `stop`." % (SKILL, batch.name), "",
+           *["- `%s`: %s" % step for step in LOOP], "",
+           "Conclude every review with `shop work batch reviewed %s --reply <the reviewer's transcript>`. A task "
+           "subagent's completion may reach the session that started you instead of you: if one seems quiet, check its "
+           "branch and ask `shop work batch next` again. Never end your turn while a subagent is still running." % (
+               batch.name), "",
            "## Tasks", ""]
     out += _tasks(root, batch, picked)
     if _fresh(root, picked):
@@ -161,8 +186,9 @@ def text(root, batch, picked, unwritten=(), superseded=()):
              "after the person merges it. A question you cannot settle goes onto its item with `shop work batch park`, "
              "never to the person."), "",
             "## What you reply", "",
-            ("The pull request's URL, each item delivered in it and each item parked with its question, in a few "
-             "lines; or, if the batch was abandoned, that and why. Then the batch summary, in the batch summary form "
+            ("At `stop`: the pull request's URL, each item delivered in it and each item parked with its question, in a few "
+             "lines; or, if the batch was abandoned, that and why; and any new gap of `shop work batch next`, a step it "
+             "named wrongly or did not name. Then the batch summary, in the batch summary form "
              "below (b580): each figure as far as the batch has run, its cost and tokens summed from what your "
              "subagents and your own session report, its times from the batch's commits and the test runs `shop work "
              "batch done` and `review` timed; a figure you cannot read written `%s`." % batch_summary.UNKNOWN), "",
