@@ -7,7 +7,7 @@ area: registry
 specifies: service contract-registry
 language: codified-2
 retired: []
-unbuilt: [r4]
+unbuilt: []
 ---
 
 # Contract registry
