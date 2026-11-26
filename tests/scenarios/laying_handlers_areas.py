@@ -119,3 +119,4 @@ for _template in ("GivenK", "GivenK_A", "GivenCode", "GivenDoes", "GivenDoesNot"
 W.local("WhenRequests")(requests)
 for _template in ("ThenDoes", "ThenDoesNot"):
     W.local(_template)(then)
+sys.modules["vocab"].handler("GivenCode", "item")(L.untaken)   # the key `features vocab --check` reads
