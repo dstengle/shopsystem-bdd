@@ -106,7 +106,7 @@ LOOP = (
                      "`shop work batch review`.")),
     ("park item", "`shop work batch park` of the item with its subagent's question."),
     ("abandon batch", "`shop work batch abandon`: every item is `needs-input`."),
-    ("stop", "the batch is `awaiting-merge` (or no longer building): reply as `## What you reply` says."),
+    ("stop", "the batch is `awaiting-merge` (or no longer building): reply as the section below on what you reply says."),
 )
 
 
