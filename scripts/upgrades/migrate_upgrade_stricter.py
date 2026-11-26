@@ -18,9 +18,19 @@ NAME = "the stricter rules"
 CODES = ("v_t13", "v_t22", "v_m9")
 
 
-def word(term):
-    """A term as `spec check` names it, `term/<path>/the-desk-service`, or a word: the word, `the desk service`."""
-    return term.rsplit("/", 1)[-1].replace("-", " ") if term.startswith("term/") else term
+def word(term, root):
+    """A term as `spec check` names it, `term/<path>/follow-up`, or a word: the word as its entry writes it, the term
+    of the lexicon at `root` whose id is the node's (`follow-up`, its hyphen kept: b854), else the id's last part."""
+    if not term.startswith("term/"):
+        return term
+    import spec_lexicon
+    from model_facts import Model
+    from model_spec import term_word
+    node, model = term.rsplit("/", 1)[-1], Model(root)
+    for t in spec_lexicon.read(root).terms:
+        if model.term_id(" ".join(term_word(t).lower().split())).rsplit("/", 1)[-1] == node:
+            return t.term
+    return node
 
 
 def found(root):
@@ -30,12 +40,12 @@ def found(root):
     return [(name, [str(a) for a in args]) for name, args in solve(Model(root).read())[0] if name in CODES]
 
 
-def line(code, args):
+def line(code, args, root):
     if code == "v_m9":
         obj, attribute, before, after = args
         return ("%s: %s %s, %s, %s, %s: the transition %s → %s of the %s of %s is performed by an operation of "
                 "another area" % (NAME, code, obj, attribute, before, after, before, after, attribute, obj))
-    return "%s: %s %s: %s" % (NAME, code, word(args[0]), re.sub(r"\s+", " ", args[1]))
+    return "%s: %s %s: %s" % (NAME, code, word(args[0], root), re.sub(r"\s+", " ", args[1]))
 
 
 def plan(root):
@@ -49,5 +59,5 @@ def plan(root):
     composed = spec_composition.composed(root, text)
     if composed != text:
         changes.texts["spec/index.md"] = composed
-    changes.notes = [line(code, args) for code, args in found(root)]
+    changes.notes = [line(code, args, root) for code, args in found(root)]
     return changes
