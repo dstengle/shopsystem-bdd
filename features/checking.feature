@@ -1114,3 +1114,64 @@ Feature: Checking
     And a version v1
     When the downstream context d1 fetches the contract c1 with the version v1
     Then the specification service retrieves the contract c1 with the version v1
+
+  @g132 @r132
+  Scenario: Obtaining from a bounded context outside the shop that no upstream entry identifies is refused naming it
+    Given a bounded context b1
+    And this shop does not hold the bounded context b1
+    And no upstream entry identifies the bounded context b1
+    And a contract c1
+    When the person obtains the contract c1 from the bounded context b1
+    Then the specification service refuses this request
+    And the specification service names the bounded context b1
+    And the specification service names `bounded context not an upstream`
+
+  @g133 @r133
+  Scenario: Obtaining from a failing provider that no adapter spec has is refused naming the provider
+    Given a provider p1
+    And the health of the provider p1 is `failing`
+    And no adapter spec has the provider p1
+    And a contract c1
+    When the person obtains the contract c1 from the provider p1
+    Then the specification service refuses this request
+    And the specification service names the provider p1
+    And the specification service names `bounded context failing`
+
+  @g134 @r134
+  Scenario: A deposit the contract registry refuses names the version and changes nothing
+    Given a contract c1
+    And the specification service deposits the contract c1
+    When the contract registry service refuses the request to deposit the contract c1
+    Then the specification service names the version v1
+    And the contract c1 has the version v1
+    And the specification service changes nothing
+
+  @g135 @r135
+  Scenario: A provider operation an adapter spec uses that no held contract declares
+    Given a port line p1
+    And an operation o1
+    And the port line p1 governs the operation o1
+    And a requirement id r1
+    And the port line p1 has the requirement id r1
+    And an adapter spec a1
+    And the adapter spec a1 realises the requirement id r1
+    And an operation o2
+    And the operation o1 uses the operation o2
+    And no contract in the adapter spec a1 holds the operation o2
+    When the person validates the adapter spec a1
+    Then the specification service fails this check
+    And the specification service names the operation o2
+
+  @g136 @r136
+  Scenario: A port operation of an adapter spec that uses no provider operation
+    Given a port line p1
+    And an operation o1
+    And the port line p1 governs the operation o1
+    And a requirement id r1
+    And the port line p1 has the requirement id r1
+    And an adapter spec a1
+    And the adapter spec a1 realises the requirement id r1
+    And the operation o1 uses no operation
+    When the person validates the adapter spec a1
+    Then the specification service fails this check
+    And the specification service names the operation o1

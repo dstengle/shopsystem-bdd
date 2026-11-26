@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56, g94, r94]
-unbuilt: []
+unbuilt: [r132, r133, r134, r135, r136]
 ---
 
 # Checking
@@ -373,6 +373,21 @@ Restates: design-model-check#r13@0.29.
 
 ### [g130] A retrieval the contract registry refuses names the version and changes nothing
 - [r130] When the contract registry service refuses the request to retrieve a contract, the specification service shall name the version of the contract and change nothing.
+
+### [g132] Obtaining from a bounded context outside the shop that no upstream entry identifies is refused naming it
+- [r132] While a bounded context is not in the shop, if the person obtains a contract from the bounded context that no upstream entry identifies, then the specification service shall refuse the request and name the bounded context and the `bounded context not an upstream` reason.
+
+### [g133] Obtaining from a failing provider that no adapter spec has is refused naming the provider
+- [r133] While the health of a provider is `failing`, if the person obtains a contract from the provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `bounded context failing` reason.
+
+### [g134] A deposit the contract registry refuses names the version and changes nothing
+- [r134] When the contract registry service refuses the request to deposit a contract, the specification service shall name the version of the contract and change nothing.
+
+### [g135] A provider operation an adapter spec uses that no held contract declares
+- [r135] While an adapter spec realises the requirement id of a port line that governs an operation and the operation uses another operation and the adapter spec holds no contract that holds the operation, if the person validates the adapter spec, then the specification service shall fail the check and name the operation.
+
+### [g136] A port operation of an adapter spec that uses no provider operation
+- [r136] While an adapter spec realises the requirement id of a port line that governs an operation and the operation uses no operation, if the person validates the adapter spec, then the specification service shall fail the check and name the operation.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

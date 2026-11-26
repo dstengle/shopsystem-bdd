@@ -13,6 +13,6 @@ The contracts the specification keeps and finds through a driven port: a contrac
 
 ```model
 service contract registry
-  operation deposit(contract, version)  outcomes: done → the contract
+  operation deposit(contract, version)  outcomes: done → the contract | refused: contract not deposited
   operation retrieve(contract, bounded context, version)  outcomes: returned → the contract | refused: version not deposited
 ```

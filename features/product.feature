@@ -374,3 +374,28 @@ Feature: Product
     Then the product p1 holds the bounded context b1
     And the product service keeps the bounded context b1
     And the product service completes this request
+
+  @g35 @r35
+  Scenario: A trace follows each provider operation an adapter spec uses
+    Given a requirement group r1
+    And a job j1
+    And the requirement group r1 serves the job j1
+    And a requirement r2
+    And the requirement group r1 has the requirement r2
+    And an operation o1
+    And the requirement r2 uses the operation o1
+    And a port line p1
+    And the port line p1 governs the operation o1
+    And a requirement id r3
+    And the port line p1 has the requirement id r3
+    And an adapter spec a1
+    And the adapter spec a1 realises the requirement id r3
+    And an operation o2
+    And the operation o1 uses the operation o2
+    And a requirement r4
+    And the requirement r4 governs the operation o2
+    And a contract c1
+    And the contract c1 holds the requirement r4
+    And the adapter spec a1 holds the contract c1
+    When the person traces the job j1
+    Then the product service returns the requirement r4
