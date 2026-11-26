@@ -1463,3 +1463,41 @@ Feature: Batches
     When the person parks the item i1
     Then the batches service sets the status of the design-decision d1 to `accepted`
     And the batches service does not keep the design-decision d2
+
+  @g175 @r175
+  Scenario: An in-batch item amended while its batch's feature generator is unresponsive is refused, naming the generator
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And a workspace w1
+    And the batch b1 has the workspace w1
+    And a feature generator f1
+    And the workspace w1 has the feature generator f1
+    And the responsiveness of the feature generator f1 is `unresponsive`
+    When the person amends the item i1
+    Then the batches service refuses this request
+    And the batches service names the feature generator f1
+    # entailed: U17
+
+  @g176 @r176
+  Scenario: An in-batch item parked while its batch's feature generator is unresponsive is refused, naming the generator
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And a workspace w1
+    And the batch b1 has the workspace w1
+    And a feature generator f1
+    And the workspace w1 has the feature generator f1
+    And the responsiveness of the feature generator f1 is `unresponsive`
+    When the person parks the item i1
+    Then the batches service refuses this request
+    And the batches service names the feature generator f1
+    # entailed: U17

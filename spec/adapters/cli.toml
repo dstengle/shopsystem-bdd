@@ -389,6 +389,7 @@ requirements = [
   "scenarios#r46: While a requirement of a requirement group of a capability uses `reply-trigger` and the requirement has a requester, when the person generates the feature of the capability, the scenarios service shall complete the request and keep a given step that mentions the requester.",
   "scenarios#r47: While a requirement of a requirement group of a capability uses `every` and the requirement has a restriction and the precondition of the requirement uses `no-noun` and a code, when the person generates the feature of the capability, the scenarios service shall keep a counter-example that does not use the code.",
   "scenarios#r48: While a requirement of a requirement group of a capability uses `no-noun`, `rc-object` and `named`, when the person generates the feature of the capability, the scenarios service shall not keep a step that has an ambiguous text.",
+  "scenarios#r49: While a requirement of a requirement group of a capability uses `every` and the requirement has a restriction and the precondition of the requirement uses `no-noun` and `and-condition`, when the person generates the feature of the capability, the scenarios service shall keep a counter-example that uses `has-no-value`.",
 ]
 [operations."scenarios.generate".parameters]
 capability = { positional = 1 }
@@ -1084,6 +1085,7 @@ requirements = [
   "batches#r119: While an item in a batch holds a model line that holds a member line and another item in the batch holds a model line that restates an element and the element does not hold the member line and the item is `in-batch`, when a session parks the item, the batches service shall keep the member line in the domain model and keep a domain model that does not hold the model line.",
   "batches#r155: While an item in a batch is `in-batch` and the kind of an area is `port` and the area holds a capability that the item holds and the area imports an area whose kind is `supporting`, when the person parks another item in the batch, the batches service shall keep the area.",
   "batches#r174: While an item in a batch is `in-batch` and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded`, when the person parks the item, the batches service shall set the status of the design-decision to `accepted` and keep no design-decision that supersedes the design-decision.",
+  "batches#r176: While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch has a feature generator and the feature generator is `unresponsive`, if the person parks the item, then the batches service shall refuse the request, name the feature generator and change nothing.",
 ]
 [operations."batches.park".parameters]
 item = { positional = 2 }
@@ -1100,6 +1102,7 @@ requirements = [
   "batches#r170: While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement and the workspace of the batch has a feature generator, when the person amends the item, the batches service shall keep a workspace of the batch that holds a feature of the feature generator.",
   "batches#r171: While an item in a batch is `in-batch` and a review of the batch holds a review finding, when the person amends the item, the batches service shall keep a kept change for the review finding.",
   "batches#r172: While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement and this corpus holds the requirement, when the person amends the item, the batches service shall keep a corpus that conforms to the corpus form and keep a workspace of the batch that holds the corpus.",
+  "batches#r175: While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch has a feature generator and the feature generator is `unresponsive`, if the person amends the item, then the batches service shall refuse the request, name the feature generator and change nothing.",
 ]
 [operations."batches.amend".parameters]
 item = { positional = 1 }

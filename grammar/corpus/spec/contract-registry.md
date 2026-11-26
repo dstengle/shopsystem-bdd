@@ -52,3 +52,14 @@ shall [x1: service the specification service (constant), x4: service the contrac
     complete(e2, subject: x4, object: x5)
 ```
 
+## r5
+From: b743 r5.
+
+```reading
+When the specification service deregisters a contract for an adapter spec, the contract registry service shall complete the request.
+shall [x1: service the specification service (constant), x4: service the contract registry service (constant), x5: request "the request the trigger makes" (indexical)]
+  when [x2: contract, x3: adapter spec]
+    request(e1, contract registry.deregister, subject: x1, object: x2, for: x3)
+  response
+    complete(e2, subject: x4, object: x5)
+```

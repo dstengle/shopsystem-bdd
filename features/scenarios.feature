@@ -814,3 +814,23 @@ Feature: Scenarios
     And the step s1 has the ambiguous text a1
     When the person generates the feature f1
     Then the scenarios service does not keep the step s1
+
+  @g49 @r49
+  Scenario: generation writes a counter-example with no value of the attribute when the no boxes of the precondition deny every other value
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And the requirement r1 uses `every`
+    And a restriction r3
+    And the requirement r1 has the restriction r3
+    And a precondition p1
+    And the requirement r1 has the precondition p1
+    And the precondition p1 uses `no-noun`
+    And the precondition p1 uses `and-condition`
+    And a feature f1
+    And the capability c1 has the feature f1
+    When the person generates the feature f1
+    Then the scenarios service keeps the counter-example c2
+    And the counter-example c2 uses `has-no-value`

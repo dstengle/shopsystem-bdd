@@ -1200,3 +1200,15 @@ Feature: Checking
     Then the specification service refuses this request
     And the specification service names the bounded context b1
     And the specification service names `bounded context unreachable`
+
+  @g142 @r142
+  Scenario: A registration the contract registry refuses deregisters the contract registered for another adapter spec of the provider
+    Given a provider p1
+    And an adapter spec a1
+    And the adapter spec a1 has the provider p1
+    And a contract c1
+    And the specification service registers the contract c1 for the adapter spec a1
+    And an adapter spec a2
+    When the contract registry service refuses the request to register the contract c1 for the adapter spec a1
+    Then the specification service deregisters the contract c1 for the adapter spec a2
+    And the adapter spec a2 has the provider p1

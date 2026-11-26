@@ -7,7 +7,7 @@ area: specification
 specifies: service scenarios
 language: codified-2
 retired: [g14, r14, g26, r26, g27, r27, g33, r33, g34, r34, g35, r35]
-unbuilt: []
+unbuilt: [r49]
 ---
 
 # Scenarios
@@ -282,4 +282,7 @@ the capability `shelf` holds:
 
 ### [g47] generation writes a counter-example of every that the no box of the precondition does not deny
 - [r47] While a requirement of a requirement group of a capability uses `every` and the requirement has a restriction and the precondition of the requirement uses `no-noun` and a code, when the person generates the feature of the capability, the scenarios service shall keep a counter-example that does not use the code.
+
+### [g49] generation writes a counter-example with no value of the attribute when the no boxes of the precondition deny every other value
+- [r49] While a requirement of a requirement group of a capability uses `every` and the requirement has a restriction and the precondition of the requirement uses `no-noun` and `and-condition`, when the person generates the feature of the capability, the scenarios service shall keep a counter-example that uses `has-no-value`.
 

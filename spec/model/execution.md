@@ -124,6 +124,7 @@ object fix kind of kept change
 
 object feature generator kind of file
   relations: has → feature (many)
+  attributes: responsiveness: responsive | unresponsive
 
 object corpus form kind of artifact
 ```
