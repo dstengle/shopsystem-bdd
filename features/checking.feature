@@ -660,16 +660,6 @@ Feature: Checking
     Then the specification service keeps the contract c2
     And the specification service does not change the contract c3
 
-  @g91 @r91
-  Scenario: An obtained contract is held by the adapter spec of its provider
-    Given a provider p1
-    And an adapter spec a1
-    And the adapter spec a1 has the provider p1
-    And a contract c1
-    When the person obtains the contract c1 from the provider p1
-    Then the adapter spec a1 holds the contract c1
-    And the specification service keeps the contract c1
-
   @g92 @r92
   Scenario: An adapter spec whose id does not match its own name is refused
     Given an id i1
@@ -751,22 +741,6 @@ Feature: Checking
     And the port line p1 excludes the operation outcome o2
     When the person validates this specification
     Then the specification service completes this request
-
-  @g100 @r100
-  Scenario: An obtained contract is kept at the version its adapter spec pins, not a later one
-    Given a provider p1
-    And an adapter spec a1
-    And the adapter spec a1 has the provider p1
-    And the provider p1 has the `1.2.0` version
-    And a contract c1
-    And the contract c1 has `1.3.0`
-    And the provider p1 has the contract c1
-    And a contract c2
-    When the person obtains the contract c2 from the provider p1
-    Then the specification service keeps the contract c3
-    And the contract c3 has `1.2.0`
-    And the adapter spec a1 holds the contract c3
-    And the specification service keeps the adapter spec a1
 
   @g101 @r101
   Scenario: A lifecycle transition that no operation of its own area performs fails the check
@@ -1175,3 +1149,42 @@ Feature: Checking
     When the person validates the adapter spec a1
     Then the specification service fails this check
     And the specification service names the operation o1
+
+  @g137 @r137
+  Scenario: An obtained contract is registered with the contract registry for each adapter spec of its provider
+    Given a provider p1
+    And an adapter spec a1
+    And the adapter spec a1 has the provider p1
+    And a contract c1
+    When the person obtains the contract c1 from the provider p1
+    Then the specification service registers the contract c1 for the adapter spec a1 with the provider p1
+
+  @g138 @r138
+  Scenario: An obtained contract is registered at the version its adapter spec pins, not a later one
+    Given a provider p1
+    And an adapter spec a1
+    And the adapter spec a1 has the provider p1
+    And the provider p1 has the `1.2.0` version
+    And a contract c1
+    And the contract c1 has `1.3.0`
+    And the provider p1 has the contract c1
+    And a contract c2
+    When the person obtains the contract c2 from the provider p1
+    Then the specification service registers the contract c2 for the adapter spec a1 with the provider p1 and the `1.2.0` version
+
+  @g139 @r139
+  Scenario: A registration the contract registry completes keeps the obtained contract
+    Given a contract c1
+    And an adapter spec a1
+    And the specification service registers the contract c1 for the adapter spec a1
+    When the contract registry service completes the request to register the contract c1 for the adapter spec a1
+    Then the specification service keeps the contract c1
+
+  @g140 @r140
+  Scenario: A registration the contract registry refuses names the adapter spec and changes nothing
+    Given a contract c1
+    And an adapter spec a1
+    And the specification service registers the contract c1 for the adapter spec a1
+    When the contract registry service refuses the request to register the contract c1 for the adapter spec a1
+    Then the specification service names the adapter spec a1
+    And the specification service changes nothing

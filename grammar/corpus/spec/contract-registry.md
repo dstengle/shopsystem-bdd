@@ -39,3 +39,15 @@ shall [x1: service the specification service (constant), x5: service the contrac
     refuse(e2, subject: x5, object: x6)
     name(e3, subject: x5, object: x3)
 ```
+
+## r4
+From: b735 r4.
+
+```reading
+When the specification service registers a contract for an adapter spec, the contract registry service shall complete the request.
+shall [x1: service the specification service (constant), x4: service the contract registry service (constant), x5: request "the request the trigger makes" (indexical)]
+  when [x2: contract, x3: adapter spec]
+    request(e1, contract registry.register, subject: x1, object: x2, for: x3)
+  response
+    complete(e2, subject: x4, object: x5)
+```

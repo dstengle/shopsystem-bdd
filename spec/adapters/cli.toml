@@ -385,6 +385,7 @@ requirements = [
   "scenarios#r44: While a requirement of a requirement group of a capability uses `reply-trigger`, when the person generates the feature of the capability, the scenarios service shall not keep a step that mentions an instance that no given step and no when step introduce.",
   "scenarios#r45: While a requirement of a requirement group of a capability uses `no-noun`, `of-relation` and a code, when the person generates the feature of the capability, the scenarios service shall keep a given step that uses the code.",
   "scenarios#r46: While a requirement of a requirement group of a capability uses `reply-trigger` and the requirement has a requester, when the person generates the feature of the capability, the scenarios service shall complete the request and keep a given step that mentions the requester.",
+  "scenarios#r47: While a requirement of a requirement group of a capability uses `every` and the requirement has a restriction and the precondition of the requirement uses `no-noun` and a code, when the person generates the feature of the capability, the scenarios service shall keep a counter-example that does not use the code.",
   "scenarios#r48: While a requirement of a requirement group of a capability uses `no-noun`, `rc-object` and `named`, when the person generates the feature of the capability, the scenarios service shall not keep a step that has an ambiguous text.",
 ]
 [operations."scenarios.generate".parameters]
@@ -1554,13 +1555,13 @@ requirements = [
   "checking#r88: If the person obtains a contract from a bounded context whose id does not conform to the context id form, then the specification service shall refuse the request and name the id and the `id not in the context id form` reason.",
   "checking#r89: If the person obtains a contract from a bounded context whose availability is `unreachable`, then the specification service shall refuse the request and name the bounded context and the `bounded context unreachable` reason.",
   "checking#r90: While a bounded context has a contract, when the person obtains a contract from another bounded context, the specification service shall keep the contract and change no contract of a bounded context.",
-  "checking#r91: While an adapter spec has a provider, when the person obtains a contract from the provider, the specification service shall keep the contract that the adapter spec holds.",
-  "checking#r100: While an adapter spec has a provider and the provider has the `1.2.0` version and the provider has a contract that has the `1.3.0` version, when the person obtains a contract from the provider, the specification service shall keep a contract that has the `1.2.0` version and keep the adapter spec that holds the contract.",
   "checking#r102: If the person obtains a contract from a bounded context whose health is `failing`, then the specification service shall refuse the request and name the bounded context and the `bounded context failing` reason.",
   "checking#r103: While the id of a provider conforms to the context id form and the provider is `available`, if the person obtains a contract from the provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `no adapter spec has the provider` reason.",
   "checking#r126: When the person obtains a contract from a bounded context with a version, the specification service shall retrieve the contract with the bounded context and the version.",
   "checking#r132: While a bounded context is not in the shop, if the person obtains a contract from the bounded context that no upstream entry identifies, then the specification service shall refuse the request and name the bounded context and the `bounded context not an upstream` reason.",
   "checking#r133: While the health of a provider is `failing`, if the person obtains a contract from the provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `bounded context failing` reason.",
+  "checking#r137: While an adapter spec has a provider, when the person obtains a contract from the provider, the specification service shall register the contract for the adapter spec with the provider.",
+  "checking#r138: While an adapter spec has a provider and the provider has the `1.2.0` version and the provider has a contract that has the `1.3.0` version, when the person obtains a contract from the provider, the specification service shall register the contract for the adapter spec with the provider and the `1.2.0` version.",
 ]
 [operations."specification.obtain".parameters]
 "bounded context" = { positional = 1, example = "bounded-context/example.org/fixture/inventory" }

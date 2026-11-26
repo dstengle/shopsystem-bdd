@@ -843,6 +843,29 @@ shall [x4: thing `reply-trigger` (parameter), x6: agent the person (constant), x
     keep(e3, subject: x8, object: x10)
 ```
 
+## r47
+From: b732 r47.
+
+```reading
+While a requirement of a requirement group of a capability uses `every` and the requirement has a restriction and the precondition of the requirement uses `no-noun` and a code, when the person generates the feature of the capability, the scenarios service shall keep a counter-example that does not use the code.
+shall [x4: thing `every` (parameter), x7: thing `no-noun` (parameter), x9: agent the person (constant), x11: service the scenarios service (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability, x5: restriction, x6: precondition, x8: code]
+    of(x2, x3)
+    of(x1, x2)
+    use(subject: x1, object: x4)
+    of(x5, x1)
+    of(x6, x1)
+    use(subject: x6, object: x7)
+    use(subject: x6, object: x8)
+  when [x10: feature]
+    of(x10, x3)
+    request(e1, scenarios.generate, subject: x9, object: x10)
+  response [x12: counter-example]
+    not
+      use(subject: x12, object: x8)
+    keep(e2, subject: x11, object: x12)
+```
+
 ## r48
 From: b733 r48.
 

@@ -15,4 +15,5 @@ The contracts the specification keeps and finds through a driven port: a contrac
 service contract registry
   operation deposit(contract, version)  outcomes: done → the contract | refused: contract not deposited
   operation retrieve(contract, bounded context, version)  outcomes: returned → the contract | refused: version not deposited
+  operation register(contract, adapter spec, provider, version)  outcomes: done → the contract | refused: contract not registered
 ```

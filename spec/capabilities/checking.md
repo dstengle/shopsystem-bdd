@@ -6,8 +6,8 @@ group: service
 area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
-retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56, g94, r94]
-unbuilt: []
+retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56, g94, r94, g91, r91, g100, r100]
+unbuilt: [r137, r138, r139, r140]
 ---
 
 # Checking
@@ -260,9 +260,6 @@ Restates: design-model-check#r13@0.29.
 ### [g93] A provider's version that is not a version is refused
 - [r93] While a provider of an adapter spec has a version that does not conform to the version form, if the person validates the adapter spec, then the specification service shall fail the check and name the version.
 
-### [g91] An obtained contract is held by the adapter spec of its provider
-- [r91] While an adapter spec has a provider, when the person obtains a contract from the provider, the specification service shall keep the contract that the adapter spec holds.
-
 ### [g95] A port operation that no core line requests is refused
 - [r95] While a driven port holds an operation and no core line that uses `response-request` uses the operation, if the person validates this specification, then the specification service shall fail the check and name the operation.
 
@@ -277,9 +274,6 @@ Restates: design-model-check#r13@0.29.
 
 ### [g99] A port line that excludes an unhandled outcome needs no citation of its core lines
 - [r99] While a core line that uses `response-request` uses an operation and a port line that governs the operation supports no requirement id and the port line excludes an operation outcome that no core line handles, when the person validates this specification, the specification service shall complete the request.
-
-### [g100] An obtained contract is kept at the version its adapter spec pins, not a later one
-- [r100] While an adapter spec has a provider and the provider has the `1.2.0` version and the provider has a contract that has the `1.3.0` version, when the person obtains a contract from the provider, the specification service shall keep a contract that has the `1.2.0` version and keep the adapter spec that holds the contract.
 
 ### [g101] A lifecycle transition that no operation of its own area performs fails the check
 - [r101] While an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition, if the person validates this specification, then the specification service shall fail the check and name the transition.
@@ -388,6 +382,18 @@ Restates: design-model-check#r13@0.29.
 
 ### [g136] A port operation of an adapter spec that uses no provider operation
 - [r136] While an adapter spec realises the requirement id of a port line that governs an operation and the operation uses no operation, if the person validates the adapter spec, then the specification service shall fail the check and name the operation.
+
+### [g137] An obtained contract is registered with the contract registry for each adapter spec of its provider
+- [r137] While an adapter spec has a provider, when the person obtains a contract from the provider, the specification service shall register the contract for the adapter spec with the provider.
+
+### [g138] An obtained contract is registered at the version its adapter spec pins, not a later one
+- [r138] While an adapter spec has a provider and the provider has the `1.2.0` version and the provider has a contract that has the `1.3.0` version, when the person obtains a contract from the provider, the specification service shall register the contract for the adapter spec with the provider and the `1.2.0` version.
+
+### [g139] A registration the contract registry completes keeps the obtained contract
+- [r139] When the contract registry service completes the request to register a contract for an adapter spec, the specification service shall keep the contract.
+
+### [g140] A registration the contract registry refuses names the adapter spec and changes nothing
+- [r140] When the contract registry service refuses the request to register a contract for an adapter spec, the specification service shall name the adapter spec and change nothing.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
