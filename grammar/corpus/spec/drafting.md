@@ -1101,3 +1101,20 @@ shall [x1: agent the person (constant), x5: service the drafting service (consta
     in(x2, x4)
     keep(e2, subject: x5, object: x4)
 ```
+
+## r72
+From: b645 r72.
+
+```reading
+When the person drafts an item with a capability and an area, the drafting service shall keep the capability in the item and keep the area that holds the capability in the item.
+shall [x1: agent the person (constant), x5: service the drafting service (constant)]
+  when [x2: item, x3: capability, x4: area]
+    request(e1, drafting.draft, subject: x1, object: x2)
+    param(e1, capability, x3)
+    param(e1, area, x4)
+  response
+    in(x3, x2)
+    keep(e2, subject: x5, object: x3)
+    in(x3, x4)
+    keep(e3, subject: x5, object: x4)
+```

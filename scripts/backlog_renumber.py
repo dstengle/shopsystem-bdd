@@ -29,12 +29,13 @@ def renumber(root, item, taken):
     """New group, requirement and universal ids for the item's wherever they collide with its capability in `spec/`
     (groups, requirements, `retired:`), with `spec/universal.md`'s, or with `taken` ({capability, or "universal":
     ids} of the items picked before it), each the next free in file order (plan 4, D8). `taken` gains the item's ids;
-    the item's `## Requirements` is rewritten, its model blocks kept (b378), and its `request_lines` keyed by the new
-    ids (b6). The (`<cap>#<old>`, `<cap>#<new>`) pairs."""
+    the item's `## Requirements` is rewritten, its model, adapter, pack and moves blocks kept (b378, b660), and its
+    `request_lines` keyed by the new ids (b6). The (`<cap>#<old>`, `<cap>#<new>`) pairs."""
     from backlog_lines import _spec_of  # backlog_lines imports this module
     blocks, pairs = read(item, "the item %s" % item.name), []
     out = Blocks(upstreams=blocks.upstreams, universal_language=blocks.universal_language,
-                 universal_retired=blocks.universal_retired, models=blocks.models)
+                 universal_retired=blocks.universal_retired, models=blocks.models,
+                 adapters=blocks.adapters, packs=blocks.packs, moves=blocks.moves)
     for block in blocks:
         cap = _spec_of(root, block.capability, blocks)
         used = {g.id for g in cap.groups} | {r.id for g in cap.groups for r in g.requirements}

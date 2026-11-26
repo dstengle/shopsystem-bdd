@@ -22,9 +22,9 @@ TERM = "- **the person** (proper noun) → actor the person. The human who keeps
 
 
 def mine(step):
-    """True when the step is of batches' scenarios of r117 and r118."""
+    """True when the step is of batches' scenarios of r117, r118 and r127 (its ids renumbered, batches_handlers_collide)."""
     found = sys.modules["vocab"].vocab4.requested.scenario(step.request.node)
-    return found is not None and bool({"r117", "r118"} & set(found.tags))
+    return found is not None and bool({"r117", "r118", "r127"} & set(found.tags))
 
 
 def _world(step):

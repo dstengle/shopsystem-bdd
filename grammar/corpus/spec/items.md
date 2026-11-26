@@ -1155,3 +1155,38 @@ shall [x4: readiness bar "the readiness bar of the plugin that runs the command"
   response
     initiates(e2, subject: x6, status(x1) = `ready`)
 ```
+
+## r66
+From: b648 r66.
+
+```reading
+While an item is `shaped` and the item meets the readiness bar and a capability holds a requirement id that the item holds, when the person readies the item, the backlog service shall set the status of the item to `ready`.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x6: service the backlog service (constant)]
+  while [x1: item, x3: capability, x4: requirement id]
+    status(x1) = `shaped`
+    meet(subject: x1, object: x2)
+    in(x4, x1)
+    in(x4, x3)
+  when
+    request(e1, backlog.ready, subject: x5, object: x1)
+  response
+    initiates(e2, subject: x6, status(x1) = `ready`)
+```
+
+## r67
+From: b648 r67.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and a capability holds a requirement id that the item holds, when the person readies the item, the backlog service shall complete the request and keep the item.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x6: service the backlog service (constant), x7: request "the request the trigger makes" (indexical)]
+  while [x1: item, x3: capability, x4: requirement id]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    in(x4, x1)
+    in(x4, x3)
+  when
+    request(e1, backlog.ready, subject: x5, object: x1)
+  response
+    complete(e2, subject: x6, object: x7)
+    keep(e3, subject: x6, object: x1)
+```

@@ -33,6 +33,7 @@ from backlog_section_render import (  # noqa: F401
     FENCE,
     INDEX,
     NEW_FIELDS,
+    REQUIRED,
     UNIVERSAL,
     ids,
     laid_group,
@@ -171,10 +172,12 @@ class _Reader:
             self.fence.append(line.rstrip())
 
     def new(self, m):
-        """`narrator:`, `group:` and `purpose:`, in that order, first in the block of a capability the item makes."""
+        """`narrator:`, `group:` and `purpose:`, then `area:` when the person named one (b645), in that order, first in
+        the block of a capability the item makes."""
         blocks = self.blocks
         have = (blocks[-1].new or ()) if blocks else ()
-        if not blocks or blocks[-1]._replace(new=None) != Block(blocks[-1].capability, [], []) or len(have) == 3 \
+        if not blocks or blocks[-1]._replace(new=None) != Block(blocks[-1].capability, [], []) \
+                or len(have) == len(NEW_FIELDS) \
                 or NEW_FIELDS[len(have)] != m.group(1):
             self.refuse("a `%s:` line that is not in the order %s first in a `### <capability>` block: %s"
                         % (m.group(1), ", ".join(NEW_FIELDS), m.group(0)))
@@ -246,8 +249,8 @@ def read(item, rel):
         reader.line(line)
     if reader.fence is not None or reader.mfence is not None or reader.adapter.fence is not None:
         reader.refuse("a given block or a model block is not closed")
-    if any(b.new and len(b.new) != len(NEW_FIELDS) for b in reader.blocks):
-        reader.refuse("a new capability's block without each of %s" % ", ".join(NEW_FIELDS))
+    if any(b.new and len(b.new) < REQUIRED for b in reader.blocks):
+        reader.refuse("a new capability's block without each of %s" % ", ".join(NEW_FIELDS[:REQUIRED]))
     return reader.blocks
 
 

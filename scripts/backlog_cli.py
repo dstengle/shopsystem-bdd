@@ -82,7 +82,7 @@ def add_parsers(sub):
     p.add_argument("--capability", help="a capability new to the context, written as a block of the item with "
                    "--narrator, --group (service or guarantees, default service) and its purpose as the text")
     p.add_argument("--narrator", help="with --capability: who the new capability's lines speak for")
-    for module in ("backlog_adapter", "backlog_pack") + EDITS:
+    for module in ("backlog_capability", "backlog_adapter", "backlog_pack") + EDITS:
         __import__(module).add_arguments(p)
     p.add_argument("--upstream", help="an upstream entry `bounded-context/<path>: ..., github: <owner>/<name>` for "
                    "spec/index.md's ## Upstreams, with no --into")

@@ -210,3 +210,15 @@ when the change is merged.
 ### [g125] An item amended with a review finding keeps a change for the finding, which its review accepts
 - [r125] While an item in a batch is `in-batch` and a review of the batch holds a review finding, when the person amends the item with the review finding, the batches service shall keep a kept change for the review finding.
 
+### [g128] An item's term of a pack kept when its ids are renumbered
+- [r128] While an item is `ready` and the item meets the readiness bar and the item holds a term of a pack and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep the pack that has the term.
+
+### [g126] An item's operation table kept when its ids are renumbered
+- [r126] While an item is `ready` and the item meets the readiness bar and the item holds an operation table and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep an adapter contract that holds the operation table.
+
+### [g127] An item's moved term kept when its ids are renumbered
+- [r127] While an item is `ready` and the item meets the readiness bar and the item moves a term that means an element and an area holds the element and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep the area that holds the term.
+
+### [g129] A new capability laid with its area is kept in that area
+- [r129] While an item is `ready` and the item meets the readiness bar and the item holds a capability and the item holds an area that holds the capability, when the person opens a batch, the batches service shall keep the capability that the area holds.
+

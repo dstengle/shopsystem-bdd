@@ -18,9 +18,9 @@ def _r():
 
 
 def mine(step):
-    """True when the step is of batches' scenario of r95."""
+    """True when the step is of batches' scenarios of r95 and r128 (its ids renumbered, batches_handlers_collide)."""
     found = sys.modules["vocab"].vocab4.requested.scenario(step.request.node)
-    return found is not None and "r95" in found.tags
+    return found is not None and bool({"r95", "r128"} & set(found.tags))
 
 
 @four("GivenK", "term", *BOTH)

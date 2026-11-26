@@ -37,6 +37,7 @@ object item kind of file
   relations: exceeds → review limit (many)
   relations: derives from → item (one)
   relations: moves → term (many)
+  relations: holds → area (many)
 
 object backlog
 
@@ -132,7 +133,7 @@ service backlog
   operation suspend(item, question)  outcomes: done | refused: item not in-batch
 
 service drafting
-  operation draft(item, relation row, universal condition, universal condition id, upstream entry, given block, requirement id, requirement, capability)
+  operation draft(item, relation row, universal condition, universal condition id, upstream entry, given block, requirement id, requirement, capability, area)
     outcomes: done → the item | refused: relation row not in form, upstream entry not in form, given block not example data, requirement id of no requirement, universal condition id of no condition, chore in the item, capability that exists
   operation recodify(capability, item)  outcomes: done
   operation reword(requirement)  outcomes: done | refused: requirement of a capability

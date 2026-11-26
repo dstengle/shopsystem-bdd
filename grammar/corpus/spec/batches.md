@@ -1109,3 +1109,82 @@ shall [x5: agent the person (constant), x6: service the batches service (constan
     for(x7, x4)
     keep(e2, subject: x6, object: x7)
 ```
+
+## r126
+From: b660 r126.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds an operation table and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep an adapter contract that holds the operation table.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x6: agent the person (constant), x8: service the batches service (constant)]
+  while [x1: item, x3: operation table, x4: capability, x5: requirement id]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    in(x3, x1)
+    in(x5, x1)
+    in(x5, x4)
+  when [x7: batch]
+    request(e1, batches.open, subject: x6, object: x7)
+  response [x9: adapter contract]
+    in(x3, x9)
+    keep(e2, subject: x8, object: x9)
+```
+
+## r127
+From: b660 r127.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item moves a term that means an element and an area holds the element and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep the area that holds the term.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x8: agent the person (constant), x10: service the batches service (constant)]
+  while [x1: item, x3: term, x4: element, x5: area, x6: capability, x7: requirement id]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    mean(subject: x3, object: x4)
+    move#4(subject: x1, object: x3)
+    in(x4, x5)
+    in(x7, x1)
+    in(x7, x6)
+  when [x9: batch]
+    request(e1, batches.open, subject: x8, object: x9)
+  response
+    in(x3, x5)
+    keep(e2, subject: x10, object: x5)
+```
+
+## r128
+From: b660 r128.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds a term of a pack and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep the pack that has the term.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x7: agent the person (constant), x9: service the batches service (constant)]
+  while [x1: item, x3: term, x4: pack, x5: capability, x6: requirement id]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    of(x3, x4)
+    in(x3, x1)
+    in(x6, x1)
+    in(x6, x5)
+  when [x8: batch]
+    request(e1, batches.open, subject: x7, object: x8)
+  response
+    of(x3, x4)
+    keep(e2, subject: x9, object: x4)
+```
+
+## r129
+From: b645 r129.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds a capability and the item holds an area that holds the capability, when the person opens a batch, the batches service shall keep the capability that the area holds.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant)]
+  while [x1: item, x3: capability, x4: area]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    in(x3, x1)
+    in(x3, x4)
+    in(x4, x1)
+  when [x6: batch]
+    request(e1, batches.open, subject: x5, object: x6)
+  response
+    in(x3, x4)
+    keep(e2, subject: x7, object: x3)
+```

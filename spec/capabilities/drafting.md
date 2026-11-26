@@ -250,3 +250,6 @@ capabilities, retirements, rewordings and chores.
 ### [g71] A requirement group dedicated to a job serves the job in the item
 - [r71] When the person dedicates a requirement group to a job with an item, the drafting service shall keep the item that holds the requirement group that serves the job.
 
+### [g72] A new capability drafted with an area is kept in that area
+- [r72] When the person drafts an item with a capability and an area, the drafting service shall keep the capability in the item and keep the area that holds the capability in the item.
+
