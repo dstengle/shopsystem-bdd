@@ -12,6 +12,7 @@ only when it is that worktree on its branch (`batch_git.is_tree`, S1). Each chan
 `work batch review` are here: the lines commit, uncited commits, commits that change `.shop/`, the tests."""
 import re
 import shlex
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -36,6 +37,7 @@ from batch_git import (
     scripts_env,
     tree_for,
     trees_dir,
+    trees_path,
     uncommitted,
 )
 from shop_files import Refused
@@ -258,6 +260,7 @@ def park(root, name, item_name, question, discard=False):
     `pending`, its worktree removed and its branch kept. Refused while the worktree has uncommitted changes, unless
     `discard`."""
     question = backlog_moves.text_line(question, "question")
+    fresh = not trees_path(root).exists()
     with locked(root):
         batch = building(root, name, "work batch park")
         item = backlog_items.find(root, item_name)
@@ -272,8 +275,13 @@ def park(root, name, item_name, question, discard=False):
         backlog_lifecycle.suspend(item, question, "parked from %s; its work is on branch %s" % (batch.name,
                                                                                                task.branch))
         task.status = "pending"
+        try:
+            before = batch_parked.take_out(root, batch, [item], "work batch park")     # at once (r17)
+        except BaseException:       # the feature generator unresponsive among them (b749): nothing changed (U17)
+            if fresh:
+                shutil.rmtree(trees_path(root), ignore_errors=True)
+            raise
         remove_tree(root, tree_of(root, batch, task))
-        before = batch_parked.take_out(root, batch, [item], "work batch park")     # at once (r17)
         try:
             batch_plan.commit(root, batch, [item], "work batch park: %s %s -> needs-input" % (
                 batch.name, backlog_items.label(item)))

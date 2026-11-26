@@ -56,14 +56,18 @@ def take_out(root, batch, items, command):
     one commit citing them; none when they are out already. The branch's head before, to put it back with."""
     tree = trees_dir(root) / batch.name
     made = tree_for(root, tree, batch.branch, command)
+    before = git(tree, "rev-parse", "HEAD").stdout.strip()
     try:
-        before = git(tree, "rev-parse", "HEAD").stdout.strip()
         changed = batch_start.unlay_lines(tree, as_laid(root, batch, items), command, base_of(root, batch))
         if changed and git(tree, "status", "--porcelain", "--", *changed).stdout.strip():
             git(tree, "add", "--", *changed)
             git(tree, "commit", "-q", "-m", "%s: the requirement lines of %s taken out\n%s" % (
                 batch.name, batch_start.labels(items), batch_start.cites(items)))
         return before
+    except BaseException:       # a refusal (an unresponsive feature generator, b749) leaves the worktree as it was
+        if not made:
+            git(tree, "reset", "-q", "--hard", before)
+        raise
     finally:
         if made:
             remove_tree(root, tree)

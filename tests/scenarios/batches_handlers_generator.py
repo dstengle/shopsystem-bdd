@@ -3,7 +3,9 @@ the batch is made (T.AFTER_BATCH), its branch `batch-<n>` given a commit of a st
 repository holds one: `scripts/features_generate.py` and an executable `scripts/features` whose `generate` (with
 `--root`, `--preview FILE` or capability names, and `features --dir DIR`) writes each feature as the one line
 `MARK`. `work batch amend` run from the base's checkout then writes the item's capability's feature on the batch's
-branch with that generator, not its own; the Thens read the feature on `batch-<n>`."""
+branch with that generator, not its own; the Thens read the feature on `batch-<n>`. An `unresponsive` generator
+(r175, r176, b749) sleeps `STALL` seconds before it writes, and the run's time limit `$SHOPSYSTEM_GENERATE_TIMEOUT` is
+one second, so `work batch amend` and `park` refuse naming the feature generator."""
 import sys
 
 W, B, T, F = (sys.modules[n] for n in ("shop_work_queue_world", "shop_backlog_world", "shop_batches_world",
@@ -11,6 +13,7 @@ W, B, T, F = (sys.modules[n] for n in ("shop_work_queue_world", "shop_backlog_wo
 four, parts = F.four, F.parts
 BOTH = ("backlog", "batches")
 MARK = "# written by the workspace's feature generator"
+STALL = "import time\ntime.sleep(30)\n"       # longer than the time limit, far shorter than the run's
 FEATURES = '''#!/usr/bin/env python3
 """A stand-in of `features`: `generate` writes each capability's feature as one line."""
 import argparse
@@ -52,6 +55,16 @@ def has_generator(step):
     step.context["generator"] = n2
 
 
+@four("GivenK_A", "feature generator", *BOTH)
+def responsiveness(step):
+    """The responsiveness of the feature generator f1 is `unresponsive`: a run of it outlasts its time limit."""
+    if step.attribute != "responsiveness":
+        return False
+    if step.values[0].strip("`") == "unresponsive":
+        step.context["stalled"] = True
+        step.context.setdefault("env", {})["SHOPSYSTEM_GENERATE_TIMEOUT"] = "1"
+
+
 def generator(step, name):
     """The stand-in generator committed on the batch's branch (T.AFTER_BATCH), after the task branches are made."""
     if "generator" not in step.context:
@@ -61,7 +74,8 @@ def generator(step, name):
     scripts = tree / "scripts"
     scripts.mkdir(exist_ok=True)
     (scripts / "features_generate.py").write_text('"""A stand-in of the feature generator."""\n')
-    (scripts / "features").write_text(FEATURES)
+    (scripts / "features").write_text(FEATURES.replace("import argparse\n", "import argparse\n" + STALL)
+                                      if step.context.get("stalled") else FEATURES)
     (scripts / "features").chmod(0o755)
     T.git(step, "add", "-A", cwd=tree)
     T.git(step, "commit", "-q", "-m", "the workspace's feature generator", cwd=tree)
@@ -78,6 +92,15 @@ def _feature(step):
     capability = step.context["amended"][0][0]
     branch = T.batch_name(step, next(iter(step.context["given"]["batch"])))
     return T.git(step, "show", "%s:features/%s.feature" % (branch, capability))
+
+
+@four("ThenDoes", "name", *BOTH)
+def names_generator(step):
+    """`the batches service names the feature generator f1`: the refusal says the feature generator."""
+    if parts(step)[1][0] != "feature generator":
+        return False
+    done = step.context["result"]
+    assert done.returncode == 1 and "feature generator" in done.stderr, (step.text, done.stdout, done.stderr)
 
 
 @four("ThenDoes", "has", *BOTH)
