@@ -70,6 +70,32 @@ Feature: Laying
     And the laying service keeps the scenario s1
     And the scenario s1 refers to the requirement id r2
 
+  @g7 @r7
+  Scenario: An item laid that holds a requirement group serving a job keeps the group serving the job
+    Given a requirement group r1
+    And a job j1
+    And the requirement group r1 serves the job j1
+    And an item i1
+    And the item i1 holds the requirement group r1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then the requirement group r2 serves the job j1
+    And the laying service keeps the capability c1
+    And the capability c1 has the requirement group r2
+
+  @g8 @r8
+  Scenario: An item laid that holds a capability in an area keeps the capability in the area
+    Given a capability c1
+    And an item i1
+    And the item i1 holds the capability c1
+    And an area a1
+    And the area a1 holds the capability c1
+    And the item i1 holds the area a1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then the area a1 holds the capability c1
+    And the laying service keeps the capability c1
+
   @g9 @r9
   Scenario: A workspace prepared for a batch keeps the logical form of each requirement of its items in the corpus
     Given an item i1
@@ -260,3 +286,76 @@ Feature: Laying
     When the batches service lays the item i1 in the workspace w1
     Then the workspace w1 holds the requirement r1
     And the laying service keeps the workspace w1
+
+  @g22 @r22
+  Scenario: An item laid that holds a universal condition where none exists keeps universal in the new language
+    Given `universal` does not exist
+    And a universal condition u1
+    And an item i1
+    And the item i1 holds the universal condition u1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then the laying service keeps `universal`
+    And the laying service sets the language of `universal` to `codified-2`
+
+  @g23 @r23
+  Scenario: An item laid that holds a capability keeps the capability of the capability form
+    Given a capability c1
+    And an item i1
+    And the item i1 holds the capability c1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then the capability c1 conforms to the capability form
+    And the laying service keeps the capability c1
+
+  @g24 @r24
+  Scenario: An item laid that holds a capability in a driven port keeps the capability in the driven port
+    Given a capability c1
+    And an item i1
+    And the item i1 holds the capability c1
+    And a driven port d1
+    And the driven port d1 holds the capability c1
+    And the item i1 holds the driven port d1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then the driven port d1 holds the capability c1
+    And the laying service keeps the driven port d1
+
+  @g25 @r25
+  Scenario: An item laid that holds a term of a pack keeps the pack with the term and imports it
+    Given a term t1
+    And a pack p1
+    And the pack p1 has the term t1
+    And an item i1
+    And the item i1 holds the term t1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then the pack p1 has the term t1
+    And the laying service keeps the pack p1
+    And this bounded context imports the pack p1
+
+  @g26 @r26
+  Scenario: An item laid that holds a term of a pack beside its requirements keeps the pack with the term
+    Given a term t1
+    And a pack p1
+    And the pack p1 has the term t1
+    And an item i1
+    And the item i1 holds the term t1
+    And a requirement id r1
+    And the item i1 holds the requirement id r1
+    And a capability c1
+    And the capability c1 holds the requirement id r1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then the pack p1 has the term t1
+    And the laying service keeps the pack p1
+
+  @g27 @r27
+  Scenario: An item laid that imports a pack keeps the pack imported
+    Given an item i1
+    And a pack p1
+    And the item i1 imports the pack p1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then this bounded context imports the pack p1
+    And the laying service keeps the pack p1

@@ -7,7 +7,7 @@ area: laying
 specifies: service laying
 language: codified-2
 retired: [g1, r1]
-unbuilt: []
+unbuilt: [r22, r23, r7, r8, r24, r25, r26, r27]
 ---
 
 # Laying
@@ -87,4 +87,36 @@ Relied on by: batches#r180, batches#r189
 ### [g20] A check of an item whose core line uses another area's operation that performs a transition fails naming the line and v_m9
 - [r20] While an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition and an item holds a core line that uses the operation, when the batches service checks the item in a workspace, the laying service shall fail the request and name the core line and `v_m9`.
 Relied on by: batches#r180, batches#r189
+
+### [g22] An item laid that holds a universal condition where none exists keeps universal in the new language
+- [r22] While `universal` does not exist and a universal condition is in an item, when the batches service lays the item in a workspace, the laying service shall keep `universal` and set the language of `universal` to `codified-2`.
+Relied on by: batches#r179
+
+### [g23] An item laid that holds a capability keeps the capability of the capability form
+- [r23] While an item holds a capability, when the batches service lays the item in a workspace, the laying service shall keep the capability that conforms to the capability form.
+Relied on by: batches#r179
+
+### [g7] An item laid that holds a requirement group serving a job keeps the group serving the job
+- [r7] While an item holds a requirement group that serves a job, when the batches service lays the item in a workspace, the laying service shall keep a capability that has a requirement group that serves the job.
+Relied on by: batches#r179
+
+### [g8] An item laid that holds a capability in an area keeps the capability in the area
+- [r8] While an item holds a capability and the item holds an area that holds the capability, when the batches service lays the item in a workspace, the laying service shall keep the capability that the area holds.
+Relied on by: batches#r179
+
+### [g24] An item laid that holds a capability in a driven port keeps the capability in the driven port
+- [r24] While an item holds a capability and the item holds a driven port that holds the capability, when the batches service lays the item in a workspace, the laying service shall keep the driven port that holds the capability.
+Relied on by: batches#r179
+
+### [g25] An item laid that holds a term of a pack keeps the pack with the term and imports it
+- [r25] While an item holds a term of a pack, when the batches service lays the item in a workspace, the laying service shall keep the pack that has the term and keep the pack that this bounded context imports.
+Relied on by: batches#r179
+
+### [g26] An item laid that holds a term of a pack beside its requirements keeps the pack with the term
+- [r26] While an item holds a term of a pack and a capability holds a requirement id that the item holds, when the batches service lays the item in a workspace, the laying service shall keep the pack that has the term.
+Relied on by: batches#r179
+
+### [g27] An item laid that imports a pack keeps the pack imported
+- [r27] While an item imports a pack, when the batches service lays the item in a workspace, the laying service shall keep the pack that this bounded context imports.
+Relied on by: batches#r179
 
