@@ -1,9 +1,9 @@
 """A park of an item that restates an element while another item of the batch adds a member line to it (batches
 r119, b647): over batches_handlers_restate's world (its Given of a model line: the domain-model fixture's model,
-vocabulary and notebook), the item that restates (i2) restating notes' `object note` whole as batches_handlers_element
-does, laid first, and the other item (i1) adding the member line `relations: pins → tag (many)` to it after; `work
+vocabulary and notebook), the item that restates (i2) restating notes' `object note` whole (as laying_handlers_model's
+g33 does), laid first, and the other item (i1) adding the member line `relations: pins → tag (many)` to it after; `work
 batch park` of i2, and the Thens read `spec/model/notes.md` off the batch's branch: the member line kept, the object's
-members as the model held them before the lay, the restatement's gone. Loaded before batches_handlers_element and
+members as the model held them before the lay, the restatement's gone. Loaded before
 batches_handlers_restate, whose handlers of a model line would take these steps."""
 import sys
 
