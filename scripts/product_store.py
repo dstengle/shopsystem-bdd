@@ -1,8 +1,9 @@
 """Where the product layer is kept (b602; decision 0102): the product file `.shop/product/product.toml` of the shop,
-written and committed only by `spec product`, `spec actor`, `spec job`, `spec subdomain` and `spec context` (`kept`).
+written and committed only by `spec product`, `actor`, `job`, `subdomain`, `context`, `assign` and `plays` (`kept`).
 Its form: `id` and `purpose`, `actors = [...]`, a table `[jobs."<id>"]` of each job with its `actors`, `statement`
 and `needs`, and the domain map (b642): a table `[subdomains."<id>"]` of each subdomain with its `type` and `serves`,
-and `[contexts."<id>"]` of each bounded context with its `addresses` and `shop`, none for a provider (`render`,
+and `[contexts."<id>"]` of each bounded context with its `addresses`, `shop`, none for a provider, the `jobs`
+assigned to it and, as `[contexts."<id>".actors]`, each product actor with the actor it plays (b675) (`render`,
 `read`); a product detail, any other key or table of the file, kept whole by `read` and written back by `render` after
 the parts of the form (b673, product r8-r10); a file that does not read refused naming it, and one whose parts are not
 of their types (its jobs no table of jobs, its actors no list of texts) refused as product not in the product form,
@@ -17,12 +18,12 @@ from shop_refused import Refused
 from toml_edit import literal, name
 
 REL = ".shop/product/product.toml"
-HEADER = ("# The product this bounded context belongs to; written by `spec product`, `actor`, `job`, `subdomain` and "
-          "`context`.\n")
+HEADER = ("# The product this bounded context belongs to; written by `spec product`, `actor`, `job`, `subdomain`, "
+          "`context`, `assign` and `plays`.\n")
 FORM = ("id", "purpose", "actors", "jobs", "subdomains", "contexts")
 # each table of tables of the form: its fields in order, and those that are lists of texts
 TABLES = {"jobs": (("actors", "statement", "needs"), ("actors", "needs")),
-          "subdomains": (("type", "serves"), ("serves",)), "contexts": (("addresses", "shop"), ("addresses",))}
+          "subdomains": (("type", "serves"), ("serves",)), "contexts": (("addresses", "shop", "jobs"), ("addresses", "jobs"))}
 
 
 def _literal(value):

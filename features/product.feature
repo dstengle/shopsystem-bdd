@@ -210,3 +210,102 @@ Feature: Product
     When the person declares the bounded context b1 with the subdomain s1
     Then the product service refuses this request
     And the product service names the subdomain s1
+
+  @g22 @r22
+  Scenario: A job is assigned to the bounded context that serves it
+    Given a job j1
+    And a bounded context b1
+    When the person assigns the job j1 to the bounded context b1
+    Then the bounded context b1 holds the job j1
+    And the product service keeps the job j1
+    And the product service completes this request
+
+  @g23 @r23
+  Scenario: A job assigned to a bounded context is not assigned again
+    Given a job j1
+    And a bounded context b1
+    And the bounded context b1 holds the job j1
+    And a bounded context b2
+    When the person assigns the job j1 to the bounded context b2
+    Then the product service refuses this request
+    And the product service names the job j1
+
+  @g24 @r24
+  Scenario: A product actor is mapped to the actor a bounded context calls it by
+    Given a product actor p1
+    And a bounded context b1
+    And an actor a1
+    When the person maps the product actor p1 with the bounded context b1 and the actor a1
+    Then the bounded context b1 holds the product actor p1
+    And the product service keeps the product actor p1
+    And the product service completes this request
+
+  @g25 @r25
+  Scenario: A product actor the product does not hold is not mapped
+    Given a product actor p1
+    And this product does not hold the product actor p1
+    When the person maps the product actor p1
+    Then the product service refuses this request
+    And the product service names the product actor p1
+
+  @g26 @r26
+  Scenario: A job's trace holds the requirements of the groups that serve it
+    Given a requirement group r1
+    And a job j1
+    And the requirement group r1 serves the job j1
+    And a requirement r2
+    And the requirement group r1 has the requirement r2
+    When the person traces the job j1
+    Then the product service returns the requirement r2
+
+  @g27 @r27
+  Scenario: A job's trace holds the requirements that govern the operations its requirements use
+    Given a requirement group r1
+    And a job j1
+    And the requirement group r1 serves the job j1
+    And a requirement r2
+    And the requirement group r1 has the requirement r2
+    And an operation o1
+    And the requirement r2 uses the operation o1
+    And a requirement r3
+    And the requirement r3 governs the operation o1
+    When the person traces the job j1
+    Then the product service returns the requirement r3
+
+  @g28 @r28
+  Scenario: A job's trace holds the adapter specs that realise the port lines it reaches
+    Given a requirement group r1
+    And a job j1
+    And the requirement group r1 serves the job j1
+    And a requirement r2
+    And the requirement group r1 has the requirement r2
+    And an operation o1
+    And the requirement r2 uses the operation o1
+    And a port line p1
+    And the port line p1 governs the operation o1
+    And a requirement id r3
+    And the port line p1 has the requirement id r3
+    And an adapter spec a1
+    And the adapter spec a1 realises the requirement id r3
+    When the person traces the job j1
+    Then the product service returns the adapter spec a1
+
+  @g29 @r29
+  Scenario: A job's trace holds the traces of the jobs it needs
+    Given a requirement group r1
+    And a need n1
+    And the requirement group r1 serves the need n1
+    And a requirement r2
+    And the requirement group r1 has the requirement r2
+    And a job j1
+    And the job j1 needs the need n1
+    When the person traces the job j1
+    Then the product service returns the requirement r2
+
+  @g30 @r30
+  Scenario: A job that no requirement group serves is not traced
+    Given a job j1
+    And no requirement group serves the job j1
+    When the person traces the job j1
+    Then the product service refuses this request
+    And the product service names the job j1

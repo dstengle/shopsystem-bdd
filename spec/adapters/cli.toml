@@ -1632,3 +1632,36 @@ requirements = [
 id = { positional = 1, example = "missingmass.io/shopsystem/shopsystem-bdd" }
 subdomain = { option = "--addresses", repeat = true, example = "specification" }
 shop = { option = "--shop", example = "missingmass.io/shopsystem/shop" }
+
+[operations."product.assign"]
+command = "spec assign"
+requirements = [
+  "product#r22: When the person assigns a job to a bounded context, the product service shall keep the job in the bounded context and complete the request.",
+  "product#r23: While a bounded context holds a job, if the person assigns the job to a bounded context, then the product service shall refuse the request and name the job.",
+]
+[operations."product.assign".parameters]
+job = { positional = 1, example = "j1" }
+"bounded context" = { option = "--to", example = "missingmass.io/shopsystem/shopsystem-bdd" }
+
+[operations."product.map"]
+command = "spec plays"
+requirements = [
+  "product#r24: When the person maps a product actor with a bounded context and an actor, the product service shall keep the product actor in the bounded context and complete the request.",
+  "product#r25: If the person maps a product actor that is not in the product, then the product service shall refuse the request and name the product actor.",
+]
+[operations."product.map".parameters]
+"product actor" = { positional = 1, example = "the developer" }
+"bounded context" = { option = "--in", example = "missingmass.io/shopsystem/shopsystem-bdd" }
+actor = { option = "--as", example = "the person" }
+
+[operations."product.trace"]
+command = "spec trace"
+requirements = [
+  "product#r26: While a requirement group serves a job and the requirement group has a requirement, when the person traces the job, the product service shall return the requirement.",
+  "product#r27: While a requirement group serves a job and a requirement of the requirement group uses an operation and a different requirement governs the operation, when the person traces the job, the product service shall return the requirement.",
+  "product#r28: While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and an adapter spec realises the requirement id of the port line, when the person traces the job, the product service shall return the adapter spec.",
+  "product#r29: While a requirement group serves a need and the requirement group has a requirement, when the person traces a job that needs the need, the product service shall return the requirement.",
+  "product#r30: If the person traces a job that no requirement group serves, then the product service shall refuse the request and name the job.",
+]
+[operations."product.trace".parameters]
+job = { positional = 1, example = "j1" }

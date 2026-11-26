@@ -346,3 +346,146 @@ shall [x1: agent the person (constant), x4: product "the product this bounded co
     refuse(e2, subject: x5, object: x6)
     name(e3, subject: x5, object: x3)
 ```
+
+## r22
+From: b675 r22.
+
+```reading
+When the person assigns a job to a bounded context, the product service shall keep the job in the bounded context and complete the request.
+shall [x1: agent the person (constant), x4: service the product service (constant), x5: request "the request the trigger makes" (indexical)]
+  when [x2: job, x3: bounded context]
+    request(e1, product.assign, subject: x1, object: x2, to: x3)
+  response
+    in(x2, x3)
+    keep(e2, subject: x4, object: x2)
+    complete(e3, subject: x4, object: x5)
+```
+
+## r23
+From: b675 r23.
+
+```reading
+While a bounded context holds a job, if the person assigns the job to a bounded context, then the product service shall refuse the request and name the job.
+shall [x3: agent the person (constant), x5: service the product service (constant), x6: request "the request the trigger makes" (indexical)]
+  while [x1: bounded context, x2: job]
+    in(x2, x1)
+  if [x4: bounded context]
+    request(e1, product.assign, subject: x3, object: x2, to: x4)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x2)
+```
+
+## r24
+From: b675 r24.
+
+```reading
+When the person maps a product actor with a bounded context and an actor, the product service shall keep the product actor in the bounded context and complete the request.
+shall [x1: agent the person (constant), x5: service the product service (constant), x6: request "the request the trigger makes" (indexical)]
+  when [x2: product actor, x3: bounded context, x4: actor]
+    request(e1, product.map, subject: x1, object: x2)
+    param(e1, bounded context, x3)
+    param(e1, actor, x4)
+  response
+    in(x2, x3)
+    keep(e2, subject: x5, object: x2)
+    complete(e3, subject: x5, object: x6)
+```
+
+## r25
+From: b675 r25.
+
+```reading
+If the person maps a product actor that is not in the product, then the product service shall refuse the request and name the product actor.
+shall [x1: agent the person (constant), x3: product "the product this bounded context belongs to" (indexical), x4: service the product service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: product actor]
+    not
+      in(x2, x3)
+    request(e1, product.map, subject: x1, object: x2)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r26
+From: b644 r26.
+
+```reading
+While a requirement group serves a job and the requirement group has a requirement, when the person traces the job, the product service shall return the requirement.
+shall [x4: agent the person (constant), x5: service the product service (constant)]
+  while [x1: requirement group, x2: job, x3: requirement]
+    serve(subject: x1, object: x2)
+    of(x3, x1)
+  when
+    request(e1, product.trace, subject: x4, object: x2)
+  response
+    return(e2, subject: x5, object: x3)
+```
+
+## r27
+From: b644 r27.
+
+```reading
+While a requirement group serves a job and a requirement of the requirement group uses an operation and a different requirement governs the operation, when the person traces the job, the product service shall return the requirement.
+shall [x6: agent the person (constant), x7: service the product service (constant)]
+  while [x1: requirement group, x2: job, x3: requirement, x4: operation, x5: requirement]
+    serve(subject: x1, object: x2)
+    of(x3, x1)
+    use(subject: x3, object: x4)
+    distinct(x5, x3)
+    govern(subject: x5, object: x4)
+  when
+    request(e1, product.trace, subject: x6, object: x2)
+  response
+    return(e2, subject: x7, object: x5)
+```
+
+## r28
+From: b644 r28.
+
+```reading
+While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and an adapter spec realises the requirement id of the port line, when the person traces the job, the product service shall return the adapter spec.
+shall [x8: agent the person (constant), x9: service the product service (constant)]
+  while [x1: requirement group, x2: job, x3: requirement, x4: operation, x5: port line, x6: adapter spec, x7: requirement id]
+    serve(subject: x1, object: x2)
+    of(x3, x1)
+    use(subject: x3, object: x4)
+    govern(subject: x5, object: x4)
+    of(x7, x5)
+    realise(subject: x6, object: x7)
+  when
+    request(e1, product.trace, subject: x8, object: x2)
+  response
+    return(e2, subject: x9, object: x6)
+```
+
+## r29
+From: b644 r29.
+
+```reading
+While a requirement group serves a need and the requirement group has a requirement, when the person traces a job that needs the need, the product service shall return the requirement.
+shall [x4: agent the person (constant), x6: service the product service (constant)]
+  while [x1: requirement group, x2: need, x3: requirement]
+    serve(subject: x1, object: x2)
+    of(x3, x1)
+  when [x5: job]
+    need(subject: x5, object: x2)
+    request(e1, product.trace, subject: x4, object: x5)
+  response
+    return(e2, subject: x6, object: x3)
+```
+
+## r30
+From: b644 r30.
+
+```reading
+If the person traces a job that no requirement group serves, then the product service shall refuse the request and name the job.
+shall [x1: agent the person (constant), x4: service the product service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: job]
+    not [x3: requirement group]
+      serve(subject: x3, object: x2)
+    request(e1, product.trace, subject: x1, object: x2)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
