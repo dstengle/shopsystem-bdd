@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/contracts-are-located-and-kept-through-a-driven-port
 summary: "Where a published or obtained contract is kept, and how one is found, is an adapter's mechanism behind a driven port of the specification; no line or core code names a file location."
 date: 2026-11-25
-status: accepted
+status: superseded
 tier: judgement
 source: [quote-94]
 ---
