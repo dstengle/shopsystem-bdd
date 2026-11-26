@@ -41,6 +41,7 @@ def sense(st, n):
 def frame_atom(st, n, m, slots):
     """The atom of frame m of verb n, `slots` the referent of each kind of the frame in order."""
     v = st.names.verbs[n]
+    _actor(st, v, m, slots[0])
     roles, it = [("subject", slots[0])], iter(slots[1:])
     for words, kind in v.frames[m - 1][1]:
         x = next(it) if kind is not None else None
@@ -51,6 +52,22 @@ def frame_atom(st, n, m, slots):
         return spec_lf_request.frame(st, n, e, v.term.term, sense(st, n), tuple(roles)) or \
             Atom("event", (e, v.term.term, sense(st, n), tuple(roles)))
     return Atom("state", (v.term.term, sense(st, n), tuple(roles)))
+
+
+def _actor(st, v, m, subject):
+    """A frame whose subject is an actor takes that actor alone (b847), or a referent of a kind it is of: any other
+    subject is no translation, so a line reads by the frame that takes it ("the notes service shall return every
+    note" by the request pack's return beside the context's "the person returns <note>")."""
+    actor = v.actors[m - 1] if m <= len(getattr(v, "actors", ())) else ""
+    if not actor or not isinstance(subject, core.Ref):
+        return
+    vocab = st.vocab
+    one = vocab.elements.get(actor, actor)     # two terms of one element one actor (b544)
+    if (vocab.elements.get(subject.value, subject.value) == one if subject.origin == "constant"
+            else subject.kind in vocab.ancestors(dict(vocab.actors).get(actor))):
+        return
+    raise ValueError("no translation of %s as the subject of the frame \"%s\", whose subject is %s" % (
+        subject.value or "a " + subject.kind, v.texts[m - 1], actor))
 
 
 def numbers(name, count):

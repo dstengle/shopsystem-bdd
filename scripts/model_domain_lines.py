@@ -144,22 +144,26 @@ class Lines:
                 out.append(("asks", ident, o, self.doer(a.args[3][0][1])))
         return out
 
-    @staticmethod
-    def refused(trigger):
+    def packed(self, a, words):
+        """True of an event atom of a verb of `words` by the request pack's sense of it, not a sense of the context's
+        that names an operation beside it (b847)."""
+        return a.pred == "event" and a.args[1] in words and not self.operations.get((a.args[1], a.args[2]))
+
+    def refused(self, trigger):
         """The things a trigger's refusal is of: "If the stock service refuses a reservation" (the request pack's
         refuse), each its object's referent."""
-        return [r[1] for a in (trigger.body if trigger else ()) if isinstance(a, Atom) and a.pred == "event"
-                and a.args[1] == "refuse" for r in a.args[3][1:] if len(r) == 2 and isinstance(r[1], Ref)]
+        return [r[1] for a in (trigger.body if trigger else ()) if isinstance(a, Atom) and self.packed(a, ("refuse",))
+                for r in a.args[3][1:] if len(r) == 2 and isinstance(r[1], Ref)]
 
     def reasons(self, ident, o, response):
         service, _, name = o.rpartition(".")
         op = self.model.services[service].operation(name) if service in self.model.services else None
-        if op is None or not any(a.pred == "event" and a.args[1] == "refuse" for a in response):
+        if op is None or not any(self.packed(a, ("refuse",)) for a in response):
             return []
         declared = [r for x in op.outcomes if x.kind == "refused" for r in x.reasons]
         out = []
         for a in response:
-            if a.pred != "event" or a.args[1] != "name":
+            if not self.packed(a, ("name",)):
                 continue
             x = next((r[1] for r in a.args[3][1:] if len(r) == 2 and isinstance(r[1], Ref)), None)
             if x is None:

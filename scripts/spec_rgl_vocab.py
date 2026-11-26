@@ -32,6 +32,7 @@ class Verb:
     aspect: str                 # state or action
     frames: tuple               # (subject kind, pieces) of each frame that reads
     texts: tuple = ()           # the `Frame:` text of each of them, in order (b420: a refusal names it)
+    actors: tuple = ()          # of each of them, the actor its subject names, else "" (b847: only it is the subject)
 
 
 @dataclass
@@ -63,8 +64,10 @@ def lexicon(root):
     layered = spec_packs.layers(root)
     own = {spec_packs.sense(t) for layer, t in layered if not layer.startswith("pack ")}
     last = {spec_packs.sense(t): layer for layer, t in layered if layer.startswith("pack ")}
+    beside = {spec_packs.sense(t) for layer, t in layered if not layer.startswith("pack ") and spec_lexicon.beside(t)}
     terms = [t for layer, t in layered if not layer.startswith("pack ")
-             or (spec_packs.sense(t) not in own and last[spec_packs.sense(t)] == layer)]
+             or (spec_packs.sense(t) not in own and last[spec_packs.sense(t)] == layer)
+             or (layer == "pack request" and spec_packs.sense(t) in beside)]
     if domain_model.exists(root):
         terms = _kinds_of(terms, domain_model.load(root).objects)
     return spec_lexicon.Lexicon(terms, spec_relations.read(root), tuple(spec_packs.imports(root)))
@@ -122,13 +125,16 @@ def pieces(words, kinds):
     return out + ([(tuple(fixed), None)] if fixed else [])
 
 
-def frame(term, text, kinds, actors):
-    """(subject kind, pieces) of one `Frame:` of a verb's entry, or None when it does not read."""
+def frame(term, text, kinds, actors, named=False):
+    """(subject kind, pieces) of one `Frame:` of a verb's entry, or None when it does not read; `named`, the actor
+    its subject names in place of the frame (b847), "" when it names a kind."""
     words, verb = text.split(), spec_frames.s3(term).split()
     for n in range(len(words) - len(verb), 0, -1):
         subject = " ".join(words[:n])
         if words[n:n + len(verb)] == verb and (subject in kinds or subject in actors):
             rest = pieces(words[n + len(verb):], kinds)
+            if named:
+                return subject if subject in actors and subject not in kinds else ""
             return None if rest is None else (actors.get(subject, subject), tuple(rest))
     return None
 
@@ -155,7 +161,8 @@ def read(root):
     for t in lex.of("event"):
         framed = [(f, text) for f, text in ((frame(t, text, vocab.kinds, actors), text) for text in t.frames) if f]
         if t.aspect in spec_lexicon.ASPECTS and framed:
-            vocab.verbs.append(Verb(t, t.aspect, tuple(f for f, _ in framed), tuple(text for _, text in framed)))
+            vocab.verbs.append(Verb(t, t.aspect, tuple(f for f, _ in framed), tuple(text for _, text in framed),
+                                    tuple(frame(t, text, vocab.kinds, actors, named=True) for _, text in framed)))
     if domain_model.exists(root):     # the operations a verb may name (the domain contract design, §5.1)
         vocab.operations = {"%s.%s" % (op.service, op.name): op for op in domain_model.load(root).operations()}
     vocab.words = lex.words() | {sg for sg, _ in vocab.nouns.values()} | {pl for _, pl in vocab.nouns.values()}

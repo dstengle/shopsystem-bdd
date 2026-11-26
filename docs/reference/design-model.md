@@ -168,12 +168,12 @@ which `shop spec rules` does not list (they are in [`grammar/rules.md`](../../gr
 | `v_t3` | an avoided word is a term | Drop the word from the other entry's `Not:`, or rename one term. |
 | `v_t4` | a term of a typed glossary does not name its part of speech | Write it in the bullet: `- **<term>** (<part of speech>): ...`. |
 | `v_t5` | a value names no attribute, or more than one | List the value under exactly one attribute's `Values:`. |
-| `v_t6` | two terms are written the same | Rename one of them. |
+| `v_t6` | a term is written as another term is, or as a word the grammar spells itself | Rename one of them; a verb of the request pack your context names an operation by is kept beside the pack's with `Redefines: request`. |
 | `v_t11` | a verb's entry gives no frame: the kinds of its subject and object, or that it takes no object | Add a `Frame:` field to the verb's entry. |
 | `v_t12` | a condition names another kind with `the`: a relation between two kinds is a verb | Make the relation a verb with a frame, or a row of `## Relations`. |
 | `v_t13` | a verb's Frame: does not read as its subject, the verb and the kinds it takes | Rewrite the `Frame:` as subject, verb, then the kinds it takes; on a verb naming an operation, words of no kind may stand before the object (`<actor> lists the characters of <note>.`) or as the whole object (`<actor> lists the checklists.`). The finding names the frame as you wrote it. |
 | `v_t14` | a verb's entry says neither state nor action | Write its part of speech as `(verb, state)` or `(verb, action)`. |
-| `v_t15` | two entries of one verb take, in every slot, the same kind or one kind under the other | Make the senses' frames differ, or keep one entry. |
+| `v_t15` | two senses of one verb, two entries or an entry and a pack's it redefines, take in every slot the same kind or one kind under the other | Make the senses' frames differ (a subject that is an actor, or a kind that is no service, beside the request pack's), or keep one entry. |
 | `v_t16` | a term an imported pack defines too has no `Redefines:` naming the pack | Add `Redefines: <pack>` to the entry, or drop the entry and use the pack's. |
 | `v_t17` | `spec/index.md` imports a pack that neither the plugin nor the bounded context has | Fix the name under `imports:`; the plugin's packs are in [`grammar/packs/`](../../grammar/packs/). |
 | `v_t18` | a vocabulary entry names no element of the domain model | Write `→ <element>` after the part of speech. |

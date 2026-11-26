@@ -26,19 +26,27 @@ def bring_response(r, part):
         if all(x in part.refs for x in atom.args[1:]) and atom.args[1] not in events:     # a held thing only described
             for x in atom.args[1:]:
                 r.bring_in(x)
-    owned = [i for i in part.body if owner(part, i)]
+    owned = [i for i in part.body if owner(part, i, r.vocab)]
     for atom in owned:
         r.bring_in(atom.args[1])
         r.brought.extend(r.given(atom))
     return [i for i in part.body if i not in owned]
 
 
-def owner(part, item):
+def owner(part, item, vocab):
     """True for a row `K1 | of | K2` of a response's own K1 and a K2 of the pre-state, a While, trigger or
-    indexical referent (b421), K1 named by an act that conveys it and by no other act."""
+    indexical referent (b421), K1 named by an act that conveys it, a pack's sense of its verb (not a context's sense
+    beside it that names an operation, b847), and by no other act."""
     if not (isinstance(item, Atom) and item.pred == "rel" and item.args[0] == "of" and item.args[1] in part.refs
             and getattr(item.args[2], "origin", None) in PRESUPPOSED and item.args[2] not in part.refs):
         return False
-    verbs = {i.args[1] for i in part.body if isinstance(i, Atom) and i.pred == "event"
-             and any(len(z) == 2 and z[1] == item.args[1] for z in i.args[-1])}
+    verbs = {i.args[1] if not _operation(vocab, i.args[1], i.args[2]) else None for i in part.body
+             if isinstance(i, Atom) and i.pred == "event" and any(len(z) == 2 and z[1] == item.args[1]
+                                                                   for z in i.args[-1])}
     return bool(verbs) and verbs <= set(CONVEY)
+
+
+def _operation(vocab, word, sense):
+    """The operation the `sense`-th entry of the verb `word` names, "" of a pack's."""
+    found = [v for v in vocab.verbs if v.term.term == word]
+    return found[sense - 1].term.operation if 0 < sense <= len(found) else ""
