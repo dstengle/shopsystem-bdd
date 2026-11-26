@@ -1096,38 +1096,6 @@ Feature: Batches
     Then the driven port d1 holds the capability c1
     And the batches service keeps the driven port d1
 
-  @g152 @r152
-  Scenario: A batch with unbuilt running tasks and no failed task asks the driver to build every running task with its brief
-    Given a batch b1
-    And the status of the batch b1 is `building`
-    And an item i1
-    And the batch b1 holds the item i1
-    And a task t1
-    And the item i1 has the task t1
-    And the status of the task t1 is `running`
-    And a task t2
-    And the item i1 has the task t2
-    And the status of the task t2 is `running`
-    And the batch b1 has no task
-    And a batch brief b2
-    And the batch b1 has the batch brief b2
-    And a task t3
-    And the batch b1 has the task t3
-    And the status of the task t3 is `running`
-    And a task t4
-    And the batch b1 has the task t4
-    And the status of the task t4 is `running`
-    And a task t5
-    And the batch b1 has the task t5
-    And the status of the task t5 is `pending`
-    When the driver polls the batch b1
-    Then the batches service returns the batch step b3
-    And the instruction of the batch step b3 is `build task`
-    And the batches service returns the task t3
-    And the batches service returns the task t4
-    And the batches service does not return the task t5
-    And the batches service returns the batch brief b2
-
   @g153 @r153
   Scenario: A batch with pending tasks and no failed or running task asks the driver to prepare every pending task
     Given a batch b1
@@ -1207,3 +1175,80 @@ Feature: Batches
     And `registry` imports `tracking`
     When the person amends the item i1
     Then the batches service keeps `registry`
+
+  @g157 @r157
+  Scenario: A batch opened regenerates the feature and corpus of a capability its model lines reach
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a model line m1
+    And an operation o1
+    And the model line m1 specifies the operation o1
+    And the item i1 holds the model line m1
+    And a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And the requirement r1 governs the operation o1
+    And the capability c1 holds no requirement id
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service generates the feature f1
+    And the capability c1 has the feature f1
+    And this corpus holds the requirement r1
+    And the batches service keeps the logical form l1
+    And the requirement r1 has the logical form l1
+
+  @g158 @r158
+  Scenario: A batch whose task branches conflict is polled for the later item's task and the file
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    And a task t1
+    And the batch b1 has the task t1
+    And the status of the task t1 is `done`
+    And an item i1
+    And the batch b1 holds the item i1
+    And a kept change k1
+    And the kept change k1 cites the item i1
+    And a file f1
+    And the kept change k1 touches the file f1
+    And a kept change k2
+    And the kept change k1 conflicts with the kept change k2
+    And a task t2
+    And the item i1 has the task t2
+    When the driver polls the batch b1
+    Then the batches service returns the batch step b2
+    And the instruction of the batch step b2 is `fix task`
+    And the batches service returns the task t2
+    And the batches service returns the file f1
+
+  @g159 @r159
+  Scenario: A batch with running tasks none of which is built asks the driver to build every running task with its brief
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    And an item i1
+    And the batch b1 holds the item i1
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And a task t2
+    And the item i1 has the task t2
+    And the status of the task t2 is `running`
+    And the batch b1 has no task
+    And a batch brief b2
+    And the batch b1 has the batch brief b2
+    And a task t3
+    And the batch b1 has the task t3
+    And the status of the task t3 is `running`
+    And a task t4
+    And the batch b1 has the task t4
+    And the status of the task t4 is `running`
+    And a task t5
+    And the batch b1 has the task t5
+    And the status of the task t5 is `pending`
+    When the driver polls the batch b1
+    Then the batches service returns the batch step b3
+    And the instruction of the batch step b3 is `build task`
+    And the batches service returns the task t3
+    And the batches service returns the task t4
+    And the batches service does not return the task t5
+    And the batches service returns the batch brief b2

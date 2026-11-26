@@ -280,24 +280,6 @@ shall [x1: agent the person (constant), x4: product "the product this bounded co
     name(e3, subject: x5, object: x3)
 ```
 
-## r18
-From: b642 r18.
-
-```reading
-When the person declares a bounded context with an id and a subdomain and a shop, the product service shall keep the bounded context in the product and complete the request.
-shall [x1: agent the person (constant), x6: service the product service (constant), x8: request "the request the trigger makes" (indexical)]
-  when [x2: bounded context, x3: id, x4: subdomain, x5: shop]
-    request(e1, product.declare context, subject: x1, object: x2)
-    param(e1, id, x3)
-    param(e1, subdomain, x4)
-    param(e1, shop, x5)
-  response [x7: product]
-    of(x7, x5)
-    in(x2, x7)
-    keep(e2, subject: x6, object: x2)
-    complete(e3, subject: x6, object: x8)
-```
-
 ## r19
 From: b642 r19.
 
@@ -561,3 +543,21 @@ shall [x9: agent the person (constant), x10: service the product service (consta
     return(e2, subject: x10, object: x2)
 ```
 
+## r34
+Retires: r18. From: b706 r34.
+
+```reading
+While a shop has a product, when the person declares a bounded context with an id and a subdomain and the shop, the product service shall keep the bounded context in the product and complete the request.
+shall [x3: agent the person (constant), x7: service the product service (constant), x8: request "the request the trigger makes" (indexical)]
+  while [x1: shop, x2: product]
+    of(x2, x1)
+  when [x4: bounded context, x5: id, x6: subdomain]
+    request(e1, product.declare context, subject: x3, object: x4)
+    param(e1, id, x5)
+    param(e1, subdomain, x6)
+    param(e1, shop, x1)
+  response
+    in(x4, x2)
+    keep(e2, subject: x7, object: x4)
+    complete(e3, subject: x7, object: x8)
+```

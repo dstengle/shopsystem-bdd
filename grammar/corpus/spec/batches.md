@@ -1462,37 +1462,6 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
     keep(e2, subject: x7, object: x4)
 ```
 
-## r152
-Retires: r145. From: b702 r152.
-
-```reading
-While a batch is `building` and two tasks of items in the batch are `running` and no task of the batch is `failed`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `build task`, every task of the batch whose status is `running` and the batch brief of the batch.
-shall [x6: agent the driver (constant), x7: service the batches service (constant)]
-  while [x1: batch, x2: task, x3: item, x4: task]
-    status(x1) = `building`
-    in(x3, x1)
-    of(x2, x3)
-    status(x2) = `running`
-    distinct(x4, x2)
-    of(x4, x3)
-    status(x4) = `running`
-    not [x5: task]
-      of(x5, x1)
-      status(x5) = `failed`
-  when
-    request(e1, batches.poll, subject: x6, object: x1)
-  response [x8: batch step, x10: batch brief]
-    instruction(x8) = `build task`
-    return(e2, subject: x7, object: x8)
-    every [x9: task]
-      of(x9, x1)
-      status(x9) = `running`
-      scope
-        return(e3, subject: x7, object: x9)
-    of(x10, x1)
-    return(e4, subject: x7, object: x10)
-```
-
 ## r153
 Retires: r146. From: b702 r153.
 
@@ -1593,4 +1562,94 @@ shall [x4: area `registry` (parameter), x6: area `tracking` (parameter), x7: age
     request(e1, batches.amend, subject: x7, object: x1)
   response
     keep(e2, subject: x8, object: x4)
+```
+
+## r157
+From: b707 r157.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds a model line that specifies an operation and a requirement of a capability governs the operation and the item holds no requirement id that is in the capability, when the person opens a batch, the batches service shall generate the feature of the capability and keep the logical form of the requirement in the corpus.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x8: agent the person (constant), x10: service the batches service (constant), x12: corpus "the corpus of the bounded context the command runs in" (indexical)]
+  while [x1: item, x3: model line, x4: operation, x5: requirement, x6: capability]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    specify(subject: x3, object: x4)
+    in(x3, x1)
+    of(x5, x6)
+    govern(subject: x5, object: x4)
+    not [x7: requirement id]
+      in(x7, x6)
+      in(x7, x1)
+  when [x9: batch]
+    request(e1, batches.open, subject: x8, object: x9)
+  response [x11: feature, x13: logical form]
+    of(x11, x6)
+    generate(e2, subject: x10, object: x11)
+    in(x5, x12)
+    of(x13, x5)
+    keep(e3, subject: x10, object: x13)
+```
+
+## r158
+From: b710 r158.
+
+```reading
+While a batch is `building` and every task of the batch is `done` and a kept change that cites an item in the batch touches a file and the kept change conflicts with another kept change, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `fix task`, the task of the item and the file.
+shall [x7: agent the driver (constant), x8: service the batches service (constant)]
+  while [x1: batch, x3: kept change, x4: item, x5: file, x6: kept change]
+    status(x1) = `building`
+    every [x2: task]
+      of(x2, x1)
+      scope
+        status(x2) = `done`
+    in(x4, x1)
+    cite(subject: x3, object: x4)
+    touch(subject: x3, object: x5)
+    distinct(x6, x3)
+    conflict(subject: x3, with: x6)
+  if
+    request(e1, batches.poll, subject: x7, object: x1)
+  response [x9: batch step, x10: task]
+    instruction(x9) = `fix task`
+    return(e2, subject: x8, object: x9)
+    of(x10, x4)
+    return(e3, subject: x8, object: x10)
+    return(e4, subject: x8, object: x5)
+```
+
+## r159
+Retires: r152. From: b711 r159.
+
+```reading
+While a batch is `building` and two tasks of items in the batch are `running` and no task of the batch is `failed` and no workspace of a task of the batch holds a kept change that cites an item in the batch, when the driver polls the batch, the batches service shall return a batch step whose instruction is `build task`, every task of the batch whose status is `running` and the batch brief of the batch.
+shall [x10: agent the driver (constant), x11: service the batches service (constant)]
+  while [x1: batch, x2: task, x3: item, x4: task]
+    status(x1) = `building`
+    in(x3, x1)
+    of(x2, x3)
+    status(x2) = `running`
+    distinct(x4, x2)
+    of(x4, x3)
+    status(x4) = `running`
+    not [x5: task]
+      of(x5, x1)
+      status(x5) = `failed`
+    not [x6: workspace, x7: task, x8: kept change, x9: item]
+      of(x7, x1)
+      of(x6, x7)
+      in(x9, x1)
+      cite(subject: x8, object: x9)
+      in(x8, x6)
+  when
+    request(e1, batches.poll, subject: x10, object: x1)
+  response [x12: batch step, x14: batch brief]
+    instruction(x12) = `build task`
+    return(e2, subject: x11, object: x12)
+    every [x13: task]
+      of(x13, x1)
+      status(x13) = `running`
+      scope
+        return(e3, subject: x11, object: x13)
+    of(x14, x1)
+    return(e4, subject: x11, object: x14)
 ```

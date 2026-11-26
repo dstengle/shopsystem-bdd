@@ -6,8 +6,8 @@ group: service
 area: specification
 specifies: service product
 language: codified-2
-retired: []
-unbuilt: []
+retired: [g18, r18]
+unbuilt: [r34]
 ---
 
 # Product
@@ -71,9 +71,6 @@ the job statement `j2` holds "When a change is wanted, reviewed and agreed, the 
 ### [g17] A subdomain serving a job the product does not hold is refused
 - [r17] If the person declares a subdomain with a job that is not in the product, then the product service shall refuse the request and name the job.
 
-### [g18] A bounded context a shop keeps is declared in the domain map
-- [r18] When the person declares a bounded context with an id and a subdomain and a shop, the product service shall keep the bounded context in the product and complete the request.
-
 ### [g19] A third-party provider is declared as a bounded context no shop keeps
 - [r19] When the person declares a bounded context with an id and a subdomain and without a shop, the product service shall keep the bounded context in the product and complete the request.
 
@@ -118,4 +115,7 @@ the job statement `j2` holds "When a change is wanted, reviewed and agreed, the 
 
 ### [g33] A job whose trace makes compensated requests of two ports is coordinated by a saga
 - [r33] While a requirement group serves a job and a requirement of the requirement group uses two operations in a driven port that have a property that refers to an operation, when the person traces the job, the product service shall return the job whose coordination is `saga`.
+
+### [g34] A bounded context a shop keeps is declared in the product the shop has
+- [r34] While a shop has a product, when the person declares a bounded context with an id and a subdomain and the shop, the product service shall keep the bounded context in the product and complete the request.
 

@@ -6,8 +6,8 @@ group: service
 area: execution
 specifies: object batch, object task, service batches
 language: codified-2
-retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146]
-unbuilt: []
+retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146, g152, r152]
+unbuilt: [r157, r158, r159]
 ---
 
 # Batches
@@ -261,9 +261,6 @@ when the change is merged.
 ### [g151] A new capability laid with its driven port is kept in an area of kind port
 - [r151] While an item is `ready` and the item meets the readiness bar and the item holds a capability and the item holds a driven port that holds the capability, when the person opens a batch, the batches service shall keep the driven port that holds the capability.
 
-### [g152] A batch with unbuilt running tasks and no failed task asks the driver to build every running task with its brief
-- [r152] While a batch is `building` and two tasks of items in the batch are `running` and no task of the batch is `failed`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `build task`, every task of the batch whose status is `running` and the batch brief of the batch.
-
 ### [g153] A batch with pending tasks and no failed or running task asks the driver to prepare every pending task
 - [r153] While a batch is `building` and two tasks of items in the batch are `pending` and no task of the batch is `failed` and no task of the batch is `running`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `prepare task` and every task of the batch whose status is `pending`.
 
@@ -275,4 +272,13 @@ when the change is merged.
 
 ### [g156] Amending an item takes out the imports of a driven port its lines no longer need
 - [r156] While an item in a batch is `in-batch` and a task of the item is `running` and the kind of the `registry` area is `port` and the item holds no capability that the `registry` area holds and the `registry` area imports the `tracking` area, when the person amends the item, the batches service shall keep the `registry` area.
+
+### [g157] A batch opened regenerates the feature and corpus of a capability its model lines reach
+- [r157] While an item is `ready` and the item meets the readiness bar and the item holds a model line that specifies an operation and a requirement of a capability governs the operation and the item holds no requirement id that is in the capability, when the person opens a batch, the batches service shall generate the feature of the capability and keep the logical form of the requirement in the corpus.
+
+### [g158] A batch whose task branches conflict is polled for the later item's task and the file
+- [r158] While a batch is `building` and every task of the batch is `done` and a kept change that cites an item in the batch touches a file and the kept change conflicts with another kept change, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `fix task`, the task of the item and the file.
+
+### [g159] A batch with running tasks none of which is built asks the driver to build every running task with its brief
+- [r159] While a batch is `building` and two tasks of items in the batch are `running` and no task of the batch is `failed` and no workspace of a task of the batch holds a kept change that cites an item in the batch, when the driver polls the batch, the batches service shall return a batch step whose instruction is `build task`, every task of the batch whose status is `running` and the batch brief of the batch.
 

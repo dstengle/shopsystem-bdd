@@ -1026,6 +1026,7 @@ requirements = [
   "batches#r134: While an item is `ready` and the item meets the readiness bar and the item retires a term, when the person opens a batch, the batches service shall keep an area that does not hold the term.",
   "batches#r142: While an item is `ready` and the item meets the readiness bar and the item retires a model line that restates an element and the item retires a term that means the element, when the person opens a batch, the batches service shall keep an area that does not hold the term.",
   "batches#r151: While an item is `ready` and the item meets the readiness bar and the item holds a capability and the item holds a driven port that holds the capability, when the person opens a batch, the batches service shall keep the driven port that holds the capability.",
+  "batches#r157: While an item is `ready` and the item meets the readiness bar and the item holds a model line that specifies an operation and a requirement of a capability governs the operation and the item holds no requirement id that is in the capability, when the person opens a batch, the batches service shall generate the feature of the capability and keep the logical form of the requirement in the corpus.",
 ]
 
 [operations."batches.resume"]
@@ -1643,10 +1644,10 @@ job = { option = "--serves", repeat = true, example = "j1" }
 [operations."product.declare context"]
 command = "spec context"
 requirements = [
-  "product#r18: When the person declares a bounded context with an id and a subdomain and a shop, the product service shall keep the bounded context in the product and complete the request.",
   "product#r19: When the person declares a bounded context with an id and a subdomain and without a shop, the product service shall keep the bounded context in the product and complete the request.",
   "product#r20: If the person declares a bounded context with an id that the id of this product does not cover, then the product service shall refuse the request and name the id.",
   "product#r21: If the person declares a bounded context with a subdomain that is not in the product, then the product service shall refuse the request and name the subdomain.",
+  "product#r34: While a shop has a product, when the person declares a bounded context with an id and a subdomain and the shop, the product service shall keep the bounded context in the product and complete the request.",
 ]
 [operations."product.declare context".parameters]
 id = { positional = 1, example = "missingmass.io/shopsystem/shopsystem-bdd" }
@@ -1731,9 +1732,10 @@ requirements = [
   "batches#r148: While a batch is `building` and a review of the batch holds a review finding whose triage is `fix now` and no kept change for the review finding exists, when the driver polls the batch, the batches service shall return a batch step whose instruction is `fix finding` and the review finding.",
   "batches#r149: While a batch is `building` and a task of an item in the batch is `done` and every task of the batch is `done` and a scenario of the item breaks in the workspace of the batch, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `fix task` and the task.",
   "batches#r150: While a batch is `building` and a task of an item in the batch is `running` and the item is `in-batch` and the workspace of the task holds an amendment that cites the item and the workspace of the task holds exactly one kept change that cites the item and no task of the batch is `failed`, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `build task`, the task and the batch brief of the batch.",
-  "batches#r152: While a batch is `building` and two tasks of items in the batch are `running` and no task of the batch is `failed`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `build task`, every task of the batch whose status is `running` and the batch brief of the batch.",
   "batches#r153: While a batch is `building` and two tasks of items in the batch are `pending` and no task of the batch is `failed` and no task of the batch is `running`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `prepare task` and every task of the batch whose status is `pending`.",
   "batches#r154: While a batch is `building` and every task of the batch is `done` and a scenario breaks in the workspace of the batch and no scenario of an item in the batch breaks in the workspace of the batch, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `look at failure` and the scenario.",
+  "batches#r158: While a batch is `building` and every task of the batch is `done` and a kept change that cites an item in the batch touches a file and the kept change conflicts with another kept change, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `fix task`, the task of the item and the file.",
+  "batches#r159: While a batch is `building` and two tasks of items in the batch are `running` and no task of the batch is `failed` and no workspace of a task of the batch holds a kept change that cites an item in the batch, when the driver polls the batch, the batches service shall return a batch step whose instruction is `build task`, every task of the batch whose status is `running` and the batch brief of the batch.",
 ]
 [operations."batches.poll".parameters]
 batch = { positional = 1, example = "batch-1" }
