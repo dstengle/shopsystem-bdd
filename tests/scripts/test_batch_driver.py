@@ -64,3 +64,18 @@ def test_batch_rules_that_are_not_a_list_of_texts_are_refused(tmp_path):
         assert "[batch] rules is not a list of texts" in str(why)
     else:
         raise AssertionError("a text in place of a list was taken")
+
+
+def test_the_driver_loops_on_the_batch_step(tmp_path, monkeypatch):
+    """b787: the brief is the driver's whole prompt again; it polls `work batch next` and does each step it names."""
+    import batch_next
+    _built(tmp_path)
+    text = _brief(tmp_path, monkeypatch)
+    assert "`shop work batch next batch-1 --json`" in text
+    for instruction in batch_next.INSTRUCTIONS:
+        assert "`%s`" % instruction in text, instruction
+    assert "every task in its `tasks` list at once" in text and "the findings file it names" in text
+    assert "`shop work batch reviewed batch-1 --reply <the reviewer's transcript>`" in text
+    assert "check its branch and ask `shop work batch next` again" in text
+    assert "Never end your turn while a subagent is still running" in text
+    assert "any new gap of `shop work batch next`" in text
