@@ -129,7 +129,8 @@ Keep the person's word. Don't coin a verb they never said (`browse`): the word g
 the other operation, with a frame that tells it apart. Listing takes a container: one checklist (the frame's
 object), the service's whole collection (the frame's own words, "the checklists"), or a part of one thing that its
 fixed words name ("the characters of a note"). You wouldn't list a note, but you could list its characters, and
-show its length. Here are the model's operations and the entries, two of `list` and `show` beside the third `list`:
+show its length. Fixed words before the object read only on a verb that names an operation, and `shop spec check`
+passes them. Here are the model's operations and the entries, two of `list` and `show` beside the third `list`:
 
 <!-- docs: context tests/scripts/fixtures/docs-checklists -->
 ```text

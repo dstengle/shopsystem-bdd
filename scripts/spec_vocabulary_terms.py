@@ -136,15 +136,16 @@ def _frames(model, e, kinds, verb):
         else:
             service, _, op = e.element.id.rpartition(".")
             thin = ("<actor> %s <%s>" % (verb, model.services[service].operation(op).object or "thing"),)
-    out = []
+    out = {}
     for frame in thin:
         texts = [""]
         for piece in re.split(r"(<[^>]+>)", frame):
             slot = SLOT.fullmatch(piece)
             options = _slot(model, e, slot.group(1), kinds) if slot else [piece]
             texts = [t + o for t in texts for o in options]
-        out += [" ".join(t.split()) for t in texts]
-    return tuple(dict.fromkeys(out))
+        for t in texts:
+            out.setdefault(" ".join(t.split()), frame)
+    return tuple(out), tuple(out.values())
 
 
 def _verbs(model, found, kinds):
@@ -153,9 +154,10 @@ def _verbs(model, found, kinds):
         if not e.label.startswith("verb") or not e.element or e.element.kind not in ("relation", "operation"):
             continue
         t = e.fields
-        frames = _frames(model, e, kinds, spec_frames.s3(t))
+        frames, written = _frames(model, e, kinds, spec_frames.s3(t))
         out.append(spec_lexicon.Term(term=e.term, category="event", text=e.text, where=e.where, label=e.label,
                                      aspect=t.aspect, forms=t.forms, frames=frames, frame=frames[0], nots=t.nots,
+                                     written=written,
                                      operation=e.element.id if e.element.kind == "operation" else "",
                                      element=qualified(e.element)))
     return out
