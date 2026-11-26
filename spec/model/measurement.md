@@ -13,6 +13,7 @@ What work cost: the measurement of a merged batch, the defects found after it, a
 
 ```model
 object dispatch kind of session
+  relations: has → reply (one)
 
 object compaction
 

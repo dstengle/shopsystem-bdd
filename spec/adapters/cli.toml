@@ -1133,6 +1133,7 @@ command = "work batch reviewed"
 requirements = [
   "review-guarantees#r6: While the triage of a review finding on the proposed change of a batch is `fix now`, when a session concludes a review of the batch, the reviews service shall set the status of the batch to `building`.",
   "review-guarantees#r8: While a batch has a proposed change and no review finding on the proposed change whose triage is `fix now` exists, when a session concludes a review of the batch, the reviews service shall set the status of the batch to `awaiting-merge`.",
+  "review-guarantees#r13: When a session concludes a review of a batch, the reviews service shall keep a review of the batch that holds the reply of `pr-reviewer`.",
 ]
 
 [operations."measurement.measure"]
@@ -1577,8 +1578,8 @@ job = { option = "--serves" }
 command = "work context keep"
 requirements = [
   "shop#r1: When the person entrusts a bounded context with an id, the shop service shall keep the bounded context in the shop and complete the request.",
-  "shop#r2: If the person entrusts a bounded context with an id that the product id of the shop does not cover, then the shop service shall refuse the request and name the id.",
   "shop#r3: While a bounded context that has an id is in the shop, if the person entrusts a bounded context with the id, then the shop service shall refuse the request and name the id.",
+  "shop#r6: While the product of the shop has an id, if the person entrusts a bounded context with another id that the id does not cover, then the shop service shall refuse the request and name the id.",
 ]
 [operations."shop.keep".parameters]
 id = { positional = 1, example = "bounded-context/missingmass.io/shopsystem/language" }

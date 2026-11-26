@@ -73,9 +73,6 @@ area: execution
 - **the shop service** (proper noun) → service shop.
 - **entrust** (verb, action) → operation shop.keep. The person gives a bounded context to the shop to keep under its id, beside the bounded contexts the shop keeps already. Forms: entrusts, entrusted. Frame: <actor> entrusts <bounded context>.
 - **list** (verb, action) → operation shop.list. The person asks which bounded contexts a shop keeps. Forms: lists, listed. Frame: <actor> lists <shop>.
-- **shop** (noun) → object shop. The unit one product's work is managed and executed in, which keeps bounded contexts, each under its id. Plural: shops. This: the shop the request is made in.
-- **product id** (noun) → object product id. The id of the product a shop belongs to, the part of the id of this bounded context before its last part, as `missingmass.io/shopsystem`. Plural: product ids.
-- **cover** (verb, state) → relation product id.covers. An id lies under a product id: the path of the id opens with the product id. Forms: covers, covered. Frame: <product id> covers <id>.
 - **the driver** (proper noun) → actor the driver. Whatever runs a batch by asking the batches service for its next step and reporting each step's result back: an agent, a script or a runner.
 - **poll** (verb, action) → operation batches.poll. The driver asks the batches service for the next step of a batch. Forms: polls, polled. Frame: <actor> polls <batch>.
 - **findings file** (noun) → object findings file. The file `findings.md` in a review folder where the reviewer's reply is saved, which `work batch reviewed` reads. Plural: findings files.
@@ -90,3 +87,4 @@ area: execution
 - **fix task** (noun) → value batch step.instruction fix task.
 - **park item** (noun) → value batch step.instruction park item.
 - **stop** (noun) → value batch step.instruction stop.
+- **shop** (noun) → object shop. The unit one product's work is managed and executed in, which keeps bounded contexts, each under its id. Plural: shops. This: the shop the request is made in.
