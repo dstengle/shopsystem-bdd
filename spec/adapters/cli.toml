@@ -173,6 +173,8 @@ requirements = [
   "checking#r125: While a driven port holds an operation that has an operation outcome and a core line that uses `reply-trigger` handles the operation outcome, when the person validates this specification, the specification service shall complete the request.",
   "checking#r135: While an adapter spec realises the requirement id of a port line that governs an operation and the operation uses another operation and the adapter spec holds no contract that holds the operation, if the person validates the adapter spec, then the specification service shall fail the check and name the operation.",
   "checking#r136: While an adapter spec realises the requirement id of a port line that governs an operation and the operation uses no operation, if the person validates the adapter spec, then the specification service shall fail the check and name the operation.",
+  "checking#r150: While a frame of a term has a fixed phrase and the frame takes a noun phrase, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r151: While a term has a frame that violates `v_t13`, if the person validates this specification, then the specification service shall fail the check and name the frame.",
   "decisions#r1: While a design-decision is not `superseded` or `rejected` and the design-decision has no tier, when the person validates this specification, the specification service shall return `w_untiered`.",
   "decisions#r2: While the tier of a design-decision is `check` and no test enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d6`.",
   "decisions#r3: While the tier of a design-decision is `requirement` and no requirement enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d7`.",
@@ -1567,16 +1569,6 @@ requirements = [
 item = { positional = 1 }
 term = { option = "--move-term" }
 
-[operations."drafting.dedicate"]
-command = "work line"
-requirements = [
-  "drafting#r71: When the person dedicates a requirement group to a job with an item, the drafting service shall keep the item that holds the requirement group that serves the job.",
-]
-[operations."drafting.dedicate".parameters]
-item = { positional = 1 }
-"requirement group" = { option = "--serves" }
-job = { option = "--serves" }
-
 [operations."shop.keep"]
 command = "work context keep"
 requirements = [
@@ -1652,6 +1644,7 @@ requirements = [
   "product#r20: If the person declares a bounded context with an id that the id of this product does not cover, then the product service shall refuse the request and name the id.",
   "product#r21: If the person declares a bounded context with a subdomain that is not in the product, then the product service shall refuse the request and name the subdomain.",
   "product#r34: While a shop has a product, when the person declares a bounded context with an id and a subdomain and the shop, the product service shall keep the bounded context in the product and complete the request.",
+  "product#r37: If the person declares a bounded context with an id that does not conform to the context id form, then the product service shall refuse the request and name the id.",
 ]
 [operations."product.declare context".parameters]
 id = { positional = 1, example = "missingmass.io/shopsystem/shopsystem-bdd" }
@@ -1663,6 +1656,8 @@ command = "spec assign"
 requirements = [
   "product#r22: When the person assigns a job to a bounded context, the product service shall keep the job in the bounded context and complete the request.",
   "product#r23: While a bounded context holds a job, if the person assigns the job to a bounded context, then the product service shall refuse the request and name the job.",
+  "product#r38: If the person assigns a job to a bounded context whose id does not conform to the context id form, then the product service shall refuse the request and name the id.",
+  "product#r39: If the person assigns a job to a bounded context that is not in the product, then the product service shall refuse the request and name the bounded context.",
 ]
 [operations."product.assign".parameters]
 job = { positional = 1, example = "j1" }
@@ -1807,3 +1802,17 @@ requirements = [
 [operations."drafting.reinstate requirement".parameters]
 item = { positional = 1 }
 "requirement id" = { option = "--remove" }
+
+[operations."drafting.dedicate"]
+command = "work line"
+cli-only = { options = ["--into", "--group", "--in"] }
+requirements = [
+  "drafting#r71: When the person dedicates a requirement group to a job with an item, the drafting service shall keep the item that holds the requirement group that serves the job.",
+  "drafting#r92: While the product exists, if the person dedicates a requirement group to a job that the product does not hold with an item, then the drafting service shall refuse the request and name the job.",
+  "drafting#r93: When the person dedicates a requirement group to a job with an item and a requirement, the drafting service shall keep the requirement in the item and name the requirement, the requirement group and the job.",
+]
+[operations."drafting.dedicate".parameters]
+item = { positional = 1 }
+requirement = { positional = 2 }
+"requirement group" = { option = "--serves" }
+job = { option = "--serves" }

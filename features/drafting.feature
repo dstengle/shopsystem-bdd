@@ -890,3 +890,27 @@ Feature: Drafting
     When the person reinstates the requirement id r1 in the item i1
     Then the drafting service keeps the item i2
     And the item i2 does not hold the requirement r3
+
+  @g92 @r92
+  Scenario: Dedicating a requirement group to a job the product does not hold is refused
+    Given this product exists
+    And a job j1
+    And this product does not hold the job j1
+    And a requirement group r1
+    And an item i1
+    When the person dedicates the requirement group r1 to the job j1 with the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the job j1
+
+  @g93 @r93
+  Scenario: A requirement drafted for a job is named with the job
+    Given a requirement group r1
+    And a job j1
+    And an item i1
+    And a requirement r2
+    When the person dedicates the requirement group r1 to the job j1 with the item i1 and the requirement r2
+    Then the item i1 holds the requirement r2
+    And the drafting service keeps the requirement r2
+    And the drafting service names the requirement r2
+    And the drafting service names the requirement group r1
+    And the drafting service names the job j1

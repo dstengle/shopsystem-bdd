@@ -2057,3 +2057,35 @@ shall [x6: agent the person (constant), x7: shop "the shop the request is made i
     return(e2, subject: x8, object: x9)
     name(e3, subject: x8, object: x3)
 ```
+
+## r150
+From: b796 r150.
+
+```reading
+While a frame of a term has a fixed phrase and the frame takes a noun phrase, when the person validates this specification, the specification service shall complete the request.
+shall [x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x8: request "the request the trigger makes" (indexical)]
+  while [x1: frame, x2: term, x3: fixed phrase, x4: noun phrase]
+    of(x1, x2)
+    of(x3, x1)
+    take(subject: x1, object: x4)
+  when
+    request(e1, specification.check, subject: x5, object: x6)
+  response
+    complete(e2, subject: x7, object: x8)
+```
+
+## r151
+From: b796 r151.
+
+```reading
+While a term has a frame that violates `v_t13`, if the person validates this specification, then the specification service shall fail the check and name the frame.
+shall [x3: rule `v_t13` (parameter), x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x7: check "the check the trigger makes" (indexical)]
+  while [x1: term, x2: frame]
+    violate(subject: x2, object: x3)
+    of(x2, x1)
+  if
+    request(e1, specification.check, subject: x4, object: x5)
+  response
+    fail(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x2)
+```

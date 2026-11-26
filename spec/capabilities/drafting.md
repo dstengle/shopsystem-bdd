@@ -7,7 +7,7 @@ area: tracking
 specifies: service drafting
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r92, r93]
 ---
 
 # Drafting
@@ -309,4 +309,10 @@ capabilities, retirements, rewordings and chores.
 
 ### [g91] Reinstating a requirement id takes the retirement of the item's own requirement out
 - [r91] When the person reinstates a requirement id in an item that holds a requirement that retires the requirement id, the drafting service shall keep an item that holds no requirement that retires the requirement id.
+
+### [g92] Dedicating a requirement group to a job the product does not hold is refused
+- [r92] While the product exists, if the person dedicates a requirement group to a job that the product does not hold with an item, then the drafting service shall refuse the request and name the job.
+
+### [g93] A requirement drafted for a job is named with the job
+- [r93] When the person dedicates a requirement group to a job with an item and a requirement, the drafting service shall keep the requirement in the item and name the requirement, the requirement group and the job.
 

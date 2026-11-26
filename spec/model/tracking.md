@@ -155,7 +155,7 @@ service drafting
   operation replace(item, universal condition, upstream entry, given block)  outcomes: done | refused: universal condition not in the item, upstream entry not in the item, given block not in the item
   operation move(model line, item)  outcomes: done | refused: model line not in the domain model
   operation move term(term, item)  outcomes: done | refused: term not in the vocabulary
-  operation dedicate(requirement group, job, item)  outcomes: done
+  operation dedicate(requirement group, job, item, requirement)  outcomes: done | refused: job outside the product
   operation import pack(pack, item)  outcomes: done | refused: no such pack
   operation retire model line(model line, item)  outcomes: done | refused: model line not in the domain model
   operation retire term(term, item)  outcomes: done | refused: term not in the vocabulary

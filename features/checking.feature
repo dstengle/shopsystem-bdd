@@ -1311,3 +1311,25 @@ Feature: Checking
     When the person reports on this shop
     Then the specification service returns the coupling c1
     And the specification service names the word w1
+
+  @g150 @r150
+  Scenario: the check passes a frame of a fixed phrase before a kind
+    Given a frame f1
+    And a term t1
+    And the term t1 has the frame f1
+    And a fixed phrase f2
+    And the frame f1 has the fixed phrase f2
+    And a noun phrase n1
+    And the frame f1 takes the noun phrase n1
+    When the person validates this specification
+    Then the specification service completes this request
+
+  @g151 @r151
+  Scenario: the check refuses a frame that does not read naming the frame as written
+    Given a frame f1
+    And the frame f1 violates `v_t13`
+    And a term t1
+    And the term t1 has the frame f1
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the frame f1

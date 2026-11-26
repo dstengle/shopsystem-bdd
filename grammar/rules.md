@@ -1132,7 +1132,7 @@ a verb's Frame: does not read as its subject, the verb and the kinds it takes
 - Changed: b123
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`, `scripts/upgrades/migrate_upgrade_frames.py`
-- Cited by: no line
+- Cited by: checking#r151
 - Fails on:
 
   ```prolog
