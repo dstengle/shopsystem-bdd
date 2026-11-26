@@ -1904,3 +1904,4 @@ shall [x1: service the contract registry service (constant), x5: service the spe
     not [x6: thing]
       change(e3, subject: x5, object: x6)
 ```
+

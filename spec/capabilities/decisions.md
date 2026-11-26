@@ -7,7 +7,7 @@ area: specification
 specifies: service decisions, object design-decision
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r26]
 ---
 
 # Decisions
@@ -117,4 +117,7 @@ Restates: design-model-check#r37@0.29.
 
 ### [g25] `work decision --amend` with a foundation the decision names already changes nothing
 - [r25] While a design-decision whose status is `accepted` has a foundation, when the person amends the design-decision with the foundation, the decisions service shall complete the request and change no file.
+
+### [g26] A superseded decision may name a requirement a later line retired
+- [r26] While a requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded`, when the person validates this specification, the specification service shall complete the request.
 

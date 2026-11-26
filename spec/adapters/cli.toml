@@ -178,6 +178,7 @@ requirements = [
   "decisions#r13: While the kind of a route of a design-decision is not `scenario`, `check`, `judgement` or `monitor`, if the person validates this specification, then the specification service shall fail the check and name the design-decision.",
   "decisions#r17: While a design-decision has no id, if the person validates this specification, then the specification service shall fail the check and name the design-decision.",
   "decisions#r20: While a design-decision has no section whose heading is `Decision`, if the person validates this specification, then the specification service shall fail the check and name the design-decision.",
+  "decisions#r26: While a requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded`, when the person validates this specification, the specification service shall complete the request.",
 ]
 
 [operations."specification.examine"]

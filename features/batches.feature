@@ -1096,7 +1096,7 @@ Feature: Batches
     And the status of the task t4 is `pending`
     And a task t5
     And the batch b1 has the task t5
-    And the status of the task t5 is `done`
+    And the status of the task t5 is `running`
     When the driver polls the batch b1
     Then the batches service returns the batch step b2
     And the instruction of the batch step b2 is `prepare task`
