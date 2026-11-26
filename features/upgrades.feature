@@ -1155,8 +1155,8 @@ Feature: Upgrades
     And the upgrades service names this branch
     And the upgrades service completes this request
 
-  @g47 @r47
-  Scenario: An upgrade to 0.45.0 names each term and transition the stricter rules fail and rewrites the Composition
+  @g48 @r48
+  Scenario: An upgrade to 0.45.0 names each term, transition and requirement the stricter rules fail and rewrites the Composition
     Given the tracked file `.shop/plugin-version` holds "0.44.0"
     And the tracked file `spec/index.md` holds:
       """
@@ -1190,6 +1190,10 @@ Feature: Upgrades
     And the transition t8 violates `v_m9`
     And a transition t9
     And the transition t9 does not violate `v_m9`
+    And a requirement r1
+    And the requirement r1 does not conform to the language reference
+    And a requirement r2
+    And the requirement r2 does not conform to the language reference
     When the person upgrades this repository
     Then the upgrades service changes the index file i1
     And this bounded context has the index file i1
@@ -1202,3 +1206,5 @@ Feature: Upgrades
     And the upgrades service returns the transition t7
     And the upgrades service returns the transition t8
     And the upgrades service does not return the transition t9
+    And the upgrades service returns the requirement r1
+    And the upgrades service returns the requirement r2
