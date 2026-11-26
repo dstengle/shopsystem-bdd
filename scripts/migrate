@@ -16,11 +16,11 @@ from pathlib import Path
 
 import migrate_init
 from adapter_cli_respond import prepare, respond
-from migrate_layout import Plan, plan_ids, plan_moves
 from migrate_ledger import plan_ledger
 from migrate_spec import plan_capabilities, plan_holding, plan_index, plan_references
 from migrate_upgrade import run as run_upgrade
-from migrate_write import Failed, check_moves, top_level, uncommitted, write
+from plumbing.migrate_layout import Plan, plan_ids, plan_moves
+from plumbing.migrate_write import Failed, check_moves, top_level, uncommitted, write
 
 
 def refuse(failures):

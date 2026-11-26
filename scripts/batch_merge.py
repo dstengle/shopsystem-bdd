@@ -20,7 +20,7 @@ from pathlib import Path
 
 import spec_unbuilt
 from batch_git import git
-from shop_files import Refused
+from plumbing.shop_files import Refused
 
 RERERE = ("-c", "rerere.enabled=true", "-c", "rerere.autoUpdate=true")
 

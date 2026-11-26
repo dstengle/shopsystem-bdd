@@ -18,8 +18,8 @@ import measure_batch_read
 import measure_batch_sessions
 import measure_cost
 import measure_defect
-import shop_files
-from transcripts import Refused, moment
+from plumbing import shop_files
+from plumbing.transcripts import Refused, moment
 
 
 def now():

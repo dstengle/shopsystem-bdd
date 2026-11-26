@@ -9,7 +9,7 @@ import backlog_items
 import batch_findings
 import batch_rerun
 from batch_git import git, is_tree, tree_for, trees_dir
-from shop_files import Refused
+from plumbing.shop_files import Refused
 
 
 def cited_findings(root, since, branch):

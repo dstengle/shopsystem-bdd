@@ -10,12 +10,12 @@ import re
 from pathlib import Path
 
 import backlog_universal
-import shop_files
 import spec_lexicon
 import spec_read
 import spec_read_given
 from backlog_items import Refused, commit, find, label, one_line
 from backlog_section import SECTION, Block, capability_file, read, render, takes
+from plumbing import shop_files
 
 HEADER = ("| from | word | to | cardinality |", "|---|---|---|---|")
 UPSTREAM = re.compile(r"^(bounded-context/[\w.-]+(?:/[\w.-]+)+):(?:\s.*)?$")

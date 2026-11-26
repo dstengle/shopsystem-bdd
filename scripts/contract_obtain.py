@@ -18,7 +18,7 @@ deposited, or none at V, naming the bounded context and the version (r130)."""
 from pathlib import Path
 
 import contract_registry
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 ADAPTERS = "adapters"
 

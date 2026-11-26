@@ -23,7 +23,7 @@ from backlog_section import (
     render,
     takes,
 )
-from shop_files import context_path
+from plumbing.shop_files import context_path
 
 GROUPS = ("service", "guarantees")
 COMMAND = "work line --capability"

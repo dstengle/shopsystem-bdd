@@ -10,7 +10,7 @@ import pytest
 import request_lines
 import request_terms
 import spec_lexicon
-from shop_files import Refused
+from plumbing.shop_files import Refused
 
 FIXTURE = Path(__file__).resolve().parent / "fixtures" / "domain-model"
 SHELF = "- **shelf** (noun) → object shelf. A place the person keeps books on."

@@ -4,7 +4,7 @@ actor mapped to the actor a bounded context's model calls it by (`map_actor`), k
 `{product actor: actor}`, in the product dict of product_layer (its `contexts`, product_map's), kept by the store the
 caller gives (product_store's). A job is assigned once: one a bounded context holds already is refused naming the
 job; a product actor the product does not hold is refused naming it."""
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 
 def assign(product, job, context):

@@ -4,7 +4,7 @@ import textwrap
 
 import domain_model
 import pytest
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 FIXTURE = pathlib.Path(__file__).parent / "fixtures" / "domain-model"
 

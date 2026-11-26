@@ -10,7 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 
 import spec_moves  # noqa: E402
 import spec_read  # noqa: E402
-from shop_refused import Refused  # noqa: E402
+from plumbing.shop_refused import Refused  # noqa: E402
 
 OLD = """---
 id: capability/ex/{name}

@@ -15,8 +15,8 @@ from pathlib import Path
 import backlog_area_move
 import backlog_model
 import backlog_model_area
-import shop_files
 from backlog_items import Refused
+from plumbing import shop_files
 
 IMPORTS = re.compile(r"^imports:\s*\[(.*)\]\s*$", re.MULTILINE)
 

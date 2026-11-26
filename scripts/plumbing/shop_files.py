@@ -1,7 +1,7 @@
 """The plumbing of .shop/ that every command shares: the one refusal, frontmatter read with scripts/spec's own reader
 (so the two never disagree on a file), the context's path, a file's text, git, a commit of named files only and its
 push (U4, backlog r18; to the branch's upstream, r21; refused on a task's branch, r20), bounded in time (r19), and an
-append to a log whole or not at all. Standard library, shop_refused and model_parse."""
+append to a log whole or not at all. Standard library and the plumbing's shop_refused and frontmatter."""
 import os
 import re
 import signal
@@ -9,12 +9,12 @@ import subprocess
 import sys
 from pathlib import Path
 
-# scripts/spec's own reader (model_parse, standard library only), not the whole of scripts/spec, which imports every
-# check: so the two never disagree on a file, and a command starts without the checks
-from model_parse import frontmatter
+# scripts/spec's own reader (the plumbing's, which model_parse re-exports), not the whole of scripts/spec, which
+# imports every check: so the two never disagree on a file, and a command starts without the checks
+from plumbing.frontmatter import frontmatter
 
 # the one refusal, re-exported (b145): shop_files.Refused is shop_refused.Refused
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 # A task's branch, `batch-<n>-b<j>` (batch_start), on which no command of .shop/ commits (backlog r20).
 TASK_BRANCH = re.compile(r"(batch-[1-9]\d*)-(b[1-9]\d*)")

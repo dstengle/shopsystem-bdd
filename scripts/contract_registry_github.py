@@ -13,7 +13,7 @@ import shlex
 import subprocess
 
 import contract_registry
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 KEPT = ".shop/contracts"
 FILE = "contract.toml"
@@ -23,7 +23,7 @@ COMMAND = "spec obtain"
 
 def _gh(root, *args):
     """gh's output as bytes, its line ends as gh wrote them (b594); a gh that fails refused as batch_gh's `gh`."""
-    import batch_gh
+    from plumbing import batch_gh
     argv = shlex.split(os.environ.get(batch_gh.GH) or "gh")
     try:
         done = subprocess.run([*argv, *args], cwd=root, capture_output=True)
@@ -61,7 +61,7 @@ def listed(root, context):
     """Refused, naming the bounded context `context`, unless it is this bounded context or an upstream entry under
     `## Upstreams` of spec/index.md identifies it (checking r132)."""
     import request_gh
-    import shop_files
+    from plumbing import shop_files
     if context != "bounded-context/" + shop_files.context_path(root) and context not in request_gh.bullets(root):
         raise Refused("no upstream entry under ## Upstreams in spec/index.md identifies the bounded context {names}: "
                       "bounded context not an upstream", reason="bounded context not an upstream",

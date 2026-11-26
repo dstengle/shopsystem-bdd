@@ -2,10 +2,9 @@
 import json
 
 import pytest
-
-import domain_envelope
-from domain_envelope import Response
-from shop_refused import Refused
+from plumbing import domain_envelope
+from plumbing.domain_envelope import Response
+from plumbing.shop_refused import Refused
 
 
 def test_the_four_fields():

@@ -19,7 +19,7 @@ import os
 
 import contract_registry
 import contract_registry_folder as FOLDER
-from domain_envelope import Response, error
+from plumbing.domain_envelope import Response, error
 
 CONTRACT = 'context = "the stand-in registry"\nversion = "%s"\nstatus = "published"\n'
 
@@ -71,7 +71,7 @@ def deregister(root, contract, adapter_spec, provider, version):
                                                                           "provider": provider})
     done = FOLDER.deregister(root, contract, adapter_spec, provider, version)
     if _reply("deregister") == "complete" and done.outcome == "done":
-        import shop_files
+        from plumbing import shop_files
         _record("completed", provider, version, head=shop_files.git(root, "rev-parse", "HEAD").strip())
     return done
 

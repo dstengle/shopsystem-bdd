@@ -31,7 +31,7 @@ import spec_corpus_write
 import spec_read
 import spec_unbuilt
 from batch_git import git, remove_tree
-from shop_files import Refused
+from plumbing.shop_files import Refused
 
 _BEFORE, _SOLVED = {}, {}
 

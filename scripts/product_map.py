@@ -6,7 +6,7 @@ gives (product_store's). `declare_subdomain` keeps a subdomain and `declare_cont
 again in place of the one of its id (its other keys kept). A subdomain is refused, naming the parameter, when its type
 is not of the subdomain type form (`TYPES`) or a job it serves is no job of the product; a bounded context when its id
 lies outside the product's id (`covers`) or a subdomain it addresses is no subdomain of the product."""
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 # the subdomain type form: the types of subdomain decision 0128 names
 TYPES = ("core", "supporting", "generic")

@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 
 import record_write
-import shop_files
+from plumbing import shop_files
 
 PATH = record_write.RECORDS / "observations.md"
 HEAD = "# Observations\n\nDated, never edited. An observation is an origin: an initiative may cite it as its `source`.\n"
@@ -51,7 +51,7 @@ def write(root, summary, *, about=None, by="a session", slug=None, date=None):
 
 def observe(args):
     """`work observe`: the request records.file observation, its text the summary."""
-    from domain_envelope import Response
+    from plumbing.domain_envelope import Response
     ident = write(args.root, args.summary, about=args.about, by=args.by, slug=args.slug, date=args.date)
     print(ident)
     return Response("done", {"id": ident, "path": PATH.as_posix()})

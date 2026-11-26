@@ -39,9 +39,9 @@ def requests(step):
     if not mine(step) or step.template != "WhenRequests" or not world(step).get("retiring"):
         return False
     import backlog_items
-    import domain_envelope
     import laying
-    from shop_refused import Refused
+    from plumbing import domain_envelope
+    from plumbing.shop_refused import Refused
     w = world(step)
     R().codify(step)
     B = sys.modules["shop_backlog_world"]

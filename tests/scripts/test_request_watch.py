@@ -7,8 +7,8 @@ import sys
 import request_sync
 import request_watch
 from backlog_testing import SCRIPTS, git
+from plumbing.shop_files import Refused
 from request_testing import hosted
-from shop_files import Refused
 
 OWN = "https://github.com/ex/ctx/issues/1"
 OTHER = "https://github.com/ex/up/issues/4"

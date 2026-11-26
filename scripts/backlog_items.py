@@ -8,8 +8,8 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
-import shop_files
-from shop_files import LINE_BREAKS, Refused
+from plumbing import shop_files
+from plumbing.shop_files import LINE_BREAKS, Refused
 
 BACKLOG = Path(".shop") / "backlog"
 STATUSES = ("idea", "shaped", "ready", "in-batch", "delivered", "needs-input", "refused", "withdrawn")

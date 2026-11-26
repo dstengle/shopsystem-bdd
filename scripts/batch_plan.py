@@ -9,9 +9,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import backlog_items
-import shop_files
 from batch_git import current_branch
-from shop_files import Refused
+from plumbing import shop_files
+from plumbing.shop_files import Refused
 
 BATCHES = Path(".shop") / "batches"
 STATUSES = ("building", "in-review", "awaiting-merge", "merged", "abandoned")

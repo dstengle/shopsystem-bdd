@@ -22,7 +22,7 @@ import textwrap
 from collections import OrderedDict
 from pathlib import Path
 
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 MOVES = "spec/moves.json"
 CONTEXT = "capability/missingmass.io/shopsystem/shopsystem-bdd/"

@@ -10,7 +10,7 @@ import re
 import tomllib
 
 import adapter_cli
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 HEAD = re.compile(r'^\[\s*operations\s*\.\s*"([^"]+)"')
 TABLE = re.compile(r"^\[")

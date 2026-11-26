@@ -14,7 +14,7 @@ import batch_findings
 import batch_plan
 import batch_timings
 from batch_git import git, push, remote, remove_tree, tree_for, trees_dir, trees_path
-from shop_files import Refused
+from plumbing.shop_files import Refused
 
 
 def since(root, batch):

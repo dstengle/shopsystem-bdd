@@ -1,7 +1,7 @@
 """migrate's reading of the old ledger, spec/decisions.md: a decision file for each entry (migration-tools r2, r11, r13, r17)."""
 import re
 
-from migrate_layout import load_model, tracked
+from plumbing.migrate_layout import load_model, tracked
 
 LEDGER = "spec/decisions.md"
 ENTRY = re.compile(r"^## decision/(?:(?P<number>\d+)-)?(?P<slug>[\w-]+)\s*$")

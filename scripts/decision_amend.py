@@ -7,8 +7,8 @@ is written."""
 import re
 from pathlib import Path
 
-import shop_files
 from model_parse import DECISIONS, decision_files
+from plumbing import shop_files
 
 KEYS = ("enforced_by", "verified_by", "rests_on", "supersedes", "source")    # the lists' order in a decision's head
 

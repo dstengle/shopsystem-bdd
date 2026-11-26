@@ -1,5 +1,5 @@
 """shop_refused: the one refusal carries a business reason and the references it names (design §5.4)."""
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 
 def test_an_old_raise_keeps_working():
