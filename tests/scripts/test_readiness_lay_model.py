@@ -122,3 +122,16 @@ def test_a_new_capability_takes_model_lines_in_its_own_area(modelled, tmp_path):
 def test_model_lines_for_an_unmade_capability_are_refused(modelled):
     done = work(modelled, "line", "b1", "--into", "shelving", "--model", "object shelf")
     assert done.returncode != 0 and "no codified capability shelving" in done.stderr
+
+
+def test_a_new_capability_specifies_the_service_its_own_model_lines_declare(modelled, tmp_path):
+    """laying#r49 (b850, review f2): a capability laid in an area whose service the item's own model lines declare
+    specifies that service, not its own name."""
+    ok(work(modelled, "line", "b1", "--capability", "shelf", "--area", "stock", "--narrator", "a person",
+            "Stock kept on a shelf."))
+    ok(work(modelled, "line", "b1", "--into", "shelf", "--model", "service inventory\n  operation count(note)  "
+            "outcomes: done"))
+    into = tmp_path / "copy"
+    shutil.copytree(FIXTURE, into)
+    backlog_lines.lay_onto(into, backlog_items.find(modelled, "b1"), [])
+    assert "\nspecifies: service inventory\n" in (into / "spec/capabilities/shelf.md").read_text()

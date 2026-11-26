@@ -354,3 +354,6 @@ capabilities, retirements, rewordings and chores.
 ### [g111] work line --term refuses a slot of a frame that names no kind, no actor and no parameter, naming the slot
 - [r111] While a frame of a term has a slot and the slot refers to no term whose part of speech is `noun` and the slot refers to no term whose part of speech is `proper noun` and the slot refers to no parameter, if the person writes the term into an item, then the drafting service shall refuse the request and name the slot.
 
+### [g112] spec check --item reports the item's lexicon problems as work ready does, and --reword-term warns as --term does
+- [r112] While a term violates `v_t6`, when the person rewords the term in an item, the drafting service shall keep the term in the item, name `v_t6` and complete the request.
+

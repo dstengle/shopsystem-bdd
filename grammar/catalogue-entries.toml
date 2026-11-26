@@ -888,6 +888,11 @@ purpose = "Each actor of a job starts a line of the job's trace in the bounded c
 since = "b643"
 changed = []
 
+[rules.w_unplayed_actor]
+purpose = "Each product actor of a job a bounded context holds is played by an actor of it, so a mapping is never silently forgotten."
+since = "b849"
+changed = []
+
 [rules.w_unaddressed_sub]
 purpose = "Every subdomain of the product is given its solution by a bounded context of the domain map."
 since = "b643"

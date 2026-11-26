@@ -24,6 +24,7 @@ object bounded context
 object capability kind of file
   attributes: group: service | guarantees | model | operations; language: codified-1 | codified-2
   relations: has → section | requirement | feature | requirement group | Behaviour line (many); holds → requirement id | count | order | given block (many)
+  relations: specifies → service (one)
 
 object requirement kind of text
   relations: has → precondition | trigger | logical form | consequence | parse | compiled grammar | translation | response | act | restriction | upper bound | requirement id (many); omits → requirement (many); allows → act (many); oblige → requirement (many); overrides → requirement (many); adds → consequence (many); permits → act (many); retires → requirement id (many); uses → construct | rule (many)
@@ -383,6 +384,7 @@ object area
   relations: imports → area (many)
   relations: has → coupling (many)
   relations: holds → Python file (many)
+  relations: has → service (many)
 
 object group title kind of text
 

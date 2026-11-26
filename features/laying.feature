@@ -654,3 +654,16 @@ Feature: Laying
     Then the laying service keeps `watering`
     And the laying service keeps the area a1
     And the area a1 imports `plots`
+
+  @g49 @r49
+  Scenario: An item laid that holds a capability keeps the capability specifying the service its area holds
+    Given a capability c1
+    And an item i1
+    And the item i1 holds the capability c1
+    And an area a1
+    And the area a1 holds the capability c1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then the area a1 has the service s1
+    And the capability c1 specifies the service s1
+    And the laying service keeps the capability c1

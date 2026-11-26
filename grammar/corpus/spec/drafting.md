@@ -1696,3 +1696,20 @@ shall [x7: agent the person (constant), x9: service the drafting service (consta
     refuse(e2, subject: x9, object: x10)
     name(e3, subject: x9, object: x3)
 ```
+
+## r112
+From: b848 r112.
+
+```reading
+While a term violates `v_t6`, when the person rewords the term in an item, the drafting service shall keep the term in the item, name `v_t6` and complete the request.
+shall [x2: rule `v_t6` (parameter), x3: agent the person (constant), x5: service the drafting service (constant), x6: request "the request the trigger makes" (indexical)]
+  while [x1: term]
+    violate(subject: x1, object: x2)
+  when [x4: item]
+    request(e1, drafting.reword term, subject: x3, object: x1, in: x4)
+  response
+    in(x1, x4)
+    keep(e2, subject: x5, object: x1)
+    name(e3, subject: x5, object: x2)
+    complete(e4, subject: x5, object: x6)
+```

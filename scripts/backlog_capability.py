@@ -11,6 +11,7 @@ import re
 import subprocess
 from pathlib import Path
 
+import backlog_model_area
 from backlog_items import Refused, commit, find, label, one_line
 from backlog_section import (
     CAP,
@@ -114,10 +115,12 @@ def kind(block):
     return dict(zip(NEW_FIELDS, block.new)).get("kind") or "core"
 
 
-def specifies(block):
-    """What the capability is about: the service of its name, or the guarantees of its name."""
+def specifies(block, root=None):
+    """What the capability is about: the service its area's model declares (backlog_model_area's `service`, b850), or its guarantees."""
     fields = dict(zip(NEW_FIELDS, block.new))
-    return ("service %s" if fields["group"] == "service" else "the %s guarantees") % block.capability
+    if fields["group"] != "service":
+        return "the %s guarantees" % block.capability
+    return "service %s" % backlog_model_area.service(root, area(block), block.capability)
 
 
 def text(root, block):
@@ -128,7 +131,7 @@ def text(root, block):
     title = block.capability.replace("-", " ").capitalize()
     return ("---\nid: capability/%s/%s\ntitle: %s\nnarrator: %s\ngroup: %s\narea: %s\nspecifies: %s\n"
             "language: codified-2\nretired: []\n---\n\n# %s\n\n## Purpose\n%s\n\n## Behaviour\n"
-            % (path, block.capability, title, fields["narrator"], fields["group"], area(block), specifies(block),
+            % (path, block.capability, title, fields["narrator"], fields["group"], area(block), specifies(block, root),
                title, fields["purpose"]))
 
 
@@ -241,6 +244,15 @@ def _without(body, block, root):
         return body[:row.start()] + "| %s |" % " | ".join(cells) + row.group(0)[len(row.group(0).rstrip("\n")):] \
             + body[row.end():]
     return body
+
+
+def respecify(into, block):
+    """`specifies:` written again once the item's model lines are laid, so a service they declare is read (b850)."""
+    import spec_held
+    spec_held.invalidate(into)
+    path = path_of(into, block.capability)
+    path.write_text(re.sub(r"(?m)^specifies: .*$", lambda _: "specifies: %s" % specifies(block, into),
+                           path.read_text(), count=1))
 
 
 def _row(block):

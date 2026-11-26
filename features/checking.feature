@@ -1423,3 +1423,27 @@ Feature: Checking
     When the person validates this specification
     Then the specification service fails this check
     And the specification service names the slot s1
+
+  @g160 @r160
+  Scenario: spec check --item reports the item's lexicon problems as work ready does, and --reword-term warns as --term does
+    Given a rule r1
+    And the severity of the rule r1 is `error`
+    And a term t1
+    And the term t1 violates the rule r1
+    And an item i1
+    And the item i1 holds the term t1
+    When the person validates this specification with the item i1
+    Then the specification service fails this check
+    And the specification service names the term t1
+    And the specification service names the rule r1
+
+  @g161 @r161
+  Scenario: A product actor of a job held here that no actor here plays is named
+    Given a job j1
+    And this bounded context holds the job j1
+    And a product actor p1
+    And the job j1 has the product actor p1
+    And no agent plays the product actor p1
+    When the person validates this specification
+    Then the specification service names the product actor p1
+    And the specification service completes this request

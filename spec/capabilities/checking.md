@@ -449,6 +449,12 @@ Restates: design-model-check#r13@0.29.
 ### [g159] the check fails on a slot of a frame that names no kind, no actor and no parameter, naming the slot
 - [r159] While a frame of a term has a slot and the slot refers to no term whose part of speech is `noun` and the slot refers to no term whose part of speech is `proper noun` and the slot refers to no parameter, if the person validates this specification, then the specification service shall fail the check and name the slot.
 
+### [g160] spec check --item reports the item's lexicon problems as work ready does, and --reword-term warns as --term does
+- [r160] While an item holds a term that violates a rule whose severity is `error`, if the person validates this specification with the item, then the specification service shall fail the check and name the term and the rule.
+
+### [g161] A product actor of a job held here that no actor here plays is named
+- [r161] While this bounded context holds a job and the job has a product actor and no agent plays the product actor, when the person validates this specification, the specification service shall name the product actor and complete the request.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.

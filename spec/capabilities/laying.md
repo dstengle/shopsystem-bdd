@@ -200,3 +200,7 @@ Relied on by: batches#r182
 - [r48] While an item holds the `watering` area and the item holds the `plots` area and the `plots` area holds a term and the `watering` area holds a capability and a requirement of the capability uses the term, when the batches service lays the item in a workspace, the laying service shall keep the `watering` area and keep an area that imports the `plots` area.
 Relied on by: batches#r179
 
+### [g49] An item laid that holds a capability keeps the capability specifying the service its area holds
+- [r49] While an item holds a capability and an area holds the capability, when the batches service lays the item in a workspace, the laying service shall keep the capability that specifies the service of the area.
+Relied on by: batches#r179
+

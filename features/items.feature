@@ -1094,3 +1094,16 @@ Feature: Items
     Then the backlog service refuses this request
     And the backlog service names the core line c1
     And the backlog service names `v_m9`
+
+  @g74 @r74
+  Scenario: A shaped item whose only lines dedicate requirement groups to jobs is readied
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    And a requirement group r1
+    And a job j1
+    And the requirement group r1 serves the job j1
+    And the item i1 holds the requirement group r1
+    And the item i1 holds no requirement
+    And the item i1 meets this readiness bar
+    When the person readies the item i1
+    Then the backlog service sets the status of the item i1 to `ready`

@@ -2236,3 +2236,40 @@ shall [x7: agent the person (constant), x8: specification "the specification of 
     fail(e2, subject: x9, object: x10)
     name(e3, subject: x9, object: x3)
 ```
+
+## r160
+From: b848 r160.
+
+```reading
+While an item holds a term that violates a rule whose severity is `error`, if the person validates this specification with the item, then the specification service shall fail the check and name the term and the rule.
+shall [x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x7: check "the check the trigger makes" (indexical)]
+  while [x1: item, x2: term, x3: rule]
+    severity(x3) = `error`
+    violate(subject: x2, object: x3)
+    in(x2, x1)
+  if
+    request(e1, specification.check, subject: x4, object: x5)
+    param(e1, item, x1)
+  response
+    fail(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x2)
+    name(e4, subject: x6, object: x3)
+```
+
+## r161
+From: b849 r161.
+
+```reading
+While this bounded context holds a job and the job has a product actor and no agent plays the product actor, when the person validates this specification, the specification service shall name the product actor and complete the request.
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x8: request "the request the trigger makes" (indexical)]
+  while [x2: job, x3: product actor]
+    in(x2, x1)
+    of(x3, x2)
+    not [x4: agent]
+      play(subject: x4, object: x3)
+  when
+    request(e1, specification.check, subject: x5, object: x6)
+  response
+    name(e2, subject: x7, object: x3)
+    complete(e3, subject: x7, object: x8)
+```

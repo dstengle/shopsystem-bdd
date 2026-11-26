@@ -444,6 +444,7 @@ requirements = [
   "items#r71: While an item is `shaped` and the item holds a port line and the item holds a core line and the port line supports the requirement id of the core line, when the person readies the item, the backlog service shall set the status of the item to `ready`.",
   "items#r72: While an item is `shaped` and the item holds a port line that governs an operation and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, if the person readies the item, then the backlog service shall refuse the request and name the operation outcome and `v_pb2`.",
   "items#r73: While an item is `shaped` and an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition and the item holds a core line that uses the operation, if the person readies the item, then the backlog service shall refuse the request and name the core line and `v_m9`.",
+  "items#r74: While an item is `shaped` and the item holds a requirement group that serves a job and the item holds no requirement and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.",
   "shaping-guarantees#r1: When the brainstorming session readies an item, the brainstorming session shall not ask a question.",
 ]
 [operations."backlog.ready".parameters]
@@ -1853,6 +1854,8 @@ requirements = [
   "checking#r157: While a term means an element that the term does not fit, if the person validates this specification, then the specification service shall fail the check and name the term.",
   "checking#r158: While a term has a frame that does not end the term, if the person validates this specification, then the specification service shall fail the check and name the frame.",
   "checking#r159: While a frame of a term has a slot and the slot refers to no term whose part of speech is `noun` and the slot refers to no term whose part of speech is `proper noun` and the slot refers to no parameter, if the person validates this specification, then the specification service shall fail the check and name the slot.",
+  "checking#r160: While an item holds a term that violates a rule whose severity is `error`, if the person validates this specification with the item, then the specification service shall fail the check and name the term and the rule.",
+  "checking#r161: While this bounded context holds a job and the job has a product actor and no agent plays the product actor, when the person validates this specification, the specification service shall name the product actor and complete the request.",
   "decisions#r1: While a design-decision is not `superseded` or `rejected` and the design-decision has no tier, when the person validates this specification, the specification service shall return `w_untiered`.",
   "decisions#r2: While the tier of a design-decision is `check` and no test enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d6`.",
   "decisions#r3: While the tier of a design-decision is `requirement` and no requirement enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d7`.",
@@ -1894,6 +1897,7 @@ requirements = [
   "drafting#r102: While a term violates `v_t4`, `v_t7`, `v_t11`, `v_t13`, `v_t14` or `v_t19`, if the person rewords the term in an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.",
   "drafting#r105: When the person rewords a term in an item, the drafting service shall keep a different term in the item, return the term and complete the request.",
   "drafting#r109: While a term means an element that the term does not fit, if the person rewords the term in an item, then the drafting service shall refuse the request and name the term.",
+  "drafting#r112: While a term violates `v_t6`, when the person rewords the term in an item, the drafting service shall keep the term in the item, name `v_t6` and complete the request.",
 ]
 [operations."drafting.reword term".parameters]
 item = { positional = 1 }

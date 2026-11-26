@@ -35,9 +35,14 @@ def solve(model=None):
 
 
 def rule_order(labels):
-    """The codes in the order model.lp gives their labels, which puts the violations before the warnings."""
+    """The codes in the order model.lp gives their labels, which puts the violations before the warnings; a code it
+    has no label of (a rule of the lexicon alone, b848) after them, by its code."""
     text = LP.read_text()
-    return sorted(labels, key=lambda code: text.index(f'label("{code}",'))
+
+    def at(code):
+        found = text.find(f'label("{code}",')
+        return (found if found >= 0 else len(text), code)
+    return sorted(labels, key=at)
 
 
 def interpreters():
@@ -119,11 +124,21 @@ def rows(found, labels, head, limit):
             print(f"    ... and {len(by[name]) - limit} more")
 
 
+def lexical(problems, labels):
+    """The lexicon problems `(code, term, message)` an item's lay brings as violations `(code, [term, message])`,
+    each code given its label in `labels`: model.lp's, else the rule catalogue's, else its own."""
+    from model_rules import LEXICON
+    for code, _, _ in problems:
+        labels.setdefault(code, LEXICON[code][0] if code in LEXICON else "a rule of the lexicon")
+    return [(code, [term, message]) for code, term, message in problems]
+
+
 def check(args):
     model = Model(args.root).read()
     found, labels = solve(model)
     lay_only = getattr(args, "lay_only", None)       # `spec check --item`: what the item's lay alone brings (b808)
     found = [f for f in found if not (lay_only and lay_only(*f))]
+    found += lexical(getattr(args, "lexicon", ()), labels)       # `spec check --item`: the lay's lexicon (b848)
     violations = [f for f in found if f[0].startswith("v")]
     warnings = [f for f in found if f[0].startswith("w_")]
     if args.json:

@@ -2,7 +2,7 @@
 context that a block of the item makes (`work line --capability`, b317), its block's `area:`, else its own name; and the model
 file of an area that `spec/model/` does not hold yet, made by the lay (`made`, with the new capability's purpose as the
 area's, of kind `port` when the block makes it a driven port, b701) and removed again by the unlay when nothing but
-what it made is left, the areas it imports aside (`unmade`)."""
+what it made is left, the areas it imports aside (`unmade`); the service the model declares in an area (`service`, b850)."""
 import re
 from pathlib import Path
 
@@ -90,3 +90,17 @@ def unmade(root, area, blocks):
         path.unlink()
         return True
     return False
+
+
+def service(root, name, capability):
+    """The service the model at `root` declares in the area `name`, the one named `capability` of several, else the
+    first; with none `capability`."""
+    import domain_model
+    if root is None or not domain_model.exists(root):
+        return capability
+    try:
+        services = domain_model.load(root).services
+    except Refused:     # a model that does not read is spec check's to name, not the lay's
+        return capability
+    held = [s for s, found in services.items() if found.area == name]
+    return capability if capability in held or not held else held[0]
