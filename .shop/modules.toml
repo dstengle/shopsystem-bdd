@@ -20,12 +20,12 @@ modules = ["scripts/backlog_*.py", "scripts/request_*.py", "scripts/request_hook
            "scripts/shop_frozen.py"]
 
 [execution]
-modules = ["scripts/work", "scripts/shop", "scripts/batch_*.py", "scripts/delivery_settings.py", "scripts/toml_edit.py",
-           "scripts/shop_files.py", "scripts/shop_refused.py", "scripts/shop_contexts.py", "scripts/work_items.py",
+modules = ["scripts/work", "scripts/shop", "scripts/batch_*.py", "scripts/delivery_settings.py",
+           "scripts/shop_contexts.py", "scripts/work_items.py",
            "scripts/review_*.py"]
 
 [measurement]
-modules = ["scripts/measure", "scripts/measure_*.py", "scripts/transcripts.py"]
+modules = ["scripts/measure", "scripts/measure_*.py"]
 
 [analysis]
 modules = ["scripts/tools", "scripts/tools_*.py"]
