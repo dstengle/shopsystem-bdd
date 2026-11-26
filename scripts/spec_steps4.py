@@ -46,12 +46,12 @@ TraceError, subst = boxes.TraceError, boxes.subst
 class Reader:
     """One scenario read into step trees: the referents' names and the words' funs."""
 
-    def __init__(self, vocab, choices=()):
+    def __init__(self, vocab, choices=(), asks=None):
         self.vocab, self.names, self.counts, self.shared, self.known = vocab, {}, {}, {}, set()
         self.brought = []       # the Givens of the response's boxes: each K brought in, its restrictor
         self.dets, self.images, self.cns = {}, {}, {}     # "no K", "the T of x", a K's own noun (b716)
         self.numbers, self.counted = {}, {}     # a printed number's `number` box (b240); a counted K's (b273)
-        self.arguments = {}     # an option's referent: its argument (spec_lf_option, b240)
+        self.arguments, self.asks = {}, dict(asks or {})     # an option's argument (b240); a request's asker (b728)
         self.choices, self.taken, self.options = list(choices), [], []      # the case of each `or` box
         self.pre = []           # the first line's While, Where and trigger parts: what a value Given meets
         self.actors = {t: ("a_%s_%d" % (spec_rgl.slug(t), n + 1), k) for n, (t, k) in enumerate(vocab.actors)}
@@ -261,11 +261,11 @@ def mentioned(item):
     return out
 
 
-def cases(vocab, forms, entailed=None):
-    """[[(keyword, tree)]] of one group, a scenario for each case its `or` boxes give (as codified-1's R#n)."""
+def cases(vocab, forms, entailed=None, asks=None):
+    """[[(keyword, tree)]] of one group, a scenario a case of its `or` boxes (codified-1's R#n); `asks` the askers."""
     out, seq = [], []
     while seq is not None:
-        r = Reader(vocab, seq)
+        r = Reader(vocab, seq, asks)
         out.append(read(vocab, forms, entailed, r))
         seq = spec_lf_core.next_choice(r.taken, r.options)
     return out
@@ -287,7 +287,7 @@ def read(vocab, forms, entailed=None, r=None):
             if part.op in ("while", "where") and n == 0:
                 givens += [g for item in part.body for g in r.given(item)]
             elif part.op in ("when", "if") and n == 0:     # a When each event, a request with its parameters
-                found = request.trigger(r, part, form)
+                found = request.trigger(r, part)
                 givens, when = givens + found[0], when + found[1]
             elif part.op == "response":
                 body = bring.bring_response(r, part)     # brought in before the When (b273, b286, b416)
