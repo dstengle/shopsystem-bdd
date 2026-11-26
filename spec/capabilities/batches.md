@@ -6,7 +6,7 @@ group: service
 area: execution
 specifies: object batch, object task, service batches
 language: codified-2
-retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146, g152, r152, g149, r149, g154, r154, g160, r160, g166, r166, g108, r108, g106, r106, g60, r60, g130, r130, g71, r71, g72, r72, g73, r73, g74, r74, g75, r75, g113, r113, g114, r114, g115, r115, g157, r157, g164, r164, g167, r167, g169, r169]
+retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146, g152, r152, g149, r149, g154, r154, g160, r160, g166, r166, g108, r108, g106, r106, g60, r60, g130, r130, g71, r71, g72, r72, g73, r73, g74, r74, g75, r75, g113, r113, g114, r114, g115, r115, g157, r157, g164, r164, g167, r167, g169, r169, g64, r64, g95, r95, g128, r128, g132, r132, g76, r76, g124, r124, g129, r129, g151, r151]
 unbuilt: []
 ---
 
@@ -39,11 +39,6 @@ when the change is merged.
 - [r63] While a batch holds an item and the batch has a task, when the person monitors the batch, the batches service
   shall return the item, the task and the status of the task.
 
-### [g64] A batch opened with a universal condition keeps the universal conditions in the language
-- [r64] While `universal` does not exist and an item is `ready` and the item meets the readiness bar and a universal
-  condition is in the item, when the person opens a batch, the batches service shall keep `universal` and set the
-  language of `universal` to `codified-2`.
-
 ### [g66] A task whose chore breaks is not finished
 - [r66] While a task of an item is `running` and the item holds a chore and the chore breaks in the workspace of the
   task, if a session finishes the task, then the batches service shall refuse the request and name the chore.
@@ -62,9 +57,6 @@ when the change is merged.
   batch is `needs-input` and the item has a requirement that is not in the workspace of the batch and a scenario of the
   item breaks in the workspace of the task, when a session finishes the task, the batches service shall set the status
   of the task to `done`.
-
-### [g76] A new capability is laid in 0.38's form: area:, specifies:, no empty ## Terms, one ## Composition
-- [r76] While an item is `ready` and the item meets the readiness bar and the item holds a capability, when the person opens a batch, the batches service shall keep the capability that conforms to the capability form and keep an index file that conforms to the index form.
 
 ### [g77] A task finishes with its tests run by the workspace's virtual environment
 - [r77] While a task of an item is `running` and the workspace of the task holds a virtual environment and a scenario of the item succeeds in the workspace of the task, when a session finishes the task, the batches service shall set the status of the task to `done`.
@@ -104,9 +96,6 @@ when the change is merged.
 
 ### [g92] A batch opened writes the operation table of an operation an item adds with none given
 - [r92] While an item is `ready` and the item meets the readiness bar and the item holds a model line and the model line specifies an operation and the domain model does not hold the operation and the item holds no operation table of the operation, when the person opens a batch, the batches service shall keep an adapter contract that holds an operation table of the operation.
-
-### [g95] A batch opened keeps each term of a pack in the pack, and the pack imported
-- [r95] While an item is `ready` and the item meets the readiness bar and the item holds a term of a pack, when the person opens a batch, the batches service shall keep the pack that has the term and keep the pack that this bounded context imports.
 
 ### [g96] An in-batch item amended that does not meet the readiness bar is refused and nothing changes
 - [r96] While an item in a batch is `in-batch` and the item does not meet the readiness bar, if the person amends the item, then the batches service shall refuse the request, name the item and change nothing.
@@ -159,14 +148,8 @@ when the change is merged.
 ### [g121] A model line that restates an actor is laid in place of the actor
 - [r121] While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an actor, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the actor.
 
-### [g124] A batch opened keeps the job a requirement group of an item serves
-- [r124] While an item is `ready` and the item meets the readiness bar and the item holds a requirement group that serves a job, when the person opens a batch, the batches service shall keep a capability that has a requirement group that serves the job.
-
 ### [g125] An item amended with a review finding keeps a change for the finding, which its review accepts
 - [r125] While an item in a batch is `in-batch` and a review of the batch holds a review finding, when the person amends the item with the review finding, the batches service shall keep a kept change for the review finding.
-
-### [g128] An item's term of a pack kept when its ids are renumbered
-- [r128] While an item is `ready` and the item meets the readiness bar and the item holds a term of a pack and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep the pack that has the term.
 
 ### [g126] An item's operation table kept when its ids are renumbered
 - [r126] While an item is `ready` and the item meets the readiness bar and the item holds an operation table and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep an adapter contract that holds the operation table.
@@ -174,14 +157,8 @@ when the change is merged.
 ### [g127] An item's moved term kept when its ids are renumbered
 - [r127] While an item is `ready` and the item meets the readiness bar and the item moves a term that means an element and an area holds the element and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep the area that holds the term.
 
-### [g129] A new capability laid with its area is kept in that area
-- [r129] While an item is `ready` and the item meets the readiness bar and the item holds a capability and the item holds an area that holds the capability, when the person opens a batch, the batches service shall keep the capability that the area holds.
-
 ### [g131] A ready item whose change would take the batch past the review limit is not allocated, whether or not it meets the bar
 - [r131] While an item is `ready` and the item exceeds the review limit, when the person opens a batch, the batches service shall not allocate the item.
-
-### [g132] A batch opened imports each pack its items import
-- [r132] While an item is `ready` and the item meets the readiness bar and the item imports a pack, when the person opens a batch, the batches service shall keep the pack that this bounded context imports.
 
 ### [g133] A batch opened takes each retired model line out of the domain model
 - [r133] While an item is `ready` and the item meets the readiness bar and the item retires a model line, when the person opens a batch, the batches service shall keep an area that does not hold the model line.
@@ -212,9 +189,6 @@ when the change is merged.
 
 ### [g150] A running task whose only kept change citing its item is an amendment asks the driver to build it
 - [r150] While a batch is `building` and a task of an item in the batch is `running` and the item is `in-batch` and the workspace of the task holds an amendment that cites the item and the workspace of the task holds exactly one kept change that cites the item and no task of the batch is `failed`, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `build task`, the task and the batch brief of the batch.
-
-### [g151] A new capability laid with its driven port is kept in an area of kind port
-- [r151] While an item is `ready` and the item meets the readiness bar and the item holds a capability and the item holds a driven port that holds the capability, when the person opens a batch, the batches service shall keep the driven port that holds the capability.
 
 ### [g153] A batch with pending tasks and no failed or running task asks the driver to prepare every pending task
 - [r153] While a batch is `building` and two tasks of items in the batch are `pending` and no task of the batch is `failed` and no task of the batch is `running`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `prepare task` and every task of the batch whose status is `pending`.

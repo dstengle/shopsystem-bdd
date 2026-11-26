@@ -94,25 +94,6 @@ shall [x4: agent the person (constant), x5: service the batches service (constan
     return(e4, subject: x5, object: x6)
 ```
 
-## r64
-From: batches#r39, reworded in request words (0.38.0).
-
-```reading
-While `universal` does not exist and an item is `ready` and the item meets the readiness bar and a universal condition is in the item, when the person opens a batch, the batches service shall keep `universal` and set the language of `universal` to `codified-2`.
-shall [x1: capability `universal` (constant), x3: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant)]
-  while [x2: item, x4: universal condition]
-    not
-      exists(x1)
-    status(x2) = `ready`
-    meet(subject: x2, object: x3)
-    in(x4, x2)
-  when [x6: batch]
-    request(e1, batches.open, subject: x5, object: x6)
-  response
-    keep(e2, subject: x7, object: x1)
-    initiates(e3, subject: x7, language(x1) = `codified-2`)
-```
-
 ## r66
 From: batches#r42, reworded in request words (0.38.0).
 
@@ -195,25 +176,6 @@ shall [x10: service the batches service (constant)]
     request(e1, batches.finish, subject: x9, object: x3)
   response
     initiates(e2, subject: x10, status(x3) = `done`)
-```
-
-## r76
-Retires: r69. From: b391 r76.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item holds a capability, when the person opens a batch, the batches service shall keep the capability that conforms to the capability form and keep an index file that conforms to the index form.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x4: agent the person (constant), x6: service the batches service (constant), x7: artifact the capability form (constant), x9: artifact the index form (constant)]
-  while [x1: item, x3: capability]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    in(x3, x1)
-  when [x5: batch]
-    request(e1, batches.open, subject: x4, object: x5)
-  response [x8: index file]
-    conforms(x3, x7)
-    keep(e2, subject: x6, object: x3)
-    conforms(x8, x9)
-    keep(e3, subject: x6, object: x8)
 ```
 
 ## r77
@@ -476,26 +438,6 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
     of(x11, x4)
     in(x11, x10)
     keep(e2, subject: x9, object: x10)
-```
-
-## r95
-From: b472 r95.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item holds a term of a pack, when the person opens a batch, the batches service shall keep the pack that has the term and keep the pack that this bounded context imports.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant), x8: bounded context "the bounded context the request is made in" (indexical)]
-  while [x1: item, x3: term, x4: pack]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    of(x3, x4)
-    in(x3, x1)
-  when [x6: batch]
-    request(e1, batches.open, subject: x5, object: x6)
-  response
-    of(x3, x4)
-    keep(e2, subject: x7, object: x4)
-    import(subject: x8, object: x4)
-    keep(e3, subject: x7, object: x4)
 ```
 
 ## r96
@@ -828,25 +770,6 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
     keep(e3, subject: x7, object: x9)
 ```
 
-## r124
-From: b641 r124.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item holds a requirement group that serves a job, when the person opens a batch, the batches service shall keep a capability that has a requirement group that serves the job.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant)]
-  while [x1: item, x3: requirement group, x4: job]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    serve(subject: x3, object: x4)
-    in(x3, x1)
-  when [x6: batch]
-    request(e1, batches.open, subject: x5, object: x6)
-  response [x8: capability, x9: requirement group]
-    serve(subject: x9, object: x4)
-    of(x9, x8)
-    keep(e2, subject: x7, object: x8)
-```
-
 ## r125
 From: b600 r125.
 
@@ -906,45 +829,6 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
     keep(e2, subject: x10, object: x5)
 ```
 
-## r128
-From: b660 r128.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item holds a term of a pack and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep the pack that has the term.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x7: agent the person (constant), x9: service the batches service (constant)]
-  while [x1: item, x3: term, x4: pack, x5: capability, x6: requirement id]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    of(x3, x4)
-    in(x3, x1)
-    in(x6, x1)
-    in(x6, x5)
-  when [x8: batch]
-    request(e1, batches.open, subject: x7, object: x8)
-  response
-    of(x3, x4)
-    keep(e2, subject: x9, object: x4)
-```
-
-## r129
-From: b645 r129.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item holds a capability and the item holds an area that holds the capability, when the person opens a batch, the batches service shall keep the capability that the area holds.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant)]
-  while [x1: item, x3: capability, x4: area]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    in(x3, x1)
-    in(x3, x4)
-    in(x4, x1)
-  when [x6: batch]
-    request(e1, batches.open, subject: x5, object: x6)
-  response
-    in(x3, x4)
-    keep(e2, subject: x7, object: x3)
-```
-
 ## r131
 Retires: r107. From: b663 r131.
 
@@ -959,23 +843,6 @@ shall [x2: agent the review limit (constant), x3: agent the person (constant), x
   response
     not
       allocate(e2, subject: x5, object: x1)
-```
-
-## r132
-From: b672 r132.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item imports a pack, when the person opens a batch, the batches service shall keep the pack that this bounded context imports.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x4: agent the person (constant), x6: service the batches service (constant), x7: bounded context "the bounded context the request is made in" (indexical)]
-  while [x1: item, x3: pack]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    import#4(subject: x1, object: x3)
-  when [x5: batch]
-    request(e1, batches.open, subject: x4, object: x5)
-  response
-    import(subject: x7, object: x3)
-    keep(e2, subject: x6, object: x3)
 ```
 
 ## r133
@@ -1186,25 +1053,6 @@ shall [x8: agent the driver (constant), x9: service the batches service (constan
     return(e3, subject: x9, object: x2)
     of(x11, x1)
     return(e4, subject: x9, object: x11)
-```
-
-## r151
-From: b701 r151.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item holds a capability and the item holds a driven port that holds the capability, when the person opens a batch, the batches service shall keep the driven port that holds the capability.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant)]
-  while [x1: item, x3: capability, x4: driven port]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    in(x3, x1)
-    in(x3, x4)
-    in(x4, x1)
-  when [x6: batch]
-    request(e1, batches.open, subject: x5, object: x6)
-  response
-    in(x3, x4)
-    keep(e2, subject: x7, object: x4)
 ```
 
 ## r153

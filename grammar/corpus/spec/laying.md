@@ -93,6 +93,40 @@ shall [x4: service the batches service (constant), x6: service the laying servic
     keep(e2, subject: x6, object: x7)
 ```
 
+## r7
+From: b745 r7.
+
+```reading
+While an item holds a requirement group that serves a job, when the batches service lays the item in a workspace, the laying service shall keep a capability that has a requirement group that serves the job.
+shall [x4: service the batches service (constant), x6: service the laying service (constant)]
+  while [x1: item, x2: requirement group, x3: job]
+    serve(subject: x2, object: x3)
+    in(x2, x1)
+  when [x5: workspace]
+    request(e1, laying.lay, subject: x4, object: x1, in: x5)
+  response [x7: capability, x8: requirement group]
+    serve(subject: x8, object: x3)
+    of(x8, x7)
+    keep(e2, subject: x6, object: x7)
+```
+
+## r8
+From: b745 r8.
+
+```reading
+While an item holds a capability and the item holds an area that holds the capability, when the batches service lays the item in a workspace, the laying service shall keep the capability that the area holds.
+shall [x4: service the batches service (constant), x6: service the laying service (constant)]
+  while [x1: item, x2: capability, x3: area]
+    in(x2, x1)
+    in(x2, x3)
+    in(x3, x1)
+  when [x5: workspace]
+    request(e1, laying.lay, subject: x4, object: x1, in: x5)
+  response
+    in(x2, x3)
+    keep(e2, subject: x6, object: x2)
+```
+
 ## r9
 From: b758 r9.
 
@@ -340,4 +374,104 @@ shall [x3: service the batches service (constant), x5: service the laying servic
   response
     in(x2, x4)
     keep(e2, subject: x5, object: x4)
+```
+
+## r22
+From: b745 r22.
+
+```reading
+While `universal` does not exist and a universal condition is in an item, when the batches service lays the item in a workspace, the laying service shall keep `universal` and set the language of `universal` to `codified-2`.
+shall [x1: capability `universal` (constant), x4: service the batches service (constant), x6: service the laying service (constant)]
+  while [x2: universal condition, x3: item]
+    not
+      exists(x1)
+    in(x2, x3)
+  when [x5: workspace]
+    request(e1, laying.lay, subject: x4, object: x3, in: x5)
+  response
+    keep(e2, subject: x6, object: x1)
+    initiates(e3, subject: x6, language(x1) = `codified-2`)
+```
+
+## r23
+From: b745 r23.
+
+```reading
+While an item holds a capability, when the batches service lays the item in a workspace, the laying service shall keep the capability that conforms to the capability form.
+shall [x3: service the batches service (constant), x5: service the laying service (constant), x6: artifact the capability form (constant)]
+  while [x1: item, x2: capability]
+    in(x2, x1)
+  when [x4: workspace]
+    request(e1, laying.lay, subject: x3, object: x1, in: x4)
+  response
+    conforms(x2, x6)
+    keep(e2, subject: x5, object: x2)
+```
+
+## r24
+From: b745 r24.
+
+```reading
+While an item holds a capability and the item holds a driven port that holds the capability, when the batches service lays the item in a workspace, the laying service shall keep the driven port that holds the capability.
+shall [x4: service the batches service (constant), x6: service the laying service (constant)]
+  while [x1: item, x2: capability, x3: driven port]
+    in(x2, x1)
+    in(x2, x3)
+    in(x3, x1)
+  when [x5: workspace]
+    request(e1, laying.lay, subject: x4, object: x1, in: x5)
+  response
+    in(x2, x3)
+    keep(e2, subject: x6, object: x3)
+```
+
+## r25
+From: b745 r25.
+
+```reading
+While an item holds a term of a pack, when the batches service lays the item in a workspace, the laying service shall keep the pack that has the term and keep the pack that this bounded context imports.
+shall [x4: service the batches service (constant), x6: service the laying service (constant), x7: bounded context "the bounded context the request is made in" (indexical)]
+  while [x1: item, x2: term, x3: pack]
+    of(x2, x3)
+    in(x2, x1)
+  when [x5: workspace]
+    request(e1, laying.lay, subject: x4, object: x1, in: x5)
+  response
+    of(x2, x3)
+    keep(e2, subject: x6, object: x3)
+    import(subject: x7, object: x3)
+    keep(e3, subject: x6, object: x3)
+```
+
+## r26
+From: b745 r26.
+
+```reading
+While an item holds a term of a pack and a capability holds a requirement id that the item holds, when the batches service lays the item in a workspace, the laying service shall keep the pack that has the term.
+shall [x6: service the batches service (constant), x8: service the laying service (constant)]
+  while [x1: item, x2: term, x3: pack, x4: capability, x5: requirement id]
+    of(x2, x3)
+    in(x2, x1)
+    in(x5, x1)
+    in(x5, x4)
+  when [x7: workspace]
+    request(e1, laying.lay, subject: x6, object: x1, in: x7)
+  response
+    of(x2, x3)
+    keep(e2, subject: x8, object: x3)
+```
+
+## r27
+From: b745 r27.
+
+```reading
+While an item imports a pack, when the batches service lays the item in a workspace, the laying service shall keep the pack that this bounded context imports.
+shall [x3: service the batches service (constant), x5: service the laying service (constant), x6: bounded context "the bounded context the request is made in" (indexical)]
+  while [x1: item, x2: pack]
+    import#4(subject: x1, object: x2)
+  when [x4: workspace]
+    request(e1, laying.lay, subject: x3, object: x1, in: x4)
+  response
+    import(subject: x6, object: x2)
+    keep(e2, subject: x5, object: x2)
 ```

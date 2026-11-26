@@ -75,19 +75,6 @@ Feature: Batches
     And the batches service returns the task t1
     And the batches service returns the status of the task t1
 
-  @g64 @r64
-  Scenario: A batch opened with a universal condition keeps the universal conditions in the language
-    Given `universal` does not exist
-    And an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a universal condition u1
-    And the item i1 holds the universal condition u1
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service keeps `universal`
-    And the batches service sets the language of `universal` to `codified-2`
-
   @g66 @r66
   Scenario: A task whose chore breaks is not finished
     Given a task t1
@@ -161,20 +148,6 @@ Feature: Batches
     And a session s2
     When the session s2 finishes the task t1
     Then the batches service sets the status of the task t1 to `done`
-
-  @g76 @r76
-  Scenario: A new capability is laid in 0.38's form: area:, specifies:, no empty ## Terms, one ## Composition
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a capability c1
-    And the item i1 holds the capability c1
-    And a batch b1
-    When the person opens the batch b1
-    Then the capability c1 conforms to the capability form
-    And the batches service keeps the capability c1
-    And the batches service keeps the index file i2
-    And the index file i2 conforms to the index form
 
   @g77 @r77
   Scenario: A task finishes with its tests run by the workspace's virtual environment
@@ -367,21 +340,6 @@ Feature: Batches
     Then the operation o1 has the operation table o2
     And the batches service keeps the adapter contract a1
     And the adapter contract a1 holds the operation table o2
-
-  @g95 @r95
-  Scenario: A batch opened keeps each term of a pack in the pack, and the pack imported
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a term t1
-    And a pack p1
-    And the pack p1 has the term t1
-    And the item i1 holds the term t1
-    And a batch b1
-    When the person opens the batch b1
-    Then the pack p1 has the term t1
-    And the batches service keeps the pack p1
-    And this bounded context imports the pack p1
 
   @g96 @r96
   Scenario: An in-batch item amended that does not meet the readiness bar is refused and nothing changes
@@ -633,21 +591,6 @@ Feature: Batches
     And the batches service keeps the domain model d1
     And the domain model d1 does not hold the actor a1
 
-  @g124 @r124
-  Scenario: A batch opened keeps the job a requirement group of an item serves
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a requirement group r1
-    And a job j1
-    And the requirement group r1 serves the job j1
-    And the item i1 holds the requirement group r1
-    And a batch b1
-    When the person opens the batch b1
-    Then the requirement group r2 serves the job j1
-    And the batches service keeps the capability c1
-    And the capability c1 has the requirement group r2
-
   @g125 @r125
   Scenario: An item amended with a review finding keeps a change for the finding, which its review accepts
     Given an item i1
@@ -698,39 +641,6 @@ Feature: Batches
     Then the area a1 holds the term t1
     And the batches service keeps the area a1
 
-  @g128 @r128
-  Scenario: An item's term of a pack kept when its ids are renumbered
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a term t1
-    And a pack p1
-    And the pack p1 has the term t1
-    And the item i1 holds the term t1
-    And a requirement id r1
-    And the item i1 holds the requirement id r1
-    And a capability c1
-    And the capability c1 holds the requirement id r1
-    And a batch b1
-    When the person opens the batch b1
-    Then the pack p1 has the term t1
-    And the batches service keeps the pack p1
-
-  @g129 @r129
-  Scenario: A new capability laid with its area is kept in that area
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a capability c1
-    And the item i1 holds the capability c1
-    And an area a1
-    And the area a1 holds the capability c1
-    And the item i1 holds the area a1
-    And a batch b1
-    When the person opens the batch b1
-    Then the area a1 holds the capability c1
-    And the batches service keeps the capability c1
-
   @g131 @r131
   Scenario: A ready item whose change would take the batch past the review limit is not allocated, whether or not it meets the bar
     Given an item i1
@@ -739,18 +649,6 @@ Feature: Batches
     And a batch b1
     When the person opens the batch b1
     Then the batches service does not allocate the item i1
-
-  @g132 @r132
-  Scenario: A batch opened imports each pack its items import
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a pack p1
-    And the item i1 imports the pack p1
-    And a batch b1
-    When the person opens the batch b1
-    Then this bounded context imports the pack p1
-    And the batches service keeps the pack p1
 
   @g133 @r133
   Scenario: A batch opened takes each retired model line out of the domain model
@@ -902,21 +800,6 @@ Feature: Batches
     And the instruction of the batch step b3 is `build task`
     And the batches service returns the task t1
     And the batches service returns the batch brief b2
-
-  @g151 @r151
-  Scenario: A new capability laid with its driven port is kept in an area of kind port
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a capability c1
-    And the item i1 holds the capability c1
-    And a driven port d1
-    And the driven port d1 holds the capability c1
-    And the item i1 holds the driven port d1
-    And a batch b1
-    When the person opens the batch b1
-    Then the driven port d1 holds the capability c1
-    And the batches service keeps the driven port d1
 
   @g153 @r153
   Scenario: A batch with pending tasks and no failed or running task asks the driver to prepare every pending task
