@@ -1367,9 +1367,10 @@ assigned the job j1 to the bounded context bounded-context/missingmass.io/shopsy
 ### `shop spec plays`
 
 Maps a product actor to the actor a bounded context's model calls it by, kept among the bounded context's actors in
-the product file, in one commit. A product actor the product does not hold is refused naming it before the actor is checked, a bounded context
-whose id is not of the context id form naming the id, and, in this bounded context, an actor its domain model does
-not declare naming `--as`.\
+the product file, in one commit. A product actor the product does not hold is refused naming it before the actor is
+checked, a bounded context whose id is not of the context id form naming the id, one the product does not declare
+(`shop spec context` declares it) naming the bounded context, and, in this bounded context, an actor its domain model
+does not declare naming `--as`.\
 Synopsis: `shop spec plays <product actor> --in <bounded context> --as <actor>`
 
 ```console

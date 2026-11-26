@@ -8,9 +8,9 @@ not hold it, and each bounded context unless a Given says this product does not 
 holds. The command is run with the values the instances stand for: a job `<j>`, a product actor `the <p> user`, an
 actor `the <a> person`, and of a parameter the When does not give its adapter example (a bounded context
 `bounded-context/example.org/x`, an actor `the person`). Mapped with this bounded context (r40, b798), the scenario's
-repository is the bounded context `bounded-context/example.org/here` with a domain model whose one actor is `the
-person`, so an actor a Given says this domain model does not hold, `the <a> person`, is none of it. The
-Thens read the job under the bounded context's `jobs`, or the product actor under its `actors` called by the actor,
+repository is the bounded context `bounded-context/example.org/here`, which the product holds (b824), with a domain
+model whose one actor is `the person`, so an actor a Given says this domain model does not hold, `the <a> person`, is
+none of it. The Thens read the job under the bounded context's `jobs`, or the product actor under its `actors` called by the actor,
 back from the kept product file, the run committing only it; a refusal an error exit, nothing committed, the value
 named."""
 import hashlib
@@ -82,10 +82,13 @@ def runs(step):
         return False
     w, repo = P.world(step), step.repo
     kinds = {w["kinds"].get(n): n for n in step.names}
-    (repo / P.REL).parent.mkdir(parents=True, exist_ok=True)
-    (repo / P.REL).write_text(P.scripts("product_store").render(held(w)))
+    product = held(w)
     context = value(w, kinds["bounded context"]) if "bounded context" in kinds else context_id(w, "x")
-    context = here(repo) if ("bounded context", "this bounded context") in step.params else context
+    if ("bounded context", "this bounded context") in step.params:
+        context = here(repo)
+        product.setdefault("contexts", {})[context] = {"addresses": []}
+    (repo / P.REL).parent.mkdir(parents=True, exist_ok=True)
+    (repo / P.REL).write_text(P.scripts("product_store").render(product))
     step.context["head"] = W.init(repo)
     if step.term == "`spec assign`":
         args = ["assign", value(w, kinds["job"]), "--to", context]
