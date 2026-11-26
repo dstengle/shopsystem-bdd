@@ -1255,3 +1255,14 @@ Feature: Drafting
     When the person writes the term t1 into the item i1
     Then the drafting service refuses this request
     And the drafting service names the slot s1
+
+  @g112 @r112
+  Scenario: spec check --item reports the item's lexicon problems as work ready does, and --reword-term warns as --term does
+    Given a term t1
+    And the term t1 violates `v_t6`
+    And an item i1
+    When the person rewords the term t1 in the item i1
+    Then the item i1 holds the term t1
+    And the drafting service keeps the term t1
+    And the drafting service names `v_t6`
+    And the drafting service completes this request

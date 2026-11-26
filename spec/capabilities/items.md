@@ -7,7 +7,7 @@ area: tracking
 specifies: object item, service backlog, the readiness policy
 language: codified-2
 retired: [g3, r3, g18, r18, g33, r33]
-unbuilt: []
+unbuilt: [r74]
 ---
 
 # Items
@@ -256,4 +256,7 @@ declined, withdrawn, answered and listed.
 
 ### [g73] An item whose line performs another area's lifecycle transition is not readied
 - [r73] While an item is `shaped` and an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition and the item holds a core line that uses the operation, if the person readies the item, then the backlog service shall refuse the request and name the core line and `v_m9`.
+
+### [g74] A shaped item whose only lines dedicate requirement groups to jobs is readied
+- [r74] While an item is `shaped` and the item holds a requirement group that serves a job and the item holds no requirement and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.
 

@@ -7,7 +7,7 @@ area: laying
 specifies: service laying
 language: codified-2
 retired: [g1, r1, g42, r42]
-unbuilt: []
+unbuilt: [r49]
 ---
 
 # Laying
@@ -198,5 +198,9 @@ Relied on by: batches#r182
 
 ### [g48] An item laid that makes two areas imports into one the other whose term its requirement uses
 - [r48] While an item holds the `watering` area and the item holds the `plots` area and the `plots` area holds a term and the `watering` area holds a capability and a requirement of the capability uses the term, when the batches service lays the item in a workspace, the laying service shall keep the `watering` area and keep an area that imports the `plots` area.
+Relied on by: batches#r179
+
+### [g49] An item laid that holds a capability keeps the capability specifying the service its area holds
+- [r49] While an item holds a capability and an area holds the capability, when the batches service lays the item in a workspace, the laying service shall keep the capability that specifies the service of the area.
 Relied on by: batches#r179
 

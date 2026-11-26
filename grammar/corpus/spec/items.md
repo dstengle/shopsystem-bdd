@@ -1313,3 +1313,22 @@ shall [x8: agent the person (constant), x9: service the backlog service (constan
     name(e3, subject: x9, object: x7)
     name(e4, subject: x9, object: x11)
 ```
+
+## r74
+From: b845 r74.
+
+```reading
+While an item is `shaped` and the item holds a requirement group that serves a job and the item holds no requirement and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.
+shall [x5: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x6: agent the person (constant), x7: service the backlog service (constant)]
+  while [x1: item, x2: requirement group, x3: job]
+    status(x1) = `shaped`
+    serve(subject: x2, object: x3)
+    in(x2, x1)
+    not [x4: requirement]
+      in(x4, x1)
+    meet(subject: x1, object: x5)
+  when
+    request(e1, backlog.ready, subject: x6, object: x1)
+  response
+    initiates(e2, subject: x7, status(x1) = `ready`)
+```

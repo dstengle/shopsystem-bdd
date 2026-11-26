@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56, g94, r94, g91, r91, g100, r100, g144, r144]
-unbuilt: []
+unbuilt: [r160, r161]
 ---
 
 # Checking
@@ -448,6 +448,12 @@ Restates: design-model-check#r13@0.29.
 
 ### [g159] the check fails on a slot of a frame that names no kind, no actor and no parameter, naming the slot
 - [r159] While a frame of a term has a slot and the slot refers to no term whose part of speech is `noun` and the slot refers to no term whose part of speech is `proper noun` and the slot refers to no parameter, if the person validates this specification, then the specification service shall fail the check and name the slot.
+
+### [g160] spec check --item reports the item's lexicon problems as work ready does, and --reword-term warns as --term does
+- [r160] While an item holds a term that violates a rule whose severity is `error`, if the person validates this specification with the item, then the specification service shall fail the check and name the term and the rule.
+
+### [g161] A product actor of a job held here that no actor here plays is named
+- [r161] While this bounded context holds a job and the job has a product actor and no agent plays the product actor, when the person validates this specification, the specification service shall name the product actor and complete the request.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

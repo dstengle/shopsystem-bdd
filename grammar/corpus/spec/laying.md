@@ -274,7 +274,7 @@ While a batch holds an item and the item holds a model line that specifies an op
 shall [x8: service the batches service (constant), x10: service the laying service (constant), x12: corpus "the corpus of the bounded context the command runs in" (indexical)]
   while [x1: batch, x2: item, x3: model line, x4: operation, x5: requirement, x6: capability]
     in(x2, x1)
-    specify(subject: x3, object: x4)
+    specify#2(subject: x3, object: x4)
     in(x3, x2)
     of(x5, x6)
     govern(subject: x5, object: x4)
@@ -516,7 +516,7 @@ While an item holds a model line and the model line specifies an operation and t
 shall [x4: domain model "the domain model of this bounded context" (indexical), x6: service the batches service (constant), x8: service the laying service (constant)]
   while [x1: item, x2: model line, x3: operation]
     in(x2, x1)
-    specify(subject: x2, object: x3)
+    specify#2(subject: x2, object: x3)
     not
       in(x3, x4)
     not [x5: operation table]
@@ -852,4 +852,21 @@ shall [x2: area `watering` (parameter), x3: area `plots` (parameter), x7: servic
     keep(e2, subject: x9, object: x2)
     import#3(subject: x10, object: x3)
     keep(e3, subject: x9, object: x10)
+```
+
+## r49
+From: b850 r49.
+
+```reading
+While an item holds a capability and an area holds the capability, when the batches service lays the item in a workspace, the laying service shall keep the capability that specifies the service of the area.
+shall [x4: service the batches service (constant), x6: service the laying service (constant)]
+  while [x1: item, x2: capability, x3: area]
+    in(x2, x1)
+    in(x2, x3)
+  when [x5: workspace]
+    request(e1, laying.lay, subject: x4, object: x1, in: x5)
+  response [x7: service]
+    of(x7, x3)
+    specify(subject: x2, object: x7)
+    keep(e2, subject: x6, object: x2)
 ```
