@@ -1202,3 +1202,90 @@ shall [x1: agent the person (constant), x5: service the drafting service (consta
     refuse(e2, subject: x5, object: x6)
     name(e3, subject: x5, object: x2)
 ```
+
+## r79
+From: b688 r79.
+
+```reading
+When the person reinstates a model line in an item, the drafting service shall keep an item that does not retire the model line.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: model line, x3: item]
+    request(e1, drafting.reinstate model line, subject: x1, object: x2, in: x3)
+  response [x5: item]
+    not
+      retire#4(subject: x5, object: x2)
+    keep(e2, subject: x4, object: x5)
+```
+
+## r80
+From: b688 r80.
+
+```reading
+If the person reinstates a model line in an item that does not retire the model line, then the drafting service shall refuse the request and name the model line.
+shall [x1: agent the person (constant), x4: service the drafting service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: model line, x3: item]
+    not
+      retire#4(subject: x3, object: x2)
+    request(e1, drafting.reinstate model line, subject: x1, object: x2, in: x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r81
+From: b688 r81.
+
+```reading
+When the person reinstates a term in an item, the drafting service shall keep an item that does not retire the term.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: term, x3: item]
+    request(e1, drafting.reinstate term, subject: x1, object: x2, in: x3)
+  response [x5: item]
+    not
+      retire#4(subject: x5, object: x2)
+    keep(e2, subject: x4, object: x5)
+```
+
+## r82
+From: b688 r82.
+
+```reading
+If the person reinstates a term in an item that does not retire the term, then the drafting service shall refuse the request and name the term.
+shall [x1: agent the person (constant), x4: service the drafting service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: term, x3: item]
+    not
+      retire#4(subject: x3, object: x2)
+    request(e1, drafting.reinstate term, subject: x1, object: x2, in: x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r83
+From: b688 r83.
+
+```reading
+When the person removes a pack from an item, the drafting service shall keep an item that does not import the pack.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: pack, x3: item]
+    request(e1, drafting.remove import, subject: x1, object: x2, from: x3)
+  response [x5: item]
+    not
+      import#3(subject: x5, object: x2)
+    keep(e2, subject: x4, object: x5)
+```
+
+## r84
+From: b688 r84.
+
+```reading
+If the person removes a pack from an item that does not import the pack, then the drafting service shall refuse the request and name the pack.
+shall [x1: agent the person (constant), x4: service the drafting service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: pack, x3: item]
+    not
+      import#3(subject: x3, object: x2)
+    request(e1, drafting.remove import, subject: x1, object: x2, from: x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```

@@ -4,7 +4,8 @@ and before its model lines are laid, and after its model lines and before its mo
 
 The imports are backlog_import's. A model line's retirement takes the element (its header and members) out of the
 fence of `spec/model/<area>.md`, with each entry of any layer that means it (backlog_area_move's `means`); a term's
-retirement takes its entry out of its layer. The unlay puts each back where the file held it at the commit `base`
+retirement takes its entry out of its layer, and is met when a model line retirement of the item took the entry
+out with its element (b688). The unlay puts each back where the file held it at the commit `base`
 (the batch's base), else in the latest version git holds of it with it (backlog_area_move_unlay's `put_element` and
 `_put_bullets`)."""
 import subprocess
@@ -24,6 +25,14 @@ def _wanted(retirement):
         return lambda w, r: bool(r) and backlog_area_move.means(retirement.what, r)
     word, _, ref = retirement.what.partition(" → ")
     return lambda w, r: (w, r) == (word, ref)
+
+
+def _elemental(retirement, blocks):
+    """Whether a model line retirement of the item takes the term's entry out with its element (b688), so that the
+    term's retirement has nothing left to take out and is met."""
+    ref = retirement.what.partition(" → ")[2]
+    return any(r.kind == "model line" and backlog_area_move.means(r.what, ref)
+               for r in getattr(blocks, "retirements", ()))
 
 
 def _layers(into):
@@ -47,7 +56,7 @@ def lay(into, blocks, files):
         else:
             layers = [retirement.area]
         taken = [layer for layer in layers if laid._out_of_layer(into, layer, _wanted(retirement))]
-        if retirement.kind == "term" and not taken:
+        if retirement.kind == "term" and not taken and not _elemental(retirement, blocks):
             raise Refused("the layer %s holds no term %s to retire" % (retirement.area, retirement.what))
         files += [laid._rel("vocabulary", layer) for layer in taken]
 

@@ -159,6 +159,9 @@ service drafting
   operation import pack(pack, item)  outcomes: done | refused: no such pack
   operation retire model line(model line, item)  outcomes: done | refused: model line not in the domain model
   operation retire term(term, item)  outcomes: done | refused: term not in the vocabulary
+  operation reinstate model line(model line, item)  outcomes: done | refused: model line not retired by the item
+  operation reinstate term(term, item)  outcomes: done | refused: term not retired by the item
+  operation remove import(pack, item)  outcomes: done | refused: pack not imported by the item
 
 service context requests
   operation raise(context request, origin, thread, text, bounded context)

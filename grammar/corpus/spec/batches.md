@@ -1368,3 +1368,24 @@ shall [x3: agent the driver (constant), x4: service the batches service (constan
     instruction(x5) = `submit batch`
     return(e2, subject: x4, object: x5)
 ```
+
+## r142
+From: b688 r142.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item retires a model line that restates an element and the item retires a term that means the element, when the person opens a batch, the batches service shall keep an area that does not hold the term.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x6: agent the person (constant), x8: service the batches service (constant)]
+  while [x1: item, x3: model line, x4: element, x5: term]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    restate(subject: x3, object: x4)
+    retire#4(subject: x1, object: x3)
+    mean(subject: x5, object: x4)
+    retire#4(subject: x1, object: x5)
+  when [x7: batch]
+    request(e1, batches.open, subject: x6, object: x7)
+  response [x9: area]
+    not
+      in(x5, x9)
+    keep(e2, subject: x8, object: x9)
+```

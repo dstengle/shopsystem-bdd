@@ -271,3 +271,21 @@ capabilities, retirements, rewordings and chores.
 ### [g78] Retiring a term that no area holds is refused
 - [r78] If the person retires a term that no area holds in an item, then the drafting service shall refuse the request and name the term.
 
+### [g79] A model line reinstated in an item is no longer retired
+- [r79] When the person reinstates a model line in an item, the drafting service shall keep an item that does not retire the model line.
+
+### [g80] Reinstating a model line that the item does not retire is refused
+- [r80] If the person reinstates a model line in an item that does not retire the model line, then the drafting service shall refuse the request and name the model line.
+
+### [g81] A term reinstated in an item is no longer retired
+- [r81] When the person reinstates a term in an item, the drafting service shall keep an item that does not retire the term.
+
+### [g82] Reinstating a term that the item does not retire is refused
+- [r82] If the person reinstates a term in an item that does not retire the term, then the drafting service shall refuse the request and name the term.
+
+### [g83] A pack import removed from an item is no longer imported
+- [r83] When the person removes a pack from an item, the drafting service shall keep an item that does not import the pack.
+
+### [g84] Removing a pack that the item does not import is refused
+- [r84] If the person removes a pack from an item that does not import the pack, then the drafting service shall refuse the request and name the pack.
+

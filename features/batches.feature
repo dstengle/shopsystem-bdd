@@ -1014,3 +1014,20 @@ Feature: Batches
     When the driver polls the batch b1
     Then the batches service returns the batch step b2
     And the instruction of the batch step b2 is `submit batch`
+
+  @g142 @r142
+  Scenario: A batch opened takes out a retired term whose element a retired model line already took out
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a model line m1
+    And an element e1
+    And the model line m1 restates the element e1
+    And the item i1 retires the model line m1
+    And a term t1
+    And the term t1 means the element e1
+    And the item i1 retires the term t1
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service keeps the area a1
+    And the area a1 does not hold the term t1

@@ -252,3 +252,6 @@ when the change is merged.
 ### [g138] A batch with a failed task asks the driver to park the task's item
 - [r138] While a batch is `building` and a task of the batch is `failed`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `park item` and the task.
 
+### [g142] A batch opened takes out a retired term whose element a retired model line already took out
+- [r142] While an item is `ready` and the item meets the readiness bar and the item retires a model line that restates an element and the item retires a term that means the element, when the person opens a batch, the batches service shall keep an area that does not hold the term.
+

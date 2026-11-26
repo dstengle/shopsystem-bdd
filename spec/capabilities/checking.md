@@ -317,6 +317,9 @@ Restates: design-model-check#r13@0.29.
 ### [g112] A transition that only a forbidden set reaches is named as a transition no line causes
 - [r112] While a lifecycle has a transition and a requirement that forbids an act uses `set-attribute` and the transition and no operation performs the transition, when the person validates this specification, the specification service shall name the transition and complete the request.
 
+### [g113] A domain model object spelled by an imported pack's term reads as the term's kind
+- [r113] While this bounded context imports a pack and the pack has a term and the term spells an element and no term means the element and another element refers to the term, when the person validates this specification, the specification service shall complete the request.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.

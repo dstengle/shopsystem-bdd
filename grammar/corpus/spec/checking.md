@@ -1468,3 +1468,23 @@ shall [x5: thing `set-attribute` (parameter), x7: agent the person (constant), x
     name(e2, subject: x9, object: x2)
     complete(e3, subject: x9, object: x10)
 ```
+
+## r113
+From: b688 r113.
+
+```reading
+While this bounded context imports a pack and the pack has a term and the term spells an element and no term means the element and another element refers to the term, when the person validates this specification, the specification service shall complete the request.
+shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x7: agent the person (constant), x8: specification "the specification of this bounded context" (indexical), x9: service the specification service (constant), x10: request "the request the trigger makes" (indexical)]
+  while [x2: pack, x3: term, x4: element, x6: element]
+    import(subject: x1, object: x2)
+    of(x3, x2)
+    spell(subject: x3, object: x4)
+    not [x5: term]
+      mean(subject: x5, object: x4)
+    distinct(x6, x4)
+    refer#3(subject: x6, to: x3)
+  when
+    request(e1, specification.check, subject: x7, object: x8)
+  response
+    complete(e2, subject: x9, object: x10)
+```

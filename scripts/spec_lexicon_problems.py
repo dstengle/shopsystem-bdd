@@ -50,6 +50,7 @@ def problems(lexicon, outer=frozenset()):
     spec_relations' v_t4, v_t8 and v_t10, and spec_frames' v_t11, v_t12 and v_t13 (its frames may name `outer`, b199), as (code, term, message) sorted."""
     out = []
     kinds = lexicon.kind_names()
+    known = kinds | outer       # an imported pack's kind a term's kind too (b688)
     for t in lexicon.terms:
         if _unnamed(t):
             hint = _relabelled(t)
@@ -57,8 +58,8 @@ def problems(lexicon, outer=frozenset()):
                 t.where, "; " + hint if hint else "")))
         elif t.category in ("attribute", "condition", "relation") and not t.kinds:
             out.append(("v_t4", t.term, "%s: the %s names no kind" % (t.where, t.category)))
-        elif any(k not in kinds for k in t.kinds):
-            missing = ", ".join(k for k in t.kinds if k not in kinds)
+        elif any(k not in known for k in t.kinds):
+            missing = ", ".join(k for k in t.kinds if k not in known)
             out.append(("v_t4", t.term, "%s: %s is not a kind" % (t.where, missing)))
         elif t.category == "attribute" and (not t.values and not t.type or spec_value_kinds.mixed(t)):
             out.append(("v_t4", t.term, "%s: the attribute gives %s" % (t.where, spec_value_kinds.mixed(t) or "no Values")))
