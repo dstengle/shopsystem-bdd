@@ -1052,17 +1052,18 @@ shall [x1: agent the person (constant), x3: product "the product this bounded co
 From: b814 r68.
 
 ```reading
-While an item holds a requirement group that serves a job and no capability has the requirement group, if the person traces the job without an item, then the product service shall refuse the request and name the item.
-shall [x5: agent the person (constant), x6: service the product service (constant), x7: request "the request the trigger makes" (indexical)]
+While an item holds a requirement group that serves a job and no capability has a requirement group that serves the job, if the person traces the job without an item, then the product service shall refuse the request and name the item.
+shall [x6: agent the person (constant), x7: service the product service (constant), x8: request "the request the trigger makes" (indexical)]
   while [x1: item, x2: requirement group, x3: job]
     serve(subject: x2, object: x3)
     in(x2, x1)
-    not [x4: capability]
-      of(x2, x4)
+    not [x4: capability, x5: requirement group]
+      serve(subject: x5, object: x3)
+      of(x5, x4)
   if
-    request(e1, product.trace, subject: x5, object: x3)
+    request(e1, product.trace, subject: x6, object: x3)
     noparam(e1, item)
   response
-    refuse(e2, subject: x6, object: x7)
-    name(e3, subject: x6, object: x1)
+    refuse(e2, subject: x7, object: x8)
+    name(e3, subject: x7, object: x1)
 ```
