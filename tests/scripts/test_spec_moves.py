@@ -8,9 +8,9 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 
-import spec_moves  # noqa: E402
-import spec_read  # noqa: E402
-from plumbing.shop_refused import Refused  # noqa: E402
+import spec_moves
+import spec_read
+from plumbing.shop_refused import Refused
 
 OLD = """---
 id: capability/ex/{name}
@@ -126,5 +126,5 @@ def test_a_reused_name_renamed_to_0_37_keeps_its_old_ids_apart(tmp_path):
     spec_moves.apply(root, table(tmp_path, rows), tmp_path / "caps.tsv")
     assert spec_moves.resolve(root, "notes#r2") == "notes#r8"
     cap = spec_read.capability(root / "spec" / "capabilities" / "notes.md")
-    assert [r.id for g in cap.groups for r in g.requirements][0] == "r5"
+    assert next(r.id for g in cap.groups for r in g.requirements) == "r5"
     assert (root / "spec" / "capabilities" / "notes-0-37.md").read_text().count("| r2 | notes#r8 |") == 1
