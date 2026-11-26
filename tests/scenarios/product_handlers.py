@@ -208,13 +208,6 @@ def holds(step, w, name):
     raise AssertionError("no product holds a %s" % kind)
 
 
-def unsaid(step, w):
-    """Whether the step's last instance is a product actor no Given brought in and the request did not give (r62)."""
-    return bool(step.names) and step.names[-1] not in w["kinds"] and step.nps[-1:] in (
-        ["the product actor %s" % step.names[-1]], ["the `--actor` option"]) and "product actor" in step.context.get(
-        "absent", [])
-
-
 def then(step):
     """This product holds x (in the kept file); `spec` writes x (one commit of the file, a change from the head before
     the run, x in it); `spec` refuses (an error exit, nothing changed); `spec` names x (its value, and its option)."""
@@ -235,9 +228,6 @@ def then(step):
         assert not git(step.repo, "status", "--porcelain", "--", REL).strip()
     elif step.term == "name" and not step.names:
         assert REL in said, said           # this product: the product file
-    elif step.term in ("name", "has") and unsaid(step, w):     # the job's product actor the request did not give
-        assert done.returncode != 0 and "--actor" in said, said    # (r62): named by its option, the job kept nowhere
-        assert step.term == "name" or value(w, step.names[0]) not in kept(step).get("jobs", {}), kept(step)
     elif step.term == "name":
         name = step.names[-1]
         option = {"job statement": "--statement", "product actor": "--actor", "need": "--needs"}[w["kinds"][name]]
