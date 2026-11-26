@@ -311,6 +311,12 @@ Restates: design-model-check#r13@0.29.
 ### [g110] A capability whose requirement group serves a job is not unserved
 - [r110] While this bounded context has a job and a requirement group of a capability serves the job, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.
 
+### [g111] An operation requested only by a response's request with no parameter is requested
+- [r111] While a requirement has a response that uses an operation and no parameter and no requirement governs the operation, when the person validates this specification, the specification service shall complete the request.
+
+### [g112] A transition that only a forbidden set reaches is named as a transition no line causes
+- [r112] While a lifecycle has a transition and a requirement that forbids an act uses `set-attribute` and the transition and no operation performs the transition, when the person validates this specification, the specification service shall name the transition and complete the request.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.
