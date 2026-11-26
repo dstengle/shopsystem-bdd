@@ -22,4 +22,4 @@ def test_model_check_says_it_is_spec_now_and_answers_as_spec_check():
 
 def test_spec_is_the_program_name():
     done = run("spec", "--help")
-    assert done.returncode == 0 and done.stdout.startswith("usage: spec"), done.stdout
+    assert done.returncode == 0 and done.stdout.startswith("usage: shop spec"), done.stdout
