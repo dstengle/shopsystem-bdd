@@ -119,9 +119,10 @@ def _fresh(root, picked):
     return unbound or ((root / "spec" / "model").is_dir() and not (root / "spec" / "adapters" / "cli.toml").exists())
 
 
-def text(root, batch, picked, unwritten=()):
+def text(root, batch, picked, unwritten=(), superseded=()):
     """The batch brief of `batch`, whose tasks are the items `picked`, in order; `unwritten`, each catalogue problem
-    that kept the lay from writing it (batch_catalogues, b333)."""
+    that kept the lay from writing it (batch_catalogues, b333); `superseded`, each decision the lay superseded
+    (decision_successor's `said`, b741)."""
     root, push = Path(root).resolve(), push_prefix(root)
     out = ["# %s: the batch brief" % batch.name, "",
            "You run %s, from `shop work batch resume` until its pull request is `awaiting-merge`, as the one fresh agent "
@@ -146,6 +147,8 @@ def text(root, batch, picked, unwritten=()):
              "reads it against the line and corrects it."), ""]
     out += ["- Not written, for the task of the item that brings it to mend: %s" % p for p in unwritten]
     out += [""] if unwritten else []
+    out += ["- Superseded by the lay, its retirement leaving the decision unenforced: %s" % s for s in superseded]
+    out += [""] if superseded else []
     out += ["## Push", "",
             ("Run every git push and gh call as `%s <command>`; `work` pushes its own commits." % push) if push else
             "`.shop/delivery.toml` gives no `[batch] push`: git push and gh run as they are; `work` pushes its own "
@@ -167,9 +170,9 @@ def text(root, batch, picked, unwritten=()):
     return "\n".join(out) + "\n"
 
 
-def write(root, batch, picked, unwritten=()):
+def write(root, batch, picked, unwritten=(), superseded=()):
     """The batch brief of `batch` written; its path."""
     where = path(root, batch.name)
     where.parent.mkdir(parents=True, exist_ok=True)
-    where.write_text(text(root, batch, picked, unwritten), encoding="utf-8")
+    where.write_text(text(root, batch, picked, unwritten, superseded), encoding="utf-8")
     return where

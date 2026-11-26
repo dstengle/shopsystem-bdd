@@ -26,6 +26,7 @@ import batch_laid
 import batch_pick
 import batch_reached
 import batch_timings
+import decision_successor
 import features_generate
 import readiness_bound
 import shop_files
@@ -46,11 +47,13 @@ def cites(items):
     return "".join("\nItem: %s" % i.name for i in items)
 
 
-def lay_lines(tree, picked, unwritten=None, command="work batch start"):
+def lay_lines(tree, picked, unwritten=None, command="work batch start", superseded=None):
     """Every picked item's lines laid into the worktree's `spec/`, their ids appended to `unbuilt:`, the feature of
     each service capability laid written again, and the bookkeeping of the lay (b333): the corpus's blocks
     (spec_corpus_write), the features and corpus blocks the lay's change of grammar 4's inputs reaches (batch_reached, b707), spec/index.md's Composition (spec_composition, b606), the adapter contracts annotated (b379) and the catalogues (batch_catalogues), a catalogue
-    that cannot be written added to `unwritten`; a refusal said as `command`'s (b486); the paths changed."""
+    that cannot be written added to `unwritten`; each accepted decision a retirement leaves unenforced superseded
+    (decision_successor, b741), `(item, path, old id)` added to `superseded`; a refusal said as `command`'s (b486);
+    the paths changed."""
     ids, files, before = {}, [], batch_reached.digest(tree)
     for item in picked:
         backlog_lines.lay_onto(tree, item, files)
@@ -62,6 +65,7 @@ def lay_lines(tree, picked, unwritten=None, command="work batch start"):
         path.write_text(spec_unbuilt.with_unbuilt(path.read_text(), listed))
         changed += _generated(tree, capability, command)
     changed += spec_corpus_write.write(tree, picked)
+    changed += decision_successor.lay(tree, picked, superseded)
     changed += batch_reached.regenerated(tree, before, set(ids))
     changed += spec_composition.write(tree)
     changed += _annotated(tree)
@@ -100,7 +104,8 @@ def _generated(tree, capability, command):
 def unlay_lines(tree, items, command, base=None):
     """Every item's lines taken out of the worktree's `spec/` and their ids out of `unbuilt:`, and the feature of each
     service capability changed written again (plan 4 review, B1), spec/index.md's Composition again, the operation tables as the commit `base` (the
-    batch's base, b479) held them; the paths changed."""
+    batch's base, b479) held them, each decision the items' lay superseded accepted again and its successor out (b741);
+    the paths changed."""
     changed = []
     for item in items:
         ids = backlog_lines.ids(backlog_lines.read(item, backlog_items.rel_of(item.name)))
@@ -109,6 +114,7 @@ def unlay_lines(tree, items, command, base=None):
             path.write_text(spec_unbuilt.without_unbuilt(
                 path.read_text(), [i.split("#")[1] for i in ids if i.split("#")[0] == capability]))
             changed += _generated(tree, capability, command)
+    changed += decision_successor.unlay(tree, items)
     changed += spec_composition.write(tree)
     return list(dict.fromkeys(changed))
 
@@ -167,9 +173,9 @@ def _build(root, base, picked, returned):
     tree = trees_dir(root) / name
     try:
         add_tree(root, tree, name, forked)
-        unwritten = []
+        unwritten, superseded = [], []
         before = readiness_bound.before(tree)       # the base's unhandled outcomes are no picked item's (b725)
-        changed = lay_lines(tree, picked, unwritten)
+        changed = lay_lines(tree, picked, unwritten, superseded=superseded)
         broken = violating(tree, picked, before) or batch_laid.passing(root, tree, picked)
         if broken:
             raise _Broken(broken)
@@ -189,8 +195,9 @@ def _build(root, base, picked, returned):
         if git(root, "branch", "--list", name).stdout.strip():
             git(root, "branch", "-D", name)
         raise
-    batch_driver.write(root, batch, picked, unwritten)
-    return batch
+    said = decision_successor.said(superseded)
+    batch_driver.write(root, batch, picked, unwritten, said)
+    return batch, said
 
 
 def start(root):
@@ -215,9 +222,9 @@ def start(root):
         pick = batch_pick.pick(root)
         while pick.picked:
             try:
-                batch = _build(root, base, pick.picked, pick.returned)
+                batch, said = _build(root, base, pick.picked, pick.returned)
                 batch_timings.kept(root, batch.name, "opening", time.monotonic() - began)
-                return batch, pick
+                return batch, pick._replace(superseded=tuple(said))
             except _Broken as err:          # laid again without the items whose lines broke a rule (b478)
                 broken = err.args[0]
             for item, reasons in broken:
@@ -237,6 +244,7 @@ def said(root, batch, pick):
         out.append("%s building: %s" % (batch.name, ", ".join(
             "%s %s" % (t.task, backlog_items.label(i)) for t, i in zip(batch.tasks, pick.picked))))
         out.append("batch brief: %s" % batch_driver.path(root, batch.name))
+        out += list(pick.superseded)
     else:
         out.append("no batch started")
     out += ["%s -> shaped: %s" % (backlog_items.label(i), r[0]) for i, r in pick.returned]
