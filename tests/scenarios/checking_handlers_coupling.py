@@ -1,13 +1,16 @@
-"""Handlers of checking's coupling report scenarios (r144-r146, b612), each a `work_queue_world.local` that takes only a
+"""Handlers of checking's coupling report scenarios (r144-r147, b612, b744), each a `work_queue_world.local` that takes only a
 step of a scenario of one of its groups (`mine`). The world is the domain-model fixture (tests/scripts/fixtures/
 domain-model/: the area notes, its vocabulary and the notebook capability's lines) with a second area beside it,
 `binder`, written at the When: its model (`spec/model/binder.md`), whose object binder holds notes (an element that
 refers to the notes word "note", r145) and whose attribute size has the value high, its words (`spec/vocabulary/
 binder.md`: "high", a word notes defines too, r144; read before notes', so that notes holds the word's second entry),
-and its capability `shelving`, whose line says the notes word "note" (r146).
+and its capability `shelving`, whose line says the notes word "note" (r146); when a Given brings in a Python file
+(r147), `src/notes_store.py`, `src/binder_shelf.py` that imports it and `.shop/modules.toml` declaring each area's
+files.
 
 The Givens keep what they say (`world`): each scenario's area a2 is notes, the area each coupling is of, and a1 is
-binder; the word w1 is `high`, the element e2 `object note`, the requirement r1 `shelving#r1`. The When runs `spec
+binder; the word w1 is `high`, the element e2 `object note`, the requirement r1 `shelving#r1`, and the Python file p2 `src/notes_store.py`, named by the coupling returned as imported by
+`src/binder_shelf.py`. The When runs `spec
 coupling --json`; the Thens read the couplings of the envelope's content."""
 import json
 import shutil
@@ -17,9 +20,16 @@ from pathlib import Path
 W = sys.modules["shop_work_queue_world"]
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURE = ROOT / "tests" / "scripts" / "fixtures" / "domain-model"
-GROUPS = {"g144", "g145", "g146"}
+GROUPS = {"g144", "g145", "g146", "g147"}
 SAYS = {"word": "high", "element": "object note", "requirement": "shelving#r1"}
 AREAS = {"a1": "binder", "a2": "notes"}
+IMPORT = "src/binder_shelf.py -> src/notes_store.py"
+MODULES = """[notes]
+modules = ["src/notes_*.py"]
+
+[binder]
+modules = ["src/binder_*.py"]
+"""
 
 MODEL = """---
 id: model/example.org/fixture/binder
@@ -95,7 +105,7 @@ def world(step):
 
 def given_instance(step):
     if not mine(step) or step.kind not in ("word", "term", "area", "element", "coupling", "capability",
-                                           "requirement"):
+                                           "requirement", "Python file"):
         return False
     world(step)["kinds"][step.names[0]] = step.kind
 
@@ -103,7 +113,7 @@ def given_instance(step):
 def given_state(step):
     """`the area a2 has the coupling c1`: the coupling is of a2; the other states (has, holds, refers to, means,
     uses) are the world as written."""
-    if not mine(step) or step.term not in ("has", "holds", "refer", "mean", "use"):
+    if not mine(step) or step.term not in ("has", "holds", "refer", "mean", "use", "import"):
         return False
     w = world(step)
     if step.term == "has" and w["kinds"].get(step.names[1]) == "coupling":
@@ -123,6 +133,19 @@ def build(step):
     row = "| notes | core | notebook |\n"
     assert row in index.read_text(), index.read_text()
     index.write_text(index.read_text().replace(row, row + "| binder | supporting | shelving |\n"))
+    if "Python file" in world(step)["kinds"].values():
+        code(repo)
+
+
+def code(repo):
+    """r147: binder's Python file imports notes', each area's files declared in `.shop/modules.toml`, committed (a
+    Python file is a tracked one)."""
+    (repo / "src").mkdir(exist_ok=True)
+    (repo / "src" / "notes_store.py").write_text("NOTES = []\n")
+    (repo / "src" / "binder_shelf.py").write_text("import notes_store\n")
+    (repo / ".shop").mkdir(exist_ok=True)
+    (repo / ".shop" / "modules.toml").write_text(MODULES)
+    W.init(repo)
 
 
 def runs(step):
@@ -160,13 +183,16 @@ def then_returns(step):
 
 def then_does(step):
     """`the coupling c1 holds the word w1`, `... the requirement r1`; `the specification service names the element
-    e2`: the coupling it returned names it."""
+    e2`, `... the Python file p2`: the coupling it returned names it, a Python file in its imports."""
     if not mine(step) or "coupling" not in step.context or step.term not in ("holds", "name"):
         return False
     w = world(step)
     owner, thing = (step.names[0], step.names[1]) if step.term == "holds" else (w["returned"], step.names[0])
     kind = w["kinds"][thing]
     found = coupling(step, owner)
+    if kind == "Python file":
+        assert IMPORT in found.get("imports", []), found
+        return
     assert SAYS[kind] in found[kind + "s"], found
 
 

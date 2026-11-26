@@ -6,17 +6,20 @@ element of the other's model refers to by its word (a relation's or an object at
 operation's object or a parameter naming an object, the operation an event is raised by), named by its kind and id
 (r145, `elements`); each requirement of a capability of the other area whose logical form uses a term only the area's
 layer holds (r146, `requirements`). The couplings most first (`couplings`), the content of a `returned` response
-printed as text (`text`) or as the envelope under `--json`. Code imports are not read (b744)."""
+printed as text (`text`) or as the envelope under `--json`; each tracked Python file of the other area that imports
+one of the area's, the module groups declared in `.shop/modules.toml` (r147, b744, decision 0151: spec_coupling_imports,
+`imports`, each `<importer> -> <imported>`)."""
 import re
 from collections import defaultdict
 from pathlib import Path
 
 from domain_envelope import Response
 
+KINDS = ("words", "elements", "requirements", "imports")
+
 
 def _coupling(found, area, by):
-    return found.setdefault((area, by), {"area": area, "by": by, "words": set(), "elements": set(),
-                                         "requirements": set()})
+    return found.setdefault((area, by), {"area": area, "by": by, **{k: set() for k in KINDS}})
 
 
 def _words(root, found):
@@ -93,6 +96,13 @@ def _requirements(root, found):
                         _coupling(found, other, area)["requirements"].add("%s#%s" % (cap.name, req.id))
 
 
+def _imports(root, found):
+    """r147: a Python file of an area that imports another area's, the coupling of the imported file's area."""
+    import spec_coupling_imports
+    for area, by, said in spec_coupling_imports.imports(root):
+        _coupling(found, area, by)["imports"].add(said)
+
+
 def _natural(name):
     """`batches#r9` before `batches#r10`."""
     return [int(p) if p.isdigit() else p for p in re.split(r"(\d+)", name)]
@@ -107,10 +117,9 @@ def couplings(root):
         _words(root, found)
         _elements(root, found)
         _requirements(root, found)
-    out = [{**c, **{k: sorted(c[k], key=_natural) for k in ("words", "elements", "requirements")}}
-           for c in found.values()]
-    return sorted(out, key=lambda c: (-sum(len(c[k]) for k in ("words", "elements", "requirements")),
-                                      c["area"], c["by"]))
+        _imports(root, found)
+    out = [{**c, **{k: sorted(c[k], key=_natural) for k in KINDS}} for c in found.values()]
+    return sorted(out, key=lambda c: (-sum(len(c[k]) for k in KINDS), c["area"], c["by"]))
 
 
 def text(found):
@@ -119,9 +128,9 @@ def text(found):
     lines = []
     for c in found:
         counts = ", ".join("%d %s" % (len(c[k]), k[:-1] if len(c[k]) == 1 else k)
-                           for k in ("words", "elements", "requirements"))
+                           for k in KINDS)
         lines.append("%s by %s: %s" % (c["area"], c["by"], counts))
-        lines += ["  %s: %s" % (k[:-1], ", ".join(c[k])) for k in ("words", "elements", "requirements") if c[k]]
+        lines += ["  %s: %s" % (k[:-1], ", ".join(c[k])) for k in KINDS if c[k]]
     return "\n".join(lines) + "\n"
 
 
