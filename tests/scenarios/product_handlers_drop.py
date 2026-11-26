@@ -9,7 +9,9 @@ bounded context (`bounded-context/example.org/<b>`) the Givens bring in, with th
 a bounded context no Given says does not hold it is held by it (r50's world: r51's If takes precedence where it does
 not hold the job). The command is run
 with the values the instances stand for: `spec unassign <job> --from <bounded context>`, `spec drop job|actor|
-subdomain|context <it>`. The Thens read the kept product file: the bounded context, or this product, not holding the
+subdomain|context <it>`. What a Given says this product does not hold is left out of it (r64-r67, b812), and a
+bounded context with the id i1 a Given gives it has that id, `example.org/<i>` when a Given says it does not conform
+to the context id form (r63). The Thens read the kept product file: the bounded context, or this product, not holding the
 thing; the product service not keeping it (one commit of the product file, the thing out of the bounded context or
 the product); what a refusal names (an error exit, the value)."""
 import hashlib
@@ -37,11 +39,13 @@ def world(step):
 
 
 def value(w, name):
-    kind = w["kinds"].get(name)
+    kind, p = w["kinds"].get(name), w.get("p", {})
     if kind == "product actor":
         return "the %s user" % name
-    if kind == "bounded context":
-        return "bounded-context/example.org/%s" % name
+    if kind == "bounded context" and name in p.get("context ids", {}):
+        return value(w, p["context ids"][name])
+    if kind in ("bounded context", "id"):
+        return ("example.org/%s" if name in p.get("unformed", ()) else "bounded-context/example.org/%s") % name
     return name
 
 
@@ -50,14 +54,20 @@ def given_rel(step):
     j1`, `the job j1 needs the need n1`, `the job j1 has the product actor p1`: kept as (verb, a, b)."""
     if not ours(step) or step.term not in ("hold", "holds", "address", "serve", "need", "has", "have"):
         return False
+    if [P.world(step)["kinds"].get(n) for n in step.names[:2]] == ["bounded context", "id"]:
+        return False        # `the bounded context b1 has the id i1`: product_handlers_map's (r63)
     verb = {"holds": "hold", "addresses": "address", "serves": "serve", "needs": "need", "has": "have"}
     world(step)["rels"].append((verb.get(step.term, step.term), *step.names[:2]))
 
 
 def given_not(step):
-    """`the bounded context b1 does not hold the job j1`: the job not assigned to it."""
+    """`the bounded context b1 does not hold the job j1`: the job not assigned to it; `this product does not hold the
+    job j1`: the job left out of the product (r64-r67, b812)."""
     if not ours(step) or step.term not in ("hold", "holds"):
         return False
+    if len(step.names) == 1:
+        P.world(step)["outside"].add(step.names[0])
+        return None
     world(step).setdefault("unheld", []).append(tuple(step.names[:2]))
 
 
@@ -65,6 +75,7 @@ def held(w):
     """The product the Givens describe."""
     kinds, rels = w["kinds"], w["rels"]
     product = {"id": "example.org", "actors": [], "jobs": {}, "subdomains": {}, "contexts": {}}
+    kinds = {name: kind for name, kind in kinds.items() if name not in w["p"]["outside"]}
     for name, kind in kinds.items():
         if kind == "product actor":
             product["actors"].append(value(w, name))
@@ -94,7 +105,8 @@ def runs(step):
     if not ours(step) or not step.term.startswith(("`spec unassign", "`spec drop")):
         return False
     w = world(step)
-    w["kinds"] = P.world(step)["kinds"]
+    w["p"] = P.world(step)
+    w["kinds"] = w["p"]["kinds"]
     repo, kinds = step.repo, {w["kinds"].get(n): n for n in step.names}
     if step.term.startswith("`spec unassign"):
         pair = (kinds["bounded context"], kinds["job"])
