@@ -12,7 +12,9 @@ now` finding no commit cites yet), `park item` (a failed task), `fix task` (ever
 run of `work batch review` failed: the task of the item whose change broke it, batch_broken, b696; or two tasks'
 branches conflict in a file, which `work batch review` would refuse to merge: the later task, whose item's subagent
 merges the earlier branch and settles it, and the files, batch_merge's `clashes`, b710), `look at failure`
-(the same, but the tests are of no task's item: the failed tests and no task, b703) or `stop`. One step is picked,
+(the same, but the tests are of no task's item: the failed tests and no task, b703) or `stop`; a fix of the refused
+submit (a commit on a task's branch since it, batch_broken's `fixed`, b713) makes it `submit batch` in place of `fix
+task` for the failure and `look at failure`. One step is picked,
 the first that applies in this order: stop, review change, fix finding, park item, finish task, build task, prepare
 task, fix task (a conflict first), look at failure, submit batch (`pick`). Only the tasks of an item still `in-batch` count; a building
 batch with none of them stops. Each step names the command its result is reported through (`report`). The step is
@@ -160,9 +162,10 @@ def poll(root, name):
     tasks = [t for t in batch.tasks if _in_batch(root, t)]
     unfixed = _unfixed(root, batch) if batch.status == "building" else []
     done = batch.status == "building" and tasks and all(t.status == "done" for t in tasks) and not unfixed
-    broken = batch_broken.task_of(root, batch, tasks) if done else None
+    unfixed_run = done and not batch_broken.fixed(root, batch, tasks)     # a fix is submitted (b713)
+    broken = batch_broken.task_of(root, batch, tasks) if unfixed_run else None
     clash = _conflict(root, tasks) if done else None
-    kept = bool(done and broken is None and batch_broken.failed(root, batch))
+    kept = bool(unfixed_run and broken is None and batch_broken.failed(root, batch))
     instruction, picked, finding = pick(batch, tasks, unfixed, _built(root, batch, tasks), broken, kept, clash)
     folder = None
     if instruction == "review change":
