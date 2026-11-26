@@ -85,15 +85,17 @@ def _done(items):
 
 
 class Lines:
-    """The facts of the lines of one context: its model and its lexicon's kinds and attributes by their elements."""
+    """The facts of the lines of one context: its model, its lexicon's kinds and attributes by their elements, and
+    the operation each sense of a verb names, the senses grammar 4's `verbs` (spec_rgl_vocab's Verbs) number."""
 
-    def __init__(self, model, lexicon):
+    def __init__(self, model, lexicon, verbs):
         self.model = model
         self.objects = {t.term: t.element.split(".", 1)[1] for t in lexicon.of("kind") if t.element}
         self.attrs = {(k, t.term): t.element.rsplit(".", 1)[1] for t in lexicon.of("attribute") if t.element
                       for k in t.kinds}
-        self.operations = {}     # (verb, sense) -> the operation it names, senses numbered as spec_logic_vocab's
-        for t in lexicon.of("event"):
+        self.operations = {}     # (verb, sense) -> the operation it names, senses numbered as spec_lf_clause's
+        for v in verbs:          # in grammar 4's order: a request pack's entry kept beside the context's first (b847)
+            t = v.term
             sense = 1 + sum(1 for k in self.operations if k[0] == t.term and k[1] is not None)
             self.operations[(t.term, sense)] = t.operation
             self.operations[(t.term, None)] = t.operation     # with no sense, the verb's last, as spec_lf_ids'

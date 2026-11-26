@@ -30,8 +30,8 @@ REFERS = ("compensated by",)     # the properties of domain_model_props that ref
 def _facts(root, ctx):
     """{line id: [fact]} of each parsed line of the context, and the model."""
     model = domain_model.load(root)
-    lines = model_domain_lines.Lines(model, spec_lexicon.read(root))
     rgl, ports = spec_grammar4.load(root)[0], model_bound.ported(model)
+    lines = model_domain_lines.Lines(model, spec_lexicon.read(root), rgl.verbs)
     areas = {}
     for name in ctx.caps:
         path = root / "spec" / "capabilities" / ("%s.md" % name)

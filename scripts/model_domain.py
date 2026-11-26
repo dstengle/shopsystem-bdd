@@ -112,7 +112,8 @@ class DomainReading:
         form = spec_lf.form(vocab, parsed.tree)
         if getattr(self, "_lines", None) is None:
             import spec_lexicon
-            self._lines = model_domain_lines.Lines(domain_model.load(self.root), spec_lexicon.read(self.root))
+            self._lines = model_domain_lines.Lines(domain_model.load(self.root), spec_lexicon.read(self.root),
+                                                   vocab.verbs)
         for name, *args in self._lines.facts(ident, form):
             self.fact(name, *args)
         area = frontmatter(path.read_text())[0].get("area")
