@@ -1173,3 +1173,37 @@ Feature: Batches
     Then the batches service returns the batch step b2
     And the instruction of the batch step b2 is `look at failure`
     And the batches service returns the scenario s1
+
+  @g155 @r155
+  Scenario: Parking an item keeps the imports another item laid on the same driven port
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And an area a1
+    And the kind of the area a1 is `port`
+    And a capability c1
+    And the item i1 holds the capability c1
+    And the area a1 holds the capability c1
+    And an area a2
+    And the kind of the area a2 is `supporting`
+    And the area a1 imports the area a2
+    And an item i2
+    And the batch b1 holds the item i2
+    When the person parks the item i2
+    Then the batches service keeps the area a2
+
+  @g156 @r156
+  Scenario: Amending an item takes out the imports of a driven port its lines no longer need
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And the kind of `registry` is `port`
+    And `registry` holds no capability
+    And `registry` imports `tracking`
+    When the person amends the item i1
+    Then the batches service keeps `registry`

@@ -372,6 +372,7 @@ object area
   relations: holds → operation | capability (many)
   relations: holds → lifecycle (many)
   relations: holds → model line | term | element (many)
+  relations: imports → area (many)
 
 object group title kind of text
 

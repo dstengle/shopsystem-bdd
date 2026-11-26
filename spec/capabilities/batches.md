@@ -7,7 +7,7 @@ area: execution
 specifies: object batch, object task, service batches
 language: codified-2
 retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146]
-unbuilt: []
+unbuilt: [r155, r156]
 ---
 
 # Batches
@@ -269,4 +269,10 @@ when the change is merged.
 
 ### [g154] A batch whose submit broke a scenario of no item asks the driver to look at the failure
 - [r154] While a batch is `building` and every task of the batch is `done` and a scenario breaks in the workspace of the batch and no scenario of an item in the batch breaks in the workspace of the batch, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `look at failure` and the scenario.
+
+### [g155] Parking an item keeps the imports another item laid on the same driven port
+- [r155] While an item in a batch is `in-batch` and the kind of an area is `port` and the area holds a capability that the item holds and the area imports an area whose kind is `supporting`, when the person parks another item in the batch, the batches service shall keep the area.
+
+### [g156] Amending an item takes out the imports of a driven port its lines no longer need
+- [r156] While an item in a batch is `in-batch` and a task of the item is `running` and the kind of the `registry` area is `port` and the item holds no capability that the `registry` area holds and the `registry` area imports the `tracking` area, when the person amends the item, the batches service shall keep the `registry` area.
 
