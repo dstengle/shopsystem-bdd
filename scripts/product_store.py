@@ -1,35 +1,81 @@
 """Where the product layer is kept (b602; decision 0102): the product file `.shop/product/product.toml` of the shop,
 written and committed only by `spec product`, `spec actor` and `spec job` (`kept`). Its form: `id` and `purpose`,
 `actors = [...]`, and a table `[jobs."<id>"]` of each job with its `actors`, `statement` and `needs` (`render`,
-`read`); a file that does not read refused naming it."""
+`read`); a product detail, any other key or table of the file, kept whole by `read` and written back by `render` after
+the parts of the form (b673, product r8-r10); a file that does not read refused naming it, and one whose parts are not
+of their types (its jobs no table of jobs, its actors no list of texts) refused as product not in the product form,
+naming it (r11-r13)."""
+import datetime
 import tomllib
 from pathlib import Path
 
 import shop_files
 from product_layer import empty
 from shop_refused import Refused
-from toml_edit import literal
+from toml_edit import literal, name
 
 REL = ".shop/product/product.toml"
 HEADER = "# The product this bounded context belongs to; written by `spec product`, `spec actor` and `spec job`.\n"
 
 
+def _literal(value):
+    """A value as a TOML literal, a date or a time among them."""
+    if isinstance(value, (datetime.date, datetime.time)):
+        return value.isoformat()
+    if isinstance(value, list):
+        return "[%s]" % ", ".join(_literal(v) for v in value)
+    if isinstance(value, dict):
+        return "{ %s }" % ", ".join("%s = %s" % (name((k,)), _literal(v)) for k, v in value.items())
+    return literal(value)
+
+
+def _table(path, data, known=()):
+    """The lines of the table `path`: its known keys, then its other values, then each table under it."""
+    keys = list(known) + [k for k in data if k not in known]
+    lines = ["%s = %s\n" % (name((k,)), _literal(data[k])) for k in keys if not isinstance(data.get(k), dict)]
+    for key in [k for k in keys if isinstance(data.get(k), dict)]:
+        lines += ["\n[%s]\n" % name(path + (key,))] + _table(path + (key,), data[key])
+    return lines
+
+
 def render(product):
-    """The product file's text of a product (a part it lacks left out)."""
-    lines = [HEADER]
-    for key in ("id", "purpose"):
-        if product.get(key):
-            lines.append("%s = %s\n" % (key, literal(product[key])))
-    lines.append("actors = %s\n" % literal(product.get("actors", [])))
+    """The product file's text of a product (an id or a purpose it lacks left out), every other key of it, a product
+    detail, written back after the parts of the product form it sits beside."""
+    rest = {k: v for k, v in product.items() if k not in ("id", "purpose", "actors", "jobs")}
+    head = {k: product.get(k) for k in ("id", "purpose") if product.get(k)}
+    head["actors"] = product.get("actors", [])
+    lines = [HEADER] + _table((), {**head, **{k: v for k, v in rest.items() if not isinstance(v, dict)}})
     for ident, job in product.get("jobs", {}).items():
-        lines.append("\n[jobs.%s]\n" % literal(ident))
-        lines += ["%s = %s\n" % (key, literal(job.get(key, [] if key != "statement" else ""))) for key in
-                  ("actors", "statement", "needs")]
-    return "".join(lines)
+        job = {"actors": [], "statement": "", "needs": [], **job}
+        lines += ["\n[jobs.%s]\n" % literal(ident)] + _table(("jobs", ident), job, ("actors", "statement", "needs"))
+    return "".join(lines + _table((), {k: v for k, v in rest.items() if isinstance(v, dict)}))
+
+
+def _formed(data):
+    """Why the parsed file is not of the product form, or None."""
+    for key in ("id", "purpose"):
+        if not isinstance(data.get(key, ""), str):
+            return "its %s is no text" % key
+    if not _texts(data.get("actors", [])):
+        return "its actors are no list of texts"
+    if not isinstance(data.get("jobs", {}), dict):
+        return "its jobs are no table of jobs"
+    for ident, job in data.get("jobs", {}).items():
+        if not isinstance(job, dict):
+            return "its job %s is no table" % ident
+        if not (_texts(job.get("actors", [])) and _texts(job.get("needs", []))
+                and isinstance(job.get("statement", ""), str)):
+            return "its job %s's actors, statement or needs are not of their types" % ident
+    return None
+
+
+def _texts(value):
+    return isinstance(value, list) and all(isinstance(v, str) for v in value)
 
 
 def read(root):
-    """The product kept in `root`, or an empty one with no file."""
+    """The product kept in `root`, every key of its file kept, or an empty one with no file; a file not of the product
+    form refused naming it."""
     path = Path(root) / REL
     if not path.is_file():
         return empty()
@@ -37,9 +83,12 @@ def read(root):
         data = tomllib.loads(path.read_text(encoding="utf-8"))
     except tomllib.TOMLDecodeError as why:
         raise Refused("%s: %s" % (REL, why)) from None
-    jobs = {ident: {"actors": list(job.get("actors", [])), "statement": job.get("statement", ""),
-                    "needs": list(job.get("needs", []))} for ident, job in data.get("jobs", {}).items()}
-    return {"id": data.get("id"), "purpose": data.get("purpose"), "actors": list(data.get("actors", [])),
+    why = _formed(data)
+    if why:
+        raise Refused("{names} is not of the product form (%s)" % why, reason="product not in the product form",
+                      names=["file:%s" % REL])
+    jobs = {ident: {"actors": [], "statement": "", "needs": [], **job} for ident, job in data.get("jobs", {}).items()}
+    return {**data, "id": data.get("id"), "purpose": data.get("purpose"), "actors": list(data.get("actors", [])),
             "jobs": jobs}
 
 
