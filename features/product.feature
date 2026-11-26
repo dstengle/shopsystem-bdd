@@ -170,18 +170,6 @@ Feature: Product
     Then the product service refuses this request
     And the product service names the job j1
 
-  @g18 @r18
-  Scenario: A bounded context a shop keeps is declared in the domain map
-    Given a bounded context b1
-    And an id i1
-    And a subdomain s1
-    And a shop s2
-    When the person declares the bounded context b1 with the id i1 and the subdomain s1 and the shop s2
-    Then the shop s2 has the product p1
-    And the product p1 holds the bounded context b1
-    And the product service keeps the bounded context b1
-    And the product service completes this request
-
   @g19 @r19
   Scenario: A third-party provider is declared as a bounded context no shop keeps
     Given a bounded context b1
@@ -373,3 +361,16 @@ Feature: Product
     When the person traces the job j1
     Then the coordination of the job j1 is `saga`
     And the product service returns the job j1
+
+  @g34 @r34
+  Scenario: A bounded context a shop keeps is declared in the product the shop has
+    Given a product p1
+    And a shop s1
+    And the shop s1 has the product p1
+    And a bounded context b1
+    And an id i1
+    And a subdomain s2
+    When the person declares the bounded context b1 with the id i1 and the subdomain s2 and the shop s1
+    Then the product p1 holds the bounded context b1
+    And the product service keeps the bounded context b1
+    And the product service completes this request

@@ -44,6 +44,15 @@ def test_a_refused_submit_of_no_item_asks_to_look_at_the_failure():
     assert batch_next.report(b, "look at failure", [], None).endswith("then shop work batch review batch-1")
 
 
+def test_two_task_branches_that_conflict_ask_for_the_later_task_before_a_kept_failure():
+    b = batch("building", "done", "done")
+    clash = (b.tasks[1], b.tasks[0], ["src/shared.txt"])
+    assert batch_next.pick(b, b.tasks, [], set(), b.tasks[0], True, clash)[:2] == ("fix task", [b.tasks[1]])
+    assert batch_next.report(b, "fix task", [b.tasks[1]], None, clash) == (
+        "batch-1-b1 merged into batch-1-b2 with src/shared.txt settled, a commit citing Item: b2, then shop work "
+        "batch review batch-1")
+
+
 def test_a_batch_with_no_task_in_it_stops():
     assert picked(batch("building")) == ("stop", None, None)
 
