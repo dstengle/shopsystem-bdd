@@ -63,9 +63,16 @@ def ident(stem, rid):
     return rid if stem == "universal" else "%s#%s" % (stem, rid)
 
 
-def reading(root, stem, rid, line, four=None):
+def askers(root, lines):
+    """{operation id: its requester} of the lines that parse, the steps of a reply trigger's line naming it (b728)."""
+    steps = spec_rgl_steps.load(root)[0]
+    trees = [t for t in (spec_grammar4.parse(root, line).tree for line in lines) if t]
+    return spec_steps4.request.asking(steps, [spec_lf.form(steps, t) for t in trees])
+
+
+def reading(root, stem, rid, line, four=None, asks=None):
     """What is wrong with one block's line, by checks 1, 2 and 4: [] when nothing, and the line's form; `four` the
-    root's spec_context.Four, made here when not given."""
+    root's spec_context.Four, made here when not given; `asks` the requesters of the lines around it (`askers`)."""
     parsed = spec_grammar4.parse(root, line)
     if not parsed.tree:
         return ["(1) %s" % parsed.refusal], None
@@ -84,7 +91,7 @@ def reading(root, stem, rid, line, four=None):
     if form.modality == "shall":        # a permission and a necessity have no steps (features_generate4)
         steps = spec_rgl_steps.load(root)[0]
         try:
-            spec_steps4.cases(steps, [(ident(stem, rid), spec_lf.form(steps, parsed.tree))])
+            spec_steps4.cases(steps, [(ident(stem, rid), spec_lf.form(steps, parsed.tree))], None, asks)
         except (spec_steps4.TraceError, ValueError) as err:
             wrong.append("(2) steps: %s" % err)
         except CRASH as err:
@@ -100,6 +107,7 @@ def faults(root):
     out, have, spec = [], corpus(root), live(root)
     unbuilt = {} if spec_unbuilt.strict(root) else spec_unbuilt.unbuilt(root)     # a task's tree, as `work batch done`
     four = spec_context.Four(root)      # one lexicon for every line of the run
+    asks = askers(root, [b[1] for blocks in have.values() for b in blocks.values() if b[1]])
     for stem, blocks in sorted(have.items()):
         for rid, (trace, line, form) in blocks.items():
             if not trace or trace.startswith("```"):
@@ -107,7 +115,7 @@ def faults(root):
             if line is None:
                 out.append("%s %s: not one reading block" % (stem, rid))
                 continue
-            wrong, shown = reading(root, stem, rid, line, four)
+            wrong, shown = reading(root, stem, rid, line, four, asks)
             if shown is not None and shown != form:
                 wrong.insert(0, "(1) reads as\n%s" % shown)
             out += ["%s %s: %s" % (stem, rid, w) for w in wrong]

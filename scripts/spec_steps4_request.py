@@ -19,7 +19,7 @@ import spec_lf_request
 import spec_rgl
 import spec_rgl_ops
 import spec_steps4_boxes
-from spec_lf_core import Atom, Box
+from spec_lf_core import Atom, Ref
 
 kid = spec_rgl.kid
 PRED = spec_lf_request.PRED
@@ -27,14 +27,14 @@ EVENTS = ("event", PRED)
 PARAMS = (spec_lf_request.PARAM, spec_lf_request.NOPARAM)
 
 
-def trigger(r, part, form=None):
+def trigger(r, part):
     """(the Givens, the When steps) of a trigger part: a When for each of its events (one act on each of "two Ks",
     b240, a When each), a request's with its parameters; a reply's request (`replied`) its Givens first."""
     replies = [i for i in part.body if replied(i)]
     events = [i for i in part.body if isinstance(i, Atom) and i.pred in EVENTS and i not in replies]
     params = [i for i in part.body if isinstance(i, Atom) and i.pred in PARAMS]
     r.in_use = in_use(r, part.body, params)
-    givens = [g for atom in replies for g in reply(r, atom, form)]
+    givens = [g for atom in replies for g in reply(r, atom)]
     givens += [g for item in part.body if item not in events + replies and item not in params for g in r.given(item)]
     givens += [g for x, (term, value) in r.in_use.items() for g in in_use_given(r, x, term, value)]
     when = []
@@ -59,35 +59,59 @@ def replied(item):
     return isinstance(item, Atom) and item.pred == PRED and hasattr(item.args[0], "origin")
 
 
-def reply(r, atom, form):
+def asked(item):
+    """True of a response's request of an operation (response-request), whose first argument is its event."""
+    return isinstance(item, Atom) and item.pred == PRED and not replied(item)
+
+
+def asking(vocab, forms):
+    """{operation id: the doer of the first response of `forms` that requests it (response-request), or acts by a verb
+    naming it with no parameters (b604)}: the requesters a reply trigger's scenario names (b728, `requester`)."""
+    out = {}
+    for form in forms:
+        for a in (a for p in form.parts if p.op == "response" for a in p.body):
+            op = a.args[1] if asked(a) else operation(vocab, a)
+            if op:
+                out.setdefault(op, a.args[-1][0][1])
+    return out
+
+
+def operation(vocab, atom):
+    """The operation an event atom's verb names in its sense (senses numbered as Reader.frame's), or None."""
+    if not isinstance(atom, Atom) or atom.pred != "event":
+        return None
+    verb, sense = atom.args[1], atom.args[2]
+    senses = [v for v in vocab.verbs if v.term.term == verb]
+    return getattr(senses[sense - 1].term, "operation", None) if 0 < (sense or 0) <= len(senses) else None
+
+
+def reply(r, atom):
     """The Givens of the request a trigger's reply is on (reply-trigger, b724): its object brought in ("a note n1"),
-    then the core's request of it in the present, its requester the response's doer whose kind the frame's subject
-    takes ("the notes service reserves the note n1"); the request said after it "the request to reserve the note n1"
-    (`rq_<verb>_<n>_<m>`, kept in `r.replies` for `np`)."""
-    ref, _, verb, sense, roles = atom.args
+    then the core's request of it in the present by its requester (`requester`), "the notes service reserves the note
+    n1"; the request said after it "the request to reserve the note n1" (`rq_<verb>_<n>_<m>`, kept in `r.replies` for
+    `np`)."""
+    ref, op, verb, sense, roles = atom.args
     r.known.add(ref)
     givens = r.introduce(Atom(PRED, (None,) + atom.args[1:]))
-    fun = r.frame(verb, sense, (("subject", None),) + roles)
-    doers = [d for p in (form.parts if form else ()) if p.op == "response" for d in _doers(p.body)]
-    doer = next((d for d in doers if fun[1] in r.vocab.ancestors(d.kind)), None)
-    if doer is None:
-        raise spec_steps4_boxes.TraceError("no step of the request of %s a reply is on" % verb)
-    subject, s, vp = r.clause(Atom("event", (None, verb, sense, (("subject", doer),) + roles)))
+    subject, s, vp = r.clause(Atom("event", (None, verb, sense, (("subject", requester(r, op)),) + roles)))
     _, n, m = vp[0].rsplit("_", 2)
     r.__dict__.setdefault("replies", {})[ref] = ("rq_%s_%s_%s" % (spec_rgl.slug(verb), n, m), ("k_request_n",)) \
         + tuple(vp[1:])
     return givens + [(kid(subject) + "_Does", ("PPos",), s, vp)]
 
 
-def _doers(body):
-    """The doers of a response's acts, in order, a box's too: an event's subject, a setting act's agent."""
-    for a in body:
-        if isinstance(a, Atom) and a.pred == "event":
-            yield a.args[3][0][1]
-        elif isinstance(a, Atom) and a.pred == "initiates":
-            yield a.args[1]
-        elif isinstance(a, Box):
-            yield from _doers(tuple(a.body) + (tuple(a.scope.body) if a.scope else ()))
+def requester(r, op):
+    """The agent that made a request of the operation `op` (b728): the doer of the context's line whose response
+    requests it (`r.asks`), else the first actor the operation's model line gives (`by`); refused naming the
+    operation when the context gives none."""
+    if op in getattr(r, "asks", {}):
+        return r.asks[op]
+    model = r.vocab.operations.get(op)
+    for name in getattr(model, "by", ()):
+        for term, kind in r.vocab.actors:
+            if name == term or r.vocab.elements.get(term, "").split(" ", 1)[-1] == name:
+                return Ref("x0", kind, "constant", term)
+    raise spec_steps4_boxes.TraceError("no requester of the request of %s a reply is on" % op)
 
 
 def then(r, atom, body, pos):

@@ -7,7 +7,7 @@ area: specification
 specifies: service scenarios
 language: codified-2
 retired: [g14, r14, g26, r26, g27, r27, g33, r33, g34, r34, g35, r35]
-unbuilt: [r46]
+unbuilt: []
 ---
 
 # Scenarios

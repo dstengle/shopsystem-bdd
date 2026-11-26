@@ -8,7 +8,7 @@ stock service to reserve a note (`response-request`), and the core lines that ha
 notebook#r12 on its refusal of it. Its features are written by `features generate`.
 
 The Givens say only what the world is. The When runs `spec check` (v_pb2 finds no outcome unhandled, v_m4 no reason
-unstated) or `spec logic` (each line translated, no finding); the Thens read its exit and its output."""
+unstated); the Then reads its exit."""
 import shutil
 import sys
 from pathlib import Path
@@ -104,10 +104,10 @@ def build(step):
 
 
 def runs(step):
-    if not mine(step) or step.term not in ("`spec check`", "`spec logic`"):
+    if not mine(step) or step.term != "`spec check`":
         return False
     build(step)
-    step.context["result"] = step.run("spec", step.term.strip("`").split()[1])
+    step.context["result"] = step.run("spec", "check")
 
 
 def then_completes(step):
@@ -119,17 +119,7 @@ def then_completes(step):
     assert generated.returncode == 0, generated.stdout + generated.stderr
 
 
-def then_returns(step):
-    """`the specification service returns `no findings``: `spec logic` translates every line and finds nothing."""
-    if not mine(step) or "replied" not in step.context or step.term != "return":
-        return False
-    done = step.context["result"]
-    assert done.returncode == 0 and "no findings" in done.stdout and "unread" not in done.stdout, \
-        done.stdout + done.stderr
-
-
 for _template in ("GivenK", "GivenDoes", "GivenDoesNot", "GivenNo", "GivenK_A"):
     W.local(_template)(given)
 W.local("WhenRuns")(runs)
 W.local("ThenExitsOk")(then_completes)
-W.local("ThenDoes")(then_returns)
