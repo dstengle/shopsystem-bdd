@@ -1,7 +1,7 @@
 """The twins of grammar/language.md's `## Constructs` (b240): each line that grammar 4 reads is also read by the check
 and by the step generator, and linearises back to itself, in the fixture (the spec corpus's checks 2 and 4). A
-construct whose check and steps a later phase of b240 builds is `LATER` until then (none now: identity and
-distinctness's check and steps came with phase 9)."""
+construct whose check and steps a later item builds is `LATER` until then (reply-trigger's, b626, whose check's
+reading and steps are an item of their own)."""
 import pathlib
 import re
 import sys
@@ -15,7 +15,7 @@ import toolchain
 REPO = pathlib.Path(__file__).resolve().parents[2]
 FIXTURE = REPO / "tests" / "scripts" / "fixtures" / "codified-2"
 REQUEST = REPO / "tests" / "scripts" / "fixtures" / "request-4"     # language.md's context (the domain contract)
-LATER = ()
+LATER = ('### "completes the request to settle a line"',)     # reply-trigger (b626): the check's reading split off
 BLOCK = re.compile(r"^```reading\n(.*?)\n```$", re.MULTILINE | re.DOTALL)
 
 
