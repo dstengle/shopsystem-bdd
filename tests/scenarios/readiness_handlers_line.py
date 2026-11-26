@@ -134,6 +134,7 @@ def _term(step, item, line):
     name, narrator, purpose = NEW
     assert step.context.get("new"), "no Given said the capability does not exist: %s" % step.text
     _work(step, item, "--capability", name, "--narrator", narrator, purpose)
+    _work(step, item, "--into", name, "--model", "object shelf\n  attributes: name (text)")   # its element (b810)
     line["piece"] = ("term", ENTRY)
     return ["--into", name, "--term", ENTRY]
 

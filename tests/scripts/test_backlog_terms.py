@@ -14,6 +14,7 @@ FROB = "- **frobnicate** (verb, action): Forms: frobnicates, frobnicated. Frame:
 TWIDDLE = "- **twiddle** (verb, action): Forms: twiddles, twiddled. Frame: `work` twiddles initiative."
 PIN = "- **pin** (verb, action) → operation notes.pin. Forms: pins, pinned. Frame: <actor> pins <note>."
 SHELF = "- **shelf** (noun) → object shelf. A place notes are kept."
+DECLARED = "object shelf\n  attributes: name (text)\n\nservice notes\n  operation pin(note)  outcomes: done"
 
 
 def commits(repo):
@@ -56,6 +57,8 @@ def modelled(backlog_repo):
 
 
 def test_two_vocabulary_entries_in_one_run_are_one_commit(modelled):
+    declared = work(modelled, "line", "b1", "--into", "notebook", "--model", DECLARED)    # their elements (b810)
+    assert declared.returncode == 0, declared.stderr
     before = commits(modelled)
     done = work(modelled, "line", "b1", "--into", "notebook", "--term", PIN, "--term", SHELF)
     assert done.returncode == 0, done.stderr
