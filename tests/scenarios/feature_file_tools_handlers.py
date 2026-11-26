@@ -197,7 +197,7 @@ def then_does_not(step):
     (ORDER.writes_not if ORDER.mine(w, step) else GEN.writes_not)(step, w)
 
 
-@W.own("ThenDoesNot", "use", registry=False)
+@W.own("ThenDoesNot", "use")
 def then_uses_not(step):
     """`the counter-example c3 does not use the code c2` (b732)."""
     result(step)
