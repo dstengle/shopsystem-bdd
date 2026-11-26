@@ -5,7 +5,10 @@ retires `work-queue#r1` (the requirement r1). r173: `work batch start`, and the 
 superseded, a decision that supersedes it) and the output naming the successor. r174: the item laid in the batch,
 and when the lay left 0001 accepted on the batch's branch, 0001 superseded there and a successor of the item's lay
 written by hand (so the park, not the lay, is what the Thens see); `work batch park`, and the Thens read the batch's
-branch: 0001 accepted and no decision superseding it. The handlers are put first in their keys' chains."""
+branch: 0001 accepted and no decision superseding it. r177 (b750): 0001 enforced by `work-queue#r1` and
+`work-queue#r2` (the requirement r4, its requirement id r5), the item i2, `ready`, whose line `r6` retires
+`work-queue#r2` (the requirement r6); `work batch start`, and the Thens read the one successor on the batch's branch,
+enforced by i2's line as `work batch start` renumbered it. The handlers are put first in their keys' chains."""
 import re
 import sys
 
@@ -20,6 +23,9 @@ DECISION = ("---\nid: %s\nsummary: \"The queue is worked in order.\"\ndate: 2026
             "tier: requirement\nenforced_by: [work-queue#r1]\n---\n\n# 0001. The queue is worked in order\n\n"
             "## Decision\n\nA proposed initiative is started by `work start`.\n" % IDENT)
 BLOCK = "### work-queue\n\nretired: [r1]\nretires: [r5 r1]\n\n#### [g4] %s\n- [r5] %s"
+SECOND = ("While an initiative is `proposed`, when the person runs `work abandon` on the initiative, `work` shall set "
+          "the status of the initiative to `abandoned`.")      # passes beside R.PASSING (readiness_world's DIFFERING)
+OTHER = "### work-queue\n\nretired: [r2]\nretires: [r6 r2]\n\n#### [g5] %s\n- [r6] %s"     # r177's i2
 
 
 def first(template, term):
@@ -35,7 +41,7 @@ def first(template, term):
 def mine(step):
     """r173 or r174, the tag of the step's scenario, else None."""
     found = sys.modules["vocab"].vocab4.requested.scenario(step.request.node)
-    return next((t for t in ("r173", "r174") if found is not None and t in found.tags), None)
+    return next((t for t in ("r173", "r174", "r177") if found is not None and t in found.tags), None)
 
 
 @first("GivenK", "design-decision")
@@ -64,7 +70,8 @@ def enforces(step):
     R.codify(step)
     path = step.repo / REL
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(DECISION)
+    path.write_text(DECISION if mine(step) != "r177" else
+                    DECISION.replace("[work-queue#r1]", "[work-queue#r1, work-queue#r2]"))
     (path.parent / "index.md").write_text(render_decisions(step.repo))
 
 
@@ -78,7 +85,10 @@ def holds(step):
     R = sys.modules["shop_readiness_world"]
     R.codify(step)
     title = step.context.get("item_fields", {}).get(n1, {}).get("title", "Title of %s" % n1)
-    B.write_item(step, n1, sections={"Requirements": BLOCK % (title, R.PASSING)})
+    if n1 == "i2":      # r177: the other item, ready, retiring `work-queue#r2`
+        B.write_item(step, n1, status="ready", sections={"Requirements": OTHER % (title, SECOND)})
+    else:
+        B.write_item(step, n1, sections={"Requirements": BLOCK % (title, R.PASSING)})
 
 
 def _decisions(step, branch):
@@ -88,7 +98,8 @@ def _decisions(step, branch):
 
 
 def _successors(found):
-    return [p for p, text in found.items() if re.search(r"(?m)^supersedes: \[.*%s.*\]$" % re.escape(IDENT), text)]
+    return [p for p, text in found.items()
+            if re.search(r"(?m)^supersedes: \[(.*, )?%s(, .*)?\]$" % re.escape(IDENT), text)]
 
 
 def superseded_by_hand(step, name):
@@ -167,3 +178,20 @@ def names(step):
     found = _successors(_decisions(step, _branch(step)))
     out = step.context["result"].stdout
     assert found and all(p in out for p in found), (found, out)
+
+
+@first("ThenDoes", "enforce")
+@first("ThenDoes", "enforces")
+def enforced(step):
+    """r177: the requirement r6 enforces the design-decision d2: the one successor on the batch's branch names, under
+    `enforced_by`, i2's line as `work batch start` renumbered it on main, and no longer `work-queue#r2`."""
+    if not mine(step):
+        return False
+    branch = _branch(step)
+    found = _decisions(step, branch)
+    successors = _successors(found)
+    assert len(successors) == 1, successors
+    line = re.search(r"(?m)^retires: \[(r\d+) r2\]$", T.git(step, "show", "main:.shop/backlog/%s.md" % B.ident("i2")))
+    enforcers = re.search(r"(?m)^enforced_by: \[(.*)\]$", found[successors[0]]).group(1).split(", ")
+    assert line and "work-queue#%s" % line.group(1) in enforcers and "work-queue#r2" not in enforcers, (
+        enforcers, step.context["result"].stdout)
