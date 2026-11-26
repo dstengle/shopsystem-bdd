@@ -120,7 +120,7 @@ b250 "work show prints the status of an item" shaped
 Writes a requirement line into an item's `## Requirements`, under the capability it goes into, and commits it. It
 takes an item that is `idea`, `shaped` or `in-batch`; an in-batch item's changed lines reach its batch with
 [`shop work batch amend`](#shop-work-batch-amend).\
-Synopsis: `shop work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN|CAP] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--expose TABLES] [--withhold SERVICE.OPERATION] [--remove-model MODEL] [--reword-model HEADER] [--remove-term TERM] [--reword-term TERM] [--pack NAME] [--remove-universal U<n>] [--replace-universal U<n>] [--remove-upstream ID] [--replace-upstream ID] [--remove-given CAP#g<n>] [--replace-given CAP#g<n>] [--serves CAP#gN JOB] [--upstream UPSTREAM] name [text]`
+Synopsis: `shop work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN|CAP] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--area AREA] [--port] [--expose TABLES] [--withhold SERVICE.OPERATION] [--pack NAME] [--move-model HEADER] [--move-term TERM] [--import PACK] [--remove-model MODEL] [--reword-model HEADER] [--remove-term TERM] [--reword-term TERM] [--remove-universal U<n>] [--replace-universal U<n>] [--remove-upstream ID] [--replace-upstream ID] [--remove-given CAP#g<n>] [--replace-given CAP#g<n>] [--reinstate-model HEADER] [--reinstate-term TERM] [--remove-import PACK] [--retire-model HEADER] [--retire-term TERM] [--serves CAP#gN JOB [CAP#gN JOB ...]] [--relied-on-by CAP#rN[,...]] [--upstream UPSTREAM] name [text]`
 
 - `--into <capability>`: the codified capability the line goes into.
 - `--group "<title>"`: open a new group with this title (default: the item's title). `--in g<n>` joins one of the
@@ -172,7 +172,18 @@ Synopsis: `shop work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retir
   it is in. `--into <name>` of a capability no file and no block of the item holds names the item that holds it
   and its batch, in place of suggesting `--capability`. Lines and terms go into it with `--into <name>`; `shop work
   batch start` writes its file (with `area:` and `specifies:`) and names it in its area's row under `## Composition` of `spec/index.md`.
-- `--serves <cap>#g<n> <job>`: dedicate a requirement group (a live one, or one of the item's own) to a job of the
+- `--area <area>` with `--capability`: the area the new capability is placed in, an area of `spec/model/` or a new
+  one (default: the capability's own name); `--port` with it makes the area a driven port, of kind `port`.
+- `--move-model "<header>"` and `--move-term <term>`: an element another area declares, with its members and
+  vocabulary entries, moved into the area of the capability `--into` names, or one vocabulary entry moved into the
+  layer of the area that declares its element. `--retire-model "<header>"` and `--retire-term <term>` take an
+  element (with the entries that mean it) or an entry out once the item is laid, and `--import <pack>` adds a pack
+  of the plugin to `spec/index.md`'s `imports:`. `--reinstate-model`, `--reinstate-term` and `--remove-import` take
+  the item's retirement or import back out. Each refuses an element, a term or a pack it cannot find, naming it.
+- `--relied-on-by <cap>#r<n>[,...]`: the core requirements a port line supports, kept as the line's
+  `Relied on by: <ids>` line; given with `--into` and the line, or with `--in g<n>` for the group's last line. Each id
+  is a live requirement or one of the item's own lines; another is refused naming it.
+- `--serves <cap>#g<n> <job> [<cap>#g<n> <job> ...]`: dedicate a requirement group (a live one, or one of the item's own) to a job of the
   product (`shop spec job` declares it), kept as the pair under the item's block of the capability; `shop work
   batch start` writes it as the group's `serves: <job>` line. Beside a requirement line, `--serves <job>` alone
   dedicates the group the line goes into, and the line added is printed before the pair; with `--into`, `--serves`
