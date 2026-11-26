@@ -8,7 +8,9 @@ unless the model file at the batch's base held it or a line left in the area (an
 of its model fence the base did not hold (another item's) still says a word of the imported layer, never reset to
 the base, so a park keeps the imports another item laid on the same port and an amend (given the batch's base too)
 takes out those its lines no longer need and keeps those the base held; and the model file the lay made removed when
-nothing else is left in it (`unlay`). A word is said when
+nothing else is left in it (`unlay`). Every other area the item makes is laid and taken out alike (b830, laying r48:
+`areas`), its model file made only when it imports an area, and once gone taken out of the imports of the areas left
+(the item's model lines, its words with them, out before). A word is said when
 it, one of its forms or its plural stands whole in the text, as backlog_area_move_lay reads a moved word's users."""
 import re
 from pathlib import Path
@@ -67,20 +69,37 @@ def _imports(into, area, names, files):
         files.append(laid._rel("model", area))
 
 
+def areas(blocks):
+    """The areas the item's blocks make (b830), its driven ports first, in their order."""
+    made = [backlog_model_area._area(b) for b in blocks if getattr(b, "new", None)]
+    return list(dict.fromkeys(ports(blocks) + made))
+
+
+def _needed(into, area, blocks):
+    """The areas whose layer the item says a word of in `area`, the area itself and the shared layer aside."""
+    said = _text(into, area, blocks)
+    return [a for a in _areas(into) if a not in (area, SHARED) and _says(said, a, into)]
+
+
 def lay(into, blocks, files):
-    """Each driven port the item makes laid over `into/spec` after its model lines, each path changed added to
-    `files`."""
+    """Each area the item makes laid over `into/spec` after its model lines, each path changed added to `files`: a
+    driven port's model file made, and each made area importing the areas whose words its lines say, a core area's
+    model file made only when it imports one (b830), and imported by each other area of the item that says its
+    words."""
     made = ports(blocks)
     for port in made:
         if backlog_model_area.made(into, port, blocks):
             files.append(laid._rel("model", port))
-    for port in made:
-        said = _text(into, port, blocks)
-        _imports(into, port, [a for a in _areas(into) if a not in (port, SHARED) and _says(said, a, into)], files)
-        users = {_area(into, b, blocks) for b in blocks} - {None, port}
-        for area in sorted(a for a in users if backlog_model.model_path(into, a).is_file()):
-            if _says(_text(into, area, blocks), port, into):
-                _imports(into, area, [port], files)
+    for area in areas(blocks):
+        needed = _needed(into, area, blocks)
+        if needed and backlog_model_area.made(into, area, blocks):
+            files.append(laid._rel("model", area))
+        if backlog_model.model_path(into, area).is_file():
+            _imports(into, area, needed, files)
+        users = {_area(into, b, blocks) for b in blocks} - {None, area}
+        for user in sorted(a for a in users if backlog_model.model_path(into, a).is_file()):
+            if _says(_text(into, user, blocks), area, into):
+                _imports(into, user, [area], files)
 
 
 def _fenced(text, area):
@@ -127,17 +146,19 @@ def _unimport(into, area, names, base, files):
 
 
 def unlay(into, blocks, files, base=None):
-    """The reverse of `lay`, after the model lines are out (backlog_model's unlay), per item (b704)."""
-    made = ports(blocks)
-    for port in made:
-        said = _text(into, port, blocks)
-        _unimport(into, port, [a for a in _areas(into) if a not in (port, SHARED) and _says(said, a, into)], base,
-                  files)
-        users = {_area(into, b, blocks) for b in blocks} - {None, port}
-        for area in sorted(users):
-            if _says(_text(into, area, blocks), port, into):
-                _unimport(into, area, [port], base, files)
-    for port in made:
-        rel = laid._rel("model", port)
-        if backlog_model_area.unmade(into, port, blocks) and rel not in files:
+    """The reverse of `lay`, after the model lines are out (backlog_model's unlay), per item (b704), of every area the
+    item makes (b830)."""
+    for area in areas(blocks):
+        _unimport(into, area, _needed(into, area, blocks), base, files)
+        users = {_area(into, b, blocks) for b in blocks} - {None, area}
+        for user in sorted(users):
+            if _says(_text(into, user, blocks), area, into):
+                _unimport(into, user, [area], base, files)
+    for area in areas(blocks):
+        rel = laid._rel("model", area)
+        if backlog_model_area.unmade(into, area, blocks) and rel not in files:
             files.append(rel)
+    for area in areas(blocks):          # an area gone, its layer with it: out of the imports of the areas left
+        if not backlog_model.model_path(into, area).is_file():
+            for user in _areas(into):
+                _unimport(into, user, [area], base, files)
