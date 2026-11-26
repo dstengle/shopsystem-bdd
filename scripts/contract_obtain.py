@@ -1,7 +1,7 @@
 """A contract obtained from an upstream (b587, checking r81, r82, r88-r90; b591; decision 0117), retrieved from the
-contract registry (contract_registry, b636, checking r126; decision 0147): `spec obtain <bounded context> [--version
-V]` retrieves the upstream's contract published (or the one at V) and requests the registry to register it, byte for
-byte, for each adapter spec of its provider (b735, checking r137): an adapter spec `adapters/<name>/` whose
+contract registry (contract_registry, b636, checking r126; decisions 0147, 0149): `spec obtain <bounded context>
+[--version V]` retrieves the upstream's contract published (or the one at V) and requests the registry to register it,
+byte for byte, for each adapter spec of its provider (b735, checking r137): an adapter spec `adapters/<name>/` whose
 `providers:` name the bounded context (`holders`), each at the version it pins the provider at, else the one asked or
 published (checking r138). Where and how a registered contract is kept is the registry's adapter's; a register
 completed prints what it kept, `obtained <it>`, or `kept already <it>` when it was kept so already (r139), and one
