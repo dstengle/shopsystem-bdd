@@ -666,8 +666,8 @@ $ shop work settings set review.size 1500
 #### `shop work context keep`
 
 Keeps a bounded context in this shop under its context id, in `.shop/contexts.toml`, and commits it. The shop's
-product id is the id of this bounded context less `bounded-context/` and its last part; an id outside the product
-id, or one the shop keeps already, is refused, naming it.\
+product id is its product's id, read off `.shop/product/product.toml`; while the product has an id, an id outside it is
+refused, naming it, and with none any id is kept. An id the shop keeps already is refused, naming it.\
 Synopsis: `shop work context keep id`
 
 ```console
