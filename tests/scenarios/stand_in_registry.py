@@ -9,7 +9,10 @@ version asked, `version not deposited`, whatever the folder holds, and the depos
 `contract not deposited`, nothing written (b736, checking r134). A register (b735) is answered alike: unset, as the
 shop-folder adapter does; `complete`, completed without writing anything, its completion recorded; `refuse`, refused,
 `contract not registered`, naming the adapter spec, nothing written. `$STAND_IN_REGISTRY_ON`, when set, names the
-one operation the reply is on, every other answered as the shop-folder adapter does. Loaded by contract_registry from its path."""
+one operation the reply is on, every other answered as the shop-folder adapter does. `$STAND_IN_REGISTRY_REFUSE_FOR`,
+when set, names the one adapter spec folder whose register is refused (g142, b743), every other answered as the
+shop-folder adapter does; a deregister (b743) is recorded and answered as the shop-folder adapter does. Loaded by
+contract_registry from its path."""
 import json
 import os
 
@@ -53,12 +56,19 @@ def retrieve(root, context=None, version=None):
 def register(root, contract, adapter_spec, provider, version):
     _record("register", provider, version, contract.decode("utf-8"), **{"adapter spec": str(adapter_spec),
                                                                         "provider": provider})
-    if _reply("register") == "refuse":
+    refused_for = os.environ.get("STAND_IN_REGISTRY_REFUSE_FOR")
+    if _reply("register") == "refuse" or (refused_for and refused_for == str(adapter_spec)):
         return contract_registry.unregistered(adapter_spec)
     if _reply("register") == "complete":
         _record("completed", provider, version)
         return contract_registry.completed({"kept": str(adapter_spec), "changed": True})
     return FOLDER.register(root, contract, adapter_spec, provider, version)
+
+
+def deregister(root, contract, adapter_spec, provider, version):
+    _record("deregister", provider, version, contract.decode("utf-8"), **{"adapter spec": str(adapter_spec),
+                                                                          "provider": provider})
+    return FOLDER.deregister(root, contract, adapter_spec, provider, version)
 
 
 def held(folder, provider, version=None):
