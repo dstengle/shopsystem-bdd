@@ -509,3 +509,116 @@ Feature: Product
     Then this product holds the job j1
     And the product service keeps the job j1
     And the product service completes this request
+
+  @g45 @r45
+  Scenario: A product actor a bounded context maps is not dropped
+    Given a product actor p1
+    And a bounded context b1
+    And the bounded context b1 holds the product actor p1
+    When the person drops the product actor p1
+    Then the product service refuses this request
+    And the product service names the bounded context b1
+
+  @g46 @r46
+  Scenario: A subdomain is dropped from the product
+    Given a subdomain s1
+    When the person drops the subdomain s1
+    Then this product does not hold the subdomain s1
+    And the product service does not keep the subdomain s1
+    And the product service completes this request
+
+  @g47 @r47
+  Scenario: A subdomain a bounded context addresses is not dropped
+    Given a bounded context b1
+    And a subdomain s1
+    And the bounded context b1 addresses the subdomain s1
+    When the person drops the subdomain s1
+    Then the product service refuses this request
+    And the product service names the bounded context b1
+
+  @g48 @r48
+  Scenario: A bounded context is dropped from the product
+    Given a bounded context b1
+    When the person drops the bounded context b1
+    Then this product does not hold the bounded context b1
+    And the product service does not keep the bounded context b1
+    And the product service completes this request
+
+  @g49 @r49
+  Scenario: A bounded context that holds a job is not dropped
+    Given a job j1
+    And a bounded context b1
+    And the bounded context b1 holds the job j1
+    When the person drops the bounded context b1
+    Then the product service refuses this request
+    And the product service names the job j1
+
+  @g50 @r50
+  Scenario: A job is unassigned from a bounded context
+    Given a job j1
+    And a bounded context b1
+    When the person unassigns the job j1 from the bounded context b1
+    Then the bounded context b1 does not hold the job j1
+    And the product service does not keep the job j1
+    And the product service completes this request
+
+  @g51 @r51
+  Scenario: A job a bounded context does not hold is not unassigned from it
+    Given a job j1
+    And a bounded context b1
+    And the bounded context b1 does not hold the job j1
+    When the person unassigns the job j1 from the bounded context b1
+    Then the product service refuses this request
+    And the product service names the job j1
+
+  @g52 @r52
+  Scenario: A job is dropped from the product
+    Given a job j1
+    When the person drops the job j1
+    Then this product does not hold the job j1
+    And the product service does not keep the job j1
+    And the product service completes this request
+
+  @g53 @r53
+  Scenario: A job another job needs is not dropped
+    Given a job j1
+    And a need n1
+    And the job j1 needs the need n1
+    When the person drops the need n1
+    Then the product service refuses this request
+    And the product service names the job j1
+
+  @g54 @r54
+  Scenario: A job a bounded context holds is not dropped
+    Given a job j1
+    And a bounded context b1
+    And the bounded context b1 holds the job j1
+    When the person drops the job j1
+    Then the product service refuses this request
+    And the product service names the bounded context b1
+
+  @g55 @r55
+  Scenario: A job a subdomain serves is not dropped
+    Given a subdomain s1
+    And a job j1
+    And the subdomain s1 serves the job j1
+    When the person drops the job j1
+    Then the product service refuses this request
+    And the product service names the subdomain s1
+
+  @g56 @r56
+  Scenario: A product actor is dropped from the product
+    Given a product actor p1
+    When the person drops the product actor p1
+    Then this product does not hold the product actor p1
+    And the product service does not keep the product actor p1
+    And the product service completes this request
+
+  @g57 @r57
+  Scenario: A product actor a job has is not dropped
+    Given a product actor p1
+    And a job j1
+    And the job j1 has the product actor p1
+    When the person drops the product actor p1
+    Then the product service refuses this request
+    And the product service names the job j1

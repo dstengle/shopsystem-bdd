@@ -153,3 +153,42 @@ the job statement `j2` holds "When x, the developer wants y, so they can z."
 ### [g41] A product actor is not mapped in a bounded context whose id is out of the context id form
 - [r41] If the person maps a product actor with a bounded context whose id does not conform to the context id form and an actor, then the product service shall refuse the request and name the id.
 
+### [g50] A job is unassigned from a bounded context
+- [r50] When the person unassigns a job from a bounded context, the product service shall not keep the job in the bounded context and complete the request.
+
+### [g51] A job a bounded context does not hold is not unassigned from it
+- [r51] If the person unassigns a job from a bounded context that does not hold the job, then the product service shall refuse the request and name the job.
+
+### [g52] A job is dropped from the product
+- [r52] When the person drops a job, the product service shall not keep the job in the product and complete the request.
+
+### [g53] A job another job needs is not dropped
+- [r53] If the person drops a need that a job needs, then the product service shall refuse the request and name the job.
+
+### [g54] A job a bounded context holds is not dropped
+- [r54] While a bounded context holds a job, if the person drops the job, then the product service shall refuse the request and name the bounded context.
+
+### [g55] A job a subdomain serves is not dropped
+- [r55] While a subdomain serves a job, if the person drops the job, then the product service shall refuse the request and name the subdomain.
+
+### [g56] A product actor is dropped from the product
+- [r56] When the person drops a product actor, the product service shall not keep the product actor in the product and complete the request.
+
+### [g57] A product actor a job has is not dropped
+- [r57] While a job has a product actor, if the person drops the product actor, then the product service shall refuse the request and name the job.
+
+### [g45] A product actor a bounded context maps is not dropped
+- [r45] While a bounded context holds a product actor, if the person drops the product actor, then the product service shall refuse the request and name the bounded context.
+
+### [g46] A subdomain is dropped from the product
+- [r46] When the person drops a subdomain, the product service shall not keep the subdomain in the product and complete the request.
+
+### [g47] A subdomain a bounded context addresses is not dropped
+- [r47] While a bounded context addresses a subdomain, if the person drops the subdomain, then the product service shall refuse the request and name the bounded context.
+
+### [g48] A bounded context is dropped from the product
+- [r48] When the person drops a bounded context, the product service shall not keep the bounded context in the product and complete the request.
+
+### [g49] A bounded context that holds a job is not dropped
+- [r49] While a bounded context holds a job, if the person drops the bounded context, then the product service shall refuse the request and name the job.
+

@@ -337,3 +337,8 @@ area: specification
 - **word** (noun) → object word. The written form of a term, as `list`, that entries of several areas may share. Plural: words.
 - **homonym** (noun) → object homonym. A word that two areas each define for an element of their own, so that neither relies on the other for it. Plural: homonyms.
 - **fixed phrase** (noun) → object fixed phrase. The words of a frame after its verb that name no kind, as `the characters of` in `<actor> lists the characters of <note>.`.
+- **unassign** (verb, action) → operation product.unassign. The person takes a job back from the bounded context it was assigned to. Forms: unassigns, unassigned. Frame: <actor> unassigns <job> from <bounded context>.
+- **drop** (verb, action) → operation product.drop job. The person takes a job out of the product. Forms: drops, dropped. Frame: <actor> drops <job>.
+- **drop** (verb, action) → operation product.drop actor. The person takes a product actor out of the product. Forms: drops, dropped. Frame: <actor> drops <product actor>.
+- **drop** (verb, action) → operation product.drop subdomain. The person takes a subdomain out of the product's domain map. Forms: drops, dropped. Frame: <actor> drops <subdomain>.
+- **drop** (verb, action) → operation product.drop context. The person takes a bounded context out of the product's domain map. Forms: drops, dropped. Frame: <actor> drops <bounded context>.

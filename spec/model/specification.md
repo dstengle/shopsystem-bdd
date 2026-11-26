@@ -460,6 +460,11 @@ service product
   operation assign(job, bounded context)  outcomes: done → the job | refused: job assigned already, id not in the context id form, bounded context outside the product
   operation map(product actor, bounded context, actor)  outcomes: done → the product actor | refused: product actor outside the product, id not in the context id form, actor outside the domain model
   operation trace(job)  outcomes: returned | refused: job that no requirement group serves
+  operation unassign(job, bounded context)  outcomes: done → the job | refused: job not assigned to the bounded context
+  operation drop job(job)  outcomes: done → the job | refused: job a job needs, job a bounded context holds, job a subdomain serves
+  operation drop actor(product actor)  outcomes: done → the product actor | refused: product actor of a job, product actor a bounded context holds
+  operation drop subdomain(subdomain)  outcomes: done → the subdomain | refused: subdomain a bounded context addresses
+  operation drop context(bounded context)  outcomes: done → the bounded context | refused: bounded context that holds a job
 
 object product
   relations: has → id (one); has → purpose (one); holds → product actor (many); holds → job (many)
