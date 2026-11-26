@@ -230,3 +230,119 @@ shall [x1: agent the person (constant), x4: artifact the job statement form (con
     keep(e2, subject: x5, object: x2)
     complete(e3, subject: x5, object: x7)
 ```
+
+## r15
+From: b642 r15.
+
+```reading
+When the person declares a subdomain with an id and a subdomain type and a job, the product service shall keep the subdomain in the product and complete the request.
+shall [x1: agent the person (constant), x6: service the product service (constant), x7: product "the product this bounded context belongs to" (indexical), x8: request "the request the trigger makes" (indexical)]
+  when [x2: subdomain, x3: id, x4: subdomain type, x5: job]
+    request(e1, product.declare subdomain, subject: x1, object: x2)
+    param(e1, id, x3)
+    param(e1, subdomain type, x4)
+    param(e1, job, x5)
+  response
+    in(x2, x7)
+    keep(e2, subject: x6, object: x2)
+    complete(e3, subject: x6, object: x8)
+```
+
+## r16
+From: b642 r16.
+
+```reading
+If the person declares a subdomain with a subdomain type that does not conform to the subdomain type form, then the product service shall refuse the request and name the subdomain type.
+shall [x1: agent the person (constant), x4: artifact the subdomain type form (constant), x5: service the product service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x2: subdomain, x3: subdomain type]
+    not
+      conforms(x3, x4)
+    request(e1, product.declare subdomain, subject: x1, object: x2)
+    param(e1, subdomain type, x3)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x3)
+```
+
+## r17
+From: b642 r17.
+
+```reading
+If the person declares a subdomain with a job that is not in the product, then the product service shall refuse the request and name the job.
+shall [x1: agent the person (constant), x4: product "the product this bounded context belongs to" (indexical), x5: service the product service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x2: subdomain, x3: job]
+    not
+      in(x3, x4)
+    request(e1, product.declare subdomain, subject: x1, object: x2)
+    param(e1, job, x3)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x3)
+```
+
+## r18
+From: b642 r18.
+
+```reading
+When the person declares a bounded context with an id and a subdomain and a shop, the product service shall keep the bounded context in the product and complete the request.
+shall [x1: agent the person (constant), x6: service the product service (constant), x7: product "the product this bounded context belongs to" (indexical), x8: request "the request the trigger makes" (indexical)]
+  when [x2: bounded context, x3: id, x4: subdomain, x5: shop]
+    request(e1, product.declare context, subject: x1, object: x2)
+    param(e1, id, x3)
+    param(e1, subdomain, x4)
+    param(e1, shop, x5)
+  response
+    in(x2, x7)
+    keep(e2, subject: x6, object: x2)
+    complete(e3, subject: x6, object: x8)
+```
+
+## r19
+From: b642 r19.
+
+```reading
+When the person declares a bounded context with an id and a subdomain and without a shop, the product service shall keep the bounded context in the product and complete the request.
+shall [x1: agent the person (constant), x5: service the product service (constant), x6: product "the product this bounded context belongs to" (indexical), x7: request "the request the trigger makes" (indexical)]
+  when [x2: bounded context, x3: id, x4: subdomain]
+    request(e1, product.declare context, subject: x1, object: x2)
+    param(e1, id, x3)
+    param(e1, subdomain, x4)
+    noparam(e1, shop)
+  response
+    in(x2, x6)
+    keep(e2, subject: x5, object: x2)
+    complete(e3, subject: x5, object: x7)
+```
+
+## r20
+From: b642 r20.
+
+```reading
+If the person declares a bounded context with an id that the id of this product does not cover, then the product service shall refuse the request and name the id.
+shall [x1: agent the person (constant), x4: product "the product this bounded context belongs to" (indexical), x6: service the product service (constant), x7: request "the request the trigger makes" (indexical)]
+  if [x2: bounded context, x3: id, x5: id]
+    of(x5, x4)
+    not
+      cover#2(subject: x5, object: x3)
+    request(e1, product.declare context, subject: x1, object: x2)
+    param(e1, id, x3)
+  response
+    refuse(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x5)
+```
+
+## r21
+From: b642 r21.
+
+```reading
+If the person declares a bounded context with a subdomain that is not in the product, then the product service shall refuse the request and name the subdomain.
+shall [x1: agent the person (constant), x4: product "the product this bounded context belongs to" (indexical), x5: service the product service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x2: bounded context, x3: subdomain]
+    not
+      in(x3, x4)
+    request(e1, product.declare context, subject: x1, object: x2)
+    param(e1, subdomain, x3)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x3)
+```

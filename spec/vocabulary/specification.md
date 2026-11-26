@@ -310,3 +310,9 @@ area: specification
 - **depend on** (verb, state) → relation job.depends on. A job needs another job, directly or through the jobs it needs. Forms: depends on, depended on. Frame: <job> depends on <job>.
 - **product detail** (noun) → object product detail. A part of the product that this release of the product service declares nothing of, as one a later release wrote, kept as it is by each declaration. Plural: product details.
 - **the product form** (proper noun) → object product form. The form a product is kept in: its id and purpose, its actors, and its jobs, each with its actors, its job statement and its needs.
+- **subdomain** (noun) → object subdomain. A part of the product's problem that the product declares with its id, its type and the jobs it serves, which bounded contexts address (decision 0128). Plural: subdomains.
+- **declare** (verb, action) → operation product.declare subdomain. The person writes a subdomain of the product with its id, its type and the jobs it serves. Forms: declares, declared. Frame: <actor> declares <subdomain>.
+- **declare** (verb, action) → operation product.declare context. The person writes a bounded context of the product's domain map with its id, the subdomains it addresses and the shop that keeps it, or none for a third-party provider (decision 0143). Forms: declares, declared. Frame: <actor> declares <bounded context>.
+- **cover** (verb, state) → relation id.covers. An id lies under another: its path opens with the other id. Forms: covers, covered. Frame: <id> covers <id>.
+- **subdomain type** (noun) → object subdomain type. How the product weighs a subdomain, as `core`. Plural: subdomain types.
+- **the subdomain type form** (proper noun) → object subdomain type form. `core`, `supporting` or `generic`, the types of subdomain decision 0128 names.
