@@ -166,6 +166,7 @@ That's what you asked for.
 
 ```console
 $ shop work line b250 --into items --retires items#r12 --group 'An item shown gives its title and its status' 'When the person shows an item, the backlog service shall return the title of the item and the status of the item.'
+b250 "work show prints the status of an item": items#r31 When the person shows an item, the backlog service shall return the title of the item and the status of the item.
 b250 "work show prints the status of an item": items#r31 retires items#r12
 ```
 

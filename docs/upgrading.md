@@ -308,8 +308,10 @@ new id, and its old id goes to the capability's `retired:`. `shop work line --re
 $ shop work idea "Reword buy for grammar 4"
 b1 "Reword buy for grammar 4" idea
 $ shop work line b1 --into buy --retires buy#r4 "While a shopper owns no cart, when the shopper picks a cart, the shopper shall watch a till."
+b1 "Reword buy for grammar 4": buy#r9 While a shopper owns no cart, when the shopper picks a cart, the shopper shall watch a till.
 b1 "Reword buy for grammar 4": buy#r9 retires buy#r4
 $ shop work line b1 --into buy --in g2 --retires buy#r3 "When a shopper picks a cart, the shopper shall watch a till for the shopper."
+b1 "Reword buy for grammar 4": buy#r10 When a shopper picks a cart, the shopper shall watch a till for the shopper.
 b1 "Reword buy for grammar 4": buy#r10 retires buy#r3
 ```
 

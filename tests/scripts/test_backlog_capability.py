@@ -29,7 +29,7 @@ def test_it_writes_the_block_and_lines_go_into_it(ready_repo):
     made(ready_repo)
     assert git(ready_repo, "show", "--name-only", "--format=", "HEAD").split() == [".shop/backlog/b1.md"]
     done = work(ready_repo, "line", "b1", "--into", "shelf", LINE)
-    assert done.returncode == 0 and done.stdout.endswith("shelf#r1\n"), done.stderr
+    assert done.returncode == 0 and done.stdout.endswith("shelf#r1 %s\n" % LINE), done.stderr
     assert blocks(ready_repo) == [Block("shelf", [], [Group("g1", "Fix the parser", [("r1", LINE)])], new=NEW)]
     text = (ready_repo / ".shop" / "backlog" / "b1.md").read_text()
     assert "### shelf\n\nnarrator: %s\ngroup: service\npurpose: %s\n\n#### [g1]" % (NEW[0], NEW[2]) in text

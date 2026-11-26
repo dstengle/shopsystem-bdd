@@ -337,6 +337,7 @@ b250 "Showing an item gives its status too" idea
 $ shop work shape b250
 b250 "Showing an item gives its status too" shaped
 $ shop work line b250 --into items --retires 'items#r12' --group 'An item shown gives its title and status' 'When the person shows an item, the backlog service shall return the title of the item and the status of the item.'
+b250 "Showing an item gives its status too": items#r31 When the person shows an item, the backlog service shall return the title of the item and the status of the item.
 b250 "Showing an item gives its status too": items#r31 retires items#r12
 ```
 
@@ -360,7 +361,7 @@ items' when it lays them:
 
 ```console
 $ shop work line b251 --into items --group 'An item shown gives its provenance' 'When the person shows an item, the backlog service shall return the provenance of the item.'
-b251 "Showing an item gives its provenance": items#r31
+b251 "Showing an item gives its provenance": items#r31 When the person shows an item, the backlog service shall return the provenance of the item.
 $ shop work batch start
 batch-34 building: t1 b250 "Showing an item gives its status too", t2 b251 "Showing an item gives its provenance"
 b251 "Showing an item gives its provenance" renumbered: items#g31 -> items#g32, items#r31 -> items#r32

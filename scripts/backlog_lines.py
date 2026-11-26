@@ -110,6 +110,13 @@ def add_line(root, name, capability, text, group=None, in_group=None):
     return item, ident
 
 
+def added(item, ident, text, retires=None):
+    """What `work line` prints of a requirement line it added (drafting r98, b815): `<label>: <cap>#r<n> <line>`, and
+    of one that retires a live requirement a second line `<label>: <cap>#r<n> retires <old id>`."""
+    said = "%s: %s %s" % (label(item), ident, text)
+    return said if retires is None else "%s\n%s: %s retires %s" % (said, label(item), ident, retires)
+
+
 def retire(root, name, ident, text, into=None, group=None, in_group=None):
     """`work line --retires <cap>#r<n> <line>`: the line written into the item `name` as `work line` writes it, and the
     old id under its block's `retired:` (backlog_retires), committed; refused, changing nothing, when the capability
