@@ -9,7 +9,8 @@ groups (r120-r122): notebook's g2 serving the job, whose r2 asks the notes servi
 reaches `shelf` (product_handlers_trace's, on a request to archive a note: c2, r120); checking_handlers_port's driven
 port `stock-port` (c2, r121); a guarantees capability `rules` (c2, r122); and, so that `w_unserved_cap` is seen live,
 `drawer`, which no job's trace reaches. The When runs `spec check`; the Thens read its exit and the rows under the
-rule the group's line is about (`RULES`)."""
+rule the group's line is about (`RULES`). A product not of the product form (r124) has `jobs = ["keep-notes"]`, and
+"this product" is named by the product file's path."""
 import hashlib
 import shutil
 import sys
@@ -24,7 +25,7 @@ CONTEXT, OTHER = "example.org/fixture/domain-model", "example.org/fixture/other"
 JOB, NEED, ACTOR, SUBDOMAIN = "keep-notes", "file-notes", "the note keeper", "note-taking"
 RULES = {"g114": "w_unheld_job", "g115": "w_unserved_job", "g116": "w_untriggered_actor", "g117": "v_need_cycle",
          "g118": "w_unaddressed_sub", "g119": "w_unreached_sub", "g123": "v_job_elsewhere",
-         "g120": "w_unserved_cap", "g121": "w_unserved_cap", "g122": "w_unserved_cap"}
+         "g120": "w_unserved_cap", "g121": "w_unserved_cap", "g122": "w_unserved_cap", "g124": "w_unformed_product"}
 SAYS = {"job": JOB, "need": NEED, "product actor": ACTOR, "subdomain": SUBDOMAIN, "bounded context": OTHER}
 CAPABILITY = """---
 id: capability/example.org/fixture/domain-model/%(name)s
@@ -142,7 +143,10 @@ def build(step, group):
     if said:
         capability(spec, "drawer", LABELS)
     held = product(group)
-    if held is not None:
+    if group == "g124":
+        (repo / REL).parent.mkdir(parents=True, exist_ok=True)
+        (repo / REL).write_text('id = "example.org/fixture"\njobs = ["%s"]\n' % JOB)
+    elif held is not None:
         (repo / REL).parent.mkdir(parents=True, exist_ok=True)
         (repo / REL).write_text(T.P.scripts("product_store").render(held))
     for args in (("features", "generate"), ("spec", "annotate")):
@@ -196,7 +200,7 @@ def then_names(step):
     if not ran(step) or step.term != "name":
         return False
     done = step.context["result"]
-    said = SAYS[step.context["product check"][step.names[-1]]]
+    said = SAYS[step.context["product check"][step.names[-1]]] if step.names else REL     # this product: its file
     assert any(said in row for row in rows(done.stdout, RULES[group_of(step)])), done.stdout + done.stderr
 
 
