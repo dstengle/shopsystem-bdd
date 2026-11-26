@@ -46,3 +46,26 @@ Feature: Laying
     And a workspace w1
     When the batches service checks the item i1 in the workspace w1
     Then the laying service completes this request
+
+  @g5 @r5
+  Scenario: A lift of an item keeps out a requirement of the same group that another requirement in the workspace retires
+    Given a requirement r2
+    And a requirement group r3
+    And the requirement group r3 has the requirement r2
+    And a requirement id r4
+    And the requirement r2 has the requirement id r4
+    And a requirement r1
+    And the requirement r1 retires the requirement id r4
+    And an item i1
+    And the item i1 holds the requirement r1
+    And a requirement r6
+    And the requirement group r3 has the requirement r6
+    And a requirement id r7
+    And the requirement r6 has the requirement id r7
+    And a requirement r5
+    And the requirement r5 retires the requirement id r7
+    And a workspace w1
+    And the workspace w1 holds the requirement r5
+    When the batches service lifts the item i1 from the workspace w1
+    Then the laying service keeps the workspace w2
+    And the workspace w2 does not hold the requirement r6

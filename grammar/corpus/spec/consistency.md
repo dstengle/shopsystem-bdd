@@ -886,3 +886,28 @@ shall [x5: thing `response-request` (parameter), x6: thing `oblique-role` (param
     return(e2, subject: x13, object: x4)
     return(e3, subject: x13, object: x3)
 ```
+
+## r47
+From: b756 r47.
+
+```reading
+While a requirement has a trigger and the requirement has a consequence and another requirement that has the trigger uses `response-request` and `oblique-role` and a term has a frame that has a preposition and the term has another frame that has the preposition, when the person explains the requirement, the language service shall return the requirement and the consequence.
+shall [x5: thing `response-request` (parameter), x6: thing `oblique-role` (parameter), x11: agent the person (constant), x12: service the language service (constant)]
+  while [x1: requirement, x2: trigger, x3: consequence, x4: requirement, x7: term, x8: frame, x9: preposition, x10: frame]
+    of(x2, x1)
+    of(x3, x1)
+    distinct(x4, x1)
+    of(x2, x4)
+    use(subject: x4, object: x5)
+    use(subject: x4, object: x6)
+    of(x9, x8)
+    of(x8, x7)
+    distinct(x10, x8)
+    of(x9, x10)
+    of(x10, x7)
+  when
+    request(e1, language.explain, subject: x11, object: x4)
+  response
+    return(e2, subject: x12, object: x4)
+    return(e3, subject: x12, object: x3)
+```
