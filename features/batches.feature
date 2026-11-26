@@ -895,3 +895,39 @@ Feature: Batches
     And a batch b1
     When the person opens the batch b1
     Then the batches service does not allocate the item i1
+
+  @g132 @r132
+  Scenario: A batch opened imports each pack its items import
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a pack p1
+    And the item i1 imports the pack p1
+    And a batch b1
+    When the person opens the batch b1
+    Then this bounded context imports the pack p1
+    And the batches service keeps the pack p1
+
+  @g133 @r133
+  Scenario: A batch opened takes each retired model line out of the domain model
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a model line m1
+    And the item i1 retires the model line m1
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service keeps the area a1
+    And the area a1 does not hold the model line m1
+
+  @g134 @r134
+  Scenario: A batch opened takes each retired term out of its area
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a term t1
+    And the item i1 retires the term t1
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service keeps the area a1
+    And the area a1 does not hold the term t1

@@ -1189,3 +1189,56 @@ shall [x2: agent the review limit (constant), x3: agent the person (constant), x
     not
       allocate(e2, subject: x5, object: x1)
 ```
+
+## r132
+From: b672 r132.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item imports a pack, when the person opens a batch, the batches service shall keep the pack that this bounded context imports.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x4: agent the person (constant), x6: service the batches service (constant), x7: bounded context "the bounded context whose repository the command runs in" (indexical)]
+  while [x1: item, x3: pack]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    import#3(subject: x1, object: x3)
+  when [x5: batch]
+    request(e1, batches.open, subject: x4, object: x5)
+  response
+    import(subject: x7, object: x3)
+    keep(e2, subject: x6, object: x3)
+```
+
+## r133
+From: b672 r133.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item retires a model line, when the person opens a batch, the batches service shall keep an area that does not hold the model line.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x4: agent the person (constant), x6: service the batches service (constant)]
+  while [x1: item, x3: model line]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    retire#4(subject: x1, object: x3)
+  when [x5: batch]
+    request(e1, batches.open, subject: x4, object: x5)
+  response [x7: area]
+    not
+      in(x3, x7)
+    keep(e2, subject: x6, object: x7)
+```
+
+## r134
+From: b672 r134.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item retires a term, when the person opens a batch, the batches service shall keep an area that does not hold the term.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x4: agent the person (constant), x6: service the batches service (constant)]
+  while [x1: item, x3: term]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    retire#4(subject: x1, object: x3)
+  when [x5: batch]
+    request(e1, batches.open, subject: x4, object: x5)
+  response [x7: area]
+    not
+      in(x3, x7)
+    keep(e2, subject: x6, object: x7)
+```

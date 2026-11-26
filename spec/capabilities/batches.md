@@ -7,7 +7,7 @@ area: execution
 specifies: object batch, object task, service batches
 language: codified-2
 retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107]
-unbuilt: []
+unbuilt: [r132, r133, r134]
 ---
 
 # Batches
@@ -221,4 +221,13 @@ when the change is merged.
 
 ### [g131] A ready item whose change would take the batch past the review limit is not allocated, whether or not it meets the bar
 - [r131] While an item is `ready` and the item exceeds the review limit, when the person opens a batch, the batches service shall not allocate the item.
+
+### [g132] A batch opened imports each pack its items import
+- [r132] While an item is `ready` and the item meets the readiness bar and the item imports a pack, when the person opens a batch, the batches service shall keep the pack that this bounded context imports.
+
+### [g133] A batch opened takes each retired model line out of the domain model
+- [r133] While an item is `ready` and the item meets the readiness bar and the item retires a model line, when the person opens a batch, the batches service shall keep an area that does not hold the model line.
+
+### [g134] A batch opened takes each retired term out of its area
+- [r134] While an item is `ready` and the item meets the readiness bar and the item retires a term, when the person opens a batch, the batches service shall keep an area that does not hold the term.
 

@@ -7,7 +7,7 @@ area: tracking
 specifies: service drafting
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r73, r74, r75, r76, r77, r78]
 ---
 
 # Drafting
@@ -252,4 +252,22 @@ capabilities, retirements, rewordings and chores.
 
 ### [g72] A new capability drafted with an area is kept in that area
 - [r72] When the person drafts an item with a capability and an area, the drafting service shall keep the capability in the item and keep the area that holds the capability in the item.
+
+### [g73] A plugin pack imported into an item is kept
+- [r73] When the person imports a pack into an item, the drafting service shall keep the item that imports the pack.
+
+### [g74] Importing a pack that does not exist is refused
+- [r74] If the person imports a pack that does not exist into an item, then the drafting service shall refuse the request and name the pack.
+
+### [g75] A model line retired in an item is kept
+- [r75] When the person retires a model line in an item, the drafting service shall keep the model line in the item.
+
+### [g76] Retiring a model line that the domain model does not hold is refused
+- [r76] If the person retires a model line that the domain model does not hold in an item, then the drafting service shall refuse the request and name the model line.
+
+### [g77] A term retired in an item is kept
+- [r77] When the person retires a term in an item, the drafting service shall keep the term in the item.
+
+### [g78] Retiring a term that no area holds is refused
+- [r78] If the person retires a term that no area holds in an item, then the drafting service shall refuse the request and name the term.
 
