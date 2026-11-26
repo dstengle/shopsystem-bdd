@@ -19,7 +19,7 @@ KEEPS = ("write", "commit", "post", "keep", "make", "rewrite", "publish")     # 
 CONTRACT, PACK = "spec/adapters/cli.toml", "spec/packs/household.md"
 NOTES, SHARED = "spec/vocabulary/notes.md", "spec/vocabulary/shared.md"
 MOVED = "### moves\n\n- term `the person → actor the person` from shared to notes"
-GROUPS = ("g190", "g191")
+GROUPS = ("g190", "g191", "g192")
 
 
 def _module(name):
