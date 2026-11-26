@@ -211,6 +211,9 @@ def given_does(step):
         holds(step)
     elif term in ("address", "originate"):
         set_field(request(step, step.names[0]), "upstream" if term == "address" else "asker", Q.OWN)
+    elif term == "for":                                 # raised for another request (r4, r39, b748)
+        step.context["raised_for"] = step.names[1]
+        request(step, step.names[1])
     elif term == "reject":
         step.context.setdefault("before_run", []).append(next(m for m in list(sys.modules.values()) if getattr(
             m, "__file__", "").endswith("requests_handlers_commit.py")).uncommittable)

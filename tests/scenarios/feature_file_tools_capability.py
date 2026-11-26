@@ -42,6 +42,9 @@ def shared(name, file):
     return sys.modules[name]
 
 
+unread = shared("shop_scenario_unread", "scenario_unread.py").unread     # b748
+
+
 W = shared("shop_feature_file_tools_world", "feature_file_tools_world.py")
 USES = shared("shop_feature_file_tools_uses", "feature_file_tools_uses.py")
 COL = shared("shop_feature_file_tools_collections", "feature_file_tools_collections.py")
@@ -122,6 +125,8 @@ def prepare(step):
     elif REQ.prepare(step, w, W.kind, NAME, PATH):     # a request's parameters, an operation that makes (b418)
         w["groups"] = 1
     elif not USES.prepare(step, w, W._write, NAME, PATH):     # a capability of one construct (b274)
+        if not sorted((step.repo / "spec" / "capabilities").glob("*.md")):     # b748: no example data either
+            unread(step, "the facts %s" % (w["facts"],))
         return []
     else:
         w["groups"] = 1     # its one group, the construct's (b288)
@@ -130,11 +135,14 @@ def prepare(step):
     return [NAME]
 
 
-def feature(w, f):
-    """The path of the feature f: its capability's feature, or the one feature of the example data."""
+def feature(step, w, f):
+    """The path of the feature f: its capability's feature, or the one feature of the example data; with neither, the
+    Given that names it fails (b748)."""
     caps = [c for c, f2 in W.facts(w, "has", ("capability",)) if f2 == f]
     if caps:
         return "features/%s.feature" % W.value(w, caps[0])
+    if f not in w["values"] and not (step.repo / "features" / "shelf.feature").is_file():
+        unread(step, "the feature %s: no capability has it and no example data holds features/shelf.feature" % f)
     return w["values"].get(f, "features/shelf.feature")
 
 
