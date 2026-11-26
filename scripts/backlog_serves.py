@@ -16,9 +16,9 @@ import sys
 from pathlib import Path
 
 import product_store
-from model_product import name_of
 import spec_read
 from backlog_items import Refused, commit, find, items, label
+from model_product import name_of
 
 GROUP = re.compile(r"^(?P<cap>[a-z0-9]+(?:-[a-z0-9]+)*)#(?P<g>g[1-9]\d*)$")
 
