@@ -192,13 +192,14 @@ def _scenarios(copy, blocks, unparsed=()):
 def well_formed(root, item, others=()):
     """(reasons, warnings) of the item's requirement lines, checked on a copy of `spec/` with them laid in (D6, D7, D9),
     over the lines of `others` (a batch's items picked before it, plan 4 D7). An item with no line is not passing,
-    unless it retires a requirement (b271); its universal conditions are lines too (b516), and its moves (b654)."""
+    unless it retires a requirement (b271); its universal conditions are lines too (b516), its moves (b654), and its
+    imports and retirements (b688)."""
     if backlog_chore.read(item) is not None:        # a chore in place of lines (b316): its check is done's to run
         return backlog_chore.unlined(item), []
     blocks = backlog_lines.read(item, rel_of(item.name))
     mine = set(backlog_lines.ids(blocks))
     if not mine and not blocks.universal and not any(b.retired for b in blocks) and not blocks.adapters \
-            and not blocks.moves:      # b355; b654
+            and not blocks.moves and not blocks.imports and not blocks.retirements:      # b355; b654; b688
         return ["it has no requirement line: give it one with `shop work line`"], []
     copy = Path(tempfile.mkdtemp(prefix="readiness-"))
     try:
