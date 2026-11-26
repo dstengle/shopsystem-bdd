@@ -4,7 +4,8 @@ r86's or r87's scenario (`mine`) and returns False on any other: the requirement
 `work-queue#r1`, or, when no requirement has it, `work-queue#r99`; `work line <item> --into work-queue
 --relied-on-by <id> <line>` drafts the item, written at the When with no lines; and the Thens read the item's block
 as `work` committed it, the line with its `Relied on by:` line after it, or the refusal and the item left as it
-was."""
+was. r88's (b759): the requirement id r3 the live `work-queue#r2`, given to the When as `--retires`, and the Thens of
+the item holding and keeping it read its block's `retired: [r2]` and the new line's pair with r2 under `retires:`."""
 import importlib.util
 import re
 import sys
@@ -24,14 +25,14 @@ W = shared("shop_work_queue_world", "work_queue_world.py")
 B = shared("shop_backlog_world", "backlog_world.py")
 R = shared("shop_readiness_world", "readiness_world.py")
 local = W.local
-LIVE, NONE = "work-queue#r1", "work-queue#r99"
+LIVE, NONE, RETIRED = "work-queue#r1", "work-queue#r99", "work-queue#r2"
 
 
 def mine(step):
-    """True when the step is of drafting's scenario of r86 or r87."""
+    """True when the step is of drafting's scenario of r86, r87 or r88."""
     found = sys.modules["vocab"].vocab4.requested.scenario(step.request.node)
     return (sys.modules["vocab"].origin(step.request.node) == "drafting" and found is not None
-            and bool({"r86", "r87"} & set(found.tags)))
+            and bool({"r86", "r87", "r88"} & set(found.tags)))
 
 
 def _world(step):
@@ -40,8 +41,12 @@ def _world(step):
 
 @local("GivenK")
 def given_named(step):
-    """a requirement, a requirement id, an item: what the When writes."""
-    return None if mine(step) else False
+    """a requirement, a requirement id, an item: what the When writes; r88's requirement id r3 the one it retires."""
+    if not mine(step):
+        return False
+    if step.names == ["r3"]:
+        _world(step)["retires"] = RETIRED
+    return None
 
 
 @local("GivenDoes")
@@ -66,8 +71,9 @@ def draft(step):
     R.codify(step)
     path = B.write_item(step, item, status="shaped")
     world["before"] = path.read_text()
-    B.run_work(step, "line", B.ident(item), "--into", R.CAPABILITY, "--relied-on-by", world["id"], R.PASSING,
-               **R.NO_INPUT)
+    retiring = ("--retires", world["retires"]) if "retires" in world else ()
+    B.run_work(step, "line", B.ident(item), "--into", R.CAPABILITY, "--relied-on-by", world["id"], *retiring,
+               R.PASSING, **R.NO_INPUT)
     return None
 
 
@@ -93,4 +99,7 @@ def then_does(step):
     at = next((k for k, line in enumerate(lines) if line.startswith("- [r") and line.endswith(R.PASSING)), None)
     assert at is not None, (step.text, lines)
     assert lines[at + 1] == "Relied on by: %s" % world["id"], (step.text, lines)
+    if step.names[-1:] == ["r3"]:
+        new, old = lines[at][3:lines[at].index("]")], world["retires"].split("#")[1]
+        assert "retired: [%s]" % old in lines and "retires: [%s %s]" % (new, old) in lines, (step.text, lines)
     return None
