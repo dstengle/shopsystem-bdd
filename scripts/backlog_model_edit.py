@@ -8,7 +8,8 @@ place of the element and its members. `--remove-term <term>` takes a term out (a
 or a term bullet of a capability block); `--reword-term <term> "<entry>"` puts the new entry in its place. A term is
 named by its word, by `<word> → <element>` when two entries share the word, or by its whole bullet. A model block
 left with no line and no entry goes. A model line or a term the item does not hold is refused, naming it; `--into
-<capability>` narrows a model line to its capability's area."""
+<capability>` narrows a model line to its capability's area, and a term, as `--term` takes it, to the model block of
+its area or the capability's own block (b800)."""
 import re
 
 import backlog_model
@@ -26,7 +27,8 @@ def add_arguments(p):
     p.add_argument("--remove-term", metavar="TERM", help="an item's term (its word, `<word> → <element>`, or its "
                    "whole bullet) taken out")
     p.add_argument("--reword-term", metavar="TERM", help="an item's term (its word, `<word> → <element>`, or its "
-                   "whole bullet) replaced by the entry given as the text")
+                   "whole bullet) replaced by the entry given as the text, its bullet as --term takes it "
+                   "(`- **w** (...) ...`, no `--` before it); with --into, the capability's term")
 
 
 def given(args):
@@ -138,11 +140,14 @@ def _matches(bullet, term):
     return term == word or (element is not None and re.sub(r"\s+", " ", term) == "%s → %s" % (word, element))
 
 
-def _term_at(blocks, term):
+def _term_at(blocks, term, root=None, into=None):
     """[(kind, block index, bullet)] of the item's terms `term` names: a model block's ("model") or a capability
-    block's ("capability"); refused, naming the term, when none or more than one."""
-    found = [("model", n, b) for n, block in enumerate(blocks.models) for b in block.terms if _matches(b, term)]
-    found += [("capability", n, b) for n, block in enumerate(blocks) for b in block.terms if _matches(b, term)]
+    block's ("capability"), of `into`'s area or its own block when given; refused, naming the term, when none or more
+    than one."""
+    area = backlog_model.area_of(root, into, blocks) if into else None
+    found = [("model", n, b) for n, block in _model_blocks(blocks, area) for b in block.terms if _matches(b, term)]
+    found += [("capability", n, b) for n, block in enumerate(blocks) for b in block.terms
+              if (into is None or block.capability == into) and _matches(b, term)]
     if not found:
         raise Refused("work line: the item holds no term %s" % term, reason="term not in the item",
                       names=["term:%s" % term])
@@ -152,9 +157,9 @@ def _term_at(blocks, term):
     return found[0]
 
 
-def _replace_term(item, blocks, term, new):
+def _replace_term(item, blocks, term, new, root=None, into=None):
     from backlog_section import SECTION, render
-    kind, n, bullet = _term_at(blocks, term)
+    kind, n, bullet = _term_at(blocks, term, root, into)
     if kind == "model":
         terms = list(blocks.models[n].terms)
         at = terms.index(bullet)
@@ -169,38 +174,38 @@ def _replace_term(item, blocks, term, new):
     item.sections[SECTION] = render(blocks)
 
 
-def remove_term(root, name, term):
+def remove_term(root, name, term, into=None):
     """`--remove-term`: the item's term out of it, committed."""
     item, blocks = _opened(root, name)
     term = one_line(term, "term").strip()
-    _replace_term(item, blocks, term, None)
+    _replace_term(item, blocks, term, None, root, into)
     commit(root, item, "work line: %s removes the term %s" % (label(item), term))
     return item
 
 
-def reword_term(root, name, term, entry):
+def reword_term(root, name, term, entry, into=None):
     """`--reword-term`: the item's term replaced by `entry` (a model block's checked as `--term`'s are), committed."""
     item, blocks = _opened(root, name)
     term = one_line(term, "term").strip()
     if not entry:
         raise Refused("work line: --reword-term %s takes the entry that replaces it" % term)
-    kind = _term_at(blocks, term)[0]
+    kind = _term_at(blocks, term, root, into)[0]
     new = backlog_model._entries([entry])[0] if kind == "model" else one_line(entry, "term")
-    _replace_term(item, blocks, term, new)
+    _replace_term(item, blocks, term, new, root, into)
     commit(root, item, "work line: %s rewords the term %s" % (label(item), term))
     return item
 
 
 def cmd(args):
-    """`work line` with one of this module's options: one of them, the text only of a reword, `--into` only of a
-    model line; what was done, printed."""
+    """`work line` with one of this module's options: one of them, the text only of a reword, `--into` narrowing
+    where the model line or term is; what was done, printed."""
     flags = [k for k in FLAGS if getattr(args, k, None) is not None]
     from backlog_cli import PIECES
     others = [k for k in PIECES[1:] + ("retires", "reword", "remove", "group", "in_group")
               if getattr(args, k, None) is not None]
-    if len(flags) != 1 or others or (args.into is not None and flags[0].endswith("term")):
+    if len(flags) != 1 or others:
         raise Refused("work line: --remove-model, --reword-model, --remove-term and --reword-term take one of them, "
-                      "the text of a reword, and --into only of a model line")
+                      "the text of a reword, and --into")
     flag = flags[0]
     value = getattr(args, flag)
     if flag.startswith("remove") and args.text is not None:
@@ -210,8 +215,8 @@ def cmd(args):
     elif flag == "reword_model":
         item, said = reword_model(args.root, args.name, value, args.text, args.into), "model line %s reworded"
     elif flag == "remove_term":
-        item, said = remove_term(args.root, args.name, value), "term %s removed"
+        item, said = remove_term(args.root, args.name, value, args.into), "term %s removed"
     else:
-        item, said = reword_term(args.root, args.name, value, args.text), "term %s reworded"
+        item, said = reword_term(args.root, args.name, value, args.text, args.into), "term %s reworded"
     print("%s: %s" % (label(item), said % value.strip().split("\n")[0]))
     return 0

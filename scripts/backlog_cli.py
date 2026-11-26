@@ -8,12 +8,12 @@ import backlog_items
 
 
 class _LineParser(argparse.ArgumentParser):
-    """`work line b1 --into CAP TEXT`: argparse (before 3.12) gives the optional positional TEXT nothing at `b1` and
-    then finds TEXT left over after the options; it is taken as TEXT here, as is one word after `--`."""
+    """`work line b1 --into CAP TEXT`: argparse (before 3.12) gives the optional positional TEXT nothing at `b1`, then
+    finds TEXT left over; it is taken as TEXT here, as are one word after `--` and a bullet opening with "- " (b800)."""
 
     def parse_known_args(self, args=None, namespace=None):
         found, extras = super().parse_known_args(args, namespace)
-        if found.text is None and len(extras) == 1 and not extras[0].startswith("-"):
+        if found.text is None and len(extras) == 1 and (not extras[0].startswith("-") or extras[0].startswith("- ")):
             found.text = extras.pop()
         elif found.text is None and len(extras) == 2 and extras[0] == "--":
             found.text, extras = extras[1], []
