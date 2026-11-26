@@ -3,8 +3,8 @@ out of `batch-<n>` at once, in one commit citing it (`take_out`), and `work batc
 worktree of the task's head with every parked item's lines taken out (`tested_tree`), so that a parked item's scenario
 holds up no other task. Both have the laying service lift each item from the workspace (laying, b611, batches r182;
 `lifted`), as `work batch review` does, and keep the change citing the items once it completed (r183), each item as it
-was laid (`as_laid`, b324; after `work batch amend`, as it last laid it, b460): an item reshaped after its park is
-taken out by the lines the batch branch holds."""
+was laid, which the laying service reads at the commit that holds it (b324; after `work batch amend`, as it last laid
+it, b460, b769): an item reshaped after its park is taken out by the lines the batch branch holds."""
 import contextlib
 import re
 
@@ -18,21 +18,6 @@ from batch_git import GitFailed, git, is_tree, remove_tree, tree_for, trees_dir
 def parked(root, batch):
     """The items of the batch's tasks that are no longer `in-batch`."""
     return [i for i in (backlog_items.find(root, t.item) for t in batch.tasks) if i.status != "in-batch"]
-
-
-def as_laid(root, batch, items):
-    """Each of `items` as `work batch start` laid it (batches r45, b324): its file in the base's commit that added the
-    batch's plan, its ids renumbered; the item as it now reads when that commit or its file there is not found."""
-    added = base_of(root, batch)
-    laid = []
-    for item in items:
-        rel = backlog_items.rel_of(item.name)
-        source = amended(root, batch, item) or added
-        try:
-            laid.append(backlog_items.parse(git(root, "show", "%s:%s" % (source, rel)).stdout, rel) if source else item)
-        except GitFailed:
-            laid.append(item)
-    return laid
 
 
 def base_of(root, batch):
@@ -76,11 +61,13 @@ def take_out(root, batch, items, command):
 
 
 def lifted(root, batch, items, workspace, command):
-    """Each of `items`, as it was laid, lifted from the workspace by the laying service against the batch's base; the
-    paths its lifts changed."""
+    """Each of `items` lifted from the workspace by the laying service against the batch's base, as it was laid (batches
+    r45, b324): its file in the base's commit that added the batch's plan, or that the `Laid:` line of its latest amend
+    names (b460); the paths its lifts changed."""
     base, changed = base_of(root, batch), []
-    for item in as_laid(root, batch, items):
-        changed += laying.changed(laying.lift(item, workspace, command, base), command)
+    for item in items:
+        reply = laying.lift(item, workspace, command, base, amended(root, batch, item))
+        changed += laying.changed(reply, command)
     return list(dict.fromkeys(changed))
 
 
