@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/an-obtained-contract-is-kept-in-its-provider-s-adapter-spec-checked
 summary: "spec obtain keeps an upstream's contract in each adapter spec of that provider, under the provider's whole id and the version, never at the repository root."
 date: 2026-11-25
-status: accepted
+status: superseded
 tier: requirement
 enforced_by: [checking#r91]
 verified_by: [scenario]

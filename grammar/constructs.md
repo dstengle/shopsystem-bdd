@@ -614,7 +614,7 @@ each one
 - Since: b240
 - Form: every <noun>
 - Functions: `DetEvery`
-- Cited by: consistency#r4, consistency#r26, scenarios#r9, scenarios#r12, scenarios#r24
+- Cited by: consistency#r4, consistency#r26, scenarios#r9, scenarios#r12, scenarios#r24, scenarios#r47
 - Example and its reading:
 
 ```construct
@@ -676,7 +676,7 @@ there is none
 - Since: b240
 - Form: no <noun>
 - Functions: `DetNo`
-- Cited by: consistency#r28, scenarios#r23, scenarios#r45, scenarios#r48
+- Cited by: consistency#r28, scenarios#r23, scenarios#r45, scenarios#r48, scenarios#r47
 - Example and its reading:
 
 ```construct

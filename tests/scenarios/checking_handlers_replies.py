@@ -1,13 +1,17 @@
-"""Handlers of checking's scenarios of the contract registry's replies (g128-g130, g134: r128-r130, r134; b636, b736), each a
+"""Handlers of checking's scenarios of the contract registry's replies (g128-g130, g134, g139, g140: r128-r130, r134,
+r139, r140; b636, b736, b735), each a
 `work_queue_world.local` that takes only a step of a scenario of one of its groups (`mine`). The registry is
 checking_handlers_registry's stand-in, answering as the When says (`$STAND_IN_REGISTRY_REPLY`): it completes the
 deposit of `spec publish --version 1.2.0` (checking_handlers_publish's world, no contract kept before), returns its own
 contract to `spec fetch --version 1.2.0` (the folder keeping another at that version), refuses the retrieval of
 `spec obtain` at `1.2.0` (checking_handlers_obtain's world, the upstream holding that version), or, when the core's
-request is a deposit, refuses the deposit of `spec publish --version 1.2.0` (r134). The Given of the core's request
+request is a deposit, refuses the deposit of `spec publish --version 1.2.0` (r134); when it is a register, completes
+it without writing anything, or refuses it, in that obtain's world (r139, r140). The Given of the core's request
 says which request the reply is on. The Thens: the contract kept (committed at its version as
-the published one, once the stand-in recorded its completion, and the command done), the contract returned (the
-stand-in's printed, not the folder's), the version named in the refusal, the contract asked at that version, and
+the published one, once the stand-in recorded its completion, and the command done; of a register, the command done
+once the stand-in completed it, saying it obtained what the stand-in kept and writing nothing itself), the contract
+returned (the stand-in's printed, not the folder's), the version named in the refusal (the adapter spec, of a
+register), the contract asked at that version, and
 nothing changed (no file, no commit)."""
 import os
 import sys
@@ -17,7 +21,7 @@ from pathlib import Path
 from vocab import handler
 
 W = sys.modules["shop_work_queue_world"]
-GROUPS = {"g128", "g129", "g130", "g134"}
+GROUPS = {"g128", "g129", "g130", "g134", "g139", "g140"}
 VERSION = "1.2.0"
 REPLIES = {"complete": "`spec publish`", "return": "`spec fetch`", "refuse": "`spec obtain`"}
 KEEPS = ("write", "commit", "post", "keep", "make", "rewrite", "publish")
@@ -37,14 +41,15 @@ def world(step):
 
 
 def given_instance(step):
-    if not mine(step) or step.kind != "contract":
+    if not mine(step) or step.kind not in ("contract", "adapter spec"):
         return False
     world(step)
 
 
 def given_request(step):
-    """`the specification service deposits the contract c1`, `... retrieves the contract c1`: the request replied to."""
-    if not mine(step) or step.term not in ("deposit", "retrieve"):
+    """`the specification service deposits the contract c1`, `... retrieves the contract c1`, `... registers the
+    contract c1 for the adapter spec a1`: the request replied to."""
+    if not mine(step) or step.term not in ("deposit", "retrieve", "register"):
         return False
     world(step)["request"] = step.term
 
@@ -64,11 +69,12 @@ def replies(step):
     w["calls"] = str(obtain.outside(step) / "registry-calls.jsonl")
     env = dict(obtain.env(step), SHOPSYSTEM_CONTRACT_REGISTRY=str(registry.STAND_IN),
                STAND_IN_REGISTRY_CALLS=w["calls"], STAND_IN_REGISTRY_REPLY=step.term,
+               STAND_IN_REGISTRY_ON="register" if w.get("request") == "register" else "",
                PYTHONPATH=os.pathsep.join([str(registry.STAND_IN.parent), os.environ.get("PYTHONPATH", "")]))
     if step.term == "refuse" and w.get("request") == "deposit":
         _module("checking_handlers_publish.py").build(step, False, VERSION)
         words = ["publish"]
-    elif step.term == "refuse":
+    elif step.term == "refuse" or w.get("request") == "register":
         obtain.build(step)
         words = ["obtain", obtain.UPSTREAM]
     else:
@@ -96,6 +102,12 @@ def then_keeps(step):
     if not mine(step) or "replies" not in step.context or step.term not in KEEPS:
         return False
     done, rel = _done(step), ".shop/contracts/%s/contract.toml" % VERSION
+    if world(step).get("request") == "register":
+        adapter = _module("checking_handlers_obtain.py").ADAPTER
+        assert [c["operation"] for c in calls(step)][-2:] == ["register", "completed"], calls(step)
+        assert "obtained %s" % adapter in done.stdout, done.stdout
+        assert not list(step.repo.rglob("provider")) and W.head(step.repo) == world(step)["head"], W.committed(step.repo)
+        return None
     assert [c["operation"] for c in calls(step)][-2:] == ["deposit", "completed"], calls(step)
     assert rel in W.committed(step.repo) and W.head(step.repo) != world(step)["head"], W.committed(step.repo)
     assert tomllib.loads((step.repo / rel).read_text())["status"] == "published"
@@ -116,8 +128,9 @@ def then_does(step):
     if not mine(step) or "replies" not in step.context or step.term not in ("name", "has"):
         return False
     done = step.context["result"]
+    named = _module("checking_handlers_obtain.py").ADAPTER if world(step).get("request") == "register" else VERSION
     if step.term == "name":
-        assert done.returncode == 1 and VERSION in done.stdout + done.stderr, done.stdout + done.stderr
+        assert done.returncode == 1 and named in done.stdout + done.stderr, done.stdout + done.stderr
     else:
         asked = world(step).get("request") or "retrieve"
         assert [c["version"] for c in calls(step) if c["operation"] == asked] == [VERSION], calls(step)

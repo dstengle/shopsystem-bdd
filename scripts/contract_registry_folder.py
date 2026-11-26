@@ -6,8 +6,9 @@ every one published before it superseded, in one commit by `shop_files.committed
 context's folder, a folder of the same shop that holds the bounded context asked (a `spec/index.md` whose `id` is
 it, at the shop's top or one or two folders under it: `hosted`, b622), else the upstream's folder on GitHub
 (contract_registry_github); with no version the published contract (the one of the highest version), a version
-never deposited refused naming it, `version not deposited`. An obtained contract is kept in an adapter spec's folder
-as `provider/<id's path>/<version>/contract.toml` (`place`, b593)."""
+never deposited refused naming it, `version not deposited`. A contract registered for an adapter spec (b735,
+contract-registry r4) is kept in the adapter spec's folder as `provider/<id's path>/<version>/contract.toml` (`place`,
+b593), committed, the same bytes kept there already left as they are; `held` reads back what a folder holds there."""
 import re
 from pathlib import Path
 
@@ -39,6 +40,29 @@ def place(context, version):
     keyed by the whole id, the id's path after `bounded-context/` (two bounded contexts whose ids end alike each keep
     their own), then the version; `version` may be a glob."""
     return PROVIDER.joinpath(*context.split("/")[1:], version, FILE)
+
+
+def held(folder, provider, version=None):
+    """The contracts of `provider` kept in the adapter spec's `folder`, at `version` (None: any), sorted."""
+    return sorted(Path(folder).glob(place(provider, version or "*").as_posix()))
+
+
+def register(root, contract, adapter_spec, provider, version):
+    """The contract (its bytes) of `provider` kept at `version` in the adapter spec's folder `adapter_spec` (relative
+    to `root`), committed unless the same bytes are kept there already; the reply completed, {"kept": its path,
+    "changed": whether it was written}."""
+    import shop_files
+    rel = (Path(adapter_spec) / place(provider, version)).as_posix()
+    target = Path(root) / rel
+    if target.is_file() and target.read_bytes() == contract:
+        return contract_registry.completed({"kept": rel, "changed": False})
+
+    def write():
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(contract)
+    shop_files.committed(root, [rel], "spec obtain: the contract of %s at %s for %s" % (provider, version,
+                                                                                     adapter_spec), write)
+    return contract_registry.completed({"kept": rel, "changed": True})
 
 
 def deposit(root, contract, version):

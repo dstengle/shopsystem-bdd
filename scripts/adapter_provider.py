@@ -1,6 +1,6 @@
 """A provider's words in an adapter spec (b550, checking r106-r109; decisions 0117, 0120, 0135): the terms of each
 contract the adapter spec holds for a provider of its `providers:` (model_adapter's provider check: kept where
-`spec obtain` keeps it, contract_obtain's `place`), read as entries of its lexicon after the packs and before its
+`spec obtain` registers it, contract_registry's `held`), read as entries of its lexicon after the packs and before its
 own glossary (`terms`, which spec_lexicon's `read` gives a context of `kind: adapter`). The contract writes each term
 as its vocabulary does, `<word> (<part of speech>): <text>`; read here in the glossary's entry form: a frame's
 `<actor>` and `<agent>` the kind `agent`, `<from>` and `<to>` the object and the target of the contract's relation
@@ -42,12 +42,12 @@ def renames(root):
 
 def contracts(root):
     """(where, provider id, contract) of each provider's contract the adapter spec holds, in `providers:` order."""
-    import contract_obtain
+    import contract_registry
     import model_adapter
     root, out = Path(root), []
     for given in as_list(_index(root).get("providers")):
         m = model_adapter.PROVIDER.match(str(given).strip())
-        kept = sorted(root.glob(contract_obtain.place(m.group("id"), m.group("version") or "*").as_posix())) if m else []
+        kept = contract_registry.held(root, m.group("id"), m.group("version")) if m else []
         if kept:
             out.append((kept[-1].relative_to(root).as_posix(), m.group("id"), tomllib.loads(kept[-1].read_text())))
     return out

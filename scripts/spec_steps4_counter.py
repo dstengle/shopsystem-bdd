@@ -2,7 +2,8 @@
 
 - a counter-example of a response's `every` or `only` with a restriction: one more K brought in that meets its
   restriction but the last atom of it, which it fails (another value of the attribute, else the atom negated: "the
-  worktree w1 does not hold the file f3"), and the Then of the scope's acts negated on it (`counter`); an `every`
+  worktree w1 does not hold the file f3"), a value no "no" box of the precondition denies of it, else no
+  counter-example (`denied`, b732), and the Then of the scope's acts negated on it (`counter`); an `every`
   keeps its two members and their Thens (`each`), an `only` asserts no act on a member, since it obliges none;
 - an upper bound of a response's count ("at most n", "exactly n", "fewer than n", "one"): one K past the upper bound
   brought in, each meeting the restriction, and one Then of the count as the line says it ("`work` prints at most
@@ -66,23 +67,52 @@ def counter(r, box, k, act):
         return []
     m = renamed(box, k)
     body = boxes.subst(box.body, m)
+    held = body[:n] + body[n + 1:]
+    if values(r, body[n], held) == []:     # every other value a no box of the precondition denies (b732)
+        return []
     for x in box.refs:
         introduce(r, m[x])
-    r.brought += [s for c in body[:n] + body[n + 1:] for s in boxes.restrictor(r, c)]
-    r.brought.append(("SCond", unmet(r, body[n])))
+    r.brought += [s for c in held for s in boxes.restrictor(r, c)]
+    r.brought.append(("SCond", unmet(r, body[n], held)))
     return [(act, tree) for _, tree in r.acts(boxes.subst(box.scope.body, m), False)]
 
 
-def unmet(r, atom):
-    """The Cond tree of an atom a thing fails: another value of its attribute, else the atom negated."""
-    if atom.pred == "attr":     # of the attribute entry spec_steps4's `cond` says it by
-        x, term, value = atom.args
-        t = next((t for t, kinds in r.vocab.attributes if t.term == term
-                  and any(k in r.vocab.ancestors(x.kind) for k in kinds)), None)
-        others = [v for v in (t.values if t else ()) if v != value]
-        if others:
-            return r.cond(Atom("attr", (x, term, others[0])))
-    return r.cond(atom, False)
+def unmet(r, atom, held=None):
+    """The Cond tree of an atom a thing fails: another value of its attribute, else the atom negated; given what the
+    thing `held` meets besides, the first other value no "no" box of the precondition denies of it (b732)."""
+    free = values(r, atom, held)
+    return r.cond(Atom("attr", atom.args[:2] + (free[0],))) if free else r.cond(atom, False)
+
+
+def values(r, atom, held=None):
+    """The other values of an attribute atom's attribute, less those a "no" box of the precondition denies of its
+    thing when it meets `held` besides ([] when each is denied); None for an atom of no attribute with values."""
+    if atom.pred != "attr":
+        return None
+    x, term, value = atom.args     # of the attribute entry spec_steps4's `cond` says it by
+    t = next((t for t, kinds in r.vocab.attributes if t.term == term
+              and any(k in r.vocab.ancestors(x.kind) for k in kinds)), None)
+    others = [v for v in (t.values if t else ()) if v != value]
+    if not others:
+        return None
+    return [v for v in others if v not in denied(r, x, term, held)] if held is not None else others
+
+
+def denied(r, x, term, held):
+    """The values of the attribute `term` that a "no" box of the precondition (a `not` box of one K, x's kind or one
+    above it) denies of x: each box whose other atoms, x put in, are among `held`."""
+    out = set()
+    for b in r.pre:
+        if not (isinstance(b, Box) and b.op == "not" and len(b.refs) == 1
+                and b.refs[0].kind in r.vocab.ancestors(x.kind) and all(isinstance(i, Atom) for i in b.body)):
+            continue
+        body = boxes.subst(b.body, {b.refs[0]: x})
+        values = [a.args[2] for a in body if a.pred == "attr" and a.args[:2] == (x, term)
+                  and not isinstance(a.args[2], Ref)]
+        rest = [a for a in body if not (a.pred == "attr" and a.args[:2] == (x, term))]
+        if len(values) == 1 and all(a in held for a in rest):
+            out.add(values[0])
+    return out
 
 
 def only(r, box):

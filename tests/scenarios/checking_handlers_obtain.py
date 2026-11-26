@@ -1,4 +1,4 @@
-"""Handlers of checking's obtained contract scenarios (r81, r82, r88-r91, r102, r103; b587, b591, b593, b596, b601), each a `work_queue_world.local`
+"""Handlers of checking's obtained contract scenarios (r81, r82, r88-r90, r102, r103; b587, b591, b593, b596, b601), each a `work_queue_world.local`
 that takes only a step of a scenario of one of its groups (`mine`). The world is the domain-model fixture
 (tests/scripts/fixtures/domain-model/), copied into the repository at the When with each bounded context under
 `## Upstreams` of its index, hosted on GitHub, and committed; the stand-in gh (tests/scripts/stub_gh.py, run as
@@ -25,7 +25,7 @@ W = sys.modules["shop_work_queue_world"]
 ROOT = Path(__file__).resolve().parents[2]
 STUB = ROOT / "tests" / "scripts" / "stub_gh.py"
 FIXTURE = ROOT / "tests" / "scripts" / "fixtures" / "domain-model"
-GROUPS = {"g81", "g82", "g88", "g89", "g90", "g91", "g102", "g103"}
+GROUPS = {"g81", "g82", "g88", "g89", "g90", "g102", "g103"}
 UPSTREAM = "bounded-context/example.org/fixture/inventory"
 MALFORMED = "bounded-context/example/inventory"
 OTHERS = ["bounded-context/example.org/other/inventory", "bounded-context/example.org/third/inventory"]
@@ -177,19 +177,6 @@ def then_keeps(step):
     assert KEPT in W.committed(step.repo), W.committed(step.repo)
 
 
-def then_holds(step):
-    """`the adapter spec a1 holds the contract c1`: the contract kept under its folder's provider/, by the provider's
-    whole id and the version, in the run's commit, and nothing kept at the repository root (decision 0136)."""
-    if not mine(step) or "obtained" not in step.context or step.term != "holds":
-        return False
-    _done(step)
-    assert world(step)["kinds"].get(step.names[0]) == "adapter spec", step.names
-    assert world(step)["kinds"].get(step.names[-1]) == "contract", step.names
-    assert (step.repo / KEPT).read_text() == CONTRACT % (UPSTREAM, "1.2.0", "published")
-    assert KEPT in W.committed(step.repo), W.committed(step.repo)
-    assert not (step.repo / "provider").exists()
-
-
 def then_unchanged(step):
     """`the specification service does not change the contract c3`: kept where and as it was before the When."""
     if not mine(step) or "obtained" not in step.context or step.term != "change":
@@ -224,7 +211,7 @@ def then_names(step):
 
 
 def then_does(step):
-    for each in (then_keeps, then_holds, then_unchanged, then_refuses, then_names):
+    for each in (then_keeps, then_unchanged, then_refuses, then_names):
         if each(step) is not False:
             return None
     return False

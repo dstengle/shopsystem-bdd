@@ -1086,21 +1086,6 @@ shall [x3: agent the person (constant), x6: service the specification service (c
       change(e3, subject: x6, object: x7)
 ```
 
-## r91
-From: b593 r91.
-
-```reading
-While an adapter spec has a provider, when the person obtains a contract from the provider, the specification service shall keep the contract that the adapter spec holds.
-shall [x3: agent the person (constant), x5: service the specification service (constant)]
-  while [x1: adapter spec, x2: provider]
-    of(x2, x1)
-  when [x4: contract]
-    request(e1, specification.obtain, subject: x3, object: x4, from: x2)
-  response
-    in(x4, x1)
-    keep(e2, subject: x5, object: x4)
-```
-
 ## r92
 From: b595 r92.
 
@@ -1229,26 +1214,6 @@ shall [x2: thing `response-request` (parameter), x8: agent the person (constant)
     request(e1, specification.check, subject: x8, object: x9)
   response
     complete(e2, subject: x10, object: x11)
-```
-
-## r100
-From: b599 r100.
-
-```reading
-While an adapter spec has a provider and the provider has the `1.2.0` version and the provider has a contract that has the `1.3.0` version, when the person obtains a contract from the provider, the specification service shall keep a contract that has the `1.2.0` version and keep the adapter spec that holds the contract.
-shall [x3: version `1.2.0` (parameter), x5: version `1.3.0` (parameter), x6: agent the person (constant), x8: service the specification service (constant)]
-  while [x1: adapter spec, x2: provider, x4: contract]
-    of(x2, x1)
-    of(x3, x2)
-    of(x5, x4)
-    of(x4, x2)
-  when [x7: contract]
-    request(e1, specification.obtain, subject: x6, object: x7, from: x2)
-  response [x9: contract]
-    of(x3, x9)
-    keep(e2, subject: x8, object: x9)
-    in(x9, x1)
-    keep(e3, subject: x8, object: x1)
 ```
 
 ## r101
@@ -1877,3 +1842,66 @@ shall [x6: agent the person (constant), x7: service the specification service (c
     fail(e2, subject: x7, object: x8)
     name(e3, subject: x7, object: x3)
 ```
+
+## r137
+Retires: r91. From: b735 r137.
+
+```reading
+While an adapter spec has a provider, when the person obtains a contract from the provider, the specification service shall register the contract for the adapter spec with the provider.
+shall [x3: agent the person (constant), x5: service the specification service (constant)]
+  while [x1: adapter spec, x2: provider]
+    of(x2, x1)
+  when [x4: contract]
+    request(e1, specification.obtain, subject: x3, object: x4, from: x2)
+  response
+    request(e2, contract registry.register, subject: x5, object: x4, for: x1)
+    param(e2, provider, x2)
+```
+
+## r138
+Retires: r100. From: b735 r138.
+
+```reading
+While an adapter spec has a provider and the provider has the `1.2.0` version and the provider has a contract that has the `1.3.0` version, when the person obtains a contract from the provider, the specification service shall register the contract for the adapter spec with the provider and the `1.2.0` version.
+shall [x3: version `1.2.0` (parameter), x5: version `1.3.0` (parameter), x6: agent the person (constant), x8: service the specification service (constant)]
+  while [x1: adapter spec, x2: provider, x4: contract]
+    of(x2, x1)
+    of(x3, x2)
+    of(x5, x4)
+    of(x4, x2)
+  when [x7: contract]
+    request(e1, specification.obtain, subject: x6, object: x7, from: x2)
+  response
+    request(e2, contract registry.register, subject: x8, object: x7, for: x1)
+    param(e2, provider, x2)
+    param(e2, version, x3)
+```
+
+## r139
+From: b735 r139.
+
+```reading
+When the contract registry service completes the request to register a contract for an adapter spec, the specification service shall keep the contract.
+shall [x1: service the contract registry service (constant), x5: service the specification service (constant)]
+  when [x2: request, x3: contract, x4: adapter spec]
+    request(x2, contract registry.register, object: x3, for: x4)
+    complete(e1, subject: x1, object: x2)
+  response
+    keep(e2, subject: x5, object: x3)
+```
+
+## r140
+From: b735 r140.
+
+```reading
+When the contract registry service refuses the request to register a contract for an adapter spec, the specification service shall name the adapter spec and change nothing.
+shall [x1: service the contract registry service (constant), x5: service the specification service (constant)]
+  when [x2: request, x3: contract, x4: adapter spec]
+    request(x2, contract registry.register, object: x3, for: x4)
+    refuse(e1, subject: x1, object: x2)
+  response
+    name(e2, subject: x5, object: x4)
+    not [x6: thing]
+      change(e3, subject: x5, object: x6)
+```
+

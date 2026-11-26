@@ -65,12 +65,29 @@ def given_task(step):
 
 @handler("GivenK_A", "task")
 def given_task_is(step):
-    if step.text.startswith("no "):     # "no task of the batch b1 whose status is `failed` exists" (b716): none given
+    """A task's status; "no task of the batch b1 whose status is `failed` exists" kept and honoured: no task of the
+    batch given that status, before or after it (b716, b732)."""
+    if step.text.startswith("no "):
+        denied = (step.names[-1] if step.names else None, bare(step.values[0]))
+        step.context.setdefault("no_task", set()).add(denied)
+        for name in step.context.get("given", {}).get("task", {}):
+            _honoured(step, name)
         return
     status = bare(step.values[0])
     if " is not " in step.text:
         status = next(s for s in TASK_STATUSES if s != status)
     T.given(step, "task", step.names[0])["status"] = status
+    _honoured(step, step.names[0])
+
+
+def _honoured(step, name):
+    """Assert that no "no task" Given denies the task `name` its status in its batch."""
+    given = step.context.get("given", {})
+    task = given.get("task", {}).get(name, {})
+    batch = task.get("batch") or given.get("item", {}).get(task.get("item"), {}).get("batch")
+    for b, status in step.context.get("no_task", ()):
+        assert not (task.get("status") == status and b in (None, batch)), (
+            "the task %s of the batch %s is `%s`, which a no Given denies" % (name, batch, status))
 
 
 @handler("GivenR", "in")

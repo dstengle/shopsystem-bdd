@@ -22,3 +22,10 @@ Feature: Contract registry
     When the specification service retrieves the contract c1 with the version v1
     Then the contract registry service refuses this request
     And the contract registry service names the version v1
+
+  @g4 @r4
+  Scenario: A contract registered for an adapter spec is kept by the registry
+    Given a contract c1
+    And an adapter spec a1
+    When the specification service registers the contract c1 for the adapter spec a1
+    Then the contract registry service completes this request

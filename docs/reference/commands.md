@@ -1195,17 +1195,19 @@ status = "published"
 ### `shop spec obtain`
 
 Keeps an upstream's contract, the one it keeps as published or with `--version` the one kept at that version, in
-each adapter spec `adapters/<name>/` whose `providers:` name it, as `provider/<id's path>/<version>/contract.toml`
-under the adapter spec's folder (its id after `bounded-context/`, so two upstreams whose ids end alike keep their
-own), where the adapter spec's provider check reads it, byte for byte, in one commit; nothing is kept at the
-repository root, and it keeps no context request and changes no other contract. The
+each adapter spec `adapters/<name>/` whose `providers:` name it, at the version the adapter spec pins the provider at
+when it pins one: it asks the contract registry to register the contract for each such adapter spec. The shop-folder
+adapter keeps it as `provider/<id's path>/<version>/contract.toml` under the adapter spec's folder (its id after
+`bounded-context/`, so two upstreams whose ids end alike keep their own), where the adapter spec's provider check
+reads it, byte for byte, one commit for each adapter spec; nothing is kept at the repository root, and it keeps no
+context request and changes no other contract. The
 upstream is a bounded context under `## Upstreams` of `spec/index.md`, read off the GitHub repository its `github:`
 names. An id out of the context id form `bounded-context/<domain>/<path>` is refused, naming the id and
 `id not in the context id form`; a repository GitHub does not serve (missing, private or not answering), naming the
 bounded context and `bounded context unreachable`; an upstream with no contract, naming the bounded context; an
-upstream no adapter spec has as its provider, naming the bounded context and `no adapter spec has the provider`.
-`shop spec obtain` is the only writer of `provider/`: obtained again, a contract kept there is written again with the
-upstream's bytes, or left as it is when they are the same.\
+upstream no adapter spec has as its provider, naming the bounded context and `no adapter spec has the provider`; a
+registration the registry refuses, naming the adapter spec and `contract not registered`. Obtained again, a contract
+kept already is written again with the upstream's bytes, or left as it is when they are the same (`kept already`).\
 Synopsis: `shop spec obtain <bounded context> [--version <version>]`
 
 ```console

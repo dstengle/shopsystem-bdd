@@ -28,3 +28,7 @@ Relied on by: checking#r131
 - [r3] If the specification service retrieves a contract with a version that no contract has, then the contract registry service shall refuse the request and name the version.
 Relied on by: checking#r126
 
+### [g4] A contract registered for an adapter spec is kept by the registry
+- [r4] When the specification service registers a contract for an adapter spec, the contract registry service shall complete the request.
+Relied on by: checking#r137, checking#r138
+

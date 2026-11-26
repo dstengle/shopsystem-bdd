@@ -776,6 +776,27 @@ Feature: Scenarios
     And the scenarios service keeps the given step g1
     And the given step g1 mentions the requester r3
 
+  @g47 @r47
+  Scenario: generation writes a counter-example of every that the no box of the precondition does not deny
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And the requirement r1 uses `every`
+    And a restriction r3
+    And the requirement r1 has the restriction r3
+    And a precondition p1
+    And the requirement r1 has the precondition p1
+    And the precondition p1 uses `no-noun`
+    And a code c2
+    And the precondition p1 uses the code c2
+    And a feature f1
+    And the capability c1 has the feature f1
+    When the person generates the feature f1
+    Then the scenarios service keeps the counter-example c3
+    And the counter-example c3 does not use the code c2
+
   @g48 @r48
   Scenario: generation writes a step of one parse where a code names a thing
     Given a requirement group r2
