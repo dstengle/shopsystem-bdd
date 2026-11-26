@@ -1,4 +1,4 @@
-"""decision_successor (b741, batches r173, r174): an accepted decision an item's retirement leaves unenforced is
+"""decision_successor (b741, batches r173, r174; b750, r177, r178): an accepted decision items' retirements leave unenforced is
 superseded by a successor the lay writes, and the unlay takes the successor out and the decision is accepted again."""
 import backlog_items
 import decision_successor
@@ -58,3 +58,66 @@ def test_an_item_that_retires_nothing_changes_nothing(tmp_path):
     item = backlog_items.parse(ITEM.replace("retired: [r1]\nretires: [r5 r1]\n\n", ""), ".shop/backlog/b7.md")
     assert decision_successor.lay(root, [item]) == [] and decision_successor.unlay(root, [item]) == []
     assert (root / "spec/decisions/0001-kept-in-order.md").read_text() == OLD
+
+
+SECOND = (ITEM.replace("b7", "b8").replace("Retire it", "Retire the other").replace("[r1]", "[r2]")
+          .replace("[r5 r1]", "[r6 r2]").replace("[g4]", "[g5]").replace("[r5]", "[r6]"))
+JOINT = "spec/decisions/0003-kept-in-order-b7.md"
+
+
+def two(tmp_path):
+    root, first = tree(tmp_path)
+    (root / "spec/decisions/0002-other.md").write_text(OTHER.replace("work-queue#r2", "work-queue#r3"))
+    return root, first, backlog_items.parse(SECOND, ".shop/backlog/b8.md")
+
+
+def test_two_items_retiring_ids_of_one_decision_give_one_successor(tmp_path):
+    root, first, second = two(tmp_path)
+    written = []
+    decision_successor.lay(root, [first, second], written)
+    assert decision_successor.said(written) == [
+        'b7 "Retire it": %s supersedes design-decision/ex.com/prod/ctx/kept-in-order' % JOINT,
+        'b8 "Retire the other": %s supersedes design-decision/ex.com/prod/ctx/kept-in-order' % JOINT]
+    data, body = frontmatter((root / JOINT).read_text())
+    assert data["enforced_by"] == ["work-queue#r5", "work-queue#r6"]
+    assert data["source"] == ["item/ex.com/prod/ctx/b7", "item/ex.com/prod/ctx/b8"]
+    assert data["by"] == "the lay of item/ex.com/prod/ctx/b7, item/ex.com/prod/ctx/b8"
+    assert sorted(p.name for p in (root / "spec/decisions").glob("*.md")) == [
+        "0001-kept-in-order.md", "0002-other.md", "0003-kept-in-order-b7.md", "index.md"]
+    assert set(decision_successor.entries(body)) == {"item/ex.com/prod/ctx/b7", "item/ex.com/prod/ctx/b8"}
+
+
+def test_the_unlay_of_one_keeps_the_successor_with_the_others_lines(tmp_path):
+    root, first, second = two(tmp_path)
+    decision_successor.lay(root, [first, second])
+    assert JOINT in decision_successor.unlay(root, [first])
+    data, _ = frontmatter((root / JOINT).read_text())
+    assert data["enforced_by"] == ["work-queue#r1", "work-queue#r6"]
+    assert data["source"] == ["item/ex.com/prod/ctx/b8"]
+    assert frontmatter((root / "spec/decisions/0001-kept-in-order.md").read_text())[0]["status"] == "superseded"
+    decision_successor.unlay(root, [second])
+    assert not (root / JOINT).exists()
+    assert (root / "spec/decisions/0001-kept-in-order.md").read_text() == OLD
+
+
+def test_a_relay_lays_the_item_into_the_successor_of_the_batch(tmp_path):
+    root, first, second = two(tmp_path)
+    decision_successor.lay(root, [first, second])
+    decision_successor.unlay(root, [first])
+    decision_successor.lay(root, [first])
+    data, _ = frontmatter((root / JOINT).read_text())
+    assert sorted(data["enforced_by"]) == ["work-queue#r5", "work-queue#r6"]
+    assert sorted(p.name for p in (root / "spec/decisions").glob("0*.md")) == [
+        "0001-kept-in-order.md", "0002-other.md", "0003-kept-in-order-b7.md"]
+
+
+def test_a_delivered_items_successor_is_superseded_in_its_turn(tmp_path):
+    root, first, second = two(tmp_path)
+    decision_successor.lay(root, [first])
+    (root / ".shop" / "backlog").mkdir(parents=True)
+    (root / ".shop/backlog/b7.md").write_text(ITEM.replace("status: in-batch", "status: delivered"))
+    decision_successor.lay(root, [second])
+    assert frontmatter((root / JOINT).read_text())[0]["status"] == "superseded"
+    data, _ = frontmatter((root / "spec/decisions/0004-kept-in-order-b7-b8.md").read_text())
+    assert data["enforced_by"] == ["work-queue#r5", "work-queue#r6"]
+    assert data["supersedes"] == ["design-decision/ex.com/prod/ctx/kept-in-order-b7"]
