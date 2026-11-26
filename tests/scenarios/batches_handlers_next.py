@@ -122,6 +122,25 @@ def polled_world(step):
 T.BEFORE_BATCH.append(polled_world)
 
 
+def parked_world(step):
+    """Under a poll (b722): a batch every item the scenario gives of which is `needs-input` holds only parked items, as
+    `work batch park` leaves them (their question kept, their task back to `pending`), so the world's own in-batch item
+    is not added."""
+    items = step.context["given"]["item"]
+    ours = [n for n in items if n != T.OWN_IN]
+    if not step.context.get("polling") or not ours or any(T.status_of(step, n) != "needs-input" for n in ours):
+        return
+    tasks = step.context["given"]["task"]
+    items.pop(T.OWN_IN, None)
+    for name in [n for n, t in tasks.items() if t["item"] == T.OWN_IN]:
+        del tasks[name]
+    for found in tasks.values():
+        found["status"] = "pending"
+
+
+T.BEFORE_BATCH.append(parked_world)
+
+
 @four("WhenRuns", "`work batch next`", *BOTH)
 def batch_next(step):
     step.context["polling"] = True

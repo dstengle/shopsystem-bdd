@@ -12,10 +12,12 @@ now` finding no commit cites yet), `park item` (a failed task), `fix task` (ever
 run of `work batch review` failed: the task of the item whose change broke it, batch_broken, b696; or two tasks'
 branches conflict in a file, which `work batch review` would refuse to merge: the later task, whose item's subagent
 merges the earlier branch and settles it, and the files, batch_merge's `clashes`, b710), `look at failure`
-(the same, but the tests are of no task's item: the failed tests and no task, b703) or `stop`; a fix of the refused
+(the same, but the tests are of no task's item: the failed tests and no task, b703), `abandon batch` (a building
+batch every item of which is parked, `needs-input`: nothing is left to build, so its driver abandons it, b722) or
+`stop`; a fix of the refused
 submit (a commit on a task's branch since it, batch_broken's `fixed`, b713) makes it `submit batch` in place of `fix
 task` for the failure and `look at failure`. One step is picked,
-the first that applies in this order: stop, review change, fix finding, park item, finish task, build task, prepare
+the first that applies in this order: stop, review change, abandon batch, fix finding, park item, finish task, build task, prepare
 task, fix task (a conflict first), look at failure, submit batch (`pick`). Only the tasks of an item still `in-batch` count; a building
 batch with none of them stops. Each step names the command its result is reported through (`report`). The step is
 printed as lines, one `task:` line a task, and is the content of a `returned` response (the envelope under `--json`:
@@ -35,7 +37,7 @@ from domain_envelope import Response
 from shop_files import Refused
 
 INSTRUCTIONS = ("prepare task", "build task", "finish task", "submit batch", "review change", "fix finding", "fix task",
-                "look at failure", "park item", "stop")
+                "look at failure", "park item", "abandon batch", "stop")
 
 
 def _in_batch(root, task):
@@ -89,18 +91,29 @@ def _conflict(root, tasks):
     return None
 
 
-def pick(batch, tasks, unfixed, built=(), broken=None, kept=False, clash=None):
+def _parked(root, batch):
+    """Whether the batch holds items and every one of them is `needs-input` (b722)."""
+    try:
+        return bool(batch.tasks) and all(backlog_items.find(root, t.item).status == "needs-input" for t in batch.tasks)
+    except Refused:
+        return False
+
+
+def pick(batch, tasks, unfixed, built=(), broken=None, kept=False, clash=None, parked=False):
     """(instruction, the tasks it is about, finding or None): the first step that applies, in the service's order.
     `tasks` are the batch's tasks of in-batch items, `unfixed` its open findings to fix, `built` the ids of its running
     tasks whose branch holds a kept change citing their item, `broken` the task to fix for a refused submit (or None),
     `kept` whether a refused submit's failed run is kept with no task to fix it (`look at failure`, b703), `clash`
-    (later task, earlier task, files) of two task branches that conflict (b710).
+    (later task, earlier task, files) of two task branches that conflict (b710), `parked` whether every item of the
+    batch is `needs-input` (`abandon batch`, b722).
     `build task` and `prepare task` are about every task that takes the step, so that they are built side by side
     (b702); `finish task` (the first built running task), `park item` and `fix task` about one."""
     if batch.status not in ("building", "in-review"):
         return "stop", [], None
     if batch.status == "in-review":
         return "review change", [], None
+    if parked:
+        return "abandon batch", [], None
     if unfixed:
         return "fix finding", [], unfixed[0]
     failed = [t for t in tasks if t.status == "failed"]
@@ -138,6 +151,7 @@ def report(batch, instruction, tasks, finding, clash=None):
             "finish task": "shop work batch done %s %s" % (name, task.task if task else ""),
             "park item": "shop work batch park %s %s --question <question>" % (name, task.item if task else ""),
             "submit batch": "shop work batch review %s" % name,
+            "abandon batch": "shop work batch abandon %s" % name,
             "fix task": "a commit on %s citing Item: %s, then shop work batch review %s" % (
                 task.branch if task else "", task.item if task else "", name),
             "look at failure": "the failed tests looked at and fixed on the batch's branch or a task's, "
@@ -166,7 +180,8 @@ def poll(root, name):
     broken = batch_broken.task_of(root, batch, tasks) if unfixed_run else None
     clash = _conflict(root, tasks) if done else None
     kept = bool(unfixed_run and broken is None and batch_broken.failed(root, batch))
-    instruction, picked, finding = pick(batch, tasks, unfixed, _built(root, batch, tasks), broken, kept, clash)
+    instruction, picked, finding = pick(batch, tasks, unfixed, _built(root, batch, tasks), broken, kept, clash,
+                                   batch.status == "building" and _parked(root, batch))
     folder = None
     if instruction == "review change":
         folder = str(batch_findings.scratch(root, batch, len(batch_findings.reviews(root, batch)) + 1).resolve())
