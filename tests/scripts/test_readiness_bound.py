@@ -23,3 +23,21 @@ def test_reasons_name_the_outcome_and_the_rule_of_owned_operations():
 
 def test_no_reason_of_an_operation_the_item_does_not_own():
     assert readiness_bound.reasons(FOUND, {"notes.add"}, LABELS) == []
+
+
+def test_before_reads_the_readiness_bars_kept_result(tmp_path, monkeypatch):
+    import readiness_before
+    (tmp_path / "spec").mkdir()
+    monkeypatch.setattr(readiness_before, "get", lambda copy, digest: (set(), FOUND))
+    assert readiness_bound.before(tmp_path) == {v for v in FOUND if v[0] != "v_m4"}
+
+
+def test_before_solves_the_tree_when_nothing_is_kept(tmp_path, monkeypatch):
+    import model_check
+    import model_facts
+    import readiness_before
+    (tmp_path / "spec").mkdir()
+    monkeypatch.setattr(readiness_before, "get", lambda copy, digest: None)
+    monkeypatch.setattr(model_facts.Model, "read", lambda self: self)
+    monkeypatch.setattr(model_check, "solve", lambda model: ([("v_pb2", ["stock.reserve done"]), ("v_m4", ["x"])], {}))
+    assert readiness_bound.before(tmp_path) == {("v_pb2", ("stock.reserve done",))}
