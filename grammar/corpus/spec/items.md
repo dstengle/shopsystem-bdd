@@ -1290,3 +1290,26 @@ shall [x7: agent the person (constant), x8: service the backlog service (constan
     name(e3, subject: x8, object: x4)
     name(e4, subject: x8, object: x10)
 ```
+
+## r73
+From: b731 r73.
+
+```reading
+While an item is `shaped` and an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition and the item holds a core line that uses the operation, if the person readies the item, then the backlog service shall refuse the request and name the core line and `v_m9`.
+shall [x8: agent the person (constant), x9: service the backlog service (constant), x10: request "the request the trigger makes" (indexical), x11: thing `v_m9` (parameter)]
+  while [x1: item, x2: area, x3: lifecycle, x4: transition, x5: area, x6: operation, x7: core line]
+    status(x1) = `shaped`
+    in(x3, x2)
+    of(x4, x3)
+    distinct(x5, x2)
+    perform(subject: x6, object: x4)
+    in(x6, x5)
+    use(subject: x7, object: x6)
+    in(x7, x1)
+  if
+    request(e1, backlog.ready, subject: x8, object: x1)
+  response
+    refuse(e2, subject: x9, object: x10)
+    name(e3, subject: x9, object: x7)
+    name(e4, subject: x9, object: x11)
+```

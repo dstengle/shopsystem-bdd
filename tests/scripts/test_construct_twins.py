@@ -28,6 +28,16 @@ def twins():
     return [line for line, said in found if not said.startswith("refused:")]
 
 
+def asks():
+    """The requesters the twins' response-request lines give a reply trigger's twin (b728), read once."""
+    if not ASKS:
+        ASKS.append(test_corpus_spec.askers(REQUEST, twins()))
+    return ASKS[0]
+
+
+ASKS = []
+
+
 def test_the_constructs_have_twins():
     assert any("conform" in line for line in twins())
 
@@ -35,5 +45,5 @@ def test_the_constructs_have_twins():
 @pytest.mark.parametrize("line", twins())
 def test_each_twin_is_read_by_the_check_and_the_steps(line):
     toolchain.require()
-    wrong, _ = test_corpus_spec.reading(REQUEST, "twin", "r1", line)
+    wrong, _ = test_corpus_spec.reading(REQUEST, "twin", "r1", line, asks=asks())
     assert wrong == []

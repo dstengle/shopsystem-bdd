@@ -1073,3 +1073,24 @@ Feature: Items
     Then the backlog service refuses this request
     And the backlog service names the operation outcome o2
     And the backlog service names `v_pb2`
+
+  @g73 @r73
+  Scenario: An item whose line performs another area's lifecycle transition is not readied
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    And a lifecycle l1
+    And an area a1
+    And the area a1 holds the lifecycle l1
+    And a transition t1
+    And the lifecycle l1 has the transition t1
+    And an operation o1
+    And the operation o1 performs the transition t1
+    And an area a2
+    And the area a2 holds the operation o1
+    And a core line c1
+    And the core line c1 uses the operation o1
+    And the item i1 holds the core line c1
+    When the person readies the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the core line c1
+    And the backlog service names `v_m9`

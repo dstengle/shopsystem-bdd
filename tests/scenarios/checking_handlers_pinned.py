@@ -32,12 +32,12 @@ def given_instance(step):
 
 
 def given_state(step):
-    """`the provider p1 has `1.2.0`` and `the contract c1 has `1.3.0``: the version of each; `the provider p1 has the
+    """`the provider p1 has the `1.2.0` version` and `the contract c1 has `1.3.0``: the version of each; `the provider p1 has the
     contract c1` and `the adapter spec a1 has the provider p1`."""
     if not mine(step) or step.term != "has":
         return False
     w = world(step)
-    code = next((n.strip("`") for n in step.nps if n.startswith("`")), None)
+    code = next((n.split("`")[1] for n in step.nps if "`" in n), None)     # bare, or "the `1.2.0` version" (b733)
     if code is not None:
         w["versions"][step.names[0]] = code
     else:

@@ -12,6 +12,8 @@ before the command (`prepare`) and read by its Thens:
   holding or capping line, and the Then its feature must hold (`uses`);
 - a capability whose requirement uses `param-of` or governs an operation that makes a referent (b418):
   feature_file_tools_request's;
+- a capability whose requirement uses `no-noun`, `rc-object` and `named` and a step that has an ambiguous text:
+  feature_file_tools_ambiguous's (b733);
 - a capability whose requirement uses a construct (b274): its catalogue example (feature_file_tools_uses), of
   `no-noun`, `of-relation` and a code a no box of two atoms (b716);
 - else the capability of the example data, run on by no name.
@@ -44,6 +46,7 @@ W = shared("shop_feature_file_tools_world", "feature_file_tools_world.py")
 USES = shared("shop_feature_file_tools_uses", "feature_file_tools_uses.py")
 COL = shared("shop_feature_file_tools_collections", "feature_file_tools_collections.py")
 REQ = shared("shop_feature_file_tools_request", "feature_file_tools_request.py")     # b418
+AMB = shared("shop_feature_file_tools_ambiguous", "feature_file_tools_ambiguous.py")     # b733
 
 
 def _codified2():
@@ -107,6 +110,9 @@ def prepare(step):
     elif "conform" in verbs:
         w["groups"] = constructs(step.repo)
     elif USES.unlinked(step, w, NAME, PATH):     # a no box of two atoms (b716)
+        w["groups"] = 1
+    elif AMB.mine(w, W.kind):     # a code that reads two ways bare (b733)
+        AMB.prepare(step, w, capability, step.repo / "spec" / "index.md")
         w["groups"] = 1
     elif COL.kind(w, W.kind):     # every, only, counts and two (b273)
         w["lines"] = COL.kind(w, W.kind)
@@ -183,6 +189,8 @@ def result_ok(step):
 def writes_not(step, w):
     done = step.context["result"]
     assert done.returncode == 0, done.stderr
+    if w.get("ambiguous"):      # every step of one parse (b733)
+        return AMB.check(step.repo, NAME)
     if w.get("lines"):      # a step that asserts what only allows (r118), one that names an unbrought instance (r116)
         return collections(step, w, "assert" if w["lines"] == "only" else "introduce")
     kept, entailed = w["entailed"]

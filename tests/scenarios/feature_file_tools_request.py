@@ -7,15 +7,20 @@ pack) (`prepare`). The Thens read the feature `features generate` wrote: a given
 one code (the value in use, made up, given to the other thing and to the request), and the thing the operation makes
 brought in by the when step ("When the person enters a design-decision d1 ...") and by no given step (`then`); and a
 requirement that uses `reply-trigger` the example of it, every instance its steps mention brought in by a given or a
-when step (b724: `unbrought`)."""
+when step (b724: `unbrought`), in g1 beside g2, the line whose response makes the request (`response-request`) and
+whose doer is the requester (b728); with a requester, r1 that trigger with a response by another agent (`REPLIED`), a
+given step naming the requester (`REQUESTER`)."""
 import re
 import shutil
 from pathlib import Path
 
 PLUGIN = Path(__file__).resolve().parents[2]
 CONTEXT = PLUGIN / "grammar" / "corpus" / "constructs" / "request" / "spec"
-KINDS = ("operation", "when step")
+KINDS = ("operation", "when step", "requester")
 GIVEN = re.compile(r"^    (?:Given|And) (.*)$")
+REPLIED = ("When the registry completes the request to publish a design-decision, the registry shall notify the person "
+           "of the design-decision.")
+REQUESTER = "the decisions service"     # the doer of the response-request example's response
 
 
 def example(code):
@@ -41,10 +46,15 @@ def prepare(step, w, kind, name, path):
     code = construct(w, kind)
     if code is None:
         return False
+    lines = "### [g1] %s\n- [r1] %s\n" % (code, example(code))
+    if code == "reply-trigger":     # the line that makes the request the reply is on, which gives its requester (b728)
+        if any(v == "has" and pos and kind(w, o) == "requester" for v, _, o, pos in w["facts"]):
+            lines, w["requester"] = "### [g1] %s\n- [r1] %s\n" % (code, REPLIED), REQUESTER
+        lines += "\n### [g2] requesting\n- [r2] %s\n" % example("response-request")
     shutil.copytree(CONTEXT, step.repo / "spec", dirs_exist_ok=True)
     cap = ("---\nid: capability/%s/%s\ntitle: %s\nnarrator: the person\ngroup: service\narea: decisions\n"
            "specifies: service decisions\nlanguage: codified-2\nretired: []\n---\n\n# %s\n\n## Purpose\n\nSomething."
-           "\n\n## Behaviour\n\n### [g1] %s\n- [r1] %s\n" % (path, name, name, name, code, example(code)))
+           "\n\n## Behaviour\n\n%s" % (path, name, name, name, lines))
     (step.repo / "spec" / "capabilities").mkdir(parents=True, exist_ok=True)
     (step.repo / "spec" / "capabilities" / ("%s.md" % name)).write_text(cap)
     w["request"], w["code"] = name, code
@@ -56,10 +66,10 @@ def mine(w):
 
 
 def steps(step, w):
-    """(the given steps, the when steps) of the feature's one scenario."""
+    """(the given steps, the when steps) of the feature's first scenario, g1's."""
     text = (step.repo / "features" / ("%s.feature" % w["request"])).read_text()
     givens, whens, now = [], [], None
-    for line in text.splitlines():
+    for line in text.split("\n  Scenario")[1].splitlines():
         found = re.match(r"^    (Given|When|Then|And|But) (.*)$", line)
         if found:
             now = found.group(1) if found.group(1) in ("Given", "When", "Then") else now
@@ -99,6 +109,8 @@ def then(step, w, pos=True):
         assert introduced, ("the when step brings in nothing", whens)
         kind, name = introduced
         assert "a %s %s" % (kind, name) not in givens and "an %s %s" % (kind, name) not in givens, givens
+    elif np.startswith("the requester") and step.term == "mention":     # the doer of r2's response (b728)
+        assert "%s publishes the design-decision" % w["requester"] in " ".join(givens), (givens, whens)
     elif step.subject.startswith("the given step") and step.term == "mention":
         assert codes(givens) & codes(whens), (givens, whens)
     elif step.subject.startswith("the when step") and step.term == "mention":

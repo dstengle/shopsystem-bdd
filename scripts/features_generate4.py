@@ -1,6 +1,7 @@
 """`features generate`'s scenario of a codified-2 group (the CNL 4 design, I14a): its example data, then its
 requirements' steps read off their logical forms by spec_steps4 and written in the step grammar 4 (spec_rgl_steps),
-each Then a universal condition entails left out with a comment naming it (`entailed`).
+each step of one reading under its keyword, a code named before its kind's noun where it reads two ways bare
+(spec_steps4_code, b733), each Then a universal condition entails left out with a comment naming it (`entailed`).
 
 An act is entailed when spec_entail answers it forced and a universal condition is among its premises; the comment
 names each such condition, and the definition of refuse when the condition's trigger is a refusal and the line's is
@@ -15,10 +16,11 @@ import spec_lf
 import spec_read_given
 import spec_rgl_steps
 import spec_steps4
+import spec_steps4_code
 from spec_solve_pairs import order
 
 ALLOWED = {"given": ("SCond", "_Given", "_HoldsBlock", "_HoldsText")}
-_entailed = {}
+_entailed, _asks = {}, {}
 
 
 class GenerateError(Exception):
@@ -42,6 +44,20 @@ def entailed(root, ctx):
             out.setdefault(line, {})[int(act)] = " and ".join(said)
     _entailed[id(ctx)] = (ctx, out)
     return out
+
+
+def asks(vocab, ctx):
+    """{operation id: the doer of the first of the context's lines whose response requests it (response-request)},
+    once per context read: the requester a reply trigger's scenario names (b728)."""
+    if id(ctx) not in _asks:
+        forms = []
+        for s in ctx.statements:
+            try:
+                forms.append(spec_lf.form(vocab, s.tree))
+            except (spec_steps4.TraceError, ValueError):
+                continue
+        _asks[id(ctx)] = (ctx, spec_steps4.request.asking(vocab, forms))
+    return _asks[id(ctx)][1]
 
 
 def _example(root, gid, group):
@@ -78,12 +94,14 @@ def lines(root, ctx, cap, group, skipped=None):
         forms = [(i, f) for i, f in forms if f.modality == "shall"]
         if not forms:
             return None
-        found = spec_steps4.cases(vocab, forms, entailed(root, ctx))
+        found = spec_steps4.cases(vocab, forms, entailed(root, ctx), asks(vocab, ctx))
+        codes = spec_steps4_code.kinds(forms)     # a step of one reading, its codes named where need be (b733)
+        found = [[(k, t if k == "#" else spec_steps4_code.one(root, vocab, gram, k, t, codes)) for k, t in steps]
+                 for steps in found]
     except (spec_steps4.TraceError, ValueError) as err:
         print("features generate: %s: no scenario: %s" % (gid, err), file=sys.stderr)
         if skipped is not None:
             skipped[gid] = str(err)
         return None
     example = _example(root, gid, group)
-    return [example + [(k, t if k == "#" else spec_rgl_steps.text(gram, t), None) for k, t in steps]
-            for steps in found]
+    return [example + [(k, t, None) for k, t in steps] for steps in found]

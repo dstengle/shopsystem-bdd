@@ -480,7 +480,7 @@ a relative clause whose object is the noun
 - Since: b240
 - Form: <noun> that <subject> <verb>
 - Functions: `k_\w+_Gapped_k_\w+|g_\w+|r\d+_\w+_Gap`
-- Cited by: consistency#r24, scenarios#r20
+- Cited by: consistency#r24, scenarios#r20, scenarios#r48
 - Example and its reading:
 
 ```construct
@@ -676,7 +676,7 @@ there is none
 - Since: b240
 - Form: no <noun>
 - Functions: `DetNo`
-- Cited by: consistency#r28, scenarios#r23, scenarios#r45
+- Cited by: consistency#r28, scenarios#r23, scenarios#r45, scenarios#r48
 - Example and its reading:
 
 ```construct
@@ -985,7 +985,7 @@ a noun named by a code
 - Since: b240
 - Form: the <noun> `<code>`
 - Functions: `k_\w+_Named`
-- Cited by: no line
+- Cited by: scenarios#r48
 - Example and its reading:
 
 ```construct
@@ -1141,7 +1141,7 @@ a trigger on a service's reply to a request of an operation, said with the reque
 - Since: b626
 - Form: <service> completes|returns|refuses the request to <operation verb> <np>
 - Functions: `rq_\w+`
-- Cited by: checking#r125, consistency#r44, parsing#r25, parsing#r26, parsing#r27, scenarios#r44
+- Cited by: checking#r125, consistency#r44, parsing#r25, parsing#r26, parsing#r27, scenarios#r44, scenarios#r46
 - Context: `grammar/corpus/constructs/request/`
 - Example and its reading:
 

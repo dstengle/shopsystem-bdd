@@ -297,3 +297,6 @@ when the change is merged.
 ### [g168] An item whose port outcomes were unhandled before it is allocated at the opening
 - [r168] While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit and the item holds a port line that governs an operation and another port line that governs the operation is not in the item and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, when the person opens a batch, the batches service shall allocate the item.
 
+### [g169] An item whose line performs another area's lifecycle transition is reopened at the opening
+- [r169] While an item is `ready` and an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition and the item holds a core line that uses the operation, if the person opens a batch, then the batches service shall reopen the item and name the core line and `v_m9`.
+

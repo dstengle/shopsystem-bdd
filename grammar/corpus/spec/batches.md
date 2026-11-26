@@ -1781,3 +1781,26 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
   response
     allocate(e2, subject: x14, object: x1)
 ```
+
+## r169
+From: b731 r169.
+
+```reading
+While an item is `ready` and an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition and the item holds a core line that uses the operation, if the person opens a batch, then the batches service shall reopen the item and name the core line and `v_m9`.
+shall [x8: agent the person (constant), x10: service the batches service (constant), x11: thing `v_m9` (parameter)]
+  while [x1: item, x2: area, x3: lifecycle, x4: transition, x5: area, x6: operation, x7: core line]
+    status(x1) = `ready`
+    in(x3, x2)
+    of(x4, x3)
+    distinct(x5, x2)
+    perform(subject: x6, object: x4)
+    in(x6, x5)
+    use(subject: x7, object: x6)
+    in(x7, x1)
+  if [x9: batch]
+    request(e1, batches.open, subject: x8, object: x9)
+  response
+    reopen#2(e2, subject: x10, object: x1)
+    name(e3, subject: x10, object: x7)
+    name(e4, subject: x10, object: x11)
+```

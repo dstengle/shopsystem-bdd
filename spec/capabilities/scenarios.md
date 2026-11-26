@@ -274,3 +274,9 @@ the capability `shelf` holds:
 ### [g45] generation says the value a no box restricts its things by
 - [r45] While a requirement of a requirement group of a capability uses `no-noun`, `of-relation` and a code, when the person generates the feature of the capability, the scenarios service shall keep a given step that uses the code.
 
+### [g46] generation names the requester of the request a reply trigger is on
+- [r46] While a requirement of a requirement group of a capability uses `reply-trigger` and the requirement has a requester, when the person generates the feature of the capability, the scenarios service shall complete the request and keep a given step that mentions the requester.
+
+### [g48] generation writes a step of one parse where a code names a thing
+- [r48] While a requirement of a requirement group of a capability uses `no-noun`, `rc-object` and `named`, when the person generates the feature of the capability, the scenarios service shall not keep a step that has an ambiguous text.
+
