@@ -897,3 +897,8 @@ changed = []
 purpose = "A job's trace reaches a bounded context that addresses each subdomain serving the job."
 since = "b643"
 changed = []
+
+[rules.w_unformed_product]
+purpose = "A product file that does not read as the product form is named among the findings, so it stops no check of the context."
+since = "b695"
+changed = []

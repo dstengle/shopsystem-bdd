@@ -2103,6 +2103,27 @@ a job's needs close a cycle
   pneeds("j","n").
   ```
 
+## w_unformed_product
+
+a product file not of the product form
+
+- Purpose: A product file that does not read as the product form is named among the findings, so it stops no check of the context.
+- Since: b695
+- Severity: warning
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  unformed_product(".shop/product/product.toml","product not in the product form").
+  ```
+
+- Passes on:
+
+  ```prolog
+  pjob("j").
+  ```
+
 ## w_unheld_job
 
 a job of the product that no bounded context holds

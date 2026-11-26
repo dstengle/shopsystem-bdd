@@ -11,7 +11,8 @@ product actor this bounded context maps to its actor A, and `triggers_as(P, Q)` 
 request A makes (model_domain_lines' `requester`). Of this bounded context: `served_here(J)` of each job a requirement
 group serves; `job_reaches(J, Q)` of each requirement of J's trace, and `job_reaches_context(J, B)` of this bounded
 context when the trace holds a requirement and of each provider of an adapter spec in it (decision 0143).
-A product file not of the product form a file problem. The trace is derived only when a job has a serving group."""
+A product file not of the product form `unformed_product(F, Why)` of its path and product_store's reason, which
+w_unformed_product reads, so that the check names it and completes (r124, b695); nothing else read of it. The trace is derived only when a job has a serving group."""
 import re
 from pathlib import Path
 
@@ -52,7 +53,7 @@ class ProductReading:
         try:
             product = product_store.read(self.root)
         except Refused as why:
-            self.problems.append(f"{product_store.REL}: {why}")
+            self.fact("unformed_product", product_store.REL, why.reason)
             return
         name = name_of
         here = bare(self.context)
