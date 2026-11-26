@@ -228,6 +228,7 @@ command = "spec rules"
 cli-only = { options = ["--write"] }
 requirements = [
   "checking#r35: When the person renews the rule catalogue, the specification service shall keep a rule catalogue and complete the request.",
+  "checking#r36: While a rule has a catalogue entry that a rule catalogue does not hold, if the person renews the rule catalogue with the audit, then the specification service shall fail the check, name the rule catalogue and change no file.",
 ]
 [operations."specification.renew".parameters]
 audit = { option = "--check", flag = true }
@@ -251,6 +252,7 @@ requirements = [
 command = "spec annotate"
 requirements = [
   "checking#r48: While a requirement governs an operation that an adapter contract holds, when the person annotates the adapter contract, the specification service shall keep an adapter contract that holds an operation that holds the requirement and complete the request.",
+  "checking#r51: While a requirement governs an operation that an adapter contract holds and the operation does not hold the requirement, if the person annotates the adapter contract with the audit, then the specification service shall fail the check, name the adapter contract and change no file.",
 ]
 [operations."specification.annotate".parameters]
 "adapter contract" = { positional = 1 }
@@ -295,6 +297,8 @@ requirements = [
   "decisions#r21: When the person amends a design-decision whose status is `accepted` with an enforcer, the decisions service shall keep a design-decision that has an enforcer and keep the decisions index.",
   "decisions#r22: When the person amends a design-decision whose status is `accepted` with a foundation, the decisions service shall keep a design-decision that has a foundation and keep the decisions index.",
   "decisions#r23: If the person amends a design-decision whose status is not `accepted`, then the decisions service shall refuse the request and name the design-decision.",
+  "decisions#r24: While a design-decision whose status is `accepted` has an enforcer, when the person amends the design-decision with the enforcer, the decisions service shall complete the request and change no file.",
+  "decisions#r25: While a design-decision whose status is `accepted` has a foundation, when the person amends the design-decision with the foundation, the decisions service shall complete the request and change no file.",
 ]
 [operations."decisions.amend".parameters]
 "design-decision" = { option = "--amend" }
@@ -307,6 +311,7 @@ requirements = [
   "decisions#r4: While the tier of a design-decision is `check` and a test enforces the design-decision, when the person rebuilds the decisions index with the audit, the decisions service shall return the verdict of the test.",
   "decisions#r5: While the tier of a design-decision is `check` and a test whose verdict is `failed` enforces the design-decision, if the person rebuilds the decisions index with the audit, then the decisions service shall fail the check and name the design-decision.",
   "decisions#r16: When the person rebuilds the decisions index, the decisions service shall keep the decisions index.",
+  "decisions#r18: While a design-decision has an index entry that a decisions index does not hold, if the person rebuilds the decisions index with the audit, then the decisions service shall fail the check, name the decisions index and change no file.",
   "decisions#r19: While no decisions index lacks an index entry, when the person rebuilds the decisions index with the audit, the decisions service shall complete the request.",
 ]
 [operations."decisions.rebuild".parameters]
@@ -331,6 +336,7 @@ text = { option = "--about" }
 command = "features generate"
 cli-only = { options = ["--preview", "--root"] }
 requirements = [
+  "scenarios#r1: While the feature of a capability has a scenario that no requirement group has, if the person generates the feature of the capability with the audit, then the scenarios service shall fail the check, name the feature and change no file.",
   "scenarios#r3: While the language of a capability is `codified-2` and every requirement of the capability conforms to the language reference and every requirement of the capability uses the `shall` construct, when the person generates the feature of the capability, the scenarios service shall keep the scenario of every requirement group of the capability.",
   "scenarios#r4: While the language of a capability is `codified-2`, when the person generates the feature of the capability, the scenarios service shall not keep a step that a universal condition entails.",
   "scenarios#r5: While the group of a capability is `service` and the language of the capability is `codified-2`, when the person generates the feature of the capability, the scenarios service shall keep the feature of the capability and return the feature.",
@@ -374,6 +380,9 @@ audit = { option = "--check", flag = true }
 [operations."scenarios.audit"]
 command = "features vocab"
 cli-only = { options = ["--check", "--root", "--tests"] }
+requirements = [
+  "scenarios#r2: While a step of a feature has no handler, if the person audits the feature, then the scenarios service shall fail the check, name the step, name the feature and change no file.",
+]
 [operations."scenarios.audit".parameters]
 feature = { positional = 1 }
 
@@ -412,7 +421,9 @@ command = "features bindings"
 cli-only = { options = ["--tests"] }
 requirements = [
   "feature-reading#r11: While every binding binds a scenario, when the person vets this repository, the feature reading service shall return `every binding names a scenario` and complete the request.",
+  "feature-reading#r12: While a binding of a test module binds no scenario, if the person vets this repository, then the feature reading service shall fail the check, name the test module and change no file.",
   "feature-reading#r13: While a scenarios call binds a scenario of a feature file, when the person vets this repository with the unbound listing, the feature reading service shall complete the request and not return a scenario of the feature file.",
+  "feature-reading#r14: While a feature file has a scenario that no binding binds, if the person vets this repository with the unbound listing, then the feature reading service shall fail the check, name the scenario and change no file.",
 ]
 [operations."feature reading.vet".parameters]
 "unbound listing" = { option = "--unbound", flag = true }
@@ -1025,7 +1036,10 @@ requirements = [
   "batches#r61: While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the batch is `needs-input` and a scenario of the item breaks in the workspace of the task, when a session finishes the task, the batches service shall set the status of the task to `done`.",
   "batches#r62: While an item in a batch is `in-batch` and a task of the item is `running` and another item in the batch is `in-batch` and a scenario of the item succeeds in the workspace of the task, when a session finishes the task, the batches service shall set the status of the task to `done`.",
   "batches#r66: While a task of an item is `running` and the item holds a chore and the chore breaks in the workspace of the task, if a session finishes the task, then the batches service shall refuse the request and name the chore.",
+  "batches#r67: While a task of an item is `running` and the item holds a chore and a kept change in the workspace of the task touches a file that is not in the chore, if a session finishes the task, then the batches service shall refuse the request and name the file.",
   "batches#r70: While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the batch is `needs-input` and the item has a requirement that is not in the workspace of the batch and a scenario of the item breaks in the workspace of the task, when a session finishes the task, the batches service shall set the status of the task to `done`.",
+  "batches#r77: While a task of an item is `running` and the workspace of the task holds a virtual environment and a scenario of the item succeeds in the workspace of the task, when a session finishes the task, the batches service shall set the status of the task to `done`.",
+  "batches#r78: While a task of an item is `running` and a scenario breaks in the workspace of the task and the scenario has a capability and the item holds no requirement id that is in the capability and no kept change in the workspace of the task touches the feature of the capability, when a session finishes the task, the batches service shall set the status of the task to `done`.",
 ]
 [operations."batches.finish".parameters]
 task = { positional = 2 }
@@ -1064,6 +1078,9 @@ requirements = [
   "reviews#r3: While a task of a batch is not `done`, if the person submits the batch, then the batches service shall refuse the request and name the task.",
   "reviews#r4: While a workspace of a task of a batch holds a kept change that cites no item, if the person submits the batch, then the batches service shall refuse the request and name the kept change.",
   "reviews#r5: While a batch is `building` and every task of the batch is `done`, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.",
+  "reviews#r6: While a batch is `building` and every task of the batch is `done` and the workspace of the batch holds a virtual environment, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.",
+  "reviews#r7: While a batch is `building` and every task of the batch is `done` and an item in the batch is `in-batch` and a kept change that touches a file cites the item and another kept change touches the file and another item in the batch is `in-batch` and the kept change cites the item and no kept change conflicts with a kept change, when the person submits the batch, the batches service shall keep a proposed change of the batch that holds the kept change and set the status of the batch to `in-review`.",
+  "reviews#r8: While an item in a batch is `in-batch` and a kept change cites the item and another item in the batch is `in-batch` and the kept change conflicts with another kept change that cites the item and the kept change touches a file, if the person submits the batch, then the batches service shall refuse the request and name the file, the item and every item in the batch that a kept change that conflicts with the kept change cites.",
   "reviews#r9: While a batch is `awaiting-merge` and the workspace of the batch holds a base merge, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.",
   "reviews#r10: While a batch is `awaiting-merge` and the workspace of the batch holds no base merge, if the person submits the batch, then the batches service shall refuse the request and name the batch.",
   "reviews#r13: While an item in a batch is `in-batch` and every task of the batch is `done` and the workspace of the batch holds an amendment that cites the item and a scenario of the item succeeds in the workspace of a task of the item, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.",
@@ -1161,6 +1178,7 @@ requirements = [
   "toolchain#r2: While the `.venv/bin/python` Python interpreter exists, when the person probes the toolchain without a Python interpreter, the toolchain service shall return the `.venv/bin/python` Python interpreter.",
   "toolchain#r3: While the `venv/bin/python` Python interpreter exists and the `.venv/bin/python` Python interpreter does not exist, when the person probes the toolchain without a Python interpreter, the toolchain service shall return the `venv/bin/python` Python interpreter.",
   "toolchain#r4: While the `$VIRTUAL_ENV/bin/python` Python interpreter exists and the `.venv/bin/python` Python interpreter does not exist and the `venv/bin/python` Python interpreter does not exist, when the person probes the toolchain without a Python interpreter, the toolchain service shall return the `$VIRTUAL_ENV/bin/python` Python interpreter.",
+  "toolchain#r5: While the `.venv/bin/python` Python interpreter does not exist and the `venv/bin/python` Python interpreter does not exist and the `$VIRTUAL_ENV/bin/python` Python interpreter does not exist, when the person probes the toolchain without a Python interpreter, the toolchain service shall return a Python interpreter that executes the `scripts/tools` file.",
   "toolchain#r6: While the `.venv/bin/python` Python interpreter exists and the `venv/bin/python` Python interpreter exists, when the person probes the toolchain without a Python interpreter, the toolchain service shall not return the `venv/bin/python` Python interpreter.",
   "toolchain#r7: While no analysis tool is `missing`, when the person probes the toolchain, the toolchain service shall return every analysis tool and complete the request.",
   "toolchain#r8: While an analysis tool is `missing`, when the person probes the toolchain, the toolchain service shall fail the check and name the analysis tool.",
@@ -1230,6 +1248,12 @@ identifier = { positional = 1 }
 [operations."code analysis.lint"]
 command = "tools check"
 cli-only = { options = ["--base", "--python"] }
+requirements = [
+  "code-analysis#r11: While a file holds a finding of an analysis tool, when the person lints the file, the code analysis service shall return the heading of the analysis tool and the finding, fail the check and name the finding.",
+  "code-analysis#r12: While `vulture` is `missing`, when the person lints a file, the code analysis service shall fail the check and name `vulture`.",
+  "code-analysis#r15: While a Python file differs from the base branch and the Python file holds a finding of an analysis tool, when the person lints this repository, the code analysis service shall return the finding and fail the check.",
+  "code-analysis#r16: While a Python file holds a finding of an analysis tool and the Python file does not differ from the base branch, when the person lints this repository, the code analysis service shall complete the request.",
+]
 [operations."code analysis.lint".parameters]
 file = { positional = 1 }
 
@@ -1259,6 +1283,7 @@ requirements = [
   "upgrades#r13: While the release of this repository is before `0.24.0`, when the person upgrades this repository, the upgrades service shall return every upgrade step and change the plugin version file of this repository, every work-item file, every stage directory and every initiative log.",
   "upgrades#r14: While the release of this repository is after `0.23.1` and before `0.25.0`, when the person upgrades this repository, the upgrades service shall change every work-item file.",
   "upgrades#r15: While the release of this repository is after `0.25.0` and before `0.30.0` and a capability of this repository has no language, when the person upgrades this repository, the upgrades service shall keep a restated file, change the capability and return the restated file and the capability.",
+  "upgrades#r16: While the release of this repository is after `0.25.0` and before `0.30.0`, when the person upgrades this repository, the upgrades service shall change every work-item file that mentions a requirement and change every feature that holds a scenario that has the `@deprecated` tag.",
   "upgrades#r20: While the release of this repository is after `0.29.0` and before `0.31.0`, when the person upgrades this repository, the upgrades service shall keep a frozen notice and change the decisions index of this repository.",
   "upgrades#r21: While the release of this repository is after `0.29.0` and before `0.31.0` and the asker of a frozen request is not `internal` and the frozen request is not `delivered`, `refused` or `withdrawn`, when the person upgrades this repository, the upgrades service shall change the frozen request.",
   "upgrades#r22: While the release of this repository is after `0.29.0` and before `0.31.0` and an initiative of this repository is not `done` or `abandoned`, when the person upgrades this repository, the upgrades service shall return every upgrade step whose release is `0.31.0` and the initiative.",
@@ -1266,6 +1291,7 @@ requirements = [
   "upgrades#r24: While the release of this repository is after `0.30.0` and before `0.32.0`, when the person upgrades this repository, the upgrades service shall change the index file of this bounded context and return every upgrade step whose release is `0.32.0` and every term that violates `v_t11`.",
   "upgrades#r25: While the release of this repository is after `0.32.0` and before `0.33.0`, when the person upgrades this repository, the upgrades service shall change the index file of this bounded context and every capability and return every upgrade step whose release is `0.33.0`.",
   "upgrades#r26: While the release of this repository is `0.33.0`, when the person upgrades this repository, the upgrades service shall return every upgrade step whose release is `0.34.0` and every term that violates `w_value_kind`.",
+  "upgrades#r27: While the release of this repository is the same as the release of the plugin and the release of this repository is after `0.34.0`, when the person upgrades this repository, the upgrades service shall return `no upgrade step is pending` and change no file.",
   "upgrades#r30: While the release of this repository is `0.34.0` and the release of the plugin is `0.34.1`, when the person upgrades this repository, the upgrades service shall return `no upgrade step is pending`, change the plugin version file of this repository and keep the plugin version file.",
   "upgrades#r36: While the release of this repository is before the release of the plugin and the scenario conftest of this repository conforms to the old scenario conftest form, when the person upgrades this repository, the upgrades service shall change the scenario conftest of this repository and keep the scenario conftest.",
   "upgrades#r37: While the release of this repository is before the release of the plugin and the scenario conftest of this repository does not conform to the old scenario conftest form and the scenario conftest of this repository does not conform to the scenario conftest form, when the person upgrades this repository, the upgrades service shall return the scenario conftest and not change the scenario conftest.",
@@ -1275,6 +1301,7 @@ requirements = [
 [operations."upgrades.relocate"]
 command = "migrate run"
 requirements = [
+  "upgrades#r1: While this repository holds an old-layout directory, when the person relocates a bounded context, the upgrades service shall change every old-layout directory and every file that mentions an old-layout directory.",
   "upgrades#r2: While a decision ledger of this repository has a ledger entry, when the person relocates a bounded context, the upgrades service shall keep a design-decision of the ledger entry, keep no decision ledger, change the decisions index of this repository and complete the request.",
   "upgrades#r3: While a ledger entry supersedes another ledger entry, when the person relocates a bounded context, the upgrades service shall keep a design-decision of the ledger entry whose status is `superseded` and keep another design-decision that supersedes the design-decision.",
   "upgrades#r4: While a ledger entry that has a qualifier supersedes another ledger entry, when the person relocates a bounded context, the upgrades service shall keep a design-decision that holds the qualifier.",
@@ -1299,6 +1326,8 @@ command = "migrate init"
 requirements = [
   "upgrades#r32: If the person founds this bounded context without a context id, then the upgrades service shall refuse the request and name this bounded context.",
   "upgrades#r33: If the person founds this bounded context with a context id that does not conform to the bounded context id form, then the upgrades service shall refuse the request and name the context id.",
+  "upgrades#r34: While this bounded context has an index file, if the person founds this bounded context with a context id, then the upgrades service shall refuse the request, name the index file and change no file.",
+  "upgrades#r35: While this repository has a shop directory, if the person founds this bounded context with a context id, then the upgrades service shall refuse the request, name the shop directory and change no file.",
   "upgrades#r41: While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id and a context purpose, the upgrades service shall keep an index file that has the context purpose and complete the request.",
   "upgrades#r42: While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository does not conform to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall change the ignore file of this repository, keep the context scaffold and the ignore file of this repository and complete the request.",
   "upgrades#r43: While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository conforms to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold, not change the ignore file and complete the request.",
@@ -1473,8 +1502,12 @@ question = { option = "--question", example = "Which reading holds?" }
 [operations."specification.publish"]
 command = "spec publish"
 requirements = [
+  "checking#r73: When the person publishes a contract with the `1.2.0` version, the specification service shall keep a contract that has the `1.2.0` version.",
+  "checking#r74: When the person publishes a contract with the `1.3.0` version, the specification service shall set the status of every contract whose status is `published` to `superseded`.",
+  "checking#r75: While a contract has the `1.2.0` version, if the person publishes a contract with the `1.2.0` version, then the specification service shall refuse the request and name the version.",
   "checking#r76: While a requirement does not conform to the language reference, if the person publishes a contract, then the specification service shall refuse the request and name the requirement.",
   "checking#r77: When the person publishes a contract, the specification service shall keep a contract whose status is `published` and keep every requirement and every term in the contract.",
+  "checking#r83: If the person publishes a contract with a version that does not conform to the version form, then the specification service shall refuse the request and name the version and the `version not in the version form` reason.",
 ]
 [operations."specification.publish".parameters]
 version = { option = "--version", example = "1.2.0" }
@@ -1483,6 +1516,8 @@ version = { option = "--version", example = "1.2.0" }
 command = "spec fetch"
 requirements = [
   "checking#r78: When a downstream context fetches a contract, the specification service shall return the contract whose status is `published` and change nothing.",
+  "checking#r79: While no contract has the `2.0.0` version, if a downstream context fetches a contract with the `2.0.0` version, then the specification service shall refuse the request and name the version.",
+  "checking#r80: When a downstream context fetches a contract with the `1.2.0` version, the specification service shall return the contract that has the `1.2.0` version.",
 ]
 [operations."specification.fetch".parameters]
 version = { option = "--version", example = "1.2.0" }

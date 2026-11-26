@@ -5,7 +5,8 @@ naming where it was copied from); both hold term entries under `## Glossary`, in
 hold `## Relations` and `## Definitions`. `spec/index.md` imports packs in its frontmatter: `imports: [cli, time]`.
 
 The layers, lowest first (`layers`): each imported pack in the order listed, then the glossary of `spec/index.md`,
-then each capability's `## Terms`. A word a higher layer defines that an imported pack defines too carries
+then each capability's `## Terms`. A word a higher layer defines that an imported pack defines too in the same sense
+(`sense`: a verb, or a word of any other part of speech; b618: the verb "file" beside the base pack's noun) carries
 `Redefines: <pack>` on its entry, else it is unmarked (v_t16); an import that names no pack is v_t17. The requirement
 grammar of codified-1 does not read the packs' words: `model lexicon` and these checks do, and grammar 4
 (spec_rgl_vocab) reads them as its layers.
@@ -49,6 +50,12 @@ def redefines(term):
     return [n.strip() for n in spec_lexicon._field(term.text, "Redefines").split(",") if n.strip()]
 
 
+def sense(term):
+    """The word an entry defines and whether as a verb or not, the key by which a higher layer's entry takes the place
+    of a pack's (b618): ("file", "verb") of the verb "file", ("file", "noun") of the base pack's noun."""
+    return term.term, "verb" if term.category == "event" else "noun"
+
+
 def kinds(root):
     """The kinds the imported packs define (a noun's term), in import order: in a context with a domain model each a
     declared object for the model (b609), which domain_model reads as `pack_kinds`."""
@@ -84,14 +91,14 @@ def layers(root, lexicon=None):
 
 
 def unmarked(root, lexicon=None):
-    """Each of the context's terms that an imported pack defines too, with the packs its entry does not name in
+    """Each of the context's terms that an imported pack defines too in its sense, with the packs its entry does not name in
     `Redefines:`, as {(where, term): [pack, ...]} (v_t16)."""
     by_pack, out = {}, {}
     for layer, t in layers(root, lexicon):
         if layer.startswith("pack "):
-            by_pack.setdefault(t.term, []).append(layer[len("pack "):])
+            by_pack.setdefault(sense(t), []).append(layer[len("pack "):])
             continue
-        unnamed = [p for p in by_pack.get(t.term, []) if p not in redefines(t)]
+        unnamed = [p for p in by_pack.get(sense(t), []) if p not in redefines(t)]
         if unnamed:
             out[(t.where, t.term)] = unnamed
     return out

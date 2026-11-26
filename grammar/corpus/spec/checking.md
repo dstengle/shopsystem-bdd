@@ -150,7 +150,7 @@ From: design-model-check#r196, reworded in request words (0.38.0).
 
 ```reading
 While this bounded context does not conform to the final layout, if the person validates this specification, then the specification service shall fail the check and name `scripts/migrate`.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x2: artifact the final layout (constant), x3: agent the person (constant), x4: specification "the specification of this bounded context" (indexical), x5: service the specification service (constant), x6: check "the check the trigger makes" (indexical), x7: thing `scripts/migrate` (parameter)]
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x2: artifact the final layout (constant), x3: agent the person (constant), x4: specification "the specification of this bounded context" (indexical), x5: service the specification service (constant), x6: check "the check the trigger makes" (indexical), x7: thing `scripts/migrate` (parameter)]
   while
     not
       conforms(x1, x2)
@@ -166,7 +166,7 @@ From: design-model-check#r198, reworded in request words (0.38.0).
 
 ```reading
 While this bounded context has no job, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x3: agent the person (constant), x4: specification "the specification of this bounded context" (indexical), x5: service the specification service (constant), x7: rule `w_unserved_cap` (parameter)]
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x3: agent the person (constant), x4: specification "the specification of this bounded context" (indexical), x5: service the specification service (constant), x7: rule `w_unserved_cap` (parameter)]
   while
     not [x2: job]
       of(x2, x1)
@@ -216,7 +216,7 @@ From: design-model-check#r201, reworded in request words (0.38.0).
 
 ```reading
 When the person translates this specification, the specification service shall return every fact of this bounded context.
-shall [x1: agent the person (constant), x2: specification "the specification of this bounded context" (indexical), x3: service the specification service (constant), x5: bounded context "the bounded context whose repository the command runs in" (indexical)]
+shall [x1: agent the person (constant), x2: specification "the specification of this bounded context" (indexical), x3: service the specification service (constant), x5: bounded context "the bounded context the request is made in" (indexical)]
   when
     request(e1, specification.translate, subject: x1, object: x2)
   response
@@ -342,7 +342,7 @@ From: design-model-check#r225, reworded in request words (0.38.0).
 
 ```reading
 While this bounded context imports a pack, when the person looks up the pack, the language service shall return every term of the pack and complete the request.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x3: agent the person (constant), x4: service the language service (constant), x6: request "the request the trigger makes" (indexical)]
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x3: agent the person (constant), x4: service the language service (constant), x6: request "the request the trigger makes" (indexical)]
   while [x2: pack]
     import(subject: x1, object: x2)
   when
@@ -1310,7 +1310,7 @@ From: b609 r104.
 
 ```reading
 While this bounded context imports a pack and the pack has a term and an element refers to the term, when the person validates this specification, the specification service shall complete the request.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x8: request "the request the trigger makes" (indexical)]
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x8: request "the request the trigger makes" (indexical)]
   while [x2: pack, x3: term, x4: element]
     import(subject: x1, object: x2)
     of(x3, x2)
@@ -1326,7 +1326,7 @@ From: b609 r105.
 
 ```reading
 While this bounded context imports the `base` pack, when the person looks up the pack, the language service shall return every term of the pack and complete the request.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x2: pack `base` (parameter), x3: agent the person (constant), x4: service the language service (constant), x6: request "the request the trigger makes" (indexical)]
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x2: pack `base` (parameter), x3: agent the person (constant), x4: service the language service (constant), x6: request "the request the trigger makes" (indexical)]
   while
     import(subject: x1, object: x2)
   when
@@ -1417,7 +1417,7 @@ From: b641 r110.
 
 ```reading
 While this bounded context has a job and a requirement group of a capability serves the job, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x9: rule `w_unserved_cap` (parameter)]
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x9: rule `w_unserved_cap` (parameter)]
   while [x2: job, x3: requirement group, x4: capability]
     of(x2, x1)
     of(x3, x4)
@@ -1474,7 +1474,7 @@ From: b688 r113.
 
 ```reading
 While this bounded context imports a pack and the pack has a term and the term spells an element and no term means the element and another element refers to the term, when the person validates this specification, the specification service shall complete the request.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x7: agent the person (constant), x8: specification "the specification of this bounded context" (indexical), x9: service the specification service (constant), x10: request "the request the trigger makes" (indexical)]
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x7: agent the person (constant), x8: specification "the specification of this bounded context" (indexical), x9: service the specification service (constant), x10: request "the request the trigger makes" (indexical)]
   while [x2: pack, x3: term, x4: element, x6: element]
     import(subject: x1, object: x2)
     of(x3, x2)
@@ -1511,7 +1511,7 @@ From: b643 r115.
 
 ```reading
 While this bounded context holds a job and no requirement group serves the job, when the person validates this specification, the specification service shall name the job and complete the request.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x7: request "the request the trigger makes" (indexical)]
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x7: request "the request the trigger makes" (indexical)]
   while [x2: job]
     in(x2, x1)
     not [x3: requirement group]
@@ -1528,7 +1528,7 @@ From: b643 r116.
 
 ```reading
 While this bounded context holds a job and an agent plays a product actor of the job and the agent triggers no requirement that the job reaches, when the person validates this specification, the specification service shall name the product actor and complete the request.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x6: agent the person (constant), x7: specification "the specification of this bounded context" (indexical), x8: service the specification service (constant), x9: request "the request the trigger makes" (indexical)]
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x6: agent the person (constant), x7: specification "the specification of this bounded context" (indexical), x8: service the specification service (constant), x9: request "the request the trigger makes" (indexical)]
   while [x2: job, x3: agent, x4: product actor]
     in(x2, x1)
     of(x4, x2)
@@ -1582,7 +1582,7 @@ From: b643 r119.
 
 ```reading
 While this bounded context holds a job and a subdomain serves the job and the job reaches no bounded context that addresses the subdomain, when the person validates this specification, the specification service shall name the subdomain and complete the request.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x8: request "the request the trigger makes" (indexical)]
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x8: request "the request the trigger makes" (indexical)]
   while [x2: job, x3: subdomain]
     in(x2, x1)
     serve#2(subject: x3, object: x2)
@@ -1601,7 +1601,7 @@ From: b643 r120.
 
 ```reading
 While this bounded context has a job and the job reaches a capability, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x8: rule `w_unserved_cap` (parameter)]
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x8: rule `w_unserved_cap` (parameter)]
   while [x2: job, x3: capability]
     of(x2, x1)
     reach(subject: x2, object: x3)
@@ -1618,7 +1618,7 @@ From: b643 r121.
 
 ```reading
 While this bounded context has a job and a capability has a port line, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x9: rule `w_unserved_cap` (parameter)]
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x9: rule `w_unserved_cap` (parameter)]
   while [x2: job, x3: capability, x4: port line]
     of(x2, x1)
     of(x4, x3)
@@ -1635,7 +1635,7 @@ From: b643 r122.
 
 ```reading
 While this bounded context has a job and a requirement group serves the job and the group of a capability is `guarantees`, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.
-shall [x1: bounded context "the bounded context whose repository the command runs in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x9: rule `w_unserved_cap` (parameter)]
+shall [x1: bounded context "the bounded context the request is made in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x9: rule `w_unserved_cap` (parameter)]
   while [x2: job, x3: requirement group, x4: capability]
     of(x2, x1)
     serve(subject: x3, object: x2)
@@ -1653,7 +1653,7 @@ From: b643 r123.
 
 ```reading
 While a requirement group serves a job and this bounded context has the job and another bounded context holds the job, if the person validates this specification, then the specification service shall fail the check and name the job.
-shall [x3: bounded context "the bounded context whose repository the command runs in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x8: check "the check the trigger makes" (indexical)]
+shall [x3: bounded context "the bounded context the request is made in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x8: check "the check the trigger makes" (indexical)]
   while [x1: requirement group, x2: job, x4: bounded context]
     serve(subject: x1, object: x2)
     of(x2, x3)
