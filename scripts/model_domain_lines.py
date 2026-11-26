@@ -15,7 +15,8 @@ on the refusal of what a response asks O for states O's reasons, v_m4); `states_
 O, R)` of each declared reason of O its refusal states, read by the reason's first noun (session's call, §5.5): a
 named parameter states the reason whose first noun is the parameter, a named thing the reason that names its kind;
 `sets(Q, Obj, T, From, To)` of a set of a lifecycle's attribute from the value its pre-state says, and
-`sets_from_any(Q, Obj, T, To)` of one whose pre-state says none.
+`sets_from_any(Q, Obj, T, To)` of one whose pre-state says none; a set inside a `not` box ("shall not set the status
+of the note to `abandoned`") forbids the transition and causes nothing, so it is no set (b605).
 """
 import re
 
@@ -70,6 +71,18 @@ def _atoms(items):
                 yield from _atoms(x.scope.body)
 
 
+def _done(items):
+    """The atoms a response says are done, as `_atoms` walks them but outside any `not` box (a forbidden act is not
+    done)."""
+    for x in items:
+        if isinstance(x, Atom):
+            yield x
+        elif isinstance(x, Box) and x.op != "not":
+            yield from _done(x.body)
+            if x.scope:
+                yield from _done(x.scope.body)
+
+
 class Lines:
     """The facts of the lines of one context: its model and its lexicon's kinds and attributes by their elements."""
 
@@ -95,7 +108,8 @@ class Lines:
         for req in (a for a in response if a.pred == "request"):     # a response's request (b543)
             out += self.request(ident, "asks", req, response)
         out += [("on_refusal", ident, self.obj(x.kind)) for x in self.refused(trigger) if self.obj(x.kind)]
-        out += self.sets(ident, pre, response)
+        done = [a for p in form.parts if p.op == "response" for a in _done(p.body)]
+        out += self.sets(ident, pre, done)
         return out
 
     def request(self, ident, pred, req, said):
