@@ -744,3 +744,197 @@ shall [x1: agent the person (constant), x5: artifact the job statement form (con
     keep(e2, subject: x6, object: x2)
     complete(e3, subject: x6, object: x8)
 ```
+
+## r45
+From: b795 r45.
+
+```reading
+While a bounded context holds a product actor, if the person drops the product actor, then the product service shall refuse the request and name the bounded context.
+shall [x3: agent the person (constant), x4: service the product service (constant), x5: request "the request the trigger makes" (indexical)]
+  while [x1: bounded context, x2: product actor]
+    in(x2, x1)
+  if
+    request(e1, product.drop actor, subject: x3, object: x2)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x1)
+```
+
+## r46
+From: b795 r46.
+
+```reading
+When the person drops a subdomain, the product service shall not keep the subdomain in the product and complete the request.
+shall [x1: agent the person (constant), x3: service the product service (constant), x4: product "the product this bounded context belongs to" (indexical), x5: request "the request the trigger makes" (indexical)]
+  when [x2: subdomain]
+    request(e1, product.drop subdomain, subject: x1, object: x2)
+  response
+    not
+      in(x2, x4)
+      keep(e2, subject: x3, object: x2)
+    complete(e3, subject: x3, object: x5)
+```
+
+## r47
+From: b795 r47.
+
+```reading
+While a bounded context addresses a subdomain, if the person drops the subdomain, then the product service shall refuse the request and name the bounded context.
+shall [x3: agent the person (constant), x4: service the product service (constant), x5: request "the request the trigger makes" (indexical)]
+  while [x1: bounded context, x2: subdomain]
+    address(subject: x1, object: x2)
+  if
+    request(e1, product.drop subdomain, subject: x3, object: x2)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x1)
+```
+
+## r48
+From: b795 r48.
+
+```reading
+When the person drops a bounded context, the product service shall not keep the bounded context in the product and complete the request.
+shall [x1: agent the person (constant), x3: service the product service (constant), x4: product "the product this bounded context belongs to" (indexical), x5: request "the request the trigger makes" (indexical)]
+  when [x2: bounded context]
+    request(e1, product.drop context, subject: x1, object: x2)
+  response
+    not
+      in(x2, x4)
+      keep(e2, subject: x3, object: x2)
+    complete(e3, subject: x3, object: x5)
+```
+
+## r49
+From: b795 r49.
+
+```reading
+While a bounded context holds a job, if the person drops the bounded context, then the product service shall refuse the request and name the job.
+shall [x3: agent the person (constant), x4: service the product service (constant), x5: request "the request the trigger makes" (indexical)]
+  while [x1: bounded context, x2: job]
+    in(x2, x1)
+  if
+    request(e1, product.drop context, subject: x3, object: x1)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r50
+From: b795 r50.
+
+```reading
+When the person unassigns a job from a bounded context, the product service shall not keep the job in the bounded context and complete the request.
+shall [x1: agent the person (constant), x4: service the product service (constant), x5: request "the request the trigger makes" (indexical)]
+  when [x2: job, x3: bounded context]
+    request(e1, product.unassign, subject: x1, object: x2, from: x3)
+  response
+    not
+      in(x2, x3)
+      keep(e2, subject: x4, object: x2)
+    complete(e3, subject: x4, object: x5)
+```
+
+## r51
+From: b795 r51.
+
+```reading
+If the person unassigns a job from a bounded context that does not hold the job, then the product service shall refuse the request and name the job.
+shall [x1: agent the person (constant), x4: service the product service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: job, x3: bounded context]
+    not
+      in(x2, x3)
+    request(e1, product.unassign, subject: x1, object: x2, from: x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r52
+From: b795 r52.
+
+```reading
+When the person drops a job, the product service shall not keep the job in the product and complete the request.
+shall [x1: agent the person (constant), x3: service the product service (constant), x4: product "the product this bounded context belongs to" (indexical), x5: request "the request the trigger makes" (indexical)]
+  when [x2: job]
+    request(e1, product.drop job, subject: x1, object: x2)
+  response
+    not
+      in(x2, x4)
+      keep(e2, subject: x3, object: x2)
+    complete(e3, subject: x3, object: x5)
+```
+
+## r53
+From: b795 r53.
+
+```reading
+If the person drops a need that a job needs, then the product service shall refuse the request and name the job.
+shall [x1: agent the person (constant), x4: service the product service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: need, x3: job]
+    need(subject: x3, object: x2)
+    request(e1, product.drop job, subject: x1, object: x2)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x3)
+```
+
+## r54
+From: b795 r54.
+
+```reading
+While a bounded context holds a job, if the person drops the job, then the product service shall refuse the request and name the bounded context.
+shall [x3: agent the person (constant), x4: service the product service (constant), x5: request "the request the trigger makes" (indexical)]
+  while [x1: bounded context, x2: job]
+    in(x2, x1)
+  if
+    request(e1, product.drop job, subject: x3, object: x2)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x1)
+```
+
+## r55
+From: b795 r55.
+
+```reading
+While a subdomain serves a job, if the person drops the job, then the product service shall refuse the request and name the subdomain.
+shall [x3: agent the person (constant), x4: service the product service (constant), x5: request "the request the trigger makes" (indexical)]
+  while [x1: subdomain, x2: job]
+    serve#2(subject: x1, object: x2)
+  if
+    request(e1, product.drop job, subject: x3, object: x2)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x1)
+```
+
+## r56
+From: b795 r56.
+
+```reading
+When the person drops a product actor, the product service shall not keep the product actor in the product and complete the request.
+shall [x1: agent the person (constant), x3: service the product service (constant), x4: product "the product this bounded context belongs to" (indexical), x5: request "the request the trigger makes" (indexical)]
+  when [x2: product actor]
+    request(e1, product.drop actor, subject: x1, object: x2)
+  response
+    not
+      in(x2, x4)
+      keep(e2, subject: x3, object: x2)
+    complete(e3, subject: x3, object: x5)
+```
+
+## r57
+From: b795 r57.
+
+```reading
+While a job has a product actor, if the person drops the product actor, then the product service shall refuse the request and name the job.
+shall [x3: agent the person (constant), x4: service the product service (constant), x5: request "the request the trigger makes" (indexical)]
+  while [x1: job, x2: product actor]
+    of(x2, x1)
+  if
+    request(e1, product.drop actor, subject: x3, object: x2)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x1)
+```

@@ -1823,3 +1823,52 @@ item = { positional = 1 }
 requirement = { positional = 2 }
 "requirement group" = { option = "--serves" }
 job = { option = "--serves" }
+
+[operations."product.unassign"]
+command = "spec unassign"
+requirements = [
+  "product#r50: When the person unassigns a job from a bounded context, the product service shall not keep the job in the bounded context and complete the request.",
+  "product#r51: If the person unassigns a job from a bounded context that does not hold the job, then the product service shall refuse the request and name the job.",
+]
+[operations."product.unassign".parameters]
+job = { option = "--job", example = "job-1" }
+"bounded context" = { option = "--bounded-context", example = "bounded context-1" }
+
+[operations."product.drop job"]
+command = "spec drop job"
+requirements = [
+  "product#r52: When the person drops a job, the product service shall not keep the job in the product and complete the request.",
+  "product#r53: If the person drops a need that a job needs, then the product service shall refuse the request and name the job.",
+  "product#r54: While a bounded context holds a job, if the person drops the job, then the product service shall refuse the request and name the bounded context.",
+  "product#r55: While a subdomain serves a job, if the person drops the job, then the product service shall refuse the request and name the subdomain.",
+]
+[operations."product.drop job".parameters]
+job = { option = "--job", example = "job-1" }
+
+[operations."product.drop actor"]
+command = "spec drop actor"
+requirements = [
+  "product#r45: While a bounded context holds a product actor, if the person drops the product actor, then the product service shall refuse the request and name the bounded context.",
+  "product#r56: When the person drops a product actor, the product service shall not keep the product actor in the product and complete the request.",
+  "product#r57: While a job has a product actor, if the person drops the product actor, then the product service shall refuse the request and name the job.",
+]
+[operations."product.drop actor".parameters]
+"product actor" = { option = "--product-actor", example = "product actor-1" }
+
+[operations."product.drop subdomain"]
+command = "spec drop subdomain"
+requirements = [
+  "product#r46: When the person drops a subdomain, the product service shall not keep the subdomain in the product and complete the request.",
+  "product#r47: While a bounded context addresses a subdomain, if the person drops the subdomain, then the product service shall refuse the request and name the bounded context.",
+]
+[operations."product.drop subdomain".parameters]
+subdomain = { option = "--subdomain", example = "subdomain-1" }
+
+[operations."product.drop context"]
+command = "spec drop context"
+requirements = [
+  "product#r48: When the person drops a bounded context, the product service shall not keep the bounded context in the product and complete the request.",
+  "product#r49: While a bounded context holds a job, if the person drops the bounded context, then the product service shall refuse the request and name the job.",
+]
+[operations."product.drop context".parameters]
+"bounded context" = { option = "--bounded-context", example = "bounded context-1" }
