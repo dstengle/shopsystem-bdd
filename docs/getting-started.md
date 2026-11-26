@@ -399,69 +399,24 @@ they want done. Say it, in your own words:
 It's for a writer: when a thought comes up, they want to note it down, so they can find it later.
 ```
 
-The session keeps the product in the shop's product file, `.shop/product/product.toml`, one commit a command. It
-declares the product, its actor and the job, with the job statement in its one form, `When <situation>, <actor>
-wants <motivation>, so they can <outcome>.`:
+The session keeps the product in the shop's product file, `.shop/product/product.toml`: the product, the writer, each
+job with its statement, and the domain map that gives the jobs to this bounded context. Then it dedicates each group
+of the capability to the job it does, on an item, and the batch writes that as the group's `serves:` line. From then
+on, ask "what does keeping notes rest on?" and the session answers with the job's **trace**, every requirement that
+does it:
 
-```console
-$ shop spec product example.org/notes --purpose "Keep short notes at hand."
-declared the product example.org/notes
-$ shop spec actor "the writer"
-declared the product actor the writer
-$ shop spec job keep-notes --actor "the writer" --statement "When a thought comes up, the writer wants to note it down, so they can find it later."
-declared the job keep-notes
-```
-
-Then the product's domain map: the subdomain the job belongs to, this bounded context addressing it (by the id
-`shop migrate init` gave it, the one form `bounded-context/<domain>/<path>`), the job assigned to it, and the
-product's actor mapped to the actor this context's model calls it:
-
-```console
-$ shop spec subdomain note-keeping --type core --serves keep-notes
-declared the subdomain note-keeping
-$ shop spec context bounded-context/example.org/notes/notes-cli --addresses note-keeping --shop example.org/notes/shop
-declared the bounded context bounded-context/example.org/notes/notes-cli kept by example.org/notes/shop
-$ shop spec assign keep-notes --to bounded-context/example.org/notes/notes-cli
-assigned the job keep-notes to the bounded context bounded-context/example.org/notes/notes-cli
-$ shop spec plays "the writer" --in bounded-context/example.org/notes/notes-cli --as "the person"
-mapped the product actor the writer to the person in the bounded context bounded-context/example.org/notes/notes-cli
-```
-
-A declaration made wrongly is taken back, never edited in the file by hand: `shop spec unassign keep-notes --from
-<bounded context>` before assigning it elsewhere, and `shop spec drop job`, `drop actor`, `drop subdomain` or `drop
-context`, each refused while something still refers to what it drops.
-
-Now `shop spec check` warns that nothing serves the job yet (`w_unserved_job`). The session dedicates the groups that
-do the job to it, on an item, as it writes lines: a group of `spec/` by its id, or the group a new line goes into
-with `--serves <job>` beside the line. A job the product does not hold is refused:
-
-```console
-$ shop work idea "The notes tool serves keeping notes"
-b2 "The notes tool serves keeping notes" idea
-$ shop work line b2 --serves notes#g1 keep-notes
-b2 "The notes tool serves keeping notes": notes#g1 serves keep-notes
-$ shop work line b2 --serves notes#g3 keep-notes
-b2 "The notes tool serves keeping notes": notes#g3 serves keep-notes
-```
-
-The job's **trace** is every requirement that does it, derived from the groups that serve it and never written down.
-Ask "what does keeping notes rest on?", and the session runs `shop spec trace`. Once b2's batch has laid its pairs
-as each group's `serves:` line:
-
+<!-- docs: context docs/examples/notes-cli -->
 ```console
 $ shop spec trace keep-notes
 the trace of the job keep-notes:
   notes#r1 (served by notes#g1): When the person adds a note with a title and a tag, the notes service shall keep the note under the tag.
-  notes#r3 (served by notes#g3): When the person lists the notes, the notes service shall return every note.
+  notes#r2 (served by notes#g2): If the person adds a note without a title, then the notes service shall refuse the request and name the title.
 ```
 
-Before then, the item's pairs are on the item only, so the plain `shop spec trace keep-notes` says no requirement
-group serves the job. The session reads them with the item laid in on a copy, as `shop spec parse --item` reads a
-line: `shop spec trace keep-notes --item b2` prints the trace above, and `shop spec check --item b2` no longer warns
-of the job. Nothing in `spec/` changes until the batch.
-
-[Concepts](concepts.md#product-job-and-trace) has the product's words, and
-[the commands](reference/commands.md#shop-spec-product) every option.
+[Talking with Claude](talking-with-claude.md#your-product-and-its-jobs) walks the whole conversation, with what the
+session runs and what you see at each step. [`docs/examples/notes-cli/`](examples/notes-cli/README.md) keeps the
+result: its product file and its capability with each group's job. [Concepts](concepts.md#product-job-and-trace) has
+the product's words, and [the commands](reference/commands.md#shop-spec-product) every option.
 
 ## 9. From here, keep saying what you want
 
