@@ -10,9 +10,9 @@ import tomllib
 from pathlib import Path
 
 import product_store
-import shop_files
+from plumbing import shop_files
+from plumbing.shop_files import Refused
 from product_map import covers
-from shop_files import Refused
 
 REL = ".shop/contexts.toml"
 HEADER = "# The bounded contexts this shop keeps, each by its context id; written by `work context keep`.\n"

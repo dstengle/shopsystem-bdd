@@ -15,7 +15,7 @@ import re
 from pathlib import Path
 
 import contract_registry
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 KEPT = Path(".shop") / "contracts"
 FILE = "contract.toml"
@@ -53,7 +53,7 @@ def register(root, contract, adapter_spec, provider, version):
     """The contract (its bytes) of `provider` kept at `version` in the adapter spec's folder `adapter_spec` (relative
     to `root`), committed unless the same bytes are kept there already; the reply completed, {"kept": its path,
     "changed": whether it was written}."""
-    import shop_files
+    from plumbing import shop_files
     rel = (Path(adapter_spec) / place(provider, version)).as_posix()
     target = Path(root) / rel
     if target.is_file() and target.read_bytes() == contract:
@@ -71,7 +71,7 @@ def deregister(root, contract, adapter_spec, provider, version):
     """The contract of `provider` at `version` taken out of the adapter spec's folder `adapter_spec` (relative to
     `root`), committed, the folders under the adapter spec it leaves empty removed; the reply completed, {"kept": its
     path, "changed": whether it was there}. `contract` is the one registered, which the file held."""
-    import shop_files
+    from plumbing import shop_files
     rel = (Path(adapter_spec) / place(provider, version)).as_posix()
     target = Path(root) / rel
     if not target.is_file():
@@ -91,7 +91,7 @@ def deregister(root, contract, adapter_spec, provider, version):
 def deposit(root, contract, version):
     """The contract (its text) kept at `version` as the published one, every one published before it superseded,
     committed; the reply completed, {"kept": its path, "superseded": the paths set superseded}."""
-    import shop_files
+    from plumbing import shop_files
     contracts = kept(root)
     if version in contracts:
         raise Refused("a contract is kept at the version {names} already", reason="version already published",

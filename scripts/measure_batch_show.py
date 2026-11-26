@@ -6,7 +6,7 @@ from pathlib import Path
 
 import measure_write
 from measure_show import cell, ratio, table
-from transcripts import Refused
+from plumbing.transcripts import Refused
 
 TOTALS = (("wall time", "wall_time"), ("session time", "session_time"), ("waiting for merge", "waiting_for_merge"),
           ("output tokens", "output_tokens"), ("new input tokens", "new_input_tokens"),

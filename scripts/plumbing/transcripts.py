@@ -6,7 +6,7 @@ import json
 import os
 from pathlib import Path
 
-import shop_refused
+from plumbing import shop_refused
 
 
 class Refused(shop_refused.Refused):

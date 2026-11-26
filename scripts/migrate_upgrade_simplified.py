@@ -15,8 +15,8 @@ from pathlib import Path
 import model_report
 from migrate_upgrade_ids import Changes
 from model_parse import frontmatter
+from plumbing.shop_files import Refused, context_path
 from request_text import FROZEN, REQUESTS
-from shop_files import Refused, context_path
 
 WORK = Path(".shop/work")
 MARKER = WORK / "FROZEN.md"

@@ -7,8 +7,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 
-from migrate_layout import Plan
 from migrate_spec import plan_holding
+from plumbing.migrate_layout import Plan
 
 FEATURE = """Feature: Queue
 

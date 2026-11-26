@@ -18,7 +18,7 @@ import backlog_lines
 import batch_plan
 import batch_summary
 from batch_git import SCRIPTS, delivery, trees_dir
-from shop_files import Refused
+from plumbing.shop_files import Refused
 
 SKILL = "shopsystem-bdd:building-a-batch"
 

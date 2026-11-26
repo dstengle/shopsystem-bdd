@@ -10,7 +10,7 @@ import os
 import subprocess
 from pathlib import Path
 
-from migrate_write import top_level
+from plumbing.migrate_write import top_level
 
 POINTER = Path("shopsystem") / "prompt.json"
 

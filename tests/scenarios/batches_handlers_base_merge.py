@@ -7,7 +7,7 @@ batch."""
 import sys
 
 import batch_findings
-import shop_files
+from plumbing import shop_files
 
 W, B, T, F = (sys.modules[n] for n in ("shop_work_queue_world", "shop_backlog_world", "shop_batches_world",
                                        "shop_world_four"))

@@ -28,7 +28,6 @@ import batch_parked
 import batch_plan
 import laying
 import readiness_bar
-import shop_files
 import spec_corpus_write
 import spec_unbuilt
 from batch_git import (
@@ -43,7 +42,8 @@ from batch_git import (
     uncommitted,
 )
 from batch_tasks import building, tree_of
-from shop_files import Refused
+from plumbing import shop_files
+from plumbing.shop_files import Refused
 
 COMMAND = "work batch amend"
 LAID = "Laid: "

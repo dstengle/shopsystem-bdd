@@ -9,7 +9,7 @@ import subprocess
 import tomllib
 from pathlib import Path
 
-from shop_files import Refused, push_failure, remote  # noqa: F401 -- `remote` is batch_git's to its importers
+from plumbing.shop_files import Refused, push_failure, remote  # noqa: F401 -- `remote` is batch_git's to its importers
 
 SCRIPTS = Path(__file__).resolve().parent
 TREES = Path(".shop") / "worktrees"

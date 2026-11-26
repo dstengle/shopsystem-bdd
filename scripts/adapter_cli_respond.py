@@ -20,9 +20,9 @@ import json
 import os
 import sys
 
-import domain_envelope
-from domain_envelope import Response
-from shop_refused import Refused
+from plumbing import domain_envelope
+from plumbing.domain_envelope import Response
+from plumbing.shop_refused import Refused
 
 BY_SHOP = "SHOPSYSTEM_BY_SHOP"
 

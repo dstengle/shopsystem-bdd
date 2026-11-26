@@ -19,7 +19,7 @@ from pathlib import Path
 
 import product_store
 from model_parse import as_list, frontmatter
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 PROVIDER = re.compile(r"^(?:bounded-context/)?(?P<id>[^@\s]+)")
 

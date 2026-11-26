@@ -6,7 +6,7 @@ where the check runs."""
 from pathlib import Path
 
 import spec_read
-from shop_files import Refused
+from plumbing.shop_files import Refused
 
 
 def uncodified(root):

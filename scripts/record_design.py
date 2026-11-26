@@ -9,7 +9,7 @@ import re
 from pathlib import Path
 
 import record_write
-import shop_files
+from plumbing import shop_files
 
 RECORDS = record_write.RECORDS
 

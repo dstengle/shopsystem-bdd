@@ -4,7 +4,7 @@ way, the repository put back as it was."""
 import subprocess
 from pathlib import Path, PurePosixPath
 
-from migrate_layout import load_model, tracked
+from plumbing.migrate_layout import load_model, tracked
 
 INDEX = "spec/decisions/index.md"
 

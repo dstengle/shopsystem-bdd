@@ -8,8 +8,8 @@ from pathlib import Path
 import backlog_items
 import batch_plan
 from backlog_view import cell
-from migrate_write import top_level
-from shop_files import Refused
+from plumbing.migrate_write import top_level
+from plumbing.shop_files import Refused
 
 HOOK_LINE = ("The names of this repository's items and batches: tell the person each by its name beside its id "
              '(b3 "Fix the parser"), never by its id alone.')

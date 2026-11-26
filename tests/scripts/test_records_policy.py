@@ -5,7 +5,7 @@ import backlog_items
 import model_check
 import model_facts
 import pytest
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 ITEM = """---
 id: item/ex/prod/ctx/b{n}

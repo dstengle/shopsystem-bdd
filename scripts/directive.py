@@ -10,9 +10,9 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import conversation_quote
-import shop_files
-from migrate_write import top_level
-from shop_files import Refused
+from plumbing import shop_files
+from plumbing.migrate_write import top_level
+from plumbing.shop_files import Refused
 
 DIRECTIVES = Path(".shop") / "directives"
 STATUSES = ("live", "promoted", "dropped")

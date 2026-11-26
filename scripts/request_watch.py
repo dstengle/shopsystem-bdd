@@ -22,7 +22,7 @@ import conversation_prompt
 import request_form
 import request_moves
 import request_sync
-import shop_files
+from plumbing import shop_files
 from request_text import field
 
 COMMAND = "work watch"

@@ -10,8 +10,8 @@ import conversation_names
 import conversation_prompt
 import conversation_quote
 import directive_cli
-from shop_files import Refused
-from transcripts import Refused as ReadRefused
+from plumbing.shop_files import Refused
+from plumbing.transcripts import Refused as ReadRefused
 
 is_quote = conversation_quote.is_quote
 is_directive = directive_cli.is_directive

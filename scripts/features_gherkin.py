@@ -3,7 +3,7 @@ feature files under a directory, and a scenario found by its title. Standard lib
 import os
 import re
 
-import shop_refused
+from plumbing import shop_refused
 
 STEP = re.compile(r"(Given|When|Then|And|But|\*)\s")
 SCENARIO = re.compile(r"(Scenario Outline|Scenario Template|Scenario|Example):")

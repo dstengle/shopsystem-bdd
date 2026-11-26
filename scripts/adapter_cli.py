@@ -15,7 +15,7 @@ import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 PATH = Path("spec") / "adapters" / "cli.toml"
 

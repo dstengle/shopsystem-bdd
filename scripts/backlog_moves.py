@@ -1,6 +1,5 @@
 """The commands that change an item of the backlog (capability backlog), each one commit of that item's file, with a
 message naming the item by its label (workflow simplification plan 2, D3, D5)."""
-import shop_files
 from backlog_items import (
     PROVENANCES,
     RATINGS,
@@ -14,6 +13,7 @@ from backlog_items import (
     one_line,
     shaping_note,
 )
+from plumbing import shop_files
 
 # The moves of an item's status that a command makes, before -> after: the glossary's transitions of `status` of item
 # by `work shape`, `work refuse`, `work withdraw`, `work answer`, `work ready` and `work reopen`, and tracking's

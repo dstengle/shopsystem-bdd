@@ -10,8 +10,8 @@ from pathlib import Path
 import backlog_items
 import batch_git
 import batch_plan
-import shop_files
-from transcripts import Refused
+from plumbing import shop_files
+from plumbing.transcripts import Refused
 
 COMMAND = "measure defect"
 

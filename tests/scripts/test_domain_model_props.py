@@ -3,7 +3,7 @@ refers to what the model does not declare (b547, checking r66, r67)."""
 import domain_model
 import domain_model_check
 import pytest
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 BLOCK = """object order
 

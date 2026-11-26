@@ -13,13 +13,12 @@ sys.path.insert(0, str(SCRIPTS))
 
 import batch_git
 import features_gherkin
-import shop_files
-import shop_refused
 import tools_env
 import tools_grammar
-import transcripts
+from plumbing import shop_files, shop_refused, transcripts
 
-IMPORTERS = ("shop_files", "tools_env", "tools_grammar", "features_gherkin", "transcripts", "shop_refused")
+IMPORTERS = ("plumbing.shop_files", "tools_env", "tools_grammar", "features_gherkin", "plumbing.transcripts",
+             "plumbing.shop_refused")
 
 
 def test_every_refusal_class_reaches_the_one_base():

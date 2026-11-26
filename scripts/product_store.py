@@ -12,10 +12,10 @@ import datetime
 import tomllib
 from pathlib import Path
 
-import shop_files
+from plumbing import shop_files
+from plumbing.shop_refused import Refused
+from plumbing.toml_edit import literal, name
 from product_layer import empty
-from shop_refused import Refused
-from toml_edit import literal, name
 
 REL = ".shop/product/product.toml"
 HEADER = ("# The product this bounded context belongs to; written by `spec product`, `actor`, `job`, `subdomain`, "

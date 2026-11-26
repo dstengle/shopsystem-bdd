@@ -10,10 +10,10 @@ from pathlib import Path
 
 import conversation_prompt
 import conversation_read as C
-import shop_files
-from shop_files import Refused
-from transcripts import Refused as ReadRefused
-from transcripts import json_rows, moment, store_dir
+from plumbing import shop_files
+from plumbing.shop_files import Refused
+from plumbing.transcripts import Refused as ReadRefused
+from plumbing.transcripts import json_rows, moment, store_dir
 
 QUOTES = Path(".shop") / "quotes"
 LIMIT = 2000

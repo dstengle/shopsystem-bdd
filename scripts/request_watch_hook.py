@@ -10,7 +10,7 @@ import re
 
 import request_moves
 import request_side
-import shop_files
+from plumbing import shop_files
 from request_text import field
 
 START = ("A request waits on the other side: start `shop work watch --forward` with the Monitor tool, and run `shop work sync` "

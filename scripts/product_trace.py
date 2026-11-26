@@ -19,7 +19,7 @@ import product_store
 import spec_context
 import spec_entail_chain
 from model_parse import as_list, frontmatter
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 from spec_entail_rules import Premises, parse
 
 

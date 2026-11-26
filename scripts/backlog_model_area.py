@@ -6,8 +6,8 @@ what it made is left, the areas it imports aside (`unmade`)."""
 import re
 from pathlib import Path
 
-import shop_files
 from backlog_items import Refused
+from plumbing import shop_files
 
 IMPORTS = re.compile(r"^imports:\s*\[.*\]\s*$", re.MULTILINE)
 

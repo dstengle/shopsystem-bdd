@@ -18,7 +18,6 @@ import backlog_items
 import batch_base_merge
 import batch_broken
 import batch_fix
-import batch_gh
 import batch_merge
 import batch_parked
 import batch_plan
@@ -45,7 +44,8 @@ from batch_tasks import (
     uncited,
     under_shop,
 )
-from shop_files import Refused
+from plumbing import batch_gh
+from plumbing.shop_files import Refused
 
 COMMAND = "work batch review"
 

@@ -8,7 +8,7 @@ import datetime
 import re
 from pathlib import Path
 
-import shop_files
+from plumbing import shop_files
 
 RECORDS = Path(".shop") / "records"
 # The record kinds `model` reads under .shop/records/ (model_work.RECORD_KINDS) that a record file holds: an
@@ -156,7 +156,7 @@ def write(root, title, summary, kind, body, *, about=None, slug=None, date=None)
 def record(args):
     """`work record`: the request records.keep, its parameters read off the command line by business name."""
     import record_design
-    from domain_envelope import Response
+    from plumbing.domain_envelope import Response
     if args.plan:
         if not isinstance(args.design, str):
             raise shop_files.Refused("a plan gives {names}, the design it goes in", reason="missing parameters",

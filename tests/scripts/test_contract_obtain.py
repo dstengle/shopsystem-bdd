@@ -9,7 +9,7 @@ from pathlib import Path
 import contract_obtain
 import pytest
 from batch_testing import gh_env
-from shop_refused import Refused
+from plumbing.shop_refused import Refused
 
 FIXTURE = Path(__file__).parent / "fixtures" / "domain-model"
 UPSTREAM = "bounded-context/example.org/fixture/inventory"

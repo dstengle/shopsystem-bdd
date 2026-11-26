@@ -8,7 +8,7 @@ A section holds one entry a line, `<n>. <text>`. `## Counter-proposals` holds `<
 import re
 from pathlib import Path
 
-from shop_files import frontmatter, read
+from plumbing.shop_files import frontmatter, read
 
 # Where a live request is kept, and where plugin 0.30 kept them, frozen (workflow simplification plan 9, D7).
 REQUESTS = Path(".shop") / "requests"

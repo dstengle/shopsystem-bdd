@@ -14,8 +14,9 @@ import request_form
 import request_gh
 import request_post
 import request_side
-import shop_files
 from backlog_items import one_line
+from plumbing import shop_files
+from plumbing.shop_files import Refused
 from request_text import (  # noqa: F401  (SETTLED: imported from here)
     REQUESTS,
     SETTLED,
@@ -28,7 +29,6 @@ from request_text import (  # noqa: F401  (SETTLED: imported from here)
     with_entries,
     with_field,
 )
-from shop_files import Refused
 
 ABOUT = ("A request between bounded contexts, kept by shopsystem-bdd's `work`: each step is a comment `work` posts, "
          "and only its block of fields is read.")

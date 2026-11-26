@@ -13,7 +13,7 @@ import re
 from collections import defaultdict
 from pathlib import Path
 
-from domain_envelope import Response
+from plumbing.domain_envelope import Response
 
 KINDS = ("words", "elements", "requirements", "imports")
 

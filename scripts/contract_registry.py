@@ -17,7 +17,7 @@ its place, a stand-in the tests swap in as `$SHOPSYSTEM_WORK_GH` names a stand-i
 import importlib.util
 import os
 
-from domain_envelope import Response, error
+from plumbing.domain_envelope import Response, error
 
 ADAPTER = "SHOPSYSTEM_CONTRACT_REGISTRY"
 REASON = "version not deposited"

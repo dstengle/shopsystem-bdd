@@ -12,8 +12,8 @@ from pathlib import Path
 import backlog_items
 import batch_git
 import batch_plan
-import shop_files
-from shop_files import Refused
+from plumbing import shop_files
+from plumbing.shop_files import Refused
 
 GRADES = ("Critical", "Important", "Minor")
 TRIAGES = ("fix now", "observation", "drop")

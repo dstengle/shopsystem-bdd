@@ -15,7 +15,7 @@ commit the batch was laid on, which a lift puts the operation tables back as."""
 import importlib.util
 import os
 
-from domain_envelope import Response, error
+from plumbing.domain_envelope import Response, error
 
 ADAPTER = "SHOPSYSTEM_LAYING"
 COMMAND = "work batch start"
@@ -80,7 +80,7 @@ def reasons(reply):
 def changed(reply, command=COMMAND):
     """The paths a lay, a prepare or a lift done changed; any other reply refused, naming what it says."""
     if reply.outcome != "done":
-        from shop_files import Refused
+        from plumbing.shop_files import Refused
         raise Refused("%s: the laying service answered %s: %s" % (
             command, reply.outcome, "; ".join(e["reason"] for e in reply.errors)))
     return reply.content["changed"]

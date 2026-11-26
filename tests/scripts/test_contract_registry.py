@@ -80,7 +80,7 @@ def test_fetch_prints_the_contract_the_registry_returns(tmp_path, monkeypatch, c
 def test_fetch_names_the_version_the_registry_refuses(tmp_path, monkeypatch):
     import contract_publish
     import pytest
-    from shop_refused import Refused
+    from plumbing.shop_refused import Refused
     _stand_in(tmp_path, monkeypatch, "contract_registry.undeposited('1.2.0')")
     with pytest.raises(Refused) as refused:
         contract_publish.fetch(tmp_path)

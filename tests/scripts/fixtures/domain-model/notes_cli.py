@@ -9,8 +9,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "scripts"))
 from adapter_cli_respond import prepare, respond
-from domain_envelope import Response
-from shop_refused import Refused
+from plumbing.domain_envelope import Response
+from plumbing.shop_refused import Refused
 
 
 def _notes(root):

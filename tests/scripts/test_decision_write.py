@@ -5,7 +5,7 @@ import subprocess
 import sys
 
 from backlog_testing import SCRIPTS, git, state, work
-from shop_files import frontmatter
+from plumbing.shop_files import frontmatter
 
 
 def decide(repo, *more, title="Decide the thing"):
@@ -105,10 +105,9 @@ def test_the_operation_is_requested_by_its_business_names(backlog_repo):
 
 
 def test_a_refusal_names_the_parameter_by_its_business_name(backlog_repo):
-    import pytest
-
     import decision_write
-    from shop_refused import Refused
+    import pytest
+    from plumbing.shop_refused import Refused
     with pytest.raises(Refused) as caught:
         decision_write.write(backlog_repo, "Decide it", tier="check", wording="So.")
     assert caught.value.names == ["parameter:summary"] and caught.value.reason == "missing parameters"

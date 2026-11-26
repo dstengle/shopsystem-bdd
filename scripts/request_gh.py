@@ -8,9 +8,8 @@ import json
 import re
 from pathlib import Path
 
-import batch_gh
-import shop_files
-from shop_files import Refused
+from plumbing import batch_gh, shop_files
+from plumbing.shop_files import Refused
 
 REPO = r"[\w.-]+/[\w.-]+"
 

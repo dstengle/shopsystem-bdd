@@ -62,6 +62,7 @@ def _scripts_copy(into):
     into.mkdir(parents=True)
     for source in SCRIPTS.glob("*.py"):
         shutil.copy2(source, into / source.name)
+    shutil.copytree(SCRIPTS / "plumbing", into / "plumbing", ignore=shutil.ignore_patterns("__pycache__"))
 
 
 def test_a_tree_whose_conftest_puts_its_scripts_first_is_marked_by_its_own_spec_read(tmp_path):

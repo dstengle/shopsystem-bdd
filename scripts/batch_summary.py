@@ -62,7 +62,7 @@ def merged(root, name):
     """The batch summary `work batch merged` returns of the batch `name` (r102): its heading, then each figure of
     measure batch's figures; when they cannot be read, each figure `unknown` and why after the heading."""
     import measure_batch
-    from transcripts import Refused
+    from plumbing.transcripts import Refused
     try:
         return ["batch summary of %s" % name, *of(measure_batch.figures_of(root, name))]
     except Refused as why:
