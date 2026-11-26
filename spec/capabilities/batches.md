@@ -6,8 +6,8 @@ group: service
 area: execution
 specifies: object batch, object task, service batches
 language: codified-2
-retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146, g152, r152, g149, r149, g154, r154, g160, r160, g166, r166, g108, r108, g106, r106, g60, r60]
-unbuilt: []
+retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146, g152, r152, g149, r149, g154, r154, g160, r160, g166, r166, g108, r108, g106, r106, g60, r60, g130, r130, g71, r71, g72, r72, g73, r73, g74, r74, g75, r75, g113, r113, g114, r114, g115, r115, g157, r157, g164, r164, g167, r167, g169, r169]
+unbuilt: [r187, r188, r189]
 ---
 
 # Batches
@@ -62,26 +62,6 @@ when the change is merged.
   batch is `needs-input` and the item has a requirement that is not in the workspace of the batch and a scenario of the
   item breaks in the workspace of the task, when a session finishes the task, the batches service shall set the status
   of the task to `done`.
-
-### [g71] A batch opened keeps each line's logical form in the corpus
-- [r71] While an item is `ready` and the item meets the readiness bar and a requirement of the item has a logical form,
-  when the person opens a batch, the batches service shall keep the logical form in the corpus.
-
-### [g72] A batch opened takes a retired requirement out of the corpus
-- [r72] While an item is `ready` and the item meets the readiness bar and a requirement id is in the item and a
-  requirement in the corpus has the requirement id, when the person opens a batch, the batches service shall keep a
-  corpus that does not hold the requirement.
-
-### [g73] A batch opened keeps the catalogue entry of each rule its lines use
-- [r73] While an item is `ready` and the item meets the readiness bar and a requirement of the item uses a rule, when
-  the person opens a batch, the batches service shall keep the catalogue entry of the rule.
-
-### [g74] A batch opened keeps the construct catalogue its lines use
-- [r74] While an item is `ready` and the item meets the readiness bar and a requirement of the item uses a construct,
-  when the person opens a batch, the batches service shall keep the construct catalogue.
-
-### [g75] A batch opened keeps no construct catalogue for lines that use no construct
-- [r75] While no requirement of an item whose status is `ready` uses a construct and no construct catalogue exists, when the person opens a batch, the batches service shall keep no construct catalogue.
 
 ### [g76] A new capability is laid in 0.38's form: area:, specifies:, no empty ## Terms, one ## Composition
 - [r76] While an item is `ready` and the item meets the readiness bar and the item holds a capability, when the person opens a batch, the batches service shall keep the capability that conforms to the capability form and keep an index file that conforms to the index form.
@@ -161,15 +141,6 @@ when the change is merged.
 ### [g109] A ready item whose new line's scenario passes on the lay is reopened
 - [r109] While an item is `ready` and the item meets the readiness bar and a requirement of the item retires no requirement id and a scenario of the item refers to the requirement id of the requirement and the scenario succeeds in a workspace of a batch, if the person opens the batch, then the batches service shall reopen the item and name the scenario.
 
-### [g113] A batch opened keeps the index file in the index form
-- [r113] While an item is `ready` and the item meets the readiness bar, when the person opens a batch, the batches service shall keep an index file that conforms to the index form.
-
-### [g114] A batch opened leaves a capability with no requirement out of the index file
-- [r114] While a capability has no requirement and an item is `ready` and the item meets the readiness bar, when the person opens a batch, the batches service shall keep an index file that does not hold the capability.
-
-### [g115] A batch opened names a capability with a requirement in the index file
-- [r115] While a capability has a requirement and an item is `ready` and the item meets the readiness bar, when the person opens a batch, the batches service shall keep an index file that holds the capability.
-
 ### [g116] A model line that restates an element is laid in place of it
 - [r116] While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an element, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the element.
 
@@ -205,9 +176,6 @@ when the change is merged.
 
 ### [g129] A new capability laid with its area is kept in that area
 - [r129] While an item is `ready` and the item meets the readiness bar and the item holds a capability and the item holds an area that holds the capability, when the person opens a batch, the batches service shall keep the capability that the area holds.
-
-### [g130] A ready item within the review limit that no longer meets the bar is reopened
-- [r130] While an item is `ready` and the item does not meet the readiness bar and the item does not exceed the review limit, when the person opens a batch, the batches service shall reopen the item.
 
 ### [g131] A ready item whose change would take the batch past the review limit is not allocated, whether or not it meets the bar
 - [r131] While an item is `ready` and the item exceeds the review limit, when the person opens a batch, the batches service shall not allocate the item.
@@ -257,9 +225,6 @@ when the change is merged.
 ### [g156] Amending an item takes out the imports of a driven port its lines no longer need
 - [r156] While an item in a batch is `in-batch` and a task of the item is `running` and the kind of the `registry` area is `port` and the item holds no capability that the `registry` area holds and the `registry` area imports the `tracking` area, when the person amends the item, the batches service shall keep the `registry` area.
 
-### [g157] A batch opened regenerates the feature and corpus of a capability its model lines reach
-- [r157] While an item is `ready` and the item meets the readiness bar and the item holds a model line that specifies an operation and a requirement of a capability governs the operation and the item holds no requirement id that is in the capability, when the person opens a batch, the batches service shall generate the feature of the capability and keep the logical form of the requirement in the corpus.
-
 ### [g158] A batch whose task branches conflict is polled for the later item's task and the file
 - [r158] While a batch is `building` and every task of the batch is `done` and a kept change that cites an item in the batch touches a file and the kept change conflicts with another kept change, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `fix task`, the task of the item and the file.
 
@@ -275,20 +240,11 @@ when the change is merged.
 ### [g162] A batch whose other scenario breaks with no fix is polled to look at the failure
 - [r162] While a batch is `building` and every task of the batch is `done` and a scenario breaks in the workspace of the batch and no scenario of an item in the batch breaks in the workspace of the batch and no fix exists, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `look at failure` and the scenario.
 
-### [g164] A batch opened rewrites the corpus of a line whose verb an item gives a sense
-- [r164] While an item is `ready` and the item meets the readiness bar and the item holds a verb that has a sense and a requirement of a capability uses the verb and the item holds no requirement id that is in the capability, when the person opens a batch, the batches service shall keep the logical form of the requirement in the corpus.
-
 ### [g165] A building batch whose every item is parked is polled for its abandonment
 - [r165] While a batch is `building` and the status of every item in the batch is `needs-input`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `abandon batch`.
 
-### [g167] work batch start counts only the outcome violations an item adds, as the readiness bar does
-- [r167] While an item is `ready` and the item holds a port line that governs an operation and every port line that governs the operation is in the item and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, if the person opens a batch, then the batches service shall reopen the item and name the operation outcome.
-
 ### [g168] An item whose port outcomes were unhandled before it is allocated at the opening
 - [r168] While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit and the item holds a port line that governs an operation and another port line that governs the operation is not in the item and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, when the person opens a batch, the batches service shall allocate the item.
-
-### [g169] An item whose line performs another area's lifecycle transition is reopened at the opening
-- [r169] While an item is `ready` and an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition and the item holds a core line that uses the operation, if the person opens a batch, then the batches service shall reopen the item and name the core line and `v_m9`.
 
 ### [g170] An in-batch item amended has its features written by the generator its batch's workspace holds
 - [r170] While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement and the workspace of the batch has a feature generator, when the person amends the item, the batches service shall keep a workspace of the batch that holds a feature of the feature generator.
@@ -334,4 +290,13 @@ when the change is merged.
 
 ### [g184] An item whose check the laying service completes is kept in a change that cites it
 - [r184] When the laying service completes the request to check an item in a workspace, the batches service shall keep a kept change that cites the item.
+
+### [g187] A ready item that no longer meets the readiness bar at opening is reopened naming each bar check it does not meet
+- [r187] While an item is `ready` and the item does not meet the readiness bar and the item does not exceed the review limit, when the person opens a batch, the batches service shall reopen the item and name every bar check that the item does not meet.
+
+### [g188] A workspace in which an item of a batch is laid is prepared for the batch
+- [r188] While a batch holds an item, when the laying service completes the request to lay the item in a workspace, the batches service shall prepare the workspace for the batch.
+
+### [g189] Each item of a batch is checked again once the laying service has prepared the workspace for the batch
+- [r189] While a batch holds an item, when the laying service completes the request to prepare a workspace for the batch, the batches service shall check the item in the workspace.
 

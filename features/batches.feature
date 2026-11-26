@@ -162,70 +162,6 @@ Feature: Batches
     When the session s2 finishes the task t1
     Then the batches service sets the status of the task t1 to `done`
 
-  @g71 @r71
-  Scenario: A batch opened keeps each line's logical form in the corpus
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a requirement r1
-    And the item i1 has the requirement r1
-    And a logical form l1
-    And the requirement r1 has the logical form l1
-    And a batch b1
-    When the person opens the batch b1
-    Then this corpus holds the logical form l1
-    And the batches service keeps the logical form l1
-
-  @g72 @r72
-  Scenario: A batch opened takes a retired requirement out of the corpus
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a requirement id r1
-    And the item i1 holds the requirement id r1
-    And a requirement r2
-    And this corpus holds the requirement r2
-    And the requirement r2 has the requirement id r1
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service keeps the corpus c1
-    And the corpus c1 does not hold the requirement r2
-
-  @g73 @r73
-  Scenario: A batch opened keeps the catalogue entry of each rule its lines use
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a requirement r1
-    And the item i1 has the requirement r1
-    And a rule r2
-    And the requirement r1 uses the rule r2
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service keeps the catalogue entry c1
-    And the rule r2 has the catalogue entry c1
-
-  @g74 @r74
-  Scenario: A batch opened keeps the construct catalogue its lines use
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a requirement r1
-    And the item i1 has the requirement r1
-    And a construct c1
-    And the requirement r1 uses the construct c1
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service keeps this construct catalogue
-
-  @g75 @r75
-  Scenario: A batch opened keeps no construct catalogue for lines that use no construct
-    Given no item whose status is `ready` exists
-    And no construct catalogue exists
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service does not keep a construct catalogue
-
   @g76 @r76
   Scenario: A new capability is laid in 0.38's form: area:, specifies:, no empty ## Terms, one ## Composition
     Given an item i1
@@ -595,41 +531,6 @@ Feature: Batches
     And the batches service restores the item i2
     And the batches service does not restore the item i3
 
-  @g113 @r113
-  Scenario: A batch opened keeps the index file in the index form
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service keeps the index file i2
-    And the index file i2 conforms to the index form
-
-  @g114 @r114
-  Scenario: A batch opened leaves a capability with no requirement out of the index file
-    Given a capability c1
-    And the capability c1 has no requirement
-    And an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service keeps the index file i2
-    And the index file i2 does not hold the capability c1
-
-  @g115 @r115
-  Scenario: A batch opened names a capability with a requirement in the index file
-    Given a requirement r1
-    And a capability c1
-    And the capability c1 has the requirement r1
-    And an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service keeps the index file i2
-    And the index file i2 holds the capability c1
-
   @g116 @r116
   Scenario: A model line that restates an element is laid in place of it
     Given an item i1
@@ -829,16 +730,6 @@ Feature: Batches
     When the person opens the batch b1
     Then the area a1 holds the capability c1
     And the batches service keeps the capability c1
-
-  @g130 @r130
-  Scenario: A ready item within the review limit that no longer meets the bar is reopened
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 does not meet this readiness bar
-    And the item i1 does not exceed the review limit
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service reopens the item i1
 
   @g131 @r131
   Scenario: A ready item whose change would take the batch past the review limit is not allocated, whether or not it meets the bar
@@ -1091,28 +982,6 @@ Feature: Batches
     When the person amends the item i1
     Then the batches service keeps `registry`
 
-  @g157 @r157
-  Scenario: A batch opened regenerates the feature and corpus of a capability its model lines reach
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a model line m1
-    And an operation o1
-    And the model line m1 specifies the operation o1
-    And the item i1 holds the model line m1
-    And a requirement r1
-    And a capability c1
-    And the capability c1 has the requirement r1
-    And the requirement r1 governs the operation o1
-    And the item i1 holds no requirement id in the capability c1
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service generates the feature f1
-    And the capability c1 has the feature f1
-    And this corpus holds the requirement r1
-    And the batches service keeps the logical form l1
-    And the requirement r1 has the logical form l1
-
   @g158 @r158
   Scenario: A batch whose task branches conflict is polled for the later item's task and the file
     Given a batch b1
@@ -1227,26 +1096,6 @@ Feature: Batches
     Then the batches service returns the batch step b2
     And the instruction of the batch step b2 is `submit batch`
 
-  @g164 @r164
-  Scenario: A batch opened rewrites the corpus of a line whose verb an item gives a sense
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a sense s1
-    And a verb v1
-    And the verb v1 has the sense s1
-    And the item i1 holds the verb v1
-    And a requirement r1
-    And a capability c1
-    And the capability c1 has the requirement r1
-    And the requirement r1 uses the verb v1
-    And the item i1 holds no requirement id in the capability c1
-    And a batch b1
-    When the person opens the batch b1
-    Then this corpus holds the requirement r1
-    And the batches service keeps the logical form l1
-    And the requirement r1 has the logical form l1
-
   @g165 @r165
   Scenario: A building batch whose every item is parked is polled for its abandonment
     Given a batch b1
@@ -1257,23 +1106,6 @@ Feature: Batches
     When the driver polls the batch b1
     Then the batches service returns the batch step b2
     And the instruction of the batch step b2 is `abandon batch`
-
-  @g167 @r167
-  Scenario: work batch start counts only the outcome violations an item adds, as the readiness bar does
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And a port line p1
-    And an operation o1
-    And the port line p1 governs the operation o1
-    And the item i1 holds the port line p1
-    And an operation outcome o2
-    And the operation o1 has the operation outcome o2
-    And no core line handles the operation outcome o2
-    And no port line excludes the operation outcome o2
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service reopens the item i1
-    And the batches service names the operation outcome o2
 
   @g168 @r168
   Scenario: An item whose port outcomes were unhandled before it is allocated at the opening
@@ -1296,28 +1128,6 @@ Feature: Batches
     And a batch b1
     When the person opens the batch b1
     Then the batches service allocates the item i1
-
-  @g169 @r169
-  Scenario: An item whose line performs another area's lifecycle transition is reopened at the opening
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And a lifecycle l1
-    And an area a1
-    And the area a1 holds the lifecycle l1
-    And a transition t1
-    And the lifecycle l1 has the transition t1
-    And an operation o1
-    And the operation o1 performs the transition t1
-    And an area a2
-    And the area a2 holds the operation o1
-    And a core line c1
-    And the core line c1 uses the operation o1
-    And the item i1 holds the core line c1
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service reopens the item i1
-    And the batches service names the core line c1
-    And the batches service names `v_m9`
 
   @g170 @r170
   Scenario: An in-batch item amended has its features written by the generator its batch's workspace holds
@@ -1588,3 +1398,39 @@ Feature: Batches
     When the laying service completes the request to check the item i1 in the workspace w1
     Then the batches service keeps the kept change k1
     And the kept change k1 cites the item i1
+
+  @g187 @r187
+  Scenario: A ready item that no longer meets the readiness bar at opening is reopened naming each bar check it does not meet
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 does not meet this readiness bar
+    And the item i1 does not exceed the review limit
+    And a batch b1
+    And a bar check b2
+    And the item i1 does not meet the bar check b2
+    And a bar check b3
+    And the item i1 does not meet the bar check b3
+    When the person opens the batch b1
+    Then the batches service reopens the item i1
+    And the batches service names the bar check b2
+    And the batches service names the bar check b3
+
+  @g188 @r188
+  Scenario: A workspace in which an item of a batch is laid is prepared for the batch
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And a workspace w1
+    And the batches service lays the item i1 in the workspace w1
+    When the laying service completes the request to lay the item i1 in the workspace w1
+    Then the batches service prepares the workspace w1 for the batch b1
+
+  @g189 @r189
+  Scenario: Each item of a batch is checked again once the laying service has prepared the workspace for the batch
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And a workspace w1
+    And the batches service prepares the workspace w1 for the batch b1
+    When the laying service completes the request to prepare the workspace w1 for the batch b1
+    Then the batches service checks the item i1 in the workspace w1
