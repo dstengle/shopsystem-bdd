@@ -16,4 +16,5 @@ service laying
   operation lay(item, workspace)  outcomes: done
   operation lift(item, workspace)  outcomes: done
   operation check(item, workspace)  outcomes: done | failed
+  operation prepare(workspace, batch)  outcomes: done
 ```

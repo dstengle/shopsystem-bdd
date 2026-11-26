@@ -4,7 +4,7 @@ importing the request pack), as batches_handlers_port's world; the item holds re
 driven port `stock-port` whose port line governs `stock.reserve` and excludes its refusal, its model line, and
 notebook's core line requesting it, no core line on its completion, so the outcome `stock.reserve done` no line
 handles. The Then of the outcome named reads `work batch start`'s output for its name in the bound check. r167, which
-retires r160, keeps its world. r166 (b725): BLOCK laid on the base spec before the item, so the base already leaves
+retired r160, is laying#r19 (b758), whose world laying_handlers_reached builds with `_spec`. r166 (b725): BLOCK laid on the base spec before the item, so the base already leaves
 the outcome unhandled, and the item holding only a second port line of `stock-port` that governs `stock.reserve`
 (SECOND). r168 (b730), which retires r166, keeps its world."""
 import shutil
@@ -24,10 +24,9 @@ TERMS = ("holds", "hold", "governs", "govern", "has", "have", "handles", "handle
 
 
 def mine(step):
-    """True when the step is of batches' scenario of r160 or r166, or of r167 or r168, which retire them in their
-    worlds."""
+    """True when the step is of batches' scenario of r160 or r166, or of r168, which retires r166 in its world."""
     found = sys.modules["vocab"].vocab4.requested.scenario(step.request.node)
-    return found is not None and bool({"r160", "r166", "r167", "r168"} & set(found.tags))
+    return found is not None and bool({"r160", "r166", "r168"} & set(found.tags))
 
 
 def _tags(step):

@@ -1730,7 +1730,7 @@ a lifecycle transition an operation of another area performs
 - Since: b610
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/readiness_bound.py`
-- Cited by: batches#r169, items#r73
+- Cited by: items#r73, laying#r20
 - Fails on:
 
   ```prolog
