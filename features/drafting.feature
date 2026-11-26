@@ -826,3 +826,24 @@ Feature: Drafting
     And the drafting service keeps the capability c1
     And the driven port d1 holds the capability c1
     And the drafting service keeps the driven port d1
+
+  @g86 @r86
+  Scenario: A port line drafted with the core lines it supports is kept in the item
+    Given a requirement r1
+    And a requirement id r2
+    And the requirement r1 supports the requirement id r2
+    And an item i1
+    When the person drafts the item i1 with the requirement r1
+    Then the item i1 holds the requirement r1
+    And the drafting service keeps the requirement r1
+
+  @g87 @r87
+  Scenario: A port line drafted as supporting a requirement id no requirement has is refused
+    Given a requirement id r2
+    And no requirement has the requirement id r2
+    And a requirement r1
+    And the requirement r1 supports the requirement id r2
+    And an item i1
+    When the person drafts the item i1 with the requirement r1
+    Then the drafting service refuses this request
+    And the drafting service names the requirement id r2

@@ -6,8 +6,8 @@ group: service
 area: execution
 specifies: object batch, object task, service batches
 language: codified-2
-retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137]
-unbuilt: []
+retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146]
+unbuilt: [r152, r153, r154]
 ---
 
 # Batches
@@ -246,12 +246,6 @@ when the change is merged.
 ### [g144] A batch with a built running task and no failed task asks the driver to finish the task
 - [r144] While a batch is `building` and a task of an item in the batch is `running` and the item is `in-batch` and the workspace of the task holds a kept change that cites the item and no task of the batch is `failed`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `finish task` and the task.
 
-### [g145] A batch with an unbuilt running task and no failed task asks the driver to build the task with its brief
-- [r145] While a batch is `building` and a task of an item in the batch is `running` and the item is `in-batch` and the workspace of the task holds no kept change that cites the item and no task of the batch is `failed`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `build task`, the task and the batch brief of the batch.
-
-### [g146] A batch with a pending task and no failed or running task asks the driver to prepare the task
-- [r146] While a batch is `building` and a task of an item in the batch is `pending` and the item is `in-batch` and no task of the batch is `failed` and no task of the batch is `running`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `prepare task` and the task.
-
 ### [g147] A batch in review asks the driver to review its change with the review folder and its findings file
 - [r147] While a batch is `in-review`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `review change`, a review folder of the batch and a findings file in the review folder.
 
@@ -266,4 +260,13 @@ when the change is merged.
 
 ### [g151] A new capability laid with its driven port is kept in an area of kind port
 - [r151] While an item is `ready` and the item meets the readiness bar and the item holds a capability and the item holds a driven port that holds the capability, when the person opens a batch, the batches service shall keep the driven port that holds the capability.
+
+### [g152] A batch with unbuilt running tasks and no failed task asks the driver to build every running task with its brief
+- [r152] While a batch is `building` and two tasks of items in the batch are `running` and no task of the batch is `failed`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `build task`, every task of the batch whose status is `running` and the batch brief of the batch.
+
+### [g153] A batch with pending tasks and no failed or running task asks the driver to prepare every pending task
+- [r153] While a batch is `building` and two tasks of items in the batch are `pending` and no task of the batch is `failed` and no task of the batch is `running`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `prepare task` and every task of the batch whose status is `pending`.
+
+### [g154] A batch whose submit broke a scenario of no item asks the driver to look at the failure
+- [r154] While a batch is `building` and every task of the batch is `done` and a scenario breaks in the workspace of the batch and no scenario of an item in the batch breaks in the workspace of the batch, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `look at failure` and the scenario.
 

@@ -7,7 +7,7 @@ area: execution
 specifies: object review, object proposed change, service batches: submit
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r14]
 ---
 
 # Reviews
@@ -60,4 +60,7 @@ A batch's change submitted for review once its tasks are done, holding only the 
 
 ### [g13] A batch whose amended line its task built is submitted with the line built
 - [r13] While an item in a batch is `in-batch` and every task of the batch is `done` and the workspace of the batch holds an amendment that cites the item and a scenario of the item succeeds in the workspace of a task of the item, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.
+
+### [g14] A fix after a review of a scenario its item's change broke is accepted on submit
+- [r14] While a batch is `building` and every task of the batch is `done` and a review of the batch exists and an item in the batch is `in-batch` and a scenario of the item succeeds in the workspace of the batch and the workspace of a task of the item holds a kept change that cites the item, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.
 

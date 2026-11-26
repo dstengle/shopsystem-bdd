@@ -1249,3 +1249,21 @@ shall [x7: readiness bar "the readiness bar of the plugin that runs the command"
   response
     initiates(e2, subject: x9, status(x1) = `ready`)
 ```
+
+## r71
+From: b705 r71.
+
+```reading
+While an item is `shaped` and the item holds a port line and the item holds a core line and the port line supports the requirement id of the core line, when the person readies the item, the backlog service shall set the status of the item to `ready`.
+shall [x5: agent the person (constant), x6: service the backlog service (constant)]
+  while [x1: item, x2: port line, x3: core line, x4: requirement id]
+    status(x1) = `shaped`
+    in(x2, x1)
+    in(x3, x1)
+    of(x4, x3)
+    support(subject: x2, object: x4)
+  when
+    request(e1, backlog.ready, subject: x5, object: x1)
+  response
+    initiates(e2, subject: x6, status(x1) = `ready`)
+```

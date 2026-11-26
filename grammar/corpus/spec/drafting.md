@@ -1306,3 +1306,35 @@ shall [x1: agent the person (constant), x5: service the drafting service (consta
     in(x3, x4)
     keep(e3, subject: x5, object: x4)
 ```
+
+## r86
+From: b705 r86.
+
+```reading
+When the person drafts an item with a requirement that supports a requirement id, the drafting service shall keep the requirement in the item.
+shall [x1: agent the person (constant), x5: service the drafting service (constant)]
+  when [x2: item, x3: requirement, x4: requirement id]
+    support(subject: x3, object: x4)
+    request(e1, drafting.draft, subject: x1, object: x2)
+    param(e1, requirement, x3)
+  response
+    in(x3, x2)
+    keep(e2, subject: x5, object: x3)
+```
+
+## r87
+From: b705 r87.
+
+```reading
+If the person drafts an item with a requirement that supports a requirement id that no requirement has, then the drafting service shall refuse the request and name the requirement id.
+shall [x1: agent the person (constant), x6: service the drafting service (constant), x7: request "the request the trigger makes" (indexical)]
+  if [x2: item, x3: requirement, x4: requirement id]
+    not [x5: requirement]
+      of(x4, x5)
+    support(subject: x3, object: x4)
+    request(e1, drafting.draft, subject: x1, object: x2)
+    param(e1, requirement, x3)
+  response
+    refuse(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x4)
+```

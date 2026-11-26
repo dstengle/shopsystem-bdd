@@ -1004,44 +1004,6 @@ Feature: Batches
     And the instruction of the batch step b2 is `finish task`
     And the batches service returns the task t1
 
-  @g145 @r145
-  Scenario: A batch with an unbuilt running task and no failed task asks the driver to build the task with its brief
-    Given a batch b1
-    And the status of the batch b1 is `building`
-    And an item i1
-    And the batch b1 holds the item i1
-    And a task t1
-    And the item i1 has the task t1
-    And the status of the task t1 is `running`
-    And the status of the item i1 is `in-batch`
-    And a workspace w1
-    And the task t1 has the workspace w1
-    And no kept change cites the item i1
-    And the batch b1 has no task
-    And a batch brief b2
-    And the batch b1 has the batch brief b2
-    When the driver polls the batch b1
-    Then the batches service returns the batch step b3
-    And the instruction of the batch step b3 is `build task`
-    And the batches service returns the task t1
-    And the batches service returns the batch brief b2
-
-  @g146 @r146
-  Scenario: A batch with a pending task and no failed or running task asks the driver to prepare the task
-    Given a batch b1
-    And the status of the batch b1 is `building`
-    And an item i1
-    And the batch b1 holds the item i1
-    And a task t1
-    And the item i1 has the task t1
-    And the status of the task t1 is `pending`
-    And the status of the item i1 is `in-batch`
-    And the batch b1 has no task
-    When the driver polls the batch b1
-    Then the batches service returns the batch step b2
-    And the instruction of the batch step b2 is `prepare task`
-    And the batches service returns the task t1
-
   @g147 @r147
   Scenario: A batch in review asks the driver to review its change with the review folder and its findings file
     Given a batch b1
@@ -1133,3 +1095,81 @@ Feature: Batches
     When the person opens the batch b1
     Then the driven port d1 holds the capability c1
     And the batches service keeps the driven port d1
+
+  @g152 @r152
+  Scenario: A batch with unbuilt running tasks and no failed task asks the driver to build every running task with its brief
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    And an item i1
+    And the batch b1 holds the item i1
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And a task t2
+    And the item i1 has the task t2
+    And the status of the task t2 is `running`
+    And the batch b1 has no task
+    And a batch brief b2
+    And the batch b1 has the batch brief b2
+    And a task t3
+    And the batch b1 has the task t3
+    And the status of the task t3 is `running`
+    And a task t4
+    And the batch b1 has the task t4
+    And the status of the task t4 is `running`
+    And a task t5
+    And the batch b1 has the task t5
+    And the status of the task t5 is `pending`
+    When the driver polls the batch b1
+    Then the batches service returns the batch step b3
+    And the instruction of the batch step b3 is `build task`
+    And the batches service returns the task t3
+    And the batches service returns the task t4
+    And the batches service does not return the task t5
+    And the batches service returns the batch brief b2
+
+  @g153 @r153
+  Scenario: A batch with pending tasks and no failed or running task asks the driver to prepare every pending task
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    And an item i1
+    And the batch b1 holds the item i1
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `pending`
+    And a task t2
+    And the item i1 has the task t2
+    And the status of the task t2 is `pending`
+    And the batch b1 has no task
+    And a task t3
+    And the batch b1 has the task t3
+    And the status of the task t3 is `pending`
+    And a task t4
+    And the batch b1 has the task t4
+    And the status of the task t4 is `pending`
+    And a task t5
+    And the batch b1 has the task t5
+    And the status of the task t5 is `running`
+    When the driver polls the batch b1
+    Then the batches service returns the batch step b2
+    And the instruction of the batch step b2 is `prepare task`
+    And the batches service returns the task t3
+    And the batches service returns the task t4
+    And the batches service does not return the task t5
+
+  @g154 @r154
+  Scenario: A batch whose submit broke a scenario of no item asks the driver to look at the failure
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    And a task t1
+    And the batch b1 has the task t1
+    And the status of the task t1 is `done`
+    And a workspace w1
+    And the batch b1 has the workspace w1
+    And a scenario s1
+    And the scenario s1 breaks in the workspace w1
+    And the batch b1 holds no item
+    When the driver polls the batch b1
+    Then the batches service returns the batch step b2
+    And the instruction of the batch step b2 is `look at failure`
+    And the batches service returns the scenario s1

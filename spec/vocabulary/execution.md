@@ -88,3 +88,4 @@ area: execution
 - **park item** (noun) → value batch step.instruction park item.
 - **stop** (noun) → value batch step.instruction stop.
 - **shop** (noun) → object shop. The unit one product's work is managed and executed in, which keeps bounded contexts, each under its id. Plural: shops. This: the shop the request is made in.
+- **look at failure** (noun) → value batch step.instruction look at failure. A batch step that asks the driver to look at the scenarios that broke a submit when they are of no task's item, with no task to fix named.

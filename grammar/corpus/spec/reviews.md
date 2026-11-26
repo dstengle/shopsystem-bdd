@@ -276,3 +276,34 @@ shall [x9: agent the person (constant), x10: service the batches service (consta
     keep(e2, subject: x10, object: x11)
     initiates(e3, subject: x10, status(x2) = `in-review`)
 ```
+
+## r14
+From: b703 r14.
+
+```reading
+While a batch is `building` and every task of the batch is `done` and a review of the batch exists and an item in the batch is `in-batch` and a scenario of the item succeeds in the workspace of the batch and the workspace of a task of the item holds a kept change that cites the item, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.
+shall [x10: agent the person (constant), x11: service the batches service (constant)]
+  while [x1: batch, x3: review, x4: item, x5: scenario, x6: workspace, x7: task, x8: workspace, x9: kept change]
+    status(x1) = `building`
+    every [x2: task]
+      of(x2, x1)
+      scope
+        status(x2) = `done`
+    of(x3, x1)
+    exists(x3)
+    in(x4, x1)
+    status(x4) = `in-batch`
+    of(x5, x4)
+    of(x6, x1)
+    succeed(subject: x5, in: x6)
+    of(x7, x4)
+    of(x8, x7)
+    cite(subject: x9, object: x4)
+    in(x9, x8)
+  when
+    request(e1, batches.submit, subject: x10, object: x1)
+  response [x12: proposed change]
+    of(x12, x1)
+    keep(e2, subject: x11, object: x12)
+    initiates(e3, subject: x11, status(x1) = `in-review`)
+```

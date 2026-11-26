@@ -7,7 +7,7 @@ area: tracking
 specifies: object item, service backlog, the readiness policy
 language: codified-2
 retired: [g3, r3, g18, r18, g33, r33]
-unbuilt: []
+unbuilt: [r71]
 ---
 
 # Items
@@ -247,4 +247,7 @@ declined, withdrawn, answered and listed.
 
 ### [g70] An item that imports a pack and retires the term of the element a pack term spells is readied
 - [r70] While an item is `shaped` and the item imports a pack and the pack has a term and an element refers to the term and the term spells another element and the item retires another term that means the element and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.
+
+### [g71] An item whose port line supports one of its core lines is readied
+- [r71] While an item is `shaped` and the item holds a port line and the item holds a core line and the port line supports the requirement id of the core line, when the person readies the item, the backlog service shall set the status of the item to `ready`.
 
