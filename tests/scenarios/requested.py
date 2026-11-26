@@ -69,6 +69,7 @@ ADDED = {"consistency#g33": "design-model-check", "consistency#g34": "design-mod
          **{"consistency#g%d" % n: "design-model-check" for n in (37, 38, 39)},  # b545: a request followed
          "consistency#g40": "design-model-check",                                # b571: a request with none
          **{"consistency#g%d" % n: "design-model-check" for n in (41, 42, 43)},  # b579: count, only; b569
+         "consistency#g44": "design-model-check",                                # b724: a reply trigger
          "drafting#g25": "readiness", "reviews#g6": "batches",   # b354: a term of a new capability; b449
          "reviews#g7": "batches", "reviews#g8": "batches",      # b491: task branches merged in task order
          "drafting#g28": "readiness",                            # b458: the decisions a retired requirement enforces

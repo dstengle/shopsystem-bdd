@@ -106,6 +106,8 @@ class Walk(Terms):
         return self.out
 
     def trigger(self, part):
+        if spec_lf_facts_request.replies(part):     # a trigger on a reply to a request (reply-trigger, b724)
+            return spec_lf_facts_request.reply(self, part)
         if spec_lf_facts_request.requests(part):     # a request with its parameters (the domain contract)
             return spec_lf_facts_request.trigger(self, part)
         events = [a for a in part.body if isinstance(a, Atom) and a.pred == "event"]
