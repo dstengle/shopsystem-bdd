@@ -4,13 +4,17 @@ written into the product file (product_store's `render`) and committed, and `spe
 run with the values the instances stand for (`value`): a product actor p1 is `the p1 user`, held by the product unless
 a Given says it is not; a need n1 is the job `n1`, held unless a Given says not, needing the job j1 when it depends on
 it (so the product holds j1 too); a job statement j2 is of the job statement form unless a Given says it does not
-conform, its text the given block's when it holds one (b674, r14); an id i1 is `example.org/i1` of a product and `i1`
+conform, its text the given block's when it holds one (b674, r14), each product actor then standing for the actor
+that text names (r44, b798); a statement of the form names the product actor a Given says it mentions, else the one
+the When gives, else one named as the statement (`the j2 user`), and the product holds the actor it names unless a
+Given says it does not hold that product actor (r42, r43, b798); an id i1 is `example.org/i1` of a product and `i1`
 of a job, a job known by its id when the When gives one. A job the When declares with no statement is given one of
 the form, so that only what the line says is wrong. A
 product detail p1 is a table `[p1]` the product form does not name, written after the rendered product (b673, r8-r10);
 a product that does not conform to the product form has `jobs = ["j1"]` (r11-r13). The Thens read what the run
 printed, its exit (a refusal no traceback), and the product file and commit it kept; "this product" is named by the
 product file's path."""
+import re
 import subprocess
 import sys
 import tomllib
@@ -49,16 +53,27 @@ def value(w, name, of=None):
     """What an instance stands for on the command line and in the product file."""
     kind = w["kinds"].get(name)
     if kind == "product actor":
-        return "the %s user" % name
+        return w.get("spoken") or "the %s user" % name
     if kind == "job statement" and name in w["texts"]:
         return w["texts"][name]
     if kind == "job statement":
-        return (UNFORMED if name in w["unformed"] else FORMED) % name
+        return UNFORMED % name if name in w["unformed"] else FORMED % mentioned(w, name)
     if kind == "id":
         return "example.org/%s" % name if of == "product" else name
     if kind == "purpose":
         return "The purpose %s." % name
     return w.get("ids", {}).get(name, name)
+
+
+def speaker(text):
+    """The actor a job statement of the form names: `When <situation>, <actor> wants`."""
+    found = re.match(r"When .*, (.+?) wants ", text)
+    return found and found[1]
+
+
+def mentioned(w, statement):
+    """The name of the product actor the job statement `statement` mentions (`the <name> user`)."""
+    return w.get("mentions", {}).get(statement) or w.get("when actor") or statement
 
 
 def given_instance(step):
@@ -71,7 +86,9 @@ def given_text(step):
     """`the job statement `j2` holds "When ..."`: the group's given block, j2's text in place of FORMED (r14)."""
     if not mine(step):
         return False
-    world(step)["texts"][step.names[0].strip("`")] = step.quoted[0][1:-1]
+    text = step.quoted[0][1:-1]
+    world(step)["texts"][step.names[0].strip("`")] = text
+    world(step)["spoken"] = speaker(text)
 
 
 def given_does(step):
@@ -83,6 +100,8 @@ def given_does(step):
         w["details"].append(step.names[-1])
     elif step.term == "depend on":
         w["depends"][step.names[0]] = step.names[1]
+    elif step.term in ("mention", "mentions"):
+        w.setdefault("mentions", {})[step.names[0]] = step.names[1]
     else:
         return False
 
@@ -122,7 +141,14 @@ def runs(step):
     kinds = {w["kinds"].get(n): n for n in step.names}
     if step.term == "`spec job`" and "id" in kinds:
         w["ids"] = {kinds["job"]: value(w, kinds["id"])}
+    w["when actor"] = kinds.get("product actor")
     w["before"] = held(w, step.term == "`spec job`")
+    if step.term == "`spec job`":
+        statement = kinds.get("job statement")
+        w["statement"] = value(w, statement) if statement else FORMED % mentioned(w, kinds["job"])
+        said = speaker(w["statement"])
+        if said and said not in w["before"]["actors"] and mentioned(w, statement or kinds["job"]) not in w["outside"]:
+            w["before"]["actors"].append(said)
     text = scripts("product_store").render(w["before"]) + "".join(detail(name) for name in w["details"])
     if w.get("unformed product"):
         text = text.replace("actors = ", 'jobs = ["j1"]\nactors = ', 1)
@@ -137,8 +163,7 @@ def runs(step):
     else:
         args = ["job", value(w, kinds["job"])]
         args += ["--actor", value(w, kinds["product actor"])] if "product actor" in kinds else []
-        statement = kinds.get("job statement")
-        args += ["--statement", value(w, statement) if statement else FORMED % kinds["job"]]
+        args += ["--statement", w["statement"]]
         args += ["--needs", value(w, kinds["need"])] if "need" in kinds else []
     step.context["product_when"] = list(step.names)
     step.context["result"] = step.run("spec", *args)

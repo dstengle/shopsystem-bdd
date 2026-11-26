@@ -6,7 +6,9 @@ not hold it, and each bounded context unless a Given says this product does not 
 `context_id`: `bounded-context/example.org/<b>`, or of the id a Given says it has), with the jobs a Given says it
 holds. The command is run with the values the instances stand for: a job `<j>`, a product actor `the <p> user`, an
 actor `the <a> person`, and of a parameter the When does not give its adapter example (a bounded context
-`bounded-context/example.org/x`, an actor `the person`). The
+`bounded-context/example.org/x`, an actor `the person`). Mapped with this bounded context (r40, b798), the scenario's
+repository is the bounded context `bounded-context/example.org/here` with a domain model whose one actor is `the
+person`, so an actor a Given says this domain model does not hold, `the <a> person`, is none of it. The
 Thens read the job under the bounded context's `jobs`, or the product actor under its `actors` called by the actor,
 back from the kept product file, the run committing only it; a refusal an error exit, nothing committed, the value
 named."""
@@ -18,6 +20,17 @@ HERE = Path(__file__).resolve().parent
 P = sys.modules["shop_handlers_%s" % hashlib.sha256(str(HERE / "product_handlers.py").encode()).hexdigest()[:12]]
 W = sys.modules["shop_work_queue_world"]
 COMMANDS = ("`spec assign`", "`spec plays`")
+HERE_ID = "bounded-context/example.org/here"
+MODEL = "---\nid: model/example.org/here/people\narea: people\nkind: core\nimports: []\n---\n\n# People\n\n" \
+        "```model\nactor the person kind of agent\n```\n"
+
+
+def here(repo):
+    """This bounded context: its index and a domain model holding the actor `the person` alone (r40)."""
+    (repo / "spec" / "model").mkdir(parents=True, exist_ok=True)
+    (repo / "spec" / "index.md").write_text("---\nid: %s\ntitle: Here\nlanguage: codified-2\n---\n\n# Here\n" % HERE_ID)
+    (repo / "spec" / "model" / "people.md").write_text(MODEL)
+    return HERE_ID
 
 
 def context_id(w, name):
@@ -70,8 +83,9 @@ def runs(step):
     kinds = {w["kinds"].get(n): n for n in step.names}
     (repo / P.REL).parent.mkdir(parents=True, exist_ok=True)
     (repo / P.REL).write_text(P.scripts("product_store").render(held(w)))
-    step.context["head"] = W.init(repo)
     context = value(w, kinds["bounded context"]) if "bounded context" in kinds else context_id(w, "x")
+    context = here(repo) if ("bounded context", "this bounded context") in step.params else context
+    step.context["head"] = W.init(repo)
     if step.term == "`spec assign`":
         args = ["assign", value(w, kinds["job"]), "--to", context]
     else:
