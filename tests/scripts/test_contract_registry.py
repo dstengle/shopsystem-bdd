@@ -85,3 +85,15 @@ def test_fetch_names_the_version_the_registry_refuses(tmp_path, monkeypatch):
     with pytest.raises(Refused) as refused:
         contract_publish.fetch(tmp_path)
     assert refused.value.names == ["version:1.2.0"]
+
+
+def test_publish_with_no_version_passes_every_version_deposited(tmp_path, monkeypatch, capsys):
+    """After 1.6 then 1.5 (1.5 published, 1.6 superseded), no version is 1.7, never the 1.6 kept already (f1)."""
+    import contract_form
+    import contract_publish
+    notebook, _ = _shop(tmp_path, monkeypatch)
+    monkeypatch.setattr(contract_publish, "nonconforming", lambda root: [])
+    monkeypatch.setattr(contract_form, "render", lambda root, version: 'context = "c"\nversion = "%s"\n' % version)
+    for version in ("1.6", "1.5", None):
+        assert contract_publish.publish(notebook, version) == 0
+    assert capsys.readouterr().out.splitlines()[-2] == "published .shop/contracts/1.7/contract.toml"
