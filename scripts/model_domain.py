@@ -2,8 +2,8 @@
 
 In a context with a domain model (`spec/model/`): `model_problem(S, Why)` of each of domain_model_check's v_m8, the
 vocabulary's problems (spec_vocabulary) as `elementless(T, Why)` (v_t18), `unresolved(T, Why)` (v_t19),
-`named_twice(T, Why)` (v_t20) and `retired_import(C, P)` (v_t21), and `foreign_term(Q, W, Why)` (v_m1) of each word a
-parsed requirement of a capability with an `area:` uses (a kind, a verb, an attribute or an actor of its logical form)
+`named_twice(T, Why)` (v_t20), `misfit(T, Why)` (v_t22) and `retired_import(C, P)` (v_t21), and
+`foreign_term(Q, W, Why)` (v_m1) of each word a parsed requirement of a capability with an `area:` uses (a kind, a verb, an attribute or an actor of its logical form)
 whose entries are all in vocabulary layers its area does not read; the facts of model_domain_lines of the model and of
 each parsed requirement (v_m2-v_m7); the bound check's facts of model_bound (v_pb1-v_pb4);
 `adapter_problem(Code, S, Why)` of adapter_cli_check's v_a1-v_a4,
@@ -26,7 +26,7 @@ import spec_vocabulary
 from backlog_items import RECORDS_POLICY
 from model_parse import as_list, frontmatter
 
-FACTS = {"v_t18": "elementless", "v_t19": "unresolved", "v_t20": "named_twice"}
+FACTS = {"v_t18": "elementless", "v_t19": "unresolved", "v_t20": "named_twice", "v_t22": "misfit"}
 
 
 def uses(form):
