@@ -77,7 +77,7 @@ def split(root, name, idents):
             kept.append(left)
         if out.groups:
             moved.append(out)
-    for attr in ("universal", "upstreams", "models", "adapters", "packs"):
+    for attr in ("universal", "upstreams", "models", "adapters", "packs", "moves", "imports", "retirements"):
         setattr(kept, attr, getattr(blocks, attr))
     kept.universal_language, kept.universal_retired = blocks.universal_language, blocks.universal_retired
     said = sorted("%s#%s" % pair for pair in chosen)

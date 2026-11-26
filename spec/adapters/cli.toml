@@ -1670,31 +1670,32 @@ requirements = [
 job = { positional = 1, example = "j1" }
 
 [operations."drafting.import pack"]
-command = "work import pack"
+command = "work line"
 requirements = [
   "drafting#r73: When the person imports a pack into an item, the drafting service shall keep the item that imports the pack.",
   "drafting#r74: If the person imports a pack that does not exist into an item, then the drafting service shall refuse the request and name the pack.",
 ]
 [operations."drafting.import pack".parameters]
-pack = { option = "--pack", example = "pack-1" }
-item = { option = "--item", example = "item-1" }
+item = { positional = 1 }
+pack = { option = "--import" }
 
 [operations."drafting.retire model line"]
-command = "work retire model line"
+command = "work line"
+cli-only = { options = ["--into"] }
 requirements = [
   "drafting#r75: When the person retires a model line in an item, the drafting service shall keep the model line in the item.",
   "drafting#r76: If the person retires a model line that the domain model does not hold in an item, then the drafting service shall refuse the request and name the model line.",
 ]
 [operations."drafting.retire model line".parameters]
-"model line" = { option = "--model-line", example = "model line-1" }
-item = { option = "--item", example = "item-1" }
+item = { positional = 1 }
+"model line" = { option = "--retire-model" }
 
 [operations."drafting.retire term"]
-command = "work retire term"
+command = "work line"
 requirements = [
   "drafting#r77: When the person retires a term in an item, the drafting service shall keep the term in the item.",
   "drafting#r78: If the person retires a term that no area holds in an item, then the drafting service shall refuse the request and name the term.",
 ]
 [operations."drafting.retire term".parameters]
-term = { option = "--term", example = "term-1" }
-item = { option = "--item", example = "item-1" }
+item = { positional = 1 }
+term = { option = "--retire-term" }
