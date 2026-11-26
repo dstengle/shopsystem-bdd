@@ -497,8 +497,11 @@ makes their worktrees), `build task` (every running task whose branch holds no c
 lines commit, with the batch brief, so that the tasks are built side by side), `finish task` (a running task whose
 branch holds one), `submit batch`, `review change` (the next review's folder and the findings file `findings.md` in
 it, where the reviewer's reply is saved for `shop work batch reviewed`), `fix finding` (an open `fix now` finding that
-no commit cites yet), `park item` (a failed task) or `stop`. Only the tasks of items still `in-batch` count. The first one that applies is picked, in this order:
-stop, review change, fix finding, park item, finish task, build task, prepare task, submit batch. Each task the step
+no commit cites yet), `park item` (a failed task), `fix task` (every task done and the last whole-suite run of
+`shop work batch review` failed: the task of the item whose change broke the batch's tests, with the failed tests),
+`look at failure` (the same, but the failed tests are of no task's item: the failed tests, with no task) or `stop`.
+Only the tasks of items still `in-batch` count. The first one that applies is picked, in this order: stop, review
+change, fix finding, park item, finish task, build task, prepare task, fix task, look at failure, submit batch. Each task the step
 is about has a `task:` line; the last line names the command that reports the step's result, of `build task` one for
 each task. With `--json` the step is the envelope's `content`, its tasks under `tasks` and the first of them `task`.
 Writes nothing.\
