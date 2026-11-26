@@ -1,7 +1,7 @@
 """Handlers of checking's obtained contract refused for its upstream (r132, r133, b736), each a
 `work_queue_world.local` that takes only a step of a scenario of g132 or g133 (`mine`), over checking_handlers_obtain's
 world (the domain-model fixture, the stand-in gh, the bounded context `UPSTREAM` obtained from, in no folder of the
-shop). r132: the bounded context hosted on the stand-in gh, but no upstream entry under `## Upstreams` of spec/index.md
+shop). r141 (b739): the provider's upstream entry kept with no `github:` (`unhosted`). r132: the bounded context hosted on the stand-in gh, but no upstream entry under `## Upstreams` of spec/index.md
 identifies it (`unlisted`), and no adapter spec names it. r133: the provider's upstream entry kept, every read of its
 contents refused by the stand-in gh (`failing`), and no adapter spec names it. The When runs `spec obtain` with its
 id; the Thens read the refusal, the id and the reason it names, and that nothing was kept (no provider/, no commit)."""
@@ -11,7 +11,7 @@ from pathlib import Path
 W = sys.modules["shop_work_queue_world"]
 O = next(m for m in list(sys.modules.values()) if (getattr(m, "__file__", None) or "").endswith(
     "/checking_handlers_obtain.py"))     # loaded before this module: the glob is sorted
-GROUPS = {"g132", "g133"}
+GROUPS = {"g132", "g133", "g141"}
 
 
 def mine(step):
@@ -20,18 +20,24 @@ def mine(step):
 
 
 def given_instance(step):
-    if not mine(step) or step.kind not in ("contract", "bounded context", "provider"):
+    if not mine(step) or step.kind not in ("contract", "bounded context", "provider", "upstream entry"):
         return False
     O.world(step)["kinds"][step.names[0]] = step.kind
 
 
 def given_state(step):
     """`this shop does not hold the bounded context b1` (no folder of the shop is its: the fixture's alone), `no
-    upstream entry identifies the bounded context b1` (`unlisted`) and `no adapter spec has the provider p1`."""
+    upstream entry identifies the bounded context b1` (`unlisted`) and `no adapter spec has the provider p1`; g141's
+    `the upstream entry u1 identifies the bounded context b1` (its bullet) and `... holds no shared store` (`unhosted`:
+    the bullet names no `github:`), no adapter spec of it either."""
     if not mine(step) or step.term not in ("holds", "identify", "has"):
         return False
     w = O.world(step)
-    if step.term == "holds":
+    if step.text.startswith("the upstream entry"):     # g141: its bullet kept, naming no place (`unhosted`)
+        if step.term == "holds":
+            assert any(n.startswith("no shared store") for n in step.nps), step.text
+            w["unhosted"] = True
+    elif step.term == "holds":
         assert step.template.endswith("Not"), step.text
     elif step.term == "identify":
         assert step.text.startswith("no upstream entry"), step.text
