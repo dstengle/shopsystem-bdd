@@ -269,7 +269,8 @@ def _v_t6(root):
 def warn_terms(root, item, bullets):
     """`work line --term`'s warning (b801, drafting r94): each v_t6 problem the item's lay onto a temporary copy of
     `spec/` brings that names a word of `bullets`, printed on stderr as `work line: warning: v_t6: <message>`; the
-    term kept and the write completed, a failure of the check no warning. 0, the write's exit."""
+    term kept and the write completed, a lay or a read of the copy that is refused or fails on a file no warning
+    (any other error raised). 0, the write's exit."""
     words = {m.group(1).strip() for m in (re.match(r"\s*-\s*\*\*(.+?)\*\*", b) for b in bullets or ()) if m}
     copy, found = Path(tempfile.mkdtemp(prefix="term-warn-")), set()
     try:
@@ -278,7 +279,7 @@ def warn_terms(root, item, bullets):
             before = _v_t6(copy)
             lay_onto(copy, item)
             found = _v_t6(copy) - before
-    except Exception:       # a warning never fails the write: the readiness bar checks the lexicon whole
+    except (Refused, OSError):  # a lay or a read that fails warns of nothing: the readiness bar checks it whole
         found = set()
     finally:
         shutil.rmtree(copy, ignore_errors=True)
