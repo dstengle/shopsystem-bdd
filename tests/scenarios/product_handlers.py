@@ -4,9 +4,13 @@ written into the product file (product_store's `render`) and committed, and `spe
 run with the values the instances stand for (`value`): a product actor p1 is `the p1 user`, held by the product unless
 a Given says it is not; a need n1 is the job `n1`, held unless a Given says not, needing the job j1 when it depends on
 it (so the product holds j1 too); a job statement j2 is of the job statement form unless a Given says it does not
-conform; an id i1 is `example.org/i1` of a product and `i1` of a job, a job known by its id when the When gives one.
-A job the When declares with no statement is given one of the form, so that only what the line says is wrong. The
-Thens read what the run printed, its exit, and the product file and commit it kept."""
+conform, its text the given block's when it holds one (b674, r14); an id i1 is `example.org/i1` of a product and `i1`
+of a job, a job known by its id when the When gives one. A job the When declares with no statement is given one of
+the form, so that only what the line says is wrong. A
+product detail p1 is a table `[p1]` the product form does not name, written after the rendered product (b673, r8-r10);
+a product that does not conform to the product form has `jobs = ["j1"]` (r11-r13). The Thens read what the run
+printed, its exit (a refusal no traceback), and the product file and commit it kept; "this product" is named by the
+product file's path."""
 import subprocess
 import sys
 import tomllib
@@ -25,7 +29,13 @@ def mine(step):
 
 
 def world(step):
-    return step.context.setdefault("product", {"kinds": {}, "outside": set(), "unformed": set(), "depends": {}})
+    return step.context.setdefault("product", {"kinds": {}, "outside": set(), "unformed": set(), "depends": {},
+                                               "details": [], "texts": {}})
+
+
+def detail(name):
+    """The text of the product detail `name` in the product file: a table no part of the product form names."""
+    return '\n[%s]\nsubdomains = ["s-%s"]\n' % (name, name)
 
 
 def scripts(name):
@@ -40,6 +50,8 @@ def value(w, name, of=None):
     kind = w["kinds"].get(name)
     if kind == "product actor":
         return "the %s user" % name
+    if kind == "job statement" and name in w["texts"]:
+        return w["texts"][name]
     if kind == "job statement":
         return (UNFORMED if name in w["unformed"] else FORMED) % name
     if kind == "id":
@@ -55,18 +67,35 @@ def given_instance(step):
     world(step)["kinds"][step.names[0]] = step.kind
 
 
-def given_does(step):
-    """`the need n1 depends on the job j1`."""
-    if not mine(step) or step.term != "depend on":
+def given_text(step):
+    """`the job statement `j2` holds "When ..."`: the group's given block, j2's text in place of FORMED (r14)."""
+    if not mine(step):
         return False
-    world(step)["depends"][step.names[0]] = step.names[1]
+    world(step)["texts"][step.names[0].strip("`")] = step.quoted[0][1:-1]
+
+
+def given_does(step):
+    """`the need n1 depends on the job j1`; `this product holds the product detail p1`."""
+    if not mine(step):
+        return False
+    w = world(step)
+    if step.term in ("hold", "holds") and w["kinds"].get(step.names[-1]) == "product detail":
+        w["details"].append(step.names[-1])
+    elif step.term == "depend on":
+        w["depends"][step.names[0]] = step.names[1]
+    else:
+        return False
 
 
 def given_not(step):
-    """`this product does not hold the product actor p1`; `the job statement j2 does not conform to ...`."""
+    """`this product does not hold the product actor p1`; `the job statement j2 does not conform to ...`; `this product
+    does not conform to the product form` (its jobs a list, not a table of jobs)."""
     if not mine(step) or step.term not in ("holds", "hold", "conform"):
         return False
     w = world(step)
+    if not step.names:
+        w["unformed product"] = True
+        return None
     (w["unformed"] if step.term == "conform" else w["outside"]).add(step.names[-1])
 
 
@@ -94,9 +123,12 @@ def runs(step):
     if step.term == "`spec job`" and "id" in kinds:
         w["ids"] = {kinds["job"]: value(w, kinds["id"])}
     w["before"] = held(w, step.term == "`spec job`")
-    if w["before"]["actors"] or w["before"]["jobs"]:
+    text = scripts("product_store").render(w["before"]) + "".join(detail(name) for name in w["details"])
+    if w.get("unformed product"):
+        text = text.replace("actors = ", 'jobs = ["j1"]\nactors = ', 1)
+    if w["before"]["actors"] or w["before"]["jobs"] or w["details"] or w.get("unformed product"):
         (repo / REL).parent.mkdir(parents=True, exist_ok=True)
-        (repo / REL).write_text(scripts("product_store").render(w["before"]))
+        (repo / REL).write_text(text)
     step.context["head"] = W.init(repo)
     if step.term == "`spec product`":
         args = ["product", value(w, kinds["id"], "product"), "--purpose", value(w, kinds["purpose"])]
@@ -137,6 +169,9 @@ def holds(step, w, name):
         given = {w["kinds"].get(n): n for n in step.context["product_when"]}
         return (product.get("id"), product.get("purpose")) == (value(w, given["id"], "product"),
                                                               value(w, given["purpose"]))
+    if kind == "product detail":
+        path = step.repo / REL
+        return detail(name) in path.read_text() and product.get(name) == {"subdomains": ["s-%s" % name]}
     raise AssertionError("no product holds a %s" % kind)
 
 
@@ -155,9 +190,11 @@ def then(step):
         assert git(step.repo, "rev-parse", "HEAD").strip() != step.context["head"]
         assert holds(step, w, step.names[-1]), kept(step)
     elif step.term == "refuse":
-        assert done.returncode != 0 and done.stderr.strip(), said
+        assert done.returncode != 0 and done.stderr.strip() and "Traceback" not in said, said
         assert git(step.repo, "rev-parse", "HEAD").strip() == step.context["head"]
         assert not git(step.repo, "status", "--porcelain", "--", REL).strip()
+    elif step.term == "name" and not step.names:
+        assert REL in said, said           # this product: the product file
     elif step.term == "name":
         name = step.names[-1]
         option = {"job statement": "--statement", "product actor": "--actor", "need": "--needs"}[w["kinds"][name]]
@@ -174,6 +211,7 @@ def completes(step):
 
 
 W.local("GivenK")(given_instance)
+sys.modules["vocab"].handler("GivenCode", "job statement")(given_text)     # a claim `features vocab --check` sees
 W.local("GivenDoes")(given_does)
 W.local("GivenDoesNot")(given_not)
 W.local("WhenRuns")(runs)

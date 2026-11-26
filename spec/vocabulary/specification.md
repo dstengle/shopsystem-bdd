@@ -308,3 +308,5 @@ area: specification
 - **declare** (verb, action) → operation product.declare job. The person writes a job to be done of the product with its id, its actors, its job statement and the jobs it needs. Forms: declares, declared. Frame: <actor> declares <job>.
 - **need** (verb, state) → relation job.needs. A job is carried through another job first. Forms: needs, needed. Frame: <job> needs <job>.
 - **depend on** (verb, state) → relation job.depends on. A job needs another job, directly or through the jobs it needs. Forms: depends on, depended on. Frame: <job> depends on <job>.
+- **product detail** (noun) → object product detail. A part of the product that this release of the product service declares nothing of, as one a later release wrote, kept as it is by each declaration. Plural: product details.
+- **the product form** (proper noun) → object product form. The form a product is kept in: its id and purpose, its actors, and its jobs, each with its actors, its job statement and its needs.
