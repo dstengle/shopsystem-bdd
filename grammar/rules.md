@@ -1335,6 +1335,27 @@ a context with a domain model imports the retired pack cli: run `migrate upgrade
   typed("ctx").
   ```
 
+## v_t22
+
+a vocabulary entry's part of speech does not fit the element it names
+
+- Purpose: A word's part of speech fits the element it names, so a line that uses it reads as the model means.
+- Since: b825
+- Severity: error
+- Implemented in: `scripts/model.lp`, `scripts/backlog_term_rules.py`, `scripts/model_domain.py`, `scripts/spec_vocabulary.py`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  misfit("personal","spec/vocabulary/notes.md: the entry is an adjective, which names a value, not actor the person").
+  ```
+
+- Passes on:
+
+  ```prolog
+  category("personal","condition").
+  ```
+
 ## v_m1
 
 a requirement uses a word that names no element through the vocabulary its capability's area reads
