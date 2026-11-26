@@ -1729,7 +1729,7 @@ a lifecycle transition an operation of another area performs
 - Purpose: A lifecycle's transitions are performed only by operations of the area that declares its object, so one area owns each object's lifecycle.
 - Since: b610
 - Severity: error
-- Implemented in: `scripts/model.lp`
+- Implemented in: `scripts/model.lp`, `scripts/readiness_bound.py`
 - Cited by: batches#r169, items#r73
 - Fails on:
 
