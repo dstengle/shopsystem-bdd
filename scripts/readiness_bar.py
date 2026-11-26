@@ -120,6 +120,7 @@ def _broken(copy, blocks, before):
         if name.startswith("v_m") and not set(short) & mine:    # a domain model rule over its model lines (b477)
             reasons += _modelled(blocks, name, labels.get(name, ""), args)
     reasons += readiness_bound.reasons(found - before, ops, labels)
+    reasons += readiness_bound.transitions(found - before, facts, mine, labels)     # v_m9 of its own line (b731)
     return list(dict.fromkeys(reasons))
 
 

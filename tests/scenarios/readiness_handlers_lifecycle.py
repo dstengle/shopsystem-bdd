@@ -1,0 +1,135 @@
+"""items#r73's and batches#r169's world (b731): an item whose core line performs another area's lifecycle transition.
+The domain-model fixture's model, vocabulary and notebook (items: its whole spec; batches: beside readiness_world's
+codified spec, as batches_handlers_outcome's world), with a second area `desk` (DESK) whose service's `stamp` the notes
+area imports; the area `notes` holds the lifecycle `note.status` and its transition `draft → active`; the item holds
+notebook's core line requesting `desk.stamp` and setting the status of the note to `active` (BLOCK), so the lay brings
+v_m9 of the transition. What `work ready` and `work batch start` name the core line by is its requirement's id."""
+import importlib.util
+import shutil
+import sys
+from pathlib import Path
+
+
+def shared(name, file):
+    """A world module loaded once by path, the one the other handler modules load under the same name."""
+    if name not in sys.modules:
+        spec = importlib.util.spec_from_file_location(name, Path(__file__).with_name(file))
+        sys.modules[name] = module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+    return sys.modules[name]
+
+
+W = shared("shop_work_queue_world", "work_queue_world.py")
+B = shared("shop_backlog_world", "backlog_world.py")
+F = shared("shop_world_four", "world_four.py")
+FIXTURE = Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "domain-model" / "spec"
+LINE = "notebook#r10"
+BLOCK = """### notebook
+
+#### [g10] A note stamped is active
+- [r10] When the person stamps a note, the desk service shall set the status of the note to `active`."""
+DESK = {"model/desk.md": """---
+id: model/example.org/fixture/desk
+area: desk
+kind: core
+imports: [notes]
+---
+
+# Desk
+
+## Purpose
+
+The desk where notes are stamped.
+
+```model
+service desk
+  operation stamp(note)  outcomes: done
+```
+""", "vocabulary/desk.md": """---
+id: vocabulary/example.org/fixture/desk
+area: desk
+---
+
+# The words of desk
+
+## Terms
+
+- **stamp** (verb, action) → operation desk.stamp. Forms: stamps, stamped. Frame: <actor> stamps <note>.
+- **the desk service** (proper noun) → service desk.
+"""}
+KINDS = ("lifecycle", "area", "transition", "operation", "core line")
+TERMS = ("holds", "hold", "has", "have", "performs", "perform", "uses", "use")
+
+
+def _tag(step):
+    """"items" or "batches" when the step is of items' scenario of r73 or batches' of r169, else None."""
+    requested = sys.modules["vocab"].vocab4.requested
+    found = requested.scenario(step.request.node)
+    if found is None:
+        return None
+    capability = requested.capability(step.request.node)
+    return capability if (capability, True) in (("items", "r73" in found.tags), ("batches", "r169" in found.tags)) \
+        else None
+
+
+def _spec(step, tag):
+    """The world's spec, once: the fixture's (beside readiness_world's codified spec in batches) and DESK."""
+    if step.context.get("lifecycle_spec"):
+        return
+    spec = step.repo / "spec"
+    if tag == "items":
+        shutil.copytree(FIXTURE, spec, dirs_exist_ok=True)
+    else:
+        sys.modules["shop_readiness_world"].codify(step)
+        for folder in ("model", "vocabulary", "adapters"):
+            shutil.copytree(FIXTURE / folder, spec / folder, dirs_exist_ok=True)
+        shutil.copy(FIXTURE / "capabilities" / "notebook.md", spec / "capabilities" / "notebook.md")
+        index = spec / "index.md"
+        index.write_text(index.read_text().replace("imports: [cli]", "imports: [request]"))
+    notes = spec / "model" / "notes.md"
+    notes.write_text(notes.read_text().replace("imports: []", "imports: [desk]", 1))
+    for rel, text in DESK.items():
+        (spec / rel).write_text(text)
+    step.context["lifecycle_spec"] = True
+
+
+def given_named(step):
+    """`a lifecycle l1`, `an area a1`, `a transition t1`, `an operation o1`, `a core line c1`: the spec they are read
+    in; the core line named by its requirement's id."""
+    tag = _tag(step)
+    if tag is None or step.kind not in KINDS:
+        return False
+    _spec(step, tag)
+    if step.kind == "core line":
+        step.context.setdefault("says", {})[step.names[0]] = LINE
+    return None
+
+
+def given_held(step):
+    """`the item i1 holds the core line c1`: the item's BLOCK; the areas, the lifecycle, its transition and the
+    operation that performs it: so the spec and BLOCK say."""
+    tag = _tag(step)
+    if tag is None or step.term not in TERMS:
+        return False
+    if step.term in ("holds", "hold") and step.subject.startswith("the item "):
+        B.write_item(step, step.names[0], sections={"Requirements": BLOCK})
+    return None
+
+
+W.local("GivenK")(given_named)
+W.local("GivenDoes")(given_held)
+for _kind in KINDS:
+    F.four("GivenK", _kind, "backlog", "batches")(given_named)
+for _term in TERMS:
+    F.four("GivenDoes", _term, "backlog", "batches")(given_held)
+
+
+@F.four("ThenDoes", "name", "backlog", "batches")
+def names_line(step):
+    """The batches service names the core line c1: `work batch start` printed its requirement's id."""
+    if _tag(step) != "batches" or F.parts(step)[1][0] != "core line":
+        return False
+    done = step.context["result"]
+    assert done.returncode == 0, (step.text, done.stdout, done.stderr)
+    assert LINE in done.stdout, (step.text, done.stdout)
+    return None
