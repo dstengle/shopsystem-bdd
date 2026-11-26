@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""`shop`, the plugin's one command (decision 0132): `shop <command> <args>` runs the plugin's command of that name with
-the same arguments, its output and exit unchanged, and with no notice of the old name (adapter_cli_respond's notice, b631)."""
+"""`shop`, the plugin's one command: `shop <command> <args>` runs the plugin's command of that name with the same
+arguments, its output and exit unchanged, and with no notice of the command's old name."""
 import argparse
 import os
 import sys
