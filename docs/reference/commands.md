@@ -175,7 +175,9 @@ Synopsis: `shop work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retir
 - `--serves <cap>#g<n> <job>`: dedicate a requirement group (a live one, or one of the item's own) to a job of the
   product (`shop spec job` declares it), kept as the pair under the item's block of the capability; `shop work
   batch start` writes it as the group's `serves: <job>` line. Beside a requirement line, `--serves <job>` alone
-  dedicates the group the line goes into, and the line added is printed before the pair. A job the product does not
+  dedicates the group the line goes into, and the line added is printed before the pair; with `--into`, `--serves`
+  takes the job alone and the line may follow it, as `shop work line b1 --into bookings --group "Booking a slot"
+  --serves book-repair "<line>"`. Only a first word of the form `<cap>#g<n>` makes it take two. A job the product does not
   hold is refused naming it, and so is a pair the group serves already or another open item holds.
   [`shop spec trace`](#shop-spec-trace) shows what serves a job.
 - `--expose '<tables>'`: the tables of one operation for the CLI adapter contract, `[operations."<service>.<operation>"]`
