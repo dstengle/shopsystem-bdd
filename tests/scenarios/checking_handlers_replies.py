@@ -1,10 +1,11 @@
-"""Handlers of checking's scenarios of the contract registry's replies (g128-g130: r128-r130, b636), each a
+"""Handlers of checking's scenarios of the contract registry's replies (g128-g130, g134: r128-r130, r134; b636, b736), each a
 `work_queue_world.local` that takes only a step of a scenario of one of its groups (`mine`). The registry is
 checking_handlers_registry's stand-in, answering as the When says (`$STAND_IN_REGISTRY_REPLY`): it completes the
 deposit of `spec publish --version 1.2.0` (checking_handlers_publish's world, no contract kept before), returns its own
-contract to `spec fetch --version 1.2.0` (the folder keeping another at that version), or refuses the retrieval of
-`spec obtain` at `1.2.0` (checking_handlers_obtain's world, the upstream holding that version). The Given of the
-core's request only says which request the reply is on. The Thens: the contract kept (committed at its version as
+contract to `spec fetch --version 1.2.0` (the folder keeping another at that version), refuses the retrieval of
+`spec obtain` at `1.2.0` (checking_handlers_obtain's world, the upstream holding that version), or, when the core's
+request is a deposit, refuses the deposit of `spec publish --version 1.2.0` (r134). The Given of the core's request
+says which request the reply is on. The Thens: the contract kept (committed at its version as
 the published one, once the stand-in recorded its completion, and the command done), the contract returned (the
 stand-in's printed, not the folder's), the version named in the refusal, the contract asked at that version, and
 nothing changed (no file, no commit)."""
@@ -16,7 +17,7 @@ from pathlib import Path
 from vocab import handler
 
 W = sys.modules["shop_work_queue_world"]
-GROUPS = {"g128", "g129", "g130"}
+GROUPS = {"g128", "g129", "g130", "g134"}
 VERSION = "1.2.0"
 REPLIES = {"complete": "`spec publish`", "return": "`spec fetch`", "refuse": "`spec obtain`"}
 KEEPS = ("write", "commit", "post", "keep", "make", "rewrite", "publish")
@@ -64,7 +65,10 @@ def replies(step):
     env = dict(obtain.env(step), SHOPSYSTEM_CONTRACT_REGISTRY=str(registry.STAND_IN),
                STAND_IN_REGISTRY_CALLS=w["calls"], STAND_IN_REGISTRY_REPLY=step.term,
                PYTHONPATH=os.pathsep.join([str(registry.STAND_IN.parent), os.environ.get("PYTHONPATH", "")]))
-    if step.term == "refuse":
+    if step.term == "refuse" and w.get("request") == "deposit":
+        _module("checking_handlers_publish.py").build(step, False, VERSION)
+        words = ["publish"]
+    elif step.term == "refuse":
         obtain.build(step)
         words = ["obtain", obtain.UPSTREAM]
     else:
@@ -108,14 +112,15 @@ def then_returns(step):
 
 def then_does(step):
     """`the specification service names the version v1` (the refusal names `1.2.0`), `the contract c1 has the version
-    v1` (the retrieval asked at it)."""
+    v1` (the retrieval asked at it, or the deposit made at it, r134)."""
     if not mine(step) or "replies" not in step.context or step.term not in ("name", "has"):
         return False
     done = step.context["result"]
     if step.term == "name":
         assert done.returncode == 1 and VERSION in done.stdout + done.stderr, done.stdout + done.stderr
     else:
-        assert [c["version"] for c in calls(step) if c["operation"] == "retrieve"] == [VERSION], calls(step)
+        asked = world(step).get("request") or "retrieve"
+        assert [c["version"] for c in calls(step) if c["operation"] == asked] == [VERSION], calls(step)
 
 
 def then_unchanged(step):
