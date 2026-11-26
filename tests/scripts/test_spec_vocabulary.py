@@ -1,5 +1,5 @@
 """spec_vocabulary and spec_vocabulary_terms: a context's words named onto its domain model (the domain contract
-design, §4.2), their layers and problems (v_t18-v_t21), and the lexicon the grammars read from them."""
+design, §4.2), their layers and problems (v_t18-v_t22), and the lexicon the grammars read from them."""
 import pathlib
 import shutil
 
@@ -63,6 +63,21 @@ def test_v_t20_two_entries_of_one_layer_naming_one_element(ctx):
 def test_v_t20_in_two_layers_is_no_problem(ctx):
     _add(ctx, "archive", "- **memo** (noun) → object note.\n")
     assert _codes(ctx, "v_t20") == []
+
+
+def test_v_t22_a_part_of_speech_that_does_not_fit_its_element(ctx):
+    _add(ctx, "archive", "- **personal** (adjective) → actor the person.\n- **plot** (verb, action) → object tag.\n"
+                         "- **asking** (noun) → operation notes.add.\n- **shed** (adjective) → service notes.\n"
+                         "- **owning** (verb, state) → operation notes.file.\n- **shelve** (verb, action) → "
+                         "relation note.carries.\n- **stage** (attribute) → value note.status draft.\n")
+    assert _codes(ctx, "v_t22") == ["asking", "owning", "personal", "plot", "shed", "shelve", "stage"]
+
+
+def test_v_t22_each_part_of_speech_that_fits(ctx):
+    _add(ctx, "archive", "- **memo** (noun) → object note.\n- **the memo form** (proper noun) → object note.\n"
+                         "- **nil** (noun) → value note.priority low.\n- **the owner** (proper noun) → actor the "
+                         "person.\n- **jot** (verb) → operation notes.add.\n")
+    assert _codes(ctx, "v_t22") == []
 
 
 def test_v_t21_the_retired_cli_import_in_a_context_with_a_model(ctx, monkeypatch):

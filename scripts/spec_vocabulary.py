@@ -6,8 +6,9 @@ element by domain_model's qualified id up to the first `. `, then a gloss and th
 
 An area reads its own layer, the layers of the areas its model file imports, then `shared` (`layers_of`). The
 problems (`problems`): v_t18 (an entry names no element), v_t19 (it names one the model does not declare), v_t20 (two
-entries of one layer name one element and neither is a form of the other) and v_t21 (`imports: [cli]` in a context
-with a domain model, switched on once the plugin has the request pack `grammar/packs/request.md`).
+entries of one layer name one element and neither is a form of the other), v_t21 (`imports: [cli]` in a context
+with a domain model, switched on once the plugin has the request pack `grammar/packs/request.md`) and v_t22 (its part
+of speech does not fit the element it names: `FITS`, b825).
 spec_vocabulary_terms turns the entries into spec_lexicon's terms.
 """
 import re
@@ -24,6 +25,11 @@ ENTRY = re.compile(r"^- \*\*(?P<term>.+?)\*\*\s*\((?P<label>[^)]*)\)\s*(?P<arrow
 REF = re.compile(r"^(?P<ref>.+?)\.(?:\s+(?P<rest>.*))?$", re.DOTALL)
 SHARED = "shared"
 REQUEST_PACK = spec_packs.PLUGIN / "request.md"
+# the kinds of element each part of speech fits (b825): a proper noun of an object is a constant of its kind, as
+# spec_vocabulary_terms reads it and grammar/language.md writes "the stage form"; a verb of no aspect (v_t14's) either
+FITS = {"noun": ("object", "value"), "proper noun": ("service", "actor", "object"), "adjective": ("value",),
+        "attribute": ("attribute",), "verb, action": ("operation",), "verb, state": ("relation",),
+        "verb": ("operation", "relation")}
 
 
 @dataclass(frozen=True)
@@ -96,8 +102,33 @@ def _twice(found):
                     b.where, group[0].term, b.term, element.kind, element.id, layer))
 
 
+def part(label):
+    """The part of speech of a label as FITS keys it: `verb, action`, `proper noun`, `noun` of `noun, exclusive`;
+    None of a label that names none (v_t4's)."""
+    words = " ".join(label.replace(",", " , ").split())
+    if words.startswith("proper noun"):
+        return "proper noun"
+    if words.startswith("verb"):
+        aspect = next((a for a in ("action", "state") if a in words.split()), None)
+        return "verb, %s" % aspect if aspect else "verb"
+    first = words.split(" ")[0] if words else ""
+    return first if first in FITS else None
+
+
+def _a(word):
+    return ("an " if word[0] in "aeiou" else "a ") + word
+
+
+def _misfits(found):
+    for e in found:
+        said = part(e.label)
+        if e.element and said and e.element.kind not in FITS[said]:
+            yield ("v_t22", e.term, "%s: the entry is %s, which names %s, not %s %s" % (
+                e.where, _a(said), " or ".join(_a(k) for k in FITS[said]), e.element.kind, e.element.id))
+
+
 def problems(root):
-    """v_t18-v_t21 of the context at `root`, as (code, term, message) sorted; none with no `spec/model/`."""
+    """v_t18-v_t22 of the context at `root`, as (code, term, message) sorted; none with no `spec/model/`."""
     if not domain_model.exists(root):
         return []
     found = entries(root)
@@ -106,6 +137,7 @@ def problems(root):
     out += [("v_t19", e.term, "%s: the entry names %s, which the model does not declare" % (e.where, e.ref))
             for e in found if e.ref and not e.element]
     out += list(_twice(found))
+    out += list(_misfits(found))
     if REQUEST_PACK.is_file() and "cli" in spec_packs.imports(root):
         why = "spec/index.md imports the retired pack cli; import request, and run `shop migrate upgrade`"
         out.append(("v_t21", "cli", why))

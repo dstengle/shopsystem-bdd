@@ -46,7 +46,7 @@
 #defined relational/1.            % relational(T): condition T's definition names another kind with `the`
 % the domain contract: the domain model, the vocabulary naming its elements, the records policy (model_domain)
 #defined model_problem/2.         % model_problem(S, Why): the domain model breaks its own rules at S (domain_model_check)
-#defined elementless/2.  #defined unresolved/2.  #defined named_twice/2.  #defined retired_import/2.
+#defined elementless/2.  #defined unresolved/2.  #defined named_twice/2.  #defined retired_import/2.  #defined misfit/2.
 #defined foreign_term/3.          % foreign_term(Q, W, Why): Q uses W, a word of no vocabulary layer its area reads
 #defined adapter_problem/3.       % adapter_problem(Code, S, Why): the CLI contract breaks Code at S (adapter_cli_check)
 #defined contract_op/2.  #defined op_holds/3.   % an adapter contract C holds the operation O, which holds the requirement Q (adapter_annotate)
@@ -425,6 +425,10 @@ label("v_t21", "a context with a domain model imports the retired pack cli: run 
 % fail v_t21: retired_import("ctx","cli").
 % pass v_t21: typed("ctx").
 v_t21(C, P)   :- retired_import(C, P).
+label("v_t22", "a vocabulary entry's part of speech does not fit the element it names").
+% fail v_t22: misfit("personal","spec/vocabulary/notes.md: the entry is an adjective, which names a value, not actor the person").
+% pass v_t22: category("personal","condition").
+v_t22(T, Why) :- misfit(T, Why).
 
 % ---------------------------------------------------------------- the domain model (the domain contract, §5.5)
 label("v_m1", "a requirement uses a word that names no element through the vocabulary its capability's area reads").
@@ -674,7 +678,7 @@ w_example(Q, L)    :- exemplified(Q, L).
 #show v_d6/1. #show v_d7/1. #show v_d8/2. #show v_d9/2.
 #show v17/1. #show v18d/1.
 #show v_t1/3. #show v_t2/1. #show v_t3/1. #show v_t4/1. #show v_t5/1. #show v_t6/2. #show v_t11/1. #show v_t12/1. #show v_t13/2. #show v_t14/1. #show v_t15/1.
-#show v_t16/2. #show v_t17/2. #show v_t18/2. #show v_t19/2. #show v_t20/2. #show v_t21/2.
+#show v_t16/2. #show v_t17/2. #show v_t18/2. #show v_t19/2. #show v_t20/2. #show v_t21/2. #show v_t22/2.
 #show v_m1/3. #show v_m2/2. #show v_m3/2. #show v_m4/2. #show w_m5/4. #show v_m6/4. #show v_m7/1. #show v_m9/4. #show v_pb1/1. #show v_pb2/1. #show v_pb3/2. #show v_pb4/1. #show v_m8/2. #show v_a1/2. #show v_a2/2. #show v_a3/2. #show v_a4/2. #show v_a5/2. #show v_a6/2. #show v_c1/2. #show v_c2/1. #show v_c3/1. #show v_c4/2. #show v_r1/2. #show w_r1/2.
 #show v_p0/1. #show v_p1/2. #show v_p2/1. #show v_p3/2.
 #show v_job_elsewhere/2. #show v_need_cycle/2. #show w_unheld_job/1. #show w_unformed_product/2. #show w_untriggered_actor/2.

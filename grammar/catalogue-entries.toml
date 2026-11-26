@@ -912,3 +912,8 @@ changed = []
 purpose = "Lets a trigger be a service's failure of a request the core made, as its other replies are, so a compensation on a failed reply can be written."
 since = "b727"
 changed = []
+
+[rules.v_t22]
+purpose = "A word's part of speech fits the element it names, so a line that uses it reads as the model means."
+since = "b825"
+changed = []

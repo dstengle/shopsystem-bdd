@@ -13,7 +13,7 @@ from pathlib import Path
 
 from backlog_items import Refused
 
-RULES = ("v_t4", "v_t7", "v_t11", "v_t13", "v_t14", "v_t19")
+RULES = ("v_t4", "v_t7", "v_t11", "v_t13", "v_t14", "v_t19", "v_t22")
 WORD = re.compile(r"\s*-\s*\*\*(.+?)\*\*")
 
 
