@@ -316,3 +316,6 @@ area: specification
 - **cover** (verb, state) → relation id.covers. An id lies under another: its path opens with the other id. Forms: covers, covered. Frame: <id> covers <id>.
 - **subdomain type** (noun) → object subdomain type. How the product weighs a subdomain, as `core`. Plural: subdomain types.
 - **the subdomain type form** (proper noun) → object subdomain type form. `core`, `supporting` or `generic`, the types of subdomain decision 0128 names.
+- **assign** (verb, action) → operation product.assign. The person gives a job of the product to the one bounded context whose capabilities serve it (decision 0140). Forms: assigns, assigned. Frame: <actor> assigns <job> to <bounded context>.
+- **map** (verb, action) → operation product.map. The person says which actor of a bounded context's model plays a product actor there (decision 0141). Forms: maps, mapped. Frame: <actor> maps <product actor>.
+- **trace** (verb, action) → operation product.trace. The person asks which requirements and adapter specs a job of the product rests on: the lines of the requirement groups that serve it, the lines its requests reach and the traces of the jobs it needs. Forms: traces, traced. Frame: <actor> traces <job>.

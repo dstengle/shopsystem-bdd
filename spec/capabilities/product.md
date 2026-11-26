@@ -7,7 +7,7 @@ area: specification
 specifies: service product
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r22, r23, r24, r25, r26, r27, r28, r29, r30]
 ---
 
 # Product
@@ -82,4 +82,31 @@ the job statement `j2` holds "When a change is wanted, reviewed and agreed, the 
 
 ### [g21] A bounded context addressing a subdomain the product does not hold is refused
 - [r21] If the person declares a bounded context with a subdomain that is not in the product, then the product service shall refuse the request and name the subdomain.
+
+### [g22] A job is assigned to the bounded context that serves it
+- [r22] When the person assigns a job to a bounded context, the product service shall keep the job in the bounded context and complete the request.
+
+### [g23] A job assigned to a bounded context is not assigned again
+- [r23] While a bounded context holds a job, if the person assigns the job to a bounded context, then the product service shall refuse the request and name the job.
+
+### [g24] A product actor is mapped to the actor a bounded context calls it by
+- [r24] When the person maps a product actor with a bounded context and an actor, the product service shall keep the product actor in the bounded context and complete the request.
+
+### [g25] A product actor the product does not hold is not mapped
+- [r25] If the person maps a product actor that is not in the product, then the product service shall refuse the request and name the product actor.
+
+### [g26] A job's trace holds the requirements of the groups that serve it
+- [r26] While a requirement group serves a job and the requirement group has a requirement, when the person traces the job, the product service shall return the requirement.
+
+### [g27] A job's trace holds the requirements that govern the operations its requirements use
+- [r27] While a requirement group serves a job and a requirement of the requirement group uses an operation and a different requirement governs the operation, when the person traces the job, the product service shall return the requirement.
+
+### [g28] A job's trace holds the adapter specs that realise the port lines it reaches
+- [r28] While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and an adapter spec realises the requirement id of the port line, when the person traces the job, the product service shall return the adapter spec.
+
+### [g29] A job's trace holds the traces of the jobs it needs
+- [r29] While a requirement group serves a need and the requirement group has a requirement, when the person traces a job that needs the need, the product service shall return the requirement.
+
+### [g30] A job that no requirement group serves is not traced
+- [r30] If the person traces a job that no requirement group serves, then the product service shall refuse the request and name the job.
 
