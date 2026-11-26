@@ -38,6 +38,7 @@ object item kind of file
   relations: derives from → item (one)
   relations: moves → term (many)
   relations: holds → area (many)
+  relations: imports → pack (many); retires → model line | term (many)
 
 object backlog
 
@@ -155,6 +156,9 @@ service drafting
   operation move(model line, item)  outcomes: done | refused: model line not in the domain model
   operation move term(term, item)  outcomes: done | refused: term not in the vocabulary
   operation dedicate(requirement group, job, item)  outcomes: done
+  operation import pack(pack, item)  outcomes: done | refused: no such pack
+  operation retire model line(model line, item)  outcomes: done | refused: model line not in the domain model
+  operation retire term(term, item)  outcomes: done | refused: term not in the vocabulary
 
 service context requests
   operation raise(context request, origin, thread, text, bounded context)

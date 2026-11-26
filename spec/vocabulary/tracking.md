@@ -194,3 +194,8 @@ area: tracking
 - **the person** (proper noun) → actor the person. The human the bounded context works for.
 - **meet** (verb, state) → relation item.meets. An item satisfies the readiness bar or one of its bar checks. Forms: meets, met. Frame: <item> meets <readiness bar>. Frame: <item> meets <bar check>.
 - **dedicate** (verb, action) → operation drafting.dedicate. Forms: dedicates, dedicated. Frame: <actor> dedicates <requirement group> to <job>.
+- **import** (verb, action) → operation drafting.import pack. Forms: imports, imported. Frame: <actor> imports <pack> into <item>.
+- **retire** (verb, action) → operation drafting.retire model line. Forms: retires, retired. Frame: <actor> retires <model line> in <item>.
+- **retire** (verb, action) → operation drafting.retire term. Forms: retires, retired. Frame: <actor> retires <term> in <item>.
+- **import** (verb, state) → relation item.imports. An item names a plugin pack that its batch adds to the imports of this bounded context's index. Forms: imports, imported. Frame: <item> imports <pack>.
+- **retire** (verb, state) → relation item.retires. An item names an element the domain model declares, or a vocabulary entry, that its batch takes out of its area's model file or its layer, an element with the entries that mean it. Forms: retires, retired. Frame: <item> retires <model line>. Frame: <item> retires <term>.

@@ -1,10 +1,12 @@
 """An item's `## Requirements` section written back (backlog_section reads it), byte-stable: each capability block in
-the capability file's own syntax one heading level down, then the model, adapter, pack and moves blocks, the universal
+the capability file's own syntax one heading level down, then the model, adapter, pack, moves, imports and retirements blocks, the universal
 block and the index block; a group's text as a capability file holds it (`laid_group`); the requirement ids in file
 order (`ids`). Split out of backlog_section, which re-exports what it names here."""
 import backlog_adapter
 import backlog_area_move
+import backlog_import
 import backlog_pack
+import backlog_retire
 from backlog_model import CLOSE as MODEL_CLOSE
 from backlog_model import FENCE as MODEL_FENCE
 
@@ -12,6 +14,8 @@ UNIVERSAL, INDEX = "universal", "index"
 NEW_FIELDS = ("narrator", "group", "purpose", "area")  # a new capability's block (`work line --capability`, b317;
 REQUIRED = 3                                           # its `area:` optional, b645)
 FENCE, CLOSE = "```given", "```"
+# the blocks of bullets after the pack blocks, in their order: (the Blocks attribute, its module's HEAD, Lines, render)
+LISTS = (("moves", backlog_area_move), ("imports", backlog_import), ("retirements", backlog_retire))
 
 
 def laid_group(group, level="###"):
@@ -38,7 +42,7 @@ def render(blocks):
         out.append("\n\n".join(parts + (["\n".join(model.terms)] if model.terms else [])))
     out += [backlog_adapter.render(a) for a in getattr(blocks, "adapters", ())]
     out += [backlog_pack.render(a) for a in getattr(blocks, "packs", ())]
-    out += [backlog_area_move.render(blocks.moves)] if getattr(blocks, "moves", None) else []
+    out += [module.render(getattr(blocks, name)) for name, module in LISTS if getattr(blocks, name, None)]
     language, retired = getattr(blocks, "universal_language", None), getattr(blocks, "universal_retired", ())
     if getattr(blocks, "universal", None) or language or retired:
         parts = ["### %s" % UNIVERSAL] + (["language: %s" % language] if language else [])

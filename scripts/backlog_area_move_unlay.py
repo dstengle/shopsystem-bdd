@@ -90,17 +90,26 @@ def _element_back(into, move, base, files, blocks):
     chunk = body[at:stop]
     path.write_text("\n".join(lines[:start] + laid._cut(body, at, stop) + lines[end:]))
     backlog_model_area.unmade(into, move.target, blocks)
-    source, lines, start, end = laid._body(into, move.source)
-    was = held(source, base, move.what)
+    put_element(into, move.source, move.what, chunk, base)
+    files += [laid._rel("model", move.source), laid._rel("model", move.target)]
+
+
+def put_element(into, area, what, chunk, base):
+    """The element `what` put back into the model of `area` where it held it at `base` (else in the latest version git
+    holds of it with it), as it held it there, else `chunk` at the end; nothing when neither gives its lines."""
+    source, lines, start, end = laid._body(into, area)
+    was = held(source, base, what)
     old = backlog_model._fence(was, source.name) if was is not None and "```model" in was else None
     body = lines[start:end]
     prev = None
     if old is not None:
         old_body = old[0][old[1]:old[2]]
-        k = old_body.index(move.what) if move.what in old_body else 0
-        chunk = old_body[k:backlog_model._end(old_body, k)] if move.what in old_body else chunk
+        k = old_body.index(what) if what in old_body else 0
+        chunk = old_body[k:backlog_model._end(old_body, k)] if what in old_body else chunk
         prev = next((old_body[j] for j in range(k - 1, -1, -1) if old_body[j].strip() and
                      not old_body[j].startswith(" ")), None)
+    if not chunk:
+        return
     where = backlog_model._at(body, prev) if prev else None
     if where is not None:
         stop = backlog_model._end(body, where)
@@ -110,7 +119,6 @@ def _element_back(into, move, base, files, blocks):
     else:
         body = backlog_model.merged(body, chunk)
     source.write_text("\n".join(lines[:start] + body + lines[end:]))
-    files += [laid._rel("model", move.source), laid._rel("model", move.target)]
 
 
 def unlay(into, blocks, files, base=None):

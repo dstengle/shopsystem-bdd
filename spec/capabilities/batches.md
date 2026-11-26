@@ -222,3 +222,12 @@ when the change is merged.
 ### [g131] A ready item whose change would take the batch past the review limit is not allocated, whether or not it meets the bar
 - [r131] While an item is `ready` and the item exceeds the review limit, when the person opens a batch, the batches service shall not allocate the item.
 
+### [g132] A batch opened imports each pack its items import
+- [r132] While an item is `ready` and the item meets the readiness bar and the item imports a pack, when the person opens a batch, the batches service shall keep the pack that this bounded context imports.
+
+### [g133] A batch opened takes each retired model line out of the domain model
+- [r133] While an item is `ready` and the item meets the readiness bar and the item retires a model line, when the person opens a batch, the batches service shall keep an area that does not hold the model line.
+
+### [g134] A batch opened takes each retired term out of its area
+- [r134] While an item is `ready` and the item meets the readiness bar and the item retires a term, when the person opens a batch, the batches service shall keep an area that does not hold the term.
+

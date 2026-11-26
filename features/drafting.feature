@@ -713,3 +713,54 @@ Feature: Drafting
     And the drafting service keeps the capability c1
     And the area a1 holds the capability c1
     And the drafting service keeps the area a1
+
+  @g73 @r73
+  Scenario: A plugin pack imported into an item is kept
+    Given a pack p1
+    And an item i1
+    When the person imports the pack p1 into the item i1
+    Then the item i1 imports the pack p1
+    And the drafting service keeps the item i1
+
+  @g74 @r74
+  Scenario: Importing a pack that does not exist is refused
+    Given a pack p1
+    And the pack p1 does not exist
+    And an item i1
+    When the person imports the pack p1 into the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the pack p1
+
+  @g75 @r75
+  Scenario: A model line retired in an item is kept
+    Given a model line m1
+    And an item i1
+    When the person retires the model line m1 in the item i1
+    Then the item i1 holds the model line m1
+    And the drafting service keeps the model line m1
+
+  @g76 @r76
+  Scenario: Retiring a model line that the domain model does not hold is refused
+    Given a model line m1
+    And this domain model does not hold the model line m1
+    And an item i1
+    When the person retires the model line m1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the model line m1
+
+  @g77 @r77
+  Scenario: A term retired in an item is kept
+    Given a term t1
+    And an item i1
+    When the person retires the term t1 in the item i1
+    Then the item i1 holds the term t1
+    And the drafting service keeps the term t1
+
+  @g78 @r78
+  Scenario: Retiring a term that no area holds is refused
+    Given a term t1
+    And no area holds the term t1
+    And an item i1
+    When the person retires the term t1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the term t1

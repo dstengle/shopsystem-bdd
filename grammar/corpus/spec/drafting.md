@@ -1118,3 +1118,87 @@ shall [x1: agent the person (constant), x5: service the drafting service (consta
     in(x3, x4)
     keep(e3, subject: x5, object: x4)
 ```
+
+## r73
+From: b672 r73.
+
+```reading
+When the person imports a pack into an item, the drafting service shall keep the item that imports the pack.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: pack, x3: item]
+    request(e1, drafting.import pack, subject: x1, object: x2, into: x3)
+  response
+    import#3(subject: x3, object: x2)
+    keep(e2, subject: x4, object: x3)
+```
+
+## r74
+From: b672 r74.
+
+```reading
+If the person imports a pack that does not exist into an item, then the drafting service shall refuse the request and name the pack.
+shall [x1: agent the person (constant), x4: service the drafting service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: pack, x3: item]
+    not
+      exists(x2)
+    request(e1, drafting.import pack, subject: x1, object: x2, into: x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r75
+From: b672 r75.
+
+```reading
+When the person retires a model line in an item, the drafting service shall keep the model line in the item.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: model line, x3: item]
+    request(e1, drafting.retire model line, subject: x1, object: x2, in: x3)
+  response
+    in(x2, x3)
+    keep(e2, subject: x4, object: x2)
+```
+
+## r76
+From: b672 r76.
+
+```reading
+If the person retires a model line that the domain model does not hold in an item, then the drafting service shall refuse the request and name the model line.
+shall [x1: agent the person (constant), x3: domain model "the domain model of this bounded context" (indexical), x5: service the drafting service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x2: model line, x4: item]
+    not
+      in(x2, x3)
+    request(e1, drafting.retire model line, subject: x1, object: x2, in: x4)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x2)
+```
+
+## r77
+From: b672 r77.
+
+```reading
+When the person retires a term in an item, the drafting service shall keep the term in the item.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: term, x3: item]
+    request(e1, drafting.retire term, subject: x1, object: x2, in: x3)
+  response
+    in(x2, x3)
+    keep(e2, subject: x4, object: x2)
+```
+
+## r78
+From: b672 r78.
+
+```reading
+If the person retires a term that no area holds in an item, then the drafting service shall refuse the request and name the term.
+shall [x1: agent the person (constant), x5: service the drafting service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x2: term, x4: item]
+    not [x3: area]
+      in(x2, x3)
+    request(e1, drafting.retire term, subject: x1, object: x2, in: x4)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x2)
+```
