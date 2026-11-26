@@ -30,6 +30,13 @@ def test_the_order():
     assert picked(batch("building", "done", "done")) == ("submit batch", None, None)
 
 
+def test_a_refused_submit_asks_for_its_task():
+    b = batch("building", "done", "done")
+    assert batch_next.pick(b, b.tasks, [], set(), b.tasks[1])[:2] == ("fix task", b.tasks[1])
+    assert batch_next.report(b, "fix task", b.tasks[1], None) == (
+        "a commit on batch-1-b2 citing Item: b2, then shop work batch review batch-1")
+
+
 def test_a_batch_with_no_task_in_it_stops():
     assert picked(batch("building")) == ("stop", None, None)
 

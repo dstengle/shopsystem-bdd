@@ -5,7 +5,8 @@ Under the lock: every task of an `in-batch` item must be `done`, and every commi
 commit must cite its item (or an earlier in-batch item, whose branch it merged) and leave `.shop/` alone. Then, in the
 batch's worktree, one commit takes every parked item's lines out of `spec/` (plan 4 review, B1), each in-batch item's
 branch is merged into `batch-<n>` with `--no-ff` in task order, each after the ones before (batch_merge) (a parked item's branch never is, so its commits stay out), the
-tests run there, the branch is pushed to the base's remote, and a draft pull request is created through gh unless the
+tests run there (the ids a failed run names kept under the batch's name, batch_rerun, for the poll's `fix task`:
+batch_broken, b696), the branch is pushed to the base's remote, and a draft pull request is created through gh unless the
 batch has one already (plan 5's fix loop pushes only, once each commit since the last review cites an open finding
 and each open finding has a commit: `batch_fix.check`). Last, the batch is `in-review` with its pull request,
 committed on the base. A refusal while merging, testing, pushing or creating puts `batch-<n>` (and the remote's) back
@@ -143,7 +144,7 @@ def review(root, name):
             for task, item in mine:
                 _merge(root, tree, batch, task, item, mine)
             with batch_timings.timed(root, batch.name, "review"):       # the test run's duration (b73)
-                tests_pass(root, tree, "%s: %s" % (COMMAND, batch.name))
+                tests_pass(root, tree, "%s: %s" % (COMMAND, batch.name), key=batch.name)   # its failures kept (b696)
             push(root, where, batch.branch, COMMAND)
             pushed = True
             url = batch.pull_request or batch_gh.create(
