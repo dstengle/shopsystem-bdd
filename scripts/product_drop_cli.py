@@ -1,6 +1,6 @@
 """`spec unassign <job> --from <bounded context>` and `spec drop job|actor|subdomain|context <it>` (b795, product
 r45-r57): the product service's operations unassign, drop job, drop actor, drop subdomain and drop context requested
-on the command line, product_drop's over the product product_store keeps, committed, and what was taken back printed; a drop that changes nothing commits nothing.
+on the command line, product_drop's over the product product_store keeps, committed, and what was taken back printed.
 A refusal names the parameter, which the CLI adapter spells as its option or positional (the dests are the
 parameters' names), or the job, the subdomain or the bounded context that still refers to what is dropped."""
 import product_drop

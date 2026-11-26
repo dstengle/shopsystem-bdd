@@ -194,3 +194,18 @@ the job statement `j2` holds "When x, the developer wants y, so they can z."
 ### [g61] A product actor of the product is not mapped to an actor the domain model does not hold
 - [r61] If the person maps a product actor that is in the product with this bounded context and an actor that the domain model does not hold, then the product service shall refuse the request and name the actor.
 
+### [g64] A job the product does not hold is not dropped
+- [r64] If the person drops a job that is not in the product, then the product service shall refuse the request and name the job.
+
+### [g65] A product actor the product does not hold is not dropped
+- [r65] If the person drops a product actor that is not in the product, then the product service shall refuse the request and name the product actor.
+
+### [g66] A subdomain the product does not hold is not dropped
+- [r66] If the person drops a subdomain that is not in the product, then the product service shall refuse the request and name the subdomain.
+
+### [g67] A bounded context the product does not hold is not dropped
+- [r67] If the person drops a bounded context that is not in the product, then the product service shall refuse the request and name the bounded context.
+
+### [g63] A bounded context whose id is out of the context id form is not dropped
+- [r63] If the person drops a bounded context whose id does not conform to the context id form, then the product service shall refuse the request and name the id.
+

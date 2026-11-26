@@ -1707,6 +1707,8 @@ requirements = [
   "drafting#r71: When the person dedicates a requirement group to a job with an item, the drafting service shall keep the item that holds the requirement group that serves the job.",
   "drafting#r92: While the product exists, if the person dedicates a requirement group to a job that the product does not hold with an item, then the drafting service shall refuse the request and name the job.",
   "drafting#r93: When the person dedicates a requirement group to a job with an item and a requirement, the drafting service shall keep the requirement in the item and name the requirement, the requirement group and the job.",
+  "drafting#r96: While this product does not conform to the product form, when the person dedicates a requirement group to a job with an item, the drafting service shall keep the item that holds the requirement group that serves the job and name this product.",
+  "drafting#r97: While this product holds a job and the job has an id, when the person dedicates a requirement group to the job with an item, the drafting service shall keep the item that holds the requirement group that serves the job.",
 ]
 [operations."drafting.dedicate".parameters]
 item = { positional = 1 }
@@ -1731,6 +1733,7 @@ requirements = [
   "product#r53: If the person drops a need that a job needs, then the product service shall refuse the request and name the job.",
   "product#r54: While a bounded context holds a job, if the person drops the job, then the product service shall refuse the request and name the bounded context.",
   "product#r55: While a subdomain serves a job, if the person drops the job, then the product service shall refuse the request and name the subdomain.",
+  "product#r64: If the person drops a job that is not in the product, then the product service shall refuse the request and name the job.",
 ]
 [operations."product.drop job".parameters]
 job = { positional = 1, example = "j1" }
@@ -1741,6 +1744,7 @@ requirements = [
   "product#r45: While a bounded context holds a product actor, if the person drops the product actor, then the product service shall refuse the request and name the bounded context.",
   "product#r56: When the person drops a product actor, the product service shall not keep the product actor in the product and complete the request.",
   "product#r57: While a job has a product actor, if the person drops the product actor, then the product service shall refuse the request and name the job.",
+  "product#r65: If the person drops a product actor that is not in the product, then the product service shall refuse the request and name the product actor.",
 ]
 [operations."product.drop actor".parameters]
 "product actor" = { positional = 1, example = "the developer" }
@@ -1750,6 +1754,7 @@ command = "spec drop subdomain"
 requirements = [
   "product#r46: When the person drops a subdomain, the product service shall not keep the subdomain in the product and complete the request.",
   "product#r47: While a bounded context addresses a subdomain, if the person drops the subdomain, then the product service shall refuse the request and name the bounded context.",
+  "product#r66: If the person drops a subdomain that is not in the product, then the product service shall refuse the request and name the subdomain.",
 ]
 [operations."product.drop subdomain".parameters]
 subdomain = { positional = 1, example = "specification" }
@@ -1759,6 +1764,8 @@ command = "spec drop context"
 requirements = [
   "product#r48: When the person drops a bounded context, the product service shall not keep the bounded context in the product and complete the request.",
   "product#r49: While a bounded context holds a job, if the person drops the bounded context, then the product service shall refuse the request and name the job.",
+  "product#r63: If the person drops a bounded context whose id does not conform to the context id form, then the product service shall refuse the request and name the id.",
+  "product#r67: If the person drops a bounded context that is not in the product, then the product service shall refuse the request and name the bounded context.",
 ]
 [operations."product.drop context".parameters]
 "bounded context" = { positional = 1, example = "bounded-context/missingmass.io/shopsystem/shopsystem-bdd" }
@@ -1840,6 +1847,7 @@ requirements = [
   "checking#r153: While an item holds a requirement group, when the person validates this specification with the item, the specification service shall return no requirement group that violates `v_s3`.",
   "checking#r154: While an item holds a requirement that governs an operation, when the person validates this specification with the item, the specification service shall return no operation that violates `v_a5`.",
   "checking#r155: While an item holds a requirement that violates a rule whose severity is `error`, if the person validates this specification with the item, then the specification service shall fail the check and name the rule.",
+  "checking#r156: While a term has a frame that takes no noun phrase, if the person validates this specification, then the specification service shall fail the check and name the frame.",
   "decisions#r1: While a design-decision is not `superseded` or `rejected` and the design-decision has no tier, when the person validates this specification, the specification service shall return `w_untiered`.",
   "decisions#r2: While the tier of a design-decision is `check` and no test enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d6`.",
   "decisions#r3: While the tier of a design-decision is `requirement` and no requirement enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d7`.",

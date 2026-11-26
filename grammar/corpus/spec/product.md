@@ -971,3 +971,79 @@ shall [x1: agent the person (constant), x4: service the product service (constan
   response
     refuse(e2, subject: x4, object: x5)
 ```
+
+## r63
+From: b812 r63.
+
+```reading
+If the person drops a bounded context whose id does not conform to the context id form, then the product service shall refuse the request and name the id.
+shall [x1: agent the person (constant), x4: artifact the context id form (constant), x5: service the product service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x2: bounded context, x3: id]
+    of(x3, x2)
+    not
+      conforms(x3, x4)
+    request(e1, product.drop context, subject: x1, object: x2)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x3)
+```
+
+## r64
+From: b812 r64.
+
+```reading
+If the person drops a job that is not in the product, then the product service shall refuse the request and name the job.
+shall [x1: agent the person (constant), x3: product "the product this bounded context belongs to" (indexical), x4: service the product service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: job]
+    not
+      in(x2, x3)
+    request(e1, product.drop job, subject: x1, object: x2)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r65
+From: b812 r65.
+
+```reading
+If the person drops a product actor that is not in the product, then the product service shall refuse the request and name the product actor.
+shall [x1: agent the person (constant), x3: product "the product this bounded context belongs to" (indexical), x4: service the product service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: product actor]
+    not
+      in(x2, x3)
+    request(e1, product.drop actor, subject: x1, object: x2)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r66
+From: b812 r66.
+
+```reading
+If the person drops a subdomain that is not in the product, then the product service shall refuse the request and name the subdomain.
+shall [x1: agent the person (constant), x3: product "the product this bounded context belongs to" (indexical), x4: service the product service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: subdomain]
+    not
+      in(x2, x3)
+    request(e1, product.drop subdomain, subject: x1, object: x2)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r67
+From: b812 r67.
+
+```reading
+If the person drops a bounded context that is not in the product, then the product service shall refuse the request and name the bounded context.
+shall [x1: agent the person (constant), x3: product "the product this bounded context belongs to" (indexical), x4: service the product service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: bounded context]
+    not
+      in(x2, x3)
+    request(e1, product.drop context, subject: x1, object: x2)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```

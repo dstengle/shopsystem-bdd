@@ -108,7 +108,7 @@ def _attributes(model, found, kinds):
     return out
 
 
-def _slot(model, e, name, kinds):
+def _slot(model, e, name, kinds, strict=False):
     if name in ("actor", "agent"):
         return ["agent"]
     if e.element.kind == "relation":
@@ -123,9 +123,16 @@ def _slot(model, e, name, kinds):
     if e.element.kind == "operation":
         service, _, op = e.element.id.rpartition(".")
         param = next((p for p in model.services[service].operation(op).parameters if p.name == name), None)
-        if param and param.targets:
-            return [kinds.get(t, t) for t in param.targets]
-    return ["thing"]
+        if param:     # a parameter of no object a slot of `thing`
+            return [kinds.get(t, t) for t in param.targets] or ["thing"]
+    return None if strict else ["thing"]
+
+
+def _slotless(model, e, frame, kinds):
+    """Whether a written `Frame:` takes no noun phrase: no slot in angle brackets, or none naming a kind, an actor or
+    a parameter of its operation (b811); such a frame is a v_t13 (spec_frames), never read as of `thing`."""
+    return not any(name == "thing" or _slot(model, e, name, kinds, strict=True)
+                   for name in re.findall(r"<([^>]+)>", frame))
 
 
 def _frames(model, e, kinds, verb):
@@ -145,7 +152,8 @@ def _frames(model, e, kinds, verb):
             texts = [t + o for t in texts for o in options]
         for t in texts:
             out.setdefault(" ".join(t.split()), frame)
-    return tuple(out), tuple(out.values())
+    slotless = tuple(f for f in e.fields.frames if _slotless(model, e, f, kinds))
+    return tuple(out), tuple(out.values()), slotless
 
 
 def _verbs(model, found, kinds):
@@ -154,10 +162,10 @@ def _verbs(model, found, kinds):
         if not e.label.startswith("verb") or not e.element or e.element.kind not in ("relation", "operation"):
             continue
         t = e.fields
-        frames, written = _frames(model, e, kinds, spec_frames.s3(t))
+        frames, written, slotless = _frames(model, e, kinds, spec_frames.s3(t))
         out.append(spec_lexicon.Term(term=e.term, category="event", text=e.text, where=e.where, label=e.label,
                                      aspect=t.aspect, forms=t.forms, frames=frames, frame=frames[0], nots=t.nots,
-                                     written=written,
+                                     written=written, slotless=slotless,
                                      operation=e.element.id if e.element.kind == "operation" else "",
                                      element=qualified(e.element)))
     return out

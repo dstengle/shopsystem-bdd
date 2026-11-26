@@ -1472,3 +1472,40 @@ shall [x1: agent the person (constant), x5: service the drafting service (consta
     in(x6, x3)
     keep(e2, subject: x5, object: x6)
 ```
+
+## r96
+From: b803 r96.
+
+```reading
+While this product does not conform to the product form, when the person dedicates a requirement group to a job with an item, the drafting service shall keep the item that holds the requirement group that serves the job and name this product.
+shall [x1: product "the product this bounded context belongs to" (indexical), x2: artifact the product form (constant), x3: agent the person (constant), x7: service the drafting service (constant)]
+  while
+    not
+      conforms(x1, x2)
+  when [x4: requirement group, x5: job, x6: item]
+    request(e1, drafting.dedicate, subject: x3, object: x4, to: x5)
+    param(e1, item, x6)
+  response
+    serve(subject: x4, object: x5)
+    in(x4, x6)
+    keep(e2, subject: x7, object: x6)
+    name(e3, subject: x7, object: x1)
+```
+
+## r97
+From: b803 r97.
+
+```reading
+While this product holds a job and the job has an id, when the person dedicates a requirement group to the job with an item, the drafting service shall keep the item that holds the requirement group that serves the job.
+shall [x1: product "the product this bounded context belongs to" (indexical), x4: agent the person (constant), x7: service the drafting service (constant)]
+  while [x2: job, x3: id]
+    in(x2, x1)
+    of(x3, x2)
+  when [x5: requirement group, x6: item]
+    request(e1, drafting.dedicate, subject: x4, object: x5, to: x2)
+    param(e1, item, x6)
+  response
+    serve(subject: x5, object: x2)
+    in(x5, x6)
+    keep(e2, subject: x7, object: x6)
+```

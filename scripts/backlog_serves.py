@@ -2,7 +2,9 @@
 <item> --serves <capability>#g<n> <job>`, a live group of the capability or one of the item's own, and `work line
 <item> --into <capability> [--group <title>] <line> --serves <job>`, the group the line goes into, the requirement it
 added printed before the pair (drafting r93, b799); a job the product does not hold, while its product file is kept,
-refused naming the job (drafting r92, b799); each the pair
+refused naming the job (drafting r92, b799), a job held when the product holds one of its name, given by its name or
+its id, as `spec check` reads it, and a product file not of the product form checking nothing and named (drafting r96,
+r97, b803); each the pair
 (g<n>, job) under the `serves: [g<n> <job>, ...]` line of the item's block of the capability (backlog_section),
 one commit of the item. Laid by `lay` into the group's `serves: <job>, ...` line under its heading in the capability
 file (spec_read reads it, `spec check` its serves fact) and taken out again by `unlay`, a job the file at the batch's
@@ -10,11 +12,13 @@ base serves left on (`at_base`); a pair a live group serves already, or another 
 of the item's own groups carried to their new ids by `renumbered` (backlog_renumber)."""
 import re
 import subprocess
+import sys
 from pathlib import Path
 
 import product_store
 import spec_read
 from backlog_items import Refused, commit, find, items, label
+from model_product import name_of
 
 GROUP = re.compile(r"^(?P<cap>[a-z0-9]+(?:-[a-z0-9]+)*)#(?P<g>g[1-9]\d*)$")
 
@@ -31,14 +35,24 @@ def given(args):
 
 
 def _job(root, job):
-    """The job, refused when it is not a job's id, and, while the product exists (its product file is kept), when the
-    product does not hold it (drafting r92): the reason `job outside the product`, naming the job."""
+    """The job and what is said of the product, refused when it is not a job's name or id, and, while the product
+    exists (its product file is kept), when the product does not hold it (drafting r92): the reason `job outside the
+    product`, naming the job. A job is held when the product holds a job of its name, by its name or its id, as `spec
+    check` reads it (model_product's `name_of`, drafting r97); a product file not of the product form, which `spec
+    check` only warns of, checks nothing and is said, naming the file (drafting r96, b803)."""
     if not spec_read.JOB.match(job):
         raise Refused("work line: --serves: %r is not a job's name or id" % job)
-    if (Path(root) / product_store.REL).is_file() and job not in product_store.read(root)["jobs"]:
+    if not (Path(root) / product_store.REL).is_file():
+        return job, None
+    try:
+        jobs = product_store.read(root)["jobs"]
+    except Refused as why:
+        return job, "work line: --serves: %s; the job %s not checked against the product" % (
+            str(why).replace("{names}", product_store.REL), job)
+    if name_of(job) not in {name_of(j) for j in jobs}:
         raise Refused("work line: --serves: the product holds no job %s" % job, reason="job outside the product",
                       names=["job:%s" % job])
-    return job
+    return job, None
 
 
 def _groups(root, capability, block):
@@ -95,11 +109,12 @@ def cmd(args):
         m = GROUP.match(args.serves[0])
         if not m:
             raise Refused("work line: --serves: %r is not a requirement group <capability>#g<n>" % args.serves[0])
-        capability, gid, job = m.group("cap"), m.group("g"), _job(args.root, args.serves[1])
+        capability, gid = m.group("cap"), m.group("g")
+        job, notice = _job(args.root, args.serves[1])
     elif len(args.serves) == 1 and args.text is not None and args.into is not None:
         import backlog_lines
         from backlog_section import read
-        job = _job(args.root, args.serves[0])
+        job, notice = _job(args.root, args.serves[0])
         capability = args.into
         rid = backlog_lines.add_line_to(args.root, item, capability, args.text, args.group, args.in_group).split("#")[1]
         block = next(b for b in read(item, "the item %s" % item.name) if b.capability == capability)
@@ -109,6 +124,8 @@ def cmd(args):
         raise Refused("work line: --serves takes a requirement group <capability>#g<n> and a job, or a job beside "
                       "a requirement line and --into")
     dedicate(args.root, item, capability, gid, job)
+    if notice is not None:  # a product not of the product form named, as spec check's w_unformed_product names it
+        print(notice, file=sys.stderr)
     commit(args.root, item, "work line: %s %s#%s serves %s" % (label(item), capability, gid, job))
     if added is not None:   # the requirement the line added, named with its group and the job (drafting r93)
         print("%s: %s" % (label(item), added))

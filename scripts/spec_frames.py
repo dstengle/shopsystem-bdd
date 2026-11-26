@@ -27,6 +27,8 @@ Frame = namedtuple("Frame", "subject object recipient prep oblique fixed", defau
 # what fixed words after the verb may be, said when a frame of them does not read (b796)
 FIXED = ("words of no kind after the verb read as a fixed phrase before the object, or as the whole object, on a verb "
          "naming an operation")
+# what a frame of a context with a domain model names its noun phrases by (b811)
+SLOTS = "a frame names its slots in angle brackets, each a kind, an actor or a parameter of its operation"
 # the words that, right after a verb in its frame, are the verb's preposition before its object
 PREPOSITIONS = {"to", "for", "from", "on", "onto", "in", "into", "at", "with", "about", "of", "by", "over", "under",
                 "through", "after", "before", "against", "upon", "without"}
@@ -130,7 +132,10 @@ def misread(term, names, shown=False):
     """Why a verb's `Frame:` (the first of its frames that does not read) does not read, naming the word it could not
     read and what it expected there, and, `shown`, the frame as its entry writes it (b796); None when each reads or
     the entry gives no `Frame:` (v_t11). A word the frame could not read that is no one word is given no nearest
-    names, and what fixed words after the verb may be in their place."""
+    names, and what fixed words after the verb may be in their place. A frame that takes no noun phrase (no slot in
+    angle brackets naming a kind, an actor or a parameter, spec_vocabulary_terms' `slotless`, b811) does not read."""
+    if term.slotless:
+        return 'the Frame: "%s." takes no noun phrase: %s' % (term.slotless[0], SLOTS)
     said = term.frames or (term.frame,)
     at, why = next(((i, w) for i, w in enumerate(read(term, names, f)[1] for f in said) if w), (None, None))
     if why is None:

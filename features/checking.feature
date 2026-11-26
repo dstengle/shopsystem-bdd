@@ -1380,3 +1380,13 @@ Feature: Checking
     When the person validates this specification with the item i1
     Then the specification service fails this check
     And the specification service names the rule r2
+
+  @g156 @r156
+  Scenario: the check refuses a frame that names no slot, naming the frame
+    Given a frame f1
+    And the frame f1 takes no noun phrase
+    And a term t1
+    And the term t1 has the frame f1
+    When the person validates this specification
+    Then the specification service fails this check
+    And the specification service names the frame f1

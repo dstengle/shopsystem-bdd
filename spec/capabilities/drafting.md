@@ -322,3 +322,9 @@ capabilities, retirements, rewordings and chores.
 ### [g95] Rewording a term of an item in a capability keeps the new term
 - [r95] When the person rewords a term in an item with a capability, the drafting service shall keep a different term in the item.
 
+### [g96] A requirement group dedicated to a job of a product not of the product form is kept and the product named
+- [r96] While this product does not conform to the product form, when the person dedicates a requirement group to a job with an item, the drafting service shall keep the item that holds the requirement group that serves the job and name this product.
+
+### [g97] A requirement group dedicated to a job the product holds, given by the job's id, is kept
+- [r97] While this product holds a job and the job has an id, when the person dedicates a requirement group to the job with an item, the drafting service shall keep the item that holds the requirement group that serves the job.
+

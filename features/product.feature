@@ -642,3 +642,45 @@ Feature: Product
     And a job statement j2
     When the person declares the job j1 with the job statement j2 and without a product actor
     Then the product service refuses this request
+
+  @g63 @r63
+  Scenario: A bounded context whose id is out of the context id form is not dropped
+    Given an id i1
+    And a bounded context b1
+    And the bounded context b1 has the id i1
+    And the id i1 does not conform to the context id form
+    When the person drops the bounded context b1
+    Then the product service refuses this request
+    And the product service names the id i1
+
+  @g64 @r64
+  Scenario: A job the product does not hold is not dropped
+    Given a job j1
+    And this product does not hold the job j1
+    When the person drops the job j1
+    Then the product service refuses this request
+    And the product service names the job j1
+
+  @g65 @r65
+  Scenario: A product actor the product does not hold is not dropped
+    Given a product actor p1
+    And this product does not hold the product actor p1
+    When the person drops the product actor p1
+    Then the product service refuses this request
+    And the product service names the product actor p1
+
+  @g66 @r66
+  Scenario: A subdomain the product does not hold is not dropped
+    Given a subdomain s1
+    And this product does not hold the subdomain s1
+    When the person drops the subdomain s1
+    Then the product service refuses this request
+    And the product service names the subdomain s1
+
+  @g67 @r67
+  Scenario: A bounded context the product does not hold is not dropped
+    Given a bounded context b1
+    And this product does not hold the bounded context b1
+    When the person drops the bounded context b1
+    Then the product service refuses this request
+    And the product service names the bounded context b1
