@@ -90,7 +90,7 @@ ADDED = {"consistency#g33": "design-model-check", "consistency#g34": "design-mod
          "checking#g63": "design-model-check",                                   # b538: an attribute's senses
          "reviews#g9": "batches", "reviews#g10": "batches",     # b492: a base merge resubmitted; b370: the rule catalogue's checks
          "reviews#g11": "batches", "reviews#g12": "batches",    # b69: a batch reopened with the person's finding
-         "reviews#g13": "batches",                              # b600: an amended line its task built
+         "reviews#g13": "batches", "reviews#g14": "batches",    # b600: an amended line its task built; b703
          **{"context-requests#g%d" % n: "requests" for n in (51, 52, 54, 55, 56)},    # b68: a thread out of step; b71
          **{"context-requests#g%d" % n: "requests" for n in (53, 57, 58, 59)}}    # b42: a term proposal
 

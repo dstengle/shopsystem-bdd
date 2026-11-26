@@ -1,10 +1,13 @@
 """The fix loop of a batch's pull request review (capability pr-review r6; workflow simplification plan 5, D11, D14):
 a fix-now finding is fixed by commits on its item's branch, in its task's worktree, each citing `Item: b<j>` and
 `Finding: f<m>`. `work batch review` checks them before it merges (`check`): every commit after the last review
-cites an open finding of its item, and every open finding has a commit. `work batch resume` gives each open
+cites an open finding of its item, or, while the batch's last whole-suite run is kept failed (batch_rerun, under the
+batch's name), an in-batch item, the fix of the task the failure belongs to (b703, reviews r14); and every open
+finding has a commit. `work batch resume` gives each open
 finding's task its worktree back (`trees`) and prints where to fix it (`said`)."""
 import backlog_items
 import batch_findings
+import batch_rerun
 from batch_git import git, is_tree, tree_for, trees_dir
 from shop_files import Refused
 
@@ -18,6 +21,14 @@ def cited_findings(root, since, branch):
         sha, subject, cited = entry.strip("\n").split("\x00")
         found.append((sha, subject, {c.strip() for c in cited.replace(" ", ",").split(",") if c.strip()}))
     return found
+
+
+def _item_fixes(root, since, branch, items):
+    """The short shas of the non-merge commits on `branch` after `since` whose `Item:` trailers cite one of `items`."""
+    out = git(root, "log", "--no-merges", "--format=%h%x09%(trailers:key=Item,valueonly,separator=%x2c)",
+              "%s..%s" % (since, branch)).stdout
+    rows = (line.split("\t", 1) for line in out.splitlines() if "\t" in line)
+    return {sha for sha, cited in rows if items & {c.strip() for c in cited.split(",")}}
 
 
 def _last_head(root, batch):
@@ -46,7 +57,8 @@ def _label(root, name):
 
 
 def check(root, batch, mine, command):
-    """Refused unless every commit on an in-batch item's branch after the last review cites an open finding, and
+    """Refused unless every commit on an in-batch item's branch after the last review cites an open finding (or, while
+    the batch's last whole-suite run is kept failed, an in-batch item), and
     every open finding has a commit on its item's branch citing it (D11). A commit may cite another in-batch item's
     open finding, so that a branch may merge another's fix to resolve a conflict (plan 5 rulings, Q1). `mine` is
     [(task, item)] of the in-batch items."""
@@ -56,9 +68,12 @@ def check(root, batch, mine, command):
     still = batch_findings.open_findings(root, batch.name)
     allowed = {f.fid for f in still}
     named = ", ".join("%s (%s)" % (f.fid, f.item) for f in sorted(still, key=lambda f: int(f.fid[1:])))
+    broken = bool(batch_rerun.kept(root, batch.name))      # a refused submit's fix cites its item (b703)
+    items = {item.name for _, item in mine}
     for task, item in mine:
+        fixes = _item_fixes(root, since, task.branch, items) if broken else set()
         for sha, subject, cited in cited_findings(root, since, task.branch):
-            if not cited & allowed:
+            if not cited & allowed and sha not in fixes:
                 raise Refused('%s: %s: %s "%s" on %s cites no open finding (a Finding: f<m> line)%s' % (
                     command, batch.name, sha, subject, task.branch,
                     "; the open findings are %s" % named if named else
