@@ -2161,3 +2161,20 @@ shall [x4: agent the person (constant), x5: specification "the specification of 
     fail(e2, subject: x6, object: x7)
     name(e3, subject: x6, object: x3)
 ```
+
+## r156
+From: b811 r156.
+
+```reading
+While a term has a frame that takes no noun phrase, if the person validates this specification, then the specification service shall fail the check and name the frame.
+shall [x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x7: check "the check the trigger makes" (indexical)]
+  while [x1: term, x2: frame]
+    not [x3: noun phrase]
+      take(subject: x2, object: x3)
+    of(x2, x1)
+  if
+    request(e1, specification.check, subject: x4, object: x5)
+  response
+    fail(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x2)
+```

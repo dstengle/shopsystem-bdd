@@ -935,3 +935,28 @@ Feature: Drafting
     When the person rewords the term t1 in the item i1 with the capability c1
     Then the drafting service keeps the term t2
     And the item i1 holds the term t2
+
+  @g96 @r96
+  Scenario: A requirement group dedicated to a job of a product not of the product form is kept and the product named
+    Given this product does not conform to the product form
+    And a requirement group r1
+    And a job j1
+    And an item i1
+    When the person dedicates the requirement group r1 to the job j1 with the item i1
+    Then the requirement group r1 serves the job j1
+    And the item i1 holds the requirement group r1
+    And the drafting service keeps the item i1
+    And the drafting service names this product
+
+  @g97 @r97
+  Scenario: A requirement group dedicated to a job the product holds, given by the job's id, is kept
+    Given a job j1
+    And this product holds the job j1
+    And an id i1
+    And the job j1 has the id i1
+    And a requirement group r1
+    And an item i2
+    When the person dedicates the requirement group r1 to the job j1 with the item i2
+    Then the requirement group r1 serves the job j1
+    And the item i2 holds the requirement group r1
+    And the drafting service keeps the item i2
