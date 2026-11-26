@@ -59,7 +59,8 @@ def without_block(text, ident):
     return text
 
 
-def _codified(tree, name):
+def codified(tree, name):
+    """Whether the file `name` of the corpus (a capability's, or `universal`) is read in grammar 4."""
     if name == "universal":
         return str(spec_read.read_universal(tree).frontmatter.get("language", "")).strip() == "codified-2"
     path = backlog_lines.capability_file(tree, name)
@@ -92,7 +93,7 @@ def write(tree, items):
     changed = []
     for item in items:
         for name, (laid, retired) in _edits(item).items():
-            if not _codified(tree, name):
+            if not codified(tree, name):
                 continue
             path = Path(tree) / CORPUS / ("%s.md" % name)
             text = was = path.read_text() if path.is_file() else (
