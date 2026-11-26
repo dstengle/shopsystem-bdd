@@ -1,7 +1,8 @@
 """Handlers of features/product.feature's assignments and mappings (product r22-r25, b675), beside product_handlers.py,
 whose world, Givens of instances and completion they share; each a `work_queue_world.local` tried before its. At the
 When of `spec assign` or `spec plays` the product the Givens describe is written into the product file with the id
-`example.org` and committed: each job the Givens bring in, each product actor unless a Given says this product does
+`example.org` and committed: each job the Givens bring in unless a Given says this product does not hold it (r59),
+each product actor unless a Given says this product does
 not hold it, and each bounded context unless a Given says this product does not hold it, by its id (product_handlers_map's
 `context_id`: `bounded-context/example.org/<b>`, or of the id a Given says it has), with the jobs a Given says it
 holds. The command is run with the values the instances stand for: a job `<j>`, a product actor `the <p> user`, an
@@ -68,7 +69,7 @@ def held(w):
     product = {"id": "example.org", "actors": [value(w, n) for n, k in kinds.items()
                                                if k == "product actor" and n not in outside], "jobs": {}}
     for name, kind in kinds.items():
-        if kind == "job":
+        if kind == "job" and name not in outside:
             product["jobs"][name] = {"actors": [], "statement": P.FORMED % name, "needs": []}
         if kind == "bounded context" and name not in outside:
             jobs = w.get("assigned", {}).get(name, [])
