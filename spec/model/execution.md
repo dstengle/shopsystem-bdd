@@ -101,7 +101,7 @@ object review limit
 object amendment kind of kept change
 
 service shop
-  operation keep(bounded context, id)  outcomes: done → the bounded context | refused: id not in the context id form, id outside the product id, id kept already
+  operation keep(bounded context, id)  outcomes: done → the bounded context | refused: id outside the product id, id kept already
   operation list(shop)  outcomes: returned → every bounded context
 
 object shop
