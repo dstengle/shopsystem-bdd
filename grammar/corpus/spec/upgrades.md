@@ -816,12 +816,12 @@ shall [x1: branch "the branch checked out in the repository the request is made 
     complete(e4, subject: x9, object: x11)
 ```
 
-## r47
-From: b851 r47.
+## r48
+Retires: r47. From: b853 r48.
 
 ```reading
-While the release of this repository is after `0.34.0` and before `0.45.0` and the release of this repository is before the release of the plugin, when the person upgrades this repository, the upgrades service shall change the index file of this bounded context and return every term that violates `v_t13`, every term that violates `v_t22` and every transition that violates `v_m9`.
-shall [x1: repository "the repository the request is made in" (indexical), x2: plugin "the plugin the request is made with" (indexical), x3: agent the person (constant), x4: service the upgrades service (constant), x5: bounded context "the bounded context the request is made in" (indexical), x8: rule `v_t13` (parameter), x10: rule `v_t22` (parameter), x12: rule `v_m9` (parameter)]
+While the release of this repository is after `0.34.0` and before `0.45.0` and the release of this repository is before the release of the plugin, when the person upgrades this repository, the upgrades service shall change the index file of this bounded context and return every term that violates `v_t13`, every term that violates `v_t22`, every transition that violates `v_m9` and every requirement that does not conform to the language reference.
+shall [x1: repository "the repository the request is made in" (indexical), x2: plugin "the plugin the request is made with" (indexical), x3: agent the person (constant), x4: service the upgrades service (constant), x5: bounded context "the bounded context the request is made in" (indexical), x8: rule `v_t13` (parameter), x10: rule `v_t22` (parameter), x12: rule `v_m9` (parameter), x14: artifact the language reference (constant)]
   while
     cmp(release(x1)) after `0.34.0`
     cmp(release(x1)) before `0.45.0`
@@ -843,4 +843,9 @@ shall [x1: repository "the repository the request is made in" (indexical), x2: p
       violate(subject: x11, object: x12)
       scope
         return(e5, subject: x4, object: x11)
+    every [x13: requirement]
+      not
+        conforms(x13, x14)
+      scope
+        return(e6, subject: x4, object: x13)
 ```

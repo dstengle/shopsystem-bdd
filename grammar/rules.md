@@ -1133,7 +1133,7 @@ a verb's Frame: does not read as its subject, the verb and the kinds it takes
 - Changed: b123
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/backlog_term_rules.py`, `scripts/spec_frames.py`, `scripts/upgrades/migrate_upgrade_frames.py`, `scripts/upgrades/migrate_upgrade_stricter.py`
-- Cited by: checking#r151, drafting#r101, drafting#r102, upgrades#r47
+- Cited by: checking#r151, drafting#r101, drafting#r102, upgrades#r48
 - Fails on:
 
   ```prolog
@@ -1345,7 +1345,7 @@ a vocabulary entry's part of speech does not fit the element it names
 - Since: b825
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/backlog_term_rules.py`, `scripts/model_domain.py`, `scripts/spec_vocabulary.py`, `scripts/upgrades/migrate_upgrade_stricter.py`
-- Cited by: upgrades#r47
+- Cited by: upgrades#r48
 - Fails on:
 
   ```prolog
@@ -1753,7 +1753,7 @@ a lifecycle transition an operation of another area performs
 - Since: b610
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/readiness_bound.py`, `scripts/upgrades/migrate_upgrade_stricter.py`
-- Cited by: items#r73, laying#r20, upgrades#r47
+- Cited by: items#r73, laying#r20, upgrades#r48
 - Fails on:
 
   ```prolog
