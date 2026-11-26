@@ -177,13 +177,11 @@ don'ts this stop ran into.
 
 ### The job it serves
 
-This tour's clone keeps no product file, so the line serves no declared job. In a shop that has declared its product
-(`shop spec product`, `shop spec actor`, and each job with `shop spec job <id> --actor <actor> --statement <text>`),
-Claude would also dedicate the new group to the job it does, on the same item:
-`shop work line b250 --serves items#g31 <job>`, a pair the batch writes as the group's `serves: <job>` line. A job the
-product does not hold is refused. `shop spec trace <job>` then lists every requirement that does the job; until the
-batch lays b250, `shop spec trace <job> --item b250` reads it with the item laid in, as `shop spec check --item b250`
-checks it. [Getting started](getting-started.md#8-say-what-the-product-is-for) walks through the whole product.
+This tour's clone keeps no product file, so the line serves no declared job. In a shop that has declared its product,
+Claude would also dedicate the new group to the job it does, on the same item, with `--serves`; the batch writes it as
+the group's `serves:` line, and `shop spec trace <job>` then lists every requirement that does the job.
+[Talking with Claude](talking-with-claude.md#your-product-and-its-jobs) walks that conversation on
+[the notes example](examples/notes-cli/README.md), which keeps its product and its jobs.
 
 ## Stop 3: rate and ready
 

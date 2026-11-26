@@ -1,0 +1,31 @@
+# The product this bounded context belongs to; written by `spec product`, `actor`, `job`, `subdomain`, `context`, `assign`, `plays`, `unassign` and `drop`.
+id = "example.org/notes"
+purpose = "Keep a writer's passing thoughts at hand."
+actors = ["the writer"]
+
+[jobs."keep-notes"]
+actors = ["the writer"]
+statement = "When a thought comes up, the writer wants to note it down, so they can find it later."
+needs = []
+
+[jobs."find-notes"]
+actors = ["the writer"]
+statement = "When the writer sits down to write, the writer wants to see every note they kept, so they can pick one up."
+needs = ["keep-notes"]
+
+[jobs."clear-notes"]
+actors = ["the writer"]
+statement = "When a note is done with, the writer wants to remove it, so they can keep the list short."
+needs = ["keep-notes"]
+
+[subdomains."note-keeping"]
+type = "core"
+serves = ["keep-notes", "find-notes", "clear-notes"]
+
+[contexts."bounded-context/example.org/notes/notes-cli"]
+addresses = ["note-keeping"]
+shop = "example.org/notes/shop"
+jobs = ["keep-notes", "find-notes", "clear-notes"]
+
+[contexts."bounded-context/example.org/notes/notes-cli".actors]
+"the writer" = "the person"

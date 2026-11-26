@@ -28,3 +28,10 @@ Feature: Notes
     Given a note n1
     When the person removes the note n1
     Then the notes service sets the status of the note n1 to `removed`
+
+  @g5 @r5
+  Scenario: A removed note is not removed again
+    Given a note n1
+    And the status of the note n1 is `removed`
+    When the person removes the note n1
+    Then the notes service refuses this request

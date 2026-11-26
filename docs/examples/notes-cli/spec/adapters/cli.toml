@@ -35,6 +35,7 @@ requirements = [
 command = "notes remove"
 requirements = [
   "notes#r4: When the person removes a note, the notes service shall set the status of the note to `removed`.",
+  "notes#r5: If the person removes a note whose status is `removed`, then the notes service shall refuse the request.",
 ]
 [operations."notes.remove".parameters]
 note = { positional = 1, example = "1" }
