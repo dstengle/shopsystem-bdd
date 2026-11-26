@@ -6,7 +6,8 @@ that job, one a bounded context holds naming the bounded context, one a subdomai
 product actor a job has (among its actors or in its job statement) naming the job, one a bounded context maps naming
 the bounded context; a subdomain a bounded context addresses naming the bounded context; a bounded context that holds
 a job naming the job. A job unassigned from a bounded context that does not hold it is refused naming the job; a drop
-of what the product does not hold gives the product unchanged."""
+of what the product does not hold is refused naming it (b812, product r64-r67), the reason `<what> outside the
+product`."""
 from plumbing.shop_refused import Refused
 from product_layer import FORM
 
@@ -24,8 +25,16 @@ def unassign(product, job, context):
     return {**product, "contexts": {**held, context: entry}}
 
 
+def _held(held, ident, what):
+    """`ident` when the product holds it among `held`; else refused naming it, the parameter `what`."""
+    if ident not in held:
+        raise Refused("{names} %s is no %s of the product" % (ident, what), reason="%s outside the product" % what,
+                      names=["parameter:%s" % what])
+
+
 def drop_job(product, job):
     """The product without the job `job`; refused as above."""
+    _held(product.get("jobs", {}), job, "job")
     for other, entry in product.get("jobs", {}).items():
         if job in entry.get("needs", []):
             raise Refused("the job %s needs %s: drop it first, or declare it again without the need; {names}" % (
@@ -48,6 +57,7 @@ def _speaker(statement):
 
 def drop_actor(product, actor):
     """The product without the product actor `actor`; refused as above."""
+    _held(product.get("actors", []), actor, "product actor")
     for job, entry in product.get("jobs", {}).items():
         if actor in entry.get("actors", []) or _speaker(entry.get("statement")) == actor:
             raise Refused("the job {names} has the product actor %r: declare it again without it, or drop it first"
@@ -61,6 +71,7 @@ def drop_actor(product, actor):
 
 def drop_subdomain(product, subdomain):
     """The product without the subdomain `subdomain`; refused as above."""
+    _held(product.get("subdomains", {}), subdomain, "subdomain")
     for context, entry in product.get("contexts", {}).items():
         if subdomain in entry.get("addresses", []):
             raise Refused("the bounded context {names} addresses the subdomain %s: declare it again without it first"
@@ -71,6 +82,7 @@ def drop_subdomain(product, subdomain):
 
 def drop_context(product, context):
     """The product without the bounded context `context`; refused as above."""
+    _held(product.get("contexts", {}), context, "bounded context")
     jobs = product.get("contexts", {}).get(context, {}).get("jobs", [])
     if jobs:
         raise Refused("the bounded context %s holds the job {names}: unassign it first" % context,
