@@ -1,7 +1,9 @@
 <!--
-The spec, feature and test module on this page are docs/examples/notes-cli/'s, which the docs test checks. Outputs
-are from real runs on 2026-11-19: plugin 0.38.0, Python 3.11, pytest 9.1.1, pytest-bdd 8.1.0, in a scratch
-repository built from docs/examples/notes-cli/. The home directory is written as ~, and long paths are cut with "...".
+The spec and feature on this page are docs/examples/notes-cli/'s, which the docs test checks; the example keeps no
+test module, so the step bindings of step 6 are a sketch of the module a first batch writes. The pytest outputs are
+from real runs on 2026-11-19: plugin 0.38.0, Python 3.11, pytest 9.1.1, pytest-bdd 8.1.0, in a scratch repository
+built from docs/examples/notes-cli/ with that module. The outputs of steps 3, 4 and 8 are from runs on 2026-11-26,
+plugin 0.44.0. The home directory is written as ~, and long paths are cut with "...".
 -->
 
 # Getting started
@@ -71,6 +73,7 @@ The session:
 What you see is the grammar tools it found, and the commit:
 
 ```text
+no Python file: the analysis tools are not probed or installed; agents search by text, and say so
 grammar:
   gf 3.12.0 (~/.local/share/shopsystem-bdd/gf-3.12/bin/gf)
   pgf 1.1
@@ -78,7 +81,9 @@ grammar:
   gf-rgl 20250812 (~/.local/share/shopsystem-bdd/gf-rgl-20250812)
 ```
 
-A tool that is missing says so on its line, with what can't be done without it. Setting up is once a repository; a
+The first line is the analysis tools' (the coverage map and the reference finder of `shop tools`): with no Python
+file in the folder there is nothing for them to read yet, so they are left out and the agents search the code by
+text. A tool that is missing says so on its line, with what can't be done without it. Setting up is once a repository; a
 repository that already has a `spec/index.md` or a `.shop/` is never founded again.
 
 ## 4. Say what you want
@@ -146,7 +151,17 @@ two notes have the same title?"). It won't ask you to approve the lines; it tell
 and what its lines say.
 
 The item's lines stay on the item until its batch merges. [The capability file](reference/capability-file.md),
-[the domain model](reference/domain-model.md) and [the vocabulary](concepts.md) have every field of these files.
+[the domain model](reference/domain-model.md) and [the vocabulary](concepts.md#vocabulary-and-packs) have every field of these files.
+
+Keeping your words needs a live session: `shop work quote` finds your message in the transcript the session's
+UserPromptSubmit hook names. Run by hand in a plain shell, with no session, it is refused and keeps nothing:
+
+```console
+$ shop work quote "I want a command-line notes tool."
+work quote: no session is known: the UserPromptSubmit hook keeps it (work quote --hook), or give --session <id>
+```
+
+Give it the session's id with `--session <id>` if you quote by hand; in a session the hook does it for you.
 
 ## 5. Ask what a line means
 
@@ -400,10 +415,51 @@ It's for a writer: when a thought comes up, they want to note it down, so they c
 ```
 
 The session keeps the product in the shop's product file, `.shop/product/product.toml`: the product, the writer, each
-job with its statement, and the domain map that gives the jobs to this bounded context. Then it dedicates each group
-of the capability to the job it does, on an item, and the batch writes that as the group's `serves:` line. From then
-on, ask "what does keeping notes rest on?" and the session answers with the job's **trace**, every requirement that
-does it:
+job with its statement, and the domain map that gives the jobs to this bounded context. Each declaration is one
+command and one commit:
+
+<!-- docs: context docs/examples/notes-cli -->
+```console
+$ shop spec product example.org/notes --purpose "Keep a writer's passing thoughts at hand."
+declared the product example.org/notes
+$ shop spec actor "the writer"
+declared the product actor the writer
+$ shop spec job keep-notes --actor "the writer" --statement "When a thought comes up, the writer wants to note it down, so they can find it later."
+declared the job keep-notes
+$ shop spec subdomain note-keeping --type core --serves keep-notes
+declared the subdomain note-keeping
+$ shop spec context bounded-context/example.org/notes/notes-cli --addresses note-keeping --shop example.org/notes/shop
+declared the bounded context bounded-context/example.org/notes/notes-cli kept by example.org/notes/shop
+$ shop spec assign keep-notes --to bounded-context/example.org/notes/notes-cli
+assigned the job keep-notes to the bounded context bounded-context/example.org/notes/notes-cli
+$ shop spec plays "the writer" --in bounded-context/example.org/notes/notes-cli --as "the person"
+mapped the product actor the writer to the person in the bounded context bounded-context/example.org/notes/notes-cli
+```
+
+- **`--shop`** names the shop that keeps the bounded context: the repositories of one product kept together, here
+  this one alone. Its id is a name you choose, and the plugin checks no form of it; the notes example writes the
+  product's id followed by `/shop`. A bounded context with no `--shop` is a third-party provider, one no shop of the
+  product keeps.
+- **`spec plays` waits for the first merged batch.** It maps the product's actor, "the writer", to the actor this
+  context's domain model calls the person, and the model holds that actor only once the first batch is merged (step
+  7). Before that it is refused, and `shop spec check` warns that no actor here plays the writer:
+
+  ```console
+  $ shop spec plays "the writer" --in bounded-context/example.org/notes/notes-cli --as "the person"
+  spec: --as 'the person' is no actor of the domain model of bounded-context/example.org/notes/notes-cli; it holds no actor
+  $ shop spec check
+  warning w_unplayed_actor  a product actor of a job held here that no actor of this bounded context plays  (1)
+      keep-notes, the writer
+  warning w_unreached_sub  a subdomain of a job held here whose trace reaches no bounded context that addresses it  (1)
+      keep-notes, note-keeping
+  warning w_unserved_job  a job nothing serves  (1)
+      job/example.org/notes/notes-cli/keep-notes
+  0 violations, 3 warnings, 0 unresolved references, 0 file problems
+  ```
+
+Then the session dedicates each group of the capability to the job it does, on an item, and the batch writes that
+as the group's `serves:` line. From then on, ask "what does keeping notes rest on?" and the session answers with the
+job's **trace**, every requirement that does it:
 
 <!-- docs: context docs/examples/notes-cli -->
 ```console

@@ -4,7 +4,9 @@ quote numbers (b250-b252, batch-34, batch-35, 0092, quote-24) are the clone's. L
 "Shape a chore" is from a run on 2026-11-18, plugin 0.37.0, in a scratch clone with no remote (its b350). The first
 three recipes and "See what a line means" are from runs on 2026-11-19, plugin 0.38.0, in a scratch clone with no remote
 (its b359 and b361 written here as b250 and b252). "One verb for several operations" is from runs on 2026-11-20,
-plugin 0.41.0 with b420, in its sketch context tests/scripts/fixtures/docs-checklists. -->
+plugin 0.41.0 with b420, in its sketch context tests/scripts/fixtures/docs-checklists. The pack verb `return` under
+"A word a pack already has" is from a run on 2026-11-26, plugin 0.44.0, on a copy of docs/examples/notes-cli given an
+operation notes.return. -->
 
 # Recipes
 
@@ -117,6 +119,31 @@ with `may follow:` listing the verbs the person can do. See
 verbs. To give one of them your own meaning, mark your entry `Redefines: request`. Without it, `shop spec lexicon
 --check` says `v_t16  <word>  <file>: the pack request defines <word> too; mark the entry Redefines: request`; with it,
 `shop spec lexicon` lists the word as `<word>  [redefines request]`.
+
+A verb of the pack, such as `return`, is the person's word too when it names one of your operations ("the person
+returns a note", the model's `operation return(note)` of `service notes`). With `Redefines: request` your entry keeps the pack's verb beside it, so "the notes service shall
+return every note" still reads as the pack's outcome while "the person returns a note" requests your operation. The
+frames tell the two senses apart, so write yours with the actor that does it, not a bare `<actor>`:
+
+<!-- docs: context docs/examples/notes-cli -->
+```markdown
+- **return** (verb, action) → operation notes.return. Forms: returns, returned. Redefines: request. Frame: the person returns <note>.
+```
+
+With `Frame: <actor> returns <note>.` the subject `<actor>` takes any agent, a service among them, as the pack's
+frame does, and `shop spec lexicon --check` says so (`v_t15  return  ...: the verb return takes in every slot the
+kinds the pack request's return takes (Frame: service returns thing), or kinds under or over them: give it a frame
+whose subject is an actor or a kind that is no service, or another verb`). With the actor named, it passes, and
+"When the person returns a note, the notes service shall set the status of the note to `kept`" parses to the
+request of your operation:
+
+```text
+shall [x1: agent the person (constant), x3: service the notes service (constant)]
+  when [x2: note]
+    request(e1, notes.return, subject: x1, object: x2)
+  response
+    initiates(e2, subject: x3, status(x2) = `kept`)
+```
 
 ## One verb for several operations
 
