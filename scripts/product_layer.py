@@ -2,7 +2,7 @@
 actors and its jobs to be done, each job with its id, its actors, its job statement and the jobs it needs. A product
 is a dict `{"id", "purpose", "actors": [...], "jobs": {id: {"actors", "statement", "needs"}}}`, read and kept by the
 store the caller gives (product_store's). `declare` keeps the product's id and purpose, `declare_actor` an actor,
-`declare_job` a job, a job declared again in place of the one of its id. A job is refused, naming the business
+`declare_job` a job, a job declared again in place of the one of its id (its other keys kept, b673). A job is refused, naming the business
 reference, when its statement is not of the job statement form (`conforms`, its form only), an actor of it is not
 the product's, a need of it is no job the product holds, or a need depends on the job, directly or through the jobs
 it needs (`depends`), so that needs never close a cycle."""
@@ -67,4 +67,4 @@ def declare_job(product, ident, actors, statement, needs):
             raise Refused("{names} %s depends on the job %s, so the needs would close a cycle" % (need, ident),
                           reason="need that depends on the job", names=["parameter:need"])
     job = {"actors": list(dict.fromkeys(actors)), "statement": statement.strip(), "needs": list(dict.fromkeys(needs))}
-    return {**product, "jobs": {**product["jobs"], ident: job}}
+    return {**product, "jobs": {**product["jobs"], ident: {**product["jobs"].get(ident, {}), **job}}}
