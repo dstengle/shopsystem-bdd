@@ -11,7 +11,10 @@ they pick is written: the domain-model fixture (tests/scripts/fixtures/domain-mo
   port `stock` beside the fixture, notebook's g10 serving the job (r10, which requests `stock.reserve`), and the
   adapter spec `adapters/stock-ledger/` realising `stock-port#r1` (r28);
 - of those, the ledger's contract held in the adapter spec at `bounded-context/example.org/fixture/ledger@1.0.0`,
-  its `[operations."ledger.post"]` listing `ledger#r1`, and `uses:` naming ledger.post for stock.reserve (r35);
+  its `[operations."ledger.post"]` listing `ledger#r1`, and `uses:` naming ledger.post for stock.reserve, the trace
+  naming it by its provider, `example.org/fixture/ledger:ledger#r1` (r35);
+  of those, the requirement listed under the port line's id `stock-port#r1`, which is in the trace, returned by
+  its provider and its id, `example.org/fixture/ledger:stock-port#r1`, with the ledger's text (r36, b738);
 - a group that serves a need of the job: the product file holding the job and its need `n1`, notebook's g1 serving
   the need and shelf's g1 serving the job (so that the job is served, but not by the line returned: r29);
 - no group serving the job: nothing serves it (r30).
@@ -34,7 +37,7 @@ def _module(name):
 P = _module("product_handlers.py")
 W = sys.modules["shop_work_queue_world"]
 FIXTURE = ROOT / "tests" / "scripts" / "fixtures" / "domain-model"
-GROUPS = {"g26", "g27", "g28", "g29", "g30", "g35"}
+GROUPS = {"g26", "g27", "g28", "g29", "g30", "g35", "g36"}
 PARENT = "bounded-context/example.org/fixture/domain-model"
 ADAPTER = "%s/adapter/stock-ledger" % PARENT
 TERMS = ("serve", "has", "use", "govern", "realise", "need", "hold")
@@ -84,6 +87,8 @@ The adapter that realises the notes service's needs of the stock.
 
 LEDGER = "bounded-context/example.org/fixture/ledger"
 LEDGER_REQ = "ledger#r1"
+PORT_REQ = "stock-port#r1"
+LEDGER_TEXT = "When a client posts an entry, the ledger service shall complete the request."
 LEDGER_CONTRACT = """context = "%s"
 version = "1.0.0"
 status = "published"
@@ -95,14 +100,15 @@ requirements = [
 """ % (LEDGER, LEDGER_REQ)
 
 
-def ledger(adapter):
-    """The ledger's contract held in the adapter spec at its pin, and `uses:` naming its ledger.post for stock.reserve."""
+def ledger(adapter, rid=LEDGER_REQ):
+    """The ledger's contract held in the adapter spec at its pin, its ledger.post's requirement listed under `rid`,
+    and `uses:` naming its ledger.post for stock.reserve."""
     index = adapter / "spec" / "index.md"
     index.write_text(index.read_text().replace("providers: []\n", "providers: [%s@1.0.0]\nuses:\n"
                                                "  - stock.reserve → ledger.post\n" % LEDGER))
     kept = adapter / "provider" / "example.org" / "fixture" / "ledger" / "1.0.0"
     kept.mkdir(parents=True)
-    (kept / "contract.toml").write_text(LEDGER_CONTRACT)
+    (kept / "contract.toml").write_text(LEDGER_CONTRACT.replace(LEDGER_REQ + ":", rid + ":"))
 
 
 def mine(step):
@@ -158,8 +164,13 @@ def build(step, job):
         serve(notebook, "g10", job)
         says = {by_kind["requirement"]: "notebook#r10", by_kind["adapter spec"]: ADAPTER}
         if "contract" in kinds:     # r35: the ledger's contract held, its ledger.post used for stock.reserve
-            ledger(repo / "adapters" / "stock-ledger")
-            says = {next(ns[-1] for t, ns in facts if t == "hold" and names.get(ns[0]) == "contract"): LEDGER_REQ}
+            held = next(ns[-1] for t, ns in facts if t == "hold" and names.get(ns[0]) == "contract")
+            same = any(t == "has" and (names.get(ns[0]), names.get(ns[-1])) == ("requirement", "requirement id")
+                       for t, ns in facts)      # r36: the requirement has the port line's id
+            rid = PORT_REQ if same else LEDGER_REQ
+            ledger(repo / "adapters" / "stock-ledger", rid)
+            says = {held: "%s:%s" % (LEDGER.removeprefix("bounded-context/"), rid)}     # by its provider (b738)
+            step.context["text"] = LEDGER_TEXT if same else None
     elif "operation" in kinds:
         shelf = SHELF % ("", ARCHIVES)
         serve(notebook, "g2", job)
@@ -204,6 +215,9 @@ def then_returns(step):
     assert done.returncode == 0, done.stdout + done.stderr
     named = [w[2] if w[:2] == ["adapter", "spec"] else w[0] for w in map(str.split, done.stdout.splitlines()[1:]) if w]
     assert want in named, done.stdout
+    if step.context.get("text"):    # r36: that entry carries the provider's text, beside the port line's own
+        assert any(line.split()[0] == want and line.endswith(step.context["text"])
+                   for line in done.stdout.splitlines()[1:] if line.split()), done.stdout
 
 
 def then_does(step):
