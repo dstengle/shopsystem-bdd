@@ -6,7 +6,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import shop_refused
-from adapter_cli_respond import prepare, respond
+from adapter_cli_respond import marked, prepare, respond
 import tools_check
 import tools_env
 import tools_map
@@ -92,10 +92,10 @@ def under(python, argv):
     """Run this script again under the project's interpreter, where the tools are.
 
     Paths are compared as given, not resolved: a virtualenv's python is a link to its base interpreter, but it
-    reads its own packages. The marker stops a second re-run when the interpreter reports another path."""
+    reads its own packages. The marker stops a second re-run when the interpreter reports another path; the run
+    again is marked as `shop`'s (adapter_cli_respond's `marked`), so its old name's notice is said once, here."""
     if os.path.abspath(python) != os.path.abspath(sys.executable) and os.environ.get("TOOLS_UNDER") != python:
-        os.environ["TOOLS_UNDER"] = python
-        os.execv(python, [python, os.path.abspath(__file__)] + argv)
+        os.execve(python, [python, os.path.abspath(__file__)] + argv, {**marked(), "TOOLS_UNDER": python})
 
 
 def main():
