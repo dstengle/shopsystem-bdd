@@ -7,7 +7,7 @@ area: execution
 specifies: object batch, object task, service batches
 language: codified-2
 retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146, g152, r152, g149, r149, g154, r154, g160, r160, g166, r166, g108, r108, g106, r106, g60, r60, g130, r130, g71, r71, g72, r72, g73, r73, g74, r74, g75, r75, g113, r113, g114, r114, g115, r115, g157, r157, g164, r164, g167, r167, g169, r169, g64, r64, g95, r95, g128, r128, g132, r132, g76, r76, g124, r124, g129, r129, g151, r151, g79, r79, g80, r80, g92, r92, g126, r126, g87, r87, g116, r116, g120, r120, g121, r121, g117, r117, g118, r118, g127, r127, g133, r133, g134, r134, g142, r142, g81, r81, g90, r90, g156, r156, g91, r91, g119, r119, g155, r155]
-unbuilt: []
+unbuilt: [r190, r191, r192]
 ---
 
 # Batches
@@ -216,4 +216,13 @@ when the change is merged.
 
 ### [g185] An amended item is lifted from the workspaces of its batch and task and laid there again
 - [r185] While an item in a batch is `in-batch` and a task of the item is `running`, when the person amends the item, the batches service shall lift the item from the workspace of the batch, lift the item from the workspace of the task, lay the item in the workspace of the batch and lay the item in the workspace of the task.
+
+### [g190] An item picked whose requirement id a capability holds keeps its pack term once renumbered
+- [r190] While an item is `ready` and the item meets the readiness bar and the item holds a term of a pack and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep the pack that has the term.
+
+### [g191] An item picked whose requirement id a capability holds keeps its operation table once renumbered
+- [r191] While an item is `ready` and the item meets the readiness bar and the item holds an operation table and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep an adapter contract that holds the operation table.
+
+### [g192] An item picked whose requirement id a capability holds keeps the term it moves once renumbered
+- [r192] While an item is `ready` and the item meets the readiness bar and the item moves a term that means an element and an area holds the element and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep the area that holds the term.
 

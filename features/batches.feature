@@ -999,3 +999,57 @@ Feature: Batches
     And the batches service prepares the workspace w1 for the batch b1
     When the laying service completes the request to prepare the workspace w1 for the batch b1
     Then the batches service checks the item i1 in the workspace w1
+
+  @g190 @r190
+  Scenario: An item picked whose requirement id a capability holds keeps its pack term once renumbered
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a term t1
+    And a pack p1
+    And the pack p1 has the term t1
+    And the item i1 holds the term t1
+    And a requirement id r1
+    And the item i1 holds the requirement id r1
+    And a capability c1
+    And the capability c1 holds the requirement id r1
+    And a batch b1
+    When the person opens the batch b1
+    Then the pack p1 has the term t1
+    And the batches service keeps the pack p1
+
+  @g191 @r191
+  Scenario: An item picked whose requirement id a capability holds keeps its operation table once renumbered
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And an operation table o1
+    And the item i1 holds the operation table o1
+    And a requirement id r1
+    And the item i1 holds the requirement id r1
+    And a capability c1
+    And the capability c1 holds the requirement id r1
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service keeps the adapter contract a1
+    And the adapter contract a1 holds the operation table o1
+
+  @g192 @r192
+  Scenario: An item picked whose requirement id a capability holds keeps the term it moves once renumbered
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a term t1
+    And an element e1
+    And the term t1 means the element e1
+    And the item i1 moves the term t1
+    And an area a1
+    And the area a1 holds the element e1
+    And a requirement id r1
+    And the item i1 holds the requirement id r1
+    And a capability c1
+    And the capability c1 holds the requirement id r1
+    And a batch b1
+    When the person opens the batch b1
+    Then the area a1 holds the term t1
+    And the batches service keeps the area a1
