@@ -103,7 +103,7 @@ def implemented(code, kind):
     """Where a rule is implemented: model.lp for its rules, and each module of the plugin that gives the code."""
     found = ["scripts/model.lp"] if kind == "facts" else []
     here = Path(__file__).resolve()
-    for path in sorted((PLUGIN / "scripts").glob("*.py")):
+    for path in sorted((PLUGIN / "scripts").rglob("*.py")):
         if path != here and gives(path.read_text(), code):
             found.append(path.relative_to(PLUGIN).as_posix())
     return found
