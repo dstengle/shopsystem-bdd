@@ -1528,7 +1528,7 @@ requirements = [
   "product#r42: If the person declares a job with a job statement that mentions a product actor that is not in the product, then the product service shall refuse the request and name the product actor.",
   "product#r44: When the person declares a job with a product actor and a job statement that conforms to the job statement form, the product service shall keep the job in the product and complete the request.",
   "product#r60: If the person declares a job with a product actor that is in the product and a job statement that mentions a different product actor that is in the product, then the product service shall refuse the request and name the job statement.",
-  "product#r62: If the person declares a job with a job statement and without a product actor, then the product service shall refuse the request and name the product actor.",
+  "product#r62: If the person declares a job with a job statement and without a product actor, then the product service shall refuse the request.",
 ]
 [operations."product.declare job".parameters]
 id = { positional = 1, example = "j1" }

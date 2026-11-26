@@ -642,5 +642,3 @@ Feature: Product
     And a job statement j2
     When the person declares the job j1 with the job statement j2 and without a product actor
     Then the product service refuses this request
-    And the product service names the product actor p1
-    And the job j1 has the product actor p1

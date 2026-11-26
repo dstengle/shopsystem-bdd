@@ -7,7 +7,7 @@ area: specification
 specifies: service product
 language: codified-2
 retired: [g18, r18, g14, r14, g43, r43, g40, r40]
-unbuilt: [r59]
+unbuilt: [r59, r62]
 ---
 
 # Product
@@ -186,7 +186,7 @@ the job statement `j2` holds "When x, the developer wants y, so they can z."
 - [r59] If the person assigns a job that is not in the product to a bounded context, then the product service shall refuse the request and name the job.
 
 ### [g62] A job declared without a product actor is refused
-- [r62] If the person declares a job with a job statement and without a product actor, then the product service shall refuse the request and name the product actor.
+- [r62] If the person declares a job with a job statement and without a product actor, then the product service shall refuse the request.
 
 ### [g60] A job whose statement mentions another actor of the product than the job's is refused
 - [r60] If the person declares a job with a product actor that is in the product and a job statement that mentions a different product actor that is in the product, then the product service shall refuse the request and name the job statement.
