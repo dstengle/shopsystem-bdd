@@ -8,9 +8,11 @@ service of a driven port. Of the trace's operations:
 - a long-running process: a port operation it uses whose outcome a line handles (model_bound's `on_outcome` of the
   operation's object) and that line uses an operation that performs a transition (a line triggered on a request of
   it sets an attribute of a lifecycle: model_domain_lines' `sets`, `sets_from_any`);
-- a port request: a port operation it uses whose outcomes no line handles.
+- a port request: an operation it uses that a port line governs, that has no property that refers to an operation
+  (`compensated by`, `REFERS`) and whose outcomes no line handles (r31 as reworded by f1, so that a saga's operations
+  are no port request).
 
-The most specific kind wins (a saga is a long-running process too); a trace of no port operation has none (None)."""
+A saga is a long-running process too and is said first; a trace of no port operation has none (None)."""
 from pathlib import Path
 
 import domain_model
@@ -22,6 +24,7 @@ import spec_lf
 from model_parse import frontmatter
 
 SAGA, PROCESS, REQUEST = "saga", "long-running process", "port request"
+REFERS = ("compensated by",)     # the properties of domain_model_props that refer to an operation
 
 
 def _facts(root, ctx):
@@ -50,12 +53,12 @@ def coordination(root, ctx, traced):
     port_lines = {q for q, fs in facts.items() if ("port_line", q) in fs}
     ops = {"%s.%s" % (op.service, op.name): op for op in model.operations()}
     ported = model_bound.ported(model)
-    port_ops = {f[2] for q in port_lines for f in facts[q] if f[0] == "requester"}
-    port_ops |= {o for o, op in ops.items() if getattr(model.services.get(op.service), "area", None) in ported}
+    governed = {f[2] for q in port_lines for f in facts[q] if f[0] == "requester"}
+    port_ops = governed | {o for o, op in ops.items() if getattr(model.services.get(op.service), "area", None) in ported}
     used = {o for q in traced for o in uses.get(q, ())} & port_ops
     if not used:
         return None
-    compensated = {o for o in used if any(p.key == "compensated by" for p in ops[o].properties)}
+    compensated = {o for o in used if any(p.key in REFERS for p in ops[o].properties)}
     if len(compensated) >= 2:
         return SAGA
     transitions = {f[2] for fs in facts.values() for f in fs if f[0] == "requester"
@@ -64,4 +67,4 @@ def coordination(root, ctx, traced):
                 for o in used if ops[o].object}
     if any(uses[q] & transitions for hs in handlers.values() for q in hs):
         return PROCESS
-    return REQUEST if any(not handlers.get(o) for o in used) else None
+    return REQUEST if any(not handlers.get(o) for o in (used & governed) - compensated) else None
