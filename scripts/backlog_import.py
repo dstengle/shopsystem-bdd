@@ -3,9 +3,9 @@
 The item keeps its imports in an `### imports` block of its `## Requirements` (backlog_section reads and writes it,
 after the moves block), one bullet a pack: `- pack `<name>``. `work line <item> --import <name>` keeps the import of
 the plugin's pack `grammar/packs/<name>.md` in the item, refused naming the pack when the plugin has no pack of that
-name, and when spec/index.md or the item imports it already. `lay` adds each name to `spec/index.md`'s `imports:`;
-`unlay` takes out each one the index did not import at the batch's base (else in the latest version git holds of
-it)."""
+name, and when the item imports it already; a pack spec/index.md imports is kept too. `lay` adds each name to
+`spec/index.md`'s `imports:` that it does not list; `unlay` takes out each one the index did not import at the
+batch's base (else in the latest version git holds of it)."""
 import re
 
 import spec_packs
@@ -59,8 +59,6 @@ def write(root, name, pack):
     pack = one_line(pack, "pack")
     if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", pack) or not (spec_packs.PLUGIN / ("%s.md" % pack)).is_file():
         raise Refused("work line: the plugin has no pack %s" % pack, reason="no such pack", names=["pack:%s" % pack])
-    if pack in spec_packs.imports(root):
-        raise Refused("work line: spec/index.md imports the pack %s already" % pack)
     if pack in blocks.imports:
         raise Refused("work line: %s imports the pack %s already" % (label(item), pack))
     blocks.imports.append(pack)
