@@ -45,10 +45,12 @@ def _unfixed(root, batch):
 
 
 def _cites(root, since, branch, item):
-    """Whether a commit on `branch` after `since` has an `Item: <item>` trailer."""
-    out = batch_git.git(root, "log", "--format=%(trailers:key=Item,valueonly,separator=%x2c)", "%s..%s" % (
-        since, branch)).stdout
-    return item in {c.strip() for line in out.splitlines() for c in line.split(",")}
+    """Whether a commit on `branch` after `since` has an `Item: <item>` trailer and no `Laid:` one: an amendment
+    `work batch amend` lays cites the item but builds nothing (b698)."""
+    out = batch_git.git(root, "log", "--format=%(trailers:key=Laid,valueonly,separator=%x2c)%x09"
+                        "%(trailers:key=Item,valueonly,separator=%x2c)", "%s..%s" % (since, branch)).stdout
+    rows = (line.split("\t", 1) for line in out.splitlines() if "\t" in line)
+    return any(not laid.strip() and item in {c.strip() for c in cited.split(",")} for laid, cited in rows)
 
 
 def _built(root, batch, tasks):

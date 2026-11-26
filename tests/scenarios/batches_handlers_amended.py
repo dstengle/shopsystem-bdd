@@ -50,10 +50,14 @@ def amendment_cites(step):
 
 @four("GivenDoes", "holds", *BOTH)
 def holds_amendment(step):
-    """`the worktree w1 holds the amendment a1`: the batch's workspace, the batch branch the amend lays it on."""
-    (k1, _), (k2, _) = parts(step)
+    """`the worktree w1 holds the amendment a1`: the batch's workspace, the batch branch the amend lays it on; a
+    task's workspace (b698), its branch holding the amend's lay as its one kept change, nothing built after it."""
+    (k1, n1), (k2, n2) = parts(step)
     if (k1, k2) != ("worktree", "amendment"):
         return False
+    if (step.context.get("git_branches", {}).get(n1) or {}).get("task"):
+        step.context.setdefault("unbuilt_amendments", set()).add(n2)
+        T.given(step, "item", step.context["amendments"][n2])["unbuilt"] = True     # no build commit before the lay
 
 
 def _relaid(step, branch, old, new, item, laid, build=False):
@@ -74,6 +78,7 @@ def _relaid(step, branch, old, new, item, laid, build=False):
 def amended(step, name):
     """The batch's amendment (T.AFTER_BATCH): each item an amendment cites given a new line on main, laid on the
     batch branch and its task branch, built there."""
+    unbuilt = {step.context["amendments"][a] for a in step.context.get("unbuilt_amendments", ())}
     for item in dict.fromkeys(step.context.get("amendments", {}).values()):
         if T.given(step, "item", item).get("batch") != name:
             continue
@@ -88,7 +93,7 @@ def amended(step, name):
         new = backlog_items.find(step.repo, b)
         n = T.batch_name(step, name)
         _relaid(step, n, old, new, b, laid)
-        _relaid(step, "%s-%s" % (n, b), old, new, b, laid, build=True)
+        _relaid(step, "%s-%s" % (n, b), old, new, b, laid, build=item not in unbuilt)
 
 
 T.AFTER_BATCH.append(amended)
