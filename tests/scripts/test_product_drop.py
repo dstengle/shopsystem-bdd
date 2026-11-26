@@ -25,7 +25,7 @@ def _repo(tmp_path):
 
 @pytest.mark.parametrize("what,dest", [("job", "job"), ("actor", "product_actor"), ("subdomain", "subdomain"),
                                        ("context", "bounded_context")])
-def test_a_drop_of_what_the_product_does_not_hold_completes_unchanged(tmp_path, capsys, what, dest):
+def test_a_drop_of_what_the_product_does_not_hold_completes_unchanged(tmp_path, what, dest):
     repo = _repo(tmp_path)
     before, head = (repo / product_store.REL).read_text(), _git(repo, "rev-parse", "HEAD")
     args = argparse.Namespace(root=repo, what=what, **{dest: "unheld"})
