@@ -475,3 +475,253 @@ shall [x3: service the batches service (constant), x5: service the laying servic
     import(subject: x6, object: x2)
     keep(e2, subject: x5, object: x2)
 ```
+
+## r28
+From: b746 r28.
+
+```reading
+While an item holds an operation table, when the batches service lays the item in a workspace, the laying service shall keep an adapter contract that holds the operation table.
+shall [x3: service the batches service (constant), x5: service the laying service (constant)]
+  while [x1: item, x2: operation table]
+    in(x2, x1)
+  when [x4: workspace]
+    request(e1, laying.lay, subject: x3, object: x1, in: x4)
+  response [x6: adapter contract]
+    in(x2, x6)
+    keep(e2, subject: x5, object: x6)
+```
+
+## r29
+From: b746 r29.
+
+```reading
+While an item holds an operation, when the batches service lays the item in a workspace, the laying service shall keep an adapter contract and keep no operation table of the operation.
+shall [x3: service the batches service (constant), x5: service the laying service (constant)]
+  while [x1: item, x2: operation]
+    in(x2, x1)
+  when [x4: workspace]
+    request(e1, laying.lay, subject: x3, object: x1, in: x4)
+  response [x6: adapter contract]
+    keep(e2, subject: x5, object: x6)
+    not [x7: operation table]
+      of(x7, x2)
+      keep(e3, subject: x5, object: x7)
+```
+
+## r30
+From: b746 r30.
+
+```reading
+While an item holds a model line and the model line specifies an operation and the domain model does not hold the operation and the item holds no operation table of the operation, when the batches service lays the item in a workspace, the laying service shall keep an adapter contract that holds an operation table of the operation.
+shall [x4: domain model "the domain model of this bounded context" (indexical), x6: service the batches service (constant), x8: service the laying service (constant)]
+  while [x1: item, x2: model line, x3: operation]
+    in(x2, x1)
+    specify(subject: x2, object: x3)
+    not
+      in(x3, x4)
+    not [x5: operation table]
+      of(x5, x3)
+      in(x5, x1)
+  when [x7: workspace]
+    request(e1, laying.lay, subject: x6, object: x1, in: x7)
+  response [x9: adapter contract, x10: operation table]
+    of(x10, x3)
+    in(x10, x9)
+    keep(e2, subject: x8, object: x9)
+```
+
+## r31
+From: b746 r31.
+
+```reading
+While an item holds an operation table and a capability holds a requirement id that the item holds, when the batches service lays the item in a workspace, the laying service shall keep an adapter contract that holds the operation table.
+shall [x5: service the batches service (constant), x7: service the laying service (constant)]
+  while [x1: item, x2: operation table, x3: capability, x4: requirement id]
+    in(x2, x1)
+    in(x4, x1)
+    in(x4, x3)
+  when [x6: workspace]
+    request(e1, laying.lay, subject: x5, object: x1, in: x6)
+  response [x8: adapter contract]
+    in(x2, x8)
+    keep(e2, subject: x7, object: x8)
+```
+
+## r32
+From: b746 r32.
+
+```reading
+While an item holds a model line that restates an operation, when the batches service lays the item in a workspace, the laying service shall keep the model line in the domain model and keep a domain model that does not hold the operation.
+shall [x4: service the batches service (constant), x6: service the laying service (constant), x7: domain model "the domain model of this bounded context" (indexical)]
+  while [x1: item, x2: model line, x3: operation]
+    restate#2(subject: x2, object: x3)
+    in(x2, x1)
+  when [x5: workspace]
+    request(e1, laying.lay, subject: x4, object: x1, in: x5)
+  response [x8: domain model]
+    in(x2, x7)
+    keep(e2, subject: x6, object: x2)
+    not
+      in(x3, x8)
+    keep(e3, subject: x6, object: x8)
+```
+
+## r33
+From: b746 r33.
+
+```reading
+While an item holds a model line that restates an element, when the batches service lays the item in a workspace, the laying service shall keep the model line in the domain model and keep a domain model that does not hold the element.
+shall [x4: service the batches service (constant), x6: service the laying service (constant), x7: domain model "the domain model of this bounded context" (indexical)]
+  while [x1: item, x2: model line, x3: element]
+    restate(subject: x2, object: x3)
+    in(x2, x1)
+  when [x5: workspace]
+    request(e1, laying.lay, subject: x4, object: x1, in: x5)
+  response [x8: domain model]
+    in(x2, x7)
+    keep(e2, subject: x6, object: x2)
+    not
+      in(x3, x8)
+    keep(e3, subject: x6, object: x8)
+```
+
+## r34
+From: b746 r34.
+
+```reading
+While an item holds a model line that restates an event, when the batches service lays the item in a workspace, the laying service shall keep the model line in the domain model and keep a domain model that does not hold the event.
+shall [x4: service the batches service (constant), x6: service the laying service (constant), x7: domain model "the domain model of this bounded context" (indexical)]
+  while [x1: item, x2: model line, x3: event]
+    restate(subject: x2, object: x3)
+    in(x2, x1)
+  when [x5: workspace]
+    request(e1, laying.lay, subject: x4, object: x1, in: x5)
+  response [x8: domain model]
+    in(x2, x7)
+    keep(e2, subject: x6, object: x2)
+    not
+      in(x3, x8)
+    keep(e3, subject: x6, object: x8)
+```
+
+## r35
+From: b746 r35.
+
+```reading
+While an item holds a model line that restates an actor, when the batches service lays the item in a workspace, the laying service shall keep the model line in the domain model and keep a domain model that does not hold the actor.
+shall [x4: service the batches service (constant), x6: service the laying service (constant), x7: domain model "the domain model of this bounded context" (indexical)]
+  while [x1: item, x2: model line, x3: actor]
+    restate(subject: x2, object: x3)
+    in(x2, x1)
+  when [x5: workspace]
+    request(e1, laying.lay, subject: x4, object: x1, in: x5)
+  response [x8: domain model]
+    in(x2, x7)
+    keep(e2, subject: x6, object: x2)
+    not
+      in(x3, x8)
+    keep(e3, subject: x6, object: x8)
+```
+
+## r36
+From: b746 r36.
+
+```reading
+While an item holds a model line that moves to an area, when the batches service lays the item in a workspace, the laying service shall keep the area that holds the model line.
+shall [x4: service the batches service (constant), x6: service the laying service (constant)]
+  while [x1: item, x2: model line, x3: area]
+    move#3(subject: x2, to: x3)
+    in(x2, x1)
+  when [x5: workspace]
+    request(e1, laying.lay, subject: x4, object: x1, in: x5)
+  response
+    in(x2, x3)
+    keep(e2, subject: x6, object: x3)
+```
+
+## r37
+From: b746 r37.
+
+```reading
+While an item moves a term that means an element and an area holds the element, when the batches service lays the item in a workspace, the laying service shall keep the area that holds the term.
+shall [x5: service the batches service (constant), x7: service the laying service (constant)]
+  while [x1: item, x2: term, x3: element, x4: area]
+    mean(subject: x2, object: x3)
+    move#4(subject: x1, object: x2)
+    in(x3, x4)
+  when [x6: workspace]
+    request(e1, laying.lay, subject: x5, object: x1, in: x6)
+  response
+    in(x2, x4)
+    keep(e2, subject: x7, object: x4)
+```
+
+## r38
+From: b746 r38.
+
+```reading
+While an item moves a term that means an element and an area holds the element and a capability holds a requirement id that the item holds, when the batches service lays the item in a workspace, the laying service shall keep the area that holds the term.
+shall [x7: service the batches service (constant), x9: service the laying service (constant)]
+  while [x1: item, x2: term, x3: element, x4: area, x5: capability, x6: requirement id]
+    mean(subject: x2, object: x3)
+    move#4(subject: x1, object: x2)
+    in(x3, x4)
+    in(x6, x1)
+    in(x6, x5)
+  when [x8: workspace]
+    request(e1, laying.lay, subject: x7, object: x1, in: x8)
+  response
+    in(x2, x4)
+    keep(e2, subject: x9, object: x4)
+```
+
+## r39
+From: b746 r39.
+
+```reading
+While an item retires a model line, when the batches service lays the item in a workspace, the laying service shall keep an area that does not hold the model line.
+shall [x3: service the batches service (constant), x5: service the laying service (constant)]
+  while [x1: item, x2: model line]
+    retire#4(subject: x1, object: x2)
+  when [x4: workspace]
+    request(e1, laying.lay, subject: x3, object: x1, in: x4)
+  response [x6: area]
+    not
+      in(x2, x6)
+    keep(e2, subject: x5, object: x6)
+```
+
+## r40
+From: b746 r40.
+
+```reading
+While an item retires a term, when the batches service lays the item in a workspace, the laying service shall keep an area that does not hold the term.
+shall [x3: service the batches service (constant), x5: service the laying service (constant)]
+  while [x1: item, x2: term]
+    retire#4(subject: x1, object: x2)
+  when [x4: workspace]
+    request(e1, laying.lay, subject: x3, object: x1, in: x4)
+  response [x6: area]
+    not
+      in(x2, x6)
+    keep(e2, subject: x5, object: x6)
+```
+
+## r41
+From: b746 r41.
+
+```reading
+While an item retires a model line that restates an element and the item retires a term that means the element, when the batches service lays the item in a workspace, the laying service shall keep an area that does not hold the term.
+shall [x5: service the batches service (constant), x7: service the laying service (constant)]
+  while [x1: item, x2: model line, x3: element, x4: term]
+    restate(subject: x2, object: x3)
+    retire#4(subject: x1, object: x2)
+    mean(subject: x4, object: x3)
+    retire#4(subject: x1, object: x4)
+  when [x6: workspace]
+    request(e1, laying.lay, subject: x5, object: x1, in: x6)
+  response [x8: area]
+    not
+      in(x4, x8)
+    keep(e2, subject: x7, object: x8)
+```

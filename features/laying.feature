@@ -359,3 +359,191 @@ Feature: Laying
     When the batches service lays the item i1 in the workspace w1
     Then this bounded context imports the pack p1
     And the laying service keeps the pack p1
+
+  @g28 @r28
+  Scenario: An item laid that holds an operation table keeps it in the adapter contract
+    Given an operation table o1
+    And an item i1
+    And the item i1 holds the operation table o1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then the laying service keeps the adapter contract a1
+    And the adapter contract a1 holds the operation table o1
+
+  @g29 @r29
+  Scenario: An item laid that holds an operation keeps no operation table of it
+    Given an operation o1
+    And an item i1
+    And the item i1 holds the operation o1
+    And a workspace w1
+    And an operation table o2
+    And the operation o1 has the operation table o2
+    When the batches service lays the item i1 in the workspace w1
+    Then the laying service keeps the adapter contract a1
+    And the laying service does not keep the operation table o2
+
+  @g30 @r30
+  Scenario: An item laid whose model line specifies a new operation with no table keeps a table of it
+    Given a model line m1
+    And an item i1
+    And the item i1 holds the model line m1
+    And an operation o1
+    And the model line m1 specifies the operation o1
+    And this domain model does not hold the operation o1
+    And the item i1 holds no operation table of the operation o1
+    And a workspace w1
+    And an operation table o2
+    And an adapter contract a1
+    When the batches service lays the item i1 in the workspace w1
+    Then the operation o1 has the operation table o2
+    And the laying service keeps the adapter contract a1
+    And the adapter contract a1 holds the operation table o2
+
+  @g31 @r31
+  Scenario: An item laid that holds an operation table beside its requirements keeps it in the adapter contract
+    Given an operation table o1
+    And an item i1
+    And the item i1 holds the operation table o1
+    And a requirement id r1
+    And the item i1 holds the requirement id r1
+    And a capability c1
+    And the capability c1 holds the requirement id r1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then the laying service keeps the adapter contract a1
+    And the adapter contract a1 holds the operation table o1
+
+  @g32 @r32
+  Scenario: An item laid whose model line restates an operation keeps the model line in place of the operation
+    Given a model line m1
+    And an operation o1
+    And the model line m1 restates the operation o1
+    And an item i1
+    And the item i1 holds the model line m1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then this domain model holds the model line m1
+    And the laying service keeps the model line m1
+    And the laying service keeps the domain model d1
+    And the domain model d1 does not hold the operation o1
+
+  @g33 @r33
+  Scenario: An item laid whose model line restates an element keeps the model line in place of the element
+    Given a model line m1
+    And an element e1
+    And the model line m1 restates the element e1
+    And an item i1
+    And the item i1 holds the model line m1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then this domain model holds the model line m1
+    And the laying service keeps the model line m1
+    And the laying service keeps the domain model d1
+    And the domain model d1 does not hold the element e1
+
+  @g34 @r34
+  Scenario: An item laid whose model line restates an event keeps the model line in place of the event
+    Given a model line m1
+    And an event e1
+    And the model line m1 restates the event e1
+    And an item i1
+    And the item i1 holds the model line m1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then this domain model holds the model line m1
+    And the laying service keeps the model line m1
+    And the laying service keeps the domain model d1
+    And the domain model d1 does not hold the event e1
+
+  @g35 @r35
+  Scenario: An item laid whose model line restates an actor keeps the model line in place of the actor
+    Given a model line m1
+    And an actor a1
+    And the model line m1 restates the actor a1
+    And an item i1
+    And the item i1 holds the model line m1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then this domain model holds the model line m1
+    And the laying service keeps the model line m1
+    And the laying service keeps the domain model d1
+    And the domain model d1 does not hold the actor a1
+
+  @g36 @r36
+  Scenario: An item laid whose model line moves to an area keeps the area holding the model line
+    Given a model line m1
+    And an area a1
+    And the model line m1 moves to the area a1
+    And an item i1
+    And the item i1 holds the model line m1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then the area a1 holds the model line m1
+    And the laying service keeps the area a1
+
+  @g37 @r37
+  Scenario: An item laid that moves a term keeps the term in the area of its element
+    Given a term t1
+    And an element e1
+    And the term t1 means the element e1
+    And an item i1
+    And the item i1 moves the term t1
+    And an area a1
+    And the area a1 holds the element e1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then the area a1 holds the term t1
+    And the laying service keeps the area a1
+
+  @g38 @r38
+  Scenario: An item laid that moves a term beside its requirements keeps the term in the area of its element
+    Given a term t1
+    And an element e1
+    And the term t1 means the element e1
+    And an item i1
+    And the item i1 moves the term t1
+    And an area a1
+    And the area a1 holds the element e1
+    And a requirement id r1
+    And the item i1 holds the requirement id r1
+    And a capability c1
+    And the capability c1 holds the requirement id r1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then the area a1 holds the term t1
+    And the laying service keeps the area a1
+
+  @g39 @r39
+  Scenario: An item laid that retires a model line keeps an area without it
+    Given an item i1
+    And a model line m1
+    And the item i1 retires the model line m1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then the laying service keeps the area a1
+    And the area a1 does not hold the model line m1
+
+  @g40 @r40
+  Scenario: An item laid that retires a term keeps an area without it
+    Given an item i1
+    And a term t1
+    And the item i1 retires the term t1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then the laying service keeps the area a1
+    And the area a1 does not hold the term t1
+
+  @g41 @r41
+  Scenario: An item laid that retires an element and a term meaning it keeps an area without the term
+    Given a model line m1
+    And an element e1
+    And the model line m1 restates the element e1
+    And an item i1
+    And the item i1 retires the model line m1
+    And a term t1
+    And the term t1 means the element e1
+    And the item i1 retires the term t1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then the laying service keeps the area a1
+    And the area a1 does not hold the term t1

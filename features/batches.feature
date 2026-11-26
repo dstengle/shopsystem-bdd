@@ -184,32 +184,6 @@ Feature: Batches
     When the session s2 finishes the task t1
     Then the batches service sets the status of the task t1 to `done`
 
-  @g79 @r79
-  Scenario: An operation table of an item is laid into the adapter contract
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And an operation table o1
-    And the item i1 holds the operation table o1
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service keeps the adapter contract a1
-    And the adapter contract a1 holds the operation table o1
-
-  @g80 @r80
-  Scenario: An operation withheld in an item leaves the adapter contract
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And an operation o1
-    And the item i1 holds the operation o1
-    And a batch b1
-    And an operation table o2
-    And the operation o1 has the operation table o2
-    When the person opens the batch b1
-    Then the batches service keeps the adapter contract a1
-    And the batches service does not keep the operation table o2
-
   @g81 @r81
   Scenario: An in-batch item amended has its lines laid again on its batch's and its task's workspaces
     Given an item i1
@@ -264,22 +238,6 @@ Feature: Batches
     Then the batches service refuses this request
     And the batches service names the setting value s2
 
-  @g87 @r87
-  Scenario: A batch opened lays a model line in place of the operation it restates
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a model line m1
-    And an operation o1
-    And the model line m1 restates the operation o1
-    And the item i1 holds the model line m1
-    And a batch b1
-    When the person opens the batch b1
-    Then this domain model holds the model line m1
-    And the batches service keeps the model line m1
-    And the batches service keeps the domain model d1
-    And the domain model d1 does not hold the operation o1
-
   @g90 @r90
   Scenario: A line removed from an in-batch item leaves its task's workspace too, not only the batch's
     Given an item i1
@@ -321,25 +279,6 @@ Feature: Batches
     When the session s1 parks the item i1
     Then the batches service keeps the domain model d1
     And the domain model d1 holds the operation o1
-
-  @g92 @r92
-  Scenario: A batch opened writes the operation table of an operation an item adds with none given
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a model line m1
-    And the item i1 holds the model line m1
-    And an operation o1
-    And the model line m1 specifies the operation o1
-    And this domain model does not hold the operation o1
-    And the item i1 holds no operation table of the operation o1
-    And a batch b1
-    And an operation table o2
-    And an adapter contract a1
-    When the person opens the batch b1
-    Then the operation o1 has the operation table o2
-    And the batches service keeps the adapter contract a1
-    And the adapter contract a1 holds the operation table o2
 
   @g96 @r96
   Scenario: An in-batch item amended that does not meet the readiness bar is refused and nothing changes
@@ -489,52 +428,6 @@ Feature: Batches
     And the batches service restores the item i2
     And the batches service does not restore the item i3
 
-  @g116 @r116
-  Scenario: A model line that restates an element is laid in place of it
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a model line m1
-    And an element e1
-    And the model line m1 restates the element e1
-    And the item i1 holds the model line m1
-    And a batch b1
-    When the person opens the batch b1
-    Then this domain model holds the model line m1
-    And the batches service keeps the model line m1
-    And the batches service keeps the domain model d1
-    And the domain model d1 does not hold the element e1
-
-  @g117 @r117
-  Scenario: A batch opened declares a moved model line in the area it moves to
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a model line m1
-    And an area a1
-    And the model line m1 moves to the area a1
-    And the item i1 holds the model line m1
-    And a batch b1
-    When the person opens the batch b1
-    Then the area a1 holds the model line m1
-    And the batches service keeps the area a1
-
-  @g118 @r118
-  Scenario: A batch opened writes a moved term into the area that holds its element
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a term t1
-    And an element e1
-    And the term t1 means the element e1
-    And the item i1 moves the term t1
-    And an area a1
-    And the area a1 holds the element e1
-    And a batch b1
-    When the person opens the batch b1
-    Then the area a1 holds the term t1
-    And the batches service keeps the area a1
-
   @g119 @r119
   Scenario: A park of an item that restates an element keeps a member line another item of the batch adds
     Given an item i1
@@ -559,38 +452,6 @@ Feature: Batches
     And the batches service keeps the domain model d1
     And the domain model d1 does not hold the model line m3
 
-  @g120 @r120
-  Scenario: A model line that restates an event is laid in place of the event
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a model line m1
-    And an event e1
-    And the model line m1 restates the event e1
-    And the item i1 holds the model line m1
-    And a batch b1
-    When the person opens the batch b1
-    Then this domain model holds the model line m1
-    And the batches service keeps the model line m1
-    And the batches service keeps the domain model d1
-    And the domain model d1 does not hold the event e1
-
-  @g121 @r121
-  Scenario: A model line that restates an actor is laid in place of the actor
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a model line m1
-    And an actor a1
-    And the model line m1 restates the actor a1
-    And the item i1 holds the model line m1
-    And a batch b1
-    When the person opens the batch b1
-    Then this domain model holds the model line m1
-    And the batches service keeps the model line m1
-    And the batches service keeps the domain model d1
-    And the domain model d1 does not hold the actor a1
-
   @g125 @r125
   Scenario: An item amended with a review finding keeps a change for the finding, which its review accepts
     Given an item i1
@@ -605,42 +466,6 @@ Feature: Batches
     Then the batches service keeps the kept change k1
     And the kept change k1 is for the review finding r2
 
-  @g126 @r126
-  Scenario: An item's operation table kept when its ids are renumbered
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And an operation table o1
-    And the item i1 holds the operation table o1
-    And a requirement id r1
-    And the item i1 holds the requirement id r1
-    And a capability c1
-    And the capability c1 holds the requirement id r1
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service keeps the adapter contract a1
-    And the adapter contract a1 holds the operation table o1
-
-  @g127 @r127
-  Scenario: An item's moved term kept when its ids are renumbered
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a term t1
-    And an element e1
-    And the term t1 means the element e1
-    And the item i1 moves the term t1
-    And an area a1
-    And the area a1 holds the element e1
-    And a requirement id r1
-    And the item i1 holds the requirement id r1
-    And a capability c1
-    And the capability c1 holds the requirement id r1
-    And a batch b1
-    When the person opens the batch b1
-    Then the area a1 holds the term t1
-    And the batches service keeps the area a1
-
   @g131 @r131
   Scenario: A ready item whose change would take the batch past the review limit is not allocated, whether or not it meets the bar
     Given an item i1
@@ -649,30 +474,6 @@ Feature: Batches
     And a batch b1
     When the person opens the batch b1
     Then the batches service does not allocate the item i1
-
-  @g133 @r133
-  Scenario: A batch opened takes each retired model line out of the domain model
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a model line m1
-    And the item i1 retires the model line m1
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service keeps the area a1
-    And the area a1 does not hold the model line m1
-
-  @g134 @r134
-  Scenario: A batch opened takes each retired term out of its area
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a term t1
-    And the item i1 retires the term t1
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service keeps the area a1
-    And the area a1 does not hold the term t1
 
   @g135 @r135
   Scenario: A batch awaiting its merge tells the driver to stop
@@ -692,23 +493,6 @@ Feature: Batches
     When the driver polls the batch b1
     Then the batches service returns the batch step b2
     And the instruction of the batch step b2 is `submit batch`
-
-  @g142 @r142
-  Scenario: A batch opened takes out a retired term whose element a retired model line already took out
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a model line m1
-    And an element e1
-    And the model line m1 restates the element e1
-    And the item i1 retires the model line m1
-    And a term t1
-    And the term t1 means the element e1
-    And the item i1 retires the term t1
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service keeps the area a1
-    And the area a1 does not hold the term t1
 
   @g143 @r143
   Scenario: A batch with a failed task of an in-batch item asks the driver to park the task's item

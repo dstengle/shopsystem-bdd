@@ -120,3 +120,59 @@ Relied on by: batches#r179
 - [r27] While an item imports a pack, when the batches service lays the item in a workspace, the laying service shall keep the pack that this bounded context imports.
 Relied on by: batches#r179
 
+### [g28] An item laid that holds an operation table keeps it in the adapter contract
+- [r28] While an item holds an operation table, when the batches service lays the item in a workspace, the laying service shall keep an adapter contract that holds the operation table.
+Relied on by: batches#r179
+
+### [g29] An item laid that holds an operation keeps no operation table of it
+- [r29] While an item holds an operation, when the batches service lays the item in a workspace, the laying service shall keep an adapter contract and keep no operation table of the operation.
+Relied on by: batches#r179
+
+### [g30] An item laid whose model line specifies a new operation with no table keeps a table of it
+- [r30] While an item holds a model line and the model line specifies an operation and the domain model does not hold the operation and the item holds no operation table of the operation, when the batches service lays the item in a workspace, the laying service shall keep an adapter contract that holds an operation table of the operation.
+Relied on by: batches#r179
+
+### [g31] An item laid that holds an operation table beside its requirements keeps it in the adapter contract
+- [r31] While an item holds an operation table and a capability holds a requirement id that the item holds, when the batches service lays the item in a workspace, the laying service shall keep an adapter contract that holds the operation table.
+Relied on by: batches#r179
+
+### [g32] An item laid whose model line restates an operation keeps the model line in place of the operation
+- [r32] While an item holds a model line that restates an operation, when the batches service lays the item in a workspace, the laying service shall keep the model line in the domain model and keep a domain model that does not hold the operation.
+Relied on by: batches#r179
+
+### [g33] An item laid whose model line restates an element keeps the model line in place of the element
+- [r33] While an item holds a model line that restates an element, when the batches service lays the item in a workspace, the laying service shall keep the model line in the domain model and keep a domain model that does not hold the element.
+Relied on by: batches#r179
+
+### [g34] An item laid whose model line restates an event keeps the model line in place of the event
+- [r34] While an item holds a model line that restates an event, when the batches service lays the item in a workspace, the laying service shall keep the model line in the domain model and keep a domain model that does not hold the event.
+Relied on by: batches#r179
+
+### [g35] An item laid whose model line restates an actor keeps the model line in place of the actor
+- [r35] While an item holds a model line that restates an actor, when the batches service lays the item in a workspace, the laying service shall keep the model line in the domain model and keep a domain model that does not hold the actor.
+Relied on by: batches#r179
+
+### [g36] An item laid whose model line moves to an area keeps the area holding the model line
+- [r36] While an item holds a model line that moves to an area, when the batches service lays the item in a workspace, the laying service shall keep the area that holds the model line.
+Relied on by: batches#r179
+
+### [g37] An item laid that moves a term keeps the term in the area of its element
+- [r37] While an item moves a term that means an element and an area holds the element, when the batches service lays the item in a workspace, the laying service shall keep the area that holds the term.
+Relied on by: batches#r179
+
+### [g38] An item laid that moves a term beside its requirements keeps the term in the area of its element
+- [r38] While an item moves a term that means an element and an area holds the element and a capability holds a requirement id that the item holds, when the batches service lays the item in a workspace, the laying service shall keep the area that holds the term.
+Relied on by: batches#r179
+
+### [g39] An item laid that retires a model line keeps an area without it
+- [r39] While an item retires a model line, when the batches service lays the item in a workspace, the laying service shall keep an area that does not hold the model line.
+Relied on by: batches#r179
+
+### [g40] An item laid that retires a term keeps an area without it
+- [r40] While an item retires a term, when the batches service lays the item in a workspace, the laying service shall keep an area that does not hold the term.
+Relied on by: batches#r179
+
+### [g41] An item laid that retires an element and a term meaning it keeps an area without the term
+- [r41] While an item retires a model line that restates an element and the item retires a term that means the element, when the batches service lays the item in a workspace, the laying service shall keep an area that does not hold the term.
+Relied on by: batches#r179
+
