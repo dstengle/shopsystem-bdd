@@ -87,8 +87,8 @@ def _frontmatter_list(head, key, ids):
 
 def _highest(text):
     """The highest r<n> or g<n> a capability file's groups, requirements and `retired:` hold."""
-    ids = re.findall(r"^### \[g(\d+)\]|^- \[r(\d+)\]", text, re.M)
-    retired = re.search(r"^retired: \[(.*)\]", text, re.M)
+    ids = re.findall(r"^### \[g(\d+)\]|^- \[r(\d+)\]", text, re.MULTILINE)
+    retired = re.search(r"^retired: \[(.*)\]", text, re.MULTILINE)
     found = [int(a or b) for a, b in ids] + [int(t) for t in re.findall(r"[rg](\d+)", retired.group(1) if retired else "")]
     return max(found or [0])
 
@@ -105,7 +105,7 @@ def apply(root, table, capabilities):
     rows = _rows(table)
     seen = [r[0] for r in rows]
     if len(seen) != len(set(seen)):
-        raise Refused("the move names %s twice" % sorted({s for s in seen if seen.count(s) > 1})[0])
+        raise Refused("the move names %s twice" % min({s for s in seen if seen.count(s) > 1}))
     old = {}
     for old_id in seen:
         cap = old_id.split("#")[0]
