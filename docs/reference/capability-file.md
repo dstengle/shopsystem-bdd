@@ -97,6 +97,21 @@ This is the part everything else is generated from. Two groups from `items.md`:
 A group may hold several lines, which make one scenario together; two groups of one capability may not share their
 features, condition and trigger (`v15n`). A long line may be wrapped, its later lines indented two spaces.
 
+A group may say, on the line under its heading, the jobs of the product it serves:
+
+```markdown
+### [g14] An idea shaped becomes shaped
+serves: shape-work
+```
+
+**`serves: <job>, ...`** names each job by its id, as `shop spec job` declared it in the product file
+(`.shop/product/product.toml`). It is never written by hand: `shop work line <b> --serves <cap>#g<n> <job>` puts the
+pair on an item, and the batch that lays the item writes the line. A job's trace (`shop spec trace <job>`) starts from
+the groups that serve it, and `shop spec check` warns of a job no group serves (`w_unserved_job`) and of a capability
+none of whose groups serves a job (`w_unserved_cap`). Before the batch lays the item, `shop spec trace <job> --item b<n>`
+and `shop spec check --item b<n>` read it with the item's pairs laid in. [Concepts](../concepts.md#product-job-and-trace)
+has the product's words.
+
 Every line must parse to exactly one meaning. Here is what g14's line means:
 
 ```reading
