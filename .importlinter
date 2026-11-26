@@ -55,6 +55,7 @@ forbidden_modules =
     backlog_section_render
     backlog_serves
     backlog_split
+    backlog_term_warn
     backlog_universal
     backlog_view
     batch_amend
