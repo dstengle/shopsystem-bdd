@@ -1205,7 +1205,7 @@ Feature: Drafting
     Given a requirement r1
     And an item i1
     And the item i1 holds the requirement r1
-    When the person rewords the requirement r1
+    When the person rewords the requirement r1 with the requirement r1
     Then the drafting service changes nothing
     And the drafting service names the requirement r1
 
