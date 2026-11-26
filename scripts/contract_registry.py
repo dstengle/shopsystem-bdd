@@ -4,7 +4,9 @@ version)` gives the registry the contract (its text) to keep at the version as t
 `retrieve(root, context, version)` asks it for the contract of the bounded context `context` (None: this one) at the
 version (None: the one published); `register(root, contract, adapter spec, provider, version)` gives it a contract
 obtained from the provider to keep for the adapter spec (its folder relative to `root`) at the version (b735,
-contract-registry r4; checking r137-r140), and `held(folder, provider, version)` reads back what an adapter spec's
+contract-registry r4; checking r137-r140), `deregister(root, contract, adapter spec, provider, version)` asks it to
+undo such a registration, so that it no longer keeps the contract for the adapter spec (b743, contract-registry r5;
+checking r142: register is `compensated by deregister`), and `held(folder, provider, version)` reads back what an adapter spec's
 folder holds of the provider (any version when None), which its provider check reads. Each request answers with its reply, a domain_envelope Response, which the caller handles
 (checking r128-r130): a deposit completed (`completed`: done, what was kept), a contract returned (`returned`:
 (version, bytes)), a version never deposited refused naming it (`undeposited`: `version not deposited`), a
@@ -49,6 +51,12 @@ def register(root, contract, adapter_spec, provider, version):
     """The registry's reply to a register of the contract (its bytes) of `provider` at `version` for the adapter spec
     `adapter_spec`: done, {"kept": what was kept, "changed": whether it was not kept so already}, or refused."""
     return adapter().register(root, contract, adapter_spec, provider, version)
+
+
+def deregister(root, contract, adapter_spec, provider, version):
+    """The registry's reply to a deregister of the contract of `provider` at `version` for the adapter spec
+    `adapter_spec`: done, {"kept": where it was kept, "changed": whether it was kept there}."""
+    return adapter().deregister(root, contract, adapter_spec, provider, version)
 
 
 def held(folder, provider, version=None):

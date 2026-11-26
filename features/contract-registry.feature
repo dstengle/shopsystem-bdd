@@ -29,3 +29,10 @@ Feature: Contract registry
     And an adapter spec a1
     When the specification service registers the contract c1 for the adapter spec a1
     Then the contract registry service completes this request
+
+  @g5 @r5
+  Scenario: A contract deregistered for an adapter spec is no longer kept by the registry
+    Given a contract c1
+    And an adapter spec a1
+    When the specification service deregisters the contract c1 for the adapter spec a1
+    Then the contract registry service completes this request

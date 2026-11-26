@@ -1914,3 +1914,49 @@ shall [x7: agent the person (constant), x8: service the batches service (constan
       supersede(subject: x9, object: x5)
       keep(e3, subject: x8, object: x9)
 ```
+
+## r175
+From: b749 r175.
+
+```reading
+While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch has a feature generator and the feature generator is `unresponsive`, if the person amends the item, then the batches service shall refuse the request, name the feature generator and change nothing.
+shall [x6: agent the person (constant), x7: service the batches service (constant), x8: request "the request the trigger makes" (indexical)]
+  while [x1: item, x2: batch, x3: task, x4: workspace, x5: feature generator]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    of(x3, x1)
+    status(x3) = `running`
+    of(x4, x2)
+    of(x5, x4)
+    responsiveness(x5) = `unresponsive`
+  if
+    request(e1, batches.amend, subject: x6, object: x1)
+  response
+    refuse(e2, subject: x7, object: x8)
+    name(e3, subject: x7, object: x5)
+    not [x9: thing]
+      change(e4, subject: x7, object: x9)
+```
+
+## r176
+From: b749 r176.
+
+```reading
+While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch has a feature generator and the feature generator is `unresponsive`, if the person parks the item, then the batches service shall refuse the request, name the feature generator and change nothing.
+shall [x6: agent the person (constant), x7: service the batches service (constant), x8: request "the request the trigger makes" (indexical)]
+  while [x1: item, x2: batch, x3: task, x4: workspace, x5: feature generator]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    of(x3, x1)
+    status(x3) = `running`
+    of(x4, x2)
+    of(x5, x4)
+    responsiveness(x5) = `unresponsive`
+  if
+    request(e1, batches.park, subject: x6, object: x1)
+  response
+    refuse(e2, subject: x7, object: x8)
+    name(e3, subject: x7, object: x5)
+    not [x9: thing]
+      change(e4, subject: x7, object: x9)
+```

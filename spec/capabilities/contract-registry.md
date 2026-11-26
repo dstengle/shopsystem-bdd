@@ -32,3 +32,7 @@ Relied on by: checking#r126
 - [r4] When the specification service registers a contract for an adapter spec, the contract registry service shall complete the request.
 Relied on by: checking#r137, checking#r138
 
+### [g5] A contract deregistered for an adapter spec is no longer kept by the registry
+- [r5] When the specification service deregisters a contract for an adapter spec, the contract registry service shall complete the request.
+Relied on by: checking#r142
+

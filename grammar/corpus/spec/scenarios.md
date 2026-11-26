@@ -886,3 +886,25 @@ shall [x4: thing `no-noun` (parameter), x5: thing `rc-object` (parameter), x6: t
       of(x11, x10)
       keep(e2, subject: x9, object: x10)
 ```
+
+## r49
+From: b743 r49.
+
+```reading
+While a requirement of a requirement group of a capability uses `every` and the requirement has a restriction and the precondition of the requirement uses `no-noun` and `and-condition`, when the person generates the feature of the capability, the scenarios service shall keep a counter-example that uses `has-no-value`.
+shall [x4: thing `every` (parameter), x7: thing `no-noun` (parameter), x8: thing `and-condition` (parameter), x9: agent the person (constant), x11: service the scenarios service (constant), x13: thing `has-no-value` (parameter)]
+  while [x1: requirement, x2: requirement group, x3: capability, x5: restriction, x6: precondition]
+    of(x2, x3)
+    of(x1, x2)
+    use(subject: x1, object: x4)
+    of(x5, x1)
+    of(x6, x1)
+    use(subject: x6, object: x7)
+    use(subject: x6, object: x8)
+  when [x10: feature]
+    of(x10, x3)
+    request(e1, scenarios.generate, subject: x9, object: x10)
+  response [x12: counter-example]
+    use(subject: x12, object: x13)
+    keep(e2, subject: x11, object: x12)
+```

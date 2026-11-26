@@ -2,7 +2,8 @@
 
 - a counter-example of a response's `every` or `only` with a restriction: one more K brought in that meets its
   restriction but the last atom of it, which it fails (another value of the attribute, else the atom negated: "the
-  worktree w1 does not hold the file f3"), a value no "no" box of the precondition denies of it, else no
+  worktree w1 does not hold the file f3"), a value no "no" box of the precondition denies of it, else no value of
+  the attribute ("the stage s3 has no priority", b743), else, when a "no" box denies the absence too, no
   counter-example (`denied`, b732), and the Then of the scope's acts negated on it (`counter`); an `every`
   keeps its two members and their Thens (`each`), an `only` asserts no act on a member, since it obliges none;
 - an upper bound of a response's count ("at most n", "exactly n", "fewer than n", "one"): one K past the upper bound
@@ -20,6 +21,7 @@
 from dataclasses import replace
 
 import spec_lf_number
+import spec_lf_values
 import spec_rgl
 import spec_steps4_boxes as boxes
 from spec_lf_core import Atom, Box, Ref, least
@@ -68,7 +70,7 @@ def counter(r, box, k, act):
     m = renamed(box, k)
     body = boxes.subst(box.body, m)
     held = body[:n] + body[n + 1:]
-    if values(r, body[n], held) == []:     # every other value a no box of the precondition denies (b732)
+    if values(r, body[n], held) == []:     # every other value and none a no box of the precondition denies (b732)
         return []
     for x in box.refs:
         introduce(r, m[x])
@@ -86,7 +88,8 @@ def unmet(r, atom, held=None):
 
 def values(r, atom, held=None):
     """The other values of an attribute atom's attribute, less those a "no" box of the precondition denies of its
-    thing when it meets `held` besides ([] when each is denied); None for an atom of no attribute with values."""
+    thing when it meets `held` besides, and when each is denied no value (`NONE`, b743) unless a "no" box denies the
+    absence too ([] then); None for an atom of no attribute with values."""
     if atom.pred != "attr":
         return None
     x, term, value = atom.args     # of the attribute entry spec_steps4's `cond` says it by
@@ -95,7 +98,10 @@ def values(r, atom, held=None):
     others = [v for v in (t.values if t else ()) if v != value]
     if not others:
         return None
-    return [v for v in others if v not in denied(r, x, term, held)] if held is not None else others
+    if held is None:
+        return others
+    out = denied(r, x, term, held)
+    return [v for v in others if v not in out] or [v for v in (spec_lf_values.NONE,) if v not in out]
 
 
 def denied(r, x, term, held):

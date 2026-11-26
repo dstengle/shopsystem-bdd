@@ -1922,3 +1922,20 @@ shall [x4: agent the person (constant), x6: service the specification service (c
     name(e3, subject: x6, object: x2)
     name(e4, subject: x6, object: x8)
 ```
+
+## r142
+From: b743 r142.
+
+```reading
+While an adapter spec has a provider, when the contract registry service refuses the request to register a contract for the adapter spec, the specification service shall deregister the contract for a different adapter spec that has the provider.
+shall [x3: service the contract registry service (constant), x6: service the specification service (constant)]
+  while [x1: adapter spec, x2: provider]
+    of(x2, x1)
+  when [x4: request, x5: contract]
+    request(x4, contract registry.register, object: x5, for: x1)
+    refuse(e1, subject: x3, object: x4)
+  response [x7: adapter spec]
+    distinct(x7, x1)
+    of(x2, x7)
+    deregister(e2, subject: x6, object: x5, for: x7)
+```

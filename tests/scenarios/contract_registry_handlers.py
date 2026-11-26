@@ -5,7 +5,8 @@ context's spec/index.md). A contract a Given brings in is deposited at `1.2.0` b
 it is the one the When deposits; the version v1 is `9.9.9` (`VERSION`), which no contract has. The When deposits the
 contract c1 at `1.2.0`, or retrieves this bounded context's contract, published or at the version it names, and keeps
 the registry's reply, a domain_envelope Response; or registers the contract c1 at `1.2.0` for the adapter spec a1,
-`adapters/stock-inventory/` (`ADAPTER`, providing `PROVIDER`), r4 (b735). The Thens read it back: completed (the
+`adapters/stock-inventory/` (`ADAPTER`, providing `PROVIDER`), r4 (b735); or deregisters it there once registered,
+r5 (b743). The Thens read it back: completed (the
 contract kept at its version and committed, or held by the adapter spec at its version and committed), returned (the bytes of the contract deposited), refused (`version not deposited`) and named
 (the version among the refusal's names). A port's request has no CLI command, so requested.py leaves it as it is and
 re-keys its Thens to ThenExitsOk, ThenPrints and ThenDoes (refuse, name), which these handlers take."""
@@ -54,7 +55,7 @@ def requests(step):
     w, repo = world(step), step.repo
     (repo / "spec").mkdir(parents=True, exist_ok=True)
     (repo / "spec" / "index.md").write_text(INDEX)
-    if step.term.endswith(".register"):
+    if step.term.endswith((".register", ".deregister")):
         (repo / ADAPTER / "spec").mkdir(parents=True)
         (repo / ADAPTER / "spec" / "index.md").write_text(SPEC % PROVIDER)
     W.init(repo)
@@ -62,6 +63,12 @@ def requests(step):
     if step.term.endswith(".register"):
         w["registered"] = True
         w["response"] = contract_registry.register(repo, (CONTRACT % DEPOSITED).encode(), ADAPTER, PROVIDER, DEPOSITED)
+        return None
+    if step.term.endswith(".deregister"):
+        contract = (CONTRACT % DEPOSITED).encode()
+        contract_registry.register(repo, contract, ADAPTER, PROVIDER, DEPOSITED)
+        w["head"], w["deregistered"] = W.head(repo), True
+        w["response"] = contract_registry.deregister(repo, contract, ADAPTER, PROVIDER, DEPOSITED)
         return None
     depositing = step.term.endswith(".deposit")
     if not depositing:
@@ -83,6 +90,12 @@ def then_completes(step):
     if not mine(step) or "registry" not in step.context:
         return False
     done = _response(step, "done")
+    if world(step).get("deregistered"):
+        import contract_registry
+        assert contract_registry.held(step.repo / ADAPTER, PROVIDER) == [], list((step.repo / ADAPTER).rglob("*"))
+        assert done.content["changed"] and W.head(step.repo) != world(step)["head"], done
+        assert done.content["kept"] in W.committed(step.repo), W.committed(step.repo)
+        return None
     if world(step).get("registered"):
         import contract_registry
         held = contract_registry.held(step.repo / ADAPTER, PROVIDER, DEPOSITED)
@@ -130,5 +143,5 @@ def untaken(step):
 
 
 for key in (("WhenRequests", "contract registry.deposit"), ("WhenRequests", "contract registry.retrieve"),
-            ("WhenRequests", "contract registry.register")):
+            ("WhenRequests", "contract registry.register"), ("WhenRequests", "contract registry.deregister")):
     handler(*key)(untaken)

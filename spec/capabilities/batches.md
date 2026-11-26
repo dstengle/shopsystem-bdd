@@ -315,3 +315,9 @@ when the change is merged.
 ### [g174] A parked item's superseding decision leaves the batch and the decision it superseded is accepted again
 - [r174] While an item in a batch is `in-batch` and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded`, when the person parks the item, the batches service shall set the status of the design-decision to `accepted` and keep no design-decision that supersedes the design-decision.
 
+### [g175] An in-batch item amended while its batch's feature generator is unresponsive is refused, naming the generator
+- [r175] While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch has a feature generator and the feature generator is `unresponsive`, if the person amends the item, then the batches service shall refuse the request, name the feature generator and change nothing.
+
+### [g176] An in-batch item parked while its batch's feature generator is unresponsive is refused, naming the generator
+- [r176] While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch has a feature generator and the feature generator is `unresponsive`, if the person parks the item, then the batches service shall refuse the request, name the feature generator and change nothing.
+

@@ -139,7 +139,7 @@ two conditions that both hold
 - Since: b240
 - Form: <condition> and <condition>
 - Functions: `AndCond`
-- Cited by: no line
+- Cited by: scenarios#r49
 - Example and its reading:
 
 ```construct
@@ -614,7 +614,7 @@ each one
 - Since: b240
 - Form: every <noun>
 - Functions: `DetEvery`
-- Cited by: consistency#r4, consistency#r26, scenarios#r9, scenarios#r12, scenarios#r24, scenarios#r47
+- Cited by: consistency#r4, consistency#r26, scenarios#r9, scenarios#r12, scenarios#r24, scenarios#r47, scenarios#r49
 - Example and its reading:
 
 ```construct
@@ -676,7 +676,7 @@ there is none
 - Since: b240
 - Form: no <noun>
 - Functions: `DetNo`
-- Cited by: consistency#r28, scenarios#r23, scenarios#r45, scenarios#r48, scenarios#r47
+- Cited by: consistency#r28, scenarios#r23, scenarios#r45, scenarios#r48, scenarios#r47, scenarios#r49
 - Example and its reading:
 
 ```construct
@@ -1458,7 +1458,7 @@ an attribute with no value
 - Since: b240
 - Form: <np> has no <attribute>
 - Functions: `t_[a-z0-9_]+_\d+_k_\w+_HasNo`
-- Cited by: no line
+- Cited by: scenarios#r49
 - Example and its reading:
 
 ```construct

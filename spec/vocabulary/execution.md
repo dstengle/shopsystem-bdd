@@ -93,3 +93,6 @@ area: execution
 - **abandon batch** (noun) → value batch step.instruction abandon batch. A batch step that asks the driver to abandon a batch that is still building when every item it held is parked, so no item is left to build.
 - **feature generator** (noun) → object feature generator. The plugin's code that writes a capability's feature from its requirement groups, as a workspace holds it: a batch's workspace may hold a newer one than the checkout a command runs in.
 - **the corpus form** (proper noun) → object corpus form. A corpus file's layout: its heading, then one block a requirement in id order, each block separated from the next by one blank line and the last ending the file with no blank line after it.
+- **responsiveness** (attribute) → attribute feature generator.responsiveness. Whether a run of the feature generator ends within its time limit.
+- **responsive** (adjective) → value feature generator.responsiveness responsive.
+- **unresponsive** (adjective) → value feature generator.responsiveness unresponsive. A run of it does not end within its time limit or cannot be started.

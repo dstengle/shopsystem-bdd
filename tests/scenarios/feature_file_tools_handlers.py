@@ -173,6 +173,8 @@ def then_does(step):
         GEN.USES.uses(step, GEN.NAME)
     elif step.term == "use" and step.subject.startswith("the given step"):     # b716
         GEN.USES.given_code(step, w, GEN.NAME)
+    elif step.term == "use" and step.subject.startswith("the counter-example"):     # `has-no-value` (b743)
+        GEN.valueless(step, w)
     elif step.term == "use":      # the scenario s1 uses `only` (b272)
         GEN.uses(step, w)
     elif step.term == "refuse":
