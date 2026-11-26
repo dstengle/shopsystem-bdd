@@ -115,3 +115,4 @@ W.local("GivenDoes")(given_retires)
 W.local("WhenRequests")(requests)
 W.local("ThenDoes")(then_kept)
 W.local("ThenDoesNot")(then_held)
+sys.modules["vocab"].handler("ThenDoesNot", "support")(L.untaken)      # the key `features vocab --check` reads
