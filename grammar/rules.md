@@ -1064,7 +1064,7 @@ two terms are written the same
 - Since: b123
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/spec_lexicon_problems.py`
-- Cited by: no line
+- Cited by: drafting#r94
 - Fails on:
 
   ```prolog

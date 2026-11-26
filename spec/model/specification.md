@@ -454,11 +454,11 @@ service product
   operation declare(product, id, purpose)  outcomes: done → the product | refused: product not in the product form
   operation declare actor(product actor)  outcomes: done → the product actor | refused: product not in the product form
   operation declare job(job, id, product actor, job statement, need)
-    outcomes: done → the job | refused: job statement not in the job statement form, product actor outside the product, need outside the product, need that depends on the job, product not in the product form
+    outcomes: done → the job | refused: job statement not in the job statement form, product actor outside the product, need outside the product, need that depends on the job, product not in the product form, job statement mentioning another product actor
   operation declare subdomain(subdomain, id, subdomain type, job)  outcomes: done → the subdomain | refused: subdomain type not in the subdomain type form, job outside the product
   operation declare context(bounded context, id, subdomain, shop)  outcomes: done → the bounded context | refused: id outside the product, subdomain outside the product, id not in the context id form
   operation assign(job, bounded context)  outcomes: done → the job | refused: job assigned already, id not in the context id form, bounded context outside the product
-  operation map(product actor, bounded context, actor)  outcomes: done → the product actor | refused: product actor outside the product
+  operation map(product actor, bounded context, actor)  outcomes: done → the product actor | refused: product actor outside the product, id not in the context id form, actor outside the domain model
   operation trace(job)  outcomes: returned | refused: job that no requirement group serves
 
 object product

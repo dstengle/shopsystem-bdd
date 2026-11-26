@@ -7,7 +7,7 @@ area: specification
 specifies: service product
 language: codified-2
 retired: [g18, r18]
-unbuilt: []
+unbuilt: [r42, r43, r44, r40, r41]
 ---
 
 # Product
@@ -133,4 +133,23 @@ the job statement `j2` holds "When a change is wanted, reviewed and agreed, the 
 
 ### [g39] A job assigned to a bounded context the product does not hold is refused
 - [r39] If the person assigns a job to a bounded context that is not in the product, then the product service shall refuse the request and name the bounded context.
+
+### [g42] A job whose statement mentions an actor the product does not hold is refused
+- [r42] If the person declares a job with a job statement that mentions a product actor that is not in the product, then the product service shall refuse the request and name the product actor.
+
+### [g43] A job whose statement mentions another actor than the job's is refused
+- [r43] If the person declares a job with a product actor and a job statement that mentions a different product actor, then the product service shall refuse the request and name the job statement.
+
+### [g44] A job whose statement's situation is one word is declared
+- [r44] When the person declares a job with a product actor and a job statement that conforms to the job statement form, the product service shall keep the job in the product and complete the request.
+
+```given
+the job statement `j2` holds "When x, the developer wants y, so they can z."
+```
+
+### [g40] A product actor is not mapped to an actor the domain model does not hold
+- [r40] If the person maps a product actor with this bounded context and an actor that the domain model does not hold, then the product service shall refuse the request and name the actor.
+
+### [g41] A product actor is not mapped in a bounded context whose id is out of the context id form
+- [r41] If the person maps a product actor with a bounded context whose id does not conform to the context id form and an actor, then the product service shall refuse the request and name the id.
 

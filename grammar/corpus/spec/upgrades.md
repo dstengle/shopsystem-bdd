@@ -793,3 +793,25 @@ shall [x1: bounded context "the bounded context the request is made in" (indexic
     keep(e2, subject: x7, object: x8)
     complete(e3, subject: x7, object: x10)
 ```
+
+## r46
+From: b802 r46.
+
+```reading
+While the branch differs from the base branch and this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold of this repository, name the branch and complete the request.
+shall [x1: branch "the branch checked out in the repository the request is made in" (indexical), x2: base branch "the base branch of the repository the request is made in" (indexical), x3: bounded context "the bounded context the request is made in" (indexical), x5: repository "the repository the request is made in" (indexical), x7: agent the person (constant), x9: service the upgrades service (constant), x11: request "the request the trigger makes" (indexical)]
+  while
+    differ#2(subject: x1, from: x2)
+    not [x4: index file]
+      of(x4, x3)
+    not [x6: shop directory]
+      of(x6, x5)
+  when [x8: context id]
+    request(e1, upgrades.found, subject: x7, object: x3)
+    param(e1, context id, x8)
+  response [x10: context scaffold]
+    of(x10, x5)
+    keep(e2, subject: x9, object: x10)
+    name(e3, subject: x9, object: x1)
+    complete(e4, subject: x9, object: x11)
+```

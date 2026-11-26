@@ -657,6 +657,7 @@ area = { option = "--area" }
 command = "work line"
 requirements = [
   "drafting#r25: While an item holds a capability that does not exist, when the person writes a term into the item, the drafting service shall keep the term in the item.",
+  "drafting#r94: While a term violates `v_t6`, when the person writes the term into an item, the drafting service shall keep the term in the item, name `v_t6` and complete the request.",
 ]
 [operations."drafting.write".parameters]
 item = { positional = 1 }
@@ -1335,6 +1336,7 @@ requirements = [
   "upgrades#r42: While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository does not conform to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall change the ignore file of this repository, keep the context scaffold and the ignore file of this repository and complete the request.",
   "upgrades#r43: While this bounded context has no index file and this repository has no shop directory and the ignore file of this repository conforms to the ignore file form, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold, not change the ignore file and complete the request.",
   "upgrades#r45: While this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id, the upgrades service shall keep a bounded context that imports the `base` pack and complete the request.",
+  "upgrades#r46: While the branch differs from the base branch and this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold of this repository, name the branch and complete the request.",
 ]
 [operations."upgrades.found".parameters]
 "context id" = { option = "--id" }
@@ -1618,6 +1620,9 @@ requirements = [
   "product#r10: While this product holds a product detail, when the person declares a job with an id and a product actor and a job statement, the product service shall keep the product detail in the product and complete the request.",
   "product#r13: While this product does not conform to the product form, if the person declares a job with an id and a product actor and a job statement, then the product service shall refuse the request and name this product.",
   "product#r14: When the person declares a job with a job statement that conforms to the job statement form, the product service shall keep the job in the product and complete the request.",
+  "product#r42: If the person declares a job with a job statement that mentions a product actor that is not in the product, then the product service shall refuse the request and name the product actor.",
+  "product#r43: If the person declares a job with a product actor and a job statement that mentions a different product actor, then the product service shall refuse the request and name the job statement.",
+  "product#r44: When the person declares a job with a product actor and a job statement that conforms to the job statement form, the product service shall keep the job in the product and complete the request.",
 ]
 [operations."product.declare job".parameters]
 id = { positional = 1, example = "j1" }
@@ -1668,6 +1673,8 @@ command = "spec plays"
 requirements = [
   "product#r24: When the person maps a product actor with a bounded context and an actor, the product service shall keep the product actor in the bounded context and complete the request.",
   "product#r25: If the person maps a product actor that is not in the product, then the product service shall refuse the request and name the product actor.",
+  "product#r40: If the person maps a product actor with this bounded context and an actor that the domain model does not hold, then the product service shall refuse the request and name the actor.",
+  "product#r41: If the person maps a product actor with a bounded context whose id does not conform to the context id form and an actor, then the product service shall refuse the request and name the id.",
 ]
 [operations."product.map".parameters]
 "product actor" = { positional = 1, example = "the developer" }
