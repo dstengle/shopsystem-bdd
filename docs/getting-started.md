@@ -3,7 +3,9 @@ The spec and feature on this page are docs/examples/notes-cli/'s, which the docs
 test module, so the step bindings of step 6 are a sketch of the module a first batch writes. The pytest outputs are
 from real runs on 2026-11-19: plugin 0.38.0, Python 3.11, pytest 9.1.1, pytest-bdd 8.1.0, in a scratch repository
 built from docs/examples/notes-cli/ with that module. The outputs of steps 3, 4 and 8 are from runs on 2026-11-26,
-plugin 0.44.0. The home directory is written as ~, and long paths are cut with "...".
+plugin 0.44.0; step 8's on a copy of docs/examples/notes-cli/ replayed as talking-with-claude.md says, and its
+before-the-first-batch check in a context `migrate init` had just founded. The home directory is written as ~, and
+long paths are cut with "...".
 -->
 
 # Getting started
@@ -65,9 +67,10 @@ The session:
   checks them against each other), the pinned pgf wheel and GF's resource grammar library. In an empty folder there
   is no code yet, and that's fine: the grammar tools are installed all the same;
 - asks you for the context's id, `bounded-context/<domain>/<path>` (say `bounded-context/example.org/notes/notes-cli`),
-  and founds the context with it: `spec/index.md`, `spec/universal.md`, the empty `spec/model/`, `spec/vocabulary/`
-  and `spec/capabilities/`, `.shop/` for the backlog and records, `features/` and `tests/scenarios/conftest.py`, in
-  one commit;
+  and for its purpose, what the context is for in a sentence or two, and founds the context with them
+  (`shop migrate init --id <id> --purpose "<purpose>"`): `spec/index.md` with the purpose under `## Purpose`,
+  `spec/universal.md`, the empty `spec/model/`, `spec/vocabulary/` and `spec/capabilities/`, `.shop/` for the backlog
+  and records, `features/` and `tests/scenarios/conftest.py`, in one commit;
 - asks for, or creates with `gh`, the GitHub repository it pushes to, since a batch ends in a pull request there.
 
 What you see is the grammar tools it found, and the commit:
@@ -85,6 +88,13 @@ The first line is the analysis tools' (the coverage map and the reference finder
 file in the folder there is nothing for them to read yet, so they are left out and the agents search the code by
 text. A tool that is missing says so on its line, with what can't be done without it. Setting up is once a repository; a
 repository that already has a `spec/index.md` or a `.shop/` is never founded again.
+
+The new `spec/index.md` imports two of the plugin's packs, `imports: [base, request]`: `request` holds the words of
+a request and its response (*request*, *service*, *refuse*, *return* and the rest), and `base` the kinds most contexts
+name (*text*, *file*, *version*, *repository*, *bounded context*). The plugin keeps `time`, `spec` and the deprecated
+`cli` too. A word of your own spelled as a pack's collides with it (`shop spec lexicon --check` says `v_t16`) until its
+entry says `Redefines: base.` or `Redefines: request.`; [Vocabulary and packs](concepts.md#vocabulary-and-packs) shows
+one.
 
 ## 4. Say what you want
 
@@ -125,6 +135,11 @@ an item in the backlog, and writes on it everything the context needs, in the fo
   - **add** (verb, action) → operation notes.add. Forms: adds, added. Frame: <actor> adds <note>.
   - **the notes service** (proper noun) → service notes. What answers the person's requests about notes.
   ```
+
+  A verb the request pack has already, such as `return`, can name one of your operations too, with `Redefines:
+  request.` on its entry; its frame then names the actor that does it, `Frame: the person returns <note>.`, not a
+  bare `<actor>`, so it is told apart from the pack's "the notes service returns ...". The recipe
+  [A word a pack already has](recipes.md#add-a-word-to-the-vocabulary) shows it.
 
 - the **requirements**: the rules, one line each, in a new capability `notes`:
 
@@ -402,7 +417,8 @@ it. Then say:
 The pull request is merged.
 ```
 
-The session marks the item delivered, cleans up the batch's branches, and starts the next batch if anything else is
+The session marks the item delivered, cleans up the batch's branches, runs `shop spec check` on the merged spec, and
+runs any `shop spec plays` that waited for the merge (step 8). Then it starts the next batch if anything else is
 ready.
 
 ## 8. Say what the product is for
@@ -411,12 +427,13 @@ The notes tool is a bounded context, and a bounded context is built for a produc
 they want done. Say it, in your own words:
 
 ```text
-It's for a writer: when a thought comes up, they want to note it down, so they can find it later.
+The notes tool is for a writer. When a thought comes up, they want to note it down so they can find it later.
+When they sit down to write, they want to see every note they kept. And they clear out the notes they're done with.
 ```
 
 The session keeps the product in the shop's product file, `.shop/product/product.toml`: the product, the writer, each
-job with its statement, and the domain map that gives the jobs to this bounded context. Each declaration is one
-command and one commit:
+job with its statement (finding and clearing notes **need** keeping them first), and the domain map that gives the
+jobs to this bounded context. Each declaration is one command and one commit:
 
 <!-- docs: context docs/examples/notes-cli -->
 ```console
@@ -426,12 +443,20 @@ $ shop spec actor "the writer"
 declared the product actor the writer
 $ shop spec job keep-notes --actor "the writer" --statement "When a thought comes up, the writer wants to note it down, so they can find it later."
 declared the job keep-notes
-$ shop spec subdomain note-keeping --type core --serves keep-notes
+$ shop spec job find-notes --actor "the writer" --statement "When the writer sits down to write, the writer wants to see every note they kept, so they can pick one up." --needs keep-notes
+declared the job find-notes
+$ shop spec job clear-notes --actor "the writer" --statement "When a note is done with, the writer wants to remove it, so they can keep the list short." --needs keep-notes
+declared the job clear-notes
+$ shop spec subdomain note-keeping --type core --serves keep-notes --serves find-notes --serves clear-notes
 declared the subdomain note-keeping
 $ shop spec context bounded-context/example.org/notes/notes-cli --addresses note-keeping --shop example.org/notes/shop
 declared the bounded context bounded-context/example.org/notes/notes-cli kept by example.org/notes/shop
 $ shop spec assign keep-notes --to bounded-context/example.org/notes/notes-cli
 assigned the job keep-notes to the bounded context bounded-context/example.org/notes/notes-cli
+$ shop spec assign find-notes --to bounded-context/example.org/notes/notes-cli
+assigned the job find-notes to the bounded context bounded-context/example.org/notes/notes-cli
+$ shop spec assign clear-notes --to bounded-context/example.org/notes/notes-cli
+assigned the job clear-notes to the bounded context bounded-context/example.org/notes/notes-cli
 $ shop spec plays "the writer" --in bounded-context/example.org/notes/notes-cli --as "the person"
 mapped the product actor the writer to the person in the bounded context bounded-context/example.org/notes/notes-cli
 ```
@@ -442,24 +467,38 @@ mapped the product actor the writer to the person in the bounded context bounded
   product keeps.
 - **`spec plays` waits for the first merged batch.** It maps the product's actor, "the writer", to the actor this
   context's domain model calls the person, and the model holds that actor only once the first batch is merged (step
-  7). Before that it is refused, and `shop spec check` warns that no actor here plays the writer:
+  7). Here the batch is merged, so it passes. Said earlier, in a new context, before its first batch, the same
+  declarations are kept but `spec plays` is refused, and `shop spec check` warns that no actor here plays the writer;
+  the session runs `spec plays` again after the merge:
 
   ```console
   $ shop spec plays "the writer" --in bounded-context/example.org/notes/notes-cli --as "the person"
   spec: --as 'the person' is no actor of the domain model of bounded-context/example.org/notes/notes-cli; it holds no actor
   $ shop spec check
-  warning w_unplayed_actor  a product actor of a job held here that no actor of this bounded context plays  (1)
+  warning w_unplayed_actor  a product actor of a job held here that no actor of this bounded context plays  (3)
+      clear-notes, the writer
+      find-notes, the writer
       keep-notes, the writer
-  warning w_unreached_sub  a subdomain of a job held here whose trace reaches no bounded context that addresses it  (1)
+  warning w_unreached_sub  a subdomain of a job held here whose trace reaches no bounded context that addresses it  (3)
+      clear-notes, note-keeping
+      find-notes, note-keeping
       keep-notes, note-keeping
-  warning w_unserved_job  a job nothing serves  (1)
+  warning w_unserved_job  a job nothing serves  (3)
+      job/example.org/notes/notes-cli/clear-notes
+      job/example.org/notes/notes-cli/find-notes
       job/example.org/notes/notes-cli/keep-notes
-  0 violations, 3 warnings, 0 unresolved references, 0 file problems
+  0 violations, 9 warnings, 0 unresolved references, 0 file problems
   ```
 
+With the product declared after the merge, `shop spec check` warns of each job nothing serves yet and of the
+capability that serves none: what is still to do, not errors.
+[Talking with Claude](talking-with-claude.md#your-product-and-its-jobs) replays this step from its start on a copy of
+the example, with every check's output.
+
 Then the session dedicates each group of the capability to the job it does, on an item, and the batch writes that
-as the group's `serves:` line. From then on, ask "what does keeping notes rest on?" and the session answers with the
-job's **trace**, every requirement that does it:
+as the group's `serves:` line. The example's g5, "a removed note is not removed again", came on that same item, from
+one more thing said ("a note that's already removed can't be removed again"), its group given the job `clear-notes`. From then on, ask "what does keeping notes rest on?" and the session
+answers with the job's **trace**, every requirement that does it:
 
 <!-- docs: context docs/examples/notes-cli -->
 ```console

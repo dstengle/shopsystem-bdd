@@ -1,7 +1,9 @@
 <!-- Outputs on this page are from real runs on 2026-11-10, plugin 0.33.0 (commit 7f60e57de): a 0.32.1 repository
 built from the 0.33.0 upgrade's test fixture (tests/scripts/test_migrate_upgrade_cnl4.py), upgraded and reworded.
 The 0.38.0 section's are from 2026-11-19, plugin 0.38.0: the frozen 0.37 notes-cli copy
-(tests/scripts/fixtures/upgrade-0.37/), upgraded. -->
+(tests/scripts/fixtures/upgrade-0.37/), upgraded. The "From 0.44 to 0.45" section's are from 2026-11-26: the plugin's
+scripts at batch-169 with plugin.json at 0.45.0, as the release writes it, on a copy of docs/examples/notes-cli/ at
+0.44.0 given the entries and the line the section names (r6 parsed with plugin 0.44.0). -->
 
 # Upgrading
 
@@ -532,6 +534,86 @@ New to use: `shop work chore` for an item with no requirement line, `shop work l
 in place of writing its file, `shop spec forms --check`, and the directives (`shop work directive`, `shop work
 directives`, `shop work promote`, `shop work drop`), which a new SessionStart hook shows. A repository's tests pin
 `pytest==9.1.1` and `pytest-bdd==8.1.0` ([Getting started](getting-started.md)).
+
+## From 0.44 to 0.45
+
+A y release with one upgrade step, 0.45.0 "the stricter rules". It rewords no line and no entry: it writes what is
+mechanical and names, by term and by id, what rules made stricter since 0.38.0 now refuse, for a session to reword.
+Here it is on a 0.44.0 copy of the notes example given an entry `pin` with the frame `<actor> pins <memo>.`, an entry
+`label` that calls the object tag an adjective, a CLAUDE.md that runs `work backlog` and `spec check`, the
+Composition written as a list under `### Capabilities`, and `remove`'s frame written for the person alone, `Frame: the
+person removes <note>.`, beside a line r6, "When the editor removes a note, ...":
+
+```console
+$ shop migrate status
+the repository's plugin version: 0.44.0
+the plugin's version: 0.45.0
+pending upgrade step 0.45.0 "the stricter rules": write the index file's Composition in the index form, and name each term whose Frame: v_t13 refuses, each vocabulary entry v_t22 refuses and each lifecycle transition v_m9 refuses, for a session to reword
+$ shop migrate upgrade
+upgraded to 0.45.0: the stricter rules
+the stricter rules: v_t13 pin: the Frame: "<actor> pins <memo>." names the slot <memo>, which refers to no kind, no actor and no parameter: a frame names its slots in angle brackets, each a kind, an actor or a parameter of its operation
+the stricter rules: v_t22 label: spec/vocabulary/notes-cli.md: the entry is an adjective, which names a value, not object tag
+the stricter rules: notes#r6: refused: no translation of the editor as the subject of the frame "the person removes note", whose subject is the person
+CLAUDE.md: its old command lines rewritten to shop <name>
+```
+
+The upgrade commits `.shop/plugin-version`, `spec/index.md` and the rewritten instructions files in one commit, and
+names in it what it reports:
+
+- **`v_t13`**: a `Frame:` the language reads no more. A frame is the last thing of its entry and names its slots in
+  angle brackets, each a kind, an actor or a parameter of its operation; text after it, a frame with no slot in angle
+  brackets, or a slot that names nothing (`<memo>`) is refused. Reword the entry on an item with
+  `shop work line --reword-term`.
+- **`v_t22`**: a vocabulary entry whose part of speech does not fit the element it names: a noun names an object or a
+  value, a proper noun a service, an actor or an object, an adjective a value, an attribute an attribute, a
+  `verb, action` an operation and a `verb, state` a relation. Reword it the same way.
+- **`v_m9`**: a lifecycle transition that a line sets on the request of an operation of another area than the
+  object's. The transition is the object's area's own: have the line request an operation of that area, or place the
+  operation there.
+- **A requirement grammar 4 refuses** on the upgraded tree, by id with its refusal. **An actor named as a frame's
+  subject now takes only that actor**: `Frame: the person removes <note>.` reads "the person removes a note" and no
+  other agent's, where 0.44 let any agent stand there (it is what lets a pack's verb such as `return` name your own
+  operation, [A word a pack already has](recipes.md#add-a-word-to-the-vocabulary)). r6 above parsed in 0.44.0; now
+  give the verb a frame the editor's line reads by (`Frame: <actor> removes <note>.`, or a second entry
+  `Frame: the editor removes <note>.`), or reword the line with `shop work line --retires`.
+- **The Composition** of `spec/index.md` is written in the index form, one table `| area | kind | capabilities |`, as
+  every `shop work batch start` now writes it, so the first batch after the upgrade does not drop its old
+  subsections unseen.
+
+Then `shop spec check` and `shop features generate`, and the suite.
+
+**The old command names.** `work`, `spec`, `measure`, `migrate`, `tools` and `features` are `shop work`, `shop spec`
+and the rest. `shop migrate upgrade` rewrites them in the instructions files (`CLAUDE.md`, the hook commands of
+`.claude/settings.json`, `[batch] tests` and `[review] checks` of `.shop/delivery.toml`, the tracked `docs/**/*.md`),
+naming each file, and leaves a mention in prose alone. The old names still run, as aliases for this release, each
+printing a notice on stderr first:
+
+```text
+work: now `shop work`; `work` goes in the next release
+```
+
+**`[batch] rules` are only the context's.** The batch brief gives every subagent the plugin's own rules, then each of
+`[batch] rules` in `.shop/delivery.toml`. The plugin's code no longer keeps two rules of a session's setup that it gave
+before, that worktrees of older work are never reference material and not to chain `cp` and `rm` in one shell
+command. A context that wants them, or rules of its own, sets them, in one commit:
+
+```console
+$ shop work settings set batch.rules '["Never chain cp and rm in one shell command, and keep shell variables few."]'
+.shop/delivery.toml: batch.rules = ["Never chain cp and rm in one shell command, and keep shell variables few."]
+```
+
+**The base pack.** `grammar/packs/base.md` holds the kinds most contexts name and none owns: *text*, *file*,
+*version*, *repository*, *bounded context*. A context `shop migrate init` founds imports it, `imports: [base,
+request]`; the upgrade leaves an existing context's imports as they are. Adopt it on an item with `shop work line
+<item> --import base`; a word of your own spelled as one of its kinds then needs `Redefines: base.` on its entry
+(`v_t16`, [Vocabulary and packs](concepts.md#vocabulary-and-packs)).
+
+**The plugin's modules moved into packages.** The shared plumbing is the package `scripts/plumbing/`
+(`shop_files`, `shop_refused`, `domain_envelope`, `transcripts`, `batch_gh`, `migrate_write`, `migrate_layout`, and
+the new `frontmatter` and `toml_edit`), and the upgrade steps the package `scripts/upgrades/` (`migrate_init`,
+`migrate_upgrade` and its steps, `migrate_spec`, `migrate_ledger`). A test or handler of yours that imports one by
+its old flat name (`import shop_files`, `import domain_envelope`) fails with `ModuleNotFoundError`: import it from its
+package, `from plumbing import shop_files`, `from upgrades import migrate_upgrade`.
 
 ## Older than 0.32?
 
