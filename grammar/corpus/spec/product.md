@@ -962,14 +962,12 @@ shall [x1: agent the person (constant), x3: product "the product this bounded co
 Retires: r14. From: b813 r62.
 
 ```reading
-If the person declares a job with a job statement and without a product actor, then the product service shall refuse the request and name the product actor.
+If the person declares a job with a job statement and without a product actor, then the product service shall refuse the request.
 shall [x1: agent the person (constant), x4: service the product service (constant), x5: request "the request the trigger makes" (indexical)]
   if [x2: job, x3: job statement]
     request(e1, product.declare job, subject: x1, object: x2)
     param(e1, job statement, x3)
     noparam(e1, product actor)
-  response [x6: product actor]
+  response
     refuse(e2, subject: x4, object: x5)
-    of(x6, x2)
-    name(e3, subject: x4, object: x6)
 ```
