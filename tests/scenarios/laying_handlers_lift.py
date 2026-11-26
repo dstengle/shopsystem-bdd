@@ -1,15 +1,16 @@
-"""Handlers of laying's scenarios of what a lift keeps (r42-r45, b747), moved from batches' (r91, r119, r155, r156,
+"""Handlers of laying's scenarios of what a lift keeps (r43-r46, b747, b765), moved from batches' (r91, r119, r155, r156,
 whose handler modules went with them), `work_queue_world.local`s tried before laying_handlers' own, each taking only a step of a scenario of one of their groups (`mine`). A scenario's world is its group's, built at
 the When, so the Givens record nothing: readiness_world's codified spec with the domain-model fixture's model,
 vocabulary and notebook beside it, the index importing the request pack (`_spec`), committed on `main`; the workspace
 w1 a worktree of it on a branch of its own, each item the group lays laid there in its order (`LAID`) and committed,
 then the item the When names lifted with `main`'s head as the batch's base, and the reply kept.
 
-g42: the port `registry` and the supporting area `tracking`; the item i1 as laid holds `registry-recording`, its line
-saying a parcel (so its lay makes `registry` import `tracking`), the item lifted as laid, as an amend lifts an item
-that holds no capability of `registry` any more; the Then: `registry` kept, importing nothing, as before the lay.
-g43: i1's model line repeating notes' `archive(note)` unchanged (the domain model holds it); the Thens: notes' model
-declares `archive` once, as before. g44: i2's model line restating `object note` whole, laid first, and i1's adding the
+g46: the port `registry` and the supporting area `tracking`; the item i1 holds `registry-recording`, a capability of
+`registry`, its line saying a parcel (so its lay makes `registry` import `tracking`), i1 lifted; the Thens: `registry`
+kept, the area a1 (`registry`) not importing `tracking`, as before the lay.
+g43: i1's model line restating notes' `archive(note)` with a parameter and a refusal reason (`CHANGED`, so the lay
+changes the operation); the Thens: notes' model declares `archive` once, as `main` held it, so a lift that does nothing
+fails them. g44: i2's model line restating `object note` whole, laid first, and i1's adding the
 member line `relations: pins → tag (many)` after, i2 lifted; the Thens: `object note` holds the member line once and
 its other members as the model held them. g45: the port `stock`, the area a1, importing nothing, and notes, the area a2,
 of kind `supporting`; i1's new capability `stock-reserving` and i2's `stock-releasing`, each in `stock` with a line
@@ -48,15 +49,16 @@ NOTEBOOK = "### notebook\n\n#### [g%d] %s\n- [r%d] %s\n\n### notes model\n\n```m
 ARCHIVED = "While a note is `active`, when the person archives the note, the notes service shall keep the note."
 FILED = "While a note is `draft`, when the person files the note, the notes service shall keep the note."
 OPERATION = "  operation archive(note)  outcomes: done"
+CHANGED = "  operation archive(note, reason)  outcomes: done | refused: retired note"
 HEADER, MEMBER = "object note", "  relations: pins → tag (many)"
 OLD = ("  attributes: text (text); priority: low | high",
        "  lifecycle status: draft → active; active → retired; draft → retired", "  relations: carries → tag (many)")
 RESTATED = ("  attributes: text (text); priority: low | high | urgent",) + OLD[1:]
 # Each group's areas, the items' blocks and the order they are laid in.
 WORLDS = {
-    "g42": (["tracking", "registry"], {"i1": PORT % ("registry-recording", "the registry", "registry",
+    "g46": (["tracking", "registry"], {"i1": PORT % ("registry-recording", "the registry", "registry",
                                                      "A parcel recorded is recorded", "records a parcel", "registry")}),
-    "g43": ([], {"i1": NOTEBOOK % (10, "An active note archived is kept", 10, ARCHIVED, "service notes\n" + OPERATION)}),
+    "g43": ([], {"i1": NOTEBOOK % (10, "An active note archived is kept", 10, ARCHIVED, "service notes\n" + CHANGED)}),
     "g44": ([], {"i2": NOTEBOOK % (10, "An active note archived is kept", 10, ARCHIVED, "\n".join((HEADER,) + RESTATED)),
                  "i1": NOTEBOOK % (11, "A draft note filed is kept", 11, FILED, "%s\n%s" % (HEADER, MEMBER))}),
     "g45": (["stock"], {"i1": PORT % ("stock-reserving", "the stock", "stock", "A note reserved is reserved",
@@ -154,8 +156,10 @@ def then(step):
     if tag is None or "tree" not in world(step):
         return False
     kinds = [k for k, _ in parts(step)]
-    if tag == "g42":
-        assert _imports(step, "registry") == [], _imports(step, "registry")
+    if tag == "g46" and step.template.endswith("Not"):          # the area a1, `registry`, does not import tracking
+        assert "tracking" not in _imports(step, "registry"), _imports(step, "registry")
+    elif tag == "g46":                                            # `registry` and the area a1 kept
+        assert (world(step)["tree"] / "spec" / "model" / "registry.md").is_file()
     elif tag == "g43":
         lines = _lines(step, NOTES)
         assert [x for x in lines if x.startswith("  operation archive(")] == [OPERATION], lines
