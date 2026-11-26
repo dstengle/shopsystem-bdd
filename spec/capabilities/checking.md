@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56, g94, r94]
-unbuilt: []
+unbuilt: [r123, r114, r115, r116, r117, r118, r119, r120, r121, r122]
 ---
 
 # Checking
@@ -319,6 +319,36 @@ Restates: design-model-check#r13@0.29.
 
 ### [g113] A domain model object spelled by an imported pack's term reads as the term's kind
 - [r113] While this bounded context imports a pack and the pack has a term and the term spells an element and no term means the element and another element refers to the term, when the person validates this specification, the specification service shall complete the request.
+
+### [g123] A job served here that the product assigns to another bounded context fails the check
+- [r123] While a requirement group serves a job and this bounded context has the job and another bounded context holds the job, if the person validates this specification, then the specification service shall fail the check and name the job.
+
+### [g114] A job of the product that no bounded context holds is named
+- [r114] While this product holds a job and no bounded context holds the job, when the person validates this specification, the specification service shall name the job and complete the request.
+
+### [g115] A job assigned here that no requirement group serves is named
+- [r115] While this bounded context holds a job and no requirement group serves the job, when the person validates this specification, the specification service shall name the job and complete the request.
+
+### [g116] A product actor of a job whose actor here triggers no line of the job's trace is named
+- [r116] While this bounded context holds a job and an agent plays a product actor of the job and the agent triggers no requirement that the job reaches, when the person validates this specification, the specification service shall name the product actor and complete the request.
+
+### [g117] A job whose needs close a cycle fails the check
+- [r117] While this product holds a job and the job needs a need that depends on the job, if the person validates this specification, then the specification service shall fail the check and name the need.
+
+### [g118] A subdomain that no bounded context addresses is named
+- [r118] While this product holds a subdomain and no bounded context addresses the subdomain, when the person validates this specification, the specification service shall name the subdomain and complete the request.
+
+### [g119] A subdomain of a job that the job's trace reaches no bounded context of is named
+- [r119] While this bounded context holds a job and a subdomain serves the job and the job reaches no bounded context that addresses the subdomain, when the person validates this specification, the specification service shall name the subdomain and complete the request.
+
+### [g120] A capability a job's trace reaches contributes to the job
+- [r120] While this bounded context has a job and the job reaches a capability, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.
+
+### [g121] A capability that has a port line contributes to the jobs it serves through the port
+- [r121] While this bounded context has a job and a capability has a port line, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.
+
+### [g122] A guarantees capability contributes to the jobs whose lines it constrains
+- [r122] While this bounded context has a job and a requirement group serves the job and the group of a capability is `guarantees`, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

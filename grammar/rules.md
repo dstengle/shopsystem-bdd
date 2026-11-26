@@ -2011,7 +2011,7 @@ a capability serves no job
 - Since: b123
 - Severity: warning
 - Implemented in: `scripts/model.lp`
-- Cited by: checking#r110
+- Cited by: checking#r110, checking#r120, checking#r121, checking#r122
 - Fails on:
 
   ```prolog
