@@ -1,0 +1,23 @@
+---
+id: batch/missingmass.io/shopsystem/shopsystem-bdd/batch-132
+kind: batch
+status: building
+base: main
+forked_from: a177f280f511c23e61ee4042b6306e1a147ad993
+branch: batch-132
+pull_request:
+---
+
+# batch-132
+
+## Tasks
+
+| task | item | status | branch |
+|---|---|---|---|
+| t1 | b731 | pending | batch-132-b731 |
+| t2 | b728 | pending | batch-132-b728 |
+| t3 | b733 | pending | batch-132-b733 |
+
+## Plan
+
+One task for each item: each builds its item's requirement lines, whose generated scenarios are its acceptance tests.
