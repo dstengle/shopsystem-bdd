@@ -1607,3 +1607,28 @@ id = { positional = 1, example = "j1" }
 "product actor" = { option = "--actor", repeat = true, example = "the developer" }
 "job statement" = { option = "--statement", example = "When a change is wanted, the developer wants it specified, so they can build it." }
 need = { option = "--needs", repeat = true, example = "j2" }
+
+[operations."product.declare subdomain"]
+command = "spec subdomain"
+requirements = [
+  "product#r15: When the person declares a subdomain with an id and a subdomain type and a job, the product service shall keep the subdomain in the product and complete the request.",
+  "product#r16: If the person declares a subdomain with a subdomain type that does not conform to the subdomain type form, then the product service shall refuse the request and name the subdomain type.",
+  "product#r17: If the person declares a subdomain with a job that is not in the product, then the product service shall refuse the request and name the job.",
+]
+[operations."product.declare subdomain".parameters]
+id = { positional = 1, example = "specification" }
+"subdomain type" = { option = "--type", example = "core" }
+job = { option = "--serves", repeat = true, example = "j1" }
+
+[operations."product.declare context"]
+command = "spec context"
+requirements = [
+  "product#r18: When the person declares a bounded context with an id and a subdomain and a shop, the product service shall keep the bounded context in the product and complete the request.",
+  "product#r19: When the person declares a bounded context with an id and a subdomain and without a shop, the product service shall keep the bounded context in the product and complete the request.",
+  "product#r20: If the person declares a bounded context with an id that the id of this product does not cover, then the product service shall refuse the request and name the id.",
+  "product#r21: If the person declares a bounded context with a subdomain that is not in the product, then the product service shall refuse the request and name the subdomain.",
+]
+[operations."product.declare context".parameters]
+id = { positional = 1, example = "missingmass.io/shopsystem/shopsystem-bdd" }
+subdomain = { option = "--addresses", repeat = true, example = "specification" }
+shop = { option = "--shop", example = "missingmass.io/shopsystem/shop" }

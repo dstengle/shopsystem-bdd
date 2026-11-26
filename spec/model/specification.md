@@ -18,6 +18,7 @@ object bounded context
   relations: has → id (one)
   attributes: availability: available | unreachable
   attributes: health: sound | failing
+  relations: addresses → subdomain (many); is hosted by → shop (one)
 
 object capability kind of file
   attributes: group: service | guarantees | model | operations; language: codified-1 | codified-2
@@ -130,6 +131,7 @@ object section kind of text
 
 object id kind of text
   relations: matches → adapter spec (one)
+  relations: covers → id (many)
 
 object precondition kind of text
   relations: has → comparison (many); holds → count (many)
@@ -440,10 +442,13 @@ service product
   operation declare actor(product actor)  outcomes: done → the product actor | refused: product not in the product form
   operation declare job(job, id, product actor, job statement, need)
     outcomes: done → the job | refused: job statement not in the job statement form, product actor outside the product, need outside the product, need that depends on the job, product not in the product form
+  operation declare subdomain(subdomain, id, subdomain type, job)  outcomes: done → the subdomain | refused: subdomain type not in the subdomain type form, job outside the product
+  operation declare context(bounded context, id, subdomain, shop)  outcomes: done → the bounded context | refused: id outside the product, subdomain outside the product
 
 object product
   relations: has → id (one); has → purpose (one); holds → product actor (many); holds → job (many)
   relations: holds → product detail (many)
+  relations: holds → subdomain | bounded context (many)
 
 object product actor kind of text
 
@@ -456,4 +461,11 @@ object need kind of job
 object product detail kind of text
 
 object product form kind of artifact
+
+object subdomain
+  relations: has → id (one); has → subdomain type (one); serves → job (many)
+
+object subdomain type kind of text
+
+object subdomain type form kind of artifact
 ```

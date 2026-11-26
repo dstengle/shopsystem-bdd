@@ -62,3 +62,24 @@ The product a bounded context belongs to: its id and purpose, its actors and the
 the job statement `j2` holds "When a change is wanted, reviewed and agreed, the developer wants it specified, so they can build it."
 ```
 
+### [g15] A subdomain is declared with its id, type and jobs
+- [r15] When the person declares a subdomain with an id and a subdomain type and a job, the product service shall keep the subdomain in the product and complete the request.
+
+### [g16] A subdomain of a type outside the subdomain type form is refused
+- [r16] If the person declares a subdomain with a subdomain type that does not conform to the subdomain type form, then the product service shall refuse the request and name the subdomain type.
+
+### [g17] A subdomain serving a job the product does not hold is refused
+- [r17] If the person declares a subdomain with a job that is not in the product, then the product service shall refuse the request and name the job.
+
+### [g18] A bounded context a shop keeps is declared in the domain map
+- [r18] When the person declares a bounded context with an id and a subdomain and a shop, the product service shall keep the bounded context in the product and complete the request.
+
+### [g19] A third-party provider is declared as a bounded context no shop keeps
+- [r19] When the person declares a bounded context with an id and a subdomain and without a shop, the product service shall keep the bounded context in the product and complete the request.
+
+### [g20] A bounded context whose id lies outside the product is refused
+- [r20] If the person declares a bounded context with an id that the id of this product does not cover, then the product service shall refuse the request and name the id.
+
+### [g21] A bounded context addressing a subdomain the product does not hold is refused
+- [r21] If the person declares a bounded context with a subdomain that is not in the product, then the product service shall refuse the request and name the subdomain.
+

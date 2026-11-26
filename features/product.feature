@@ -140,3 +140,73 @@ Feature: Product
     Then this product holds the job j1
     And the product service keeps the job j1
     And the product service completes this request
+
+  @g15 @r15
+  Scenario: A subdomain is declared with its id, type and jobs
+    Given a subdomain s1
+    And an id i1
+    And a subdomain type s2
+    And a job j1
+    When the person declares the subdomain s1 with the id i1 and the subdomain type s2 and the job j1
+    Then this product holds the subdomain s1
+    And the product service keeps the subdomain s1
+    And the product service completes this request
+
+  @g16 @r16
+  Scenario: A subdomain of a type outside the subdomain type form is refused
+    Given a subdomain type s2
+    And the subdomain type s2 does not conform to the subdomain type form
+    And a subdomain s1
+    When the person declares the subdomain s1 with the subdomain type s2
+    Then the product service refuses this request
+    And the product service names the subdomain type s2
+
+  @g17 @r17
+  Scenario: A subdomain serving a job the product does not hold is refused
+    Given a job j1
+    And this product does not hold the job j1
+    And a subdomain s1
+    When the person declares the subdomain s1 with the job j1
+    Then the product service refuses this request
+    And the product service names the job j1
+
+  @g18 @r18
+  Scenario: A bounded context a shop keeps is declared in the domain map
+    Given a bounded context b1
+    And an id i1
+    And a subdomain s1
+    And a shop s2
+    When the person declares the bounded context b1 with the id i1 and the subdomain s1 and the shop s2
+    Then this product holds the bounded context b1
+    And the product service keeps the bounded context b1
+    And the product service completes this request
+
+  @g19 @r19
+  Scenario: A third-party provider is declared as a bounded context no shop keeps
+    Given a bounded context b1
+    And an id i1
+    And a subdomain s1
+    When the person declares the bounded context b1 with the id i1 and the subdomain s1 and without a shop
+    Then this product holds the bounded context b1
+    And the product service keeps the bounded context b1
+    And the product service completes this request
+
+  @g20 @r20
+  Scenario: A bounded context whose id lies outside the product is refused
+    Given an id i2
+    And this product has the id i2
+    And an id i1
+    And the id i2 does not cover the id i1
+    And a bounded context b1
+    When the person declares the bounded context b1 with the id i1
+    Then the product service refuses this request
+    And the product service names the id i2
+
+  @g21 @r21
+  Scenario: A bounded context addressing a subdomain the product does not hold is refused
+    Given a subdomain s1
+    And this product does not hold the subdomain s1
+    And a bounded context b1
+    When the person declares the bounded context b1 with the subdomain s1
+    Then the product service refuses this request
+    And the product service names the subdomain s1
