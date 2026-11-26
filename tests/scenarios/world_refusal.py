@@ -1,7 +1,9 @@
 """The CLI pack's refusal in a codified-2 feature (b240 phase 15): "`work` shall refuse the command and name X" is
 generated as two Thens, "`work` refuses `work decision`" and "`work` names the `--tier` option". A tool refuses a
 command when it exits with an error on it (the pack's definition); what it names is in its output or its error: a
-code without its backticks, an instance by what a Given said it is named by (`says`), else by its name."""
+code without its backticks, an instance by what a Given said it is named by (`says`), else by its name. A usage
+error, argparse's `usage:` on stderr with exit 2, is no refusal (b686): the scenario ran a command no parser reads.
+Exit 2 alone is one, since some commands refuse with it."""
 import re
 
 from vocab import handler
@@ -9,6 +11,11 @@ from vocab import handler
 
 def bare(word):
     return word.strip("`")
+
+
+def usage_error(done):
+    """Whether a run's result is argparse's usage error: exit 2 with its `usage:` text on stderr."""
+    return done.returncode == 2 and re.search(r"^usage: ", done.stderr, re.MULTILINE) is not None
 
 
 def result(step):
@@ -21,6 +28,7 @@ def result(step):
 def refuses(step):
     done = result(step)
     assert done.returncode != 0, (step.text, done.stdout)
+    assert not usage_error(done), (step.text, "a usage error, no refusal", done.stderr)
     assert done.stderr.strip(), (step.text, "no error")
 
 
