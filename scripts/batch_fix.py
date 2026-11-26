@@ -89,6 +89,6 @@ def trees(root, batch):
 
 def said(root, batch, found):
     """One line for each open finding: where and how to fix it (D14)."""
-    return ["%s %s %s %s: %s: fix in %s on %s with Item: %s and Finding: %s; then work batch review %s" % (
+    return ["%s %s %s %s: %s: fix in %s on %s with Item: %s and Finding: %s; then shop work batch review %s" % (
         f.fid, f.grade, _label(root, f.item), f.where or "-", f.title, tree, task.branch, f.item, f.fid, batch.name)
         for f, task, tree in found]

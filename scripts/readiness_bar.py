@@ -199,7 +199,7 @@ def well_formed(root, item, others=()):
     mine = set(backlog_lines.ids(blocks))
     if not mine and not blocks.universal and not any(b.retired for b in blocks) and not blocks.adapters \
             and not blocks.moves:      # b355; b654
-        return ["it has no requirement line: give it one with `work line`"], []
+        return ["it has no requirement line: give it one with `shop work line`"], []
     copy = Path(tempfile.mkdtemp(prefix="readiness-"))
     try:
         shutil.copytree(Path(root) / "spec", copy / "spec")      # backlog_lines.lay, the lexicon read before the item

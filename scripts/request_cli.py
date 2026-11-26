@@ -21,7 +21,7 @@ def add_parsers(sub):
     p = sub.add_parser("accept", help="the upstream's person: accept a request whose lines are settled, as an item")
     p.add_argument("request")
     sub.add_parser("sync", help="record what the other side of each request posted, and print every live request")
-    p = sub.add_parser("watch", help="poll the requests' issues; print what `work sync` would take in, and exit")
+    p = sub.add_parser("watch", help="poll the requests' issues; print what `shop work sync` would take in, and exit")
     p.add_argument("--every", type=float, default=60, help="seconds between polls (default: 60)")
     p.add_argument("--polls", type=int, help="end, exit 1, after this many polls that find nothing (default: no end)")
     p.add_argument("--forward", action="store_true",

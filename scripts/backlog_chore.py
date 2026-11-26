@@ -145,7 +145,7 @@ def said(item):
     chore = read(item)
     if chore is None:
         return []
-    return ["Chore: build it until its check passes; `work batch done` runs it",
+    return ["Chore: build it until its check passes; `shop work batch done` runs it",
             "Chore files (a commit of the task touches no other path): %s" % ", ".join(chore.files),
             "Chore check: `%s`" % chore.check]
 

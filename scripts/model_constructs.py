@@ -178,5 +178,5 @@ def catalogue(root, write=False):
     if path.is_file() and path.read_text() == text:
         print("%s is current" % CATALOGUE)
         return 0
-    print("stale: the construct catalogue %s is not what `model constructs --write` would write" % CATALOGUE)
+    print("stale: the construct catalogue %s is not what `shop spec constructs --write` would write" % CATALOGUE)
     return 1

@@ -95,7 +95,7 @@ def main(argv=None):
     sub = ap.add_subparsers(dest="cmd", required=True)
     li = sub.add_parser("list", help="each request with its status, and each observation no source cites")
     li.add_argument("--json", action="store_true", help="print one JSON object instead of lines")
-    s = sub.add_parser("show", help="where an item, a request, a quote or a directive stands (default: as `work list`)")
+    s = sub.add_parser("show", help="where an item, a request, a quote or a directive stands (default: as `shop work list`)")
     s.add_argument("target", nargs="?", help="an item b<n>, a request q<n>, a quote quote-<n> or a directive directive-<n>")
     s.add_argument("--json", action="store_true", help="print one JSON object instead of lines")
     w = sub.add_parser("withdraw", help="move an item b<n> to withdrawn")

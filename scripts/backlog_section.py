@@ -259,7 +259,7 @@ def capability_file(root, capability):
     the item that holds it as a new capability and its batch, when one does (b450)."""
     path = Path(root) / "spec" / "capabilities" / ("%s.md" % capability)
     if "/" in capability or capability in (UNIVERSAL, INDEX) or not spec_read.codified(path):
-        new = "" if path.exists() else "; a new one is given to an item with `work line <item> --capability %s`" % (
+        new = "" if path.exists() else "; a new one is given to an item with `shop work line <item> --capability %s`" % (
             capability)
         holders = [] if path.exists() else __import__("backlog_retract").holders(root, capability)
         if holders:

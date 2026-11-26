@@ -109,7 +109,7 @@ def compile(srcs, sha, grammar, reuse=None):
     compiled in the folder `reuse` read from their .gfo."""
     gf = tools_grammar.gf_binary()
     if not gf:
-        raise GrammarError("no gf: run `python3 scripts/tools install`, or set $SHOPSYSTEM_GF")
+        raise GrammarError("no gf: run `python3 scripts/shop tools install`, or set $SHOPSYSTEM_GF")
     base = cache()
     base.mkdir(parents=True, exist_ok=True)
     tmp = Path(tempfile.mkdtemp(dir=base, prefix=".tmp-"))

@@ -114,7 +114,7 @@ def test_a_stale_index_still_runs_the_tests(repo, outside):
     r = subprocess.run([sys.executable, str(SCRIPT), "--root", str(repo), "decisions", "--check"],
                        capture_output=True, text=True)
     assert r.returncode == 1, r.stdout
-    assert "spec/decisions/index.md is not what `model decisions` writes: run it" in r.stdout, r.stdout
+    assert "spec/decisions/index.md is not what `shop spec decisions` writes: run it" in r.stdout, r.stdout
     assert "holds    spec/decisions/a.md" in r.stdout, r.stdout
     assert ran(outside) == ["a"]
 

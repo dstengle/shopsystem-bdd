@@ -170,7 +170,7 @@ def closed(root, rels, before, message, url, command):
 
 def not_recorded(why, what, url):
     """The refusal of a commit of the URL of `what`, which GitHub took (f6): it names the URL and how to record it."""
-    return ("%s; %s %s is posted on GitHub but not recorded: `work sync`, or the command again, records it"
+    return ("%s; %s %s is posted on GitHub but not recorded: `shop work sync`, or the command again, records it"
             % (why, what, url))
 
 

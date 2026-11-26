@@ -26,8 +26,8 @@ def process(path):
 
 
 def commands(text, script):
-    """The subcommands of `script` the text names: `` `work ready `` or `` `python3 <scripts>/work ready ``."""
-    return set(re.findall(r"(?:`|/)%s ([a-z][a-z-]*)" % script, text))
+    """The subcommands of `script` the text names: `` `shop work ready `` or `` `python3 <scripts>/shop work ready ``."""
+    return set(re.findall(r"(?:`|/)shop %s ([a-z][a-z-]*)" % script, text))
 
 
 def choices(script):

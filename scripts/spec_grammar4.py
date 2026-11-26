@@ -102,7 +102,7 @@ def _named(root):
     """(vocab, the PGF, the sources' sha): load's, and parse's with one look at the files' state."""
     import pgf
     if not _rgl():
-        raise spec_gf.GrammarError("gf-rgl is missing: run `python3 scripts/tools install`")
+        raise spec_gf.GrammarError("gf-rgl is missing: run `python3 scripts/shop tools install`")
     vocab, srcs, name = _context(root)
     if name not in _loaded:
         target = spec_gf.cache() / name / ("%s.pgf" % GRAMMAR)

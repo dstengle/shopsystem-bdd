@@ -87,7 +87,7 @@ def needing_clingo(command, run):
             why = "no interpreter it tried has it: " + ", ".join(run_again_with_clingo())
         print(f"{command} needs the clingo package, which this interpreter lacks; {why}.\n"
               f"  install: {sys.executable} -m pip install clingo\n"
-              "  without it: `model facts` prints the facts for any Datalog or ASP engine.")
+              "  without it: `shop spec facts` prints the facts for any Datalog or ASP engine.")
         return 2
     return run()
 

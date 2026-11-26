@@ -97,6 +97,6 @@ def enforcing(root, requirement):
         data, _ = shop_files.frontmatter(shop_files.read(path, root))
         held = data.get("enforced_by") or []
         if requirement in (held if isinstance(held, list) else [held]):
-            out.append("%s enforces %s (%s): name what holds it now with `work decision --amend %s --enforced-by "
+            out.append("%s enforces %s (%s): name what holds it now with `shop work decision --amend %s --enforced-by "
                        "<id>`" % (requirement, data.get("id"), path.relative_to(root).as_posix(), data.get("id")))
     return out

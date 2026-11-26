@@ -114,5 +114,5 @@ def test_merged_names_a_request_it_leaves_alone(reviewed, batch_outside):
     done = work(reviewed, "batch", "merged", "batch-1")
     assert done.returncode == 0, done.stderr
     assert statuses(reviewed, "b1") == ["delivered"]
-    assert "q1 not resolved (it is open, not accepted); run work resolve" in done.stdout
+    assert "q1 not resolved (it is open, not accepted); run shop work resolve" in done.stdout
     assert (reviewed / ".shop" / "requests" / "q1.md").read_text() == before

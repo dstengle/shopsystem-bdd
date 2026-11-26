@@ -1,11 +1,11 @@
 """`work watch` (capability requests, r43, r44): a session's wait on the other side of its requests. Every `--every`
-seconds it polls GitHub, through request_gh as `work sync` reads it (request_sync's `unheld_comments` and
+seconds it polls GitHub, through request_gh as `shop work sync` reads it (request_sync's `unheld_comments` and
 `unheld_issues`), for the issue of each request that is not closed and for the open issues of this context's own
 repository. After the first poll that finds a comment a request does not hold or an untaken ask (an issue whose body
 is an `ask` no request holds), it prints one line for each and exits 0, so a session starts it in the background and
-is woken when it ends: it runs `work sync`, the skill the request's turn calls for, and the watch again.
+is woken when it ends: it runs `shop work sync`, the skill the request's turn calls for, and the watch again.
 
-It writes nothing in the repository and commits nothing; `work sync` records. A readable comment and an untaken ask
+It writes nothing in the repository and commits nothing; `shop work sync` records. A readable comment and an untaken ask
 are printed by every watch that finds them, until sync has recorded or taken them. An unreadable comment (its block of
 fields missing or not parsing, as sync reads it) is recorded by sync with nothing of it applied; until then it is
 printed once and kept by its URL
@@ -86,11 +86,11 @@ def found(root):
             continue
         for url, body in request_sync.unheld_comments(root, text, COMMAND):
             bad = not is_readable(body)
-            end = "unreadable: `work sync` notes it as such, applying nothing" if bad else "`work sync` applies it"
+            end = "unreadable: `shop work sync` notes it as such, applying nothing" if bad else "`shop work sync` applies it"
             out.append((url, "%s %s comment %s: %s (%s)" % (name, issue, comment_number(url), url, end), bad))
     for url, title, body in request_sync.unheld_issues(root, COMMAND):
         if is_ask(body):
-            out.append((url, "ask %s %s (`work sync` takes it in)" % (url, " ".join(title.split())), False))
+            out.append((url, "ask %s %s (`shop work sync` takes it in)" % (url, " ".join(title.split())), False))
     return out
 
 

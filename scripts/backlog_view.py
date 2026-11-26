@@ -63,7 +63,7 @@ def waiting_on(item, by_name, root=None):
     found = progress(root, item) if root is not None else None
     said += ["in %(name)s (%(status)s): %(tasks_done)d of %(tasks)d tasks done" % found] if found else []
     ungroomed = item.status == "idea" and not backlog_items.shaping_note(item)     # r44
-    said += ["no shaping note: groom it with work shape --note"] if ungroomed else []
+    said += ["no shaping note: groom it with shop work shape --note"] if ungroomed else []
     return said + (["question: %s" % question] if question else [])
 
 

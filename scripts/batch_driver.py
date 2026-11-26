@@ -33,10 +33,10 @@ RULES = (
     "Change nothing under `.shop/` (`.shop/backlog/`, `.shop/batches/` are the base checkout's batch commands' only).",
     ("Never use `git stash`: every worktree shares one stash list, so two tasks' stashes swap; to see a test "
      "red, put files back with `git checkout <commit> -- <path>` or a scratch copy."),
-    "Don't push and don't run `work` commands that commit.",
+    "Don't push and don't run `shop work` commands that commit.",
     "A scenario that passes before it is built (an XPASS) means a test step is too loose: say so in the reply.",
     ("There is no brief or result file: reply with what was built and its commits, or with one question, never a "
-     "guess. `work batch done` runs the whole suite in the worktree and refuses with its last lines."),
+     "guess. `shop work batch done` runs the whole suite in the worktree and refuses with its last lines."),
 )
 
 
@@ -73,7 +73,7 @@ def _tasks(root, batch, picked):
         unbound = [_module(c) for c in caps if not (root / _module(c)).exists()]
         chore = ["- %s" % said for said in backlog_chore.said(item)]       # in place of ids (b316)
         out += ["### %s %s" % (task.task, backlog_items.label(item)), "",
-                "- Worktree: %s (made by `work batch resume`)" % (trees_dir(root) / ("%s-%s" % (batch.name, task.task))),
+                "- Worktree: %s (made by `shop work batch resume`)" % (trees_dir(root) / ("%s-%s" % (batch.name, task.task))),
                 "- Branch: %s" % task.branch,
                 "- Item file: %s" % (Path(root) / backlog_items.rel_of(item.name)),
                 *(chore or ["- Requirement ids: %s" % (", ".join(ids) or "none"),
@@ -90,22 +90,22 @@ def _module(cap):
 
 
 FRESH = (
-    ("A context's first batch builds what its tests run against, and nothing of it is laid by `work batch start`. "
+    ("A context's first batch builds what its tests run against, and nothing of it is laid by `shop work batch start`. "
      "The first task whose item needs a piece makes it; a later task that needs it too merges that task's branch "
      "into its own (its commits cite the earlier in-batch item, which `done` accepts)."),
     ("- Step bindings: one test module a capability, `tests/scenarios/test_<capability>.py`, binding "
      "`features/<capability>.feature` with pytest-bdd's `scenarios(...)` and one step definition a step text; "
-     "`features vocab` lists the step grammar's shapes (the functions ending in `Step`) and %s, step 6, shows a "
-     "whole module. `tests/scenarios/conftest.py` (from `migrate init`) and `-p work_items` make an `unbuilt:` id's "
+     "`shop features vocab` lists the step grammar's shapes (the functions ending in `Step`) and %s, step 6, shows a "
+     "whole module. `tests/scenarios/conftest.py` (from `shop migrate init`) and `-p work_items` make an `unbuilt:` id's "
      "scenario a strict xfail." % (SCRIPTS.parent / "docs" / "getting-started.md")),
     ("- The program: the command-line program the lines' operations are requested of, with its argparse "
      "subcommands and options; a When step runs it, a Then reads its exit, output and the files it kept."),
     ("- The adapter contract `spec/adapters/cli.toml`: `[programs]` names the program's path, and each "
      "`[operations.\"<service>.<operation>\"]` of the domain model the lines request maps it to its `command` and "
-     "its `parameters` to options; `spec check` holds it to the model and the program both ways (v_a1-v_a4), and "
-     "`spec annotate` writes each operation's governing requirements into it (`spec annotate --check` in the "
-     "suite). Without the file `spec annotate` and its `--check` do nothing and say nothing."),
-    ("- `work batch review` pushes the batch branch and opens a draft pull request: the repository needs a remote "
+     "its `parameters` to options; `shop spec check` holds it to the model and the program both ways (v_a1-v_a4), and "
+     "`shop spec annotate` writes each operation's governing requirements into it (`shop spec annotate --check` in the "
+     "suite). Without the file `shop spec annotate` and its `--check` do nothing and say nothing."),
+    ("- `shop work batch review` pushes the batch branch and opens a draft pull request: the repository needs a remote "
      "and gh logged in to it (a remote and gh), or the review is refused."),
 )
 
@@ -124,17 +124,17 @@ def text(root, batch, picked, unwritten=()):
     that kept the lay from writing it (batch_catalogues, b333)."""
     root, push = Path(root).resolve(), push_prefix(root)
     out = ["# %s: the batch brief" % batch.name, "",
-           "You run %s, from `work batch resume` until its pull request is `awaiting-merge`, as the one fresh agent "
+           "You run %s, from `shop work batch resume` until its pull request is `awaiting-merge`, as the one fresh agent "
            "of this batch: you dispatch its task, fix and review subagents yourself." % batch.name, "",
            "- Batch: %s (`%s`)" % (batch.name, batch_plan.rel_of(batch.name)),
-           "- Base checkout: %s, on %s: run every `work batch` command there, never in a task's worktree" % (
+           "- Base checkout: %s, on %s: run every `shop work batch` command there, never in a task's worktree" % (
                root, batch.base),
            "- Batch branch: %s, its worktree %s" % (batch.branch, trees_dir(root) / batch.name),
            "- Scripts: %s" % SCRIPTS, "",
            "## The skill", "",
-           "Follow the skill `%s` from step 3 (Resume) to step 7's `-> awaiting-merge`: `work batch resume %s`, one "
-           "subagent for each running task, all at once, `work batch done` or `park` as each returns, `work batch "
-           "review`, then `work batch brief`, a fresh `shopsystem-bdd:pr-reviewer` and `work batch reviewed`, and the "
+           "Follow the skill `%s` from step 3 (Resume) to step 7's `-> awaiting-merge`: `shop work batch resume %s`, one "
+           "subagent for each running task, all at once, `shop work batch done` or `park` as each returns, `shop work batch "
+           "review`, then `shop work batch brief`, a fresh `shopsystem-bdd:pr-reviewer` and `shop work batch reviewed`, and the "
            "fix loop until the review is clean." % (SKILL, batch.name), "",
            "## Tasks", ""]
     out += _tasks(root, batch, picked)
@@ -154,14 +154,14 @@ def text(root, batch, picked, unwritten=()):
     out += ["- %s" % r for r in (*RULES, *batch_rules(root))]
     out += ["", "## Where you stop", "",
             ("At `-> awaiting-merge`, once the pull request is clean and marked ready. You never merge the pull "
-             "request, and never run `work batch merged` nor `measure batch`: the session that started you does, "
-             "after the person merges it. A question you cannot settle goes onto its item with `work batch park`, "
+             "request, and never run `shop work batch merged` nor `shop measure batch`: the session that started you does, "
+             "after the person merges it. A question you cannot settle goes onto its item with `shop work batch park`, "
              "never to the person."), "",
             "## What you reply", "",
             ("The pull request's URL, each item delivered in it and each item parked with its question, in a few "
              "lines; or, if the batch was abandoned, that and why. Then the batch summary, in the batch summary form "
              "below (b580): each figure as far as the batch has run, its cost and tokens summed from what your "
-             "subagents and your own session report, its times from the batch's commits and the test runs `work "
+             "subagents and your own session report, its times from the batch's commits and the test runs `shop work "
              "batch done` and `review` timed; a figure you cannot read written `%s`." % batch_summary.UNKNOWN), "",
             "### The batch summary form", "", *batch_summary.form()]
     return "\n".join(out) + "\n"

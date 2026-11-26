@@ -107,7 +107,7 @@ def test_reviewed_refuses_without_a_brief(briefed):
     before = state(briefed)
     done = reviewed(briefed, CLEAN)
     assert done.returncode == 1 and "has no brief %s" % (scratch(briefed) / "brief.md") in done.stderr, done.stderr
-    assert "moved" not in done.stderr and "run work batch brief batch-1" in done.stderr
+    assert "moved" not in done.stderr and "run shop work batch brief batch-1" in done.stderr
     assert state(briefed) == before
 
 

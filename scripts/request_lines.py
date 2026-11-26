@@ -22,7 +22,7 @@ def check(root, lines):
     """Refuse the first line the upstream would not read; return None when every line passes."""
     old = uncodified(root)
     if old:
-        raise Refused("the upstream's %s is not codified: run `migrate upgrade`" % old)
+        raise Refused("the upstream's %s is not codified: run `shop migrate upgrade`" % old)
     import request_terms
     import spec_gf
     import spec_language
@@ -34,7 +34,7 @@ def check(root, lines):
             parsed = spec_language.parse(root, line)
         except (ImportError, spec_gf.GrammarError) as err:
             raise Refused("the upstream's requirement grammar could not be built (%s); run "
-                          "`python3 scripts/tools install`" % err) from err
+                          "`python3 scripts/shop tools install`" % err) from err
         if parsed.tree is not None:
             continue
         why = "line %d does not parse in the upstream's requirement grammar: %s\n  %s" % (number, line, parsed.refusal)
