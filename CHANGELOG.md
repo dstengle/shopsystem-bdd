@@ -10,6 +10,7 @@ been renamed or retired since.
 
 | Line | Releases |
 |---|---|
+| 0.45 | [0.45.0](#0450-the-product-layer-contracts-between-bounded-contexts-and-one-command-shop) |
 | 0.44 | [0.44.0](#0440-commands-for-what-was-edited-by-hand) |
 | 0.43 | [0.43.0](#0430-the-readiness-bar-answers-in-seconds-and-grammar-4-builds-and-parses-faster) |
 | 0.42 | [0.42.0](#0420-a-request-acts-on-one-thing-one-verb-for-several-operations-and-a-made-thing-introduced-by-the-when) |
@@ -27,12 +28,69 @@ been renamed or retired since.
 | 0.30 | [0.30.0](#0300-released-as-100-codified-requirements) |
 | 0.29 and before | [0.29.0](#0290-glossary-proposals-delegations-given-late-and-fewer-stops-from-outside-a-work-item) · [0.28.3](#0283-a-branch-review-that-runs-nothing) · [0.28.2](#0282-answers-a-round-cannot-hold-go-back-to-integration) · [0.28.1](#0281-work-run-stops-visibly-on-questions-and-spends-less-agent-time) · [0.28.0](#0280-one-set-of-request-commands-work-list-and-work-show-and-answers-that-redraft) · [0.27.0](#0270-transitions-from-how-a-session-ended-and-the-turn-of-an-accepted-request) · [0.26.0](#0260-requests-and-the-context-loop) · [0.25.0](#0250-work-items-side-by-side-answers-and-guarantees) · [0.24.0](#0240-work-items-named-by-ids-and-upgrades-between-plugin-releases) · [0.23.1](#0231---work-item-keeps-tests-that-are-not-scenarios) · [0.23.0](#0230-faults-settled-query-output-as-json-the-session-keeps-the-gate-measurement-on-v3) · [0.22.0](#0220-one-requirement-per-scenario-faults-and-the-lessons-of-a-blind-formulation) · [0.21.0](#0210-the-final-layout-and-delivery-by-work-run) |
 
-## Unreleased
+## 0.45.0: the product layer, contracts between bounded contexts, and one command shop
 
-- **The old command names are aliases of `shop`** (b631, decision 0132): `work`, `spec`, `measure`, `migrate`,
-  `tools` and `features` run by their old names print one notice on stderr,
-  ``<name>: now `shop <name>`; `<name>` goes in the next release``, then run as before, their output and exit
-  unchanged; `shop <name>` prints none. The aliases are kept for this release and go in the release after it.
+- **The product layer** (b602, b642, b675, b644, b680, b643, b795, b797; decisions 0140-0144): `spec product`,
+  `spec actor`, `spec job` (a job statement, its actors and needs), `spec subdomain` and `spec context` keep the
+  product's identity, jobs and domain map in `.shop/product/product.toml`; `spec assign` gives a job to one bounded
+  context, `spec plays` maps a product actor to a context's actor, and `spec unassign` and `spec drop` take a
+  declaration back. `work line --serves` dedicates a requirement group to a job (its `serves:` line, b641).
+  `spec trace <job>` derives a job's trace: its serving groups, the requests they reach, the jobs it needs, adapter
+  specs and their providers' requirements, and its coordination (port request, long-running process or saga).
+  `spec check` checks the product: v_job_elsewhere, v_need_cycle, w_unheld_job, w_untriggered_actor,
+  w_unaddressed_sub, w_unreached_sub, w_unserved_job, w_unserved_cap, w_unformed_product. `spec check --item` and
+  `spec trace --item` read an item's lines as `spec parse --item` does, and `spec check --item` reports the item's lexicon problems as `work ready` does (b848). `w_unplayed_actor` names a product actor of a job held here that no actor here plays (b849). An item whose only lines dedicate groups to jobs is ready (b845); `--serves <job>` may come before the line's text or after it (b839). The forms are checked: one bounded-context
+  id form (b793), a product id with a dotted domain, actors with "the", the order of declarations (b827), and
+  refusals that name their cause and option (b798, b807, b809, b812, b813, b824).
+- **A shop's bounded contexts** (b576, b666): `work context keep` and `work context list` keep
+  `.shop/contexts.toml`, under the product's id.
+- **Contracts between bounded contexts** (b547, b348, b587, b636, b735, b743, b596, b736, b739): `spec prepare
+  --contract` prints a context's contract; `spec publish` deposits it at a version, `spec fetch` reads it back, and
+  `spec obtain` registers an upstream's contract in each adapter spec of that provider, all through the contract
+  registry port (a shop-folder adapter, GitHub for a remote upstream). A failure undoes what was registered.
+- **Driven ports and adapter specs** (b548, b549, b705, b540, b550, b593, b595, b599, b637, b701): an area of kind
+  `port` holds port lines with `Relied on by:`; the bound check (v_pb1-v_pb4) makes the core request, handle and rely
+  on them. An adapter spec at `adapters/<name>/` realises port lines, speaks its provider's words (`renames:`) and
+  names in `uses:` the provider operations each port operation uses.
+- **Requests in responses and reply triggers** (b543, b545, b571, b579, b569, b626, b724, b726, b727, b728): a
+  response can make a request with its parameters; a line can be triggered on a reply ("when the stock service
+  completes the request to reserve the note"); entailment follows a request to the lines of the same requester.
+- **One command `shop`** (b575, b629, b630, b631, b632; decision 0132): `shop work|spec|features|measure|migrate|tools`.
+  The old names are aliases that print a notice on stderr; they go in the next release. `shop migrate upgrade`
+  rewrites a consumer's old command lines in hooks, CLAUDE.md, `.shop/delivery.toml` and docs.
+- **The domain model edited by command** (b463, b598, b647, b607, b672, b688, b367, b645, b830): a model line restates
+  an operation or element in place; `work line --move-model`/`--move-term` move an element or term to another area;
+  `--import` imports a plugin pack; `--retire-model`/`--retire-term` retire, `--reinstate-*` and `--remove-import`
+  take back; `--capability --area [--port]` places a new capability. The base pack (`text`, `file`, `version`,
+  `repository`, `bounded context`) is one `migrate init` imports (b609).
+- **Stricter lexicon checks** (b825, b840, b811, b810, b826, b801): a vocabulary entry's part of speech must fit its
+  element (v_t22); a `Frame:` ends its entry, names its slots in angle brackets, and each slot is a kind, an actor or
+  a parameter (v_t13); `work line --term` and `--reword-term` refuse what `spec check` would fail, and warn of an
+  actor that reads as a kind. A term that `Redefines:` a pack's word, such as the request pack's `return`, is the context's own (b847). A capability a batch lays says the service of its area's model in `specifies:` (b850).
+- **The domain model's own rules** (b610, b605, b604): a lifecycle transition that another area's operation performs
+  is v_m9.
+- **Item commands** (b459, b48, b450, b460, b583, b705, b759, b760, b768, b815, b829): `work split`, `work
+  retitle`, `work line --remove <cap>`, piece edits (`--remove-`/`--replace-universal`, `-upstream`, `-given`),
+  `work batch amend` of an in-batch item's lines; a second line joins its item's group of the same title; every
+  line added is confirmed with its text.
+- **Records, decisions and settings by command** (b475, b49, b462, b741, b750): `work record --design`, `--plan`,
+  `--about`, `work observe`; `spec catalogue entry`; `work settings set`; a laid retirement of a line that enforces a
+  decision writes the superseding decision.
+- **Tracking and the batch poll** (b578, b585, b683, b692, b696, b702, b703, b710, b713, b722, b787): `work
+  allocate`, `deliver`, `restore`, `suspend`; `work batch next` says a batch's next step to any driver, and the
+  batch brief loops on it. `work batch reopen` reopens a batch with a person's finding (b69); a
+  `batch-implementer` agent builds a task (b34).
+- **Batches** (b483, b640, b663, b478, b488, b491, b492, b588, b611, b745-b747, b758, b707, b721, b731, b749): a
+  batch past the review limit is split; a lay that breaks a test or adds a violation is refused at opening; a
+  submit's conflicts are merged in task order; a batch that merged its base is reviewed for that merge alone; opening
+  takes under a minute; the lay goes through a laying port. `spec/index.md`'s `## Composition` is written in the index
+  form on every lay (b606). The batch brief's rules beyond the plugin's own come from `[batch] rules` (b75).
+- **`spec coupling`** (b612, b744, b762, b772): the coupling between a context's areas (words, references,
+  requirements, and code imports by `.shop/modules.toml`).
+- **`migrate init`** (b464, b470, b487, b802): `--purpose`, a `.gitignore` matched as git matches it, a warning off
+  `main`.
+- **Upgrading to 0.45.0** (b851, b853, b854): `shop migrate upgrade`'s 0.45.0 step writes `spec/index.md`'s `## Composition` in the index form and reports, for a session to reword, each term v_t13 or v_t22 now fails, each transition v_m9 fails and each requirement grammar 4 no longer reads (an actor named as a frame's subject now takes that actor only). [Upgrading](docs/upgrading.md#from-044-to-045) has the rest: `[batch] rules` are now only a consumer's own, the base pack, and the plugin's modules moved into the `plumbing` and `upgrades` packages.
+- **The docs** (b792, b838, b846, b856, b796, b816, b828): a new user's walk-through of the product layer on the notes example made a product, as a conversation with Claude in talking-with-claude, with every output pasted from a real run.
 
 ## 0.44.0: commands for what was edited by hand
 

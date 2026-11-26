@@ -31,7 +31,7 @@ Commands are written short, `shop work backlog` for `python3 "$SHOP/scripts/shop
 Every console block on this page is what the session runs for you; you never need to. `shop` and its commands are
 scripts in the installed plugin's `scripts/` folder, not commands on your `PATH`, so a shell finds no `shop` of its own.
 To run it yourself, keep the plugin's folder in `$SHOP`, from `claude plugin list --json`'s `installPath` (a path
-that ends in the version, such as `~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.44.0`; with
+that ends in the version, such as `~/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.45.0`; with
 `claude --plugin-dir`, the checkout):
 
 ```console
