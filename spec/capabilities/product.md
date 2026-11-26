@@ -119,3 +119,6 @@ the job statement `j2` holds "When a change is wanted, reviewed and agreed, the 
 ### [g34] A bounded context a shop keeps is declared in the product the shop has
 - [r34] While a shop has a product, when the person declares a bounded context with an id and a subdomain and the shop, the product service shall keep the bounded context in the product and complete the request.
 
+### [g35] A trace follows each provider operation an adapter spec uses
+- [r35] While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and an adapter spec realises the requirement id of the port line and the operation uses another operation and the adapter spec holds a contract that holds a requirement that governs the operation, when the person traces the job, the product service shall return the requirement.
+

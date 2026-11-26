@@ -168,6 +168,8 @@ requirements = [
   "checking#r123: While a requirement group serves a job and this bounded context has the job and another bounded context holds the job, if the person validates this specification, then the specification service shall fail the check and name the job.",
   "checking#r124: While this product does not conform to the product form, when the person validates this specification, the specification service shall name this product and complete the request.",
   "checking#r125: While a driven port holds an operation that has an operation outcome and a core line that uses `reply-trigger` handles the operation outcome, when the person validates this specification, the specification service shall complete the request.",
+  "checking#r135: While an adapter spec realises the requirement id of a port line that governs an operation and the operation uses another operation and the adapter spec holds no contract that holds the operation, if the person validates the adapter spec, then the specification service shall fail the check and name the operation.",
+  "checking#r136: While an adapter spec realises the requirement id of a port line that governs an operation and the operation uses no operation, if the person validates the adapter spec, then the specification service shall fail the check and name the operation.",
   "decisions#r1: While a design-decision is not `superseded` or `rejected` and the design-decision has no tier, when the person validates this specification, the specification service shall return `w_untiered`.",
   "decisions#r2: While the tier of a design-decision is `check` and no test enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d6`.",
   "decisions#r3: While the tier of a design-decision is `requirement` and no requirement enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d7`.",
@@ -1557,6 +1559,8 @@ requirements = [
   "checking#r102: If the person obtains a contract from a bounded context whose health is `failing`, then the specification service shall refuse the request and name the bounded context and the `bounded context failing` reason.",
   "checking#r103: While the id of a provider conforms to the context id form and the provider is `available`, if the person obtains a contract from the provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `no adapter spec has the provider` reason.",
   "checking#r126: When the person obtains a contract from a bounded context with a version, the specification service shall retrieve the contract with the bounded context and the version.",
+  "checking#r132: While a bounded context is not in the shop, if the person obtains a contract from the bounded context that no upstream entry identifies, then the specification service shall refuse the request and name the bounded context and the `bounded context not an upstream` reason.",
+  "checking#r133: While the health of a provider is `failing`, if the person obtains a contract from the provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `bounded context failing` reason.",
 ]
 [operations."specification.obtain".parameters]
 "bounded context" = { positional = 1, example = "bounded-context/example.org/fixture/inventory" }
@@ -1706,6 +1710,7 @@ requirements = [
   "product#r31: While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and the operation has no property that refers to an operation and no requirement handles an operation outcome of the operation, when the person traces the job, the product service shall return the job whose coordination is `port request`.",
   "product#r32: While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and a requirement that handles an operation outcome of the operation uses an operation that performs a transition, when the person traces the job, the product service shall return the job whose coordination is `long-running process`.",
   "product#r33: While a requirement group serves a job and a requirement of the requirement group uses two operations in a driven port that have a property that refers to an operation, when the person traces the job, the product service shall return the job whose coordination is `saga`.",
+  "product#r35: While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and an adapter spec realises the requirement id of the port line and the operation uses another operation and the adapter spec holds a contract that holds a requirement that governs the operation, when the person traces the job, the product service shall return the requirement.",
 ]
 [operations."product.trace".parameters]
 job = { positional = 1, example = "j1" }

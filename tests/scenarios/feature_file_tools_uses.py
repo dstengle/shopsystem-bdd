@@ -105,6 +105,12 @@ def unthinged(w):
             and any(v == "use" and w["kinds"].get(o) == "verb" for v, _, o, _ in w["facts"]))
 
 
+def thingless(w):
+    """The fact of a Given that no frame (in any wording) takes `thing`, or None (b734)."""
+    return next(((v, a, o) for v, a, o, _ in w["facts"] if v == "take" and isinstance(a, tuple) and a[0] == "no"
+                 and "frame" in a[1] and o == "`thing`"), None)
+
+
 def returned(w):
     """The line of b297 the requirement's constructs say, or None."""
     used = {o.strip("`") for v, _, o, pos in w["facts"] if v == "use" and pos and isinstance(o, str)}
@@ -128,7 +134,9 @@ def example(code):
 def prepare(step, w, write, name, path):
     """The capability `name` whose r1 is the catalogue's example of the construct; True when one was written."""
     code, line = construct(w), returned(w)
+    fact = thingless(w)
     if code is None:
+        assert fact is None, "no b298 world reads the fact %r" % (fact,)
         return False
     index = (PLUGIN / "grammar" / "corpus" / "constructs" / "spec" / "index.md").read_text()
     line, index = line or preconditioned(w, code) or example(code), index + (RETURNING if line else "")
@@ -138,6 +146,7 @@ def prepare(step, w, write, name, path):
         line = ORDERED_GIVE
     if code == "order-by-every" and any(v == "use" and o == "`of-relation`" for v, _, o, _ in w["facts"]):
         line = ORDERED_IN
+    assert fact is None or line in (ORDERED_RETURN, ORDERED_GIVE), "no b298 world reads the fact %r" % (fact,)
     cap = ("---\nid: capability/%s/%s\ntitle: %s\nnarrator: a client\ngroup: service\nlanguage: codified-2\n"
            "rests_on: []\nretired: []\n---\n\n# %s\n\n## Purpose\nSomething.\n\n## Behaviour\n\n### [g1] %s\n"
            "- [r1] %s\n\n## Not yet\n" % (path, name, name, name, code, line))

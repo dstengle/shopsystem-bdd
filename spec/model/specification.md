@@ -289,7 +289,7 @@ service specification
   operation fetch(contract, version) by downstream context
     outcomes: returned → the contract | refused: version not published
   operation obtain(contract, bounded context, version) by the person
-    outcomes: done → the contract | refused: bounded context with no contract, id not in the context id form, bounded context unreachable, bounded context failing
+    outcomes: done → the contract | refused: bounded context with no contract, id not in the context id form, bounded context unreachable, bounded context failing, bounded context not an upstream
 
 service decisions
   operation enter(design-decision, title, summary, tier, wording, route, supersedes)
@@ -319,6 +319,7 @@ object operation
   relations: has → property (many)
   relations: has → operation outcome (many)
   relations: performs → transition (many)
+  relations: uses → operation (many)
 
 object reading rule kind of rule
 

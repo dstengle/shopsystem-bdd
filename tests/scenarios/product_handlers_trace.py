@@ -10,6 +10,8 @@ they pick is written: the domain-model fixture (tests/scripts/fixtures/domain-mo
 - a port line that governs it and an adapter spec that realises the port line's id: checking_handlers_port's driven
   port `stock` beside the fixture, notebook's g10 serving the job (r10, which requests `stock.reserve`), and the
   adapter spec `adapters/stock-ledger/` realising `stock-port#r1` (r28);
+- of those, the ledger's contract held in the adapter spec at `bounded-context/example.org/fixture/ledger@1.0.0`,
+  its `[operations."ledger.post"]` listing `ledger#r1`, and `uses:` naming ledger.post for stock.reserve (r35);
 - a group that serves a need of the job: the product file holding the job and its need `n1`, notebook's g1 serving
   the need and shelf's g1 serving the job (so that the job is served, but not by the line returned: r29);
 - no group serving the job: nothing serves it (r30).
@@ -32,10 +34,10 @@ def _module(name):
 P = _module("product_handlers.py")
 W = sys.modules["shop_work_queue_world"]
 FIXTURE = ROOT / "tests" / "scripts" / "fixtures" / "domain-model"
-GROUPS = {"g26", "g27", "g28", "g29", "g30"}
+GROUPS = {"g26", "g27", "g28", "g29", "g30", "g35"}
 PARENT = "bounded-context/example.org/fixture/domain-model"
 ADAPTER = "%s/adapter/stock-ledger" % PARENT
-TERMS = ("serve", "has", "use", "govern", "realise", "need")
+TERMS = ("serve", "has", "use", "govern", "realise", "need", "hold")
 
 SHELF = """---
 id: capability/example.org/fixture/domain-model/shelf
@@ -80,6 +82,29 @@ The adapter that realises the notes service's needs of the stock.
 """
 
 
+LEDGER = "bounded-context/example.org/fixture/ledger"
+LEDGER_REQ = "ledger#r1"
+LEDGER_CONTRACT = """context = "%s"
+version = "1.0.0"
+status = "published"
+
+[operations."ledger.post"]
+requirements = [
+  "%s: When a client posts an entry, the ledger service shall complete the request.",
+]
+""" % (LEDGER, LEDGER_REQ)
+
+
+def ledger(adapter):
+    """The ledger's contract held in the adapter spec at its pin, and `uses:` naming its ledger.post for stock.reserve."""
+    index = adapter / "spec" / "index.md"
+    index.write_text(index.read_text().replace("providers: []\n", "providers: [%s@1.0.0]\nuses:\n"
+                                               "  - stock.reserve → ledger.post\n" % LEDGER))
+    kept = adapter / "provider" / "example.org" / "fixture" / "ledger" / "1.0.0"
+    kept.mkdir(parents=True)
+    (kept / "contract.toml").write_text(LEDGER_CONTRACT)
+
+
 def mine(step):
     found = sys.modules["vocab"].vocab4.requested.scenario(step.request.node)
     return P.mine(step) and found is not None and bool(GROUPS & set(found.tags))
@@ -93,7 +118,7 @@ def given_does(step):
     """`the requirement group r1 serves the job j1`, `... has the requirement r2`, `the requirement r2 uses the
     operation o1`, `the requirement r3 governs ...`, `the adapter spec a1 realises ...`, `the job j1 needs the need n1`:
     each kept with what it names; `no requirement group serves the job j1`: nothing serves it."""
-    if not mine(step) or step.term not in TERMS + ("serves", "uses", "governs", "realises", "needs"):
+    if not mine(step) or step.term not in TERMS + ("serves", "uses", "governs", "realises", "needs", "holds"):
         return False
     if (step.subject or "").startswith("no "):      # `no requirement group serves the job j1`: nothing serves it
         P.world(step)["unserved"] = True
@@ -132,6 +157,9 @@ def build(step, job):
         (repo / "adapters" / "stock-ledger" / "spec" / "index.md").write_text(INDEX % ADAPTER)
         serve(notebook, "g10", job)
         says = {by_kind["requirement"]: "notebook#r10", by_kind["adapter spec"]: ADAPTER}
+        if "contract" in kinds:     # r35: the ledger's contract held, its ledger.post used for stock.reserve
+            ledger(repo / "adapters" / "stock-ledger")
+            says = {next(ns[-1] for t, ns in facts if t == "hold" and names.get(ns[0]) == "contract"): LEDGER_REQ}
     elif "operation" in kinds:
         shelf = SHELF % ("", ARCHIVES)
         serve(notebook, "g2", job)

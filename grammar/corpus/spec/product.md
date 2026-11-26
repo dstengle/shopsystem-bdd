@@ -561,3 +561,27 @@ shall [x3: agent the person (constant), x7: service the product service (constan
     keep(e2, subject: x7, object: x4)
     complete(e3, subject: x7, object: x8)
 ```
+
+## r35
+From: b637 r35.
+
+```reading
+While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and an adapter spec realises the requirement id of the port line and the operation uses another operation and the adapter spec holds a contract that holds a requirement that governs the operation, when the person traces the job, the product service shall return the requirement.
+shall [x11: agent the person (constant), x12: service the product service (constant)]
+  while [x1: requirement group, x2: job, x3: requirement, x4: operation, x5: port line, x6: adapter spec, x7: requirement id, x8: operation, x9: contract, x10: requirement]
+    serve(subject: x1, object: x2)
+    of(x3, x1)
+    use(subject: x3, object: x4)
+    govern(subject: x5, object: x4)
+    of(x7, x5)
+    realise(subject: x6, object: x7)
+    distinct(x8, x4)
+    use#2(subject: x4, object: x8)
+    govern(subject: x10, object: x8)
+    in(x10, x9)
+    in(x9, x6)
+  when
+    request(e1, product.trace, subject: x11, object: x2)
+  response
+    return(e2, subject: x12, object: x10)
+```

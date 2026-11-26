@@ -8,10 +8,11 @@ the id's path after `bounded-context/`, else a file problem naming the id), its 
 `spec obtain` keeps it (contract_obtain's `place`), any version when none is named, a version that does not conform
 to the version form (contract_publish's `VERSION`) a file problem naming it, never matched as a pattern (b595,
 checking r93) (`uncontracted`); adapter_provider's problems of its providers' words and assumed descriptions
-(b550). Its `adr/`, the adapter decisions, is accepted as it is; nothing here reads it further."""
+(b550); adapter_uses' problems of the provider operations each port operation it realises uses (b637). Its `adr/`, the adapter decisions, is accepted as it is; nothing here reads it further."""
 import re
 
 import adapter_provider
+import adapter_uses
 import contract_obtain
 import contract_publish
 import spec_read
@@ -54,7 +55,7 @@ def path(root, data, ident, problems):
                         f"adapters/{ident.rpartition('/')[2]}/, the adapter spec is kept at adapters/{root.name}/")
         return None
     problems.extend(unrealised(root, as_list(data.get("realises"))) + uncontracted(root, as_list(data.get("providers")))
-                    + adapter_provider.problems(root))
+                    + adapter_provider.problems(root) + adapter_uses.problems(root))
     return ident.partition("/")[2]
 
 

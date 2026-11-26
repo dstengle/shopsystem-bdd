@@ -1783,3 +1783,97 @@ shall [x4: service the specification service (constant)]
     request(e2, contract registry.retrieve, subject: x4, object: x2)
     param(e2, version, x3)
 ```
+
+## r132
+From: b736 r132.
+
+```reading
+While a bounded context is not in the shop, if the person obtains a contract from the bounded context that no upstream entry identifies, then the specification service shall refuse the request and name the bounded context and the `bounded context not an upstream` reason.
+shall [x2: shop "the shop the request is made in" (indexical), x3: agent the person (constant), x6: service the specification service (constant), x7: request "the request the trigger makes" (indexical), x8: reason `bounded context not an upstream` (parameter)]
+  while [x1: bounded context]
+    not
+      in(x1, x2)
+  if [x4: contract]
+    not [x5: upstream entry]
+      identify(subject: x5, object: x1)
+    request(e1, specification.obtain, subject: x3, object: x4, from: x1)
+  response
+    refuse(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x1)
+    name(e4, subject: x6, object: x8)
+```
+
+## r133
+From: b736 r133.
+
+```reading
+While the health of a provider is `failing`, if the person obtains a contract from the provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `bounded context failing` reason.
+shall [x2: agent the person (constant), x5: service the specification service (constant), x6: request "the request the trigger makes" (indexical), x7: reason `bounded context failing` (parameter)]
+  while [x1: provider]
+    health(x1) = `failing`
+  if [x3: contract]
+    not [x4: adapter spec]
+      of(x1, x4)
+    request(e1, specification.obtain, subject: x2, object: x3, from: x1)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x1)
+    name(e4, subject: x5, object: x7)
+```
+
+## r134
+From: b736 r134.
+
+```reading
+When the contract registry service refuses the request to deposit a contract, the specification service shall name the version of the contract and change nothing.
+shall [x1: service the contract registry service (constant), x4: service the specification service (constant)]
+  when [x2: request, x3: contract]
+    request(x2, contract registry.deposit, object: x3)
+    refuse(e1, subject: x1, object: x2)
+  response [x5: version]
+    of(x5, x3)
+    name(e2, subject: x4, object: x5)
+    not [x6: thing]
+      change(e3, subject: x4, object: x6)
+```
+
+## r135
+From: b637 r135.
+
+```reading
+While an adapter spec realises the requirement id of a port line that governs an operation and the operation uses another operation and the adapter spec holds no contract that holds the operation, if the person validates the adapter spec, then the specification service shall fail the check and name the operation.
+shall [x7: agent the person (constant), x8: service the specification service (constant), x9: check "the check the trigger makes" (indexical)]
+  while [x1: adapter spec, x2: port line, x3: operation, x4: requirement id, x5: operation]
+    govern(subject: x2, object: x3)
+    of(x4, x2)
+    realise(subject: x1, object: x4)
+    distinct(x5, x3)
+    use#2(subject: x3, object: x5)
+    not [x6: contract]
+      in(x5, x6)
+      in(x6, x1)
+  if
+    request(e1, specification.check, subject: x7, object: x1)
+  response
+    fail(e2, subject: x8, object: x9)
+    name(e3, subject: x8, object: x5)
+```
+
+## r136
+From: b637 r136.
+
+```reading
+While an adapter spec realises the requirement id of a port line that governs an operation and the operation uses no operation, if the person validates the adapter spec, then the specification service shall fail the check and name the operation.
+shall [x6: agent the person (constant), x7: service the specification service (constant), x8: check "the check the trigger makes" (indexical)]
+  while [x1: adapter spec, x2: port line, x3: operation, x4: requirement id]
+    govern(subject: x2, object: x3)
+    of(x4, x2)
+    realise(subject: x1, object: x4)
+    not [x5: operation]
+      use#2(subject: x3, object: x5)
+  if
+    request(e1, specification.check, subject: x6, object: x1)
+  response
+    fail(e2, subject: x7, object: x8)
+    name(e3, subject: x7, object: x3)
+```

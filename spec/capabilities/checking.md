@@ -374,6 +374,21 @@ Restates: design-model-check#r13@0.29.
 ### [g130] A retrieval the contract registry refuses names the version and changes nothing
 - [r130] When the contract registry service refuses the request to retrieve a contract, the specification service shall name the version of the contract and change nothing.
 
+### [g132] Obtaining from a bounded context outside the shop that no upstream entry identifies is refused naming it
+- [r132] While a bounded context is not in the shop, if the person obtains a contract from the bounded context that no upstream entry identifies, then the specification service shall refuse the request and name the bounded context and the `bounded context not an upstream` reason.
+
+### [g133] Obtaining from a failing provider that no adapter spec has is refused naming the provider
+- [r133] While the health of a provider is `failing`, if the person obtains a contract from the provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `bounded context failing` reason.
+
+### [g134] A deposit the contract registry refuses names the version and changes nothing
+- [r134] When the contract registry service refuses the request to deposit a contract, the specification service shall name the version of the contract and change nothing.
+
+### [g135] A provider operation an adapter spec uses that no held contract declares
+- [r135] While an adapter spec realises the requirement id of a port line that governs an operation and the operation uses another operation and the adapter spec holds no contract that holds the operation, if the person validates the adapter spec, then the specification service shall fail the check and name the operation.
+
+### [g136] A port operation of an adapter spec that uses no provider operation
+- [r136] While an adapter spec realises the requirement id of a port line that governs an operation and the operation uses no operation, if the person validates the adapter spec, then the specification service shall fail the check and name the operation.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.
