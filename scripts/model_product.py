@@ -9,7 +9,8 @@ context's `jobs` hold and `here(B)` of this one (a job held here also a `job` no
 `psub(S)` and `psub_serves(S, J)` of each subdomain; `addresses(B, S)` of each bounded context; `plays(P, A)` of each
 product actor this bounded context maps to its actor A, and `triggers_as(P, Q)` of each requirement Q whose trigger's
 request A makes (model_domain_lines' `requester`). Of this bounded context: `served_here(J)` of each job a requirement
-group serves; `job_reaches(J, Q)` of each requirement of J's trace, and `job_reaches_context(J, B)` of this bounded
+group serves; `job_reaches(J, Q)` of each requirement of J's trace of its own (a provider's that an adapter spec's `uses:`
+reaches left out, b637), and `job_reaches_context(J, B)` of this bounded
 context when the trace holds a requirement and of each provider of an adapter spec in it (decision 0143).
 A product file not of the product form `unformed_product(F, Why)` of its path and product_store's reason, which
 w_unformed_product reads, so that the check names it and completes (r124, b695); nothing else read of it. The trace is derived only when a job has a serving group."""
@@ -104,7 +105,10 @@ class ProductReading:
             if found is None:
                 continue
             reqs, specs = found
-            for rid in reqs:
+            local = product_trace.texts(ctx)
+            for rid, (_, text, _) in reqs.items():
+                if local.get(rid) != text:      # a provider's requirement an adapter spec's uses: reaches (b637)
+                    continue
                 cap, _, n = rid.partition("#")
                 self.fact("job_reaches", job, "%s#%s" % (caps.get(cap, cap), n))
             reached = ([here] if reqs else []) + [p for ident in specs for p in providers(self.root, ident)]
