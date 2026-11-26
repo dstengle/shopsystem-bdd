@@ -83,15 +83,19 @@ SKIPPED_RULES = {"v_a3", "v_a4", "v_a5", "v_a6"}
 OWN_STAGE = {"v_p1", "v_p2", "v_s1", "v_s2", "v_s3"} | SKIPPED_RULES
 
 
+_FACTS = {}     # a copy's path: the facts its last `_violations` solved over, which readiness_bound reads (b721)
+
+
 def _violations(copy):
-    """(the violations of every `model.lp` rule `model check` finds in the copy, as (code, args), {code: label}, the
-    facts), read through `model`'s facts as `model check` reads them (b333)."""
+    """(the violations of every `model.lp` rule `model check` finds in the copy, as (code, args), {code: label}), read
+    through `model`'s facts as `model check` reads them (b333); the facts kept under `_FACTS`."""
     from model_check import solve
     from model_facts import Model
     model = Model(copy).read()
     relations, labels = solve(model)
+    _FACTS[str(copy)] = model.facts
     return {(name, tuple(str(a) for a in args)) for name, args in relations
-            if name.startswith("v") and name not in OWN_STAGE}, labels, model.facts
+            if name.startswith("v") and name not in OWN_STAGE}, labels
 
 
 def _broken(copy, blocks, before):
@@ -102,7 +106,8 @@ def _broken(copy, blocks, before):
     bound check's (v_pb1, v_pb2) whose operation its model lines declare or its lines request, naming the operation
     or the outcome and the rule (readiness_bound, b721)."""
     mine = {"%s#%s" % (b.capability, g.id) for b in blocks for g in b.groups} | set(backlog_lines.ids(blocks))
-    found, labels, facts = _violations(copy)
+    found, labels = _violations(copy)
+    facts = _FACTS.pop(str(copy), [])
     ops = readiness_bound.operations(model_elements(blocks), facts, mine)
     reasons = []
     for name, args in sorted(found - before):
@@ -225,7 +230,9 @@ def _laid(copy, item, blocks, mine):
 
     def unlaid():
         spec_prefetch.prefetch(copy, spec_prefetch.texts(copy))
-        return set(spec_lexicon.problems(spec_lexicon.read(copy), outer)), _violations(copy)[0]
+        problems, violations = set(spec_lexicon.problems(spec_lexicon.read(copy), outer)), _violations(copy)[0]
+        _FACTS.pop(str(copy), None)         # the facts before the lay are no item's
+        return problems, violations
     before, before_lay = readiness_before.before(copy, unlaid)
     doubled = backlog_forms.laid_already(copy, blocks)      # an upstream an item picked before lays (b476)
     backlog_lines.lay_onto(copy, item)
