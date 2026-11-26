@@ -21,6 +21,7 @@ import backlog_items
 import backlog_lines
 import batch_git
 import batch_start
+import laying_inprocess
 import spec_unbuilt
 
 STUB = Path(__file__).resolve().parents[1] / "scripts" / "stub_gh.py"
@@ -178,7 +179,7 @@ def lay(step, tree, items):
     """The lines commit of a batch, as `work batch start` makes it: every item's lines laid, their ids unbuilt, the
     features written again, citing each item (plan 4 review, B1)."""
     found = [backlog_items.find(step.repo, B().ident(i)) for i in items]
-    changed = batch_start.lay_lines(tree, found)
+    changed = laying_inprocess.lay_lines(tree, found)
     if changed:
         git(step, "add", "--", *changed, cwd=tree)
     git(step, "commit", "-q", "--allow-empty", "-m", "%s: the requirement lines\n%s" % (tree.name, batch_start.cites(found)), cwd=tree)

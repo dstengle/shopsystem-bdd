@@ -1,7 +1,8 @@
 """A parked item's lines out of a batch (capability batches r17, r18; b47): `work batch park` takes the item's lines
 out of `batch-<n>` at once, in one commit citing it (`take_out`), and `work batch done` runs a task's tests in a
 worktree of the task's head with every parked item's lines taken out (`tested_tree`), so that a parked item's scenario
-holds up no other task. Both take the lines out as `work batch review` does (`batch_start.unlay_lines`), each item as it
+holds up no other task. Both have the laying service lift each item from the workspace (laying, b611, batches r182;
+`lifted`), as `work batch review` does, and keep the change citing the items once it completed (r183), each item as it
 was laid (`as_laid`, b324; after `work batch amend`, as it last laid it, b460): an item reshaped after its park is
 taken out by the lines the batch branch holds."""
 import contextlib
@@ -10,6 +11,7 @@ import re
 import backlog_items
 import batch_plan
 import batch_start
+import laying
 from batch_git import GitFailed, git, is_tree, remove_tree, tree_for, trees_dir
 
 
@@ -58,7 +60,7 @@ def take_out(root, batch, items, command):
     made = tree_for(root, tree, batch.branch, command)
     before = git(tree, "rev-parse", "HEAD").stdout.strip()
     try:
-        changed = batch_start.unlay_lines(tree, as_laid(root, batch, items), command, base_of(root, batch))
+        changed = lifted(root, batch, items, tree, command)
         if changed and git(tree, "status", "--porcelain", "--", *changed).stdout.strip():
             git(tree, "add", "--", *changed)
             git(tree, "commit", "-q", "-m", "%s: the requirement lines of %s taken out\n%s" % (
@@ -71,6 +73,15 @@ def take_out(root, batch, items, command):
     finally:
         if made:
             remove_tree(root, tree)
+
+
+def lifted(root, batch, items, workspace, command):
+    """Each of `items`, as it was laid, lifted from the workspace by the laying service against the batch's base; the
+    paths its lifts changed."""
+    base, changed = base_of(root, batch), []
+    for item in as_laid(root, batch, items):
+        changed += laying.changed(laying.lift(item, workspace, command, base), command)
+    return list(dict.fromkeys(changed))
 
 
 def put_back(root, batch, before):
@@ -94,7 +105,7 @@ def tested_tree(root, batch, task, tree, head, command):
     remove_tree(root, other)
     git(root, "worktree", "add", "-q", "--detach", str(other), head)
     try:
-        batch_start.unlay_lines(other, as_laid(root, batch, items), command, base_of(root, batch))
+        lifted(root, batch, items, other, command)
         yield other
     finally:
         remove_tree(root, other)

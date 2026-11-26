@@ -7,6 +7,7 @@ import sys
 
 import backlog_items
 import batch_start
+import laying_inprocess
 
 W, B, T, F = (sys.modules[n] for n in ("shop_work_queue_world", "shop_backlog_world", "shop_batches_world",
                                        "shop_world_four"))
@@ -34,7 +35,7 @@ def reshape(step, name):
     tree = T.outside(step) / ("park-%s" % n)
     T.git(step, "worktree", "add", "-q", str(tree), n)
     found = [backlog_items.find(step.repo, B.ident(i)) for i in items]
-    changed = batch_start.unlay_lines(tree, found, "work batch park")
+    changed = laying_inprocess.unlay_lines(tree, found, "work batch park")
     T.git(step, "add", "--", *changed, cwd=tree)
     T.git(step, "commit", "-q", "-m", "%s: the requirement lines taken out\n%s" % (n, batch_start.cites(found)),
           cwd=tree)
