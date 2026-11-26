@@ -7,7 +7,7 @@ area: specification
 specifies: service product
 language: codified-2
 retired: [g18, r18, g14, r14, g43, r43, g40, r40]
-unbuilt: [r69, r74, r70, r71, r72, r73]
+unbuilt: [r69]
 ---
 
 # Product
