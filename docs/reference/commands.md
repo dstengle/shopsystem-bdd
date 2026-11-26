@@ -1305,6 +1305,24 @@ performs a lifecycle transition, `port request` when it requests a port operatio
 handles. It is printed as `coordination: <kind>` after the first line, and is the content's `coordination` (null
 when the trace requests no port operation).
 
+### `shop spec coupling`
+
+Prints the coupling between the areas of the domain model (`spec/model/`), writing nothing, each area a bounded
+context the disentangling of a shop will make. A coupling is of the area depended on, by another area, and holds
+each word both areas' vocabularies define (of the area of the word's second entry), each element of the area the
+other's model refers to, and each requirement of a capability of the other area that uses a word only the area
+defines. Code imports are not read.\
+Synopsis: `shop spec coupling`
+
+```console
+$ shop spec coupling --json
+```
+
+Each coupling is printed as `<area> by <other area>: <n> words, <n> elements, <n> requirements`, then a line of
+its words, its elements (`object note`) and its requirement ids, the couplings with the most first. Under `--json`
+the content is `{"couplings": [{"area", "by", "words", "elements", "requirements"}]}`; a context with no domain model
+has no coupling.
+
 ### `shop spec assign`
 
 Assigns a job of the product to the one bounded context whose capabilities serve it, kept among the bounded
