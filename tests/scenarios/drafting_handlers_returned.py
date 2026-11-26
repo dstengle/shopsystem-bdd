@@ -1,7 +1,8 @@
 """drafting's requirement reworded in an item and term written into one, each returned (drafting#r103, r106, r107,
 b829). Each a `local` handler that takes a step of those scenarios (`mine`) and returns False on any other. Of r106
 and r107, readiness_world's codified spec, the item holding the passing line as `work-queue#r5`, reworded by
-`work line <item> --reword work-queue#r5` to `R.LINE` (r106) or to the text it holds (r107); of r103, the
+`work line <item> --reword work-queue#r5` to `R.LINE` (r106, no text given) or, given the `text` parameter the
+requirement itself, to the text it holds (r107); of r103, the
 domain-model fixture's spec, `work line <item> --into notebook --term <entry>`. The Thens read the item as committed
 and what `work` printed: the id and the line, the term, or that nothing changed and the requirement named."""
 import re
@@ -49,11 +50,21 @@ def run(step):
     else:
         R.give_lines(step, "i1", R.PASSING)
         B.write_item(step, "i1", status="shaped")
-        world["text"] = R.LINE if _tags(step) == {"r106"} else R.PASSING
+        world["text"] = _text(step)
         args = ["--reword", IDENT, world["text"]]
     world["before"] = (step.repo / step.context["items"]["i1"]).read_text()
     B.run_work(step, "line", B.ident("i1"), *args, **R.NO_INPUT)
     return None
+
+
+def _text(step):
+    """the text the reword is given: the step's `text` parameter, the requirement the item holds (r107), its held
+    text; with none (r106), another text."""
+    given = dict(step.params).get("text")
+    if given is None:
+        return R.LINE
+    assert given == "the requirement r1", (step.text, given)
+    return R.PASSING
 
 
 def _done(step):
