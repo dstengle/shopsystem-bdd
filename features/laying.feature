@@ -636,3 +636,21 @@ Feature: Laying
     Then the laying service keeps the requirement r9
     And the requirement group r3 has the requirement r9
     And the requirement r9 does not support the requirement id r8
+
+  @g48 @r48
+  Scenario: An item laid that makes two areas imports into one the other whose term its requirement uses
+    Given an item i1
+    And the item i1 holds `watering`
+    And the item i1 holds `plots`
+    And a term t1
+    And the `plots` area holds the term t1
+    And a capability c1
+    And the `watering` area holds the capability c1
+    And a requirement r1
+    And the capability c1 has the requirement r1
+    And the requirement r1 uses the term t1
+    And a workspace w1
+    When the batches service lays the item i1 in the workspace w1
+    Then the laying service keeps `watering`
+    And the laying service keeps the area a1
+    And the area a1 imports `plots`

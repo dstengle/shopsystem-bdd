@@ -72,3 +72,37 @@ def test_an_import_the_port_held_at_the_base_survives_the_unlay(tmp_path):
     backlog_port.lay(tmp_path, blocks, [])
     backlog_port.unlay(tmp_path, blocks, [], base)
     assert "imports: [notes]\n" in stock.read_text(), stock.read_text()
+
+
+PLOTS = "---\nid: model/ex.com/prod/ctx/plots\narea: plots\nkind: core\nimports: []\n---\n\n# Plots\n\n```model\nobject plot\n```\n"
+PLOT_WORDS = "---\nid: vocabulary/ex.com/prod/ctx/plots\narea: plots\n---\n\n# The words of plots\n\n## Terms\n- **plot** (noun) → object plot. A plot. Plural: plots.\n"
+TWO = ("### plots\n\nnarrator: a gardener\ngroup: service\npurpose: Plots.\n\n#### [g1] A plot\n- [r1] When the person "
+       "adds a note, the notes service shall keep the note.\n\n### watering\n\nnarrator: a gardener\ngroup: service\n"
+       "purpose: Watering.\n\n#### [g1] A plot watered\n- [r1] When the person adds a plot, the notes service shall "
+       "keep the plot.\n\n### notebook\n\n#### [g2] A plot noted\n- [r2] When the person adds a plot, the notes "
+       "service shall keep the plot.")
+NOTEBOOK = "---\narea: notes\nlanguage: codified-2\nretired: []\n---\n\n# Notebook\n\n## Behaviour\n"
+
+
+def test_two_areas_an_item_makes_import_the_one_whose_word_the_other_says(tmp_path):
+    """b830: a core area the item makes, whose line says a word of another area it makes, laid with its model file
+    importing that area, as is an area the spec holds whose item line says it; taken out once the other area's model
+    and words are, the made model file gone and the import out of the area left."""
+    _repo(tmp_path)
+    (tmp_path / "spec" / "capabilities").mkdir()
+    (tmp_path / "spec" / "capabilities" / "notebook.md").write_text(NOTEBOOK)
+    blocks = read(SimpleNamespace(sections={"Requirements": TWO}, name="b1"), "the item b1")
+    plots, words = tmp_path / "spec" / "model" / "plots.md", tmp_path / "spec" / "vocabulary" / "plots.md"
+    plots.write_text(PLOTS)                         # as backlog_model lays the item's model lines before
+    words.write_text(PLOT_WORDS)
+    files = []
+    backlog_port.lay(tmp_path, blocks, files)
+    watering = tmp_path / "spec" / "model" / "watering.md"
+    assert "plots" in watering.read_text().split("imports: [", 1)[1].split("]")[0], watering.read_text()
+    assert "spec/model/watering.md" in files
+    assert "imports: [plots]\n" in (tmp_path / "spec" / "model" / "notes.md").read_text()
+    plots.unlink()                                  # as backlog_model takes them out again
+    words.unlink()
+    backlog_port.unlay(tmp_path, blocks, [])
+    assert not watering.exists()
+    assert (tmp_path / "spec" / "model" / "notes.md").read_text() == NOTES
