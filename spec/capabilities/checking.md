@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56, g94, r94]
-unbuilt: []
+unbuilt: [r125]
 ---
 
 # Checking
@@ -352,6 +352,9 @@ Restates: design-model-check#r13@0.29.
 
 ### [g124] A product not of the product form is named by the check, which completes
 - [r124] While this product does not conform to the product form, when the person validates this specification, the specification service shall name this product and complete the request.
+
+### [g125] A port outcome a reply trigger is on is handled
+- [r125] While a driven port holds an operation that has an operation outcome and a core line that uses `reply-trigger` handles the operation outcome, when the person validates this specification, the specification service shall complete the request.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

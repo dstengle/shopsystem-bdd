@@ -619,3 +619,14 @@ Feature: Consistency
     And the requirement r3 governs the operation o1
     When the person examines this specification
     Then the specification service returns `no findings`
+
+  @g44 @r44
+  Scenario: A requirement whose trigger is a reply is translated
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And the requirement r1 uses `reply-trigger`
+    And a translation t1
+    And the requirement r1 has the translation t1
+    When the person examines this specification with the capability c1
+    Then the specification service returns the translation t1

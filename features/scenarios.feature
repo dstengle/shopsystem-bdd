@@ -723,3 +723,21 @@ Feature: Scenarios
     And the step s1 mentions the instance i1
     When the person generates the feature f1
     Then the scenarios service does not keep the step s1
+
+  @g44 @r44
+  Scenario: generation introduces the thing a reply trigger's request is on
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And the requirement r1 uses `reply-trigger`
+    And a feature f1
+    And the capability c1 has the feature f1
+    And a step s1
+    And an instance i1
+    And no given step introduces the instance i1
+    And no when step introduces the instance i1
+    And the step s1 mentions the instance i1
+    When the person generates the feature f1
+    Then the scenarios service does not keep the step s1

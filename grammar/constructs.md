@@ -1141,7 +1141,7 @@ a trigger on a service's reply to a request of an operation, said with the reque
 - Since: b626
 - Form: <service> completes|returns|refuses the request to <operation verb> <np>
 - Functions: `rq_\w+`
-- Cited by: parsing#r25, parsing#r26
+- Cited by: checking#r125, consistency#r44, parsing#r25, parsing#r26, scenarios#r44
 - Context: `grammar/corpus/constructs/request/`
 - Example and its reading:
 

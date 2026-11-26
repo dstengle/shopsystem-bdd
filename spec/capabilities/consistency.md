@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: examine; service language: explain
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r44]
 ---
 
 # Consistency
@@ -195,4 +195,7 @@ The requirements examined together: contradictions, what a line adds over the ot
 
 ### [g43] spec logic follows a response's request to no line of a different requester
 - [r43] While a requirement that has a requester uses `response-request` and an operation and another requirement that has a different requester governs the operation, when the person examines this specification, the specification service shall return `no findings`.
+
+### [g44] A requirement whose trigger is a reply is translated
+- [r44] While a requirement of a capability uses `reply-trigger`, when the person examines this specification with the capability, the specification service shall return a translation of the requirement.
 
