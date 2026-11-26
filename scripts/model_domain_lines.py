@@ -8,7 +8,8 @@ From, To)` of each lifecycle, and `op_area(O, A)`, `obj_area(Obj, A)` of the are
 object is declared in (v_m9, b610). O is an operation's id (`notes.add`), Obj an object's name, T its attribute's.
 
 Of a line Q (`line_facts`): `requester(Q, O, A)` of its trigger's request of O by the actor A (a kind's name when a K
-requests it: Q governs O), `asks(Q, O, D)` of a response's request of O by its doer D (response-request, b543),
+requests it: Q governs O), `asks(Q, O, D)` of a response's request of O by its doer D (response-request, b543), and
+of a response's act of a verb naming O with no parameters, which spec_lf_facts keys `req(O,())` (`acted`, b571, b604),
 `req_param(Q, O, P)` of each parameter either names, `req_value(Q, O, P, V)` of each value it gives one; `on_refusal(Q,
 Obj)` of a trigger's refusal of a thing of the object Obj (beside the model's `op_object(O, Obj)`, O's object: a line
 on the refusal of what a response asks O for states O's reasons, v_m4); `states_reason(Q,
@@ -91,6 +92,11 @@ class Lines:
         self.objects = {t.term: t.element.split(".", 1)[1] for t in lexicon.of("kind") if t.element}
         self.attrs = {(k, t.term): t.element.rsplit(".", 1)[1] for t in lexicon.of("attribute") if t.element
                       for k in t.kinds}
+        self.operations = {}     # (verb, sense) -> the operation it names, senses numbered as spec_logic_vocab's
+        for t in lexicon.of("event"):
+            sense = 1 + sum(1 for k in self.operations if k[0] == t.term and k[1] is not None)
+            self.operations[(t.term, sense)] = t.operation
+            self.operations[(t.term, None)] = t.operation     # with no sense, the verb's last, as spec_lf_ids'
 
     def obj(self, kind):
         return self.objects.get(kind)
@@ -107,6 +113,7 @@ class Lines:
             out += self.reasons(ident, req.args[1], response)
         for req in (a for a in response if a.pred == "request"):     # a response's request (b543)
             out += self.request(ident, "asks", req, response)
+        out += self.acted(ident, response)
         out += [("on_refusal", ident, self.obj(x.kind)) for x in self.refused(trigger) if self.obj(x.kind)]
         done = [a for p in form.parts if p.op == "response" for a in _done(p.body)]
         out += self.sets(ident, pre, done)
@@ -115,13 +122,25 @@ class Lines:
     def request(self, ident, pred, req, said):
         """`requester` (a trigger's) or `asks` (a response's) of a request atom, and its parameters `said` names."""
         e, o, _, _, roles = req.args
-        who = roles[0][1]
-        out = [(pred, ident, o, who.value if who.origin == "constant" else self.obj(who.kind) or who.kind)]
+        out = [(pred, ident, o, self.doer(roles[0][1]))]
         for a in said:
             if a.pred in ("param", "noparam") and a.args[0] == e:
                 out.append(("req_param", ident, o, a.args[1]))
                 if a.pred == "param" and isinstance(a.args[2], str) and a.args[2].startswith("`"):
                     out.append(("req_value", ident, o, a.args[1], _bare(a.args[2])))
+        return out
+
+    def doer(self, who):
+        """The actor a request's subject names, or the object of its kind (a K requests it)."""
+        return who.value if who.origin == "constant" else self.obj(who.kind) or who.kind
+
+    def acted(self, ident, response):
+        """`asks` of a response's act of a verb naming an operation with no parameters (b604)."""
+        out = []
+        for a in response:
+            o = a.pred == "event" and self.operations.get((a.args[1], a.args[2]))
+            if o:
+                out.append(("asks", ident, o, self.doer(a.args[3][0][1])))
         return out
 
     @staticmethod

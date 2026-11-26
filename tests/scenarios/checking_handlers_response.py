@@ -1,13 +1,13 @@
-"""Handlers of checking's scenarios of a response's request (r71, r72, b543), each a `work_queue_world.local` that
-takes only a step of a scenario of one of its groups (`mine`). The world is the domain-model fixture
-(tests/scripts/fixtures/domain-model/: the notes service, its CLI contract and the notebook capability's lines) with a
-driven port beside it, written at the When: the area `stock` of kind `port`, whose operation `stock.reserve` no line's
-trigger requests (no requirement governs it) and the CLI contract has no table of; the notes area importing it; and
-r1, a notebook line whose response asks the stock service to reserve a note with a quantity (`response-request`). In
-r72's group the operation declares the refusal reason `no stock`, and r2, a notebook line triggered on the stock
-service's refusal of a reservation, the thing the operation makes; and r12, a notebook line triggered on the stock
-service's completion of a reservation, so that no outcome of the port's operation is unhandled (v_b2, b549). The
-features are written by `features generate`.
+"""Handlers of checking's scenarios of a response's request (r71, r72, b543; r111, b604), each a
+`work_queue_world.local` that takes only a step of a scenario of one of its groups (`mine`). The world is the
+domain-model fixture (tests/scripts/fixtures/domain-model/: the notes service, its CLI contract and the notebook
+capability's lines) with a driven port beside it, written at the When: the area `stock` of kind `port`, whose operation
+`stock.reserve` no line's trigger requests (no requirement governs it) and the CLI contract has no table of; the notes
+area importing it; and r1, a notebook line whose response asks the stock service to reserve a note with a quantity
+(`response-request`), in r111's group with no parameter (b604). In r72's group the operation declares the refusal reason
+`no stock`, and r2, a notebook line triggered on the stock service's refusal of a reservation, the thing the operation
+makes; and r12, a notebook line triggered on the stock service's completion of a reservation, so that no outcome of the
+port's operation is unhandled (v_b2, b549). The features are written by `features generate`.
 
 The Givens say only what the world is; the When runs `spec check`; the Then reads its exit: v_m7 counts r1's request
 of `stock.reserve`, and v_m4 counts r2 as stating its reason."""
@@ -18,7 +18,7 @@ from pathlib import Path
 W = sys.modules["shop_work_queue_world"]
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURE = ROOT / "tests" / "scripts" / "fixtures" / "domain-model"
-GROUPS = {"g71", "g72"}
+GROUPS = {"g71", "g72", "g111"}
 
 MODEL = """---
 id: model/example.org/fixture/stock
@@ -83,6 +83,12 @@ def refusing(step):
     return "g72" in found.tags
 
 
+def bare(step):
+    """True in r111's group: r1's response asks the stock service to reserve a note with no parameter (b604)."""
+    found = sys.modules["vocab"].vocab4.requested.scenario(step.request.node)
+    return "g111" in found.tags
+
+
 def given(step):
     """Each Given of the groups: the world below says it."""
     if not mine(step):
@@ -105,7 +111,8 @@ def build(step):
     assert "imports: []\n" in notes.read_text(), notes.read_text()
     notes.write_text(notes.read_text().replace("imports: []\n", "imports: [stock]\n"))
     notebook = spec / "capabilities" / "notebook.md"
-    notebook.write_text(notebook.read_text() + ASKING + HANDLED + (REFUSED if refused else ""))
+    asking = ASKING.replace(" with the quantity `2`", "") if bare(step) else ASKING
+    notebook.write_text(notebook.read_text() + asking + HANDLED + (REFUSED if refused else ""))
     index = spec / "index.md"
     row = "| notes | core | notebook |\n"
     assert row in index.read_text(), index.read_text()
