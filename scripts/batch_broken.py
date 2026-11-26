@@ -6,7 +6,12 @@ them. While they are kept, they are the scenarios that break in the batch's work
 step `fix task` with the task of the item whose change broke them (`task_of`): the first task one of whose item's
 scenarios (a scenario of `features/<capability>.feature` on the batch's branch tagged with one of its requirement
 ids) a failed id names, else the first whose reached tests (batch_reach) hold a failed id's file, else none: the
-poll then says `look at failure` with the failed tests and no task (b703, batches r154)."""
+poll then says `look at failure` with the failed tests and no task (b703, batches r154).
+
+A fix (b713, batches r161-r163) is a commit on a task's branch newer than the refused submit: `work batch review`
+keeps each task branch's head as it submits (`submitted`, beside the failed ids, `rerun/batch-<n>.heads`), and while
+the failed ids are kept, a task branch that holds a commit its kept head does not is fixed (`fixed`); the poll then
+says `submit batch`, not `fix task` nor `look at failure`, whose run tests the fix."""
 import re
 
 import backlog_items
@@ -20,6 +25,39 @@ from shop_files import Refused
 def failed(root, batch):
     """The ids the batch's last whole-suite run named failed, kept until a run passes."""
     return batch_rerun.kept(root, batch.name)
+
+
+def _heads_key(batch):
+    return "%s.heads" % batch.name
+
+
+def submitted(root, batch, tasks):
+    """Each task's branch head kept as the batch is submitted, so that a later commit on it reads as a fix."""
+    heads = []
+    for task in tasks:
+        try:
+            heads.append("%s %s" % (task.branch, git(root, "rev-parse", task.branch).stdout.strip()))
+        except Refused:
+            continue
+    batch_rerun.keep(root, _heads_key(batch), heads)
+
+
+def fixed(root, batch, tasks):
+    """Whether a fix exists: the batch's failed run is kept and a task's branch holds a commit newer than its head
+    at that submit."""
+    if not failed(root, batch):
+        return False
+    heads = dict(line.split(" ", 1) for line in batch_rerun.kept(root, _heads_key(batch)) if " " in line)
+    for task in tasks:
+        head = heads.get(task.branch)
+        if not head:
+            continue
+        try:
+            if git(root, "rev-list", "--count", "%s..%s" % (head, task.branch)).stdout.strip() != "0":
+                return True
+        except Refused:
+            continue
+    return False
 
 
 def test_name(title):

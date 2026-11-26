@@ -25,6 +25,7 @@ import backlog_lines
 import features_generate
 import model_decisions
 import readiness_before
+import readiness_bound
 import readiness_titles
 import request_moves
 import request_text
@@ -82,12 +83,17 @@ SKIPPED_RULES = {"v_a3", "v_a4", "v_a5", "v_a6"}
 OWN_STAGE = {"v_p1", "v_p2", "v_s1", "v_s2", "v_s3"} | SKIPPED_RULES
 
 
+_FACTS = {}     # a copy's path: the facts its last `_violations` solved over, which readiness_bound reads (b721)
+
+
 def _violations(copy):
     """(the violations of every `model.lp` rule `model check` finds in the copy, as (code, args), {code: label}), read
-    through `model`'s facts as `model check` reads them (b333)."""
+    through `model`'s facts as `model check` reads them (b333); the facts kept under `_FACTS`."""
     from model_check import solve
     from model_facts import Model
-    relations, labels = solve(Model(copy).read())
+    model = Model(copy).read()
+    relations, labels = solve(model)
+    _FACTS[str(copy)] = model.facts
     return {(name, tuple(str(a) for a in args)) for name, args in relations
             if name.startswith("v") and name not in OWN_STAGE}, labels
 
@@ -96,9 +102,13 @@ def _broken(copy, blocks, before):
     """A reason for each violation of a `model.lp` rule that names a group or a requirement of the item, naming it and
     the rule (and any other node the violation names), and for each that names none of them but an element of the
     item's model lines by a domain model rule (`v_m<n>`: v_m4 of a reason no line states, b477), naming the model line by its element and the rule,
-    unless the violation is in `before`, the copy's before the item's lines were laid (b77, b333)."""
+    unless the violation is in `before`, the copy's before the item's lines were laid (b77, b333); and for each of the
+    bound check's (v_pb1, v_pb2) whose operation its model lines declare or its lines request, naming the operation
+    or the outcome and the rule (readiness_bound, b721)."""
     mine = {"%s#%s" % (b.capability, g.id) for b in blocks for g in b.groups} | set(backlog_lines.ids(blocks))
     found, labels = _violations(copy)
+    facts = _FACTS.pop(str(copy), [])
+    ops = readiness_bound.operations(model_elements(blocks), facts, mine)
     reasons = []
     for name, args in sorted(found - before):
         short = [a.rsplit("/", 1)[-1] for a in args]       # capability/<context>/<name>#g<n> as <name>#g<n>
@@ -109,6 +119,7 @@ def _broken(copy, blocks, before):
                                                 ": with %s" % ", ".join(others) if others else ""))
         if name.startswith("v_m") and not set(short) & mine:    # a domain model rule over its model lines (b477)
             reasons += _modelled(blocks, name, labels.get(name, ""), args)
+    reasons += readiness_bound.reasons(found - before, ops, labels)
     return list(dict.fromkeys(reasons))
 
 
@@ -219,7 +230,9 @@ def _laid(copy, item, blocks, mine):
 
     def unlaid():
         spec_prefetch.prefetch(copy, spec_prefetch.texts(copy))
-        return set(spec_lexicon.problems(spec_lexicon.read(copy), outer)), _violations(copy)[0]
+        problems, violations = set(spec_lexicon.problems(spec_lexicon.read(copy), outer)), _violations(copy)[0]
+        _FACTS.pop(str(copy), None)         # the facts before the lay are no item's
+        return problems, violations
     before, before_lay = readiness_before.before(copy, unlaid)
     doubled = backlog_forms.laid_already(copy, blocks)      # an upstream an item picked before lays (b476)
     backlog_lines.lay_onto(copy, item)

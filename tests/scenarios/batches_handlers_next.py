@@ -88,6 +88,8 @@ def refused_submit(step, batch):
         return
     done = T.run_batch(step, "review", T.batch_name(step, batch))
     assert done.returncode != 0 and "FAILED" in done.stderr, (done.stdout, done.stderr)
+    for fix in T.AFTER_SUBMIT:        # a fix made after the refused submit (batches_handlers_fix, b713)
+        fix(step, batch)
 
 
 RANK = {"failed": 0, "running": 1, "pending": 2}

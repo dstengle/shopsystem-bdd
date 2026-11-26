@@ -1385,32 +1385,6 @@ shall [x5: agent the driver (constant), x6: service the batches service (constan
     return(e3, subject: x6, object: x3)
 ```
 
-## r149
-From: b696 r149.
-
-```reading
-While a batch is `building` and a task of an item in the batch is `done` and every task of the batch is `done` and a scenario of the item breaks in the workspace of the batch, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `fix task` and the task.
-shall [x7: agent the driver (constant), x8: service the batches service (constant)]
-  while [x1: batch, x2: task, x3: item, x5: scenario, x6: workspace]
-    status(x1) = `building`
-    in(x3, x1)
-    of(x2, x3)
-    status(x2) = `done`
-    every [x4: task]
-      of(x4, x1)
-      scope
-        status(x4) = `done`
-    of(x5, x3)
-    of(x6, x1)
-    break(subject: x5, in: x6)
-  if
-    request(e1, batches.poll, subject: x7, object: x1)
-  response [x9: batch step]
-    instruction(x9) = `fix task`
-    return(e2, subject: x8, object: x9)
-    return(e3, subject: x8, object: x2)
-```
-
 ## r150
 From: b698 r150.
 
@@ -1492,32 +1466,6 @@ shall [x7: agent the driver (constant), x8: service the batches service (constan
       status(x10) = `pending`
       scope
         return(e3, subject: x8, object: x10)
-```
-
-## r154
-From: b703 r154.
-
-```reading
-While a batch is `building` and every task of the batch is `done` and a scenario breaks in the workspace of the batch and no scenario of an item in the batch breaks in the workspace of the batch, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `look at failure` and the scenario.
-shall [x7: agent the driver (constant), x8: service the batches service (constant)]
-  while [x1: batch, x3: scenario, x4: workspace]
-    status(x1) = `building`
-    every [x2: task]
-      of(x2, x1)
-      scope
-        status(x2) = `done`
-    of(x4, x1)
-    break(subject: x3, in: x4)
-    not [x5: scenario, x6: item]
-      in(x6, x1)
-      of(x5, x6)
-      break(subject: x5, in: x4)
-  if
-    request(e1, batches.poll, subject: x7, object: x1)
-  response [x9: batch step]
-    instruction(x9) = `look at failure`
-    return(e2, subject: x8, object: x9)
-    return(e3, subject: x8, object: x3)
 ```
 
 ## r155
@@ -1652,4 +1600,128 @@ shall [x10: agent the driver (constant), x11: service the batches service (const
         return(e3, subject: x11, object: x13)
     of(x14, x1)
     return(e4, subject: x11, object: x14)
+```
+
+## r160
+From: b721 r160.
+
+```reading
+While an item is `ready` and the item holds a port line that governs an operation and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, if the person opens a batch, then the batches service shall reopen the item and name the operation outcome.
+shall [x7: agent the person (constant), x9: service the batches service (constant)]
+  while [x1: item, x2: port line, x3: operation, x4: operation outcome]
+    status(x1) = `ready`
+    govern(subject: x2, object: x3)
+    in(x2, x1)
+    of(x4, x3)
+    not [x5: core line]
+      handle(subject: x5, object: x4)
+    not [x6: port line]
+      exclude(subject: x6, object: x4)
+  if [x8: batch]
+    request(e1, batches.open, subject: x7, object: x8)
+  response
+    reopen#2(e2, subject: x9, object: x1)
+    name(e3, subject: x9, object: x4)
+```
+
+## r161
+Retires: r149. From: b713 r161.
+
+```reading
+While a batch is `building` and a task of an item in the batch is `done` and every task of the batch is `done` and a scenario of the item breaks in the workspace of the batch and no fix exists, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `fix task` and the task.
+shall [x8: agent the driver (constant), x9: service the batches service (constant)]
+  while [x1: batch, x2: task, x3: item, x5: scenario, x6: workspace]
+    status(x1) = `building`
+    in(x3, x1)
+    of(x2, x3)
+    status(x2) = `done`
+    every [x4: task]
+      of(x4, x1)
+      scope
+        status(x4) = `done`
+    of(x5, x3)
+    of(x6, x1)
+    break(subject: x5, in: x6)
+    not [x7: fix]
+      exists(x7)
+  if
+    request(e1, batches.poll, subject: x8, object: x1)
+  response [x10: batch step]
+    instruction(x10) = `fix task`
+    return(e2, subject: x9, object: x10)
+    return(e3, subject: x9, object: x2)
+```
+
+## r162
+Retires: r154. From: b713 r162.
+
+```reading
+While a batch is `building` and every task of the batch is `done` and a scenario breaks in the workspace of the batch and no scenario of an item in the batch breaks in the workspace of the batch and no fix exists, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `look at failure` and the scenario.
+shall [x8: agent the driver (constant), x9: service the batches service (constant)]
+  while [x1: batch, x3: scenario, x4: workspace]
+    status(x1) = `building`
+    every [x2: task]
+      of(x2, x1)
+      scope
+        status(x2) = `done`
+    of(x4, x1)
+    break(subject: x3, in: x4)
+    not [x5: scenario, x6: item]
+      in(x6, x1)
+      of(x5, x6)
+      break(subject: x5, in: x4)
+    not [x7: fix]
+      exists(x7)
+  if
+    request(e1, batches.poll, subject: x8, object: x1)
+  response [x10: batch step]
+    instruction(x10) = `look at failure`
+    return(e2, subject: x9, object: x10)
+    return(e3, subject: x9, object: x3)
+```
+
+## r163
+From: b713 r163.
+
+```reading
+While a batch is `building` and every task of the batch is `done` and a scenario breaks in the workspace of the batch and a fix exists, when the driver polls the batch, the batches service shall return a batch step whose instruction is `submit batch`.
+shall [x6: agent the driver (constant), x7: service the batches service (constant)]
+  while [x1: batch, x3: scenario, x4: workspace, x5: fix]
+    status(x1) = `building`
+    every [x2: task]
+      of(x2, x1)
+      scope
+        status(x2) = `done`
+    of(x4, x1)
+    break(subject: x3, in: x4)
+    exists(x5)
+  when
+    request(e1, batches.poll, subject: x6, object: x1)
+  response [x8: batch step]
+    instruction(x8) = `submit batch`
+    return(e2, subject: x7, object: x8)
+```
+
+## r164
+From: b715 r164.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds a verb that has a sense and a requirement of a capability uses the verb and the item holds no requirement id that is in the capability, when the person opens a batch, the batches service shall keep the logical form of the requirement in the corpus.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x8: agent the person (constant), x10: service the batches service (constant), x11: corpus "the corpus of the bounded context the command runs in" (indexical)]
+  while [x1: item, x3: verb, x4: sense, x5: requirement, x6: capability]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    of(x4, x3)
+    in(x3, x1)
+    of(x5, x6)
+    use(subject: x5, object: x3)
+    not [x7: requirement id]
+      in(x7, x6)
+      in(x7, x1)
+  when [x9: batch]
+    request(e1, batches.open, subject: x8, object: x9)
+  response [x12: logical form]
+    in(x5, x11)
+    of(x12, x5)
+    keep(e2, subject: x10, object: x12)
 ```

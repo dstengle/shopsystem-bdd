@@ -251,3 +251,6 @@ declined, withdrawn, answered and listed.
 ### [g71] An item whose port line supports one of its core lines is readied
 - [r71] While an item is `shaped` and the item holds a port line and the item holds a core line and the port line supports the requirement id of the core line, when the person readies the item, the backlog service shall set the status of the item to `ready`.
 
+### [g72] An item whose port outcome no line handles is not readied
+- [r72] While an item is `shaped` and the item holds a port line that governs an operation and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, if the person readies the item, then the backlog service shall refuse the request and name the operation outcome and `v_pb2`.
+

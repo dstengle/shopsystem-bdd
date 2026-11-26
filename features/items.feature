@@ -1056,3 +1056,20 @@ Feature: Items
     And the port line p1 supports the requirement id r1
     When the person readies the item i1
     Then the backlog service sets the status of the item i1 to `ready`
+
+  @g72 @r72
+  Scenario: An item whose port outcome no line handles is not readied
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    And a port line p1
+    And an operation o1
+    And the port line p1 governs the operation o1
+    And the item i1 holds the port line p1
+    And an operation outcome o2
+    And the operation o1 has the operation outcome o2
+    And no core line handles the operation outcome o2
+    And no port line excludes the operation outcome o2
+    When the person readies the item i1
+    Then the backlog service refuses this request
+    And the backlog service names the operation outcome o2
+    And the backlog service names `v_pb2`

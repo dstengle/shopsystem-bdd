@@ -6,7 +6,7 @@ group: service
 area: execution
 specifies: object batch, object task, service batches
 language: codified-2
-retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146, g152, r152]
+retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146, g152, r152, g149, r149, g154, r154]
 unbuilt: []
 ---
 
@@ -252,9 +252,6 @@ when the change is merged.
 ### [g148] A batch with a finding to fix now that no kept change is for asks the driver to fix the finding
 - [r148] While a batch is `building` and a review of the batch holds a review finding whose triage is `fix now` and no kept change for the review finding exists, when the driver polls the batch, the batches service shall return a batch step whose instruction is `fix finding` and the review finding.
 
-### [g149] A batch whose submit a scenario of an item broke asks the driver to fix the item's task
-- [r149] While a batch is `building` and a task of an item in the batch is `done` and every task of the batch is `done` and a scenario of the item breaks in the workspace of the batch, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `fix task` and the task.
-
 ### [g150] A running task whose only kept change citing its item is an amendment asks the driver to build it
 - [r150] While a batch is `building` and a task of an item in the batch is `running` and the item is `in-batch` and the workspace of the task holds an amendment that cites the item and the workspace of the task holds exactly one kept change that cites the item and no task of the batch is `failed`, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `build task`, the task and the batch brief of the batch.
 
@@ -263,9 +260,6 @@ when the change is merged.
 
 ### [g153] A batch with pending tasks and no failed or running task asks the driver to prepare every pending task
 - [r153] While a batch is `building` and two tasks of items in the batch are `pending` and no task of the batch is `failed` and no task of the batch is `running`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `prepare task` and every task of the batch whose status is `pending`.
-
-### [g154] A batch whose submit broke a scenario of no item asks the driver to look at the failure
-- [r154] While a batch is `building` and every task of the batch is `done` and a scenario breaks in the workspace of the batch and no scenario of an item in the batch breaks in the workspace of the batch, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `look at failure` and the scenario.
 
 ### [g155] Parking an item keeps the imports another item laid on the same driven port
 - [r155] While an item in a batch is `in-batch` and the kind of an area is `port` and the area holds a capability that the item holds and the area imports an area whose kind is `supporting`, when the person parks another item in the batch, the batches service shall keep the area.
@@ -281,4 +275,19 @@ when the change is merged.
 
 ### [g159] A batch with running tasks none of which is built asks the driver to build every running task with its brief
 - [r159] While a batch is `building` and two tasks of items in the batch are `running` and no task of the batch is `failed` and no workspace of a task of the batch holds a kept change that cites an item in the batch, when the driver polls the batch, the batches service shall return a batch step whose instruction is `build task`, every task of the batch whose status is `running` and the batch brief of the batch.
+
+### [g160] A ready item whose port outcome no line handles is reopened at the batch's opening
+- [r160] While an item is `ready` and the item holds a port line that governs an operation and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, if the person opens a batch, then the batches service shall reopen the item and name the operation outcome.
+
+### [g163] A batch whose failure has a fix is polled for its submit
+- [r163] While a batch is `building` and every task of the batch is `done` and a scenario breaks in the workspace of the batch and a fix exists, when the driver polls the batch, the batches service shall return a batch step whose instruction is `submit batch`.
+
+### [g161] A batch whose item's scenario breaks with no fix is polled for the item's task
+- [r161] While a batch is `building` and a task of an item in the batch is `done` and every task of the batch is `done` and a scenario of the item breaks in the workspace of the batch and no fix exists, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `fix task` and the task.
+
+### [g162] A batch whose other scenario breaks with no fix is polled to look at the failure
+- [r162] While a batch is `building` and every task of the batch is `done` and a scenario breaks in the workspace of the batch and no scenario of an item in the batch breaks in the workspace of the batch and no fix exists, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `look at failure` and the scenario.
+
+### [g164] A batch opened rewrites the corpus of a line whose verb an item gives a sense
+- [r164] While an item is `ready` and the item meets the readiness bar and the item holds a verb that has a sense and a requirement of a capability uses the verb and the item holds no requirement id that is in the capability, when the person opens a batch, the batches service shall keep the logical form of the requirement in the corpus.
 

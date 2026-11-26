@@ -1267,3 +1267,26 @@ shall [x5: agent the person (constant), x6: service the backlog service (constan
   response
     initiates(e2, subject: x6, status(x1) = `ready`)
 ```
+
+## r72
+From: b721 r72.
+
+```reading
+While an item is `shaped` and the item holds a port line that governs an operation and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, if the person readies the item, then the backlog service shall refuse the request and name the operation outcome and `v_pb2`.
+shall [x7: agent the person (constant), x8: service the backlog service (constant), x9: request "the request the trigger makes" (indexical), x10: thing `v_pb2` (parameter)]
+  while [x1: item, x2: port line, x3: operation, x4: operation outcome]
+    status(x1) = `shaped`
+    govern(subject: x2, object: x3)
+    in(x2, x1)
+    of(x4, x3)
+    not [x5: core line]
+      handle(subject: x5, object: x4)
+    not [x6: port line]
+      exclude(subject: x6, object: x4)
+  if
+    request(e1, backlog.ready, subject: x7, object: x1)
+  response
+    refuse(e2, subject: x8, object: x9)
+    name(e3, subject: x8, object: x4)
+    name(e4, subject: x8, object: x10)
+```

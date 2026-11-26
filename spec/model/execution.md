@@ -118,4 +118,6 @@ object batch step
 
 object shop
   relations: holds → bounded context (many); has → product (one)
+
+object fix kind of kept change
 ```

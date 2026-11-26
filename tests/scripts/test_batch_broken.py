@@ -1,6 +1,10 @@
 """batch_broken (b696, batches r149): the task a batch's refused submit is to be fixed by, the task whose item's
-scenario a failed test of the kept whole-suite run is, else one whose reached tests hold it, else none (b703)."""
+scenario a failed test of the kept whole-suite run is, else one whose reached tests hold it, else none (b703); and
+whether a fix of it exists (b713)."""
+import subprocess
+
 import batch_broken
+import batch_rerun
 from batch_plan import Batch, Task
 
 FEATURE = """Feature: work queue
@@ -50,3 +54,23 @@ def test_else_a_task_whose_change_reaches_the_test(monkeypatch):
 def test_else_none_and_none_with_nothing_kept(monkeypatch):
     assert picked(monkeypatch, ["tests/scripts/test_x.py::test_y"]) is None
     assert picked(monkeypatch, []) is None
+
+
+def _git(repo, *args):
+    subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True)
+
+
+def test_a_commit_on_a_task_branch_since_the_submit_is_a_fix(tmp_path):
+    """A fix (b713): with the failed run kept, a task branch that moved past its head at the submit."""
+    _git(tmp_path, "init", "-q", "-b", "main")
+    _git(tmp_path, "-c", "user.name=t", "-c", "user.email=t@x", "commit", "-q", "--allow-empty", "-m", "base")
+    b = batch()
+    for task in b.tasks:
+        _git(tmp_path, "branch", task.branch)
+    batch_broken.submitted(tmp_path, b, b.tasks)
+    assert not batch_broken.fixed(tmp_path, b, b.tasks)        # no failed run kept
+    batch_rerun.keep(tmp_path, b.name, ["tests/scripts/test_x.py::test_y"])
+    assert not batch_broken.fixed(tmp_path, b, b.tasks)        # no commit since the submit
+    _git(tmp_path, "checkout", "-q", "batch-1-b2")
+    _git(tmp_path, "-c", "user.name=t", "-c", "user.email=t@x", "commit", "-q", "--allow-empty", "-m", "fix")
+    assert batch_broken.fixed(tmp_path, b, b.tasks)

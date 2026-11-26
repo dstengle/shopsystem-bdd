@@ -1032,28 +1032,6 @@ Feature: Batches
     And the instruction of the batch step b2 is `fix finding`
     And the batches service returns the review finding r2
 
-  @g149 @r149
-  Scenario: A batch whose submit a scenario of an item broke asks the driver to fix the item's task
-    Given a batch b1
-    And the status of the batch b1 is `building`
-    And an item i1
-    And the batch b1 holds the item i1
-    And a task t1
-    And the item i1 has the task t1
-    And the status of the task t1 is `done`
-    And a task t2
-    And the batch b1 has the task t2
-    And the status of the task t2 is `done`
-    And a scenario s1
-    And the item i1 has the scenario s1
-    And a workspace w1
-    And the batch b1 has the workspace w1
-    And the scenario s1 breaks in the workspace w1
-    When the driver polls the batch b1
-    Then the batches service returns the batch step b2
-    And the instruction of the batch step b2 is `fix task`
-    And the batches service returns the task t1
-
   @g150 @r150
   Scenario: A running task whose only kept change citing its item is an amendment asks the driver to build it
     Given a batch b1
@@ -1124,23 +1102,6 @@ Feature: Batches
     And the batches service returns the task t3
     And the batches service returns the task t4
     And the batches service does not return the task t5
-
-  @g154 @r154
-  Scenario: A batch whose submit broke a scenario of no item asks the driver to look at the failure
-    Given a batch b1
-    And the status of the batch b1 is `building`
-    And a task t1
-    And the batch b1 has the task t1
-    And the status of the task t1 is `done`
-    And a workspace w1
-    And the batch b1 has the workspace w1
-    And a scenario s1
-    And the scenario s1 breaks in the workspace w1
-    And the batch b1 holds no item
-    When the driver polls the batch b1
-    Then the batches service returns the batch step b2
-    And the instruction of the batch step b2 is `look at failure`
-    And the batches service returns the scenario s1
 
   @g155 @r155
   Scenario: Parking an item keeps the imports another item laid on the same driven port
@@ -1252,3 +1213,98 @@ Feature: Batches
     And the batches service returns the task t4
     And the batches service does not return the task t5
     And the batches service returns the batch brief b2
+
+  @g160 @r160
+  Scenario: A ready item whose port outcome no line handles is reopened at the batch's opening
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And a port line p1
+    And an operation o1
+    And the port line p1 governs the operation o1
+    And the item i1 holds the port line p1
+    And an operation outcome o2
+    And the operation o1 has the operation outcome o2
+    And no core line handles the operation outcome o2
+    And no port line excludes the operation outcome o2
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service reopens the item i1
+    And the batches service names the operation outcome o2
+
+  @g161 @r161
+  Scenario: A batch whose item's scenario breaks with no fix is polled for the item's task
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    And an item i1
+    And the batch b1 holds the item i1
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `done`
+    And a task t2
+    And the batch b1 has the task t2
+    And the status of the task t2 is `done`
+    And a scenario s1
+    And the item i1 has the scenario s1
+    And a workspace w1
+    And the batch b1 has the workspace w1
+    And the scenario s1 breaks in the workspace w1
+    And no fix exists
+    When the driver polls the batch b1
+    Then the batches service returns the batch step b2
+    And the instruction of the batch step b2 is `fix task`
+    And the batches service returns the task t1
+
+  @g162 @r162
+  Scenario: A batch whose other scenario breaks with no fix is polled to look at the failure
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    And a task t1
+    And the batch b1 has the task t1
+    And the status of the task t1 is `done`
+    And a workspace w1
+    And the batch b1 has the workspace w1
+    And a scenario s1
+    And the scenario s1 breaks in the workspace w1
+    And the batch b1 holds no item
+    And no fix exists
+    When the driver polls the batch b1
+    Then the batches service returns the batch step b2
+    And the instruction of the batch step b2 is `look at failure`
+    And the batches service returns the scenario s1
+
+  @g163 @r163
+  Scenario: A batch whose failure has a fix is polled for its submit
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    And a task t1
+    And the batch b1 has the task t1
+    And the status of the task t1 is `done`
+    And a workspace w1
+    And the batch b1 has the workspace w1
+    And a scenario s1
+    And the scenario s1 breaks in the workspace w1
+    And a fix f1
+    And the fix f1 exists
+    When the driver polls the batch b1
+    Then the batches service returns the batch step b2
+    And the instruction of the batch step b2 is `submit batch`
+
+  @g164 @r164
+  Scenario: A batch opened rewrites the corpus of a line whose verb an item gives a sense
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a sense s1
+    And a verb v1
+    And the verb v1 has the sense s1
+    And the item i1 holds the verb v1
+    And a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And the requirement r1 uses the verb v1
+    And the capability c1 holds no requirement id
+    And a batch b1
+    When the person opens the batch b1
+    Then this corpus holds the requirement r1
+    And the batches service keeps the logical form l1
+    And the requirement r1 has the logical form l1
