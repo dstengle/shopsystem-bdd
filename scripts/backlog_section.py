@@ -22,6 +22,7 @@ from pathlib import Path
 
 import backlog_adapter
 import backlog_pack
+import backlog_relied
 import spec_read
 from backlog_items import Refused, label
 from backlog_model import CLOSE as MODEL_CLOSE
@@ -43,7 +44,7 @@ from backlog_section_render import (  # noqa: F401
 
 SECTION = "Requirements"
 TAKES = ("idea", "shaped", "in-batch")     # an in-batch item's lines are laid again by `work batch amend` (b460)
-Group = namedtuple("Group", "id title requirements given", defaults=((),))
+Group = namedtuple("Group", "id title requirements given relied", defaults=((), ()))   # relied: (r<n>, ids) (b705)
 Block = namedtuple("Block", "capability terms groups relations retired language new retires serves",
                    defaults=((), (), None, None, (), ()))     # serves: (g<n>, job) pairs (backlog_serves, b641)
 
@@ -229,6 +230,12 @@ class _Reader:
             if m.group(1) in {r for g in blocks[-1].groups for r, _ in g.requirements}:
                 self.refuse("the requirement %s is there twice" % m.group(1))
             blocks[-1].groups[-1].requirements.append((m.group(1), m.group(2).strip()))
+        elif line.startswith(backlog_relied.HEAD):
+            if not blocks or not blocks[-1].groups or not blocks[-1].groups[-1].requirements \
+                    or blocks[-1].groups[-1].given:
+                self.refuse("a `Relied on by:` line that is not after a requirement of a group: %s" % line)
+            group = blocks[-1].groups[-1]
+            blocks[-1].groups[-1] = backlog_relied.supported_by(group, line)
         elif line.strip() == FENCE:
             if not blocks or not blocks[-1].groups or blocks[-1].groups[-1].given:
                 self.refuse("a given block that is not after the lines of a group of its own")
@@ -244,7 +251,7 @@ class _Reader:
             else:
                 blocks[-1].terms.append(line.strip())
         else:
-            self.refuse("a line that is no heading, requirement, `language:`, `retired:` or `retires:` line, term "
+            self.refuse("a line that is no heading, requirement, `Relied on by:`, `language:`, `retired:` or `retires:` line, term "
                         "bullet or relation row: %s" % line)
 
 
