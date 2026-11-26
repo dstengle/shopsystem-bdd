@@ -1132,7 +1132,7 @@ a verb's Frame: does not read as its subject, the verb and the kinds it takes
 - Since: b106
 - Changed: b123
 - Severity: error
-- Implemented in: `scripts/model.lp`, `scripts/backlog_term_rules.py`, `scripts/spec_frames.py`, `scripts/upgrades/migrate_upgrade_frames.py`
+- Implemented in: `scripts/model.lp`, `scripts/backlog_term_rules.py`, `scripts/spec_frames.py`, `scripts/upgrades/migrate_upgrade_frames.py`, `scripts/upgrades/migrate_upgrade_stricter.py`
 - Cited by: checking#r151, drafting#r101, drafting#r102, upgrades#r47
 - Fails on:
 
@@ -1344,7 +1344,7 @@ a vocabulary entry's part of speech does not fit the element it names
 - Purpose: A word's part of speech fits the element it names, so a line that uses it reads as the model means.
 - Since: b825
 - Severity: error
-- Implemented in: `scripts/model.lp`, `scripts/backlog_term_rules.py`, `scripts/model_domain.py`, `scripts/spec_vocabulary.py`
+- Implemented in: `scripts/model.lp`, `scripts/backlog_term_rules.py`, `scripts/model_domain.py`, `scripts/spec_vocabulary.py`, `scripts/upgrades/migrate_upgrade_stricter.py`
 - Cited by: upgrades#r47
 - Fails on:
 
@@ -1752,7 +1752,7 @@ a lifecycle transition an operation of another area performs
 - Purpose: A lifecycle's transitions are performed only by operations of the area that declares its object, so one area owns each object's lifecycle.
 - Since: b610
 - Severity: error
-- Implemented in: `scripts/model.lp`, `scripts/readiness_bound.py`
+- Implemented in: `scripts/model.lp`, `scripts/readiness_bound.py`, `scripts/upgrades/migrate_upgrade_stricter.py`
 - Cited by: items#r73, laying#r20, upgrades#r47
 - Fails on:
 
