@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/an-adapter-spec-records-the-provider-operations-each-port-operation-uses
 summary: "For each port operation an adapter spec names the set of provider operations used to realise it, of one provider or several; the relation is many-to-many, never one port operation to one provider operation."
 date: 2026-11-25
-status: accepted
+status: superseded
 tier: judgement
 source: [quote-93]
 ---
