@@ -2,10 +2,11 @@
 drafting r38-r40) laid again on its batch's branch `batch-<n>` and on its task's branch, when the task has one.
 
 On each, in its worktree (made, and removed again, when it is not there), the item's lines as last laid
-(`batch_parked.as_laid`) are taken out and its lines as they now read laid in (`batch_start.unlay_lines`,
-`lay_lines`), in one commit citing the item, whose `Laid:` line names the base's commit that holds the item as laid,
-so that a later park, review or amend takes out the lines the branch holds. Its new ids are renumbered past the
-batch branch's (the other items' lines laid there), the item committed on the base when they move. A line laid
+(`batch_parked.as_laid`) are taken out against the batch's base (`batch_parked.base_of`, as a park takes them out:
+b704) and its lines as they now read laid in (`batch_start.unlay_lines`, `lay_lines`), in one commit citing the
+item, whose `Laid:` line names the base's commit that holds the item as laid, so that a later park, review or amend
+takes out the lines the branch holds. Its new ids are renumbered past the batch branch's (the other items' lines
+laid there), the item committed on the base when they move. A line laid
 before with the same text keeps its place in `unbuilt:`, built or not; a new or changed line is unbuilt, and a line
 the item no longer holds leaves `unbuilt:` and the corpus. A `done` task is set `running` again, so that its new
 lines are built. Refused, changing nothing, unless the item is `in-batch` (naming it, r83), its batch `building` on
@@ -103,13 +104,13 @@ def _corpus(tree, old, new):
     return changed
 
 
-def relay(tree, old, new, renumber=False, root=None):
-    """`old`'s lines out of the worktree and `new`'s in (renumbered past the tree's first, with `renumber`); with
-    `root`, `new` checked by the readiness bar over the worktree before it is laid (b486); the paths changed and the
-    renumbered pairs."""
+def relay(tree, old, new, renumber=False, root=None, base=None):
+    """`old`'s lines out of the worktree, against the commit `base` (the batch's base, as a park takes them out: b704),
+    and `new`'s in (renumbered past the tree's first, with `renumber`); with `root`, `new` checked by the readiness bar
+    over the worktree before it is laid (b486); the paths changed and the renumbered pairs."""
     caps = set(_lines(old)) | set(_lines(new))
     before = _unbuilt(tree, caps)
-    changed = batch_start.unlay_lines(tree, [old], COMMAND)
+    changed = batch_start.unlay_lines(tree, [old], COMMAND, base)
     pairs = backlog_lines.renumber(tree, new, {}) if renumber else []
     if root is not None:
         _bar(root, tree, new)
@@ -182,14 +183,15 @@ def amend(root, name, finding=None):
         item, batch, task = _checked(root, name)
         finding = _finding(root, batch, finding)
         old = batch_parked.as_laid(root, batch, [item])[0]
+        base = batch_parked.base_of(root, batch)
         heads, made, laid_on, undo = {}, [], [], None
         try:
             tree = _tree(root, trees_dir(root) / batch.name, batch.branch, heads, made)
-            changed, pairs = relay(tree, old, item, renumber=True, root=root)
+            changed, pairs = relay(tree, old, item, renumber=True, root=root, base=base)
             trees = [(tree, batch.branch, changed)]
             if has_branch(root, task.branch):
                 there = _tree(root, tree_of(root, batch, task), task.branch, heads, made)
-                trees.append((there, task.branch, relay(there, old, item)[0]))
+                trees.append((there, task.branch, relay(there, old, item, base=base)[0]))
             reopened = task.status == "done"
             if reopened:
                 task.status = "running"
