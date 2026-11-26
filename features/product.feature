@@ -425,3 +425,32 @@ Feature: Product
     And the requirement r4 has the requirement id r3
     When the person traces the job j1
     Then the product service returns the requirement r4
+
+  @g37 @r37
+  Scenario: A bounded context whose id is out of the context id form is not declared
+    Given an id i1
+    And the id i1 does not conform to the context id form
+    And a bounded context b1
+    When the person declares the bounded context b1 with the id i1
+    Then the product service refuses this request
+    And the product service names the id i1
+
+  @g38 @r38
+  Scenario: A job is not assigned to a bounded context whose id is out of the context id form
+    Given an id i1
+    And a bounded context b1
+    And the bounded context b1 has the id i1
+    And the id i1 does not conform to the context id form
+    And a job j1
+    When the person assigns the job j1 to the bounded context b1
+    Then the product service refuses this request
+    And the product service names the id i1
+
+  @g39 @r39
+  Scenario: A job assigned to a bounded context the product does not hold is refused
+    Given a bounded context b1
+    And this product does not hold the bounded context b1
+    And a job j1
+    When the person assigns the job j1 to the bounded context b1
+    Then the product service refuses this request
+    And the product service names the bounded context b1

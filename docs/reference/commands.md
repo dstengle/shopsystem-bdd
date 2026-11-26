@@ -1267,14 +1267,16 @@ declared the subdomain specification
 ### `shop spec context`
 
 Declares a bounded context of the product's domain map with its id, the subdomains it addresses and the shop that
-keeps it, kept in the product file in one commit; with no `--shop` it is a third-party provider. An id that does not
-lie under the product's id is refused naming the id, and a subdomain that is no subdomain of the product naming
+keeps it, kept in the product file in one commit; with no `--shop` it is a third-party provider. The id is of the
+context id form `migrate init` and `work context` take, `bounded-context/<domain>/<path>`: one of another form is
+refused naming it, so one bounded context is never kept under two ids. An id that does not lie under the product's id
+is refused naming the id, and a subdomain that is no subdomain of the product naming
 `--addresses`.\
 Synopsis: `shop spec context <id> [--addresses <subdomain> ...] [--shop <shop>]`
 
 ```console
-$ shop spec context missingmass.io/shopsystem/shopsystem-bdd --addresses specification --shop missingmass.io/shopsystem/shop
-declared the bounded context missingmass.io/shopsystem/shopsystem-bdd kept by missingmass.io/shopsystem/shop
+$ shop spec context bounded-context/missingmass.io/shopsystem/shopsystem-bdd --addresses specification --shop missingmass.io/shopsystem/shop
+declared the bounded context bounded-context/missingmass.io/shopsystem/shopsystem-bdd kept by missingmass.io/shopsystem/shop
 ```
 
 ### `shop spec trace`
@@ -1331,13 +1333,15 @@ has no coupling.
 ### `shop spec assign`
 
 Assigns a job of the product to the one bounded context whose capabilities serve it, kept among the bounded
-context's jobs in the product file, in one commit. A job is assigned once: a job a bounded context holds already is
+context's jobs in the product file, in one commit. The bounded context is named by its id in the context id form,
+`bounded-context/<domain>/<path>`, and is one the product holds (`shop spec context` declares it): an id of another
+form is refused naming the id, and a bounded context the product does not hold naming it. A job is assigned once: a job a bounded context holds already is
 refused naming the job.\
 Synopsis: `shop spec assign <job> --to <bounded context>`
 
 ```console
-$ shop spec assign j1 --to missingmass.io/shopsystem/shopsystem-bdd
-assigned the job j1 to the bounded context missingmass.io/shopsystem/shopsystem-bdd
+$ shop spec assign j1 --to bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+assigned the job j1 to the bounded context bounded-context/missingmass.io/shopsystem/shopsystem-bdd
 ```
 
 ### `shop spec plays`
@@ -1347,8 +1351,8 @@ the product file, in one commit. A product actor the product does not hold is re
 Synopsis: `shop spec plays <product actor> --in <bounded context> --as <actor>`
 
 ```console
-$ shop spec plays "the developer" --in missingmass.io/shopsystem/shopsystem-bdd --as "the person"
-mapped the product actor the developer to the person in the bounded context missingmass.io/shopsystem/shopsystem-bdd
+$ shop spec plays "the developer" --in bounded-context/missingmass.io/shopsystem/shopsystem-bdd --as "the person"
+mapped the product actor the developer to the person in the bounded context bounded-context/missingmass.io/shopsystem/shopsystem-bdd
 ```
 
 ### `shop spec decisions`

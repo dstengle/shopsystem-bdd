@@ -171,7 +171,7 @@ which `shop spec rules` does not list (they are in [`grammar/rules.md`](../../gr
 | `v_t6` | two terms are written the same | Rename one of them. |
 | `v_t11` | a verb's entry gives no frame: the kinds of its subject and object, or that it takes no object | Add a `Frame:` field to the verb's entry. |
 | `v_t12` | a condition names another kind with `the`: a relation between two kinds is a verb | Make the relation a verb with a frame, or a row of `## Relations`. |
-| `v_t13` | a verb's Frame: does not read as its subject, the verb and the kinds it takes | Rewrite the `Frame:` as subject, verb, then the kinds it takes. |
+| `v_t13` | a verb's Frame: does not read as its subject, the verb and the kinds it takes | Rewrite the `Frame:` as subject, verb, then the kinds it takes; on a verb naming an operation, words of no kind may stand before the object (`<actor> lists the characters of <note>.`) or as the whole object (`<actor> lists the checklists.`). The finding names the frame as you wrote it. |
 | `v_t14` | a verb's entry says neither state nor action | Write its part of speech as `(verb, state)` or `(verb, action)`. |
 | `v_t15` | two entries of one verb take, in every slot, the same kind or one kind under the other | Make the senses' frames differ, or keep one entry. |
 | `v_t16` | a term an imported pack defines too has no `Redefines:` naming the pack | Add `Redefines: <pack>` to the entry, or drop the entry and use the pack's. |

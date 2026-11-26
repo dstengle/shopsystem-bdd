@@ -1,6 +1,8 @@
 """A requirement group dedicated to a job on an item (decision 0140, b641; drafting r71, batches r124): `work line
 <item> --serves <capability>#g<n> <job>`, a live group of the capability or one of the item's own, and `work line
-<item> --into <capability> [--group <title>] <line> --serves <job>`, the group the line goes into; each the pair
+<item> --into <capability> [--group <title>] <line> --serves <job>`, the group the line goes into, the requirement it
+added printed before the pair (drafting r93, b799); a job the product does not hold, while its product file is kept,
+refused naming the job (drafting r92, b799); each the pair
 (g<n>, job) under the `serves: [g<n> <job>, ...]` line of the item's block of the capability (backlog_section),
 one commit of the item. Laid by `lay` into the group's `serves: <job>, ...` line under its heading in the capability
 file (spec_read reads it, `spec check` its serves fact) and taken out again by `unlay`, a job the file at the batch's
@@ -10,6 +12,7 @@ import re
 import subprocess
 from pathlib import Path
 
+import product_store
 import spec_read
 from backlog_items import Refused, commit, find, items, label
 
@@ -27,9 +30,14 @@ def given(args):
     return getattr(args, "serves", None) is not None
 
 
-def _job(job):
+def _job(root, job):
+    """The job, refused when it is not a job's id, and, while the product exists (its product file is kept), when the
+    product does not hold it (drafting r92): the reason `job outside the product`, naming the job."""
     if not spec_read.JOB.match(job):
         raise Refused("work line: --serves: %r is not a job's name or id" % job)
+    if (Path(root) / product_store.REL).is_file() and job not in product_store.read(root)["jobs"]:
+        raise Refused("work line: --serves: the product holds no job %s" % job, reason="job outside the product",
+                      names=["job:%s" % job])
     return job
 
 
@@ -82,25 +90,28 @@ def dedicate(root, item, capability, gid, job):
 
 def cmd(args):
     """`work line <item> --serves ...`: one commit of the item; what it printed."""
-    item = find(args.root, args.name)
+    item, added = find(args.root, args.name), None
     if len(args.serves) == 2 and args.text is None:
         m = GROUP.match(args.serves[0])
         if not m:
             raise Refused("work line: --serves: %r is not a requirement group <capability>#g<n>" % args.serves[0])
-        capability, gid, job = m.group("cap"), m.group("g"), _job(args.serves[1])
+        capability, gid, job = m.group("cap"), m.group("g"), _job(args.root, args.serves[1])
     elif len(args.serves) == 1 and args.text is not None and args.into is not None:
         import backlog_lines
         from backlog_section import read
-        job = _job(args.serves[0])
+        job = _job(args.root, args.serves[0])
         capability = args.into
         rid = backlog_lines.add_line_to(args.root, item, capability, args.text, args.group, args.in_group).split("#")[1]
         block = next(b for b in read(item, "the item %s" % item.name) if b.capability == capability)
         gid = next(g.id for g in block.groups if any(r == rid for r, _ in g.requirements))
+        added = "%s#%s %s" % (capability, rid, args.text)
     else:
         raise Refused("work line: --serves takes a requirement group <capability>#g<n> and a job, or a job beside "
                       "a requirement line and --into")
     dedicate(args.root, item, capability, gid, job)
     commit(args.root, item, "work line: %s %s#%s serves %s" % (label(item), capability, gid, job))
+    if added is not None:   # the requirement the line added, named with its group and the job (drafting r93)
+        print("%s: %s" % (label(item), added))
     print("%s: %s#%s serves %s" % (label(item), capability, gid, job))
     return 0
 

@@ -125,3 +125,12 @@ the job statement `j2` holds "When a change is wanted, reviewed and agreed, the 
 ### [g36] A trace keeps a provider's requirement whose id is a local requirement's
 - [r36] While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and an adapter spec realises the requirement id of the port line and the operation uses another operation and the adapter spec holds a contract that holds a different requirement that governs the operation and the requirement has the requirement id, when the person traces the job, the product service shall return the requirement.
 
+### [g37] A bounded context whose id is out of the context id form is not declared
+- [r37] If the person declares a bounded context with an id that does not conform to the context id form, then the product service shall refuse the request and name the id.
+
+### [g38] A job is not assigned to a bounded context whose id is out of the context id form
+- [r38] If the person assigns a job to a bounded context whose id does not conform to the context id form, then the product service shall refuse the request and name the id.
+
+### [g39] A job assigned to a bounded context the product does not hold is refused
+- [r39] If the person assigns a job to a bounded context that is not in the product, then the product service shall refuse the request and name the bounded context.
+

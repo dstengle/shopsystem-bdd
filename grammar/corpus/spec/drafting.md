@@ -1404,3 +1404,39 @@ shall [x1: agent the person (constant), x5: service the drafting service (consta
       in(x7, x6)
     keep(e2, subject: x5, object: x6)
 ```
+
+## r92
+From: b799 r92.
+
+```reading
+While the product exists, if the person dedicates a requirement group to a job that the product does not hold with an item, then the drafting service shall refuse the request and name the job.
+shall [x1: product "the product this bounded context belongs to" (indexical), x2: agent the person (constant), x6: service the drafting service (constant), x7: request "the request the trigger makes" (indexical)]
+  while
+    exists(x1)
+  if [x3: requirement group, x4: job, x5: item]
+    not
+      in(x4, x1)
+    request(e1, drafting.dedicate, subject: x2, object: x3, to: x4)
+    param(e1, item, x5)
+  response
+    refuse(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x4)
+```
+
+## r93
+From: b799 r93.
+
+```reading
+When the person dedicates a requirement group to a job with an item and a requirement, the drafting service shall keep the requirement in the item and name the requirement, the requirement group and the job.
+shall [x1: agent the person (constant), x6: service the drafting service (constant)]
+  when [x2: requirement group, x3: job, x4: item, x5: requirement]
+    request(e1, drafting.dedicate, subject: x1, object: x2, to: x3)
+    param(e1, item, x4)
+    param(e1, requirement, x5)
+  response
+    in(x5, x4)
+    keep(e2, subject: x6, object: x5)
+    name(e3, subject: x6, object: x5)
+    name(e4, subject: x6, object: x2)
+    name(e5, subject: x6, object: x3)
+```

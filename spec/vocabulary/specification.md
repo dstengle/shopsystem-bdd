@@ -336,3 +336,4 @@ area: specification
 - **coupling** (noun) → object coupling. What ties one area of the domain model to another: each word the other borrows for the area's elements, each element the other's model names of the area's and each requirement of the other that says a word of the area. Plural: couplings.
 - **word** (noun) → object word. The written form of a term, as `list`, that entries of several areas may share. Plural: words.
 - **homonym** (noun) → object homonym. A word that two areas each define for an element of their own, so that neither relies on the other for it. Plural: homonyms.
+- **fixed phrase** (noun) → object fixed phrase. The words of a frame after its verb that name no kind, as `the characters of` in `<actor> lists the characters of <note>.`.

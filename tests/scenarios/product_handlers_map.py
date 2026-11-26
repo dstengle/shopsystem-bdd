@@ -2,10 +2,12 @@
 Givens of instances, refusal and completion they share; each a `work_queue_world.local` tried before its. At the When
 of `spec subdomain` or `spec context` the product the Givens describe is written into the product file with the id
 `example.org` (the product's id i2 of a Given stands for it) and committed: before a subdomain is declared, each job
-the Givens bring in, held unless a Given says this product does not hold it; before a bounded context is declared,
+the Givens bring in, held unless a Given says this product does not hold it (`the bounded context b1 has the id i1`
+kept as b1's id, which product_handlers_assign reads); before a bounded context is declared,
 each subdomain, held unless a Given says not. The command is run with the values the instances stand for (`value`): a
 subdomain type `core`, `central` when a Given says it does not conform to the subdomain type form; a bounded context's
-id `example.org/<i>`, `other.org/<i>` when a Given says the product's id does not cover it; a subdomain's id `<i>`;
+id `bounded-context/example.org/<i>`, `bounded-context/other.org/<i>` when a Given says the product's id does not cover
+it, without `bounded-context/` when a Given says it does not conform to the context id form (b793); a subdomain's id `<i>`;
 a shop `example.org/shop-<s>`; a subdomain known by its id when the When gives one. The Thens read the subdomain
 (with its type and jobs) or the bounded context (with its subdomains and its shop, none for a provider) back from
 the kept product file, the product of a Given's shop (its id covering the shop's, b706), and what a
@@ -28,10 +30,16 @@ def value(w, name):
     if kind == "id" and name == w.get("product id"):
         return "example.org"
     if kind == "id" and w.get("context"):
-        return "%s/%s" % ("other.org" if name in w.get("uncovered", ()) else "example.org", name)
+        return context_id(w, name, "other.org" if name in w.get("uncovered", ()) else "example.org")
     if kind == "shop":
         return "%s/shop-%s" % ("example.org" if name in w.get("products", {}) else "other.org", name)
     return name
+
+
+def context_id(w, name, domain="example.org"):
+    """A bounded context's id `bounded-context/<domain>/<i>` of the context id form, `<domain>/<i>` when a Given says
+    it does not conform to the context id form (r37, r38, b793)."""
+    return "%s/%s" % (domain, name) if name in w["unformed"] else "bounded-context/%s/%s" % (domain, name)
 
 
 def given_has(step):
@@ -40,7 +48,10 @@ def given_has(step):
     if not P.mine(step) or step.term != "has":
         return False
     w = P.world(step)
-    if w["kinds"].get(step.names[-1]) == "id":
+    kinds = [w["kinds"].get(n) for n in step.names]
+    if kinds == ["bounded context", "id"]:
+        w.setdefault("context ids", {})[step.names[0]] = step.names[1]
+    elif kinds[-1:] == ["id"]:
         w["product id"] = step.names[-1]
     elif len(step.names) == 2 and [w["kinds"].get(n) for n in step.names] == ["shop", "product"]:
         w.setdefault("products", {})[step.names[0]] = step.names[1]
@@ -79,7 +90,7 @@ def runs(step):
     (repo / P.REL).write_text(P.scripts("product_store").render(held(w, w["context"])))
     step.context["head"] = W.init(repo)
     if w["context"]:
-        ident = value(w, kinds["id"]) if "id" in kinds else "example.org/%s" % kinds["bounded context"]
+        ident = value(w, kinds["id"]) if "id" in kinds else context_id(w, kinds["bounded context"])
         args = ["context", ident]
         args += ["--addresses", value(w, kinds["subdomain"])] if "subdomain" in kinds else []
         args += ["--shop", value(w, kinds["shop"])] if "shop" in kinds else []

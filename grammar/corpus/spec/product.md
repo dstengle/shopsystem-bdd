@@ -611,3 +611,50 @@ shall [x11: agent the person (constant), x12: service the product service (const
   response
     return(e2, subject: x12, object: x10)
 ```
+
+## r37
+From: b793 r37.
+
+```reading
+If the person declares a bounded context with an id that does not conform to the context id form, then the product service shall refuse the request and name the id.
+shall [x1: agent the person (constant), x4: artifact the context id form (constant), x5: service the product service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x2: bounded context, x3: id]
+    not
+      conforms(x3, x4)
+    request(e1, product.declare context, subject: x1, object: x2)
+    param(e1, id, x3)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x3)
+```
+
+## r38
+From: b793 r38.
+
+```reading
+If the person assigns a job to a bounded context whose id does not conform to the context id form, then the product service shall refuse the request and name the id.
+shall [x1: agent the person (constant), x5: artifact the context id form (constant), x6: service the product service (constant), x7: request "the request the trigger makes" (indexical)]
+  if [x2: job, x3: bounded context, x4: id]
+    of(x4, x3)
+    not
+      conforms(x4, x5)
+    request(e1, product.assign, subject: x1, object: x2, to: x3)
+  response
+    refuse(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x4)
+```
+
+## r39
+From: b793 r39.
+
+```reading
+If the person assigns a job to a bounded context that is not in the product, then the product service shall refuse the request and name the bounded context.
+shall [x1: agent the person (constant), x4: product "the product this bounded context belongs to" (indexical), x5: service the product service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x2: job, x3: bounded context]
+    not
+      in(x3, x4)
+    request(e1, product.assign, subject: x1, object: x2, to: x3)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x3)
+```

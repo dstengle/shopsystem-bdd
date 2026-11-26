@@ -419,6 +419,12 @@ Restates: design-model-check#r13@0.29.
 ### [g148] the coupling report holds a word two areas each define for their own elements as a homonym
 - [r148] While an area holds an element and the area holds a term that means the element and the term has a word and another area holds an element and the area holds a term that means the element and the term has the word, when the person reports on the shop, the specification service shall return a coupling of the area that holds a homonym that has the word.
 
+### [g150] the check passes a frame of a fixed phrase before a kind
+- [r150] While a frame of a term has a fixed phrase and the frame takes a noun phrase, when the person validates this specification, the specification service shall complete the request.
+
+### [g151] the check refuses a frame that does not read naming the frame as written
+- [r151] While a term has a frame that violates `v_t13`, if the person validates this specification, then the specification service shall fail the check and name the frame.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.
