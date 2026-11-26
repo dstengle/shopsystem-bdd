@@ -108,8 +108,8 @@ class Reader:
             return boxes.np_image(self, ref, slot)
         if ref in self.dets:
             a = self.dets[ref]
-        if request.np(ref, slot):     # "the text", a parameter a response names (§5.1)
-            return request.np(ref, slot)
+        if request.np(ref, slot, self):     # "the text", a parameter a response names (§5.1); a reply's request
+            return request.np(ref, slot, self)
         if not a and ref.origin in ("constant", "parameter") and ref.value not in self.actors:
             return (S + "_Code", ("CodeLit", ref.value))
         det = a if isinstance(a, str) else "DetA"
@@ -287,7 +287,7 @@ def read(vocab, forms, entailed=None, r=None):
             if part.op in ("while", "where") and n == 0:
                 givens += [g for item in part.body for g in r.given(item)]
             elif part.op in ("when", "if") and n == 0:     # a When each event, a request with its parameters
-                found = request.trigger(r, part)
+                found = request.trigger(r, part, form)
                 givens, when = givens + found[0], when + found[1]
             elif part.op == "response":
                 body = bring.bring_response(r, part)     # brought in before the When (b273, b286, b416)

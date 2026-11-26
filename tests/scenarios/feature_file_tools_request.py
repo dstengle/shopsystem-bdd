@@ -5,7 +5,9 @@ is its `done →` outcome's and named by no parameter), each the one requirement
 catalogue's request context (grammar/corpus/constructs/request/: a domain model, its vocabulary and the request
 pack) (`prepare`). The Thens read the feature `features generate` wrote: a given step and the when step that mention
 one code (the value in use, made up, given to the other thing and to the request), and the thing the operation makes
-brought in by the when step ("When the person enters a design-decision d1 ...") and by no given step (`then`)."""
+brought in by the when step ("When the person enters a design-decision d1 ...") and by no given step (`then`); and a
+requirement that uses `reply-trigger` the example of it, every instance its steps mention brought in by a given or a
+when step (b724: `unbrought`)."""
 import re
 import shutil
 from pathlib import Path
@@ -27,6 +29,8 @@ def construct(w, kind):
     used = {o for v, a, o, pos in w["facts"] if v == "use" and pos and kind(w, a) == "requirement"}
     if "`param-of`" in used:
         return "param-of"
+    if "`reply-trigger`" in used:     # b724: the thing the replied request is on brought in
+        return "reply-trigger"
     makes = {a for v, a, o, pos in w["facts"] if v == "make" and pos and kind(w, a) == "operation"}
     governs = any(v == "govern" and pos and o in makes for v, _, o, pos in w["facts"])
     return "request-params" if governs else None
@@ -43,7 +47,7 @@ def prepare(step, w, kind, name, path):
            "\n\n## Behaviour\n\n### [g1] %s\n- [r1] %s\n" % (path, name, name, name, code, example(code)))
     (step.repo / "spec" / "capabilities").mkdir(parents=True, exist_ok=True)
     (step.repo / "spec" / "capabilities" / ("%s.md" % name)).write_text(cap)
-    w["request"] = name
+    w["request"], w["code"] = name, code
     return True
 
 
@@ -69,6 +73,14 @@ def made(whens):
     return found.groups() if found else None
 
 
+def unbrought(givens, whens):
+    """Each instance a step mentions ("the design-decision d1") that no given step and no when step brings in ("a
+    design-decision d1"), a code's words left out."""
+    brought = {m for line in givens + whens for m in re.findall(r"\ban? [a-z][a-z -]*? ([a-z]\d+)\b", line)}
+    named = {m for line in givens + whens for m in re.findall(r"(?<![\w@-])([a-z]\d+)\b", re.sub(r"`[^`]*`", "", line))}
+    return named - brought
+
+
 def codes(lines):
     return {c for line in lines for c in re.findall(r"`[^`]+`", line)}
 
@@ -81,7 +93,9 @@ def then(step, w, pos=True):
     givens, whens = steps(step, w)
     np = step.nps[0] if step.nps else ""
     introduced = made(whens)
-    if not pos:     # the given step that would bring in what the operation makes
+    if not pos and w.get("code") == "reply-trigger":     # every instance a step mentions brought in (b724)
+        assert givens and whens and not unbrought(givens, whens), (unbrought(givens, whens), givens, whens)
+    elif not pos:     # the given step that would bring in what the operation makes
         assert introduced, ("the when step brings in nothing", whens)
         kind, name = introduced
         assert "a %s %s" % (kind, name) not in givens and "an %s %s" % (kind, name) not in givens, givens

@@ -19,7 +19,7 @@ import spec_lf_request
 import spec_rgl
 import spec_rgl_ops
 import spec_steps4_boxes
-from spec_lf_core import Atom
+from spec_lf_core import Atom, Box
 
 kid = spec_rgl.kid
 PRED = spec_lf_request.PRED
@@ -27,13 +27,15 @@ EVENTS = ("event", PRED)
 PARAMS = (spec_lf_request.PARAM, spec_lf_request.NOPARAM)
 
 
-def trigger(r, part):
+def trigger(r, part, form=None):
     """(the Givens, the When steps) of a trigger part: a When for each of its events (one act on each of "two Ks",
-    b240, a When each), a request's with its parameters."""
-    events = [i for i in part.body if isinstance(i, Atom) and i.pred in EVENTS]
+    b240, a When each), a request's with its parameters; a reply's request (`replied`) its Givens first."""
+    replies = [i for i in part.body if replied(i)]
+    events = [i for i in part.body if isinstance(i, Atom) and i.pred in EVENTS and i not in replies]
     params = [i for i in part.body if isinstance(i, Atom) and i.pred in PARAMS]
     r.in_use = in_use(r, part.body, params)
-    givens = [g for item in part.body if item not in events and item not in params for g in r.given(item)]
+    givens = [g for atom in replies for g in reply(r, atom, form)]
+    givens += [g for item in part.body if item not in events + replies and item not in params for g in r.given(item)]
     givens += [g for x, (term, value) in r.in_use.items() for g in in_use_given(r, x, term, value)]
     when = []
     for event in events:
@@ -49,6 +51,43 @@ def trigger(r, part):
             when.append(("STrig", (kid(subject) + "_Event", s, vp)))
         when[-1] = _fresh(r, when[-1], fresh)
     return givens, when
+
+
+def replied(item):
+    """True of the request a reply is on (reply-trigger: spec_lf_request's `replied`), whose first argument is a
+    referent of kind request, not an event."""
+    return isinstance(item, Atom) and item.pred == PRED and hasattr(item.args[0], "origin")
+
+
+def reply(r, atom, form):
+    """The Givens of the request a trigger's reply is on (reply-trigger, b724): its object brought in ("a note n1"),
+    then the core's request of it in the present, its requester the response's doer whose kind the frame's subject
+    takes ("the notes service reserves the note n1"); the request said after it "the request to reserve the note n1"
+    (`rq_<verb>_<n>_<m>`, kept in `r.replies` for `np`)."""
+    ref, _, verb, sense, roles = atom.args
+    r.known.add(ref)
+    givens = r.introduce(Atom(PRED, (None,) + atom.args[1:]))
+    fun = r.frame(verb, sense, (("subject", None),) + roles)
+    doers = [d for p in (form.parts if form else ()) if p.op == "response" for d in _doers(p.body)]
+    doer = next((d for d in doers if fun[1] in r.vocab.ancestors(d.kind)), None)
+    if doer is None:
+        raise spec_steps4_boxes.TraceError("no step of the request of %s a reply is on" % verb)
+    subject, s, vp = r.clause(Atom("event", (None, verb, sense, (("subject", doer),) + roles)))
+    head, n, m = vp[0].rsplit("_", 2)
+    r.__dict__.setdefault("replies", {})[ref] = ("rq_%s_%s_%s" % (spec_rgl.slug(verb), n, m), ("k_request_n",)) \
+        + tuple(vp[1:])
+    return givens + [(kid(subject) + "_Does", ("PPos",), s, vp)]
+
+
+def _doers(body):
+    """The doers of a response's acts, in order, a box's too: an event's subject, a setting act's agent."""
+    for a in body:
+        if isinstance(a, Atom) and a.pred == "event":
+            yield a.args[3][0][1]
+        elif isinstance(a, Atom) and a.pred == "initiates":
+            yield a.args[1]
+        elif isinstance(a, Box):
+            yield from _doers(tuple(a.body) + (tuple(a.scope.body) if a.scope else ()))
 
 
 def then(r, atom, body, pos):
@@ -164,8 +203,12 @@ def one(r, O, p, v):
     return ("%s_Is_%s" % (P, kid(k)), r.np(v, k))
 
 
-def np(ref, slot):
-    """The `K_NP` tree of "the p" a response names (`p_<p>_NP`), or None of any other referent."""
+def np(ref, slot, r=None):
+    """The `K_NP` tree of "the p" a response names (`p_<p>_NP`), of the request a reply is on (`reply`), or None of
+    any other referent."""
+    said = getattr(r, "replies", {}).get(ref)
+    if said is not None:
+        return ("k_request_Simple", said) if slot == "request" else ("k_request_Up_%s" % kid(slot), said)
     if ref.kind != "parameter" or ref.origin != "constant":
         return None
     tree = ("p_%s_NP" % spec_rgl.slug(ref.value),)
