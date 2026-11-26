@@ -220,7 +220,7 @@ def checked(root, batch, task):
             batch_timings.timed(root, batch.name, "done", task.task):    # no parked lines (r18); its duration (b73)
         tests_pass(root, tested, "%s: %s" % (command, label), strict=False, workspace=tree,
                    unreached=skipped, key="%s-%s" % (batch.name, task.task))       # its own ids are built (r19)
-    backlog_chore.passes(item, tree, "%s: %s" % (command, label))     # a chore's check, after the tests (b316)
+    backlog_chore.passes(item, tree, "%s: %s" % (command, label), workspace=tree, root=root)    # after the tests
     return head
 
 

@@ -56,3 +56,15 @@ def test_check_finds_the_plugin_scripts_with_the_trees_python(tmp_path, monkeypa
     (venv / "python").chmod(0o755)
     code, out = backlog_chore.run(backlog_chore.Chore(("f",), check), tmp_path)
     assert code == 0 and out.startswith("venv-python -c"), out
+
+
+def test_check_falls_back_to_the_checkout_venv(tmp_path):
+    root, tree = tmp_path / "root", tmp_path / "tree"
+    tree.mkdir()
+    venv = root / ".venv" / "bin"
+    venv.mkdir(parents=True)
+    (venv / "python").write_text("#!/bin/sh\necho checkout-venv-python \"$@\"\n")
+    (venv / "python").chmod(0o755)
+    chore = backlog_chore.Chore(("f",), "python3 -c 'print(1)'")
+    code, out = backlog_chore.run(chore, tree, root=root)
+    assert code == 0 and out.startswith("checkout-venv-python -c"), out
