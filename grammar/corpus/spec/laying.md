@@ -439,7 +439,7 @@ shall [x4: service the batches service (constant), x6: service the laying servic
   response
     of(x2, x3)
     keep(e2, subject: x6, object: x3)
-    import(subject: x7, object: x3)
+    import#2(subject: x7, object: x3)
     keep(e3, subject: x6, object: x3)
 ```
 
@@ -468,11 +468,11 @@ From: b745 r27.
 While an item imports a pack, when the batches service lays the item in a workspace, the laying service shall keep the pack that this bounded context imports.
 shall [x3: service the batches service (constant), x5: service the laying service (constant), x6: bounded context "the bounded context the request is made in" (indexical)]
   while [x1: item, x2: pack]
-    import#4(subject: x1, object: x2)
+    import#5(subject: x1, object: x2)
   when [x4: workspace]
     request(e1, laying.lay, subject: x3, object: x1, in: x4)
   response
-    import(subject: x6, object: x2)
+    import#2(subject: x6, object: x2)
     keep(e2, subject: x5, object: x2)
 ```
 
@@ -737,7 +737,7 @@ shall [x1: area `registry` (parameter), x4: area `tracking` (parameter), x5: ser
     not [x3: capability]
       in(x3, x1)
       in(x3, x2)
-    import#2(subject: x1, object: x4)
+    import#3(subject: x1, object: x4)
   when [x6: workspace]
     request(e1, laying.lift, subject: x5, object: x2, from: x6)
   response
@@ -796,7 +796,7 @@ shall [x5: service the batches service (constant), x8: service the laying servic
     in(x2, x3)
     in(x2, x1)
     kind(x4) = `supporting`
-    import#2(subject: x1, object: x4)
+    import#3(subject: x1, object: x4)
   when [x6: item, x7: workspace]
     distinct(x6, x3)
     request(e1, laying.lift, subject: x5, object: x6, from: x7)

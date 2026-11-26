@@ -1311,16 +1311,19 @@ Prints the coupling between the areas of the domain model (`spec/model/`), writi
 context the disentangling of a shop will make. A coupling is of the area depended on, by another area, and holds
 each word both areas' vocabularies define (of the area of the word's second entry), each element of the area the
 other's model refers to, and each requirement of a capability of the other area that uses a word only the area
-defines. Code imports are not read.\
+defines, and each Python file of the other area that imports one of the area's, the areas' Python files declared
+in `.shop/modules.toml` (a table `[<area>]` with `modules`, path patterns from the repository's root, `**` across
+folders; a file two tables match is the first's, a file none matches no area's).\
 Synopsis: `shop spec coupling`
 
 ```console
 $ shop spec coupling --json
 ```
 
-Each coupling is printed as `<area> by <other area>: <n> words, <n> elements, <n> requirements`, then a line of
-its words, its elements (`object note`) and its requirement ids, the couplings with the most first. Under `--json`
-the content is `{"couplings": [{"area", "by", "words", "elements", "requirements"}]}`; a context with no domain model
+Each coupling is printed as `<area> by <other area>: <n> words, <n> elements, <n> requirements, <n> imports`,
+then a line of its words, its elements (`object note`), its requirement ids and its imports
+(`src/binder_shelf.py -> src/notes_store.py`), the couplings with the most first. Under `--json` the content is
+`{"couplings": [{"area", "by", "words", "elements", "requirements", "imports"}]}`; a context with no domain model
 has no coupling.
 
 ### `shop spec assign`

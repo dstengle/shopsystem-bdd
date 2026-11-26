@@ -379,6 +379,7 @@ object area
   relations: holds → model line | term | element (many)
   relations: imports → area (many)
   relations: has → coupling (many)
+  relations: holds → Python file (many)
 
 object group title kind of text
 

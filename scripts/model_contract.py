@@ -217,10 +217,12 @@ contract:
     refuses names the adapter spec (contract_obtain).
   - coupling prints each coupling between the areas of the domain model,
     most first: the area depended on and the area that depends on it, the
-    counts of the words both define, of the elements its model refers to and
-    of the requirements that use its words, and each of them; --json gives
-    them as the envelope's content {"couplings": [{"area", "by", "words",
-    "elements", "requirements"}]} (spec_coupling).
+    counts of the words both define, of the elements its model refers to, of
+    the requirements that use its words and of the imports of its Python
+    files by the other's (the areas' files declared in .shop/modules.toml),
+    and each of them; --json gives them as the envelope's content
+    {"couplings": [{"area", "by", "words", "elements", "requirements",
+    "imports"}]} (spec_coupling, spec_coupling_imports).
   - restates [--json] [<capability>] exits 0 when every 0.29 id (of the
     capability, or of every one) is restated by a group, dropped, or moved
     (a move into a codified capability must be restated there; one into an

@@ -4,7 +4,9 @@ and `work line <item> --into <cap> --in g<n> --relied-on-by <ids>`, the group's 
 of its capability or one of the item's own lines, else refused naming it, the item unchanged. The ids kept under the
 line as `Relied on by: <ids>` in the item's block (backlog_section reads it, backlog_section_render's `laid_group`
 writes it, so the lay writes it into the capability file as spec_read reads it), one commit of the item; the item's
-own ids carried to their new ids by `renumbered` (backlog_renumber)."""
+own ids carried to their new ids by `renumbered` (backlog_renumber). With `--retires <cap>#r<n>` and a line
+(b759, drafting r88) the id checked and kept under the block's `retired:` with the line's pair under `retires:`, as
+`work line --retires` keeps it, in the same commit."""
 import re
 
 import spec_read
@@ -78,13 +80,20 @@ def supported(blocks, capability, rid, ids):
 def cmd(args):
     """`work line <item> --relied-on-by ...`: one commit of the item; what it printed."""
     import backlog_lines
+    import backlog_retires
     from backlog_section import SECTION, read, render
     item = find(args.root, args.name)
     if args.into is None:
         raise Refused("work line: --relied-on-by takes --into <capability> with a requirement line or --in g<n>")
     capability = args.into
+    retires = getattr(args, "retires", None)
+    if retires is not None and args.text is None:
+        raise Refused("work line: --retires with --relied-on-by takes a requirement line")
     if args.text is not None:
+        old = retires and backlog_retires.check(args.root, item, retires, capability)[1]
         rid = backlog_lines.add_line_to(args.root, item, capability, args.text, args.group, args.in_group).split("#")[1]
+        if old:
+            backlog_retires.with_retired(item, capability, old, rid)
         blocks = read(item, "the item %s" % item.name)
     elif args.in_group is not None:
         blocks = read(item, "the item %s" % item.name)
@@ -96,9 +105,14 @@ def cmd(args):
         raise Refused("work line: --relied-on-by takes a requirement line or --in g<n>")
     check(args.root, blocks, args.relied_on_by)
     item.sections[SECTION] = render(supported(blocks, capability, rid, args.relied_on_by))
-    commit(args.root, item, "work line: %s %s#%s relied on by %s" % (
-        label(item), capability, rid, ", ".join(args.relied_on_by)))
-    print("%s: %s#%s relied on by %s" % (label(item), capability, rid, ", ".join(args.relied_on_by)))
+    said = "%s#%s relied on by %s%s" % (capability, rid, ", ".join(args.relied_on_by),
+                                       ", retires %s" % retires if retires else "")
+    commit(args.root, item, "work line: %s %s" % (label(item), said))
+    print("%s: %s" % (label(item), said))
+    if retires:
+        import decision_amend
+        for line in decision_amend.enforcing(args.root, retires):    # drafting r28, as --retires names them
+            print(line)
     return 0
 
 

@@ -186,9 +186,9 @@ While this interpreter does not import `clingo` and another interpreter imports 
 shall [x1: interpreter "the interpreter the request is answered with" (indexical), x2: agent `clingo` (constant), x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x7: thing `0 violations` (parameter)]
   while [x3: interpreter]
     not
-      import(subject: x1, object: x2)
+      import#2(subject: x1, object: x2)
     distinct(x3, x1)
-    import(subject: x3, object: x2)
+    import#2(subject: x3, object: x2)
   when
     request(e1, specification.check, subject: x4, object: x5)
   response
@@ -203,7 +203,7 @@ While no interpreter imports `clingo`, if the person validates this specificatio
 shall [x2: agent `clingo` (constant), x3: agent the person (constant), x4: specification "the specification of this bounded context" (indexical), x5: service the specification service (constant), x6: check "the check the trigger makes" (indexical), x7: interpreter "the interpreter the request is answered with" (indexical)]
   while
     not [x1: interpreter]
-      import(subject: x1, object: x2)
+      import#2(subject: x1, object: x2)
   if
     request(e1, specification.check, subject: x3, object: x4)
   response
@@ -344,7 +344,7 @@ From: design-model-check#r225, reworded in request words (0.38.0).
 While this bounded context imports a pack, when the person looks up the pack, the language service shall return every term of the pack and complete the request.
 shall [x1: bounded context "the bounded context the request is made in" (indexical), x3: agent the person (constant), x4: service the language service (constant), x6: request "the request the trigger makes" (indexical)]
   while [x2: pack]
-    import(subject: x1, object: x2)
+    import#2(subject: x1, object: x2)
   when
     request(e1, language.look up, subject: x3, object: x2)
   response
@@ -1277,7 +1277,7 @@ From: b609 r104.
 While this bounded context imports a pack and the pack has a term and an element refers to the term, when the person validates this specification, the specification service shall complete the request.
 shall [x1: bounded context "the bounded context the request is made in" (indexical), x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x8: request "the request the trigger makes" (indexical)]
   while [x2: pack, x3: term, x4: element]
-    import(subject: x1, object: x2)
+    import#2(subject: x1, object: x2)
     of(x3, x2)
     refer#3(subject: x4, to: x3)
   when
@@ -1293,7 +1293,7 @@ From: b609 r105.
 While this bounded context imports the `base` pack, when the person looks up the pack, the language service shall return every term of the pack and complete the request.
 shall [x1: bounded context "the bounded context the request is made in" (indexical), x2: pack `base` (parameter), x3: agent the person (constant), x4: service the language service (constant), x6: request "the request the trigger makes" (indexical)]
   while
-    import(subject: x1, object: x2)
+    import#2(subject: x1, object: x2)
   when
     request(e1, language.look up, subject: x3, object: x2)
   response
@@ -1441,7 +1441,7 @@ From: b688 r113.
 While this bounded context imports a pack and the pack has a term and the term spells an element and no term means the element and another element refers to the term, when the person validates this specification, the specification service shall complete the request.
 shall [x1: bounded context "the bounded context the request is made in" (indexical), x7: agent the person (constant), x8: specification "the specification of this bounded context" (indexical), x9: service the specification service (constant), x10: request "the request the trigger makes" (indexical)]
   while [x2: pack, x3: term, x4: element, x6: element]
-    import(subject: x1, object: x2)
+    import#2(subject: x1, object: x2)
     of(x3, x2)
     spell(subject: x3, object: x4)
     not [x5: term]
@@ -2012,4 +2012,23 @@ shall [x6: agent the person (constant), x7: shop "the shop the request is made i
     of(x9, x5)
     in(x3, x9)
     return(e2, subject: x8, object: x9)
+```
+
+## r147
+From: b744 r147.
+
+```reading
+While an area holds a Python file and the Python file imports a Python file that another area holds, when the person reports on the shop, the specification service shall return a coupling of the area and name the Python file.
+shall [x5: agent the person (constant), x6: shop "the shop the request is made in" (indexical), x7: service the specification service (constant)]
+  while [x1: area, x2: Python file, x3: Python file, x4: area]
+    in(x2, x1)
+    distinct(x4, x1)
+    in(x3, x4)
+    import(subject: x2, object: x3)
+  when
+    request(e1, specification.report coupling, subject: x5, on: x6)
+  response [x8: coupling]
+    of(x8, x4)
+    return(e2, subject: x7, object: x8)
+    name(e3, subject: x7, object: x3)
 ```

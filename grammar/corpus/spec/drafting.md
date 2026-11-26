@@ -1128,7 +1128,7 @@ shall [x1: agent the person (constant), x4: service the drafting service (consta
   when [x2: pack, x3: item]
     request(e1, drafting.import pack, subject: x1, object: x2, into: x3)
   response
-    import#4(subject: x3, object: x2)
+    import#5(subject: x3, object: x2)
     keep(e2, subject: x4, object: x3)
 ```
 
@@ -1271,7 +1271,7 @@ shall [x1: agent the person (constant), x4: service the drafting service (consta
     request(e1, drafting.remove import, subject: x1, object: x2, from: x3)
   response [x5: item]
     not
-      import#4(subject: x5, object: x2)
+      import#5(subject: x5, object: x2)
     keep(e2, subject: x4, object: x5)
 ```
 
@@ -1283,7 +1283,7 @@ If the person removes a pack from an item that does not import the pack, then th
 shall [x1: agent the person (constant), x4: service the drafting service (constant), x5: request "the request the trigger makes" (indexical)]
   if [x2: pack, x3: item]
     not
-      import#4(subject: x3, object: x2)
+      import#5(subject: x3, object: x2)
     request(e1, drafting.remove import, subject: x1, object: x2, from: x3)
   response
     refuse(e2, subject: x4, object: x5)
@@ -1337,4 +1337,53 @@ shall [x1: agent the person (constant), x6: service the drafting service (consta
   response
     refuse(e2, subject: x6, object: x7)
     name(e3, subject: x6, object: x4)
+```
+
+## r88
+From: b759 r88.
+
+```reading
+While a requirement supports a requirement id, when the person drafts an item with the requirement and a different requirement id, the drafting service shall keep the requirement in the item and keep the requirement id in the item.
+shall [x3: agent the person (constant), x6: service the drafting service (constant)]
+  while [x1: requirement, x2: requirement id]
+    support(subject: x1, object: x2)
+  when [x4: item, x5: requirement id]
+    distinct(x5, x2)
+    request(e1, drafting.draft, subject: x3, object: x4)
+    param(e1, requirement, x1)
+    param(e1, requirement id, x5)
+  response
+    in(x1, x4)
+    keep(e2, subject: x6, object: x1)
+    in(x5, x4)
+    keep(e3, subject: x6, object: x5)
+```
+
+## r89
+From: b760 r89.
+
+```reading
+If the person reinstates a requirement id in an item that does not hold the requirement id, then the drafting service shall refuse the request and name the requirement id.
+shall [x1: agent the person (constant), x4: service the drafting service (constant), x5: request "the request the trigger makes" (indexical)]
+  if [x2: requirement id, x3: item]
+    not
+      in(x2, x3)
+    request(e1, drafting.reinstate requirement, subject: x1, object: x2, in: x3)
+  response
+    refuse(e2, subject: x4, object: x5)
+    name(e3, subject: x4, object: x2)
+```
+
+## r90
+From: b760 r90.
+
+```reading
+When the person reinstates a requirement id in an item, the drafting service shall keep an item that does not hold the requirement id.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: requirement id, x3: item]
+    request(e1, drafting.reinstate requirement, subject: x1, object: x2, in: x3)
+  response [x5: item]
+    not
+      in(x2, x5)
+    keep(e2, subject: x4, object: x5)
 ```

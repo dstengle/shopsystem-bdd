@@ -789,7 +789,7 @@ shall [x1: bounded context "the bounded context the request is made in" (indexic
     request(e1, upgrades.found, subject: x5, object: x1)
     param(e1, context id, x6)
   response [x8: bounded context]
-    import(subject: x8, object: x9)
+    import#2(subject: x8, object: x9)
     keep(e2, subject: x7, object: x8)
     complete(e3, subject: x7, object: x10)
 ```
