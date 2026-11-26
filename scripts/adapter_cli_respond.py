@@ -8,15 +8,39 @@ handler: a `Response` it returns is the response; else its exit and what it prin
 refusal (its reason and the business references it names; for a person its message with each reference spelled as
 the command's parser spells it, `--summary`), any other exception `broken`, a check (`args.check`, or a command
 `checks` names) passed or failed by its exit, an exit 1 of any other command refused, else done, or returned when the
-command printed its own JSON object. Under `--json` the content is that object, or the text it printed."""
+command printed its own JSON object. Under `--json` the content is that object, or the text it printed.
+
+`notice` (b631, decision 0132): a command run by its old name, `work` and not `shop work`, says on stderr that `shop`
+replaces it, then runs as before; `shop` marks its run in the environment (`BY_SHOP`), and the mark is taken out at
+once, so a command the run starts by its old name says it again; a command that runs itself again passes it on
+(`marked`)."""
 import contextlib
 import io
 import json
+import os
 import sys
 
 import domain_envelope
 from domain_envelope import Response
 from shop_refused import Refused
+
+BY_SHOP = "SHOPSYSTEM_BY_SHOP"
+
+
+def notice(name):
+    """The notice of `name` run by its old name, on stderr; none when `shop` ran it. It never fails the command."""
+    if os.environ.pop(BY_SHOP, None):
+        return
+    try:
+        sys.stderr.write("%s: now `shop %s`; `%s` goes in the next release\n" % (name, name, name))
+        sys.stderr.flush()
+    except (OSError, ValueError):
+        pass
+
+
+def marked():
+    """The environment that runs a command as `shop` runs it: with no notice."""
+    return {**os.environ, BY_SHOP: "1"}
 
 
 def leaves(parser):
