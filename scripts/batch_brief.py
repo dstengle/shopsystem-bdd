@@ -206,8 +206,9 @@ def _header(batch, k, rng, head, tree, where, first, merged=False):
     return ["# The review of %s's pull request" % batch.name, "", "Review: %d (%s)" % (k, kind),
             "Batch: %s" % batch.name, "Pull request: %s" % batch.pull_request, "Base: %s" % batch.base,
             "Range: %s" % rng, "Head: %s" % head, "Tree: %s" % tree, "Findings file: %s" % (where / "findings.md"),
-            ("Reply: the findings file's content and nothing else, starting at ## Verdict; the batch session saves "
-             "it byte for byte at Findings file:")]
+            ("Reply: the findings file's content and nothing else, starting at ## Verdict; shop work batch reviewed "
+             "--reply reads it from this dispatch's transcript, and the findings file the batch session saves byte for "
+             "byte at Findings file: only when no transcript is found")]
 
 
 def _earlier(root, batch, own):

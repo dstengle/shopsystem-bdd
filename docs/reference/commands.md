@@ -598,10 +598,12 @@ $ shop work batch brief batch-34
 
 #### `shop work batch reviewed`
 
-Records the findings file (the reviewer's reply, saved where the brief says): writes
+Records the reviewer's reply, read from the `pr-reviewer` dispatch's transcript (`--reply <transcript>`, else the
+newest `pr-reviewer` transcript of the session's store whose prompt names the brief; the reply relayed to the session
+has `<`, `>` and `&` escaped), or from the findings file saved where the brief says when no transcript is found: writes
 `.shop/batches/<n>/review-<k>.md`, posts it on the pull request, and moves the batch back to `building` while a
 finding is open, or to `awaiting-merge` (the pull request marked ready) when none is.\
-Synopsis: `shop work batch reviewed batch`
+Synopsis: `shop work batch reviewed batch [--reply transcript]`
 
 ```console
 $ shop work batch reviewed batch-34

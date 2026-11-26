@@ -37,8 +37,11 @@ def add_parsers(sub):
     s.add_argument("--discard", action="store_true", help="discard the uncommitted changes of its task worktrees")
     s = cmds.add_parser("review", help="merge the in-batch items into the batch branch, test, push and publish its pull request")
     s.add_argument("batch")
-    cmds.add_parser("reviewed", help="record the findings file (pr-reviewer's reply, saved): back to building, or awaiting-merge"
-                    ).add_argument("batch")
+    s = cmds.add_parser("reviewed", help="record pr-reviewer's reply, read from its transcript (else the findings "
+                                         "file): back to building, or awaiting-merge")
+    s.add_argument("batch")
+    s.add_argument("--reply", help="the transcript of the pr-reviewer dispatch, whose last text is its reply (default: "
+                                   "the newest of the session's store whose prompt names the brief)")
     cmds.add_parser("brief", help="write the brief of the next review of a batch's pull request, for pr-reviewer"
                     ).add_argument("batch")
     cmds.add_parser("next", help="the next step of a batch for its driver: its instruction and the task, brief, "
@@ -150,7 +153,7 @@ def brief(args):
 
 def reviewed(args):
     import batch_reviewed
-    print(batch_reviewed.said(args.root, batch_reviewed.reviewed(args.root, args.batch)))
+    print(batch_reviewed.said(args.root, batch_reviewed.reviewed(args.root, args.batch, args.reply)))
     return 0
 
 
