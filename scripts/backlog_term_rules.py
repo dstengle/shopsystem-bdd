@@ -1,9 +1,9 @@
-"""The lexicon rules a term written or reworded into an item breaks (b810, drafting r99, r100): the item, as it is to be
+"""The lexicon rules a term written or reworded into an item breaks (b810, b826, drafting r101, r102): the item, as it is to be
 committed, laid onto a temporary copy of `spec/` (backlog_lines' `lay_onto`), and each problem of the lexicon
 (spec_lexicon's, spec_vocabulary's) the lay brings that names a word of the terms; in a context with a domain model,
 whose lexicon is read off the model, each vocabulary entry's own part of speech (v_t4) and gloss of one sentence (v_t7)
 checked too, as a capability term's are. When one of `RULES` is among them, the write is refused naming the term and
-every rule it breaks (`refuse`), nothing committed; another rule, as v_t6, leaves the write to go on (backlog_lines'
+every rule it breaks, each once with its first message (`refuse`), nothing committed; another rule, as v_t6, leaves the write to go on (backlog_lines'
 `warn_terms`). A lay or a read of the copy that is refused or fails on a file refuses nothing: the readiness bar
 checks it whole."""
 import re
@@ -13,7 +13,7 @@ from pathlib import Path
 
 from backlog_items import Refused
 
-RULES = ("v_t4", "v_t7", "v_t11", "v_t19")
+RULES = ("v_t4", "v_t7", "v_t11", "v_t13", "v_t14", "v_t19")
 WORD = re.compile(r"\s*-\s*\*\*(.+?)\*\*")
 
 
@@ -69,7 +69,8 @@ def violations(root, item, bullets):
         shutil.rmtree(copy, ignore_errors=True)
     out = {}
     for code, word, message in sorted(f for f in found if f[1] in words):
-        out.setdefault(word, []).append((code, message))
+        if code not in {c for c, _ in out.get(word, ())}:      # a rule named once, as two readers may each find it
+            out.setdefault(word, []).append((code, message))
     return out
 
 

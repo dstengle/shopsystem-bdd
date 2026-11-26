@@ -195,7 +195,7 @@ def add(root, name, capability, model=None, relation=None, term=None):
         blocks.models[at] = block._replace(lines=tuple(merged(block.lines, lines)))
         said = "model lines of %s" % area + _left_out(root, area, block.lines, lines)
     item.sections[SECTION] = render(blocks)
-    if term is not None:    # a term that breaks a lexicon rule (b810, drafting r99)
+    if term is not None:    # a term that breaks a lexicon rule (b810, b826, drafting r101)
         __import__("backlog_term_rules").refuse(root, item, bullets)
     commit(root, item, "work line: %s %s" % (label(item), said))
     return item, said
