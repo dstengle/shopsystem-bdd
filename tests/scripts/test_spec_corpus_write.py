@@ -24,6 +24,13 @@ def test_a_block_of_the_same_id_is_replaced_and_a_retired_one_taken_out():
     assert "## r9" not in corpus.without_block(text, "r9")
 
 
+def test_the_last_block_replaced_in_place_leaves_no_blank_line_at_the_end():
+    last = HEAD + "\n" + R2 + R9.rstrip("\n") + "\n"
+    text = corpus.with_block(last, "r9", corpus.block("r9", "From: b7 r9.", "new", "shall []"))
+    assert text.endswith("```reading\nnew\nshall []\n```\n") and "line two" in text
+    assert corpus.without_block(text, "r2").endswith("```\n") and not text.endswith("\n\n")
+
+
 def test_a_context_with_no_corpus_keeps_none(tmp_path):
     assert corpus.write(tmp_path, []) == [] and not (tmp_path / "grammar").exists()
 
