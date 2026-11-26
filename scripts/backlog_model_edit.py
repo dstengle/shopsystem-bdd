@@ -144,7 +144,8 @@ def _term_at(blocks, term, root=None, into=None):
     """[(kind, block index, bullet)] of the item's terms `term` names: a model block's ("model") or a capability
     block's ("capability"), of `into`'s area or its own block when given; refused, naming the term, when none or more
     than one."""
-    area = backlog_model.area_of(root, into, blocks) if into else None
+    modelled = into and __import__("domain_model").exists(root)    # a capability block's term needs no area
+    area = backlog_model.area_of(root, into, blocks) if modelled else None
     found = [("model", n, b) for n, block in _model_blocks(blocks, area) for b in block.terms if _matches(b, term)]
     found += [("capability", n, b) for n, block in enumerate(blocks) for b in block.terms
               if (into is None or block.capability == into) and _matches(b, term)]
@@ -192,6 +193,8 @@ def reword_term(root, name, term, entry, into=None):
     kind = _term_at(blocks, term, root, into)[0]
     new = backlog_model._entries([entry])[0] if kind == "model" else one_line(entry, "term")
     _replace_term(item, blocks, term, new, root, into)
+    import backlog_term_rules
+    backlog_term_rules.refuse(root, item, [new])        # a term that breaks a lexicon rule (b810, drafting r100)
     commit(root, item, "work line: %s rewords the term %s" % (label(item), term))
     return item
 
