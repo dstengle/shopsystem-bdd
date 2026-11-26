@@ -51,3 +51,4 @@ shall [x1: service the specification service (constant), x4: service the contrac
   response
     complete(e2, subject: x4, object: x5)
 ```
+

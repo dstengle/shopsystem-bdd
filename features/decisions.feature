@@ -223,3 +223,16 @@ Feature: Decisions
     When the person amends the design-decision d1 with the foundation f1
     Then the decisions service completes this request
     And the decisions service does not change a file
+
+  @g26 @r26
+  Scenario: A superseded decision may name a requirement a later line retired
+    Given a design-decision d1
+    And the status of the design-decision d1 is `superseded`
+    And a requirement r2
+    And the requirement r2 enforces the design-decision d1
+    And a requirement id r3
+    And the requirement r2 has the requirement id r3
+    And a requirement r1
+    And the requirement r1 retires the requirement id r3
+    When the person validates this specification
+    Then the specification service completes this request

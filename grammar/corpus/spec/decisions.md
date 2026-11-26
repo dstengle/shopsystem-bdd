@@ -404,3 +404,20 @@ shall [x3: agent the person (constant), x4: service the decisions service (const
     not [x6: file]
       change(e3, subject: x4, object: x6)
 ```
+
+## r26
+From: b735 r26.
+
+```reading
+While a requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded`, when the person validates this specification, the specification service shall complete the request.
+shall [x5: agent the person (constant), x6: specification "the specification of this bounded context" (indexical), x7: service the specification service (constant), x8: request "the request the trigger makes" (indexical)]
+  while [x1: requirement, x2: requirement, x3: design-decision, x4: requirement id]
+    status(x3) = `superseded`
+    enforce(subject: x2, object: x3)
+    of(x4, x2)
+    retire(subject: x1, object: x4)
+  when
+    request(e1, specification.check, subject: x5, object: x6)
+  response
+    complete(e2, subject: x7, object: x8)
+```
