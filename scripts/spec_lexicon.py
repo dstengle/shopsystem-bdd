@@ -52,6 +52,7 @@ class Term:
     aspect: str = ""      # a verb's: state or action (`(verb, state)`), "" when it says neither (v_t14)
     frames: tuple = ()    # a verb's every `Frame:`: one meaning, one predicate
     written: tuple = ()   # of each of `frames`, the `Frame:` as its entry writes it, when it differs (`<actor>`, b796)
+    slotless: tuple = ()  # of its `Frame:`s, each as written that takes no noun phrase (spec_vocabulary_terms, b811)
     this: str = ""        # a kind's `This:`, the run's own thing of that kind
     schema: tuple = ()    # an artifact's `Schema:` as (schema type, file), stored, checked by nothing yet (b241)
     field_of: str = ""    # an attribute's `Field of:`, the artifact it is a field of, stored (b241)
