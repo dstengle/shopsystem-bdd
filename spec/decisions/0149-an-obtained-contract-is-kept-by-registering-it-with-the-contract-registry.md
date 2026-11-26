@@ -4,7 +4,7 @@ summary: "spec obtain asks the contract registry to register an obtained contrac
 date: 2026-11-26
 status: accepted
 tier: requirement
-enforced_by: [checking#r137, checking#r138, checking#r139, checking#r140, contract-registry#r4]
+enforced_by: [checking#r137, checking#r138, checking#r139, checking#r140, contract-registry#r4, checking#r142, contract-registry#r5]
 verified_by: [scenario]
 supersedes: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/an-obtained-contract-is-kept-in-its-provider-s-adapter-spec-checked]
 ---
