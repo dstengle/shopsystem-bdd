@@ -1367,7 +1367,7 @@ a doer gives an attribute a value
 - Since: b240
 - Form: set the <attribute> of <np> to <value>
 - Functions: `t_[a-z0-9_]+_\d+_Set`
-- Cited by: no line
+- Cited by: checking#r112
 - Example and its reading:
 
 ```construct

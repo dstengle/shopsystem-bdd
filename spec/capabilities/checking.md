@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56, g94, r94]
-unbuilt: []
+unbuilt: [r111, r112]
 ---
 
 # Checking
@@ -310,6 +310,12 @@ Restates: design-model-check#r13@0.29.
 
 ### [g110] A capability whose requirement group serves a job is not unserved
 - [r110] While this bounded context has a job and a requirement group of a capability serves the job, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.
+
+### [g111] An operation requested only by a response's request with no parameter is requested
+- [r111] While a requirement has a response that uses an operation and no parameter and no requirement governs the operation, when the person validates this specification, the specification service shall complete the request.
+
+### [g112] A transition that only a forbidden set reaches is named as a transition no line causes
+- [r112] While a lifecycle has a transition and a requirement that forbids an act uses `set-attribute` and the transition and no operation performs the transition, when the person validates this specification, the specification service shall name the transition and complete the request.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

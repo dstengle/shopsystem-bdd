@@ -897,3 +897,30 @@ Feature: Checking
     And the capability c2 violates `w_unserved_cap`
     When the person validates this specification
     Then the specification service does not return the capability c2
+
+  @g111 @r111
+  Scenario: An operation requested only by a response's request with no parameter is requested
+    Given a response r2
+    And an operation o1
+    And the response r2 uses the operation o1
+    And the response r2 uses no parameter
+    And a requirement r1
+    And the requirement r1 has the response r2
+    And no requirement governs the operation o1
+    When the person validates this specification
+    Then the specification service completes this request
+
+  @g112 @r112
+  Scenario: A transition that only a forbidden set reaches is named as a transition no line causes
+    Given a transition t1
+    And a lifecycle l1
+    And the lifecycle l1 has the transition t1
+    And a requirement r1
+    And an act a1
+    And the requirement r1 forbids the act a1
+    And the requirement r1 uses `set-attribute`
+    And the requirement r1 uses the transition t1
+    And no operation performs the transition t1
+    When the person validates this specification
+    Then the specification service names the transition t1
+    And the specification service completes this request

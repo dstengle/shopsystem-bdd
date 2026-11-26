@@ -1429,3 +1429,42 @@ shall [x1: bounded context "the bounded context whose repository the command run
       violate(subject: x8, object: x9)
       return(e2, subject: x7, object: x8)
 ```
+
+## r111
+From: b604 r111.
+
+```reading
+While a requirement has a response that uses an operation and no parameter and no requirement governs the operation, when the person validates this specification, the specification service shall complete the request.
+shall [x6: agent the person (constant), x7: specification "the specification of this bounded context" (indexical), x8: service the specification service (constant), x9: request "the request the trigger makes" (indexical)]
+  while [x1: requirement, x2: response, x3: operation]
+    use(subject: x2, object: x3)
+    not [x4: parameter]
+      use(subject: x2, object: x4)
+    of(x2, x1)
+    not [x5: requirement]
+      govern(subject: x5, object: x3)
+  when
+    request(e1, specification.check, subject: x6, object: x7)
+  response
+    complete(e2, subject: x8, object: x9)
+```
+
+## r112
+From: b605 r112.
+
+```reading
+While a lifecycle has a transition and a requirement that forbids an act uses `set-attribute` and the transition and no operation performs the transition, when the person validates this specification, the specification service shall name the transition and complete the request.
+shall [x5: thing `set-attribute` (parameter), x7: agent the person (constant), x8: specification "the specification of this bounded context" (indexical), x9: service the specification service (constant), x10: request "the request the trigger makes" (indexical)]
+  while [x1: lifecycle, x2: transition, x3: requirement, x4: act]
+    of(x2, x1)
+    forbid(subject: x3, object: x4)
+    use(subject: x3, object: x5)
+    use(subject: x3, object: x2)
+    not [x6: operation]
+      perform(subject: x6, object: x2)
+  when
+    request(e1, specification.check, subject: x7, object: x8)
+  response
+    name(e2, subject: x9, object: x2)
+    complete(e3, subject: x9, object: x10)
+```
