@@ -6,8 +6,8 @@ of the context given with `--file` read off the copy, so a capability file holds
 and `grammar/` copied, every other entry of the context's top folder linked, so its features, backlog and product
 file are read as they are. Of `spec check --item`, the violations the lay alone brings left out (`lay_only`, b808,
 checking r153-r155): v_s3 of a group the item lays, whose scenarios only a batch's lay writes, and v_a5 of a
-requirement it lays and v_a6 of one it retires, which only a batch's lay annotates in the adapter contract, as the
-readiness bar leaves them out; every other violation of the item's reported."""
+requirement it lays, which only a batch's lay annotates in the adapter contract, as the readiness bar leaves them out;
+every other violation of the item's reported."""
 
 import shutil
 import tempfile
@@ -22,7 +22,7 @@ import spec_catalogued
 # The rules whose violations of the item's own ids only a batch's lay clears (`lay_only`), each with the place of the
 # id in its row: skipped, so that the rule catalogue does not take this module for where they are implemented
 # (model_rules.skipped, b467).
-SKIPPED_RULES = {"v_s3": 0, "v_a5": 1, "v_a6": 1}
+SKIPPED_RULES = {"v_s3": 0, "v_a5": 1}
 COPIED = ("spec", "grammar")      # what the lay may write: copied, never linked, so the context is never changed
 
 
@@ -64,12 +64,11 @@ def rooted(args, run):
 
 def lay_only(item):
     """Whether a violation `(code, args)` is one the lay of `item` alone brings: v_s3 of a group it lays, v_a5 of a
-    requirement it lays, v_a6 of one it retires (the module's doc)."""
+    requirement it lays (the module's doc)."""
     blocks = backlog_section.read(item, "the item %s" % item.name)
     groups = {"%s#%s" % (b.capability, g.id) for b in blocks for g in b.groups}
     lines = set(backlog_section.ids(blocks))
-    retired = {"%s#%s" % (b.capability, r) for b in blocks for r in b.retired}
-    ids = dict(zip(SKIPPED_RULES, (groups, lines, retired)))
+    ids = dict(zip(SKIPPED_RULES, (groups, lines)))
 
     def brought(code, found):
         at = SKIPPED_RULES.get(code)

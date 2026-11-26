@@ -92,9 +92,9 @@ def build(repo, text=ITEM):
     program = (FIXTURE / "notes_cli.py").read_text()
     (repo / "notes_cli.py").write_text(program.replace('Path(__file__).resolve().parents[4] / "scripts"',
                                                        repr(str(ROOT / "scripts"))))
-    for rel, text in ((".shop/product/product.toml", PRODUCT), (".shop/backlog/b1.md", text)):
+    for rel, body in ((".shop/product/product.toml", PRODUCT), (".shop/backlog/b1.md", text)):
         (repo / rel).parent.mkdir(parents=True, exist_ok=True)
-        (repo / rel).write_text(text % {"context": CONTEXT, "job": JOB})
+        (repo / rel).write_text(body % {"context": CONTEXT, "job": JOB})
 
 
 def runs(step):
