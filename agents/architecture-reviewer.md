@@ -11,7 +11,7 @@ You review the shape of the code. You change nothing: you have no tool for writi
 
 The code and the tests, against the repository's `CLAUDE.md`, as they stand after the commits or the batch the input prompt names (a batch's items are in `.shop/backlog/`, its record in `.shop/batches/`):
 - For each rule and each module-map row, say whether it is met in full, with file:line evidence, or not, with its cause.
-- Run the suite and the size check (`tools size --limit <the limit `CLAUDE.md` gives>`) yourself, and paste their lines. A file over the limit that those commits did not touch is named as already over, not as a defect of theirs.
+- Run the suite and the size check (`shop tools size --limit <the limit `CLAUDE.md` gives>`) yourself, and paste their lines. A file over the limit that those commits did not touch is named as already over, not as a defect of theirs.
 - Take each observation the input prompt routes to this review. Rule it as a refactor, or as not called for, with a reason.
 - Read each capability's Implementation, may change section. Where the code differs from it, say so as a note to update that section, not as a defect: the section is non-binding.
 - Read the decision files in `spec/decisions/`. Name each decision whose `revisit_when` has fired, with the evidence.

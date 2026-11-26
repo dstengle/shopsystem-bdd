@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/migrate\" status --hook"
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/shop\" migrate status --hook"
           },
           {
             "type": "command",
