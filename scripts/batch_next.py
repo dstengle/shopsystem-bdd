@@ -9,10 +9,12 @@ item since the batch's lines commit, with the batch brief, so that the driver bu
 (a running task whose branch holds one), `submit batch`, `review change` (the next review's folder and the findings
 file in it, `findings.md`, where the reviewer's reply is saved for `work batch reviewed`), `fix finding` (an open `fix
 now` finding no commit cites yet), `park item` (a failed task), `fix task` (every task done, and the last whole-suite
-run of `work batch review` failed: the task of the item whose change broke it, batch_broken, b696), `look at failure`
+run of `work batch review` failed: the task of the item whose change broke it, batch_broken, b696; or two tasks'
+branches conflict in a file, which `work batch review` would refuse to merge: the later task, whose item's subagent
+merges the earlier branch and settles it, and the files, batch_merge's `clashes`, b710), `look at failure`
 (the same, but the tests are of no task's item: the failed tests and no task, b703) or `stop`. One step is picked,
 the first that applies in this order: stop, review change, fix finding, park item, finish task, build task, prepare
-task, fix task, look at failure, submit batch (`pick`). Only the tasks of an item still `in-batch` count; a building
+task, fix task (a conflict first), look at failure, submit batch (`pick`). Only the tasks of an item still `in-batch` count; a building
 batch with none of them stops. Each step names the command its result is reported through (`report`). The step is
 printed as lines, one `task:` line a task, and is the content of a `returned` response (the envelope under `--json`:
 `tasks`, and the first of them as `task`)."""
@@ -24,6 +26,7 @@ import batch_driver
 import batch_findings
 import batch_fix
 import batch_git
+import batch_merge
 import batch_plan
 import batch_tasks
 from domain_envelope import Response
@@ -73,11 +76,23 @@ def _built(root, batch, tasks):
     return found
 
 
-def pick(batch, tasks, unfixed, built=(), broken=None, kept=False):
+def _conflict(root, tasks):
+    """(the later task, the earlier one, the files) of the first two tasks whose branches conflict, in plan order, or
+    None."""
+    for j, later in enumerate(tasks):
+        for earlier in tasks[:j]:
+            files = batch_merge.clashes(root, earlier.branch, later.branch)
+            if files:
+                return later, earlier, files
+    return None
+
+
+def pick(batch, tasks, unfixed, built=(), broken=None, kept=False, clash=None):
     """(instruction, the tasks it is about, finding or None): the first step that applies, in the service's order.
     `tasks` are the batch's tasks of in-batch items, `unfixed` its open findings to fix, `built` the ids of its running
     tasks whose branch holds a kept change citing their item, `broken` the task to fix for a refused submit (or None),
-    `kept` whether a refused submit's failed run is kept with no task to fix it (`look at failure`, b703).
+    `kept` whether a refused submit's failed run is kept with no task to fix it (`look at failure`, b703), `clash`
+    (later task, earlier task, files) of two task branches that conflict (b710).
     `build task` and `prepare task` are about every task that takes the step, so that they are built side by side
     (b702); `finish task` (the first built running task), `park item` and `fix task` about one."""
     if batch.status not in ("building", "in-review"):
@@ -98,6 +113,8 @@ def pick(batch, tasks, unfixed, built=(), broken=None, kept=False):
     pending = [t for t in tasks if t.status == "pending"]
     if pending:
         return "prepare task", pending, None
+    if clash is not None:
+        return "fix task", [clash[0]], None
     if broken is not None:
         return "fix task", [broken], None
     if kept:
@@ -105,10 +122,13 @@ def pick(batch, tasks, unfixed, built=(), broken=None, kept=False):
     return ("submit batch", [], None) if tasks else ("stop", [], None)
 
 
-def report(batch, instruction, tasks, finding):
+def report(batch, instruction, tasks, finding, clash=None):
     """The command the step's result is reported through, or None for `stop`: of `build task`, one for each task."""
     name = batch.name
     task = tasks[0] if tasks else None
+    if instruction == "fix task" and clash:
+        return "%s merged into %s with %s settled, a commit citing Item: %s, then shop work batch review %s" % (
+            clash[1].branch, clash[0].branch, ", ".join(clash[2]), clash[0].item, name)
     if instruction == "build task":
         return "; ".join("a commit on %s citing Item: %s, then shop work batch done %s %s" % (
             t.branch, t.item, name, t.task) for t in tasks)
@@ -141,8 +161,9 @@ def poll(root, name):
     unfixed = _unfixed(root, batch) if batch.status == "building" else []
     done = batch.status == "building" and tasks and all(t.status == "done" for t in tasks) and not unfixed
     broken = batch_broken.task_of(root, batch, tasks) if done else None
+    clash = _conflict(root, tasks) if done else None
     kept = bool(done and broken is None and batch_broken.failed(root, batch))
-    instruction, picked, finding = pick(batch, tasks, unfixed, _built(root, batch, tasks), broken, kept)
+    instruction, picked, finding = pick(batch, tasks, unfixed, _built(root, batch, tasks), broken, kept, clash)
     folder = None
     if instruction == "review change":
         folder = str(batch_findings.scratch(root, batch, len(batch_findings.reviews(root, batch)) + 1).resolve())
@@ -155,7 +176,8 @@ def poll(root, name):
             "review finding": {"finding": finding.fid, "title": finding.title, "item": finding.item,
                                "where": finding.where} if finding else None,
             "failed tests": batch_broken.failed(root, batch) if instruction in ("fix task", "look at failure") else None,
-            "report": report(batch, instruction, picked, finding)}
+            "files": clash[2] if clash and instruction == "fix task" else None,
+            "report": report(batch, instruction, picked, finding, clash)}
 
 
 def text(step):
@@ -165,6 +187,8 @@ def text(step):
     if step["review finding"]:
         f = step["review finding"]
         lines.append("review finding: %s %s (%s, %s)" % (f["finding"], f["title"], f["item"], f["where"] or "-"))
+    for path in step.get("files") or ():
+        lines.append("file: %s" % path)
     for test in step.get("failed tests") or ():
         lines.append("failed test: %s" % test)
     for key in ("batch brief", "review folder", "findings file", "report"):

@@ -67,20 +67,23 @@ def _blob(tree, oid):
     return subprocess.run(["git", "cat-file", "blob", oid], cwd=tree, capture_output=True, text=True).stdout
 
 
-def clashing(tree, branch, other, path):
-    """Whether `branch` and `other` conflict in `path`, other than in its `unbuilt:` line (git merge-tree)."""
+def clashes(tree, branch, other):
+    """The paths in which `branch` and `other` conflict, other than in their `unbuilt:` lines (git merge-tree)."""
     done = subprocess.run(["git", "merge-tree", "--write-tree", "--no-messages", branch, other], cwd=tree,
                           capture_output=True, text=True)
     if done.returncode != 1:
-        return False
+        return []
     stages = {}
     for line in done.stdout.splitlines()[1:]:
         info, _, name = line.partition("\t")
-        if name == path and len(info.split()) == 3:
-            stages[int(info.split()[2])] = _blob(tree, info.split()[1])
-    if not stages:
-        return False
-    return reconciled(*(stages.get(n) for n in (1, 2, 3))) is None
+        if name and len(info.split()) == 3:
+            stages.setdefault(name, {})[int(info.split()[2])] = _blob(tree, info.split()[1])
+    return [name for name, found in stages.items() if reconciled(*(found.get(n) for n in (1, 2, 3))) is None]
+
+
+def clashing(tree, branch, other, path):
+    """Whether `branch` and `other` conflict in `path`, other than in its `unbuilt:` line (git merge-tree)."""
+    return path in clashes(tree, branch, other)
 
 
 def _merging(tree):
