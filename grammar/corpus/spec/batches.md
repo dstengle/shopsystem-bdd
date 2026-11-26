@@ -1199,7 +1199,7 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
   while [x1: item, x3: pack]
     status(x1) = `ready`
     meet(subject: x1, object: x2)
-    import#3(subject: x1, object: x3)
+    import#4(subject: x1, object: x3)
   when [x5: batch]
     request(e1, batches.open, subject: x4, object: x5)
   response
@@ -1549,4 +1549,48 @@ shall [x7: agent the driver (constant), x8: service the batches service (constan
     instruction(x9) = `look at failure`
     return(e2, subject: x8, object: x9)
     return(e3, subject: x8, object: x3)
+```
+
+## r155
+From: b704 r155.
+
+```reading
+While an item in a batch is `in-batch` and the kind of an area is `port` and the area holds a capability that the item holds and the area imports an area whose kind is `supporting`, when the person parks another item in the batch, the batches service shall keep the area.
+shall [x6: agent the person (constant), x8: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: area, x4: capability, x5: area]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    kind(x3) = `port`
+    in(x4, x1)
+    in(x4, x3)
+    kind(x5) = `supporting`
+    import#2(subject: x3, object: x5)
+  when [x7: item]
+    distinct(x7, x1)
+    in(x7, x2)
+    request(e1, batches.park, subject: x6, object: x7)
+  response
+    keep(e2, subject: x8, object: x5)
+```
+
+## r156
+From: b704 r156.
+
+```reading
+While an item in a batch is `in-batch` and a task of the item is `running` and the kind of the `registry` area is `port` and the item holds no capability that the `registry` area holds and the `registry` area imports the `tracking` area, when the person amends the item, the batches service shall keep the `registry` area.
+shall [x4: area `registry` (parameter), x6: area `tracking` (parameter), x7: agent the person (constant), x8: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: task]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    of(x3, x1)
+    status(x3) = `running`
+    kind(x4) = `port`
+    not [x5: capability]
+      in(x5, x4)
+      in(x5, x1)
+    import#2(subject: x4, object: x6)
+  when
+    request(e1, batches.amend, subject: x7, object: x1)
+  response
+    keep(e2, subject: x8, object: x4)
 ```

@@ -1199,7 +1199,7 @@ While an item is `shaped` and the item imports a pack and the item holds no requ
 shall [x4: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x6: service the backlog service (constant)]
   while [x1: item, x2: pack]
     status(x1) = `shaped`
-    import#3(subject: x1, object: x2)
+    import#4(subject: x1, object: x2)
     not [x3: requirement]
       in(x3, x1)
     meet(subject: x1, object: x4)
@@ -1235,7 +1235,7 @@ While an item is `shaped` and the item imports a pack and the pack has a term an
 shall [x7: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x8: agent the person (constant), x9: service the backlog service (constant)]
   while [x1: item, x2: pack, x3: term, x4: element, x5: element, x6: term]
     status(x1) = `shaped`
-    import#3(subject: x1, object: x2)
+    import#4(subject: x1, object: x2)
     of(x3, x2)
     refer#3(subject: x4, to: x3)
     distinct(x5, x4)

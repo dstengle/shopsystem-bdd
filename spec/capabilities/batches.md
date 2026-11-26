@@ -270,3 +270,9 @@ when the change is merged.
 ### [g154] A batch whose submit broke a scenario of no item asks the driver to look at the failure
 - [r154] While a batch is `building` and every task of the batch is `done` and a scenario breaks in the workspace of the batch and no scenario of an item in the batch breaks in the workspace of the batch, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `look at failure` and the scenario.
 
+### [g155] Parking an item keeps the imports another item laid on the same driven port
+- [r155] While an item in a batch is `in-batch` and the kind of an area is `port` and the area holds a capability that the item holds and the area imports an area whose kind is `supporting`, when the person parks another item in the batch, the batches service shall keep the area.
+
+### [g156] Amending an item takes out the imports of a driven port its lines no longer need
+- [r156] While an item in a batch is `in-batch` and a task of the item is `running` and the kind of the `registry` area is `port` and the item holds no capability that the `registry` area holds and the `registry` area imports the `tracking` area, when the person amends the item, the batches service shall keep the `registry` area.
+

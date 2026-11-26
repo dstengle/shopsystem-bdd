@@ -329,3 +329,4 @@ area: specification
 - **address** (verb, state) → relation bounded context.addresses. A bounded context of the domain map gives the subdomain its solution. Forms: addresses, addressed. Frame: <bounded context> addresses <subdomain>.
 - **play** (verb, state) → relation actor.plays. An actor of a bounded context's model is the one the product maps a product actor to there (decision 0141). Forms: plays, played. Frame: <actor> plays <product actor>.
 - **serve** (verb, state) → relation subdomain.serves. A subdomain of the product holds a job whose work it is. Forms: serves, served. Frame: <subdomain> serves <job>.
+- **import** (verb, state) → relation area.imports. An area's model file names another area under its `imports:`, whose words the lines of its capabilities may say. Forms: imports, imported. Frame: <area> imports <area>.

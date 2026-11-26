@@ -1128,7 +1128,7 @@ shall [x1: agent the person (constant), x4: service the drafting service (consta
   when [x2: pack, x3: item]
     request(e1, drafting.import pack, subject: x1, object: x2, into: x3)
   response
-    import#3(subject: x3, object: x2)
+    import#4(subject: x3, object: x2)
     keep(e2, subject: x4, object: x3)
 ```
 
@@ -1271,7 +1271,7 @@ shall [x1: agent the person (constant), x4: service the drafting service (consta
     request(e1, drafting.remove import, subject: x1, object: x2, from: x3)
   response [x5: item]
     not
-      import#3(subject: x5, object: x2)
+      import#4(subject: x5, object: x2)
     keep(e2, subject: x4, object: x5)
 ```
 
@@ -1283,7 +1283,7 @@ If the person removes a pack from an item that does not import the pack, then th
 shall [x1: agent the person (constant), x4: service the drafting service (constant), x5: request "the request the trigger makes" (indexical)]
   if [x2: pack, x3: item]
     not
-      import#3(subject: x3, object: x2)
+      import#4(subject: x3, object: x2)
     request(e1, drafting.remove import, subject: x1, object: x2, from: x3)
   response
     refuse(e2, subject: x4, object: x5)
