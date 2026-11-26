@@ -59,6 +59,10 @@
 % the bound check (model_bound; v_pb1-v_pb4, b549)
 #defined port_op/1.  #defined outcome/3.  #defined outcome_reason/2.  #defined port_line/1.  #defined core_line/1.
 #defined on_outcome/3.  #defined denies/3.  #defined supports/2.
+% the product check (model_product, b643): the product file's jobs, actors, subdomains and contexts, and each job's trace
+#defined pjob/1.  #defined pjob_actor/2.  #defined pneeds/2.  #defined held_by/2.  #defined here/1.  #defined psub/1.
+#defined psub_serves/2.  #defined addresses/2.  #defined plays/2.  #defined triggers_as/2.  #defined served_here/1.
+#defined job_reaches/2.  #defined job_reaches_context/2.
 #defined cites_record/2.          % cites_record(I, R): item I's source: names the record R
 #defined new_item/1.              % new_item(I): item I came after the records policy
 #defined held/1.                  % held(X): X is an item or a batch whose file this repository holds (shop_ids)
@@ -585,12 +589,47 @@ label("w_unserved_cap", "a capability serves no job").
 % pass w_unserved_cap: node("c","capability"). node("j","job"). group_id("g","c",1). serves("g","j").
 cap_serves(C)      :- serves(C, _), node(C, "capability").
 cap_serves(C)      :- serves(G, _), group_id(G, C, _).     % a requirement group serves a job (decision 0140, b641)
+cap_serves(C)      :- job_reaches(_, Q), req_id(Q, C, _).   % a participant: a job's trace reaches it (decision 0144, b643)
+cap_serves(C)      :- port_line(Q), req_id(Q, C, _).        % a port: it specifies a driven port
+cap_serves(C)      :- group(C, "guarantees"), serves(_, _). % a guarantees capability constrains the jobs' lines
 w_unserved_cap(C)  :- node(C, "capability"), not cap_serves(C), node(_, "job").
 label("w_unserved_job", "a job nothing serves").
 % fail w_unserved_job: node("j","job").
 % pass w_unserved_job: node("j","job"). serves("c","j").
 w_unserved_job(J)  :- node(J, "job"), not serves(_, J), not of_job(_, J).
 seam_used(R)       :- seam(R, Up, Down), in(C, Down), in(D, Up), depends_on(C, D).
+% the product check (b643; decisions 0140-0144): the product file against this bounded context and the jobs' traces
+label("v_job_elsewhere", "a job a requirement group serves here is assigned to another bounded context").
+% fail v_job_elsewhere: here("b"). served_here("j"). held_by("j","c").
+% pass v_job_elsewhere: here("b"). served_here("j"). held_by("j","b").
+v_job_elsewhere(J, B) :- served_here(J), held_by(J, B), not here(B).
+label("v_need_cycle", "a job's needs close a cycle").
+% fail v_need_cycle: pjob("j"). pjob("n"). pneeds("j","n"). pneeds("n","j").
+% pass v_need_cycle: pjob("j"). pjob("n"). pneeds("j","n").
+needs_tc(J, N)     :- pneeds(J, N).
+needs_tc(J, M)     :- needs_tc(J, N), pneeds(N, M).
+v_need_cycle(J, N) :- pneeds(J, N), needs_tc(N, J).
+label("w_unheld_job", "a job of the product that no bounded context holds").
+% fail w_unheld_job: pjob("j").
+% pass w_unheld_job: pjob("j"). held_by("j","b").
+job_held(J)        :- held_by(J, _).
+w_unheld_job(J)    :- pjob(J), not job_held(J).
+label("w_untriggered_actor", "a product actor of a job held here whose actor here triggers no line of the job's trace").
+% fail w_untriggered_actor: here("b"). held_by("j","b"). pjob_actor("j","p"). plays("p","the person").
+% pass w_untriggered_actor: here("b"). held_by("j","b"). pjob_actor("j","p"). plays("p","the person"). job_reaches("j","q"). triggers_as("p","q").
+held_here(J)       :- held_by(J, B), here(B).
+actor_triggered(J, P) :- job_reaches(J, Q), triggers_as(P, Q).
+w_untriggered_actor(J, P) :- held_here(J), pjob_actor(J, P), plays(P, _), not actor_triggered(J, P).
+label("w_unaddressed_sub", "a subdomain that no bounded context addresses").
+% fail w_unaddressed_sub: psub("s").
+% pass w_unaddressed_sub: psub("s"). addresses("b","s").
+sub_addressed(S)   :- addresses(_, S).
+w_unaddressed_sub(S) :- psub(S), not sub_addressed(S).
+label("w_unreached_sub", "a subdomain of a job held here whose trace reaches no bounded context that addresses it").
+% fail w_unreached_sub: here("b"). held_by("j","b"). psub_serves("s","j").
+% pass w_unreached_sub: here("b"). held_by("j","b"). psub_serves("s","j"). job_reaches_context("j","b"). addresses("b","s").
+sub_reached(J, S)  :- job_reaches_context(J, B), addresses(B, S).
+w_unreached_sub(J, S) :- held_here(J), psub_serves(S, J), not sub_reached(J, S).
 label("w_seam_unused", "a seam nothing crosses").
 % fail w_seam_unused: seam("m","u","d").
 % pass w_seam_unused: seam("m","u","d"). in("c","d"). in("e","u"). using("c","i","e").
@@ -632,5 +671,7 @@ w_example(Q, L)    :- exemplified(Q, L).
 #show v_t16/2. #show v_t17/2. #show v_t18/2. #show v_t19/2. #show v_t20/2. #show v_t21/2.
 #show v_m1/3. #show v_m2/2. #show v_m3/2. #show v_m4/2. #show w_m5/4. #show v_m6/4. #show v_m7/1. #show v_m9/4. #show v_pb1/1. #show v_pb2/1. #show v_pb3/2. #show v_pb4/1. #show v_m8/2. #show v_a1/2. #show v_a2/2. #show v_a3/2. #show v_a4/2. #show v_a5/2. #show v_a6/2. #show v_c1/2. #show v_c2/1. #show v_c3/1. #show v_c4/2. #show v_r1/2. #show w_r1/2.
 #show v_p0/1. #show v_p1/2. #show v_p2/1. #show v_p3/2.
+#show v_job_elsewhere/2. #show v_need_cycle/2. #show w_unheld_job/1. #show w_untriggered_actor/2.
+#show w_unaddressed_sub/1. #show w_unreached_sub/2.
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
 #show w_many_requests/1. #show w_untiered/1. #show w_unrouted/1. #show w_example/2. #show w_value_kind/1.

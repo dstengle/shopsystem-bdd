@@ -2009,6 +2009,7 @@ a capability serves no job
 
 - Purpose: Every capability serves some job, so the system holds no behaviour without a reason.
 - Since: b123
+- Changed: b643
 - Severity: warning
 - Implemented in: `scripts/model.lp`
 - Cited by: checking#r110, checking#r120, checking#r121, checking#r122
@@ -2034,6 +2035,7 @@ a job nothing serves
 
 - Purpose: Every job someone needs done is served by some capability, so no need is left unmet.
 - Since: b123
+- Changed: b643
 - Severity: warning
 - Implemented in: `scripts/model.lp`
 - Cited by: no line
@@ -2048,6 +2050,157 @@ a job nothing serves
   ```prolog
   node("j","job").
   serves("c","j").
+  ```
+
+## v_job_elsewhere
+
+a job a requirement group serves here is assigned to another bounded context
+
+- Purpose: A job is served only in the bounded context the product assigns it to, so two contexts never both answer for it.
+- Since: b643
+- Severity: error
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  here("b").
+  served_here("j").
+  held_by("j","c").
+  ```
+
+- Passes on:
+
+  ```prolog
+  here("b").
+  served_here("j").
+  held_by("j","b").
+  ```
+
+## v_need_cycle
+
+a job's needs close a cycle
+
+- Purpose: A job's needs never close a cycle, so its trace joins the traces of the jobs it needs once.
+- Since: b643
+- Severity: error
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  pjob("j").
+  pjob("n").
+  pneeds("j","n").
+  pneeds("n","j").
+  ```
+
+- Passes on:
+
+  ```prolog
+  pjob("j").
+  pjob("n").
+  pneeds("j","n").
+  ```
+
+## w_unheld_job
+
+a job of the product that no bounded context holds
+
+- Purpose: Every job of the product is assigned to a bounded context, so none is left with no one to serve it.
+- Since: b643
+- Severity: warning
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  pjob("j").
+  ```
+
+- Passes on:
+
+  ```prolog
+  pjob("j").
+  held_by("j","b").
+  ```
+
+## w_untriggered_actor
+
+a product actor of a job held here whose actor here triggers no line of the job's trace
+
+- Purpose: Each actor of a job starts a line of the job's trace in the bounded context that holds it, so no actor of the job is left out.
+- Since: b643
+- Severity: warning
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  here("b").
+  held_by("j","b").
+  pjob_actor("j","p").
+  plays("p","the person").
+  ```
+
+- Passes on:
+
+  ```prolog
+  here("b").
+  held_by("j","b").
+  pjob_actor("j","p").
+  plays("p","the person").
+  job_reaches("j","q").
+  triggers_as("p","q").
+  ```
+
+## w_unaddressed_sub
+
+a subdomain that no bounded context addresses
+
+- Purpose: Every subdomain of the product is given its solution by a bounded context of the domain map.
+- Since: b643
+- Severity: warning
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  psub("s").
+  ```
+
+- Passes on:
+
+  ```prolog
+  psub("s").
+  addresses("b","s").
+  ```
+
+## w_unreached_sub
+
+a subdomain of a job held here whose trace reaches no bounded context that addresses it
+
+- Purpose: A job's trace reaches a bounded context that addresses each subdomain serving the job.
+- Since: b643
+- Severity: warning
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  here("b").
+  held_by("j","b").
+  psub_serves("s","j").
+  ```
+
+- Passes on:
+
+  ```prolog
+  here("b").
+  held_by("j","b").
+  psub_serves("s","j").
+  job_reaches_context("j","b").
+  addresses("b","s").
   ```
 
 ## w_seam_unused

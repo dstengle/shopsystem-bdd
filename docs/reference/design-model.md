@@ -250,6 +250,23 @@ See [adapter contracts](adapters.md).
 
 A line says what is true for every value; the given block holds the value a scenario runs with.
 
+### The product check
+
+In a shop that keeps the product layer (`.shop/product/product.toml`, written by `shop spec job`, `subdomain`,
+`context`, `assign` and `plays`), `shop spec check` reads it against this bounded context and each job's trace (what
+`shop spec trace` derives).
+
+| code | `shop spec rules` says | when it fires |
+|---|---|---|
+| `v_job_elsewhere` | a job a requirement group serves here is assigned to another bounded context | A group's `serves:` names a job the product assigns elsewhere. Serve it there, or assign it here. |
+| `v_need_cycle` | a job's needs close a cycle | The product file was edited by hand; `shop spec job` refuses such needs. |
+| `w_unheld_job` | a job of the product that no bounded context holds | Assign it with `shop spec assign`. |
+| `w_unserved_job` | a job nothing serves | A job assigned here that no group's `serves:` names. |
+| `w_untriggered_actor` | a product actor of a job held here whose actor here triggers no line of the job's trace | The actor that plays it here starts no line of the trace. |
+| `w_unaddressed_sub` | a subdomain that no bounded context addresses | Declare the bounded context that addresses it with `shop spec context`. |
+| `w_unreached_sub` | a subdomain of a job held here whose trace reaches no bounded context that addresses it | The job's trace stops short of the subdomain's solution. |
+| `w_unserved_cap` | a capability serves no job | An orphan: no group of it serves a job, no job's trace reaches it, it has no port line and it is no guarantees capability. |
+
 ### Kept from the 0.30 graph
 
 Plugin 0.30 kept jobs, seams, job-threads and pinned dependencies between contexts. These rules still guard those
@@ -266,8 +283,6 @@ edges. A 0.33 repository writes none of them, so in practice only the parts on t
 | `v7c` | an upstream names a downstream client | 0.30 only. |
 | `v11` | a capability without exactly one narrator | Give the capability file one `narrator:`. |
 | `v_d2` | a built job-thread has a request not delivered | 0.30 only. |
-| `w_unserved_cap` | a capability serves no job | Judged only once the repository has jobs. |
-| `w_unserved_job` | a job nothing serves | 0.30 only. |
 | `w_seam_unused` | a seam nothing crosses | 0.30 only. |
 
 ## The catalogues are specification

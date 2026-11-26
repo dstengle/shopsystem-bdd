@@ -11,6 +11,7 @@ import spec_read
 from model_catalogue import CatalogueReading
 from model_domain import DomainReading
 from model_parse import as_list, frontmatter, mention, scenarios
+from model_product import ProductReading
 from model_requests import RequestReading
 from model_spec import SpecReading
 from model_work import FROZEN_KINDS, WorkReading
@@ -24,7 +25,7 @@ NOT_PROSE = re.compile(r'`[^`]*`|"[^"]*"|(?<!\w)@[\w-]+')
 OLD_LAYOUT = ("spec/decisions.md", "decisions/", "work/", "records/")    # what scripts/migrate moves (r61)
 
 
-class Model(SpecReading, WorkReading, RequestReading, DomainReading, CatalogueReading):
+class Model(SpecReading, WorkReading, RequestReading, DomainReading, CatalogueReading, ProductReading):
     def __init__(self, root, today=None):
         self.root = Path(root)
         self.today = today or datetime.date.today()
@@ -143,6 +144,7 @@ class Model(SpecReading, WorkReading, RequestReading, DomainReading, CatalogueRe
         self.check_refs()
         self.read_mentions()
         self.read_catalogues()      # b370
+        self.read_product()         # the product check (b643)
         return self
 
     def read_layout(self):

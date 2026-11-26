@@ -92,15 +92,12 @@ def own(root, ctx, job):
     return reqs, list(first.values())
 
 
-def trace(root, job):
-    """{"job", "requirements": [{"id", "text", "why"}], "adapter specs": [{"id", "why"}]} of `job` with the traces
-    of the jobs it needs joined, each id once; refused naming the job when no requirement group serves it."""
-    ctx = spec_context.load(root)
+def joined(root, ctx, job, jobs):
+    """(requirements, adapter specs) of `job` with those of the jobs it needs joined, each {id: (id, ..., why)} once,
+    the needs read off the product's `jobs` (product_store's); None when no requirement group serves `job`."""
     first = own(root, ctx, job)
     if first is None:
-        raise Refused("{names} %s is served by no requirement group" % job,
-                      reason="job that no requirement group serves", names=["parameter:job"])
-    jobs = product_store.read(root)["jobs"]
+        return None
     reqs, specs = {r[0]: r for r in first[0]}, {s[0]: s for s in first[1]}
     todo, seen = list(needs(jobs, job)), {name_of(job)}
     while todo:
@@ -114,6 +111,18 @@ def trace(root, job):
             reqs.setdefault(rid, (rid, text, "needed job %s: %s" % (need, why)))
         for ident, why in found[1] if found else ():
             specs.setdefault(ident, (ident, "needed job %s: %s" % (need, why)))
+    return reqs, specs
+
+
+def trace(root, job):
+    """{"job", "requirements": [{"id", "text", "why"}], "adapter specs": [{"id", "why"}]} of `job` with the traces
+    of the jobs it needs joined, each id once; refused naming the job when no requirement group serves it."""
+    ctx = spec_context.load(root)
+    found = joined(root, ctx, job, product_store.read(root)["jobs"])
+    if found is None:
+        raise Refused("{names} %s is served by no requirement group" % job,
+                      reason="job that no requirement group serves", names=["parameter:job"])
+    reqs, specs = found
     return {"job": job, "coordination": product_coordination.coordination(root, ctx, list(reqs)),
             "requirements": [{"id": i, "text": t, "why": w} for i, t, w in reqs.values()],
             "adapter specs": [{"id": i, "why": w} for i, w in specs.values()]}
