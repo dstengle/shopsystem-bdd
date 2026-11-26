@@ -184,25 +184,6 @@ Feature: Batches
     When the session s2 finishes the task t1
     Then the batches service sets the status of the task t1 to `done`
 
-  @g81 @r81
-  Scenario: An in-batch item amended has its lines laid again on its batch's and its task's workspaces
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a task t1
-    And the item i1 has the task t1
-    And the status of the task t1 is `running`
-    And a requirement r1
-    And the item i1 holds the requirement r1
-    When the person amends the item i1
-    Then the batches service keeps the workspace w1
-    And the batch b1 has the workspace w1
-    And the workspace w1 holds the requirement r1
-    And the batches service keeps the workspace w2
-    And the task t1 has the workspace w2
-    And the workspace w2 holds the requirement r1
-
   @g83 @r83
   Scenario: Amending an item that is not in a batch is refused
     Given an item i1
@@ -237,48 +218,6 @@ Feature: Batches
     When the person configures the setting s1 with the setting value s2
     Then the batches service refuses this request
     And the batches service names the setting value s2
-
-  @g90 @r90
-  Scenario: A line removed from an in-batch item leaves its task's workspace too, not only the batch's
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a task t1
-    And the item i1 has the task t1
-    And the status of the task t1 is `running`
-    And a workspace w1
-    And the batch b1 has the workspace w1
-    And a requirement r1
-    And the item i1 has the requirement r1
-    And the workspace w1 holds the requirement r1
-    And a workspace w2
-    And the task t1 has the workspace w2
-    And the workspace w2 holds the requirement r1
-    And the item i1 does not hold the requirement r1
-    When the person amends the item i1
-    Then the batches service keeps the workspace w3
-    And the batch b1 has the workspace w3
-    And the workspace w3 does not hold the requirement r1
-    And the batches service keeps the workspace w4
-    And the task t1 has the workspace w4
-    And the workspace w4 does not hold the requirement r1
-
-  @g91 @r91
-  Scenario: An item parked puts back the operation its model line restates
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a model line m1
-    And an operation o1
-    And the model line m1 restates the operation o1
-    And the item i1 holds the model line m1
-    And this domain model holds the model line m1
-    And a session s1
-    When the session s1 parks the item i1
-    Then the batches service keeps the domain model d1
-    And the domain model d1 holds the operation o1
 
   @g96 @r96
   Scenario: An in-batch item amended that does not meet the readiness bar is refused and nothing changes
@@ -427,30 +366,6 @@ Feature: Batches
     And the batches service restores the item i1
     And the batches service restores the item i2
     And the batches service does not restore the item i3
-
-  @g119 @r119
-  Scenario: A park of an item that restates an element keeps a member line another item of the batch adds
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And a member line m2
-    And a model line m1
-    And the model line m1 holds the member line m2
-    And the item i1 holds the model line m1
-    And an item i2
-    And the batch b1 holds the item i2
-    And a model line m3
-    And an element e1
-    And the model line m3 restates the element e1
-    And the item i2 holds the model line m3
-    And the element e1 does not hold the member line m2
-    And the status of the item i2 is `in-batch`
-    And a session s1
-    When the session s1 parks the item i2
-    Then this domain model holds the member line m2
-    And the batches service keeps the member line m2
-    And the batches service keeps the domain model d1
-    And the domain model d1 does not hold the model line m3
 
   @g125 @r125
   Scenario: An item amended with a review finding keeps a change for the finding, which its review accepts
@@ -614,40 +529,6 @@ Feature: Batches
     And the batches service returns the task t3
     And the batches service returns the task t4
     And the batches service does not return the task t5
-
-  @g155 @r155
-  Scenario: Parking an item keeps the imports another item laid on the same driven port
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And an area a1
-    And the kind of the area a1 is `port`
-    And a capability c1
-    And the item i1 holds the capability c1
-    And the area a1 holds the capability c1
-    And an area a2
-    And the kind of the area a2 is `supporting`
-    And the area a1 imports the area a2
-    And an item i2
-    And the batch b1 holds the item i2
-    When the person parks the item i2
-    Then the batches service keeps the area a2
-
-  @g156 @r156
-  Scenario: Amending an item takes out the imports of a driven port its lines no longer need
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a task t1
-    And the item i1 has the task t1
-    And the status of the task t1 is `running`
-    And the kind of `registry` is `port`
-    And the item i1 holds no capability in the `registry` area
-    And the `registry` area imports `tracking`
-    When the person amends the item i1
-    Then the batches service keeps `registry`
 
   @g158 @r158
   Scenario: A batch whose task branches conflict is polled for the later item's task and the file
@@ -1065,6 +946,23 @@ Feature: Batches
     When the laying service completes the request to check the item i1 in the workspace w1
     Then the batches service keeps the kept change k1
     And the kept change k1 cites the item i1
+
+  @g185 @r185
+  Scenario: An amended item is lifted from the workspaces of its batch and task and laid there again
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    When the person amends the item i1
+    Then the batches service lifts the item i1 from the workspace w1
+    And the batch b1 has the workspace w1
+    And the batches service lifts the item i1 from the workspace w2
+    And the task t1 has the workspace w2
+    And the batches service lays the item i1 in the workspace w1
+    And the batches service lays the item i1 in the workspace w2
 
   @g187 @r187
   Scenario: A ready item that no longer meets the readiness bar at opening is reopened naming each bar check it does not meet

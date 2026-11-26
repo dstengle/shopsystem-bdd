@@ -725,3 +725,81 @@ shall [x5: service the batches service (constant), x7: service the laying servic
       in(x4, x8)
     keep(e2, subject: x7, object: x8)
 ```
+
+## r42
+From: b747 r42.
+
+```reading
+While the kind of the `registry` area is `port` and an item holds no capability that the `registry` area holds and the `registry` area imports the `tracking` area, when the batches service lifts the item from a workspace, the laying service shall keep the `registry` area.
+shall [x1: area `registry` (parameter), x4: area `tracking` (parameter), x5: service the batches service (constant), x7: service the laying service (constant)]
+  while [x2: item]
+    kind(x1) = `port`
+    not [x3: capability]
+      in(x3, x1)
+      in(x3, x2)
+    import#2(subject: x1, object: x4)
+  when [x6: workspace]
+    request(e1, laying.lift, subject: x5, object: x2, from: x6)
+  response
+    keep(e2, subject: x7, object: x1)
+```
+
+## r43
+From: b747 r43.
+
+```reading
+While an item holds a model line that restates an operation and the domain model holds the model line, when the batches service lifts the item from a workspace, the laying service shall keep a domain model that holds the operation.
+shall [x4: domain model "the domain model of this bounded context" (indexical), x5: service the batches service (constant), x7: service the laying service (constant)]
+  while [x1: item, x2: model line, x3: operation]
+    restate#2(subject: x2, object: x3)
+    in(x2, x1)
+    in(x2, x4)
+  when [x6: workspace]
+    request(e1, laying.lift, subject: x5, object: x1, from: x6)
+  response [x8: domain model]
+    in(x3, x8)
+    keep(e2, subject: x7, object: x8)
+```
+
+## r44
+From: b747 r44.
+
+```reading
+While an item holds a model line that holds a member line and another item holds a model line that restates an element and the element does not hold the member line, when the batches service lifts the item from a workspace, the laying service shall keep the member line in the domain model and keep a domain model that does not hold the model line.
+shall [x7: service the batches service (constant), x9: service the laying service (constant), x10: domain model "the domain model of this bounded context" (indexical)]
+  while [x1: item, x2: model line, x3: member line, x4: item, x5: model line, x6: element]
+    in(x3, x2)
+    in(x2, x1)
+    distinct(x4, x1)
+    restate(subject: x5, object: x6)
+    in(x5, x4)
+    not
+      in(x3, x6)
+  when [x8: workspace]
+    request(e1, laying.lift, subject: x7, object: x4, from: x8)
+  response [x11: domain model]
+    in(x3, x10)
+    keep(e2, subject: x9, object: x3)
+    not
+      in(x5, x11)
+    keep(e3, subject: x9, object: x11)
+```
+
+## r45
+From: b747 r45.
+
+```reading
+While the kind of an area is `port` and the area holds a capability that an item holds and the area imports an area whose kind is `supporting`, when the batches service lifts another item from a workspace, the laying service shall keep the area.
+shall [x5: service the batches service (constant), x8: service the laying service (constant)]
+  while [x1: area, x2: capability, x3: item, x4: area]
+    kind(x1) = `port`
+    in(x2, x3)
+    in(x2, x1)
+    kind(x4) = `supporting`
+    import#2(subject: x1, object: x4)
+  when [x6: item, x7: workspace]
+    distinct(x6, x3)
+    request(e1, laying.lift, subject: x5, object: x6, from: x7)
+  response
+    keep(e2, subject: x8, object: x4)
+```

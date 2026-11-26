@@ -222,29 +222,6 @@ shall [x10: service the batches service (constant)]
     initiates(e2, subject: x10, status(x1) = `done`)
 ```
 
-## r81
-From: b460 r81.
-
-```reading
-While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement, when the person amends the item, the batches service shall keep a workspace of the batch that holds the requirement and keep a workspace of the task that holds the requirement.
-shall [x5: agent the person (constant), x6: service the batches service (constant)]
-  while [x1: item, x2: batch, x3: task, x4: requirement]
-    in(x1, x2)
-    status(x1) = `in-batch`
-    of(x3, x1)
-    status(x3) = `running`
-    in(x4, x1)
-  when
-    request(e1, batches.amend, subject: x5, object: x1)
-  response [x7: workspace, x8: workspace]
-    of(x7, x2)
-    in(x4, x7)
-    keep(e2, subject: x6, object: x7)
-    of(x8, x3)
-    in(x4, x8)
-    keep(e3, subject: x6, object: x8)
-```
-
 ## r83
 From: b460 r83.
 
@@ -307,56 +284,6 @@ shall [x1: agent the person (constant), x4: artifact the delivery settings form 
   response
     refuse(e2, subject: x5, object: x6)
     name(e3, subject: x5, object: x3)
-```
-
-## r90
-Retires: r82. From: b466 r90.
-
-```reading
-While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch holds a requirement of the item and the workspace of the task holds the requirement and the item does not hold the requirement, when the person amends the item, the batches service shall keep a workspace of the batch that does not hold the requirement and keep a workspace of the task that does not hold the requirement.
-shall [x7: agent the person (constant), x8: service the batches service (constant)]
-  while [x1: item, x2: batch, x3: task, x4: workspace, x5: requirement, x6: workspace]
-    in(x1, x2)
-    status(x1) = `in-batch`
-    of(x3, x1)
-    status(x3) = `running`
-    of(x4, x2)
-    of(x5, x1)
-    in(x5, x4)
-    of(x6, x3)
-    in(x5, x6)
-    not
-      in(x5, x1)
-  when
-    request(e1, batches.amend, subject: x7, object: x1)
-  response [x9: workspace, x10: workspace]
-    of(x9, x2)
-    not
-      in(x5, x9)
-    keep(e2, subject: x8, object: x9)
-    of(x10, x3)
-    not
-      in(x5, x10)
-    keep(e3, subject: x8, object: x10)
-```
-
-## r91
-Retires: r88. From: b485 r91.
-
-```reading
-While an item in a batch is `in-batch` and the item holds a model line that restates an operation and the domain model holds the model line, when a session parks the item, the batches service shall keep a domain model that holds the operation.
-shall [x5: domain model "the domain model of this bounded context" (indexical), x7: service the batches service (constant)]
-  while [x1: item, x2: batch, x3: model line, x4: operation]
-    in(x1, x2)
-    status(x1) = `in-batch`
-    restate#2(subject: x3, object: x4)
-    in(x3, x1)
-    in(x3, x5)
-  when [x6: session]
-    request(e1, batches.park, subject: x6, object: x1)
-  response [x8: domain model]
-    in(x4, x8)
-    keep(e2, subject: x7, object: x8)
 ```
 
 ## r96
@@ -560,33 +487,6 @@ shall [x2: agent the person (constant), x3: service the batches service (constan
       status(x4) = `in-batch`
       scope
         restore(e3, subject: x3, object: x4)
-```
-
-## r119
-From: b647 r119.
-
-```reading
-While an item in a batch holds a model line that holds a member line and another item in the batch holds a model line that restates an element and the element does not hold the member line and the item is `in-batch`, when a session parks the item, the batches service shall keep the member line in the domain model and keep a domain model that does not hold the model line.
-shall [x9: service the batches service (constant), x10: domain model "the domain model of this bounded context" (indexical)]
-  while [x1: item, x2: batch, x3: model line, x4: member line, x5: item, x6: model line, x7: element]
-    in(x1, x2)
-    in(x4, x3)
-    in(x3, x1)
-    distinct(x5, x1)
-    in(x5, x2)
-    restate(subject: x6, object: x7)
-    in(x6, x5)
-    not
-      in(x4, x7)
-    status(x5) = `in-batch`
-  when [x8: session]
-    request(e1, batches.park, subject: x8, object: x5)
-  response [x11: domain model]
-    in(x4, x10)
-    keep(e2, subject: x9, object: x4)
-    not
-      in(x6, x11)
-    keep(e3, subject: x9, object: x11)
 ```
 
 ## r125
@@ -807,50 +707,6 @@ shall [x7: agent the driver (constant), x8: service the batches service (constan
       status(x10) = `pending`
       scope
         return(e3, subject: x8, object: x10)
-```
-
-## r155
-From: b704 r155.
-
-```reading
-While an item in a batch is `in-batch` and the kind of an area is `port` and the area holds a capability that the item holds and the area imports an area whose kind is `supporting`, when the person parks another item in the batch, the batches service shall keep the area.
-shall [x6: agent the person (constant), x8: service the batches service (constant)]
-  while [x1: item, x2: batch, x3: area, x4: capability, x5: area]
-    in(x1, x2)
-    status(x1) = `in-batch`
-    kind(x3) = `port`
-    in(x4, x1)
-    in(x4, x3)
-    kind(x5) = `supporting`
-    import#2(subject: x3, object: x5)
-  when [x7: item]
-    distinct(x7, x1)
-    in(x7, x2)
-    request(e1, batches.park, subject: x6, object: x7)
-  response
-    keep(e2, subject: x8, object: x5)
-```
-
-## r156
-From: b704 r156.
-
-```reading
-While an item in a batch is `in-batch` and a task of the item is `running` and the kind of the `registry` area is `port` and the item holds no capability that the `registry` area holds and the `registry` area imports the `tracking` area, when the person amends the item, the batches service shall keep the `registry` area.
-shall [x4: area `registry` (parameter), x6: area `tracking` (parameter), x7: agent the person (constant), x8: service the batches service (constant)]
-  while [x1: item, x2: batch, x3: task]
-    in(x1, x2)
-    status(x1) = `in-batch`
-    of(x3, x1)
-    status(x3) = `running`
-    kind(x4) = `port`
-    not [x5: capability]
-      in(x5, x4)
-      in(x5, x1)
-    import#2(subject: x4, object: x6)
-  when
-    request(e1, batches.amend, subject: x7, object: x1)
-  response
-    keep(e2, subject: x8, object: x4)
 ```
 
 ## r158
@@ -1359,6 +1215,28 @@ shall [x1: service the laying service (constant), x5: service the batches servic
   response [x6: kept change]
     cite(subject: x6, object: x3)
     keep(e2, subject: x5, object: x6)
+```
+
+## r185
+Retires: r81. From: b747 r185.
+
+```reading
+While an item in a batch is `in-batch` and a task of the item is `running`, when the person amends the item, the batches service shall lift the item from the workspace of the batch, lift the item from the workspace of the task, lay the item in the workspace of the batch and lay the item in the workspace of the task.
+shall [x4: agent the person (constant), x5: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: task]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    of(x3, x1)
+    status(x3) = `running`
+  when
+    request(e1, batches.amend, subject: x4, object: x1)
+  response [x6: workspace, x7: workspace]
+    of(x6, x2)
+    lift(e2, subject: x5, object: x1, from: x6)
+    of(x7, x3)
+    lift(e3, subject: x5, object: x1, from: x7)
+    lay(e4, subject: x5, object: x1, in: x6)
+    lay(e5, subject: x5, object: x1, in: x7)
 ```
 
 ## r187
