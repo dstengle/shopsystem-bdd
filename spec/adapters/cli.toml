@@ -1787,10 +1787,11 @@ requirements = [
 [operations."specification.report coupling"]
 command = "spec coupling"
 requirements = [
-  "checking#r144: While an area holds a term that has a word and another area holds a term that has the word, when the person reports on the shop, the specification service shall return a coupling of the area that holds the word.",
   "checking#r145: While an area holds an element that refers to a term and the term means an element that another area holds, when the person reports on the shop, the specification service shall return a coupling of the area and name the element.",
   "checking#r146: While an area holds a capability and the capability has a requirement that uses a term and another area holds the term, when the person reports on the shop, the specification service shall return a coupling of the area that holds the requirement.",
   "checking#r147: While an area holds a Python file and the Python file imports a Python file that another area holds, when the person reports on the shop, the specification service shall return a coupling of the area and name the Python file.",
+  "checking#r148: While an area holds an element and the area holds a term that means the element and the term has a word and another area holds an element and the area holds a term that means the element and the term has the word, when the person reports on the shop, the specification service shall return a coupling of the area that holds a homonym that has the word.",
+  "checking#r149: While an area holds an element and another area holds a term that means the element and the term has a word, when the person reports on the shop, the specification service shall return a coupling of the area that holds the word.",
 ]
 
 [operations."drafting.reinstate requirement"]

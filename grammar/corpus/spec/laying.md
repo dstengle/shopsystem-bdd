@@ -726,24 +726,6 @@ shall [x5: service the batches service (constant), x7: service the laying servic
     keep(e2, subject: x7, object: x8)
 ```
 
-## r42
-From: b747 r42.
-
-```reading
-While the kind of the `registry` area is `port` and an item holds no capability that the `registry` area holds and the `registry` area imports the `tracking` area, when the batches service lifts the item from a workspace, the laying service shall keep the `registry` area.
-shall [x1: area `registry` (parameter), x4: area `tracking` (parameter), x5: service the batches service (constant), x7: service the laying service (constant)]
-  while [x2: item]
-    kind(x1) = `port`
-    not [x3: capability]
-      in(x3, x1)
-      in(x3, x2)
-    import#3(subject: x1, object: x4)
-  when [x6: workspace]
-    request(e1, laying.lift, subject: x5, object: x2, from: x6)
-  response
-    keep(e2, subject: x7, object: x1)
-```
-
 ## r43
 From: b747 r43.
 
@@ -802,4 +784,24 @@ shall [x5: service the batches service (constant), x8: service the laying servic
     request(e1, laying.lift, subject: x5, object: x6, from: x7)
   response
     keep(e2, subject: x8, object: x4)
+```
+
+## r46
+Retires: r42. From: b765 r46.
+
+```reading
+While the kind of the `registry` area is `port` and an item holds a capability that the `registry` area holds and the `registry` area imports the `tracking` area, when the batches service lifts the item from a workspace, the laying service shall keep the `registry` area and keep an area that does not import the `tracking` area.
+shall [x1: area `registry` (parameter), x4: area `tracking` (parameter), x5: service the batches service (constant), x7: service the laying service (constant)]
+  while [x2: item, x3: capability]
+    kind(x1) = `port`
+    in(x3, x1)
+    in(x3, x2)
+    import#3(subject: x1, object: x4)
+  when [x6: workspace]
+    request(e1, laying.lift, subject: x5, object: x2, from: x6)
+  response [x8: area]
+    keep(e2, subject: x7, object: x1)
+    not
+      import#3(subject: x8, object: x4)
+    keep(e3, subject: x7, object: x8)
 ```

@@ -6,8 +6,8 @@ group: service
 area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
-retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56, g94, r94, g91, r91, g100, r100]
-unbuilt: []
+retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56, g94, r94, g91, r91, g100, r100, g144, r144]
+unbuilt: [r149, r148]
 ---
 
 # Checking
@@ -404,9 +404,6 @@ Restates: design-model-check#r13@0.29.
 ### [g143] A completed deregistration changes nothing more
 - [r143] When the contract registry service completes the request to deregister a contract for an adapter spec, the specification service shall change nothing.
 
-### [g144] the coupling report names the words two areas share
-- [r144] While an area holds a term that has a word and another area holds a term that has the word, when the person reports on the shop, the specification service shall return a coupling of the area that holds the word.
-
 ### [g145] the coupling report names the elements one area's model refers to of another's
 - [r145] While an area holds an element that refers to a term and the term means an element that another area holds, when the person reports on the shop, the specification service shall return a coupling of the area and name the element.
 
@@ -415,6 +412,12 @@ Restates: design-model-check#r13@0.29.
 
 ### [g147] the coupling report names the Python files of one area that import another area's
 - [r147] While an area holds a Python file and the Python file imports a Python file that another area holds, when the person reports on the shop, the specification service shall return a coupling of the area and name the Python file.
+
+### [g149] the coupling report names the words one area borrows for another area's elements
+- [r149] While an area holds an element and another area holds a term that means the element and the term has a word, when the person reports on the shop, the specification service shall return a coupling of the area that holds the word.
+
+### [g148] the coupling report holds a word two areas each define for their own elements as a homonym
+- [r148] While an area holds an element and the area holds a term that means the element and the term has a word and another area holds an element and the area holds a term that means the element and the term has the word, when the person reports on the shop, the specification service shall return a coupling of the area that holds a homonym that has the word.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

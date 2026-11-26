@@ -1221,23 +1221,6 @@ Feature: Checking
     When the contract registry service completes the request to deregister the contract c1 for the adapter spec a1
     Then the specification service changes nothing
 
-  @g144 @r144
-  Scenario: the coupling report names the words two areas share
-    Given a word w1
-    And a term t1
-    And the term t1 has the word w1
-    And an area a1
-    And the area a1 holds the term t1
-    And a term t2
-    And the term t2 has the word w1
-    And an area a2
-    And the area a2 holds the term t2
-    And a coupling c1
-    And the area a2 has the coupling c1
-    When the person reports on this shop
-    Then the specification service returns the coupling c1
-    And the coupling c1 holds the word w1
-
   @g145 @r145
   Scenario: the coupling report names the elements one area's model refers to of another's
     Given an element e1
@@ -1286,3 +1269,45 @@ Feature: Checking
     When the person reports on this shop
     Then the specification service returns the coupling c1
     And the specification service names the Python file p2
+
+  @g148 @r148
+  Scenario: the coupling report holds a word two areas each define for their own elements as a homonym
+    Given an element e1
+    And an area a1
+    And the area a1 holds the element e1
+    And a term t1
+    And the term t1 means the element e1
+    And the area a1 holds the term t1
+    And a word w1
+    And the term t1 has the word w1
+    And an element e2
+    And an area a2
+    And the area a2 holds the element e2
+    And a term t2
+    And the term t2 means the element e2
+    And the area a2 holds the term t2
+    And the term t2 has the word w1
+    And a homonym h1
+    And a coupling c1
+    And the area a2 has the coupling c1
+    When the person reports on this shop
+    Then the homonym h1 has the word w1
+    And the specification service returns the coupling c1
+    And the coupling c1 holds the homonym h1
+
+  @g149 @r149
+  Scenario: the coupling report names the words one area borrows for another area's elements
+    Given an element e1
+    And an area a1
+    And the area a1 holds the element e1
+    And a term t1
+    And the term t1 means the element e1
+    And an area a2
+    And the area a2 holds the term t1
+    And a word w1
+    And the term t1 has the word w1
+    And a coupling c1
+    And the area a2 has the coupling c1
+    When the person reports on this shop
+    Then the specification service returns the coupling c1
+    And the coupling c1 holds the word w1

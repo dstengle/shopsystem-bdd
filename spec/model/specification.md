@@ -489,6 +489,10 @@ object replied request kind of text
 
 object coupling
   relations: holds → word | element | requirement (many)
+  relations: holds → homonym (many)
 
 object word kind of text
+
+object homonym kind of text
+  relations: has → word (one)
 ```

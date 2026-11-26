@@ -335,3 +335,4 @@ area: specification
 - **report** (verb, action) → operation specification.report coupling. The person asks how the areas of a shop depend on one another: the words they share, the elements one area's model names of another's, and the lines that say another area's words. Forms: reports, reported. Frame: <actor> reports on <shop>.
 - **coupling** (noun) → object coupling. What ties one area of the domain model to another: each word both define, each element the other's model names of the area's and each requirement of the other that says a word of the area. Plural: couplings.
 - **word** (noun) → object word. The written form of a term, as `list`, that entries of several areas may share. Plural: words.
+- **homonym** (noun) → object homonym. A word that two areas each define for an element of their own, so that neither relies on the other for it. Plural: homonyms.

@@ -548,16 +548,6 @@ Feature: Laying
     Then the laying service keeps the area a1
     And the area a1 does not hold the term t1
 
-  @g42 @r42
-  Scenario: A lift of an item that holds no capability of a port area importing tracking keeps the area
-    Given the kind of `registry` is `port`
-    And an item i1
-    And the item i1 holds no capability in the `registry` area
-    And the `registry` area imports `tracking`
-    And a workspace w1
-    When the batches service lifts the item i1 from the workspace w1
-    Then the laying service keeps `registry`
-
   @g43 @r43
   Scenario: A lift of an item whose model line restates an operation keeps the operation in the domain model
     Given a model line m1
@@ -606,3 +596,17 @@ Feature: Laying
     And a workspace w1
     When the batches service lifts the item i2 from the workspace w1
     Then the laying service keeps the area a2
+
+  @g46 @r46
+  Scenario: A lift of an item that holds a capability of a port area takes out the import its lay added
+    Given the kind of `registry` is `port`
+    And a capability c1
+    And the `registry` area holds the capability c1
+    And an item i1
+    And the item i1 holds the capability c1
+    And the `registry` area imports `tracking`
+    And a workspace w1
+    When the batches service lifts the item i1 from the workspace w1
+    Then the laying service keeps `registry`
+    And the laying service keeps the area a1
+    And the area a1 does not import `tracking`
