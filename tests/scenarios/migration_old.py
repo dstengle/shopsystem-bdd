@@ -29,7 +29,7 @@ def plugin(version=None):
     if version not in _copy:
         root = pathlib.Path(tempfile.mkdtemp())
         atexit.register(shutil.rmtree, root, True)
-        for part in ("scripts", "hooks"):
+        for part in ("scripts", "hooks", "grammar"):     # the grammar a step that parses or checks reads (b851)
             shutil.copytree(PLUGIN / part, root / part, ignore=shutil.ignore_patterns("__pycache__"))
         (root / ".claude-plugin").mkdir()
         (root / ".claude-plugin/plugin.json").write_text(json.dumps(dict(data, version=version), indent=2) + "\n")
