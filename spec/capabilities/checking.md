@@ -356,6 +356,24 @@ Restates: design-model-check#r13@0.29.
 ### [g125] A port outcome a reply trigger is on is handled
 - [r125] While a driven port holds an operation that has an operation outcome and a core line that uses `reply-trigger` handles the operation outcome, when the person validates this specification, the specification service shall complete the request.
 
+### [g127] A contract published is deposited in the contract registry at its version
+- [r127] When the person publishes a contract with a version, the specification service shall deposit the contract with the version.
+
+### [g131] A contract fetched is retrieved from the contract registry at its version
+- [r131] When a downstream context fetches a contract with a version, the specification service shall retrieve the contract with the version.
+
+### [g126] A contract obtained is retrieved from the contract registry for its bounded context and version
+- [r126] When the person obtains a contract from a bounded context with a version, the specification service shall retrieve the contract with the bounded context and the version.
+
+### [g128] A deposit the contract registry completes publishes the contract
+- [r128] When the contract registry service completes the request to deposit a contract, the specification service shall keep the contract.
+
+### [g129] A contract the contract registry returns is returned to whoever asked for it
+- [r129] When the contract registry service returns the request to retrieve a contract, the specification service shall return the contract.
+
+### [g130] A retrieval the contract registry refuses names the version and changes nothing
+- [r130] When the contract registry service refuses the request to retrieve a contract, the specification service shall name the version of the contract and change nothing.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.

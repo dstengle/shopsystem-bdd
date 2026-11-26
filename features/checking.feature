@@ -1068,3 +1068,49 @@ Feature: Checking
     And the core line c1 handles the operation outcome o2
     When the person validates this specification
     Then the specification service completes this request
+
+  @g126 @r126
+  Scenario: A contract obtained is retrieved from the contract registry for its bounded context and version
+    Given a contract c1
+    And a bounded context b1
+    And a version v1
+    When the person obtains the contract c1 from the bounded context b1 with the version v1
+    Then the specification service retrieves the contract c1 with the bounded context b1 and the version v1
+
+  @g127 @r127
+  Scenario: A contract published is deposited in the contract registry at its version
+    Given a contract c1
+    And a version v1
+    When the person publishes the contract c1 with the version v1
+    Then the specification service deposits the contract c1 with the version v1
+
+  @g128 @r128
+  Scenario: A deposit the contract registry completes publishes the contract
+    Given a contract c1
+    And the specification service deposits the contract c1
+    When the contract registry service completes the request to deposit the contract c1
+    Then the specification service keeps the contract c1
+
+  @g129 @r129
+  Scenario: A contract the contract registry returns is returned to whoever asked for it
+    Given a contract c1
+    And the specification service retrieves the contract c1
+    When the contract registry service returns the request to retrieve the contract c1
+    Then the specification service returns the contract c1
+
+  @g130 @r130
+  Scenario: A retrieval the contract registry refuses names the version and changes nothing
+    Given a contract c1
+    And the specification service retrieves the contract c1
+    When the contract registry service refuses the request to retrieve the contract c1
+    Then the specification service names the version v1
+    And the contract c1 has the version v1
+    And the specification service changes nothing
+
+  @g131 @r131
+  Scenario: A contract fetched is retrieved from the contract registry at its version
+    Given a downstream context d1
+    And a contract c1
+    And a version v1
+    When the downstream context d1 fetches the contract c1 with the version v1
+    Then the specification service retrieves the contract c1 with the version v1

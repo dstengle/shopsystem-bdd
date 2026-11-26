@@ -1,129 +1,52 @@
-"""A contract obtained from an upstream (b587, checking r81, r82, r88-r90; b591; decision 0117): `spec obtain <bounded
-context> [--version V]` reads the upstream's contract kept as published (or the one kept at V) off its GitHub
-repository, the `github:` of its bullet under `## Upstreams` in spec/index.md (request_gh's `repo_of`), through
-`$SHOPSYSTEM_WORK_GH` (`gh api repos/<r>/contents/.shop/contracts/...`, the raw file), and keeps it, byte for byte, in
-each adapter spec of its provider (b593, checking r91; decision 0136): an adapter spec `adapters/<name>/` whose
-`providers:` name the bounded context (`holders`), each at the version it pins the provider at, else the one asked
-or published (b599, checking r100), as `provider/<id's path>/<version>/contract.toml` under its folder
-(`place`: keyed by the whole id, so that two bounded contexts whose ids end alike never share a folder), where its
-provider check (model_adapter's `uncontracted`) reads it, in one commit by `shop_files.committed`: the only writer of
-provider/, nothing kept at the repository root. It keeps no context request and opens no issue. In this order: an id
-out of the context id form (migrate init's `FORM`) is refused naming the id and `id not in the context id form`
-(r88); a repository GitHub does not serve (`gh api repos/<r>`: missing, private or not answering, `reached`) naming
-the bounded context and `bounded context unreachable` (r89); a bounded context no adapter spec has as its provider
-naming the provider and `no adapter spec has the provider` (b593, r103: only of an available provider in the
-context id form, b601); an upstream with no contract kept, or none at V, naming the bounded context; a contract kept already at that place is left as it is when the same, and
-written again with the upstream's bytes, committed, when another (review f1)."""
-import json
-import os
-import shlex
-import subprocess
+"""A contract obtained from an upstream (b587, checking r81, r82, r88-r90; b591; decision 0117), retrieved from the
+contract registry (contract_registry, b636, checking r126; decision 0139): `spec obtain <bounded context> [--version
+V]` retrieves the upstream's contract published (or the one at V) and keeps it, byte for byte, in each adapter spec
+of its provider (b593, checking r91; decision 0136): an adapter spec `adapters/<name>/` whose `providers:` name the
+bounded context (`holders`), each at the version it pins the provider at, else the one asked or published (b599,
+checking r100), where the registry's adapter places it (contract_registry_folder's `place`, which its provider
+check, model_adapter's `uncontracted`, reads), in one commit by `shop_files.committed`: the only writer of provider/,
+nothing kept at the repository root. It keeps no context request and opens no issue. In this order: an id out of the
+context id form (migrate init's `FORM`) is refused naming the id and `id not in the context id form` (r88); an
+upstream the registry cannot reach naming the bounded context and `bounded context unreachable` (r89); a bounded
+context no adapter spec has as its provider naming the provider and `no adapter spec has the provider` (b593, r103:
+only of an available provider in the context id form, b601); an upstream with no contract deposited, or none at V,
+naming the bounded context and the version (r130); a contract kept already at that place is left as it is when the same, and written again
+with the upstream's bytes, committed, when another (review f1)."""
 from pathlib import Path
 
+import contract_registry
+from contract_registry_folder import place
 from shop_refused import Refused
 
-PROVIDER = Path("provider")
 ADAPTERS = "adapters"
-KEPT = ".shop/contracts"
-FILE = "contract.toml"
-RAW = "Accept: application/vnd.github.raw"
-COMMAND = "spec obtain"
-
-
-def _gh(root, *args):
-    """gh's output as bytes, its line ends as gh wrote them (b594); a gh that fails refused as batch_gh's `gh`."""
-    import batch_gh
-    argv = shlex.split(os.environ.get(batch_gh.GH) or "gh")
-    try:
-        done = subprocess.run([*argv, *args], cwd=root, capture_output=True)
-    except OSError as err:
-        raise Refused("%s: gh %s failed: %s" % (COMMAND, " ".join(args[:2]), err)) from None
-    if done.returncode != 0:
-        said = done.stderr.decode(errors="replace").strip() or done.stdout.decode(errors="replace").strip()
-        raise Refused("%s: gh %s failed: %s" % (COMMAND, " ".join(args[:2]),
-                                               (said or "exit %d" % done.returncode).splitlines()[0]))
-    return done.stdout
-
-
-def _unreachable(context, why):
-    return Refused("the bounded context {names} cannot be reached: bounded context unreachable (%s)" % why,
-                   reason="bounded context unreachable", names=["bounded context:%s" % context])
-
-
-def _failing(context, why):
-    return Refused("the bounded context {names} fails to answer: bounded context failing (%s)" % why,
-                   reason="bounded context failing", names=["bounded context:%s" % context])
-
-
-def _reach(root, repo, context):
-    """Refused unless GitHub serves the repository `repo` of `context`: one missing, private or not answering is a
-    bounded context unreachable, never one with no contract."""
-    try:
-        _gh(root, "api", "repos/%s" % repo)
-    except Refused as err:
-        raise _unreachable(context, "gh api repos/%s: %s" % (repo, str(err).strip().splitlines()[-1])) from None
-
-
-def _api(root, repo, path, context):
-    """The bytes of `path` in `repo` on GitHub, or None when it is not there; another gh failure, of a repository
-    `_reach` reached, the bounded context failing (b596, checking r102)."""
-    try:
-        return _gh(root, "api", "-H", RAW, "repos/%s/contents/%s" % (repo, path))
-    except Refused as err:
-        if "404" in str(err) or "Not Found" in str(err):
-            return None
-        raise _failing(context, str(err).strip().splitlines()[-1]) from None
 
 
 def _none(context, version):
-    at = " at the version %s" % version if version else ""
-    return Refused("the bounded context {names} has no contract%s" % at, reason="bounded context with no contract",
-                   names=["bounded context:%s" % context])
+    if not version:
+        return Refused("the bounded context {names} has no contract", reason="bounded context with no contract",
+                       names=["bounded context:%s" % context])
+    return Refused("no contract is deposited for the bounded context and the version {names}",
+                   reason="bounded context with no contract",
+                   names=["bounded context:%s" % context, "version:%s" % version])
 
 
-def reached(root, context):
-    """The GitHub repository of `context`, refused as unreachable unless GitHub serves it (checking r89)."""
-    import request_gh
-    repo = request_gh.repo_of(root, context, COMMAND)
-    _reach(root, repo, context)
-    return repo
+def retrieved(root, context, version):
+    """(version, bytes) of the contract of `context` the registry returns, at `version` or published; a retrieval it
+    refuses refused naming the bounded context (r82) and the version (r130), nothing written."""
+    reply = contract_registry.retrieve(root, context, version)
+    if reply.outcome == "returned":
+        return reply.content
+    raise _none(context, contract_registry.refused_version(reply, version))
 
 
-def published(root, context, version=None, repo=None):
-    """(version, bytes) of the contract `context` keeps as published, or at `version`; refused when it has none.
-    `repo`, its repository `reached` gave, else reached here."""
-    import contract_publish
-    repo = repo or reached(root, context)
-    if version:
-        text = _api(root, repo, "%s/%s/%s" % (KEPT, version, FILE), context)
-        if text is None:
-            raise _none(context, version)
-        return version, text
-    listed = _api(root, repo, KEPT, context)
+def _reach(root, context):
+    """Refused only when the registry cannot reach `context` (r89 before r103, b601): a retrieve's other refusals let
+    the caller's refusal stand."""
     try:
-        entries = json.loads(listed) if listed else []
-    except ValueError:
-        raise Refused("%s: gh api printed no JSON listing %s of %s" % (COMMAND, KEPT, repo)) from None
-    found = None
-    for entry in entries if isinstance(entries, list) else []:
-        if entry.get("type") != "dir":
-            continue
-        text = _api(root, repo, "%s/%s/%s" % (KEPT, entry["name"], FILE), context)
-        lines = (text or b"").decode("utf-8", errors="replace").splitlines()
-        status = contract_publish.STATUS.search("\n".join(lines))
-        if status and status.group(1) == "published":
-            found = (entry["name"], text)
-    if found is None:
-        raise _none(context, None)
-    return found
-
-
-def place(context, version):
-    """Where a contract of the bounded context `context` at `version` is kept in an adapter spec's folder: provider/
-    keyed by the whole id, the
-    id's path after `bounded-context/` (two bounded contexts whose ids end alike each keep their own), then the
-    version; `version` may be a glob."""
-    return PROVIDER.joinpath(*context.split("/")[1:], version, FILE)
+        contract_registry.retrieve(root, context, None)
+    except Refused as err:
+        if err.reason == "bounded context unreachable":
+            raise
 
 
 def holders(root, context):
@@ -157,16 +80,16 @@ def obtain(root, context, version=None):
     if not FORM.fullmatch(context):
         raise Refused("the id {names} is refused: id not in the context id form bounded-context/<domain>/<path>",
                       reason="id not in the context id form", names=["id:%s" % context])
-    repo = reached(root, context)
     held = holders(root, context)
     if not held:
+        _reach(root, context)
         raise Refused("the provider {names} is the provider of no adapter spec under %s/: no adapter spec has the "
                       "provider" % ADAPTERS, reason="no adapter spec has the provider", names=["provider:%s" % context])
     texts, rels = {}, {}
     for folder, pin in held:
         wanted = pin or version
         if wanted not in texts:
-            texts[wanted] = published(root, context, wanted, repo)
+            texts[wanted] = retrieved(root, context, wanted)
         at, text = texts[wanted]
         rels[(folder / place(context, at)).as_posix()] = text
     changed = [rel for rel, text in rels.items()

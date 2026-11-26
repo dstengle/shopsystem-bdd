@@ -3,7 +3,8 @@ keyword as a Call, keyed by a template and a term, which a handler is found by.
 
 The templates: a Given that brings in an instance `GivenK`; example data `GivenCodeText` (a block under the step)
 and `GivenCode` (one value, in `quoted`); a value `GivenK_A`, `ThenK_A`; the number of Ks compared `GivenCount`
-(its noun phrase the subject, the comparison its one noun phrase, b240); a state `GivenDoes`, `GivenDoesNot`,
+(its noun phrase the subject, the comparison its one noun phrase, b240); a state `GivenDoes`, `GivenDoesNot` (and
+an act a Given says when it reads as nothing else, the core's request a reply is on, b636),
 `ThenDoes`, `ThenDoesNot` ("x exists" of the verb exist, b240); a run `WhenRuns` (its options, spec_lf_option), any other trigger `WhenHappens`;
 an act `ThenPrints`, `ThenPrintsNot`, `ThenExitsOk`, `ThenExitsErr`, `ThenChangesNothing`, else `ThenDoes`,
 `ThenDoesNot`; a Then that states an order its `order` (spec_lf_ordered's `read`); a request `WhenRequests` and the
@@ -116,6 +117,8 @@ def template(names, keyword, tree):
         verb = _verb(names, cond[0] if ROW.match(cond[0]) else cond[3])
         return keyword.capitalize() + ("DoesNot" if neg else "Does"), None, None, verb
     neg, verb, vp = args[0] == ("PNeg",), _verb(names, args[2]), args[2]
+    if keyword == "given":
+        return ("GivenDoesNot" if neg else "GivenDoes"), None, None, verb
     if verb == "print":
         return ("ThenPrintsNot" if neg else "ThenPrints"), None, None, None
     if verb == "exit":
@@ -133,6 +136,8 @@ def step(root, keyword, text):
     except spec_rgl_steps.StepError as err:
         raise StepError(str(err))
     trees = [t for t in found if t[0].endswith(ALLOWED[keyword])]
+    if keyword == "given" and not trees:     # an act a Given says: the core's request a reply is on (b636)
+        trees = [t for t in found if t[0].endswith("_Does")]
     data = [t for t in trees if t[0].endswith(("_HoldsBlock", "_HoldsText"))]
     trees = data or trees    # example data read as such, not as a holds condition on a code (b154)
     names = spec_lf_np.Names(vocab)

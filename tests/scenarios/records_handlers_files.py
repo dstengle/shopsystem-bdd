@@ -123,7 +123,7 @@ def kept_design(step, name, rels):
 @local("ThenDoes")
 def writes(step):
     """`work writes the design d1`, `... the plan p1`, `... the observation o1` (the records service keeps it)."""
-    found = W.named(step.nps[-1]) or re.fullmatch(r"the (design|plan|observation) (\S+)", step.nps[-1] or "")
+    found = W.named((step.nps or [""])[-1]) or re.fullmatch(r"the (design|plan|observation) (\S+)", (step.nps or [""])[-1] or "")
     if not mine(step) or step.term != "write" or not found:
         return False
     kind, name = found.groups() if hasattr(found, "groups") else found
