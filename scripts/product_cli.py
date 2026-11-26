@@ -1,9 +1,11 @@
 """`spec product <id> --purpose <text>`, `spec actor <product actor>` and `spec job <id> [--actor <a> ...] --statement
-<text> [--needs <j> ...]` (b602, product r1-r7): the product service's operations declare, declare actor and declare
-job requested on the command line, each product_layer's over the product product_store keeps, committed, and what is
-kept printed. A refusal names the parameter, which the CLI adapter spells as its option (`--statement`, `--actor`,
-`--needs`: their dests are the parameters' names)."""
+<text> [--needs <j> ...]` (b602, product r1-r7), `spec subdomain <id> --type <t> [--serves <j> ...]` and `spec context
+<id> [--addresses <s> ...] [--shop <shop>]` (b642, product r15-r21): the product service's operations declare,
+declare actor, declare job, declare subdomain and declare context requested on the command line, each product_layer's
+or product_map's over the product product_store keeps, committed, and what is kept printed. A refusal names the parameter, which the CLI adapter spells as its option (`--statement`, `--actor`,
+`--needs`, `--type`, `--serves`, `--addresses`: their dests are the parameters' names)."""
 import product_layer
+import product_map
 import product_store
 
 
@@ -29,6 +31,22 @@ def cmd_job(args):
     return 0
 
 
+def cmd_subdomain(args):
+    product = product_map.declare_subdomain(product_store.read(args.root), args.id, args.subdomain_type,
+                                            args.job or [])
+    product_store.kept(args.root, product, "spec subdomain: %s" % args.id)
+    print("declared the subdomain %s" % args.id)
+    return 0
+
+
+def cmd_context(args):
+    product = product_map.declare_context(product_store.read(args.root), args.id, args.subdomain or [], args.shop)
+    product_store.kept(args.root, product, "spec context: %s" % args.id)
+    print("declared the bounded context %s%s" % (args.id, " kept by %s" % args.shop if args.shop else
+                                                 ", a third-party provider"))
+    return 0
+
+
 def add_parsers(sub):
     p = sub.add_parser("product", help="declare the product this bounded context belongs to: its id and purpose")
     p.add_argument("id", help="the product's id, as missingmass.io/shopsystem")
@@ -42,5 +60,15 @@ def add_parsers(sub):
                    help="the job statement: When <situation>, <actor> wants <motivation>, so they can <outcome>.")
     j.add_argument("--needs", dest="need", action="append", help="a job of the product this job needs done first")
 
+    s = sub.add_parser("subdomain", help="declare a subdomain of the product with its type and the jobs it serves")
+    s.add_argument("id", help="the subdomain's id, as specification")
+    s.add_argument("--type", dest="subdomain_type", required=True, help="the subdomain type: core, supporting or generic")
+    s.add_argument("--serves", dest="job", action="append", help="a job of the product the subdomain serves")
+    c = sub.add_parser("context", help="declare a bounded context of the product's domain map")
+    c.add_argument("id", help="the bounded context's id, under the product's id")
+    c.add_argument("--addresses", dest="subdomain", action="append", help="a subdomain of the product it addresses")
+    c.add_argument("--shop", help="the shop that keeps it; none for a third-party provider")
 
-COMMANDS = {"product": cmd_product, "actor": cmd_actor, "job": cmd_job}
+
+COMMANDS = {"product": cmd_product, "actor": cmd_actor, "job": cmd_job, "subdomain": cmd_subdomain,
+            "context": cmd_context}
