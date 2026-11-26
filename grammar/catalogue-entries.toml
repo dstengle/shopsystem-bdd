@@ -416,12 +416,12 @@ changed = []
 [rules.w_unserved_cap]
 purpose = "Every capability serves some job, so the system holds no behaviour without a reason."
 since = "b123"
-changed = []
+changed = ["b643"]
 
 [rules.w_unserved_job]
 purpose = "Every job someone needs done is served by some capability, so no need is left unmet."
 since = "b123"
-changed = []
+changed = ["b643"]
 
 [rules.w_seam_unused]
 purpose = "Declared seams are actually used, so the context map reflects real dependencies, not stale ones."
@@ -866,4 +866,34 @@ changed = []
 [rules.v_m9]
 purpose = "A lifecycle's transitions are performed only by operations of the area that declares its object, so one area owns each object's lifecycle."
 since = "b610"
+changed = []
+
+[rules.v_job_elsewhere]
+purpose = "A job is served only in the bounded context the product assigns it to, so two contexts never both answer for it."
+since = "b643"
+changed = []
+
+[rules.v_need_cycle]
+purpose = "A job's needs never close a cycle, so its trace joins the traces of the jobs it needs once."
+since = "b643"
+changed = []
+
+[rules.w_unheld_job]
+purpose = "Every job of the product is assigned to a bounded context, so none is left with no one to serve it."
+since = "b643"
+changed = []
+
+[rules.w_untriggered_actor]
+purpose = "Each actor of a job starts a line of the job's trace in the bounded context that holds it, so no actor of the job is left out."
+since = "b643"
+changed = []
+
+[rules.w_unaddressed_sub]
+purpose = "Every subdomain of the product is given its solution by a bounded context of the domain map."
+since = "b643"
+changed = []
+
+[rules.w_unreached_sub]
+purpose = "A job's trace reaches a bounded context that addresses each subdomain serving the job."
+since = "b643"
 changed = []
