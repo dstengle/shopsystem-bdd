@@ -5,9 +5,14 @@ request its key covers (spec_entail_chain's `covers`), followed again up to spec
 (`reached`); its adapter specs each adapter spec nested at `adapters/<name>/` whose `realises:` names a port line in
 the trace (`realising`); and the traces of the jobs it needs (the product file's needs, product_store), joined,
 each requirement and adapter spec once with why it is in the trace. A job no group serves is refused naming it.
-Provider operations an adapter spec uses are not followed: the trace stops at the adapter spec."""
+An adapter spec in the trace is followed into its providers (b637, product r35; decision 0138): for each port
+operation a port line in the trace governs, each provider operation its `uses:` names, the requirements the held
+contract lists under it (adapter_uses' `governed`), each with the provider, its version and the operation
+(`provided`)."""
 from pathlib import Path
 
+import adapter_annotate
+import adapter_uses
 import product_coordination
 import product_store
 import spec_context
@@ -64,12 +69,31 @@ def reached(ctx, starts):
 
 
 def adapter_specs(root):
-    """[(adapter spec id, [requirement id])] of each adapter spec nested at `adapters/<name>/` and what it realises."""
+    """[(adapter spec id, [requirement id], its folder)] of each adapter spec nested at `adapters/<name>/` and what it
+    realises."""
     out = []
     for index in sorted(Path(root).glob("adapters/*/spec/index.md")):
         data, _ = frontmatter(index.read_text(encoding="utf-8"))
         if str(data.get("kind", "")).strip() == "adapter" and data.get("id"):
-            out.append((str(data["id"]), [str(i).strip() for i in as_list(data.get("realises"))]))
+            out.append((str(data["id"]), [str(i).strip() for i in as_list(data.get("realises"))], index.parent.parent))
+    return out
+
+
+def provided(root, specs, held):
+    """[(requirement id, text, why)] of the requirements each held contract of an adapter spec in the trace lists
+    under a provider operation it uses for a port operation a port line in the trace (`held`) governs."""
+    specs = [(ident, folder) for ident, ids, folder in specs if held & set(ids)]
+    if not specs:
+        return []
+    governing, out = adapter_annotate.governing(root), []
+    for ident, folder in specs:
+        for port, lines in sorted(adapter_uses.realised(folder, governing).items()):
+            if not held & set(lines):
+                continue
+            for req, provider, version, used in adapter_uses.governed(folder, port):
+                rid, _, text = str(req).partition(":")
+                out.append((rid.strip(), text.strip(), "governs the operation %s of %s@%s, which %s uses for %s"
+                            % (used, provider, version, ident, port)))
     return out
 
 
@@ -83,9 +107,9 @@ def own(root, ctx, job):
     said = texts(ctx)
     reqs += [(rid, said.get(rid, ""), "governs the operation %s uses" % by)
              for rid, by in reached(ctx, [rid for rid, _, _ in lines]).items() if rid in said]
-    held = {rid for rid, _, _ in reqs}
-    specs = [(ident, "realises the port line %s" % rid) for ident, ids in adapter_specs(root)
-             for rid in ids if rid in held]
+    held, found = {rid for rid, _, _ in reqs}, adapter_specs(root)
+    specs = [(ident, "realises the port line %s" % rid) for ident, ids, _ in found for rid in ids if rid in held]
+    reqs += [r for r in provided(root, found, held) if r[0] not in held]
     first = {}
     for ident, why in specs:
         first.setdefault(ident, (ident, why))

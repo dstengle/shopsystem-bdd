@@ -69,7 +69,18 @@ def test_only_the_operations_a_realised_port_line_governs_are_realised(tmp_path,
     (root / "spec").mkdir(parents=True)
     text = INDEX % (PROVIDER, "")
     (root / "spec" / "index.md").write_text(text.replace("[stock-port#r1]", "[stock-port#r1, notebook#r1]"))
-    monkeypatch.setattr(adapter_uses, "_ported", lambda parent: {"stock-port"})
+    monkeypatch.setattr(adapter_uses, "_ported", lambda _: {"stock-port"})
     governing = {"stock.reserve": [("stock-port#r1", "...")], "notes.add": [("notebook#r1", "...")],
                  "stock.cancel": [("stock-port#r2", "...")]}
     assert adapter_uses.realised(root, governing) == {"stock.reserve": ["stock-port#r1"]}
+
+
+def test_a_trace_follows_an_adapter_spec_in_it_into_its_provider_s_requirements(tmp_path, monkeypatch):
+    import adapter_annotate
+    import product_trace
+    root = spec(tmp_path, monkeypatch, "stock.reserve → inventory.hold")
+    monkeypatch.setattr(adapter_annotate, "governing", lambda _: {})
+    found = product_trace.provided(tmp_path, [("a1", ["stock-port#r1"], root)], {"stock-port#r1"})
+    assert [(rid, why) for rid, _, why in found] == [
+        ("holding#r1", "governs the operation inventory.hold of %s@1.2.0, which a1 uses for stock.reserve" % PROVIDER)]
+    assert product_trace.provided(tmp_path, [("a1", ["stock-port#r1"], root)], {"notebook#r1"}) == []
