@@ -19,6 +19,10 @@ import backlog_lines
 import backlog_section
 import spec_catalogued
 
+# The rules whose violations of the item's own ids only a batch's lay clears (`lay_only`), each with the place of the
+# id in its row: skipped, so that the rule catalogue does not take this module for where they are implemented
+# (model_rules.skipped, b467).
+SKIPPED_RULES = {"v_s3": 0, "v_a5": 1, "v_a6": 1}
 COPIED = ("spec", "grammar")      # what the lay may write: copied, never linked, so the context is never changed
 
 
@@ -65,11 +69,11 @@ def lay_only(item):
     groups = {"%s#%s" % (b.capability, g.id) for b in blocks for g in b.groups}
     lines = set(backlog_section.ids(blocks))
     retired = {"%s#%s" % (b.capability, r) for b in blocks for r in b.retired}
-    named = {"v_s3": (0, groups), "v_a5": (1, lines), "v_a6": (1, retired)}
+    ids = dict(zip(SKIPPED_RULES, (groups, lines, retired)))
 
     def brought(code, found):
-        at, ids = named.get(code, (None, ()))
-        return at is not None and len(found) > at and any(str(found[at]).endswith("/" + i) for i in ids)
+        at = SKIPPED_RULES.get(code)
+        return at is not None and len(found) > at and any(str(found[at]).endswith("/" + i) for i in ids[code])
     return brought
 
 
