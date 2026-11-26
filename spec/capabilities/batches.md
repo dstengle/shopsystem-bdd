@@ -7,7 +7,7 @@ area: execution
 specifies: object batch, object task, service batches
 language: codified-2
 retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146, g152, r152, g149, r149, g154, r154, g160, r160, g166, r166]
-unbuilt: []
+unbuilt: [r177, r178]
 ---
 
 # Batches
@@ -320,4 +320,10 @@ when the change is merged.
 
 ### [g176] An in-batch item parked while its batch's feature generator is unresponsive is refused, naming the generator
 - [r176] While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch has a feature generator and the feature generator is `unresponsive`, if the person parks the item, then the batches service shall refuse the request, name the feature generator and change nothing.
+
+### [g177] A batch opened with two items retiring ids of one decision supersedes it by one decision every retiring line enforces
+- [r177] While an item is `ready` and the item meets the readiness bar and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `accepted` and a requirement that enforces the design-decision has a requirement id and another item that meets the readiness bar holds another requirement and the requirement retires the requirement id, when the person opens a batch, the batches service shall keep a design-decision that the requirement enforces.
+
+### [g178] A park of one of two items retiring ids of one decision keeps the decision superseded by the other item's line
+- [r178] While an item in a batch is `in-batch` and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded` and a requirement that enforces the design-decision has a requirement id and another item in the batch holds another requirement and the requirement retires the requirement id, when the person parks the item, the batches service shall keep a design-decision that the requirement enforces.
 

@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56, g94, r94, g91, r91, g100, r100]
-unbuilt: []
+unbuilt: [r143]
 ---
 
 # Checking
@@ -400,6 +400,9 @@ Restates: design-model-check#r13@0.29.
 
 ### [g142] A registration the contract registry refuses deregisters the contract registered for another adapter spec of the provider
 - [r142] While an adapter spec has a provider, when the contract registry service refuses the request to register a contract for the adapter spec, the specification service shall deregister the contract for a different adapter spec that has the provider.
+
+### [g143] A completed deregistration changes nothing more
+- [r143] When the contract registry service completes the request to deregister a contract for an adapter spec, the specification service shall change nothing.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

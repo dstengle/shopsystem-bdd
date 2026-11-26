@@ -88,6 +88,7 @@ requirements = [
   "consistency#r12: When the person explains a requirement that a requirement overrides, the language service shall return a requirement that uses a refusal.",
   "consistency#r13: If the person explains a requirement id that no capability holds, then the language service shall refuse the request and name the requirement id.",
   "consistency#r45: While a requirement has a trigger and the requirement has a consequence and another requirement that has the trigger uses `response-request` and `oblique-role`, when the person explains the requirement, the language service shall return the requirement and the consequence.",
+  "consistency#r46: While a requirement has a trigger and the requirement has a consequence and another requirement that has the trigger uses `response-request` and `oblique-role` and a term has a frame that has a preposition and the term has another frame that has another preposition, when the person explains the requirement, the language service shall return the requirement and the consequence.",
 ]
 [operations."language.explain".parameters]
 text = { positional = 1 }
@@ -1051,6 +1052,7 @@ requirements = [
   "batches#r168: While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit and the item holds a port line that governs an operation and another port line that governs the operation is not in the item and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, when the person opens a batch, the batches service shall allocate the item.",
   "batches#r169: While an item is `ready` and an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition and the item holds a core line that uses the operation, if the person opens a batch, then the batches service shall reopen the item and name the core line and `v_m9`.",
   "batches#r173: While an item is `ready` and the item meets the readiness bar and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `accepted`, when the person opens a batch, the batches service shall set the status of the design-decision to `superseded`, keep a design-decision that supersedes the design-decision and name the design-decision.",
+  "batches#r177: While an item is `ready` and the item meets the readiness bar and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `accepted` and a requirement that enforces the design-decision has a requirement id and another item that meets the readiness bar holds another requirement and the requirement retires the requirement id, when the person opens a batch, the batches service shall keep a design-decision that the requirement enforces.",
 ]
 
 [operations."batches.resume"]
@@ -1086,6 +1088,7 @@ requirements = [
   "batches#r155: While an item in a batch is `in-batch` and the kind of an area is `port` and the area holds a capability that the item holds and the area imports an area whose kind is `supporting`, when the person parks another item in the batch, the batches service shall keep the area.",
   "batches#r174: While an item in a batch is `in-batch` and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded`, when the person parks the item, the batches service shall set the status of the design-decision to `accepted` and keep no design-decision that supersedes the design-decision.",
   "batches#r176: While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch has a feature generator and the feature generator is `unresponsive`, if the person parks the item, then the batches service shall refuse the request, name the feature generator and change nothing.",
+  "batches#r178: While an item in a batch is `in-batch` and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded` and a requirement that enforces the design-decision has a requirement id and another item in the batch holds another requirement and the requirement retires the requirement id, when the person parks the item, the batches service shall keep a design-decision that the requirement enforces.",
 ]
 [operations."batches.park".parameters]
 item = { positional = 2 }

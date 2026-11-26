@@ -417,7 +417,7 @@ a verb's role after a preposition other than "to"
 - Since: b240
 - Form: <subject> <verb> ... <preposition> <role>
 - Functions: `frame:oblique`
-- Cited by: consistency#r45
+- Cited by: consistency#r45, consistency#r46
 - Example and its reading:
 
 ```construct
@@ -1119,7 +1119,7 @@ a response's act that is a request of an operation with its parameters, said as 
 - Since: b543
 - Form: <doer> shall <operation verb> <np> with the <parameter> <value>
 - Functions: `k_\w+_ActReq_k_\w+`
-- Cited by: checking#r71, checking#r72, checking#r95, checking#r99, consistency#r36, consistency#r37, consistency#r38, consistency#r39, consistency#r40, consistency#r43, consistency#r45, parsing#r23, parsing#r24
+- Cited by: checking#r71, checking#r72, checking#r95, checking#r99, consistency#r36, consistency#r37, consistency#r38, consistency#r39, consistency#r40, consistency#r43, consistency#r45, consistency#r46, parsing#r23, parsing#r24
 - Context: `grammar/corpus/constructs/request/`
 - Example and its reading:
 
