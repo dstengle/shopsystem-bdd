@@ -2,9 +2,11 @@
 whose world, Givens of instances and completion they share; each a `work_queue_world.local` tried before its. At the
 When of `spec assign` or `spec plays` the product the Givens describe is written into the product file with the id
 `example.org` and committed: each job the Givens bring in, each product actor unless a Given says this product does
-not hold it, and each bounded context, `example.org/<b>`, with the jobs a Given says it holds. The command is run with
-the values the instances stand for: a job `<j>`, a product actor `the <p> user`, an actor `the <a> person`, and of a
-parameter the When does not give its adapter example (a bounded context `example.org/x`, an actor `the person`). The
+not hold it, and each bounded context unless a Given says this product does not hold it, by its id (product_handlers_map's
+`context_id`: `bounded-context/example.org/<b>`, or of the id a Given says it has), with the jobs a Given says it
+holds. The command is run with the values the instances stand for: a job `<j>`, a product actor `the <p> user`, an
+actor `the <a> person`, and of a parameter the When does not give its adapter example (a bounded context
+`bounded-context/example.org/x`, an actor `the person`). The
 Thens read the job under the bounded context's `jobs`, or the product actor under its `actors` called by the actor,
 back from the kept product file, the run committing only it; a refusal an error exit, nothing committed, the value
 named."""
@@ -18,10 +20,18 @@ W = sys.modules["shop_work_queue_world"]
 COMMANDS = ("`spec assign`", "`spec plays`")
 
 
+def context_id(w, name):
+    """product_handlers_map's `context_id`, loaded after this module."""
+    key = "shop_handlers_%s" % hashlib.sha256(str(HERE / "product_handlers_map.py").encode()).hexdigest()[:12]
+    return sys.modules[key].context_id(w, name)
+
+
 def value(w, name):
     kind = w["kinds"].get(name)
-    if kind == "bounded context":
-        return "example.org/%s" % name
+    if kind == "bounded context" and name in w.get("context ids", {}):
+        return value(w, w["context ids"][name])
+    if kind in ("bounded context", "id"):
+        return context_id(w, name)
     if kind == "product actor":
         return "the %s user" % name
     if kind == "actor":
@@ -47,7 +57,7 @@ def held(w):
     for name, kind in kinds.items():
         if kind == "job":
             product["jobs"][name] = {"actors": [], "statement": P.FORMED % name, "needs": []}
-        if kind == "bounded context":
+        if kind == "bounded context" and name not in outside:
             jobs = w.get("assigned", {}).get(name, [])
             product.setdefault("contexts", {})[value(w, name)] = {"addresses": [], **({"jobs": jobs} if jobs else {})}
     return product
@@ -61,7 +71,7 @@ def runs(step):
     (repo / P.REL).parent.mkdir(parents=True, exist_ok=True)
     (repo / P.REL).write_text(P.scripts("product_store").render(held(w)))
     step.context["head"] = W.init(repo)
-    context = value(w, kinds["bounded context"]) if "bounded context" in kinds else "example.org/x"
+    context = value(w, kinds["bounded context"]) if "bounded context" in kinds else context_id(w, "x")
     if step.term == "`spec assign`":
         args = ["assign", value(w, kinds["job"]), "--to", context]
     else:

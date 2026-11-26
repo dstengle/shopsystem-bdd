@@ -5,11 +5,22 @@ it addresses and the shop that keeps it, none for a third-party provider. In the
 gives (product_store's). `declare_subdomain` keeps a subdomain and `declare_context` a bounded context, each declared
 again in place of the one of its id (its other keys kept). A subdomain is refused, naming the parameter, when its type
 is not of the subdomain type form (`TYPES`) or a job it serves is no job of the product; a bounded context when its id
-lies outside the product's id (`covers`) or a subdomain it addresses is no subdomain of the product."""
+is not of the context id form, `bounded-context/<domain>/<path>` (migrate init's `FORM`, `conformed`, b793), lies
+outside the product's id (`covers`) or a subdomain it addresses is no subdomain of the product."""
 from plumbing.shop_refused import Refused
 
 # the subdomain type form: the types of subdomain decision 0128 names
 TYPES = ("core", "supporting", "generic")
+
+
+def conformed(ident, names):
+    """`ident` when it is of the context id form; else refused naming `names`, the id or the bounded context, so one
+    bounded context is never kept under two ids (b793)."""
+    from upgrades.migrate_init import FORM
+    if not FORM.fullmatch(ident):
+        raise Refused("{names} %s is not of the context id form bounded-context/<domain>/<path>" % ident,
+                      reason="id not in the context id form", names=[names])
+    return ident
 
 
 def covers(product_id, ident):
@@ -35,7 +46,7 @@ def declare_subdomain(product, ident, kind, jobs):
 def declare_context(product, ident, subdomains, shop):
     """The product with the bounded context of `ident`, kept by `shop` or, with none, a third-party provider; refused
     naming the id or a subdomain as above."""
-    if not covers(product.get("id"), ident):
+    if not covers(product.get("id"), conformed(ident, "parameter:id")):
         raise Refused("{names} %s lies outside the product's id %s" % (ident, product.get("id") or "(none declared)"),
                       reason="id outside the product", names=["parameter:id"])
     for subdomain in subdomains:

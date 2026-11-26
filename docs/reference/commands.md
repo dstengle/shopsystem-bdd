@@ -1267,14 +1267,16 @@ declared the subdomain specification
 ### `shop spec context`
 
 Declares a bounded context of the product's domain map with its id, the subdomains it addresses and the shop that
-keeps it, kept in the product file in one commit; with no `--shop` it is a third-party provider. An id that does not
-lie under the product's id is refused naming the id, and a subdomain that is no subdomain of the product naming
+keeps it, kept in the product file in one commit; with no `--shop` it is a third-party provider. The id is of the
+context id form `migrate init` and `work context` take, `bounded-context/<domain>/<path>`: one of another form is
+refused naming it, so one bounded context is never kept under two ids. An id that does not lie under the product's id
+is refused naming the id, and a subdomain that is no subdomain of the product naming
 `--addresses`.\
 Synopsis: `shop spec context <id> [--addresses <subdomain> ...] [--shop <shop>]`
 
 ```console
-$ shop spec context missingmass.io/shopsystem/shopsystem-bdd --addresses specification --shop missingmass.io/shopsystem/shop
-declared the bounded context missingmass.io/shopsystem/shopsystem-bdd kept by missingmass.io/shopsystem/shop
+$ shop spec context bounded-context/missingmass.io/shopsystem/shopsystem-bdd --addresses specification --shop missingmass.io/shopsystem/shop
+declared the bounded context bounded-context/missingmass.io/shopsystem/shopsystem-bdd kept by missingmass.io/shopsystem/shop
 ```
 
 ### `shop spec trace`
