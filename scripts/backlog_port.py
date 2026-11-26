@@ -4,7 +4,8 @@ lines (backlog_model_area's skeleton writes the kind), importing each area whose
 of the port or its model lines of the port say, and imported in turn by the model file of each area a capability
 block of the item is in whose lines say a word of the port's layer, so the lay raises no v_m1 (`lay`); taken out
 again by the unlay, each import the lay added out (the model file at the batch's base, else as git last held it, not
-holding it) and the model file the lay made removed when nothing else is left in it (`unlay`). A word is said when
+holding it), the imports of a port spec/model/ held already put back as that version held them (f1), and the model
+file the lay made removed when nothing else is left in it (`unlay`). A word is said when
 it, one of its forms or its plural stands whole in the text, as backlog_area_move_lay reads a moved word's users."""
 import re
 from pathlib import Path
@@ -87,5 +88,10 @@ def unlay(into, blocks, files, base=None):
     backlog_area_move_unlay._imports(into, set(made), base, files)
     for port in made:
         rel = laid._rel("model", port)
+        path = backlog_model.model_path(into, port)
+        was = backlog_area_move_unlay.held(path, base) if path.is_file() else None
+        if was is not None and laid._imported(path.read_text()) != laid._imported(was):   # a port spec/model/ held (f1)
+            path.write_text(laid._with_imports(path.read_text(), laid._imported(was)))
+            files.append(rel)
         if backlog_model_area.unmade(into, port, blocks) and rel not in files:
             files.append(rel)
