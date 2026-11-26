@@ -1,11 +1,15 @@
 """The area an item's model lines go to (b387): a capability's `area:` in its file, or, for a capability new to the
 context that a block of the item makes (`work line --capability`, b317), its block's `area:`, else its own name; and the model
 file of an area that `spec/model/` does not hold yet, made by the lay (`made`, with the new capability's purpose as the
-area's) and removed again by the unlay when nothing but what it made is left (`unmade`)."""
+area's, of kind `port` when the block makes it a driven port, b701) and removed again by the unlay when nothing but
+what it made is left, the areas it imports aside (`unmade`)."""
+import re
 from pathlib import Path
 
 import shop_files
 from backlog_items import Refused
+
+IMPORTS = re.compile(r"^imports:\s*\[.*\]\s*$", re.MULTILINE)
 
 
 def _area(block):
@@ -40,17 +44,30 @@ def model_path(root, area):
     return Path(root) / "spec" / "model" / ("%s.md" % area)
 
 
-def skeleton(root, area, purpose):
-    """The model file of a new area: its frontmatter, title, purpose and an empty ```model block."""
+def skeleton(root, area, purpose, kind="core"):
+    """The model file of a new area: its frontmatter (its kind), title, purpose and an empty ```model block."""
     title = area.replace("-", " ").capitalize()
-    return ("---\nid: model/%s/%s\narea: %s\nkind: core\nimports: []\n---\n\n# %s\n\n## Purpose\n\n%s\n\n```model\n```\n"
-            % (shop_files.context_path(root), area, area, title, purpose))
+    return ("---\nid: model/%s/%s\narea: %s\nkind: %s\nimports: []\n---\n\n# %s\n\n## Purpose\n\n%s\n\n```model\n```\n"
+            % (shop_files.context_path(root), area, area, kind, title, purpose))
+
+
+def _field(blocks, area, name, default=""):
+    from backlog_section import NEW_FIELDS
+    block = area_block(blocks, area)
+    return dict(zip(NEW_FIELDS, block.new)).get(name) or default if block is not None else default
 
 
 def purpose_of(blocks, area):
-    from backlog_section import NEW_FIELDS
-    block = area_block(blocks, area)
-    return dict(zip(NEW_FIELDS, block.new)).get("purpose", "") if block is not None else ""
+    return _field(blocks, area, "purpose")
+
+
+def kind_of(blocks, area):
+    """The kind of the area a block of the item makes: `port` of a driven port (b701), else core."""
+    return _field(blocks, area, "kind", "core")
+
+
+def _skeleton(root, area, blocks):
+    return skeleton(root, area, purpose_of(blocks, area), kind_of(blocks, area))
 
 
 def made(root, area, blocks):
@@ -60,15 +77,16 @@ def made(root, area, blocks):
     if path.is_file() or area_block(blocks, area) is None:
         return False
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(skeleton(root, area, purpose_of(blocks, area)))
+    path.write_text(_skeleton(root, area, blocks))
     return True
 
 
 def unmade(root, area, blocks):
-    """The model file `made` made removed when it holds nothing more than it did then; True when it was removed."""
+    """The model file `made` made removed when it holds nothing more than it did then, the areas it imports aside
+    (backlog_port's, b701); True when it was removed."""
     path = model_path(root, area)
     if path.is_file() and area_block(blocks, area) is not None and \
-            path.read_text() == skeleton(root, area, purpose_of(blocks, area)):
+            IMPORTS.sub("imports: []", path.read_text(), count=1) == _skeleton(root, area, blocks):
         path.unlink()
         return True
     return False
