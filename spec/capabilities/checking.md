@@ -395,6 +395,9 @@ Restates: design-model-check#r13@0.29.
 ### [g140] A registration the contract registry refuses names the adapter spec and changes nothing
 - [r140] When the contract registry service refuses the request to register a contract for an adapter spec, the specification service shall name the adapter spec and change nothing.
 
+### [g141] Obtaining from a bounded context whose upstream entry holds no shared store is refused as unreachable
+- [r141] While an upstream entry identifies a bounded context and the upstream entry holds no shared store, if the person obtains a contract from the bounded context, then the specification service shall refuse the request and name the bounded context and the `bounded context unreachable` reason.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.

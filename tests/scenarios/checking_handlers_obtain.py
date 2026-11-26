@@ -132,6 +132,8 @@ def build(step):
         bullets = "- %s: github: ex/unreachable\n" % obtained_from(step)
     if w.get("unlisted"):       # hosted, but no upstream entry identifies it (checking_handlers_upstream, r132)
         bullets = ""
+    if w.get("unhosted"):       # identified, but its entry holds no shared store (checking_handlers_upstream, r141)
+        bullets = "- %s: the inventory context\n" % obtained_from(step)
     bullets += "".join(host(step, context) for context in others.values())
     index = repo / "spec" / "index.md"
     index.write_text(index.read_text().rstrip("\n") + "\n\n## Upstreams\n\n" + bullets)

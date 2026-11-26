@@ -1188,3 +1188,15 @@ Feature: Checking
     When the contract registry service refuses the request to register the contract c1 for the adapter spec a1
     Then the specification service names the adapter spec a1
     And the specification service changes nothing
+
+  @g141 @r141
+  Scenario: Obtaining from a bounded context whose upstream entry holds no shared store is refused as unreachable
+    Given an upstream entry u1
+    And a bounded context b1
+    And the upstream entry u1 identifies the bounded context b1
+    And the upstream entry u1 holds no shared store
+    And a contract c1
+    When the person obtains the contract c1 from the bounded context b1
+    Then the specification service refuses this request
+    And the specification service names the bounded context b1
+    And the specification service names `bounded context unreachable`

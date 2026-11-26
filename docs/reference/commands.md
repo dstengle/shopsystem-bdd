@@ -1292,7 +1292,11 @@ $ shop spec trace j1 --json
 
 Each requirement is printed as `<capability>#r<n> (<why>): <its text>`, the why one of `served by <capability>#g<n>`,
 `governs the operation <capability>#r<n> uses` and `needed job <job>: ...`, and each adapter spec as
-`adapter spec <id> (realises the port line <capability>#r<n>)`.
+`adapter spec <id> (realises the port line <capability>#r<n>)`. A provider's requirement, which a contract an adapter
+spec in the trace holds lists under a provider operation it uses, is printed by its provider and its id,
+`<provider id less bounded-context/>:<capability>#r<n> (governs the operation <operation> of <provider>@<version>,
+which <adapter spec> uses for <port operation>): <its text>`, so that an id equal to one of this bounded context's
+requirements, or of another provider's, is a requirement of its own.
 
 The trace also says the job's coordination (decision 0134), derived from its lines and the domain model, never
 declared: `saga` when it requests two operations of a driven port or more that have a `compensated by` property,
