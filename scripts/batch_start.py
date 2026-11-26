@@ -9,7 +9,7 @@ base gets one commit: `plan.md` with a `pending` task for each item, the picked 
 pick returned `shaped`. The base checkout's own `spec/` and `features/` are never written, and its branch never
 switched; a failure once the branch is made removes its worktree and the branch before it is raised again.
 
-Before the lay is committed (batches r179-r181, r184): an item whose check the laying service fails (a requirement
+Before the lay is committed (batches r179-r181, r184, r188, r189): an item whose check the laying service fails (a requirement
 of it violates a rule of severity error on the laid workspace, which the readiness bar's copy of `spec/` alone could
 not find, b478) goes back to `shaped` naming each rule its failure names, and the batch is laid again without it; so does an item one of whose requirements, retiring
 none, has a scenario that already passes on the lay, naming the scenario (batch_laid, b488)."""
