@@ -7,6 +7,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+import adapter_cli_respond
 from model_facts import Model
 
 LP = Path(__file__).resolve().with_name("model.lp")
@@ -70,7 +71,7 @@ def run_again_with_clingo():
         if has_clingo(python):
             sys.stdout.flush()
             try:
-                os.execvpe(python, [python, str(SCRIPT), *sys.argv[1:]], {**os.environ, REEXEC: "1"})
+                os.execvpe(python, [python, str(SCRIPT), *sys.argv[1:]], {**adapter_cli_respond.marked(), REEXEC: "1"})
             except OSError:
                 continue
     return tried

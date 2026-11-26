@@ -156,4 +156,5 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
+    __import__("adapter_cli_respond").notice("work")
     sys.exit(main())

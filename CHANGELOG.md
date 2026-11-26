@@ -27,6 +27,13 @@ been renamed or retired since.
 | 0.30 | [0.30.0](#0300-released-as-100-codified-requirements) |
 | 0.29 and before | [0.29.0](#0290-glossary-proposals-delegations-given-late-and-fewer-stops-from-outside-a-work-item) · [0.28.3](#0283-a-branch-review-that-runs-nothing) · [0.28.2](#0282-answers-a-round-cannot-hold-go-back-to-integration) · [0.28.1](#0281-work-run-stops-visibly-on-questions-and-spends-less-agent-time) · [0.28.0](#0280-one-set-of-request-commands-work-list-and-work-show-and-answers-that-redraft) · [0.27.0](#0270-transitions-from-how-a-session-ended-and-the-turn-of-an-accepted-request) · [0.26.0](#0260-requests-and-the-context-loop) · [0.25.0](#0250-work-items-side-by-side-answers-and-guarantees) · [0.24.0](#0240-work-items-named-by-ids-and-upgrades-between-plugin-releases) · [0.23.1](#0231---work-item-keeps-tests-that-are-not-scenarios) · [0.23.0](#0230-faults-settled-query-output-as-json-the-session-keeps-the-gate-measurement-on-v3) · [0.22.0](#0220-one-requirement-per-scenario-faults-and-the-lessons-of-a-blind-formulation) · [0.21.0](#0210-the-final-layout-and-delivery-by-work-run) |
 
+## Unreleased
+
+- **The old command names are aliases of `shop`** (b631, decision 0132): `work`, `spec`, `measure`, `migrate`,
+  `tools` and `features` run by their old names print one notice on stderr,
+  ``<name>: now `shop <name>`; `<name>` goes in the next release``, then run as before, their output and exit
+  unchanged; `shop <name>` prints none. The aliases are kept for this release and go in the release after it.
+
 ## 0.44.0: commands for what was edited by hand
 
 - **`work reopen`** (b431, items#r31, r32): a ready item goes back to shaped to take more lines; an item that is not
