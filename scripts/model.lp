@@ -630,6 +630,11 @@ label("w_untriggered_actor", "a product actor of a job held here whose actor her
 held_here(J)       :- held_by(J, B), here(B).
 actor_triggered(J, P) :- job_reaches(J, Q), triggers_as(P, Q).
 w_untriggered_actor(J, P) :- held_here(J), pjob_actor(J, P), plays(P, _), not actor_triggered(J, P).
+label("w_unplayed_actor", "a product actor of a job held here that no actor of this bounded context plays").
+% fail w_unplayed_actor: here("b"). held_by("j","b"). pjob_actor("j","p").
+% pass w_unplayed_actor: here("b"). held_by("j","b"). pjob_actor("j","p"). plays("p","the person").
+actor_played(P)    :- plays(P, _).
+w_unplayed_actor(J, P) :- held_here(J), pjob_actor(J, P), not actor_played(P).
 label("w_unaddressed_sub", "a subdomain that no bounded context addresses").
 % fail w_unaddressed_sub: psub("s").
 % pass w_unaddressed_sub: psub("s"). addresses("b","s").
@@ -681,7 +686,7 @@ w_example(Q, L)    :- exemplified(Q, L).
 #show v_t16/2. #show v_t17/2. #show v_t18/2. #show v_t19/2. #show v_t20/2. #show v_t21/2. #show v_t22/2.
 #show v_m1/3. #show v_m2/2. #show v_m3/2. #show v_m4/2. #show w_m5/4. #show v_m6/4. #show v_m7/1. #show v_m9/4. #show v_pb1/1. #show v_pb2/1. #show v_pb3/2. #show v_pb4/1. #show v_m8/2. #show v_a1/2. #show v_a2/2. #show v_a3/2. #show v_a4/2. #show v_a5/2. #show v_a6/2. #show v_c1/2. #show v_c2/1. #show v_c3/1. #show v_c4/2. #show v_r1/2. #show w_r1/2.
 #show v_p0/1. #show v_p1/2. #show v_p2/1. #show v_p3/2.
-#show v_job_elsewhere/2. #show v_need_cycle/2. #show w_unheld_job/1. #show w_unformed_product/2. #show w_untriggered_actor/2.
+#show v_job_elsewhere/2. #show v_need_cycle/2. #show w_unheld_job/1. #show w_unformed_product/2. #show w_untriggered_actor/2. #show w_unplayed_actor/2.
 #show w_unaddressed_sub/1. #show w_unreached_sub/2.
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
 #show w_many_requests/1. #show w_untiered/1. #show w_unrouted/1. #show w_example/2. #show w_value_kind/1.

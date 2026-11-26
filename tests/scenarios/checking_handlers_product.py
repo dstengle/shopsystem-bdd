@@ -3,7 +3,7 @@ takes only a step of a scenario of one of its groups (`mine`). The Givens are ta
 scenario needs is written at the When over the domain-model fixture (tests/scripts/fixtures/domain-model/, the
 bounded context `example.org/fixture/domain-model`): the product file `.shop/product/product.toml` (product_store's
 `render`) holding the job `keep-notes` (j1), its need `file-notes` (n1), the product actor `the note keeper` (p1)
-played here by the person, the subdomain `note-taking` (s1) and another bounded context `example.org/fixture/other`
+played here by the person (by no actor here of r161), the subdomain `note-taking` (s1) and another bounded context `example.org/fixture/other`
 (b1), as each group's line says; notebook's g1 serving the job when a group serves it here. Of the capabilities'
 groups (r120-r122): notebook's g2 serving the job, whose r2 asks the notes service to archive a note, so the job
 reaches `shelf` (product_handlers_trace's, on a request to archive a note: c2, r120); checking_handlers_port's driven
@@ -25,7 +25,8 @@ CONTEXT, OTHER = "example.org/fixture/domain-model", "example.org/fixture/other"
 JOB, NEED, ACTOR, SUBDOMAIN = "keep-notes", "file-notes", "the note keeper", "note-taking"
 RULES = {"g114": "w_unheld_job", "g115": "w_unserved_job", "g116": "w_untriggered_actor", "g117": "v_need_cycle",
          "g118": "w_unaddressed_sub", "g119": "w_unreached_sub", "g123": "v_job_elsewhere",
-         "g120": "w_unserved_cap", "g121": "w_unserved_cap", "g122": "w_unserved_cap", "g124": "w_unformed_product"}
+         "g120": "w_unserved_cap", "g121": "w_unserved_cap", "g122": "w_unserved_cap", "g124": "w_unformed_product",
+         "g161": "w_unplayed_actor"}
 SAYS = {"job": JOB, "need": NEED, "product actor": ACTOR, "subdomain": SUBDOMAIN, "bounded context": OTHER}
 CAPABILITY = """---
 id: capability/example.org/fixture/domain-model/%(name)s
@@ -96,9 +97,11 @@ def product(group):
     if group == "g116":
         jobs[JOB]["actors"] = [ACTOR]
         here["actors"] = {ACTOR: "the person"}
+    if group == "g161":
+        jobs[JOB]["actors"] = [ACTOR]
     if group == "g119":
         out["subdomains"] = {SUBDOMAIN: {"type": "core", "serves": [JOB]}}
-    return {**out, "contexts": {CONTEXT: here}} if group in ("g115", "g116", "g119") else None
+    return {**out, "contexts": {CONTEXT: here}} if group in ("g115", "g116", "g119", "g161") else None
 
 
 def capability(spec, name, line, group="service"):

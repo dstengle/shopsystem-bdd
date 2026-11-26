@@ -263,6 +263,7 @@ In a shop that keeps the product layer (`.shop/product/product.toml`, written by
 | `w_unheld_job` | a job of the product that no bounded context holds | Assign it with `shop spec assign`. |
 | `w_unserved_job` | a job nothing serves | A job assigned here that no group's `serves:` names. |
 | `w_untriggered_actor` | a product actor of a job held here whose actor here triggers no line of the job's trace | The actor that plays it here starts no line of the trace. |
+| `w_unplayed_actor` | a product actor of a job held here that no actor of this bounded context plays | Map it to an actor here with `shop spec plays`. |
 | `w_unaddressed_sub` | a subdomain that no bounded context addresses | Declare the bounded context that addresses it with `shop spec context`. |
 | `w_unreached_sub` | a subdomain of a job held here whose trace reaches no bounded context that addresses it | The job's trace stops short of the subdomain's solution. |
 | `w_unserved_cap` | a capability serves no job | An orphan: no group of it serves a job, no job's trace reaches it, it has no port line and it is no guarantees capability. |
