@@ -73,7 +73,7 @@ def reply(r, atom, form):
     if doer is None:
         raise spec_steps4_boxes.TraceError("no step of the request of %s a reply is on" % verb)
     subject, s, vp = r.clause(Atom("event", (None, verb, sense, (("subject", doer),) + roles)))
-    head, n, m = vp[0].rsplit("_", 2)
+    _, n, m = vp[0].rsplit("_", 2)
     r.__dict__.setdefault("replies", {})[ref] = ("rq_%s_%s_%s" % (spec_rgl.slug(verb), n, m), ("k_request_n",)) \
         + tuple(vp[1:])
     return givens + [(kid(subject) + "_Does", ("PPos",), s, vp)]
