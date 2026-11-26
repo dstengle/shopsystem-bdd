@@ -113,6 +113,7 @@ def runs_migrate(step):
         old.write(rel, text)
     old.git("add", "-A")
     old.git("commit", "-q", "--allow-empty", "-m", "the repository")
+    old.git("branch", "-M", step.context.get("branch", "main"))     # the branch founded on (r46, b802)
     for rel, text in step.context.get("untracked", {}).items():
         old.write(rel, text)
     old.keep()
