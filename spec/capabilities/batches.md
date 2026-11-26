@@ -321,3 +321,9 @@ when the change is merged.
 ### [g176] An in-batch item parked while its batch's feature generator is unresponsive is refused, naming the generator
 - [r176] While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch has a feature generator and the feature generator is `unresponsive`, if the person parks the item, then the batches service shall refuse the request, name the feature generator and change nothing.
 
+### [g177] A batch opened with two items retiring ids of one decision supersedes it by one decision every retiring line enforces
+- [r177] While an item is `ready` and the item meets the readiness bar and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `accepted` and a requirement that enforces the design-decision has a requirement id and another item that meets the readiness bar holds another requirement and the requirement retires the requirement id, when the person opens a batch, the batches service shall keep a design-decision that the requirement enforces.
+
+### [g178] A park of one of two items retiring ids of one decision keeps the decision superseded by the other item's line
+- [r178] While an item in a batch is `in-batch` and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded` and a requirement that enforces the design-decision has a requirement id and another requirement retires the requirement id, when the person parks the item, the batches service shall keep a design-decision that the requirement enforces.
+

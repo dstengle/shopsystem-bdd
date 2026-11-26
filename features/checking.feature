@@ -1212,3 +1212,11 @@ Feature: Checking
     When the contract registry service refuses the request to register the contract c1 for the adapter spec a1
     Then the specification service deregisters the contract c1 for the adapter spec a2
     And the adapter spec a2 has the provider p1
+
+  @g143 @r143
+  Scenario: A completed deregistration changes nothing more
+    Given a contract c1
+    And an adapter spec a1
+    And the specification service deregisters the contract c1 for the adapter spec a1
+    When the contract registry service completes the request to deregister the contract c1 for the adapter spec a1
+    Then the specification service changes nothing

@@ -61,12 +61,14 @@ class Explain:
         self.P = Premises(self.reqs, self.dom)
         self.pack = refuse_pack(root)
         self.fixed = {c: dict(f["role"])[y] for r, f in self.reqs.items() for y, c in self.P.fixed(r).items()}
-        # a verb's words before its second slot, as grammar 4's frame reads them ("lodge" "on", b742)
-        self.oblique = {}
-        for verb in spec_grammar4.sources(root)[0].verbs:
+        # each frame's words before its second slot with its slots' kinds, as grammar 4's frame reads them ("lodge"
+        # "on" <design-decision> <shelf>, b742), every frame of a verb's (b751)
+        self.vocab, self.oblique = spec_grammar4.sources(root)[0], {}
+        for verb in self.vocab.verbs:
             for _, slots in verb.frames:
                 if len(slots) > 1:
-                    self.oblique.setdefault(verb.term.term, " ".join(slots[1][0]))
+                    self.oblique.setdefault(verb.term.term, []).append(
+                        (" ".join(slots[1][0]), (slots[0][1], slots[1][1])))
 
     def parts(self, ident):
         return sorted(r for r in self.reqs if spec_lf_core.split(r) == ident)
@@ -87,6 +89,25 @@ class Explain:
             return " ".join(self.term(L, a) for a in x.arguments)
         return self.words.term(L, x)
 
+    def kind(self, L, x):
+        """The kind of a term of L's world as the lexicon names it (`shelf`), or None: a role of L, or of the premise
+        M that makes it (`f(M,y,...)`)."""
+        if x.type == clingo.SymbolType.Function and x.name == "t" and len(x.arguments) == 1:
+            x = x.arguments[0]
+        if x.type == clingo.SymbolType.Function and x.name == "f" and len(x.arguments) >= 2:
+            L, x = x.arguments[0].string, x.arguments[1]
+        found = [k.name for y, k in self.words.of(L, "role") if y == x]
+        return self.words.v.kinds.get(found[0], found[0]) if found else None
+
+    def word(self, L, verb, parts):
+        """The words before the second slot of the frame of `verb` whose slots' kinds `parts` are of (or under), as
+        spec_steps4_boxes.fits picks a frame, else of its only frame (b751)."""
+        frames = self.oblique.get(verb, [])
+        kinds = [self.kind(L, p) for p in parts]
+        fit = [w for w, slots in frames
+               if all(k is not None and s in self.vocab.ancestors(k) for k, s in zip(kinds, slots))]
+        return fit[0] if fit else frames[0][0] if len(frames) == 1 else ""
+
     def request(self, L, e, x, rest):
         """`rest` of a response's request (`req(O,Ps)`) with its object, and the recipient after the verb's word
         before it, as this world names them (b742)."""
@@ -97,7 +118,7 @@ class Explain:
             return rest
         mine = self.term(L, obj)
         if obj.type == clingo.SymbolType.Function and obj.name == "pair":
-            mine = " ".join(w for w in (self.term(L, obj.arguments[0]), self.oblique.get(verb, ""),
+            mine = " ".join(w for w in (self.term(L, obj.arguments[0]), self.word(L, verb, obj.arguments),
                                         self.term(L, obj.arguments[1])) if w)
         return ("%s %s %s" % (verb, mine, rest[len(raw):])).rstrip()
 

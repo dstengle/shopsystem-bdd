@@ -74,7 +74,7 @@ def given_does(step):
     if W.kind(w, a) == "capability" and W.kind(w, b) == "feature":
         w["values"][b] = "features/%s.feature" % W.value(w, a)
     if W.kind(w, a) == "feature" and W.kind(w, b) in ("scenario", "step"):     # what the example's feature holds
-        w["values"].setdefault(a, GEN.feature(w, a))
+        w["values"][a] = w["values"].get(a) or GEN.feature(step, w, a)
         text = (step.repo / w["values"][a]).read_text()
         pattern = r"^\s*Scenario: (.*)$" if W.kind(w, b) == "scenario" else r"^\s*(?:Given|When|Then) (.*)$"
         w["values"][b] = re.findall(pattern, text, re.MULTILINE)[0]

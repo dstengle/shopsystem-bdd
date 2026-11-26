@@ -1939,3 +1939,17 @@ shall [x3: service the contract registry service (constant), x6: service the spe
     of(x2, x7)
     deregister(e2, subject: x6, object: x5, for: x7)
 ```
+
+## r143
+From: b754 r143.
+
+```reading
+When the contract registry service completes the request to deregister a contract for an adapter spec, the specification service shall change nothing.
+shall [x1: service the contract registry service (constant), x5: service the specification service (constant)]
+  when [x2: request, x3: contract, x4: adapter spec]
+    request(x2, contract registry.deregister, object: x3, for: x4)
+    complete(e1, subject: x1, object: x2)
+  response
+    not [x6: thing]
+      change(e2, subject: x5, object: x6)
+```

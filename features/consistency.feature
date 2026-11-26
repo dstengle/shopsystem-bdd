@@ -645,3 +645,27 @@ Feature: Consistency
     When the person explains the requirement r2
     Then the language service returns the requirement r2
     And the language service returns the consequence c1
+
+  @g46 @r46
+  Scenario: spec explain says a request's recipient with the preposition of the frame its line uses when the verb has frames of different prepositions
+    Given a trigger t1
+    And a requirement r1
+    And the requirement r1 has the trigger t1
+    And a consequence c1
+    And the requirement r1 has the consequence c1
+    And a requirement r2
+    And the requirement r2 has the trigger t1
+    And the requirement r2 uses `response-request`
+    And the requirement r2 uses `oblique-role`
+    And a preposition p1
+    And a frame f1
+    And the frame f1 has the preposition p1
+    And a term t2
+    And the term t2 has the frame f1
+    And a preposition p2
+    And a frame f2
+    And the frame f2 has the preposition p2
+    And the term t2 has the frame f2
+    When the person explains the requirement r2
+    Then the language service returns the requirement r2
+    And the language service returns the consequence c1

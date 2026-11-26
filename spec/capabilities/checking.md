@@ -401,6 +401,9 @@ Restates: design-model-check#r13@0.29.
 ### [g142] A registration the contract registry refuses deregisters the contract registered for another adapter spec of the provider
 - [r142] While an adapter spec has a provider, when the contract registry service refuses the request to register a contract for the adapter spec, the specification service shall deregister the contract for a different adapter spec that has the provider.
 
+### [g143] A completed deregistration changes nothing more
+- [r143] When the contract registry service completes the request to deregister a contract for an adapter spec, the specification service shall change nothing.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.

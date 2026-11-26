@@ -1501,3 +1501,56 @@ Feature: Batches
     Then the batches service refuses this request
     And the batches service names the feature generator f1
     # entailed: U17
+
+  @g177 @r177
+  Scenario: A batch opened with two items retiring ids of one decision supersedes it by one decision every retiring line enforces
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a requirement r1
+    And the item i1 holds the requirement r1
+    And a design-decision d1
+    And the status of the design-decision d1 is `accepted`
+    And a requirement r2
+    And the requirement r2 enforces the design-decision d1
+    And a requirement id r3
+    And the requirement r2 has the requirement id r3
+    And the requirement r1 retires the requirement id r3
+    And a requirement r4
+    And the requirement r4 enforces the design-decision d1
+    And a requirement id r5
+    And the requirement r4 has the requirement id r5
+    And an item i2
+    And the item i2 meets this readiness bar
+    And a requirement r6
+    And the item i2 holds the requirement r6
+    And the requirement r6 retires the requirement id r5
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service keeps the design-decision d2
+    And the requirement r6 enforces the design-decision d2
+
+  @g178 @r178
+  Scenario: A park of one of two items retiring ids of one decision keeps the decision superseded by the other item's line
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a requirement r1
+    And the item i1 holds the requirement r1
+    And a design-decision d1
+    And the status of the design-decision d1 is `superseded`
+    And a requirement r2
+    And the requirement r2 enforces the design-decision d1
+    And a requirement id r3
+    And the requirement r2 has the requirement id r3
+    And the requirement r1 retires the requirement id r3
+    And a requirement r4
+    And the requirement r4 enforces the design-decision d1
+    And a requirement id r5
+    And the requirement r4 has the requirement id r5
+    And a requirement r6
+    And the requirement r6 retires the requirement id r5
+    When the person parks the item i1
+    Then the batches service keeps the design-decision d2
+    And the requirement r6 enforces the design-decision d2

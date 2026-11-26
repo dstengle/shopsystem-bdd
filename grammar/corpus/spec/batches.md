@@ -1960,3 +1960,56 @@ shall [x6: agent the person (constant), x7: service the batches service (constan
     not [x9: thing]
       change(e4, subject: x7, object: x9)
 ```
+
+## r177
+From: b750 r177.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `accepted` and a requirement that enforces the design-decision has a requirement id and another item that meets the readiness bar holds another requirement and the requirement retires the requirement id, when the person opens a batch, the batches service shall keep a design-decision that the requirement enforces.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x11: agent the person (constant), x13: service the batches service (constant)]
+  while [x1: item, x3: requirement, x4: requirement, x5: design-decision, x6: requirement id, x7: requirement, x8: requirement id, x9: item, x10: requirement]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    in(x3, x1)
+    status(x5) = `accepted`
+    enforce(subject: x4, object: x5)
+    of(x6, x4)
+    retire(subject: x3, object: x6)
+    enforce(subject: x7, object: x5)
+    of(x8, x7)
+    distinct(x9, x1)
+    meet(subject: x9, object: x2)
+    distinct(x10, x7)
+    in(x10, x9)
+    retire(subject: x10, object: x8)
+  when [x12: batch]
+    request(e1, batches.open, subject: x11, object: x12)
+  response [x14: design-decision]
+    enforce(subject: x10, object: x14)
+    keep(e2, subject: x13, object: x14)
+```
+
+## r178
+From: b750 r178.
+
+```reading
+While an item in a batch is `in-batch` and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded` and a requirement that enforces the design-decision has a requirement id and another requirement retires the requirement id, when the person parks the item, the batches service shall keep a design-decision that the requirement enforces.
+shall [x10: agent the person (constant), x11: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: requirement, x4: requirement, x5: design-decision, x6: requirement id, x7: requirement, x8: requirement id, x9: requirement]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    in(x3, x1)
+    status(x5) = `superseded`
+    enforce(subject: x4, object: x5)
+    of(x6, x4)
+    retire(subject: x3, object: x6)
+    enforce(subject: x7, object: x5)
+    of(x8, x7)
+    distinct(x9, x7)
+    retire(subject: x9, object: x8)
+  when
+    request(e1, batches.park, subject: x10, object: x1)
+  response [x12: design-decision]
+    enforce(subject: x9, object: x12)
+    keep(e2, subject: x11, object: x12)
+```
