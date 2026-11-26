@@ -4,7 +4,8 @@ context's contract (contract_form) at a version with `status = "published"`, the
 one and every contract published before it superseded, and keeps it once the registry completes the deposit (r128:
 the command's report of the contract kept, a deposit not completed refused naming the version); a version deposited already is refused naming it, and so is
 a context with a requirement that does not conform to the language reference, naming each such requirement. With no
-version the contract is deposited at the published one's last number one more, else at `1.0.0`. `spec fetch
+version the contract is deposited at the published one's last number one more, else at `1.0.0`, its last number
+raised again past each version deposited already (a superseded one higher than the published one among them). `spec fetch
 [--version V]` retrieves the contract published, or the one at V, and prints it, writing nothing; a version no
 contract is deposited at is refused naming it. Fetch returns the contract the registry returns (r129) and, when the
 registry refuses the retrieval, names the version and changes nothing (r130)."""
@@ -33,6 +34,14 @@ def _next(latest):
     return "%s%d" % (head, int(number or 0) + 1) if number else latest + ".1"
 
 
+def _default(root):
+    """The version `spec publish` takes with none: past the published one and past every version deposited."""
+    version = _next(_published(root))
+    while _deposited(root, version):
+        version = _next(version)
+    return version
+
+
 def nonconforming(root):
     """The id of each requirement of a codified-2 capability that grammar 4 refuses or does not read."""
     import adapter_annotate
@@ -49,7 +58,7 @@ def nonconforming(root):
 def publish(root, version=None):
     """`spec publish`: the contract deposited at `version` and published, the ones published before superseded."""
     import contract_form
-    version = version or _next(_published(root))
+    version = version or _default(root)
     if not VERSION.fullmatch(version):
         raise Refused("the version {names} is refused: version not in the version form",
                       reason="version not in the version form",
