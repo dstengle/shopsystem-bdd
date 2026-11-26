@@ -11,6 +11,8 @@ re-keys its Thens to ThenExitsOk, ThenPrints and ThenDoes (refuse, name), which 
 import sys
 from pathlib import Path
 
+from vocab import handler
+
 W = sys.modules["shop_work_queue_world"]
 DEPOSITED = "1.2.0"
 VERSION = "9.9.9"
@@ -106,3 +108,13 @@ W.local("WhenRequests")(requests)
 W.local("ThenExitsOk")(then_completes)
 W.local("ThenPrints")(then_returns)
 W.local("ThenDoes")(then_does)
+
+
+def untaken(step):
+    """The registry's key of the registry's requests, which `features vocab --check` reads: what is left when the local above takes no
+    step."""
+    raise AssertionError("no handler of this scenario's feature took the step: %s" % step.text)
+
+
+for key in (("WhenRequests", "contract registry.deposit"), ("WhenRequests", "contract registry.retrieve")):
+    handler(*key)(untaken)
