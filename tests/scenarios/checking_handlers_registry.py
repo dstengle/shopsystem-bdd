@@ -12,6 +12,8 @@ import sys
 import tomllib
 from pathlib import Path
 
+from vocab import handler
+
 W = sys.modules["shop_work_queue_world"]
 STAND_IN = Path(__file__).resolve().parent / "stand_in_registry.py"
 GROUPS = {"g126", "g127", "g131"}
@@ -78,3 +80,13 @@ def then_requests(step):
 W.local("GivenK")(given_instance)
 W.local("WhenRuns")(runs)
 W.local("ThenDoes")(then_requests)
+
+
+def untaken(step):
+    """The registry's key of a deposit and a retrieve Then, which `features vocab --check` reads: what is left when the local above takes no
+    step."""
+    raise AssertionError("no handler of this scenario's feature took the step: %s" % step.text)
+
+
+for key in (("ThenDoes", "deposit"), ("ThenDoes", "retrieve")):
+    handler(*key)(untaken)
