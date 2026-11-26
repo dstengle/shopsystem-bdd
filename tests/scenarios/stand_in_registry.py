@@ -4,7 +4,8 @@ operation, the bounded context, the version and the contract deposited), then an
 says: unset, as the shop-folder adapter beside it answers, so the command behaves as it does with that adapter wired
 in; `complete`, the deposit made of the shop-folder adapter and its completion recorded (`completed`) before the reply;
 `return`, the stand-in's own contract (`CONTRACT`, unlike any the folder keeps); `refuse`, the retrieve refused at the
-version asked, `version not deposited`, whatever the folder holds. Loaded by contract_registry from its path."""
+version asked, `version not deposited`, whatever the folder holds, and the deposit refused naming its version,
+`contract not deposited`, nothing written (b736, checking r134). Loaded by contract_registry from its path."""
 import json
 import os
 
@@ -26,6 +27,8 @@ def _reply():
 
 def deposit(root, contract, version):
     _record("deposit", None, version, contract)
+    if _reply() == "refuse":
+        return Response("refused", errors=[error("contract not deposited", ["version:%s" % version])])
     done = FOLDER.deposit(root, contract, version)
     if _reply() == "complete" and done.outcome == "done":
         _record("completed", None, version)
