@@ -291,3 +291,6 @@ when the change is merged.
 ### [g164] A batch opened rewrites the corpus of a line whose verb an item gives a sense
 - [r164] While an item is `ready` and the item meets the readiness bar and the item holds a verb that has a sense and a requirement of a capability uses the verb and the item holds no requirement id that is in the capability, when the person opens a batch, the batches service shall keep the logical form of the requirement in the corpus.
 
+### [g165] A building batch whose every item is parked is polled for its abandonment
+- [r165] While a batch is `building` and the status of every item in the batch is `needs-input`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `abandon batch`.
+

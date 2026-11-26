@@ -113,7 +113,7 @@ actor the driver kind of agent
 object findings file kind of file
 
 object batch step
-  attributes: instruction: prepare task | build task | finish task | submit batch | review change | fix finding | fix task | look at failure | park item | stop
+  attributes: instruction: prepare task | build task | finish task | submit batch | review change | fix finding | fix task | look at failure | park item | abandon batch | stop
   relations: holds → task | batch brief | review folder | findings file | review finding (many)
 
 object shop

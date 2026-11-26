@@ -90,3 +90,4 @@ area: execution
 - **shop** (noun) → object shop. The unit one product's work is managed and executed in, which keeps bounded contexts, each under its id. Plural: shops. This: the shop the request is made in.
 - **look at failure** (noun) → value batch step.instruction look at failure. A batch step that asks the driver to look at the scenarios that broke a submit when they are of no task's item, with no task to fix named.
 - **fix** (noun) → object fix. A kept change on the branch of a task of a building batch, made after the batch's last submit that a scenario broke, which the next submit tests. Plural: fixes.
+- **abandon batch** (noun) → value batch step.instruction abandon batch. A batch step that asks the driver to abandon a batch that is still building when every item it held is parked, so no item is left to build.

@@ -1308,3 +1308,14 @@ Feature: Batches
     Then this corpus holds the requirement r1
     And the batches service keeps the logical form l1
     And the requirement r1 has the logical form l1
+
+  @g165 @r165
+  Scenario: A building batch whose every item is parked is polled for its abandonment
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    And an item i1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `needs-input`
+    When the driver polls the batch b1
+    Then the batches service returns the batch step b2
+    And the instruction of the batch step b2 is `abandon batch`

@@ -57,6 +57,8 @@ requirements = [
   "parsing#r18: When the person parses a requirement that uses `param-of` with the logical form, the language service shall return a logical form that holds a value in use.",
   "parsing#r23: When the person parses a requirement that uses `response-request`, the language service shall complete the request.",
   "parsing#r24: When the person parses a requirement that uses `response-request` with the logical form, the language service shall return a logical form that uses `request-params`.",
+  "parsing#r25: When the person parses a requirement that uses `reply-trigger`, the language service shall complete the request.",
+  "parsing#r26: When the person parses a requirement that uses `reply-trigger` with the logical form, the language service shall return a logical form that holds a replied request.",
 ]
 [operations."language.parse".parameters]
 text = { positional = 1 }
@@ -1740,6 +1742,7 @@ requirements = [
   "batches#r161: While a batch is `building` and a task of an item in the batch is `done` and every task of the batch is `done` and a scenario of the item breaks in the workspace of the batch and no fix exists, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `fix task` and the task.",
   "batches#r162: While a batch is `building` and every task of the batch is `done` and a scenario breaks in the workspace of the batch and no scenario of an item in the batch breaks in the workspace of the batch and no fix exists, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `look at failure` and the scenario.",
   "batches#r163: While a batch is `building` and every task of the batch is `done` and a scenario breaks in the workspace of the batch and a fix exists, when the driver polls the batch, the batches service shall return a batch step whose instruction is `submit batch`.",
+  "batches#r165: While a batch is `building` and the status of every item in the batch is `needs-input`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `abandon batch`.",
 ]
 [operations."batches.poll".parameters]
 batch = { positional = 1, example = "batch-1" }

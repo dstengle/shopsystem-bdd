@@ -186,6 +186,13 @@ If the person opens the board without the summary, then the work service shall r
 If a session settles a line without a note, then the work service shall refuse the request and name the note.
 When the person opens the board with a source and a thread option, the work service shall complete the request.
 = refused: does not parse at option
+# a trigger on a reply (reply-trigger, b626): the request to V <np> after complete, return, refuse; its parameters
+# not said in it
+When the work service completes the request to settle a line, the work service shall keep the line.
+If the work service refuses the request to end a stage, then the work service shall not end the stage.
+When the work service returns the request to inspect a worktree, the work service shall return the worktree.
+When the work service refuses the request to settle a line with the note `n1`, the work service shall keep the line.
+= refused: does not parse at with
 # value kinds (b257): the short form "x is v" of an adjective value; a value declared a noun only in the full form
 While the tier of a stage is `review`, when the person opens the board, the work service shall end the stage.
 When a session ends a stage whose tier is not `test`, the work service shall return the stage.

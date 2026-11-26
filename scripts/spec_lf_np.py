@@ -89,6 +89,9 @@ def np(st, tree):
     said = spec_lf_request.np(st, name)     # "the text", a parameter a response names (§5.1)
     if said is not None:
         return core.fixed(said)
+    replied = spec_lf_request.replied(st, tree, sys.modules[__name__])     # reply-trigger (b626)
+    if replied is not None:
+        return replied
     if name == "k_thing_Nothing":
         return NP(st.ref("thing"), "no")
     kind, rest = st.names.kind(name)
