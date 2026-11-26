@@ -924,3 +924,17 @@ Feature: Checking
     When the person validates this specification
     Then the specification service names the transition t1
     And the specification service completes this request
+
+  @g113 @r113
+  Scenario: A domain model object spelled by an imported pack's term reads as the term's kind
+    Given a pack p1
+    And this bounded context imports the pack p1
+    And a term t1
+    And the pack p1 has the term t1
+    And an element e1
+    And the term t1 spells the element e1
+    And no term means the element e1
+    And an element e2
+    And the element e2 refers to the term t1
+    When the person validates this specification
+    Then the specification service completes this request

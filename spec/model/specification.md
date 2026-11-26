@@ -46,6 +46,7 @@ object term
   relations: has → subject | object | recipient | frame | sense | noun phrase | value order (many); redefines → pack (many); agrees with → subject (many)
   relations: means → element (one)
   relations: clashes with → term (many)
+  relations: spells → element (many)
 
 object design-decision kind of file
   attributes: status: proposed | accepted | rejected | superseded; tier: check | requirement | judgement

@@ -764,3 +764,54 @@ Feature: Drafting
     When the person retires the term t1 in the item i1
     Then the drafting service refuses this request
     And the drafting service names the term t1
+
+  @g79 @r79
+  Scenario: A model line reinstated in an item is no longer retired
+    Given a model line m1
+    And an item i1
+    When the person reinstates the model line m1 in the item i1
+    Then the drafting service keeps the item i2
+    And the item i2 does not retire the model line m1
+
+  @g80 @r80
+  Scenario: Reinstating a model line that the item does not retire is refused
+    Given an item i1
+    And a model line m1
+    And the item i1 does not retire the model line m1
+    When the person reinstates the model line m1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the model line m1
+
+  @g81 @r81
+  Scenario: A term reinstated in an item is no longer retired
+    Given a term t1
+    And an item i1
+    When the person reinstates the term t1 in the item i1
+    Then the drafting service keeps the item i2
+    And the item i2 does not retire the term t1
+
+  @g82 @r82
+  Scenario: Reinstating a term that the item does not retire is refused
+    Given an item i1
+    And a term t1
+    And the item i1 does not retire the term t1
+    When the person reinstates the term t1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the term t1
+
+  @g83 @r83
+  Scenario: A pack import removed from an item is no longer imported
+    Given a pack p1
+    And an item i1
+    When the person removes the pack p1 from the item i1
+    Then the drafting service keeps the item i2
+    And the item i2 does not import the pack p1
+
+  @g84 @r84
+  Scenario: Removing a pack that the item does not import is refused
+    Given an item i1
+    And a pack p1
+    And the item i1 does not import the pack p1
+    When the person removes the pack p1 from the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the pack p1

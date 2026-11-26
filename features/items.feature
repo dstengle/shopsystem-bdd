@@ -1001,3 +1001,25 @@ Feature: Items
     When the person readies the item i1
     Then the backlog service completes this request
     And the backlog service keeps the item i1
+
+  @g68 @r68
+  Scenario: A shaped item whose only lines are pack imports is readied
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    And a pack p1
+    And the item i1 imports the pack p1
+    And the item i1 holds no requirement
+    And the item i1 meets this readiness bar
+    When the person readies the item i1
+    Then the backlog service sets the status of the item i1 to `ready`
+
+  @g69 @r69
+  Scenario: A shaped item whose only lines are retired terms is readied
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    And a term t1
+    And the item i1 retires the term t1
+    And the item i1 holds no requirement
+    And the item i1 meets this readiness bar
+    When the person readies the item i1
+    Then the backlog service sets the status of the item i1 to `ready`

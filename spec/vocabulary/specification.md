@@ -323,3 +323,4 @@ area: specification
 - **port request** (noun) → value job.coordination port request. A job's coordination that is one request of the core through a driven port, its outcomes told apart by the core's statuses.
 - **long-running process** (noun) → value job.coordination long-running process. A job's coordination that is an object of the core whose lifecycle waits on the replies to its requests.
 - **saga** (noun) → value job.coordination saga. A job's coordination that is a long-running process with two state-changing requests or more to other bounded contexts, each compensated by an operation when a later one fails.
+- **spell** (verb, state) → relation term.spells. A term of an imported pack is the word of an object the domain model declares, so that the object reads as the term's kind once no vocabulary entry means the object. Forms: spells, spelled. Frame: <term> spells <element>.

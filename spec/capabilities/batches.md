@@ -7,7 +7,7 @@ area: execution
 specifies: object batch, object task, service batches
 language: codified-2
 retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107]
-unbuilt: []
+unbuilt: [r142]
 ---
 
 # Batches
@@ -251,4 +251,7 @@ when the change is merged.
 
 ### [g138] A batch with a failed task asks the driver to park the task's item
 - [r138] While a batch is `building` and a task of the batch is `failed`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `park item` and the task.
+
+### [g142] A batch opened takes out a retired term whose element a retired model line already took out
+- [r142] While an item is `ready` and the item meets the readiness bar and the item retires a model line that restates an element and the item retires a term that means the element, when the person opens a batch, the batches service shall keep an area that does not hold the term.
 
