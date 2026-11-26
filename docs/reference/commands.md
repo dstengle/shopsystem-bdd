@@ -1076,7 +1076,9 @@ Synopsis: `shop spec check [--json] [--limit LIMIT] [--item b<n>]`
 - `--limit`: rows shown for each rule (the rest are counted).
 - `--item b<n>`: check the specification as it reads once the item's lines, terms, model lines and `serves:` pairs
   are laid into it, on a copy, as `shop spec parse --item` reads a line; nothing in `spec/` changes. A job the item's
-  groups serve is then no `w_unserved_job`, before any batch lays them.
+  groups serve is then no `w_unserved_job`, before any batch lays them. What only a batch's lay writes is not
+  reported: no `v_s3` of a group the item lays (its scenarios), no `v_a5` of a requirement it lays nor `v_a6` of one
+  it retires (the adapter contract's annotations); every other violation of its lines is, and fails the check.
 
 ```console
 $ shop spec check
