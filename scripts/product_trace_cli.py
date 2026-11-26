@@ -1,7 +1,7 @@
 """`spec trace <job>` (b644, product r26-r30): the product service's trace requested on the command line, over
 product_trace: each requirement of the job's trace by its id with why it is in the trace and its text, then each
 adapter spec by its id with why, printed as text, the whole trace the content of a `returned` response (the envelope
-under `--json`). A job no requirement group serves is refused naming it. product_trace, which reads clingo, is
+under `--json`). With `--item b<n>`, the trace of the context with the item's lines laid (spec_preview, b797). A job no requirement group serves is refused naming it. product_trace, which reads clingo, is
 imported by the command alone, so that `spec` builds its parser without clingo."""
 from plumbing.domain_envelope import Response
 
@@ -16,7 +16,8 @@ def text(found):
 
 def cmd_trace(args):
     import product_trace
-    found = product_trace.trace(args.root, args.job)
+    import spec_preview
+    found = spec_preview.rooted(args, lambda a: product_trace.trace(a.root, a.job))
     if not args.json:
         print(text(found), end="")
     return Response("returned", found)
@@ -25,6 +26,7 @@ def cmd_trace(args):
 def add_parser(sub):
     t = sub.add_parser("trace", help="print the requirements and adapter specs a job of the product rests on")
     t.add_argument("job", help="the job's id")
+    t.add_argument("--item", metavar="b<n>", help="trace the job with the lines item b<n> holds laid")
 
 
 COMMANDS = {"trace": cmd_trace}
