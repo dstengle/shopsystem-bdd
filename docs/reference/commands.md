@@ -1359,6 +1359,62 @@ $ shop spec plays "the developer" --in bounded-context/missingmass.io/shopsystem
 mapped the product actor the developer to the person in the bounded context bounded-context/missingmass.io/shopsystem/shopsystem-bdd
 ```
 
+### `shop spec unassign`
+
+Takes a job back from the bounded context it is assigned to, in one commit of the product file, so it can be assigned
+again with `shop spec assign`. A job the bounded context does not hold is refused naming the job.\
+Synopsis: `shop spec unassign <job> --from <bounded context>`
+
+```console
+$ shop spec unassign j1 --from bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+unassigned the job j1 from the bounded context bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+```
+
+### `shop spec drop job`
+
+Takes a job out of the product file, in one commit. A job still referred to is refused naming what refers to it: a
+job that needs it (the job), a bounded context that holds it (the bounded context; `shop spec unassign` it first) or a
+subdomain that serves it (the subdomain). A job the product does not hold is refused naming it.\
+Synopsis: `shop spec drop job <job>`
+
+```console
+$ shop spec drop job j1
+dropped the job j1
+```
+
+### `shop spec drop actor`
+
+Takes a product actor out of the product file, in one commit. One a job has (among its actors or in its job
+statement) is refused naming the job, and one a bounded context maps naming the bounded context.\
+Synopsis: `shop spec drop actor <product actor>`
+
+```console
+$ shop spec drop actor "the developer"
+dropped the product actor the developer
+```
+
+### `shop spec drop subdomain`
+
+Takes a subdomain out of the product's domain map, in one commit. One a bounded context addresses is refused naming
+the bounded context.\
+Synopsis: `shop spec drop subdomain <subdomain>`
+
+```console
+$ shop spec drop subdomain specification
+dropped the subdomain specification
+```
+
+### `shop spec drop context`
+
+Takes a bounded context out of the product's domain map, in one commit, with the product actors it maps. One that
+holds a job is refused naming the job.\
+Synopsis: `shop spec drop context <bounded context>`
+
+```console
+$ shop spec drop context bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+dropped the bounded context bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+```
+
 ### `shop spec decisions`
 
 Writes `spec/decisions/index.md` from the decision files. Not committed.\

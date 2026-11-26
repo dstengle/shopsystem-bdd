@@ -253,7 +253,7 @@ A line says what is true for every value; the given block holds the value a scen
 ### The product check
 
 In a shop that keeps the product layer (`.shop/product/product.toml`, written by `shop spec job`, `subdomain`,
-`context`, `assign` and `plays`), `shop spec check` reads it against this bounded context and each job's trace (what
+`context`, `assign`, `plays`, `unassign` and `drop`), `shop spec check` reads it against this bounded context and each job's trace (what
 `shop spec trace` derives).
 
 | code | `shop spec rules` says | when it fires |

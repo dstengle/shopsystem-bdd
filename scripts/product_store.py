@@ -1,5 +1,6 @@
 """Where the product layer is kept (b602; decision 0102): the product file `.shop/product/product.toml` of the shop,
-written and committed only by `spec product`, `actor`, `job`, `subdomain`, `context`, `assign` and `plays` (`kept`).
+written and committed only by `spec product`, `actor`, `job`, `subdomain`, `context`, `assign`, `plays`, `unassign`
+and `drop` (`kept`).
 Its form: `id` and `purpose`, `actors = [...]`, a table `[jobs."<id>"]` of each job with its `actors`, `statement`
 and `needs`, and the domain map (b642): a table `[subdomains."<id>"]` of each subdomain with its `type` and `serves`,
 and `[contexts."<id>"]` of each bounded context with its `addresses`, `shop`, none for a provider, the `jobs`
@@ -19,7 +20,7 @@ from product_layer import empty
 
 REL = ".shop/product/product.toml"
 HEADER = ("# The product this bounded context belongs to; written by `spec product`, `actor`, `job`, `subdomain`, "
-          "`context`, `assign` and `plays`.\n")
+          "`context`, `assign`, `plays`, `unassign` and `drop`.\n")
 FORM = ("id", "purpose", "actors", "jobs", "subdomains", "contexts")
 # each table of tables of the form: its fields in order, and those that are lists of texts
 TABLES = {"jobs": (("actors", "statement", "needs"), ("actors", "needs")),

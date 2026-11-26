@@ -152,6 +152,8 @@ forbidden_modules =
     observation_write
     product_assign
     product_assign_cli
+    product_drop
+    product_drop_cli
     product_cli
     product_coordination
     product_layer

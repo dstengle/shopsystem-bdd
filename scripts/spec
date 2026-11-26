@@ -96,6 +96,7 @@ def main(argv=None):
     __import__("model_catalogue_write").add_parser(sub)
     __import__("product_cli").add_parsers(sub)
     __import__("product_assign_cli").add_parsers(sub)
+    __import__("product_drop_cli").add_parsers(sub)
     __import__("product_trace_cli").add_parser(sub)
     __import__("spec_coupling").add_parser(sub)
     q = sub.add_parser("prepare", help="print this bounded context's contract in the contract form, writing nothing")
@@ -124,6 +125,7 @@ def main(argv=None):
                "obtain": lambda x: __import__("contract_obtain").obtain(x.root, x.context, x.version),
                "constructs": cmd_constructs, "catalogue": lambda x: __import__("model_catalogue_write").cmd(x),
                **__import__("product_cli").COMMANDS, **__import__("product_assign_cli").COMMANDS,
+               **__import__("product_drop_cli").COMMANDS,
                **__import__("product_trace_cli").COMMANDS, **__import__("spec_coupling").COMMANDS}[args.cmd]
     return respond("spec", handler, args, checks=args.cmd in ("check", "logic"))
 

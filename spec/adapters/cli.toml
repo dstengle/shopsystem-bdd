@@ -1831,8 +1831,8 @@ requirements = [
   "product#r51: If the person unassigns a job from a bounded context that does not hold the job, then the product service shall refuse the request and name the job.",
 ]
 [operations."product.unassign".parameters]
-job = { option = "--job", example = "job-1" }
-"bounded context" = { option = "--bounded-context", example = "bounded context-1" }
+job = { positional = 1, example = "j1" }
+"bounded context" = { option = "--from", example = "bounded-context/missingmass.io/shopsystem/shopsystem-bdd" }
 
 [operations."product.drop job"]
 command = "spec drop job"
@@ -1843,7 +1843,7 @@ requirements = [
   "product#r55: While a subdomain serves a job, if the person drops the job, then the product service shall refuse the request and name the subdomain.",
 ]
 [operations."product.drop job".parameters]
-job = { option = "--job", example = "job-1" }
+job = { positional = 1, example = "j1" }
 
 [operations."product.drop actor"]
 command = "spec drop actor"
@@ -1853,7 +1853,7 @@ requirements = [
   "product#r57: While a job has a product actor, if the person drops the product actor, then the product service shall refuse the request and name the job.",
 ]
 [operations."product.drop actor".parameters]
-"product actor" = { option = "--product-actor", example = "product actor-1" }
+"product actor" = { positional = 1, example = "the developer" }
 
 [operations."product.drop subdomain"]
 command = "spec drop subdomain"
@@ -1862,7 +1862,7 @@ requirements = [
   "product#r47: While a bounded context addresses a subdomain, if the person drops the subdomain, then the product service shall refuse the request and name the bounded context.",
 ]
 [operations."product.drop subdomain".parameters]
-subdomain = { option = "--subdomain", example = "subdomain-1" }
+subdomain = { positional = 1, example = "specification" }
 
 [operations."product.drop context"]
 command = "spec drop context"
@@ -1871,4 +1871,4 @@ requirements = [
   "product#r49: While a bounded context holds a job, if the person drops the bounded context, then the product service shall refuse the request and name the job.",
 ]
 [operations."product.drop context".parameters]
-"bounded context" = { option = "--bounded-context", example = "bounded context-1" }
+"bounded context" = { positional = 1, example = "bounded-context/missingmass.io/shopsystem/shopsystem-bdd" }
