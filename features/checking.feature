@@ -1220,3 +1220,54 @@ Feature: Checking
     And the specification service deregisters the contract c1 for the adapter spec a1
     When the contract registry service completes the request to deregister the contract c1 for the adapter spec a1
     Then the specification service changes nothing
+
+  @g144 @r144
+  Scenario: the coupling report names the words two areas share
+    Given a word w1
+    And a term t1
+    And the term t1 has the word w1
+    And an area a1
+    And the area a1 holds the term t1
+    And a term t2
+    And the term t2 has the word w1
+    And an area a2
+    And the area a2 holds the term t2
+    And a coupling c1
+    And the area a2 has the coupling c1
+    When the person reports on this shop
+    Then the specification service returns the coupling c1
+    And the coupling c1 holds the word w1
+
+  @g145 @r145
+  Scenario: the coupling report names the elements one area's model refers to of another's
+    Given an element e1
+    And a term t1
+    And the element e1 refers to the term t1
+    And an area a1
+    And the area a1 holds the element e1
+    And an element e2
+    And an area a2
+    And the area a2 holds the element e2
+    And the term t1 means the element e2
+    And a coupling c1
+    And the area a2 has the coupling c1
+    When the person reports on this shop
+    Then the specification service returns the coupling c1
+    And the specification service names the element e2
+
+  @g146 @r146
+  Scenario: the coupling report names the requirements that use another area's words
+    Given a capability c1
+    And an area a1
+    And the area a1 holds the capability c1
+    And a requirement r1
+    And a term t1
+    And the requirement r1 uses the term t1
+    And the capability c1 has the requirement r1
+    And an area a2
+    And the area a2 holds the term t1
+    And a coupling c2
+    And the area a2 has the coupling c2
+    When the person reports on this shop
+    Then the specification service returns the coupling c2
+    And the coupling c2 holds the requirement r1

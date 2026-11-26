@@ -1953,3 +1953,63 @@ shall [x1: service the contract registry service (constant), x5: service the spe
     not [x6: thing]
       change(e2, subject: x5, object: x6)
 ```
+
+## r144
+From: b612 r144.
+
+```reading
+While an area holds a term that has a word and another area holds a term that has the word, when the person reports on the shop, the specification service shall return a coupling of the area that holds the word.
+shall [x6: agent the person (constant), x7: shop "the shop the request is made in" (indexical), x8: service the specification service (constant)]
+  while [x1: area, x2: term, x3: word, x4: area, x5: term]
+    of(x3, x2)
+    in(x2, x1)
+    distinct(x4, x1)
+    of(x3, x5)
+    in(x5, x4)
+  when
+    request(e1, specification.report coupling, subject: x6, on: x7)
+  response [x9: coupling]
+    of(x9, x4)
+    in(x3, x9)
+    return(e2, subject: x8, object: x9)
+```
+
+## r145
+From: b612 r145.
+
+```reading
+While an area holds an element that refers to a term and the term means an element that another area holds, when the person reports on the shop, the specification service shall return a coupling of the area and name the element.
+shall [x6: agent the person (constant), x7: shop "the shop the request is made in" (indexical), x8: service the specification service (constant)]
+  while [x1: area, x2: element, x3: term, x4: element, x5: area]
+    refer#3(subject: x2, to: x3)
+    in(x2, x1)
+    distinct(x5, x1)
+    in(x4, x5)
+    mean(subject: x3, object: x4)
+  when
+    request(e1, specification.report coupling, subject: x6, on: x7)
+  response [x9: coupling]
+    of(x9, x5)
+    return(e2, subject: x8, object: x9)
+    name(e3, subject: x8, object: x4)
+```
+
+## r146
+From: b612 r146.
+
+```reading
+While an area holds a capability and the capability has a requirement that uses a term and another area holds the term, when the person reports on the shop, the specification service shall return a coupling of the area that holds the requirement.
+shall [x6: agent the person (constant), x7: shop "the shop the request is made in" (indexical), x8: service the specification service (constant)]
+  while [x1: area, x2: capability, x3: requirement, x4: term, x5: area]
+    in(x2, x1)
+    use(subject: x3, object: x4)
+    of(x3, x2)
+    distinct(x5, x1)
+    in(x4, x5)
+  when
+    request(e1, specification.report coupling, subject: x6, on: x7)
+  response [x9: coupling]
+    of(x9, x5)
+    in(x3, x9)
+    return(e2, subject: x8, object: x9)
+```

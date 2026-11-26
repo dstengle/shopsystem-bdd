@@ -47,6 +47,7 @@ object term
   relations: means → element (one)
   relations: clashes with → term (many)
   relations: spells → element (many)
+  relations: has → word (one)
 
 object design-decision kind of file
   attributes: status: proposed | accepted | rejected | superseded; tier: check | requirement | judgement
@@ -290,6 +291,7 @@ service specification
     outcomes: returned → the contract | refused: version not published
   operation obtain(contract, bounded context, version) by the person
     outcomes: done → the contract | refused: bounded context with no contract, id not in the context id form, bounded context unreachable, bounded context failing, bounded context not an upstream
+  operation report coupling(shop)  outcomes: returned → every coupling
 
 service decisions
   operation enter(design-decision, title, summary, tier, wording, route, supersedes)
@@ -376,6 +378,7 @@ object area
   relations: holds → lifecycle (many)
   relations: holds → model line | term | element (many)
   relations: imports → area (many)
+  relations: has → coupling (many)
 
 object group title kind of text
 
@@ -482,4 +485,9 @@ object subdomain type kind of text
 object subdomain type form kind of artifact
 
 object replied request kind of text
+
+object coupling
+  relations: holds → word | element | requirement (many)
+
+object word kind of text
 ```

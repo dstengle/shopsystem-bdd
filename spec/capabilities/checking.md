@@ -404,6 +404,15 @@ Restates: design-model-check#r13@0.29.
 ### [g143] A completed deregistration changes nothing more
 - [r143] When the contract registry service completes the request to deregister a contract for an adapter spec, the specification service shall change nothing.
 
+### [g144] the coupling report names the words two areas share
+- [r144] While an area holds a term that has a word and another area holds a term that has the word, when the person reports on the shop, the specification service shall return a coupling of the area that holds the word.
+
+### [g145] the coupling report names the elements one area's model refers to of another's
+- [r145] While an area holds an element that refers to a term and the term means an element that another area holds, when the person reports on the shop, the specification service shall return a coupling of the area and name the element.
+
+### [g146] the coupling report names the requirements that use another area's words
+- [r146] While an area holds a capability and the capability has a requirement that uses a term and another area holds the term, when the person reports on the shop, the specification service shall return a coupling of the area that holds the requirement.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.
