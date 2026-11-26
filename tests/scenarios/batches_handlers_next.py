@@ -42,6 +42,16 @@ def has_brief(step):
     T.given(step, "batch brief", n2)["batch"] = n1
 
 
+@first("GivenDoes", "cite")
+def none_cites(step):
+    """`no kept change cites the item i1`: its task's branch holds no commit after the batch's lines commit."""
+    if not (step.subject or "").startswith("no "):
+        return False
+    kind, name = parts(step)[-1]
+    assert kind == "item", step.text
+    T.given(step, "item", name)["unbuilt"] = True
+
+
 @four("GivenK_A", "review finding", *BOTH)
 def given_triage(step):
     """`the triage of the review finding r2 is `fix now``: batches_handlers_finding records each as `fix now`."""

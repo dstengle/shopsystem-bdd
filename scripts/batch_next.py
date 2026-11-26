@@ -16,7 +16,9 @@ import backlog_items
 import batch_driver
 import batch_findings
 import batch_fix
+import batch_git
 import batch_plan
+import batch_tasks
 from domain_envelope import Response
 from shop_files import Refused
 
@@ -36,19 +38,45 @@ def _unfixed(root, batch):
     return [f for f in batch_findings.open_findings(root, batch.name) if not cited.get(f.fid)]
 
 
-def pick(batch, tasks, unfixed):
+def _cites(root, since, branch, item):
+    """Whether a commit on `branch` after `since` has an `Item: <item>` trailer."""
+    out = batch_git.git(root, "log", "--format=%(trailers:key=Item,valueonly,separator=%x2c)", "%s..%s" % (
+        since, branch)).stdout
+    return item in {c.strip() for line in out.splitlines() for c in line.split(",")}
+
+
+def _built(root, batch, tasks):
+    """The ids of the running tasks whose branch holds a commit citing the task's item since the batch's lines commit:
+    the kept change its subagent reported."""
+    running = [t for t in tasks if t.status == "running"]
+    try:
+        since = batch_tasks.lines_commit(root, batch) if running else None
+    except Refused:
+        return set()
+    found = set()
+    for task in running:
+        try:
+            if _cites(root, since, task.branch, task.item):
+                found.add(task.task)
+        except Refused:          # no such branch yet: nothing built on it
+            pass
+    return found
+
+
+def pick(batch, tasks, unfixed, built=()):
     """(instruction, task or None, finding or None): the first step that applies, in the service's order. `tasks` are
-    the batch's tasks of in-batch items, `unfixed` its open findings to fix."""
+    the batch's tasks of in-batch items, `unfixed` its open findings to fix, `built` the ids of its running tasks whose
+    branch holds a kept change citing their item."""
     if batch.status not in ("building", "in-review"):
         return "stop", None, None
     if batch.status == "in-review":
         return "review change", None, None
     if unfixed:
         return "fix finding", None, unfixed[0]
-    for status, instruction in (("failed", "park item"), ("running", "finish task"), ("pending", "prepare task")):
+    for status, instruction in (("failed", "park item"), ("running", None), ("pending", "prepare task")):
         task = next((t for t in tasks if t.status == status), None)
         if task is not None:
-            return instruction, task, None
+            return instruction or ("finish task" if task.task in built else "build task"), task, None
     return ("submit batch", None, None) if tasks else ("stop", None, None)
 
 
@@ -56,6 +84,8 @@ def report(batch, instruction, task, finding):
     """The command the step's result is reported through, or None for `stop`."""
     name = batch.name
     return {"prepare task": "shop work batch resume %s" % name,
+            "build task": "a commit on %s citing Item: %s, then shop work batch done %s %s" % (
+                task.branch if task else "", task.item if task else "", name, task.task if task else ""),
             "finish task": "shop work batch done %s %s" % (name, task.task if task else ""),
             "park item": "shop work batch park %s %s --question <question>" % (name, task.item if task else ""),
             "submit batch": "shop work batch review %s" % name,
@@ -75,7 +105,7 @@ def poll(root, name):
     batch = batch_plan.find(root, name)
     tasks = [t for t in batch.tasks if _in_batch(root, t)]
     unfixed = _unfixed(root, batch) if batch.status == "building" else []
-    instruction, task, finding = pick(batch, tasks, unfixed)
+    instruction, task, finding = pick(batch, tasks, unfixed, _built(root, batch, tasks))
     folder = None
     if instruction == "review change":
         folder = str(batch_findings.scratch(root, batch, len(batch_findings.reviews(root, batch)) + 1).resolve())
